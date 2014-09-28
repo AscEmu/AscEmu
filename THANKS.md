@@ -1,10 +1,10 @@
 # AscEmu
 ## Thanks and Credits
 
-AscEmu is a rewrite (derivation) of ArcEmu, which was original written by OpenAscent, Ascent, Antrix, EspireEmu and 
+AscEmu is a rewrite (derivation) of ArcEmu, OpenAscent, Ascent, Antrix, EspireEmu and 
 Wow Daemon Team. A lot of people worked on the source and and we appreciate the developers of the earlier projects.
 
-Project Credits:
+### Project Credits:
 Aceindy - Antrix, Ascent team member.
 Aim - Wowd, Antrix, and Ascent team member.
 Andy - AscentCommunity team member.
@@ -65,7 +65,7 @@ Zum - ArcEmu team member.
 Zyres - AscEmu team member
 
 
-And all the friendly people in the different communyties, repositories and "one-man-shows":
+### And all the friendly people in the different communyties, repositories and "one-man-shows":
 armm77 - Sandshroud team member
 Cromon - tutorials
 DarkAngel39 - ArcDB
