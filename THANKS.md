@@ -2,7 +2,7 @@
 ## Thanks and Credits
 
 AscEmu is a rewrite (derivation) of ArcEmu, OpenAscent, Ascent, Antrix, EspireEmu and 
-Wow Daemon Team. A lot of people worked on the source and and we appreciate the developers of the earlier projects.
+Wow Daemon Team. A lot of people worked on the source and we appreciate the developers of the earlier projects.
 
 ### Project Credits:
 Aceindy - Antrix, Ascent team member.
