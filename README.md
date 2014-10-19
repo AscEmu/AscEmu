@@ -1,6 +1,11 @@
 ﻿# ![logo](http://ascemu.org/style/img/logo.png)
 
-##Introduction
+
+## UNDER CONSTRUCTION
+Here is nothing to see and nothing to fork...
+
+
+## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
 We focus on optimizing the codebase and improving the ingame functionality.
 
@@ -21,22 +26,24 @@ Anything else like "fun-content" is NOT useful!
 
 ## Install
 HowTo install (detailed guides on our wiki)
-* [Windows](/wiki/index.php?title=3.3.5_Windows)
-* [Ubuntu](/wiki/index.php?title=3.3.5_Ubuntu)
-* [Mac OSX](/wiki/index.php?title=3.3.5_Mac_OSX)
+* [Windows](http://www.ascemu.org//wiki/index.php?title=3.3.5_Windows)
+* [Ubuntu](http://www.ascemu.org/wiki/index.php?title=3.3.5_Ubuntu)
+* [Mac OSX](http://www.ascemu.org/wiki/index.php?title=3.3.5_Mac_OSX)
 
 
 ## Links
-Web: ...
+Web: http://www.ascemu.org
 
-Forums: ...
+Forums: http://www.board.ascemu.org
 
-Wiki: ...
+Wiki: http://www.ascemu.org/wiki/
 
 ### Further projects:
 AscDB: https://github.com/AscEmu/AscDB
 
 AscWeb: https://github.com/AscEmu/AscWeb
+
+Moon/Sun++ : http://www.moonplusplus.info
 
 
 ### Copyright and other Stuff
