@@ -1,6 +1,10 @@
 ﻿# ![logo](http://ascemu.org/style/img/logo.png)
 
-We decide to keep up the Antrix-Ascent-Arcemu way of Framework.
+##Introduction
+AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
+We focus on optimizing the codebase and improving the ingame functionality.
+
+You can help us by contributing. It is completely open source and can be used by everyone.
 
 ## Contributing
 Feel free to contribute any corrections bur please make shure it is useful.
