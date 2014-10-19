@@ -1,6 +1,5 @@
 ﻿# ![logo](http://ascemu.org/style/img/logo.png)
 
-## Ascemu?
 We decide to keep up the Antrix-Ascent-Arcemu way of Framework.
 
 ## Contributing
