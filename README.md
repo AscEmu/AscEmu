@@ -21,4 +21,16 @@ Forums: ...
 
 Wiki: ...
 
-## Database
+### Further projects:
+AscDB: https://github.com/AscEmu/AscDB
+
+AscWeb: https://github.com/AscEmu/AscWeb
+
+
+### Copyright and other Stuff
+ [LICENSE.md](LICENSE)
+ 
+ [THANKS.md](Thanks to all)
+ 
+ [TERMS OF USE AGREEMENT](Terms)
+ 
