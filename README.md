@@ -6,6 +6,7 @@ We focus on optimizing the codebase and improving the ingame functionality.
 
 You can help us by contributing. It is completely open source and can be used by everyone.
 
+
 ## Contributing
 Feel free to contribute any corrections bur please make shure it is useful.
 
@@ -16,6 +17,14 @@ What are "useful" commits?
  4. Adding functions related to "blizzlike" functions 
 
 Anything else like "fun-content" is NOT useful!
+
+
+## Install
+HowTo install (detailed guides on our wiki)
+* [Windows](/wiki/index.php?title=3.3.5_Windows)
+* [Ubuntu](/wiki/index.php?title=3.3.5_Ubuntu)
+* [Mac OSX](/wiki/index.php?title=3.3.5_Mac_OSX)
+
 
 ## Links
 Web: ...
