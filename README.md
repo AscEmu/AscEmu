@@ -47,9 +47,9 @@ Moon/Sun++ : http://www.moonplusplus.info
 
 
 ### Copyright and other Stuff
- [LICENSE.md](LICENSE)
+ [License](LICENSE.md)
  
- [THANKS.md](Thanks to all)
+ [Thanks to all](THANKS.md)
  
- [TERMS OF USE AGREEMENT](Terms)
+ [Terms of use](TERMS OF USE AGREEMENT)
  
