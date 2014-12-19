@@ -1,10 +1,6 @@
 ﻿# ![logo](http://ascemu.org/style/img/logo.png)
 
 
-## UNDER CONSTRUCTION
-Here is nothing to see and nothing to fork...
-
-
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
 We focus on optimizing the codebase and improving the ingame functionality.
