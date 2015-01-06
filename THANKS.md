@@ -41,6 +41,8 @@ Elenion - ArcEmu team member.
 
 Emsy - Ascent and ArcEmu team member.
 
+Erotix8210 - Prismatic Net Emu.
+
 Feanor - ArcEmu team member.
 
 Gaijin - ArcEmu team member.
@@ -146,4 +148,3 @@ zdroid9770 - Crimoxic.
 WhyDB-Team
 
 IFDB-Team
-
