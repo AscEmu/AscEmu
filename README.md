@@ -36,9 +36,7 @@ Forums: http://www.board.ascemu.org
 Wiki: http://www.ascemu.org/wiki/
 
 ### Further projects:
-AscDB: https://github.com/AscEmu/AscDB
-
-AscWeb: https://github.com/AscEmu/AscWeb
+AscDB: http://www.board.ascemu.org/index.php/Thread/9-AscDB-3-3-5/
 
 Moon/Sun++ : http://www.moonplusplus.info
 
