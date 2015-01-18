@@ -11,6 +11,10 @@ Aim - Wowd, Antrix, and Ascent team member.
 
 Andy - AscentCommunity team member.
 
+armm77 - Sandshroud team member.
+
+azolex - Sunscripting.
+
 BoogieMan/Joker - Wowd team member.
 
 Burlex - Wowd, Antrix, and Ascent team member.
@@ -21,13 +25,21 @@ Cebernic - ArcEmu team member.
 
 Compboy - Antrix and Ascent team member.
 
+Cromon - emudevs.
+
 DankoDj - AscEmu team member.
 
 Dameon87 - Wowd, Antrix, and ArcEmu team member.
 
+DarkAngel39 - ArcDB.
+
+dberga - arcbliz ragezone.
+
 Dealer - ArcEmu team member.
 
 Debug - Ascent, and ArcEmu team member.
+
+Dibzz - continued-arcemu.
 
 Dfighter - ArcEmu team member.
 
@@ -55,6 +67,8 @@ Hoffa - ArcEmu team member.
 
 Hypersniper - ArcEmu team member.
 
+IFDB - Team
+
 Jackpotz - ArcEmu team member.
 
 Jajcer - Ascent team member.
@@ -66,6 +80,8 @@ Kekers - WoWEmulation contributor.
 KFL - ArcEmu team member.
 
 Kolkoo - Wowd team member.
+
+Magnifikator - landofelves.
 
 Maku - ArcEmu team member.
 
@@ -89,6 +105,8 @@ Paroxysm - ArcEmu team member.
 
 Razor950 - ArcEmu team member.
 
+sanctum32 - easywow.
+
 SB@L - ArcEmu team member.
 
 Sfera - ArcEmu team member.
@@ -103,6 +121,8 @@ Supalosa - Ascent team member.
 
 Tazjin - AscentCommunity team member.
 
+Thetruecrow - Sandshroud team member.
+
 TOM_RUS - Mangos team member.
 
 Trelorn/Motive - Ascent team member.
@@ -110,6 +130,10 @@ Trelorn/Motive - Ascent team member.
 Warxhead - Ascent team member.
 
 Whoami - ArcEmu team member.
+
+WhyDB - Team
+
+Velho - easywow.
 
 VirtualAngel - ArcEmu team member.
 
@@ -119,32 +143,8 @@ Vojta - ArcEmu team member.
 
 Zack/Tudi - Wowd, Antrix, Ascent and ArcEmu team member.
 
+zdroid9770 - Crimoxic.
+
 Zum - ArcEmu team member.
 
 Zyres - AscEmu team member.
-
-
-### And all the friendly people in the different communyties, repositories and "one-man-shows":
-armm77 - Sandshroud team member.
-
-Cromon - emudevs.
-
-DarkAngel39 - ArcDB.
-
-dberga - arcbliz ragezone.
-
-Dibzz - continued-arcemu.
-
-Magnifikator - landofelves.
-
-sanctum32 - easywow.
-
-Thetruecrow - Sandshroud team member.
-
-Velho - easywow.
-
-zdroid9770 - Crimoxic.
-
-WhyDB-Team
-
-IFDB-Team
