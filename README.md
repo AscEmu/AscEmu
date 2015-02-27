@@ -35,10 +35,8 @@ Forums: http://www.board.ascemu.org
 
 Wiki: http://www.ascemu.org/wiki/
 
-### Further projects:
 AscDB: http://www.board.ascemu.org/index.php/Thread/9-AscDB-3-3-5/
 
-Moon/Sun++ : http://www.moonplusplus.info
 
 
 ### Copyright and other Stuff
