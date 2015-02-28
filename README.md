@@ -35,14 +35,14 @@ Forums: http://www.board.ascemu.org
 
 Wiki: http://www.ascemu.org/wiki/
 
-AscDB: http://www.board.ascemu.org/index.php/Thread/9-AscDB-3-3-5/
+DB: http://www.board.ascemu.org/filebase/index.php/Filebase/
 
 
 
 ### Copyright and other Stuff
- [License](LICENSE.md)
+[License](LICENSE.md)
  
- [Thanks to all](THANKS.md)
+[Thanks to all](THANKS.md)
  
- [Terms of use](TERMS OF USE AGREEMENT)
+[Terms of use](TERMS OF USE AGREEMENT)
  
