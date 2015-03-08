@@ -29,13 +29,10 @@ HowTo install (detailed guides on our wiki)
 
 
 ## Links
-Web: http://www.ascemu.org
-
-Forums: http://www.board.ascemu.org
-
-Wiki: http://www.ascemu.org/wiki/
-
-DB: http://www.board.ascemu.org/filebase/index.php/Filebase/
+* [Web](http://www.ascemu.org)
+* [Forums](http://www.board.ascemu.org)
+* [Wiki](http://www.ascemu.org/wiki/)
+* [World DB](http://www.board.ascemu.org/filebase/index.php/FileList/1-Database/)
 
 
 
