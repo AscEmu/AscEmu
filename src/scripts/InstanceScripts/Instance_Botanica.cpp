@@ -19,17 +19,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
 #include "Instance_Botanica.h"
 
-
 // Bloodwarder Protector AI
-
-#define CN_BLOOD_PROTECTOR 17993
-
-#define CRYSTAL_STRIKE 29765 // 1 target
-
 class BloodProtectorAI : public CreatureAIScript
 {
     public:
@@ -129,20 +123,15 @@ class BloodProtectorAI : public CreatureAIScript
 
 
 // Bloodwarder Mender AI
-
-#define CN_BLOOD_MENDER
+// \todo Script me!
 
 /*  * Healer
     * Casts Shadow Word: Pain and Mind Blast
     * Mind Control these for Holy Fury buff (+295 spell damage for 30 minutes, shows as DIVINE fury on the pet bar). Can be spellstolen.
     */
 
+
 // Bloodwarder Greenkeeper AI
-
-#define CN_BLOOD_GREENKEEPER 18419
-
-#define GREENKEEPER_FURY 39121
-
 class BloodGreenkeeperAI : public CreatureAIScript
 {
     public:
@@ -242,11 +231,6 @@ class BloodGreenkeeperAI : public CreatureAIScript
 
 
 // Sunseeker Chemist AI
-#define CN_SUN_CHEMIST 19486
-
-#define FLAME_BREATH 18435
-#define POISON_CLOUD 37469
-
 class SunchemistAI : public CreatureAIScript
 {
     public:
@@ -351,14 +335,6 @@ class SunchemistAI : public CreatureAIScript
 
 
 // Sunseeker Researcher AI
-
-#define CN_SUN_RESEARCHER 18421
-
-#define POISON_SHIELD 34355 // self
-#define MIND_SHOCK 34352 // 1 target
-#define FROST_SHOCK 39062 // 1 target
-#define FLAME_SHOCK 22423 // 1 target
-
 class SunResearcherAI : public CreatureAIScript
 {
     public:
@@ -474,20 +450,8 @@ class SunResearcherAI : public CreatureAIScript
         int nrspells;
 };
 
-/**************************/
-/*                        */
-/*       Boss AIs         */
-/*                        */
-/**************************/
 
 // Commander Sarannis AI
-
-#define CN_COMMANDER_SARANNIS 17976    // spawn adds (or maybe write spell which will be harder)
-
-#define ARCANE_RESONANCE 34794
-#define ARCANE_DEVASTATION 34799
-#define SUMMON_REINFORCEMENTS 34803    // it's dummy (sss) and must be scripted separately
-
 class CommanderSarannisAI : public CreatureAIScript
 {
     public:
@@ -533,7 +497,7 @@ class CommanderSarannisAI : public CreatureAIScript
             GuardAdds = false;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Step forward! I will see that you are appropriately welcomed.");    // needs checks!
+            _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_01);
             _unit->PlaySoundToSet(11071);
         }
 
@@ -562,11 +526,11 @@ class CommanderSarannisAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Oh stop your whimpering.");    // :|
+                        _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_02);
                         _unit->PlaySoundToSet(11072);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Mission accomplished!");
+                        _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_03);
                         _unit->PlaySoundToSet(11073);
                         break;
                 }
@@ -578,7 +542,7 @@ class CommanderSarannisAI : public CreatureAIScript
             GuardAdds = false;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have not yet... begun to...");    // ??
+            _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_07);
             _unit->PlaySoundToSet(11079);
         }
 
@@ -587,7 +551,7 @@ class CommanderSarannisAI : public CreatureAIScript
             if (_unit->GetHealthPct() <= 50 && GuardAdds == false)
             {
                 GuardAdds = true;    // need to add guard spawning =/
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Guards, rally! Cut these invaders down!");    // not sure
+                _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_06);
                 _unit->PlaySoundToSet(11078);
             }
             float val = RandomFloat(100.0f);
@@ -601,11 +565,11 @@ class CommanderSarannisAI : public CreatureAIScript
             switch (RandomArcane)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You are no longer dealing with some underling.");
+                    _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_04);
                     _unit->PlaySoundToSet(11076);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Band'or shorel'aran!");
+                    _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_05);
                     _unit->PlaySoundToSet(11077);
                     break;
             }
@@ -667,18 +631,8 @@ class CommanderSarannisAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // High Botanist Freywinn AI
-
-#define CN_HIGH_BOTANIST_FREYWINN 17975
-
-#define PLANT_RED_SEEDLING 34763
-#define PLANT_GREEN_SEEDLING 34761
-#define PLANT_WHITE_SEEDLING 34759
-#define PLANT_BLUE_SEEDLING 34762
-#define SUMMON_FRAYER_PROTECTOR 34557
-#define TREE_FORM 34551
-#define TRANQUILITY 34550
-
 class HighBotanistFreywinnAI : public CreatureAIScript
 {
     public:
@@ -753,7 +707,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             PlantTimer = 10;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What are you doin'? These <missing_word> are very delicate!");    // needs checks!
+            _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_04);
             _unit->PlaySoundToSet(11144);
         }
 
@@ -782,11 +736,11 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your life circle is now concluded!");
+                        _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_03);
                         _unit->PlaySoundToSet(11145);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You will feed the worms!");
+                        _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_02);
                         _unit->PlaySoundToSet(11146);
                         break;
                 }
@@ -798,7 +752,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             PlantTimer = 10;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Those <missing_word> must be preserved!");    // ??
+            _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_06);
             _unit->PlaySoundToSet(11149);
         }
 
@@ -852,13 +806,13 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             {
                 case 0:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "<missing_text>");
+                    _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_01);
                     _unit->PlaySoundToSet(11147);
                 }
                 break;
                 case 1:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Nature bends to my will!");
+                    _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_05);
                     _unit->PlaySoundToSet(11148);
                 }
                 break;
@@ -925,14 +879,8 @@ class HighBotanistFreywinnAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Thorngrin the Tender AI
-
-#define CN_THORNGRIN_THE_TENDER 17978
-
-#define HELLFIRE 34659 // DBC: 34659, 34660
-#define SACRIFICE 34661
-#define ENRAGE 34670
-
 class ThorngrinTheTenderAI : public CreatureAIScript
 {
     public:
@@ -978,7 +926,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             Enraged = false;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What aggravation is this? You will die!");
+            _unit->SendScriptTextChatMessage(SAY_THORNIN_01);
             _unit->PlaySoundToSet(11205);
         }
 
@@ -1007,11 +955,11 @@ class ThorngrinTheTenderAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You seek a prize, eh? How about death?");
+                        _unit->SendScriptTextChatMessage(SAY_THORNIN_02);
                         _unit->PlaySoundToSet(11206);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I hate to say I told you so...");
+                        _unit->SendScriptTextChatMessage(SAY_THORNIN_03);
                         _unit->PlaySoundToSet(11207);
                         break;
                 }
@@ -1023,7 +971,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             Enraged = false;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You won't... get far.");
+            _unit->SendScriptTextChatMessage(SAY_THORNIN_08);
             _unit->PlaySoundToSet(11212);
         }
 
@@ -1046,11 +994,11 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             switch (RandomHellfire)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll incinerate you!");
+                    _unit->SendScriptTextChatMessage(SAY_THORNIN_06);
                     _unit->PlaySoundToSet(11210);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Scream while you burn!");
+                    _unit->SendScriptTextChatMessage(SAY_THORNIN_07);
                     _unit->PlaySoundToSet(11211);
                     break;
             }
@@ -1063,11 +1011,11 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             switch (RandomSacrifice)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your life will be mine!");
+                    _unit->SendScriptTextChatMessage(SAY_THORNIN_04);
                     _unit->PlaySoundToSet(11208);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I revel in your pain!");
+                    _unit->SendScriptTextChatMessage(SAY_THORNIN_05);
                     _unit->PlaySoundToSet(11209);
                     break;
             }
@@ -1137,15 +1085,8 @@ class ThorngrinTheTenderAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Laj AI
-
-#define CN_LAJ 17980
-
-#define ALERGIC_REACTION 34697
-#define SUMMON_THORN_LASHER 34684 // DBC: 34684, 34681
-#define SUMMON_THORN_FLAYER 34682 // DBC: 34685, 34682        // they should be spawned on platforms
-#define TELEPORT_SELF 34673
-
 class LajAI : public CreatureAIScript
 {
     public:
@@ -1232,7 +1173,7 @@ class LajAI : public CreatureAIScript
 
             if (!TeleportTimer)
             {
-                _unit->SetPosition(-204.125000f, 391.248993f, -11.194300f, 0.017453f);    // hmm doesn't work :S
+                _unit->SetPosition(-204.125000f, 391.248993f, -11.194300f, 0.017453f);    // \todo hmm doesn't work :S
                 _unit->CastSpell(_unit, spells[3].info, spells[3].instant);
                 TeleportTimer = 20;
             }
@@ -1295,15 +1236,8 @@ class LajAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Warp Splinter AI
-
-#define CN_WARP_SPLINTER 17977
-
-#define STOMP 34716
-#define SUMMON_SAPLINGS 34727    // DBC: 34727, 34731, 34733, 34734, 34736, 34739, 34741 (with Ancestral Life spell 34742)    // won't work (guardian summon)
-#define ARCANE_VOLLEY 34785     //37078, 34785   // must additional script them (because Splinter eats them after 20 sec ^)
-// ^ Doesn't work somehow when used by mob :O
-
 class WarpSplinterAI : public CreatureAIScript
 {
     public:
@@ -1350,7 +1284,7 @@ class WarpSplinterAI : public CreatureAIScript
             SummonTimer = 20;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Who disturbs this sanctuary?");
+            _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_01);
             _unit->PlaySoundToSet(11230);
         }
 
@@ -1379,11 +1313,11 @@ class WarpSplinterAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You must die! But wait: this does not-- No, no... you must die!");
+                        _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_02);
                         _unit->PlaySoundToSet(11231);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What am I doing? Why do I...");
+                        _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_03);
                         _unit->PlaySoundToSet(11232);
                         break;
                 }
@@ -1395,7 +1329,7 @@ class WarpSplinterAI : public CreatureAIScript
             SummonTimer = 20;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "So... confused. Do not... belong here!");
+            _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_06);
             _unit->PlaySoundToSet(11235);
         }
 
@@ -1425,11 +1359,11 @@ class WarpSplinterAI : public CreatureAIScript
             switch (RandomSummon)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Children, come to me!");
+                    _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_04);
                     _unit->PlaySoundToSet(11233);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Maybe this is not-- No, we fight! Come to my aid!");
+                    _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_05);
                     _unit->PlaySoundToSet(11234);
                     break;
             }

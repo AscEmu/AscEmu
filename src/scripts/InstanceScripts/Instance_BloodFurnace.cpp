@@ -19,23 +19,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
 #include "Instance_BloodFurnace.h"
 
+
 // Keli'dan the BreakerAI
-
-#define CN_KELIDAN_THE_BREAKER            17377
-
-#define KELIDAN_BURNING_NOVA            30940
-#define KELIDAN_SHADOW_BOLT_VOLLEY        28599
-#define KELIDAN_SHADOW_BOLT_VOLLEY_H    40070
-#define KELIDAN_FIRE_NOVA                33132
-#define KELIDAN_FIRE_NOVA_H                37371
-#define KELIDAN_CORRUPTION                30938
-#define KELIDAN_EVOCATION                30935
-#define KELIDAN_VORTEX                    37370
-
 class KelidanTheBreakerAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(KelidanTheBreakerAI, MoonScriptBossAI);
@@ -99,15 +88,8 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
     int32           mBurningNovaTimer;
 };
 
-//------------------------------------
-//    -= Broggok =-
-//------------------------------------
-#define CN_BROGGOK 17380
 
-#define POISON_BOLT 30917
-#define POISON_CLOUD 31259 // DBC: 30916; no idea if correct
-#define SLIME_SPRAY 30913
-
+// Broggok
 class BroggokAI : public MoonScriptCreatureAI
 {
     public:
@@ -123,23 +105,16 @@ class BroggokAI : public MoonScriptCreatureAI
         void OnDied(Unit* pKiller)
         {
             GameObject* pDoor = NULL;
-            pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(456.157349f, 34.248005f, 9.559463f, 181819);
+            pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(456.157349f, 34.248005f, 9.559463f, GO_BROGGOK);
             if (pDoor)
-                pDoor->SetState(0);
+                pDoor->SetState(GAMEOBJECT_STATE_OPEN);
 
             MoonScriptCreatureAI::OnDied(pKiller);
         }
 };
 
-//------------------------------------
-//    -= The Maker =-
-//------------------------------------
-#define CN_THE_MAKER 17381
 
-#define DOMINATION 30923 // 36866
-#define ACID_SPRAY 38973 // 38973 or 38153    // not sure about casting of this
-#define THROW_BEAKER 30925 // Throw beaker <--- maybe this is it?
-
+// The Maker
 class TheMakerAI : public MoonScriptCreatureAI
 {
     public:
@@ -162,9 +137,9 @@ class TheMakerAI : public MoonScriptCreatureAI
         void OnDied(Unit* pKiller)
         {
             GameObject* pDoor = NULL;
-            pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(327.155487f, 149.753418f, 9.559869f, 181812);
+            pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(327.155487f, 149.753418f, 9.559869f, GO_THE_MAKER);
             if (pDoor)
-                pDoor->SetState(0);
+                pDoor->SetState(GAMEOBJECT_STATE_OPEN);
 
             MoonScriptCreatureAI::OnDied(pKiller);
         }
