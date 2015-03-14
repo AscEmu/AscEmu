@@ -9,7 +9,7 @@ branches:
   only:
     - master
 
-# do not build with clang until fixed
+# define complier for build
 compiler:
   - gcc
   - clang
