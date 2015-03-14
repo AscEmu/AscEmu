@@ -19,26 +19,20 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
-
 #include "Setup.h"
 #include "Instance_BlackMorass.h"
 
-#define CN_CHRONO_LORD_DEJA 17879
 
-#define ARCANE_BLAST 24857
-#define TIME_LAPSE 31467
-//#define MAGNETIC_PULL 31705 Only in Heroics - Correct ID?
-
-class CHRONOLORDDEJAAI : public CreatureAIScript
+// ChronoLordAI
+class ChronoLordAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CHRONOLORDDEJAAI);
+        ADD_CREATURE_FACTORY_FUNCTION(ChronoLordAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        CHRONOLORDDEJAAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ChronoLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -70,8 +64,8 @@ class CHRONOLORDDEJAAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "If you will not cease this foolish quest, then you will die!");
-            _unit->PlaySoundToSet(10271);
+            _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_01);
+            _unit->PlaySoundToSet(10414);       // old soundId 10271
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -86,20 +80,20 @@ class CHRONOLORDDEJAAI : public CreatureAIScript
             if (_unit->GetHealthPct() > 0)
             {
                 uint32 sound = 0;
-                const char* text = NULL;
+                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        sound = 10271;
-                        text = "I told you it was a fool's quest!";
+                        sound = 10415;              // old soundId 10271
+                        textId = SAY_CHRONOLORD_02;
                         break;
                     case 1:
-                        sound = 10271;
-                        text = "Leaving so soon?";
+                        sound = 10416;              // old soundId 10271
+                        textId = SAY_CHRONOLORD_03;
                         break;
                 }
                 _unit->PlaySoundToSet(sound);
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, text);
+                _unit->SendScriptTextChatMessage(textId);
             }
         }
 
@@ -114,8 +108,8 @@ class CHRONOLORDDEJAAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Time ... is on our side.");
-            _unit->PlaySoundToSet(10271);
+            _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_04);
+            _unit->PlaySoundToSet(10417);       // old soundId 10271
             RemoveAIUpdateEvent();
         }
 
@@ -178,21 +172,17 @@ class CHRONOLORDDEJAAI : public CreatureAIScript
         int nrspells;
 };
 
-#define CN_TEMPORUS 17880
 
-#define HASTEN 31458
-#define MORTAL_WOUND 28467
-//#define SPELL_REFLECTION 31705 Only in Heroics - Correct ID?
-
-class TEMPORUSAI : public CreatureAIScript
+// TemporusAI
+class TemporusAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(TEMPORUSAI);
+        ADD_CREATURE_FACTORY_FUNCTION(TemporusAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        TEMPORUSAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        TemporusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -224,8 +214,8 @@ class TEMPORUSAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "So be it ... you have been warned.");
-            _unit->PlaySoundToSet(10271);
+            _unit->SendScriptTextChatMessage(SAY_TEMPORUS_01);
+            _unit->PlaySoundToSet(10444);               // old soundId 10271
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -240,20 +230,20 @@ class TEMPORUSAI : public CreatureAIScript
             if (_unit->GetHealthPct() > 0)
             {
                 uint32 sound = 0;
-                const char* text = NULL;
+                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        sound = 10271;
-                        text = "You should have left when you had the chance.";
+                        sound = 10445;              // old soundId 10271
+                        textId = SAY_TEMPORUS_02;
                         break;
                     case 1:
-                        sound = 10271;
-                        text = "Your days are done.";
+                        sound = 10446;              // old soundId 10271
+                        textId = SAY_TEMPORUS_03;
                         break;
                 }
                 _unit->PlaySoundToSet(sound);
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, text);
+                _unit->SendScriptTextChatMessage(textId);
             }
         }
 
@@ -268,8 +258,8 @@ class TEMPORUSAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "My death means ... little.");
-            _unit->PlaySoundToSet(10271);
+            _unit->SendScriptTextChatMessage(SAY_TEMPORUS_04);
+            _unit->PlaySoundToSet(10447);           // old soundId 10271
             RemoveAIUpdateEvent();
         }
 
@@ -332,21 +322,17 @@ class TEMPORUSAI : public CreatureAIScript
         int nrspells;
 };
 
-#define CN_AEONUS 17881
 
-#define SAND_BREATH 31478
-#define TIME_STOP 31422
-#define FRENZY 28371 //ID according to wowwiki
-
-class AEONUSAI : public CreatureAIScript
+//AenusAI
+class AenusAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(AEONUSAI);
+        ADD_CREATURE_FACTORY_FUNCTION(AenusAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        AEONUSAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        AenusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -378,8 +364,8 @@ class AEONUSAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             CastTime();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Let us see what fate lays in store...");
-            _unit->PlaySoundToSet(10271);
+            _unit->SendScriptTextChatMessage(SAY_AENUS_01);
+            _unit->PlaySoundToSet(10402);               // old soundId 10271
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -394,20 +380,20 @@ class AEONUSAI : public CreatureAIScript
             if (_unit->GetHealthPct() > 0)
             {
                 uint32 sound = 0;
-                const char* text = NULL;
+                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        sound = 10271;
-                        text = "No one can stop us! No one!";
+                        sound = 10404;              // old soundId 10271
+                        textId = SAY_AENUS_02;
                         break;
                     case 1:
-                        sound = 10271;
-                        text = "One less obstacle in our way!";
+                        sound = 10403;              // old soundId 10271
+                        textId = SAY_AENUS_03;
                         break;
                 }
                 _unit->PlaySoundToSet(sound);
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, text);
+                _unit->SendScriptTextChatMessage(textId);
             }
         }
 
@@ -422,8 +408,8 @@ class AEONUSAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             CastTime();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It is only a matter...of time.");
-            _unit->PlaySoundToSet(10271);
+            _unit->SendScriptTextChatMessage(SAY_AENUS_04);
+            _unit->PlaySoundToSet(10405);           // old soundId 10271
             RemoveAIUpdateEvent();
         }
 
@@ -488,7 +474,7 @@ class AEONUSAI : public CreatureAIScript
 
 void SetupTheBlackMorass(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(CN_CHRONO_LORD_DEJA, &CHRONOLORDDEJAAI::Create);
-    mgr->register_creature_script(CN_TEMPORUS, &TEMPORUSAI::Create);
-    mgr->register_creature_script(CN_AEONUS, &AEONUSAI::Create);
+    mgr->register_creature_script(CN_CHRONO_LORD_DEJA, &ChronoLordAI::Create);
+    mgr->register_creature_script(CN_TEMPORUS, &TemporusAI::Create);
+    mgr->register_creature_script(CN_AEONUS, &AenusAI::Create);
 }

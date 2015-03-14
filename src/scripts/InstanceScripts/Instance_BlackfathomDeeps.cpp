@@ -17,12 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
-
 #include "Setup.h"
 #include "Instance_BlackfathomDeeps.h"
 
-#define CN_LadySarevess 4831
+// LadySarevessAI
 class LadySarevessAI : public MoonScriptCreatureAI
 {
     public:
@@ -37,7 +35,7 @@ class LadySarevessAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BaronAquanis 12876
+// BaronAquanisAI
 class BaronAquanisAI : public MoonScriptCreatureAI
 {
     public:
@@ -51,7 +49,7 @@ class BaronAquanisAI : public MoonScriptCreatureAI
         }
 };
 
-#define OBJ_FathomStone 177964
+// FathomStone
 class FathomStone : public GameObjectAIScript
 {
     public:
@@ -68,7 +66,7 @@ class FathomStone : public GameObjectAIScript
             if (pPlayer->IsTeamHorde() && SpawnBaronAquanis == true) // Horde
             {
                 // Spawn Baron Aquanis
-                _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(CN_BaronAquanis, -782.021f, -63.5876f, -45.0935f, -2.44346f, true, false, 0, 0);
+                _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(CN_BARON_AQUANIS, -782.021f, -63.5876f, -45.0935f, -2.44346f, true, false, 0, 0);
                 SpawnBaronAquanis = false;
             }
         }
@@ -78,7 +76,7 @@ class FathomStone : public GameObjectAIScript
         bool SpawnBaronAquanis;
 };
 
-#define CN_TwilightLordKelris 4832
+// KelrisAI
 class KelrisAI : public MoonScriptCreatureAI
 {
     public:
@@ -93,7 +91,7 @@ class KelrisAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_Akumai 4829
+// AkumaiAI
 class AkumaiAI : public MoonScriptCreatureAI
 {
     public:
@@ -108,39 +106,49 @@ class AkumaiAI : public MoonScriptCreatureAI
         }
 };
 
-#define GS_Morridune 6729
-class MorriduneGossip : public Arcemu::Gossip::Script
+// MorriduneGossip
+class MorriduneGossip : public GossipScript
 {
     public:
-        void OnHello(Object* pObject, Player*  plr)
-        {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7247);
 
-            if (plr->IsTeamAlliance())
-                menu.AddItem(0, "Please Teleport me to Darnassus.", 1);
-            menu.AddItem(0, "I wish to leave this horrible place", 2);
-            menu.Send(plr);
+        void GossipHello(Object* pObject, Player* pPlayer)
+        {
+            GossipMenu* menu;
+            objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), MORRIDUNE_ON_HELLO, pPlayer);
+
+            if (pPlayer->IsTeamAlliance())
+                menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
+            else
+                menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_2), 2);
+
+            menu->SendTo(pPlayer);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
         {
-            switch (Id)
+            switch (IntId)
             {
-                case 0: OnHello(pObject, plr);    break;
-                    // port to Darnassus
-                case 1:    plr->SafeTeleport(1, 0, 9951.52f, 2280.32f, 1341.39f, 0); break;
-                    // Port to entrance
-                case 2:    plr->SafeTeleport(1, 0, 4247.74f, 745.879f, -24.2967f, 4.36996f); break;
+                case 0:
+                    GossipHello(pObject, pPlayer);
+                    break;
+                case 1:
+                    pPlayer->SafeTeleport(1, 0, 9951.52f, 2280.32f, 1341.39f, 0);
+                    break;
+                case 2:
+                    pPlayer->SafeTeleport(1, 0, 4247.74f, 745.879f, -24.2967f, 4.36996f);
+                    break;
             }
         }
 };
 
 void SetupBlackfathomDeeps(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(CN_LadySarevess, &LadySarevessAI::Create);
-    mgr->register_creature_script(CN_BaronAquanis, &BaronAquanisAI::Create);
-    mgr->register_gameobject_script(OBJ_FathomStone, &FathomStone::Create);
-    mgr->register_creature_script(CN_TwilightLordKelris, &KelrisAI::Create);
-    mgr->register_creature_script(CN_Akumai, &AkumaiAI::Create);
-    mgr->register_creature_gossip(GS_Morridune, new MorriduneGossip);
+    mgr->register_creature_script(CN_LADY_SAREVESS, &LadySarevessAI::Create);
+    mgr->register_creature_script(CN_BARON_AQUANIS, &BaronAquanisAI::Create);
+    mgr->register_creature_script(CN_LORD_KELRIS, &KelrisAI::Create);
+    mgr->register_creature_script(CN_AKUMAI, &AkumaiAI::Create);
+
+    mgr->register_creature_gossip(CN_MORRIDUNE, new MorriduneGossip);
+
+    mgr->register_gameobject_script(GO_FATHOM_STONE, &FathomStone::Create);
 }

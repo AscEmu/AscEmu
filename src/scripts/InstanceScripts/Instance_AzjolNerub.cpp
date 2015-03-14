@@ -19,23 +19,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
-// \ todo Finish Kritkhir Encounter, needs more blizzlike, may need InstanceScript | Anuburak | Add's AI and trash
+/// \ todo Finish Kritkhir Encounter, needs more blizzlike, may need InstanceScript | Anuburak | Add's AI and trash
 
 #include "Setup.h"
 #include "Instance_AzjolNerub.h"
 
 
-//Krikthir The Gatewatcher BOSS
-#define BOSS_KRIKTHIR 28684
-
-#define KRIKTHIR_MINDFLAY 52586
-#define KRIKTHIR_CURSEOFFATIGUE 52592
-#define KRIKTHIR_ENRAGE 28747
-
-#define KRIKTHIR_MINDFLAY_HC 59367
-#define KRIKTHIR_CURSEOFFATIGUE_HC 59368
-
+//Krikthir The Gatewatcher
 class KrikthirAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(KrikthirAI, MoonScriptCreatureAI);
@@ -83,18 +73,7 @@ class KrikthirAI : public MoonScriptCreatureAI
     bool mEnraged;
 };
 
-//boss Hadronox
-#define BOSS_HADRONOX 28921
-
-#define HADRONOX_WEBGRAB 53406
-#define HADRONOX_PIERCEARMOR 53418
-#define HADRONOX_LEECHPOISON 53030
-#define HADRONOX_ACIDCLOUD 53400
-
-#define HADRONOX_WEBGRAB_HC 59421
-#define HADRONOX_LEECHPOISON_HC 59417
-#define HADRONOX_ACIDCLOUD_HC 59419
-
+//Hadronox
 class HadronoxAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(HadronoxAI, MoonScriptCreatureAI);
@@ -118,13 +97,7 @@ class HadronoxAI : public MoonScriptCreatureAI
 
 };
 
-//Watcher Gashra.
-#define CN_GASHRA 28730
-
-#define GASHRA_WEBWRAP 52086
-#define GASHRA_INFECTEDBITE 52469
-#define GASHRA_ENRAGE 52470
-
+//Watcher Gashra
 class GashraAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(GashraAI, MoonScriptCreatureAI);
@@ -137,12 +110,6 @@ class GashraAI : public MoonScriptCreatureAI
 };
 
 //Watcher Narjil
-#define CN_NARJIL 28729
-
-#define NARJIL_WEBWRAP 52086
-#define NARJIL_INFECTEDBITE 52469
-#define NARJIL_BLINDINGWEBS 52524
-
 class NarjilAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(NarjilAI, MoonScriptCreatureAI);
@@ -156,12 +123,6 @@ class NarjilAI : public MoonScriptCreatureAI
 };
 
 //Watcher Silthik
-#define CN_SILTHIK 28731
-
-#define SILTHIK_WEBWRAP 52086
-#define SILTHIK_INFECTEDBITE 52469
-#define SILTHIK_POISONSPRAY 52493
-
 class SilthikAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(SilthikAI, MoonScriptCreatureAI);
@@ -175,11 +136,6 @@ class SilthikAI : public MoonScriptCreatureAI
 };
 
 //Anub'ar Shadowcaster (anub shadowcaster)
-#define CN_ANUB_SHADOWCASTER 28733
-
-#define SHADOWCASTER_SHADOWBOLT 52534
-#define SHADOWCASTER_SHADOW_NOVA 52535
-
 class AnubShadowcasterAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(AnubShadowcasterAI, MoonScriptCreatureAI);
