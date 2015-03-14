@@ -72,6 +72,47 @@ set(sources
     )
 
 SET(headers
+    Instance_Arcatraz.h 
+    Instance_AuchenaiCrypts.h 
+    Instance_AzjolNerub.h 
+    Instance_BlackfathomDeeps.h 
+    Instance_BlackMorass.h 
+    Instance_BlackrockDepths.h 
+    Instance_BlackrockSpire.h 
+    Instance_BloodFurnace.h 
+    Instance_Botanica.h 
+    Instance_CullingOfStratholme.h 
+    Instance_Deadmines.h 
+    Instance_DireMaul.h 
+    Instance_DrakTharonKeep.h 
+    Instance_Gundrak.h 
+    Instance_HallsOfLightning.h 
+    Instance_HallsOfReflection.h 
+    Instance_HallsOfStone.h 
+    Instance_HellfireRamparts.h 
+    Instance_MagistersTerrace.h 
+    Instance_ManaTombs.h 
+    Instance_Mauradon.h 
+    Instance_Nexus.h 
+    Instance_OldHillsbradFoothills.h 
+    Instance_RagefireChasm.h 
+    Instance_RazorfenDowns.h 
+    Instance_ScarletMonastery.h 
+    Instance_Scholomance.h 
+    Instance_SethekkHalls.h 
+    Instance_ShadowLabyrinth.h 
+    Instance_ShadowfangKeep.h 
+    Instance_TheMechanar.h 
+    Instance_TheShatteredHalls.h 
+    Instance_TheSlavePens.h 
+    Instance_TheSteamvault.h 
+    Instance_TheUnderbog.h 
+    Instance_TheVioletHold.h 
+    Instance_Uldaman.h 
+    Instance_UtgardeKeep.h 
+    Instance_WailingCaverns.h 
+    Instance_TheStockade.h 
+    Instance_ZulFarrak.h
     Raid_Naxxramas.h
     Raid_Ulduar.h
     Raid_IceCrownCitadel.h

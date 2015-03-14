@@ -21,7 +21,7 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
-
+#include "Instance_HellfireRamparts.h"
 
 // Watchkeeper GargolmarAI
 // "Do you smell that? Fresh meat has somehow breached our citadel. Be wary of any intruders." should be on some areatrigger

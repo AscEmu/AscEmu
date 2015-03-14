@@ -20,7 +20,7 @@
 // \todo Last boss needs to be finished
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
-
+#include "Instance_Nexus.h"
 
 #define ANOMALUS_CS        188527
 #define TELESTRA_CS        188526

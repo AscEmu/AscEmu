@@ -17,6 +17,7 @@
  */
 
 #include "Setup.h"
+#include "Instance_TheVioletHold.h"
 
 struct Location EventPreGuardSP[] = //PortalGuard spwns
 {

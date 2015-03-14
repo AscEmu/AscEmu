@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Instance_Arcatraz.h"
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 

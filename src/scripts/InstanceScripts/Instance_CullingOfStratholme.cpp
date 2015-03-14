@@ -19,6 +19,7 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
+#include "Instance_CullingOfStratholme.h"
 
 #define MEATHOOK_ENTRY 26529
 class MEATHOOK_AI : public CreatureAIScript

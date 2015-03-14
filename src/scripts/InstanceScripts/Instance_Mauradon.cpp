@@ -21,7 +21,7 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
-
+#include "Instance_Mauradon.h"
 
 class CelebrasTheCursed : public CreatureAIScript
 {

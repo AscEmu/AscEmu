@@ -22,6 +22,7 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 
 #include "Setup.h"
+#include "Instance_BlackMorass.h"
 
 #define CN_CHRONO_LORD_DEJA 17879
 

@@ -19,6 +19,7 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
+#include "Instance_HallsOfStone.h"
 
 //Dark Rune Stormcaller
 #define CN_DR_STORMCALLER 27984

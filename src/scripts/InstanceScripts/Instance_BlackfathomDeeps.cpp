@@ -20,6 +20,7 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 
 #include "Setup.h"
+#include "Instance_BlackfathomDeeps.h"
 
 #define CN_LadySarevess 4831
 class LadySarevessAI : public MoonScriptCreatureAI

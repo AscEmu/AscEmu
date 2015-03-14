@@ -18,7 +18,7 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
-
+#include "Instance_HallsOfLightning.h"
 
 #define MAP_HALLS_OF_LIGHTNING        602
 #define CN_GENERAL_BJARNGRIM        28586

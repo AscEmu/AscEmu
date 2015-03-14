@@ -23,6 +23,7 @@
 // \ todo Finish Kritkhir Encounter, needs more blizzlike, may need InstanceScript | Anuburak | Add's AI and trash
 
 #include "Setup.h"
+#include "Instance_AzjolNerub.h"
 
 
 //Krikthir The Gatewatcher BOSS

@@ -19,6 +19,7 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
+#include "Instance_HallsOfReflection.h"
 
 #define MAP_HALLSOFREFLECTION 668
 
