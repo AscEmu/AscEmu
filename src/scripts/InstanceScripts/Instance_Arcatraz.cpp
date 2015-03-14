@@ -22,8 +22,6 @@
 #include "Setup.h"
 #include "Instance_Arcatraz.h"
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
-
 // #define VOID_ZONE 36119    // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).
 
 // Zereketh the UnboundAI

@@ -22,28 +22,8 @@
 #include "Setup.h"
 #include "Instance_AuchenaiCrypts.h"
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
-
-/************************************************************************/
-/* Instance_AuchenaiCrypts.cpp Script                                    */
-/************************************************************************/
-
-/*****************************/
-/*                           */
-/*         Boss AIs          */
-/*                           */
-/*****************************/
-
 // Shirrak the Dead WatcherAI
-
-#define CN_SHIRRAK_THE_DEAD_WATCHER 18371
-
-#define INHIBIT_MAGIC        32264
-#define CARNIVOROUS_BITE    41092 // Also can be: 36383 or 41092
-#define FOCUS_FIRE            32310 // not fully functional for now =/ Let's try: 32310, 32301 or 32300    - needs further researches
-#define ATTRACT_MAGIC        32265 // doesn't work anyway
 // Hmmm... next boss without sounds?
-
 class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
 {
     public:
@@ -174,8 +154,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;         // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -225,13 +204,6 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
 
 
 // Avatar of the MartyredAI
-
-#define CN_AVATAR_OF_THE_MARTYRED 18478
-
-#define SUNDER_ARMOR    16145
-#define MORTAL_STRIKE    15708    // not sure to spells ofc :)
-#define PHASE_IN        33422
-
 class AvatarOfTheMartyredAI : public CreatureAIScript
 {
     public:
@@ -358,15 +330,6 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
 
 
 // Exarch MaladaarAI
-
-#define CN_EXARCH_MALADAAR 18373
-
-#define SOUL_SCREAM            32421
-#define RIBBON_OF_SOULS        32422
-#define STOLEN_SOUL            32346
-#define SUMMON_AVATAR        32424
-//#define SOUL_CLEAVE        32346
-
 class EXARCHMALADAARAI : public CreatureAIScript
 {
     public:
@@ -432,15 +395,15 @@ class EXARCHMALADAARAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You will pay with your life!");
+                    _unit->SendScriptTextChatMessage(SAY_MALADAAR_01);
                     _unit->PlaySoundToSet(10513);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "There is no turning back now!");
+                    _unit->SendScriptTextChatMessage(SAY_MALADAAR_02);
                     _unit->PlaySoundToSet(10514);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Serve your penitence!");
+                    _unit->SendScriptTextChatMessage(SAY_MALADAAR_03);
                     _unit->PlaySoundToSet(10515);
                     break;
             }
@@ -456,11 +419,11 @@ class EXARCHMALADAARAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "These wall will be your DOOM!");
+                        _unit->SendScriptTextChatMessage(SAY_MALADAAR_04);
                         _unit->PlaySoundToSet(10516);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Haha, now you'll stay for eternity! Mwahahah!"); // spelling check needed !
+                        _unit->SendScriptTextChatMessage(SAY_MALADAAR_05);
                         _unit->PlaySoundToSet(10517);
                         break;
                 }
@@ -480,7 +443,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This is... Where... I belong...");
+            _unit->SendScriptTextChatMessage(SAY_MALADAAR_06);
             _unit->PlaySoundToSet(10518);
 
             RemoveAIUpdateEvent();
@@ -490,7 +453,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() <= 25 && !Avatar && !_unit->IsStunned())
             {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Rise my fallen brothers! Take form and fight!");
+                _unit->SendScriptTextChatMessage(SAY_MALADAAR_07);
                 _unit->PlaySoundToSet(10512);
 
                 _unit->setAttackTimer(3500, false);
@@ -565,8 +528,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
