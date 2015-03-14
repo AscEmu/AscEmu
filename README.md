@@ -24,8 +24,8 @@ Anything else like "fun-content" is NOT useful!
 ## Install
 HowTo install (detailed guides on our wiki)
 * [Windows](http://www.ascemu.org//wiki/index.php?title=3.3.5_Windows)
-* [Ubuntu](http://www.ascemu.org/wiki/index.php?title=3.3.5_Ubuntu)
-* [Mac OSX](http://www.ascemu.org/wiki/index.php?title=3.3.5_Mac_OSX)
+* [Ubuntu](http://www.ascemu.org/wiki/index.php?title=3.3.5_Ubuntu) (outdated)
+* [Mac OSX](http://www.ascemu.org/wiki/index.php?title=3.3.5_Mac_OSX) (outdated)
 
 
 ## Links
@@ -38,9 +38,7 @@ HowTo install (detailed guides on our wiki)
 
 
 ### Copyright and other Stuff
-[License](LICENSE.md)
- 
-[Thanks to all](THANKS.md)
- 
-[Terms of use](TERMS OF USE AGREEMENT)
+* [License](LICENSE.md)
+* [Thanks to all](THANKS.md)
+* [Terms of use](TERMS OF USE AGREEMENT)
  
