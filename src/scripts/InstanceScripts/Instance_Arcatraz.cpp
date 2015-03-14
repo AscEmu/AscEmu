@@ -24,17 +24,9 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 
-// Zereketh the UnboundAI
-#define CN_ZEREKETH            20870
-#define CN_VOIDZONEARC        21101
-
-#define SEED_OF_C            36123    //32865, 36123
-#define SHADOW_NOVA            36127 // 30533, 39005, 36127 (normal mode), 39005 (heroic mode?)
-#define SHADOW_NOVA_H        39005
-#define CONSUMPTION            30498
-#define CONSUMPTION_H        39004
 // #define VOID_ZONE 36119    // DBC: 36119; it's not fully functionl without additional core support (for dmg and random place targeting).
 
+// Zereketh the UnboundAI
 class ZerekethAI : public MoonScriptBossAI
 {
     public:
@@ -89,11 +81,11 @@ class ZerekethAI : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The shadow... will engulf you.");
+                    _unit->SendScriptTextChatMessage(SAY_ZEREKETH_01);
                     _unit->PlaySoundToSet(11253);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Darkness... consumes all.");
+                    _unit->SendScriptTextChatMessage(SAY_ZEREKETH_02);
                     _unit->PlaySoundToSet(11254);
                     break;
             }
@@ -184,15 +176,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
 
 
 // Dalliah the DoomsayerAI
-
-#define CN_DALLIAH_THE_DOOMSAYER 20885
-
-#define GIFT_OF_THE_DOOMSAYER 36173 // DBC: 36173
-#define WHIRLWIND 36175    // DBC: 36142, 36175
-#define HEAL 36144
-#define SHADOW_WAVE 39016    // Heroic mode spell
 // sounds missing related to Wrath... (look on script below this one)
-
 class DalliahTheDoomsayerAI : public MoonScriptBossAI
 {
     public:
@@ -231,18 +215,10 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
 };
 
 // Wrath-Scryer SoccothratesAI
-// TO DO: Add moar sounds
-#define CN_WRATH_SCRYER_SOCCOTHRATES 20886
-
-#define IMMOLATION 35959 // DBC: 36051, 35959
-#define FELFIRE_SHOCK 35759
-#define FELFIRE_LINE_UP 35770    // ?
-#define KNOCK_AWAY 20686 // DBC: 36512; but it uses it on himself too so changed to other
-#define CHARGE 35754 // DBC: 36058, 35754 =(=(
+// \todo Add moar sounds
 // CHARGE_TARGETING 36038 ?
 // There are more sounds connected with Dalliah and some spells, but I don't know situation in which they are used
 // so haven't added them.
-
 class WrathScryerSoccothratesAI : public MoonScriptBossAI
 {
     public:
@@ -275,17 +251,9 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
 
 // Harbinger SkyrissAI
 // Full event must be scripted for this guy.
-#define CN_HARBRINGER_SKYRISS 20912
-
-#define MIND_REND 36924 // DBC: 36859, 36924;
-#define FEAR 39415
-#define DOMINATION 37162
-#define SUMMON_ILLUSION_66 36931    // those 2 don't work
-#define SUMMON_ILLUSION_33 36932
 // BLINK_VISUAL 36937 ?
 // SIMPLE_TELEPORT 12980 ?
 // Add sounds related to his dialog with mind controlled guy
-
 class HarbringerSkyrissAI : public MoonScriptBossAI
 {
     public:
@@ -345,16 +313,8 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
         SpellDesc* Illusion33;
 };
 
-#define CN_WARDEN_MELLICHAR 20904
 
-#define BLAZING_TRICKSTER 20905
-#define WARP_STALKER 20906
-#define AKKIRIS_LIGHTNING_WAKER 20908
-#define SULFURON_MAGMA_THROWER 20909
-#define TWILIGHT_DRAKONAAR 20910
-#define BLACKWING_DRAKONAAR 20911
-#define MILLHOUSE_MANASTORM 20977
-
+// Warden MellicharAI
 class WardenMellicharAI : public MoonScriptBossAI
 {
     public:
@@ -391,9 +351,9 @@ class WardenMellicharAI : public MoonScriptBossAI
             if (shield)
                 shield->SetState(1);
 
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I knew the prince would be angry but, I... I have not been myself. I had to let them out! The great one speaks to me, you see. Wait--outsiders. Kael'thas did not send you! Good... I'll just tell the prince you released the prisoners!");
+            _unit->SendScriptTextChatMessage(SAY_MELLICHAR_01);
             _unit->PlaySoundToSet(11222);
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "The naaru kept some of the most dangerous beings in existence here in these cells. Let me introduce you to another...", 27000);
+            _unit->SendScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
             sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)11223, EVENT_UNK, 27000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             ParentClass::OnCombatStart(mTarget);
@@ -426,10 +386,10 @@ class WardenMellicharAI : public MoonScriptBossAI
                     {
                         NPC_ID_Spawn = 0;
                         case 0:
-                            NPC_ID_Spawn = BLAZING_TRICKSTER;
+                            NPC_ID_Spawn = CN_BLAZING_TRICKSTER;
                             break;
                         case 1:
-                            NPC_ID_Spawn = WARP_STALKER;
+                            NPC_ID_Spawn = CN_WARP_STALKER;
                             break;
                     }
                     ResetTimer(Phase_Timer, 8000);
@@ -447,7 +407,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     }
                     else if (NPC_orb1 && !NPC_orb1->IsAlive())
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Yes, yes... another! Your will is mine! Behold another terrifying creature of incomprehensible power!");
+                        _unit->SendScriptTextChatMessage(SAY_MELLICHAR_03);
                         _unit->PlaySoundToSet(11224);
                         SetPhase(1);
                         Phasepart = 0;
@@ -483,21 +443,21 @@ class WardenMellicharAI : public MoonScriptBossAI
                     if (!NPC_orb2 && Spawncounter == 0)
                     {
                         ++Spawncounter;
-                        NPC_orb2 = SpawnCreature(MILLHOUSE_MANASTORM, 413.192f, -148.586f, 42.569f, 0.024347f);
+                        NPC_orb2 = SpawnCreature(CN_MILLHOUSE_MANASTORM, 413.192f, -148.586f, 42.569f, 0.024347f);
                         return;
                     }
                     else if (NPC_orb2 && NPC_orb2->IsAlive())
                     {
-                        Unit* millhouse = TO_UNIT(ForceCreatureFind(MILLHOUSE_MANASTORM));
+                        Creature* millhouse = TO_CREATURE(ForceCreatureFind(CN_MILLHOUSE_MANASTORM));
                         if (millhouse)
                         {
-                            millhouse->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Where in Bonzo's brass buttons am I? And who are-- yaaghh, that's one mother of a headache!", 2000);
+                            millhouse->SendScriptTextChatMessage(SAY_MILLHOUS_01, 2000);
                             sEventMgr.AddEvent(TO_OBJECT(millhouse), &Object::PlaySoundToSet, (uint32)11171, EVENT_UNK, 2000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "What is this? A lowly gnome? I will do better, oh great one.", 13000);
+                            _unit->SendScriptTextChatMessage(SAY_MELLICHAR_04, 13000);
                             sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)11226, EVENT_UNK, 13000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-                            millhouse->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Lowly? Nobody refers to the mighty Millhouse Manastorm as lowly! I have no idea what goes on here, but I will gladly join your fight against this impudent imbecile!", 22000);
+                            millhouse->SendScriptTextChatMessage(SAY_MILLHOUS_02, 22000);
                             sEventMgr.AddEvent(TO_OBJECT(millhouse), &Object::PlaySoundToSet, (uint32)11172, EVENT_UNK, 22000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                         }
                         SetPhase(2);
@@ -529,10 +489,10 @@ class WardenMellicharAI : public MoonScriptBossAI
                     {
                         NPC_ID_Spawn = 0;
                         case 0:
-                            NPC_ID_Spawn = SULFURON_MAGMA_THROWER;
+                            NPC_ID_Spawn = CN_SULFURON_MAGMA_THROWER;
                             break;
                         case 1:
-                            NPC_ID_Spawn = AKKIRIS_LIGHTNING_WAKER;
+                            NPC_ID_Spawn = CN_AKKIRIS_LIGHTNING_WAKER;
                             break;
                     }
                     ResetTimer(Phase_Timer, 8000);
@@ -544,6 +504,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                 {
                     if (!NPC_orb3 && NPC_ID_Spawn != 0 && Spawncounter == 0)
                     {
+                        /// \todo investigate.... saying "1"... really?
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "1");
                         ++Spawncounter;
                         NPC_orb3 = SpawnCreature(NPC_ID_Spawn, 420.050f, -173.500f, 42.580f, 6.110f);
@@ -551,12 +512,13 @@ class WardenMellicharAI : public MoonScriptBossAI
                     }
                     else if (!NPC_orb3)
                     {
+                        /// \todo investigate.... saying "2"... really?
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "2");
                         NPC_orb3 = GetNearestCreature(NPC_ID_Spawn);
                     }
                     else if (NPC_orb3 && !NPC_orb3->IsAlive())
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Anarchy! Bedlam! Oh, you are so wise! Yes, I see it now, of course!");
+                        _unit->SendScriptTextChatMessage(SAY_MELLICHAR_05);
                         _unit->PlaySoundToSet(11227);
                         SetPhase(3);
                         Phasepart = 0;
@@ -586,10 +548,10 @@ class WardenMellicharAI : public MoonScriptBossAI
                     {
                         NPC_ID_Spawn = 0;
                         case 0:
-                            NPC_ID_Spawn = TWILIGHT_DRAKONAAR;
+                            NPC_ID_Spawn = CN_TWILIGHT_DRAKONAAR;
                             break;
                         case 1:
-                            NPC_ID_Spawn = BLACKWING_DRAKONAAR;
+                            NPC_ID_Spawn = CN_BLACKWING_DRAKONAAR;
                             break;
                     }
                     ResetTimer(Phase_Timer, 8000);
@@ -611,7 +573,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     }
                     else if (NPC_orb4 && !NPC_orb4->IsAlive())
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Yes, O great one, right away!");
+                        _unit->SendScriptTextChatMessage(SAY_MELLICHAR_06);
                         _unit->PlaySoundToSet(11228);
                         SetPhase(4);
                         Phasepart = 0;

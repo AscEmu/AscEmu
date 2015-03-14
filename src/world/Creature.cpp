@@ -2313,6 +2313,34 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
     SendMessageToSet(&data, true);      // sending this
 }
 
+void Creature::SendScriptTextChatMessage(uint32 textid, uint32 delay)
+{
+    CreatureText* ct = CreatureTextStorage.LookupEntry(textid);
+    const char* msg = ct->text;
+    if (delay)
+    {
+        sEventMgr.AddEvent(this, &Creature::SendChatMessage, uint8(ct->type), uint32(ct->language), msg, uint32(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        return;
+    }
+
+    const char* name = GetCreatureInfo()->Name;
+    size_t CreatureNameLength = strlen((char*)name) + 1;
+    size_t MessageLength = strlen((char*)ct->text) + 1;
+
+    WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
+    data << uint8(ct->type);            // f.e. CHAT_MSG_MONSTER_SAY enum ChatMsg (perfect name for this enum XD)
+    data << uint32(ct->language);       // f.e. LANG_UNIVERSAL enum Languages
+    data << GetGUID();                  // guid of the npc
+    data << uint32(0);
+    data << uint32(CreatureNameLength); // the length of the npc name (needed to calculate text beginning)
+    data << name;                       // name of the npc
+    data << uint64(0);
+    data << uint32(MessageLength);      // the length of the message (needed to calculate the bubble)
+    data << ct->text;                   // the text
+    data << uint8(0x00);
+    SendMessageToSet(&data, true);      // sending this
+}
+
 void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr)
 {
     size_t UnitNameLength = 0, MessageLength = 0;
