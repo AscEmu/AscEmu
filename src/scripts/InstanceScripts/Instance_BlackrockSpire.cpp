@@ -24,14 +24,6 @@
 #include "Instance_BlackrockSpire.h"
 
 // General Drakkisath AI by Soulshifter
-
-#define CN_GENERAL_DRAKKISATH            10363
-
-#define SPELL_FIRENOVA                  23462
-#define SPELL_CLEAVE1                   20691
-#define SPELL_CONFLAGRATION                16805
-#define SPELL_THUNDERCLAP               30633
-
 class GeneralDrakkisathAI : public CreatureAIScript
 {
     public:
@@ -150,13 +142,6 @@ class GeneralDrakkisathAI : public CreatureAIScript
 
 
 // Pyroguard Embersser AI by Soulshifter
-
-#define CN_PYROGUARD_EMBERSSER            9816
-
-#define SPELL_FIRENOVA                    23462
-#define SPELL_FLAMEBUFFET                 23341
-#define SPELL_PYROBLAST                    17274
-
 class PyroguardEmbersserAI : public CreatureAIScript
 {
     public:
@@ -270,13 +255,6 @@ class PyroguardEmbersserAI : public CreatureAIScript
 
 // Warchief Rend Blackhand AI by Soulshifter
 ///\todo  PHASES. D:
-
-#define CN_REND_BLACKHAND                10429
-
-#define SPELL_WHIRLWIND                 26038
-#define SPELL_CLEAVE2                   20691
-#define SPELL_THUNDERCLAP               30633
-
 class RendBlackhandAI : public CreatureAIScript
 {
     public:
@@ -310,7 +288,7 @@ class RendBlackhandAI : public CreatureAIScript
             spells[1].perctrigger = 30.0f;
             spells[1].attackstoptimer = 1000; // 1sec
 
-            spells[2].info = dbcSpell.LookupEntry(SPELL_THUNDERCLAP);
+            spells[2].info = dbcSpell.LookupEntry(SPELL_THUNDERCLAP_WR);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].perctrigger = 30.0f;
@@ -388,14 +366,8 @@ class RendBlackhandAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Gyth AI by Soulshifter
-
-#define CN_GYTH                            10339
-
-#define SPELL_CORROSIVEACID              20667
-#define SPELL_FREEZE                     18763
-#define SPELL_FLAMEBREATH                20712
-
 class GythAI : public CreatureAIScript
 {
     public:
@@ -527,14 +499,8 @@ class GythAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // The Beast AI by Soulshifter
-
-#define CN_THE_BEAST                            10430
-
-#define SPELL_FLAMEBREAK                        16785
-#define SPELL_IMMOLATE                             20294
-#define SPELL_TERRIFYINGROAR                    14100
-
 class TheBeastAI : public CreatureAIScript
 {
     public:
@@ -646,18 +612,8 @@ class TheBeastAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Highlord Omokk AI by Soulshifter
-
-#define CN_HIGHLORD_OMOKK            9196
-
-#define SPELL_WARSTOMP                24375
-#define SPELL_CLEAVE3                 15579
-#define SPELL_STRIKE                18368
-#define SPELL_REND                     18106
-#define SPELL_SUNDERARMOR           24317
-#define SPELL_KNOCKAWAY              20686
-#define SPELL_SLOW                  22356
-
 class HighlordOmokkAI : public CreatureAIScript
 {
     public:
@@ -793,14 +749,8 @@ class HighlordOmokkAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Shadow Hunter Vosh'gajin AI by Soulshifter
-
-#define CN_SHADOW_HUNTER_VOSH            9236
-
-#define SPELL_CURSEOFBLOOD                 24673
-#define SPELL_HEX                         16708
-#define SPELL_CLEAVE4                      20691
-
 class ShadowHunterVoshAI : public CreatureAIScript
 {
     public:
@@ -912,17 +862,8 @@ class ShadowHunterVoshAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // War Master Voone AI by Soulshifter
-
-#define CN_WAR_MASTER_VOONE                9237
-
-#define SPELL_SNAPKICK                  15618
-#define SPELL_CLEAVE                     15579
-#define SPELL_UPPERCUT                    10966
-#define SPELL_MORTALSTRIKE                 16856
-#define SPELL_PUMMEL                      15615
-#define SPELL_THROWAXE                     16075
-
 class WarMasterVooneAI : public CreatureAIScript
 {
     public:
@@ -950,7 +891,7 @@ class WarMasterVooneAI : public CreatureAIScript
             spells[0].perctrigger = 20.0f;
             spells[0].attackstoptimer = 1000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(SPELL_CLEAVE);
+            spells[1].info = dbcSpell.LookupEntry(SPELL_CLEAVE_WM);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 10.0f;
@@ -1052,15 +993,8 @@ class WarMasterVooneAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Mother Smolderweb AI by Soulshifter
-
-#define CN_MOTHER_SMOLDERWEB            10596
-
-#define SPELL_CRYSTALIZE                16104
-#define SPELL_MOTHERSMILK                 16468
-#define SPELL_POISON                    24097
-#define SPELL_WEBEXPLOSION              16469
-
 class MotherSmolderwebAI : public CreatureAIScript
 {
     public:
@@ -1178,18 +1112,8 @@ class MotherSmolderwebAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Urok Doomhowl AI by Soulshifter
-
-#define CN_UROK_DOOMHOWL            10584
-
-#define SPELL_WARSTOMP                24375
-#define SPELL_CLEAVE                 15579
-#define SPELL_STRIKE                18368
-#define SPELL_REND                     18106
-#define SPELL_SUNDERARMOR           24317
-#define SPELL_KNOCKAWAY              20686
-#define SPELL_SLOW                  22356
-
 class UrokDoomhowlAI : public CreatureAIScript
 {
     public:
@@ -1211,43 +1135,43 @@ class UrokDoomhowlAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(SPELL_WARSTOMP);
+            spells[0].info = dbcSpell.LookupEntry(SPELL_WARSTOMP_UD);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 20.0f;
             spells[0].attackstoptimer = 1000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(SPELL_CLEAVE);
+            spells[1].info = dbcSpell.LookupEntry(SPELL_CLEAVE_UD);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000; // 1sec
 
-            spells[2].info = dbcSpell.LookupEntry(SPELL_STRIKE);
+            spells[2].info = dbcSpell.LookupEntry(SPELL_STRIKE_UD);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].perctrigger = 20.0f;
             spells[2].attackstoptimer = 1000; // 1sec
 
-            spells[3].info = dbcSpell.LookupEntry(SPELL_REND);
+            spells[3].info = dbcSpell.LookupEntry(SPELL_REND_UD);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = false;
             spells[3].perctrigger = 20.0f;
             spells[3].attackstoptimer = 1000; // 1sec
 
-            spells[4].info = dbcSpell.LookupEntry(SPELL_SUNDERARMOR);
+            spells[4].info = dbcSpell.LookupEntry(SPELL_SUNDERARMOR_UD);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = false;
             spells[4].perctrigger = 20.0f;
             spells[4].attackstoptimer = 1000; // 1sec
 
-            spells[5].info = dbcSpell.LookupEntry(SPELL_KNOCKAWAY);
+            spells[5].info = dbcSpell.LookupEntry(SPELL_KNOCKAWAY_UD);
             spells[5].targettype = TARGET_VARIOUS;
             spells[5].instant = false;
             spells[5].perctrigger = 20.0f;
             spells[5].attackstoptimer = 1000; // 1sec
 
-            spells[6].info = dbcSpell.LookupEntry(SPELL_SLOW);
+            spells[6].info = dbcSpell.LookupEntry(SPELL_SLOW_UD);
             spells[6].targettype = TARGET_VARIOUS;
             spells[6].instant = false;
             spells[6].perctrigger = 10.0f;
@@ -1325,14 +1249,8 @@ class UrokDoomhowlAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Quartermaster Zigris AI by Soulshifter
-
-#define CN_QUARTERMASTER_ZIGRIS        9736
-
-#define SPELL_SHOOT                    22907
-#define SPELL_STUNBOMB                16497
-#define SPELL_HOOKEDNET                15609
-
 class QuartermasterZigrisAI : public CreatureAIScript
 {
     public:
@@ -1444,13 +1362,8 @@ class QuartermasterZigrisAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Halycon AI by Soulshifter
-
-#define CN_HALYCON                10220
-#define CN_GIZRUL                10268
-#define SPELL_CROWDPUMMEL       10887
-#define SPELL_MIGHTYBLOW        14099
-
 class HalyconAI : public CreatureAIScript
 {
     public:
@@ -1576,16 +1489,8 @@ class HalyconAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Overlord Wyrmthalak AI by Soulshifter
-
-#define CN_OVERLORD_WYRMTHALAK    9568
-
-#define CN_SPIRESTONE_WARLORD    9216
-#define SPELL_BLASTWAVE         11130
-#define SPELL_SHOUT             23511
-#define SPELL_CLEAVE5           20691
-#define SPELL_KNOCKAWAY         20686
-
 class OverlordWyrmthalakAI : public CreatureAIScript
 {
     public:
@@ -1625,7 +1530,7 @@ class OverlordWyrmthalakAI : public CreatureAIScript
             spells[2].perctrigger = 25.0f;
             spells[2].attackstoptimer = 1000; // 1sec
 
-            spells[3].info = dbcSpell.LookupEntry(SPELL_KNOCKAWAY);
+            spells[3].info = dbcSpell.LookupEntry(SPELL_KNOCKAWAY_OW);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = false;
             spells[3].perctrigger = 15.0f;

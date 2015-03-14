@@ -2686,25 +2686,25 @@ class PyromancerLoregrain : public CreatureAIScript
 
 void SetupBlackrockDepths(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(9156, &AmbassadorFlamelash::Create);
-    mgr->register_creature_script(9031, &AnubShiah::Create);
-    mgr->register_creature_script(9016, &BaelGar::Create);
-    mgr->register_creature_script(9019, &EmperorDagranThaurissan::Create);
-    mgr->register_creature_script(9029, &Eviscerator::Create);
-    mgr->register_creature_script(9056, &FineousDarkvire::Create);
-    mgr->register_creature_script(9033, &GeneralAngerforge::Create);
-    mgr->register_creature_script(8983, &GolemLordArgelmach::Create);
-    //mgr->register_creature_script(9027, &GoroshtheDervish::Create); - AI must be added ;)
-    mgr->register_creature_script(9028, &Grizzle::Create);
-    mgr->register_creature_script(9032, &HedrumTheCreeper::Create);
-    mgr->register_creature_script(9018, &HighInterrogatorGerstahn::Create);
-    mgr->register_creature_script(9319, &HoundmasterGrebmar::Create);
-    mgr->register_creature_script(9537, &HurleyBlackbreath::Create);
-    mgr->register_creature_script(9017, &LordIncendius::Create);
-    mgr->register_creature_script(9025, &LordRoccor::Create);
-    mgr->register_creature_script(9938, &Magmus::Create);
-    mgr->register_creature_script(9030, &OkThorTheBreaker::Create);
-    mgr->register_creature_script(9502, &Phalanx::Create);
-    mgr->register_creature_script(8929, &PrincessMoiraBronzebeard::Create);
-    mgr->register_creature_script(9024, &PyromancerLoregrain::Create);
+    mgr->register_creature_script(CN_AMBASSADOR_FLAMELASH, &AmbassadorFlamelash::Create);
+    mgr->register_creature_script(CN_ANUB_SHIAH, &AnubShiah::Create);
+    mgr->register_creature_script(CN_BAEL_GAR, &BaelGar::Create);
+    mgr->register_creature_script(CN_DRAGRAN_THAURISSAN, &EmperorDagranThaurissan::Create);
+    mgr->register_creature_script(CN_EVISCERATOR, &Eviscerator::Create);
+    mgr->register_creature_script(CN_FINEOUS_DARKVIRE, &FineousDarkvire::Create);
+    mgr->register_creature_script(CN_GENERAL_ANGERFORGE, &GeneralAngerforge::Create);
+    mgr->register_creature_script(CN_GOLEM_LORD_ARGELMACH, &GolemLordArgelmach::Create);
+    //mgr->register_creature_script(CN_GOROSH_THE_DERVISH, &GoroshtheDervish::Create); - AI must be added ;)
+    mgr->register_creature_script(CN_GRIZZLE, &Grizzle::Create);
+    mgr->register_creature_script(CN_HEDRUM_THE_CREEPER, &HedrumTheCreeper::Create);
+    mgr->register_creature_script(CN_INTERROGATOR_GERSTAHN, &HighInterrogatorGerstahn::Create);
+    mgr->register_creature_script(CN_HOUNDMASTER_GREBMAR, &HoundmasterGrebmar::Create);
+    mgr->register_creature_script(CN_HURLEY_BLACKBREATH, &HurleyBlackbreath::Create);
+    mgr->register_creature_script(CN_LORD_INCENDIUS, &LordIncendius::Create);
+    mgr->register_creature_script(CN_LORD_ROCCOR, &LordRoccor::Create);
+    mgr->register_creature_script(CN_MAGMUS, &Magmus::Create);
+    mgr->register_creature_script(CN_OKTHOR_THE_BREAKER, &OkThorTheBreaker::Create);
+    mgr->register_creature_script(CN_PHALANX, &Phalanx::Create);
+    mgr->register_creature_script(CN_MOIRA_BRONZEBART, &PrincessMoiraBronzebeard::Create);
+    mgr->register_creature_script(CN_PYROMANCER_LOREGRAIN, &PyromancerLoregrain::Create);
 }
