@@ -10,7 +10,7 @@ You can help us by contributing. It is completely open source and can be used by
 
 
 ## Contributing
-Feel free to contribute any corrections bur please make shure it is useful.
+Feel free to contribute any corrections but please make shure it is useful.
 
 What are "useful" commits?
  1. Fixing an open issue.
@@ -32,6 +32,7 @@ HowTo install (detailed guides on our wiki)
 * [Web](http://www.ascemu.org)
 * [Forums](http://www.board.ascemu.org)
 * [Wiki](http://www.ascemu.org/wiki/)
+* [Doxygen](http://www.ascemu.org/doxygen/)
 * [World DB](http://www.board.ascemu.org/filebase/index.php/FileList/1-Database/)
 
 
