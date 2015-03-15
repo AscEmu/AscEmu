@@ -19,18 +19,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
 #include "Instance_Scholomance.h"
 
 // Doctor Theolen KrastinovAI
-
-#define CN_DOCTOR_THEOLEN_KRASTINOV 11261    //+
-
-#define REND    18106
-#define KRASTINOVCLEAVE    15584
-#define FRENZY    28371
-
 class DoctorTheolenKrastinovAI : public CreatureAIScript
 {
     public:
@@ -49,19 +42,19 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(REND);
+            spells[0].info = dbcSpell.LookupEntry(SP_DR_THEOL_REND);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 20.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(KRASTINOVCLEAVE);
+            spells[1].info = dbcSpell.LookupEntry(SP_DR_THEOL_KRASTINOVCLEAVE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(FRENZY);
+            spells[2].info = dbcSpell.LookupEntry(SP_DR_THEOL_FRENZY);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -149,15 +142,6 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
 };
 
 // Instructor MaliciaAI
-
-#define CN_INSTRUCTOR_MALICIA 10505    //+
-
-#define CALL_OF_GRAVE    17831
-#define CORRUPTION        11672
-#define FLASH_HEAL        17138    //10917
-#define RENEW            10929
-#define HEAL            15586    // not sure
-
 class InstructorMaliciaAI : public CreatureAIScript
 {
     public:
@@ -175,31 +159,31 @@ class InstructorMaliciaAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CALL_OF_GRAVE);
+            spells[0].info = dbcSpell.LookupEntry(SP_MALICIA_CALL_OF_GRAVE);
             spells[0].targettype = TARGET_DESTINATION; // VARIOUS, DESINATION or ATTACKING?
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(CORRUPTION);
+            spells[1].info = dbcSpell.LookupEntry(SP_MALICIA_CORRUPTION);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;    // should be false, but doesn't work then
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(FLASH_HEAL);
+            spells[2].info = dbcSpell.LookupEntry(SP_MALICIA_FLASH_HEAL);
             spells[2].targettype = TARGET_SELF;    // works for caster and his enemy :o
             spells[2].instant = true;    // should be false, but doesn't work then
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(RENEW);
+            spells[3].info = dbcSpell.LookupEntry(SP_MALICIA_RENEW);
             spells[3].targettype = TARGET_SELF;    // w00t, heals player too ? :|
             spells[3].instant = true;
             spells[3].perctrigger = 4.0f;    // why 0?:|
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(HEAL);
+            spells[4].info = dbcSpell.LookupEntry(SP_MALICIA_HEAL);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;    // should be false, but doesn't work then
             spells[4].perctrigger = 5.0f;
@@ -275,14 +259,6 @@ class InstructorMaliciaAI : public CreatureAIScript
 };
 
 // The RavenianAI
-
-#define CN_THE_RAVENIAN 10507    //+
-
-#define TRAMPLE            15550
-#define RAVENIANCLEAVE    20691
-#define SUNDERINCLEAVE    25174
-#define KNOCKAWAY        10101
-
 class TheRavenianAI : public CreatureAIScript
 {
     public:
@@ -300,25 +276,25 @@ class TheRavenianAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(TRAMPLE);
+            spells[0].info = dbcSpell.LookupEntry(SP_RAVENIAN_TRAMPLE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(RAVENIANCLEAVE);
+            spells[1].info = dbcSpell.LookupEntry(SP_RAVENIAN_RAVENIANCLEAVE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SUNDERINCLEAVE);
+            spells[2].info = dbcSpell.LookupEntry(SP_RAVENIAN_SUNDERINCLEAVE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].perctrigger = 20.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(KNOCKAWAY);
+            spells[3].info = dbcSpell.LookupEntry(SP_RAVENIAN_KNOCKAWAY);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 11.0f;
@@ -394,15 +370,6 @@ class TheRavenianAI : public CreatureAIScript
 };
 
 // Lady Illucia BarovAI
-
-#define CN_LADY_ILLUCIA_BAROV 10502    //+
-
-#define CURSE_OF_AGONY    18671    //+
-#define SHADOW_SHOCK        20603    //+
-#define SILENCE            15487    //+
-#define ILLUCIA_FEAR    26580    //26661    //+
-#define DOMINATE_MIND    20740    //+
-
 class LadyIlluciaBarovAI : public CreatureAIScript
 {
     public:
@@ -420,31 +387,31 @@ class LadyIlluciaBarovAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CURSE_OF_AGONY);
+            spells[0].info = dbcSpell.LookupEntry(SP_ILLUCIA_CURSE_OF_AGONY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SHADOW_SHOCK);
+            spells[1].info = dbcSpell.LookupEntry(SP_ILLUCIA_SHADOW_SHOCK);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 12.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SILENCE);
+            spells[2].info = dbcSpell.LookupEntry(SP_ILLUCIA_SILENCE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].perctrigger = 8.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(ILLUCIA_FEAR);
+            spells[3].info = dbcSpell.LookupEntry(SP_ILLUCIA_FEAR);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 4.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(DOMINATE_MIND);
+            spells[4].info = dbcSpell.LookupEntry(SP_ILLUCIA_DOMINATE_MIND);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = true;
             spells[4].perctrigger = 4.0f;
@@ -520,16 +487,6 @@ class LadyIlluciaBarovAI : public CreatureAIScript
 };
 
 // Ras ForstwhisperAI
-
-#define CN_RAS_FORSTWHISPER 10508    //+
-
-#define FROSTBOLT        21369    //+
-#define ICE_ARMOR        18100    //+
-#define FREEZE            18763    //+
-#define RAS_FEAR        26070    //+
-#define CHILL_NOVA        18099    //+
-#define FROSTBOLT_VOLLEY 22643    //8398    
-
 class RasForstwhisperAI : public CreatureAIScript
 {
     public:
@@ -547,37 +504,37 @@ class RasForstwhisperAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(FROSTBOLT);
+            spells[0].info = dbcSpell.LookupEntry(SP_RAS_FORTH_FROSTBOLT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 14.0f;
             spells[0].attackstoptimer = 2000;
 
-            spells[1].info = dbcSpell.LookupEntry(ICE_ARMOR);
+            spells[1].info = dbcSpell.LookupEntry(SP_RAS_FORTH_ICE_ARMOR);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(FREEZE);
+            spells[2].info = dbcSpell.LookupEntry(SP_RAS_FORTH_FREEZE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].perctrigger = 11.0f;
             spells[2].attackstoptimer = 4000;
 
-            spells[3].info = dbcSpell.LookupEntry(RAS_FEAR);
+            spells[3].info = dbcSpell.LookupEntry(SP_RAS_FORTH_FEAR);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;    // should be false, but doesn't work then
             spells[3].perctrigger = 9.0f;
             spells[3].attackstoptimer = 2000;
 
-            spells[4].info = dbcSpell.LookupEntry(CHILL_NOVA);
+            spells[4].info = dbcSpell.LookupEntry(SP_RAS_FORTH_CHILL_NOVA);
             spells[4].targettype = TARGET_VARIOUS;
             spells[4].instant = true;
             spells[4].perctrigger = 8.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = dbcSpell.LookupEntry(FROSTBOLT_VOLLEY);
+            spells[5].info = dbcSpell.LookupEntry(SP_RAS_FORTH_FROSTB_VOLLEY);
             spells[5].targettype = TARGET_VARIOUS;
             spells[5].instant = true;    // should be false, but doesn't work then
             spells[5].perctrigger = 13.0f;
@@ -654,12 +611,6 @@ class RasForstwhisperAI : public CreatureAIScript
 };
 
 // Jandice BarovAI
-
-#define CN_JANDICE_BAROV 10503    //+
-
-#define CURSE_OF_BLOOD    24673
-#define SUMMON_ILLUSION    17773
-#define BANISH            39674 // not sure //8994
 class JandiceBarovAI : public CreatureAIScript
 {
     public:
@@ -677,19 +628,19 @@ class JandiceBarovAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CURSE_OF_BLOOD);
+            spells[0].info = dbcSpell.LookupEntry(SP_JANDICE_CURSE_OF_BLOOD);
             spells[0].targettype = TARGET_DESTINATION;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(BANISH);
+            spells[1].info = dbcSpell.LookupEntry(SP_JANDICE_BANISH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SUMMON_ILLUSION);
+            spells[2].info = dbcSpell.LookupEntry(SP_JANDICE_SUMMON_ILLUSION);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 5.0f;
@@ -765,13 +716,6 @@ class JandiceBarovAI : public CreatureAIScript
 };
 
 // KormokAI
-
-#define CN_KORMOK 14491    //+
-
-#define SHADOW_BOLT_VOLLEY    20741
-#define BONE_SHIELD            27688
-#define SUMMON_RISEY_LACKEY 17618    // not sure
-
 class KormokAI : public CreatureAIScript
 {
     public:
@@ -789,19 +733,19 @@ class KormokAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SHADOW_BOLT_VOLLEY);
+            spells[0].info = dbcSpell.LookupEntry(SP_KORMOK_SHADOW_B_VOLLEY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 11.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(BONE_SHIELD);
+            spells[1].info = dbcSpell.LookupEntry(SP_KORMOK_BONE_SHIELD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SUMMON_RISEY_LACKEY);
+            spells[2].info = dbcSpell.LookupEntry(SP_KORMOK_SUM_RISEY_LACKEY);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = false;
             spells[2].perctrigger = 4.0f;
@@ -878,13 +822,6 @@ class KormokAI : public CreatureAIScript
 };
 
 // VectusAI
-
-#define CN_VECTUS    10432    //+
-
-#define FIRE_SHIELD        19627
-#define BLAST_WAVE        13021
-#define FRENZY            28371
-
 class VectusAI : public CreatureAIScript
 {
     public:
@@ -903,19 +840,19 @@ class VectusAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(BLAST_WAVE);
+            spells[0].info = dbcSpell.LookupEntry(SP_VECTUS_BLAST_WAVE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 18.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(FIRE_SHIELD);
+            spells[1].info = dbcSpell.LookupEntry(SP_VECTUS_FIRE_SHIELD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 5.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(FRENZY);
+            spells[2].info = dbcSpell.LookupEntry(SP_VECTUS_FRENZY);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -1001,13 +938,6 @@ class VectusAI : public CreatureAIScript
 };
 
 // Lord Alexei BarovAI
-
-#define CN_LORD_ALEXEI_BAROV 10504    //+
-
-#define UNHOLY_AURA        17467
-#define IMMOLATE        20294
-#define VEIL_OF_SHADOW    17820
-
 class LordAlexeiBarovAI : public CreatureAIScript
 {
     public:
@@ -1025,19 +955,19 @@ class LordAlexeiBarovAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(UNHOLY_AURA);
+            spells[0].info = dbcSpell.LookupEntry(SP_ALEXEI_UNHOLY_AURA);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(IMMOLATE);
+            spells[1].info = dbcSpell.LookupEntry(SP_ALEXEI_IMMOLATE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(VEIL_OF_SHADOW);
+            spells[2].info = dbcSpell.LookupEntry(SP_ALEXEI_VEIL_OF_SHADOW);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].perctrigger = 8.0f;
@@ -1114,14 +1044,6 @@ class LordAlexeiBarovAI : public CreatureAIScript
 };
 
 // Lorekeeper PolkeltAI
-
-#define CN_LOREKEEPER_POLKELT 10901    //+
-
-#define VOLATILE_INFECTION    24928     // wrong id // can cause crashes as it is casted on caster too
-#define DARK_PLAGUE            18270    // sure it should be here?
-#define CORROSIVE_ACID        19463    // Added Corrosive Acid Spit; 16359 or 20667 or 19463 or 19463    // 23313
-#define NOXIOUS_CATALYST    18151
-
 class LorekeeperPolkeltAI : public CreatureAIScript
 {
     public:
@@ -1139,25 +1061,25 @@ class LorekeeperPolkeltAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(VOLATILE_INFECTION);
+            spells[0].info = dbcSpell.LookupEntry(SP_LORE_VOLATILE_INFECTION);
             spells[0].targettype = TARGET_ATTACKING;    // various affects caster too
             spells[0].instant = true;
             spells[0].perctrigger = 6.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(DARK_PLAGUE);
+            spells[1].info = dbcSpell.LookupEntry(SP_LORE_DARK_PLAGUE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(CORROSIVE_ACID);
+            spells[2].info = dbcSpell.LookupEntry(SP_LORE_CORROSIVE_ACID);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;    // should be false, but doesn't work then =/
             spells[2].perctrigger = 12.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(NOXIOUS_CATALYST);
+            spells[3].info = dbcSpell.LookupEntry(SP_LORE_NOXIOUS_CATALYST);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 10.0f;
@@ -1233,13 +1155,6 @@ class LorekeeperPolkeltAI : public CreatureAIScript
 };
 
 // Darkmaster GandlingAI
-
-#define CN_DARKMASTER_GANDLING 1853    //+    
-
-#define ARCANE_MISSILES            25346
-#define CURSE_OF_THE_DARKMASTER    18702
-#define SHADOW_SHIELD            22417
-
 class DarkmasterGandlingAI : public CreatureAIScript
 {
     public:
@@ -1257,19 +1172,19 @@ class DarkmasterGandlingAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(ARCANE_MISSILES); //VOLATILEINFECTION ???????? :|
+            spells[0].info = dbcSpell.LookupEntry(SP_GANDLING_ARCANE_MISSILES); //VOLATILEINFECTION ???????? :|
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 12.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(CURSE_OF_THE_DARKMASTER);
+            spells[1].info = dbcSpell.LookupEntry(SP_GANDLING_COT_DARKMASTER);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 7.0f;
             spells[1].attackstoptimer = 2000;
 
-            spells[2].info = dbcSpell.LookupEntry(SHADOW_SHIELD);
+            spells[2].info = dbcSpell.LookupEntry(SP_GANDLING_SHADOW_SHIELD);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
