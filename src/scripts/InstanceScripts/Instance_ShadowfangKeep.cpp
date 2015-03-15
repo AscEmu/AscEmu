@@ -19,13 +19,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_ShadowfangKeep.h"
 
-// Commander Springvale AI
-#define CN_SPRINGVALE 4278
 
+// Commander Springvale AI
 class SpringvaleAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(SpringvaleAI, MoonScriptCreatureAI);
@@ -64,8 +62,6 @@ class SpringvaleAI : public MoonScriptCreatureAI
 };
 
 // Odo the Blindwatcher AI
-#define CN_BLINDWATCHER 4279
-
 class BlindWatcherAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(BlindWatcherAI, MoonScriptBossAI);
@@ -106,8 +102,6 @@ class BlindWatcherAI : public MoonScriptBossAI
 };
 
 // Fenrus the Devourer AI
-#define CN_FENRUS 4274
-
 static Location VWSpawns[] =
 {
     {}, // Spawn Locations for the 4 voidwalkers
@@ -125,9 +119,9 @@ class FenrusAI : public MoonScriptCreatureAI
         AddSpell(7125, Target_Current, 12, 1.5f, 60);
     }
 
-    void OnDied(Unit*  pKiller)
+    void OnDied(Unit* pKiller)
     {
-        GetUnit()->SendChatMessageAlternateEntry(4275, CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Who dares interfere with the Sons of Arugal?");
+        _unit->SendScriptTextChatMessage(SAY_FENRUS_01);
         GetUnit()->PlaySoundToSet(5791);
 
         MoonScriptCreatureAI* voidwalker = NULL;
@@ -147,8 +141,6 @@ class FenrusAI : public MoonScriptCreatureAI
 };
 
 //Arugals Voidwalkers
-#define CN_VOIDWALKER 4627
-
 class VoidWalkerAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(VoidWalkerAI, MoonScriptCreatureAI);
@@ -157,19 +149,17 @@ class VoidWalkerAI : public MoonScriptCreatureAI
         AddSpell(7154, Target_WoundedFriendly, 5, 0, 7);
     }
 
-    void OnDied(Unit*  pKiller)
+    void OnDied(Unit* pKiller)
     {
-        GameObject*  pDoor = GetUnit()->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-129.034f, 2166.16f, 129.187f, 18972);
+        GameObject* pDoor = GetUnit()->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-129.034f, 2166.16f, 129.187f, GO_SORCERER_GATE);
         if (pDoor)
-            pDoor->SetState(0);
+            pDoor->SetState(GAMEOBJECT_STATE_OPEN);
 
         ParentClass::OnDied(pKiller);
     }
 };
 
 // Archmage Arugal AI
-#define CN_ARUGAL 4275
-
 class ArugalAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(ArugalAI, MoonScriptCreatureAI);
@@ -190,8 +180,6 @@ class ArugalAI : public MoonScriptCreatureAI
 };
 
 //Wolf Master Nandos AI
-#define CN_NENDOS 3927
-
 class NandosAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(NandosAI, MoonScriptCreatureAI);
@@ -206,18 +194,19 @@ class NandosAI : public MoonScriptCreatureAI
         ParentClass::OnDied(pKiller);
     }
 };
+
 //Deathstalker Adamant
-#define CN_ADAMANT 3849
+///\todo Deathstalker Adamant seems to be missing here... is it here? or is it there?... no I cant find it ;)
 
-//Rethilgore AI
-#define CN_RETHILGORE 3914
 
-class RETHILGOREAI : public MoonScriptCreatureAI
+//RethilgoreAI
+class RethilgoreAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(RETHILGOREAI, MoonScriptCreatureAI);
-    RETHILGOREAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature) {}
-    void OnDied(Unit*  pKiller)
+    MOONSCRIPT_FACTORY_FUNCTION(RethilgoreAI, MoonScriptCreatureAI);
+    RethilgoreAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature) {}
+    void OnDied(Unit* pKiller)
     {
+        ///\todo check these texts
         _unit->SendChatMessageAlternateEntry(3849, CHAT_MSG_MONSTER_SAY, LANG_GUTTERSPEAK, "About time someone killed the wretch.");
         _unit->SendChatMessageAlternateEntry(3850, CHAT_MSG_MONSTER_SAY, LANG_COMMON, "For once I agree with you... scum.");      // dont know the allys text yet
         ParentClass::OnDied(pKiller);
@@ -225,14 +214,6 @@ class RETHILGOREAI : public MoonScriptCreatureAI
 };
 
 // Prison Levers
-#define RIGHT_LEVER 18900
-#define MIDDLE_LEVER 18901
-#define LEFT_LEVER 101811
-#define RIGHT_CELL 18934
-#define MIDDLE_CELL 18936
-#define LEFT_CELL 18935
-
-
 class RightLever : public GameObjectAIScript
 {
     public:
@@ -242,13 +223,13 @@ class RightLever : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-252.696f, 2114.22f, 82.8052f, RIGHT_CELL);
+            GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-252.696f, 2114.22f, 82.8052f, GO_RIGHT_CELL);
             if (CellDoor != NULL)
             {
-                if (CellDoor->GetState() == 1)
-                    CellDoor->SetState(0);
+                if (CellDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
+                    CellDoor->SetState(GAMEOBJECT_STATE_OPEN);
                 else
-                    CellDoor->SetState(1);
+                    CellDoor->SetState(GAMEOBJECT_STATE_CLOSED);
             }
         }
 };
@@ -262,13 +243,13 @@ class MiddleLever : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-249.22f, 2123.1f, 82.8052f, MIDDLE_CELL);
+            GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-249.22f, 2123.1f, 82.8052f, GO_MIDDLE_CELL);
             if (CellDoor != NULL)
             {
-                if (CellDoor->GetState() == 1)
-                    CellDoor->SetState(0);
+                if (CellDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
+                    CellDoor->SetState(GAMEOBJECT_STATE_OPEN);
                 else
-                    CellDoor->SetState(1);
+                    CellDoor->SetState(GAMEOBJECT_STATE_CLOSED);
             }
         }
 };
@@ -282,13 +263,13 @@ class LeftLever : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-245.598f, 2132.32f, 82.8052f, LEFT_CELL);
+            GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-245.598f, 2132.32f, 82.8052f, GO_LEFT_CELL);
             if (CellDoor != NULL)
             {
-                if (CellDoor->GetState() == 1)
-                    CellDoor->SetState(0);
+                if (CellDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
+                    CellDoor->SetState(GAMEOBJECT_STATE_OPEN);
                 else
-                    CellDoor->SetState(1);
+                    CellDoor->SetState(GAMEOBJECT_STATE_CLOSED);
             }
         }
 };
@@ -298,12 +279,14 @@ void SetupShadowfangKeep(ScriptMgr* mgr)
     //creature scripts
     mgr->register_creature_script(CN_NENDOS, &NandosAI::Create);
     mgr->register_creature_script(CN_VOIDWALKER, &VoidWalkerAI::Create);
-    mgr->register_creature_script(CN_RETHILGORE, &RETHILGOREAI::Create);
+    mgr->register_creature_script(CN_RETHILGORE, &RethilgoreAI::Create);
     mgr->register_creature_script(CN_SPRINGVALE, &SpringvaleAI::Create);
     mgr->register_creature_script(CN_BLINDWATCHER, &BlindWatcherAI::Create);
     mgr->register_creature_script(CN_FENRUS, &FenrusAI::Create);
     mgr->register_creature_script(CN_ARUGAL, &ArugalAI::Create);
-    mgr->register_gameobject_script(RIGHT_LEVER, &RightLever::Create);
-    mgr->register_gameobject_script(MIDDLE_LEVER, &MiddleLever::Create);
-    mgr->register_gameobject_script(LEFT_LEVER, &LeftLever::Create);
+
+    //gameobject scripts
+    mgr->register_gameobject_script(GO_RIGHT_LEVER, &RightLever::Create);
+    mgr->register_gameobject_script(GO_MIDDLE_LEVER, &MiddleLever::Create);
+    mgr->register_gameobject_script(GO_LEFT_LEVER, &LeftLever::Create);
 }

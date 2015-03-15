@@ -19,26 +19,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
 #include "Instance_ShadowLabyrinth.h"
 
-// Cabal Acolyte AI
-
-#define CN_CABAL_ACOLYTE 18633
-
-#define SHADOW_PROTECTION 17548 // couldn't find more accurate id
-#define HEAL 31739 // no idea if this is good id
-
-class CABALACOLYTEAI : public CreatureAIScript
+// CabalAcolyteAI
+class CabalAcolyteAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CABALACOLYTEAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CabalAcolyteAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        CABALACOLYTEAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CabalAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -46,13 +40,13 @@ class CABALACOLYTEAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SHADOW_PROTECTION);
+            spells[0].info = dbcSpell.LookupEntry(SP_CABAL_ACOLYTE_SHADOW_PROTECTION);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].perctrigger = 6.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(HEAL);
+            spells[1].info = dbcSpell.LookupEntry(SP_CABAL_ACOLYTE_HEAL);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = false;
             spells[1].perctrigger = 6.0f;
@@ -128,24 +122,16 @@ class CABALACOLYTEAI : public CreatureAIScript
         int nrspells;
 };
 
-// Cabal Deathsworn AI
-
-#define CN_CABAL_DEATHSWORN 18635
-
-#define SHADOW_CLEAVE 30495 // should be 29832, 30495 or maybe other ?
-#define KNOCKBACK 37317 // 37317 or 38576 or other?
-#define BLACK_CLEAVE 38226
-// Does it use black cleave too? :|
-
-class CABALDEATHSWORNAI : public CreatureAIScript
+// CabalDeathswornAI
+class CabalDeathswornAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CABALDEATHSWORNAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CabalDeathswornAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        CABALDEATHSWORNAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CabalDeathswornAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -153,19 +139,19 @@ class CABALDEATHSWORNAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SHADOW_CLEAVE);
+            spells[0].info = dbcSpell.LookupEntry(SP_CABAL_DEATHSWORN_SHADOW_CLEAVE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 9.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(KNOCKBACK);
+            spells[1].info = dbcSpell.LookupEntry(SP_CABAL_DEATHSWORN_KNOCKBACK);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(BLACK_CLEAVE);
+            spells[2].info = dbcSpell.LookupEntry(SP_CABAL_DEATHSWORN_BLACK_CLEAVE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].perctrigger = 9.0f;
@@ -240,21 +226,16 @@ class CABALDEATHSWORNAI : public CreatureAIScript
         int nrspells;
 };
 
-// Cabal Fanatic AI
-
-#define CN_CABAL_FANATIC 18830
-
-#define FIXATE 40414
-
-class CABALFANATICAI : public CreatureAIScript
+// CabalFanaticAI
+class CabalFanaticAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CABALFANATICAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CabalFanaticAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        CABALFANATICAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CabalFanaticAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -262,7 +243,7 @@ class CABALFANATICAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(FIXATE);
+            spells[0].info = dbcSpell.LookupEntry(SP_CABAL_FANATIC_FIXATE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
@@ -338,22 +319,16 @@ class CABALFANATICAI : public CreatureAIScript
         int nrspells;
 };
 
-// Cabal Shadow Priest AI
-
-#define CN_CABAL_SHADOW_PRIEST 18637
-
-#define MIND_FLAY 29570 // 29570 or 37276
-#define SHADOW_WORD_PAIN 24212 // 24212 or 34441
-
-class CABALSHADOWPRIESTAI : public CreatureAIScript
+// CabalShadowPriestAI
+class CabalShadowPriestAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CABALSHADOWPRIESTAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CabalShadowPriestAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        CABALSHADOWPRIESTAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CabalShadowPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -361,13 +336,13 @@ class CABALSHADOWPRIESTAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(MIND_FLAY);
+            spells[0].info = dbcSpell.LookupEntry(SP_CABAL_SHADOW_PRIEST_MIND_FLAY);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SHADOW_WORD_PAIN);
+            spells[1].info = dbcSpell.LookupEntry(SP_CABAL_SHADOW_PRIEST_WORD_PAIN);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
@@ -443,22 +418,16 @@ class CABALSHADOWPRIESTAI : public CreatureAIScript
         int nrspells;
 };
 
-// Cabal Spellbinder AI
-
-#define CN_CABAL_SPELLBINDER 18639
-
-#define MIND_CONTROL 36797 // 36797 or 36798
-#define EARTH_SHOCK 26194 // 26194 or 24685 or 22885
-
-class CABALSPELLBINDERAI : public CreatureAIScript
+// CabalSpellbinderAI
+class CabalSpellbinderAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CABALSPELLBINDERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CabalSpellbinderAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        CABALSPELLBINDERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CabalSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -466,13 +435,13 @@ class CABALSPELLBINDERAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(MIND_CONTROL);
+            spells[0].info = dbcSpell.LookupEntry(SP_CABAL_SPELLBINDER_MIND_CONTROL);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(EARTH_SHOCK);
+            spells[1].info = dbcSpell.LookupEntry(SP_CABAL_SPELLBINDER_EARTH_SHOCK);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
@@ -548,23 +517,16 @@ class CABALSPELLBINDERAI : public CreatureAIScript
         int nrspells;
 };
 
-// Cabal Warlock AI
-
-#define CN_CABAL_WARLOCK 18640
-
-#define SHADOW_BOLT 31618 // can be also: 31618, 32860, 36714, 30686, 36986 and many others
-#define SEED_OF_CORRUPTION 32863 // can be: 32863, 36123, 38252, 39367
-// Should come with Succubus or Felhunter as pet
-
-class CABALWARLOCKAI : public CreatureAIScript
+// CabalWarlockAI
+class CabalWarlockAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CABALWARLOCKAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CabalWarlockAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        CABALWARLOCKAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CabalWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -572,13 +534,13 @@ class CABALWARLOCKAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SHADOW_BOLT);
+            spells[0].info = dbcSpell.LookupEntry(SP_CABAL_WARLOCK_SHADOW_BOLT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 13.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SEED_OF_CORRUPTION);
+            spells[1].info = dbcSpell.LookupEntry(SP_CABAL_WARLOCK_SEED_OF_CORRUPTION);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 8.0f;
@@ -654,23 +616,16 @@ class CABALWARLOCKAI : public CreatureAIScript
         int nrspells;
 };
 
-// Cabal Zealot AI
-#define CN_CABAL_ZEALOT 18638
-
-#define SHADOW_BOLT 31618 // no idea to this spell (added same as for warlock)
-#define TRANSFROMATION 0 // can't find correct id for now
-/*turns into a mini-Magmadar at low health, cannot
-cast but does extremely heavy melee damage.*/
-
-class CABALZEALOTAI : public CreatureAIScript
+// CabalZealotAI
+class CabalZealotAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CABALZEALOTAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CabalZealotAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        CABALZEALOTAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CabalZealotAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -678,13 +633,13 @@ class CABALZEALOTAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SHADOW_BOLT);
+            spells[0].info = dbcSpell.LookupEntry(SP_CABAL_ZEALOT_SHADOW_BOLT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 13.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(TRANSFROMATION);
+            spells[1].info = dbcSpell.LookupEntry(SP_CABAL_ZEALOT_TRANSFROMATION);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
@@ -774,30 +729,16 @@ class CABALZEALOTAI : public CreatureAIScript
     * Heroic: immune to MC
 
     */
-// Cabal Ritualist AI
-
-#define CN_CABAL_RITUALIST 18794
-
-#define    GOUGE    36862 // 36862 or 29425 or 34940 or 28456 (?)
-#define    ARCANE_MISSILES    35034 // not sure
-#define    ADDLE_HUMANOID    33487
-#define    FIRE_BLAST    36339
-#define    FLAME_BUFFET    34121
-#define    FROSTBOLT    32370 // also can be: 36710, 32370, 32364, 36279
-
-// no idea how to separate spells for same creature (as in DB/sites is only one
-// type of that creature!) so I am giving "all in one" and I don't have time to
-// think about it.
-
-class CABALRITUALISTAI : public CreatureAIScript
+// CabalRitualistAI
+class CabalRitualistAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CABALRITUALISTAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CabalRitualistAI);
         SP_AI_Spell spells[6];
         bool m_spellcheck[6];
 
-        CABALRITUALISTAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CabalRitualistAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 6;
             for (int i = 0; i < nrspells; i++)
@@ -805,37 +746,37 @@ class CABALRITUALISTAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(GOUGE);
+            spells[0].info = dbcSpell.LookupEntry(SP_CABAL_RITUALIST_GOUGE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(ARCANE_MISSILES);
+            spells[1].info = dbcSpell.LookupEntry(SP_CABAL_RITUALIST_ARCANE_MISSILES);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(ADDLE_HUMANOID);
+            spells[2].info = dbcSpell.LookupEntry(SP_CABAL_RITUALIST_ADDLE_HUMANOID);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].perctrigger = 7.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(FIRE_BLAST);
+            spells[3].info = dbcSpell.LookupEntry(SP_CABAL_RITUALIST_FIRE_BLAST);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 9.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(FLAME_BUFFET);
+            spells[4].info = dbcSpell.LookupEntry(SP_CABAL_RITUALIST_FLAME_BUFFET);
             spells[4].targettype = TARGET_VARIOUS; // ?
             spells[4].instant = false;
             spells[4].perctrigger = 9.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = dbcSpell.LookupEntry(FROSTBOLT);
+            spells[5].info = dbcSpell.LookupEntry(SP_CABAL_RITUALIST_FROSTBOLT);
             spells[5].targettype = TARGET_ATTACKING;
             spells[5].instant = false;
             spells[5].perctrigger = 9.0f;
@@ -910,25 +851,16 @@ class CABALRITUALISTAI : public CreatureAIScript
         int nrspells;
 };
 
-// Fel Overseer AI
-
-#define CN_FEL_OVERSEER 18796
-
-#define INTIMIDATING_SHOUT 33789
-#define CHARGE_OVERSEER 33709 // no idea
-#define HEAL_OVERSEER 33144 // 32130/33144 || here too :P    // doesn't work?:|
-#define MORTAL_STRIKE 24573 // same
-#define UPPERCUT 32055
-
-class FELOVERSEERAI : public CreatureAIScript
+// FelOverseerAI
+class FelOverseerAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(FELOVERSEERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(FelOverseerAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
 
-        FELOVERSEERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        FelOverseerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             HealCooldown = 1;
             nrspells = 5;
@@ -937,31 +869,31 @@ class FELOVERSEERAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(INTIMIDATING_SHOUT);
+            spells[0].info = dbcSpell.LookupEntry(SP_FEL_OVERSEER_INTIMIDATING_SHOUT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 4.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(CHARGE_OVERSEER);
+            spells[1].info = dbcSpell.LookupEntry(SP_FEL_OVERSEER_CHARGE_OVERSEER);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 5.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(HEAL_OVERSEER);
+            spells[2].info = dbcSpell.LookupEntry(SP_FEL_OVERSEER_HEAL_OVERSEER);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true; // should be false, but doesn't work then
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(MORTAL_STRIKE);
+            spells[3].info = dbcSpell.LookupEntry(SP_FEL_OVERSEER_MORTAL_STRIKE);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 12.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(UPPERCUT);
+            spells[4].info = dbcSpell.LookupEntry(SP_FEL_OVERSEER_UPPERCUT);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = true;
             spells[4].perctrigger = 5.0f;
@@ -1050,22 +982,16 @@ class FELOVERSEERAI : public CreatureAIScript
         int nrspells;
 };
 
-// Malicious Instructor AI
-
-#define CN_MALICIOUS_INSTRUCTOR 18848
-
-#define SHADOW_NOVA 33846
-#define MARK_OF_MALICE 33493
-
-class MALICIOUSINSTRUCTORAI : public CreatureAIScript
+// MaliciousInstructorAI
+class MaliciousInstructorAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(MALICIOUSINSTRUCTORAI);
+        ADD_CREATURE_FACTORY_FUNCTION(MaliciousInstructorAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        MALICIOUSINSTRUCTORAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        MaliciousInstructorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -1073,13 +999,13 @@ class MALICIOUSINSTRUCTORAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SHADOW_NOVA);
+            spells[0].info = dbcSpell.LookupEntry(SP_MILICIOUS_INSTRUCT_SHADOW_NOVA);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 12.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(MARK_OF_MALICE);
+            spells[1].info = dbcSpell.LookupEntry(SP_MILICIOUS_INSTRUCT_MARK_OF_MALICE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 9.0f;
@@ -1155,29 +1081,19 @@ class MALICIOUSINSTRUCTORAI : public CreatureAIScript
         int nrspells;
 };
 
-/*****************************/
-/*                           */
-/*         Boss AIs          */
-/*                           */
-/*****************************/
 
-// Ambassador HellmawAI
+// Boss AIs
 
-#define CN_AMBASSADOR_HELLMAW 18731
-
-#define CORROSIVE_ACID 33551
-#define AOE_FEAR 33547
-// Help sound
-
-class AMBASSADORHELLMAWAI : public CreatureAIScript
+// AmbassadorHellmawAI
+class AmbassadorHellmawAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(AMBASSADORHELLMAWAI);
+        ADD_CREATURE_FACTORY_FUNCTION(AmbassadorHellmawAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        AMBASSADORHELLMAWAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        AmbassadorHellmawAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -1186,14 +1102,14 @@ class AMBASSADORHELLMAWAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CORROSIVE_ACID);
+            spells[0].info = dbcSpell.LookupEntry(SP_AMBASSADOR_HELMAW_CORROSIVE_ACID);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 15;
 
-            spells[1].info = dbcSpell.LookupEntry(AOE_FEAR);
+            spells[1].info = dbcSpell.LookupEntry(SP_AMBASSADOR_HELMAW_AOE_FEAR);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
@@ -1211,15 +1127,15 @@ class AMBASSADORHELLMAWAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pathetic mortals, you will pay dearly!"); // not sure if doomed
+                    _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_02);
                     _unit->PlaySoundToSet(10475);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will break you"); // drink you, bring you, w00t?
+                    _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_03);
                     _unit->PlaySoundToSet(10476);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Finally, something to relieve the tedium!"); // something to believe the team?
+                    _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_04);
                     _unit->PlaySoundToSet(10477);
                     break;
             }
@@ -1234,11 +1150,11 @@ class AMBASSADORHELLMAWAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do you fear death? Hahaha!"); // needs corrections
+                        _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_06);
                         _unit->PlaySoundToSet(10478);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This is the part I enjoy most!");
+                        _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_07);
                         _unit->PlaySoundToSet(10479);
                         break;
                 }
@@ -1255,7 +1171,7 @@ class AMBASSADORHELLMAWAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not... grow... overconfident... mortal!");
+            _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_08);
             _unit->PlaySoundToSet(10480);
 
             RemoveAIUpdateEvent();
@@ -1325,26 +1241,16 @@ class AMBASSADORHELLMAWAI : public CreatureAIScript
 };
 
 
-// Blackheart the InciterAI
-
-#define CN_BLACKHEART_THE_INCITER 18667
-
-#define INCITE_CHAOS 33684 // 33684 or 33676?
-#define CHARGE 39574 //39574 (HM) or 38461 // couldn't find more accurate
-#define WAR_STOMP 33707
-//#define AOE_KNOCKBACK 30056 // 30056, 37317 or 38576
-// Help sound? And other (as there were sounds like _BlckHrt02_ (and I used only with 01)
-// Is sound id 10488 for aggro or mind control?
-
-class BLACKHEARTTHEINCITERAI : public CreatureAIScript
+// BlackheartTheInciterAI
+class BlackheartTheInciterAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(BLACKHEARTTHEINCITERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(BlackheartTheInciterAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        BLACKHEARTTHEINCITERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        BlackheartTheInciterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -1353,7 +1259,7 @@ class BLACKHEARTTHEINCITERAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CHARGE);
+            spells[0].info = dbcSpell.LookupEntry(SP_BLACKHEART_INCITER_CHARGE);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
@@ -1362,14 +1268,14 @@ class BLACKHEARTTHEINCITERAI : public CreatureAIScript
             spells[0].mindist2cast = 0.0f;
             spells[0].maxdist2cast = 40.0f;
 
-            spells[1].info = dbcSpell.LookupEntry(WAR_STOMP);
+            spells[1].info = dbcSpell.LookupEntry(SP_BLACKHEART_INCITER_WAR_STOMP);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000;
             spells[1].cooldown = 20;
 
-            spells[2].info = dbcSpell.LookupEntry(INCITE_CHAOS);
+            spells[2].info = dbcSpell.LookupEntry(SP_BLACKHEART_INCITER_CHAOS);
             spells[2].targettype = TARGET_RANDOM_SINGLE;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -1389,15 +1295,15 @@ class BLACKHEARTTHEINCITERAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll be sorry!");
-                    _unit->PlaySoundToSet(10486);
+                    _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_04);
+                    _unit->PlaySoundToSet(10496);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I see dead people.");
+                    _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_06);
                     _unit->PlaySoundToSet(10488);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Time for fun!");
+                    _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_05);
                     _unit->PlaySoundToSet(10487);
                     break;
             }
@@ -1412,11 +1318,11 @@ class BLACKHEARTTHEINCITERAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No comming back for you!");
+                        _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_07);
                         _unit->PlaySoundToSet(10489);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Nice try!");
+                        _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_08);
                         _unit->PlaySoundToSet(10490);
                         break;
                 }
@@ -1432,7 +1338,7 @@ class BLACKHEARTTHEINCITERAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This...no..good");
+            _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_10);
             _unit->PlaySoundToSet(10491);
             RemoveAIUpdateEvent();
         }
@@ -1507,8 +1413,7 @@ class BLACKHEARTTHEINCITERAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1556,30 +1461,21 @@ class BLACKHEARTTHEINCITERAI : public CreatureAIScript
         int nrspells;
 };
 
-// Grandmaster VorpilAI
-
-#define CN_GRANDMASTER_VORPIL 18732
-
-#define SHADOW_BOLT_VOLLEY    33841
-#define DRAW_SHADOWS        33563 // can't find it =/
-#define RAIN_OF_FIRE        33617 // 33617 or 34360    // breaks model behavior
-#define VOID_PORTAL_VISUAL    33569 // must work on that 33566
-// Help sound and it's case?
-// Should OnCombatStart should spawn 3 portals for Voidwalkers? (33569 ?)
+// GrandmasterVorpilAI
 /*The fight starts as soon as one of the players moves close enough
 to Vorpil to aggro him. Vorpil will immediately open the Void Rifts
 around him, and Voidwalkers will start spawning, at an increasingly
 faster rate as the battle progresses.*/
 
-class GRANDMASTERVORPILAI : public CreatureAIScript
+class GrandmasterVorpilAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(GRANDMASTERVORPILAI);
+        ADD_CREATURE_FACTORY_FUNCTION(GrandmasterVorpilAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
 
-        GRANDMASTERVORPILAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        GrandmasterVorpilAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -1588,28 +1484,28 @@ class GRANDMASTERVORPILAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SHADOW_BOLT_VOLLEY);
+            spells[0].info = dbcSpell.LookupEntry(SP_GRDMASTER_VORPIL_SHADOW_BOLT_VOLLEY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 15.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 10;
 
-            spells[1].info = dbcSpell.LookupEntry(DRAW_SHADOWS);
+            spells[1].info = dbcSpell.LookupEntry(SP_GRDMASTER_VORPIL_DRAW_SHADOWS);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
             spells[1].cooldown = 25;
 
-            spells[2].info = dbcSpell.LookupEntry(RAIN_OF_FIRE);
+            spells[2].info = dbcSpell.LookupEntry(SP_GRDMASTER_VORPIL_RAIN_OF_FIRE);
             spells[2].targettype = TARGET_DESTINATION;
             spells[2].instant = false;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 7000;
             spells[2].cooldown = 25;
 
-            spells[3].info = dbcSpell.LookupEntry(VOID_PORTAL_VISUAL);
+            spells[3].info = dbcSpell.LookupEntry(SP_GRDMASTER_VORPIL_VOID_PORTAL_VISUAL);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].perctrigger = 0.0f;
@@ -1630,15 +1526,15 @@ class GRANDMASTERVORPILAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll make an offering of your blood!");
+                    _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_02);
                     _unit->PlaySoundToSet(10524);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll be a fine example, for the others.");
+                    _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_03);
                     _unit->PlaySoundToSet(10525);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Good, a worthy sacrifice.");
+                    _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_04);
                     _unit->PlaySoundToSet(10526);
                     break;
             }
@@ -1654,11 +1550,11 @@ class GRANDMASTERVORPILAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I serve with pride.");
+                        _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_06);
                         _unit->PlaySoundToSet(10527);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your death is for the greater cause!");
+                        _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_07);
                         _unit->PlaySoundToSet(10528);
                         break;
                 }
@@ -1675,7 +1571,7 @@ class GRANDMASTERVORPILAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I give my life... Gladly.");
+            _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_08);
             _unit->PlaySoundToSet(10529);
 
             RemoveAIUpdateEvent();
@@ -1748,32 +1644,15 @@ class GRANDMASTERVORPILAI : public CreatureAIScript
 };
 
 // MurmurAI
-
-#define CN_MURMUR 18708
-
-#define SHOCKWAVE            33686    // 25425
-#define MURMURS_TOUCH        33711
-#define SONIC_BOOM1            33923    // anything missed? additional dmging spell?
-#define SONIC_BOOM2            33666
-#define RESONANCE            33657    // should be applied only when no target in melee combat range (each 5 sec)
-
-/*#define THUNDERING_STORM 39365
-
-#define SUPPRESSION_BLAST 33332*/
-// #define SONIC_BOOM 33666
-// 33666 or 38795 (I think it's dummy (33923); it should be connected with Murmur's Touch; Murmur should say
-// Murmur draws energy from the air then use Murmur's Touch (33711), Sonic Boom (33923) and
-// release Sonic Boom (38052); it also shouldn't attack during all those casts;
-
-class MURMURAI : public CreatureAIScript
+class MurmurAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(MURMURAI);
+        ADD_CREATURE_FACTORY_FUNCTION(MurmurAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
 
-        MURMURAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        MurmurAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -1782,7 +1661,7 @@ class MURMURAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SONIC_BOOM1);
+            spells[0].info = dbcSpell.LookupEntry(SP_MURMUR_SONIC_BOOM1);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
@@ -1790,21 +1669,21 @@ class MURMURAI : public CreatureAIScript
             spells[0].cooldown = 25;
             //spells[0].speech = "Murmur draws energy from the air...";
 
-            spells[1].info = dbcSpell.LookupEntry(SHOCKWAVE);
+            spells[1].info = dbcSpell.LookupEntry(SP_MURMUR_SHOCKWAVE);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
             spells[1].cooldown = 15;
 
-            spells[2].info = dbcSpell.LookupEntry(MURMURS_TOUCH);
+            spells[2].info = dbcSpell.LookupEntry(SP_MURMUR_MURMURS_TOUCH);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].perctrigger = 10.0f;
             spells[2].attackstoptimer = 2000;
             spells[2].cooldown = 20;
 
-            spells[3].info = dbcSpell.LookupEntry(RESONANCE);
+            spells[3].info = dbcSpell.LookupEntry(SP_MURMUR_RESONANCE);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = true;
             spells[3].perctrigger = 0.0f;
@@ -1865,7 +1744,7 @@ class MURMURAI : public CreatureAIScript
                 if (_unit->GetCurrentSpell())
                     _unit->GetCurrentSpell()->cancel();
 
-                _unit->CastSpell(_unit, SONIC_BOOM2, true);
+                _unit->CastSpell(_unit, SP_MURMUR_SONIC_BOOM2, true);
 
                 SonicBoom = false;
                 return;
@@ -2055,20 +1934,18 @@ class MURMURAI : public CreatureAIScript
 
 void SetupShadowLabyrinth(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(CN_CABAL_ACOLYTE, &CABALACOLYTEAI::Create);
-    mgr->register_creature_script(CN_CABAL_DEATHSWORN, &CABALDEATHSWORNAI::Create);
-    mgr->register_creature_script(CN_CABAL_FANATIC, &CABALFANATICAI::Create);
-    mgr->register_creature_script(CN_CABAL_SHADOW_PRIEST, &CABALSHADOWPRIESTAI::Create);
-    mgr->register_creature_script(CN_CABAL_SPELLBINDER, &CABALSPELLBINDERAI::Create);
-    mgr->register_creature_script(CN_CABAL_WARLOCK, &CABALWARLOCKAI::Create);
-    mgr->register_creature_script(CN_CABAL_ZEALOT, &CABALZEALOTAI::Create);
-    mgr->register_creature_script(CN_CABAL_RITUALIST, &CABALRITUALISTAI::Create);
-    mgr->register_creature_script(CN_FEL_OVERSEER, &FELOVERSEERAI::Create);
-    mgr->register_creature_script(CN_MALICIOUS_INSTRUCTOR, &MALICIOUSINSTRUCTORAI::Create);
-    mgr->register_creature_script(CN_AMBASSADOR_HELLMAW, &AMBASSADORHELLMAWAI::Create);
-    mgr->register_creature_script(CN_BLACKHEART_THE_INCITER, &BLACKHEARTTHEINCITERAI::Create);
-    mgr->register_creature_script(CN_GRANDMASTER_VORPIL, &GRANDMASTERVORPILAI::Create);
-    mgr->register_creature_script(CN_MURMUR, &MURMURAI::Create);
+    mgr->register_creature_script(CN_CABAL_ACOLYTE, &CabalAcolyteAI::Create);
+    mgr->register_creature_script(CN_CABAL_DEATHSWORN, &CabalDeathswornAI::Create);
+    mgr->register_creature_script(CN_CABAL_FANATIC, &CabalFanaticAI::Create);
+    mgr->register_creature_script(CN_CABAL_SHADOW_PRIEST, &CabalShadowPriestAI::Create);
+    mgr->register_creature_script(CN_CABAL_SPELLBINDER, &CabalSpellbinderAI::Create);
+    mgr->register_creature_script(CN_CABAL_WARLOCK, &CabalWarlockAI::Create);
+    mgr->register_creature_script(CN_CABAL_ZEALOT, &CabalZealotAI::Create);
+    mgr->register_creature_script(CN_CABAL_RITUALIST, &CabalRitualistAI::Create);
+    mgr->register_creature_script(CN_FEL_OVERSEER, &FelOverseerAI::Create);
+    mgr->register_creature_script(CN_MALICIOUS_INSTRUCTOR, &MaliciousInstructorAI::Create);
+    mgr->register_creature_script(CN_AMBASSADOR_HELLMAW, &AmbassadorHellmawAI::Create);
+    mgr->register_creature_script(CN_BLACKHEART_THE_INCITER, &BlackheartTheInciterAI::Create);
+    mgr->register_creature_script(CN_GRANDMASTER_VORPIL, &GrandmasterVorpilAI::Create);
+    mgr->register_creature_script(CN_MURMUR, &MurmurAI::Create);
 }
-
-// \todo No accurate info about spells of Cabal Assassins, Cultist, Executioner, Summoner so they aren't scripted
