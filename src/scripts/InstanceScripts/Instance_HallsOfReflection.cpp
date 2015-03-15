@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
 #include "Instance_HallsOfReflection.h"
 
@@ -37,6 +37,8 @@ class HallsOfReflectionScript : public MoonInstanceScript
         }
 };
 
+
+//JainaAI
 class JainaAI : public MoonScriptCreatureAI
 {
     public:
@@ -56,74 +58,74 @@ class JainaAI : public MoonScriptCreatureAI
 
         void InstanceRealStart()
         {
-            Creature* Uther = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5307.370f, 2000.80f, 709.341f, 37225);
-            Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, 37226);
+            Creature* Uther = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5307.370f, 2000.80f, 709.341f, CN_UTHER);
+            Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, CN_LICH);
             if (Uther && Lich)
             {
                 Lich->SetDisplayId(11686); // HACK FIX makes invisible till needed
                 Lich->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 // 8 second delay from first chat..
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Stand back! Touch that blade and your soul will be scarred for all eternity! I must attempt to commune with the spirits locked away within Frostmourne. Give me space. Back up, please.", 8000);
+                _unit->SendScriptTextChatMessage(SAY_JAINA_01, 8000);
                 sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16634, EVENT_UNK, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther talks about 12 seconds.
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Jaina! Could it truly be you?", 12500);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_01, 12500);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16666, EVENT_UNK, 12500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Jaina wait about 9-10 secs
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Uther! Dear Uther! I... I'm so sorry.", 21000);
+                _unit->SendScriptTextChatMessage(SAY_JAINA_05, 21000);
                 sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16635, EVENT_UNK, 21000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther wait about 9-11 secs
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Jaina, you haven't much time. The Lich King sees what the sword sees. He will be here shortly.", 27000);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_02, 27000);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16667, EVENT_UNK, 27000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Jaina wait about 9-10 sec.
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Arthas is here? Maybe I...", 37000);
+                _unit->SendScriptTextChatMessage(SAY_JAINA_06, 37000);
                 sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16636, EVENT_UNK, 37000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther wait about 6 seconds to chat.
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "No, girl. Arthas is not here. Arthas is merely a presence within the Lich King's mind. A dwindling presence...", 44000);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_03, 44000);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16668, EVENT_UNK, 44000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Jaina with a 15 sec delay.
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "But Uther, if there's any hope of reaching Arthas. I... I must try.", 59000);
+                _unit->SendScriptTextChatMessage(SAY_JAINA_07, 59000);
                 sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16637, EVENT_UNK, 59000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther with a 8.5 sec delay chat
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Jaina, listen to me. You must destroy the Lich King. You cannot reason with him. He will kill you and your allies and raise you all as powerful soldiers of the Scourge.", 67500);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_04, 67500);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16669, EVENT_UNK, 67500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Jaina with a 16 sec delay
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell me how, Uther? How do I destroy my prince? My...", 83500);
+                _unit->SendScriptTextChatMessage(SAY_JAINA_08, 83500);
                 sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16638, EVENT_UNK, 83500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther with a 7 sec delay
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Snap out of it, girl. You must destroy the Lich King at the place where he merged with Ner'zhul - atop the spire, at the Frozen Throne, It is the only way.", 90500);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_05, 90500);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16670, EVENT_UNK, 90500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Jaina delay with a 15 sec.
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You're right, Uther. Forgive me. I... I don't know what got a hold of me. We will deliver this information to the King and the knights that battle the Scourge within Icecrown Citadel.", 105500);
+                _unit->SendScriptTextChatMessage(SAY_JAINA_09, 105500);
                 sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16639, EVENT_UNK, 105500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther delay with a 17 sec delay.
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "There is... something else that you should know about the Lich King. Control over the Scourge must never be lost. Even if you were to strike down the Lich King, another would have to take his place. For without the control of its master, the Scourge world run rampant across the world - destroying all living things.", 122500);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_06, 122500);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16671, EVENT_UNK, 122500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther with a 17 sec delay
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "A grand sacrifice by a noble soul...", 139500);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_07, 139500);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16672, EVENT_UNK, 139500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Jaina with a 7 sec delay.
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Who could bear such a burden?", 146500);
+                _unit->SendScriptTextChatMessage(SAY_JAINA_10, 146500);
                 sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16640, EVENT_UNK, 146500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther with a 4 sec delay.
-                Uther->SendChatMessage(CHAT_MSG_EMOTE, LANG_UNIVERSAL, "shakes his head.", 150500);
+                Uther->SendChatMessage(CHAT_MSG_EMOTE, LANG_UNIVERSAL, "shakes his head.", 150500); // WHAT
                 // Uther with a 4 sec delay
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I do not know, Jaina. I Suspect that the piece of Arthas that might be left inside the Lich King is all that holds the Scourge from annihilating Azeroth.", 154500);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_08, 154500);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16673, EVENT_UNK, 154500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Jaina wuith a 14 sec delay.
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Then maybe there is still hope...", 168500);
+                _unit->SendScriptTextChatMessage(SAY_JAINA_11, 168500);
                 sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16641, EVENT_UNK, 168500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Uther says nonono when lich king appear than despawns ;D 7 sec delay
-                Uther->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No, Jaina! ARRRRRRGHHHH... He... He is coming. You... You must... ", 175500);
+                Uther->SendScriptTextChatMessage(SAY_UTHER_09, 175500);
                 sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16674, EVENT_UNK, 175500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 Uther->Despawn(188000, 0); // Uther gets sent to the "frostmourne" when LK comes in and silences him ;P        
                 // Lich King 11 sec delay
-                Lich->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "SILENCE, PALADIN!", 186500);
+                Lich->SendScriptTextChatMessage(SAY_LICH_01, 186500);
                 sEventMgr.AddEvent(TO_OBJECT(Lich), &Object::PlaySoundToSet, (uint32)17225, EVENT_UNK, 186500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Lich King 8 sec delay
-                Lich->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "So? You wish to commune with the dead? You shall your wish.", 194500);
+                Lich->SendScriptTextChatMessage(SAY_LICH_02, 194500);
                 sEventMgr.AddEvent(TO_OBJECT(Lich), &Object::PlaySoundToSet, (uint32)17226, EVENT_UNK, 194500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 // Lich King 10 sec delay also he should spawn falric & marwyn with this & start the waves..
-                Lich->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Falric. Marwyn. Bring their corpses to my chamber when you are through.", 204500);
+                Lich->SendScriptTextChatMessage(SAY_LICH_03, 204500);
                 sEventMgr.AddEvent(TO_OBJECT(Lich), &Object::PlaySoundToSet, (uint32)17227, EVENT_UNK, 204500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }
 
@@ -131,7 +133,7 @@ class JainaAI : public MoonScriptCreatureAI
 
         void AIUpdate()
         {
-            Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, 37226);
+            Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, CN_LICH);
             Lich->SetDisplayId(30721);
             Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f, 3.93f);
             RemoveAIUpdateEvent();
@@ -139,6 +141,7 @@ class JainaAI : public MoonScriptCreatureAI
 };
 
 // Lady Jaina Proudmoore Gossip
+/// \todo update this to new GossipHello
 class Jaina_Gossip : public Arcemu::Gossip::Script
 {
     public:
@@ -158,21 +161,8 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
         }
 };
 
-enum MarwynSpells
-{
-    NPC_MARWYN = 38113,
-    // Normal Mode Spells
-    N_SPELL_OBLITERATE = 72360,
-    N_SPELL_WELL = 72362,
-    N_SPELL_CORRUPTFLESH = 72363,
-    N_SPELL_SHARED = 72368,
-    // Heroic Mode Spells
-    H_SPELL_OBLITERATE = 72434,
-    H_SPELL_WELL = 72362,
-    H_SPELL_CORRUPTFLESH = 72436,
-    H_SPELL_SHARED = 72369
-};
 
+//Marwyn
 class Marwyn : public MoonScriptBossAI
 {
     public:
@@ -237,19 +227,8 @@ class Marwyn : public MoonScriptBossAI
         MoonInstanceScript* mInstance;
 };
 
-enum FalricSpells
-{
-    NPC_FALRIC = 38112,
-    // Normal Mode Spells
-    N_SPELL_QSTRIKE = 72422,
-    N_SPELL_IMPEND = 72426,
-    N_SPELL_HORROR = 72435,
-    // Heroic Mode Spells
-    H_SPELL_QSTRIKE = 72453,
-    H_SPELL_IMPEND = 72426,
-    H_SPELL_HORROR = 72452,
-};
 
+//Falric
 class Falric : public MoonScriptBossAI
 {
     public:
@@ -339,8 +318,8 @@ class Falric : public MoonScriptBossAI
 void SetupHallsOfReflection(ScriptMgr * mgr)
 {
     mgr->register_instance_script(MAP_HALLSOFREFLECTION, &HallsOfReflectionScript::Create);
-    mgr->register_creature_script(37221, &JainaAI::Create);
-    mgr->register_creature_gossip(37221, new Jaina_Gossip);
-    mgr->register_creature_script(NPC_MARWYN, &Marwyn::Create);
-    mgr->register_creature_script(NPC_FALRIC, &Falric::Create);
+    mgr->register_creature_script(CN_JAINA, &JainaAI::Create);
+    mgr->register_creature_gossip(CN_JAINA, new Jaina_Gossip);
+    mgr->register_creature_script(CN_MARWYN, &Marwyn::Create);
+    mgr->register_creature_script(CN_FALRIC, &Falric::Create);
 }

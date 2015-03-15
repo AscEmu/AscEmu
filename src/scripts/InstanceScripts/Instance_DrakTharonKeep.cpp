@@ -28,19 +28,17 @@
  Core doesn't support auras on corpses, we are currently unable to script this blizzlike
  */
 
-#define TROLLGORE_ENTRY 26630
-#define DRAKKARI_INVADER_ENTRY 27709
+//TrollgoreAI
 #define INVASION_INTERVAL 20000
 #define INVADERS_PER_INVASION 1
 //two mobs per 10s
 
-class TROLLGORE_AI : public CreatureAIScript
+class TrollgoreAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(TROLLGORE_AI);
-
-        TROLLGORE_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(TrollgoreAI);
+        TrollgoreAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             invastion_timer = 0;
@@ -124,12 +122,12 @@ class TROLLGORE_AI : public CreatureAIScript
                 //spawn invaders ;)
                 for (uint8 i = 0; i < INVADERS_PER_INVASION; i++)
                 {
-                    CreatureProto* cp = CreatureProtoStorage.LookupEntry(DRAKKARI_INVADER_ENTRY);
-                    CreatureInfo* ci = CreatureNameStorage.LookupEntry(DRAKKARI_INVADER_ENTRY);
+                    CreatureProto* cp = CreatureProtoStorage.LookupEntry(CN_DRAKKARI_INVADER);
+                    CreatureInfo* ci = CreatureNameStorage.LookupEntry(CN_DRAKKARI_INVADER);
                     Creature* c = NULL;
                     if (cp && ci)
                     {
-                        c = _unit->GetMapMgr()->CreateCreature(DRAKKARI_INVADER_ENTRY);
+                        c = _unit->GetMapMgr()->CreateCreature(CN_DRAKKARI_INVADER);
                         if (c)
                         {
                             //position is guessed
@@ -219,25 +217,18 @@ class TROLLGORE_AI : public CreatureAIScript
  - Create waypoints for summons, we need them coz Core doesn't not have path finding
  */
 
-#define NOVOS_THE_SUMMONER_ENTRY 26631
-#define SPELL_ARCANE_FIELD 47346
-#define RITUAL_CRYSTAL_ENTRY_1 189299
-#define RITUAL_CRYSTAL_ENTRY_2 189300
-#define RITUAL_CRYSTAL_ENTRY_3 189301
-#define RITUAL_CRYSTAL_ENTRY_4 189302//make sure that you doesn't have these on the map
+// NovosTheSummonerAI
 #define INVADE_INTERVAL 30000//4 mobs per 30s
 #define INVADERS_COUNT 3
 #define HANDLER_INTERVAL 60000//one handler per 60s
 #define ELITE_CHANCE 20//how much chance for elite we've got each invasion?
 
-// Novos the Summoner
-class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
+class NovosTheSummonerAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(NOVOS_THE_SUMMONER_AI);
-
-        NOVOS_THE_SUMMONER_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(NovosTheSummonerAI);
+        NovosTheSummonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             phase = 0;
@@ -284,8 +275,8 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            //these texts shouldn't be like this
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The chill that you feel is the herald of your doom!");
+            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_01);
+            _unit->PlaySoundToSet(13173);
             _unit->CastSpell(_unit, 47346, false);
             //spawn 4 Ritual Crystal
             for (uint8 i = 0; i < 4; i++)
@@ -295,8 +286,10 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
             phase = 1;
             for (uint8 i = 0; i < 7; i++)
                 _unit->SchoolImmunityList[i] = 1;
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Surely you can see the futility of it all!");
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Just give up and die already! ");
+            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_05);
+            _unit->PlaySoundToSet(13177);
+            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_06);
+            _unit->PlaySoundToSet(13178);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -328,14 +321,16 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
 
         void OnDied(Unit*  mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your efforts... are in vain.");
+            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_03);
+            _unit->PlaySoundToSet(13174);
             RemoveAIUpdateEvent();
         }
 
         void OnTargetDied(Unit* mTarget)
         {
             //BUAHAHAHAH
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Such is the fate of all who oppose the Lich King.");
+            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_02);
+            _unit->PlaySoundToSet(13175);
         }
 
         void AIUpdate()
@@ -442,7 +437,8 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
         //type: 1 - normal, 0 - handler
         void SpawnInvader(uint32 type)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Bolster my defenses! Hurry, curse you!");
+            _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_04);
+            _unit->PlaySoundToSet(13176);
             //x                y                z
             //-379.101227f    -824.835449f    60.0f
             uint32 mob_entry = 0;
@@ -514,7 +510,7 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
             {
                 case 0:
                 {
-                    entry = RITUAL_CRYSTAL_ENTRY_1;
+                    entry = GO_RITUAL_CRYSTAL_ENTRY_1;
                     x = -392.416f;
                     y = -724.865f;
                     z = 29.4156f;
@@ -523,7 +519,7 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
                 break;
                 case 1:
                 {
-                    entry = RITUAL_CRYSTAL_ENTRY_2;
+                    entry = GO_RITUAL_CRYSTAL_ENTRY_2;
                     x = -365.279f;
                     y = -751.087f;
                     z = 29.4156f;
@@ -532,7 +528,7 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
                 break;
                 case 2:
                 {
-                    entry = RITUAL_CRYSTAL_ENTRY_3;
+                    entry = GO_RITUAL_CRYSTAL_ENTRY_3;
                     x = -365.41f;
                     y = -724.865f;
                     z = 29.4156f;
@@ -541,7 +537,7 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
                 break;
                 case 3:
                 {
-                    entry = RITUAL_CRYSTAL_ENTRY_4;
+                    entry = GO_RITUAL_CRYSTAL_ENTRY_4;
                     x = -392.286f;
                     y = -751.087f;
                     z = 29.4156f;
@@ -577,15 +573,14 @@ class NOVOS_THE_SUMMONER_AI : public CreatureAIScript
         uint32 phase;
 };
 
-#define CRYSTAL_HANDLER_ENTRY 26627
 
-class CRYSTAL_HANDLER_AI : public CreatureAIScript
+//CrystalHandlerAI
+class CrystalHandlerAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CRYSTAL_HANDLER_AI);
-
-        CRYSTAL_HANDLER_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(CrystalHandlerAI);
+        CrystalHandlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
@@ -716,16 +711,14 @@ class CRYSTAL_HANDLER_AI : public CreatureAIScript
 };
 
 
+// KingDreadAI
 // \todo King Dred Call nearby friends
-#define KING_DRED_ENTRY 27483
-
-class KING_DRED_AI : public CreatureAIScript
+class KingDreadAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(KING_DRED_AI);
-
-        KING_DRED_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(KingDreadAI);
+        KingDreadAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
@@ -877,19 +870,17 @@ class KING_DRED_AI : public CreatureAIScript
  - Figure out why players are not always changed to skeletons while chaning phases
  */
 
-//The Prophet Tharon'ja
-#define THE_PROPHET_THARONJA_ENTRY 26632
+// TheProphetTaronjaAI
 #define WINDSERPENT_PHASE_INTERVAL 60000//change phase each 60s
 #define WINDSERPENT_PHASE_LENGTH 30000//30s
 #define PHASES_COUNT 2
 
-class THE_PROPHET_THARONJA : public CreatureAIScript
+class TheProphetTaronjaAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(THE_PROPHET_THARONJA);
-
-        THE_PROPHET_THARONJA(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(TheProphetTaronjaAI);
+        TheProphetTaronjaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
@@ -1107,9 +1098,9 @@ void SetupDrakTharonKeep(ScriptMgr* mgr)
     //////////////////////////////////////////
     // BOSSES
     //////////////////////////////////////////
-    mgr->register_creature_script(TROLLGORE_ENTRY, &TROLLGORE_AI::Create);
-    mgr->register_creature_script(NOVOS_THE_SUMMONER_ENTRY, &NOVOS_THE_SUMMONER_AI::Create);
-    mgr->register_creature_script(CRYSTAL_HANDLER_ENTRY, &CRYSTAL_HANDLER_AI::Create);
-    mgr->register_creature_script(KING_DRED_ENTRY, &KING_DRED_AI::Create);
-    mgr->register_creature_script(THE_PROPHET_THARONJA_ENTRY, &THE_PROPHET_THARONJA::Create);
+    mgr->register_creature_script(CN_TROLLGORE, &TrollgoreAI::Create);
+    mgr->register_creature_script(CN_NOVOS_THE_SUMMONER, &NovosTheSummonerAI::Create);
+    mgr->register_creature_script(CN_CRYSTAL_HANDLER, &CrystalHandlerAI::Create);
+    mgr->register_creature_script(CN_KING_DRED, &KingDreadAI::Create);
+    mgr->register_creature_script(CN_THE_PROPHET_THARONJA, &TheProphetTaronjaAI::Create);
 }

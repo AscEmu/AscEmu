@@ -3056,28 +3056,28 @@ class FelLash : public CreatureAIScript
 
 void SetupDireMaul(ScriptMgr* mgr)
 {
-    //mgr->register_creature_script(11492, &AlzzintheWildshaper::Create); - ai should be added
-    mgr->register_creature_script(14325, &CaptainKromcrush::Create);
-    mgr->register_creature_script(14324, &ChoRushTheObserver::Create);
-    mgr->register_creature_script(14321, &GuardFengus::Create);
-    mgr->register_creature_script(14326, &GuardMolDar::Create);
-    mgr->register_creature_script(14323, &GuardSlipKik::Create);
-    mgr->register_creature_script(13280, &Hydrospawn::Create);
-    mgr->register_creature_script(14122, &MassiveGeyser::Create);
-    mgr->register_creature_script(11488, &IllyanaRavenoak::Create);
-    mgr->register_creature_script(11496, &Immolthar::Create);
-    mgr->register_creature_script(14396, &EyeOfImmolThar::Create);
-    mgr->register_creature_script(11501, &KingGordok::Create);
-    mgr->register_creature_script(14327, &Lethtendris::Create);
-    mgr->register_creature_script(14506, &LordHelNurath::Create);
-    mgr->register_creature_script(11487, &MagisterKalendris::Create);
-    mgr->register_creature_script(11486, &PrinceTortheldrin::Create);
-    mgr->register_creature_script(14354, &Pusillin::Create);
-    mgr->register_creature_script(11498, &SkarrTheUnbreakable::Create);
-    mgr->register_creature_script(11489, &TendrisWarpwood::Create);
-    mgr->register_creature_script(11490, &ZevrimThornhoof::Create);
-    mgr->register_creature_script(11444, &GordokMageLord::Create);
-    mgr->register_creature_script(11450, &GordokReaver::Create);
-    mgr->register_creature_script(11441, &GordokBrute::Create);
-    mgr->register_creature_script(13197, &FelLash::Create);
+    //mgr->register_creature_script(CN_ALZZINTHE_WILDSHAPER, &AlzzintheWildshaper::Create); - ai should be added
+    mgr->register_creature_script(CN_CAPTAIN_KROMCRUSH, &CaptainKromcrush::Create);
+    mgr->register_creature_script(CN_CHO_RUSH_OBSERVER, &ChoRushTheObserver::Create);
+    mgr->register_creature_script(CN_GUARD_FENGUS, &GuardFengus::Create);
+    mgr->register_creature_script(CN_GUARD_MOL_DAR, &GuardMolDar::Create);
+    mgr->register_creature_script(CN_GUARD_SLIP_KIK, &GuardSlipKik::Create);
+    mgr->register_creature_script(CN_HYDROSPAWN, &Hydrospawn::Create);
+    mgr->register_creature_script(CN_MASSIVE_GEYSER, &MassiveGeyser::Create);
+    mgr->register_creature_script(CN_ILLYANA_RAVENOAK, &IllyanaRavenoak::Create);
+    mgr->register_creature_script(CN_IMMOLTHAR, &Immolthar::Create);
+    mgr->register_creature_script(CN_EYE_OF_IMMOLTHAR, &EyeOfImmolThar::Create);
+    mgr->register_creature_script(CN_KING_GORDOK, &KingGordok::Create);
+    mgr->register_creature_script(CN_LETHENDRIS, &Lethtendris::Create);
+    mgr->register_creature_script(CN_LORD_HEL_NURATH, &LordHelNurath::Create);
+    mgr->register_creature_script(CN_MAGISTER_KALENDRIS, &MagisterKalendris::Create);
+    mgr->register_creature_script(CN_PRINCE_TORTHELDRIN, &PrinceTortheldrin::Create);
+    mgr->register_creature_script(CN_PUSILLIN, &Pusillin::Create);
+    mgr->register_creature_script(CN_SKARR_THE_UNBREAKABLE, &SkarrTheUnbreakable::Create);
+    mgr->register_creature_script(CN_TENDRIS_WARPWOOD, &TendrisWarpwood::Create);
+    mgr->register_creature_script(CN_ZEVRIM_THORNHOOF, &ZevrimThornhoof::Create);
+    mgr->register_creature_script(CN_GORDOK_MAGE_LORD, &GordokMageLord::Create);
+    mgr->register_creature_script(CN_GORDOK_REAVER, &GordokReaver::Create);
+    mgr->register_creature_script(CN_GORDOK_BRUTE, &GordokBrute::Create);
+    mgr->register_creature_script(CN_FEL_LASH, &FelLash::Create);
 }

@@ -21,13 +21,13 @@
 #include "Setup.h"
 #include "Instance_CullingOfStratholme.h"
 
-#define MEATHOOK_ENTRY 26529
-class MEATHOOK_AI : public CreatureAIScript
+//MeathookAA
+class MeathookAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(MEATHOOK_AI);
-        MEATHOOK_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(MeathookAI);
+        MeathookAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
@@ -62,8 +62,8 @@ class MEATHOOK_AI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "New toys!");
-            _unit->PlaySoundToSet(13428);
+            _unit->SendScriptTextChatMessage(SAY_MEATHOOK_01);
+            _unit->PlaySoundToSet(13429);           // old sound : 13428
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -77,7 +77,7 @@ class MEATHOOK_AI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This not fun...");
+            _unit->SendScriptTextChatMessage(SAY_MEATHOOK_06);
             _unit->PlaySoundToSet(13433);
             RemoveAIUpdateEvent();
         }
@@ -87,15 +87,15 @@ class MEATHOOK_AI : public CreatureAIScript
             switch (rand() % 3)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Boring...");
+                    _unit->SendScriptTextChatMessage(SAY_MEATHOOK_02);
                     _unit->PlaySoundToSet(13430);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Why you stop moving?");
+                    _unit->SendScriptTextChatMessage(SAY_MEATHOOK_03);
                     _unit->PlaySoundToSet(13431);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Get up! Me not done!");
+                    _unit->SendScriptTextChatMessage(SAY_MEATHOOK_04);
                     _unit->PlaySoundToSet(13432);
                     break;
             }
@@ -187,14 +187,14 @@ class MEATHOOK_AI : public CreatureAIScript
         vector< ScriptSpell* > spells;
 };
 
-#define SALRAMM_THE_FLESHCRAFTER_ENTRY 26530
-class SALRAMM_THE_FLESHCRAFTER_AI : public CreatureAIScript
+//SalramTheFleshcrafterAI
+class SalramTheFleshcrafterAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(SALRAMM_THE_FLESHCRAFTER_AI);
+        ADD_CREATURE_FACTORY_FUNCTION(SalramTheFleshcrafterAI);
 
-        SALRAMM_THE_FLESHCRAFTER_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        SalramTheFleshcrafterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
@@ -247,8 +247,8 @@ class SALRAMM_THE_FLESHCRAFTER_AI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ah, the entertainment has arrived!");
-            _unit->PlaySoundToSet(13471);
+            _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_01);
+            _unit->PlaySoundToSet(13472);       // old sound 13471
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -262,7 +262,7 @@ class SALRAMM_THE_FLESHCRAFTER_AI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You only advance... the master's plan...");
+            _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_06);
             _unit->PlaySoundToSet(13483);
             RemoveAIUpdateEvent();
         }
@@ -272,15 +272,15 @@ class SALRAMM_THE_FLESHCRAFTER_AI : public CreatureAIScript
             switch (rand() % 3)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The fun is just beginning!");
+                    _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_03);
                     _unit->PlaySoundToSet(13473);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Aah, quality materials!");
+                    _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_04);
                     _unit->PlaySoundToSet(13474);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Don't worry, I'll make good use of you.");
+                    _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_05);
                     _unit->PlaySoundToSet(13475);
                     break;
             }
@@ -380,14 +380,13 @@ class SALRAMM_THE_FLESHCRAFTER_AI : public CreatureAIScript
         vector< ScriptSpell* > spells;
 };
 
-#define CHRONO_LORD_EPOCH_ENTRY 26532
-class CHRONO_LORD_EPOCH_AI : public CreatureAIScript
+//ChronoLordEpochAI
+class ChronoLordEpochAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CHRONO_LORD_EPOCH_AI);
-
-        CHRONO_LORD_EPOCH_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(ChronoLordEpochAI);
+        ChronoLordEpochAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
@@ -431,8 +430,8 @@ class CHRONO_LORD_EPOCH_AI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "We'll see about that, young prince.");
-            _unit->PlaySoundToSet(13408);
+            _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_02);
+            _unit->PlaySoundToSet(13409);       // old sound: 13408 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -454,15 +453,15 @@ class CHRONO_LORD_EPOCH_AI : public CreatureAIScript
             switch (rand() % 3)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "There is no future for you.");
+                    _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_06);
                     _unit->PlaySoundToSet(13473);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This is the hour of our greatest triumph!");
+                    _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_07);
                     _unit->PlaySoundToSet(13474);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You were destined to fail.");
+                    _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_08);
                     _unit->PlaySoundToSet(13475);
                     break;
             }
@@ -556,14 +555,13 @@ class CHRONO_LORD_EPOCH_AI : public CreatureAIScript
         vector< ScriptSpell* > spells;
 };
 
-#define INFINITE_CORRUPTOR_ENTRY 32273
-class INFINITE_CORRUPTOR_AI : public CreatureAIScript
+//InfiniteCorruptorAI
+class InfiniteCorruptorAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(INFINITE_CORRUPTOR_AI);
-
-        INFINITE_CORRUPTOR_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(InfiniteCorruptorAI);
+        InfiniteCorruptorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
@@ -588,7 +586,7 @@ class INFINITE_CORRUPTOR_AI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "How dare you interfere with our work here!");
+            _unit->SendScriptTextChatMessage(SAY_INFINITE_CORRUP_01);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -602,6 +600,7 @@ class INFINITE_CORRUPTOR_AI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
+            _unit->SendScriptTextChatMessage(SAY_INFINITE_CORRUP_02);
             RemoveAIUpdateEvent();
         }
 
@@ -693,15 +692,13 @@ class INFINITE_CORRUPTOR_AI : public CreatureAIScript
         vector< ScriptSpell* > spells;
 };
 
-
-#define MALGANIS_ENTRY 26533
-class MALGANIS_AI : public CreatureAIScript
+//MalganisAI
+class MalganisAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(MALGANIS_AI);
-
-        MALGANIS_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(MalganisAI);
+        MalganisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             scene = true;
@@ -745,7 +742,7 @@ class MALGANIS_AI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "This will be a fine test, Prince Arthas.");
+            _unit->SendScriptTextChatMessage(SAY_MALGANIS_03);
             _unit->PlaySoundToSet(14413);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
@@ -763,13 +760,16 @@ class MALGANIS_AI : public CreatureAIScript
             switch (rand() % 3)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "All too easy.");
+                    _unit->SendScriptTextChatMessage(SAY_MALGANIS_04);
+                    _unit->PlaySoundToSet(14416);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The dark lord is displeased with your interference.");
+                    _unit->SendScriptTextChatMessage(SAY_MALGANIS_05);
+                    _unit->PlaySoundToSet(14417);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It is Prince Arthas I want, not you.");
+                    _unit->SendScriptTextChatMessage(SAY_MALGANIS_06);
+                    _unit->PlaySoundToSet(14418);
                     break;
             }
         }
@@ -788,7 +788,7 @@ class MALGANIS_AI : public CreatureAIScript
                 for (uint8 i = 0; i < 7; i++)
                     _unit->SchoolImmunityList[i] = 1;
                 RemoveAIUpdateEvent();
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your journey has just begun, young prince. Gather your forces, and meet me in the arctic land of Northrend. It is there we shall settle the score between us. It is there that your true destiny will unfold.");
+                _unit->SendScriptTextChatMessage(SAY_MALGANIS_17);
                 _unit->PlaySoundToSet(14412);
                 //spawn a chest and go
                 GameObject* go = _unit->GetMapMgr()->CreateGameObject(190663);
@@ -800,6 +800,8 @@ class MALGANIS_AI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
+            _unit->SendScriptTextChatMessage(SAY_MALGANIS_16);
+            _unit->PlaySoundToSet(14429);
             RemoveAIUpdateEvent();
         }
 
@@ -999,13 +1001,13 @@ static Location walk[] =
     { 1897.4763f, 1291.1870f, 143.5821f, 1.4194f }
 };
 
-class UTHER_AI : public CreatureAIScript
+//UtherAI
+class UtherAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(UTHER_AI);
-
-        UTHER_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(UtherAI);
+        UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, RUN));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, RUN));
@@ -1018,63 +1020,63 @@ class UTHER_AI : public CreatureAIScript
             if (i == 3 && check)
             {
                 check = false;
-                Creature* Arthas = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 26499);
-                Creature* Jaina = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 26497);
+                Creature* Arthas = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_ARTHAS);
+                Creature* Jaina = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_JAINA);
                 if (Arthas && Jaina)  //Show must go on!
                 {
                     //we add 0,5s per speech
                     //1 = 0s
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Glad you could make it, Uther...");
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_01);
                     Arthas->PlaySoundToSet(12828);
                     //2 = 2,5s
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Watch your tone with me, boy. You may be the prince, but I'm still your superior as a paladin.", 2500);
-                    sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)12839, EVENT_UNK, 2500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                    _unit->SendScriptTextChatMessage(SAY_UTHER_01, 2500);
+                    sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)12828, EVENT_UNK, 2500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);   // old sound: 12839
                     //3 = 9s
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "As if I could forget. Listen Uther, there's something about the plague you should know.", 9000);
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_02, 9000);
                     sEventMgr.AddEvent(TO_OBJECT(Arthas), &Object::PlaySoundToSet, (uint32)12829, EVENT_UNK, 9000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //4 = 14,5s
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Oh no, it's already begun. These people may look fine now, but it's only a matter of time before they turn into the Undead!", 14500);
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_03, 14500);
                     sEventMgr.AddEvent(TO_OBJECT(Arthas), &Object::PlaySoundToSet, (uint32)12830, EVENT_UNK, 14500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //5 = 25s
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "What?!", 25000);
+                    _unit->SendScriptTextChatMessage(SAY_UTHER_02, 25000);
                     sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)12840, EVENT_UNK, 25000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //6 = 26,5s
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "This entire city must be purged.", 26500);
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_04, 26500);
                     sEventMgr.AddEvent(TO_OBJECT(Arthas), &Object::PlaySoundToSet, (uint32)12831, EVENT_UNK, 26500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //7 = 29s
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "How can you even consider that? There's *got* to be some other way.", 29000);
+                    _unit->SendScriptTextChatMessage(SAY_UTHER_03, 29000);
                     sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)12841, EVENT_UNK, 29000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //8 = 33,5s
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Damn it, Uther! As your future king, I order you to purge this city!", 33500);
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_05, 33500);
                     sEventMgr.AddEvent(TO_OBJECT(Arthas), &Object::PlaySoundToSet, (uint32)12832, EVENT_UNK, 33500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //9 = 38s
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You are *not* my king yet, boy. Nor would I obey that command even if you were.", 38000);
+                    _unit->SendScriptTextChatMessage(SAY_UTHER_04, 38000);
                     sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)12842, EVENT_UNK, 38000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //10 = 44,5s
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Then I must consider this an act of treason.", 44500);
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_06, 44500);
                     sEventMgr.AddEvent(TO_OBJECT(Arthas), &Object::PlaySoundToSet, (uint32)12833, EVENT_UNK, 44500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //11 = 49s
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Treason?! Have you lost your mind, Arthas?", 49000);
+                    _unit->SendScriptTextChatMessage(SAY_UTHER_05, 49000);
                     sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)12843, EVENT_UNK, 49000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //12 = 53,5s
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Have I? Lord Uther, by my right of succession and the sovereignty of my crown, I hereby relieve you of your command, and suspend your paladins from service.", 53500);
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_07, 53500);
                     sEventMgr.AddEvent(TO_OBJECT(Arthas), &Object::PlaySoundToSet, (uint32)12834, EVENT_UNK, 53500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //13 = 65s
-                    Jaina->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Arthas! You can't just--", 65000);
+                    Jaina->SendScriptTextChatMessage(SAY_JAINA_01, 65000);
                     sEventMgr.AddEvent(TO_OBJECT(Jaina), &Object::PlaySoundToSet, (uint32)12837, EVENT_UNK, 65000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //14 = 67,5s
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "It's done! Those of you who have the will to save this land, follow me. The rest of you... get out of my sight.", 67500);
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_08, 67500);
                     sEventMgr.AddEvent(TO_OBJECT(Arthas), &Object::PlaySoundToSet, (uint32)12835, EVENT_UNK, 67500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //15 = 77s
                     //here few knights should leave, after speech, Uther should leave also
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You've just crossed a terrible threshold, Arthas.", 77000);
+                    _unit->SendScriptTextChatMessage(SAY_UTHER_06, 77000);
                     sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)12844, EVENT_UNK, 77000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //16 = 80,5s
                     //Jaina begins leaving
-                    Arthas->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Jaina? ", 80500);
+                    Arthas->SendScriptTextChatMessage(SAY_ARTHAS_09, 80500);
                     sEventMgr.AddEvent(TO_OBJECT(Arthas), &Object::PlaySoundToSet, (uint32)12836, EVENT_UNK, 80500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //17 = 82s
-                    Jaina->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I'm sorry, Arthas. I can't watch you do this...", 82000);
+                    Jaina->SendScriptTextChatMessage(SAY_JAINA_02, 82000);
                     sEventMgr.AddEvent(TO_OBJECT(Jaina), &Object::PlaySoundToSet, (uint32)12838, EVENT_UNK, 82000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     //trigger Arthas actions = 86,5s
                     sEventMgr.AddEvent(Arthas, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 86500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -1119,13 +1121,14 @@ static Location ArthasWalk[] =
     { 2078.9479f, 1287.9812f, 141.4830f, 0.0308f }
 };
 
-class ARTHAS_AI : public CreatureAIScript
+
+//ArthasAI
+class ArthasAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ARTHAS_AI);
-
-        ARTHAS_AI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ADD_CREATURE_FACTORY_FUNCTION(ArthasAI);
+        ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 10500, RUN));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, RUN));
@@ -1147,7 +1150,7 @@ class ARTHAS_AI : public CreatureAIScript
             {
                 case 1:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take positions here, and I will lead a small force inside Stratholme to begin the culling. We must continue and purge the infected for sake of all of Lordaeron");
+                    _unit->SendScriptTextChatMessage(SAY_ARTHAS_10);
                     _unit->PlaySoundToSet(14327);
                     _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
                     _unit->GetAIInterface()->setWaypointToMove(2);
@@ -1163,7 +1166,7 @@ class ARTHAS_AI : public CreatureAIScript
                 break;
                 case 1000://haxxed ;)
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Everyone looks ready. Remember, these people are all infected with the plague and will die soon. We must purge Stratholme to protect the remainder of Lordaeron from the Scourge. Let's go!");
+                    _unit->SendScriptTextChatMessage(SAY_ARTHAS_11);
                     _unit->PlaySoundToSet(14293);
                     phase++;
                     sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 12500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -1195,7 +1198,7 @@ class ARTHAS_AI : public CreatureAIScript
                 break;
                 case 1:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I can only help you with a clean death.", 300);
+                    _unit->SendScriptTextChatMessage(SAY_ARTHAS_12, 300);
                     sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)14294, EVENT_UNK, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     Creature* citizen = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 28167);
                     if (citizen)
@@ -1209,7 +1212,7 @@ class ARTHAS_AI : public CreatureAIScript
                         _unit->GetAIInterface()->MoveTo(citizen->GetPositionX(), citizen->GetPositionY(), citizen->GetPositionZ(), citizen->GetOrientation());
                         _unit->DealDamage(citizen, citizen->GetUInt32Value(UNIT_FIELD_HEALTH), 0, 0, 0);
                     }
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "That was just the beginning.", 1000);
+                    _unit->SendScriptTextChatMessage(SAY_ARTHAS_13, 1000);
                     sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)14295, EVENT_UNK, 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     phase++;
                     sEventMgr.AddEvent(_unit, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 1500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -1241,15 +1244,15 @@ class ARTHAS_AI : public CreatureAIScript
                             c->SchoolImmunityList[i] = 1;
                         c->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                         //1 = 0s
-                        c->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Yes, this is the beginning. I've been waiting for you, young prince. I am Mal'Ganis.");
+                        c->SendScriptTextChatMessage(SAY_MALGANIS_01);
                         c->PlaySoundToSet(14410);
                         //2 = 13s
                         //change all citizens to undeads...
                         sEventMgr.AddEvent(c, &Creature::CallScriptUpdate, EVENT_SCRIPT_UPDATE_EVENT, 13000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                        c->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "As you can see, your people are now mine. I will now turn this city, household by household, until the flame of life has been snuffed out forever.", 13000);
+                        c->SendScriptTextChatMessage(SAY_MALGANIS_02, 13000);
                         sEventMgr.AddEvent(TO_OBJECT(c), &Object::PlaySoundToSet, (uint32)14411, EVENT_UNK, 13000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                         //2 = 32s
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I won't allow it Mal'Ganis better than these people die by my hand than serve as your slaves in death.", 32000);
+                        _unit->SendScriptTextChatMessage(SAY_ARTHAS_14, 32000);
                         sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)14296, EVENT_UNK, 32000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                         c->Despawn(38500, 0);
                         //3 = 37s
@@ -1288,6 +1291,7 @@ class ARTHAS_AI : public CreatureAIScript
 };
 
 
+//ArthasGossip
 class ArthasGossip : public GossipScript
 {
     public:
@@ -1331,19 +1335,19 @@ void SetupCullingOfStratholme(ScriptMgr* mgr)
     //////////////////////////////////////////
     // BOSSES
     //////////////////////////////////////////
-    //mgr->register_creature_script(MEATHOOK_ENTRY, &MEATHOOK_AI::Create);
-    //mgr->register_creature_script(SALRAMM_THE_FLESHCRAFTER_ENTRY, &SALRAMM_THE_FLESHCRAFTER_AI::Create);
-    //mgr->register_creature_script(CHRONO_LORD_EPOCH_ENTRY, &CHRONO_LORD_EPOCH_AI::Create);
-    //mgr->register_creature_script(INFINITE_CORRUPTOR_ENTRY, &INFINITE_CORRUPTOR_AI::Create);
-    //mgr->register_creature_script(MALGANIS_ENTRY, &MALGANIS_AI::Create);
+    //mgr->register_creature_script(CN_MEATHOOK, &MeathookAI::Create);
+    //mgr->register_creature_script(CN_SALRAMM_THE_FLESHCRAFTER, &SalramTheFleshcrafterAI::Create);
+    //mgr->register_creature_script(CN_CHRONO_LORD_EPOCH, &ChronoLordEpochAI::Create);
+    //mgr->register_creature_script(CN_INFINITE_CORRUPTOR, &InfiniteCorruptorAI::Create);
+    //mgr->register_creature_script(CN_MALGANIS, &MalganisAI::Create);
     //////////////////////////////////////////
     // QUESTS & STUFF
     //////////////////////////////////////////
     //UPDATE `quests` SET `ReqKillMobOrGOCount1`='5' WHERE (`entry`='13149');
     QuestScript* Dispelling_Illusions = new Quest_Dispelling_Illusions();
     mgr->register_quest_script(13149, Dispelling_Illusions);
-    //mgr->register_creature_script(26528, &UTHER_AI::Create);
-    //mgr->register_creature_script(26499, &ARTHAS_AI::Create);
+    //mgr->register_creature_script(CN_UTHER, &UtherAI::Create);
+    //mgr->register_creature_script(CN_ARTHAS, &ArthasAI::Create);
     //GossipScript * AG = new ArthasGossip();
-    //mgr->register_gossip_script(26499, AG);
+    //mgr->register_gossip_script(CN_ARTHAS, AG);
 }

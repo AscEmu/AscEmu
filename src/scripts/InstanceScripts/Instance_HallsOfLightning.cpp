@@ -16,21 +16,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
 #include "Instance_HallsOfLightning.h"
 
-#define MAP_HALLS_OF_LIGHTNING        602
-#define CN_GENERAL_BJARNGRIM        28586
-#define CN_VOLKHAN                    28587
-#define CN_LOKEN                    28923
-#define CN_IONAR                    28546
+#define MAP_HALLS_OF_LIGHTNING 602
 
-#define GO_GENERAL_DOORS            191416
-#define GO_VOLKHAN_DOORS            191325
-#define GO_LOKEN_DOORS                191324
-#define GO_IONAR_DOORS1                191326
-#define GO_IONAR_DOORS2                191328
 
 /////////////////////////////////////////////////////////////////////////////////
 /// Halls of Lightning Instance
@@ -190,26 +181,6 @@ class HallsOfLightningScript : public MoonInstanceScript
         };
 };
 
-
-// Spells
-#define SPELL_ARC_WELD                59085
-#define SPELL_BATTLE_AURA            41106
-#define SPELL_BATTLE_STANCE            53792
-#define SPELL_BERSERKER_AURA        41107
-#define SPELL_BERSERKER_STANCE        53791
-#define SPELL_CHARGE_UP                52098
-#define SPELL_CLEAVE                15284
-#define SPELL_DEFENSIVE_AURA        41105
-#define SPELL_DEFENSIVE_STANCE        53790
-#define SPELL_INTERCEPT                58769
-#define SPELL_IRONFORM                52022
-#define SPELL_KNOCK_AWAY            52029
-#define SPELL_MORTAL_STRIKE            16856
-#define SPELL_PUMMEL                12555
-#define SPELL_SLAM                    52026
-#define SPELL_SPELL_REFLECTION        36096
-#define SPELL_WHIRLWIND                52027
-
 #define TIMER_STANCE_CHANGE            18000
 
 enum GENERAL_STANCES
@@ -323,7 +294,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
 
     private:
 
-        int32                mStanceTimer;
+        int32 mStanceTimer;
         MoonInstanceScript* mInstance;
 };
 
@@ -334,21 +305,17 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
 { 1340.615234f, -89.083313f, 56.717800f, 0.028982f },
 };*/
 
-#define CN_MOLTEN_GOLEM                28695
-#define CN_BRITTLE_GOLEM            28681
-#define CN_VOLKHANS_ANVIL            28823
-
 // Main Spells
-#define SPELL_HEAT                    HeroicInt(52237, 59529)
-#define SPELL_SHATTERING_STOMP        HeroicInt(52237, 59529)
+#define SPELL_HEAT                  HeroicInt(52237, 59529)
+#define SPELL_SHATTERING_STOMP      HeroicInt(52237, 59529)
 #define SPELL_TEMPER                52238
 
 // Molten Golem Spells
 #define SPELL_BLAST_WAVE            23113
-#define SPELL_IMMOLATION_STRIKE        HeroicInt(52433, 59530)
-#define SPELL_SHATTER                HeroicInt(52429, 59527)
+#define SPELL_IMMOLATION_STRIKE     HeroicInt(52433, 59530)
+#define SPELL_SHATTER               HeroicInt(52429, 59527)
 // 24 seconds + up to 6
-#define TIMER_STOMP                    24000
+#define TIMER_STOMP                 24000
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -472,12 +439,12 @@ class Volkhan : public MoonScriptCreatureAI
         m_bStomp = false;
     };
 
-    SpellDesc*            mTemper;
-    SpellDesc*            mStomp;
-    Location            m_cVolkhanWP;
-    bool                m_bStomp;
-    int32                mStompTimer;
-    int32               mPhase;
+    SpellDesc* mTemper;
+    SpellDesc* mStomp;
+    Location m_cVolkhanWP;
+    bool m_bStomp;
+    int32 mStompTimer;
+    int32 mPhase;
     MoonInstanceScript* mInstance;
 };
 
@@ -522,14 +489,12 @@ class VolkhansAnvil : public MoonScriptCreatureAI
 
 };
 
-#define CN_SPARK                28926
+#define DISPRESE            52770
+#define BALL_LIGHTNING      HeroicInt(52780, 59800)
+#define STATIC_OVERLOAD     HeroicInt(52658, 59795)
+#define SPELL_SUMMON_SPARK  52746
 
-#define DISPRESE                52770
-#define BALL_LIGHTNING            HeroicInt(52780, 59800)
-#define STATIC_OVERLOAD            HeroicInt(52658, 59795)
-#define SPELL_SUMMON_SPARK        52746
-
-#define ARCING_BURN                HeroicInt(52671, 59834)
+#define ARCING_BURN         HeroicInt(52671, 59834)
 
 /////////////////////////////////////////////////////////////////////////////////
 /// Ionar
@@ -571,13 +536,13 @@ class IonarAI : public MoonScriptBossAI
 };
 
 
-#define PULSING_SHOCKWAVE        HeroicInt(52961, 59836)
-#define PULSING_SHOCKWAVE_AURA    59414
-#define ARC_LIGHTNING            52921
-#define LIGHTNING_NOVA            HeroicInt(52960, 59835)
+#define PULSING_SHOCKWAVE       HeroicInt(52961, 59836)
+#define PULSING_SHOCKWAVE_AURA  59414
+#define ARC_LIGHTNING           52921
+#define LIGHTNING_NOVA          HeroicInt(52960, 59835)
 // 14 seconds + random up to 8
-#define TIMER_NOVA                14000
-#define TIMER_RESPOND            18000
+#define TIMER_NOVA              14000
+#define TIMER_RESPOND           18000
 
 /////////////////////////////////////////////////////////////////////////////////
 /// Loken
@@ -683,12 +648,12 @@ class LokenAI : public MoonScriptCreatureAI
         ParentClass::AIUpdate();
     };
 
-    SpellDesc*    mNova;
+    SpellDesc* mNova;
     MoonInstanceScript* mInstance;
 
-    int32        mNovaTimer;
-    int32        mRespondTimer;
-    uint8        mSpeech;
+    int32 mNovaTimer;
+    int32 mRespondTimer;
+    uint8 mSpeech;
 };
 
 void SetupHallsOfLightning(ScriptMgr* mgr)

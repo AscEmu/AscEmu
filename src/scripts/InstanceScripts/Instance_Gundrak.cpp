@@ -22,25 +22,7 @@
 
 #define MAP_GUNDRAK                    604
 #define GO_FLAG_UNCLICKABLE            0x00000010
-#define CN_SLADRAN                    29304
-#define CN_MOORABI                    29305
-#define CN_GAL_DARAH                29306
-#define CN_DRAKKARI_COLOSSUS        29307
-#define CN_ECK                        29932
 
-#define GO_ALTAR1_SLADRAN            192518
-#define GO_STATUE1_SLADRAN            192564
-#define GO_ALTAR2_COLOSSUS            192520
-#define GO_STATUE2_COLOSSUS            192567
-#define GO_ALTAR3_MOORABI            192519
-#define GO_STATUE3_MOORABI            192565
-#define GO_ECKDOOR                    192632
-
-#define GO_TRAPDOOR                    193188
-#define    GO_COILISION                192633
-
-#define GO_GAL_DARAH_DOOR1            193208
-#define GO_GAL_DARAH_DOOR2            193209
 
 /////////////////////////////////////////////////////////////////////////////////
 /// Gundrak Instance Script
@@ -376,7 +358,6 @@ class GundrakScript : public MoonInstanceScript
 #define POISON_NOVA         HeroicInt(55081, 59842)
 #define POWERFUL_BITE       HeroicInt(48287, 59840)
 #define VENOM_BOLT          HeroicInt(54970, 59839)
-
 /////////////////////////////////////////////////////////////////////////////////
 /// Slad'ran encounter
 // Status: 50% done, missing add related stuff and maybe correct timers
@@ -419,8 +400,8 @@ class SladranAI : public MoonScriptCreatureAI
     MoonInstanceScript* mInstance;
 };
 
-#define WHIRLING_SLASH    HeroicInt(55250, 59824)
 
+#define WHIRLING_SLASH    HeroicInt(55250, 59824)
 /////////////////////////////////////////////////////////////////////////////////
 /// Gal'darah encounter
 // Status: 20% done, missing rihno part, need vehicle support for that, missing stampade script
@@ -458,6 +439,7 @@ class GalDarahAI : public MoonScriptCreatureAI
 
     MoonInstanceScript* mInstance;
 };
+
 
 void SetupGundrak(ScriptMgr* mgr)
 {
