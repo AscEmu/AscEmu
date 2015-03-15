@@ -18,42 +18,13 @@
  */
 
 // \todo Last boss needs to be finished
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_Nexus.h"
 
-#define ANOMALUS_CS        188527
-#define TELESTRA_CS        188526
-#define ORMOROK_CS        188528
-#define CN_KERISTRASZA  26723
-#define CN_ANOMALUS        26763
-#define CN_TELESTRA     26731
-#define CN_ORMOROK        26794
-
 #define GO_FLAG_UNCLICKABLE 0x00000010
-
-enum NexusEncounterList
-{
-    NEXUS_ANOMALUS = 0,
-    NEXUS_TELESTRA = 1,
-    NEXUS_ORMOROK = 2,
-    NEXUS_KERISTRASZA = 3,
-
-    NEXUS_END = 4
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///Anomalus
-//////////////////////////////////////////////////////////////////////////////////////////
-#define CN_CHAOTIC_RIFT            26918
-#define CN_CRAZED_MANA_WRAITH    26746
-
-#define SPARK                    47751
-#define SPARK_HC                57062
-#define CHAOTIC_ENERGY_BURST    47688
-#define CHAOTIC_RIFT_AURA        47687
-#define SUMMON_MANA_WRAITH        47692
-
 class AnomalusAI : public MoonScriptBossAI
 {
     public:
@@ -216,7 +187,6 @@ class CraziedManaWrathAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Grand Magus Telestra
-//////////////////////////////////////////////////////////////////////////////////////////
 static Location FormSpawns[] =
 {
     { 494.726990f, 89.128799f, -15.941300f, 6.021390f },
@@ -224,35 +194,6 @@ static Location FormSpawns[] =
     { 504.798431f, 102.248375f, -16.124609f, 4.629921f }
 };
 
-#define CN_TELESTRA_FROST 26930
-#define CN_TELESTRA_FIRE 26928
-#define CN_TELESTRA_ARCANE 26929
-
-#define GRAVITY_WELL 47756
-
-// Normal mode spells
-#define ICE_NOVA 47772
-#define FIREBOMB 47773
-
-// Heroic mode spells
-#define ICE_NOVA_HC 56935
-#define FIREBOMB_HC 56934
-
-// Arcane spells
-#define CRITTER 47731
-#define TIME_STOP 47736
-
-// Fire
-#define FIRE_BLAST 47721
-#define FIRE_BLAST_HC 56939
-#define SCORCH 47723
-#define SCORCH_HC 56938
-
-// Frost
-#define BLIZZARD 47727
-#define BLIZZARD_HC 56936
-#define ICE_BARB 47729
-#define ICE_BARB_HC 56937
 
 class TelestraBossAI : public MoonScriptBossAI
 {
@@ -468,27 +409,6 @@ class TelestraArcaneAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Ormorok the Tree-Shaper
-//////////////////////////////////////////////////////////////////////////////////////////
-// creatures
-#define CN_CRYSTAL_SPIKE            27099
-
-// spells
-#define SPELL_REFLECTION            47981
-#define FRENZY                        48017
-
-// normal mode spells
-#define TRAMPLE                        48016
-#define CRYSTAL_SPIKES                47958
-
-// heroic mode spells
-#define TRAMPLE_H                    57066
-#define CRYSTAL_SPIKES_H            57082
-
-// Crystal Spike spells
-#define SPELL_CRYSTAL_SPIKE_VISUAL    50442
-#define SPELL_CRYSTAL_SPIKE            47944
-#define SPELL_CRYSTAL_SPIKE_H        57067
-
 class OrmorokAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(OrmorokAI, MoonScriptBossAI);
@@ -592,19 +512,7 @@ class CrystalSpikeAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Keristrasza
-//////////////////////////////////////////////////////////////////////////////////////////
-// unfinished
-#define TAIL_SWEEP                    50155
-#define INTENSE_COLD                48094
-#define CRYSTAL_CHAINS                50997
-#define CRYSTALLIZE                    48179
-#define ENRAGE                        8599
-
-// normal mode
-#define CRYSTALFIRE_BREATH            48096
-//heroic
-#define CRYSTALFIRE_BREATH_HC        57091
-
+/// \todo currently unfinished
 class KeristraszaAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(KeristraszaAI, MoonScriptBossAI);

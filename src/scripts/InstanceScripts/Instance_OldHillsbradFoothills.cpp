@@ -86,39 +86,6 @@ static Location ThrallWP1[] = // pre 2nd boss
 
 #define MAX_THRALLWP1 27
 
-enum Data
-{
-    OHF_DATA_NOT_STARTED = 1,
-    OHF_DATA_IN_PROGRESS = 2,
-    OHF_DATA_PERFORMED = 3,
-    OHF_DATA_DONE = 4
-};
-
-enum DataIndex
-{
-    OHF_PHASE_1 = 0, // pre bosss spawn
-    OHF_PHASE_2 = 1, // 1st boss
-    OHF_PHASE_3 = 2, // pre 2nd boss, trall escort part 1
-    OHF_PHASE_4 = 3, // 2nd boss
-    OHF_PHASE_5 = 4, // pre 3rd boss, trall escort part 2
-    OHF_PHASE_6 = 5, // 3rd boss
-    OHF_PHASE_DONE = 6, // Event done
-
-    OHF_END = 7
-};
-
-enum OHF_ENTRIES
-{
-    MAP_OLD_HILSBRAD = 560,
-
-    GO_LODGE_ABLAZE = 182589,
-    GO_FIRE = 183816,
-
-    CN_EROZION = 18723,
-    CN_BRAZEN = 18725,
-    CN_LIEUTENANT_DRAKE = 17848,
-    CN_THRALL = 17876
-};
 
 class OldHilsbradInstance : public MoonInstanceScript
 {
@@ -202,14 +169,6 @@ class OldHilsbradInstance : public MoonInstanceScript
         }
 };
 
-enum eGossipTexts
-{
-    EROZION_ON_HELLO = 10475,
-    EROZION_ON_FINISH = 10474,
-    BRAZAN_ON_HELLO = 9779,
-    BRAZAN_NEED_ITEM = 9780,
-    THRALL_ON_HELLO = 9568
-};
 
 class ErozionGossip : public GossipScript
 {
@@ -226,7 +185,7 @@ class ErozionGossip : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), EROZION_ON_HELLO, Plr);
 
             if (pInstance->GetData(OHF_PHASE_1) != OHF_DATA_DONE && !Plr->HasItemCount(25853, 1))
-                Menu->AddItem(0, "I need a pack of Incendiary Bombs.", 1);
+                Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
 
             // It should give another menu if instance is done id: 10474, NYI
 
@@ -256,7 +215,7 @@ class BrazenGossip : public GossipScript
             GossipMenu* Menu;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), BRAZAN_ON_HELLO, Plr);
-            Menu->AddItem(0, "I am ready to go to Durnholde Keep.", 1);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
 
             Menu->SendTo(Plr);
         }
@@ -359,7 +318,7 @@ class ThrallGossip : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), THRALL_ON_HELLO, Plr);
-            Menu->AddItem(0, "[PH] Start escort.", 1);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
 
             Menu->SendTo(Plr);
         }

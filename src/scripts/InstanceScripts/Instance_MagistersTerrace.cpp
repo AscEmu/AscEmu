@@ -19,56 +19,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_MagistersTerrace.h"
 
-//Selin Firehart Encounter
 
-// Creature Entry's
-#define TRASH_FelCrystal 24722
-#define BOSS_SelinFireheart 24723
-
-// Normal & Heroic Spells
-
-/*
-   Mana Rage
-   Caster: Fel Crystal
-   Details: Empowers the caster with fel energy, restoring their mana for 10 sec.
-   Triggers: Increases the target's mana by 10%.
-   */
-#define FC_MANARAGE 44320
-#define FC_MANARAGE_TRIGGER 44321
-
-/*
-   Fel Explosion
-   Caster Selin Fireheart
-   Details: Area of effect damage spell, cast continually until Selin is out of mana
-   */
-#define SF_FELEXPLOSION 44314
-/*
-   Drain Life
-   Caster Selin Fireheart
-   Details: Randomly targeted channeled spell, deals damage and heals Selin.
-   */
-#define SF_DRAINLIFE 44294
-
-// Heroic Spells
-/*
-   Drain Mana (Heroic Mode Only)
-   Caster Selin Fireheart
-   Details: Randomly targeted channeled spell on a player with mana, drain Mana to the player and give it to Selin.
-   */
-#define SF_DRAINMANA 46153
-
+// Selin Firehart Encounter
 // Fel Crystal Spawn Locations
 static LocationExtra FelCrystals[] =
 {
-    { 225.969f, -20.0775f, -2.9731f, 0.942478f, TRASH_FelCrystal },
-    { 226.314f, 20.2183f, -2.98127f, 5.32325f, TRASH_FelCrystal },
-    { 247.888f, -14.6252f, 3.80777f, 2.33874f, TRASH_FelCrystal },
-    { 248.053f, 14.592f, 3.74882f, 3.94444f, TRASH_FelCrystal },
-    { 263.149f, 0.309245f, 1.32057f, 3.15905f, TRASH_FelCrystal }
+    { 225.969f, -20.0775f, -2.9731f, 0.942478f, CN_TRASH_FELCRYSTALS },
+    { 226.314f, 20.2183f, -2.98127f, 5.32325f, CN_TRASH_FELCRYSTALS },
+    { 247.888f, -14.6252f, 3.80777f, 2.33874f, CN_TRASH_FELCRYSTALS },
+    { 248.053f, 14.592f, 3.74882f, 3.94444f, CN_TRASH_FELCRYSTALS },
+    { 263.149f, 0.309245f, 1.32057f, 3.15905f, CN_TRASH_FELCRYSTALS }
 };
 
 class SelinFireheartAI : public MoonScriptCreatureAI
@@ -198,14 +161,6 @@ class SelinFireheartAI : public MoonScriptCreatureAI
 
 
 // Vexallus
-#define BOSS_VEXALLUS 24744
-#define CN_PURE_ENERGY 24745
-
-#define VEXALLUS_CHAIN_LIGHTNING 44318
-#define VEXALLUS_OVERLOAD 44353
-#define VEXALLUS_ARCANE_SHOCK 44319
-#define VEXALLUS_SUMMON_PURE_ENERGY 44322
-
 class VexallusAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(VexallusAI, MoonScriptBossAI);
@@ -252,15 +207,8 @@ class VexallusAI : public MoonScriptBossAI
     uint8        mSummon;
 };
 
+
 //Priestess Delrissa
-#define BOSS_Priestess_Delrissa 24560
-
-#define PRIESTESS_DELRISSA_DISPEL_MAGIC 27609
-#define PRIESTESS_DELRISSA_FLASH_HEAL 17843
-#define PRIESTESS_DELRISSA_SHADOWWORD_PAIN 15654
-#define PRIESTESS_DELRISSA_POWERWORD_SHIELD 44291
-#define PRIESTESS_DELRISSA_RENEW 44174
-
 class Priestess_DelrissaAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(Priestess_DelrissaAI, MoonScriptBossAI);
@@ -330,75 +278,50 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
 
     protected:
 
-        uint8        mKilledPlayers;
-        int32        mClearHateList;
+        uint8 mKilledPlayers;
+        int32 mClearHateList;
 };
 
+
 //Kagani Nightstrike
-#define CN_KaganiNightstrike 24557
-
-#define KAGANI_NIGHTSTRIKE_Eviscerate 46189
-#define KAGANI_NIGHTSTRIKE_KidneyShot 27615
-#define KAGANI_NIGHTSTRIKE_Gouge      12540
-
-class Kagani_NightstrikeAI : public MoonScriptBossAI
+class KaganiNightstrikeAI : public MoonScriptBossAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(Kagani_NightstrikeAI, MoonScriptBossAI);
-    Kagani_NightstrikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(KaganiNightstrikeAI, MoonScriptBossAI);
+    KaganiNightstrikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        AddSpell(KAGANI_NIGHTSTRIKE_KidneyShot, Target_Current, 80, 0, 25, 0, 30);
-        AddSpell(KAGANI_NIGHTSTRIKE_Gouge, Target_ClosestPlayer, 20, 0, 18, 0, 30);
-        AddSpell(KAGANI_NIGHTSTRIKE_Eviscerate, Target_Current, 8, 0, 45, 0, 30);
+        AddSpell(KAGANI_KIDNEY_SHOT, Target_Current, 80, 0, 25, 0, 30);
+        AddSpell(KAGANI_GOUGE, Target_ClosestPlayer, 20, 0, 18, 0, 30);
+        AddSpell(KAGANI_EVISCERATE, Target_Current, 8, 0, 45, 0, 30);
     }
 };
 
 //Ellrys Duskhallow
-#define CN_EllrysDuskhallow 14558
-
-#define EllrysDuskhallow_Immolate 44267
-#define EllrysDuskhallow_ShadowBolt 12471
-#define EllrysDuskhallow_CurseofAgony 14875
-#define EllrysDuskhallow_Fear 38595
-
-class Ellrys_DuskhallowAI : public MoonScriptBossAI
+class EllrysDuskhallowAI : public MoonScriptBossAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(Ellrys_DuskhallowAI, MoonScriptBossAI);
-    Ellrys_DuskhallowAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(EllrysDuskhallowAI, MoonScriptBossAI);
+    EllrysDuskhallowAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        AddSpell(EllrysDuskhallow_Immolate, Target_Current, 75, 2, 15, 0, 30);
-        AddSpell(EllrysDuskhallow_ShadowBolt, Target_RandomPlayer, 75, 3, 5, 4, 40);
-        AddSpell(EllrysDuskhallow_CurseofAgony, Target_RandomPlayer, 75, 0, 4, 0, 30);
-        AddSpell(EllrysDuskhallow_Fear, Target_RandomPlayer, 75, 1.5, 9, 0, 20);
+        AddSpell(ELLRYS_IMMOLATE, Target_Current, 75, 2, 15, 0, 30);
+        AddSpell(ELLRYS_SHADOWBOLT, Target_RandomPlayer, 75, 3, 5, 4, 40);
+        AddSpell(ELLRYS_CURSE_OF_AGONY, Target_RandomPlayer, 75, 0, 4, 0, 30);
+        AddSpell(ELLRYS_FEAR, Target_RandomPlayer, 75, 1.5, 9, 0, 20);
     }
 
 };
 
 //Eramas Brightblaze
-#define CN_EramasBrightblaze 24554
-
-#define ERAMAS_BRIGHTBLAZE_KNOCKDOWN 11428
-#define ERAMAS_BRIGHTBLAZE_SNAP_KICK 46182
-
-class Eramas_BrightblazeAI : public MoonScriptBossAI
+class EramasBrightblazeAI : public MoonScriptBossAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(Eramas_BrightblazeAI, MoonScriptBossAI);
-    Eramas_BrightblazeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(EramasBrightblazeAI, MoonScriptBossAI);
+    EramasBrightblazeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        AddSpell(ERAMAS_BRIGHTBLAZE_KNOCKDOWN, Target_Current, 25, 0, 5, 0, 5);
-        AddSpell(ERAMAS_BRIGHTBLAZE_SNAP_KICK, Target_SecondMostHated, 40, 0, 2, 0, 5);
+        AddSpell(ERAMAS_KNOCKDOWN, Target_Current, 25, 0, 5, 0, 5);
+        AddSpell(ERAMAS_SNAP_KICK, Target_SecondMostHated, 40, 0, 2, 0, 5);
     }
 
 };
 
 //Yazzai
-#define CN_YAZZAI 24561
-
-#define YAZZAI_POLYMORPH 13323
-#define YAZZAI_ICE_BLOCK 27619
-#define YAZZAI_BLIZZARD 44178
-#define YAZZAI_CONE_OF_COLD 38384
-#define YAZZAI_FROSTBOLT 15530
-
 class YazzaiAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(YazzaiAI, MoonScriptBossAI);
@@ -414,42 +337,23 @@ class YazzaiAI : public MoonScriptBossAI
 };
 
 //Warlord Salaris
-#define CN_WARLORD_SALARIS 24559
-
-#define WARLORD_SALARIS_INTERCEPT 27577
-#define WARLORD_SALARIS_DISARM 27581
-#define WARLORD_SALARIS_PIERCING_HOWL 23600
-#define WARLORD_SALARIS_FRIGHTENING_SHOUT 19134
-#define WARLORD_SALARIS_HAMSTRING 27584
-//#define WARLORD_SALARIS_BATTLE_SHOUT 27578
-#define WARLORD_SALARIS_MORTAL_STRIKE 44268
-
-class Warlord_SalarisAI : public MoonScriptBossAI
+class WarlordSalarisAI : public MoonScriptBossAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(Warlord_SalarisAI, MoonScriptBossAI);
-    Warlord_SalarisAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(WarlordSalarisAI, MoonScriptBossAI);
+    WarlordSalarisAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
         //AddSpell(uint32 pSpellId, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange
-        AddSpell(WARLORD_SALARIS_INTERCEPT, Target_RandomPlayer, 25, 0, 8, 8, 25);
-        AddSpell(WARLORD_SALARIS_DISARM, Target_Current, 100, 0, 60, 0, 5);
-        AddSpell(WARLORD_SALARIS_PIERCING_HOWL, Target_Self, 22, 0, 17, 0, 1);
-        AddSpell(WARLORD_SALARIS_FRIGHTENING_SHOUT, Target_RandomPlayer, 30, 0, 9, 0, 10);
-        AddSpell(WARLORD_SALARIS_HAMSTRING, Target_ClosestPlayer, 10, 0, 20, 0, 5);
-        AddSpell(WARLORD_SALARIS_MORTAL_STRIKE, Target_Current, 100, 0, 6, 0, 5);
+        AddSpell(SALARIS_INTERCEPT, Target_RandomPlayer, 25, 0, 8, 8, 25);
+        AddSpell(SALARIS_DISARM, Target_Current, 100, 0, 60, 0, 5);
+        AddSpell(SALARIS_PIERCING_HOWL, Target_Self, 22, 0, 17, 0, 1);
+        AddSpell(SALARIS_FRIGHTENING_SHOUT, Target_RandomPlayer, 30, 0, 9, 0, 10);
+        AddSpell(SALARIS_HAMSTRING, Target_ClosestPlayer, 10, 0, 20, 0, 5);
+        AddSpell(SALARIS_MORTAL_STRIKE, Target_Current, 100, 0, 6, 0, 5);
     }
 
 };
 
 //Geraxxas
-#define CN_GARAXXAS 24555
-
-#define GARAXXAS_AIMED_SHOT 44271
-#define GARAXXAS_SHOOT 15620
-#define GARAXXAS_CONCUSSIV_SHOT 27634
-#define GARAXXAS_MULTI_SHOT 44285
-#define GARAXXAS_WING_CLIP 44286
-
-
 class GaraxxasAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(GaraxxasAI, MoonScriptBossAI);
@@ -465,12 +369,6 @@ class GaraxxasAI : public MoonScriptBossAI
 };
 
 //Apoko
-#define CN_APOKO 24553
-
-#define APOKO_FROST_SHOCK 21401
-#define APOKO_LESSER_HEALING_WAVE 44256
-#define APOKO_PURGE 27626
-
 class ApokoAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(ApokoAI, MoonScriptCreatureAI);
@@ -484,12 +382,6 @@ class ApokoAI : public MoonScriptCreatureAI
 };
 
 //Zelfan
-#define CN_ZELFAN 24556
-
-#define ZELFAN_GOBLIN_DRAGON_GUN 44272
-#define ZELFAN_HIGH_EXPLOSIV_SHEEP 44276
-#define ZELFAN_ROCKET_LAUNCH 44137
-
 class ZelfanAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(ZelfanAI, MoonScriptCreatureAI);
@@ -505,13 +397,6 @@ class ZelfanAI : public MoonScriptCreatureAI
 //Trash mobs
 
 //Coilskar Witch
-#define CN_COILSKAR_WITCH 24696
-
-#define COILSKAR_WITCH_FORKED_LIGHTNING 46150
-#define COILSKAR_WITCH_FROST_ARROW 44639
-#define COILSKAR_WITCH_MANA_SHIELD 46151
-#define COILSKAR_WITCH_SHOOT 35946
-
 class CoilskarWitchAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(CoilskarWitchAI, MoonScriptBossAI);
@@ -526,11 +411,6 @@ class CoilskarWitchAI : public MoonScriptBossAI
 };
 
 //Sister of Torment
-#define CN_SISTER_OF_TORMENT 24697
-
-#define SISTER_OF_TORMENT_DEADLY_EMBRACE 44547
-#define SISTER_OF_TORMENT_LASH_OF_PAIN 44640
-
 class SisterOfTormentAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(SisterOfTormentAI, MoonScriptBossAI);
@@ -543,12 +423,6 @@ class SisterOfTormentAI : public MoonScriptBossAI
 };
 
 //Sunblade Blood Knight
-#define CN_SB_BLOOD_KNIGHT 24684
-
-#define BLOOD_KNIGHT_HOLY_LIGHT 46029
-#define BLOOD_KNIGHT_JUDGEMENT_OF_WRATH 44482
-#define BLOOD_KNIGHT_SEAL_OF_WRATH 46030
-
 class SunbladeBloodKnightAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(SunbladeBloodKnightAI, MoonScriptBossAI);
@@ -562,10 +436,6 @@ class SunbladeBloodKnightAI : public MoonScriptBossAI
 };
 
 //Sunblade Imp
-#define CN_SB_IMP 24815
-
-#define IMP_FIREBOLT 44577
-
 class SunbladeImpAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(SunbladeImpAI, MoonScriptBossAI);
@@ -577,11 +447,6 @@ class SunbladeImpAI : public MoonScriptBossAI
 };
 
 //Sunblade Mage Guard
-#define CN_SB_MAGE_GUARD 24683
-
-#define MAGE_GUARD_GLAVE_THROW 46028
-#define MAGE_GUARD_MAGIC_DAMPENING_FIELD 44475
-
 class SunbladeMageGuardAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(SunbladeMageGuardAI, MoonScriptBossAI);
@@ -594,11 +459,6 @@ class SunbladeMageGuardAI : public MoonScriptBossAI
 };
 
 //Sunblade Magister
-#define CN_SB_MAGISTER 24685
-
-#define MAGISTER_ARCANE_NOVA 46036
-#define MAGISTER_FROSTBOLT 46035
-
 class SunbladeMagisterAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(SunbladeMagisterAI, MoonScriptBossAI);
@@ -613,15 +473,15 @@ class SunbladeMagisterAI : public MoonScriptBossAI
 void SetupMagistersTerrace(ScriptMgr* pScriptMgr)
 {
     //Bosses
-    pScriptMgr->register_creature_script(BOSS_SelinFireheart, &SelinFireheartAI::Create);
+    pScriptMgr->register_creature_script(BOSS_SELIN_FIREHEART, &SelinFireheartAI::Create);
     pScriptMgr->register_creature_script(BOSS_VEXALLUS, &VexallusAI::Create);
-    pScriptMgr->register_creature_script(BOSS_Priestess_Delrissa, &Priestess_DelrissaAI::Create);
+    pScriptMgr->register_creature_script(BOSS_PRIEST_DELRISSA, &Priestess_DelrissaAI::Create);
     //Priestess Delrissa Encounter Creature AI
-    pScriptMgr->register_creature_script(CN_KaganiNightstrike, &Kagani_NightstrikeAI::Create);
-    pScriptMgr->register_creature_script(CN_EllrysDuskhallow, &Ellrys_DuskhallowAI::Create);
-    pScriptMgr->register_creature_script(CN_EramasBrightblaze, &Eramas_BrightblazeAI::Create);
+    pScriptMgr->register_creature_script(CN_KAGANI_NIGHTSTRIKE, &KaganiNightstrikeAI::Create);
+    pScriptMgr->register_creature_script(CN_ELLRYS_DUSKHALLOW, &EllrysDuskhallowAI::Create);
+    pScriptMgr->register_creature_script(CN_ERAMAS_BRIGHTBLAZE, &EramasBrightblazeAI::Create);
     pScriptMgr->register_creature_script(CN_YAZZAI, &YazzaiAI::Create);
-    pScriptMgr->register_creature_script(CN_WARLORD_SALARIS, &Warlord_SalarisAI::Create);
+    pScriptMgr->register_creature_script(CN_WARLORD_SALARIS, &WarlordSalarisAI::Create);
     pScriptMgr->register_creature_script(CN_GARAXXAS, &GaraxxasAI::Create);
     pScriptMgr->register_creature_script(CN_APOKO, &ApokoAI::Create);
     pScriptMgr->register_creature_script(CN_ZELFAN, &ZelfanAI::Create);

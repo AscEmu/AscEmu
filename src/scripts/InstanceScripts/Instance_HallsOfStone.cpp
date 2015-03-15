@@ -17,16 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_HallsOfStone.h"
 
+
 //Dark Rune Stormcaller
-#define CN_DR_STORMCALLER 27984
-
-#define STORMCALLER_LIGHTNINGBOLT 12167
-#define STORMCALLER_SHADOWWORD 15654
-
 class DarkRuneStormcallerAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneStormcallerAI, MoonScriptCreatureAI);
@@ -39,11 +34,6 @@ class DarkRuneStormcallerAI : public MoonScriptCreatureAI
 };
 
 //Iron Golem Custodian
-#define CN_GOLEM_CUSTODIAN 27985
-
-#define CUSTODIAN_CRUSH_ARMOR 33661 //Suden armor?
-#define CUSTODIAN_GROUND_SMASH 12734 //STUN
-
 class IronGolemCustodianAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(IronGolemCustodianAI, MoonScriptCreatureAI);
@@ -56,11 +46,6 @@ class IronGolemCustodianAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Protector
-#define CN_DR_PROTECTOR 27983
-
-#define PROTECTOR_CHARGE 22120
-#define PROTECTOR_CLAVE 42724
-
 class DarkRuneProtectorAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneProtectorAI, MoonScriptCreatureAI);
@@ -73,10 +58,6 @@ class DarkRuneProtectorAI : public MoonScriptCreatureAI
 };
 
 //Lesser Air Elemental
-#define CN_LASSER_AIR_ELEMENTAL 28384
-
-#define ELEMENTAL_LIGHTNING_BOLT 15801
-
 class LesserAirElementalAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(LesserAirElementalAI, MoonScriptCreatureAI);
@@ -88,11 +69,6 @@ class LesserAirElementalAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Worker
-#define CN_DR_WORKER 27961
-
-#define WORKER_ENRAGE 51499 //not really enrage :) 
-#define WORKER_PIERCE_ARMOR 46202
-
 class DarkRuneWorkerAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneWorkerAI, MoonScriptCreatureAI);
@@ -105,11 +81,6 @@ class DarkRuneWorkerAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Warrior
-#define CN_DR_WARRIOR 27960
-
-#define WARRIOR_CLAVE 42724
-#define WARRIOR_HEROIC_STRIKE 53395
-
 class DarkRuneWarriorAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneWarriorAI, MoonScriptCreatureAI);
@@ -122,12 +93,6 @@ class DarkRuneWarriorAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Theurgist
-#define CN_DR_THEURGIST 27963
-
-#define THEURGIST_BLAST_WAVE 22424 //Cast on self 12466
-#define THEURGIST_FIREBOLT 12466 //Random target?
-#define THEURGIST_IRON_MIGHT 51484 //Cast on self, some kind of enrage.
-
 class DarkRuneTheurgistAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneTheurgistAI, MoonScriptCreatureAI);
@@ -141,10 +106,6 @@ class DarkRuneTheurgistAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Shaper
-#define CN_DR_SHAPER 27965
-
-#define SHAPER_RAY 51496 //Debuff
-
 class DarkRuneShaperAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneShaperAI, MoonScriptCreatureAI);
@@ -156,10 +117,6 @@ class DarkRuneShaperAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Scholar
-#define CN_DR_SCHOLAR 27964
-
-#define SCHOLAR_SILANCE 51612 //not rly silance but something like it :)
-
 class DarkRuneScholarAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneScholarAI, MoonScriptCreatureAI);
@@ -171,11 +128,6 @@ class DarkRuneScholarAI : public MoonScriptCreatureAI
 };
 
 //Dark Rune Giant
-#define CN_DR_GIANT 27969
-
-#define GIANT_FIST 51494 //also some kind of enrage
-#define GIANT_STOMP 51493 //Knockback
-
 class DarkRuneGiantAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneGiantAI, MoonScriptCreatureAI);
@@ -187,13 +139,7 @@ class DarkRuneGiantAI : public MoonScriptCreatureAI
 
 };
 
-
 //Raging Construct
-#define CN_RAGING_CONSTRUCT 27970
-
-#define RAGING_CLAVE 28168
-#define RAGING_POTENT_JOLT 51819 // he should stack this in about every 6 seconds or something
-
 class DarkRuneConstructAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkRuneConstructAI, MoonScriptCreatureAI);
@@ -206,44 +152,29 @@ class DarkRuneConstructAI : public MoonScriptCreatureAI
 };
 
 //Lightning Construct
-#define CN_LIGHTNING_CONSTRUCT 27972
-
-#define LIGHTNING_CHAIN_LIGHTNING 52383
-#define LIGHTNING_ELECTRICAL_OVERLOAD 52341 //explode?
-
 class DarkLightningConstructAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DarkLightningConstructAI, MoonScriptCreatureAI);
     DarkLightningConstructAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        AddSpell(LIGHTNING_ELECTRICAL_OVERLOAD, Target_Self, 5, 1.5, 14);
-        AddSpell(LIGHTNING_CHAIN_LIGHTNING, Target_Current, 30, 3, 8, 0, 30);
+        AddSpell(LIGHTN_ELECTRICAL_OVERLOAD, Target_Self, 5, 1.5, 14);
+        AddSpell(LIGHTN_CHAIN_LIGHTNING, Target_Current, 30, 3, 8, 0, 30);
     };
 
 };
 
 //Forged Iron Trogg
-#define CN_FI_TRAGG 27979
-
-#define TRAGG_SHOCK 50900
-
 class ForgedIronTroggAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(ForgedIronTroggAI, MoonScriptCreatureAI);
     ForgedIronTroggAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        AddSpell(LIGHTNING_CHAIN_LIGHTNING, Target_RandomPlayer, 30, 2, 8, 0, 10);
+        AddSpell(LIGHTN_CHAIN_LIGHTNING, Target_RandomPlayer, 30, 2, 8, 0, 10);
     };
 
 };
 
 //Maiden of Grief
-#define BOSS_MAIDEN_OF_GRIEF 27975
-
-#define MAIDEN_PILLAR_OF_WOE 50761 //apply at long/min range (all in that void zone should get it)
-#define MAIDEN_SHOCK_OF_SORROW 50760
-#define MAIDEN_STORM_OF_GRIEF 50752
-
 class MaidenOfGriefAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(MaidenOfGriefAI, MoonScriptCreatureAI);
@@ -275,15 +206,8 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
 };
 
 // Krystallus
-#define BOSS_KRYSTALLUS 27977
-
-#define KRYSTALLUS_BOULDER_TOSS 50843
-#define KRYSTALLUS_SHATTER 50810
-#define KRYSTALLUS_STOMP 50868
-
-// some macros
-#define STOMP_TIMER        35000
-#define SHATTER_TIMER    4500
+#define STOMP_TIMER     35000
+#define SHATTER_TIMER   4500
 
 class KrystallusAI : public MoonScriptCreatureAI
 {

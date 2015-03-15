@@ -19,19 +19,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_RazorfenDowns.h"
 
-class AmnennarTheColdbringer : public CreatureAIScript
+class AmnennarTheColdbringerAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(AmnennarTheColdbringer);
+        ADD_CREATURE_FACTORY_FUNCTION(AmnennarTheColdbringerAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        AmnennarTheColdbringer(Creature* pCreature) : CreatureAIScript(pCreature)
+        AmnennarTheColdbringerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -156,17 +155,15 @@ class AmnennarTheColdbringer : public CreatureAIScript
         int nrspells;
 };
 
-#define DISEASE_CLOUD    12627
-#define FRENZY            12795
 
-class Glutton : public MoonScriptCreatureAI
+class GluttonAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(Glutton, MoonScriptCreatureAI);
-    Glutton(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(GluttonAI, MoonScriptCreatureAI);
+    GluttonAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         //spells
-        mDiseaseCloud = AddSpell(DISEASE_CLOUD, Target_Self, 0, 0, 0, 0, 0);
-        mFrenzy = AddSpell(FRENZY, Target_Self, 10, 0, 20, 0, 0);
+        mDiseaseCloud = AddSpell(SP_GLUTTON_DISEASE_CLOUD, Target_Self, 0, 0, 0, 0, 0);
+        mFrenzy = AddSpell(SP_GLUTTON_FRENZY, Target_Self, 10, 0, 20, 0, 0);
         mFrenzy->AddEmote("Glutton is getting hungry!", Text_Yell);
     }
 
@@ -177,33 +174,31 @@ class Glutton : public MoonScriptCreatureAI
         ParentClass::OnCombatStart(pTarget);
     }
 
-    SpellDesc*      mDiseaseCloud;
-    SpellDesc*      mFrenzy;
+    SpellDesc* mDiseaseCloud;
+    SpellDesc* mFrenzy;
 };
 
-#define FIRE_NOVA        12470
-#define FIREBALL        12466
 
-class MordreshFireEye : public MoonScriptCreatureAI
+class MordreshFireEyeAI : public MoonScriptCreatureAI
 {
-    MOONSCRIPT_FACTORY_FUNCTION(MordreshFireEye, MoonScriptCreatureAI);
-    MordreshFireEye(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    MOONSCRIPT_FACTORY_FUNCTION(MordreshFireEyeAI, MoonScriptCreatureAI);
+    MordreshFireEyeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         //spells
-        AddSpell(FIRE_NOVA, Target_Self, 10, 2, 0);
-        AddSpell(FIREBALL, Target_Current, 10, 3, 0, 0, 40);
+        AddSpell(SP_MORDRESH_FIRE_NOVA, Target_Self, 10, 2, 0);
+        AddSpell(SP_MORDRESH_FIREBALL, Target_Current, 10, 3, 0, 0, 40);
     }
 };
 
-class PlaguemawTheRotting : public CreatureAIScript
+class PlaguemawTheRottingAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(PlaguemawTheRotting);
+        ADD_CREATURE_FACTORY_FUNCTION(PlaguemawTheRottingAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        PlaguemawTheRotting(Creature* pCreature) : CreatureAIScript(pCreature)
+        PlaguemawTheRottingAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -319,15 +314,15 @@ class PlaguemawTheRotting : public CreatureAIScript
         int nrspells;
 };
 
-class Ragglesnout : public CreatureAIScript
+class RagglesnoutAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(Ragglesnout);
+        ADD_CREATURE_FACTORY_FUNCTION(RagglesnoutAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        Ragglesnout(Creature* pCreature) : CreatureAIScript(pCreature)
+        RagglesnoutAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -444,15 +439,15 @@ class Ragglesnout : public CreatureAIScript
 };
 
 
-class TutenKash : public CreatureAIScript
+class TutenKashAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(TutenKash);
+        ADD_CREATURE_FACTORY_FUNCTION(TutenKashAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        TutenKash(Creature* pCreature) : CreatureAIScript(pCreature)
+        TutenKashAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -570,10 +565,10 @@ class TutenKash : public CreatureAIScript
 
 void SetupRazorfenDowns(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(7358, &AmnennarTheColdbringer::Create);
-    mgr->register_creature_script(8567, &Glutton::Create);
-    mgr->register_creature_script(7357, &MordreshFireEye::Create);
-    mgr->register_creature_script(7356, &PlaguemawTheRotting::Create);
-    mgr->register_creature_script(7354, &Ragglesnout::Create);
-    mgr->register_creature_script(7355, &TutenKash::Create);
+    mgr->register_creature_script(CN_AMNENNAR_GOLDBRINGER, &AmnennarTheColdbringerAI::Create);
+    mgr->register_creature_script(CN_GLUTTON, &GluttonAI::Create);
+    mgr->register_creature_script(CN_MORDRESH_FIRE_EYE, &MordreshFireEyeAI::Create);
+    mgr->register_creature_script(CN_PLAGUEMAW_THE_ROTTING, &PlaguemawTheRottingAI::Create);
+    mgr->register_creature_script(CN_RAGGLESNOUT, &RagglesnoutAI::Create);
+    mgr->register_creature_script(CN_TUTEN_KASH, &TutenKashAI::Create);
 }

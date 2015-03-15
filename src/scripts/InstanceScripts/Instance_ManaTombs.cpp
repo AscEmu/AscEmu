@@ -19,26 +19,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_ManaTombs.h"
 
-// Ethereal Darkcaster AI
 
-#define CN_ETHEREAL_DARKCASTER 18331
-
-#define MANA_BURN 29310 // can be wrong
-#define SHADOW_WORD_PAIN 41355
-
-class ETHEREALDARKCASTERAI : public CreatureAIScript
+// EtherealDarkcasterAI
+class EtherealDarkcasterAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ETHEREALDARKCASTERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(EtherealDarkcasterAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        ETHEREALDARKCASTERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        EtherealDarkcasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -128,22 +122,17 @@ class ETHEREALDARKCASTERAI : public CreatureAIScript
         int nrspells;
 };
 
-// Ethereal Priest AI
 
-#define CN_ETHEREAL_PRIEST 18317
-
-#define HEAL 39378
-#define POWER_WORD_SHIELD 29408 // no idea if this is correct one [also can be: 41373 or other]
-
-class ETHEREALPRIESTAI : public CreatureAIScript
+// EtherealPriestAI
+class EtherealPriestAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ETHEREALPRIESTAI);
+        ADD_CREATURE_FACTORY_FUNCTION(EtherealPriestAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        ETHEREALPRIESTAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        EtherealPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -233,22 +222,16 @@ class ETHEREALPRIESTAI : public CreatureAIScript
         int nrspells;
 };
 
-// Ethereal Theurgist AI
-
-#define CN_ETHEREAL_THEURGIST 18315
-
-#define POLYMORPH 36840 // so many poly to choose from
-#define BLAST_WAVE 30092 // not sure, also can be: 39001 (maybe too powerful?), 36278, 30600, 25049 (eventually)
-
-class ETHEREALTHEURGISTAI : public CreatureAIScript
+// EtherealTheurgistAI
+class EtherealTheurgistAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ETHEREALTHEURGISTAI);
+        ADD_CREATURE_FACTORY_FUNCTION(EtherealTheurgistAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        ETHEREALTHEURGISTAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        EtherealTheurgistAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -339,21 +322,16 @@ class ETHEREALTHEURGISTAI : public CreatureAIScript
 };
 
 
-// Ethereal Sorcerer AI
-
-#define CN_ETHEREAL_SORCERER 18313
-
-#define ARCANE_MISSILES 29956  //29955 can be also: 39414 (too much dmg?), 29956 (just arcane missiles without add. effects) // doesnt'w work for now
-
-class ETHEREALSORCERERAI : public CreatureAIScript
+// EtherealSorcererAI
+class EtherealSorcererAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ETHEREALSORCERERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(EtherealSorcererAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        ETHEREALSORCERERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        EtherealSorcererAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -437,23 +415,16 @@ class ETHEREALSORCERERAI : public CreatureAIScript
         int nrspells;
 };
 
-// Nexus Stalker AI
-
-#define CN_NEXUS_STALKER 18314
-
-#define GOUGE 29425 // not sure, maybe should be : 36862, 
-#define POISON 34969 // no idea if this is correct one
-#define STEALTH 32615 // Can be also: 31621, 31526, 30991 and others // maybe I should set it's proc chance to 0.0 and add spell casting OnCombatStart...
-
-class NEXUSSTALKERAI : public CreatureAIScript
+// NexusStalkerAI
+class NexusStalkerAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(NEXUSSTALKERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(NexusStalkerAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        NEXUSSTALKERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        NexusStalkerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -549,21 +520,16 @@ class NEXUSSTALKERAI : public CreatureAIScript
         int nrspells;
 };
 
-// Nexus Terror AI
-
-#define CN_NEXUS_TERROR 19307
-
-#define PSYCHIC_SCREAM 34322
-
-class NEXUSTERRORAI : public CreatureAIScript
+// NexusTerrorAI
+class NexusTerrorAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(NEXUSTERRORAI);
+        ADD_CREATURE_FACTORY_FUNCTION(NexusTerrorAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        NEXUSTERRORAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        NexusTerrorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -648,21 +614,16 @@ class NEXUSTERRORAI : public CreatureAIScript
 };
 
 
-// Mana Leech AI
-
-#define CN_MANA_LEECH 19306
-
-#define ARCANE_EXPLOSION 39348 // not sure about id
-
-class MANALEECHAI : public CreatureAIScript
+// ManaLeechAI
+class ManaLeechAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(MANALEECHAI);
+        ADD_CREATURE_FACTORY_FUNCTION(ManaLeechAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        MANALEECHAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ManaLeechAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -747,26 +708,16 @@ class MANALEECHAI : public CreatureAIScript
         int nrspells;
 };
 
-// Ethereal Spellbinder AI
-
-#define CN_ETHEREAL_SPELLBINDER 18312  // couldn't find accurate source of it's spells
-
-#define CORRUPTION 30938
-#define IMMOLATE 38806 // Not sure to any id/spell, because of lack of information source
-#define UNSTABLE_AFFLICTION 35183 // if it casts this spell it can also be: 34439, 30938
-#define SUMMON_ETHEREAL_WRAITH 32316 // added, but still more core support needed
-// On WoWWiki is description that Spellbinder summons are Mana Wraiths, but there is no
-// spell connected with such creature.
-
-class ETHEREALSPELLBINDERAI : public CreatureAIScript
+// EtherealSpellbinderAI
+class EtherealSpellbinderAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ETHEREALSPELLBINDERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(EtherealSpellbinderAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
 
-        ETHEREALSPELLBINDERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        EtherealSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
             for (int i = 0; i < nrspells; i++)
@@ -868,22 +819,16 @@ class ETHEREALSPELLBINDERAI : public CreatureAIScript
 };
 
 
-// Ethereal Wraith AI
-
-#define CN_ETHEREAL_WRAITH 18394
-
-#define SHADOW_BOLT_VOLLEY 36736 // no idea if this is correct spell, but description seems to match with this what should be used
-// maybe normal shadow bolt like those: 29927, 30055 should be used
-
-class ETHEREALWRAITHAI : public CreatureAIScript
+// EtherealWraithAI
+class EtherealWraithAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(ETHEREALWRAITHAI);
+        ADD_CREATURE_FACTORY_FUNCTION(EtherealWraithAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        ETHEREALWRAITHAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        EtherealWraithAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -968,30 +913,18 @@ class ETHEREALWRAITHAI : public CreatureAIScript
 };
 
 
-/*****************************/
-/*                           */
-/*         Boss AIs          */
-/*                           */
-/*****************************/
-
-// \todo Needs to add Yor in a future
+/// \todo Needs to add Yor in a future
 
 // PandemoniusAI
-
-#define CN_PANDEMONIUS 18341
-
-#define VOID_BLAST 32325 //38760
-#define DARK_SHELL 32358 //38759
-
-class PANDEMONIUSAI : public CreatureAIScript
+class PandemoniusAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(PANDEMONIUSAI);
+        ADD_CREATURE_FACTORY_FUNCTION(PandemoniusAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        PANDEMONIUSAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        PandemoniusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -1026,15 +959,15 @@ class PANDEMONIUSAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "All will feed all your soul!");
+                    _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_01);
                     _unit->PlaySoundToSet(10561);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You fool life!");
+                    _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_02);
                     _unit->PlaySoundToSet(10562);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not resist!");
+                    _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_03);
                     _unit->PlaySoundToSet(10563);
                     break;
             }
@@ -1050,11 +983,11 @@ class PANDEMONIUSAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Yes, I am powered!"); // powered, emopowered?
+                        _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_04);
                         _unit->PlaySoundToSet(10564);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "More, I must have more!");
+                        _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_05);
                         _unit->PlaySoundToSet(10565);
                         break;
                 }
@@ -1071,7 +1004,7 @@ class PANDEMONIUSAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do the void... once... more.");
+            _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_06);
             _unit->PlaySoundToSet(10566);
 
             RemoveAIUpdateEvent();
@@ -1192,24 +1125,16 @@ class PANDEMONIUSAI : public CreatureAIScript
 };
 
 // TavarokAI
-
-#define CN_TAVAROK 18343
-
-#define EARTHQUAKE        33919 // affects also caster if it is close enough (and does it really works?)
-#define CRYSTAL_PRISON    32361 // deals 10 dmg instead of 10% player hp - core problem
-#define ARCING_SMASH    39144 // 8374; probably wrong id (maybe: 40457 ?)
-// Strange... I couldn't find any sounds for this boss in DBC and in extracted
-// from client sounds O_O
-
-class TAVAROKAI : public CreatureAIScript
+/// \todo Strange... I couldn't find any sounds for this boss in DBC and in extracted from client sounds O_O
+class TavarokAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(TAVAROKAI);
+        ADD_CREATURE_FACTORY_FUNCTION(TavarokAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        TAVAROKAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        TavarokAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -1323,8 +1248,7 @@ class TAVAROKAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1373,26 +1297,17 @@ class TAVAROKAI : public CreatureAIScript
 };
 
 
-// Nexus-Prince ShaffarAI
-
-#define CN_NEXUS_PRINCE_SHAFFAR 18344
-
-#define FIREBALL                32363
-#define FROSTBOLT                32364 // Also can be: 40430 or 32370
-#define FROST_NOVA                32365 // Also worth to try: 30094
-#define BLINK                    34605 // 36109 - forward 20yard, 36718 - 5yard, behind target, 29883 - random target // still doesn't tp boss
-#define SUMMON_ETEREAL_BECON    32371 // not sure about spawning way
-// TO DO: Work on beacons and find out if my current way of spawning them is correct
-
-class NEXUSPRINCESHAFFARAI : public CreatureAIScript
+// NexusPrinceShaffarAI
+/// \todo Work on beacons and find out if my current way of spawning them is correct
+class NexusPrinceShaffarAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(NEXUSPRINCESHAFFARAI);
+        ADD_CREATURE_FACTORY_FUNCTION(NexusPrinceShaffarAI);
         SP_AI_Spell spells[5];
         bool m_spellcheck[5];
 
-        NEXUSPRINCESHAFFARAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        NexusPrinceShaffarAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
             for (int i = 0; i < nrspells; i++)
@@ -1453,15 +1368,15 @@ class NEXUSPRINCESHAFFARAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ah, we have not been properly introduced!");
+                    _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_02);
                     _unit->PlaySoundToSet(10541);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "An epic battle! How exciting.");
+                    _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_03);
                     _unit->PlaySoundToSet(10542);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have longed for a good adventure!");
+                    _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_04);
                     _unit->PlaySoundToSet(10543);
                     break;
             }
@@ -1476,11 +1391,11 @@ class NEXUSPRINCESHAFFARAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "And now, we part company."); // part company?
+                        _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_06);
                         _unit->PlaySoundToSet(10544);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It has been... entertaining.");
+                        _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_05);
                         _unit->PlaySoundToSet(10545);
                         break;
                 }
@@ -1497,7 +1412,7 @@ class NEXUSPRINCESHAFFARAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I must bid you... Farewell."); // I don't think it's correct.
+            _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_08);
             _unit->PlaySoundToSet(10546);
 
             RemoveAIUpdateEvent();
@@ -1589,8 +1504,7 @@ class NEXUSPRINCESHAFFARAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1639,12 +1553,6 @@ class NEXUSPRINCESHAFFARAI : public CreatureAIScript
 };
 
 // YorAI
-
-#define CN_YOR 22930
-
-#define DOUBLE_BREATH    38369 // couldn't have found anything more powerful with that name
-#define STOMP            34716 // not sure even more about this one
-
 class YorAI : public CreatureAIScript
 {
     public:
@@ -1757,17 +1665,17 @@ class YorAI : public CreatureAIScript
 
 void SetupManaTombs(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(CN_ETHEREAL_DARKCASTER, &ETHEREALDARKCASTERAI::Create);
-    mgr->register_creature_script(CN_ETHEREAL_PRIEST, &ETHEREALPRIESTAI::Create);
-    mgr->register_creature_script(CN_ETHEREAL_SPELLBINDER, &ETHEREALSPELLBINDERAI::Create);
-    mgr->register_creature_script(CN_ETHEREAL_THEURGIST, &ETHEREALTHEURGISTAI::Create);
-    mgr->register_creature_script(CN_ETHEREAL_SORCERER, &ETHEREALSORCERERAI::Create);
-    mgr->register_creature_script(CN_ETHEREAL_WRAITH, &ETHEREALWRAITHAI::Create);
-    mgr->register_creature_script(CN_NEXUS_STALKER, &NEXUSSTALKERAI::Create);
-    mgr->register_creature_script(CN_NEXUS_TERROR, &NEXUSTERRORAI::Create);
-    mgr->register_creature_script(CN_MANA_LEECH, &MANALEECHAI::Create);
-    mgr->register_creature_script(CN_PANDEMONIUS, &PANDEMONIUSAI::Create);
-    mgr->register_creature_script(CN_TAVAROK, &TAVAROKAI::Create);
-    mgr->register_creature_script(CN_NEXUS_PRINCE_SHAFFAR, &NEXUSPRINCESHAFFARAI::Create);
+    mgr->register_creature_script(CN_ETHEREAL_DARKCASTER, &EtherealDarkcasterAI::Create);
+    mgr->register_creature_script(CN_ETHEREAL_PRIEST, &EtherealPriestAI::Create);
+    mgr->register_creature_script(CN_ETHEREAL_SPELLBINDER, &EtherealSpellbinderAI::Create);
+    mgr->register_creature_script(CN_ETHEREAL_THEURGIST, &EtherealTheurgistAI::Create);
+    mgr->register_creature_script(CN_ETHEREAL_SORCERER, &EtherealSorcererAI::Create);
+    mgr->register_creature_script(CN_ETHEREAL_WRAITH, &EtherealWraithAI::Create);
+    mgr->register_creature_script(CN_NEXUS_STALKER, &NexusStalkerAI::Create);
+    mgr->register_creature_script(CN_NEXUS_TERROR, &NexusTerrorAI::Create);
+    mgr->register_creature_script(CN_MANA_LEECH, &ManaLeechAI::Create);
+    mgr->register_creature_script(CN_PANDEMONIUS, &PandemoniusAI::Create);
+    mgr->register_creature_script(CN_TAVAROK, &TavarokAI::Create);
+    mgr->register_creature_script(CN_NEXUS_PRINCE_SHAFFAR, &NexusPrinceShaffarAI::Create);
     mgr->register_creature_script(CN_YOR, &YorAI::Create);
 }

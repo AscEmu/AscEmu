@@ -23,15 +23,15 @@
 #include "Setup.h"
 #include "Instance_Mauradon.h"
 
-class CelebrasTheCursed : public CreatureAIScript
+class CelebrasTheCursedAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(CelebrasTheCursed);
+        ADD_CREATURE_FACTORY_FUNCTION(CelebrasTheCursedAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        CelebrasTheCursed(Creature* pCreature) : CreatureAIScript(pCreature)
+        CelebrasTheCursedAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -157,15 +157,15 @@ class CelebrasTheCursed : public CreatureAIScript
 };
 
 
-class LordVyletongue : public CreatureAIScript
+class LordVyletongueAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(LordVyletongue);
+        ADD_CREATURE_FACTORY_FUNCTION(LordVyletongueAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        LordVyletongue(Creature* pCreature) : CreatureAIScript(pCreature)
+        LordVyletongueAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -282,15 +282,15 @@ class LordVyletongue : public CreatureAIScript
 };
 
 
-class MeshlokTheHarvester : public CreatureAIScript
+class MeshlokTheHarvesterAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(MeshlokTheHarvester);
+        ADD_CREATURE_FACTORY_FUNCTION(MeshlokTheHarvesterAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        MeshlokTheHarvester(Creature* pCreature) : CreatureAIScript(pCreature)
+        MeshlokTheHarvesterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -407,15 +407,15 @@ class MeshlokTheHarvester : public CreatureAIScript
 };
 
 
-class PrincessTheradras : public CreatureAIScript
+class PrincessTheradrasAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(PrincessTheradras);
+        ADD_CREATURE_FACTORY_FUNCTION(PrincessTheradrasAI);
         SP_AI_Spell spells[4];
         bool m_spellcheck[4];
 
-        PrincessTheradras(Creature* pCreature) : CreatureAIScript(pCreature)
+        PrincessTheradrasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
             for (int i = 0; i < nrspells; i++)
@@ -550,15 +550,15 @@ class PrincessTheradras : public CreatureAIScript
 };
 
 
-class Razorlash : public CreatureAIScript
+class RazorlashAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(Razorlash);
+        ADD_CREATURE_FACTORY_FUNCTION(RazorlashAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        Razorlash(Creature* pCreature) : CreatureAIScript(pCreature)
+        RazorlashAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -684,15 +684,15 @@ class Razorlash : public CreatureAIScript
 };
 
 
-class TinkererGizlock : public CreatureAIScript
+class TinkererGizlockAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(TinkererGizlock);
+        ADD_CREATURE_FACTORY_FUNCTION(TinkererGizlockAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        TinkererGizlock(Creature* pCreature) : CreatureAIScript(pCreature)
+        TinkererGizlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -809,15 +809,15 @@ class TinkererGizlock : public CreatureAIScript
 };
 
 
-class Noxxion : public CreatureAIScript
+class NoxxionAI : public CreatureAIScript
 {
     public:
 
-        ADD_CREATURE_FACTORY_FUNCTION(Noxxion);
+        ADD_CREATURE_FACTORY_FUNCTION(NoxxionAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        Noxxion(Creature* pCreature) : CreatureAIScript(pCreature)
+        NoxxionAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -935,11 +935,11 @@ class Noxxion : public CreatureAIScript
 
 void SetupMaraudon(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(12225, &CelebrasTheCursed::Create);
-    mgr->register_creature_script(12236, &LordVyletongue::Create);
-    mgr->register_creature_script(12237, &MeshlokTheHarvester::Create);
-    mgr->register_creature_script(12201, &PrincessTheradras::Create);
-    mgr->register_creature_script(12258, &Razorlash::Create);
-    mgr->register_creature_script(13601, &TinkererGizlock::Create);
-    mgr->register_creature_script(13282, &Noxxion::Create);
+    mgr->register_creature_script(CN_CELEBRAS_THE_CURESE, &CelebrasTheCursedAI::Create);
+    mgr->register_creature_script(CN_LORD_VYLETONGUE, &LordVyletongueAI::Create);
+    mgr->register_creature_script(CN_MESHLOCK_THE_HARVESTER, &MeshlokTheHarvesterAI::Create);
+    mgr->register_creature_script(CN_PRINCESS_THERADRAS, &PrincessTheradrasAI::Create);
+    mgr->register_creature_script(CN_RAZORLASH, &RazorlashAI::Create);
+    mgr->register_creature_script(CN_TRINKERER_GIZLOCK, &TinkererGizlockAI::Create);
+    mgr->register_creature_script(CN_NOXXION, &NoxxionAI::Create);
 }
