@@ -159,9 +159,6 @@ class BOGGIANTAI : public CreatureAIScript
 };
 
 // Claw AI
-
-#define CN_CLAW 17827
-
 #define ENRAGE_CLAW 34971
 #define ECHOING_ROAR 31429
 #define MAUL 34298
@@ -2229,29 +2226,19 @@ class UNDERBOGLURKERAI : public CreatureAIScript
 
 };
 
-/*****************************/
-/*                           */
-/*         Boss AIs          */
-/*                           */
-/*****************************/
+///////////////////////////////////////////////////////////
+// Boss AIs
+///////////////////////////////////////////////////////////
 
 // HungarfenAI
-
-#define CN_HUNGARFEN 17770
-
-#define UNDERBOG_MUSHROOM 31693 // still not idea *confused* //34588 // No idea if this is right spell, but should be correct (also aditional core support needed!)
-#define FOUL_SPORES 31673 //DBC: 31673, 31697 // this one needs additional core support too
-// Putrid Mushroom Primer 31693 ?
-// Despawn Underbog Mushrooms 34874 ?
-
-class HUNGARFENAI : public CreatureAIScript
+class HungarfenAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(HUNGARFENAI);
+        ADD_CREATURE_FACTORY_FUNCTION(HungarfenAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        HUNGARFENAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        HungarfenAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -2373,14 +2360,6 @@ class HUNGARFENAI : public CreatureAIScript
 };
 
 // Ghaz'anAI
-
-#define CN_GHAZAN 18105
-
-#define ACID_SPIT        34290
-#define TAIL_SWEEP        34267
-#define ACID_BREATH        24839
-#define ENRAGE            15716 // Not sure to id as always in Enrage case: 34409, 34970
-
 class GhazanAI : public CreatureAIScript
 {
     public:
@@ -2520,14 +2499,6 @@ class GhazanAI : public CreatureAIScript
 };
 
 // ClawAI
-
-#define CN_CLAW 17827
-
-#define MAUL                34298
-#define CL_ECHOING_ROAR        31429
-#define FERAL_CHARGE        39435
-#define CL_ENRAGE            34971
-
 class ClawAI : public CreatureAIScript
 {
     public:
@@ -2669,8 +2640,7 @@ class ClawAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt.
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -2719,14 +2689,6 @@ class ClawAI : public CreatureAIScript
 };
 
 // Swamplord Musel'ekAI
-#define CN_SWAMPLORD_MUSELEK 17826
-
-#define THROW_FREEZING_TRAP        31946    // needs more core support
-#define KNOCK_AWAY_MUSELEK        18813
-#define AIMED_SHOT                31623
-#define MULTI_SHOT                30990
-#define SHOT                    32103
-
 class SwamplordMuselekAI : public CreatureAIScript
 {
     public:
@@ -2789,15 +2751,15 @@ class SwamplordMuselekAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "We fight to the death!");
+                    _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_02);
                     _unit->PlaySoundToSet(10384);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will end this quickly!");
+                    _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_03);
                     _unit->PlaySoundToSet(10385);
                     break;
                 case 2:
-                    //_unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "<missing_text>!");
+                    _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_04);
                     _unit->PlaySoundToSet(10386);
                     break;
             }
@@ -2820,11 +2782,11 @@ class SwamplordMuselekAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Krypta!");
+                        _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_05);
                         _unit->PlaySoundToSet(10387);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It is finished!");
+                        _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_06);
                         _unit->PlaySoundToSet(10388);
                         break;
                 }
@@ -2841,7 +2803,7 @@ class SwamplordMuselekAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Well... done..."); // not sure
+            _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_07);
             _unit->PlaySoundToSet(10389);
 
             RemoveAIUpdateEvent();
@@ -2955,14 +2917,6 @@ class SwamplordMuselekAI : public CreatureAIScript
 
 
 // The Black StalkerAI
-
-#define CN_THE_BLACK_STALKER 17882
-
-#define CHAIN_LIGHTNING            31717 //39066 // 28167, 39066
-#define LEVITATE                31704 // Not sure to id
-#define STATIC_CHARGE            31715
-#define SUMMON_SPORE_STRIDER    38755 // spawning adds only on Heroic! lack of core support =/
-
 class TheBlackStalkerAI : public CreatureAIScript
 {
     public:
@@ -3108,8 +3062,7 @@ class TheBlackStalkerAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -3157,6 +3110,10 @@ class TheBlackStalkerAI : public CreatureAIScript
         int nrspells;
 };
 
+/// \note Wasp/Stinger must be checked. Please check it (because for sure
+// many spells/creatures with spells are missing and also you will find some dupes.
+// No spells found for: Windcaller Claw, Spore Spider, Earthbinder Rayge
+// Left Underbog Mushroom.
 void SetupTheUnderbog(ScriptMgr* mgr)
 {
     /*mgr->register_creature_script(CN_BOG_GIANT, &BOGGIANTAI::Create);
@@ -3178,14 +3135,9 @@ void SetupTheUnderbog(ScriptMgr* mgr)
     mgr->register_creature_script(CN_UNDERBOG_FRENZY, &UNDERBOGFRENZYAI::Create);
     mgr->register_creature_script(CN_UNDERBOG_LORD, &UNDERBOGLORDAI::Create);
     mgr->register_creature_script(CN_UNDERBOG_LURKER, &UNDERBOGLURKERAI::Create);*/
-    mgr->register_creature_script(CN_HUNGARFEN, &HUNGARFENAI::Create);
+    mgr->register_creature_script(CN_HUNGARFEN, &HungarfenAI::Create);
     mgr->register_creature_script(CN_GHAZAN, &GhazanAI::Create);
     mgr->register_creature_script(CN_CLAW, &ClawAI::Create);
     mgr->register_creature_script(CN_SWAMPLORD_MUSELEK, &SwamplordMuselekAI::Create);
     mgr->register_creature_script(CN_THE_BLACK_STALKER, &TheBlackStalkerAI::Create);
 }
-
-// Notes: Wasp/Stinger must be checked. Please check it (because for sure
-// many spells/creatures with spells are missing and also you will find some dupes.
-// No spells found for: Windcaller Claw, Spore Spider, Earthbinder Rayge
-// Left Underbog Mushroom.

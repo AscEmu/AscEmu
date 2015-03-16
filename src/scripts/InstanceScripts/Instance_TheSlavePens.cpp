@@ -19,27 +19,21 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_TheSlavePens.h"
 
-// Coilfang Champion AI
-
-#define CN_COILFANG_CHAMPION 17957
-
-#define INTIMIDATING_SHOUT 33789 // or 38945 || after it on off can go to next unfeared target (mostly healer or ranged unit)
+// CoilfangChampionAI
 // It should also have effect on other allies of target, but somehow it affects caster too (we can use only this: 38946 as workaround
 // But I think it's better to leave it as it is to not change it in a future as this effect will be repaired)
 // In Heroid Mode is immune to Mind Control and Seduction (same for Bogstrok)
-
-class COILFANGCHAMPIONAI : public CreatureAIScript
+class CoilfangChampionAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(COILFANGCHAMPIONAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CoilfangChampionAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        COILFANGCHAMPIONAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CoilfangChampionAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -145,21 +139,16 @@ class COILFANGCHAMPIONAI : public CreatureAIScript
         int nrspells;
 };
 
-// Coilfang Observer AI
-
-#define CN_COILFANG_OBSERVER 17938
-
-#define IMMOLATE 29928
+// CoilfangObserverAI
 // In Heroic mode, it becomes immune to Mind Control and Seduction, but can still be feared and frozen by traps.
-
-class COILFANGOBSERVERAI : public CreatureAIScript
+class CoilfangObserverAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(COILFANGOBSERVERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CoilfangObserverAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        COILFANGOBSERVERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CoilfangObserverAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -266,23 +255,18 @@ class COILFANGOBSERVERAI : public CreatureAIScript
 };
 
 
-// Coilfang Defender AI
-
-#define CN_COILFANG_DEFENDER 17958
-
-#define REFLECTIVE_SHIELD 41475 // No idea which id it should be: Reflective Damage Shield (35159), Reflective Magic Shield (35158), Reflective Shield (41475)
+// CoilfangDefenderAI
 // Cannot be trapped or feared, but can be stunned, polymorphed, cycloned and disarmed.
 // In Heroic, immune to mind control, seduce and sheep, but still vulnerable to stun and kiting.
 // Stealth Detectors, thus cannot be sapped.
-
-class COILFANGDEFENDERAI : public CreatureAIScript
+class CoilfangDefenderAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(COILFANGDEFENDERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CoilfangDefenderAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        COILFANGDEFENDERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CoilfangDefenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -390,24 +374,17 @@ class COILFANGDEFENDERAI : public CreatureAIScript
 };
 
 
-// Coilfang Scale-Healer AI
-
-#define CN_COILFANG_SCALE_HEALER 21126
-
-#define HOLY_NOVA 37669 // can be: 37669, 34944, 41380, 40096, 36985
-#define POWER_WORD_SHIELD 36052 // can be also: 36052, 29408, 41373, 32595, 35944
-#define GREATER_HEAL 35096 // all spellids are just my thoughtfulness
-
+// CoilfangScaleHealerAI
 // Priests can Mind Control these; the surrounding mobs will kill them quickly.
 // Note: Idk if it casts those spells, but it has them when it's mind controlled.
-class COILFANGSCALEHEALERAI : public CreatureAIScript
+class CoilfangScaleHealerAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(COILFANGSCALEHEALERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CoilfangScaleHealerAI);
         SP_AI_Spell spells[3];
         bool m_spellcheck[3];
 
-        COILFANGSCALEHEALERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CoilfangScaleHealerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
             for (int i = 0; i < nrspells; i++)
@@ -530,22 +507,16 @@ class COILFANGSCALEHEALERAI : public CreatureAIScript
 };
 
 
-// Coilfang Soothsayer AI
-
-#define CN_COILFANG_SOOTHSAYER 17960
-
-#define MIND_CONTROL 36797 // maybe: 36797 or 36798 or ... no idea to id, but 
-// still spell doesn't work, because of lack of core support
-
+// CoilfangSoothsayerAI
 // All forms of crowd control work on it.
-class COILFANGSOOTHSAYERAI : public CreatureAIScript
+class CoilfangSoothsayerAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(COILFANGSOOTHSAYERAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CoilfangSoothsayerAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        COILFANGSOOTHSAYERAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CoilfangSoothsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -652,23 +623,17 @@ class COILFANGSOOTHSAYERAI : public CreatureAIScript
 };
 
 
-// Coilfang Technician AI
-
-#define CN_COILFANG_TECHNICIAN 17940
-
-#define RAIN_OF_FIRE 34435 // can be: 34360, 34435, 37465, 38635, 39024, 31340, 33617, 39363
-#define BLIZZARD 30093 // can be: 30093, 29951, 37263, 38646, 31266, 34356
-
+// CoilfangTechnicianAI
 // Can be seduced and mind controlled in heroic mode.
 // Note: Idk if it casts those spells, but it has them when it's mind controlled.
-class COILFANGTECHNICIANAI : public CreatureAIScript
+class CoilfangTechnicianAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(COILFANGTECHNICIANAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CoilfangTechnicianAI);
         SP_AI_Spell spells[2];
         bool m_spellcheck[2];
 
-        COILFANGTECHNICIANAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CoilfangTechnicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
             for (int i = 0; i < nrspells; i++)
@@ -781,21 +746,16 @@ class COILFANGTECHNICIANAI : public CreatureAIScript
         int nrspells;
 };
 
-// Coilfang Ray AI
-
-#define CN_COILFANG_RAY 21128
-
-#define HOWL_OF_TERROR 39048
-
+// CoilfangRayAI
 // All forms of Beast crowd control work.
-class COILFANGRAYAI : public CreatureAIScript
+class CoilfangRayAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(COILFANGRAYAI);
+        ADD_CREATURE_FACTORY_FUNCTION(CoilfangRayAI);
         SP_AI_Spell spells[1];
         bool m_spellcheck[1];
 
-        COILFANGRAYAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        CoilfangRayAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
             for (int i = 0; i < nrspells; i++)
@@ -902,24 +862,11 @@ class COILFANGRAYAI : public CreatureAIScript
 };
 
 
-/*****************************/
-/*                           */
-/*         Boss AIs          */
-/*                           */
-/*****************************/
+//////////////////////////////////////////////////////////////
+// Boss AIs
+//////////////////////////////////////////////////////////////
 
 // TotemsAI
-
-#define CN_MENNUS_HEALING_WARD        20208
-#define CN_TAINED_EARTHGRAB_TOTEM    18176
-#define CN_TAINED_STONESKIN_TOTEM    18177
-#define CN_CORRUPTED_NOVA_TOTEM        14662    // wrong id?
-
-#define HW_MENNUS_HEALING_WARD        34977
-#define ET_ENTANGLING_ROOTS            20654
-#define ST_        31985
-#define NT_        31991
-
 class TotemsAI : public CreatureAIScript
 {
     public:
@@ -984,16 +931,6 @@ class TotemsAI : public CreatureAIScript
 };
 
 // Mennu the BetrayerAI
-
-#define CN_MENNU_THE_BETRAYER 17941
-
-#define MENNUS_HEALING_WARD            34980
-#define TAINTED_EARTHGRAB_TOTEM        31981 //31982 //31981
-#define TAINTED_STONESKIN_TOTEM        31985
-#define CORRUPTED_NOVA_TOTEM        31991
-#define LIGHTNING_BOLT                36152
-// First 4 spells don't work as more core support is needed for them
-
 uint32 Totems[4] = { 20208, 18176, 18177, 14662 };
 
 class MennuTheBetrayerAI : public CreatureAIScript
@@ -1067,15 +1004,15 @@ class MennuTheBetrayerAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The work must continue!");
+                    _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_01);
                     _unit->PlaySoundToSet(10376);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You brought this on yourselves!");
+                    _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_02);
                     _unit->PlaySoundToSet(10378);
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Don't make me kill you!");
+                    _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_03);
                     _unit->PlaySoundToSet(10379);
                     break;
             }
@@ -1091,11 +1028,11 @@ class MennuTheBetrayerAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It had to be done!");
+                        _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_04);
                         _unit->PlaySoundToSet(10380);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You should not have come!");
+                        _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_05);
                         _unit->PlaySoundToSet(10381);
                         break;
                 }
@@ -1112,7 +1049,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I... Deserve this...");
+            _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_06);
             _unit->PlaySoundToSet(10382);
 
             RemoveAIUpdateEvent();
@@ -1238,15 +1175,6 @@ class MennuTheBetrayerAI : public CreatureAIScript
 };
 
 // Rokmar the CracklerAI
-
-#define CN_ROKMAR_THE_CRACKLER 17991
-
-#define GRIEVOUS_WOUND    31956
-#define WATER_SPIT        35008
-#define ENSNARING_MOSS    31948
-#define ENRAGE            37023 // ofc not sure ;) maybe: 41305
-// boss without sounds
-
 class RokmarTheCracklerAI : public CreatureAIScript
 {
     public:
@@ -1394,8 +1322,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1446,13 +1373,6 @@ class RokmarTheCracklerAI : public CreatureAIScript
 
 
 // QuagmirranAI
-
-#define CN_QUAGMIRRAN 17942
-
-#define ACID_GEYSER            38971 // it isn't right spell (TOO POWERFUL), but I couldn't find correct one for now (as others Idk why don't want to work)
-#define POISON_BOLT_VOLLEY    39340 // maybe be also: 40095, but it isn't dispelable
-#define CLEAVE                38474 // 31345, no idea if this is correct
-
 class QuagmirranAI : public CreatureAIScript
 {
     public:
@@ -1580,8 +1500,7 @@ class QuagmirranAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1635,15 +1554,19 @@ class QuagmirranAI : public CreatureAIScript
         int nrspells;
 };
 
+
+/// \note Coilfang Slavemaster was already scripted in SteamVaults, so I haven't
+// copied/pasted it here.
+// Still many NPCs left and I don't have infos if any of those use any spell
 void SetupTheSlavePens(ScriptMgr* mgr)
 {
-    /*mgr->register_creature_script(CN_COILFANG_CHAMPION, &COILFANGCHAMPIONAI::Create);
-    mgr->register_creature_script(CN_COILFANG_OBSERVER, &COILFANGOBSERVERAI::Create);
-    mgr->register_creature_script(CN_COILFANG_DEFENDER, &COILFANGDEFENDERAI::Create);
-    mgr->register_creature_script(CN_COILFANG_SCALE_HEALER, &COILFANGSCALEHEALERAI::Create);
-    mgr->register_creature_script(CN_COILFANG_SOOTHSAYER, &COILFANGSOOTHSAYERAI::Create);
-    mgr->register_creature_script(CN_COILFANG_TECHNICIAN, &COILFANGTECHNICIANAI::Create);
-    mgr->register_creature_script(CN_COILFANG_RAY, &COILFANGRAYAI::Create);*/
+    /*mgr->register_creature_script(CN_COILFANG_CHAMPION, &CoilfangChampionAI::Create);
+    mgr->register_creature_script(CN_COILFANG_OBSERVER, &CoilfangObserverAI::Create);
+    mgr->register_creature_script(CN_COILFANG_DEFENDER, &CoilfangDefenderAI::Create);
+    mgr->register_creature_script(CN_COILFANG_SCALE_HEALER, &CoilfangScaleHealerAI::Create);
+    mgr->register_creature_script(CN_COILFANG_SOOTHSAYER, &CoilfangSoothsayerAI::Create);
+    mgr->register_creature_script(CN_COILFANG_TECHNICIAN, &CoilfangTechnicianAI::Create);
+    mgr->register_creature_script(CN_COILFANG_RAY, &CoilfangRayAI::Create);*/
     mgr->register_creature_script(CN_MENNUS_HEALING_WARD, &TotemsAI::Create);
     mgr->register_creature_script(CN_TAINED_EARTHGRAB_TOTEM, &TotemsAI::Create);
     mgr->register_creature_script(CN_TAINED_STONESKIN_TOTEM, &TotemsAI::Create);
@@ -1652,7 +1575,3 @@ void SetupTheSlavePens(ScriptMgr* mgr)
     mgr->register_creature_script(CN_ROKMAR_THE_CRACKLER, &RokmarTheCracklerAI::Create);
     mgr->register_creature_script(CN_QUAGMIRRAN, &QuagmirranAI::Create);
 }
-
-// Notes: Coilfang Slavemaster was already scripted in SteamVaults, so I haven't
-// copied/pasted it here.
-// Still many NPCs left and I don't have infos if any of those use any spell

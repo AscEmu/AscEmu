@@ -19,14 +19,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_TheStockade.h"
 
-#define CN_KAMDEEPFURY 1666
-
-#define KAM_SHIELDSLAM 15655
-
+// DeepfuryAI
 class DeepfuryAI : public CreatureAIScript
 {
     public:
@@ -111,11 +107,7 @@ class DeepfuryAI : public CreatureAIScript
 
 };
 
-#define CN_HAMHOCK 1717
-
-#define CHAINLIGHT 12058
-#define DEMORALIZO 23511
-
+// HamhockAI
 class HamhockAI : public CreatureAIScript
 {
     public:
@@ -231,10 +223,7 @@ class HamhockAI : public CreatureAIScript
         int nrspells;
 };
 
-#define CN_BAZILTHREDD 1716
-
-#define BAZILBOMB 7964
-
+// BazilAI
 class BazilAI : public CreatureAIScript
 {
     public:
@@ -335,10 +324,7 @@ class BazilAI : public CreatureAIScript
 
 };
 
-#define CN_DEXTRENWARD 1663
-
-#define INTIMIDATING 38945
-
+// DextrenAI
 class DextrenAI : public CreatureAIScript
 {
     public:
@@ -423,10 +409,7 @@ class DextrenAI : public CreatureAIScript
 
 };
 
-#define CN_DEFINMATE 1708
-
-#define CONVICTREND 13445
-
+// InmateAI
 class InmateAI : public CreatureAIScript
 {
     public:
@@ -511,10 +494,7 @@ class InmateAI : public CreatureAIScript
 
 };
 
-#define CN_DEFINSURGENT 1715
-
-#define INSURGENTDEMORALIZO 16244
-
+// InsurgentAI
 class InsurgentAI : public CreatureAIScript
 {
     public:
@@ -599,11 +579,7 @@ class InsurgentAI : public CreatureAIScript
 
 };
 
-#define CN_DEFPRISONER 1706
-
-#define PRISONKICK 27814
-#define PRISONDISARM 22691
-
+// PrisonerAI
 class PrisonerAI : public CreatureAIScript
 {
     public:
@@ -719,10 +695,7 @@ class PrisonerAI : public CreatureAIScript
         int nrspells;
 };
 
-#define CN_DEFCONVICT 1711
-
-#define CONVICTBACKHAND 12461
-
+// ConvictAI
 class ConvictAI : public CreatureAIScript
 {
     public:

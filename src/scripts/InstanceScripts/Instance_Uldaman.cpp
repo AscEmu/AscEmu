@@ -19,7 +19,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_Uldaman.h"
 
@@ -751,10 +750,10 @@ class Ironaya : public CreatureAIScript
 
 void SetupUldaman(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(2748, &Archaedas::Create);
-    mgr->register_creature_script(6910, &Revelosh::Create);
-    mgr->register_creature_script(4854, &Grimlok::Create);
-    mgr->register_creature_script(6906, &Baelog::Create);
-    mgr->register_creature_script(7291, &GalgannFirehammer::Create);
-    mgr->register_creature_script(7228, &Ironaya::Create);
+    mgr->register_creature_script(CN_ARCHAEDAS, &Archaedas::Create);
+    mgr->register_creature_script(CN_REVELOSH, &Revelosh::Create);
+    mgr->register_creature_script(CN_GRIMLOK, &Grimlok::Create);
+    mgr->register_creature_script(CN_BAELOG, &Baelog::Create);
+    mgr->register_creature_script(CN_GALGAN_FIREHAMMER, &GalgannFirehammer::Create);
+    mgr->register_creature_script(CN_IRONAYA, &Ironaya::Create);
 }

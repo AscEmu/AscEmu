@@ -23,9 +23,7 @@
 #include "Setup.h"
 #include "Instance_WailingCaverns.h"
 
-// Devouring Ectoplasm AI by Soulshifter
-
-#define CN_DEVOURING_ECTOPLASM        3638
+// Devouring Ectoplasm AI
 class DevouringEctoplasmAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DevouringEctoplasmAI, MoonScriptCreatureAI);
@@ -36,8 +34,7 @@ class DevouringEctoplasmAI : public MoonScriptCreatureAI
         }
 };
 
-// Druid of the Fang AI by Soulshifter
-#define CN_DRUID_FANG                3840
+// Druid of the Fang AI
 class DruidFangAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DruidFangAI, MoonScriptCreatureAI);
@@ -88,13 +85,9 @@ class DruidFangAI : public MoonScriptCreatureAI
         SpellDesc* HealingTouch;
 };
 
+
 // BOSSES
-
-// Lady Anacondra AI by Soulshifter
-#define CN_LADY_ANACONDRA            3671
-#define SPELL_LIGHTNING_BOLT          915
-#define SPELL_SLEEP                     1090
-
+// Lady Anacondra AI
 class LadyAnacondraAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(LadyAnacondraAI, MoonScriptCreatureAI);
@@ -108,12 +101,7 @@ class LadyAnacondraAI : public MoonScriptCreatureAI
         }
 };
 
-// Lord Cobrahn AI by Soulshifter
-#define CN_LORD_COBRAHN                3669
-#define SPELL_LIGHTNING_BOLT          915
-#define SPELL_POISON                 34969
-#define SPELL_SERPENTFORM            7965
-
+// Lord Cobrahn AI
 class LordCobrahnAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(LordCobrahnAI, MoonScriptCreatureAI);
@@ -148,8 +136,7 @@ class LordCobrahnAI : public MoonScriptCreatureAI
         SpellDesc* SerpentForm;
 };
 
-// Lord Pythas AI by Soulshifter
-#define CN_LORD_PYTHAS                3670
+// Lord Pythas AI
 class LordPythasAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(LordPythasAI, MoonScriptCreatureAI);
@@ -165,9 +152,7 @@ class LordPythasAI : public MoonScriptCreatureAI
         }
 };
 
-// Lord Serpentis AI by Soulshifter
-
-#define CN_LORD_SERPENTIS            3673
+// Lord Serpentis AI
 class LordSerpentisAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(LordSerpentisAI, MoonScriptCreatureAI);
@@ -181,9 +166,7 @@ class LordSerpentisAI : public MoonScriptCreatureAI
         }
 };
 
-// Verdan the Everliving AI by Soulshifter
-
-#define CN_VERDAN_EVERLIVING        5775
+// Verdan the Everliving AI
 class VerdanEverlivingAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(VerdanEverlivingAI, MoonScriptCreatureAI);
@@ -194,8 +177,7 @@ class VerdanEverlivingAI : public MoonScriptCreatureAI
         }
 };
 
-// Skum AI by Soulshifter
-#define CN_SKUM                        3674
+// Skum AI
 class SkumAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(SkumAI, MoonScriptCreatureAI);
@@ -220,8 +202,7 @@ class SkumAI : public MoonScriptCreatureAI
         }
 };
 
-// Mutanus the Devourer AI by Soulshifter
-#define CN_MUTANUS                3654
+// Mutanus the Devourer AI
 class MutanusAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(MutanusAI, MoonScriptCreatureAI);
@@ -237,9 +218,7 @@ class MutanusAI : public MoonScriptCreatureAI
 
 
 // Wailing Caverns Event
-// Discipline of Naralex Gossip by Soulshifter
-#define CN_NARALEX                3679
-#define CN_DIS_NARALEX            3678
+// Discipline of Naralex Gossip
 static Location ToNaralex[] =
 {
     {  },
@@ -346,7 +325,7 @@ class DofNaralexGossip : public GossipScript
 
 };
 
-// Disciple of Naralex AI by Soulshifter
+// Disciple of Naralex AI
 class DofNaralexAI : public MoonScriptBossAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DofNaralexAI, MoonScriptBossAI);

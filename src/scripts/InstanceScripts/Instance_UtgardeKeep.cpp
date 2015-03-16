@@ -24,30 +24,6 @@
 
 //////////////////////////////////////////////////////////////////////////
 //////// Utgarde Keep Instance script
-//#define ZADNJI_DOORS_MOZDA 186612
-
-#define CN_PRINCE_KELESETH 23953
-#define CN_SKARVALD 24200
-#define CN_DALRONN 24201
-#define CN_INGVAR 23954
-
-#define DALRONN_DOORS        186608
-
-#define INGVAR_DOORS_1        186756
-#define INGVAR_DOORS_2        186694
-
-#define BELLOW_1            186688
-#define BELLOW_2            186689
-#define BELLOW_3            186690
-
-#define FORGEFIRE_1            186692
-#define FORGEFIRE_2            186693
-#define FORGEFIRE_3            186691
-
-#define GLOWING_ANVIL_1        186609
-#define GLOWING_ANVIL_2        186610
-#define GLOWING_ANVIL_3        186611
-
 
 enum UtgardeData
 {
@@ -221,10 +197,6 @@ class UtgardeKeepScript : public MoonInstanceScript
 
 //////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer Forge Master
-
-#define CN_DRAGONFLAYER_FORGE_MASTER                24079
-#define DRAGONFLAYER_FORGE_MASTER_BURNING_BRAND        43757
-
 class DragonflayerForgeMasterAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerForgeMasterAI, MoonScriptCreatureAI);
@@ -248,12 +220,6 @@ class DragonflayerForgeMasterAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer HeartSplitter
-
-#define CN_DRAGONFLAYER_HEARTSPLITTER                            24071
-#define DRAGONFLAYER_HEARTSPLITTER_PIERCING_JAB        31551
-#define DRAGONFLAYER_HEARTSPLITTER_THROW                    43665
-#define DRAGONFLAYER_HEARTSPLITTER_WING_CLIP            32908
-
 class DragonflayerHeartSplitterAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerHeartSplitterAI, MoonScriptCreatureAI);
@@ -268,11 +234,6 @@ class DragonflayerHeartSplitterAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer Ironhelm
-
-#define CN_DRAGONFLAYER_IRONHELM                            23961
-#define DRAGONFLAYER_IRONHELM_HEROIC_STRIKE        29426
-#define DRAGONFLAYER_IRONHELM_RINGING_SLAP        42780
-
 class DragonflayerIronhelmAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerIronhelmAI, MoonScriptCreatureAI);
@@ -286,11 +247,6 @@ class DragonflayerIronhelmAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer Metalworker
-
-#define CN_DRAGONFLAYER_METALWORKER                        24078
-#define DRAGONFLAYER_METALWORKER_ENRAGE                8599
-#define    DRAGONFLAYER_METALWORKER_SUNDER_ARMOR    15572
-
 class DragonflayerMetalworkerAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerMetalworkerAI, MoonScriptCreatureAI);
@@ -313,17 +269,11 @@ class DragonflayerMetalworkerAI : public MoonScriptCreatureAI
         }
 
         bool Enrage;
-        SpellDesc*    mDfEnrage;
+        SpellDesc* mDfEnrage;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer Overseer
-
-#define CN_DRAGONFLAYER_OVERSEER                                    24085
-#define DRAGONFLAYER_OVERSEER_BATTLE_SHOUT                38232
-#define DRAGONFLAYER_OVERSEER_CHARGE                            35570
-#define DRAGONFLAYER_OVERSEER_DEMORALIZING_SHOUT    16244
-
 class DragonflayerOverseerAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerOverseerAI, MoonScriptCreatureAI);
@@ -337,11 +287,6 @@ class DragonflayerOverseerAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////// Tunneling Ghoul
-
-#define CN_TUNNELING_GHOUL                          24084
-#define TUNNELING_GHOUL_DECREPIFY                   42702
-#define TUNNELING_GHOUL_STRIKE                      13446
-
 class TunnelingGhoulAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(TunnelingGhoulAI, MoonScriptCreatureAI);
@@ -354,11 +299,6 @@ class TunnelingGhoulAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer Runecaster
-
-#define CN_DRAGONFLAYER_RUNECASTER                                  23960
-#define DRAGONFLAYER_RUNECASTER_BOLTHORNS_RUNE_OF_FLAME             54965
-#define DRAGONFLAYER_RUNECASTER_NJORDS_RUNE_OF_PROTECTION           42740
-
 class DragonflayerRunecasterAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerRunecasterAI, MoonScriptCreatureAI);
@@ -371,12 +311,6 @@ class DragonflayerRunecasterAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer Spiritualist
-
-#define CN_DRAGONFLAYER_SPIRITUALIST                    28410
-#define DRAGONFLAYER_SPIRITUALIST_FLAME_SHOCK           51588
-#define DRAGONFLAYER_SPIRITUALIST_HEALING_WAVE          51586
-#define DRAGONFLAYER_SPIRITUALIST_LIGHTNING_BOLT        51587
-
 class DragonflayerSpiritualistAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerSpiritualistAI, MoonScriptCreatureAI);
@@ -400,17 +334,11 @@ class DragonflayerSpiritualistAI : public MoonScriptCreatureAI
         }
 
         bool Heal;
-        SpellDesc*    mHealDf;
+        SpellDesc* mHealDf;
 };
 
 //////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer Strategist
-
-#define CN_DRAGONFLAYER_STRATEGIST                      23956
-#define DRAGONFLAYER_STRATEGIST_BLIND                   42972
-#define DRAGONFLAYER_STRATEGIST_HURL_DAGGER             42772
-#define DRAGONFLAYER_STRATEGIST_TICKING_BOMB            54962
-
 class DragonflayerStrategistAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerStrategistAI, MoonScriptCreatureAI);
@@ -424,12 +352,6 @@ class DragonflayerStrategistAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Proto-Drake Handler
-
-#define CN_PROTO_DRAKE_HANDLER                              24083
-#define PROTO_DRAKE_HANDLER_DEBILITATING_STRIKE             38621
-#define PROTO_DRAKE_HANDLER_THROW                           54983
-#define PROTO_DRAKE_HANDLER_UNHOLY_RAGE                     43664
-
 class ProtoDrake_HandlerAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(ProtoDrake_HandlerAI, MoonScriptCreatureAI);
@@ -443,10 +365,6 @@ class ProtoDrake_HandlerAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Frenzied Geist
-
-#define CN_FRENZIED_GEIST                    28419
-#define FRENZIED_GEIST_FIXATE            40414
-
 class FrenziedGeistAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(FrenziedGeistAI, MoonScriptCreatureAI);
@@ -458,11 +376,6 @@ class FrenziedGeistAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Savage Worg
-
-#define CN_SAVAGE_WORG                                  29735
-#define SAVAGE_WORG_ENRAGE                              42745
-#define SAVAGE_WORG_POUNCE                              55077
-
 class SavageWorgAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(SavageWorgAI, MoonScriptCreatureAI);
@@ -475,11 +388,6 @@ class SavageWorgAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Dragonflayer Bonecrusher
-
-#define CN_DRAGONFLAYER_BONECRUSHER							24069
-#define DRAGONFLAYER_BONECRUSHER_HEAD_CRACK					9791
-#define DRAGONFLAYER_BONECRUSHER_KNOCKDOWNSPIN				43935
-
 class DragonflayerBonecrusherAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(DragonflayerBonecrusherAI, MoonScriptCreatureAI);
@@ -492,12 +400,6 @@ class DragonflayerBonecrusherAI : public MoonScriptCreatureAI
 
 //////////////////////////////////////////////////////////////////////////
 //////// Proto-Drake Rider
-
-#define CN_PROTO_DRAKE_RIDER                        24849
-#define PROTO_DRAKE_RIDER_PIERCING_JAB              31551
-#define PROTO_DRAKE_RIDER_THROW                     43665
-#define PROTO_DRAKE_RIDER_WING_CLIP                 32908
-
 class ProtoDrake_RiderAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(ProtoDrake_RiderAI, MoonScriptCreatureAI);
@@ -514,17 +416,6 @@ class ProtoDrake_RiderAI : public MoonScriptCreatureAI
 //////////////////////////////////////////////////////////////////////////////////////////
 
 // Skarvald the Constructor
-#define CN_SKARVALD_GHOST 27390
-#define SKARVALD_CHARGE 43651
-#define STONE_STRIKE 48583
-
-// Dalronn the Controller
-#define CN_DALRONN_GHOST 27389
-#define DEBILITATE 43650
-#define SHADOW_BOLT 43649
-#define SHADOW_BOLT_HC 59575
-#define SKELETON_ADD 28878
-
 class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(SkarvaldTheConstructorAI, MoonScriptCreatureAI);
@@ -603,11 +494,12 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
         };
 
     private:
-        int32                    mReplyTimer;
-        MoonScriptCreatureAI*    pDalronn;
-        MoonScriptCreatureAI*    pDalronnGhost;
+        int32 mReplyTimer;
+        MoonScriptCreatureAI* pDalronn;
+        MoonScriptCreatureAI* pDalronnGhost;
 };
 
+// Dalronn the Controller
 class DalronnTheControllerAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DalronnTheControllerAI, MoonScriptCreatureAI);
@@ -691,9 +583,9 @@ class DalronnTheControllerAI : public MoonScriptCreatureAI
         };
 
     private:
-        int32                    mSummonTimer;
-        MoonScriptCreatureAI*    pSkarvald;
-        MoonScriptCreatureAI*    pSkarvaldGhost;
+        int32 mSummonTimer;
+        MoonScriptCreatureAI* pSkarvald;
+        MoonScriptCreatureAI* pSkarvaldGhost;
 };
 
 class SkarvaldTheConstructorGhostAI : public MoonScriptCreatureAI
@@ -751,15 +643,6 @@ class DalronnTheControllerGhostAI : public MoonScriptCreatureAI
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// Prince Keleseth ///////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-#define CN_FROST_TOMB 23965
-#define KELESETH_SHADOW_BOLT 43667
-#define KELESETH_SHADOW_BOLT_HC 59389
-#define FROST_TOMB_SPELL 48400
-
-#define KELESETH_SKELETON_ADD 23970
-#define DECREPIFY 42702
-#define DECREPIFY_HC 59397
-
 void SpellFunc_KelesethFrostTomb(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     if (pCreatureAI != NULL)
@@ -806,11 +689,12 @@ class PrinceKelesethAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStart(pTarget);
         };
 
-        SpellDesc*            mAddSummon;
-        SpellDesc*            mShadowBolt;
-        SpellDesc*            mFrostTomb;
+        SpellDesc* mAddSummon;
+        SpellDesc* mShadowBolt;
+        SpellDesc* mFrostTomb;
 };
 
+// FrostTombAI
 class FrostTombAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(FrostTombAI, MoonScriptCreatureAI);
@@ -882,27 +766,6 @@ class SkeletonAddAI : public MoonScriptCreatureAI
 ////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Ingvar the Plunderer //////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-#define CN_INGVAR_UNDEAD 23980
-#define CN_SHADOW_AXE 23996
-
-// Phase 1 spells (Human Form)
-#define INGVAR_CLEAVE 42724
-#define INGVAR_ENRAGE 59707
-#define INGVAR_SMASH 42669
-#define INGVAR_ROAR 42708
-#define INGVAR_ENRAGE_HC 42705
-#define INGVAR_SMASH_HC 59706
-#define INGVAR_ROAR_HC 59708
-
-// Phase 2 spells (Undead Form)
-#define INGVAR_DARK_SMASH 42723
-#define INGVAR_DREADFUL_ROAR 42729
-#define INGVAR_WOE_STRIKE 42730
-#define INGVAR_DREADFUL_ROAR_HC 59734
-#define INGVAR_WOE_STRIKE_HC 59735
-
-#define SHADOW_AXE_SPELL 42751
-
 void SpellFunc_ShadowAxe(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
     if (pCreatureAI != NULL)

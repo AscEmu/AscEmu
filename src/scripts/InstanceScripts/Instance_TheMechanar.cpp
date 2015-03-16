@@ -19,18 +19,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_TheMechanar.h"
 
+
 // Arcane ServantAI
-
-#define CN_ARCANE_SERVANT 20478
-
-#define ARCANE_VOLLEY 35255
-#define ARCANE_EXPLOSION 22271
-//#define SPOTLIGHT 35259 // SSS
-
 class ArcaneServantAI : public CreatureAIScript
 {
     public:
@@ -46,14 +39,14 @@ class ArcaneServantAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(ARCANE_VOLLEY);
+            spells[0].info = dbcSpell.LookupEntry(SP_ARCANE_VOLLEY);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(ARCANE_EXPLOSION);
+            spells[1].info = dbcSpell.LookupEntry(SP_ARCANE_EXPLOSION);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = -1;
@@ -152,17 +145,6 @@ class ArcaneServantAI : public CreatureAIScript
 };
 
 // Bloodwarder CenturionAI
-
-#define CN_BLOODWARDER_CENTURION 19510
-
-#define SHIELD_BASH 35178
-#define UNSTABLE_AFFLICTION 35183
-#define MELT_ARMOR 35185
-#define CHILLING_TOUCH 12531
-#define ETHEREAL_TELEPORT 34427    // SSS
-
-//#define SEED_OF_CORRUPTION 37826 // SSS
-
 class BloodwarderCenturionAI : public CreatureAIScript
 {
     public:
@@ -178,35 +160,35 @@ class BloodwarderCenturionAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(SHIELD_BASH);
+            spells[0].info = dbcSpell.LookupEntry(SP_CENTURION_SHIELD_BASH);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 5.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(UNSTABLE_AFFLICTION);
+            spells[1].info = dbcSpell.LookupEntry(SP_CENTURION_UNSTABLE_AFFLICTION);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(MELT_ARMOR);
+            spells[2].info = dbcSpell.LookupEntry(SP_CENTURION_MELT_ARMOR);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 6.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(CHILLING_TOUCH);
+            spells[3].info = dbcSpell.LookupEntry(SP_CENTURION_CHILLING_TOUCH);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 8.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(ETHEREAL_TELEPORT);
+            spells[4].info = dbcSpell.LookupEntry(SP_CENTURION_ETHEREAL_TELEPORT);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
             spells[4].cooldown = -1;
@@ -306,15 +288,6 @@ class BloodwarderCenturionAI : public CreatureAIScript
 };
 
 // Bloodwarder PhysicianAI
-
-#define CN_BLOODWARDER_PHYSICIAN 20990
-
-#define HOLY_SHOCK 36340
-#define ANESTHETIC 36333
-#define BANDAGE 36348    // DBC: 36348; mine choice 38919
-#define ETHEREAL_TELEPORT_PHYS 34427 // SSS
-//#define SEED_OF_CORRUPTION 37826 // SSS
-
 class BloodwarderPhysicianAI : public CreatureAIScript
 {
     public:
@@ -330,28 +303,28 @@ class BloodwarderPhysicianAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(HOLY_SHOCK);
+            spells[0].info = dbcSpell.LookupEntry(SP_PHYSICIAN_HOLY_SHOCK);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(ANESTHETIC);
+            spells[1].info = dbcSpell.LookupEntry(SP_PHYSICIAN_ANESTHETIC);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(BANDAGE);
+            spells[2].info = dbcSpell.LookupEntry(SP_PHYSICIAN_BANDAGE);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = false;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 6.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(ETHEREAL_TELEPORT_PHYS);
+            spells[3].info = dbcSpell.LookupEntry(SP_PHYSICIAN_ETHEREAL_TELEPORT_PHYS);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = -1;
@@ -451,15 +424,6 @@ class BloodwarderPhysicianAI : public CreatureAIScript
 };
 
 // Bloodwarder SlayerAI
-
-#define CN_BLOODWARDER_SLAYER 19167
-
-#define WHIRLWIND 13736 // DBC: 13736, 15589;
-#define SOLAR_STRIKE 35189
-#define MELT_ARMOR_SLAYER 35231
-#define CHILLING_TOUCH_SLAYER 12531
-#define MORTAL_STRIKE 15708
-
 class BloodwarderSlayerAI : public CreatureAIScript
 {
     public:
@@ -475,35 +439,35 @@ class BloodwarderSlayerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(WHIRLWIND);
+            spells[0].info = dbcSpell.LookupEntry(SP_SLAYER_WHIRLWIND);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 15.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SOLAR_STRIKE);
+            spells[1].info = dbcSpell.LookupEntry(SP_SLAYER_SOLAR_STRIKE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(MELT_ARMOR_SLAYER);
+            spells[2].info = dbcSpell.LookupEntry(SP_SLAYER_MELT_ARMOR);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(CHILLING_TOUCH_SLAYER);
+            spells[3].info = dbcSpell.LookupEntry(SP_SLAYER_CHILLING_TOUCH);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 5.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(MORTAL_STRIKE);
+            spells[4].info = dbcSpell.LookupEntry(SP_SLAYER_MORTAL_STRIKE);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = true;
             spells[4].cooldown = -1;
@@ -602,11 +566,6 @@ class BloodwarderSlayerAI : public CreatureAIScript
 };
 
 // Mechanar CrusherAI
-
-#define CN_MECHANAR_CRUSHER 19231
-
-#define DISARM 31955    // is that all?    and not sure to this one :)
-
 class MechanarCrusherAI : public CreatureAIScript
 {
     public:
@@ -622,7 +581,7 @@ class MechanarCrusherAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(DISARM);
+            spells[0].info = dbcSpell.LookupEntry(SP_MECH_CRUSHER_DISARM);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
@@ -721,14 +680,6 @@ class MechanarCrusherAI : public CreatureAIScript
 };
 
 // Mechanar DrillerAI
-
-#define CN_MECHANAR_DRILLER 19712
-
-#define GLOB_OF_MACHINE_FLUID 35056
-#define DRILL_ARMOR 35047
-#define CRIPPLING_POISON 30981    // not sure if crippling poison and glob should be here (I mean if both should be)
-#define POUND 35049
-
 class MechanarDrillerAI : public CreatureAIScript
 {
     public:
@@ -744,28 +695,28 @@ class MechanarDrillerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(GLOB_OF_MACHINE_FLUID);
+            spells[0].info = dbcSpell.LookupEntry(SP_MECH_DRILLER_GLOB_OF_MACHINE_FLUID);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 5.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(DRILL_ARMOR);
+            spells[1].info = dbcSpell.LookupEntry(SP_MECH_DRILLER_ARMOR);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(CRIPPLING_POISON);
+            spells[2].info = dbcSpell.LookupEntry(SP_MECH_DRILLER_CRIPPLING_POISON);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 10.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(POUND);
+            spells[3].info = dbcSpell.LookupEntry(SP_MECH_DRILLER_POUND);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].cooldown = -1;
@@ -864,14 +815,6 @@ class MechanarDrillerAI : public CreatureAIScript
 };
 
 // Mechanar TinkererAI
-
-#define CN_MECHANAR_TINKERER 19716 // recheck and add some stuff
-
-#define NETHERBOMB 35057
-#define PRAYER_OF_MENDING 35092 // DBC: 35092, 33110, 35094    // SSS
-#define MANIACAL_CHARGE 35062    // those two are connected with each other and Idk if those shouldn't be scripted separately
-#define NETHER_EXPLOSION 35058    // additional coding to add health percent check, chance to cast and killing caster =/
-
 class MechanarTinkererAI : public CreatureAIScript
 {
     public:
@@ -887,28 +830,28 @@ class MechanarTinkererAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(NETHERBOMB);
+            spells[0].info = dbcSpell.LookupEntry(SP_MECH_TINKERER_NETHERBOMB);
             spells[0].targettype = TARGET_DESTINATION;
             spells[0].instant = false;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 5.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(PRAYER_OF_MENDING);
+            spells[1].info = dbcSpell.LookupEntry(SP_MECH_TINKERER_PRAYER_OF_MENDING);
             spells[1].targettype = TARGET_VARIOUS;    // ?
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(MANIACAL_CHARGE);
+            spells[2].info = dbcSpell.LookupEntry(SP_MECH_TINKERER_MANIACAL_CHARGE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(NETHER_EXPLOSION);
+            spells[3].info = dbcSpell.LookupEntry(SP_MECH_TINKERER_NETHER_EXPLOSION);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = false;
             spells[3].cooldown = -1;
@@ -1025,13 +968,6 @@ class MechanarTinkererAI : public CreatureAIScript
 };
 
 // Mechanar WreckerAI
-
-#define CN_MECHANAR_WRECKER 19713
-
-#define POUND_WRECKER 35049
-#define GLOB_OF_MACHINE_FLUID_WRECKER 35056
-#define PRAYER_OF_MENDING_WRECKER 33280    // DBC: 33280, 33110, 35093; SSS (hmm... not sure if it uses it =S)    should also affect allies, not enemies
-
 class MechanarWreckerAI : public CreatureAIScript
 {
     public:
@@ -1047,21 +983,21 @@ class MechanarWreckerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(POUND_WRECKER);
+            spells[0].info = dbcSpell.LookupEntry(SP_MECH_WRECKER_POUND);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 12.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(GLOB_OF_MACHINE_FLUID_WRECKER);
+            spells[1].info = dbcSpell.LookupEntry(SP_MECH_WRECKER_GLOB_OF_MACHINE_FLUID);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 7.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(PRAYER_OF_MENDING_WRECKER);
+            spells[2].info = dbcSpell.LookupEntry(SP_MECH_WRECKER_PRAYER_OF_MENDING);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
@@ -1160,13 +1096,6 @@ class MechanarWreckerAI : public CreatureAIScript
 };
 
 // Raging FlamesAI
-
-#define CN_RAGING_FLAMES 20481
-
-#define RAGING_FLAMES 35278 // DBC: 35278;
-#define INFERNO 35268 // DBC: 35268, 35283;
-// his skills needs additional core support I think
-
 class RagingFlamesAI : public CreatureAIScript
 {
     public:
@@ -1182,14 +1111,14 @@ class RagingFlamesAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(RAGING_FLAMES);
+            spells[0].info = dbcSpell.LookupEntry(SP_RAGING_FLAMES);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 0.0f;    // 8// disabled to prevent crashes
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(INFERNO);
+            spells[1].info = dbcSpell.LookupEntry(SP_RAGING_FLAMES_INFERNO);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = -1;
@@ -1288,14 +1217,6 @@ class RagingFlamesAI : public CreatureAIScript
 };
 
 // Sunseeker AstromageAI
-
-#define CN_SUNSEEKER_ASTROMAGE 19168
-
-#define SCORCH 17195
-#define SOLARBURN 35267
-#define FIRE_SHIELD 35265 //  DBC: 35266, 35265
-#define ETHEREAL_TELEPORT_ASTROMAGE 34427
-
 class SunseekerAstromageAI : public CreatureAIScript
 {
     public:
@@ -1311,28 +1232,28 @@ class SunseekerAstromageAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(SCORCH);
+            spells[0].info = dbcSpell.LookupEntry(SP_SS_ASTROMAGE_SCORCH);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 12.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SOLARBURN);
+            spells[1].info = dbcSpell.LookupEntry(SP_SS_ASTROMAGE_SOLARBURN);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(FIRE_SHIELD);
+            spells[2].info = dbcSpell.LookupEntry(SP_SS_ASTROMAGE_FIRE_SHIELD);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 8.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(ETHEREAL_TELEPORT_ASTROMAGE);
+            spells[3].info = dbcSpell.LookupEntry(SP_SS_ASTROMAGE_ETHEREAL_TELEPORT);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = -1;
@@ -1431,14 +1352,6 @@ class SunseekerAstromageAI : public CreatureAIScript
 };
 
 // Sunseeker EngineerAI
-
-#define CN_SUNSEEKER_ENGINEER 20988
-
-#define SUPER_SHRINK_RAY 36341
-#define DEATH_RAY 36345
-#define GROWTH_RAY 36346    // doesn't work, even when used by player =(
-#define ETHEREAL_TELEPORT_ENGINEER 34427
-
 class SunseekerEngineerAI : public CreatureAIScript
 {
     public:
@@ -1454,28 +1367,28 @@ class SunseekerEngineerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(SUPER_SHRINK_RAY);
+            spells[0].info = dbcSpell.LookupEntry(SP_SS_ENGINEER_SUPER_SHRINK_RAY);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(DEATH_RAY);
+            spells[1].info = dbcSpell.LookupEntry(SP_SS_ENGINEER_DEATH_RAY);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 13.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(GROWTH_RAY);
+            spells[2].info = dbcSpell.LookupEntry(SP_SS_ENGINEER_GROWTH_RAY);
             spells[2].targettype = TARGET_SELF;    // ?
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 7.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(ETHEREAL_TELEPORT_ENGINEER);
+            spells[3].info = dbcSpell.LookupEntry(SP_SS_ENGINEER_ETHEREAL_TELEPORT);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = -1;
@@ -1574,16 +1487,6 @@ class SunseekerEngineerAI : public CreatureAIScript
 };
 
 // Sunseeker NetherbinderAI
-
-#define CN_SUNSEEKER_NETHERBINDER 20059
-
-#define ARCANE_NOVA 35261
-#define STARFIRE 35243
-#define SUMMON_ARCANE_GOLEM1 35251    // DBC: 35251, 35260; Guardian, so won't work now
-#define SUMMON_ARCANE_GOLEM2 35260
-#define DISPEL_MAGIC 23859 // no idea about this one
-//#define SEED_OF_CORRUPTION 37826
-
 class SunseekerNetherbinderAI : public CreatureAIScript
 {
     public:
@@ -1599,35 +1502,35 @@ class SunseekerNetherbinderAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(ARCANE_NOVA);
+            spells[0].info = dbcSpell.LookupEntry(SP_SS_NETHERBINDER_ARCANE_NOVA);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(STARFIRE);
+            spells[1].info = dbcSpell.LookupEntry(SP_SS_NETHERBINDER_STARFIRE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 13.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SUMMON_ARCANE_GOLEM1);
+            spells[2].info = dbcSpell.LookupEntry(SP_SS_NETHERBINDER_SUMMON_ARCANE_GOLEM1);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SUMMON_ARCANE_GOLEM2);
+            spells[3].info = dbcSpell.LookupEntry(SP_SS_NETHERBINDER_SUMMON_ARCANE_GOLEM2);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 5.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(DISPEL_MAGIC);
+            spells[4].info = dbcSpell.LookupEntry(SP_SS_NETHERBINDER_DISPEL_MAGIC);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
             spells[4].cooldown = -1;
@@ -1725,12 +1628,6 @@ class SunseekerNetherbinderAI : public CreatureAIScript
 };
 
 // Tempest-Forge DestroyerAI
-
-#define CN_TEMPEST_FORGE_DESTROYER 19735
-
-#define KNOCKDOWN 35783
-#define CHARGED_FIST 36582 // DBC: 36582, 36583;    doesn't work anyway at all (lack of core support?)
-
 class TempestForgeDestroyerAI : public CreatureAIScript
 {
     public:
@@ -1746,14 +1643,14 @@ class TempestForgeDestroyerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(KNOCKDOWN);
+            spells[0].info = dbcSpell.LookupEntry(SP_TEMPEST_DESTROYER_KNOCKDOWN);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(CHARGED_FIST);
+            spells[1].info = dbcSpell.LookupEntry(SP_TEMPEST_DESTROYER_CHARGED_FIST);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = false;
             spells[1].cooldown = -1;
@@ -1851,12 +1748,6 @@ class TempestForgeDestroyerAI : public CreatureAIScript
 };
 
 // Tempest-Forge PatrollerAI
-
-#define CN_TEMPEST_FORGE_PATROLLER 19166
-
-#define CHARGED_ARCANE_MISSILE 35012
-#define KNOCKDOWN_PATROLLER 35011
-
 class TempestForgePatrollerAI : public CreatureAIScript
 {
     public:
@@ -1872,14 +1763,14 @@ class TempestForgePatrollerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(CHARGED_ARCANE_MISSILE);
+            spells[0].info = dbcSpell.LookupEntry(SP_TEMPEST_PAT_CHARGED_ARCANE_MISSILE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 12.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(KNOCKDOWN_PATROLLER);
+            spells[1].info = dbcSpell.LookupEntry(SP_TEMPEST_PAT_KNOCKDOWN);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
@@ -1976,20 +1867,11 @@ class TempestForgePatrollerAI : public CreatureAIScript
         int nrspells;
 };
 
-/**************************/
-/*                        */
-/*       Boss AIs         */
-/*                        */
-/**************************/
+///////////////////////////////////////////////////////////////////////////////////
+// Boss AIs
+//////////////////////////////////////////////////////////////////////////////////
 
 // Gatewatcher Gyro-Kill AI
-
-#define CN_GATEWATCHER_GYRO_KILL 19218
-
-#define SAW_BLADE 35318
-#define SHADOW_POWER_GKILL 35322
-#define STEAM_OF_MACHINE_FLUID_GKILL 35311
-
 class GatewatcherGyroKillAI : public CreatureAIScript
 {
     public:
@@ -2006,21 +1888,21 @@ class GatewatcherGyroKillAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SAW_BLADE);
+            spells[0].info = dbcSpell.LookupEntry(SP_GW_GYRO_KILL_SAW_BLADE);
             spells[0].targettype = TARGET_ATTACKING;    // to prevent crashes when used VARIOUS
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 13.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SHADOW_POWER_GKILL);
+            spells[1].info = dbcSpell.LookupEntry(SP_GW_GYRO_KILL_SHADOW_POWER);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 7.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(STEAM_OF_MACHINE_FLUID_GKILL);
+            spells[2].info = dbcSpell.LookupEntry(SP_GW_GYRO_KILL_STEAM_OF_MACHINE_FLUID);
             spells[2].targettype = TARGET_VARIOUS;    // VARIOUS doesn't work somehow :S (sometimes yes, sometimes no)
             spells[2].instant = true;
             spells[2].cooldown = -1;
@@ -2033,7 +1915,7 @@ class GatewatcherGyroKillAI : public CreatureAIScript
         {
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I predict a painful death.");
+            _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_05);
             _unit->PlaySoundToSet(11101);
         }
 
@@ -2061,11 +1943,11 @@ class GatewatcherGyroKillAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your strategy was flat!");    // flat?
+                        _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_06);
                         _unit->PlaySoundToSet(11102);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Yes, the only logical outcome!");    // magical outcome? // Logical Outcome
+                        _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_04);
                         _unit->PlaySoundToSet(11103);
                         break;
                 }
@@ -2076,7 +1958,7 @@ class GatewatcherGyroKillAI : public CreatureAIScript
         {
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "An unforseen... contingency.");
+            _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_01);
             _unit->PlaySoundToSet(11106);
         }
 
@@ -2093,11 +1975,11 @@ class GatewatcherGyroKillAI : public CreatureAIScript
             switch (RandomSawBlades)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Measure twice; cut once.");
+                    _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_02);
                     _unit->PlaySoundToSet(11104);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "If my division is correct, you should be quiet dead!");    // corrected
+                    _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_03);
                     _unit->PlaySoundToSet(11105);
                     break;
             }
@@ -2160,14 +2042,6 @@ class GatewatcherGyroKillAI : public CreatureAIScript
 };
 
 // Gatewatcher Iron-Hand AI
-
-#define CN_GATEWATCHER_IRON_HAND 19710
-
-#define JACK_HAMMER 35327 // DBC: 35327, 35330
-#define HAMMER_PUNCH 35326
-#define STREAM_OF_MACHINE_FLUID_IHAND 35311
-#define SHADOW_POWER_IHAND 35322
-
 class GatewatcherIronHandAI : public CreatureAIScript
 {
     public:
@@ -2184,28 +2058,28 @@ class GatewatcherIronHandAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(JACK_HAMMER);
+            spells[0].info = dbcSpell.LookupEntry(SP_GW_IRON_HAND_JACK_HAMMER);
             spells[0].targettype = TARGET_VARIOUS;    // why this is spammed when casted ? :| maybe core bug? :|
             spells[0].instant = false;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(HAMMER_PUNCH);
+            spells[1].info = dbcSpell.LookupEntry(SP_GW_IRON_HAND_HAMMER_PUNCH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(STREAM_OF_MACHINE_FLUID_IHAND);
+            spells[2].info = dbcSpell.LookupEntry(SP_GW_IRON_HAND_STREAM_OF_MACHINE_FLUID);
             spells[2].targettype = TARGET_VARIOUS;    // VARIOUS doesn't work somehow (sometimes yes, sometimes no)
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 7.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SHADOW_POWER_IHAND);
+            spells[3].info = dbcSpell.LookupEntry(SP_GW_IRON_HAND_SHADOW_POWER);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = false;
             spells[3].cooldown = -1;
@@ -2218,7 +2092,7 @@ class GatewatcherIronHandAI : public CreatureAIScript
         {
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You have approximately five seconds to live!");    // corrected
+            _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_01);
             _unit->PlaySoundToSet(11109);
         }
 
@@ -2246,11 +2120,11 @@ class GatewatcherIronHandAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "A foregone conclusion!"); // fixed
+                        _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_04);
                         _unit->PlaySoundToSet(11110);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The processing will continue as scheduled!"); // fixed
+                        _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_05);
                         _unit->PlaySoundToSet(11111);
                         break;
                 }
@@ -2261,7 +2135,7 @@ class GatewatcherIronHandAI : public CreatureAIScript
         {
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "My calculations... did not...");    // Verified
+            _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_06);
             _unit->PlaySoundToSet(11114);
         }
 
@@ -2279,13 +2153,13 @@ class GatewatcherIronHandAI : public CreatureAIScript
             {
                 case 0:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "With the precise angle and velocity...");    // Corrected
+                    _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_02);
                     _unit->PlaySoundToSet(11112);
                 }
                 break;
                 case 1:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Low tech yet quiet effective!");    // this one too =/
+                    _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_03);
                     _unit->PlaySoundToSet(11113);
                 }
                 break;
@@ -2351,21 +2225,6 @@ class GatewatcherIronHandAI : public CreatureAIScript
 };
 
 // Mechano-Lord Capacitus AI
-
-#define CN_MECHANO_LORD_CAPACITUS 19219
-
-#define HEAD_CRACK 35161
-#define REFLECTIVE_DAMAGE_SHIELD 35159
-#define REFLECTIVE_MAGIC_SHIELD 35158
-#define SEED_OF_CORRUPTION 37826    // SSS (server side script) (is it really used?)
-
-/*#define NETHER_CHARGE 34303
-#define NETHER_CHARGE_PASSIVE 35150 // SSS
-#define NETHER_CHARGE_PULSE 35151    // SSS
-#define NETHER_CHARGE_TIMER 37670
-#define NETHER_DETONATION 35152        // Spell from Timer
-// Note: All for bombs :O*/
-
 class MechanoLordCapacitusAI : public CreatureAIScript
 {
     public:
@@ -2382,14 +2241,14 @@ class MechanoLordCapacitusAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(HEAD_CRACK);
+            spells[0].info = dbcSpell.LookupEntry(SP_MECH_LORD_HEAD_CRACK);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(REFLECTIVE_DAMAGE_SHIELD);
+            spells[1].info = dbcSpell.LookupEntry(SP_MECH_LORD_REFLECTIVE_DAMAGE_SHIELD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = false;
             spells[1].cooldown = -1;
@@ -2398,7 +2257,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
             spells[1].speech = "Think you can hurt me, huh? Think I'm afraid a' you?";
             spells[1].soundid = 11165;
 
-            spells[2].info = dbcSpell.LookupEntry(REFLECTIVE_MAGIC_SHIELD);
+            spells[2].info = dbcSpell.LookupEntry(SP_MECH_LORD_REFLECTIVE_MAGIC_SHIELD);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = false;
             spells[2].cooldown = -1;
@@ -2407,7 +2266,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
             spells[2].speech = "Go ahead, gimme your best shot. I can take it!";
             spells[2].soundid = 11166;
 
-            spells[3].info = dbcSpell.LookupEntry(SEED_OF_CORRUPTION);    // it won't work anyway
+            spells[3].info = dbcSpell.LookupEntry(SP_MECH_LORD_SEED_OF_CORRUPTION);    // it won't work anyway
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = -1;
@@ -2420,7 +2279,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
         {
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You should split while you can.");
+            _unit->SendScriptTextChatMessage(SAY_MECH_LORD_06);
             _unit->PlaySoundToSet(11162);
         }
 
@@ -2448,11 +2307,11 @@ class MechanoLordCapacitusAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Can't say I didn't warn you!");    // checks here
+                        _unit->SendScriptTextChatMessage(SAY_MECH_LORD_03);
                         _unit->PlaySoundToSet(11163);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Damn, I'm good!");
+                        _unit->SendScriptTextChatMessage(SAY_MECH_LORD_02);
                         _unit->PlaySoundToSet(11164);
                         break;
                 }
@@ -2463,7 +2322,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
         {
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Bully!");
+            _unit->SendScriptTextChatMessage(SAY_MECH_LORD_01);
             _unit->PlaySoundToSet(11167);
         }
 
@@ -2527,15 +2386,6 @@ class MechanoLordCapacitusAI : public CreatureAIScript
 };
 
 // Nethermancer Sepethrea AI
-
-#define CN_NETHERMANCER_SEPETHREA 19221
-
-#define SUMMON_RAGIN_FLAMES 35275    // must add despawning after death!
-#define FROST_ATTACK 35263
-#define ARCANE_BLAST 35314
-#define DRAGONS_BREATH 35250
-//#define KNOCKBACK 37317    // not sure to this one!
-
 class NethermancerSepethreaAI : public CreatureAIScript
 {
     public:
@@ -2553,28 +2403,28 @@ class NethermancerSepethreaAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SUMMON_RAGIN_FLAMES);
+            spells[0].info = dbcSpell.LookupEntry(SP_NETH_SEPETHREA_SUMMON_RAGIN_FLAMES);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(FROST_ATTACK);
+            spells[1].info = dbcSpell.LookupEntry(SP_NETH_SEPETHREA_FROST_ATTACK);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(ARCANE_BLAST);
+            spells[2].info = dbcSpell.LookupEntry(SP_NETH_SEPETHREA_ARCANE_BLAST);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 3.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(DRAGONS_BREATH);
+            spells[3].info = dbcSpell.LookupEntry(SP_NETH_SEPETHREA_DRAGONS_BREATH);
             spells[3].targettype = TARGET_VARIOUS;    // doesn't afffect when VARIOUS? WTF? :|  Sometimes works, sometimes not? :|
             spells[3].instant = true;
             spells[3].cooldown = -1;
@@ -2596,7 +2446,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             //_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Don't value your life very much, do you?");
+            _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_01);
             _unit->PlaySoundToSet(11186);
         }
 
@@ -2625,11 +2475,11 @@ class NethermancerSepethreaAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "And don't come back!");    // Verified
+                        _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_05);
                         _unit->PlaySoundToSet(11187);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Endala finel endal!");    // Added
+                        _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_06);
                         _unit->PlaySoundToSet(11188);
                         break;
                 }
@@ -2641,7 +2491,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
             SummonTimer = 4;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Anu... bala belore...alon.");
+            _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_07);
             _unit->PlaySoundToSet(11192);
         }
 
@@ -2652,7 +2502,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
             if (!SummonTimer)
             {
                 _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am not alone!");    // checks!
+                _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_02);
                 _unit->PlaySoundToSet(11191);
             }
 
@@ -2668,13 +2518,13 @@ class NethermancerSepethreaAI : public CreatureAIScript
             {
                 case 0:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Think you can take the heat?");
+                    _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_03);
                     _unit->PlaySoundToSet(11189);
                 }
                 break;
                 case 1:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Anar'endal dracon!");
+                    _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_04);
                     _unit->PlaySoundToSet(11190);
                 }
                 break;
@@ -2738,20 +2588,10 @@ class NethermancerSepethreaAI : public CreatureAIScript
         int nrspells;
 };
 
+
 // Pathaleon the Calculator AI
-
-#define CN_PATHALEON_THE_CALCULATOR 19220
-
-#define MANA_TRAP 36021 // I am not sure to any of those ids =(
-#define DOMINATION 36866
-#define SILENCE 38491
-#define SUMMON_NETHER_WRAITH1 35285    // not the best way, but blizzlike :) (but they don't work for now =()
-#define SUMMON_NETHER_WRAITH2 35286
-#define SUMMON_NETHER_WRAITH3 35287
-#define SUMMON_NETHER_WRAITH4 35288
 // hmm... he switches weapons and there is sound for it, but I must know when he does that, how it looks like etc.
 // before adding weapon switching =/    (Sound: 11199; speech: "I prefer to be hands-on...";)
-
 class PathaleonTheCalculatorAI : public CreatureAIScript
 {
     public:
@@ -2769,49 +2609,49 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(MANA_TRAP);
+            spells[0].info = dbcSpell.LookupEntry(SP_PATHALEON_MANA_TRAP);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(DOMINATION);
+            spells[1].info = dbcSpell.LookupEntry(SP_PATHALEON_DOMINATION);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 4.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SILENCE);
+            spells[2].info = dbcSpell.LookupEntry(SP_PATHALEON_SILENCE);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 6.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SUMMON_NETHER_WRAITH1);
+            spells[3].info = dbcSpell.LookupEntry(SP_PATHALEON_SUMMON_NETHER_WRAITH1);
             spells[3].targettype = TARGET_SELF;    // hmm
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(SUMMON_NETHER_WRAITH2);
+            spells[4].info = dbcSpell.LookupEntry(SP_PATHALEON_SUMMON_NETHER_WRAITH2);
             spells[4].targettype = TARGET_SELF;    // hmm
             spells[4].instant = true;
             spells[4].cooldown = -1;
             spells[4].perctrigger = 0.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = dbcSpell.LookupEntry(SUMMON_NETHER_WRAITH3);
+            spells[5].info = dbcSpell.LookupEntry(SP_PATHALEON_SUMMON_NETHER_WRAITH3);
             spells[5].targettype = TARGET_SELF;    // hmm
             spells[5].instant = true;
             spells[5].cooldown = -1;
             spells[5].perctrigger = 0.0f;
             spells[5].attackstoptimer = 1000;
 
-            spells[6].info = dbcSpell.LookupEntry(SUMMON_NETHER_WRAITH4);
+            spells[6].info = dbcSpell.LookupEntry(SP_PATHALEON_SUMMON_NETHER_WRAITH4);
             spells[6].targettype = TARGET_SELF;    // hmm
             spells[6].instant = true;
             spells[6].cooldown = -1;
@@ -2824,7 +2664,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             SummonTimer = rand() % 16 + 30;
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "We are on a strict timetable. You will not interfere!");
+            _unit->SendScriptTextChatMessage(SAY_PATHALEON_01);
             _unit->PlaySoundToSet(11193);
         }
 
@@ -2853,11 +2693,11 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "A minor inconvenience.");
+                        _unit->SendScriptTextChatMessage(SAY_PATHALEON_06);
                         _unit->PlaySoundToSet(11194);
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Looks like you lose.");
+                        _unit->SendScriptTextChatMessage(SAY_PATHALEON_07);
                         _unit->PlaySoundToSet(11195);
                         break;
                 }
@@ -2869,7 +2709,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             SummonTimer = rand() % 16 + 30;
             CastTime();
             RemoveAIUpdateEvent();
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The project will... continue.");
+            _unit->SendScriptTextChatMessage(SAY_PATHALEON_08);
             _unit->PlaySoundToSet(11200);
         }
 
@@ -2884,7 +2724,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 _unit->CastSpell(_unit, spells[5].info, spells[5].instant);
                 _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
                 SummonTimer = rand() % 16 + 30;    // 30 - 45
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Time to supplement my work force.");
+                _unit->SendScriptTextChatMessage(SAY_PATHALEON_04);
                 _unit->PlaySoundToSet(11196);
             }
 
@@ -2899,11 +2739,11 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             switch (RandomDomination)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'm looking for a team player...");
+                    _unit->SendScriptTextChatMessage(SAY_PATHALEON_02);
                     _unit->PlaySoundToSet(11197);
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You work for me now!");
+                    _unit->SendScriptTextChatMessage(SAY_PATHALEON_03);
                     _unit->PlaySoundToSet(11198);
                     break;
             }
@@ -2968,6 +2808,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
         int nrspells;
 };
 
+/// \todo Data needed for: Nether Wraith, Mechanar Crusher (maybe not enough?)
 void SetupTheMechanar(ScriptMgr* mgr)
 {
     mgr->register_creature_script(CN_ARCANE_SERVANT, &ArcaneServantAI::Create);
@@ -2990,5 +2831,3 @@ void SetupTheMechanar(ScriptMgr* mgr)
     mgr->register_creature_script(CN_NETHERMANCER_SEPETHREA, &NethermancerSepethreaAI::Create);
     mgr->register_creature_script(CN_PATHALEON_THE_CALCULATOR, &PathaleonTheCalculatorAI::Create);
 }
-
-// \todo Data needed for: Nether Wraith, Mechanar Crusher (maybe not enough?)

@@ -19,33 +19,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_ZulFarrak.h"
 
 //Theka the Martyr
-
 // casts the spell Theka Transform 11089 at %30  hp
 // casts the spell fevered plague around each 17 second
 /*
 Fevered Plague 8600 = Inflicts 250 Nature damage to an enemy, then an additional 11 damage every 5 sec. for 3 min.
 Fevered Plague 16186 =  Inflicts 72 to 78 Nature damage to an enemy, then an additional 10 damage every 3 sec. for 30 sec. */
 
-#define theka_transform 11089
-#define fevered_plague 16186
-//#define fevered_plague 8600  i dont know wich one it is he casts
 
-class thekaAI : public CreatureAIScript
+class ThekaAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(thekaAI);
+        ADD_CREATURE_FACTORY_FUNCTION(ThekaAI);
 
-        thekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
 
-            morph = dbcSpell.LookupEntry(theka_transform);
+            morph = dbcSpell.LookupEntry(SP_THEKA_TRANSFORM);
 
-            plague = dbcSpell.LookupEntry(fevered_plague);
+            plague = dbcSpell.LookupEntry(SP_THEKA_FEVERED_PLAGUE);
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -98,11 +93,8 @@ class thekaAI : public CreatureAIScript
 };
 
 
-//----------------------------------------------------------------------------------------------------------
-
 // Antu'sul
-
-/*
+/** \note
 needs a aggro trigger outside cave
 
 yells
@@ -121,15 +113,13 @@ misc info
 he summons 6 Sul'lithuz Broodling 8138 on aggro
 he summons Servant of antu'sul 8156 75% with spell 11894
 he summons Servant of antu'sul 8156 25% with spell 11894 each 15 second
-
-------------------------------------------------------------------------------------------------
 */
-class antusulTriggerAI : public CreatureAIScript
+class AntusulTriggerAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(antusulTriggerAI);
+        ADD_CREATURE_FACTORY_FUNCTION(AntusulTriggerAI);
 
-        antusulTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
+        AntusulTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
         void OnCombatStart(Unit* mTarget)
         {
@@ -150,23 +140,20 @@ class antusulTriggerAI : public CreatureAIScript
         }
 
 };
-/*--------------------------------------------------------------------------------------*/
-/*antusul  healing ward and earthgrab ward commented out since they need time and work wich i dont have right now */
-#define servants 11894
-#define healingward 11889
-#define earthgrabward 8376
 
-class antusulAI : public CreatureAIScript
+
+/// \note healing ward and earthgrab ward commented out since they need time and work wich i dont have right now
+class AntusulAI : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(antusulAI);
+        ADD_CREATURE_FACTORY_FUNCTION(AntusulAI);
 
-        antusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
-            servant = dbcSpell.LookupEntry(servants);
-            //healing_ward = dbcSpell.LookupEntry(healingward);
-            //earthgrab_ward = dbcSpell.LookupEntry(earthgrabward);
+            servant = dbcSpell.LookupEntry(SP_ANTUSUL_SERVANTS);
+            //healing_ward = dbcSpell.LookupEntry(SP_ANTUSUL_HEALINGWARD);
+            //earthgrab_ward = dbcSpell.LookupEntry(SP_ANTUSUL_EARTHGRABWARD);
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -278,39 +265,39 @@ class antusulAI : public CreatureAIScript
             }
             /*if (healingwardcount >= hmax)
             {
-                //_unit->CastSpell(_unit, healing_ward, true);    wrong spell id cant find right one
+                //_unit->CastSpell(_unit, SP_ANTUSUL_HEALINGWARD, true);    wrong spell id cant find right one
                 healingwardcount = 0;
             }
             if (earthgrabcount >= emax)
             {
-                //_unit->CastSpell(_unit, earthgrab_ward, true);   the totem needs to be scripted with its own ai
+                //_unit->CastSpell(_unit, SP_ANTUSUL_EARTHGRABWARD, true);   the totem needs to be scripted with its own ai
                 earthgrabcount = 0;
             }*/
         }
 
         void spawnadds()
         {
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(8138, 1777.753540f, 741.063538f, 16.439308f, 6.197119f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(8138, 1782.193481f, 751.190002f, 16.620836f, 5.174994f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(8138, 1790.956299f, 754.666809f, 14.195786f, 5.174208f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(8138, 1800.902710f, 755.723267f, 15.642491f, 4.545889f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(8138, 1809.339722f, 749.212402f, 16.910545f, 4.109208f, true, false, 0, 0);
-            _unit->GetMapMgr()->GetInterface()->SpawnCreature(8138, 1818.182129f, 744.702820f, 17.801855f, 3.899507f, true, false, 0, 0);
+            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1777.753540f, 741.063538f, 16.439308f, 6.197119f, true, false, 0, 0);
+            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1782.193481f, 751.190002f, 16.620836f, 5.174994f, true, false, 0, 0);
+            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1790.956299f, 754.666809f, 14.195786f, 5.174208f, true, false, 0, 0);
+            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1800.902710f, 755.723267f, 15.642491f, 4.545889f, true, false, 0, 0);
+            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1809.339722f, 749.212402f, 16.910545f, 4.109208f, true, false, 0, 0);
+            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SULLITHUZ_BROODLING, 1818.182129f, 744.702820f, 17.801855f, 3.899507f, true, false, 0, 0);
         }
 
         void addsdefine()
         {
-            add1 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1777.753540f, 741.063538f, 16.439308f, 8138);
-            add2 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1782.193481f, 751.190002f, 16.620836f, 8138);
-            add3 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1790.956299f, 754.666809f, 14.195786f, 8138);
-            add4 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1800.902710f, 755.723267f, 15.642491f, 8138);
-            add5 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1809.339722f, 749.212402f, 16.910545f, 8138);
-            add6 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1818.182129f, 744.702820f, 17.801855f, 8138);
+            add1 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1777.753540f, 741.063538f, 16.439308f, CN_SULLITHUZ_BROODLING);
+            add2 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1782.193481f, 751.190002f, 16.620836f, CN_SULLITHUZ_BROODLING);
+            add3 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1790.956299f, 754.666809f, 14.195786f, CN_SULLITHUZ_BROODLING);
+            add4 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1800.902710f, 755.723267f, 15.642491f, CN_SULLITHUZ_BROODLING);
+            add5 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1809.339722f, 749.212402f, 16.910545f, CN_SULLITHUZ_BROODLING);
+            add6 = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1818.182129f, 744.702820f, 17.801855f, CN_SULLITHUZ_BROODLING);
         }
 
         void resettrigger()
         {
-            trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1811.943726f, 714.839417f, 12.897189f, 133337);
+            trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1811.943726f, 714.839417f, 12.897189f, TRIGGER_ANTUSUL);
             if (trigger)
             {
                 trigger->GetAIInterface()->m_canMove = true;
@@ -367,7 +354,7 @@ class antusulAI : public CreatureAIScript
 
 void SetupZulFarrak(ScriptMgr* mgr)
 {
-    mgr->register_creature_script(8127, &antusulAI::Create);
-    mgr->register_creature_script(7272, &thekaAI::Create);
-    mgr->register_creature_script(133337, &antusulTriggerAI::Create);
+    mgr->register_creature_script(CN_ANTUSUL, &AntusulAI::Create);
+    mgr->register_creature_script(CN_THEKA , &ThekaAI::Create);
+    mgr->register_creature_script(TRIGGER_ANTUSUL, &AntusulTriggerAI::Create);
 }
