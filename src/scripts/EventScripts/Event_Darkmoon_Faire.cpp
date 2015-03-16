@@ -160,7 +160,7 @@ Tonk->Despawn(10000,0);
 
 // Close the console so others can access it
 Console->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
-Console->SetState(1);
+Console->SetState(GAMEOBJECT_STATE_CLOSED);
 RemoveAIUpdateEvent();
 }
 }

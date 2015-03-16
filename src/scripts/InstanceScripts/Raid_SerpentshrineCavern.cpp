@@ -3153,11 +3153,11 @@ class SerpentshrineCavern : public MoonInstanceScript
             {
                 pBridgePart = GetGameObjectByGuid(mBridgePart[i]);
                 if (pBridgePart != NULL)
-                    pBridgePart->SetState(0);
+                    pBridgePart->SetState(GAMEOBJECT_STATE_OPEN);
             };
 
 
-            pGameObject->SetState(0);
+            pGameObject->SetState(GAMEOBJECT_STATE_OPEN);
         }
 
 };

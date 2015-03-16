@@ -314,7 +314,7 @@ class GundrakScript : public MoonInstanceScript
 
                     pDoors = GetGameObjectByGuid(mEckDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(0);
+                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
                 }
                 break;
                 case CN_GAL_DARAH:
@@ -322,11 +322,11 @@ class GundrakScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_GAL_DARAH, State_Finished);
                     pDoors = GetGameObjectByGuid(mDoor1GUID);
                     if (pDoors)
-                        pDoors->SetState(0);
+                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
 
                     pDoors = GetGameObjectByGuid(mDoor2GUID);
                     if (pDoors)
-                        pDoors->SetState(0);
+                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
                 }
                 break;
                 case CN_SLADRAN:

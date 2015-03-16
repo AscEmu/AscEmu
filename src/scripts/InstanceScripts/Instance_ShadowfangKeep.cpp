@@ -189,7 +189,7 @@ class NandosAI : public MoonScriptCreatureAI
     {
         GameObject*  pDoor = GetUnit()->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-118.11f, 2161.86f, 155.678f, 18971);
         if (pDoor)
-            pDoor->SetState(0);
+            pDoor->SetState(GAMEOBJECT_STATE_OPEN);
 
         ParentClass::OnDied(pKiller);
     }

@@ -1617,7 +1617,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
             if (LakkasCage != NULL)
             {
-                LakkasCage->SetState(0);
+                LakkasCage->SetState(GAMEOBJECT_STATE_OPEN);
                 LakkasCage->SetUInt32Value(GAMEOBJECT_FLAGS, LakkasCage->GetUInt32Value(GAMEOBJECT_FLAGS) - 1);
             }
 
@@ -1840,7 +1840,7 @@ class TalonKingIkissAI : public CreatureAIScript
 
             GameObject* IkissDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(43.079f, 149.505f, 0.034f, 183398);
             if (IkissDoor != NULL)
-                IkissDoor->SetState(0);
+                IkissDoor->SetState(GAMEOBJECT_STATE_OPEN);
 
             RemoveAIUpdateEvent();
         }

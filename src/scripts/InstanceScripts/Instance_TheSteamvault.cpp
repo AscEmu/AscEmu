@@ -2295,7 +2295,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             GameObject* Gate = NULL;
             Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
-                Gate->SetState(1);
+                Gate->SetState(GAMEOBJECT_STATE_CLOSED);
 
             int RandomSpeach = rand() % 3;
             switch (RandomSpeach)
@@ -2341,7 +2341,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             GameObject* Gate = NULL;
             Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
-                Gate->SetState(0);
+                Gate->SetState(GAMEOBJECT_STATE_OPEN);
 
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             _unit->GetAIInterface()->m_canMove = true;

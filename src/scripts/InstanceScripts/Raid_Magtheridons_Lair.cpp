@@ -318,7 +318,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     // If Gate is found we close it
                     GameObject*  Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
                     if (Gate)
-                        Gate->SetState(1);
+                        Gate->SetState(GAMEOBJECT_STATE_CLOSED);
                 }
             }
             // We use different functions for each phase
@@ -406,7 +406,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         {
                             GameObject*  Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
                             if (Gate)
-                                Gate->SetState(0);
+                                Gate->SetState(GAMEOBJECT_STATE_OPEN);
                         }
                         // After doing our job we can clear temporary channeler list
                         AliveChannelers.clear();
@@ -1344,7 +1344,7 @@ class MagtheridonAI : public CreatureAIScript
 
             GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
-                Gate->SetState(1);
+                Gate->SetState(GAMEOBJECT_STATE_CLOSED);
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -1361,16 +1361,16 @@ class MagtheridonAI : public CreatureAIScript
             {
                 Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                 if (Gate)
-                    Gate->SetState(1);
+                    Gate->SetState(GAMEOBJECT_STATE_CLOSED);
             }
 
             Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(0.0f, 0.0f, 0.0f, 184653);
             if (Gate)
-                Gate->SetState(1);
+                Gate->SetState(GAMEOBJECT_STATE_CLOSED);
 
             Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
-                Gate->SetState(0);
+                Gate->SetState(GAMEOBJECT_STATE_OPEN);
         }
 
         void OnDied(Unit* mKiller)
@@ -1527,12 +1527,12 @@ class MagtheridonAI : public CreatureAIScript
                     {
                         Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                         if (Gate)
-                            Gate->SetState(0);
+                            Gate->SetState(GAMEOBJECT_STATE_OPEN);
                     }
 
                     Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(0.0f, 0.0f, 0.0f, 184653);
                     if (Gate)
-                        Gate->SetState(0);
+                        Gate->SetState(GAMEOBJECT_STATE_OPEN);
                 }
 
                 if (timer_caveIn == 5)

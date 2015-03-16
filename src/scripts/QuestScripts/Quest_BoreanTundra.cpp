@@ -120,8 +120,8 @@ class NerubarEggSac : public GameObjectAIScript
                 return;
 
             sEAS.KillMobForQuest(pPlayer, 11602, 0);
-            _gameobject->SetState(1);
-            _gameobject->SetState(0);
+            _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+            _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
             _gameobject->Despawn(500, 60000);
         };
 
@@ -192,8 +192,9 @@ class BlueDragonEgg : public GameObjectAIScript
                 return;
 
             sEAS.KillMobForQuest(pPlayer, 11936, 0);
-            _gameobject->SetState(1);
-            _gameobject->SetState(0);
+            ///\todo why setting gameobject state 1 and 0?!?!
+            _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+            _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
             _gameobject->Despawn(500, 60000);
         }
 };
