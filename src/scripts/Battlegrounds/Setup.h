@@ -16,13 +16,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-#ifndef BATTLEGROUNDS_SETUP_H
-#define BATTLEGROUNDS_SETUP_H
+#ifndef _BATTLEGROUNDS_SETUP_H
+#define _BATTLEGROUNDS_SETUP_H
 
 #include "StdAfx.h"
 
-#endif
-
+#endif  // _BATTLEGROUNDS_SETUP_H

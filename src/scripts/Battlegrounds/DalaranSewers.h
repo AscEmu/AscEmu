@@ -18,23 +18,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DALARAN_SEWERS_H
-#define DALARAN_SEWERS_H
+#ifndef _DALARAN_SEWERS_H
+#define _DALARAN_SEWERS_H
 
 #include "StdAfx.h"
 
-class DalaranSewers : public Arena{
-public:
-    DalaranSewers( MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side );
-    ~DalaranSewers();
+class DalaranSewers : public Arena
+{
+    public:
 
-    static CBattleground* Create( MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side ){
-        return new DalaranSewers( m, i, l, t, players_per_side );
-    }
+        DalaranSewers(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
+        ~DalaranSewers();
 
-    void OnCreate();
-    LocationVector GetStartingCoords( uint32 Team );
-    bool HookHandleRepop( Player *plr );
+        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side)
+        {
+            return new DalaranSewers(m, i, l, t, players_per_side);
+        }
+
+        void OnCreate();
+        LocationVector GetStartingCoords(uint32 Team);
+        bool HookHandleRepop(Player* plr);
 };
 
-#endif
+#endif  // _DALARAN_SEWERS_H

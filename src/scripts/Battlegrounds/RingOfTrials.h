@@ -18,24 +18,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RING_OF_TRIALS_H
-#define RING_OF_TRIALS_H
+#ifndef _RING_OF_TRIALS_H
+#define _RING_OF_TRIALS_H
 
 #include "StdAfx.h"
 
-class RingOfTrials : public Arena{
-public:
-    RingOfTrials( MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side );
-    ~RingOfTrials();
+class RingOfTrials : public Arena
+{
+    public:
 
-    static CBattleground* Create( MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side ){
-        return new RingOfTrials( m, i, l, t, players_per_side );
-    }
+        RingOfTrials(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
+        ~RingOfTrials();
 
-    void OnCreate();
-    void HookOnShadowSight();
-    LocationVector GetStartingCoords( uint32 Team );
-    bool HookHandleRepop( Player *plr );
+        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side)
+        {
+            return new RingOfTrials(m, i, l, t, players_per_side);
+        }
+
+        void OnCreate();
+        void HookOnShadowSight();
+        LocationVector GetStartingCoords(uint32 Team);
+        bool HookHandleRepop(Player* plr);
 };
 
-#endif
+#endif  // _RING_OF_TRIALS_H

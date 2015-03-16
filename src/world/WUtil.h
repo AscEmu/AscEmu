@@ -16,15 +16,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-#ifndef ARCWORLDUTILS__H
-#define ARCWORLDUTILS__H
+#ifndef _ARCWORLDUTILS_H
+#define _ARCWORLDUTILS_H
 
 namespace Arcemu
 {
-
     // Common Arcemu world stuff
     class SERVER_DECL Util
     {
@@ -40,6 +38,6 @@ namespace Arcemu
             static uint32 MAKE_GAME_TIME();
     };
 }
-#define ARCEMU_ASSERT( EXPR ) Arcemu::Util::ArcemuAssert( EXPR ); ANALYSIS_ASSUME( EXPR )
+#define ARCEMU_ASSERT(EXPR) Arcemu::Util::ArcemuAssert(EXPR); ANALYSIS_ASSUME(EXPR)
 
-#endif
+#endif  // _ARCWORLDUTILS_H

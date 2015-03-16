@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CIRCLE_OF_BLOOD_H
-#define CIRCLE_OF_BLOOD_H
+#ifndef _CIRCLE_OF_BLOOD_H
+#define _CIRCLE_OF_BLOOD_H
 
 #include "StdAfx.h"
 
@@ -38,4 +38,4 @@ public:
     bool HookHandleRepop( Player *plr );
 };
 
-#endif
+#endif  // _CIRCLE_OF_BLOOD_H

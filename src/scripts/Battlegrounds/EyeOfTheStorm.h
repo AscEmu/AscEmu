@@ -18,19 +18,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef _EYE_OF_THE_STORM_H
+#define _EYE_OF_THE_STORM_H
 
-#ifndef _EOTS_H
-#define _EOTS_H
 
-#define EOTS_TOWER_COUNT 4
-
-#define EOTS_BUFF_RESPAWN_TIME 90000
-
-#define EOTS_NETHERWING_FLAG_SPELL 34976
+#define EOTS_TOWER_COUNT            4
+#define EOTS_BUFF_RESPAWN_TIME      90000
+#define EOTS_NETHERWING_FLAG_SPELL  34976
 
 class EyeOfTheStorm : public CBattleground
 {
     public:
+
         EyeOfTheStorm(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~EyeOfTheStorm();
 
@@ -73,6 +72,7 @@ class EyeOfTheStorm : public CBattleground
         void SetIsWeekend(bool isweekend);
 
     protected:
+
         int32 m_CPStatus[EOTS_TOWER_COUNT];
         uint32 m_flagHolder;
 
@@ -94,4 +94,4 @@ class EyeOfTheStorm : public CBattleground
         Creature* m_spiritGuides[EOTS_TOWER_COUNT];
 };
 
-#endif        // _EOTS_H
+#endif  // _EYE_OF_THE_STORM_H

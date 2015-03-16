@@ -17,17 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IOC_BG_H
-#define IOC_BG_H
+#ifndef _ISLE_OF_CONQUEST_H
+#define _ISLE_OF_CONQUEST_H
 
-#define IOC_NUM_CONTROL_POINTS 7
-#define IOC_NUM_TELEPORTERS 12
-#define IOC_NUM_DOCKVEHICLES 4
-#define IOC_NUM_WORKSHOP_DEMOLISHERS 4
-#define IOC_NUM_GATES_PER_TEAM 3
-#define IOC_NUM_GRAVEYARDS 7
 
-enum ControlPointTypes{
+#define IOC_NUM_CONTROL_POINTS          7
+#define IOC_NUM_TELEPORTERS             12
+#define IOC_NUM_DOCKVEHICLES            4
+#define IOC_NUM_WORKSHOP_DEMOLISHERS    4
+#define IOC_NUM_GATES_PER_TEAM          3
+#define IOC_NUM_GRAVEYARDS              7
+
+enum ControlPointTypes
+{
     IOC_SPAWN_TYPE_NEUTRAL              = 0,
     IOC_SPAWN_TYPE_ALLIANCE_ASSAULT     = 1,
     IOC_SPAWN_TYPE_HORDE_ASSAULT        = 2,
@@ -35,161 +37,182 @@ enum ControlPointTypes{
     IOC_SPAWN_TYPE_HORDE_CONTROLLED     = 4
 };
 
-struct IOCGraveyard{
+struct IOCGraveyard
+{
     uint32 owner;
-    Creature *spiritguide;
+    Creature* spiritguide;
 
-    IOCGraveyard(){
+    IOCGraveyard()
+    {
         owner = MAX_PLAYER_TEAMS;
         spiritguide = NULL;
     }
 
-    ~IOCGraveyard(){
+    ~IOCGraveyard()
+    {
         owner = MAX_PLAYER_TEAMS;
         spiritguide = NULL;
     }
 };
 
-struct IOCTeleporter{
-    GameObject *teleporter;
-    GameObject *effect;
+struct IOCTeleporter
+{
+    GameObject* teleporter;
+    GameObject* effect;
 
-    IOCTeleporter(){
+    IOCTeleporter()
+    {
         teleporter = NULL;
-        effect     = NULL;
+        effect = NULL;
     }
 
-    ~IOCTeleporter(){
+    ~IOCTeleporter()
+    {
         teleporter = NULL;
-        effect     = NULL;
+        effect = NULL;
     }
 };
 
-struct IOCControlPoint{
-    GameObject *pole;
-    GameObject *banner;
-    GameObject *aura;
+struct IOCControlPoint
+{
+    GameObject* pole;
+    GameObject* banner;
+    GameObject* aura;
     ControlPointTypes state;
     uint32 worldstate;
 
-    IOCControlPoint(){
-        pole        = NULL;
-        banner      = NULL;
-        aura        = NULL;
-        state       = IOC_SPAWN_TYPE_NEUTRAL;
-        worldstate  = 0;
+    IOCControlPoint()
+    {
+        pole = NULL;
+        banner = NULL;
+        aura = NULL;
+        state = IOC_SPAWN_TYPE_NEUTRAL;
+        worldstate = 0;
     }
 
-    ~IOCControlPoint(){
-        pole        = NULL;
-        banner      = NULL;
-        aura        = NULL;
-        state       = IOC_SPAWN_TYPE_NEUTRAL;
-        worldstate  = 0;
+    ~IOCControlPoint()
+    {
+        pole = NULL;
+        banner = NULL;
+        aura = NULL;
+        state = IOC_SPAWN_TYPE_NEUTRAL;
+        worldstate = 0;
     }
 };
 
-struct IOCGate{
-    GameObject *gate;
-    GameObject *dyngate;
+struct IOCGate
+{
+    GameObject* gate;
+    GameObject* dyngate;
 
-    IOCGate(){
+    IOCGate()
+    {
         gate = NULL;
         dyngate = NULL;
     }
 
-    ~IOCGate(){
+    ~IOCGate()
+    {
         gate = NULL;
         dyngate = NULL;
     }
 };
 
-struct IOCVehicle{
-    Creature *c;
+struct IOCVehicle
+{
+    Creature* c;
     LocationVector baselocation;
 
-    IOCVehicle(){
+    IOCVehicle()
+    {
         c = NULL;
     }
 
-    ~IOCVehicle(){
+    ~IOCVehicle()
+    {
         c = NULL;
     }
 
-    bool IsCloseToBaseLocation(){
-        if( c != NULL ){
-            if( c->CalcDistance( baselocation ) <= 10.0f )
+    bool IsCloseToBaseLocation()
+    {
+        if (c != NULL)
+        {
+            if (c->CalcDistance(baselocation) <= 10.0f)
                 return true;
             else
                 return false;
-        }else
+        }
+        else
             return false;
     }
 
 
-    bool IsEmpty() const{
-        if( c == NULL )
+    bool IsEmpty() const
+    {
+        if (c == NULL)
             return true;
 
-        if( c->GetVehicleComponent() == NULL )
+        if (c->GetVehicleComponent() == NULL)
             return true;
 
-        if( c->GetVehicleComponent()->GetPassengerCount() > 0 )
+        if (c->GetVehicleComponent()->GetPassengerCount() > 0)
             return false;
 
         return true;
     }
 
-    void Despawn(){
-        if( c != NULL ){
-            c->Despawn( 0, 0 );
+    void Despawn()
+    {
+        if (c != NULL)
+        {
+            c->Despawn(0, 0);
             c = NULL;
         }
     }
 };
 
-class IsleOfConquest : public CBattleground{
+class IsleOfConquest : public CBattleground
+{
     public:
-        IsleOfConquest( MapMgr *mgr, uint32 id, uint32 lgroup, uint32 t );
-        
+
+        IsleOfConquest(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~IsleOfConquest();
 
-        static CBattleground* Create( MapMgr* m, uint32 i, uint32 l, uint32 t ){ return new IsleOfConquest( m, i, l, t ); }
+        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t){ return new IsleOfConquest(m, i, l, t); }
 
         void Init();
         void OnCreate();
         void OnStart();
         void OpenGates();
         void CloseGates();
-        void SpawnControlPoint( uint32 Id, uint32 Type );
-        void SpawnGraveyard( uint32 id, uint32 team );
-        void Finish( uint32 losingTeam );
-        void HookOnAreaTrigger( Player *plr, uint32 id );
-        void HookOnPlayerDeath( Player *plr );
-        void HookOnPlayerResurrect( Player *player );
+        void SpawnControlPoint(uint32 Id, uint32 Type);
+        void SpawnGraveyard(uint32 id, uint32 team);
+        void Finish(uint32 losingTeam);
+        void HookOnAreaTrigger(Player* plr, uint32 id);
+        void HookOnPlayerDeath(Player* plr);
+        void HookOnPlayerResurrect(Player* player);
         void HookOnPlayerKill(Player* plr, Player* pVictim){}
-        void HookFlagDrop( Player *plr, GameObject *obj ){}
-        void HookOnFlagDrop( Player* plr ){}
-        void HookFlagStand( Player* plr, GameObject* obj ){}
-        bool HookSlowLockOpen( GameObject *pGo, Player* pPlayer, Spell *pSpell );
-        void HookOnMount( Player *plr ){}
+        void HookFlagDrop(Player* plr, GameObject* obj){}
+        void HookOnFlagDrop(Player* plr){}
+        void HookFlagStand(Player* plr, GameObject* obj){}
+        bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell *pSpell);
+        void HookOnMount(Player* plr){}
         void HookGenerateLoot(Player* plr, Object* pCorpse){}
-        void OnAddPlayer( Player *plr );
-        void OnRemovePlayer( Player *plr );
+        void OnAddPlayer(Player* plr);
+        void OnRemovePlayer(Player* plr);
         void HookOnShadowSight();
-        void SetIsWeekend( bool isweekend );
-        void HookOnUnitKill( Player *plr, Unit* pVictim );
-        void HookOnUnitDied( Unit *victim );
-        LocationVector GetStartingCoords( uint32 Team );
-        void AddReinforcements( uint32 team, uint32 amount );
-        void RemoveReinforcements( uint32 team, uint32 amount );
+        void SetIsWeekend(bool isweekend);
+        void HookOnUnitKill(Player* plr, Unit* pVictim);
+        void HookOnUnitDied(Unit* victim);
+        LocationVector GetStartingCoords(uint32 Team);
+        void AddReinforcements(uint32 team, uint32 amount);
+        void RemoveReinforcements(uint32 team, uint32 amount);
         void UpdateResources();
-        void HookOnHK( Player *plr );
-        void AssaultControlPoint( Player *player, uint32 id );
-        void CaptureControlPoint( uint32 id );
-        bool HookHandleRepop( Player *plr );
-        void BuildWorkshopVehicle( uint32 delay );
-
+        void HookOnHK(Player* plr);
+        void AssaultControlPoint(Player* player, uint32 id);
+        void CaptureControlPoint(uint32 id);
+        bool HookHandleRepop(Player* plr);
+        void BuildWorkshopVehicle(uint32 delay);
 
         // Capture events
         void EventRefineryCaptured();
@@ -201,16 +224,17 @@ class IsleOfConquest : public CBattleground{
         void EventHordeKeepCaptured();
 
     private:
-        IOCTeleporter teleporter[ IOC_NUM_TELEPORTERS ];
-        IOCControlPoint controlpoint[ IOC_NUM_CONTROL_POINTS ];
-        IOCGate gates[ MAX_PLAYER_TEAMS ][ IOC_NUM_GATES_PER_TEAM ];
-        IOCVehicle workshopvehicle[ MAX_PLAYER_TEAMS ];
-        IOCVehicle workshopdemolisher[ MAX_PLAYER_TEAMS ][ IOC_NUM_WORKSHOP_DEMOLISHERS ];
-        IOCVehicle dockvehicle[ MAX_PLAYER_TEAMS ][ IOC_NUM_DOCKVEHICLES ];
-        IOCGraveyard graveyards[ IOC_NUM_GRAVEYARDS ];
-        GameObject* towergates[ MAX_PLAYER_TEAMS ][ 2 ];
-        Unit *generals[ MAX_PLAYER_TEAMS ];
-        uint32 m_reinforcements[ MAX_PLAYER_TEAMS ];
+
+        IOCTeleporter teleporter[IOC_NUM_TELEPORTERS];
+        IOCControlPoint controlpoint[IOC_NUM_CONTROL_POINTS];
+        IOCGate gates[MAX_PLAYER_TEAMS][IOC_NUM_GATES_PER_TEAM];
+        IOCVehicle workshopvehicle[MAX_PLAYER_TEAMS];
+        IOCVehicle workshopdemolisher[MAX_PLAYER_TEAMS][IOC_NUM_WORKSHOP_DEMOLISHERS];
+        IOCVehicle dockvehicle[MAX_PLAYER_TEAMS][IOC_NUM_DOCKVEHICLES];
+        IOCGraveyard graveyards[IOC_NUM_GRAVEYARDS];
+        GameObject* towergates[MAX_PLAYER_TEAMS][2];
+        Unit* generals[MAX_PLAYER_TEAMS];
+        uint32 m_reinforcements[MAX_PLAYER_TEAMS];
 };
 
-#endif
+#endif  // _ISLE_OF_CONQUEST_H

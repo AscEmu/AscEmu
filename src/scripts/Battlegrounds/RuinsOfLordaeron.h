@@ -18,24 +18,27 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RUINS_OF_LORDAERON
-#define RUINS_OF_LORDAERON
+#ifndef _RUINS_OF_LORDAERON_H
+#define _RUINS_OF_LORDAERON_H
 
 #include "StdAfx.h"
 
-class RuinsOfLordaeron : public Arena{
-public:
-    RuinsOfLordaeron( MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side );
-    ~RuinsOfLordaeron();
+class RuinsOfLordaeron : public Arena
+{
+    public:
 
-    static CBattleground* Create( MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side ){
-        return new RuinsOfLordaeron( m, i, l, t, players_per_side );
-    }
+        RuinsOfLordaeron(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
+        ~RuinsOfLordaeron();
 
-    void OnCreate();
-    void HookOnShadowSight();
-    LocationVector GetStartingCoords( uint32 Team );
-    bool HookHandleRepop( Player *plr );
+        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side)
+        {
+            return new RuinsOfLordaeron(m, i, l, t, players_per_side);
+        }
+
+        void OnCreate();
+        void HookOnShadowSight();
+        LocationVector GetStartingCoords(uint32 Team);
+        bool HookHandleRepop(Player* plr);
 };
 
-#endif
+#endif  // _RUINS_OF_LORDAERON_H
