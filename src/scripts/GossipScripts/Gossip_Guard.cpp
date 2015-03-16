@@ -1136,286 +1136,288 @@ class UndercityGuard : public GossipScript
         }
 };
 
-class UndercityGuardOverseer : public Arcemu::Gossip::Script
+class UndercityGuardOverseer : public GossipScript
 {
     public:
         void OnHello(Object* pObject, Player* Plr)
         {
-            Arcemu::Gossip::Menu menu(pObject->GetGUID(), 15321);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 1);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 3);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 4);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 5);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 6);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 7);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH), 8);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 9);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 10);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 11);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 12);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 13);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 14);
-            menu.Send(Plr);
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 15321, Plr);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 1);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 3);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 4);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 5);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 6);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 7);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH), 8);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 9);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 10);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 11);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 12);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 13);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 14);
+            Menu->SendTo(Plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char * Code)
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            switch(Id)
+            GossipMenu* Menu;
+            switch(IntId)
             {
-            case 0:    
-                OnHello(pObject, Plr);
-                break;
+                case 0:    
+                    OnHello(pObject, Plr);
+                    break;
 
-            case 1:     // The auction house
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14900, Plr);
-                    Plr->Gossip_SendPOI(108);
-                }
-                break;
+                case 1:     // The auction house
+                    {
+                        SendQuickMenu(14900);
+                        Plr->Gossip_SendPOI(108);
+                    }
+                    break;
 
-            case 2:     // The bank
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14901, Plr);
-                    Plr->Gossip_SendPOI(109);
-                }
-                break;
+                case 2:     // The bank
+                    {
+                        SendQuickMenu(14901);
+                        Plr->Gossip_SendPOI(109);
+                    }
+                    break;
 
-            case 3:     // Barber
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14902, Plr);
-                    Plr->Gossip_SendPOI(110);
-                }
-                break;
+                case 3:     // Barber
+                    {
+                        SendQuickMenu(14902);
+                        Plr->Gossip_SendPOI(110);
+                    }
+                    break;
 
-            case 4:     // The bat handler
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14903, Plr);
-                    Plr->Gossip_SendPOI(111);
-                }
-                break;
+                case 4:     // The bat handler
+                    {
+                        SendQuickMenu(14903);
+                        Plr->Gossip_SendPOI(111);
+                    }
+                    break;
 
-            case 5:    // The battlemaster
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14904, Plr);
-                    Plr->Gossip_SendPOI(112);
-                }
-                break;
+                case 5:    // The battlemaster
+                    {
+                        SendQuickMenu(14904);
+                        Plr->Gossip_SendPOI(112);
+                    }
+                    break;
 
-            case 6:     // The guild master
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14911, Plr);
-                    Plr->Gossip_SendPOI(113);
-                }
-                break;
+                case 6:     // The guild master
+                    {
+                        SendQuickMenu(14911);
+                        Plr->Gossip_SendPOI(113);
+                    }
+                    break;
 
-            case 7:     // The inn
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14913, Plr);
-                    Plr->Gossip_SendPOI(114);
-                }
-                break;
+                case 7:     // The inn
+                    {
+                        SendQuickMenu(14913);
+                        Plr->Gossip_SendPOI(114);
+                    }
+                    break;
 
-            case 8:     // Locksmith
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14916, Plr);
-                    Plr->Gossip_SendPOI(115);
-                }
-                break;
+                case 8:     // Locksmith
+                    {
+                        SendQuickMenu(14916);
+                        Plr->Gossip_SendPOI(115);
+                    }
+                    break;
 
-            case 9:     // The mailbox
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14918, Plr);
-                    Plr->Gossip_SendPOI(116);
-                }
-                break;
+                case 9:     // The mailbox
+                    {
+                        SendQuickMenu(14918);
+                        Plr->Gossip_SendPOI(116);
+                    }
+                    break;
 
-            case 10:     // The stable master
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14924, Plr);
-                    Plr->Gossip_SendPOI(117);
-                }
-                break;
+                case 10:     // The stable master
+                    {
+                        SendQuickMenu(14924);
+                        Plr->Gossip_SendPOI(117);
+                    }
+                    break;
 
-            case 11:     // The weapon master
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14928, Plr);
-                    Plr->Gossip_SendPOI(118);
-                }
-                break;
+                case 11:     // The weapon master
+                    {
+                        SendQuickMenu(14928);
+                        Plr->Gossip_SendPOI(118);
+                    }
+                    break;
 
-            case 12:     // The zeppelin master
-                {
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14929, Plr);
-                    Plr->Gossip_SendPOI(119);
-                }
-                break;
+                case 12:     // The zeppelin master
+                    {
+                        SendQuickMenu(14929);
+                        Plr->Gossip_SendPOI(119);
+                    }
+                    break;
 
-            case 13:    // A class trainer
-                {
-                    Arcemu::Gossip::Menu menu(pObject->GetGUID(), 3542);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE)         , 15);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN)      , 16);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST)       , 17);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE)        , 18);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK)      , 19);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR)      , 20);
-                    menu.Send(Plr);
-                }
-                break;
+                case 13:    // A class trainer
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3542, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 16);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 17);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 18);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 19);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 20);
+                        Menu->SendTo(Plr);
+                    }
+                    break;
 
-            case 14:    // A profession trainer
-                {
-                    Arcemu::Gossip::Menu menu(pObject->GetGUID(), 3541);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY)           , 21);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING)     , 22);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING)           , 23);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING)       , 24);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING)       , 25);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID)         , 26);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING)          , 27);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM)         , 28);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION)       , 29);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W)    , 30);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING)            , 31);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING)          , 32);
-                    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING)         , 33);
-                    menu.Send(Plr);
-                }
-                break;
+                case 14:    // A profession trainer
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 21);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 22);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 23);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 24);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 25);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 26);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 27);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 28);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION) , 29);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 30);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 31);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 32);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 33);
+                        Menu->SendTo(Plr);
+                    }
+                    break;
 
-            case 15: //Mage
-                {
-                    Plr->Gossip_SendPOI(120);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3513, Plr);
-                }
-                break;
+                case 15: //Mage
+                    {
+                        SendQuickMenu(3513);
+                        Plr->Gossip_SendPOI(120);
+                    }
+                    break;
 
-            case 16: //Paladin
-                {
-                    Plr->Gossip_SendPOI(121);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3521, Plr);
-                }
-                break;
+                case 16: //Paladin
+                    {
+                        SendQuickMenu(3521);
+                        Plr->Gossip_SendPOI(121);
+                    }
+                    break;
 
-            case 17: //Priest
-                {
-                    Plr->Gossip_SendPOI(122);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3521, Plr);
-                }
-                break;
+                case 17: //Priest
+                    {
+                        SendQuickMenu(3521);
+                        Plr->Gossip_SendPOI(122);
+                    }
+                    break;
 
-            case 18: //Rogue
-                {
-                    Plr->Gossip_SendPOI(123);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3526, Plr);
-                }
-                break;
+                case 18: //Rogue
+                    {
+                        SendQuickMenu(3526);
+                        Plr->Gossip_SendPOI(123);
+                    }
+                    break;
 
-            case 19: //Warlock
-                {
-                    Plr->Gossip_SendPOI(124);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3526, Plr);
-                }
-                break;
+                case 19: //Warlock
+                    {
+                        SendQuickMenu(3526);
+                        Plr->Gossip_SendPOI(124);
+                    }
+                    break;
 
-            case 20: //Warrior
-                {
-                    Plr->Gossip_SendPOI(125);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3527, Plr);
-                }
-                break;
+                case 20: //Warrior
+                    {
+                        SendQuickMenu(3527);
+                        Plr->Gossip_SendPOI(125);
+                    }
+                    break;
 
-            case 21: //Alchemy
-                {
-                    Plr->Gossip_SendPOI(126);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3528, Plr);
-                }
-                break;
+                case 21: //Alchemy
+                    {
+                        SendQuickMenu(3528);
+                        Plr->Gossip_SendPOI(126);
+                    }
+                    break;
 
-            case 22: //Blacksmithing
-                {
-                    Plr->Gossip_SendPOI(127);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3529, Plr);
-                }
-                break;
+                case 22: //Blacksmithing
+                    {
+                        SendQuickMenu(3529);
+                        Plr->Gossip_SendPOI(127);
+                    }
+                    break;
 
-            case 23: //Cooking
-                {
-                    Plr->Gossip_SendPOI(128);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3530, Plr);
-                }
-                break;
+                case 23: //Cooking
+                    {
+                        SendQuickMenu(3530);
+                        Plr->Gossip_SendPOI(128);
+                    }
+                    break;
 
-            case 24: //Enchanting
-                {
-                    Plr->Gossip_SendPOI(129);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3531, Plr);
-                }
-                break;
+                case 24: //Enchanting
+                    {
+                        SendQuickMenu(3531);
+                        Plr->Gossip_SendPOI(129);
+                    }
+                    break;
 
-            case 25: //Engineering
-                {
-                    Plr->Gossip_SendPOI(130);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3532, Plr);
-                }
-                break;
+                case 25: //Engineering
+                    {
+                        SendQuickMenu(3532);
+                        Plr->Gossip_SendPOI(130);
+                    }
+                    break;
 
-            case 26: //First Aid
-                {
-                    Plr->Gossip_SendPOI(131);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3533, Plr);
-                }
-                break;
+                case 26: //First Aid
+                    {
+                        SendQuickMenu(3533);
+                        Plr->Gossip_SendPOI(131);
+                    }
+                    break;
 
-            case 27: //Fishing
-                {
-                    Plr->Gossip_SendPOI(132);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3534, Plr);
-                }
-                break;
+                case 27: //Fishing
+                    {
+                        SendQuickMenu(3534);
+                        Plr->Gossip_SendPOI(132);
+                    }
+                    break;
 
-            case 28: //Herbalism
-                {
-                    Plr->Gossip_SendPOI(133);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3535, Plr);
-                }
-                break;
+                case 28: //Herbalism
+                    {
+                        SendQuickMenu(3535);
+                        Plr->Gossip_SendPOI(133);
+                    }
+                    break;
 
-            case 29: //Inscription
-                {
-                    Plr->Gossip_SendPOI(134);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14914, Plr);
-                }
-                break;
+                case 29: //Inscription
+                    {
+                        SendQuickMenu(14914);
+                        Plr->Gossip_SendPOI(134);
+                    }
+                    break;
 
-            case 30: //Leatherworking
-                {
-                    Plr->Gossip_SendPOI(135);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3536, Plr);
-                }
-                break;
+                case 30: //Leatherworking
+                    {
+                        SendQuickMenu(3536);
+                        Plr->Gossip_SendPOI(135);
+                    }
+                    break;
 
-            case 31: //Mining
-                {
-                    Plr->Gossip_SendPOI(136);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3537, Plr);
-                }
-                break;
+                case 31: //Mining
+                    {
+                        SendQuickMenu(3537);
+                        Plr->Gossip_SendPOI(136);
+                    }
+                    break;
 
-            case 32: //Skinning
-                {
-                    Plr->Gossip_SendPOI(137);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3538, Plr);
-                }
-                break;
+                case 32: //Skinning
+                    {
+                        SendQuickMenu(3538);
+                        Plr->Gossip_SendPOI(137);
+                    }
+                    break;
 
-            case 33: //Tailoring
-                {
-                    Plr->Gossip_SendPOI(138);
-                    Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 3539, Plr);
-                }
-                break;
+                case 33: //Tailoring
+                    {
+                        SendQuickMenu(3539);
+                        Plr->Gossip_SendPOI(138);
+                    }
+                    break;
 
             }
         }
@@ -4755,671 +4757,662 @@ class ShattrathGuard : public GossipScript
         }
 };
 
-class DalaranGuard : public Arcemu::Gossip::Script
+class DalaranGuard : public GossipScript
 {
-public:
-    void OnHello(Object *pObject, Player *Plr)
-    {
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), 50000);
-
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ARENA),1);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK),2);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2),3);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER),4);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE2_M),5);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CAPITAL_PORTS),6);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_FLIGHT_M),7);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M),8);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN2),9);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH),77);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MAILBOX),10);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_POI), 11);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M),12);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS3_T),13);
-        menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_VENDORS),14);
-
-        menu.Send(Plr);
-    }
-
-    void OnSelectOption(Object *pObject, Player *Plr, uint32 Id, const char * Code)
-    {
-        switch(Id)
+    public:
+        void GossipHello(Object* pObject, Player* Plr)
         {
-        case 0: 
-            OnHello(pObject, Plr); 
-            break;
-
-        case 1:        // Arena
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13976);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_EAST_SEW_ENTR), 15);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WEST_SEW_ENTR), 16);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WELL_ENTR), 17);
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 2:        // Auction House
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14010);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
-                menu.Send(Plr);
-            }
-            break;
-
-        case 3:        // Bank
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14007);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_NORTH_BANK), 20);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SOUTH_BANK), 21);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 22); // Sewers 1
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 4:        // Barber
-            {
-                Plr->Gossip_SendPOI(434);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14003, Plr);
-            }
-            break;
-
-        case 5:        // Battlemasters
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13977);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 6:        // Capital Portals
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13977);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 7:        // Flight Master
-            {
-                Plr->Gossip_SendPOI(435);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 10086, Plr);
-            }
-            break;
-
-        case 8:        // Guild Master
-            {
-                Plr->Gossip_SendPOI(436);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 10095, Plr);
-            }
-            break;
-
-        case 9:        // Inn
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14002);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_INN), 24);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_INN), 25);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 26); // Sewers 2
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 10:    // Mailbox
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10090);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 9);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 3);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_KRASUS_LAND), 74);
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 11:    // Points of Interest
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10056);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_VIOLET_CITADEL), 27);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_VIOLET_HOLD), 28);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 22); // Sewers 1
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRADE_DISTRICT), 29);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_KRASUS_LAND), 74);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ANTONIDAS_MEMORIAL), 30);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_RUNEWEAV_SQUARE), 31);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_EVENTIDE), 32);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CEMETARY), 33);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 34);
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 12:    // Stable Master
-            {
-                Plr->Gossip_SendPOI(437);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 10083, Plr);
-            }
-            break;
-
-        case 13:    // Trainers
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10082);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 35);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_CW_FLYING), 76);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PORTAL), 36);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 37);
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 14:    // Vendors
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 10173);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ARMOR), 38);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CLOTHING), 39);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_EMBLEM_GEAR), 40);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_FLOWERS), 41);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_FRUIT), 42);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_GENERAL_GOODS), 43);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_JEWELRY), 44);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PET_SUBS_EX_MOUNTS), 45);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PIE_PASTRY_CAKES), 46);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_REAGENTS_MAG_GOODS), 47);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TOYS), 48);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRADE_SUP), 43);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRINKETS_REL_OFF), 49);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WEAPONS), 50);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WINE_CHEESE), 51);
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 15:    // Eastern Sewer Entrance
-            {
-                Plr->Gossip_SendPOI(438);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13961, Plr);
-            }
-            break;
-
-        case 16:    // Western Sewer Entrance
-            {
-                Plr->Gossip_SendPOI(439);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13960, Plr);
-            }
-            break;
-
-        case 17:    // Well Entrance
-            {
-                Plr->Gossip_SendPOI(440);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13969, Plr);
-            }
-            break;
-
-        case 18:    // The Alliance Quarter
-            {
-                Plr->Gossip_SendPOI(441);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13973, Plr);
-            }
-            break;
-
-        case 19:    // The Horde Quarter
-            {
-                Plr->Gossip_SendPOI(442);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13972, Plr);
-            }
-            break;
-
-        case 20:    // Northern Bank
-            {
-                Plr->Gossip_SendPOI(443);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14005, Plr);
-            }
-            break;
-
-        case 21:    // Southern Bank
-            {
-                Plr->Gossip_SendPOI(444);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14006, Plr);
-            }
-            break;
-
-        case 22:    // Sewers 1
-            {
-                Plr->Gossip_SendPOI(445);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13974, Plr);
-            }
-            break;
-
-        case 24:    // Alliance Inn
-            {
-                Plr->Gossip_SendPOI(446);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13992, Plr);
-            }
-            break;
-
-        case 25:    // Horde Inn
-            {
-                Plr->Gossip_SendPOI(447);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13993, Plr);
-            }
-            break;
-
-        case 26:    // Sewers 2
-            {
-                Plr->Gossip_SendPOI(448);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13974, Plr);
-            }
-            break;
-
-        case 27:    // The Violet Citadel
-            {
-                Plr->Gossip_SendPOI(449);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13971, Plr);
-            }
-            break;
-
-        case 28:    // The Violet Hold
-            {
-                Plr->Gossip_SendPOI(450);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13970, Plr);
-            }
-            break;
-
-        case 29:    // Trade District
-            {
-                Plr->Gossip_SendPOI(451);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13980, Plr);
-            }
-            break;
-
-        case 30:    // Antonidas Memorial
-            {
-                Plr->Gossip_SendPOI(452);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13968, Plr);
-            }
-            break;
-
-        case 31:    // Runeweaver Square
-            {
-                Plr->Gossip_SendPOI(453);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13967, Plr);
-            }
-            break;
-
-        case 32:    // The Eventide
-            {
-                Plr->Gossip_SendPOI(454);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13966, Plr);
-            }
-            break;
-
-        case 33:    // Cemetary
-            {
-                Plr->Gossip_SendPOI(455);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13965, Plr);
-            }
-            break;
-
-        case 34:    // Lexicon of Power
-            {
-                Plr->Gossip_SendPOI(456);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14174, Plr);
-            }
-            break;
-
-        case 35:    // Class Trainers
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14018);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
-                menu.Send(Plr);
-            }
-            break;
-
-        case 36:    // Portal Trainer
-            {
-                Plr->Gossip_SendPOI(457);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13999, Plr);
-            }
-            break;
-
-        case 37:    // Profession Trainer
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13996);
-
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 52);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 53);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 54);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 55);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 56);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 57);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 58);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 59);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 60);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 61);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 62);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 63);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 64);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 65);
-
-                menu.Send(Plr);
-            }
-            break;
-
-        case 38:    // Armor
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14117);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CLOTH_ARMOR), 66);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LEATHER_ARMOR), 67);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MAIL_ARMOR), 68);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PLATE_ARMOR), 69);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SHIELDS), 70);
-                menu.Send(Plr);
-            }
-            break;
-
-        case 39:    // Clothing
-            {
-                Plr->Gossip_SendPOI(458);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14112, Plr);
-            }
-            break;
-
-        case 40:    // Emblem Gear
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14108);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
-                menu.Send(Plr);
-            }
-            break;
-
-        case 41:    // Flowers
-            {
-                Plr->Gossip_SendPOI(459);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 10159, Plr);
-            }
-            break;
-
-        case 42:    // Fruit
-            {
-                Plr->Gossip_SendPOI(460);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14106, Plr);
-            }
-            break;
-
-        case 43:    // General Goods
-            {
-                Plr->Gossip_SendPOI(461);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14105, Plr);
-            }
-            break;
-
-        case 44:    // Jewelry
-            {
-                Plr->Gossip_SendPOI(462);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13984, Plr);
-            }
-            break;
-
-        case 45:    // Pet Supplies & Exotic Mounts
-            {
-                Plr->Gossip_SendPOI(463);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14103, Plr);
-            }
-            break;
-
-        case 46:    // Pie, Pastry & Cakes
-            {
-                Plr->Gossip_SendPOI(464);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14102, Plr);
-            }
-            break;
-
-        case 47:    // Reagents & Magical Goods
-            {
-                Plr->Gossip_SendPOI(465);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14104, Plr);
-            }
-            break;
-
-        case 48:    // Toys
-            {
-                Plr->Gossip_SendPOI(466);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14100, Plr);
-            }
-            break;
-
-        case 49:    // Trinkets. Relics & Off-hand items
-            {
-                Plr->Gossip_SendPOI(467);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14110, Plr);
-            }
-            break;
-
-        case 50:    // Weapons
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14113);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MELEE_WEAPONS), 71);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_RANGE_THROW_WEAPONS), 72);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_STAVES_WANDS), 73);
-                menu.Send(Plr);
-            }
-            break;
-
-        case 51:    // Wine & Cheese
-            {
-                Plr->Gossip_SendPOI(468);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14095, Plr);
-            }
-            break;
-
-        case 52:    // Alchemy
-            {
-                Plr->Gossip_SendPOI(469);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13995, Plr);
-            }
-            break;
-
-        case 53:    // Blacksmithing
-            {
-                Plr->Gossip_SendPOI(470);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13994, Plr);
-            }
-            break;
-
-        case 54:    // Cooking
-            {
-                Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13991);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_INN), 24);
-                menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_INN), 25);
-                menu.Send(Plr);
-            }
-            break;
-
-        case 55:    // Enchanting
-            {
-                Plr->Gossip_SendPOI(471);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13990, Plr);
-            }
-            break;
-
-        case 56:    // Engineering
-            {
-                Plr->Gossip_SendPOI(472);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13989, Plr);
-            }
-            break;
-
-        case 57:    // First Aid
-            {
-                Plr->Gossip_SendPOI(473);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13988, Plr);
-            }
-            break;
-
-        case 58:    // Fishing
-            {
-                Plr->Gossip_SendPOI(474);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13987, Plr);
-            }
-            break;
-
-        case 59:    // Herbalism
-            {
-                Plr->Gossip_SendPOI(475);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13986, Plr);
-            }
-            break;
-
-        case 60:    // Inscription
-            {
-                Plr->Gossip_SendPOI(476);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13985, Plr);
-            }
-            break;
-
-        case 61:    // Jewelcrafting
-            {
-                Plr->Gossip_SendPOI(477);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13984, Plr);
-            }
-            break;
-
-        case 62:    // Leatherworking
-            {
-                Plr->Gossip_SendPOI(478);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13982, Plr);
-            }
-            break;
-
-        case 63:    // Mining
-            {
-                Plr->Gossip_SendPOI(479);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13983, Plr);
-            }
-            break;
-
-        case 64:    // Skinning
-            {
-                Plr->Gossip_SendPOI(480);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13982, Plr);
-            }
-            break;
-
-        case 65:    // Tailoring
-            {
-                Plr->Gossip_SendPOI(481);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 13981, Plr);
-            }
-            break;
-
-        case 66:    // Cloth Armor
-            {
-                Plr->Gossip_SendPOI(482);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14112, Plr);
-            }
-            break;
-
-        case 67:    // Leather Armor
-            {
-                Plr->Gossip_SendPOI(483);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14111, Plr);
-            }
-            break;
-
-        case 68:    // Mail Armor
-            {
-                Plr->Gossip_SendPOI(484);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14111, Plr);
-            }
-            break;
-
-        case 69:    // Plate Armor
-            {
-                Plr->Gossip_SendPOI(485);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14109, Plr);
-            }
-            break;
-
-        case 70:    // Shields
-            {
-                Plr->Gossip_SendPOI(486);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14109, Plr);
-            }
-            break;
-
-        case 71:    // Melee Weapons
-            {
-                Plr->Gossip_SendPOI(487);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14098, Plr);
-            }
-            break;
-
-        case 72:    // Ranged & Thrown Weapons
-            {
-                Plr->Gossip_SendPOI(488);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14097, Plr);
-            }
-            break;
-
-        case 73:    // Staves & Wands
-            {
-                Plr->Gossip_SendPOI(489);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14096, Plr);
-            }
-            break;
-
-        case 74:    // Krasu's Landing
-            {
-                Plr->Gossip_SendPOI(490);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14009, Plr);
-            }
-            break;
-
-        case 75:    // Trinkets, Relics & Off-hand Items
-            {
-                Plr->Gossip_SendPOI(491);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14110, Plr);
-            }
-            break;
-
-        case 76:    // Cold weather flying trainer
-            {
-                Plr->Gossip_SendPOI(492);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 60059, Plr);
-            }
-            break;
-
-        case 77:    // Locksmith
-            {
-                Plr->Gossip_SendPOI(493);
-                Arcemu::Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), 14004, Plr);
-            }
-            break;
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 50000, Plr);
+
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ARENA),1);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK),2);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2),3);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER),4);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE2_M),5);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CAPITAL_PORTS),6);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_FLIGHT_M),7);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M),8);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN2),9);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH),77);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MAILBOX),10);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_POI), 11);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M),12);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS3_T),13);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_VENDORS),14);
+
+            Menu->SendTo(Plr);
         }
-    }
+
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
+        {
+            GossipMenu* Menu;
+            switch(IntId)
+            {
+                case 0: 
+                    GossipHello(pObject, Plr);
+                    break;
+
+                case 1:        // Arena
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13976, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_EAST_SEW_ENTR), 15);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WEST_SEW_ENTR), 16);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WELL_ENTR), 17);
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 2:        // Auction House
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14010, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 3:        // Bank
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14007, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_NORTH_BANK), 20);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SOUTH_BANK), 21);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 22); // Sewers 1
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 4:        // Barber
+                    {
+                        Plr->Gossip_SendPOI(434);
+                        SendQuickMenu(14003);
+                    }
+                    break;
+
+                case 5:        // Battlemasters
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13977, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 6:        // Capital Portals
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13977, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 7:        // Flight Master
+                    {
+                        Plr->Gossip_SendPOI(435);
+                        SendQuickMenu(10086);
+                    }
+                    break;
+
+                case 8:        // Guild Master
+                    {
+                        Plr->Gossip_SendPOI(436);
+                        SendQuickMenu(10095);
+                    }
+                    break;
+
+                case 9:        // Inn
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14002, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_INN), 24);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_INN), 25);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 26); // Sewers 2
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 10:    // Mailbox
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10090, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 9);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 3);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_KRASUS_LAND), 74);
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 11:    // Points of Interest
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10056, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_VIOLET_CITADEL), 27);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_VIOLET_HOLD), 28);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 22); // Sewers 1
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRADE_DISTRICT), 29);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_KRASUS_LAND), 74);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ANTONIDAS_MEMORIAL), 30);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_RUNEWEAV_SQUARE), 31);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_EVENTIDE), 32);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CEMETARY), 33);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 34);
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 12:    // Stable Master
+                    {
+                        Plr->Gossip_SendPOI(437);
+                        SendQuickMenu(10083);
+                    }
+                    break;
+
+                case 13:    // Trainers
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10082, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 35);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_CW_FLYING), 76);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PORTAL), 36);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 37);
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 14:    // Vendors
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10173, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ARMOR), 38);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CLOTHING), 39);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_EMBLEM_GEAR), 40);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_FLOWERS), 41);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_FRUIT), 42);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_GENERAL_GOODS), 43);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_JEWELRY), 44);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PET_SUBS_EX_MOUNTS), 45);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PIE_PASTRY_CAKES), 46);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_REAGENTS_MAG_GOODS), 47);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TOYS), 48);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRADE_SUP), 43);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRINKETS_REL_OFF), 49);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WEAPONS), 50);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WINE_CHEESE), 51);
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 15:    // Eastern Sewer Entrance
+                    {
+                        Plr->Gossip_SendPOI(438);
+                        SendQuickMenu(13961);
+                    }
+                    break;
+
+                case 16:    // Western Sewer Entrance
+                    {
+                        Plr->Gossip_SendPOI(439);
+                        SendQuickMenu(13960);
+                    }
+                    break;
+
+                case 17:    // Well Entrance
+                    {
+                        Plr->Gossip_SendPOI(440);
+                        SendQuickMenu(13969);
+                    }
+                    break;
+
+                case 18:    // The Alliance Quarter
+                    {
+                        Plr->Gossip_SendPOI(441);
+                        SendQuickMenu(13973);
+                    }
+                    break;
+
+                case 19:    // The Horde Quarter
+                    {
+                        Plr->Gossip_SendPOI(442);
+                        SendQuickMenu(13972);
+                    }
+                    break;
+
+                case 20:    // Northern Bank
+                    {
+                        Plr->Gossip_SendPOI(443);
+                        SendQuickMenu(14005);
+                    }
+                    break;
+
+                case 21:    // Southern Bank
+                    {
+                        Plr->Gossip_SendPOI(444);
+                        SendQuickMenu(14006);
+                    }
+                    break;
+
+                case 22:    // Sewers 1
+                    {
+                        Plr->Gossip_SendPOI(445);
+                        SendQuickMenu(13974);
+                    }
+                    break;
+
+                case 24:    // Alliance Inn
+                    {
+                        Plr->Gossip_SendPOI(446);
+                        SendQuickMenu(13992);
+                    }
+                    break;
+
+                case 25:    // Horde Inn
+                    {
+                        Plr->Gossip_SendPOI(447);
+                        SendQuickMenu(13993);
+                    }
+                    break;
+
+                case 26:    // Sewers 2
+                    {
+                        Plr->Gossip_SendPOI(448);
+                        SendQuickMenu(13974);
+                    }
+                    break;
+
+                case 27:    // The Violet Citadel
+                    {
+                        Plr->Gossip_SendPOI(449);
+                        SendQuickMenu(13971);
+                    }
+                    break;
+
+                case 28:    // The Violet Hold
+                    {
+                        Plr->Gossip_SendPOI(450);
+                        SendQuickMenu(13970);
+                    }
+                    break;
+
+                case 29:    // Trade District
+                    {
+                        Plr->Gossip_SendPOI(451);
+                        SendQuickMenu(13980);
+                    }
+                    break;
+
+                case 30:    // Antonidas Memorial
+                    {
+                        Plr->Gossip_SendPOI(452);
+                        SendQuickMenu(13968);
+                    }
+                    break;
+
+                case 31:    // Runeweaver Square
+                    {
+                        Plr->Gossip_SendPOI(453);
+                        SendQuickMenu(13967);
+                    }
+                    break;
+
+                case 32:    // The Eventide
+                    {
+                        Plr->Gossip_SendPOI(454);
+                        SendQuickMenu(13966);
+                    }
+                    break;
+
+                case 33:    // Cemetary
+                    {
+                        Plr->Gossip_SendPOI(455);
+                        SendQuickMenu(13965);
+                    }
+                    break;
+
+                case 34:    // Lexicon of Power
+                    {
+                        Plr->Gossip_SendPOI(456);
+                        SendQuickMenu(14174);
+                    }
+                    break;
+
+                case 35:    // Class Trainers
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14018, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 36:    // Portal Trainer
+                    {
+                        Plr->Gossip_SendPOI(457);
+                        SendQuickMenu(13999);
+                    }
+                    break;
+
+                case 37:    // Profession Trainer
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13996, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 52);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 53);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 54);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 55);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 56);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 57);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 58);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 59);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 60);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 61);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 62);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 63);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 64);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 65);
+
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 38:    // Armor
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14117, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CLOTH_ARMOR), 66);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LEATHER_ARMOR), 67);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MAIL_ARMOR), 68);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PLATE_ARMOR), 69);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SHIELDS), 70);
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 39:    // Clothing
+                    {
+                        Plr->Gossip_SendPOI(458);
+                        SendQuickMenu(14112);
+                    }
+                    break;
+
+                case 40:    // Emblem Gear
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14108, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 41:    // Flowers
+                    {
+                        Plr->Gossip_SendPOI(459);
+                        SendQuickMenu(10159);
+                    }
+                    break;
+
+                case 42:    // Fruit
+                    {
+                        Plr->Gossip_SendPOI(460);
+                        SendQuickMenu(14106);
+                    }
+                    break;
+
+                case 43:    // General Goods
+                    {
+                        Plr->Gossip_SendPOI(461);
+                        SendQuickMenu(14105);
+                    }
+                    break;
+
+                case 44:    // Jewelry
+                    {
+                        Plr->Gossip_SendPOI(462);
+                        SendQuickMenu(13984);
+                    }
+                    break;
+
+                case 45:    // Pet Supplies & Exotic Mounts
+                    {
+                        Plr->Gossip_SendPOI(463);
+                        SendQuickMenu(14103);
+                    }
+                    break;
+
+                case 46:    // Pie, Pastry & Cakes
+                    {
+                        Plr->Gossip_SendPOI(464);
+                        SendQuickMenu(14102);
+                    }
+                    break;
+
+                case 47:    // Reagents & Magical Goods
+                    {
+                        Plr->Gossip_SendPOI(465);
+                        SendQuickMenu(14104);
+                    }
+                    break;
+
+                case 48:    // Toys
+                    {
+                        Plr->Gossip_SendPOI(466);
+                        SendQuickMenu(14100);
+                    }
+                    break;
+
+                case 49:    // Trinkets. Relics & Off-hand items
+                    {
+                        Plr->Gossip_SendPOI(467);
+                        SendQuickMenu(14110);
+                    }
+                    break;
+
+                case 50:    // Weapons
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14113, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MELEE_WEAPONS), 71);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_RANGE_THROW_WEAPONS), 72);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_STAVES_WANDS), 73);
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 51:    // Wine & Cheese
+                    {
+                        Plr->Gossip_SendPOI(468);
+                        SendQuickMenu(14095);
+                    }
+                    break;
+
+                case 52:    // Alchemy
+                    {
+                        Plr->Gossip_SendPOI(469);
+                        SendQuickMenu(13995);
+                    }
+                    break;
+
+                case 53:    // Blacksmithing
+                    {
+                        Plr->Gossip_SendPOI(470);
+                        SendQuickMenu(13994);
+                    }
+                    break;
+
+                case 54:    // Cooking
+                    {
+                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13991, Plr);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_INN), 24);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_INN), 25);
+                        Menu->SendTo(Plr);
+                    }
+                    break;
+
+                case 55:    // Enchanting
+                    {
+                        Plr->Gossip_SendPOI(471);
+                        SendQuickMenu(13990);
+                    }
+                    break;
+
+                case 56:    // Engineering
+                    {
+                        Plr->Gossip_SendPOI(472);
+                        SendQuickMenu(13989);
+                    }
+                    break;
+
+                case 57:    // First Aid
+                    {
+                        Plr->Gossip_SendPOI(473);
+                        SendQuickMenu(13988);
+                    }
+                    break;
+
+                case 58:    // Fishing
+                    {
+                        Plr->Gossip_SendPOI(474);
+                        SendQuickMenu(13987);
+                    }
+                    break;
+
+                case 59:    // Herbalism
+                    {
+                        Plr->Gossip_SendPOI(475);
+                        SendQuickMenu(13986);
+                    }
+                    break;
+
+                case 60:    // Inscription
+                    {
+                        Plr->Gossip_SendPOI(476);
+                        SendQuickMenu(13985);
+                    }
+                    break;
+
+                case 61:    // Jewelcrafting
+                    {
+                        Plr->Gossip_SendPOI(477);
+                        SendQuickMenu(13984);
+                    }
+                    break;
+
+                case 62:    // Leatherworking
+                    {
+                        Plr->Gossip_SendPOI(478);
+                        SendQuickMenu(13982);
+                    }
+                    break;
+
+                case 63:    // Mining
+                    {
+                        Plr->Gossip_SendPOI(479);
+                        SendQuickMenu(13983);
+                    }
+                    break;
+
+                case 64:    // Skinning
+                    {
+                        Plr->Gossip_SendPOI(480);
+                        SendQuickMenu(13982);
+                    }
+                    break;
+
+                case 65:    // Tailoring
+                    {
+                        Plr->Gossip_SendPOI(481);
+                        SendQuickMenu(13981);
+                    }
+                    break;
+
+                case 66:    // Cloth Armor
+                    {
+                        Plr->Gossip_SendPOI(482);
+                        SendQuickMenu(14112);
+                    }
+                    break;
+
+                case 67:    // Leather Armor
+                    {
+                        Plr->Gossip_SendPOI(483);
+                        SendQuickMenu(14111);
+                    }
+                    break;
+
+                case 68:    // Mail Armor
+                    {
+                        Plr->Gossip_SendPOI(484);
+                        SendQuickMenu(14111);
+                    }
+                    break;
+
+                case 69:    // Plate Armor
+                    {
+                        Plr->Gossip_SendPOI(485);
+                        SendQuickMenu(14109);
+                    }
+                    break;
+
+                case 70:    // Shields
+                    {
+                        Plr->Gossip_SendPOI(486);
+                        SendQuickMenu(14109);
+                    }
+                    break;
+
+                case 71:    // Melee Weapons
+                    {
+                        Plr->Gossip_SendPOI(487);
+                        SendQuickMenu(14098);
+                    }
+                    break;
+
+                case 72:    // Ranged & Thrown Weapons
+                    {
+                        Plr->Gossip_SendPOI(488);
+                        SendQuickMenu(14097);
+                    }
+                    break;
+
+                case 73:    // Staves & Wands
+                    {
+                        Plr->Gossip_SendPOI(489);
+                        SendQuickMenu(14096);
+                    }
+                    break;
+
+                case 74:    // Krasu's Landing
+                    {
+                        Plr->Gossip_SendPOI(490);
+                        SendQuickMenu(14009);
+                    }
+                    break;
+
+                case 75:    // Trinkets, Relics & Off-hand Items
+                    {
+                        Plr->Gossip_SendPOI(491);
+                        SendQuickMenu(14110);
+                    }
+                    break;
+
+                case 76:    // Cold weather flying trainer
+                    {
+                        Plr->Gossip_SendPOI(492);
+                        SendQuickMenu(60059);
+                    }
+                    break;
+
+                case 77:    // Locksmith
+                    {
+                        Plr->Gossip_SendPOI(493);
+                        SendQuickMenu(14004);
+                    }
+                    break;
+            }
+        }
 };
 
 void SetupGuardGossip(ScriptMgr* mgr)
@@ -5431,7 +5424,7 @@ void SetupGuardGossip(ScriptMgr* mgr)
     mgr->register_gossip_script(29712, new StormwindGuard);             // Stormwind Harbor Guard
     mgr->register_gossip_script(4262, new DarnassusGuard);              // Darnassus Sentinel
     mgr->register_gossip_script(5624, new UndercityGuard);              // Undercity Guardian
-    mgr->register_creature_gossip(36213, new UndercityGuardOverseer);   // Kor'kron Overseer
+    mgr->register_gossip_script(36213, new UndercityGuardOverseer);     // Kor'kron Overseer
     mgr->register_gossip_script(3571, new TeldrassilGuard);             // Teldrassil Sentinel
     mgr->register_gossip_script(16222, new SilvermoonGuard);            // Silvermoon City Guardian
     mgr->register_gossip_script(16733, new ExodarGuard);                // Exodar Peacekeeper
@@ -5462,28 +5455,28 @@ void SetupGuardGossip(ScriptMgr* mgr)
     mgr->register_gossip_script(727, new KharanosGuard);                // Ironforge Mountaineer
     mgr->register_gossip_script(16221, new FalconwingGuard);            // Silvermoon Guardian
     mgr->register_gossip_script(18038, new AzureWatchGuard);            // Azuremyst Peacekeeper
-    mgr->register_gossip_script(19687, new ShattrathGuard);             // Shattrath City Guard -by AeThIs
-    mgr->register_gossip_script(18568, new ShattrathGuard);             // Shattrath City Guard Aruspice -by AeThIs
-    mgr->register_gossip_script(18549, new ShattrathGuard);             // Shattrath City Guard -by AeThIs
+    mgr->register_gossip_script(19687, new ShattrathGuard);             // Shattrath City Guard
+    mgr->register_gossip_script(18568, new ShattrathGuard);             // Shattrath City Guard Aruspice
+    mgr->register_gossip_script(18549, new ShattrathGuard);             // Shattrath City Guard
 
-    //Dalaran guards
-    Arcemu::Gossip::Script * DalaranGossip = new DalaranGuard;
-    mgr->register_creature_gossip(32675, DalaranGossip);
-    mgr->register_creature_gossip(32676, DalaranGossip);
-    mgr->register_creature_gossip(32677, DalaranGossip);
-    mgr->register_creature_gossip(32678, DalaranGossip);
-    mgr->register_creature_gossip(32679, DalaranGossip);
-    mgr->register_creature_gossip(32680, DalaranGossip);
-    mgr->register_creature_gossip(32681, DalaranGossip);
-    mgr->register_creature_gossip(32683, DalaranGossip);
-    mgr->register_creature_gossip(32684, DalaranGossip);
-    mgr->register_creature_gossip(32685, DalaranGossip);
-    mgr->register_creature_gossip(32686, DalaranGossip);
-    mgr->register_creature_gossip(32687, DalaranGossip);
-    mgr->register_creature_gossip(32688, DalaranGossip);
-    mgr->register_creature_gossip(32689, DalaranGossip);
-    mgr->register_creature_gossip(32690, DalaranGossip);
-    mgr->register_creature_gossip(32691, DalaranGossip);
-    mgr->register_creature_gossip(32692, DalaranGossip);
-    mgr->register_creature_gossip(32693, DalaranGossip);
+    //Dalaran guards (updated to "new" gossip function)
+    mgr->register_gossip_script(32675, new DalaranGuard);
+    mgr->register_gossip_script(32676, new DalaranGuard);
+    mgr->register_gossip_script(32677, new DalaranGuard);
+    mgr->register_gossip_script(32678, new DalaranGuard);
+    mgr->register_gossip_script(32679, new DalaranGuard);
+    mgr->register_gossip_script(32680, new DalaranGuard);
+    mgr->register_gossip_script(32681, new DalaranGuard);
+    mgr->register_gossip_script(32683, new DalaranGuard);
+    mgr->register_gossip_script(32684, new DalaranGuard);
+    mgr->register_gossip_script(32685, new DalaranGuard);
+    mgr->register_gossip_script(32686, new DalaranGuard);
+    mgr->register_gossip_script(32687, new DalaranGuard);
+    mgr->register_gossip_script(32688, new DalaranGuard);
+    mgr->register_gossip_script(32689, new DalaranGuard);
+    mgr->register_gossip_script(32690, new DalaranGuard);
+    mgr->register_gossip_script(32691, new DalaranGuard);
+    mgr->register_gossip_script(32692, new DalaranGuard);
+    mgr->register_gossip_script(32693, new DalaranGuard);
+
 }
