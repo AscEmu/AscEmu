@@ -1,5 +1,7 @@
 ﻿# ![logo](http://ascemu.org/style/img/logo.png)
+﻿
 `master (3.3.5)`[![master Build Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu)
+﻿[![Coverity Scan Build Status](https://scan.coverity.com/projects/4546/badge.svg)](https://scan.coverity.com/projects/4546)
 
 
 ## Introduction
