@@ -27,6 +27,7 @@ Event_Love_is_in_the_Air.cpp
 Event_Lunar_Festival.cpp
 Event_Midsummer_Fire_Festival.cpp
 Event_New_Years_Eve.cpp
+Event_Nights.cpp
 Event_Night_Elf_Mohawk.cpp
 Event_Operation_Gnomeregan.cpp
 Event_Pilgrims_Bounty.cpp
@@ -42,6 +43,7 @@ Setup.cpp
 
 SET( headers
 Event_Darkmoon_Faire.h
+Event_Nights.h
 Setup.h
 ../Common/Base.h
 ../Common/EasyFunctions.h
