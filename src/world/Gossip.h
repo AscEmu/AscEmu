@@ -228,8 +228,7 @@ enum MenuItemOptions
     GI_TRICK_TREAT,             // "Trick or Treat!"
 
     // Not GuardGossips starts with 350
-    GI_TELE_AMBER_LEDGE = 350,      // "Teleport me to Amber Ledge!"
-    GI_SEE_FALL_LICH_KING,          // "See the fall of the Lich King."
+    GI_SEE_FALL_LICH_KING = 351,    // "See the fall of the Lich King."
     GI_ULTRA_CANNON,                // "Tell me how to use the Blastenheimer 5000 Ultra Cannon."
     GI_BROWS_GOODS,                 // "Let me browse your goods."
     GI_TELL_ME_DARKMOON_CARDS,      // "Tell me more about these Darkmoon Cards."

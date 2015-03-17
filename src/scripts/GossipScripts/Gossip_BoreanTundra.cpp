@@ -19,24 +19,32 @@
 #include "../world/Gossip.h"
 #include "Setup.h"
 
-class TiareGossipScript : public Arcemu::Gossip::Script
+enum UnorderedEntry
+{
+    GT_TIARE    = 13022,        // Gossip text "How can I help you, child?"
+    CN_TIARE    = 30051,        // Tiare
+    GI_TELE_AMBER_LEDGE = 350   // "Teleport me to Amber Ledge!"
+};
+
+class TiareGossipScript : public GossipScript
 {
     public:
-        void OnHello(Object* pObject, Player* Plr)
+
+        void GossipHello(Object* pObject, Player* Plr)
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1, Plr, 1, 0, Plr->GetSession()->LocalizedGossipOption(GI_TELE_AMBER_LEDGE));
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GT_TIARE, Plr);
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TELE_AMBER_LEDGE), 1);
+            Menu->SendTo(Plr);
         }
 
-        void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* EnteredCode)
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Arcemu::Gossip::Menu::Complete(plr);
-            TO_CREATURE(pObject)->CastSpell(plr, dbcSpell.LookupEntry(50135), true);
+            TO_CREATURE(pObject)->CastSpell(Plr, dbcSpell.LookupEntry(50135), true);
         }
-        void Destroy() { delete this; }
-
 };
 
 void SetupBoreanTundraGossip(ScriptMgr* mgr)
 {
-    mgr->register_creature_gossip(30051, new TiareGossipScript);        // Tiare
+    mgr->register_gossip_script(CN_TIARE, new TiareGossipScript);
 }
