@@ -1424,11 +1424,26 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(65917);
     if (sp != NULL)
         sp->Effect[0] = SPELL_EFFECT_NULL;
+    //Big Love Rocket
+	sp = CheckAndReturnSpellEntry(71342);
+	if (sp != NULL)
+	    sp->Effect[0] = SPELL_EFFECT_NULL;
     //Invincible
     sp = CheckAndReturnSpellEntry(72286);
     if (sp != NULL)
         sp->Effect[0] = SPELL_EFFECT_NULL;
-
+	//Blazing Hippogryph
+	sp = CheckAndReturnSpellEntry(74856);
+	if (sp != NULL)
+	    sp->Effect[0] = SPELL_EFFECT_NULL;
+	//Celestial Steed
+	sp = CheckAndReturnSpellEntry(75614);
+	if (sp != NULL)
+	    sp->Effect[0] = SPELL_EFFECT_NULL;
+    //Touring Rocket
+	sp = CheckAndReturnSpellEntry(75973);
+	if (sp != NULL)
+	    sp->Effect[0] = SPELL_EFFECT_NULL;
     //////////////////////////////////////////////////////
     // CLASS-SPECIFIC SPELL FIXES                        //
     //////////////////////////////////////////////////////

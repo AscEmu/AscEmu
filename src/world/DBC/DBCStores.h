@@ -669,7 +669,7 @@ struct SpellEntry
     uint32 AttributesExD;                                     //9 Flags....
     uint32 AttributesExE;                                     //10 Flags 2.0.1 unknown one
     uint32 AttributesExF;                                     //11
-  //int32  Unknown;                                           //12 AttributesExG ?
+    uint32 AttributesExG;                                     //12 
     uint32 RequiredShapeShift;                                //13 Flags BitMask for shapeshift spells
   //uint32 Unknown;                                           //14 UNK
     uint32 ShapeshiftExclude;                                 //15 this is wrong // Flags BitMask for which shapeshift forms this spell can NOT be used in.

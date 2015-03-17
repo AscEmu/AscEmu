@@ -45,6 +45,7 @@ LuaSpellEntry luaSpellVars[] =
 	{"AttributesExD", 0, offsetof(SpellEntry, AttributesExD)},
 	{"AttributesExE", 0, offsetof(SpellEntry, AttributesExE)},
 	{"AttributesExF", 0, offsetof(SpellEntry, AttributesExF)},
+    {"AttributesExG", 0, offsetof(SpellEntry, AttributesExG)},
 	{"RequiredShapeShift", 0, offsetof(SpellEntry, RequiredShapeShift)},
 	{"ShapeshiftExclude", 0, offsetof(SpellEntry, ShapeshiftExclude)},
 	{"Targets", 0, offsetof(SpellEntry, Targets)},
