@@ -470,12 +470,23 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     uint32 spellId;
     recvPacket >> spellId;
 
+    // do not cancel ghost auras
+    if(spellId == 8326 || spellId == 9036)
+		return;
+
     if (_player->m_currentSpell && _player->m_currentSpell->GetProto()->Id == spellId)
         _player->m_currentSpell->cancel();
     else
     {
         SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
-
+        Aura* aura = _player->FindAura(spellId);
+        if(aura)
+		{
+			if(!aura->IsPositive())
+				return;
+			if(info->Attributes & ATTRIBUTES_NEGATIVE)
+				return;
+		}
         if (info != NULL && !(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
         {
             _player->RemoveAllAuraById(spellId);

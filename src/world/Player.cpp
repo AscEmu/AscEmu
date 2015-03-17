@@ -4495,6 +4495,9 @@ void Player::BuildPlayerRepop()
 
 void Player::RepopRequestedPlayer()
 {
+    if (HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
+		return;
+
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHECKFORCHEATS); // cebernic:-> Remove this first
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);   //in case somebody resurrected us before this event happened
 
@@ -4858,6 +4861,9 @@ void Player::DeathDurabilityLoss(double percent)
 
 void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 {
+    if(HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
+		return;
+
     bool first = true;
     // float closestX = 0, closestY = 0, closestZ = 0, closestO = 0;
     StorageContainerIterator<GraveyardTeleport> * itr;

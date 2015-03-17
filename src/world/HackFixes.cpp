@@ -205,6 +205,12 @@ void ApplyNormalFixes()
             {
                 sp->Attributes &= ~ATTRIBUTES_ONLY_OUTDOORS;
             }
+
+            if(sp->EffectApplyAuraName[b] == SPELL_AURA_PREVENT_RESURRECTION)
+			{
+				sp->Attributes |= ATTRIBUTES_NEGATIVE;
+				sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+			}
         }
 
         if (!strcmp(sp->Name, "Hearthstone") || !strcmp(sp->Name, "Stuck") || !strcmp(sp->Name, "Astral Recall"))
@@ -7281,7 +7287,33 @@ void ApplyNormalFixes()
             ritOfSumm->Id = ritOfSummId;
         }
     }
-
+    //Persistent Shield
+    sp = CheckAndReturnSpellEntry(26467);
+	if(sp)
+	{
+		sp->EffectTriggerSpell[0] = 26470;
+		sp->Attributes |= ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE;
+		sp->DurationIndex = 0;
+		sp->procFlags = PROC_ON_CAST_SPELL;
+	}
+    //Gravity Bomb
+    sp = CheckAndReturnSpellEntry(63024);
+	if(sp)
+	{
+		sp->EffectBasePoints[0] = 0;
+		sp->Effect[1] = NULL;
+		sp->Effect[2] = NULL;
+		sp->TargetAuraState = 0;
+		sp->casterAuraSpell = 0;
+		sp->CasterAuraState = 0;
+		sp->CasterAuraStateNot = 0;
+		sp->TargetAuraStateNot = 0;
+		sp->targetAuraSpell = 0;
+		sp->casterAuraSpellNot = 0;
+		sp->targetAuraSpellNot = 0;
+		sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+		sp->Attributes |= ATTRIBUTES_NEGATIVE;
+	}
     /* War Stomp */
     sp = CheckAndReturnSpellEntry(20549);
     if (sp)

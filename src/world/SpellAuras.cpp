@@ -753,8 +753,10 @@ Aura::Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool
 
 	if (m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
 		SetNegative(100);
-	else if (m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
+	if (m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
 		SetPositive(100);
+    if(m_spellProto->Attributes & ATTRIBUTES_NEGATIVE)
+		SetNegative(100);
 
 	if (caster->IsUnit())
 	{
@@ -965,15 +967,15 @@ void Aura::ApplyModifiers(bool apply)
 			LOG_DEBUG("WORLD: target=%u, Spell Aura id=%u (%s), SpellId=%u, i=%u, apply=%s, duration=%u, miscValue=%d, damage=%d",
 			          m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellProto->Id, mod->i, apply ? "true" : "false", GetDuration(), mod->m_miscValue, mod->m_amount);
 			(*this.*SpellAuraHandler[mod->m_type])(apply);
-
-#ifdef GM_Z_DEBUG_DIRECTLY
-			if (m_target->IsPlayer() && m_target->IsInWorld() && x == 0)
+            if(apply)
 			{
-				if (TO< Player* >(m_target)->GetSession() && TO< Player* >(m_target)->GetSession()->CanUseCommand('z'))
-					sChatHandler.BlueSystemMessage(TO< Player* >(m_target)->GetSession(), "[%sSystem%s] |rAura::ApplyModifiers: %s Target = %u, Spell Aura id = %u, SpellId = %u, modi=%u, apply = [%d], duration = %u, damage = %d, GiverGUID: %u.", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE,
-					                               m_target->GetLowGUID(), mod->m_type, m_spellProto->Id, mod->i, apply , GetDuration(), mod->m_amount, m_casterGuid);
+				if(m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
+					SetNegative(100);
+				if(m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
+					SetPositive(100);
+				if(m_spellProto->Attributes & ATTRIBUTES_NEGATIVE)
+					SetNegative(100);
 			}
-#endif
 
 		}
 		else

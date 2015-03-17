@@ -381,11 +381,11 @@ enum Attributes // 0
     ATTRIBUTE_ON_NEXT_ATTACK                = 0x00000004,
     ATTRIBUTES_UNK5                         = 0x00000008,   // ATTRIBUTES_UNUSED0
     ATTRIBUTES_ABILITY                      = 0x00000010,
-    ATTRIBUTES_UNK7                         = 0x00000020,   // Tradeskill recipies
+    ATTRIBUTES_TRADESPELL                   = 0x00000020,   // Tradeskill recipies
     ATTRIBUTES_PASSIVE                      = 0x00000040,
-    ATTRIBUTES_NO_VISUAL_AURA               = 0x00000080,
+    ATTRIBUTES_NO_VISUAL_AURA               = 0x00000080,   // not visible in spellbook or aura bar
     ATTRIBUTES_NO_CAST                      = 0x00000100,   //seems to be afflicts pet
-    ATTRIBUTES_UNK11                        = 0x00000200,   // looks like temp enchants.
+    ATTRIBUTES_TARGET_MAINHAND              = 0x00000200,   // automatically select item from mainhand
     ATTRIBUTES_ON_NEXT_SWING_2              = 0x00000400,   //completely the same as ATTRIBUTE_ON_NEXT_ATTACK for class spells. So difference somewhere in mob abilities.
     ATTRIBUTES_UNK13                        = 0x00000800,
     ATTRIBUTES_DAY_ONLY                     = 0x00001000,
@@ -402,7 +402,7 @@ enum Attributes // 0
     ATTRIBUTES_DEAD_CASTABLE                = 0x00800000,   //castable while dead
     ATTRIBUTES_MOUNT_CASTABLE               = 0x01000000,   //castable on mounts
     ATTRIBUTES_TRIGGER_COOLDOWN             = 0x02000000,   //also requires atributes ex = 32 ?
-    ATTRIBUTES_UNK28                        = 0x04000000,
+    ATTRIBUTES_NEGATIVE                     = 0x04000000,   // most negative spells have this attribute
     ATTRIBUTES_CASTABLE_WHILE_SITTING       = 0x08000000,
     ATTRIBUTES_REQ_OOC                      = 0x10000000,   // ATTRIBUTES_REQ_OUT_OF_COMBAT
     ATTRIBUTES_IGNORE_INVULNERABILITY       = 0x20000000,   // debuffs that can't be removed by any spell and spells that can't be resisted in any case
