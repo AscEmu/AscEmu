@@ -93,7 +93,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectHealMaxHealth,			//SPELL_EFFECT_HEAL_MAX_HEALTH - 67
     &Spell::SpellEffectInterruptCast,			//SPELL_EFFECT_INTERRUPT_CAST - 68
     &Spell::SpellEffectDistract,				//SPELL_EFFECT_DISTRACT - 69
-    &Spell::SpellEffectNULL,					//SPELL_EFFECT_PULL - 70
+    &Spell::SpellEffectPlayerPull,				//SPELL_EFFECT_PULL - 70
     &Spell::SpellEffectPickpocket,				//SPELL_EFFECT_PICKPOCKET - 71
     &Spell::SpellEffectAddFarsight,				//SPELL_EFFECT_ADD_FARSIGHT - 72
     &Spell::SpellEffectNULL,					//SPELL_EFFECT_UNTRAIN_TALENTS? - 73
@@ -110,7 +110,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectStuck,					//SPELL_EFFECT_STUCK - 84
     &Spell::SpellEffectSummonPlayer,			//SPELL_EFFECT_SUMMON_PLAYER - 85
     &Spell::SpellEffectActivateObject,			//SPELL_EFFECT_ACTIVATE_OBJECT - 86
-    &Spell::SpellEffectBuildingDamage,				//SPELL_EFFECT_BUILDING_DAMAGE - 87
+    &Spell::SpellEffectBuildingDamage,			//SPELL_EFFECT_BUILDING_DAMAGE - 87
     &Spell::SpellEffectNULL,					//SPELL_EFFECT_BUILDING_REPAIR - 88
     &Spell::SpellEffectNULL,					//SPELL_EFFECT_BUILDING_SWITCH_STATE - 89
     &Spell::SpellEffectNULL,					//SPELL_EFFECT_KILL_CREDIT_90 - 90
@@ -120,7 +120,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectSelfResurrect,			//SPELL_EFFECT_SELF_RESURRECT - 94
     &Spell::SpellEffectSkinning,				//SPELL_EFFECT_SKINNING - 95
     &Spell::SpellEffectCharge,					//SPELL_EFFECT_CHARGE - 96
-    &Spell::SpellEffectNULL,					//SPELL_EFFECT_SUMMON_MULTIPLE_TOTEMS - 97
+    &Spell::SpellEffectNULL,					//SPELL_EFFECT_SUMMON_MULTIPLE_TOTEMS - 97 SpellEffectCastButtons
     &Spell::SpellEffectKnockBack,				//SPELL_EFFECT_KNOCK_BACK - 98
     &Spell::SpellEffectDisenchant,				//SPELL_EFFECT_DISENCHANT - 99
     &Spell::SpellEffectInebriate,				//SPELL_EFFECT_INEBRIATE - 100
@@ -150,7 +150,7 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectPlayerPull,				//SPELL_EFFECT_PLAYER_PULL - 124 - http://thottbot.com/e2312
     &Spell::SpellEffectReduceThreatPercent,     //SPELL_EFFECT_REDUCE_THREAT_PERCENT - 125 // Reduce Threat by % //http://www.thottbot.com/?sp=32835
     &Spell::SpellEffectSpellSteal,				//SPELL_EFFECT_SPELL_STEAL - 126 // Steal Beneficial Buff (Magic) //http://www.thottbot.com/?sp=30449
-    &Spell::SpellEffectProspecting,				// unknown - 127 // Search 5 ore of a base metal for precious gems.  This will destroy the ore in the process.
+    &Spell::SpellEffectProspecting,				//SPELL_EFFECT_PROSPECTING - 127 // Search 5 ore of a base metal for precious gems.  This will destroy the ore in the process.
     &Spell::SpellEffectApplyFriendAA,			// Apply Aura friendly
     &Spell::SpellEffectApplyEnemyAA,			// Apply Aura enemy
     &Spell::SpellEffectRedirectThreat,			// unknown - 130 // http://www.thottbot.com/s34477
@@ -167,11 +167,11 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectNULL,					// unknown - 141 // triggers spell, magic one,  (Mother spell) http://www.thottbot.com/s41065
     &Spell::SpellEffectTriggerSpellWithValue,	//SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE - 142 // triggers some kind of "Put spell on target" thing... (dono for sure) http://www.thottbot.com/s40872 and http://www.thottbot.com/s33076
     &Spell::SpellEffectApplyOwnerAA,			// Apply Aura on summon owner - 143 // Master -> demon effecting spell, http://www.thottbot.com/s25228 and http://www.thottbot.com/s35696
-    &Spell::SpellEffectNULL,					// unknown - 144
-    &Spell::SpellEffectNULL,					// unknown - 145
+    &Spell::SpellEffectKnockBack,				// unknown - 144
+    &Spell::SpellEffectPlayerPull,				// unknown - 145
     &Spell::SpellEffectActivateRunes,			// Activate Rune - 146
     &Spell::SpellEffectNULL,					// Quest Fail - 147
-    &Spell::SpellEffectNULL,					// unknown - 148
+    &Spell::SpellEffectNULL,					// SpellEffectTriggerMissileWithValue unknown - 148
     &Spell::SpellEffectNULL,					// unknown - 149
     &Spell::SpellEffectNULL,					// unknown - 150
     &Spell::SpellEffectTriggerSpell,			// SPELL_EFFECT_TRIGGER_SPELL_2 - 151
@@ -280,7 +280,7 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "BUILDING_DAMAGE",           //    87
     "BUILDING_REPAIR",           //    88
     "BUILDING_SWITCH_STATE",     //    89
-    "KILL_CREDIT_90",               //    90
+    "KILL_CREDIT_90",            //    90
     "THREAT_ALL",                //    91
     "ENCHANT_HELD_ITEM",         //    92
     "SET_MIRROR_NAME",           //    93
