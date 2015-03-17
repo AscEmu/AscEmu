@@ -4054,6 +4054,9 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
+    if(GetProto()->AttributesExG & SP_ATTR_EX_G_INTERRUPT_NPC && unitTarget->IsPlayer())
+		return;
+
     if (!playerTarget)
     {
         if (u_caster && (u_caster != unitTarget))
