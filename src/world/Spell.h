@@ -509,15 +509,15 @@ enum AttributesExC // 3
     FLAGS4_UNK21                            = 0x00080000,
     CAN_PERSIST_AND_CASTED_WHILE_DEAD       = 0x00100000,
     FLAGS4_UNK23                            = 0x00200000,
-    FLAGS4_PLAYER_RANGED_WAND               = 0x00400000,   // required wand
+    FLAGS4_PLAYER_REQUIRED_WAND             = 0x00400000,   // required wand
     FLAGS4_UNK25                            = 0x00800000,
     FLAGS4_TYPE_OFFHAND                     = 0x01000000,   // required offhand
     FLAGS4_NO_HEALING_BONUS                 = 0x02000000,
     FLAGS4_CAN_PROC_ON_TRIGGERED            = 0x04000000,
-    FLAGS4_UNK29                            = 0x08000000,
+    FLAGS4_DRAIN_SOUL                       = 0x08000000,   // just drain soul has this flag
     FLAGS4_UNK30                            = 0x10000000,
-    FLAGS4_UNK31                            = 0x20000000,
-    FLAGS4_UNK32                            = 0x40000000,   // tooltip dont show range
+    FLAGS4_NO_DONE_BONUS                    = 0x20000000,   ///\todo used for checking spellpower/damage mods
+    FLAGS4_NO_DISPLAY_RANGE                 = 0x40000000,   // tooltip dont show range
     FLAGS4_UNK33                            = 0x80000000,
 };
 
@@ -530,15 +530,15 @@ enum AttributesExD  // 4
     FLAGS5_UNK5                             = 0x00000008,
     FLAGS5_UNK6                             = 0x00000010,
     FLAGS5_UNK7                             = 0x00000020,
-    FLAGS5_UNK8                             = 0x00000040,
-    FLAGS5_UNK9                             = 0x00000080,
+    FLAGS5_NOT_STEALABLE                    = 0x00000040,
+    FLAGS5_TRIGGERED                        = 0x00000080,   // spells forced to be triggered
     FLAGS5_UNK10                            = 0x00000100,
-    FLAGS5_UNK11                            = 0x00000200,   // trigger activate (Deep Freeze...)
+    FLAGS5_TRIGGER_ACTIVATE                 = 0x00000200,   // trigger activate (Deep Freeze...)
     FLAGS5_UNK12                            = 0x00000400,
     FLAGS5_UNK13                            = 0x00000800,
     FLAGS5_UNK14                            = 0x00001000,
     FLAGS5_UNK15                            = 0x00002000,
-    FLAGS5_UNK16                            = 0x00004000,
+    FLAGS5_NOT_BREAK_AURAS                  = 0x00004000,   // not breake auras by damage from this spell
     FLAGS5_UNK17                            = 0x00008000,
     FLAGS5_NOT_IN_ARENA                     = 0x00010000,   // can not be used in arenas
     FLAGS5_UNK19                            = 0x00020000,   // can be used in arenas
@@ -571,13 +571,13 @@ enum AttributesExE // 5
     FLAGS6_UNK9                             = 0x00000080,
     FLAGS6_UNK10                            = 0x00000100,
     FLAGS6_UNK11                            = 0x00000200,   // periodic aura apply
-    FLAGS6_UNK12                            = 0x00000400,   // no duration for client
+    FLAGS6_HIDE_DURATION                    = 0x00000400,   // no duration for client
     FLAGS6_UNK13                            = 0x00000800,
     FLAGS6_UNK14                            = 0x00001000,
     FLAGS6_UNK15                            = 0x00002000,   // haste effect duration
     FLAGS6_UNK16                            = 0x00004000,
     FLAGS6_UNK17                            = 0x00008000,
-    FLAGS6_UNK18                            = 0x00010000,
+    FLAGS6_ITEM_CLASS_CHECK                 = 0x00010000,   ///\todo this allows spells with EquippedItemClass to affect spells from other items if the required item is equipped
     FLAGS6_USABLE_WHILE_FEARED              = 0x00020000,   // usable while feared
     FLAGS6_USABLE_WHILE_CONFUSED            = 0x00040000,   // usable while confused
     FLAGS6_UNK21                            = 0x00080000,

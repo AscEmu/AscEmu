@@ -6178,7 +6178,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         else
             flags |= AFLAG_NEGATIVE;
 
-        if (aur->GetDuration() != 0)
+        if (aur->GetDuration() != 0 && !(aur->GetSpellProto()->AttributesExE & FLAGS6_HIDE_DURATION))
             flags |= AFLAG_DURATION;
 
         data << WoWGuid(GetGUID());

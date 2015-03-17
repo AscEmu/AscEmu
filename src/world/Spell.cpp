@@ -274,6 +274,8 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     m_castPositionX = m_castPositionY = m_castPositionZ = 0;
     //TriggerSpellId = 0;
     //TriggerSpellTarget = 0;
+    if (m_spellInfo->AttributesExD & FLAGS5_TRIGGERED)
+		triggered = true;
     m_triggeredSpell = triggered;
     m_AreaAura = false;
 
