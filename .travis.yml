@@ -11,13 +11,19 @@ branches:
 
 # define complier for build
 compiler:
-  - gcc
   - clang
+  #gcc
 
 before_install:
  - sudo apt-get update -qq
  - sudo apt-get install -qq libbz2-dev libncurses5-dev libmysqlclient-dev libreadline-dev libsdl1.2-dev libssl-dev zlib1g-dev
 
+install:
+ - mkdir bins
+ - cd bin
+ - cmake ../
+ 
 script:
-  - test -d _build || mkdir _build
-  - cd _build
+  - cd ..
+  - cd bin
+  - make -j 10
