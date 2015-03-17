@@ -17,9 +17,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
  
-#include "../world/Gossip.h"
- #include "Setup.h"
+#include "Setup.h"
  
+enum UnorderedEntrys
+{
+    GO_DEDICATION_OF_HONOR  = 202443,
+    GT_DEDICATION_OF_HONOR  = 15921,    // "Dedicated to those that fell to the Scourge during the war in the frozen wastes."
+    GI_SEE_FALL_LICH_KING   = 351       // "See the fall of the Lich King."
+
+};
+
  class DedicationOfHonorAI : public GameObjectAIScript
 {
     public:
@@ -29,19 +36,20 @@
 
         void OnActivate(Player* player)
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(_gameobject->GetGUID(), 15921, player, 1, ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
+            Arcemu::Gossip::Menu::SendQuickMenu(_gameobject->GetGUID(), GT_DEDICATION_OF_HONOR, player, 1, ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
         }
 };
 
 class DedicationOfHonorGossip : public GossipScript
 {
     public:
+
         DedicationOfHonorGossip() : GossipScript(){}
 
         void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode)
         {
-            uint32 id = 16;    //video id
-            player->GetSession()->OutPacket(SMSG_TRIGGER_MOVIE, sizeof(uint32), &id);
+            uint32 video_id = 16;
+            player->GetSession()->OutPacket(SMSG_TRIGGER_MOVIE, sizeof(uint32), &video_id);
 
             Arcemu::Gossip::Menu::Complete(player);
         }
@@ -49,6 +57,6 @@ class DedicationOfHonorGossip : public GossipScript
 
 void SetupDalaranGossip(ScriptMgr* mgr)
 {
-    mgr->register_gameobject_script(202443, &DedicationOfHonorAI::Create);
-    mgr->register_go_gossip_script(202443, new DedicationOfHonorGossip);
+    mgr->register_gameobject_script(GO_DEDICATION_OF_HONOR, &DedicationOfHonorAI::Create);
+    mgr->register_go_gossip_script(GO_DEDICATION_OF_HONOR, new DedicationOfHonorGossip);
 }
