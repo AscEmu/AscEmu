@@ -566,8 +566,6 @@ class KeristraszaAI : public MoonScriptBossAI
 };
 
 // Nexus Instance script
-#define MAP_NEXUS 576
-
 class NexusScript : public MoonInstanceScript
 {
     public:

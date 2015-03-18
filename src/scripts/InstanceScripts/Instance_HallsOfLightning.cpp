@@ -20,8 +20,6 @@
 #include "Setup.h"
 #include "Instance_HallsOfLightning.h"
 
-#define MAP_HALLS_OF_LIGHTNING 602
-
 
 /////////////////////////////////////////////////////////////////////////////////
 /// Halls of Lightning Instance

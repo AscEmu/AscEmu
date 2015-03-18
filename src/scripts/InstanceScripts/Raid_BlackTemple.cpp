@@ -23,7 +23,6 @@
 #include "Setup.h"
 
 
-#define MAP_BLACK_TEMPLE                                564
 #define CN_SUPREMUS                                        22898
 
 class BlackTempleScript : public MoonInstanceScript

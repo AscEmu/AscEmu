@@ -145,4 +145,101 @@ enum
     TARGET_RANDOM_DESTINATION
 };
 
+///\todo create for all instance scripts for these maps... best example how instance saving work ->Raid_IceCrownCitadel.cpp
+enum InstanceMaps
+{
+    MAP_DEADMINES           = 36,   //Deadmines
+
+    MAP_NAXXRAMAS           = 533,  //Naxxramas
+    MAP_HYJALPAST           = 534,  //The Battle for Mount Hyjal
+    MAP_BLACK_TEMPLE        = 564,  //Black Temple
+    MAP_NEXUS               = 576,  //Nexus
+    MAP_HALLS_OF_LIGHTNING  = 602,  //Halls of Lightning
+    MAP_GUNDRAK             = 604,  //Gundrak
+    MAP_VIOLET_HOLD         = 608,  //The Violet Hold
+    MAP_OS                  = 615,  //ObsidianSanctum
+    MAP_ICECROWNCITADEL     = 631,  //Icecrown Citadel
+    MAP_HALLSOFREFLECTION   = 668,  //Halls of Reflection
+
+    /*30	Alterac Valley
+    33	Shadowfang Keep
+    34	Stormwind Stockade
+    43	Wailing Caverns
+    44	<unused> Monastery
+    47	Razorfen Kraul
+    48	Blackfathom Deeps
+    70	Uldaman
+    90	Gnomeregan
+    109	Sunken Temple
+    129	Razorfen Downs
+    169	Emerald Dream
+    189	Scarlet Monastery
+    209	Zul'Farrak
+    229	Blackrock Spire
+    230	Blackrock Depths
+    249	Onyxia's Lair
+    269	Opening of the Dark Portal
+    289	Scholomance
+    309	Zul'Gurub
+    329	Stratholme
+    349	Maraudon
+    389	Ragefire Chasm
+    409	Molten Core
+    429	Dire Maul
+    469	Blackwing Lair
+    489	Warsong Gulch
+    509	Ruins of Ahn'Qiraj
+    529	Arathi Basin
+    531	Ahn'Qiraj Temple
+    532	Karazhan
+    540	Hellfire Citadel: The Shattered Halls
+    542	Hellfire Citadel: The Blood Furnace
+    543	Hellfire Citadel: Ramparts
+    544	Magtheridon's Lair
+    545	Coilfang: The Steamvault
+    546	Coilfang: The Underbog
+    547	Coilfang: The Slave Pens
+    548	Coilfang: Serpentshrine Cavern
+    550	Tempest Keep
+    552	Tempest Keep: The Arcatraz
+    553	Tempest Keep: The Botanica
+    554	Tempest Keep: The Mechanar
+    555	Auchindoun: Shadow Labyrinth
+    556	Auchindoun: Sethekk Halls
+    557	Auchindoun: Mana-Tombs
+    558	Auchindoun: Auchenai Crypts
+    559	Nagrand Arena
+    560	The Escape From Durnholde
+    562	Blade's Edge Arena
+    565	Gruul's Lair
+    566	Eye of the Storm
+    568	Zul'Aman
+    572	Ruins of Lordaeron
+    574	Utgarde Keep
+    575	Utgarde Pinnacle
+    578	The Oculus
+    580	The Sunwell
+    585	Magister's Terrace
+    595	The Culling of Stratholme
+    598	Sunwell Fix (Unused)
+    599	Halls of Stone
+    600	Drak'Tharon Keep
+    601	Azjol-Nerub
+    603	Ulduar
+    607	Strand of the Ancients
+    615	The Obsidian Sanctum
+    616	The Eye of Eternity
+    617	Dalaran Sewers
+    618	The Ring of Valor
+    619	Ahn'kahet: The Old Kingdom
+    624	Vault of Archavon
+    628	Isle of Conquest
+    632	The Forge of Souls
+    649	Trial of the Crusader
+    650	Trial of the Champion
+    658	Pit of Saron
+    724	The Ruby Sanctum*/
+
+};
+
 #endif      // _INSTANCE_SCRIPTS_SETUP_H

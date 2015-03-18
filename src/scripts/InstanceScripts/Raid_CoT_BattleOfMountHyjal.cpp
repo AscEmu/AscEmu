@@ -48,8 +48,6 @@ enum HyjalType
     HYJAL_TYPE_END
 };
 
-#define MAP_HYJALPAST 534
-
 class MountHyjalScript : public MoonInstanceScript
 {
     public:

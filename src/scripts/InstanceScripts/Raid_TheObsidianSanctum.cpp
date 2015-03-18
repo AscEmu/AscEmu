@@ -86,7 +86,7 @@ static Location TSUNAMI_MOVE[] =
     { 3283.311035f, 556.839611f, 59.397129f, 3.105450f }
 };
 
-#define MAP_OS 615
+
 class ObsidianSanctumScript : public MoonInstanceScript
 {
     public:

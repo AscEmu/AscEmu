@@ -20,8 +20,6 @@
 #ifndef _ICECROWNCITADEL_H
 #define _ICECROWNCITADEL_H
 
-#define MAP_ICECROWNCITADEL 631
-
 enum IceCrownCitadelGOs
 {
     //GO_Tele

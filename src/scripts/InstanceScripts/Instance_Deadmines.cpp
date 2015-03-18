@@ -24,8 +24,6 @@
 #include "Instance_Deadmines.h"
 
 
-#define MAP_DEADMINES 36
-
 static Location Doors[] =
 {
     { -168.514f, -579.861f, 19.3159f, 0 },    //Gilnid doors

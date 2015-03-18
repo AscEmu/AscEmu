@@ -43,146 +43,124 @@
 //Devnotes:
 //Far away from implementing this :(
 ///////////////////////////////////////////////////////
+enum IceCrown_Encounters
+{
+    DATA_LORD_MARROWGAR,
+    DATA_COLDFLAME,
+    DATA_BONE_SPIKE,
+    DATA_LADY_DEATHWHISPER,
+    DATA_VALITHRIA_DREAM,
 
+    ICC_DATA_END
+};
 
 ///////////////////////////////////////////////////////
 //IceCrownCitadel Instance
-
 class IceCrownCitadelScript : public MoonInstanceScript
 {
     friend class ICCTeleporterAI; // Friendship forever ;-)
 
-public:
+    public:
 
-    uint32 mMarrowgarGUID;
-    uint32 mColdflameGUID;
-    uint32 mDeathwhisperGUID;
-    uint32 mDreamwalkerGUID;
-
-    MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(IceCrownCitadelScript, MoonInstanceScript);
-    IceCrownCitadelScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr) 
-    {
-        //NPC states
-        mMarrowgarGUID = 0;
-        mColdflameGUID = 0;
-        mDeathwhisperGUID = 0;
-        mDreamwalkerGUID = 0;
-    }
-
-    void OnGameObjectPushToWorld(GameObject* pGameObject)
-    {
-        // Gos which are not visible by killing a boss needs a second check...
-        if (GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
+        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(IceCrownCitadelScript, MoonInstanceScript);
+        IceCrownCitadelScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
-            AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
-            AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
-        }
-    }
+            // Way to select bosses
+            BuildEncounterMap();
+            if (mEncounters.size() == 0)
+                return;
 
-    void OnCreaturePushToWorld(Creature* pCreature)
-    {
-        switch (pCreature->GetEntry())
-        {
-            // First set state
-            case CN_LORD_MARROWGAR:
-                {
-                    mMarrowgarGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_LORD_MARROWGAR, BossData(0, mMarrowgarGUID)));
-
-                    AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Inactive);    // Icewall 1
-                    AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
-                    AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
-
-                }break;
-
-            case CN_LADY_DEATHWHISPER:
-                {
-                    mDeathwhisperGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_LADY_DEATHWHISPER, BossData(0, mDeathwhisperGUID)));
-
-                }break;
-
-            case CN_VALITHRIA_DREAMWALKER:
-                {
-                    mDreamwalkerGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_VALITHRIA_DREAMWALKER, BossData(0, mDreamwalkerGUID)));
-
-                }break;
-
-            case CN_COLDFLAME:
-                {
-                    mColdflameGUID = pCreature->GetLowGUID();
-                    mEncounters.insert(EncounterMap::value_type(CN_COLDFLAME, BossData(0, mColdflameGUID)));
-
-                }break;
-
-        }
-    };
-
-
-    void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-    {
-        if (pType != Data_EncounterState || pIndex == 0)
-            return;
-
-        EncounterMap::iterator Iter = mEncounters.find(pIndex);
-        if (Iter == mEncounters.end())
-            return;
-
-        (*Iter).second.mState = (EncounterState)pData;
-    };
-
-    uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-    {
-        if (pType != Data_EncounterState || pIndex == 0)
-            return 0;
-
-        EncounterMap::iterator Iter = mEncounters.find(pIndex);
-        if (Iter == mEncounters.end())
-            return 0;
-
-        return (*Iter).second.mState;
-    };
-
-    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
-    {
-        EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
-        if (Iter == mEncounters.end())
-            return;
-
-        (*Iter).second.mState = State_Finished;
-
-        switch (pCreature->GetEntry())
-        {
-            case CN_LORD_MARROWGAR:
+            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
             {
-                SetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR, State_Finished);
+                if ((*Iter).second.mState != State_Finished)
+                    continue;
 
+                switch ((*Iter).first)
+                {
+                    case CN_LORD_MARROWGAR:
+                        AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Inactive);    // Icewall 1
+                        AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
+                        AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
+                        break;
+                    default:
+                        continue;
+                };
+            };
+        }
+
+        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        {
+            // Gos which are not visible by killing a boss needs a second check...
+            if (GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
+            {
                 AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
                 AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
                 AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
-            }break;
-
-            case CN_LADY_DEATHWHISPER:
-                SetInstanceData(Data_EncounterState, CN_LADY_DEATHWHISPER, State_Finished);
-                break;
-
-            case CN_VALITHRIA_DREAMWALKER:
-                SetInstanceData(Data_EncounterState, CN_VALITHRIA_DREAMWALKER, State_Finished);
-                break;
-
-            case CN_COLDFLAME:
-                SetInstanceData(Data_EncounterState, CN_COLDFLAME, State_Finished);
-                break;
-
-            default:
-                break;
+            }
         }
-        return;
-    }
 
-    void OnPlayerEnter(Player* player)
+        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = (EncounterState)pData;
+        };
+
+        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return 0;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return 0;
+
+            return (*Iter).second.mState;
+        };
+
+        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+        {
+            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = State_Finished;
+
+            switch (pCreature->GetEntry())
+            {
+                case CN_LORD_MARROWGAR:
+                {
+                    SetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR, State_Finished);
+
+                    AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
+                    AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
+                    AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
+                }break;
+
+                case CN_LADY_DEATHWHISPER:
+                    SetInstanceData(Data_EncounterState, CN_LADY_DEATHWHISPER, State_Finished);
+                    break;
+
+                case CN_VALITHRIA_DREAMWALKER:
+                    SetInstanceData(Data_EncounterState, CN_VALITHRIA_DREAMWALKER, State_Finished);
+                    break;
+
+                case CN_COLDFLAME:
+                    SetInstanceData(Data_EncounterState, CN_COLDFLAME, State_Finished);
+                    break;
+
+                default:
+                    break;
+            }
+            return;
+        }
+
+        void OnPlayerEnter(Player* player)
         {
             // setup only the npcs with the correct team...
             switch (player->GetTeam())

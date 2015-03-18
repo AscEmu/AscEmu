@@ -21,7 +21,6 @@
 #include "Setup.h"
 #include "Instance_HallsOfReflection.h"
 
-#define MAP_HALLSOFREFLECTION 668
 
 class HallsOfReflectionScript : public MoonInstanceScript
 {

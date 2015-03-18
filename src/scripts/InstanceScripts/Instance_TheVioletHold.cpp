@@ -49,7 +49,6 @@ enum DataIndex
 enum TVH_ENTRIES
 {
     //Map stuff
-    MAP_VIOLET_HOLD = 608,
     AREA_VIOLET_HOLD = 4415,
 
     //Main event

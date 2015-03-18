@@ -20,7 +20,7 @@
 #include "Setup.h"
 #include "Instance_Gundrak.h"
 
-#define MAP_GUNDRAK                    604
+
 #define GO_FLAG_UNCLICKABLE            0x00000010
 
 

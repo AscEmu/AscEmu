@@ -24,7 +24,6 @@
 /////////////////////////////////////////////////////////////////////////////////
 ////// Naxxramas Instance
 
-#define MAP_NAXXRAMAS 533
 #define CN_THADDIUS 15928
 
 class NaxxramasScript : public MoonInstanceScript
