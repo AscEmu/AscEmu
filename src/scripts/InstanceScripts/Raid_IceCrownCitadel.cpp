@@ -135,25 +135,10 @@ class IceCrownCitadelScript : public MoonInstanceScript
             {
                 case CN_LORD_MARROWGAR:
                 {
-                    SetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR, State_Finished);
-
                     AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
                     AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
                     AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
                 }break;
-
-                case CN_LADY_DEATHWHISPER:
-                    SetInstanceData(Data_EncounterState, CN_LADY_DEATHWHISPER, State_Finished);
-                    break;
-
-                case CN_VALITHRIA_DREAMWALKER:
-                    SetInstanceData(Data_EncounterState, CN_VALITHRIA_DREAMWALKER, State_Finished);
-                    break;
-
-                case CN_COLDFLAME:
-                    SetInstanceData(Data_EncounterState, CN_COLDFLAME, State_Finished);
-                    break;
-
                 default:
                     break;
             }

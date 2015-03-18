@@ -43,7 +43,6 @@ class DeadminesInstanceScript : public MoonInstanceScript
     public:
 
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(DeadminesInstanceScript, MoonInstanceScript);
-
         DeadminesInstanceScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
             mFactoryDoor_GUID = 0;

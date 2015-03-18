@@ -19,9 +19,67 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_BlackrockSpire.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//Blackrock Spire
+class InstanceBlackrockSpireScript : public MoonInstanceScript
+{
+    public:
+
+        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceBlackrockSpireScript, MoonInstanceScript);
+        InstanceBlackrockSpireScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        {
+            // Way to select bosses
+            BuildEncounterMap();
+            if (mEncounters.size() == 0)
+                return;
+
+            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            {
+                if ((*Iter).second.mState != State_Finished)
+                    continue;
+            }
+        }
+
+        void OnGameObjectPushToWorld(GameObject* pGameObject) { }
+
+        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = (EncounterState)pData;
+        }
+
+        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return 0;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return 0;
+
+            return (*Iter).second.mState;
+        }
+
+        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+        {
+            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = State_Finished;
+
+            return;
+        }
+};
 
 // General Drakkisath AI by Soulshifter
 class GeneralDrakkisathAI : public CreatureAIScript
@@ -1636,6 +1694,9 @@ class OverlordWyrmthalakAI : public CreatureAIScript
 
 void SetupBlackrockSpire(ScriptMgr* mgr)
 {
+    //Instance
+    mgr->register_instance_script(MAP_BLACKROCK_SPIRE, &InstanceBlackrockSpireScript::Create);
+
     mgr->register_creature_script(CN_GENERAL_DRAKKISATH, &GeneralDrakkisathAI::Create);
     mgr->register_creature_script(CN_PYROGUARD_EMBERSSER, &PyroguardEmbersserAI::Create);
     mgr->register_creature_script(CN_REND_BLACKHAND, &RendBlackhandAI::Create);
