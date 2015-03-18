@@ -53,13 +53,13 @@ class IceCrownCitadelScript : public MoonInstanceScript
     friend class ICCTeleporterAI; // Friendship forever ;-)
 
 public:
-    MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(IceCrownCitadelScript, MoonInstanceScript);
 
     uint32 mMarrowgarGUID;
     uint32 mColdflameGUID;
     uint32 mDeathwhisperGUID;
     uint32 mDreamwalkerGUID;
 
+    MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(IceCrownCitadelScript, MoonInstanceScript);
     IceCrownCitadelScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr) 
     {
         //NPC states
@@ -67,26 +67,16 @@ public:
         mColdflameGUID = 0;
         mDeathwhisperGUID = 0;
         mDreamwalkerGUID = 0;
-
-        //GO states
-        mMarrowIceDoor1_GUID = 0;
-        mMarrowIceDoor2_GUID = 0;
-        mMarrowDoor_GUID = 0;
     }
 
     void OnGameObjectPushToWorld(GameObject* pGameObject)
     {
-        switch (pGameObject->GetEntry())
+        // Gos which are not visible by killing a boss needs a second check...
+        if (GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
         {
-            case GO_MARROWGAR_ICEWALL_1:
-                mMarrowIceDoor1_GUID = pGameObject->GetGUID();
-                break;
-            case GO_MARROWGAR_ICEWALL_2:
-                mMarrowIceDoor2_GUID = pGameObject->GetGUID();
-                break;
-            case GO_MARROWGAR_DOOR:
-                mMarrowDoor_GUID = pGameObject->GetGUID();
-                break;
+            AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
+            AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
+            AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
         }
     }
 
@@ -99,6 +89,10 @@ public:
                 {
                     mMarrowgarGUID = pCreature->GetLowGUID();
                     mEncounters.insert(EncounterMap::value_type(CN_LORD_MARROWGAR, BossData(0, mMarrowgarGUID)));
+
+                    AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Inactive);    // Icewall 1
+                    AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Inactive);    // Icewall 2
+                    AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Inactive);         // Door
 
                 }break;
 
@@ -165,18 +159,9 @@ public:
             {
                 SetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR, State_Finished);
 
-                GameObject* pMarrowIceDoor1 = FindClosestGameObjectOnMap(GO_MARROWGAR_ICEWALL_1, Doors[0].x, Doors[0].y, Doors[0].z);
-                if (pMarrowIceDoor1 != NULL)
-                    pMarrowIceDoor1->SetState(GAMEOBJECT_STATE_OPEN);
-
-                GameObject* pMarrowIceDoor2 = FindClosestGameObjectOnMap(GO_MARROWGAR_ICEWALL_2, Doors[1].x, Doors[1].y, Doors[1].z);
-                if (pMarrowIceDoor2 != NULL)
-                    pMarrowIceDoor2->SetState(GAMEOBJECT_STATE_OPEN);
-
-                GameObject* pMarrowDoor = FindClosestGameObjectOnMap(GO_MARROWGAR_DOOR, Doors[2].x, Doors[2].y, Doors[2].z);
-                if (pMarrowDoor != NULL)
-                    pMarrowDoor->SetState(GAMEOBJECT_STATE_OPEN);
-
+                AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_1, State_Active);    // Icewall 1
+                AddGameObjectStateByEntry(GO_MARROWGAR_ICEWALL_2, State_Active);    // Icewall 2
+                AddGameObjectStateByEntry(GO_MARROWGAR_DOOR, State_Active);         // Door
             }break;
 
             case CN_LADY_DEATHWHISPER:
@@ -197,11 +182,19 @@ public:
         return;
     }
 
-
-protected:
-    uint32 mMarrowIceDoor1_GUID;
-    uint32 mMarrowIceDoor2_GUID;
-    uint32 mMarrowDoor_GUID;
+    void OnPlayerEnter(Player* player)
+        {
+            // setup only the npcs with the correct team...
+            switch (player->GetTeam())
+            {
+                case TEAM_ALLIANCE:
+                    sChatHandler.SystemMessage(player->GetSession(), "Team = Alliance");
+                    break;
+                case TEAM_HORDE:
+                    sChatHandler.SystemMessage(player->GetSession(), "Team = Horde");
+                    break;
+            }
+        }
 
 };
 
