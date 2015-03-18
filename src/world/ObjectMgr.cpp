@@ -530,10 +530,13 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
 #ifdef ENABLE_ACHIEVEMENTS
 void ObjectMgr::LoadCompletedAchievements()
 {
-    QueryResult* result = WorldDatabase.Query("SELECT achievement FROM character_achievement GROUP BY achievement");
+    QueryResult* result = CharacterDatabase.Query("SELECT achievement FROM character_achievement GROUP BY achievement");
 
     if (!result)
+    {
+        Log.Error("MySQL", "Query failed: SELECT achievement FROM character_achievement");
         return;
+    }
 
     do
     {
@@ -604,8 +607,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
             pPlayerCreateInfo->taximask[index] = atol((*iter).c_str());
         }
 
-        QueryResult* sk_sql = WorldDatabase.Query(
-            "SELECT * FROM playercreateinfo_skills WHERE indexid=%u", pPlayerCreateInfo->index);
+        QueryResult* sk_sql = WorldDatabase.Query("SELECT * FROM playercreateinfo_skills WHERE indexid=%u", pPlayerCreateInfo->index);
 
         if (sk_sql)
         {
@@ -621,8 +623,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
             while (sk_sql->NextRow());
             delete sk_sql;
         }
-        QueryResult* sp_sql = WorldDatabase.Query(
-            "SELECT * FROM playercreateinfo_spells WHERE indexid=%u", pPlayerCreateInfo->index);
+        QueryResult* sp_sql = WorldDatabase.Query("SELECT * FROM playercreateinfo_spells WHERE indexid=%u", pPlayerCreateInfo->index);
 
         if (sp_sql)
         {
@@ -634,8 +635,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
             delete sp_sql;
         }
 
-        QueryResult* items_sql = WorldDatabase.Query(
-            "SELECT * FROM playercreateinfo_items WHERE indexid=%u", pPlayerCreateInfo->index);
+        QueryResult* items_sql = WorldDatabase.Query("SELECT * FROM playercreateinfo_items WHERE indexid=%u", pPlayerCreateInfo->index);
 
         if (items_sql)
         {
@@ -652,8 +652,7 @@ void ObjectMgr::LoadPlayerCreateInfo()
             delete items_sql;
         }
 
-        QueryResult* bars_sql = WorldDatabase.Query(
-            "SELECT * FROM playercreateinfo_bars WHERE class=%u", pPlayerCreateInfo->class_);
+        QueryResult* bars_sql = WorldDatabase.Query("SELECT * FROM playercreateinfo_bars WHERE class=%u", pPlayerCreateInfo->class_);
 
         if (bars_sql)
         {
@@ -713,7 +712,7 @@ void ObjectMgr::LoadGuilds()
 Corpse* ObjectMgr::LoadCorpse(uint32 guid)
 {
     Corpse* pCorpse;
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM Corpses WHERE guid =%u ", guid);
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM corpses WHERE guid =%u ", guid);
 
     if (!result)
         return NULL;
@@ -780,7 +779,7 @@ void ObjectMgr::DelinkPlayerCorpses(Player* pOwner)
 
 void ObjectMgr::LoadGMTickets()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerguid, name, level, map, posx, posy, posz, message, timestamp, deleted, assignedto, comment FROM gm_tickets WHERE deleted = false");
+    QueryResult* result = CharacterDatabase.Query("SELECT ticketid, playerGuid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment FROM gm_tickets WHERE deleted = false");
 
     GM_Ticket* ticket;
     if (result == 0)
@@ -895,7 +894,7 @@ void ObjectMgr::SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf)
 
     ss.rdbuf()->str("");
 
-    ss << "INSERT INTO gm_tickets (ticketid, playerguid, name, level, map, posx, posy, posz, message, timestamp, deleted, assignedto, comment) VALUES(";
+    ss << "INSERT INTO gm_tickets (ticketid, playerguid, name, level, map, posX, posY, posZ, message, timestamp, deleted, assignedto, comment) VALUES(";
     ss << ticket->guid << ", ";
     ss << ticket->playerGuid << ", '";
     ss << CharacterDatabase.EscapeString(ticket->name) << "', ";
@@ -926,7 +925,7 @@ void ObjectMgr::LoadAchievementRewards()
 {
     AchievementRewards.clear();                           // need for reload case
 
-    QueryResult *result = WorldDatabase.Query("SELECT * FROM achievement_reward");
+    QueryResult* result = WorldDatabase.Query("SELECT entry, gender, title_A, title_H, item, sender, subject, text FROM achievement_reward");
 
     if (!result)
     {
@@ -938,7 +937,7 @@ void ObjectMgr::LoadAchievementRewards()
 
     do
     {
-        Field *fields = result->Fetch();
+        Field* fields = result->Fetch();
         uint32 entry = fields[0].GetUInt32();
 
         if (!dbcAchievementStore.LookupEntryForced(entry))
@@ -1101,7 +1100,7 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-    result = CharacterDatabase.Query("SELECT MAX( UID ) FROM playerbugreports");
+    result = CharacterDatabase.Query("SELECT MAX(UID) FROM playerbugreports");
     if (result != NULL)
     {
         m_reportID.SetVal(uint32(result->Fetch()[0].GetUInt64() + 1));
@@ -1116,14 +1115,14 @@ void ObjectMgr::SetHighestGuids()
     }
 
 
-    result = CharacterDatabase.Query("SELECT MAX( message_id ) FROM mailbox");
+    result = CharacterDatabase.Query("SELECT MAX(message_id) FROM mailbox");
     if (result)
     {
         m_mailid.SetVal(uint32(result->Fetch()[0].GetUInt64() + 1));
         delete result;
     }
 
-    result = CharacterDatabase.Query("SELECT MAX( setGUID ) FROM equipmentsets");
+    result = CharacterDatabase.Query("SELECT MAX(setGUID) FROM equipmentsets");
     if (result != NULL)
     {
         m_setGUID.SetVal(uint32(result->Fetch()[0].GetUInt32() + 1));
