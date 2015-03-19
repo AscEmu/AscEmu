@@ -19,7 +19,7 @@
 #ifndef _LFGPLAYERDATA_H
 #define _LFGPLAYERDATA_H
 
-#include "LFG.h"
+#include "Lfg.h"
 
 /**
 Stores all lfg data needed about the player.

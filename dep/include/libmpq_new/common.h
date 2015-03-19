@@ -21,7 +21,11 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
+#ifdef _MSC_VER
 #include "winvs_stdint.h"
+#else
+#include <dirent.h>
+#endif
 
 /* function to return the hash to a given string. */
 uint32_t libmpq__hash_string(
