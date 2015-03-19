@@ -21,12 +21,63 @@
 #include "Setup.h"
 #include "Instance_HallsOfReflection.h"
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
+//Azjol-Nerub
 class HallsOfReflectionScript : public MoonInstanceScript
 {
     public:
+
         ADD_INSTANCE_FACTORY_FUNCTION(HallsOfReflectionScript)
-            HallsOfReflectionScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr){}
+        HallsOfReflectionScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        {
+            // Way to select bosses
+            BuildEncounterMap();
+            if (mEncounters.size() == 0)
+                return;
+
+            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            {
+                if ((*Iter).second.mState != State_Finished)
+                    continue;
+            }
+        }
+
+        void OnGameObjectPushToWorld(GameObject* pGameObject) { }
+
+        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = (EncounterState)pData;
+        }
+
+        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return 0;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return 0;
+
+            return (*Iter).second.mState;
+        }
+
+        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+        {
+            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = State_Finished;
+
+            return;
+        }
 
         void OnPlayerEnter(Player* pPlayer)
         {
@@ -316,7 +367,10 @@ class Falric : public MoonScriptBossAI
 
 void SetupHallsOfReflection(ScriptMgr * mgr)
 {
+    //Instance
     mgr->register_instance_script(MAP_HALLSOFREFLECTION, &HallsOfReflectionScript::Create);
+
+    //Bosses
     mgr->register_creature_script(CN_JAINA, &JainaAI::Create);
     mgr->register_creature_gossip(CN_JAINA, new Jaina_Gossip);
     mgr->register_creature_script(CN_MARWYN, &Marwyn::Create);
