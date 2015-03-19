@@ -27,7 +27,7 @@ set(sources
     Instance_HellfireRamparts.cpp 
     Instance_MagistersTerrace.cpp 
     Instance_ManaTombs.cpp 
-    Instance_Mauradon.cpp 
+    Instance_Maraudon.cpp 
     Instance_Nexus.cpp 
     Instance_OldHillsbradFoothills.cpp 
     Instance_RagefireChasm.cpp 
@@ -92,7 +92,7 @@ SET(headers
     Instance_HellfireRamparts.h 
     Instance_MagistersTerrace.h 
     Instance_ManaTombs.h 
-    Instance_Mauradon.h 
+    Instance_Maraudon.h 
     Instance_Nexus.h 
     Instance_OldHillsbradFoothills.h 
     Instance_RagefireChasm.h 

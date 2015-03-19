@@ -151,14 +151,35 @@ enum InstanceMaps
     MAP_DEADMINES           = 36,   //Deadmines
     MAP_BLACKFATHOM_DEEPS   = 48,   //Blackfathom Deeps
 
+    MAP_RAZORFEN_DOWNS      = 129,  //Razorfen Downs
+    MAP_SCARLET_MONASTERY   = 189,  //Scarlet Monastery
+
     MAP_BLACKROCK_SPIRE     = 229,  //Blackrock Spire
     MAP_BLACKROCK_DEPTHS    = 230,  //Blackrock Depths
     MAP_COT_BLACK_MORASS    = 269,  // rename this Opening of the Dark Portal -> Caverns of Time: Black Morass
+    MAP_SCHOLOMANCE         = 289,  //Scholomance
+    MAP_MARAUDON            = 349,  //Maraudon
+
+    MAP_RAGEFIRE_CHASM      = 389,  //Ragefire Chasm
+
+    MAP_DIRE_MAUL           = 429,  //Dire Maul
     MAP_NAXXRAMAS           = 533,  //Naxxramas
     MAP_HYJALPAST           = 534,  //The Battle for Mount Hyjal
+
     MAP_HC_BLOOD_FURNANCE   = 542,  //Hellfire Citadel: The Blood Furnace
+    MAP_HC_RAMPARTS         = 543,  //Hellfire Citadel: Ramparts
+
+    MAP_TK_THE_ARCATRAZ     = 552,  //Tempest Keep: The Arcatraz
+    MAP_TK_THE_BOTANICA     = 553,  //Tempest Keep: The Botanica
+
+    MAP_AUCHENAI_MANA_TOMBS = 557,  //Auchindoun: Mana-Tombs
+    MAP_AUCHENAI_CRYPT      = 558,  //Auchindoun: Auchenai Crypts
+
     MAP_BLACK_TEMPLE        = 564,  //Black Temple
     MAP_NEXUS               = 576,  //Nexus
+    MAP_MAGISTERS_TERRACE   = 585,  //Magister's Terrace
+    MAP_HALLS_OF_STONE      = 599,  //Halls of Stone
+    MAP_DRAK_THARON_KEEP    = 600,  //Drak'Tharon Keep
     MAP_AZJOL_NERUB         = 601,  //Azjol-Nerub
     MAP_HALLS_OF_LIGHTNING  = 602,  //Halls of Lightning
     MAP_GUNDRAK             = 604,  //Gundrak
@@ -166,9 +187,7 @@ enum InstanceMaps
     MAP_OS                  = 615,  //ObsidianSanctum
     MAP_ICECROWNCITADEL     = 631,  //Icecrown Citadel
     MAP_HALLSOFREFLECTION   = 668,  //Halls of Reflection
-    MAP_TK_THE_BOTANICA     = 553,  //Tempest Keep: The Botanica
-    MAP_TK_THE_ARCATRAZ     = 552,  //Tempest Keep: The Arcatraz
-    MAP_AUCHENAI_CRYPT      = 558,  //Auchindoun: Auchenai Crypts
+
     
 
     /*30	Alterac Valley
@@ -180,18 +199,18 @@ enum InstanceMaps
     70	Uldaman
     90	Gnomeregan
     109	Sunken Temple
-    129	Razorfen Downs
+    
     169	Emerald Dream
-    189	Scarlet Monastery
+
     209	Zul'Farrak
     249	Onyxia's Lair
-    289	Scholomance
+
     309	Zul'Gurub
     329	Stratholme
-    349	Maraudon
-    389	Ragefire Chasm
+
+    
     409	Molten Core
-    429	Dire Maul
+
     469	Blackwing Lair
     489	Warsong Gulch
     509	Ruins of Ahn'Qiraj
@@ -199,7 +218,7 @@ enum InstanceMaps
     531	Ahn'Qiraj Temple
     532	Karazhan
     540	Hellfire Citadel: The Shattered Halls
-    543	Hellfire Citadel: Ramparts
+
     544	Magtheridon's Lair
     545	Coilfang: The Steamvault
     546	Coilfang: The Underbog
@@ -210,7 +229,7 @@ enum InstanceMaps
     554	Tempest Keep: The Mechanar
     555	Auchindoun: Shadow Labyrinth
     556	Auchindoun: Sethekk Halls
-    557	Auchindoun: Mana-Tombs
+
     559	Nagrand Arena
     560	The Escape From Durnholde
     562	Blade's Edge Arena
@@ -222,11 +241,11 @@ enum InstanceMaps
     575	Utgarde Pinnacle
     578	The Oculus
     580	The Sunwell
-    585	Magister's Terrace
+
     595	The Culling of Stratholme
     598	Sunwell Fix (Unused)
-    599	Halls of Stone
-    600	Drak'Tharon Keep
+
+
     603	Ulduar
     607	Strand of the Ancients
     615	The Obsidian Sanctum

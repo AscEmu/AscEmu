@@ -22,6 +22,64 @@
 #include "Setup.h"
 #include "Instance_MagistersTerrace.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//Magister's Terrace
+class InstanceMagistersTerraceScript : public MoonInstanceScript
+{
+    public:
+
+        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceMagistersTerraceScript, MoonInstanceScript);
+        InstanceMagistersTerraceScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        {
+            // Way to select bosses
+            BuildEncounterMap();
+            if (mEncounters.size() == 0)
+                return;
+
+            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            {
+                if ((*Iter).second.mState != State_Finished)
+                    continue;
+            }
+        }
+
+        void OnGameObjectPushToWorld(GameObject* pGameObject) { }
+
+        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = (EncounterState)pData;
+        }
+
+        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return 0;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return 0;
+
+            return (*Iter).second.mState;
+        }
+
+        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+        {
+            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = State_Finished;
+
+            return;
+        }
+};
 
 // Selin Firehart Encounter
 // Fel Crystal Spawn Locations
@@ -470,25 +528,28 @@ class SunbladeMagisterAI : public MoonScriptBossAI
 
 };
 
-void SetupMagistersTerrace(ScriptMgr* pScriptMgr)
+void SetupMagistersTerrace(ScriptMgr* mgr)
 {
+    //Instance
+    mgr->register_instance_script(MAP_MAGISTERS_TERRACE, &InstanceMagistersTerraceScript::Create);
+
     //Bosses
-    pScriptMgr->register_creature_script(BOSS_SELIN_FIREHEART, &SelinFireheartAI::Create);
-    pScriptMgr->register_creature_script(BOSS_VEXALLUS, &VexallusAI::Create);
-    pScriptMgr->register_creature_script(BOSS_PRIEST_DELRISSA, &Priestess_DelrissaAI::Create);
+    mgr->register_creature_script(BOSS_SELIN_FIREHEART, &SelinFireheartAI::Create);
+    mgr->register_creature_script(BOSS_VEXALLUS, &VexallusAI::Create);
+    mgr->register_creature_script(BOSS_PRIEST_DELRISSA, &Priestess_DelrissaAI::Create);
     //Priestess Delrissa Encounter Creature AI
-    pScriptMgr->register_creature_script(CN_KAGANI_NIGHTSTRIKE, &KaganiNightstrikeAI::Create);
-    pScriptMgr->register_creature_script(CN_ELLRYS_DUSKHALLOW, &EllrysDuskhallowAI::Create);
-    pScriptMgr->register_creature_script(CN_ERAMAS_BRIGHTBLAZE, &EramasBrightblazeAI::Create);
-    pScriptMgr->register_creature_script(CN_YAZZAI, &YazzaiAI::Create);
-    pScriptMgr->register_creature_script(CN_WARLORD_SALARIS, &WarlordSalarisAI::Create);
-    pScriptMgr->register_creature_script(CN_GARAXXAS, &GaraxxasAI::Create);
-    pScriptMgr->register_creature_script(CN_APOKO, &ApokoAI::Create);
-    pScriptMgr->register_creature_script(CN_ZELFAN, &ZelfanAI::Create);
+    mgr->register_creature_script(CN_KAGANI_NIGHTSTRIKE, &KaganiNightstrikeAI::Create);
+    mgr->register_creature_script(CN_ELLRYS_DUSKHALLOW, &EllrysDuskhallowAI::Create);
+    mgr->register_creature_script(CN_ERAMAS_BRIGHTBLAZE, &EramasBrightblazeAI::Create);
+    mgr->register_creature_script(CN_YAZZAI, &YazzaiAI::Create);
+    mgr->register_creature_script(CN_WARLORD_SALARIS, &WarlordSalarisAI::Create);
+    mgr->register_creature_script(CN_GARAXXAS, &GaraxxasAI::Create);
+    mgr->register_creature_script(CN_APOKO, &ApokoAI::Create);
+    mgr->register_creature_script(CN_ZELFAN, &ZelfanAI::Create);
     //Trash Mobs
-    pScriptMgr->register_creature_script(CN_COILSKAR_WITCH, &CoilskarWitchAI::Create);
-    pScriptMgr->register_creature_script(CN_SISTER_OF_TORMENT, &SisterOfTormentAI::Create);
-    pScriptMgr->register_creature_script(CN_SB_IMP, &SunbladeImpAI::Create);
-    pScriptMgr->register_creature_script(CN_SB_MAGE_GUARD, &SunbladeMageGuardAI::Create);
-    pScriptMgr->register_creature_script(CN_SB_MAGISTER, &SunbladeMagisterAI::Create);
+    mgr->register_creature_script(CN_COILSKAR_WITCH, &CoilskarWitchAI::Create);
+    mgr->register_creature_script(CN_SISTER_OF_TORMENT, &SisterOfTormentAI::Create);
+    mgr->register_creature_script(CN_SB_IMP, &SunbladeImpAI::Create);
+    mgr->register_creature_script(CN_SB_MAGE_GUARD, &SunbladeMageGuardAI::Create);
+    mgr->register_creature_script(CN_SB_MAGISTER, &SunbladeMagisterAI::Create);
 }
