@@ -505,7 +505,7 @@ void MoonInstanceScript::BuildEncounterMap()
 
             if (StartedInstance)
             {
-                if (mInstance->pInstance->m_killedNpcs.find(Id) != mInstance->pInstance->m_killedNpcs.end())
+                if (mInstance->pInstance->m_killedNpcs.find(Entry) != mInstance->pInstance->m_killedNpcs.end())
                     State = State_Finished;
                 else
                     State = State_NotStarted;
