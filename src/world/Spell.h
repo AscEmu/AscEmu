@@ -523,39 +523,39 @@ enum AttributesExC // 3
 
 enum AttributesExD  // 4
 {
-    FLAGS5_NULL                             = 0x00000000,
-    FLAGS5_UNK2                             = 0x00000001,
-    FLAGS5_PROCCHANCE_COMBOBASED            = 0x00000002,
-    FLAGS5_UNK4                             = 0x00000004,
-    FLAGS5_UNK5                             = 0x00000008,
-    FLAGS5_UNK6                             = 0x00000010,
-    FLAGS5_UNK7                             = 0x00000020,
-    FLAGS5_NOT_STEALABLE                    = 0x00000040,
-    FLAGS5_TRIGGERED                        = 0x00000080,   // spells forced to be triggered
-    FLAGS5_UNK10                            = 0x00000100,
-    FLAGS5_TRIGGER_ACTIVATE                 = 0x00000200,   // trigger activate (Deep Freeze...)
-    FLAGS5_UNK12                            = 0x00000400,
-    FLAGS5_UNK13                            = 0x00000800,
-    FLAGS5_UNK14                            = 0x00001000,
-    FLAGS5_UNK15                            = 0x00002000,
-    FLAGS5_NOT_BREAK_AURAS                  = 0x00004000,   // not breake auras by damage from this spell
-    FLAGS5_UNK17                            = 0x00008000,
-    FLAGS5_NOT_IN_ARENA                     = 0x00010000,   // can not be used in arenas
-    FLAGS5_UNK19                            = 0x00020000,   // can be used in arenas
-    FLAGS5_UNK20                            = 0x00040000,
-    FLAGS5_UNK21                            = 0x00080000,
-    FLAGS5_UNK22                            = 0x00100000,
-    FLAGS5_UNK23                            = 0x00200000,   // pala aura, dk presence, dudu form, warrior stance, shadowform, hunter track
-    FLAGS5_UNK24                            = 0x00400000,
-    FLAGS5_UNK25                            = 0x00800000,
-    FLAGS5_UNK26                            = 0x01000000,
-    FLAGS5_UNK27                            = 0x02000000,
-    FLAGS5_ONLY_IN_OUTLANDS                 = 0x04000000,   // can be used only in outland
-    FLAGS5_UNK29                            = 0x08000000,
-    FLAGS5_UNK30                            = 0x10000000,
-    FLAGS5_UNK31                            = 0x20000000,
-    FLAGS5_UNK32                            = 0x40000000,
-    FLAGS5_UNK33                            = 0x80000000,
+    SP_ATTR_EX_D_NULL                       = 0x00000000,
+    SP_ATTR_EX_D_UNK1                       = 0x00000001,
+    SP_ATTR_EX_D_PROCCHANCE_COMBOBASED      = 0x00000002,
+    SP_ATTR_EX_D_UNK2                       = 0x00000004,
+    SP_ATTR_EX_D_UNK3                       = 0x00000008,
+    SP_ATTR_EX_D_UNK4                       = 0x00000010,
+    SP_ATTR_EX_D_UNK5                       = 0x00000020,
+    SP_ATTR_EX_D_NOT_STEALABLE              = 0x00000040,
+    SP_ATTR_EX_D_TRIGGERED                  = 0x00000080,   // spells forced to be triggered
+    SP_ATTR_EX_D_UNK6                       = 0x00000100,
+    SP_ATTR_EX_D_TRIGGER_ACTIVATE           = 0x00000200,   // trigger activate (Deep Freeze...)
+    SP_ATTR_EX_D_UNK7                       = 0x00000400,
+    SP_ATTR_EX_D_UNK8                       = 0x00000800,
+    SP_ATTR_EX_D_UNK9                       = 0x00001000,
+    SP_ATTR_EX_D_UNK10                      = 0x00002000,
+    SP_ATTR_EX_D_NOT_BREAK_AURAS            = 0x00004000,   // not breake auras by damage from this spell
+    SP_ATTR_EX_D_UNK11                      = 0x00008000,
+    SP_ATTR_EX_D_NOT_IN_ARENA               = 0x00010000,   // can not be used in arenas
+    SP_ATTR_EX_D_UNK12                      = 0x00020000,   // can be used in arenas
+    SP_ATTR_EX_D_UNK13                      = 0x00040000,
+    SP_ATTR_EX_D_UNK14                      = 0x00080000,
+    SP_ATTR_EX_D_UNK15                      = 0x00100000,
+    SP_ATTR_EX_D_UNK16                      = 0x00200000,   // pala aura, dk presence, dudu form, warrior stance, shadowform, hunter track
+    SP_ATTR_EX_D_UNK17                      = 0x00400000,
+    SP_ATTR_EX_D_UNK18                      = 0x00800000,
+    SP_ATTR_EX_D_UNK19                      = 0x01000000,
+    SP_ATTR_EX_D_SCALED_MOUNTS              = 0x02000000,
+    SP_ATTR_EX_D_ONLY_IN_OUTLANDS           = 0x04000000,   // can be used only in outland
+    SP_ATTR_EX_D_UNK20                      = 0x08000000,
+    SP_ATTR_EX_D_UNK21                      = 0x10000000,
+    SP_ATTR_EX_D_UNK22                      = 0x20000000,
+    SP_ATTR_EX_D_UNK23                      = 0x40000000,
+    SP_ATTR_EX_D_UNK24                      = 0x80000000,
 };
 
 enum AttributesExE // 5
@@ -1371,40 +1371,40 @@ enum DISPEL_TYPE
     DISPEL_FRENZY           = 9,
 };
 
-enum MECHANICS
+enum SpellMechanics
 {
     MECHANIC_NONE = 0,
-    MECHANIC_CHARMED, // 1
-    MECHANIC_DISORIENTED, // 2
-    MECHANIC_DISARMED, // 3
-    MECHANIC_DISTRACED, // 4
-    MECHANIC_FLEEING, // 5
-    MECHANIC_CLUMSY, // 6
-    MECHANIC_ROOTED, // 7
-    MECHANIC_PACIFIED, // 8
-    MECHANIC_SILENCED, // 9
-    MECHANIC_ASLEEP, // 10
-    MECHANIC_ENSNARED, // 11
-    MECHANIC_STUNNED, // 12
-    MECHANIC_FROZEN, // 13
-    MECHANIC_INCAPACIPATED, // 14
-    MECHANIC_BLEEDING, // 15
-    MECHANIC_HEALING, // 16
-    MECHANIC_POLYMORPHED, // 17
-    MECHANIC_BANISHED, // 18
-    MECHANIC_SHIELDED, // 19
-    MECHANIC_SHACKLED, // 20
-    MECHANIC_MOUNTED, // 21
-    MECHANIC_SEDUCED, // 22
-    MECHANIC_TURNED, // 23
-    MECHANIC_HORRIFIED, // 24
-    MECHANIC_INVULNARABLE, // 25
-    MECHANIC_INTERRUPTED, // 26
-    MECHANIC_DAZED, // 27
-    MECHANIC_DISCOVERY, // 28
-    MECHANIC_INVULNERABLE, // 29
-    MECHANIC_SAPPED, // 30
-    MECHANIC_ENRAGED, // 31
+    MECHANIC_CHARMED,           // 1
+    MECHANIC_DISORIENTED,       // 2
+    MECHANIC_DISARMED,          // 3
+    MECHANIC_DISTRACED,         // 4
+    MECHANIC_FLEEING,           // 5
+    MECHANIC_CLUMSY,            // 6
+    MECHANIC_ROOTED,            // 7
+    MECHANIC_PACIFIED,          // 8
+    MECHANIC_SILENCED,          // 9
+    MECHANIC_ASLEEP,            // 10
+    MECHANIC_ENSNARED,          // 11
+    MECHANIC_STUNNED,           // 12
+    MECHANIC_FROZEN,            // 13
+    MECHANIC_INCAPACIPATED,     // 14
+    MECHANIC_BLEEDING,          // 15
+    MECHANIC_HEALING,           // 16
+    MECHANIC_POLYMORPHED,       // 17
+    MECHANIC_BANISHED,          // 18
+    MECHANIC_SHIELDED,          // 19
+    MECHANIC_SHACKLED,          // 20
+    MECHANIC_MOUNTED,           // 21
+    MECHANIC_SEDUCED,           // 22
+    MECHANIC_TURNED,            // 23
+    MECHANIC_HORRIFIED,         // 24
+    MECHANIC_INVULNARABLE,      // 25
+    MECHANIC_INTERRUPTED,       // 26
+    MECHANIC_DAZED,             // 27
+    MECHANIC_DISCOVERY,         // 28
+    MECHANIC_INVULNERABLE,      // 29
+    MECHANIC_SAPPED,            // 30
+    MECHANIC_ENRAGED,           // 31
     MECHANIC_END
 };
 

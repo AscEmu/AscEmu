@@ -274,7 +274,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     m_castPositionX = m_castPositionY = m_castPositionZ = 0;
     //TriggerSpellId = 0;
     //TriggerSpellTarget = 0;
-    if (m_spellInfo->AttributesExD & FLAGS5_TRIGGERED)
+    if (m_spellInfo->AttributesExD & SP_ATTR_EX_D_TRIGGERED)
 		triggered = true;
     m_triggeredSpell = triggered;
     m_AreaAura = false;
@@ -3227,7 +3227,7 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (p_caster->m_bg)
         {
-            if (IS_ARENA(p_caster->m_bg->GetType()) && hasAttributeExD(FLAGS5_NOT_IN_ARENA))
+            if (IS_ARENA(p_caster->m_bg->GetType()) && hasAttributeExD(SP_ATTR_EX_D_NOT_IN_ARENA))
                 return SPELL_FAILED_NOT_IN_ARENA;
             if (!p_caster->m_bg->HasStarted() && (m_spellInfo->Id == 1953 || m_spellInfo->Id == 36554))  //Don't allow blink or shadowstep  if in a BG and the BG hasn't started.
                 return SPELL_FAILED_SPELL_UNAVAILABLE;
@@ -3235,6 +3235,9 @@ uint8 Spell::CanCast(bool tolerate)
         else if (hasAttributeExC(FLAGS4_BG_ONLY))
             return SPELL_FAILED_ONLY_BATTLEGROUNDS;
 
+        // only in outland check
+        if (p_caster->GetMapId() != 530 && hasAttributeExD(SP_ATTR_EX_D_ONLY_IN_OUTLANDS))
+            return SPELL_FAILED_INCORRECT_AREA;
         /**
          *	Cooldowns check
          */
