@@ -366,7 +366,6 @@ void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recv_data)
     }
 }
 
-
 void WorldSession::HandlePVPLogDataOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN;
@@ -380,4 +379,12 @@ void WorldSession::SendNotInArenaTeamPacket(uint8 type)
     data << uint32(0);                       // E_ERR_ARENA_NO_TEAM_II (1 = E_ERR_ARENA_EXPIRED_CAIS)
     data << uint8(type);                     // team type (2=2v2,3=3v3,5=5v5), can be used for custom types...
     SendPacket(&data);
+}
+
+void WorldSession::HandleBgInviteResponse(WorldPacket& recv_data)
+{
+    Log.Debug("HandleBgInviteResponse", "Recieved unknown packet: CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE");
+
+    // uint32 ?
+    // uint8  ?
 }

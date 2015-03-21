@@ -526,6 +526,7 @@ class SERVER_DECL WorldSession
 		void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data);
 		void HandlePetCastSpell(WorldPacket& recvPacket);
 		void HandleCancelTotem(WorldPacket& recv_data);
+        void HandleUpdateProjectilePosition(WorldPacket& recv_data);
 
 		/// Skill opcodes (SkillHandler.spp)
 		//void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
@@ -681,6 +682,8 @@ class SERVER_DECL WorldSession
 		void HandleInspectHonorStatsOpcode(WorldPacket& recv_data);
 		void HandlePVPLogDataOpcode(WorldPacket& recv_data);
 		void HandleBattlefieldListOpcode(WorldPacket& recv_data);
+        ///\todo unknown packet
+        void HandleBgInviteResponse(WorldPacket& recv_data);
 
 		/// Helper functions
 		//void SetNpcFlagsForTalkToQuest(const uint64& guid, const uint64& targetGuid);
