@@ -934,12 +934,12 @@ void SetupItemSpells_1(ScriptMgr* mgr)
     mgr->register_script_effect(35036, &WarpRiftGenerator);     // Summon a Warp Rift in Void Ridge
     mgr->register_dummy_aura(46354, &OrbOfTheSindorei);         // Orb of the Sin'dorei
     
-    mgr->register_dummy_aura(65917, &ScalingMountDummyAura);    // Magic Rooster Mount
+    /*mgr->register_dummy_aura(65917, &ScalingMountDummyAura);    // Magic Rooster Mount
     mgr->register_dummy_aura(58983, &ScalingMountDummyAura);    // Big Blizzard Bear mount
     mgr->register_dummy_aura(54729, &ScalingMountDummyAura);    // DK flying mount
     mgr->register_dummy_aura(48025, &ScalingMountDummyAura);    // Headless Horseman Mount
     mgr->register_dummy_aura(47977, &ScalingMountDummyAura);    // Magic Broom Mount
-    mgr->register_dummy_aura(72286, &ScalingMountDummyAura);    // Invincible Aura
+    mgr->register_dummy_aura(72286, &ScalingMountDummyAura);    // Invincible Aura*/
     
     mgr->register_dummy_spell(65917, &MagicRoosterMount);       // Magic Rooster Mount
     mgr->register_dummy_spell(58983, &BigBlizzardBear);         // Big Blizzard Bear mount
