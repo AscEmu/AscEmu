@@ -388,9 +388,9 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
             continue;
 
         //quest items that start quests need special check to avoid drops all the time.
-        if ((itemProto->Bonding == ITEM_BIND_QUEST) && (itemProto->QuestId) && GetQuestLogForEntry(itemProto->QuestId))
+        if ((itemProto->Bonding == ITEM_BIND_QUEST) && (itemProto->QuestId) && HasQuest(itemProto->QuestId))
             continue;
-        if ((itemProto->Bonding == ITEM_BIND_QUEST2) && (itemProto->QuestId) && GetQuestLogForEntry(itemProto->QuestId))
+        if ((itemProto->Bonding == ITEM_BIND_QUEST2) && (itemProto->QuestId) && HasQuest(itemProto->QuestId))
             continue;
 
         if ((itemProto->Bonding == ITEM_BIND_QUEST) && (itemProto->QuestId) && HasFinishedQuest(itemProto->QuestId))
@@ -411,7 +411,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                 {
                     if (pQuest->required_quests[i])
                     {
-                        if (!HasFinishedQuest(pQuest->required_quests[i]) || GetQuestLogForEntry(pQuest->required_quests[i]))
+                        if (!HasFinishedQuest(pQuest->required_quests[i]) || HasQuest(pQuest->required_quests[i]))
                         {
 
                         }

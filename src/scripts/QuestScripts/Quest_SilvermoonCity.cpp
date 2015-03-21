@@ -34,7 +34,7 @@ class PathoftheAdept : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(9692))
+            if(plr->HasQuest(9692))
                 Menu->AddItem(0, "Take Insignia", 1);
 
             Menu->SendTo(plr);

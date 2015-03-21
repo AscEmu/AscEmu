@@ -61,7 +61,7 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
             if(mKiller->IsPlayer())
             {
                 Player * plr = TO_PLAYER(mKiller);
-                if(plr->GetQuestLogForEntry(10896))
+                if(plr->HasQuest(10896))
                 {
                     if(Rand(90))
                     {
@@ -195,7 +195,7 @@ class TheMomentofTruth : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(10201) && plr->GetItemInterface()->GetItemCount(28500, 0))
+            if(plr->HasQuest(10201) && plr->GetItemInterface()->GetItemCount(28500, 0))
                 Menu->AddItem(0, "Try this", 1);
 
             Menu->SendTo(plr);

@@ -47,7 +47,7 @@ class AncientMarks : public GossipScript
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), TextId, plr);
 
-            if(plr->HasFinishedQuest(9785) || plr->GetQuestLogForEntry(9785))
+            if(plr->HasFinishedQuest(9785) || plr->HasQuest(9785))
                 Menu->AddItem(0, text, 1);
 
             Menu->SendTo(plr);

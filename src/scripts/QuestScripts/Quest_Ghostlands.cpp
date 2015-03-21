@@ -37,7 +37,7 @@ class Prisoner12 : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(9164))
+            if(plr->HasQuest(9164))
                 Menu->AddItem(0, "Release Him.", 1);
 
             Menu->SendTo(plr);
@@ -97,7 +97,7 @@ class Prisoner22 : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(9164))
+            if(plr->HasQuest(9164))
                 Menu->AddItem(0, "Release Him.", 1);
 
             Menu->SendTo(plr);
@@ -157,7 +157,7 @@ class Prisoner32 : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(9164))
+            if(plr->HasQuest(9164))
                 Menu->AddItem(0, "Release Him.", 1);
 
             Menu->SendTo(plr);

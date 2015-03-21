@@ -134,7 +134,7 @@ class Paoka_Swiftmountain : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                if(plr->GetQuestLogForEntry(4770))
+                if(plr->HasQuest(4770))
                     plr->GetQuestLogForEntry(4770)->SendQuestComplete();
             }
         }

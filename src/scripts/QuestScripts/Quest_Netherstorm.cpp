@@ -26,7 +26,7 @@ class Veronia : public GossipScript
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
-            if(plr->GetQuestLogForEntry(10652))
+            if(plr->HasQuest(10652))
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
                 Menu->AddItem(0, "I'm ready", 1);

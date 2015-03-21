@@ -38,7 +38,7 @@ class StrFever : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(348) && plr->GetItemInterface()->GetItemCount(2799, 0) && !plr->GetItemInterface()->GetItemCount(2797, 0))
+            if(plr->HasQuest(348) && plr->GetItemInterface()->GetItemCount(2799, 0) && !plr->GetItemInterface()->GetItemCount(2797, 0))
                 Menu->AddItem(0, "I'm ready, Summon Him!", 1);
 
             Menu->SendTo(plr);

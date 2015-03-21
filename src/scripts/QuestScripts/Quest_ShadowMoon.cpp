@@ -284,7 +284,7 @@ class NeltharakusTale_Gossip : public GossipScript
     public:
         void GossipHello(Object* pObject, Player* plr)
         {
-            if(plr->GetQuestLogForEntry(10814))
+            if(plr->HasQuest(10814))
             {
                 GossipMenu* Menu;
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10613, plr);
@@ -401,7 +401,7 @@ void FlanisSwiftwing_Gossip::GossipHello(Object* pObject, Player* plr)
 {
     GossipMenu* Menu;
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-    if(plr->GetQuestLogForEntry(10583) != NULL)
+    if(plr->HasQuest(10583))
         Menu->AddItem(0, "Examine the corpse", 1);
 
     Menu->SendTo(plr);

@@ -1415,7 +1415,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
             return true;
         }
 
-        if(!p_caster->GetQuestLogForEntry(tamequest->id))
+        if(!p_caster->HasQuest(tamequest->id))
         {
             p_caster->SendCastResult(triggerspell->Id, SPELL_FAILED_BAD_TARGETS, 0, 0);
         }
@@ -1758,7 +1758,7 @@ bool SymbolOfLife(uint32 i, Spell* pSpell) // Alliance ress. quests
 
     for(uint8 j = 0; j < 3; j++)
     {
-        if(plr->GetQuestLogForEntry(quests[j]) != NULL)
+        if(plr->HasQuest(quests[j]))
         {
             qle = plr->GetQuestLogForEntry(quests[j]);
             questOk = true;

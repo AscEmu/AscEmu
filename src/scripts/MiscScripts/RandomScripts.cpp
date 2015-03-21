@@ -90,7 +90,7 @@ class JeanPierrePoulain : public GossipScript
             {
             GossipMenu* Menu;
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14500, plr);
-            if(plr->HasFinishedQuest(13668) || plr->GetQuestLogForEntry(13668) || plr->HasFinishedQuest(13667) || plr->GetQuestLogForEntry(13667))
+            if (plr->HasFinishedQuest(13668) || plr->HasQuest(13668) || plr->HasFinishedQuest(13667) || plr->HasQuest(13667))
             {
                 Menu->SendTo(plr);
             }

@@ -28,7 +28,7 @@ class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 11224, plr);
 
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11224);
-            if(plr->GetQuestLogForEntry(11142) != NULL)
+            if(plr->HasQuest(11142))
                 menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_CROMSONWING), 1);
 
             menu.Send(plr);
@@ -55,7 +55,7 @@ class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
                 Text = Arcemu::Gossip::DEFAULT_TXTINDEX;
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
             sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), plr, menu);
-            if((plr->GetQuestLogForEntry(11123) != NULL) || (plr->GetQuestRewardStatus(11123) == 0)) 
+            if(plr->HasQuest(11123) || (plr->GetQuestRewardStatus(11123) == 0)) 
                 menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_SHADY_REST), 0);
             menu.Send(plr);
         }

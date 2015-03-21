@@ -51,7 +51,7 @@ class TheKesselRun1 : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(9663))
+            if (plr->HasQuest(9663))
                 Menu->AddItem(0, "Warn him", 1);
 
             Menu->SendTo(plr);
@@ -104,7 +104,7 @@ class TheKesselRun2 : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(9663))
+            if(plr->HasQuest(9663))
                 Menu->AddItem(0, "Warn him", 1);
 
             Menu->SendTo(plr);
@@ -157,7 +157,7 @@ class TheKesselRun3 : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            if(plr->GetQuestLogForEntry(9663))
+            if(plr->HasQuest(9663))
                 Menu->AddItem(0, "Warn him", 1);
 
             Menu->SendTo(plr);
@@ -241,7 +241,7 @@ class HighChiefBristlelimb : public CreatureAIScript
             {
                 Player* mPlayer = TO_PLAYER(mKiller);
 
-                if(fulborgskilled > 8 && mPlayer->GetQuestLogForEntry(9667))
+                if(fulborgskilled > 8 && mPlayer->HasQuest(9667))
                 {
                     _unit->GetMapMgr()->GetInterface()->SpawnCreature(17702, -2419, -12166, 33, 3.45f, true, false, 0, 0)->Despawn(18000000, 0);
                     fulborgskilled = 0;

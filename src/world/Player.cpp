@@ -13264,7 +13264,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    if (GetQuestLogForEntry(qst->id))
+    if (HasQuest(qst->id))
         return;
 
     if (qst_giver->IsCreature() && TO< Creature* >(qst_giver)->m_escorter != NULL)

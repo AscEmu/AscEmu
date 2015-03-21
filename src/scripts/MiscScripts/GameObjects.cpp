@@ -214,7 +214,7 @@ class TerokksDownfall : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(pPlayer->GetQuestLogForEntry(11073) && pPlayer->GetItemInterface()->GetItemCount(32720, 1))
+            if(pPlayer->HasQuest(11073) && pPlayer->GetItemInterface()->GetItemCount(32720, 1))
             {
                 float SSX = pPlayer->GetPositionX();
                 float SSY = pPlayer->GetPositionY();
@@ -299,7 +299,7 @@ class Obsidias_Egg : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(pPlayer->GetQuestLogForEntry(11078))
+            if(pPlayer->HasQuest(11078))
             {
                 float SSX = pPlayer->GetPositionX();
                 float SSY = pPlayer->GetPositionY();
@@ -327,7 +327,7 @@ class Rivendarks_Egg : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(pPlayer->GetQuestLogForEntry(11078))
+            if(pPlayer->HasQuest(11078))
             {
                 float SSX = pPlayer->GetPositionX();
                 float SSY = pPlayer->GetPositionY();
@@ -355,7 +355,7 @@ class Furywings_Egg : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(pPlayer->GetQuestLogForEntry(11078))
+            if(pPlayer->HasQuest(11078))
             {
                 float SSX = pPlayer->GetPositionX();
                 float SSY = pPlayer->GetPositionY();
@@ -383,7 +383,7 @@ class Insidions_Egg : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(pPlayer->GetQuestLogForEntry(11078))
+            if(pPlayer->HasQuest(11078))
             {
                 float SSX = pPlayer->GetPositionX();
                 float SSY = pPlayer->GetPositionY();
@@ -411,7 +411,7 @@ class Corrupt_Minor_Manifestation_Water_Object : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(pPlayer->GetQuestLogForEntry(63))
+            if(pPlayer->HasQuest(63))
             {
                 float SSX = pPlayer->GetPositionX();
                 float SSY = pPlayer->GetPositionY();
@@ -439,7 +439,7 @@ class Telathion_the_Impure_Object : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(pPlayer->GetQuestLogForEntry(9508))
+            if(pPlayer->HasQuest(9508))
             {
                 float SSX = pPlayer->GetPositionX();
                 float SSY = pPlayer->GetPositionY();
@@ -553,7 +553,7 @@ class EthereumTransponderZeta : public GameObjectAIScript
             if(commander)
                 return;
 
-            if(pPlayer->GetQuestLogForEntry(10339))
+            if(pPlayer->HasQuest(10339))
             {
                 float SSX = 4017.96f;
                 float SSY = 2315.91f;
@@ -657,12 +657,12 @@ class APlagueUponThee : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if( pPlayer->GetQuestLogForEntry(5902) || pPlayer->GetQuestLogForEntry(5904) )
+            if (pPlayer->HasQuest(5902) || pPlayer->HasQuest(5904))
             {
-                GameObject * go = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(),pPlayer->GetPositionY(),pPlayer->GetPositionZ(), 177491);
-                if(go == NULL)
+                GameObject* go = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(),pPlayer->GetPositionY(),pPlayer->GetPositionZ(), 177491);
+                if (go == NULL)
                 {
-                    GameObject * barel = sEAS.SpawnGameobject(pPlayer, 177491, 2449.51f, -1662.32f, 104.38f, 1.0f, 1, 0, 0, 0, 0);
+                    GameObject* barel = sEAS.SpawnGameobject(pPlayer, 177491, 2449.51f, -1662.32f, 104.38f, 1.0f, 1, 0, 0, 0, 0);
                     sEAS.GameobjectDelete(barel, 2*60*1000);
                 }
             }
@@ -966,7 +966,7 @@ class TheThunderspike : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(!pPlayer->GetQuestLogForEntry(10526))
+            if(!pPlayer->HasQuest(10526))
                 return;
 
             // Wth is that ? To remove ?
@@ -1155,7 +1155,7 @@ class EyeofAcherusControl : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if (!pPlayer->GetQuestLogForEntry(12641))
+            if (!pPlayer->HasQuest(12641))
                 return;
             pPlayer->CastSpell(pPlayer, 51888, true);
         }

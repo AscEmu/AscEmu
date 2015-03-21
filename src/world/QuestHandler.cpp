@@ -601,7 +601,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                         uint32 status = sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest, false);
 
                         // Checks if the player has the quest
-                        if (pPlayer->GetQuestLogForEntry(questid))
+                        if (pPlayer->HasQuest(questid))
                         {
                             response = QUEST_SHARE_MSG_HAVE_QUEST;
                         }

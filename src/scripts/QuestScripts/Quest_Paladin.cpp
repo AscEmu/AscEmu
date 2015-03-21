@@ -47,7 +47,7 @@ class GildedBrazier : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            if(pPlayer->GetQuestLogForEntry(9678))
+            if(pPlayer->HasQuest(9678))
             {
                 float SSX = pPlayer->GetPositionX();
                 float SSY = pPlayer->GetPositionY();

@@ -32,7 +32,7 @@ class BeatenCorpse : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3557, plr);
 
-            if(plr->GetQuestLogForEntry(4921) != NULL)
+            if(plr->HasQuest(4921))
                 Menu->AddItem(0, "I inspect the body further.", 1);
 
             Menu->SendTo(plr);
@@ -475,7 +475,7 @@ class VerogtheDervish : public CreatureAIScript
             {
                 Player* mPlayer = TO_PLAYER(mKiller);
 
-                if(kolkarskilled > 8 && mPlayer->GetQuestLogForEntry(851))
+                if(kolkarskilled > 8 && mPlayer->HasQuest(851))
                 {
                     _unit->GetMapMgr()->GetInterface()->SpawnCreature(3395, -1209.8f, -2729.84f, 106.33f, 4.8f, true, false, 0, 0)->Despawn(600000, 0);
                     kolkarskilled = 0;

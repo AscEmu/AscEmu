@@ -76,10 +76,10 @@ class SCRIPT_DECL AyrenCloudbreaker_Gossip : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12252, pPlayer);
 
-            if(pPlayer->GetQuestLogForEntry(11532) || pPlayer->GetQuestLogForEntry(11533))
+            if(pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
                 Menu->AddItem(0, "Speaking of action, I've been ordered to undertake an air strike.", 1);
 
-            if(pPlayer->GetQuestLogForEntry(11543) || pPlayer->GetQuestLogForEntry(11542))
+            if(pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
                 Menu->AddItem(0, "I need to intercept the Dawnblade reinforcements.", 2);
 
             Menu->SendTo(pPlayer);
@@ -118,7 +118,7 @@ class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public GossipScript
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12371, pPlayer);
-            if(pPlayer->GetQuestLogForEntry(11543) || pPlayer->GetQuestLogForEntry(11542))
+            if(pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
                 Menu->AddItem(0, "<Ride the dragonhawk to Sun's Reach>", 1);
 
             Menu->SendTo(pPlayer);

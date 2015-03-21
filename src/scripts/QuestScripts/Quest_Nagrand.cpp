@@ -351,7 +351,7 @@ class LumpGossipScript : public GossipScript
                     GossipHello(pObject, plr);
                     break;
                 case 1:
-                    if(plr->GetQuestLogForEntry(9918))
+                    if(plr->HasQuest(9918))
                     {
                         QuestLogEntry* en = plr->GetQuestLogForEntry(9918);
                         if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])

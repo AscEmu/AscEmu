@@ -26,7 +26,7 @@ class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11469);
 
-            if(plr->GetQuestLogForEntry(11223))
+            if(plr->HasQuest(11223))
                 menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SW_ARCHMAGE_JAINA), 1);
 
             menu.Send(plr);
