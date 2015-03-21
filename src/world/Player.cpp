@@ -1867,7 +1867,7 @@ void Player::_SavePet(QueryBuffer* buf)
     {
         ss.rdbuf()->str("");
 
-        ss << "INSERT INTO playerpets VALUES('"
+        ss << "REPLACE INTO playerpets VALUES('"
             << GetLowGUID() << "','"
             << itr->second->number << "','"
             << itr->second->name << "','"
