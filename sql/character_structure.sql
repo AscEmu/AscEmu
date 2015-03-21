@@ -161,7 +161,7 @@ CREATE TABLE `character_db_version`(
   PRIMARY KEY (`LastUpdate`)
 );
 
-INSERT INTO `character_db_version`(`LastUpdate`) VALUES ( '2015-01-08_event_save' );
+INSERT INTO `character_db_version`(`LastUpdate`) VALUES ( '2015-03-21_01_mailbox' );
 
 
 /*Table structure for table `characters` */
@@ -737,7 +737,7 @@ CREATE TABLE `mailbox` (
   `message_id` int(30) NOT NULL DEFAULT '0',
   `message_type` int(30) NOT NULL DEFAULT '0',
   `player_guid` int(30) NOT NULL DEFAULT '0',
-  `sender_guid` bigint(30) NOT NULL DEFAULT '0',
+  `sender_guid` bigint(30) unsigned NOT NULL DEFAULT '0',
   `subject` varchar(255) NOT NULL DEFAULT '',
   `body` longtext NOT NULL,
   `money` int(30) NOT NULL DEFAULT '0',
