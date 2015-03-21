@@ -337,7 +337,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     if (splinebuf != NULL)
     {
         flags2 |= MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_MOVE_FORWARD;	   //1=move forward
-        if (GetTypeId() == TYPEID_UNIT)
+        if (IsCreature())
         {
             if (TO_UNIT(this)->GetAIInterface()->HasWalkMode(WALKMODE_WALK))
                 flags2 |= MOVEFLAG_WALK;
@@ -345,12 +345,14 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     }
 
     uint16 moveflags2 = 0;      // mostly seem to be used by vehicles to control what kind of movement is allowed
-    if (IsVehicle()){
-        Unit *u = static_cast< Unit* >(this);
+    if (IsVehicle())
+    {
+        Unit* u = static_cast< Unit* >(this);
         if (u->GetVehicleComponent() != NULL)
             moveflags2 |= u->GetVehicleComponent()->GetMoveFlags2();
 
-        if (IsCreature()){
+        if (IsCreature())
+        {
             if (static_cast< Unit* >(this)->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT))
                 flags2 |= (MOVEFLAG_NO_COLLISION | MOVEFLAG_AIR_SWIMMING);
         }

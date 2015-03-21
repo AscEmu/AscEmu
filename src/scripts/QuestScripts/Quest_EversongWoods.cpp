@@ -69,16 +69,13 @@ void ProspectorAnvilwardGossip::GossipSelectOption(Object* pObject, Player* Plr,
     GossipMenu* Menu;
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 8240, Plr);
 
-    Creature* pCreature = (pObject->GetTypeId() == TYPEID_UNIT) ? ((Creature*)pObject) : NULL;
-    if (pCreature == NULL)
+    if(!pObject->IsCreature())
         return;
 
-        switch (IntId)
-        {
-        case 0:
-            GossipHello(pObject, Plr);
-            break;
+    Creature* pCreature = TO_CREATURE(pObject);
 
+    switch (IntId)
+    {
         case 1:
         {
             Menu->AddItem(0, ANVILWARD_MENU_2, 2);

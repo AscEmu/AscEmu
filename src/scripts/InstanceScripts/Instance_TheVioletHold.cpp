@@ -276,13 +276,16 @@ public:
 
     void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
     {
-
         TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
 
         if (!pInstance)
             return;
 
-        Creature* pCreature = (pObject->GetTypeId() == TYPEID_UNIT) ? ((Creature*)pObject) : NULL;
+        if(!pObject->IsCreature())
+            return;
+
+        Creature* pCreature = TO_CREATURE(pObject);
+
         switch (IntId)
         {
             case 0:

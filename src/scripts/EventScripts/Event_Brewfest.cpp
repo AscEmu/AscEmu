@@ -65,29 +65,26 @@ void CorenDirebrewGossip::GossipSelectOption(Object* pObject, Player* Plr, uint3
     GossipMenu* Menu;
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), DIREBREW_2, Plr);
 
-    Creature* pCreature = (pObject->GetTypeId() == TYPEID_UNIT) ? ((Creature*)pObject) : NULL;
-    if (pCreature == NULL)
+    if (!pObject->IsCreature())
         return;
+
+    Creature* pCreature = TO_CREATURE(pObject);
 
     switch (IntId)
     {
-    case 0:
-        GossipHello(pObject, Plr);
-        break;
-
-    case 1:
-    {
-        Menu->AddItem(0, DIREBREW_MENU_2, 2);/// Fight.
-        Menu->AddItem(0, DIREBREW_MENU_3, 3);/// Apologize.
-        Menu->SendTo(Plr);
-    }break;
-    case 2:
-    {
-        pCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll pay for this insult, $c!");
-        Plr->Gossip_Complete();
-        pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
-        pCreature->MoveToWaypoint(1);
-    }break;
+        case 1:
+        {
+            Menu->AddItem(0, DIREBREW_MENU_2, 2);/// Fight.
+            Menu->AddItem(0, DIREBREW_MENU_3, 3);/// Apologize.
+            Menu->SendTo(Plr);
+        }break;
+        case 2:
+        {
+            pCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll pay for this insult, $c!");
+            Plr->Gossip_Complete();
+            pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
+            pCreature->MoveToWaypoint(1);
+        }break;
     }
 };
 
