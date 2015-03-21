@@ -729,7 +729,7 @@ void Group::SendNullUpdate(Player* pPlayer)
 
 void Group::LoadFromDB(Field* fields)
 {
-#define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if(g != 0) { __d = objmgr.GetPlayerInfo(g); }
+#define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = objmgr.GetPlayerInfo(g); }
 
     uint32 g;
     m_updateblock = true;
@@ -963,7 +963,8 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, uint32 Flags, bool Distribut
         pPlayer->m_last_group_position = pPlayer->GetPosition();
     }
 
-    if (Flags & GROUP_UPDATE_FLAG_VEHICLE_SEAT){
+    if (Flags & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
+    {
         if (pPlayer->GetCurrentVehicle() != NULL)
             *data << uint32(pPlayer->GetCurrentVehicle()->GetSeatEntryForPassenger(pPlayer));
     }

@@ -181,7 +181,7 @@ class TerrainTile
         TerrainTile(TerrainHolder* parent, uint32 mapid, int32 x, int32 y);
         ~TerrainTile();
         void AddRef() { ++m_refs; }
-        void DecRef() { if(--m_refs == 0) delete this; }
+        void DecRef() { if (--m_refs == 0) delete this; }
 
         void Load()
         {
@@ -203,16 +203,16 @@ class TerrainHolder
 
         TerrainHolder(uint32 mapid)
         {
-            for(int32 i = 0; i < TERRAIN_NUM_TILES; ++i)
-                for(int32 j = 0; j < TERRAIN_NUM_TILES; ++j)
+            for (int32 i = 0; i < TERRAIN_NUM_TILES; ++i)
+                for (int32 j = 0; j < TERRAIN_NUM_TILES; ++j)
                     m_tiles[i][j] = NULL;
             m_mapid = mapid;
         }
 
         ~TerrainHolder()
         {
-            for(int32 i = 0; i < TERRAIN_NUM_TILES; ++i)
-                for(int32 j = 0; j < TERRAIN_NUM_TILES; ++j)
+            for (int32 i = 0; i < TERRAIN_NUM_TILES; ++i)
+                for (int32 j = 0; j < TERRAIN_NUM_TILES; ++j)
                     UnloadTile(i, j);
         }
 
@@ -222,7 +222,7 @@ class TerrainHolder
             TerrainTile* rv = NULL;
             m_lock[tx][ty].Acquire();
             rv = m_tiles[tx][ty];
-            if(rv != NULL)
+            if (rv != NULL)
                 rv->AddRef();
             m_lock[tx][ty].Release();
 
@@ -239,7 +239,7 @@ class TerrainHolder
         {
             m_lock[tx][ty].Acquire();
             ++m_tilerefs[tx][ty];
-            if(m_tiles[tx][ty] == NULL)
+            if (m_tiles[tx][ty] == NULL)
             {
                 m_tiles[tx][ty] = new TerrainTile(this, m_mapid, tx, ty);
                 m_tiles[tx][ty]->Load();
@@ -256,17 +256,17 @@ class TerrainHolder
         void UnloadTile(int32 tx, int32 ty)
         {
             m_lock[tx][ty].Acquire();
-            if(m_tiles[tx][ty] == NULL)
+            if (m_tiles[tx][ty] == NULL)
             {
                 m_lock[tx][ty].Release();
                 return;
             }
             m_lock[tx][ty].Release();
 
-            if(--m_tilerefs[tx][ty] == 0)
+            if (--m_tilerefs[tx][ty] == 0)
             {
                 m_lock[tx][ty].Acquire();
-                if(m_tiles[tx][ty] != NULL)
+                if (m_tiles[tx][ty] != NULL)
                     m_tiles[tx][ty]->DecRef();
                 m_tiles[tx][ty] = NULL;
                 m_lock[tx][ty].Release();
@@ -278,7 +278,7 @@ class TerrainHolder
         {
             TerrainTile* tile = GetTile(x, y);
 
-            if(tile == NULL)
+            if (tile == NULL)
                 return TERRAIN_INVALID_HEIGHT;
             float rv = tile->m_map.GetHeight(x, y);
             tile->DecRef();
@@ -292,7 +292,7 @@ class TerrainHolder
             VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
             float vmapheight = vmgr->getHeight(m_mapid, x, y, z + 0.5f, 10000.0f);
 
-            if(adtheight > z && vmapheight > -1000)
+            if (adtheight > z && vmapheight > -1000)
                 return vmapheight; //underground
             return std::max(vmapheight, adtheight);
         }
@@ -301,7 +301,7 @@ class TerrainHolder
         {
             TerrainTile* tile = GetTile(x, y);
 
-            if(tile == NULL)
+            if (tile == NULL)
                 return TERRAIN_INVALID_HEIGHT;
             float rv = tile->m_map.GetLiquidHeight(x, y);
             tile->DecRef();
@@ -312,7 +312,7 @@ class TerrainHolder
         {
             TerrainTile* tile = GetTile(x, y);
 
-            if(tile == NULL)
+            if (tile == NULL)
                 return 0;
             uint8 rv = tile->m_map.GetLiquidType(x, y);
             tile->DecRef();
@@ -323,7 +323,7 @@ class TerrainHolder
         {
             TerrainTile* tile = GetTile(x, y);
 
-            if(tile == NULL)
+            if (tile == NULL)
                 return 0;
             uint32 rv = tile->m_map.GetArea(x, y);
             tile->DecRef();
@@ -339,13 +339,13 @@ class TerrainHolder
             VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
 
             float flr;
-            if(vmgr->GetLiquidLevel(m_mapid, x, y, z, 0xFF, liquidlevel, flr, liquidtype))
+            if (vmgr->GetLiquidLevel(m_mapid, x, y, z, 0xFF, liquidlevel, flr, liquidtype))
                 return true;
 
             liquidlevel = GetLiquidHeight(x, y);
             liquidtype = GetLiquidType(x, y);
 
-            if(liquidtype == 0)
+            if (liquidtype == 0)
                 return false;
             return true;
         }

@@ -28,7 +28,7 @@ void LocalizationMgr::Shutdown()
     if (m_disabled)
         return;
 
-#define SAFE_FREE_PTR(x) if(deletedPointers.find((x)) == deletedPointers.end()) { deletedPointers.insert((x)); free((x)); }
+#define SAFE_FREE_PTR(x) if (deletedPointers.find((x)) == deletedPointers.end()) { deletedPointers.insert((x)); free((x)); }
 
     set<void*> deletedPointers;
     uint32 maxid = 0;
@@ -691,7 +691,7 @@ void LocalizationMgr::Reload(bool first)
 }
 
 #define MAKE_LOOKUP_FUNCTION(t, hm, fn) t * LocalizationMgr::fn(uint32 id, uint32 language) { \
-    if(m_disabled) { return NULL; } \
+    if (m_disabled) { return NULL; } \
     HM_NAMESPACE::hash_map<uint32, t>::iterator itr = hm[language].find(id); \
     return (itr == hm[language].end()) ? NULL : &itr->second; }
 

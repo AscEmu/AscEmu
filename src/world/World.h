@@ -22,7 +22,7 @@
 #ifndef __WORLD_H
 #define __WORLD_H
 
-#define IS_INSTANCE( a ) ( ( a > 1 ) && ( a != 530 ) && ( a != 571 ) )
+#define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571))
 
 class Object;
 class WorldPacket;
@@ -152,7 +152,7 @@ struct MapInfo
     uint32 checkpoint_id;
 
     //////////////////////////////////////////////////////////
-    //bool HasFlag( uint32 flag )
+    //bool HasFlag(uint32 flag)
     //  Tells if the map has this particular flag
     //
     //Parameters
@@ -165,14 +165,14 @@ struct MapInfo
     /////////////////////////////////////////////////////////
     bool HasFlag(uint32 flag)
     {
-        if((flags & flag) != 0)
+        if ((flags & flag) != 0)
             return true;
         else
             return false;
     }
 
     /////////////////////////////////////////////////////////
-    //bool HasDifficulty( uint32 difficulty )
+    //bool HasDifficulty(uint32 difficulty)
     //  Tells if the map has a particular raid difficulty.
     //  Valid difficulties are in the RAID_MODE enum.
     //
@@ -186,7 +186,7 @@ struct MapInfo
     //////////////////////////////////////////////////////////
     bool HasDifficulty(uint32 difficulty)
     {
-        if(difficulty > uint32(TOTAL_RAID_MODES))
+        if (difficulty > uint32(TOTAL_RAID_MODES))
             return false;
 
         return HasFlag(uint32(WMI_INSTANCE_HAS_NORMAL_10MEN) << difficulty);
@@ -312,14 +312,14 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         ARCEMU_INLINE void resetPlayerCount() { HordePlayers = AlliancePlayers = 0; }
         ARCEMU_INLINE void incrementPlayerCount(uint32 faction)
         {
-            if(faction == 1)
+            if (faction == 1)
                 HordePlayers++;
             else
                 AlliancePlayers++;
         }
         ARCEMU_INLINE void decrementPlayerCount(uint32 faction)
         {
-            if(faction == 1)
+            if (faction == 1)
                 HordePlayers--;
             else
                 AlliancePlayers--;
@@ -395,7 +395,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
-        //void PlaySoundToAll( uint32 soundid )
+        //void PlaySoundToAll(uint32 soundid)
         //  Plays the sound to everyone logged in and in the world
         //
         //Parameter(s)
@@ -434,20 +434,20 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             std::string num;
             while(t != opstr.end())
             {
-                if((char)(*t) == '{' && strlen((char*) & (*t)) > 1)    // find and no end :D
+                if ((char)(*t) == '{' && strlen((char*) & (*t)) > 1)    // find and no end :D
                 {
                     found++;
                     ++t;
                     continue;
                 }
-                if(found == 1)
+                if (found == 1)
                 {
-                    if((char)(*t) == '}') found++;
+                    if ((char)(*t) == '}') found++;
                     else num.push_back(*t);
                 }
-                if(found)    // get the flag and doing my work and skip pushback.
+                if (found)    // get the flag and doing my work and skip pushback.
                 {
-                    if(found == 2)
+                    if (found == 2)
                     {
                         temp += _session->LocalizedWorldSrv((uint32) atoi((char*)num.c_str()));
                         found = 0;
@@ -509,7 +509,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void LoadWMOAreaData()
         {
-            for(DBCStorage<WMOAreaTableEntry>::iterator itr = dbcWMOAreaTable.begin(); itr != dbcWMOAreaTable.end(); ++itr)
+            for (DBCStorage<WMOAreaTableEntry>::iterator itr = dbcWMOAreaTable.begin(); itr != dbcWMOAreaTable.end(); ++itr)
             {
                 WMOAreaTableTripple tmp((*itr)->rootId, (*itr)->adtId, (*itr)->groupId);
 
@@ -522,7 +522,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             WMOAreaTableTripple tmp(rootid, adtid, groupid);
             std::map<WMOAreaTableTripple, WMOAreaTableEntry*>::iterator itr = m_WMOAreaTableTripples.find(tmp);
 
-            if(itr != m_WMOAreaTableTripples.end())
+            if (itr != m_WMOAreaTableTripples.end())
                 return itr->second;
             return NULL;
         }
@@ -768,7 +768,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         {
 
             // We don't want to spam this
-            if(LastTrafficQuery == 0 || LastTrafficQuery <= (UNIXTIME - 10))
+            if (LastTrafficQuery == 0 || LastTrafficQuery <= (UNIXTIME - 10))
                 UpdateTotalTraffic();
 
             *totalin = TotalTrafficInKB;

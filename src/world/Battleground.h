@@ -118,7 +118,7 @@ class SERVER_DECL CBattleground : public EventableObject
         /* On Unit Killing */
         virtual void HookOnUnitKill(Player* plr, Unit* pVictim) = 0;
 
-        virtual void HookOnUnitDied(Unit *victim){}
+        virtual void HookOnUnitDied(Unit* victim){}
 
         /* Retrieval Functions */
         uint32 GetId() { return m_id; }
@@ -158,15 +158,15 @@ class SERVER_DECL CBattleground : public EventableObject
         /* Are we full? */
         bool HasFreeSlots(uint32 Team, uint32 type);
 
-        /* Add Player */
+        // Add Player
         void AddPlayer(Player* plr, uint32 team);
         virtual void OnAddPlayer(Player* plr) = 0;
 
-        /* Remove Player */
+        // Remove Player
         void RemovePlayer(Player* plr, bool logout);
         virtual void OnRemovePlayer(Player* plr) = 0;
 
-        /* Port Player */
+        // Port Player
         void PortPlayer(Player* plr, bool skip_teleport = false);
         virtual void OnCreate() = 0;
 
@@ -178,7 +178,7 @@ class SERVER_DECL CBattleground : public EventableObject
 
         GameObject* SpawnGameObject(uint32 entry, uint32 MapId , float x, float y, float z, float o, uint32 flags, uint32 faction, float scale);
         GameObject* SpawnGameObject(uint32 entry, LocationVector& v, uint32 flags, uint32 faction, float scale);
-        Creature* SpawnCreature(uint32 entry, float x, float y, float z, float o, uint32 faction = 0 );
+        Creature* SpawnCreature(uint32 entry, float x, float y, float z, float o, uint32 faction = 0);
         Creature* SpawnCreature(uint32 entry, LocationVector& v, uint32 faction = 0);
         void UpdatePvPData();
 
@@ -220,7 +220,7 @@ class SERVER_DECL CBattleground : public EventableObject
         void QueueAtNearestSpiritGuide(Player* plr, Creature* old);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// uint64 GetFlagHolderGUID( uint32 faction )
+        /// uint64 GetFlagHolderGUID(uint32 faction)
         /// Tells the GUID of the player who currently holds the flag
         ///
         /// \param  uint32 faction - The faction of the flag holder we are interested in

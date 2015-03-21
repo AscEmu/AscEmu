@@ -279,7 +279,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession* m_session)
     if (tmpItem)
     {
         std::stringstream ss;
-        ss << "INSERT INTO vendors VALUES ('" << pCreature->GetEntry() << "', '" << item << "', '" << amount << "', 0, 0, " << costid << " )" << '\0';
+        ss << "INSERT INTO vendors VALUES ('" << pCreature->GetEntry() << "', '" << item << "', '" << amount << "', 0, 0, " << costid << ")" << '\0';
         WorldDatabase.Execute(ss.str().c_str());
 
         pCreature->AddVendorItem(item, amount, ec);
@@ -452,10 +452,10 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
         sp->prepare(&targets);
 
         /*        SpellEntry * se = dbcSpell.LookupEntry(20479);
-                if(se == 0) return false;
+                if (se == 0) return false;
 
                 SpellCastTargets targets(target->GetGUID());
-                Spell * sp = sSpellFactoryMgr.NewSpell(target, se, true, 0);
+                Spell* sp = sSpellFactoryMgr.NewSpell(target, se, true, 0);
                 sp->prepare(&targets);*/
     }
 
@@ -560,7 +560,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     data << uint32(0);
     data << uint16(2);
     data << target->GetGUID();
-    //        WPARCEMU_ASSERT(   data.size() == 36);
+    //        WPARCEMU_ASSERT(  data.size() == 36);
     m_session->SendPacket(&data);
 
     data.Initialize(SMSG_SPELL_GO);
@@ -572,7 +572,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     data << uint8(0);
     data << uint16(2);
     data << target->GetGUID();
-    //        WPARCEMU_ASSERT(   data.size() == 42);
+    //        WPARCEMU_ASSERT(  data.size() == 42);
     m_session->SendPacket(&data);
 
     switch (target->GetTypeId())
@@ -679,18 +679,21 @@ bool ChatHandler::HandleMonsterYellCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleGOFaction(const char *args, WorldSession *m_session){
+bool ChatHandler::HandleGOFaction(const char *args, WorldSession* m_session)
+{
     if (args == NULL)
         return false;
 
     GameObject *go = m_session->GetPlayer()->GetSelectedGo();
-    if (go == NULL){
+    if (go == NULL)
+    {
         RedSystemMessage(m_session, "No GameObject is selected.");
         return true;
     }
 
     uint32 faction = 0;
-    if (sscanf(args, "%u", &faction) != 1){
+    if (sscanf(args, "%u", &faction) != 1)
+    {
         return false;
     }
 
@@ -700,12 +703,14 @@ bool ChatHandler::HandleGOFaction(const char *args, WorldSession *m_session){
     return true;
 }
 
-bool ChatHandler::HandleGOFlags(const char *args, WorldSession *m_session){
+bool ChatHandler::HandleGOFlags(const char *args, WorldSession* m_session)
+{
     if (args == NULL)
         return false;
 
     GameObject *go = m_session->GetPlayer()->GetSelectedGo();
-    if (go == NULL){
+    if (go == NULL)
+    {
         RedSystemMessage(m_session, "No GameObject is selected.");
         return true;
     }
@@ -720,12 +725,14 @@ bool ChatHandler::HandleGOFlags(const char *args, WorldSession *m_session){
     return true;
 }
 
-bool ChatHandler::HandleGOState(const char *args, WorldSession *m_session){
+bool ChatHandler::HandleGOState(const char *args, WorldSession* m_session)
+{
     if (args == NULL)
         return false;
 
     GameObject *go = m_session->GetPlayer()->GetSelectedGo();
-    if (go == NULL){
+    if (go == NULL)
+    {
         RedSystemMessage(m_session, "No GameObject is selected.");
         return true;
     }
@@ -739,12 +746,14 @@ bool ChatHandler::HandleGOState(const char *args, WorldSession *m_session){
     return true;
 }
 
-bool ChatHandler::HandleGOSelectByGUID(const char *args, WorldSession *m_session){
+bool ChatHandler::HandleGOSelectByGUID(const char *args, WorldSession* m_session)
+{
     if (args == NULL)
         return false;
 
     uint32 guid = 0;
-    if (sscanf(args, "%u", &guid) != 1){
+    if (sscanf(args, "%u", &guid) != 1)
+    {
         return false;
     }
 
@@ -752,7 +761,8 @@ bool ChatHandler::HandleGOSelectByGUID(const char *args, WorldSession *m_session
         return false;
 
     GameObject *go = m_session->GetPlayer()->GetMapMgr()->GetGameObject(guid);
-    if (go == NULL){
+    if (go == NULL)
+    {
         RedSystemMessage(m_session, "No GameObject was found with GUID %u", guid);
         return true;
     }
@@ -1176,7 +1186,7 @@ bool ChatHandler::HandleGOEnable(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleGOOpen(const char* args, WorldSession *m_session)
+bool ChatHandler::HandleGOOpen(const char* args, WorldSession* m_session)
 {
     GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
     if (GObj == NULL)
@@ -1185,11 +1195,13 @@ bool ChatHandler::HandleGOOpen(const char* args, WorldSession *m_session)
         return true;
     }
 
-    if (GObj->GetState() != GAMEOBJECT_STATE_OPEN){
+    if (GObj->GetState() != GAMEOBJECT_STATE_OPEN)
+    {
         GObj->SetState(GAMEOBJECT_STATE_OPEN);
         BlueSystemMessage(m_session, "Gameobject opened.");
     }
-    else{
+    else
+    {
         GObj->SetState(GAMEOBJECT_STATE_CLOSED);
         BlueSystemMessage(m_session, "Gameobject closed.");
     }
@@ -1419,14 +1431,17 @@ bool ChatHandler::HandleGOAnimProgress(const char* args, WorldSession* m_session
     return true;
 }
 
-bool ChatHandler::HandleGOFactionCommand(const char *args, WorldSession *session){
+bool ChatHandler::HandleGOFactionCommand(const char *args, WorldSession* session)
+{
     GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL){
+    if (go == NULL)
+    {
         RedSystemMessage(session, "You need to select a GO first!");
         return true;
     }
 
-    if (*args == '\0'){
+    if (*args == '\0')
+    {
         RedSystemMessage(session, "You need to specify a faction!");
         return true;
     }
@@ -1435,7 +1450,8 @@ bool ChatHandler::HandleGOFactionCommand(const char *args, WorldSession *session
     uint32 faction = 0;
 
     ss >> faction;
-    if (ss.fail()){
+    if (ss.fail())
+    {
         RedSystemMessage(session, "You need to specify a faction!");
         return true;
     }
@@ -1447,19 +1463,23 @@ bool ChatHandler::HandleGOFactionCommand(const char *args, WorldSession *session
     return true;
 }
 
-bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession *session){
+bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession* session)
+{
     GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL){
+    if (go == NULL)
+    {
         RedSystemMessage(session, "You need to select a GO first!");
         return true;
     }
 
-    if (go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING){
+    if (go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    {
         RedSystemMessage(session, "The selected GO must be a destructible building!");
         return true;
     }
 
-    if (*args == '\0'){
+    if (*args == '\0')
+    {
         RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
         return true;
     }
@@ -1468,7 +1488,8 @@ bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession *session)
     std::stringstream ss(args);
 
     ss >> damage;
-    if (ss.fail()){
+    if (ss.fail())
+    {
         RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
         return true;
     }
@@ -1482,14 +1503,17 @@ bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession *session)
     return true;
 }
 
-bool ChatHandler::HandleGORebuildCommand(const char *args, WorldSession *session){
+bool ChatHandler::HandleGORebuildCommand(const char *args, WorldSession* session)
+{
     GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL){
+    if (go == NULL)
+    {
         RedSystemMessage(session, "You need to select a GO first!");
         return true;
     }
 
-    if (go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING){
+    if (go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    {
         RedSystemMessage(session, "The selected GO must be a destructible building!");
         return true;
     }
@@ -1503,7 +1527,7 @@ bool ChatHandler::HandleGORebuildCommand(const char *args, WorldSession *session
 
 bool ChatHandler::HandleGOExport(const char* args, WorldSession* m_session)
 {
-    /*if(!m_session->GetPlayer()->m_GM_SelectedGO)
+    /*if (!m_session->GetPlayer()->m_GM_SelectedGO)
         return false;
 
         std::stringstream name;

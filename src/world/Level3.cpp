@@ -1233,7 +1233,7 @@ bool ChatHandler::HandleAccountUnmuteCommand(const char* args, WorldSession* m_s
 
 bool ChatHandler::HandleGetTransporterTime(const char* args, WorldSession* m_session)
 {
-    //Player *plyr = m_session->GetPlayer();
+    //Player* plyr = m_session->GetPlayer();
     Creature* crt = getSelectedCreature(m_session, false);
     if (crt == NULL)
         return false;
@@ -1287,8 +1287,8 @@ bool ChatHandler::HandleRemoveRessurectionSickessAuraCommand(const char* args, W
 
 bool ChatHandler::HandleParalyzeCommand(const char* args, WorldSession* m_session)
 {
-    //Player *plr = getSelectedChar(m_session, true);
-    //if(!plr) return false;
+    //Player* plr = getSelectedChar(m_session, true);
+    //if (!plr) return false;
     Unit* plr = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
     if (!plr || !plr->IsPlayer())
     {
@@ -1310,8 +1310,8 @@ bool ChatHandler::HandleParalyzeCommand(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleUnParalyzeCommand(const char* args, WorldSession* m_session)
 {
-    //Player *plr = getSelectedChar(m_session, true);
-    //if(!plr) return false;
+    //Player* plr = getSelectedChar(m_session, true);
+    //if (!plr) return false;
     Unit* plr = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
     if (!plr || !plr->IsPlayer())
     {
@@ -1550,7 +1550,7 @@ bool ChatHandler::HandleShowCheatsCommand(const char* args, WorldSession* m_sess
     uint32 active = 0, inactive = 0;
 #define print_cheat_status(CheatName, CheatVariable) SystemMessage(m_session, "%s%s: %s%s", MSG_COLOR_LIGHTBLUE, CheatName, \
         CheatVariable ? MSG_COLOR_LIGHTRED : MSG_COLOR_GREEN, CheatVariable ? "Active" : "Inactive");  \
-        if(CheatVariable) \
+        if (CheatVariable) \
         active++; \
             else \
         inactive++;
@@ -1629,7 +1629,7 @@ bool ChatHandler::HandleDBReloadCommand(const char* args, WorldSession* m_sessio
     char str[200];
     int ret = 0;
 
-    if(!*args || strlen(args) < 3)
+    if (!*args || strlen(args) < 3)
     return false;
 
 
@@ -1755,15 +1755,15 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
 //this is custom stuff !
 bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
 {
-    if(!*args)
+    if (!*args)
         return false;
 
-    if(!m_session->GetPlayer())
+    if (!m_session->GetPlayer())
         return false; //wtf ?
 
     uint32 botprice = m_session->GetPlayer()->getLevel() * 10000; //1 gold per level ?
 
-    if(!m_session->GetPlayer()->HasGold(botprice))
+    if (!m_session->GetPlayer()->HasGold(botprice))
     {
         GreenSystemMessage(m_session, "You need a total of %u coins to afford a bot", botprice);
         return false;
@@ -1771,7 +1771,7 @@ bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
 
     uint8 botType = (uint8)atof((char*)args);
 
-    if(botType != 0)
+    if (botType != 0)
     {
         RedSystemMessage(m_session, "Incorrect value. Accepting value 0 only = healbot :)");
         return true;
@@ -1781,7 +1781,7 @@ bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
     char name[50];
     uint8 race = m_session->GetPlayer()->getRace();
 
-    if(race == RACE_HUMAN || race == RACE_DWARF || race == RACE_NIGHTELF || race == RACE_GNOME || race == RACE_DRAENEI)
+    if (race == RACE_HUMAN || race == RACE_DWARF || race == RACE_NIGHTELF || race == RACE_GNOME || race == RACE_DRAENEI)
     {
         Entry = 1826;
         strcpy(name, "|cffff6060A_HealBot");
@@ -1794,7 +1794,7 @@ bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
 
     CreatureProto* pTemplate = CreatureProtoStorage.LookupEntry(Entry);
     CreatureInfo* pCreatureInfo = CreatureNameStorage.LookupEntry(Entry);
-    if(!pTemplate || !pCreatureInfo)
+    if (!pTemplate || !pCreatureInfo)
     {
         RedSystemMessage(m_session, "Invalid creature spawn template: %u", Entry);
         return true;
@@ -1806,19 +1806,19 @@ bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
     newguard->ReplaceAIInterface((AIInterface*) new_interface);
 
     /*    Pet *old_tame = plr->GetSummon();
-        if(old_tame != NULL)
+        if (old_tame != NULL)
         {
         old_tame->Dismiss(true);
         }
 
         // create a pet from this creature
-        Pet * pPet = objmgr.CreatePet( Entry );
+        Pet * pPet = objmgr.CreatePet(Entry);
         pPet->SetInstanceID(plr->GetInstanceID());
         pPet->SetMapId(plr->GetMapId());
 
-        pPet->SetFloatValue ( OBJECT_FIELD_SCALE_X, pTemplate->Scale / 2); //we do not wish to block visually other players
+        pPet->SetFloatValue (OBJECT_FIELD_SCALE_X, pTemplate->Scale / 2); //we do not wish to block visually other players
         AiAgentHealSupport *new_interface = new AiAgentHealSupport;
-        pPet->ReplaceAIInterface( (AIInterface *) new_interface );
+        pPet->ReplaceAIInterface((AIInterface *) new_interface);
         //    new_interface->Init(pPet,AITYPE_PET,MOVEMENTTYPE_NONE,plr); // i think this will get called automatically for pet
 
         pPet->CreateAsSummon(Entry, pCreatureInfo, pCreature, plr, NULL, 0x2, 0);
@@ -3793,7 +3793,8 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
         uint32 memberCount = pGuild->GetNumMembers();
         pGuild->getLock().Release();
 
-        if (memberCount >= MAX_GUILD_MEMBERS){
+        if (memberCount >= MAX_GUILD_MEMBERS)
+        {
             m_session->SystemMessage("That guild is full.");
             return true;
         }

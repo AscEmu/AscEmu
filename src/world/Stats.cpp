@@ -103,17 +103,17 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     // No need for it here - it does this later in Player::GiveXP
     /*
     uint32 max_level = 70;
-    if(pAttacker->IsPlayer())
+    if (pAttacker->IsPlayer())
     max_level = pAttacker->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
-    else if(pAttacker->IsPet())
-    max_level = TO< Pet* >( pAttacker )->GetPetOwner()->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
+    else if (pAttacker->IsPet())
+    max_level = TO< Pet* >(pAttacker)->GetPetOwner()->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
 
-    if(pAttacker->getLevel() >= max_level)
+    if (pAttacker->getLevel() >= max_level)
     return 0;
     */
 
 
-    /*if(VictimLvl+7>AttackerLvl)
+    /*if (VictimLvl+7>AttackerLvl)
     VictimLvl = AttackerLvl + 7;*/
 
     float zd = 5;
@@ -245,13 +245,13 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     float tempcap = 0;
     float xp = 0;
 
-    if(VictimLvl >= AttackerLvl)
+    if (VictimLvl >= AttackerLvl)
     {
     temp = ((AttackerLvl * 5) + 45) * (1 + 0.05 * (VictimLvl - AttackerLvl));
     tempcap = ((AttackerLvl * 5) + 45) * 1.2;
-    if(temp > tempcap)
+    if (temp > tempcap)
     {
-    if( tempcap < 0 )
+    if (tempcap < 0)
     tempcap = 0;
     else
     tempcap *= sWorld.getRate(RATE_XP);
@@ -260,7 +260,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     }
     else
     {
-    if( temp < 0 )
+    if (temp < 0)
     temp = 0;
     else
     temp *= sWorld.getRate(RATE_XP);
@@ -270,17 +270,17 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     }
     else
     {
-    if(getConColor(AttackerLvl, VictimLvl) == 0)
+    if (getConColor(AttackerLvl, VictimLvl) == 0)
     {
     return (uint32)0;
     }
     else
     {
-    if(AttackerLvl < PLAYER_LEVEL_CAP)
+    if (AttackerLvl < PLAYER_LEVEL_CAP)
     temp = (((AttackerLvl * 5) + 45) * (1 - (AttackerLvl - VictimLvl)/ZD[AttackerLvl]));
     else
     temp = (((AttackerLvl * 5) + 45) * (1 - (AttackerLvl - VictimLvl)/17));
-    if( temp < 0 )
+    if (temp < 0)
     temp = 0;
     else
     temp *= sWorld.getRate(RATE_XP);
@@ -289,7 +289,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     }
     }
 
-    if(victimI)
+    if (victimI)
     {
     switch(victimI->Rank)
     {

@@ -227,7 +227,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
     *data << riding->GetPositionX() << riding->GetPositionY() << riding->GetPositionZ();
     *data << getMSTime();
     *data << uint8(0);
-    //    *data << uint32( 0x00000300 );
+    //    *data << uint32(0x00000300);
     *data << uint32(0x00003000);
     *data << uint32(uint32((length * TAXI_TRAVEL_SPEED) - time));
     *data << uint32(nodecounter);
@@ -296,12 +296,12 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
             WorldPacket * data = new WorldPacket(SMSG_MONSTER_MOVE, 2000);
 
             *data << riding->GetNewGUID();
-            *data << riding->GetPositionX( ) << riding->GetPositionY( ) << riding->GetPositionZ( );
+            *data << riding->GetPositionX() << riding->GetPositionY() << riding->GetPositionZ();
             *data << getMSTime();
-            *data << uint8( 0 );
-            *data << uint32( 0x00000300 );
-            *data << uint32( uint32((getLength() * TAXI_TRAVEL_SPEED) - time));
-            *data << uint32( GetNodeCount() - count );
+            *data << uint8(0);
+            *data << uint32(0x00000300);
+            *data << uint32(uint32((getLength() * TAXI_TRAVEL_SPEED) - time));
+            *data << uint32(GetNodeCount() - count);
             *data << nx << ny << nz;
             while (itr != m_pathNodes.end())
             {
@@ -448,7 +448,7 @@ bool TaxiMgr::GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask)
 
     for (itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); itr++)
     {
-        /*if( itr->second->from == curloc )
+        /*if (itr->second->from == curloc)
         {*/
         field = (uint8)((itr->second->to - 1) / 32);
         if (field >= 12) continue;  //The DBC can contain negative TO values??? That'll be 255 here (because we store everything unsigned), skip them!

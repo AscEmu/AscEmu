@@ -156,8 +156,8 @@ void World::InitDruidSpells()
         sp->EffectSpellClassMask[2][1] = 0;
         sp->EffectSpellClassMask[2][2] = 0;
     }
-    /*if(sp = dbcSpell.LookupEntryForced(17002))
+    /*if (sp = dbcSpell.LookupEntryForced(17002))
         sp->RequiredShapeShift = 1 | 16 | 128;
-        if(sp = dbcSpell.LookupEntryForced(24866))
+        if (sp = dbcSpell.LookupEntryForced(24866))
         sp->RequiredShapeShift = 1 | 16 | 128; */
 }

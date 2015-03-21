@@ -624,7 +624,7 @@ void World::Update(unsigned long time_passed)
     sAuctionMgr.Update();
     UpdateQueuedSessions((uint32)time_passed);
 #ifdef SESSION_CAP
-    if(GetSessionCount() >= SESSION_CAP)
+    if (GetSessionCount() >= SESSION_CAP)
         TerminateProcess(GetCurrentProcess(), 0);
 #endif
 }
@@ -1144,8 +1144,8 @@ void TaskList::spawn()
         long affmask;
         sched_getaffinity(0, 4, (cpu_set_t*)&affmask);
         threadcount = (BitCount8(affmask)) * 2;
-        if(threadcount > 8) threadcount = 8;
-        else if(threadcount <= 0) threadcount = 1;
+        if (threadcount > 8) threadcount = 8;
+        else if (threadcount <= 0) threadcount = 1;
 #endif
 #else
         threadcount = 2;
@@ -1719,7 +1719,7 @@ void World::CleanupCheaters()
     SpellEntry * sp;
 
     QueryResult * result = CharacterDatabase.Query("SELECT guid, name, class, level, available_talent_points, spells FROM characters");
-    if(result == NULL)
+    if (result == NULL)
     return;
 
     do
@@ -1739,12 +1739,12 @@ void World::CleanupCheaters()
     while(true)
     {
     end = strchr(start,',');
-    if(!end)break;
+    if (!end)break;
     *end= 0;
     sp = dbcSpell.LookupEntry(atol(start));
     start = end +1;
 
-    if(sp->talent_tree)
+    if (sp->talent_tree)
 
     }
 

@@ -115,7 +115,7 @@ class ItemIsNotLooted
 typedef struct
 {
     _LootItem item;	    /// the item that drops
-    float chance;	    /// normal dungeon / normal 10men raid / old raid (10,25, or 40 men )
+    float chance;	    /// normal dungeon / normal 10men raid / old raid (10,25, or 40 men)
     float chance2;	    /// heroic dungeon / normal 25men raid
     float chance3;	    /// heroic 10men raid
     float chance4;	    /// heroic 25men raid
@@ -176,7 +176,7 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// bool HasLootForCreature( uint32 loot_id )
+        /// bool HasLootForCreature(uint32 loot_id)
         /// Tells if there's loot cached for the specified creature.
         ///
         /// \param uint32 loot_id - The identifier of the creature

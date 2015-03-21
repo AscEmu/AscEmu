@@ -111,7 +111,7 @@ namespace Arcemu
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool RemoveMember( unsigned long GUID )   - Removes a member to the Ritual
+        /// \note bool RemoveMember(unsigned long GUID)   - Removes a member to the Ritual
         ///
         /// \param unsigned long GUID - GUID of the ritual member to remove
         ///

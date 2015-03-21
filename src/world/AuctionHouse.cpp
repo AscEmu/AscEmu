@@ -417,8 +417,8 @@ void AuctionHouse::SendAuctionExpiredNotificationPacket(Auction* auct)
 {
     ///\todo I don't know the net code... so: TODO ;-)
 
-    //Player *owner = objmgr.GetPlayer((uint32)auct->Owner);
-    //if(owner != NULL && owner->IsInWorld())
+    //Player* owner = objmgr.GetPlayer((uint32)auct->Owner);
+    //if (owner != NULL && owner->IsInWorld())
     //{
     //  WorldPacket data(SMSG_AUCTION_REMOVED_NOTIFICATION, ??);
     //  data << GetID();
@@ -788,7 +788,7 @@ void WorldSession::HandleAuctionListPendingSales(WorldPacket& recv_data)
 
     WorldPacket data(SMSG_AUCTION_LIST_PENDING_SALES, 4);
     data << uint32(count);                                  // count
-    /*for(uint32 i = 0; i < count; ++i)
+    /*for (uint32 i = 0; i < count; ++i)
     {
     data << "";                                         // string
     data << "";                                         // string

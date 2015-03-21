@@ -56,10 +56,10 @@ void Corpse::Create(Player* owner, uint32 mapid, float x, float y, float z, floa
     Object::_Create(mapid, x, y, z, ang);
 
     /*
-    SetFloatValue( CORPSE_FIELD_POS_X, x );
-    SetFloatValue( CORPSE_FIELD_POS_Y, y );
-    SetFloatValue( CORPSE_FIELD_POS_Z, z );
-    SetFloatValue( CORPSE_FIELD_FACING, ang );
+    SetFloatValue(CORPSE_FIELD_POS_X, x);
+    SetFloatValue(CORPSE_FIELD_POS_Y, y);
+    SetFloatValue(CORPSE_FIELD_POS_Z, z);
+    SetFloatValue(CORPSE_FIELD_FACING, ang);
     */
     SetOwner(owner->GetGUID());
     _loadedfromdb = false;  // can't be created from db ;)
@@ -79,7 +79,7 @@ void Corpse::SaveToDB()
     for (uint16 i = 0; i < m_valuesCount; i++)
         ss << GetUInt32Value(i) << " ";
 
-    ss << "', " << GetInstanceID() << " )";
+    ss << "', " << GetInstanceID() << ")";
 
     CharacterDatabase.Execute(ss.str().c_str());
 }

@@ -425,8 +425,8 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     // Assertions
     ARCEMU_ASSERT(obj != NULL);
     ARCEMU_ASSERT(obj->GetMapId() == _mapId);
-    //ARCEMU_ASSERT(   obj->GetPositionX() > _minX && obj->GetPositionX() < _maxX);
-    //ARCEMU_ASSERT(   obj->GetPositionY() > _minY && obj->GetPositionY() < _maxY);
+    //ARCEMU_ASSERT(  obj->GetPositionX() > _minX && obj->GetPositionX() < _maxX);
+    //ARCEMU_ASSERT(  obj->GetPositionY() > _minY && obj->GetPositionY() < _maxY);
     ARCEMU_ASSERT(_cells != NULL);
 
     if (obj->IsActive())
@@ -572,7 +572,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
 
 void MapMgr::ChangeObjectLocation(Object* obj)
 {
-    // if ( !obj ) return; // crashfix
+    // if (!obj) return; // crashfix
     ARCEMU_ASSERT(obj != NULL);
 
     // Items and containers are of no interest for us
@@ -750,7 +750,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
 void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf)
 {
-#define CHECK_BUF if(!*buf) *buf = new ByteBuffer(2500)
+#define CHECK_BUF if (!*buf) *buf = new ByteBuffer(2500)
 
     if (cell == NULL)
         return;
@@ -1732,7 +1732,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
 
     GameObject* go = CreateGameObject(entryID);
 
-    //Player *chr = m_session->GetPlayer();
+    //Player* chr = m_session->GetPlayer();
     uint32 mapid = GetMapId();
     // Setup game object
     go->CreateFromProto(entryID, mapid, x, y, z, o);
@@ -1816,7 +1816,7 @@ float MapMgr::GetFirstZWithCPZ(float x, float y, float z)
     float posZ = NO_WMO_HEIGHT;
     for (int i = Z_SEARCH_RANGE; i >= -Z_SEARCH_RANGE; i--)
     {
-        //if ( i== 0 && !IsUnderground(x,y,z) ) return GetBaseMap()->GetLandHeight(x, y);
+        //if (i== 0 && !IsUnderground(x,y,z)) return GetBaseMap()->GetLandHeight(x, y);
         posZ = CollideInterface.GetHeight(GetMapId(), x, y, z + (float)i);
         if (posZ != NO_WMO_HEIGHT)
             break;
@@ -1851,18 +1851,22 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
     }
 }
 
-void MapMgr::SendPacketToAllPlayers(WorldPacket *packet) const{
-    for (PlayerStorageMap::const_iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr){
-        Player *p = itr->second;
+void MapMgr::SendPacketToAllPlayers(WorldPacket *packet) const
+{
+    for (PlayerStorageMap::const_iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
+    {
+        Player* p = itr->second;
 
         if (p->GetSession() != NULL)
             p->GetSession()->SendPacket(packet);
     }
 }
 
-void MapMgr::SendPacketToPlayersInZone(uint32 zone, WorldPacket *packet) const{
-    for (PlayerStorageMap::const_iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr){
-        Player *p = itr->second;
+void MapMgr::SendPacketToPlayersInZone(uint32 zone, WorldPacket *packet) const
+{
+    for (PlayerStorageMap::const_iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
+    {
+        Player* p = itr->second;
 
         if ((p->GetSession() != NULL) && (p->GetZoneId() == zone))
             p->GetSession()->SendPacket(packet);

@@ -408,14 +408,14 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
 
         /* Changed in 3.3.3 or 3.3.5
         uint32 mail_id = it->GetTextId();
-        if(mail_id)
+        if (mail_id)
         sMailSystem.RemoveMessageIfDeleted(mail_id, _player);
         */
 
 
 
         /*bool result =  _player->GetItemInterface()->SafeFullRemoveItemFromSlot(SrcInvSlot,SrcSlot);
-        if(!result)
+        if (!result)
         {
         LOG_DETAIL("ITEM: Destroy, SrcInv Slot: %u Src slot: %u Failed", (uint32)SrcInvSlot, (uint32)SrcSlot);
         }*/
@@ -1162,7 +1162,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
 
         if ((oldItem->GetStackCount() + count_per_stack) > itemMaxStack)
         {
-            //            LOG_DEBUG( "SUPADBG can't carry #2" );
+            //            LOG_DEBUG("SUPADBG can't carry #2");
             _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
             return;
         }
@@ -1188,7 +1188,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
         {
             pItem->SetStackCount(count_per_stack);
             pItem->m_isDirty = true;
-            //            LOG_DEBUG( "SUPADBG bagslot=%u, slot=%u" , bagslot, slot );
+            //            LOG_DEBUG("SUPADBG bagslot=%u, slot=%u" , bagslot, slot);
             if (!_player->GetItemInterface()->SafeAddItem(pItem, bagslot, slot))
             {
                 pItem->DeleteMe();

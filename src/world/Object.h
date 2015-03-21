@@ -513,10 +513,10 @@ class SERVER_DECL Object : public EventableObject
 		bool RemoveIfInRange(Object* obj)
 		{
 			InRangeSet::iterator itr = m_objectsInRange.find(obj);
-			if(obj->IsPlayer())
+			if (obj->IsPlayer())
 				m_inRangePlayers.erase(obj);
 
-			if(itr == m_objectsInRange.end())
+			if (itr == m_objectsInRange.end())
 				return false;
 
 			m_objectsInRange.erase(itr);
@@ -558,7 +558,7 @@ class SERVER_DECL Object : public EventableObject
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-		/// void SendPacket( WorldPacket *packet )
+		/// void SendPacket(WorldPacket *packet)
 		///  Sends a packet to the Player
 		///
         /// \param WorldPAcket *packet      -     the packet that needs to be sent
@@ -574,9 +574,9 @@ class SERVER_DECL Object : public EventableObject
 		virtual void OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
 
         //////////////////////////////////////////////////////////////////////////////////////////
-		///void SendAIReaction( uint32 reaction = 2 )
+		///void SendAIReaction(uint32 reaction = 2)
 		/// Notifies the player's clients about the AI reaction of this object
-		/// ( NPC growl for example "aggro sound" )
+		/// (NPC growl for example "aggro sound")
 		///
         /// \param uint32 reaction  -  Reaction type
 		///
@@ -589,7 +589,7 @@ class SERVER_DECL Object : public EventableObject
         //////////////////////////////////////////////////////////////////////////////////////////
 		///void SendDestroyObject()
 		/// Destroys this Object for the players' clients that are nearby
-		/// ( removes object from the scene )
+		/// (removes object from the scene)
 		///
         /// \param none
         ///

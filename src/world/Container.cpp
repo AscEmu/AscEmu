@@ -135,7 +135,7 @@ bool Container::AddItem(int16 slot, Item* item)
     if (slot < 0 || (uint32)slot >= GetProto()->ContainerSlots)
         return false;
 
-    //ARCEMU_ASSERT(   m_Slot[slot] == NULL);
+    //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
     if (m_Slot[slot] != NULL)
     {
         //sLog.outString("Bad container item %u slot %d", item->GetGUID(), slot);

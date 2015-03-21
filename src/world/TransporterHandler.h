@@ -45,7 +45,7 @@ class TransportPath
         float GetTotalLength(void)
         {
             float len = 0, xd, yd, zd;
-            for(unsigned int idx = 1; idx < i_nodes.size(); ++idx)
+            for (unsigned int idx = 1; idx < i_nodes.size(); ++idx)
             {
                 xd = i_nodes[ idx ].x - i_nodes[ idx - 1 ].x;
                 yd = i_nodes[ idx ].y - i_nodes[ idx - 1 ].y;
@@ -146,10 +146,10 @@ class Transporter : public GameObject
         Creature* GetCreature(uint32 Guid);
         GameObject* GetGameObject(uint32 Guid);
 
-        void AddPassenger( Object *o );
-        void RemovePassenger( Object *o );
+        void AddPassenger(Object *o);
+        void RemovePassenger(Object *o);
 
-        void MovePassengers( float x, float y, float z, float o );
+        void MovePassengers(float x, float y, float z, float o);
 
     private:
 

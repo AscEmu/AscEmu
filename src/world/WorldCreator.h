@@ -116,7 +116,7 @@ class SERVER_DECL InstanceMgr
 
         ARCEMU_INLINE Map* GetMap(uint32 mapid)
         {
-            if(mapid >= NUM_MAPS)
+            if (mapid >= NUM_MAPS)
                 return NULL;
             else
                 return m_maps[mapid];
@@ -142,19 +142,19 @@ class SERVER_DECL InstanceMgr
         ARCEMU_INLINE bool PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
         {
             // Expired?
-            if(pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
+            if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
             {
                 _DeleteInstance(pInstance, true);
                 return false;
             }
 
             // Persistent instance handling
-            if(pInstance->m_persistent)
+            if (pInstance->m_persistent)
             {
                 return (pPlayer->GetPersistentInstanceId(pInstance->m_mapId, pInstance->m_difficulty) == pInstance->m_instanceId);
             }
             // Default instance handling
-            else if((pPlayer->GetGroup() && pInstance->m_creatorGroup == pPlayer->GetGroup()->GetID()) || pPlayer->GetLowGUID() == pInstance->m_creatorGuid)
+            else if ((pPlayer->GetGroup() && pInstance->m_creatorGroup == pPlayer->GetGroup()->GetID()) || pPlayer->GetLowGUID() == pInstance->m_creatorGuid)
                 return true;
 
             return false;
@@ -164,7 +164,7 @@ class SERVER_DECL InstanceMgr
         ARCEMU_INLINE bool HasInstanceExpired(Instance* pInstance)
         {
             // expired?
-            if(pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
+            if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
                 return true;
 
             return false;
@@ -198,21 +198,21 @@ class SERVER_DECL InstanceMgr
 
         Instance* GetInstanceByIds(uint32 mapid, uint32 instanceId)
         {
-            if(mapid > NUM_MAPS)
+            if (mapid > NUM_MAPS)
                 return NULL;
-            if(mapid == NUM_MAPS)
+            if (mapid == NUM_MAPS)
             {
                 Instance* in;
-                for(uint32 i = 0; i < NUM_MAPS; ++i)
+                for (uint32 i = 0; i < NUM_MAPS; ++i)
                 {
                     in = GetInstanceByIds(i, instanceId);
-                    if(in != NULL)
+                    if (in != NULL)
                         return in;
                 }
                 return NULL;
             }
             InstanceMap* map = m_instances[mapid];
-            if(map == NULL)
+            if (map == NULL)
                 return NULL;
             InstanceMap::iterator instance = map->find(instanceId);
             return instance == map->end() ? NULL : instance->second;

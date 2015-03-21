@@ -118,7 +118,7 @@ struct CreatureInfo
     uint8 GenerateModelId(uint32* des)
     {
         uint32 models[] = { Male_DisplayID, Male_DisplayID2, Female_DisplayID, Female_DisplayID2 };
-        if(!models[0] && !models[1] && !models[2] && !models[3])
+        if (!models[0] && !models[1] && !models[2] && !models[3])
         {
             // All models are invalid.
             Log.Notice("CreatureSpawn", "All model IDs are invalid for creature %u", Id);
@@ -128,7 +128,7 @@ struct CreatureInfo
         while(true)
         {
             uint32 res = RandomUInt(3);
-            if(models[res])
+            if (models[res])
             {
                 *des = models[res];
                 return res < 2 ? 0 : 1;
@@ -362,7 +362,7 @@ class CreatureAIScript;
 class GossipScript;
 class AuctionHouse;
 struct Trainer;
-#define CALL_SCRIPT_EVENT(obj, func) if(obj->IsInWorld() && obj->IsCreature() && TO<Creature*>(obj)->GetScript() != NULL) TO<Creature*>(obj)->GetScript()->func
+#define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->IsCreature() && TO<Creature*>(obj)->GetScript() != NULL) TO<Creature*>(obj)->GetScript()->func
 
 
 uint8 get_byte(uint32 buffer, uint32 index);
@@ -380,7 +380,8 @@ class SERVER_DECL Creature : public Unit
         GameEvent* mEvent = nullptr;
         
         /// For derived subclasses of Creature
-        bool IsVehicle(){
+        bool IsVehicle()
+        {
             if (proto->vehicleid != 0)
                 return true;
             else
@@ -431,7 +432,7 @@ class SERVER_DECL Creature : public Unit
         int32 GetSlotByItemId(uint32 itemid)
         {
             uint32 slot = 0;
-            for(std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+            for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
             {
                 if (itr->itemid == itemid)
                     return slot;
@@ -443,7 +444,7 @@ class SERVER_DECL Creature : public Unit
 
         uint32 GetItemAmountByItemId(uint32 itemid)
         {
-            for(std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+            for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
             {
                 if (itr->itemid == itemid)
                     return ((itr->amount < 1) ? 1 : itr->amount);
@@ -475,7 +476,7 @@ class SERVER_DECL Creature : public Unit
 
         ItemExtendedCostEntry* GetItemExtendedCostByItemId(uint32 itemid)
         {
-            for(std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+            for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
             {
                 if (itr->itemid == itemid)
                     return itr->extended_cost;
@@ -505,10 +506,10 @@ class SERVER_DECL Creature : public Unit
         bool HasQuests() { return m_quests != NULL; };
         bool HasQuest(uint32 id, uint32 type)
         {
-            if(!m_quests) return false;
-            for(std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+            if (!m_quests) return false;
+            for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
             {
-                if((*itr)->qst->id == id && (*itr)->type & type)
+                if ((*itr)->qst->id == id && (*itr)->type & type)
                     return true;
             }
             return false;
@@ -576,7 +577,7 @@ class SERVER_DECL Creature : public Unit
                     return false;
             }
 
-            if (obj->IsStealth())       /// Stealth Detection (  I Hate Rogues :P  )
+            if (obj->IsStealth())       /// Stealth Detection ( I Hate Rogues :P )
             {
                 if (isInFront(obj))     /// stealthed player is in front of creature
                 {
@@ -693,7 +694,7 @@ class SERVER_DECL Creature : public Unit
 
         ARCEMU_INLINE bool IsExotic()
         {
-            if((GetCreatureInfo()->Flags1 & CREATURE_FLAG1_EXOTIC) != 0)
+            if ((GetCreatureInfo()->Flags1 & CREATURE_FLAG1_EXOTIC) != 0)
                 return true;
 
             return false;

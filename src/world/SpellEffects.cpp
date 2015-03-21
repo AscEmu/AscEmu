@@ -493,7 +493,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
             if (!u_caster || !u_caster->IsPet())
                 return;
 
-            //TO< Pet* >(u_caster)->Dismiss( true );
+            //TO< Pet* >(u_caster)->Dismiss(true);
 
             SpellEntry* se = dbcSpell.LookupEntry(5);
             if (TO< Pet* >(u_caster)->GetPetOwner() == NULL)
@@ -510,7 +510,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
             if (!p_caster || !unitTarget || !unitTarget->IsPet())
                 return;
 
-            //TO< Pet* >(unitTarget)->Dismiss( true );
+            //TO< Pet* >(unitTarget)->Dismiss(true);
 
             SpellEntry* se = dbcSpell.LookupEntry(5);
 
@@ -1121,7 +1121,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
         return;
 
-    LOG_ERROR("Spell ID: %u ( %s ) has a dummy effect ( %u ) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
+    LOG_ERROR("Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
 }
 
 void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
@@ -1138,7 +1138,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
 
     if (m_spellInfo->EffectCustomFlag == 0)
     {
-        LOG_ERROR("Spell %u ( %s ) has a teleport effect, but has no teleport flag.", spellId, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a teleport effect, but has no teleport flag.", spellId, m_spellInfo->Name);
         return;
     }
 
@@ -1149,7 +1149,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
 
         if (TC == NULL)
         {
-            LOG_ERROR("Spell %u ( %s ) has a TELEPORT TO COORDINATES effect, but has no coordinates to teleport to. ", spellId, m_spellInfo->Name);
+            LOG_ERROR("Spell %u (%s) has a TELEPORT TO COORDINATES effect, but has no coordinates to teleport to. ", spellId, m_spellInfo->Name);
             return;
         }
 
@@ -1238,7 +1238,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
         return;
 
-    LOG_ERROR("Unhandled Teleport effect %u for Spell %u ( %s ).", i, m_spellInfo->Id, m_spellInfo->Name);
+    LOG_ERROR("Unhandled Teleport effect %u for Spell %u (%s).", i, m_spellInfo->Id, m_spellInfo->Name);
 }
 
 void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
@@ -1386,7 +1386,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
 #ifdef GM_Z_DEBUG_DIRECTLY
     else
     {
-        if(unitTarget->IsPlayer() && unitTarget->IsInWorld() && TO< Player* >(unitTarget)->GetSession() && TO< Player* >(unitTarget)->GetSession()->CanUseCommand('z'))
+        if (unitTarget->IsPlayer() && unitTarget->IsInWorld() && TO< Player* >(unitTarget)->GetSession() && TO< Player* >(unitTarget)->GetSession()->CanUseCommand('z'))
         {
             sChatHandler.BlueSystemMessage(TO< Player* >(unitTarget)->GetSession(), "[%sSystem%s] |rSpell::SpellEffectApplyAura: %s EffectApplyAuraName [%u] .", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE,
                                            i);
@@ -1855,7 +1855,7 @@ void Spell::SpellEffectDodge(uint32 i)
     //i think this actually enables the skill to be able to dodge melee+ranged attacks
     //value is static and sets value directly which will be modified by other factors
     //this is only basic value and will be overwritten elsewhere !!!
-    //  if(unitTarget->IsPlayer())
+    //  if (unitTarget->IsPlayer())
     //      unitTarget->SetFloatValue(PLAYER_DODGE_PERCENTAGE,damage);
 }
 
@@ -1869,7 +1869,7 @@ void Spell::SpellEffectBlock(uint32 i)
 {
     //i think this actually enables the skill to be able to block melee+ranged attacks
     //value is static and sets value directly which will be modified by other factors
-    //  if(unitTarget->IsPlayer())
+    //  if (unitTarget->IsPlayer())
     //      unitTarget->SetFloatValue(PLAYER_BLOCK_PERCENTAGE,damage);
 }
 
@@ -1879,7 +1879,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     if (playerTarget == NULL)
     {
-        LOG_ERROR("Spell %u ( %s ) has a create item effect but no player target!", spellid, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a create item effect but no player target!", spellid, m_spellInfo->Name);
         return;
     }
 
@@ -1891,14 +1891,14 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     if (itemid == 0)
     {
-        LOG_ERROR("Spell %u ( %s ) has a create item effect but no itemid to add, Spell needs to be fixed!", spellid, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a create item effect but no itemid to add, Spell needs to be fixed!", spellid, m_spellInfo->Name);
         return;
     }
 
     ItemPrototype* m_itemProto = ItemPrototypeStorage.LookupEntry(itemid);
     if (m_itemProto == NULL)
     {
-        LOG_ERROR("Spell %u ( %s ) has a create item effect but the itemid is invalid!", spellid, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a create item effect but the itemid is invalid!", spellid, m_spellInfo->Name);
         return;
     }
 
@@ -1930,7 +1930,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     if (count <= 0)
     {
-        LOG_ERROR("Spell %u ( %s ) has a create item effect but no item count to add, Spell needs to be fixed! Count overriden to 1.", spellid, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a create item effect but no item count to add, Spell needs to be fixed! Count overriden to 1.", spellid, m_spellInfo->Name);
         count = 1;
     }
 
@@ -2064,7 +2064,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
                 }
                 else
                 {
-                    LOG_ERROR("Spell %u ( %s ) Effect %u tried to teach a non-existing Spell %u in %s:%u", spellid, m_spellInfo->Name, i, learn_spell, __FILE__, __LINE__);
+                    LOG_ERROR("Spell %u (%s) Effect %u tried to teach a non-existing Spell %u in %s:%u", spellid, m_spellInfo->Name, i, learn_spell, __FILE__, __LINE__);
                 }
             }
         }
@@ -2103,7 +2103,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
                 }
                 else
                 {
-                    LOG_ERROR("Spell %u ( %s ) Effect %u tried to teach a non-existing Spell %u in %s:%u", spellid, m_spellInfo->Name, i, learn_spell, __FILE__, __LINE__);
+                    LOG_ERROR("Spell %u (%s) Effect %u tried to teach a non-existing Spell %u in %s:%u", spellid, m_spellInfo->Name, i, learn_spell, __FILE__, __LINE__);
                 }
             }
         }
@@ -2242,7 +2242,7 @@ void Spell::SpellEffectDefense(uint32 i)
     //i think this actually enables the skill to be able to use defense
     //value is static and sets value directly which will be modified by other factors
     //this is only basic value and will be overwritten elsewhere !!!
-    //  if(unitTarget->IsPlayer())
+    //  if (unitTarget->IsPlayer())
     //      unitTarget->SetFloatValue(UNIT_FIELD_RESISTANCES,damage);
 }
 
@@ -2341,7 +2341,7 @@ void Spell::SpellEffectSummon(uint32 i)
     SummonPropertiesEntry* spe = dbcSummonProperties.LookupEntry(summonpropid);
     if (spe == NULL)
     {
-        LOG_ERROR("No SummonPropertiesEntry for Spell %u ( %s )", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("No SummonPropertiesEntry for Spell %u (%s)", m_spellInfo->Id, m_spellInfo->Name);
         return;
     }
 
@@ -2352,7 +2352,7 @@ void Spell::SpellEffectSummon(uint32 i)
 
     if ((ci == NULL) || (cp == NULL))
     {
-        LOG_ERROR("Spell %u ( %s ) tried to summon creature %u without database data", m_spellInfo->Id, m_spellInfo->Name, entry);
+        LOG_ERROR("Spell %u (%s) tried to summon creature %u without database data", m_spellInfo->Id, m_spellInfo->Name, entry);
         return;
     }
 
@@ -2651,7 +2651,8 @@ void Spell::SpellEffectSummonCompanion(uint32 i, SummonPropertiesEntry* spe, Cre
     u_caster->SetSummonedCritterGUID(s->GetGUID());
 }
 
-void Spell::SpellEffectSummonVehicle(uint32 i, SummonPropertiesEntry *spe, CreatureProto *proto, LocationVector &v){
+void Spell::SpellEffectSummonVehicle(uint32 i, SummonPropertiesEntry *spe, CreatureProto *proto, LocationVector &v)
+{
     if (u_caster == NULL)
         return;
 
@@ -2659,7 +2660,7 @@ void Spell::SpellEffectSummonVehicle(uint32 i, SummonPropertiesEntry *spe, Creat
     if ((proto->vehicleid == 0) && (p_caster == NULL) && (!p_caster->GetSession()->HasGMPermissions()))
         return;
 
-    Creature *c = u_caster->GetMapMgr()->CreateCreature(proto->Id);
+    Creature* c = u_caster->GetMapMgr()->CreateCreature(proto->Id);
     c->Load(proto, v.x, v.y, v.z, v.o);
     c->Phase(PHASE_SET, u_caster->GetPhase());
     c->SetCreatedBySpell(m_spellInfo->Id);
@@ -2821,14 +2822,14 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
     uint32 spellid = GetProto()->EffectTriggerSpell[i];
     if (spellid == 0)
     {
-        LOG_ERROR("Spell %u ( %s ) has a trigger missle effect ( %u ) but no trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name, i);
+        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but no trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name, i);
         return;
     }
 
     SpellEntry* spInfo = dbcSpell.LookupEntryForced(spellid);
     if (spInfo == NULL)
     {
-        LOG_ERROR("Spell %u ( %s ) has a trigger missle effect ( %u ) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name, i);
+        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name, i);
         return;
     }
 
@@ -3150,7 +3151,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
 
     if (playerTarget)
     {
-        /*if(u_caster && isHostile(playerTarget, u_caster))
+        /*if (u_caster && isHostile(playerTarget, u_caster))
         return;*/
 
         uint32 spellToLearn = GetProto()->EffectTriggerSpell[i];
@@ -3331,11 +3332,11 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
                         targets.m_unitTarget = u_caster->GetGUID();
                         spell->prepare(&targets);
                     }
-                    /*else if ( aur->GetSpellProto()->NameHash == SPELL_HASH_LIFEBLOOM )
+                    /*else if (aur->GetSpellProto()->NameHash == SPELL_HASH_LIFEBLOOM)
                     {
                     Spell* spell= sSpellFactoryMgr.NewSpell(aur->GetCaster(), aur->GetSpellProto(), true, NULL);
-                    spell->SetUnitTarget( unitTarget );
-                    spell->Heal( aur->mod->m_amount );
+                    spell->SetUnitTarget(unitTarget);
+                    spell->Heal(aur->mod->m_amount);
                     }*/
                 }
             }
@@ -3457,7 +3458,7 @@ void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
     else
     {
         // Don't add skills to players logging in.
-        /*if((GetProto()->Attributes & 64) && playerTarget->m_TeleportState == 1)
+        /*if ((GetProto()->Attributes & 64) && playerTarget->m_TeleportState == 1)
         return;*/
 
         if (sk->type == SKILL_TYPE_PROFESSION)
@@ -3632,7 +3633,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
         {
             if (!p_caster) return;
 
-            //Player * pTarget = p_caster->GetMapMgr()->GetPlayer( p_caster->GetSelection() );
+            //Player*  pTarget = p_caster->GetMapMgr()->GetPlayer(p_caster->GetSelection());
             Player* pTarget = objmgr.GetPlayer((uint32)p_caster->GetSelection());
             if (!pTarget || !pTarget->IsInWorld())
                 return;
@@ -3727,13 +3728,13 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
 
     if (Duration == 0)
     {
-        LOG_ERROR("Spell %u ( %s ) has no enchantment duration. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has no enchantment duration. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name);
         return;
     }
 
     if (EnchantmentID == 0)
     {
-        LOG_ERROR("Spell %u ( %s ) has no enchantment ID. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has no enchantment ID. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name);
         return;
     }
 
@@ -3838,9 +3839,9 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
 
 void Spell::SpellEffectLearnPetSpell(uint32 i)
 {
-    /*if(unitTarget && m_caster->GetTypeId() == TYPEID_PLAYER)
+    /*if (unitTarget && m_caster->GetTypeId() == TYPEID_PLAYER)
     {
-    if(unitTarget->IsPet() && unitTarget->GetTypeId() == TYPEID_UNIT)
+    if (unitTarget->IsPet() && unitTarget->GetTypeId() == TYPEID_UNIT)
     {
     TO< Player* >(m_caster)->AddPetSpell(GetProto()->EffectTriggerSpell[i], unitTarget->GetEntry());
     }
@@ -3916,7 +3917,7 @@ void Spell::SpellEffectProficiency(uint32 i)
             else
             {
                 // Don't add skills to players logging in.
-                /*if((GetProto()->Attributes & 64) && playerTarget->m_TeleportState == 1)
+                /*if ((GetProto()->Attributes & 64) && playerTarget->m_TeleportState == 1)
                 return;*/
 
                 if (sk && sk->type == SKILL_TYPE_WEAPON)
@@ -3938,7 +3939,7 @@ void Spell::SpellEffectSendEvent(uint32 i) //Send Event
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->Id, i, this))
         return;
 
-    LOG_ERROR("Spell ID: %u ( %s ) has a scripted effect ( %u ) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
+    LOG_ERROR("Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
 
 }
 
@@ -3958,7 +3959,7 @@ void Spell::SpellEffectPowerBurn(uint32 i) // power burn
     }
     int32 mult = damage;
     damage = mult * unitTarget->GetMaxPower(POWER_TYPE_MANA) / 100;
-    if (m_caster->IsUnit())  //Spell ctor has ASSERT( m_caster != NULL ) so there's no need to add NULL checks, even if static analysis reports them.
+    if (m_caster->IsUnit())  //Spell ctor has ASSERT(m_caster != NULL) so there's no need to add NULL checks, even if static analysis reports them.
     {
         Unit* caster = TO< Unit* >(m_caster);
         if ((uint32)damage > caster->GetMaxPower(POWER_TYPE_MANA) * (mult * 2) / 100)
@@ -3993,7 +3994,7 @@ void Spell::SpellEffectClearQuest(uint32 i)
 {
     if (playerTarget == NULL)
     {
-        LOG_ERROR("Spell %u ( %s ) was not casted on Player, but Spell requires Player to be a target.", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) was not casted on Player, but Spell requires Player to be a target.", m_spellInfo->Id, m_spellInfo->Name);
         return;
     }
 
@@ -4068,7 +4069,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
         }
     }
 
-    Spell *TargetSpell = unitTarget->GetCurrentSpell(); // Get target's casting spell
+    Spell* TargetSpell = unitTarget->GetCurrentSpell(); // Get target's casting spell
     if (TargetSpell)
     {
         uint32 school = TargetSpell->GetProto()->School; // Get target's casting spell school
@@ -4162,7 +4163,7 @@ void Spell::SpellEffectAddFarsight(uint32 i) // Add Farsight
     dynObj->Create(u_caster, this, x, y, z, GetDuration(), GetRadius(i));
 
     /*
-    if( dynObj == NULL ) //i <3 burlex :P
+    if (dynObj == NULL) //i <3 burlex :P
     {
     delete dynObj;
     return;
@@ -4258,7 +4259,7 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->Id, i, this))
         return;
 
-    LOG_ERROR("Spell ID: %u ( %s ) has a scripted effect ( %u ) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
+    LOG_ERROR("Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
 }
 
 void Spell::SpellEffectSanctuary(uint32 i) // Stop all attacks made to you
@@ -4322,7 +4323,7 @@ void Spell::SpellEffectDuel(uint32 i) // Duel
         return;
 
     /* not implemented yet
-    \todo dueling zones ? ( SPELL_FAILED_NO_DUELING )
+    \todo dueling zones ? (SPELL_FAILED_NO_DUELING)
     if (player->IsInvisible())
     {
     SendCastResult(SPELL_FAILED_CANT_DUEL_WHILE_INVISIBLE);
@@ -4330,7 +4331,7 @@ void Spell::SpellEffectDuel(uint32 i) // Duel
     }
     */
 
-    //Player *pTarget = sObjHolder.GetObject<Player>(player->GetSelection());      //  hacky.. and will screw up if plr is deselected..
+    //Player* pTarget = sObjHolder.GetObject<Player>(player->GetSelection());      //  hacky.. and will screw up if plr is deselected..
     if (!playerTarget)
     {
         SendCastResult(SPELL_FAILED_BAD_TARGETS);
@@ -4371,7 +4372,7 @@ void Spell::SpellEffectSummonPlayer(uint32 i)
     if (!playerTarget) return;
 
     // vojta: from 2.4 players can be summoned on another map
-    //if( m_caster->GetMapMgr()->GetMapInfo() && m_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL && m_caster->GetMapId() != playerTarget->GetMapId())
+    //if (m_caster->GetMapMgr()->GetMapInfo() && m_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL && m_caster->GetMapId() != playerTarget->GetMapId())
     //  return;
     if (m_caster->GetMapMgr()->GetMapInfo() && playerTarget->getLevel() < m_caster->GetMapMgr()->GetMapInfo()->minlevel)    // we need some blizzlike message that player needs level xx - feel free to add it ;)
         return;
@@ -4386,7 +4387,7 @@ void Spell::SpellEffectActivateObject(uint32 i) // Activate Object
 
     if (!gameObjTarget)
     {
-        LOG_ERROR("Spell %u ( %s ) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name, i);
+        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name, i);
         return;
     }
 
@@ -4397,7 +4398,8 @@ void Spell::SpellEffectActivateObject(uint32 i) // Activate Object
 }
 
 
-void Spell::SpellEffectBuildingDamage(uint32 i){
+void Spell::SpellEffectBuildingDamage(uint32 i)
+{
     if (gameObjTarget == NULL)
         return;
 
@@ -4408,7 +4410,7 @@ void Spell::SpellEffectBuildingDamage(uint32 i){
         return;
 
     uint32 damage = m_spellInfo->EffectBasePoints[i] + 1;
-    Unit *controller = NULL;
+    Unit* controller = NULL;
 
     if (u_caster->GetVehicleComponent() != NULL)
         controller = u_caster->GetMapMgr()->GetUnit(u_caster->GetCharmedByGUID());
@@ -4451,7 +4453,7 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
     }
 
     /* Windfury Totem removed in 3.0.2
-    if (m_spellInfo->NameHash == SPELL_HASH_WINDFURY_TOTEM_EFFECT && item->HasEnchantmentOnSlot( 1 ) && item->GetEnchantment( 1 )->Enchantment != Enchantment) //dirty fix for Windfury totem not overwriting existing enchantments
+    if (m_spellInfo->NameHash == SPELL_HASH_WINDFURY_TOTEM_EFFECT && item->HasEnchantmentOnSlot(1) && item->GetEnchantment(1)->Enchantment != Enchantment) //dirty fix for Windfury totem not overwriting existing enchantments
     return;
     */
 
@@ -4782,11 +4784,11 @@ void Spell::SpellEffectDispelMechanic(uint32 i)
     /* this was already working before...
     uint32 sMisc = GetProto()->EffectMiscValue[i];
 
-    for( uint32 x = 0 ; x<MAX_AURAS ; x++ )
+    for (uint32 x = 0 ; x<MAX_AURAS ; x++)
     {
-    if( unitTarget->m_auras[x] && !unitTarget->m_auras[x]->IsPositive())
+    if (unitTarget->m_auras[x] && !unitTarget->m_auras[x]->IsPositive())
     {
-    if( unitTarget->m_auras[x]->GetSpellProto()->MechanicsType == sMisc )
+    if (unitTarget->m_auras[x]->GetSpellProto()->MechanicsType == sMisc)
     unitTarget->m_auras[x]->Remove();
     }
     }
@@ -4795,7 +4797,7 @@ void Spell::SpellEffectDispelMechanic(uint32 i)
 
     /*Shady: if it's about Daze spell - dismount should be done by RemoveAllAurasByMechanic.
     We don't need useless code or hackfixes here, so commented.*/
-    //if( playerTarget && GetProto()->NameHash == SPELL_HASH_DAZED && playerTarget->IsMounted() )
+    //if (playerTarget && GetProto()->NameHash == SPELL_HASH_DAZED && playerTarget->IsMounted())
     //  playerTarget->RemoveAura(playerTarget->m_MountSpellId);
 }
 
@@ -5302,7 +5304,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
 
             if (aursp->Id != 15007 && !aur->IsPassive()
                 //              && aur->IsPositive()    // Zack : We are only checking positive auras. There is no meaning to check again
-                ) //Nothing can dispel resurrection sickness
+               ) //Nothing can dispel resurrection sickness
             {
                 if (aursp->DispelType == DISPEL_MAGIC)
                 {
@@ -5419,7 +5421,7 @@ void Spell::SpellEffectPlayMusic(uint32 i)
 
     if (soundid == 0)
     {
-        LOG_ERROR("Spell %u ( %s ) has no sound ID to play. Spell needs fixing!", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has no sound ID to play. Spell needs fixing!", m_spellInfo->Id, m_spellInfo->Name);
         return;
     }
 
@@ -5433,7 +5435,7 @@ void Spell::SpellEffectForgetSpecialization(uint32 i)
     uint32 spellid = GetProto()->EffectTriggerSpell[i];
     playerTarget->removeSpell(spellid, false, false, 0);
 
-    LOG_DEBUG("Player %u have forgot spell %u from spell %u ( caster: %u)", playerTarget->GetLowGUID(), spellid, GetProto()->Id, m_caster->GetLowGUID());
+    LOG_DEBUG("Player %u have forgot spell %u from spell %u (caster: %u)", playerTarget->GetLowGUID(), spellid, GetProto()->Id, m_caster->GetLowGUID());
 }
 
 void Spell::SpellEffectKillCredit(uint32 i)

@@ -47,8 +47,8 @@ class SERVER_DECL WorldSocket : public Socket
         ~WorldSocket();
 
         // vs8 fix - send null on empty buffer
-        ARCEMU_INLINE void SendPacket(WorldPacket* packet) { if(!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
-        ARCEMU_INLINE void SendPacket(StackBufferBase* packet) { if(!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
+        ARCEMU_INLINE void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
+        ARCEMU_INLINE void SendPacket(StackBufferBase* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
 
         void  OutPacket(uint16 opcode, size_t len, const void* data);
         OUTPACKET_RESULT  _OutPacket(uint16 opcode, size_t len, const void* data);
@@ -107,49 +107,49 @@ static inline void FastGUIDPack(ByteBuffer & buf, const uint64 & oldguid)
     int j = 1;
     uint8* test = (uint8*)&oldguid;
 
-    if(*test)  //7*8
+    if (*test)  //7*8
     {
         guidfields[j] = *test;
         guidmask |= 1;
         j++;
     }
-    if(*(test + 1)) //6*8
+    if (*(test + 1)) //6*8
     {
         guidfields[j] = *(test + 1);
         guidmask |= 2;
         j++;
     }
-    if(*(test + 2)) //5*8
+    if (*(test + 2)) //5*8
     {
         guidfields[j] = *(test + 2);
         guidmask |= 4;
         j++;
     }
-    if(*(test + 3)) //4*8
+    if (*(test + 3)) //4*8
     {
         guidfields[j] = *(test + 3);
         guidmask |= 8;
         j++;
     }
-    if(*(test + 4)) //3*8
+    if (*(test + 4)) //3*8
     {
         guidfields[j] = *(test + 4);
         guidmask |= 16;
         j++;
     }
-    if(*(test + 5)) //2*8
+    if (*(test + 5)) //2*8
     {
         guidfields[j] = *(test + 5);
         guidmask |= 32;
         j++;
     }
-    if(*(test + 6)) //1*8
+    if (*(test + 6)) //1*8
     {
         guidfields[j] = *(test + 6);
         guidmask |= 64;
         j++;
     }
-    if(*(test + 7)) //0*8
+    if (*(test + 7)) //0*8
     {
         guidfields[j] = *(test + 7);
         guidmask |= 128;
@@ -171,49 +171,49 @@ static inline unsigned int FastGUIDPack(const uint64 & oldguid, unsigned char* b
 
     uint8* test = (uint8*)&oldguid;
 
-    if(*test)  //7*8
+    if (*test)  //7*8
     {
         buffer[j] = *test;
         guidmask |= 1;
         j++;
     }
-    if(*(test + 1)) //6*8
+    if (*(test + 1)) //6*8
     {
         buffer[j] = *(test + 1);
         guidmask |= 2;
         j++;
     }
-    if(*(test + 2)) //5*8
+    if (*(test + 2)) //5*8
     {
         buffer[j] = *(test + 2);
         guidmask |= 4;
         j++;
     }
-    if(*(test + 3)) //4*8
+    if (*(test + 3)) //4*8
     {
         buffer[j] = *(test + 3);
         guidmask |= 8;
         j++;
     }
-    if(*(test + 4)) //3*8
+    if (*(test + 4)) //3*8
     {
         buffer[j] = *(test + 4);
         guidmask |= 16;
         j++;
     }
-    if(*(test + 5)) //2*8
+    if (*(test + 5)) //2*8
     {
         buffer[j] = *(test + 5);
         guidmask |= 32;
         j++;
     }
-    if(*(test + 6)) //1*8
+    if (*(test + 6)) //1*8
     {
         buffer[j] = *(test + 6);
         guidmask |= 64;
         j++;
     }
-    if(*(test + 7)) //0*8
+    if (*(test + 7)) //0*8
     {
         buffer[j] = *(test + 7);
         guidmask |= 128;

@@ -197,7 +197,7 @@ class SERVER_DECL Vehicle
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Adds the passenger to the specified seat if possible
         ///
-        /// \param Unit *passenger  -  Pointer to the passenger we want to add
+        /// \param Unit* passenger  -  Pointer to the passenger we want to add
         /// \param uint32 seatid    -  The id of the seat we want the passenger to be added
         ///
         /// \return none
@@ -208,7 +208,7 @@ class SERVER_DECL Vehicle
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Remove the passenger from the vehicle
         ///
-        /// \param Unit *passenger  -  Passenger to remove.
+        /// \param Unit* passenger  -  Passenger to remove.
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
         void EjectPassenger(Unit* passenger);
@@ -235,7 +235,7 @@ class SERVER_DECL Vehicle
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Moves the passenger to the specified seat
         ///
-        /// \param Unit *passenger  -  The passenger we want to move
+        /// \param Unit* passenger  -  The passenger we want to move
         /// \param uint32 seat      -  The seat where we want to move this passenger to
         ///
         /// \return none
@@ -320,7 +320,7 @@ class SERVER_DECL Vehicle
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// Installs all accessories for this vehicle ( turrets for example )
+        /// Installs all accessories for this vehicle (turrets for example)
         ///
         /// \param none
         /// \return none

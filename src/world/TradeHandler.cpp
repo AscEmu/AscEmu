@@ -363,10 +363,10 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
         Player* pTarget = plr;
 
         /*        // Calculate Item Count
-                for(uint32 Index = 0; Index < 7; ++Index)
+                for (uint32 Index = 0; Index < 7; ++Index)
                 {
-                if(_player->mTradeItems[Index] != 0)    ++ItemCount;
-                if(pTarget->mTradeItems[Index] != 0)    ++TargetItemCount;
+                if (_player->mTradeItems[Index] != 0)    ++ItemCount;
+                if (pTarget->mTradeItems[Index] != 0)    ++TargetItemCount;
                 }*/
 
 
@@ -400,8 +400,8 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
                 else ++TargetItemCount;
             }
 
-            //if(_player->mTradeItems[Index] != 0)    ++ItemCount;
-            //if(pTarget->mTradeItems[Index] != 0)    ++TargetItemCount;
+            //if (_player->mTradeItems[Index] != 0)    ++ItemCount;
+            //if (pTarget->mTradeItems[Index] != 0)    ++TargetItemCount;
         }
 
         if ((_player->m_ItemInterface->CalculateFreeSlots(NULL) + ItemCount) < TargetItemCount ||

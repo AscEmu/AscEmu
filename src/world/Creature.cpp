@@ -22,12 +22,12 @@
 #include "StdAfx.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// float CalcHPCoefficient( MapInfo *mi, uint32 mode, bool boss )
+// float CalcHPCoefficient(MapInfo *mi, uint32 mode, bool boss)
 //  Returns the HP coefficient that is suited for the map, mode, and creature
 //
 // Parameters:
 //  MapInfo *mi        -        pointer to the mapinfo structure
-//    uint32  mode    -        numeric representation of the version of the map (normal, heroic, 10-25 men, etc )
+//    uint32  mode    -        numeric representation of the version of the map (normal, heroic, 10-25 men, etc)
 //    bool    boss    -        true if the creature is a boss, false if not
 //
 // Return Values:
@@ -119,12 +119,12 @@ float CalcHPCoefficient(MapInfo* mi, uint32 mode, bool boss)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// float CalcDMGCoefficient( MapInfo *mi, uint32 mode )
+// float CalcDMGCoefficient(MapInfo *mi, uint32 mode)
 //  Calculates the creature damage coefficient that is suitable for the map type and difficulty
 //
 // Parameters:
 //  MapInfo *mi        -        pointer to the MapInfo structure
-//  uint32 mode        -        numeric representation of the version of the map (normal, heroic, 10-25 men, etc )
+//  uint32 mode        -        numeric representation of the version of the map (normal, heroic, 10-25 men, etc)
 //
 // Return Value:
 //  Returns the suitable damage coefficient in a float
@@ -1194,9 +1194,9 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     SetEntry(proto->Id);
     SetScale(proto->Scale);
 
-    //SetHealth( (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+    //SetHealth((mode ? long2int32(proto->Health * 1.5)  : proto->Health));
     //SetBaseHealth((mode ? long2int32(proto->Health * 1.5)  : proto->Health));
-    //SetMaxHealth( (mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+    //SetMaxHealth((mode ? long2int32(proto->Health * 1.5)  : proto->Health));
     if (proto->MinHealth > proto->MaxHealth)
     {
         proto->MaxHealth = proto->MinHealth + 1;
@@ -1225,7 +1225,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 
     // Whee, thank you blizz, I love patch 2.2! Later on, we can randomize male/female mobs! xD
     // Determine gender (for voices)
-    //if(spawn->displayid != creature_info->Male_DisplayID)
+    //if (spawn->displayid != creature_info->Male_DisplayID)
     //    setGender(1);   // Female
 
     // uint32 model = 0;
@@ -1423,7 +1423,8 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     this->m_position.z = spawn->z;
     this->m_position.o = spawn->o;
 
-    if (IsVehicle()){
+    if (IsVehicle())
+    {
         AddVehicleComponent(proto->Id, proto->vehicleid);
         SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
@@ -1604,7 +1605,8 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
     if (m_invisFlag > 0)
         m_invisible = true;
 
-    if (IsVehicle()){
+    if (IsVehicle())
+    {
         AddVehicleComponent(proto->Id, proto->vehicleid);
         SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         setAItoUse(false);
@@ -1966,7 +1968,8 @@ void Creature::RemoveSanctuaryFlag()
     summonhandler.RemoveSanctuaryFlags();
 }
 
-void Creature::SetSpeeds(uint8 type, float speed){
+void Creature::SetSpeeds(uint8 type, float speed)
+{
     WorldPacket data(50);
 
     data << GetNewGUID();
@@ -2147,7 +2150,8 @@ void Creature::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool n
 
 void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
-    if (GetVehicleComponent() != NULL){
+    if (GetVehicleComponent() != NULL)
+    {
         GetVehicleComponent()->RemoveAccessories();
         GetVehicleComponent()->EjectAllPassengers();
     }
@@ -2496,7 +2500,7 @@ void Creature::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {
     if (vehicle != NULL)
     {
-        LOG_ERROR("Creature %u ( %s ) with GUID %u already has a vehicle component.", proto->Id, creature_info->Name, GetUIdFromGUID());
+        LOG_ERROR("Creature %u (%s) with GUID %u already has a vehicle component.", proto->Id, creature_info->Name, GetUIdFromGUID());
         return;
     }
 

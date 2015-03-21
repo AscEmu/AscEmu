@@ -179,7 +179,7 @@ class ChannelIterator
         Channel* m_target;
     public:
         ChannelIterator(Channel* target) : m_searchInProgress(false), m_target(target) {}
-        ~ChannelIterator() { if(m_searchInProgress) { EndSearch(); } }
+        ~ChannelIterator() { if (m_searchInProgress) { EndSearch(); } }
 
         void BeginSearch()
         {
@@ -211,10 +211,10 @@ class ChannelIterator
 
         void Increment()
         {
-            if(!m_searchInProgress)
+            if (!m_searchInProgress)
                 BeginSearch();
 
-            if(m_itr == m_endItr)
+            if (m_itr == m_endItr)
                 return;
 
             ++m_itr;

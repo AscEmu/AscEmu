@@ -45,12 +45,12 @@ class Summon : public Creature
         ~Summon();
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //virtual void Load( CreatureProto *proto, Unit *owner, LocationVector &position, uint32 spellid, int32 summonslot );
-        //  Loads and sets up the basic properties of the summoned creature, like displayid, health, powers ( mana and co. )
+        //virtual void Load(CreatureProto *proto, Unit* owner, LocationVector &position, uint32 spellid, int32 summonslot);
+        //  Loads and sets up the basic properties of the summoned creature, like displayid, health, powers (mana and co.)
         //
         //Parameter(s)
-        //  CreatureProto *proto      -   Reference to the CreatureProto structure that belongs to this creature ( basically a template )
-        //  Unit *owner               -   Owner unit of this Creature, usually the unit that summoned it, or the unit that summoned the summoner
+        //  CreatureProto *proto      -   Reference to the CreatureProto structure that belongs to this creature (basically a template)
+        //  Unit* owner               -   Owner unit of this Creature, usually the unit that summoned it, or the unit that summoned the summoner
         //  LocationVector &position  -   Position of the summoned creature in the game world
         //  uint32 spellid            -   The spell that summoned this creature
         //  int32 summonslot          -   The summon slot of the creature, -1 means no slot
@@ -71,7 +71,7 @@ class Summon : public Creature
 
         bool SummonedToSlot()
         {
-            if(summonslot != -1)
+            if (summonslot != -1)
                 return true;
             else
                 return false;

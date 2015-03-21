@@ -480,7 +480,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             chn = channelmgr.GetChannel(channel.c_str(), GetPlayer());
             if (chn)
             {
-                //g_chatFilter->ParseEscapeCodes((char*)pMsg, (chn->m_flags & CHANNEL_PACKET_ALLOWLINKS)>0 );
+                //g_chatFilter->ParseEscapeCodes((char*)pMsg, (chn->m_flags & CHANNEL_PACKET_ALLOWLINKS)>0);
                 chn->Say(GetPlayer(), msg.c_str(), NULL, false);
             }
         }

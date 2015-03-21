@@ -52,7 +52,8 @@ class JuggernautSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(JuggernautSpellProc);
 
-    bool CanProc(Unit* victim, SpellEntry* CastingSpell){
+    bool CanProc(Unit* victim, SpellEntry* CastingSpell)
+    {
         if (CastingSpell == NULL)
             return false;
 

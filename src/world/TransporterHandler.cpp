@@ -570,7 +570,7 @@ void Transporter::MovePassengers(float x, float y, float z, float o)
 
     for (PassengerMap::iterator itr = mPassengers.begin(); itr != mPassengers.end(); ++itr)
     {
-        Player *p = itr->second;
+        Player* p = itr->second;
         p->SetPosition(x + p->transporter_info.x, y + p->transporter_info.y, z + p->transporter_info.z, o + p->transporter_info.o, false);
     }
 

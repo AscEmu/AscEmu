@@ -124,13 +124,13 @@ bool ChatHandler::HandleMoveInfoCommand(const char* args, WorldSession* m_sessio
     uint32 attackerscount = (uint32)TO< Creature* >(obj)->GetAIInterface()->getAITargetsCount();
     uint32 creatureState = TO< Creature* >(obj)->GetAIInterface()->m_creatureState;
     uint32 curwp = TO< Creature* >(obj)->GetAIInterface()->getCurrentWaypoint();
-    //    Unit* unitToFollow = ((Creature *)obj)->GetAIInterface()->getUnitToFollow();
+    //    Unit* unitToFollow = ((Creature* )obj)->GetAIInterface()->getUnitToFollow();
     uint32 aistate = TO< Creature* >(obj)->GetAIInterface()->getAIState();
     uint32 aitype = TO< Creature* >(obj)->GetAIInterface()->getAIType();
     uint32 aiagent = TO< Creature* >(obj)->GetAIInterface()->getCurrentAgent();
     uint32 lowfollow = 0;
     uint32 highfollow = 0;
-    /*if(unitToFollow == NULL)
+    /*if (unitToFollow == NULL)
     {
     lowfollow = 0;
     highfollow = 0;
@@ -152,7 +152,7 @@ bool ChatHandler::HandleMoveInfoCommand(const char* args, WorldSession* m_sessio
 
     SendMultilineMessage(m_session, sstext.str().c_str());
     //FillSystemMessageData(&data, sstext.str().c_str());
-    //m_session->SendPacket( &data );
+    //m_session->SendPacket(&data);
 
     return true;
 }
@@ -292,7 +292,7 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
     obj->SetPosition(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), theOrientation, false);
 
     /*
-    data.Initialize( SMSG_MONSTER_MOVE );
+    data.Initialize(SMSG_MONSTER_MOVE);
     data << obj->GetGUID();
     data << obj->GetPositionX() << obj->GetPositionY() << obj->GetPositionZ() << obj->GetOrientation();
     data << uint8(1);
@@ -306,13 +306,13 @@ bool ChatHandler::HandleFaceCommand(const char* args, WorldSession* m_session)
 
     // update movment for others
     //obj->BuildMovementUpdateBlock(&upd,0);
-    //upd.BuildPacket( &data );
-    //GetSession()->SendPacket( &packet );
+    //upd.BuildPacket(&data);
+    //GetSession()->SendPacket(&packet);
     //obj->BuildMovementUpdateBlock(data,0)
     //obj->SendMessageToSet(&data,false);
     LOG_DEBUG("facing sent");
     return true;
-    //((Creature *)obj)->AI_MoveTo(obj->GetPositionX()+0.1,obj->GetPositionY()+0.1,obj->GetPositionZ()+0.1,theOrientation);
+    //((Creature* )obj)->AI_MoveTo(obj->GetPositionX()+0.1,obj->GetPositionY()+0.1,obj->GetPositionZ()+0.1,theOrientation);
 }
 /*
 
@@ -327,10 +327,10 @@ if (guid != 0)
 obj = (Object*)objmgr.GetCreature(guid);
 }
 
-if(obj == NULL)
+if (obj == NULL)
 {
 FillSystemMessageData(&data, "You should select a creature.");
-m_session->SendPacket( &data );
+m_session->SendPacket(&data);
 return true;
 }
 
@@ -360,18 +360,18 @@ char* pToFrom = strtok(NULL, " ");
 if (pToFrom)
 ToFrom  = atoi(pToFrom);
 
-float fromX = ((Creature *)obj)->GetPositionX();
-float fromY = ((Creature *)obj)->GetPositionY();
-float fromZ = ((Creature *)obj)->GetPositionZ();
-float fromO = ((Creature *)obj)->GetOrientation();
+float fromX = ((Creature* )obj)->GetPositionX();
+float fromY = ((Creature* )obj)->GetPositionY();
+float fromZ = ((Creature* )obj)->GetPositionZ();
+float fromO = ((Creature* )obj)->GetOrientation();
 float toX = m_session->GetPlayer()->GetPositionX();
 float toY = m_session->GetPlayer()->GetPositionY();
 float toZ = m_session->GetPlayer()->GetPositionZ();
 float toO = m_session->GetPlayer()->GetOrientation();
 
-float distance = ((Creature *)obj)->CalcDistance((Object *)m_session->GetPlayer());
+float distance = ((Creature* )obj)->CalcDistance((Object *)m_session->GetPlayer());
 uint32 moveSpeed = 0;
-if(!Run)
+if (!Run)
 {
 moveSpeed = 2.5f*0.001f;
 }
@@ -381,9 +381,9 @@ moveSpeed = 7.0f*0.001f;
 }
 uint32 moveTime = (uint32) (distance / moveSpeed);
 
-data.Initialize( SMSG_MONSTER_MOVE );
+data.Initialize(SMSG_MONSTER_MOVE);
 data << guid;
-if(ToFrom)
+if (ToFrom)
 {
 data << toX << toY << toZ << toO;
 }
@@ -392,15 +392,15 @@ else
 data << fromX << fromY << fromZ << fromO;
 }
 data << uint8(Value1);
-if(Value1 != 1)
+if (Value1 != 1)
 {
 data << uint32(Run ? 0x00000100 : 0x00000000);
 data << moveTime;
 data << Value2;
-if(ToFrom)
+if (ToFrom)
 {
 data << fromX << fromY << fromZ;
-if(Value2 > 1)
+if (Value2 > 1)
 {
 data << fromO;
 }
@@ -408,22 +408,22 @@ data << fromO;
 else
 {
 data << toX << toY << toZ;
-if(Value2 > 1)
+if (Value2 > 1)
 {
 data << toO;
 }
 
 }
-if(Value2 > 2)
+if (Value2 > 2)
 {
 data << Value3;
 }
 }
-//((Creature *)obj)->m_m_timeToMove = moveTime;
+//((Creature* )obj)->m_m_timeToMove = moveTime;
 //m_moveTimer =  UNIT_MOVEMENT_INTERPOLATE_INTERVAL; // update every few msecs
 
 //    m_creatureState = MOVING;
-((Creature *)obj)->SendMessageToSet( &data, false );
+((Creature* )obj)->SendMessageToSet(&data, false);
 return true;
 }
 */
@@ -557,13 +557,15 @@ bool ChatHandler::HandleDebugWaterWalk(const char* args, WorldSession* m_session
 
 bool ChatHandler::HandleDebugUnroot(const char* args, WorldSession* m_session)
 {
-    if (m_session->GetPlayer()->GetTargetGUID() == 0){
+    if (m_session->GetPlayer()->GetTargetGUID() == 0)
+    {
         RedSystemMessage(m_session, "You need to select a unit!");
         return true;
     }
 
-    Unit *u = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetTargetGUID());
-    if (u == NULL){
+    Unit* u = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetTargetGUID());
+    if (u == NULL)
+    {
         RedSystemMessage(m_session, "You need to select a unit!");
         return true;
     }
@@ -577,13 +579,15 @@ bool ChatHandler::HandleDebugUnroot(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleDebugRoot(const char* args, WorldSession* m_session)
 {
-    if (m_session->GetPlayer()->GetTargetGUID() == 0){
+    if (m_session->GetPlayer()->GetTargetGUID() == 0)
+    {
         RedSystemMessage(m_session, "You need to select a unit!");
         return true;
     }
 
-    Unit *u = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetTargetGUID());
-    if (u == NULL){
+    Unit* u = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetTargetGUID());
+    if (u == NULL)
+    {
         RedSystemMessage(m_session, "You need to select a unit!");
         return true;
     }
@@ -866,7 +870,7 @@ bool ChatHandler::HandleModifyValueCommand(const char* args, WorldSession* m_ses
         if (value > sizeof(uint32))
         {
         FillSystemMessageData(&data, m_session, "Incorrect Value.");
-        m_session->SendPacket( &data );
+        m_session->SendPacket(&data);
         return true;
         }
         */
@@ -1092,8 +1096,10 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
     return true;
 }
 
-bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession *session){
-    if (*args == '\0'){
+bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession* session)
+{
+    if (*args == '\0')
+    {
         RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
         return true;
     }
@@ -1104,13 +1110,15 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession *
     std::stringstream ss(args);
 
     ss >> field;
-    if (ss.fail()){
+    if (ss.fail())
+    {
         RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
         return true;
     }
 
     ss >> state;
-    if (ss.fail()){
+    if (ss.fail())
+    {
         RedSystemMessage(session, "You need to specify the worldstate field and the new value.");
         return true;
     }
@@ -1120,8 +1128,9 @@ bool ChatHandler::HandleUpdateWorldStateCommand(const char *args, WorldSession *
     return true;
 }
 
-bool ChatHandler::HandleInitWorldStatesCommand(const char *args, WorldSession *session){
-    Player *p = session->GetPlayer();
+bool ChatHandler::HandleInitWorldStatesCommand(const char* args, WorldSession* session)
+{
+    Player* p = session->GetPlayer();
 
     uint32 zone = p->GetZoneId();
     if (zone == 0)
@@ -1134,8 +1143,9 @@ bool ChatHandler::HandleInitWorldStatesCommand(const char *args, WorldSession *s
     return true;
 }
 
-bool ChatHandler::HandleClearWorldStatesCommand(const char *args, WorldSession *session){
-    Player *p = session->GetPlayer();
+bool ChatHandler::HandleClearWorldStatesCommand(const char* args, WorldSession* session)
+{
+    Player* p = session->GetPlayer();
 
     uint32 zone = p->GetZoneId();
     if (zone == 0)

@@ -584,7 +584,7 @@ void Player::SendInitialLogonPackets()
     smsg_InitialSpells();
 
     data.Initialize(SMSG_SEND_UNLEARN_SPELLS);
-    data << uint32(0); // count, for(count) uint32;
+    data << uint32(0); // count, for (count) uint32;
     GetSession()->SendPacket(&data);
 
     SendInitialActions();

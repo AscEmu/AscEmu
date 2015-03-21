@@ -87,7 +87,7 @@ SERVER_DECL set<string> ExtraMapGameObjectTables;
 void ObjectMgr::LoadProfessionDiscoveries()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * from professiondiscoveries");
-    if(result != NULL)
+    if (result != NULL)
     {
         do
         {
@@ -114,56 +114,59 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             cn = itr->Get();
 
             // Process spell fields
-            for( uint32 i = 0; i < MAX_CREATURE_PROTO_SPELLS; i++ ){
-                if( cn->AISpells[ i ] == 0 )
+            for (uint32 i = 0; i < MAX_CREATURE_PROTO_SPELLS; i++)
+            {
+                if (cn->AISpells[ i ] == 0)
                     continue;
 
-                SpellEntry *sp = dbcSpell.LookupEntryForced( cn->AISpells[ i ] );
-                if( sp == NULL )
+                SpellEntry *sp = dbcSpell.LookupEntryForced(cn->AISpells[ i ]);
+                if (sp == NULL)
                     continue;
 
-                if( ( sp->Attributes & ATTRIBUTES_PASSIVE ) == 0 )
-                    cn->castable_spells.push_back( sp->Id );
+                if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
+                    cn->castable_spells.push_back(sp->Id);
                 else
-                    cn->start_auras.insert( sp->Id );
+                    cn->start_auras.insert(sp->Id);
 
             }
 
             // process creature spells from creaturespelldata.dbc
-            if( cn->spelldataid != 0 ){
-                CreatureSpellDataEntry* spe = dbcCreatureSpellData.LookupEntry( cn->spelldataid );
-                for( uint32 i = 0; i < 3; i++ ){
-                    if( spe->Spells[ i ] == 0 )
+            if (cn->spelldataid != 0)
+            {
+                CreatureSpellDataEntry* spe = dbcCreatureSpellData.LookupEntry(cn->spelldataid);
+                for (uint32 i = 0; i < 3; i++)
+                {
+                    if (spe->Spells[ i ] == 0)
                         continue;
 
-                    SpellEntry *sp = dbcSpell.LookupEntryForced( spe->Spells[ i ] );
-                    if( sp == NULL )
+                    SpellEntry *sp = dbcSpell.LookupEntryForced(spe->Spells[ i ]);
+                    if (sp == NULL)
                         continue;
 
-                    if( ( sp->Attributes & ATTRIBUTES_PASSIVE ) == 0 )
-                        cn->castable_spells.push_back( sp->Id );
+                    if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
+                        cn->castable_spells.push_back(sp->Id);
                     else
-                        cn->start_auras.insert( sp->Id );
+                        cn->start_auras.insert(sp->Id);
                 }
             }
 
-            if(cn->aura_string)
+            if (cn->aura_string)
             {
                 string auras = string(cn->aura_string);
                 vector<string> aurs = StrSplit(auras, " ");
-                for(vector<string>::iterator it = aurs.begin(); it != aurs.end(); ++it)
+                for (vector<string>::iterator it = aurs.begin(); it != aurs.end(); ++it)
                 {
                     uint32 id = atol((*it).c_str());
-                    if(id)
+                    if (id)
                         cn->start_auras.insert(id);
                 }
             }
 
-            if(!cn->MinHealth)
+            if (!cn->MinHealth)
                 cn->MinHealth = 1;
-            if(!cn->MaxHealth)
+            if (!cn->MaxHealth)
                 cn->MaxHealth = 1;
-            if(cn->AttackType > SCHOOL_ARCANE)
+            if (cn->AttackType > SCHOOL_ARCANE)
                 cn->AttackType = SCHOOL_NORMAL;
 
             cn->m_canFlee = cn->m_canRangedAttack = cn->m_canCallForHelp = false;
@@ -172,7 +175,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             //cn->m_fleeDuration = 0.0f;
             cn->m_fleeDuration = 0;
 
-            if(!itr->Inc())
+            if (!itr->Inc())
                 break;
         }
 
@@ -187,25 +190,25 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             ci = itr->Get();
 
             ci->lowercase_name = string(ci->Name);
-            for(uint32 j = 0; j < ci->lowercase_name.length(); ++j)
+            for (uint32 j = 0; j < ci->lowercase_name.length(); ++j)
                 ci->lowercase_name[j] = static_cast<char>(tolower(ci->lowercase_name[j]));   // Darvaleo 2008/08/15 - Copied lowercase conversion logic from ItemPrototype task
 
-            for(int i = 0; i < NUM_MONSTER_SAY_EVENTS; i++)
+            for (int i = 0; i < NUM_MONSTER_SAY_EVENTS; i++)
                 ci->MonsterSay[i] = objmgr.HasMonsterSay(ci->Id, MONSTER_SAY_EVENTS(i));
 
-            if(!itr->Inc())
+            if (!itr->Inc())
                 break;
         }
         itr->Destruct();
     }
 
     // Load AI Agents
-    if(Config.MainConfig.GetBoolDefault("Server", "LoadAIAgents", true))
+    if (Config.MainConfig.GetBoolDefault("Server", "LoadAIAgents", true))
     {
         QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents");
         CreatureProto* cn;
 
-        if(result != NULL)
+        if (result != NULL)
         {
             AI_Spell* sp;
             SpellEntry* spe;
@@ -217,12 +220,12 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                 entry = fields[0].GetUInt32();
                 cn = CreatureProtoStorage.LookupEntry(entry);
                 spe = dbcSpell.LookupEntryForced(fields[6].GetUInt32());
-                if(spe == NULL)
+                if (spe == NULL)
                 {
                     Log.Error("AIAgent", "For %u has nonexistent spell %u.", fields[0].GetUInt32(), fields[6].GetUInt32());
                     continue;
                 }
-                if(!cn)
+                if (!cn)
                     continue;
 
                 sp = new AI_Spell;
@@ -235,7 +238,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                 sp->spellType = static_cast<uint8>(fields[7].GetUInt32());
 
                 int32  targettype = fields[8].GetInt32();
-                if(targettype == -1)
+                if (targettype == -1)
                     sp->spelltargetType = static_cast<uint8>(GetAiTargetType(spe));
                 else sp->spelltargetType = static_cast<uint8>(targettype);
 
@@ -245,9 +248,9 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                 sp->cooldowntime = getMSTime();
                 sp->procCounter = 0;
                 sp->Misc2 = fields[11].GetUInt32();
-                if(sp->agent == AGENT_SPELL)
+                if (sp->agent == AGENT_SPELL)
                 {
-                    if(!sp->spell)
+                    if (!sp->spell)
                     {
                         LOG_DEBUG("SpellId %u in ai_agent for %u is invalid.", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
                         delete sp;
@@ -255,7 +258,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                         continue;
                     }
 
-                    if(sp->spell->Effect[0] == SPELL_EFFECT_LEARN_SPELL || sp->spell->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
+                    if (sp->spell->Effect[0] == SPELL_EFFECT_LEARN_SPELL || sp->spell->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
                             sp->spell->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
                     {
                         LOG_DEBUG("Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
@@ -268,7 +271,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                     sp->maxrange = GetMaxRange(dbcSpellRange.LookupEntry(sp->spell->rangeIndex));
 
                     //omg the poor darling has no clue about making ai_agents
-                    if(sp->cooldown == (uint32) - 1)
+                    if (sp->cooldown == (uint32) - 1)
                     {
                         //now this will not be exact cooldown but maybe a bigger one to not make him spam spells to often
                         int cooldown;
@@ -276,51 +279,51 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                         int Dur = 0;
                         int Casttime = 0; //most of the time 0
                         int RecoveryTime = sp->spell->RecoveryTime;
-                        if(sp->spell->DurationIndex)
+                        if (sp->spell->DurationIndex)
                             Dur =::GetDuration(sd);
                         Casttime = GetCastTime(dbcSpellCastTime.LookupEntry(sp->spell->CastingTimeIndex));
                         cooldown = Dur + Casttime + RecoveryTime;
-                        if(cooldown < 0)
+                        if (cooldown < 0)
                             sp->cooldown = 2000; //huge value that should not loop while adding some timestamp to it
                         else sp->cooldown = cooldown;
                     }
 
                     /*
                     //now apply the moron filter
-                    if(sp->procChance== 0)
+                    if (sp->procChance== 0)
                     {
                         //printf("SpellId %u in ai_agent for %u is invalid.\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
                         delete sp;
                         sp = NULL;
                         continue;
                     }
-                    if(sp->spellType== 0)
+                    if (sp->spellType== 0)
                     {
                         //right now only these 2 are used
-                        if(IsBeneficSpell(sp->spell))
+                        if (IsBeneficSpell(sp->spell))
                             sp->spellType==STYPE_HEAL;
                         else sp->spellType==STYPE_BUFF;
                     }
-                    if(sp->spelltargetType== 0)
+                    if (sp->spelltargetType== 0)
                         sp->spelltargetType = RecommandAISpellTargetType(sp->spell);
                         */
                 }
 
-                if(sp->agent == AGENT_RANGED)
+                if (sp->agent == AGENT_RANGED)
                 {
                     cn->m_canRangedAttack = true;
                     delete sp;
                     sp = NULL;
                 }
-                else if(sp->agent == AGENT_FLEE)
+                else if (sp->agent == AGENT_FLEE)
                 {
                     cn->m_canFlee = true;
-                    if(sp->floatMisc1)
+                    if (sp->floatMisc1)
                         cn->m_canFlee = (sp->floatMisc1 > 0.0f ? true : false);
                     else
                         cn->m_fleeHealth = 0.2f;
 
-                    if(sp->Misc2)
+                    if (sp->Misc2)
                         cn->m_fleeDuration = sp->Misc2;
                     else
                         cn->m_fleeDuration = 10000;
@@ -328,10 +331,10 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                     delete sp;
                     sp = NULL;
                 }
-                else if(sp->agent == AGENT_CALLFORHELP)
+                else if (sp->agent == AGENT_CALLFORHELP)
                 {
                     cn->m_canCallForHelp = true;
-                    if(sp->floatMisc1)
+                    if (sp->floatMisc1)
                         cn->m_callForHelpHealth = 0.2f;
                     delete sp;
                     sp = NULL;
@@ -352,7 +355,7 @@ void ObjectMgr::LoadExtraItemStuff()
 {
     map<uint32, uint32> foodItems;
     QueryResult* result = WorldDatabase.Query("SELECT * FROM itempetfood ORDER BY entry");
-    if(result)
+    if (result)
     {
         Field* f = result->Fetch();
         do
@@ -368,11 +371,11 @@ void ObjectMgr::LoadExtraItemStuff()
     while(!itr->AtEnd())
     {
         pItemPrototype = itr->Get();
-        if(pItemPrototype->ItemSet > 0)
+        if (pItemPrototype->ItemSet > 0)
         {
             ItemSetContentMap::iterator itr2 = mItemSets.find(pItemPrototype->ItemSet);
             std::list<ItemPrototype*>* l;
-            if(itr2 == mItemSets.end())
+            if (itr2 == mItemSets.end())
             {
                 l = new std::list<ItemPrototype*>;
                 mItemSets.insert(ItemSetContentMap::value_type(pItemPrototype->ItemSet, l));
@@ -387,13 +390,13 @@ void ObjectMgr::LoadExtraItemStuff()
 
         // lowercase name, used for searches
         pItemPrototype->lowercase_name = pItemPrototype->Name1;
-        for(uint32 j = 0; j < pItemPrototype->lowercase_name.length(); ++j)
+        for (uint32 j = 0; j < pItemPrototype->lowercase_name.length(); ++j)
             pItemPrototype->lowercase_name[j] = static_cast<char>(tolower(pItemPrototype->lowercase_name[j]));
 
         //load item_pet_food_type from extra table
         uint32 ft = 0;
         map<uint32, uint32>::iterator iter = foodItems.find(pItemPrototype->ItemId);
-        if(iter != foodItems.end())
+        if (iter != foodItems.end())
             ft = iter->second;
         pItemPrototype->FoodType = ft ;
 
@@ -518,7 +521,7 @@ void ObjectMgr::LoadExtraItemStuff()
                 break;
         }
 
-        if(!itr->Inc())
+        if (!itr->Inc())
             break;
     }
 
@@ -534,15 +537,15 @@ void ObjectMgr::LoadExtraGameObjectStuff()
     {
         goi = itr->Get();
 
-        if(!itr->Inc())
+        if (!itr->Inc())
             break;
     }
     itr->Destruct();
 }
 
-#define make_task(storage, itype, storagetype, tablename, format) tl.AddTask( new Task( \
+#define make_task(storage, itype, storagetype, tablename, format) tl.AddTask(new Task(\
     new CallbackP2< SQLStorage< itype, storagetype< itype > >, const char *, const char *> \
-    (&storage, &SQLStorage< itype, storagetype< itype > >::Load, tablename, format) ) )
+    (&storage, &SQLStorage< itype, storagetype< itype > >::Load, tablename, format)))
 
 void Storage_FillTaskList(TaskList & tl)
 {
@@ -583,16 +586,16 @@ void Storage_Cleanup()
         while(!itr->AtEnd())
         {
             p = itr->Get();
-            if(p->aura_string)
+            if (p->aura_string)
             {
                 free(p->aura_string);
                 p->aura_string = NULL;
             }
-            for(list<AI_Spell*>::iterator it = p->spells.begin(); it != p->spells.end(); ++it)
+            for (list<AI_Spell*>::iterator it = p->spells.begin(); it != p->spells.end(); ++it)
                 delete(*it);
             p->spells.clear();
             p->start_auras.clear();
-            if(!itr->Inc())
+            if (!itr->Inc())
                 break;
         }
         itr->Destruct();
@@ -627,51 +630,51 @@ vector<pair<string, string> > additionalTables;
 
 bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool firstLoad = false)
 {
-    if(!stricmp(TableName, "creature_spawns"))
+    if (!stricmp(TableName, "creature_spawns"))
     {
         ExtraMapCreatureTables.insert(string(SecondName));
         return false;
     }
-    else if(!stricmp(TableName, "gameobject_spawns"))
+    else if (!stricmp(TableName, "gameobject_spawns"))
     {
         ExtraMapGameObjectTables.insert(string(SecondName));
         return false;
     }
-    else if(firstLoad && !stricmp(TableName, "items"))                // Items
+    else if (firstLoad && !stricmp(TableName, "items"))                // Items
         ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPrototypeFormat);
-    else if(firstLoad && !stricmp(TableName, "creature_proto"))        // Creature Proto
+    else if (firstLoad && !stricmp(TableName, "creature_proto"))        // Creature Proto
         CreatureProtoStorage.LoadAdditionalData(SecondName, gCreatureProtoFormat);
-    else if(firstLoad && !stricmp(TableName, "creature_names"))        // Creature Names
+    else if (firstLoad && !stricmp(TableName, "creature_names"))        // Creature Names
         CreatureNameStorage.LoadAdditionalData(SecondName, gCreatureNameFormat);
-    else if(firstLoad && !stricmp(TableName, "gameobject_names"))    // GO Names
+    else if (firstLoad && !stricmp(TableName, "gameobject_names"))    // GO Names
         GameObjectNameStorage.LoadAdditionalData(SecondName, gGameObjectNameFormat);
-    else if(!stricmp(TableName, "areatriggers"))        // Areatriggers
+    else if (!stricmp(TableName, "areatriggers"))        // Areatriggers
         AreaTriggerStorage.LoadAdditionalData(SecondName, gAreaTriggerFormat);
-    else if(!stricmp(TableName, "itempages"))            // Item Pages
+    else if (!stricmp(TableName, "itempages"))            // Item Pages
         ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPageFormat);
     else if (!stricmp(TableName, "npc_script_text"))            // ONLY for scripted text
         CreatureTextStorage.LoadAdditionalData(SecondName, gCreatureTextFormat);
     else if (!stricmp(TableName, "gossip_menu_option"))            // Gossip Menu Option
         GossipMenuOptionStorage.LoadAdditionalData(SecondName, gGossipMenuOptionFormat);
-    else if(!stricmp(TableName, "worldstring_tables"))            // WorldString
+    else if (!stricmp(TableName, "worldstring_tables"))            // WorldString
         WorldStringTableStorage.LoadAdditionalData(SecondName, gWorldStringTableFormat);
-    else if(!stricmp(TableName, "worldbroadcast"))            // Worldbroadcast
+    else if (!stricmp(TableName, "worldbroadcast"))            // Worldbroadcast
         WorldBroadCastStorage.LoadAdditionalData(SecondName, gWorldBroadCastFormat);
-    else if(firstLoad && !stricmp(TableName, "quests"))                // Quests
+    else if (firstLoad && !stricmp(TableName, "quests"))                // Quests
         QuestStorage.LoadAdditionalData(SecondName, gQuestFormat);
-    else if(!stricmp(TableName, "npc_text"))            // NPC Text Storage
+    else if (!stricmp(TableName, "npc_text"))            // NPC Text Storage
         NpcTextStorage.LoadAdditionalData(SecondName, gNpcTextFormat);
-    else if(!stricmp(TableName, "fishing"))                // Fishing Zones
+    else if (!stricmp(TableName, "fishing"))                // Fishing Zones
         FishingZoneStorage.LoadAdditionalData(SecondName, gFishingFormat);
-    else if(!stricmp(TableName, "teleport_coords"))        // Teleport coords
+    else if (!stricmp(TableName, "teleport_coords"))        // Teleport coords
         TeleportCoordStorage.LoadAdditionalData(SecondName, gTeleportCoordFormat);
-    else if(!stricmp(TableName, "graveyards"))            // Graveyards
+    else if (!stricmp(TableName, "graveyards"))            // Graveyards
         GraveyardStorage.LoadAdditionalData(SecondName, gGraveyardFormat);
-    else if(!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
+    else if (!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
         WorldMapInfoStorage.LoadAdditionalData(SecondName, gWorldMapInfoFormat);
-    else if(!stricmp(TableName, "zoneguards"))
+    else if (!stricmp(TableName, "zoneguards"))
         ZoneGuardStorage.LoadAdditionalData(SecondName, gZoneGuardsFormat);
-    else if(!stricmp(TableName, "unit_display_sizes"))
+    else if (!stricmp(TableName, "unit_display_sizes"))
         UnitModelSizeStorage.LoadAdditionalData(SecondName, gUnitModelSizeFormat);
     else if (!stricmp(TableName, "points_of_interest"))
         PointOfInterestStorage.LoadAdditionalData(SecondName, gPointOfInterestFormat);
@@ -685,59 +688,59 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
 bool Storage_ReloadTable(const char* TableName)
 {
     // bur: mah god this is ugly :P
-    /*if(!stricmp(TableName, "items"))                    // Items
+    /*if (!stricmp(TableName, "items"))                    // Items
         ItemPrototypeStorage.Reload();
-    else if(!stricmp(TableName, "creature_proto"))        // Creature Proto
+    else if (!stricmp(TableName, "creature_proto"))        // Creature Proto
         CreatureProtoStorage.Reload();
-    else if(!stricmp(TableName, "creature_names"))        // Creature Names
+    else if (!stricmp(TableName, "creature_names"))        // Creature Names
         CreatureNameStorage.Reload();
-    else if(!stricmp(TableName, "gameobject_names"))    // GO Names
+    else if (!stricmp(TableName, "gameobject_names"))    // GO Names
         GameObjectNameStorage.Reload();*/
-    if(!stricmp(TableName, "areatriggers"))        // Areatriggers
+    if (!stricmp(TableName, "areatriggers"))        // Areatriggers
         AreaTriggerStorage.Reload();
-    else if(!stricmp(TableName, "itempages"))            // Item Pages
+    else if (!stricmp(TableName, "itempages"))            // Item Pages
         ItemPageStorage.Reload();
     else if (!stricmp(TableName, "npc_script_text"))            // Creature Text
         CreatureTextStorage.Reload();
     else if (!stricmp(TableName, "gossip_menu_option"))            // Gossip Menu Option
         GossipMenuOptionStorage.Reload();
-    else if(!stricmp(TableName, "worldstring_tables"))            // wst
+    else if (!stricmp(TableName, "worldstring_tables"))            // wst
         WorldStringTableStorage.Reload();
-    else if(!stricmp(TableName, "worldbroadcast"))            // wb
+    else if (!stricmp(TableName, "worldbroadcast"))            // wb
         WorldBroadCastStorage.Reload();
-    /*else if(!stricmp(TableName, "quests"))                // Quests
+    /*else if (!stricmp(TableName, "quests"))                // Quests
         QuestStorage.Reload();*/
-    else if(!stricmp(TableName, "npc_text"))            // NPC Text Storage
+    else if (!stricmp(TableName, "npc_text"))            // NPC Text Storage
         NpcTextStorage.Reload();
-    else if(!stricmp(TableName, "fishing"))                // Fishing Zones
+    else if (!stricmp(TableName, "fishing"))                // Fishing Zones
         FishingZoneStorage.Reload();
-    else if(!stricmp(TableName, "teleport_coords"))        // Teleport coords
+    else if (!stricmp(TableName, "teleport_coords"))        // Teleport coords
         TeleportCoordStorage.Reload();
-    else if(!stricmp(TableName, "graveyards"))            // Graveyards
+    else if (!stricmp(TableName, "graveyards"))            // Graveyards
         GraveyardStorage.Reload();
-    else if(!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
+    else if (!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
         WorldMapInfoStorage.Reload();
-    else if(!stricmp(TableName, "zoneguards"))
+    else if (!stricmp(TableName, "zoneguards"))
         ZoneGuardStorage.Reload();
-    else if(!stricmp(TableName, "unit_display_sizes"))
+    else if (!stricmp(TableName, "unit_display_sizes"))
         UnitModelSizeStorage.Reload();
-    else if(!stricmp(TableName, "command_overrides"))    // Command Overrides
+    else if (!stricmp(TableName, "command_overrides"))    // Command Overrides
     {
         CommandTableStorage::getSingleton().Dealloc();
         CommandTableStorage::getSingleton().Init();
         CommandTableStorage::getSingleton().Load();
     }
-    else if(!stricmp(TableName, "points_of_interest"))
+    else if (!stricmp(TableName, "points_of_interest"))
         PointOfInterestStorage.Reload();
     else
         return false;
 
     uint32 len = (uint32)strlen(TableName);
     uint32 len2;
-    for(vector<pair<string, string> >::iterator itr = additionalTables.begin(); itr != additionalTables.end(); ++itr)
+    for (vector<pair<string, string> >::iterator itr = additionalTables.begin(); itr != additionalTables.end(); ++itr)
     {
         len2 = (uint32)itr->second.length();
-        if(!strnicmp(TableName, itr->second.c_str(), min(len, len2)))
+        if (!strnicmp(TableName, itr->second.c_str(), min(len, len2)))
             LoadAdditionalTable(TableName, itr->first.c_str());
     }
     return true;
@@ -749,21 +752,21 @@ void Storage_LoadAdditionalTables()
     ExtraMapGameObjectTables.insert(string("gameobject_spawns"));
 
     string strData = Config.MainConfig.GetStringDefault("Startup", "LoadAdditionalTables", "");
-    if(strData.empty())
+    if (strData.empty())
         return;
 
     vector<string> strs = StrSplit(strData, ",");
-    if(strs.empty())
+    if (strs.empty())
         return;
 
-    for(vector<string>::iterator itr = strs.begin(); itr != strs.end(); ++itr)
+    for (vector<string>::iterator itr = strs.begin(); itr != strs.end(); ++itr)
     {
         char s1[200];
         char s2[200];
-        if(sscanf((*itr).c_str(), "%s %s", s1, s2) != 2)
+        if (sscanf((*itr).c_str(), "%s %s", s1, s2) != 2)
             continue;
 
-        if(LoadAdditionalTable(s2, s1, true))
+        if (LoadAdditionalTable(s2, s1, true))
         {
             pair<string, string> tmppair;
             tmppair.first = string(s1);
@@ -777,7 +780,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
 // cebernic: plz feedback
 {
     // init
-    if(!sWorld.BCSystemEnable)
+    if (!sWorld.BCSystemEnable)
     {
         Log.Notice("ObjectMgr", "BCSystem Disabled.");
         return;
@@ -787,7 +790,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
     vector<string> keyGroup;
     QueryResult* result = WorldDatabase.Query("SELECT DISTINCT percent FROM `worldbroadcast` ORDER BY percent DESC");
     // result->GetRowCount();
-    if(result != NULL)
+    if (result != NULL)
     {
         do
         {
@@ -799,7 +802,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
         result = NULL;
     }
 
-    if(keyGroup.empty())
+    if (keyGroup.empty())
     {
         Log.Notice("ObjectMgr", "BCSystem error! worldbroadcast empty? fill it first!");
         sWorld.BCSystemEnable = false;
@@ -808,14 +811,14 @@ void ObjectMgr::StoreBroadCastGroupKey()
     else
         Log.Notice("ObjectMgr", "BCSystem Enabled with %u KeyGroups.", keyGroup.size());
 
-    for(vector<string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
+    for (vector<string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
     {
         string curKey = (*itr);
         char szSQL[512];
         memset(szSQL, 0, sizeof(szSQL));
         sprintf(szSQL, "SELECT entry,percent FROM `worldbroadcast` WHERE percent='%s' ", curKey.c_str());
         result = WorldDatabase.Query(szSQL);
-        if(result != NULL)
+        if (result != NULL)
         {
             do
             {

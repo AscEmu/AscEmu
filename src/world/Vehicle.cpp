@@ -40,7 +40,7 @@ Vehicle::~Vehicle()
 }
 
 
-void Vehicle::Load(Unit *owner, uint32 creature_entry, uint32 vehicleid)
+void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
 {
     if (owner == NULL)
     {
@@ -108,7 +108,7 @@ bool Vehicle::HasEmptySeat()
         return false;
 }
 
-void Vehicle::AddPassenger(Unit *passenger)
+void Vehicle::AddPassenger(Unit* passenger)
 {
     // find seat
     uint32 seatid = MAX_VEHICLE_SEATS;
@@ -126,7 +126,7 @@ void Vehicle::AddPassenger(Unit *passenger)
     AddPassengerToSeat(passenger, seatid);
 }
 
-void Vehicle::AddPassengerToSeat(Unit *passenger, uint32 seatid)
+void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 {
     if (seats[seatid]->HasPassenger())
         return;
@@ -211,7 +211,7 @@ void Vehicle::AddPassengerToSeat(Unit *passenger, uint32 seatid)
 
     if (passenger->IsCreature())
     {
-        Creature *c = static_cast<Creature*>(passenger);
+        Creature* c = static_cast<Creature*>(passenger);
 
         if (c->GetScript() != NULL)
         {
@@ -221,7 +221,7 @@ void Vehicle::AddPassengerToSeat(Unit *passenger, uint32 seatid)
 
     if (owner->IsCreature())
     {
-        Creature *c = static_cast<Creature*>(owner);
+        Creature* c = static_cast<Creature*>(owner);
 
         if (c->GetScript() != NULL)
         {
@@ -234,7 +234,7 @@ void Vehicle::AddPassengerToSeat(Unit *passenger, uint32 seatid)
     }
 }
 
-void Vehicle::EjectPassenger(Unit *passenger)
+void Vehicle::EjectPassenger(Unit* passenger)
 {
     if (passenger->GetCurrentVehicle() == NULL)
         return;
@@ -265,7 +265,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     if (!seats[seatid]->HasPassenger())
         return;
 
-    Unit *passenger = owner->GetMapMgrUnit(seats[seatid]->GetPassengerGUID());
+    Unit* passenger = owner->GetMapMgrUnit(seats[seatid]->GetPassengerGUID());
     if (passenger == NULL)
         return;
 
@@ -327,7 +327,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
 
     if (passenger->IsCreature())
     {
-        Creature *c = static_cast<Creature*>(passenger);
+        Creature* c = static_cast<Creature*>(passenger);
 
         if (c->GetScript() != NULL)
         {
@@ -336,7 +336,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     }
     if (owner->IsCreature())
     {
-        Creature *c = static_cast<Creature*>(owner);
+        Creature* c = static_cast<Creature*>(owner);
 
         if (c->GetScript() != NULL)
         {
@@ -356,8 +356,9 @@ void Vehicle::EjectAllPassengers()
     for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != NULL) && (seats[i]->GetPassengerGUID() != 0))
         {
-            Unit *u = owner->GetMapMgr()->GetUnit(seats[i]->GetPassengerGUID());
-            if (u == NULL){
+            Unit* u = owner->GetMapMgr()->GetUnit(seats[i]->GetPassengerGUID());
+            if (u == NULL)
+            {
                 seats[i]->RemovePassenger();
                 continue;
             }
@@ -369,7 +370,7 @@ void Vehicle::EjectAllPassengers()
         }
 }
 
-void Vehicle::MovePassengerToSeat(Unit *passenger, uint32 seat)
+void Vehicle::MovePassengerToSeat(Unit* passenger, uint32 seat)
 {
     uint32 oldseatid = 0;
     for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
@@ -396,7 +397,7 @@ void Vehicle::MovePassengerToSeat(Unit *passenger, uint32 seat)
     AddPassengerToSeat(passenger, seat);
 }
 
-void Vehicle::MovePassengerToNextSeat(Unit *passenger)
+void Vehicle::MovePassengerToNextSeat(Unit* passenger)
 {
     uint32 oldseatid = 0;
     for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
@@ -427,7 +428,7 @@ void Vehicle::MovePassengerToNextSeat(Unit *passenger)
     AddPassengerToSeat(passenger, newseatid);
 }
 
-void Vehicle::MovePassengerToPrevSeat(Unit *passenger)
+void Vehicle::MovePassengerToPrevSeat(Unit* passenger)
 {
     uint32 oldseatid = MAX_VEHICLE_SEATS;
     for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
@@ -458,7 +459,7 @@ void Vehicle::MovePassengerToPrevSeat(Unit *passenger)
     AddPassengerToSeat(passenger, newseatid);
 }
 
-uint32 Vehicle::GetSeatEntryForPassenger(Unit *passenger)
+uint32 Vehicle::GetSeatEntryForPassenger(Unit* passenger)
 {
     for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
         if ((seats[i] != NULL) && (seats[i]->GetPassengerGUID() == passenger->GetGUID()))
@@ -469,10 +470,11 @@ uint32 Vehicle::GetSeatEntryForPassenger(Unit *passenger)
 
 void Vehicle::MovePassengers(float x, float y, float z, float o)
 {
-    for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++){
+    for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    {
         if ((seats[i] != NULL) && (seats[i]->GetPassengerGUID() != 0))
         {
-            Unit *passenger = owner->GetMapMgrUnit(seats[i]->GetPassengerGUID());
+            Unit* passenger = owner->GetMapMgrUnit(seats[i]->GetPassengerGUID());
             if (passenger == NULL)
                 continue;
 
@@ -484,10 +486,11 @@ void Vehicle::MovePassengers(float x, float y, float z, float o)
 uint32 Vehicle::GetPassengerCount() const{
     uint32 count = 0;
 
-    for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++){
+    for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    {
         if ((seats[i] != NULL) && (seats[i]->GetPassengerGUID() != 0))
         {
-            Unit *passenger = owner->GetMapMgrUnit(seats[i]->GetPassengerGUID());
+            Unit* passenger = owner->GetMapMgrUnit(seats[i]->GetPassengerGUID());
             if (passenger == NULL)
                 continue;
 
@@ -547,7 +550,7 @@ void Vehicle::InstallAccessories()
         if (cp == NULL)
             continue;
 
-        Creature *c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
+        Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
         c->transporter_info.guid = owner->GetGUID();
         c->transporter_info.seat = accessory->seat;
@@ -564,7 +567,7 @@ void Vehicle::RemoveAccessories()
 {
     for (std::vector< uint64 >::iterator itr = installed_accessories.begin(); itr != installed_accessories.end(); ++itr)
     {
-        Unit *u = owner->GetMapMgr()->GetUnit(*itr);
+        Unit* u = owner->GetMapMgr()->GetUnit(*itr);
         if (u == NULL)
             continue;
 

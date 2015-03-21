@@ -23,9 +23,9 @@
 #define SCRIPTMGR_H
 
 #define SCRIPT_MODULE void*
-#define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature * c) { return new cl(c); }
-#define ADD_INSTANCE_FACTORY_FUNCTION( ClassName ) static InstanceScript* Create( MapMgr* pMapMgr ) { return new ClassName( pMapMgr ); };
-#define ADD_GAMEOBJECT_FACTORY_FUNCTION( ClassName ) static GameObjectAIScript* Create(GameObject* GO) { return new ClassName(GO); };
+#define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature* c) { return new cl(c); }
+#define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
+#define ADD_GAMEOBJECT_FACTORY_FUNCTION(ClassName) static GameObjectAIScript* Create(GameObject* GO) { return new ClassName(GO); };
 
 class Channel;
 class Guild;
@@ -393,14 +393,14 @@ class SERVER_DECL CreatureAIScript
     //  Called when the first passenger enters
     //
     //Parameter(s)
-    //  Unit *passenger  -  The passenger who entered
+    //  Unit* passenger  -  The passenger who entered
     //
     //Return Value
     //  None
     //
     //
     /////////////////////////////////////////////////////
-    virtual void OnFirstPassengerEntered(Unit *passenger){}
+    virtual void OnFirstPassengerEntered(Unit* passenger){}
 
     ////////////////////////////////////////////////////
     //void OnVehicleFull()
@@ -418,18 +418,18 @@ class SERVER_DECL CreatureAIScript
 
 
     ////////////////////////////////////////////////////
-    //void OnLastPassengerLeft( Unit *passenger )
+    //void OnLastPassengerLeft(Unit* passenger)
     //  Called when the last passenger leaves
     //
     //Parameter(s)
-    //  Unit *passenger  - The passenger who left
+    //  Unit* passenger  - The passenger who left
     //
     //Return Value
     //  None
     //
     //
     ////////////////////////////////////////////////////
-    virtual void OnLastPassengerLeft(Unit *passenger){}
+    virtual void OnLastPassengerLeft(Unit* passenger){}
 
 
     protected:

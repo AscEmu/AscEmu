@@ -198,7 +198,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
     //case 1, item is from backpack container
     if (ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
-        //ARCEMU_ASSERT(   m_pItems[slot] == NULL);
+        //ARCEMU_ASSERT(  m_pItems[slot] == NULL);
         if (GetInventoryItem(slot) != NULL /*|| (slot == EQUIPMENT_SLOT_OFFHAND && !m_pOwner->HasSkillLine(118))*/)
         {
             //LOG_ERROR("bugged inventory: %u %u", m_pOwner->GetName(), item->GetGUID());
@@ -2912,14 +2912,14 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     Item* DstItem = GetInventoryItem(dstslot);
 
     LOG_DEBUG("ItemInterface::SwapItemSlots(%u, %u);", srcslot, dstslot);
-    //Item * temp = GetInventoryItem( srcslot );
-    //if( temp )
-    //    LOG_DEBUG( "Source item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType( temp->GetProto()->InventoryType ) );
-    //    temp = GetInventoryItem( dstslot );
-    //if( temp )
-    //    LOG_DEBUG( "Destination: Item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType( temp->GetProto()->InventoryType ) );
+    //Item * temp = GetInventoryItem(srcslot);
+    //if (temp)
+    //    LOG_DEBUG("Source item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType(temp->GetProto()->InventoryType));
+    //    temp = GetInventoryItem(dstslot);
+    //if (temp)
+    //    LOG_DEBUG("Destination: Item: %s (inventoryType=%u, realslot=%u);" , temp->GetProto()->Name1 , temp->GetProto()->InventoryType , GetItemSlotByType(temp->GetProto()->InventoryType));
     //else
-    //    LOG_DEBUG( "Destination: Empty" );
+    //    LOG_DEBUG("Destination: Empty");
 
     // don't stack equipped items (even with ItemStackCheat), just swap them
     uint32 srcItemMaxStack, dstItemMaxStack;
@@ -2996,7 +2996,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             m_pOwner->ApplyItemMods(m_pItems[(int)dstslot], dstslot, false);
     }
 
-    //LOG_DEBUG( "Putting items into slots..." );
+    //LOG_DEBUG("Putting items into slots...");
 
 
 
@@ -3060,23 +3060,23 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
     if (m_pItems[(int)dstslot] != NULL)
     {
-        //LOG_DEBUG( "(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)dstslot]->GetGUID() );
+        //LOG_DEBUG("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)dstslot]->GetGUID());
         m_pOwner->SetInventorySlot(dstslot, m_pItems[(int)dstslot]->GetGUID());
     }
     else
     {
-        //LOG_DEBUG( "(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2 );
+        //LOG_DEBUG("(SrcItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2);
         m_pOwner->SetInventorySlot(dstslot, 0);
     }
 
     if (m_pItems[(int)srcslot] != NULL)
     {
-        //LOG_DEBUG( "(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)srcslot]->GetGUID() );
+        //LOG_DEBUG("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now %u" , dstslot * 2 , m_pItems[(int)srcslot]->GetGUID());
         m_pOwner->SetInventorySlot(srcslot, m_pItems[(int)srcslot]->GetGUID());
     }
     else
     {
-        //LOG_DEBUG( "(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2 );
+        //LOG_DEBUG("(DstItem) PLAYER_FIELD_INV_SLOT_HEAD + %u is now 0" , dstslot * 2);
         m_pOwner->SetInventorySlot(srcslot, 0);
     }
 
@@ -3104,13 +3104,13 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * PLAYER_VISIBLE_ITEM_LENGTH);
                 m_pOwner->SetUInt32Value(VisibleBase, 0);
                 m_pOwner->SetUInt32Value(VisibleBase + 1, 0);
-                /*                m_pOwner->SetUInt32Value( VisibleBase + 2, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 3, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 4, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 5, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 6, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 7, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 8, 0 );*/
+                /*                m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 3, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 4, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 5, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 6, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 7, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 8, 0);*/
             }
         }
     }
@@ -3141,13 +3141,13 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * PLAYER_VISIBLE_ITEM_LENGTH);
                 m_pOwner->SetUInt32Value(VisibleBase, 0);
                 m_pOwner->SetUInt32Value(VisibleBase + 1, 0);
-                /*                m_pOwner->SetUInt32Value( VisibleBase + 2, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 3, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 4, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 5, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 6, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 7, 0 );
-                                m_pOwner->SetUInt32Value( VisibleBase + 8, 0 );*/
+                /*                m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 3, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 4, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 5, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 6, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 7, 0);
+                                m_pOwner->SetUInt32Value(VisibleBase + 8, 0);*/
             }
         }
     }
@@ -3357,7 +3357,7 @@ SlotResult ItemInterface::FindFreeInventorySlot(ItemPrototype* proto)
     //special slots will be ignored of item is not set
     if (proto != NULL)
     {
-        //LOG_DEBUG( "ItemInterface::FindFreeInventorySlot called for item %s" , proto->Name1 );
+        //LOG_DEBUG("ItemInterface::FindFreeInventorySlot called for item %s" , proto->Name1);
         if (proto->BagFamily)
         {
             if (proto->BagFamily & ITEM_TYPE_KEYRING || proto->Class == ITEM_CLASS_KEY)
@@ -3924,7 +3924,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if ((it->RandomPropId != 0) && (it->RandomSuffixId != 0))
             {
-                LOG_ERROR("Item %u ( %s ) has both RandomPropId and RandomSuffixId.", itemid, it->Name1);
+                LOG_ERROR("Item %u (%s) has both RandomPropId and RandomSuffixId.", itemid, it->Name1);
             }
 
             if (it->RandomPropId != 0)
@@ -3937,7 +3937,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
                 }
                 else
                 {
-                    LOG_ERROR("Item %u ( %s ) has unknown RandomPropId %u", itemid, it->Name1, it->RandomPropId);
+                    LOG_ERROR("Item %u (%s) has unknown RandomPropId %u", itemid, it->Name1, it->RandomPropId);
                 }
             }
 
@@ -3951,7 +3951,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
                 }
                 else
                 {
-                    LOG_ERROR("Item %u ( %s ) has unknown RandomSuffixId %u", itemid, it->Name1, it->RandomSuffixId);
+                    LOG_ERROR("Item %u (%s) has unknown RandomSuffixId %u", itemid, it->Name1, it->RandomSuffixId);
                 }
             }
         }
@@ -4261,7 +4261,8 @@ void ItemInterface::removeLootableItems()
             continue;
 
         uint8 s = container->GetNumSlots();
-        for (uint8 j = 0; j < s; j++){
+        for (uint8 j = 0; j < s; j++)
+        {
             Item *item = container->GetItem(j);
             if (item == NULL)
                 continue;
@@ -4273,13 +4274,14 @@ void ItemInterface::removeLootableItems()
 
     for (uint8 i = BANK_SLOT_BAG_START; i < BANK_SLOT_BAG_END; i++)
     {
-        Container *container = dynamic_cast<Container*>(GetInventoryItem(i));
+        Container* container = dynamic_cast<Container*>(GetInventoryItem(i));
         if (container == NULL)
             continue;
 
         uint8 s = container->GetNumSlots();
-        for (uint8 j = 0; j < s; j++){
-            Item *item = container->GetItem(j);
+        for (uint8 j = 0; j < s; j++)
+        {
+            Item* item = container->GetItem(j);
             if (item == NULL)
                 continue;
 

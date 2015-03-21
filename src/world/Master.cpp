@@ -198,7 +198,7 @@ bool Master::Run(int argc, char** argv)
     printf("The key combination <Ctrl-C> will safely shut down the server at any time.\n");
 
 #ifndef WIN32
-    if(geteuid() == 0 || getegid() == 0)
+    if (geteuid() == 0 || getegid() == 0)
         Log.LargeErrorMessage("You are running ArcEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.", NULL);
 #endif
 
@@ -238,7 +238,7 @@ bool Master::Run(int argc, char** argv)
     }
 
 #if !defined(WIN32) && defined(__DEBUG__)
-    if(Config.MainConfig.GetIntDefault("LogLevel", "DisableCrashdumpReport", 0) == 0)
+    if (Config.MainConfig.GetIntDefault("LogLevel", "DisableCrashdumpReport", 0) == 0)
     {
         char cmd[1024];
         char banner[1024];
@@ -397,7 +397,7 @@ bool Master::Run(int argc, char** argv)
             ThreadPool.IntegrityCheck();
 #if !defined(WIN32) && defined(__DEBUG__)
             FILE* f = fopen("worldserver.uptime", "w");
-            if(f)
+            if (f)
             {
                 fprintf(f, "%u %u %u %u", sWorld.GetUptime(), sWorld.GetSessionCount(), sWorld.PeakSessionCount, sWorld.mAcceptedConnections);
                 fclose(f);
@@ -593,7 +593,8 @@ bool Master::CheckDBVersion()
     {
         Log.Error("Database", "Last world database update doesn't match the required one which is %s.", REQUIRED_WORLD_DB_VERSION);
 
-        if (result < 0){
+        if (result < 0)
+        {
             Log.Error("Database", "You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
             Log.Error("Database", "You can find the world update queries in the sql/world_updates sub-directory of your Arcemu source directory.");
         }
@@ -622,7 +623,8 @@ bool Master::CheckDBVersion()
     if (result != 0)
     {
         Log.Error("Database", "Last character database update doesn't match the required one which is %s.", REQUIRED_CHAR_DB_VERSION);
-        if (result < 0){
+        if (result < 0)
+        {
             Log.Error("Database", "You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
             Log.Error("Database", "You can find the character update queries in the sql/character_updates sub-directory of your Arcemu source directory.");
         }

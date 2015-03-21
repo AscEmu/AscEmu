@@ -938,7 +938,7 @@ class SERVER_DECL Player : public Unit
         bool Cooldown_CanCast(SpellEntry* pSpell);
         bool Cooldown_CanCast(ItemPrototype* pProto, uint32 x);
         void UpdatePotionCooldown();
-        bool HasSpellWithAuraNameAndBasePoints( uint32 auraname, uint32 basepoints );
+        bool HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoints);
 
     protected:
 
@@ -973,7 +973,7 @@ class SERVER_DECL Player : public Unit
         ///
         /// \param uint8 slot       -  Summon slot number
         /// \param uint64 GUID      -  GUID of the summon
-        /// \param uint32 duration  -  Duration of the summon ( the timer of the icon )
+        /// \param uint32 duration  -  Duration of the summon (the timer of the icon)
         /// \param uint32 spellid   -  ID of the spell that created this summon
         ///
         /// \return none
@@ -1099,7 +1099,7 @@ class SERVER_DECL Player : public Unit
 
         bool HasFinishedQuest(uint32 quest_id);
 
-        void EventTimedQuestExpire( uint32 questid );
+        void EventTimedQuestExpire(uint32 questid);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -1115,7 +1115,7 @@ class SERVER_DECL Player : public Unit
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void ClearQuest( uint32 id )
+        /// void ClearQuest(uint32 id)
         /// Clears the finished status of a quest
         ///
         /// \param uint32 id  -  Identifier of the quest
@@ -1137,7 +1137,7 @@ class SERVER_DECL Player : public Unit
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void AcceptQuest( uint64 guid, uint32 quest_id )
+        /// void AcceptQuest(uint64 guid, uint32 quest_id)
         /// Checks if the quest is acceptable from that questgiver and accepts it.
         ///
         /// \param uin64 guid      -  guid of the questgiver
@@ -1169,7 +1169,7 @@ class SERVER_DECL Player : public Unit
         bool IsInFeralForm()
         {
             int s = GetShapeShift();
-            if(s <= 0)
+            if (s <= 0)
                 return false;
 
             /// Fight forms that do not use player's weapon
@@ -2061,7 +2061,7 @@ class SERVER_DECL Player : public Unit
         {
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
-            SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value( PLAYER_CHARACTER_POINTS1) + amt );
+            SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
             smsg_TalentsInfo(false);
         }
 
@@ -2182,17 +2182,17 @@ class SERVER_DECL Player : public Unit
 
         void AddComboPoints(uint64 target, int8 count);
 
-        void NullComboPoints() { if(!m_retainComboPoints) { m_comboTarget = 0; m_comboPoints = 0; m_spellcomboPoints = 0; } UpdateComboPoints(); }
+        void NullComboPoints() { if (!m_retainComboPoints) { m_comboTarget = 0; m_comboPoints = 0; m_spellcomboPoints = 0; } UpdateComboPoints(); }
         uint32 m_speedChangeCounter;
 
         void SendAreaTriggerMessage(const char* message, ...);
 
         // Trade Target
-        //Player *getTradeTarget() {return mTradeTarget;};
+        //Player* getTradeTarget() {return mTradeTarget;};
 
         Player* GetTradeTarget()
         {
-            if(!IsInWorld()) return 0;
+            if (!IsInWorld()) return 0;
             return m_mapMgr->GetPlayer((uint32)mTradeTarget);
         }
 
@@ -2551,7 +2551,7 @@ class SkillIterator
         Player* m_target;
     public:
         SkillIterator(Player* target) : m_searchInProgress(false), m_target(target) {}
-        ~SkillIterator() { if(m_searchInProgress) { EndSearch(); } }
+        ~SkillIterator() { if (m_searchInProgress) { EndSearch(); } }
 
         void BeginSearch()
         {
@@ -2581,10 +2581,10 @@ class SkillIterator
 
         void Increment()
         {
-            if(!m_searchInProgress)
+            if (!m_searchInProgress)
                 BeginSearch();
 
-            if(m_itr == m_endItr)
+            if (m_itr == m_endItr)
                 return;
 
             ++m_itr;

@@ -375,7 +375,7 @@ void CBattleground::AddHonorToTeam(uint32 team, uint32 amount)
     m_mainLock.Acquire();
     for (std::set< Player* >::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
     {
-        Player *p = *itr;
+        Player* p = *itr;
         HonorHandler::AddHonorPointsToPlayer(p, amount);
     }
     m_mainLock.Release();
@@ -386,7 +386,7 @@ void CBattleground::CastSpellOnTeam(uint32 team, uint32 spell)
     m_mainLock.Acquire();
     for (std::set< Player* >::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
     {
-        Player *p = *itr;
+        Player* p = *itr;
         p->CastSpell(p, spell, false);
     }
     m_mainLock.Release();
@@ -397,7 +397,7 @@ void CBattleground::RemoveAuraFromTeam(uint32 team, uint32 aura)
     m_mainLock.Acquire();
     for (std::set< Player* >::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
     {
-        Player *p = *itr;
+        Player* p = *itr;
         p->RemoveAura(aura);
     }
     m_mainLock.Release();
@@ -568,7 +568,7 @@ void CBattleground::EventCountdown()
         }
         m_mainLock.Release();
 
-        // SendChatMessage( CHAT_MSG_BG_EVENT_NEUTRAL, 0, "One minute until the battle for %s begins!", GetName() );
+        // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "One minute until the battle for %s begins!", GetName());
     }
     else if (m_countdownStage == 2)
     {
@@ -585,7 +585,7 @@ void CBattleground::EventCountdown()
         }
         m_mainLock.Release();
 
-        //SendChatMessage( CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Thirty seconds until the battle for %s begins!", GetName() );
+        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Thirty seconds until the battle for %s begins!", GetName());
     }
     else if (m_countdownStage == 3)
     {
@@ -602,7 +602,7 @@ void CBattleground::EventCountdown()
         }
         m_mainLock.Release();
 
-        //SendChatMessage( CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Fifteen seconds until the battle for %s begins!", GetName() );
+        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Fifteen seconds until the battle for %s begins!", GetName());
         sEventMgr.ModifyEventTime(this, EVENT_BATTLEGROUND_COUNTDOWN, 150);
         sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 15000);
     }
@@ -618,7 +618,7 @@ void CBattleground::EventCountdown()
                 }
         }
         m_mainLock.Release();
-        //SendChatMessage( CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName() );
+        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
         Start();
     }

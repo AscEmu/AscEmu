@@ -1759,7 +1759,7 @@ class SERVER_DECL DBCStorage
             long pos;
 
             FILE* f = fopen(filename, "rb");
-            if(f == NULL)
+            if (f == NULL)
                 return false;
 
             /* read the number of rows, and allocate our block on the heap */
@@ -1785,7 +1785,7 @@ class SERVER_DECL DBCStorage
             ASSERT(m_heapBlock);
 
             /* read the data for each row */
-            for(i = 0; i < rows; ++i)
+            for (i = 0; i < rows; ++i)
             {
                 memset(&m_heapBlock[i], 0, sizeof(T));
                 ReadEntry(f, &m_heapBlock[i], format, cols, filename);
@@ -1793,7 +1793,7 @@ class SERVER_DECL DBCStorage
                 if (load_indexed)
                 {
                     /* all the time the first field in the dbc is our unique entry */
-                    if(*(uint32*)&m_heapBlock[i] > m_max)
+                    if (*(uint32*)&m_heapBlock[i] > m_max)
                         m_max = *(uint32*)&m_heapBlock[i];
                 }
             }

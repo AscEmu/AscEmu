@@ -34,7 +34,7 @@ class UpdateMask
 
         ~UpdateMask()
         {
-            if(mUpdateMask)
+            if (mUpdateMask)
                 delete [] mUpdateMask;
         }
 
@@ -42,14 +42,14 @@ class UpdateMask
         {
             ARCEMU_ASSERT(index < mCount);
             ((uint8*)mUpdateMask)[ index >> 3 ] |= 1 << (index & 0x7);
-            // ( (uint8 *)mUpdateMask )[ index / 8 ] |= 1 * pow( 2, index % 8 );
+            // ((uint8 *)mUpdateMask)[ index / 8 ] |= 1 * pow(2, index % 8);
         }
 
         void UnsetBit(const uint32 index)
         {
             ARCEMU_ASSERT(index < mCount);
             ((uint8*)mUpdateMask)[ index >> 3 ] &= (0xff ^ (1 << (index & 0x7)));
-            // ( (uint8 *)mUpdateMask )[ index / 8 ] &= 255 - ( 1 * pow( 2, index % 8 ) ) );
+            // ((uint8 *)mUpdateMask)[ index / 8 ] &= 255 - (1 * pow(2, index % 8)));
         }
 
         bool GetBit(const uint32 index) const
@@ -62,8 +62,8 @@ class UpdateMask
         uint32 GetUpdateBlockCount() const
         {
             uint32 x;
-            for(x = mBlocks - 1; x; x--)
-                if(mUpdateMask[x])break;
+            for (x = mBlocks - 1; x; x--)
+                if (mUpdateMask[x])break;
             return (x + 1);
         }
         ARCEMU_INLINE uint32 GetBlockCount() const {return mBlocks;}
@@ -74,14 +74,14 @@ class UpdateMask
 
         void SetCount(uint32 valuesCount)
         {
-            if(mUpdateMask)
+            if (mUpdateMask)
                 delete [] mUpdateMask;
 
             mCount = valuesCount;
             //mBlocks = valuesCount/32 + 1;
             //mBlocks = (valuesCount + 31) / 32;
             mBlocks = mCount >> 5;
-            if(mCount & 31)
+            if (mCount & 31)
                 ++mBlocks;
 
             mUpdateMask = new uint32[mBlocks];
@@ -90,7 +90,7 @@ class UpdateMask
 
         void Clear()
         {
-            if(mUpdateMask)
+            if (mUpdateMask)
                 memset(mUpdateMask, 0, mBlocks << 2);
         }
 
@@ -105,14 +105,14 @@ class UpdateMask
         void operator &= (const UpdateMask & mask)
         {
             ARCEMU_ASSERT(mask.mCount <= mCount);
-            for(uint32 i = 0; i < mBlocks; i++)
+            for (uint32 i = 0; i < mBlocks; i++)
                 mUpdateMask[i] &= mask.mUpdateMask[i];
         }
 
         void operator |= (const UpdateMask & mask)
         {
             ARCEMU_ASSERT(mask.mCount <= mCount);
-            for(uint32 i = 0; i < mBlocks; i++)
+            for (uint32 i = 0; i < mBlocks; i++)
                 mUpdateMask[i] |= mask.mUpdateMask[i];
         }
 

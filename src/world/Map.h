@@ -64,7 +64,7 @@ typedef struct
     {
 
         /// We don't want a segfault, now do we?
-        if(index >= 4)
+        if (index >= 4)
             return buffer;
 
         byte = byte << index * 8;
@@ -135,7 +135,7 @@ class SERVER_DECL Map
                 memset(spawns[cellx], 0, sizeof(CellSpawns*)*_sizeY);
             }
 
-            if(spawns[cellx][celly] == 0)
+            if (spawns[cellx][celly] == 0)
                 spawns[cellx][celly] = new CellSpawns;
             return spawns[cellx][celly];
         }

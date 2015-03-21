@@ -87,20 +87,20 @@ bool ConsoleThread::run()
 
 #else
         int ret = poll(&input, 1, 1000);
-        if(ret < 0)
+        if (ret < 0)
         {
             break;
         }
-        else if(ret == 0)
+        else if (ret == 0)
         {
-            if(!m_killSwitch)    // timeout
+            if (!m_killSwitch)    // timeout
                 continue;
             else
                 break;
         }
 
         ret = read(0, cmd, sizeof(cmd));
-        if(ret <= 0)
+        if (ret <= 0)
         {
             break;
         }

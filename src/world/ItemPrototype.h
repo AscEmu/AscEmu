@@ -685,7 +685,7 @@ struct ItemPrototype
     
     bool HasFlag2(uint32 flag)
     {
-        if((Flags2 & flag) != 0)
+        if ((Flags2 & flag) != 0)
             return true;
         else
             return false;

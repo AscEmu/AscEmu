@@ -109,5 +109,5 @@ void SpeedCheatDetector::ReportCheater(Player* _player)
 
     //next check will be very far away
     last_stamp = 0x0FFFFFFF;
-    cheat_threat = -100; //no more reports this session (unless flooding server :P :D )
+    cheat_threat = -100; //no more reports this session (unless flooding server :P :D)
 }

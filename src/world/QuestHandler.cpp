@@ -98,7 +98,7 @@ void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket& recv_data)
         return;
     }
 
-    /*if(qst_giver->GetAIInterface()) // NPC Stops moving for 3 minutes
+    /*if (qst_giver->GetAIInterface()) // NPC Stops moving for 3 minutes
         qst_giver->GetAIInterface()->StopMovement(180000);*/
 
     //qst_giver->Emote(EMOTE_ONESHOT_TALK); // this doesn't work
@@ -541,7 +541,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }
 
     // remove icon
-    /*if(qst_giver->GetTypeId() == TYPEID_UNIT)
+    /*if (qst_giver->GetTypeId() == TYPEID_UNIT)
     {
     qst_giver->BuildFieldUpdatePacket(GetPlayer(), UNIT_DYNAMIC_FLAGS, qst_giver->GetUInt32Value(UNIT_DYNAMIC_FLAGS));
     }*/
@@ -554,7 +554,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }
 
     sQuestMgr.OnQuestFinished(GetPlayer(), qst, qst_giver, reward_slot);
-    //if(qst_giver->GetTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >( qst_giver ),GetPlayer(),ON_QUEST_COMPLETEQUEST);
+    //if (qst_giver->GetTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
 
     if (qst->next_quest_id)
     {
@@ -621,7 +621,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                             response = QUEST_SHARE_MSG_LOG_FULL;
                         }
                         // Checks if the player is dueling
-                        else if (pPlayer->DuelingWith)   // || pPlayer->GetQuestSharer() ) //VLack: A possible lock up can occur if we don't zero out questsharer, because sometimes the client does not send the reply packet.. This of course eliminates the check on it, so it is possible to spam group members with quest sharing, but hey, they are YOUR FRIENDS, and better than not being able to receive quest sharing requests at all!
+                        else if (pPlayer->DuelingWith)   // || pPlayer->GetQuestSharer()) //VLack: A possible lock up can occur if we don't zero out questsharer, because sometimes the client does not send the reply packet.. This of course eliminates the check on it, so it is possible to spam group members with quest sharing, but hey, they are YOUR FRIENDS, and better than not being able to receive quest sharing requests at all!
                         {
                             response = QUEST_SHARE_MSG_BUSY;
                         }

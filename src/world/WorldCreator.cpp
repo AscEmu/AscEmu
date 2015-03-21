@@ -295,7 +295,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     {
         InstanceMap::iterator itr;
 
-        // this is the case when we enter an already existing instance ( with summons for example )
+        // this is the case when we enter an already existing instance (with summons for example)
         if (instanceid != 0)
         {
             itr = instancemap->find(instanceid);
@@ -327,7 +327,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
                 return INSTANCE_ABORT_NOT_FOUND;
             }
         }
-        else  // this is the case when we enter the normal way (e.g. we enter thru the portal )
+        else  // this is the case when we enter the normal way (e.g. we enter thru the portal)
         {
             in = NULL;
             if (pGroup != NULL) // we are in a group
@@ -588,7 +588,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
                     // this is our instance.
                     if (in->m_mapMgr == NULL)
                     {
-                        /*if(plr->m_TeleportState == 1)
+                        /*if (plr->m_TeleportState == 1)
                         {
                         // the player is loading. boot him out to the entry point, we don't want to spam useless instances on startup.
                         m_mapLock.Release();
@@ -811,7 +811,7 @@ void InstanceMgr::_LoadInstances()
     // clear any instances that have expired.
     Log.Success("InstanceMgr", "Deleting Expired Instances...");
     CharacterDatabase.WaitExecute("DELETE FROM instances WHERE expiration > 0 AND expiration <= %u", UNIXTIME);
-    CharacterDatabase.Execute("DELETE FROM instanceids WHERE instanceid NOT IN ( SELECT id FROM instances )");
+    CharacterDatabase.Execute("DELETE FROM instanceids WHERE instanceid NOT IN (SELECT id FROM instances)");
 
     // load saved instances
     result = CharacterDatabase.Query("SELECT id, mapid, creation, expiration, killed_npc_guids, difficulty, creator_group, creator_guid, persistent FROM instances");

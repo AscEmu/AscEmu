@@ -498,7 +498,8 @@ void LootMgr::AddLoot(Loot* loot, uint32 itemid, uint32 mincount, uint32 maxcoun
     }
 }
 
-bool LootMgr::HasLootForCreature(uint32 loot_id){
+bool LootMgr::HasLootForCreature(uint32 loot_id)
+{
     LootStore::iterator itr = CreatureLoot.find(loot_id);
     if (itr != CreatureLoot.end())
         return true;
@@ -628,18 +629,18 @@ void LootRoll::Finalize()
     uint64 player = 0;
     WorldPacket data(34);
     /*
-    Player * gplr = NULL;
-    for(std::map<uint64, uint32>::iterator itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
+    Player*  gplr = NULL;
+    for (std::map<uint64, uint32>::iterator itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
     {
     gplr = _mgr->GetPlayer((uint32)itr->first);
-    if(gplr) break;
+    if (gplr) break;
     }
-    if(!gplr)
+    if (!gplr)
     {
-    for(std::map<uint64, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
+    for (std::map<uint64, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
     {
     gplr = _mgr->GetPlayer((uint32)itr->first);
-    if(gplr) break;
+    if (gplr) break;
     }
     }
     */
@@ -656,7 +657,7 @@ void LootRoll::Finalize()
         data << _guid << _slotid << itr->first;
         data << _itemid << _randomsuffixid << _randompropertyid;
         data << uint8(itr->second) << uint8(NEED);
-        if(gplr && gplr->GetGroup())
+        if (gplr && gplr->GetGroup())
         gplr->GetGroup()->SendPacketToAll(&data);
         */
     }
@@ -675,7 +676,7 @@ void LootRoll::Finalize()
             data << _guid << _slotid << itr->first;
             data << _itemid << _randomsuffixid << _randompropertyid;
             data << uint8(itr->second) << uint8(GREED);
-            if(gplr && gplr->GetGroup())
+            if (gplr && gplr->GetGroup())
             gplr->GetGroup()->SendPacketToAll(&data);
             */
         }

@@ -394,7 +394,7 @@ bool HandleReloadConsoleCommand(BaseConsole* pConsole, int argc, const char* arg
     return true;
 
     /*
-    if( argc < 2 || strlen(argv[1]) < 3 )
+    if (argc < 2 || strlen(argv[1]) < 3)
     return false;
 
     char str[200];
@@ -405,12 +405,12 @@ bool HandleReloadConsoleCommand(BaseConsole* pConsole, int argc, const char* arg
     MSG_COLOR_LIGHTRED, argv[1]);
     sWorld.SendWorldText(str, 0);
 
-    if( !stricmp(argv[1], "spell_disable") )
+    if (!stricmp(argv[1], "spell_disable"))
     {
     objmgr.ReloadDisabledSpells();
     ret = 1;
     }
-    else if( !stricmp(argv[1], "vendors") )
+    else if (!stricmp(argv[1], "vendors"))
     {
     objmgr.ReloadVendors();
     ret = 1;
@@ -421,16 +421,16 @@ bool HandleReloadConsoleCommand(BaseConsole* pConsole, int argc, const char* arg
 
     if (ret == 0)
     {
-    pConsole->Write( "Database reload failed.\r\n" );
+    pConsole->Write("Database reload failed.\r\n");
     snprintf(str, 200, "%sDatabase reload failed.", MSG_COLOR_LIGHTRED);
     }
     else
     {
     uint32 timediff = (unsigned int)(getMSTime() - mstime);
-    pConsole->Write( "Database reload completed in %u ms.\r\n", timediff );
-    snprintf( str, 200, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, timediff );
+    pConsole->Write("Database reload completed in %u ms.\r\n", timediff);
+    snprintf(str, 200, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, timediff);
     }
-    sWorld.SendWorldText( str, 0 );
+    sWorld.SendWorldText(str, 0);
 
     return true;
 

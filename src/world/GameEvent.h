@@ -26,7 +26,7 @@ struct EventCreatureSpawnsQueryResult;
 struct EventGameObjectSpawnsQueryResult;
 
 class EventScript;
-#define CALL_EVENTSCRIPT_EVENT(obj, func) if(TO< GameEvent* >(obj)->mEventScript != nullptr) TO< GameEvent* >(obj)->mEventScript->func
+#define CALL_EVENTSCRIPT_EVENT(obj, func) if (TO< GameEvent* >(obj)->mEventScript != nullptr) TO< GameEvent* >(obj)->mEventScript->func
 
 class GameEvent
 {

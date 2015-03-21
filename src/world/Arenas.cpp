@@ -141,7 +141,7 @@ void Arena::OnAddPlayer(Player* plr)
     if (!m_started  && plr->IsInWorld())
         plr->ResetAllCooldowns();
 
-    // if( plr->m_isGmInvisible == false )
+    // if (plr->m_isGmInvisible == false)
     // Make sure the player isn't a GM an isn't invisible (monitoring?)
     if (!plr->m_isGmInvisible)
     {
@@ -334,7 +334,7 @@ uint32 Arena::CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outc
 uint32 Arena::GetTeamFaction(uint32 team)
 {
     std::set< Player* >::iterator itr = m_players[team].begin();
-    Player *p = *itr;
+    Player* p = *itr;
     return p->GetTeam();
 }
 

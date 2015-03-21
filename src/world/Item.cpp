@@ -182,7 +182,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     else
         SetItemRandomSuffixFactor(0);
 
-    //SetTextId( fields[11].GetUInt32() );
+    //SetTextId(fields[11].GetUInt32());
 
     SetDurabilityMax(m_itemProto->MaxDurability);
     SetDurability(fields[12].GetUInt32());
@@ -214,7 +214,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
                 memset(pEnchant,0,sizeof(EnchantEntry));
 
                 pEnchant->Id = enchant_id;
-                if(enchslot != 2)
+                if (enchslot != 2)
                 AddEnchantment(pEnchant,0,true, false);
                 else
                 AddEnchantment(pEnchant,0,false,false);
@@ -1214,7 +1214,7 @@ uint32 Item::CountGemsWithLimitId(uint32 LimitId)
         EnchantmentInstance* ei = GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
         if (ei
             && ei->Enchantment->GemEntry //huh ? Gem without entry ?
-            )
+           )
         {
             ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(ei->Enchantment->GemEntry);
             if (ip && ip->ItemLimitCategory == LimitId)
@@ -1234,7 +1234,7 @@ void Item::EventRemoveItem()
 void Item::SendDurationUpdate()
 {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  As of 3.1.3 the server sends this to set the actual durationtime ( the time the item exists for)
+    //  As of 3.1.3 the server sends this to set the actual durationtime (the time the item exists for)
     //  of the item
     //
     //  {SERVER} Packet: (0x01EA) SMSG_ITEM_TIME_UPDATE PacketSize = 12 TimeStamp = 37339296
@@ -1314,7 +1314,7 @@ uint32 Item::RepairItemCost()
 
 bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost is needed for the guild log
 {
-    //int32 cost = (int32)pItem->GetUInt32Value( ITEM_FIELD_MAXDURABILITY ) - (int32)pItem->GetUInt32Value( ITEM_FIELD_DURABILITY );
+    //int32 cost = (int32)pItem->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) - (int32)pItem->GetUInt32Value(ITEM_FIELD_DURABILITY);
     int32 cost = RepairItemCost();
     if (cost <= 0)
         return false;

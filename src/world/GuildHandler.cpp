@@ -96,7 +96,8 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
     uint32 memberCount = pGuild->GetNumMembers();
     pGuild->getLock().Release();
 
-    if (memberCount >= MAX_GUILD_MEMBERS){
+    if (memberCount >= MAX_GUILD_MEMBERS)
+    {
         SystemMessage("Your guild is full.");
         return;
     }
@@ -138,7 +139,8 @@ void WorldSession::HandleGuildAccept(WorldPacket& recv_data)
     uint32 memberCount = pGuild->GetNumMembers();
     pGuild->getLock().Release();
 
-    if (memberCount >= MAX_GUILD_MEMBERS){
+    if (memberCount >= MAX_GUILD_MEMBERS)
+    {
         plyr->UnSetGuildInvitersGuid();
         SystemMessage("That guild is full.");
         return;
@@ -847,11 +849,11 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
     recv_data >> charter_id;
     recv_data >> item_guid;
     /*Charter * c = objmgr.GetCharter(charter_id,CHARTER_TYPE_GUILD);
-    if(c == 0)
+    if (c == 0)
     c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_2V2);
-    if(c == 0)
+    if (c == 0)
     c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_3V3);
-    if(c == 0)
+    if (c == 0)
     c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_5V5);*/
 
     Charter* c = objmgr.GetCharterByItemGuid(item_guid);
@@ -869,9 +871,9 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
     else
     {
         /*uint32 v = c->CharterType;
-        if(c->CharterType == CHARTER_TYPE_ARENA_3V3)
+        if (c->CharterType == CHARTER_TYPE_ARENA_3V3)
         v=2;
-        else if(c->CharterType == CHARTER_TYPE_ARENA_5V5)
+        else if (c->CharterType == CHARTER_TYPE_ARENA_5V5)
         v=4;
 
         data << v << v;*/

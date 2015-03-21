@@ -142,72 +142,72 @@ enum SPELL_MODIFIER_TYPE
 
 static void SM_FFValue(int32* m, float* v, uint32* group)
 {
-    if(m == 0)
+    if (m == 0)
         return;
 
     uint32 intbit = 0, groupnum = 0;
-    for(uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
+    for (uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
     {
-        if(intbit == 32)
+        if (intbit == 32)
         {
             ++groupnum;
             intbit = 0;
         }
-        if((1 << intbit) & group[groupnum])
+        if ((1 << intbit) & group[groupnum])
             (*v) += m[bit];
     }
 }
 
 static void SM_FIValue(int32* m, int32* v, uint32* group)
 {
-    if(m == 0)
+    if (m == 0)
         return;
 
     uint32 intbit = 0, groupnum = 0;
-    for(uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
+    for (uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
     {
-        if(intbit == 32)
+        if (intbit == 32)
         {
             ++groupnum;
             intbit = 0;
         }
-        if((1 << intbit) & group[groupnum])
+        if ((1 << intbit) & group[groupnum])
             (*v) += m[bit];
     }
 }
 
 static void SM_PIValue(int32* m, int32* v, uint32* group)
 {
-    if(m == 0)
+    if (m == 0)
         return;
 
     uint32 intbit = 0, groupnum = 0;
-    for(uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
+    for (uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
     {
-        if(intbit == 32)
+        if (intbit == 32)
         {
             ++groupnum;
             intbit = 0;
         }
-        if((1 << intbit) & group[groupnum])
+        if ((1 << intbit) & group[groupnum])
             (*v) += ((*v) * m[bit]) / 100;
     }
 }
 
 static void SM_PFValue(int32* m, float* v, uint32* group)
 {
-    if(m == 0)
+    if (m == 0)
         return;
 
     uint32 intbit = 0, groupnum = 0;
-    for(uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
+    for (uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
     {
-        if(intbit == 32)
+        if (intbit == 32)
         {
             ++groupnum;
             intbit = 0;
         }
-        if((1 << intbit) & group[groupnum])
+        if ((1 << intbit) & group[groupnum])
             (*v) += ((*v) * m[bit]) / 100.0f;
     }
 }
@@ -1144,14 +1144,14 @@ enum TeleportEffectCustomFlags
 
 ARCEMU_INLINE bool CanAgroHash(uint32 spellhashname)
 {
-    if(spellhashname == SPELL_HASH_HUNTER_S_MARK)   //hunter's mark
+    if (spellhashname == SPELL_HASH_HUNTER_S_MARK)   //hunter's mark
         return false;
     else
         return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-//bool IsDamagingSpell( SpellEntry *sp )
+//bool IsDamagingSpell(SpellEntry *sp)
 //  Tells if a Spell is damaging
 //
 //Parameters
@@ -1193,7 +1193,7 @@ ARCEMU_INLINE uint32 IsHealingSpell(SpellEntry* sp)
         default:
             break;
     }
-    if(sp->Effect[0] == SPELL_EFFECT_APPLY_AURA ||
+    if (sp->Effect[0] == SPELL_EFFECT_APPLY_AURA ||
             sp->Effect[0] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
             sp->Effect[0] == SPELL_EFFECT_APPLY_RAID_AREA_AURA)
     {
@@ -1206,7 +1206,7 @@ ARCEMU_INLINE uint32 IsHealingSpell(SpellEntry* sp)
                 break;
         }
     }
-    if(sp->Effect[1] == SPELL_EFFECT_APPLY_AURA ||
+    if (sp->Effect[1] == SPELL_EFFECT_APPLY_AURA ||
             sp->Effect[1] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
             sp->Effect[1] == SPELL_EFFECT_APPLY_RAID_AREA_AURA)
     {
@@ -1219,7 +1219,7 @@ ARCEMU_INLINE uint32 IsHealingSpell(SpellEntry* sp)
                 break;
         }
     }
-    if(sp->Effect[2] == SPELL_EFFECT_APPLY_AURA ||
+    if (sp->Effect[2] == SPELL_EFFECT_APPLY_AURA ||
             sp->Effect[2] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
             sp->Effect[2] == SPELL_EFFECT_APPLY_RAID_AREA_AURA)
     {
@@ -1233,7 +1233,7 @@ ARCEMU_INLINE uint32 IsHealingSpell(SpellEntry* sp)
         }
     }
     //flash of light, holy light uses scripted effect which is not neciserally heal spell
-    if(sp->NameHash == SPELL_HASH_HOLY_LIGHT || sp->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
+    if (sp->NameHash == SPELL_HASH_HOLY_LIGHT || sp->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
         return true;
 
     return false;
@@ -1272,16 +1272,16 @@ ARCEMU_INLINE bool IsInrange(Object* o1, Object* o2, float square_r)
 
 ARCEMU_INLINE bool TargetTypeCheck(Object* obj, uint32 ReqCreatureTypeMask)
 {
-    if(!ReqCreatureTypeMask)
+    if (!ReqCreatureTypeMask)
         return true;
 
-    if(obj->IsCreature())
+    if (obj->IsCreature())
     {
         CreatureInfo* inf = TO< Creature* >(obj)->GetCreatureInfo();
-        if(!(1 << (inf->Type - 1) & ReqCreatureTypeMask))
+        if (!(1 << (inf->Type - 1) & ReqCreatureTypeMask))
             return false;
     }
-    else if(obj->IsPlayer() && !(UNIT_TYPE_HUMANOID_BIT & ReqCreatureTypeMask))
+    else if (obj->IsPlayer() && !(UNIT_TYPE_HUMANOID_BIT & ReqCreatureTypeMask))
         return false;
     else
         return false;//mg, how in the hack did we cast it on a GO ? But who cares ?
@@ -1483,14 +1483,14 @@ typedef enum
 
 inline bool HasTargetType(SpellEntry* sp, uint32 ttype)
 {
-    if(
+    if (
         sp->EffectImplicitTargetA[0] == ttype ||
         sp->EffectImplicitTargetA[1] == ttype ||
         sp->EffectImplicitTargetA[2] == ttype ||
         sp->EffectImplicitTargetB[0] == ttype ||
         sp->EffectImplicitTargetB[1] == ttype ||
         sp->EffectImplicitTargetB[2] == ttype
-    )
+   )
         return true;
     return false;
 }
@@ -1499,25 +1499,25 @@ inline int GetAiTargetType(SpellEntry* sp)
 {
     /*  this is not good as one spell effect can target self and other one an enemy,
         maybe we should make it for each spell effect or use as flags */
-    if(
+    if (
         HasTargetType(sp, EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
         HasTargetType(sp, EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMY_IN_AREA) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED) ||
         HasTargetType(sp, EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME)
-    )
+   )
         return TTYPE_DESTINATION;
-    if(
+    if (
         HasTargetType(sp, EFF_TARGET_LOCATION_TO_SUMMON) ||
         HasTargetType(sp, EFF_TARGET_IN_FRONT_OF_CASTER) ||
         HasTargetType(sp, EFF_TARGET_ALL_FRIENDLY_IN_AREA) ||
         HasTargetType(sp, EFF_TARGET_PET_SUMMON_LOCATION) ||
         HasTargetType(sp, EFF_TARGET_LOCATION_INFRONT_CASTER) ||
         HasTargetType(sp, EFF_TARGET_CONE_IN_FRONT)
-    )
+   )
         return TTYPE_SOURCE;
-    if(
+    if (
         HasTargetType(sp, EFF_TARGET_SINGLE_ENEMY) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMIES_AROUND_CASTER) ||
         HasTargetType(sp, EFF_TARGET_DUEL) ||
@@ -1527,9 +1527,9 @@ inline int GetAiTargetType(SpellEntry* sp)
         HasTargetType(sp, EFF_TARGET_TARGET_AT_ORIENTATION_TO_CASTER) ||
         HasTargetType(sp, EFF_TARGET_MULTIPLE_GUARDIAN_SUMMON_LOCATION) ||
         HasTargetType(sp, EFF_TARGET_SELECTED_ENEMY_CHANNELED)
-    )
+   )
         return TTYPE_SINGLETARGET;
-    if(
+    if (
         HasTargetType(sp, EFF_TARGET_ALL_PARTY_AROUND_CASTER) ||
         HasTargetType(sp, EFF_TARGET_SINGLE_FRIEND) ||
         HasTargetType(sp, EFF_TARGET_PET_MASTER) ||
@@ -1540,31 +1540,31 @@ inline int GetAiTargetType(SpellEntry* sp)
         HasTargetType(sp, EFF_TARGET_ALL_RAID) ||
         HasTargetType(sp, EFF_TARGET_PARTY_MEMBER) ||
         HasTargetType(sp, EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS)
-    )
+   )
         return TTYPE_OWNER;
-    if(
+    if (
         HasTargetType(sp, EFF_TARGET_SELF) ||
         HasTargetType(sp, 4) ||
         HasTargetType(sp, EFF_TARGET_PET) ||
         HasTargetType(sp, EFF_TARGET_MINION)
-    )
+   )
         return TTYPE_CASTER;
     return TTYPE_NULL;
 }
 
 ARCEMU_INLINE bool IsTargetingStealthed(SpellEntry* sp)
 {
-    if(
+    if (
         HasTargetType(sp, EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMIES_AROUND_CASTER) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT)
-    )
+   )
         return 1;
 
-    if(
+    if (
         sp->NameHash == SPELL_HASH_MAGMA_TOTEM
-    )
+   )
         return 1;
 
     return 0;
@@ -1632,7 +1632,7 @@ enum SpellDidHitResult
     NUM_SPELL_DID_HIT_RESULTS,
 };
 
-// Target constraints for spells ( mostly scripted stuff )
+// Target constraints for spells (mostly scripted stuff)
 class SpellTargetConstraint
 {
     public:
@@ -2016,7 +2016,7 @@ class SERVER_DECL Spell : public EventableObject
         void Heal(int32 amount, bool ForceCrit = false);
 
         GameObject*     g_caster;
-        Unit*           u_caster;
+        Unit*          u_caster;
         Item*           i_caster;
         Player*         p_caster;
         Object*         m_caster;
@@ -2103,7 +2103,7 @@ class SERVER_DECL Spell : public EventableObject
                         int spell_pct_modifers = 0;
                         SM_FIValue(u_caster->SM_FDur, &spell_flat_modifers, GetProto()->SpellGroupType);
                         SM_FIValue(u_caster->SM_PDur, &spell_pct_modifers, GetProto()->SpellGroupType);
-                        if(spell_flat_modifers != 0 || spell_pct_modifers != 0)
+                        if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
                             LOG_DEBUG("!!!!!spell duration mod flat %d , spell duration mod pct %d , spell duration %d, spell group %u", spell_flat_modifers, spell_pct_modifers, Dur, GetProto()->SpellGroupType);
     #endif
                     }
@@ -2135,7 +2135,7 @@ class SERVER_DECL Spell : public EventableObject
                 float spell_pct_modifers = 1;
                 SM_FFValue(u_caster->SM_FRadius, &spell_flat_modifers, GetProto()->SpellGroupType);
                 SM_PFValue(u_caster->SM_PRadius, &spell_pct_modifers, GetProto()->SpellGroupType);
-                if(spell_flat_modifers != 0 || spell_pct_modifers != 1)
+                if (spell_flat_modifers != 0 || spell_pct_modifers != 1)
                     LOG_DEBUG("!!!!!spell radius mod flat %f , spell radius mod pct %f , spell radius %f, spell group %u", spell_flat_modifers, spell_pct_modifers, Rad[i], GetProto()->SpellGroupType);
     #endif
             }
@@ -2257,7 +2257,7 @@ class SERVER_DECL Spell : public EventableObject
         int64 m_magnetTarget;
 
         // Current Targets to be used in effect handler
-        Unit*       unitTarget;
+        Unit*      unitTarget;
         Item*       itemTarget;
         GameObject* gameObjTarget;
         Player*     playerTarget;

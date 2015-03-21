@@ -255,7 +255,8 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                 }
                 else
                 {
-                    if ((qst->time != 0) && plr->HasTimedQuest()){
+                    if ((qst->time != 0) && plr->HasTimedQuest())
+                    {
                         sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, plr);
                         return true;
                     }
@@ -292,9 +293,9 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                     }
 
 
-                    //if(qst->count_required_item || qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)	// gameobject quests deactivate
+                    //if (qst->count_required_item || qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)	// gameobject quests deactivate
                     //	plr->UpdateNearbyGameObjects();
-                    //ScriptSystem->OnQuestEvent(qst, TO< Creature* >( qst_giver ), _player, QUEST_EVENT_ON_ACCEPT);
+                    //ScriptSystem->OnQuestEvent(qst, TO< Creature* >(qst_giver), _player, QUEST_EVENT_ON_ACCEPT);
 
                     sHookInterface.OnQuestAccept(plr, qst, NULL);
 
@@ -583,7 +584,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleQuestFailCommand(const char *args, WorldSession *m_session)
+bool ChatHandler::HandleQuestFailCommand(const char *args, WorldSession* m_session)
 {
     if (args == NULL)
         return false;
@@ -593,7 +594,7 @@ bool ChatHandler::HandleQuestFailCommand(const char *args, WorldSession *m_sessi
     if (questid == 0)
         return false;
 
-    Player *player = m_session->GetPlayer();
+    Player* player = m_session->GetPlayer();
     QuestLogEntry *qle = player->GetQuestLogForEntry(questid);
 
     if (qle == NULL)

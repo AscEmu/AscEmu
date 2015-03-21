@@ -89,7 +89,7 @@ class SERVER_DECL ItemInterface
 
         Item* GetInventoryItem(int16 slot);
         Item* GetInventoryItem(int8 ContainerSlot, int16 slot);
-        Container* GetContainer( int8 containerSlot );
+        Container* GetContainer(int8 containerSlot);
         int16 GetInventorySlotById(uint32 ID);
         int16 GetInventorySlotByGuid(uint64 guid);
         int16 GetBagSlotByGuid(uint64 guid);
@@ -144,7 +144,7 @@ class SERVER_DECL ItemInterface
         /// buyback stuff
         ARCEMU_INLINE Item* GetBuyBack(int32 slot)
         {
-            if(slot >= 0 && slot < MAX_BUYBACK_SLOT)
+            if (slot >= 0 && slot < MAX_BUYBACK_SLOT)
                 return m_pBuyBack[slot];
             else
                 return NULL;
@@ -215,7 +215,7 @@ class ItemIterator
         ItemInterface* m_target;
     public:
         ItemIterator(ItemInterface* target) : m_atEnd(false), m_searchInProgress(false), m_slot(0), m_containerSlot(0), m_container(NULL), m_target(target) {}
-        ~ItemIterator() { if(m_searchInProgress) { EndSearch(); } }
+        ~ItemIterator() { if (m_searchInProgress) { EndSearch(); } }
 
         void BeginSearch()
         {

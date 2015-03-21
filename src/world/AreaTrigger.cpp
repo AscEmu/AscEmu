@@ -105,8 +105,8 @@ uint32 CheckTriggerPrerequisites(AreaTrigger* pAreaTrigger, WorldSession* pSessi
         pMapInfo->type == INSTANCE_MULTIMODE
         && ((pMapInfo->heroic_key_1 > 0 && !pPlayer->GetItemInterface()->GetItemCount(pMapInfo->heroic_key_1, false))
         && (pMapInfo->heroic_key_2 > 0 && !pPlayer->GetItemInterface()->GetItemCount(pMapInfo->heroic_key_2, false))
-        )
-        )
+       )
+       )
         return AREA_TRIGGER_FAILURE_NO_KEY;
 
     if (pMapInfo->type != INSTANCE_NULL && pPlayer->iInstanceType >= MODE_HEROIC && pPlayer->getLevel() < pMapInfo->minlevel_heroic)
@@ -140,7 +140,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
     CALL_INSTANCE_SCRIPT_EVENT(pPlayer->GetMapMgr(), OnAreaTrigger)(GetPlayer(), id);
 
 #ifdef GM_Z_DEBUG_DIRECTLY
-    if(_player->GetSession() && _player->GetSession()->CanUseCommand('z'))
+    if (_player->GetSession() && _player->GetSession()->CanUseCommand('z'))
         sChatHandler.BlueSystemMessage(this, "[%sSystem%s] |rEntered areatrigger: %s%u. (%s)", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE, id, pAreaTrigger ? pAreaTrigger->Name : "Unknown name");
 #endif
 

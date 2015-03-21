@@ -1181,7 +1181,7 @@ class SERVER_DECL Unit : public Object
 		bool RemoveAurasByHeal();
 
 		////////////////////////////////////////////////////////////////////////////////////////
-		//bool AuraActionIf( AuraAction *a, AuraCondition *c )
+		//bool AuraActionIf(AuraAction *a, AuraCondition *c)
 		//  Performs the specified action on the auras that meet the specified condition
 		//
 		//Parameter(s)
@@ -1640,7 +1640,7 @@ class SERVER_DECL Unit : public Object
 		bool GetSpeedDecrease();
 		int32 m_mountedspeedModifier;
 		int32 m_flyspeedModifier;
-		virtual void SetSpeeds( uint8 type, float speed ){}
+		virtual void SetSpeeds(uint8 type, float speed){}
 		void UpdateSpeed();
 		void EnableFlight();
 		void DisableFlight();
@@ -2055,7 +2055,7 @@ class SERVER_DECL Unit : public Object
 
 	public:
 		void SetCurrentVehicle(Vehicle* v){ currentvehicle = v; }
-		void EnterVehicle( uint64 guid, uint32 delay );
+		void EnterVehicle(uint64 guid, uint32 delay);
 		Vehicle* GetCurrentVehicle(){ return currentvehicle; }
 		Vehicle* GetVehicleComponent(){ return vehicle; }
 		virtual void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid){}
@@ -2077,8 +2077,8 @@ class SERVER_DECL Unit : public Object
 		
 		void SendEnvironmentalDamageLog(uint64 guid, uint8 type, uint32 damage);
 
-        void BuildMovementPacket(ByteBuffer *data);
-        void BuildMovementPacket(ByteBuffer *data, float x, float y, float z, float o);
+        void BuildMovementPacket(ByteBuffer* data);
+        void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
         MovementInfo* GetMovementInfo() { return &movement_info; }
         uint32 GetUnitMovementFlags() { return movement_info.flags; }   //checked
         void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }

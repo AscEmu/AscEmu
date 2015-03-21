@@ -24,7 +24,7 @@
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
 #define IS_PERSISTENT_INSTANCE(p) (((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty >= MODE_HEROIC) || (p)->m_mapInfo->type == INSTANCE_RAID)
-#define IS_RESETABLE_INSTANCE(p) ( !(p)->m_persistent && ((p)->m_mapInfo->type == INSTANCE_NONRAID || ((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty == MODE_NORMAL)))
+#define IS_RESETABLE_INSTANCE(p) (!(p)->m_persistent && ((p)->m_mapInfo->type == INSTANCE_NONRAID || ((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty == MODE_NORMAL)))
 #define CHECK_INSTANCE_GROUP(p, g) ((p)->m_creatorGroup == 0 || ((g) && (p)->m_creatorGroup == (g)->GetID()))
 
 #define GO_GUID_RECYCLE_INTERVAL 2048       /// client will cache GO positions. Using same guid for same client will make GO appear at wrong possition so we try to avoid assigning same guid
@@ -134,10 +134,10 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-		/// Summon* CreateSummon( uint32 entry, SummonType type )
+		/// Summon* CreateSummon(uint32 entry, SummonType type)
 		/// Summon factory function, creates and returns the appropriate summon subclass.
 		///
-		/// \param uint32 entry     -  entry of the summon ( NPC id )
+		/// \param uint32 entry     -  entry of the summon (NPC id)
         /// \param SummonType type  -  Type of the summon
 		///
 		/// \return pointer to a summon
@@ -255,8 +255,8 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		void EventRespawnGameObject(GameObject* o, uint16 x, uint16 y);
 		void SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32 cell_radius, uint32 langpos, int32 lang, WorldSession* originator);
 		void SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Message, ...);
-		void SendPacketToAllPlayers( WorldPacket *packet ) const;
-		void SendPacketToPlayersInZone( uint32 zone, WorldPacket *packet ) const;
+		void SendPacketToAllPlayers(WorldPacket *packet) const;
+		void SendPacketToPlayersInZone(uint32 zone, WorldPacket *packet) const;
 
 		Instance* pInstance;
 		void BeginInstanceExpireCountdown();

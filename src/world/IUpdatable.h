@@ -32,7 +32,7 @@ namespace Arcemu
     {
         public:
             //////////////////////////////////////////////////////////////////////////////////////////
-            /// virtual void Update( unsigned long time_passed )
+            /// virtual void Update(unsigned long time_passed)
             /// Updates the Object, allowing it's time-continous features to work
             ///
             /// \param unsigned long time_passed - Seconds passed since last update

@@ -232,7 +232,7 @@ struct Quest
 	QuestScript* pQuestScript;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-	/// bool HasFlag( uint32 flag )
+	/// bool HasFlag(uint32 flag)
 	/// Tells if the quest has a specific flag.
 	///
 	/// \param uint32 flag  -  flag to check
@@ -258,7 +258,7 @@ enum QUEST_MOB_TYPES
 };
 
 class QuestScript;
-#define CALL_QUESTSCRIPT_EVENT(obj, func) if(TO<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) TO<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func
+#define CALL_QUESTSCRIPT_EVENT(obj, func) if (TO<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) TO<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func
 
 #define MAX_QUEST_LOG_SIZE 25
 
@@ -323,7 +323,8 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		/// \return true if the quest has failed, false otherwise.
 		///
         //////////////////////////////////////////////////////////////////////////////////////////
-		bool HasFailed(){
+		bool HasFailed()
+        {
 			if (completed == QUEST_FAILED)
 				return true;
 			else

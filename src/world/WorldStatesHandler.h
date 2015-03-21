@@ -23,16 +23,19 @@
 
 struct WorldState;
 
-class SERVER_DECL WorldStatesHandler{
+class SERVER_DECL WorldStatesHandler
+{
     public:
 
-        class SERVER_DECL WorldStatesObserver{
+        class SERVER_DECL WorldStatesObserver
+        {
         public:
             virtual ~WorldStatesObserver(){}
-            virtual void onWorldStateUpdate( uint32 zone, uint32 field, uint32 value ) = 0;
+            virtual void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) = 0;
         };
 
-        WorldStatesHandler( uint32 mapid ){
+        WorldStatesHandler(uint32 mapid)
+        {
             map = mapid;
             observer = NULL;
         }
@@ -41,7 +44,7 @@ class SERVER_DECL WorldStatesHandler{
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        //void SetWorldStateForZone( uint32 zone, uint32 area, uint32 field, uint32 value )
+        //void SetWorldStateForZone(uint32 zone, uint32 area, uint32 field, uint32 value)
         //  Sets the specified worldstate's value for the specified zone
         //
         //Parameter(s)
@@ -55,11 +58,11 @@ class SERVER_DECL WorldStatesHandler{
         //
         //
         ////////////////////////////////////////////////////////////////////////////////////////////
-        void SetWorldStateForZone( uint32 zone, uint32 area, uint32 field, uint32 value );
+        void SetWorldStateForZone(uint32 zone, uint32 area, uint32 field, uint32 value);
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        //uint32 GetWorldStateForZone( uint32 zone, uint32 area, uint32 field ) const;
+        //uint32 GetWorldStateForZone(uint32 zone, uint32 area, uint32 field) const;
         //  Returns the value of the worldstate field queried.
         //
         //Parameter(s)
@@ -73,11 +76,11 @@ class SERVER_DECL WorldStatesHandler{
         //
         //
         ////////////////////////////////////////////////////////////////////////////////////////////
-        uint32 GetWorldStateForZone( uint32 zone, uint32 area, uint32 field ) const;
+        uint32 GetWorldStateForZone(uint32 zone, uint32 area, uint32 field) const;
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        //void BuildInitWorldStatesForZone( uint32 zone, uint32 area, WorldPacket &data ) const;
+        //void BuildInitWorldStatesForZone(uint32 zone, uint32 area, WorldPacket &data) const;
         //  Builds the initial worldstates packet, that tells the client what worldstates exist
         //
         //Parameter(s)
@@ -90,11 +93,11 @@ class SERVER_DECL WorldStatesHandler{
         //
         //
         ////////////////////////////////////////////////////////////////////////////////////////////
-        void BuildInitWorldStatesForZone( uint32 zone, uint32 area, WorldPacket &data ) const;
+        void BuildInitWorldStatesForZone(uint32 zone, uint32 area, WorldPacket &data) const;
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        //void InitWorldStates( std::multimap< uint32, WorldState > *states );
+        //void InitWorldStates(std::multimap< uint32, WorldState > *states);
         //  Sets up this worldstate handler with the initial data
         //
         //Parameter(s)
@@ -105,9 +108,9 @@ class SERVER_DECL WorldStatesHandler{
         //
         //
         ////////////////////////////////////////////////////////////////////////////////////////////
-        void InitWorldStates( std::multimap< uint32, WorldState > *states );
+        void InitWorldStates(std::multimap< uint32, WorldState > *states);
 
-        void setObserver( WorldStatesObserver *observer ){ this->observer = observer; }
+        void setObserver(WorldStatesObserver *observer){ this->observer = observer; }
 
     private:
         HM_NAMESPACE::hash_map< uint32, HM_NAMESPACE::hash_map< uint32, uint32 > > worldstates;

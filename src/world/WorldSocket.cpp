@@ -185,7 +185,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
         return OUTPACKET_RESULT_NOT_CONNECTED;
 
     BurstBegin();
-    //if((m_writeByteCount + len + 4) >= m_writeBufferSize)
+    //if ((m_writeByteCount + len + 4) >= m_writeBufferSize)
     if (writeBuffer.GetSpace() < (len + 4))
     {
         BurstEnd();
@@ -418,7 +418,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 
     Log.Debug("Auth", "%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
 #ifdef SESSION_CAP
-    if(sWorld.GetSessionCount() >= SESSION_CAP)
+    if (sWorld.GetSessionCount() >= SESSION_CAP)
     {
         OutPacket(SMSG_AUTH_RESPONSE, 1, "\x0D");
         Disconnect();
@@ -520,7 +520,7 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
 
 #ifdef WIN32
     // Dynamically change nagle buffering status based on latency.
-    //if(_latency >= 250)
+    //if (_latency >= 250)
     // I think 350 is better, in a MMO 350 latency isn't that big that we need to worry about reducing the number of packets being sent.
     if (_latency >= 350)
     {

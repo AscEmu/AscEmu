@@ -81,7 +81,7 @@ void CellHandler<Class>::_Init()
     _cells = new Class** [_sizeX];
 
     ARCEMU_ASSERT(_cells != NULL);
-    for(uint32 i = 0; i < _sizeX; i++)
+    for (uint32 i = 0; i < _sizeX; i++)
     {
         _cells[i] = NULL;
     }
@@ -90,16 +90,16 @@ void CellHandler<Class>::_Init()
 template <class Class>
 CellHandler<Class>::~CellHandler()
 {
-    if(_cells)
+    if (_cells)
     {
-        for(uint32 i = 0; i < _sizeX; i++)
+        for (uint32 i = 0; i < _sizeX; i++)
         {
-            if(!_cells[i])
+            if (!_cells[i])
                 continue;
 
-            for(uint32 j = 0; j < _sizeY; j++)
+            for (uint32 j = 0; j < _sizeY; j++)
             {
-                if(_cells[i][j])
+                if (_cells[i][j])
                     delete _cells[i][j];
             }
             delete [] _cells[i];
@@ -111,9 +111,9 @@ CellHandler<Class>::~CellHandler()
 template <class Class>
 Class* CellHandler<Class>::Create(uint32 x, uint32 y)
 {
-    if(x >= _sizeX || y >= _sizeY)
+    if (x >= _sizeX || y >= _sizeY)
         return NULL;
-    if(!_cells[x])
+    if (!_cells[x])
     {
         _cells[x] = new Class*[_sizeY];
         memset(_cells[x], 0, sizeof(Class*)*_sizeY);
@@ -136,9 +136,9 @@ Class* CellHandler<Class>::CreateByCoords(float x, float y)
 template <class Class>
 void CellHandler<Class>::Remove(uint32 x, uint32 y)
 {
-    if(x >= _sizeX || y >= _sizeY)
+    if (x >= _sizeX || y >= _sizeY)
         return;
-    if(!_cells[x]) return;
+    if (!_cells[x]) return;
     ARCEMU_ASSERT(_cells[x][y] != NULL);
 
     Class* cls = _cells[x][y];
@@ -150,7 +150,7 @@ void CellHandler<Class>::Remove(uint32 x, uint32 y)
 template <class Class>
 Class* CellHandler<Class>::GetCell(uint32 x, uint32 y)
 {
-    if(x >= _sizeX || y >= _sizeY || !_cells[x]) return NULL;
+    if (x >= _sizeX || y >= _sizeY || !_cells[x]) return NULL;
     return _cells[x][y];
 }
 

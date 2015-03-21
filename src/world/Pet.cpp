@@ -699,7 +699,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         SetByte(UNIT_FIELD_BYTES_2, 2, PET_RENAME_ALLOWED);
 
     //if pet was dead on logout then it should be dead now too.//we could use mPi->alive but this will break backward compatibility
-    if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD))   //LoadFromDB() (called by Player::SpawnPet() ) now always revive the Pet if it was dead.
+    if (HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD))   //LoadFromDB() (called by Player::SpawnPet()) now always revive the Pet if it was dead.
         //This is because now we call SpawnPet() only if it's alive or we wanna revive it.
     {
         SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);

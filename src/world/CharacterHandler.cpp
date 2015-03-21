@@ -291,7 +291,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             if (Class == WARLOCK || Class == HUNTER)
             {
-                res = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u AND MOD( active, 10 ) = 1 AND alive = TRUE;", Arcemu::Util::GUID_LOPART(guid));
+                res = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u AND MOD(active, 10) = 1 AND alive = TRUE;", Arcemu::Util::GUID_LOPART(guid));
 
                 if (res)
                 {
@@ -509,7 +509,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         WorldPacket data(1);
         data.SetOpcode(SMSG_CHAR_CREATE);
         data << (uint8)56 + 1; // This errorcode is not the actual one. Need to find a real error code.
-        SendPacket( &data );
+        SendPacket(&data);
         */
         OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_LEVEL_REQUIREMENT);
         return;
@@ -610,7 +610,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
                 t->RemoveMember(inf);
         }
 
-        /*if ( _socket != NULL )
+        /*if (_socket != NULL)
             sPlrLog.write("Account: %s | IP: %s >> Deleted player %s", GetAccountName().c_str(), GetSocket()->GetRemoteIP().c_str(), name.c_str());*/
 
         sPlrLog.writefromsession(this, "deleted character %s (GUID: %u)", name.c_str(), (uint32)guid);

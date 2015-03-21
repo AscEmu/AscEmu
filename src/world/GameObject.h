@@ -165,7 +165,7 @@ enum GAMEOBJECT_TYPES
     GAMEOBJECT_TYPE_TRAPDOOR				= 35
 };
 
-#define CALL_GO_SCRIPT_EVENT(obj, func) if(obj->IsGameObject() && TO< GameObject* >(obj)->GetScript() != NULL) TO< GameObject* >(obj)->GetScript()->func
+#define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->IsGameObject() && TO< GameObject* >(obj)->GetScript() != NULL) TO< GameObject* >(obj)->GetScript()->func
 
 class SERVER_DECL GameObject : public Object
 {
@@ -233,8 +233,8 @@ class SERVER_DECL GameObject : public Object
 
 		bool isQuestGiver()
 		{
-			//from GameObject::CreateFromProto - SetType( pInfo->Type );
-			if(GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+			//from GameObject::CreateFromProto - SetType(pInfo->Type);
+			if (GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
 				return true;
 			else
 				return false;
@@ -274,18 +274,18 @@ class SERVER_DECL GameObject : public Object
 		void RemoveFromWorld(bool free_guid);
 
 		bool CanMine() {return (usage_remaining > 0);}
-		void UseMine() { if(usage_remaining) usage_remaining--;}
+		void UseMine() { if (usage_remaining) usage_remaining--;}
 		void CalcMineRemaining(bool force)
 		{
-			if(force || !usage_remaining)
+			if (force || !usage_remaining)
 				usage_remaining = GetInfo()->sound4 + RandomUInt(GetInfo()->sound5 - GetInfo()->sound4) - 1;
 		}
 
 		bool CanFish() { return (usage_remaining > 0); }
-		void CatchFish() { if(usage_remaining) usage_remaining--; }
+		void CatchFish() { if (usage_remaining) usage_remaining--; }
 		void CalcFishRemaining(bool force)
 		{
-			if(force || !usage_remaining)
+			if (force || !usage_remaining)
 				usage_remaining = GetInfo()->sound2 + RandomUInt(GetInfo()->sound3 - GetInfo()->sound2) - 1;
 		}
 
@@ -318,23 +318,23 @@ class SERVER_DECL GameObject : public Object
 		void SetType(uint8 type) { SetByte(GAMEOBJECT_BYTES_1, 1, type); }
 		uint8 GetType() { return GetByte(GAMEOBJECT_BYTES_1, 1); }
 		
-		void SetFlags( uint32 flags ){ SetUInt32Value( GAMEOBJECT_FLAGS, flags ); }		
-		uint32 GetFlags(){ return GetUInt32Value( GAMEOBJECT_FLAGS ); }
-		void RemoveFlags( uint32 flags ){ RemoveFlag( GAMEOBJECT_FLAGS, flags ); }
+		void SetFlags(uint32 flags){ SetUInt32Value(GAMEOBJECT_FLAGS, flags); }		
+		uint32 GetFlags(){ return GetUInt32Value(GAMEOBJECT_FLAGS); }
+		void RemoveFlags(uint32 flags){ RemoveFlag(GAMEOBJECT_FLAGS, flags); }
 		
         bool HasFlags(uint32 flags)
         {
-			if( HasFlag( GAMEOBJECT_FLAGS, flags ) != 0 )
+			if (HasFlag(GAMEOBJECT_FLAGS, flags) != 0)
 				return true;
 			else
 				return false;
 		}
 		
-		void SetArtKit( uint8 artkit ){ SetByte( GAMEOBJECT_BYTES_1, 2, artkit ); }
-		uint8 GetArtkKit(){ return GetByte( GAMEOBJECT_BYTES_1, 2 ); }
+		void SetArtKit(uint8 artkit){ SetByte(GAMEOBJECT_BYTES_1, 2, artkit); }
+		uint8 GetArtkKit(){ return GetByte(GAMEOBJECT_BYTES_1, 2); }
 
-		void SetAnimProgress( uint8 progress ){ SetByte( GAMEOBJECT_BYTES_1, 3, progress ); }
-		uint8 GetAnimProgress(){ return GetByte( GAMEOBJECT_BYTES_1, 3 ); }
+		void SetAnimProgress(uint8 progress){ SetByte(GAMEOBJECT_BYTES_1, 3, progress); }
+		uint8 GetAnimProgress(){ return GetByte(GAMEOBJECT_BYTES_1, 3); }
 		
         //////////////////////////////////////////////////////////////////////////////////////////
         /// void Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
@@ -348,7 +348,7 @@ class SERVER_DECL GameObject : public Object
         /// \returns none
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		void Damage( uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID,  uint32 SpellID );
+		void Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID,  uint32 SpellID);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -409,7 +409,7 @@ class SERVER_DECL GameObject : public Object
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID )
+        /// void SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
         /// Notifies the surrounding clients about the GameObject taking damage
         ///
         /// \param uint32 damage          -  The hit points that the GO will lose
@@ -420,7 +420,7 @@ class SERVER_DECL GameObject : public Object
         /// \returns none
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		void SendDamagePacket( uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID );
+		void SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID);
 		
 		
 		uint32 hitpoints;

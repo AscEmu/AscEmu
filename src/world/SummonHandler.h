@@ -38,11 +38,11 @@ class SERVER_DECL SummonHandler
         ~SummonHandler();
 
         ///////////////////////////////////////////////////////////////////////////
-        //void AddSummon( Unit *summon )
+        //void AddSummon(Unit* summon)
         //  Adds a summon that doesn't have a summon slot
         //
         //Parameter(s)
-        //  Unit *summon  -  pointer to the summon to add
+        //  Unit* summon  -  pointer to the summon to add
         //
         //Return Value
         //  None
@@ -53,12 +53,12 @@ class SERVER_DECL SummonHandler
 
 
         ///////////////////////////////////////////////////////////////////////////
-        //void AddSummonToSlot( Unit *summon, uint8 slot )
+        //void AddSummonToSlot(Unit* summon, uint8 slot)
         //  Adds a summon to a summon slot.
         //  If something is already there, it's despawned.
         //
         //Parameter(s)
-        //  Unit *summon  -  pointer to the summon to add
+        //  Unit* summon  -  pointer to the summon to add
         //  uint8 slot    -  slot number where we want to
         //                   add the summon to
         //
@@ -71,11 +71,11 @@ class SERVER_DECL SummonHandler
 
 
         ///////////////////////////////////////////////////////////////////////////
-        //void RemoveSummon( Unit *summon )
+        //void RemoveSummon(Unit* summon)
         //  Removes a summon that was not summoned to a slot
         //
         //Parameter(s)
-        //  Unit *summon  -  summon to remove
+        //  Unit* summon  -  summon to remove
         //
         //Return Value
         //  None
@@ -86,7 +86,7 @@ class SERVER_DECL SummonHandler
 
 
         ///////////////////////////////////////////////////////////////////////////
-        //void RemoveSummonFromSlot( uint8 slot, bool del = true )
+        //void RemoveSummonFromSlot(uint8 slot, bool del = true)
         //  Removes a summon that was summoned to a slot
         //
         //Parameter(s)
@@ -132,7 +132,7 @@ class SERVER_DECL SummonHandler
 
 
         ///////////////////////////////////////////////////////////////////////////
-        //void GetSummonSlotSpellIDs( std::vector< uint32 > &spellids )
+        //void GetSummonSlotSpellIDs(std::vector< uint32 > &spellids)
         //  Retrieves the spellids the summons in slots were created by
         //
         //Parameter(s)
@@ -148,7 +148,7 @@ class SERVER_DECL SummonHandler
 
 
         ///////////////////////////////////////////////////////////////////////////
-        //bool HasSummonInSlot( uint8 slot )
+        //bool HasSummonInSlot(uint8 slot)
         //  Tells if there is a summon in the specified slot
         //
         //Parameter(s)

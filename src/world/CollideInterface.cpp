@@ -67,7 +67,7 @@ void CCollideInterface::Init()
 void CCollideInterface::ActivateTile(uint32 mapId, uint32 tileX, uint32 tileY)
 {
     m_loadLock.Acquire();
-    if(m_tilesLoaded[mapId][tileX][tileY] == 0)
+    if (m_tilesLoaded[mapId][tileX][tileY] == 0)
     {
         COLLISION_BEGINTIMER;
         CollisionMgr->loadMap(sWorld.vMapPath.c_str, mapId, tileY, tileX);
@@ -81,7 +81,7 @@ void CCollideInterface::ActivateTile(uint32 mapId, uint32 tileX, uint32 tileY)
 void CCollideInterface::DeactivateTile(uint32 mapId, uint32 tileX, uint32 tileY)
 {
     m_loadLock.Acquire();
-    if(!(--m_tilesLoaded[mapId][tileX][tileY]))
+    if (!(--m_tilesLoaded[mapId][tileX][tileY]))
     {
         COLLISION_BEGINTIMER;
         CollisionMgr->unloadMap(mapId, tileY, tileX);

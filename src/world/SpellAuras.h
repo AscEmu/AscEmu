@@ -380,7 +380,7 @@ struct Modifier
 
 	///needed for per level effect
 	int32 realamount;
-	//need this to store % values or they cannot be reverted correctly (i think :D )
+	//need this to store % values or they cannot be reverted correctly (i think :D)
 	signed int fixed_amount[SCHOOL_COUNT];
 };
 
@@ -532,17 +532,17 @@ class SERVER_DECL Aura : public EventableObject
 		//! GetTimeLeft() milliseconds
 		uint32 GetTimeLeft()
 		{
-			if(m_duration == -1)return (uint32) - 1;
+			if (m_duration == -1)return (uint32) - 1;
 			int32 n = int32((UNIXTIME - time_t(expirytime)) * 1000);
-			if(n >= m_duration) return 0;
+			if (n >= m_duration) return 0;
 			else
 				return (m_duration - n);
 		}
 
 		bool HasModType(uint32 type)
 		{
-			for(uint8 x = 0; x < m_modcount; ++x)
-				if(m_modList[x].m_type == type)
+			for (uint8 x = 0; x < m_modcount; ++x)
+				if (m_modList[x].m_type == type)
 					return true;
 			return false;
 		}
@@ -806,7 +806,7 @@ class SERVER_DECL Aura : public EventableObject
 			return (m_modcount && (((m_flags & MOD_0_RESISTED) + (m_flags & MOD_1_RESISTED) + (m_flags & MOD_2_RESISTED)) == m_modcount));
 		}
 
-		int32 GetModAmount(uint32 i) { if(i < 3) return m_modList[i].m_amount; return 0; }
+		int32 GetModAmount(uint32 i) { if (i < 3) return m_modList[i].m_amount; return 0; }
 		int32 GetModAmountByMod() { return mod->m_amount; };
 		uint32 GetAuraFlags() { return m_flags; }
 		void AssignModifiers(Aura* aura);
@@ -883,8 +883,8 @@ class AbsorbAura : public Aura
 
 		uint32 GetSchoolMask()
 		{
-			for(uint8 x = 0; x < 3; ++x)
-				if(GetSpellProto()->Effect[x] == SPELL_EFFECT_APPLY_AURA && GetSpellProto()->EffectApplyAuraName[x] == SPELL_AURA_SCHOOL_ABSORB)
+			for (uint8 x = 0; x < 3; ++x)
+				if (GetSpellProto()->Effect[x] == SPELL_EFFECT_APPLY_AURA && GetSpellProto()->EffectApplyAuraName[x] == SPELL_AURA_SCHOOL_ABSORB)
 					return m_modList[x].m_miscValue;
 			return 0;
 		}

@@ -51,7 +51,7 @@ class SpellProc
 		// Return true on success, false otherwise
 		virtual bool CheckProcFlags(uint32 flag)
 		{
-			if(mProcFlags & flag)
+			if (mProcFlags & flag)
 				return true;
 			else
 				return false;
@@ -60,7 +60,7 @@ class SpellProc
 		// Check if this object is identified by method arguments, so it can be deleted
 		virtual bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)
 		{
-			if(mSpell->Id == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
+			if (mSpell->Id == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
 				return true;
 
 			return false;
@@ -70,7 +70,7 @@ class SpellProc
 		// Return true allow proc, false otherwise
 		virtual bool CheckClassMask(Unit* victim, SpellEntry* CastingSpell)
 		{
-			if((mProcClassMask[0] == 0 && mProcClassMask[1] == 0 && mProcClassMask[2] == 0) ||
+			if ((mProcClassMask[0] == 0 && mProcClassMask[1] == 0 && mProcClassMask[2] == 0) ||
 			        mProcClassMask[0] & CastingSpell->SpellGroupType[0] ||
 			        mProcClassMask[1] & CastingSpell->SpellGroupType[1] ||
 			        mProcClassMask[2] & CastingSpell->SpellGroupType[2])
@@ -108,7 +108,7 @@ class SpellProc
 		SpellEntry* mOrigSpell;
 
 		// Unit 'owner' of this proc
-		Unit*  mTarget;
+		Unit* mTarget;
 
 		// GUID of the caster of this proc
 		uint64 mCaster;

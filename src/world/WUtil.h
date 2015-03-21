@@ -34,7 +34,7 @@ namespace Arcemu
             static void ArcemuAssert(bool condition);
             static uint64 MAKE_PET_GUID(uint32 entry, uint32 lowGUID);
             static uint64 MAKE_ITEM_GUID(uint32 lowGUID);
-            static uint32 MAKE_UNIT_ACTION_BUTTON( uint32 spell, uint32 unk );
+            static uint32 MAKE_UNIT_ACTION_BUTTON(uint32 spell, uint32 unk);
             static uint32 MAKE_GAME_TIME();
     };
 }

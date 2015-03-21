@@ -173,8 +173,8 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Fills the packet with the quests that the quest giver which the player qualifies for.
         ///
-        /// \param Creature * quest giver
-        /// \param Player * player for whom quests are qualified
+        /// \param Creature* quest giver
+        /// \param Player*  player for whom quests are qualified
         /// \param Arcemu::Gossip::Menu& - menu to fill with quests.
         ///
         /// \returns void

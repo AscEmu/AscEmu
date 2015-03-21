@@ -33,7 +33,7 @@ class SealOfCommandSpellProc : public SpellProc
 
         mProcFlags = PROC_ON_MELEE_ATTACK;
 
-        /* The formula for SoC proc rate is: [ 7 / ( 60 / Weapon Speed ) - from wowwiki */
+        /* The formula for SoC proc rate is: [ 7 / (60 / Weapon Speed) - from wowwiki */
         if (!mTarget->IsPlayer())
             return;
 

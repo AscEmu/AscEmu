@@ -511,7 +511,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 plrguid = *it4;
                 plr = objmgr.GetPlayer(plrguid);
 
-                // Player has left the game or switched level group since queuing ( by leveling for example ) 
+                // Player has left the game or switched level group since queuing (by leveling for example) 
                 if (!plr || GetLevelGrouping(plr->getLevel()) != j)
                 {
                     m_queuedPlayers[i][j].erase(it4);
@@ -878,12 +878,12 @@ void CBattlegroundManager::RemoveGroupFromQueues(Group* grp)
 bool CBattlegroundManager::CanCreateInstance(uint32 Type, uint32 LevelGroup)
 {
     /*uint32 lc = 0;
-    for(map<uint32, CBattleground*>::iterator itr = m_instances[Type].begin(); itr != m_instances[Type].end(); ++itr)
+    for (map<uint32, CBattleground*>::iterator itr = m_instances[Type].begin(); itr != m_instances[Type].end(); ++itr)
     {
-    if(itr->second->GetLevelGroup() == LevelGroup)
+    if (itr->second->GetLevelGroup() == LevelGroup)
     {
     lc++;
-    if(lc >= MAXIMUM_BATTLEGROUNDS_PER_LEVEL_GROUP)
+    if (lc >= MAXIMUM_BATTLEGROUNDS_PER_LEVEL_GROUP)
     return false;
     }
     }*/
@@ -977,7 +977,8 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
     {
         /* arenas follow a different procedure. */
         uint32 arenaMapCount = arenaMaps.size();
-        if (arenaMapCount == 0){
+        if (arenaMapCount == 0)
+        {
             LOG_ERROR("BattlegroundManager", "There are no Arenas registered. Cannot create Arena.");
             return NULL;
         }

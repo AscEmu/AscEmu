@@ -879,7 +879,7 @@ void Guild::SetPublicNote(PlayerInfo* pMember, const char* szNewNote, WorldSessi
             CharacterDatabase.Execute("UPDATE guild_data SET publicNote=\'%s\' WHERE playerid=%u",
             CharacterDatabase.EscapeString(string(itr->second->szPublicNote)).c_str(),
             pMember->guid
-            );
+           );
     }
     m_lock.Release();
 
@@ -919,7 +919,7 @@ void Guild::SetOfficerNote(PlayerInfo* pMember, const char* szNewNote, WorldSess
             CharacterDatabase.Execute("UPDATE guild_data SET officerNote=\'%s\' WHERE playerid=%u",
             CharacterDatabase.EscapeString(string(itr->second->szOfficerNote)).c_str(),
             pMember->guid
-            );
+           );
     }
     m_lock.Release();
 
@@ -1481,7 +1481,7 @@ void Guild::WithdrawMoney(WorldSession* pClient, uint32 uAmount)
 void Guild::SpendMoney(uint32 uAmount)
 {
     // subtract the balance
-    m_bankBalance -= uAmount;//check if(m_bankBalance >= uAmount) before calling this, thank you.
+    m_bankBalance -= uAmount;//check if (m_bankBalance >= uAmount) before calling this, thank you.
 
     // update in db
     CharacterDatabase.Execute("UPDATE guilds SET bankBalance = %llu WHERE guildId = %u", (m_bankBalance > 0) ? m_bankBalance : 0, m_guildId);

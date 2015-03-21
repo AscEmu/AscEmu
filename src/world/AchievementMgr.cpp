@@ -1778,7 +1778,7 @@ void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
     //Reward Mail
     if (Reward->sender)
     {
-        Creature * pCreature = GetPlayer()->GetMapMgr()->CreateCreature(Reward->sender);
+        Creature* pCreature = GetPlayer()->GetMapMgr()->CreateCreature(Reward->sender);
         if (pCreature == NULL)
         {
             sLog.Error("AchievementMgr", "can not create sender for achievement %u", entry);

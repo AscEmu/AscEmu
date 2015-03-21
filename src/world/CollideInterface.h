@@ -87,7 +87,7 @@ class NavMeshData
         }
 
         void AddRef() { ++refs; }
-        bool DecRef() { if((--refs) == 0) { delete this; return true; } return false; }
+        bool DecRef() { if ((--refs) == 0) { delete this; return true; } return false; }
 };
 
 class CCollideInterface
@@ -150,27 +150,27 @@ class CCollideInterface
             uint32 flags;
             int32 adtid, rootid, groupid;
 
-            if(!mgr->getAreaInfo(mapId, x, y, z, flags, adtid, rootid, groupid))
+            if (!mgr->getAreaInfo(mapId, x, y, z, flags, adtid, rootid, groupid))
                 return true;
 
             WMOAreaTableEntry* wmoArea = sWorld.GetWMOAreaData(rootid, adtid, groupid);
             AreaTable* area = NULL;
 
-            if(wmoArea != NULL)
+            if (wmoArea != NULL)
             {
                 area = dbcArea.LookupEntryForced(wmoArea->areaId);
 
-                if(area != NULL)
+                if (area != NULL)
                 {
-                    if(area->AreaFlags & 0x04000000)  /// outdoor
+                    if (area->AreaFlags & 0x04000000)  /// outdoor
                         return true;
-                    if(area->AreaFlags & 0x02000000)  /// indoor
+                    if (area->AreaFlags & 0x02000000)  /// indoor
                         return false;
                 }
 
-                if(wmoArea->flags & 4)  /// outdoor
+                if (wmoArea->flags & 4)  /// outdoor
                     return true;
-                if(wmoArea->flags & 2)
+                if (wmoArea->flags & 2)
                     return false;
             }
             return (flags & 0x08) != 0;

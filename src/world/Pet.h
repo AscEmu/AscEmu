@@ -224,7 +224,7 @@ class SERVER_DECL Pet : public Creature
                 return DEFAULT_SPELL_STATE;
 
             SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
-            if(sp)
+            if (sp)
                 return GetSpellState(sp);
             return DEFAULT_SPELL_STATE;
         }

@@ -44,7 +44,7 @@ class SERVER_DECL MapScriptInterface
         template<class T, uint32 TypeId> T* GetObjectNearestCoords(uint32 Entry, float x, float y, float z = 0.0f)
         {
             MapCell* pCell = mapMgr.GetCell(mapMgr.GetPosX(x), mapMgr.GetPosY(y));
-            if(pCell == 0)
+            if (pCell == 0)
                 return 0;
 
             T* ClosestObject = NULL;

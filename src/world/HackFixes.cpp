@@ -206,7 +206,7 @@ void ApplyNormalFixes()
                 sp->Attributes &= ~ATTRIBUTES_ONLY_OUTDOORS;
             }
 
-            if(sp->EffectApplyAuraName[b] == SPELL_AURA_PREVENT_RESURRECTION)
+            if (sp->EffectApplyAuraName[b] == SPELL_AURA_PREVENT_RESURRECTION)
 			{
 				sp->Attributes |= ATTRIBUTES_NEGATIVE;
 				sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
@@ -288,7 +288,7 @@ void ApplyNormalFixes()
         else if (strstr(sp->Name, "Aura")
                  && !strstr(sp->Name, "Trueshot") && !strstr(sp->Name, "Moonkin")
                  && !strstr(sp->Name, "Crusader") && !strstr(sp->Name, "Sanctity") && !strstr(sp->Name, "Devotion") && !strstr(sp->Name, "Retribution") && !strstr(sp->Name, "Concentration") && !strstr(sp->Name, "Shadow Resistance") && !strstr(sp->Name, "Frost Resistance") && !strstr(sp->Name, "Fire Resistance")
-                 )
+                )
                  sp->BGR_one_buff_on_target |= SPELL_TYPE_AURA;
         else if (strstr(sp->Name, "Track") == sp->Name)
             sp->BGR_one_buff_on_target |= SPELL_TYPE_TRACK;
@@ -310,9 +310,9 @@ void ApplyNormalFixes()
             sp->BGR_one_buff_on_target |= SPELL_TYPE_FORTITUDE;
         else if (namehash == SPELL_HASH_DIVINE_SPIRIT || namehash == SPELL_HASH_PRAYER_OF_SPIRIT)
             sp->BGR_one_buff_on_target |= SPELL_TYPE_SPIRIT;
-        //        else if( strstr( sp->Name, "Curse of Weakness") || strstr( sp->Name, "Curse of Agony") || strstr( sp->Name, "Curse of Recklessness") || strstr( sp->Name, "Curse of Tongues") || strstr( sp->Name, "Curse of the Elements") || strstr( sp->Name, "Curse of Idiocy") || strstr( sp->Name, "Curse of Shadow") || strstr( sp->Name, "Curse of Doom"))
-        //        else if(namehash==4129426293 || namehash==885131426 || namehash==626036062 || namehash==3551228837 || namehash==2784647472 || namehash==776142553 || namehash==3407058720 || namehash==202747424)
-        //        else if( strstr( sp->Name, "Curse of "))
+        //        else if (strstr(sp->Name, "Curse of Weakness") || strstr(sp->Name, "Curse of Agony") || strstr(sp->Name, "Curse of Recklessness") || strstr(sp->Name, "Curse of Tongues") || strstr(sp->Name, "Curse of the Elements") || strstr(sp->Name, "Curse of Idiocy") || strstr(sp->Name, "Curse of Shadow") || strstr(sp->Name, "Curse of Doom"))
+        //        else if (namehash==4129426293 || namehash==885131426 || namehash==626036062 || namehash==3551228837 || namehash==2784647472 || namehash==776142553 || namehash==3407058720 || namehash==202747424)
+        //        else if (strstr(sp->Name, "Curse of "))
         //            type |= SPELL_TYPE_WARLOCK_CURSES;
         else if (strstr(sp->Name, "Immolate") || strstr(sp->Name, "Conflagrate"))
             sp->BGR_one_buff_on_target |= SPELL_TYPE_WARLOCK_IMMOLATE;
@@ -436,7 +436,7 @@ void ApplyNormalFixes()
                     sp->is_melee_spell = true;
                 if ((sp->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE && sp->Spell_Dmg_Type == SPELL_DMG_TYPE_RANGED))
                 {
-                    //Log.Notice( "SpellFixes" , "Ranged Spell: %u [%s]" , sp->Id , sp->Name );
+                    //Log.Notice("SpellFixes" , "Ranged Spell: %u [%s]" , sp->Id , sp->Name);
                     sp->is_ranged_spell = true;
                 }
             }
@@ -464,7 +464,7 @@ void ApplyNormalFixes()
                 uint32 aura = sp->EffectApplyAuraName[y];
                 if (aura == SPELL_AURA_PROC_TRIGGER_SPELL ||
                     aura == SPELL_AURA_PROC_TRIGGER_DAMAGE
-                    )//search for spellid in description
+                   )//search for spellid in description
                 {
                     const char* p = sp->Description;
                     while ((p = strstr(p, "$")) != 0)
@@ -916,7 +916,7 @@ void ApplyNormalFixes()
         if (
             ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)) //rogue cold blood
             || ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC))
-            )
+           )
         {
             sp->c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
         }
@@ -971,13 +971,13 @@ void ApplyNormalFixes()
                 if (spz &&
                     (spz->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE ||
                     spz->Effect[i] == SPELL_EFFECT_HEAL)
-                    )
+                   )
                     spcheck = true;
             }
             if (sp->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE ||
                 sp->Effect[i] == SPELL_EFFECT_HEAL ||
                 spcheck
-                )
+               )
             {
                 sp->spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
                 break;
@@ -1148,7 +1148,7 @@ void ApplyNormalFixes()
         //////////////////////////////////////////////////////
 
         /* Note: when applying spell hackfixes, please follow a template */
-        /* Please don't put fixes like "sp = CheckAndReturnSpellEntry( 15270 );" inside the loop */
+        /* Please don't put fixes like "sp = CheckAndReturnSpellEntry(15270);" inside the loop */
 
         //////////////////////////////////////////
         // WARRIOR                                //
@@ -2173,32 +2173,32 @@ void ApplyNormalFixes()
     /**********************************************************
      *    Blessing of Light
      **********************************************************
-     sp = CheckAndReturnSpellEntry( 19977 );
-     if( sp != NULL )
+     sp = CheckAndReturnSpellEntry(19977);
+     if (sp != NULL)
      {
      sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
      sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
      }
-     sp = CheckAndReturnSpellEntry( 19978 );
-     if( sp != NULL )
+     sp = CheckAndReturnSpellEntry(19978);
+     if (sp != NULL)
      {
      sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
      sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
      }
-     sp = CheckAndReturnSpellEntry( 19979 );
-     if( sp != NULL )
+     sp = CheckAndReturnSpellEntry(19979);
+     if (sp != NULL)
      {
      sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
      sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
      }
-     sp = CheckAndReturnSpellEntry( 27144 );
-     if( sp != NULL )
+     sp = CheckAndReturnSpellEntry(27144);
+     if (sp != NULL)
      {
      sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
      sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
      }
-     sp = CheckAndReturnSpellEntry( 32770 );
-     if( sp != NULL )
+     sp = CheckAndReturnSpellEntry(32770);
+     if (sp != NULL)
      {
      sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
      sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
@@ -2891,17 +2891,17 @@ void ApplyNormalFixes()
     }
     /*    // !!! not sure this is good !!! have to test
         // Hunter's mark r1
-        sp = CheckAndReturnSpellEntry( 1130 );
-        if( sp != NULL )
+        sp = CheckAndReturnSpellEntry(1130);
+        if (sp != NULL)
         sp->maxstack = (sp->EffectBasePoints[1]*3) / (sp->EffectBasePoints[1]/10);
-        sp = CheckAndReturnSpellEntry( 14323 );
-        if( sp != NULL )
+        sp = CheckAndReturnSpellEntry(14323);
+        if (sp != NULL)
         sp->maxstack = (sp->EffectBasePoints[1]*3) / (sp->EffectBasePoints[1]/10);
-        sp = CheckAndReturnSpellEntry( 14324 );
-        if( sp != NULL )
+        sp = CheckAndReturnSpellEntry(14324);
+        if (sp != NULL)
         sp->maxstack = (sp->EffectBasePoints[1]*3) / (sp->EffectBasePoints[1]/10);
-        sp = CheckAndReturnSpellEntry( 14325 );
-        if( sp != NULL )
+        sp = CheckAndReturnSpellEntry(14325);
+        if (sp != NULL)
         sp->maxstack = (sp->EffectBasePoints[1]*3) / (sp->EffectBasePoints[1]/10);
         */
     // MesoX: Serendipity http://www.wowhead.com/?spell=63730
@@ -3107,8 +3107,8 @@ void ApplyNormalFixes()
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
 
     /* Rogue - Improved Expose Armor (rank 1)
-    sp = CheckAndReturnSpellEntry( 14168 );
-    if(sp != NULL)
+    sp = CheckAndReturnSpellEntry(14168);
+    if (sp != NULL)
     {
     sp->EffectApplyAuraName[0] = */
 
@@ -3838,24 +3838,24 @@ void ApplyNormalFixes()
      **********************************************************/
     /*
     Zack : disabled this to not create confusion that it is working. Burlex deleted code so it needs to be reverted in order to work
-    sp = CheckAndReturnSpellEntry( 29202 );
-    if( sp != NULL )
+    sp = CheckAndReturnSpellEntry(29202);
+    if (sp != NULL)
     {
     sp->procFlags = PROC_ON_CAST_SPELL;
     sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
     sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
     sp->procChance = sp->EffectBasePoints[0] + 1;
     }
-    sp = CheckAndReturnSpellEntry( 29205 );
-    if( sp != NULL )
+    sp = CheckAndReturnSpellEntry(29205);
+    if (sp != NULL)
     {
     sp->procFlags = PROC_ON_CAST_SPELL;
     sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
     sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
     sp->procChance = sp->EffectBasePoints[0] + 1;
     }
-    sp = CheckAndReturnSpellEntry( 29206 );
-    if( sp != NULL )
+    sp = CheckAndReturnSpellEntry(29206);
+    if (sp != NULL)
     {
     sp->procFlags = PROC_ON_CAST_SPELL;
     sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
@@ -6448,7 +6448,7 @@ void ApplyNormalFixes()
 
     //Lightweave Embroidery - this will work in 3.1
     /*sp = CheckAndReturnSpellEntry(55640);
-    if(sp != NULL)
+    if (sp != NULL)
     {
     sp->EffectTriggerSpell[0] = 55637;
     sp->procFlags = PROC_ON_CAST_SPELL;
@@ -7289,7 +7289,7 @@ void ApplyNormalFixes()
     }
     //Persistent Shield
     sp = CheckAndReturnSpellEntry(26467);
-	if(sp)
+	if (sp)
 	{
 		sp->EffectTriggerSpell[0] = 26470;
 		sp->Attributes |= ATTRIBUTES_NO_VISUAL_AURA | ATTRIBUTES_PASSIVE;
@@ -7298,7 +7298,7 @@ void ApplyNormalFixes()
 	}
     //Gravity Bomb
     sp = CheckAndReturnSpellEntry(63024);
-	if(sp)
+	if (sp)
 	{
 		sp->EffectBasePoints[0] = 0;
 		sp->Effect[1] = NULL;

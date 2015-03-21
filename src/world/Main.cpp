@@ -33,16 +33,16 @@ uint8 loglevel = DEFAULT_LOG_LEVEL;
 int unix_main(int argc, char** argv)
 {
     rlimit rl;
-    if(getrlimit(RLIMIT_CORE, &rl) == -1)
+    if (getrlimit(RLIMIT_CORE, &rl) == -1)
         printf("getrlimit failed. This could be problem.\n");
     else
     {
         rl.rlim_cur = rl.rlim_max;
-        if(setrlimit(RLIMIT_CORE, &rl) == -1)
+        if (setrlimit(RLIMIT_CORE, &rl) == -1)
             printf("setrlimit failed. Server may not save core.dump files.\n");
     }
 
-    if(!sMaster.Run(argc, argv))
+    if (!sMaster.Run(argc, argv))
         exit(-1);
     else
         exit(0);

@@ -25,7 +25,7 @@
 //class WildSummon
 //  Class that implement wild summons.
 //  Wild summonned creatures don't follow or protect their owner,
-//  however they can be hostile, and attack ( not the owner )
+//  however they can be hostile, and attack (not the owner)
 //
 //
 ////////////////////////////////////////////////////////////////////

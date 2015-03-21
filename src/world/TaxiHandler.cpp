@@ -223,7 +223,7 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
             modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db
     }
 
-    //GetPlayer( )->setDismountCost( newmoney );
+    //GetPlayer()->setDismountCost(newmoney);
 
     data << uint32(0);
     // 0 Ok
@@ -356,7 +356,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
         if (!modelid) return;
     }
 
-    //GetPlayer( )->setDismountCost( newmoney );
+    //GetPlayer()->setDismountCost(newmoney);
 
     data << uint32(0);
     // 0 Ok

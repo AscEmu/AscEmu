@@ -355,7 +355,7 @@ bool loader_stub(const char* filename, const char* format, bool ind, T & l, bool
     return l.Load(filename, format, ind, loadstrs);
 }
 
-#define LOAD_DBC(filename, format, ind, stor, strings) if(!loader_stub(filename, format, ind, stor, strings)) { return false; }
+#define LOAD_DBC(filename, format, ind, stor, strings) if (!loader_stub(filename, format, ind, stor, strings)) { return false; }
 
 bool LoadDBCs()
 {

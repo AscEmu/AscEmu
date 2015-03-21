@@ -805,7 +805,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
             if (Group* pGroup = plr->GetGroup())
             {
                 //removed by Zack How the hell will healers get the kills then ?
-                //if(pGroup->GetGroupType() != GROUP_TYPE_PARTY)
+                //if (pGroup->GetGroupType() != GROUP_TYPE_PARTY)
                 //	return;  // Raid's don't get shared kills.
 
                 GroupMembersSet::iterator gitr;
@@ -1592,13 +1592,13 @@ uint32 QuestMgr::GenerateQuestXP(Player* plr, Quest* qst)
 
 uint32 QuestMgr::GenerateRewardMoney(Player* plr, Quest* qst)
 {
-    //	if ( plr == NULL || !plr->IsInWorld() || plr->getLevel() >= plr->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL) || ( !plr->GetSession()->HasFlag( ACCOUNT_FLAG_XPACK_01 ) && plr->getLevel() != 60 ) || plr->getLevel() != 70 || qst->is_repeatable != 0 )
+    //	if (plr == NULL || !plr->IsInWorld() || plr->getLevel() >= plr->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL) || (!plr->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) && plr->getLevel() != 60) || plr->getLevel() != 70 || qst->is_repeatable != 0)
     {
         return qst->reward_money;
     }
     //	else
     {
-        //		return qst->reward_money + float2int32( GenerateQuestXP( plr, qst ) * sWorld.getRate( RATE_QUESTXP ) ) * 6;
+        //		return qst->reward_money + float2int32(GenerateQuestXP(plr, qst) * sWorld.getRate(RATE_QUESTXP)) * 6;
     }
 }
 /*
@@ -1610,7 +1610,7 @@ uint32 QuestMgr::GenerateRewardMoney(Player* plr, Quest* qst)
 
     // hack fix
     xp  = qst->max_level * XP_INC;
-    if(xp <= 0)
+    if (xp <= 0)
     xp = 1;
 
     pxp  = xp + (xp / 100) * XP_INC100;
@@ -1621,14 +1621,14 @@ uint32 QuestMgr::GenerateRewardMoney(Player* plr, Quest* qst)
 
     mmx = (pxp - mxp);
 
-    if(qst->quest_flags & QUEST_FLAG_SPEAKTO)
+    if (qst->quest_flags & QUEST_FLAG_SPEAKTO)
     mmx *= 0.6;
-    if(qst->quest_flags & QUEST_FLAG_TIMED)
+    if (qst->quest_flags & QUEST_FLAG_TIMED)
     mmx *= 1.1;
-    if(qst->quest_flags & QUEST_FLAG_EXPLORATION)
+    if (qst->quest_flags & QUEST_FLAG_EXPLORATION)
     mmx *= 1.2;
 
-    if(mmx < 0)
+    if (mmx < 0)
     return 1;
 
     mmx *= sWorld.getRate(RATE_QUESTXP);

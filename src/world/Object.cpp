@@ -162,7 +162,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     // gameobject stuff
     if (IsGameObject())
     {
-        //		switch( GetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPEID) )
+        //		switch(GetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPEID))
         switch (m_uint32Values[GAMEOBJECT_BYTES_1])
         {
             case GAMEOBJECT_TYPE_MO_TRANSPORT:
@@ -411,7 +411,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
             if (uThis->GetProto()->extra_a9_flags)
             {
                 //do not send shit we can't honor
-#define UNKNOWN_FLAGS2 ( 0x00002000 | 0x04000000 | 0x08000000 )
+#define UNKNOWN_FLAGS2 (0x00002000 | 0x04000000 | 0x08000000)
                 uint32 inherit = uThis->GetProto()->extra_a9_flags & UNKNOWN_FLAGS2;
                 flags2 |= inherit;
             }
@@ -557,7 +557,8 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     {
         *data << getMSTime();
     }
-    if (flags & UPDATEFLAG_VEHICLE){
+    if (flags & UPDATEFLAG_VEHICLE)
+    {
         uint32 vehicleid = 0;
 
         if (IsCreature())
@@ -650,7 +651,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                         {
                             if ((qr->type & QUESTGIVER_QUEST_START && !target->HasQuest(qst->id))
                                 || (qr->type & QUESTGIVER_QUEST_END && target->HasQuest(qst->id))
-                                )
+                               )
                             {
                                 activate_quest_object = true;
                                 break;
@@ -838,7 +839,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
 
     if (IsUnit())
     {
-        Unit *u = static_cast< Unit* >(this);
+        Unit* u = static_cast< Unit* >(this);
         if (u->GetVehicleComponent() != NULL)
             u->GetVehicleComponent()->MovePassengers(newX, newY, newZ, newOrientation);
     }
@@ -1449,7 +1450,7 @@ bool Object::inArc(float Position1X, float Position1Y, float FOV, float Orientat
 
 bool Object::isInFront(Object* target)
 {
-    // check if we facing something ( is the object within a 180 degree slice of our positive y axis )
+    // check if we facing something (is the object within a 180 degree slice of our positive y axis)
 
     double x = target->GetPositionX() - m_position.x;
     double y = target->GetPositionY() - m_position.y;
@@ -1474,7 +1475,7 @@ bool Object::isInFront(Object* target)
 
 bool Object::isInBack(Object* target)
 {
-    // check if we are behind something ( is the object within a 180 degree slice of our negative y axis )
+    // check if we are behind something (is the object within a 180 degree slice of our negative y axis)
 
     double x = m_position.x - target->GetPositionX();
     double y = m_position.y - target->GetPositionY();

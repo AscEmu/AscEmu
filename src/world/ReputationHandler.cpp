@@ -446,7 +446,7 @@ void WorldSession::HandleSetFactionInactiveOpcode(WorldPacket& recv_data)
     _player->SetFactionInactive(id, (inactive == 1));
 }
 
-bool Player::AddNewFaction(FactionDBC* dbc, int32 standing, bool base)    // if ( base ) standing = baseRepValue
+bool Player::AddNewFaction(FactionDBC* dbc, int32 standing, bool base)    // if (base) standing = baseRepValue
 {
     if (dbc == NULL || dbc->RepListId < 0)
         return false;

@@ -474,8 +474,8 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
 
         /*ARCEMU_INLINE void ResetProcCounts()
         {
-            AI_Spell * sp;
-            for(list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+            AI_Spell* sp;
+            for (list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
                     {
                         sp = *itr;
                         sp->procCount =sp->procCountDB;
@@ -558,7 +558,7 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         bool m_hasCalledForHelp;
         uint32 m_outOfCombatRange;
 
-        // Unit *gracefull_hit_on_target;
+        // Unit* gracefull_hit_on_target;
         Unit* m_Unit;
         Unit* m_PetOwner;
         float FollowDistance;

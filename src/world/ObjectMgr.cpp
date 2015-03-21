@@ -235,7 +235,8 @@ ObjectMgr::~ObjectMgr()
     m_spelltargetconstraints.clear();
 
     Log.Notice("ObjectMgr", "Cleaning up vehicle accessories...");
-    for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr){
+    for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
+    {
         std::vector< VehicleAccessoryEntry* > *v = itr->second;
 
         for (std::vector< VehicleAccessoryEntry* >::iterator itr2 = v->begin(); itr2 != v->end(); ++itr2)
@@ -249,7 +250,8 @@ ObjectMgr::~ObjectMgr()
 
 
     Log.Notice("ObjectMgr", "Cleaning up worldstate templates");
-    for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr){
+    for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr)
+    {
         itr->second->clear();
         delete itr->second;
     }
@@ -462,7 +464,7 @@ void ObjectMgr::LoadPlayersInfo()
                         (*itr).second = instanceId;
 
                     ///\todo Instances not loaded yet ~.~
-                    //if(!sInstanceMgr.InstanceExists(mapId, pn->m_savedInstanceIds[mapId][mode]))
+                    //if (!sInstanceMgr.InstanceExists(mapId, pn->m_savedInstanceIds[mapId][mode]))
                     //{
                     //    pn->m_savedInstanceIds[mapId][mode] = 0;
                     //    CharacterDatabase.Execute("DELETE FROM instanceids WHERE mapId = %u AND instanceId = %u AND mode = %u", mapId, instanceId, mode);
@@ -1461,9 +1463,9 @@ GM_Ticket* ObjectMgr::GetGMTicket(uint64 ticketGuid)
 //std::list<GM_Ticket*>* ObjectMgr::GetGMTicketsByPlayer(uint64 playerGuid)
 //{
 //    std::list<GM_Ticket*>* list = new std::list<GM_Ticket*>();
-//    for(GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
+//    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
 //    {
-//        if((*i)->playerGuid == playerGuid)
+//        if ((*i)->playerGuid == playerGuid)
 //        {
 //            list->push_back((*i));
 //        }
@@ -1665,7 +1667,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
                     if (seo_ApplyAuraName)
                         sp->EffectApplyAuraName[seo_EffectId] = seo_ApplyAuraName;
 
-                    //                    if( seo_SpellGroupRelation )
+                    //                    if (seo_SpellGroupRelation)
                     //                        sp->EffectSpellGroupRelation[seo_EffectId] = seo_SpellGroupRelation;
 
                     if (seo_MiscValue)
@@ -2176,7 +2178,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                             TotalHealthGain += 19;
                         else if (Level < 36)
                             TotalHealthGain += Level + 6;
-                        //                    else if(Level >60) TotalHealthGain+=Level+100;
+                        //                    else if (Level >60) TotalHealthGain+=Level+100;
                         else if (Level > 60)
                             TotalHealthGain += Level + 206;
                         else
@@ -2185,7 +2187,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case HUNTER:
                         if (Level < 13)
                             TotalHealthGain += 17;
-                        //                    else if(Level >60) TotalHealthGain+=Level+45;
+                        //                    else if (Level >60) TotalHealthGain+=Level+45;
                         else if (Level > 60)
                             TotalHealthGain += Level + 161;
                         else
@@ -2195,7 +2197,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                             TotalManaGain += 29;
                         else if (Level < 27)
                             TotalManaGain += Level + 18;
-                        //                    else if(Level>60)TotalManaGain+=Level+20;
+                        //                    else if (Level>60)TotalManaGain+=Level+20;
                         else if (Level > 60)
                             TotalManaGain += Level + 150;
                         else
@@ -2204,7 +2206,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case ROGUE:
                         if (Level < 15)
                             TotalHealthGain += 17;
-                        //                    else if(Level >60) TotalHealthGain+=Level+110;
+                        //                    else if (Level >60) TotalHealthGain+=Level+110;
                         else if (Level > 60)
                             TotalHealthGain += Level + 191;
                         else
@@ -2213,7 +2215,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case DRUID:
                         if (Level < 17)
                             TotalHealthGain += 17;
-                        //                    else if(Level >60) TotalHealthGain+=Level+55;
+                        //                    else if (Level >60) TotalHealthGain+=Level+55;
                         else if (Level > 60)
                             TotalHealthGain += Level + 176;
                         else
@@ -2221,7 +2223,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 
                         if (Level < 26)
                             TotalManaGain += Level + 20;
-                        //                    else if(Level>60)TotalManaGain+=Level+25;
+                        //                    else if (Level>60)TotalManaGain+=Level+25;
                         else if (Level > 60)
                             TotalManaGain += Level + 150;
                         else
@@ -2230,7 +2232,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case MAGE:
                         if (Level < 23)
                             TotalHealthGain += 15;
-                        //                    else if(Level >60) TotalHealthGain+=Level+40;
+                        //                    else if (Level >60) TotalHealthGain+=Level+40;
                         else if (Level > 60)
                             TotalHealthGain += Level + 190;
                         else
@@ -2238,7 +2240,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 
                         if (Level < 28)
                             TotalManaGain += Level + 23;
-                        //                    else if(Level>60)TotalManaGain+=Level+26;
+                        //                    else if (Level>60)TotalManaGain+=Level+26;
                         else if (Level > 60)
                             TotalManaGain += Level + 115;
                         else
@@ -2247,7 +2249,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case SHAMAN:
                         if (Level < 16)
                             TotalHealthGain += 17;
-                        //                    else if(Level >60) TotalHealthGain+=Level+75;
+                        //                    else if (Level >60) TotalHealthGain+=Level+75;
                         else if (Level > 60)
                             TotalHealthGain += Level + 157;
                         else
@@ -2255,7 +2257,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 
                         if (Level < 22)
                             TotalManaGain += Level + 19;
-                        //                    else if(Level>60)TotalManaGain+=Level+70;
+                        //                    else if (Level>60)TotalManaGain+=Level+70;
                         else if (Level > 60)
                             TotalManaGain += Level + 175;
                         else
@@ -2264,7 +2266,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case WARLOCK:
                         if (Level < 17)
                             TotalHealthGain += 17;
-                        //                    else if(Level >60) TotalHealthGain+=Level+50;
+                        //                    else if (Level >60) TotalHealthGain+=Level+50;
                         else if (Level > 60)
                             TotalHealthGain += Level + 192;
                         else
@@ -2272,7 +2274,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 
                         if (Level < 30)
                             TotalManaGain += Level + 21;
-                        //                    else if(Level>60)TotalManaGain+=Level+25;
+                        //                    else if (Level>60)TotalManaGain+=Level+25;
                         else if (Level > 60)
                             TotalManaGain += Level + 121;
                         else
@@ -2281,7 +2283,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case PALADIN:
                         if (Level < 14)
                             TotalHealthGain += 18;
-                        //                    else if(Level >60) TotalHealthGain+=Level+55;
+                        //                    else if (Level >60) TotalHealthGain+=Level+55;
                         else if (Level > 60)
                             TotalHealthGain += Level + 167;
                         else
@@ -2289,7 +2291,7 @@ void ObjectMgr::GenerateLevelUpInfo()
 
                         if (Level < 30)
                             TotalManaGain += Level + 17;
-                        //                    else if(Level>60)TotalManaGain+=Level+100;
+                        //                    else if (Level>60)TotalManaGain+=Level+100;
                         else if (Level > 60)
                             TotalManaGain += Level + 131;
                         else
@@ -2298,7 +2300,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case PRIEST:
                         if (Level < 21)
                             TotalHealthGain += 15;
-                        //                    else if(Level >60) TotalHealthGain+=Level+40;
+                        //                    else if (Level >60) TotalHealthGain+=Level+40;
                         else if (Level > 60)
                             TotalHealthGain += Level + 157;
                         else
@@ -2308,7 +2310,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                             TotalManaGain += Level + 22;
                         else if (Level < 32)
                             TotalManaGain += Level + 37;
-                        //                    else if(Level>60)TotalManaGain+=Level+35;
+                        //                    else if (Level>60)TotalManaGain+=Level+35;
                         else if (Level > 60)
                             TotalManaGain += Level + 207;
                         else
@@ -2317,8 +2319,8 @@ void ObjectMgr::GenerateLevelUpInfo()
                     case DEATHKNIGHT: // Based on 55-56 more testing will be done.
                         if (Level < 60)
                             TotalHealthGain += 92;
-                        /*else if(Level <60) TotalHealthGain+=??;
-                        else if(Level <70) TotalHealthGain+=??;*/
+                        /*else if (Level <60) TotalHealthGain+=??;
+                        else if (Level <70) TotalHealthGain+=??;*/
                         else
                             TotalHealthGain += 92;
                         break;
@@ -2330,15 +2332,15 @@ void ObjectMgr::GenerateLevelUpInfo()
 
                 // Calculate next level XP
                 uint32 nextLvlXP = 0;
-                /*                if( Level > 0 && Level <= 30 )
+                /*                if (Level > 0 && Level <= 30)
                                 {
                                 nextLvlXP = ((int)((((double)(8 * Level * ((Level * 5) + 45)))/100)+0.5))*100;
                                 }
-                                else if( Level == 31 )
+                                else if (Level == 31)
                                 {
                                 nextLvlXP = ((int)((((double)(((8 * Level) + 3) * ((Level * 5) + 45)))/100)+0.5))*100;
                                 }
-                                else if( Level == 32 )
+                                else if (Level == 32)
                                 {
                                 nextLvlXP = ((int)((((double)(((8 * Level) + 6) * ((Level * 5) + 45)))/100)+0.5))*100;
                                 }
@@ -2355,7 +2357,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                 else
                 {
                     // 2.2
-                    //double MXP = 45 + ( 5 * level );
+                    //double MXP = 45 + (5 * level);
                     // 2.3
                     double MXP = 235 + (5 * Level);
                     double DIFF = Level < 29 ? 0.0 : Level < 30 ? 1.0 : Level < 31 ? 3.0 : Level < 32 ? 6.0 : 5.0 * (double(Level) - 30.0);
@@ -3193,7 +3195,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
     if (itr == m_reputation_instance.end())
         return false;
 
-    is_boss = false;//TO< Creature* >( pVictim )->GetCreatureInfo() ? ((Creature*)pVictim)->GetCreatureInfo()->Rank : 0;
+    is_boss = false;//TO< Creature* >(pVictim)->GetCreatureInfo() ? ((Creature*)pVictim)->GetCreatureInfo()->Rank : 0;
     if (TO< Creature* >(pVictim)->GetProto()->boss)
         is_boss = true;
 

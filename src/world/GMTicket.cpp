@@ -137,7 +137,7 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
     Channel* chn = channelmgr.GetChannel(sWorld.getGmClientChannel().c_str(), GetPlayer());
-    if(chn)
+    if (chn)
     {
         std::stringstream ss;
         ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_UPDATED;

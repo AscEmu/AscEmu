@@ -135,8 +135,8 @@ enum Languages
 #define MSG_COLOR_SEXBLUE           "|cff00E5EE"
 #define MSG_COLOR_SEXHOTPINK        "|cffFF6EB4"
 
-#define CHECKSESSION if(m_session == NULL) return NULL;  \
-    if(m_session->GetPlayer() == NULL) return NULL;
+#define CHECKSESSION if (m_session == NULL) return NULL;  \
+    if (m_session->GetPlayer() == NULL) return NULL;
 
 int32 GetSpellIDFromLink(const char* spelllink);
 uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid);
@@ -573,7 +573,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleLookupAchievementCmd(const char* args, WorldSession* m_session);
 #endif
         // Deprecated GMScript reload.
-        //bool HandleReloadScriptsCommand(const char * args, WorldSession * m_session);
+        //bool HandleReloadScriptsCommand(const char * args, WorldSession*  m_session);
         bool HandleNpcPossessCommand(const char* args, WorldSession* m_session);
         bool HandleNpcUnPossessCommand(const char* args, WorldSession* m_session);
         bool HandleRehashCommand(const char* args, WorldSession* m_session);

@@ -231,7 +231,7 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
     return true;
 }
 
-//bool ChatHandler::HandleDeleteInstanceCommand(const char* args, WorldSession *m_session)
+//bool ChatHandler::HandleDeleteInstanceCommand(const char* args, WorldSession* m_session)
 //{
 //    RedSystemMessage(m_session, "Command not implemented yet.");
 //    return true;

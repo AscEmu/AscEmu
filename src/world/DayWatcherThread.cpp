@@ -224,13 +224,13 @@ void DayWatcherThread::update_arena()
                         //    1+1639.28*2.71828
 
                         double power = ((-0.00412) * X);
-                        //if(power < 1.0)
+                        //if (power < 1.0)
                         //    power = 1.0;
 
                         double divisor = pow(((double)(2.71828)), power);
                         divisor *= 1639.28;
                         divisor += 1.0;
-                        //if(divisor < 1.0)
+                        //if (divisor < 1.0)
                         //    divisor = 1.0;
 
                         Y = 1511.26 / divisor;

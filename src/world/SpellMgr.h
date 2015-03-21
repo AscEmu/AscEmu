@@ -33,8 +33,8 @@ class Aura;
 
 #define AURA_FACTORY_FUNCTION(T) \
   public: \
-  static Aura* Create(SpellEntry *proto, int32 duration, Object* caster, Unit *target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
-  T(SpellEntry *proto, int32 duration, Object* caster, Unit *target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
+  static Aura* Create(SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
+  T(SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
 
 typedef Spell* (*spell_factory_function)(Object* Caster, SpellEntry* info, bool triggered, Aura* aur);
 typedef Aura* (*aura_factory_function)(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);

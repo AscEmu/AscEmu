@@ -35,7 +35,7 @@ class SERVER_DECL Container : public Item
         bool AddItemToFreeSlot(Item* pItem, uint32* r_slot);
         Item* GetItem(int16 slot)
         {
-            if(slot >= 0 && (uint16)slot < GetProto()->ContainerSlots)
+            if (slot >= 0 && (uint16)slot < GetProto()->ContainerSlots)
                 return m_Slot[slot];
             else
                 return 0;

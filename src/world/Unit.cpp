@@ -3579,9 +3579,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                     dmg.full_damage += float2int32(dmg.full_damage * (GetDamageDonePctMod(dmg.school_type) - 1));
 
                 if (ability != NULL && ability->NameHash == SPELL_HASH_SHRED)
-                    dmg.full_damage += float2int32(dmg.full_damage *  pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
+                    dmg.full_damage += float2int32(dmg.full_damage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
                 if (ability != NULL && ability->NameHash == SPELL_HASH_MAUL)
-                    dmg.full_damage += float2int32(dmg.full_damage *  pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
+                    dmg.full_damage += float2int32(dmg.full_damage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
 
                 //pet happiness state dmg modifier
                 if (IsPet() && !TO<Pet*>(this)->IsSummonedPet())
@@ -4347,7 +4347,7 @@ void Unit::AddAura(Aura* aur)
                         if (!aur->IsPositive()
                             && m_auras[x]->m_casterGuid != aur->m_casterGuid
                             && (m_auras[x]->GetSpellProto()->c_is_flags & SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF) == 0
-                            )
+                           )
                         {
                             continue;
                         }
@@ -4608,7 +4608,7 @@ void Unit::AddAura(Aura* aur)
         }
         /*if (isAlive() && CanAgroHash(aur->m_spellProto->NameHash)) //no threat for hunter's mark
         {
-        Unit * pCaster = aur->GetUnitCaster();
+        Unit* pCaster = aur->GetUnitCaster();
         if (!pCaster) return;
 
         addAttacker(pCaster);
@@ -5769,7 +5769,7 @@ void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 s
             && (m_auras[x]->GetSpellProto()->BGR_one_buff_on_target & buff_type) // aura is in same group
             && m_auras[x]->GetSpellId() != skip // make sure to not do self removes in case aura will stack
             && (!sguid || (sguid && m_auras[x]->m_casterGuid == sguid)) // we either remove everything or just buffs from us
-            )
+           )
             m_auras[x]->Remove();
     }
 }
@@ -6242,7 +6242,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
             && m_auras[x]->GetSpellProto()->School == School
             && (!m_auras[x]->IsPositive() || Positive)
             && (!Immune && m_auras[x]->GetSpellProto()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
-            )
+           )
             m_auras[x]->Remove();
 }
 
@@ -8292,7 +8292,7 @@ void Unit::SendEnvironmentalDamageLog(uint64 guid, uint8 type, uint32 damage)
     SendMessageToSet(&data, true, false);
 }
 
-void Unit::BuildMovementPacket(ByteBuffer *data)
+void Unit::BuildMovementPacket(ByteBuffer* data)
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
     *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
@@ -8307,7 +8307,7 @@ void Unit::BuildMovementPacket(ByteBuffer *data)
     {
         if (IsPlayer() && TO_PLAYER(this)->m_CurrentTransporter)
             transporter_info.guid = TO_PLAYER(this)->m_CurrentTransporter->GetGUID();
-        if (Unit * u = GetVehicleBase())
+        if (Unit* u = GetVehicleBase())
             transporter_info.guid = u->GetGUID();
         *data << transporter_info.guid;
         *data << transporter_info.x;
@@ -8343,7 +8343,7 @@ void Unit::BuildMovementPacket(ByteBuffer *data)
 }
 
 
-void Unit::BuildMovementPacket(ByteBuffer *data, float x, float y, float z, float o)
+void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o)
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
     *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
@@ -8358,7 +8358,7 @@ void Unit::BuildMovementPacket(ByteBuffer *data, float x, float y, float z, floa
     {
         if (IsPlayer() && TO_PLAYER(this)->m_CurrentTransporter)
             transporter_info.guid = TO_PLAYER(this)->m_CurrentTransporter->GetGUID();
-        if (Unit * u = GetVehicleBase())
+        if (Unit* u = GetVehicleBase())
             transporter_info.guid = u->GetGUID();
         *data << transporter_info.guid;
         *data << transporter_info.x;

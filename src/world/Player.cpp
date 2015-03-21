@@ -772,7 +772,7 @@ bool Player::Create(WorldPacket& data)
     memcpy(m_taximask, info->taximask, sizeof(m_taximask));
 
     // Set Starting stats for char
-    //SetScale(  ((race==RACE_TAUREN)?1.3f:1.0f));
+    //SetScale( ((race==RACE_TAUREN)?1.3f:1.0f));
     SetScale(1.0f);
     SetHealth(info->health);
     SetPower(POWER_TYPE_MANA, info->mana);
@@ -947,12 +947,12 @@ void Player::Update(unsigned long time_passed)
     {
         if (m_AutoShotAttackTimer > time_passed)
         {
-            //LOG_DEBUG( "HUNTER AUTOSHOT 0) %i, %i", m_AutoShotAttackTimer, p_time);
+            //LOG_DEBUG("HUNTER AUTOSHOT 0) %i, %i", m_AutoShotAttackTimer, p_time);
             m_AutoShotAttackTimer -= time_passed;
         }
         else
         {
-            //LOG_DEBUG( "HUNTER AUTOSHOT 1) %i", p_time);
+            //LOG_DEBUG("HUNTER AUTOSHOT 1) %i", p_time);
             EventRepeatSpell();
         }
     }
@@ -3533,7 +3533,7 @@ void Player::SetPersistentInstanceId(uint32 mapId, uint32 difficulty, uint32 ins
     }
     m_playerInfo->savedInstanceIdsLock.Release();
     CharacterDatabase.Execute("DELETE FROM instanceids WHERE playerguid = %u AND mapid = %u AND mode = %u;", m_playerInfo->guid, mapId, difficulty);
-    CharacterDatabase.Execute("INSERT INTO instanceids (playerguid, mapid, mode, instanceid) VALUES ( %u, %u, %u, %u)", m_playerInfo->guid, mapId, difficulty, instanceId);
+    CharacterDatabase.Execute("INSERT INTO instanceids (playerguid, mapid, mode, instanceid) VALUES (%u, %u, %u, %u)", m_playerInfo->guid, mapId, difficulty, instanceId);
 }
 
 void Player::RolloverHonor()
@@ -4201,7 +4201,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         {
             int32 val = proto->Stats[i].Value;
             /*
-            if ( val == 0)
+            if (val == 0)
             continue;
             */
             ModifyBonuses(proto->Stats[i].Type, val, apply);
@@ -4585,7 +4585,7 @@ void Player::RepopRequestedPlayer()
         }
         else
         {
-            // RepopAtGraveyard( GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+            // RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
             // Cebernic: Mapinfo NULL? let's search from bindposition.
             RepopAtGraveyard(GetBindPositionX(), GetBindPositionY(), GetBindPositionZ(), GetBindMapId());
         }
@@ -4874,7 +4874,7 @@ void Player::DeathDurabilityLoss(double percent)
 
 void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 {
-    if(HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
+    if (HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
 		return;
 
     bool first = true;
@@ -5043,7 +5043,8 @@ bool Player::HasFinishedQuest(uint32 quest_id)
 }
 
 
-bool Player::HasTimedQuest(){
+bool Player::HasTimedQuest()
+{
     for (uint32 i = 0; i < 25; i++)
         if ((m_questlog[i] != NULL) && (m_questlog[i]->GetQuest()->time != 0))
             return true;
@@ -5553,7 +5554,7 @@ void Player::UpdateStats()
         const static float BaseRegen[80] = { 0.034965f, 0.034191f, 0.033465f, 0.032526f, 0.031661f, 0.031076f, 0.030523f, 0.029994f, 0.029307f, 0.028661f, 0.027584f, 0.026215f, 0.025381f, 0.024300f, 0.023345f, 0.022748f, 0.021958f, 0.021386f, 0.020790f, 0.020121f, 0.019733f, 0.019155f, 0.018819f, 0.018316f, 0.017936f, 0.017576f, 0.017201f, 0.016919f, 0.016581f, 0.016233f, 0.015994f, 0.015707f, 0.015464f, 0.015204f, 0.014956f, 0.014744f, 0.014495f, 0.014302f, 0.014094f, 0.013895f, 0.013724f, 0.013522f, 0.013363f, 0.013175f, 0.012996f, 0.012853f, 0.012687f, 0.012539f, 0.012384f, 0.012233f, 0.012113f, 0.011973f, 0.011859f, 0.011714f, 0.011575f, 0.011473f, 0.011342f, 0.011245f, 0.011110f, 0.010999f, 0.010700f, 0.010522f, 0.010290f, 0.010119f, 0.009968f, 0.009808f, 0.009651f, 0.009553f, 0.009445f, 0.009327f, 0.008859f, 0.008415f, 0.007993f, 0.007592f, 0.007211f, 0.006849f, 0.006506f, 0.006179f, 0.005869f, 0.005575f };
         uint32 level = getLevel();
         if (level > 80) level = 80;
-        //float amt = ( 0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level-1])*PctPowerRegenModifier[POWER_TYPE_MANA];
+        //float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level-1])*PctPowerRegenModifier[POWER_TYPE_MANA];
 
         // Mesmer: new Manaregen formula.
         uint32 Spirit = GetStat(STAT_SPIRIT);
@@ -5632,7 +5633,7 @@ void Player::AddCalculatedRestXP(uint32 seconds)
     // http://www.worldofwarcraft.com/info/basics/resting.html
 
 
-    // Define xp for a full bar ( = 20 bubbles)
+    // Define xp for a full bar (= 20 bubbles)
     uint32 xp_to_lvl = uint32(lvlinfo->XPToNextLevel);
 
     // get RestXP multiplier from config.
@@ -5783,7 +5784,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
                         detectRange = 85.0f + 0.2f * (float)(GetStealthDetectBonus() - pObj->GetStealthLevel());
                     // Hehe... stealth skill is increased by 5 each level and detection skill is increased by 5 each level too.
                     // This way, a level 70 should easily be able to detect a level 4 rogue (level 4 because that's when you get stealth)
-                    //    detectRange += 0.2f * ( getLevel() - pObj->getLevel());
+                    //    detectRange += 0.2f * (getLevel() - pObj->getLevel());
                     if (detectRange < 1.0f) detectRange = 1.0f; // Minimum Detection Range = 1yd
                 }
                 else // stealthed player is behind us
@@ -5794,7 +5795,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
                 detectRange += GetBoundingRadius(); // adjust range for size of player
                 detectRange += pObj->GetBoundingRadius(); // adjust range for size of stealthed player
-                //sLog.outString( "Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , ( GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , GetDistanceSq(pObj));
+                //sLog.outString("Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , (GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , GetDistanceSq(pObj));
                 if (GetDistanceSq(pObj) > detectRange * detectRange)
                     return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see stealthed players
             }
@@ -5866,7 +5867,7 @@ void Player::AddInRangeObject(Object* pObj)
         if (ntime > m_taxi_ride_time)
             m_CurrentTaxiPath->SendMoveForTime(this, TO< Player* >(pObj), ntime - m_taxi_ride_time);
         /*else
-            m_CurrentTaxiPath->SendMoveForTime( this, TO< Player* >( pObj), m_taxi_ride_time - ntime);*/
+            m_CurrentTaxiPath->SendMoveForTime(this, TO< Player* >(pObj), m_taxi_ride_time - ntime);*/
     }
 
     Unit::AddInRangeObject(pObj);
@@ -6073,7 +6074,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     if (spellinfo == NULL)
         return -1;
-    //sLog.outString( "Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name);
+    //sLog.outString("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name);
 
     // Check if Morphed
     if (polySpell > 0)
@@ -6133,11 +6134,11 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     //float bonusRange = 0;
     // another hackfix: bonus range from hunter talent hawk eye: +2/4/6 yard range to ranged weapons
     //if (autoshot)
-    //SM_FFValue( SM_FRange, &bonusRange, dbcSpell.LookupEntry( 75)->SpellGroupType); // HORRIBLE hackfixes :P
+    //SM_FFValue(SM_FRange, &bonusRange, dbcSpell.LookupEntry(75)->SpellGroupType); // HORRIBLE hackfixes :P
     // Partha: +2.52yds to max range, this matches the range the client is calculating.
     // see extra/supalosa_range_research.txt for more info
     //bonusRange = 2.52f;
-    //sLog.outString( "Bonus range = %f" , bonusRange);
+    //sLog.outString("Bonus range = %f" , bonusRange);
 
     // check if facing target
     if (!isInFront(target))
@@ -6161,7 +6162,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         fail = SPELL_FAILED_LINE_OF_SIGHT;
     if (dist > maxr)
     {
-        //    sLog.outString( "Auto shot failed: out of range (Maxr: %f, Dist: %f)" , maxr , dist);
+        //    sLog.outString("Auto shot failed: out of range (Maxr: %f, Dist: %f)" , maxr , dist);
         fail = SPELL_FAILED_OUT_OF_RANGE;
     }
 
@@ -6181,8 +6182,8 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
             uint32 spellid2 = autoshot ? 75 : spellid;
             m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellid2);
         }
-        //sLog.outString( "Result for CanShootWIthRangedWeapon: %u" , fail);
-        //LOG_DEBUG( "Can't shoot with ranged weapon: %u (Timer: %u)" , fail , m_AutoShotAttackTimer);
+        //sLog.outString("Result for CanShootWIthRangedWeapon: %u" , fail);
+        //LOG_DEBUG("Can't shoot with ranged weapon: %u (Timer: %u)" , fail , m_AutoShotAttackTimer);
         return fail;
     }
 
@@ -6199,7 +6200,7 @@ void Player::EventRepeatSpell()
     {
         m_AutoShotAttackTimer = 0; //avoid flooding client with error messages
         m_onAutoShot = false;
-        //LOG_DEBUG( "Can't cast Autoshot: Target changed! (Timer: %u)" , m_AutoShotAttackTimer);
+        //LOG_DEBUG("Can't cast Autoshot: Target changed! (Timer: %u)" , m_AutoShotAttackTimer);
         return;
     }
 
@@ -6207,9 +6208,9 @@ void Player::EventRepeatSpell()
 
     if (m_isMoving)
     {
-        //LOG_DEBUG( "HUNTER AUTOSHOT 2) %i, %i", m_AutoShotAttackTimer, m_AutoShotDuration);
+        //LOG_DEBUG("HUNTER AUTOSHOT 2) %i, %i", m_AutoShotAttackTimer, m_AutoShotDuration);
         //m_AutoShotAttackTimer = m_AutoShotDuration;//avoid flooding client with error messages
-        //LOG_DEBUG( "Can't cast Autoshot: You're moving! (Timer: %u)" , m_AutoShotAttackTimer);
+        //LOG_DEBUG("Can't cast Autoshot: You're moving! (Timer: %u)" , m_AutoShotAttackTimer);
         m_AutoShotAttackTimer = 100; // shoot when we can
         return;
     }
@@ -6372,7 +6373,8 @@ void Player::EventDeActivateGameObject(GameObject* obj)
     obj->BuildFieldUpdatePacket(this, GAMEOBJECT_DYNAMIC, 0);
 }
 
-void Player::EventTimedQuestExpire(uint32 questid){
+void Player::EventTimedQuestExpire(uint32 questid)
+{
     QuestLogEntry *qle = this->GetQuestLogForEntry(questid);
     if (qle == NULL)
         return;
@@ -6526,7 +6528,8 @@ void Player::Reset_Talents()
     smsg_TalentsInfo(false); //VLack: should we send this as Aspire? Yes...
 }
 
-void Player::Reset_AllTalents(){
+void Player::Reset_AllTalents()
+{
     uint32 originalspec = m_talentActiveSpec;
     Reset_Talents();
 
@@ -6831,7 +6834,7 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
     data << firstNode->x << firstNode->y << firstNode->z;
     data << m_taxi_ride_time;
     data << uint8(0);
-    //    data << uint32( 0x00000300);
+    //    data << uint32(0x00000300);
     data << uint32(0x00003000);
     data << uint32(traveltime);
 
@@ -7427,7 +7430,7 @@ void Player::PushUpdateData(ByteBuffer* data, uint32 updatecount)
     _bufferS.Acquire();
 
     // unfortunately there is no guarantee that all data will be compressed at a ratio
-    // that will fit into 2^16 bytes ( stupid client limitation on server packets)
+    // that will fit into 2^16 bytes (stupid client limitation on server packets)
     // so if we get more than 63KB of update data, force an update and then append it
     // to the clean buffer.
     if ((data->size() + bUpdateBuffer.size()) >= 63000)
@@ -7467,7 +7470,7 @@ void Player::PushCreationData(ByteBuffer* data, uint32 updatecount)
     _bufferS.Acquire();
 
     // unfortunately there is no guarantee that all data will be compressed at a ratio
-    // that will fit into 2^16 bytes ( stupid client limitation on server packets)
+    // that will fit into 2^16 bytes (stupid client limitation on server packets)
     // so if we get more than 63KB of update data, force an update and then append it
     // to the clean buffer.
     if ((data->size() + bCreationBuffer.size() + mOutOfRangeIds.size()) >= 63000)
@@ -7852,8 +7855,8 @@ void Player::ZoneUpdate(uint32 ZoneId)
                 Log.Error("ChannelMgr", "Invalid channel entry %u for %s", chn->m_id, chn->m_name.c_str());
                 return;
             }
-            //for ( int i = 0 ; i <= 15 ; i ++)
-            //    Log.Notice( "asfssdf" , "%u %s" , i , pDBC->name_pattern[i]);
+            //for (int i = 0 ; i <= 15 ; i ++)
+            //    Log.Notice("asfssdf" , "%u %s" , i , pDBC->name_pattern[i]);
             snprintf(updatedName, 95, pDBC->name_pattern[0], at->name);
             Channel* newChannel = channelmgr.GetCreateChannel(updatedName, NULL, chn->m_id);
             if (newChannel == NULL)
@@ -7861,8 +7864,8 @@ void Player::ZoneUpdate(uint32 ZoneId)
                 Log.Error("ChannelMgr", "Could not create channel %s!", updatedName);
                 return; // whoops?
             }
-            //Log.Notice( "ChannelMgr" , "LEAVING CHANNEL %s" , chn->m_name.c_str());
-            //Log.Notice( "ChannelMgr" , "JOINING CHANNEL %s" , newChannel->m_name.c_str());
+            //Log.Notice("ChannelMgr" , "LEAVING CHANNEL %s" , chn->m_name.c_str());
+            //Log.Notice("ChannelMgr" , "JOINING CHANNEL %s" , newChannel->m_name.c_str());
             if (chn != newChannel)   // perhaps there's no need
             {
                 // join new channel
@@ -8334,11 +8337,13 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     SetPower(POWER_TYPE_MANA, Info->Mana);
 
 
-    if (Level > PreviousLevel){
+    if (Level > PreviousLevel)
+    {
         if (Level > 9)
             SetTalentPointsForAllSpec(Level - 9);
     }
-    else{
+    else
+    {
         if (Level != PreviousLevel)
             Reset_AllTalents();
     }
@@ -9005,7 +9010,7 @@ void Player::CompleteLoading()
             continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
 
         Aura* aura = sSpellFactoryMgr.NewAura(sp, (*i).dur, this, this, false);
-        //if ( !(*i).positive) // do we need this? - vojta
+        //if (!(*i).positive) // do we need this? - vojta
         //    aura->SetNegative();
 
         for (uint32 x = 0; x < 3; x++)
@@ -9465,7 +9470,7 @@ void Player::SaveAuras(stringstream & ss)
 
 void Player::SetShapeShift(uint8 ss)
 {
-    uint8 old_ss = GetShapeShift(); //GetByte( UNIT_FIELD_BYTES_2, 3);
+    uint8 old_ss = GetShapeShift(); //GetByte(UNIT_FIELD_BYTES_2, 3);
     SetByte(UNIT_FIELD_BYTES_2, 3, ss);
 
     //remove auras that we should not have
@@ -9505,7 +9510,7 @@ void Player::SetShapeShift(uint8 ss)
                 }
 
                 /*Shady: is this check necessary? anyway m_auras[x]!= NULL check already done in next iteration. Commented*/
-                //if ( m_auras[x] == NULL)
+                //if (m_auras[x] == NULL)
                 //    break;
             }
         }
@@ -9683,7 +9688,7 @@ void Player::CalcDamage()
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
                 (((1 << it->GetProto()->SubClass) & i->second.subclass))
-                )
+               )
                 tmp += i->second.value;
         }
 
@@ -10656,7 +10661,7 @@ void Player::PartLFGChannel()
 
     /*for (list<Channel*>::iterator itr = m_channels.begin(); itr != m_channels.end(); ++itr)
     {
-    if ( (*itr) == pChannel)
+    if ((*itr) == pChannel)
     {
     pChannel->Part(this);
     return;
@@ -10881,12 +10886,16 @@ void Player::UpdatePotionCooldown()
     m_lastPotionId = 0;
 }
 
-bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoints){
-    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr){
+bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoints)
+{
+    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    {
         SpellEntry *sp = dbcSpell.LookupEntry(*itr);
 
-        for (uint32 i = 0; i < 3; i++){
-            if (sp->Effect[i] == SPELL_EFFECT_APPLY_AURA){
+        for (uint32 i = 0; i < 3; i++)
+        {
+            if (sp->Effect[i] == SPELL_EFFECT_APPLY_AURA)
+            {
                 if ((sp->EffectApplyAuraName[i] == auraname) && (sp->EffectBasePoints[i] == (basepoints - 1)))
                     return true;
             }
@@ -10960,7 +10969,7 @@ void Player::Cooldown_AddStart(SpellEntry* pSpell)
         return;
 
     uint32 mstime = getMSTime();
-    int32 atime; // = float2int32( float( pSpell->StartRecoveryTime) / SpellHasteRatingBonus);
+    int32 atime; // = float2int32(float(pSpell->StartRecoveryTime) / SpellHasteRatingBonus);
 
     if (GetCastSpeedMod() >= 1.0f)
         atime = pSpell->StartRecoveryTime;
@@ -10978,8 +10987,8 @@ void Player::Cooldown_AddStart(SpellEntry* pSpell)
 
     if (pSpell->StartRecoveryCategory && pSpell->StartRecoveryCategory != 133)        // if we have a different cool category to the actual spell category - only used by few spells
         _Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->StartRecoveryCategory, mstime + atime, pSpell->Id, 0);
-    //else if ( pSpell->Category)                // cooldowns are grouped
-    //_Cooldown_Add( COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + pSpell->StartRecoveryTime, pSpell->Id, 0);
+    //else if (pSpell->Category)                // cooldowns are grouped
+    //_Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + pSpell->StartRecoveryTime, pSpell->Id, 0);
     else                                    // no category, so it's a gcd
     {
         //Log.Debug("Cooldown", "Global cooldown adding: %u ms", atime);
@@ -11548,9 +11557,9 @@ void Player::Social_SendFriendList(uint32 flag)
 
 void Player::SpeedCheatDelay(uint32 ms_delay)
 {
-    //    SDetector->SkipSamplingUntil( getMSTime() + ms_delay);
+    //    SDetector->SkipSamplingUntil(getMSTime() + ms_delay);
     //add triple latency to avoid client handling the spell effect with delay and we detect as cheat
-    //    SDetector->SkipSamplingUntil( getMSTime() + ms_delay + GetSession()->GetLatency() * 3);
+    //    SDetector->SkipSamplingUntil(getMSTime() + ms_delay + GetSession()->GetLatency() * 3);
     //add constant value to make sure the effect packet was sent to client from network pool
     SDetector->SkipSamplingUntil(getMSTime() + ms_delay + GetSession()->GetLatency() * 2 + 2000);   //2 second should be enough to send our packets to client
 }
@@ -11672,36 +11681,36 @@ for (uint32 i= 0; i<dbcAchievementCriteriaStore.GetNumRows(); i++)
 AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupRow(i);
 uint32 achientry = criteria->ID;
 //check if we need to even know about this criteria
-if ( !criteria || criteria->requiredType != achievementtype)
+if (!criteria || criteria->requiredType != achievementtype)
 continue;
 
 //we will send only this if it is required for this type
-if ( pentry && criteria->requiredAchievementRelatedEntry != pentry)
+if (pentry && criteria->requiredAchievementRelatedEntry != pentry)
 continue;
 
 //check if this achievement is even for us
-AchievementEntry *achi = dbcAchievementStore.LookupEntry( criteria->referredAchievement);
+AchievementEntry *achi = dbcAchievementStore.LookupEntry(criteria->referredAchievement);
 
-if ( !achi
-//            || !( achi->factionFlag == -1 || (isAlliance(this) && achi->factionFlag == 1) || (!isAlliance(this) && achi->factionFlag == 0)) ||
+if (!achi
+//            || !(achi->factionFlag == -1 || (isAlliance(this) && achi->factionFlag == 1) || (!isAlliance(this) && achi->factionFlag == 0)) ||
 //            || achi->flags & ACHIEVEMENT_FLAG_COUNTER
 //            || ((criteria->groupFlag & ACHIEVEMENT_CRITERIA_GROUP_NOT_IN_GROUP) && GetGroup()))
 continue;
 
-if ( !m_achievements[ achientry ])
+if (!m_achievements[ achientry ])
 m_achievements[ achientry ] = new AchievementVal;
 
 //check if we can finish = get achievement points on this
-//        if ( pvalue < criteria->requiredAchievementRelatedCount)
-//            SendAchievmentStatus( achientry);
+//        if (pvalue < criteria->requiredAchievementRelatedCount)
+//            SendAchievmentStatus(achientry);
 //        else
-if ( pvalue >= criteria->requiredAchievementRelatedCount
+if (pvalue >= criteria->requiredAchievementRelatedCount
 &&
 m_achievements[ achientry ]->cur_value < criteria->requiredAchievementRelatedCount)
 {
 //                m_achievement_points += achi->points;
 m_achievements[ achientry ]->completed_at_stamp = (uint32)UNIXTIME;
-SendAchievmentEarned( criteria->referredAchievement);
+SendAchievmentEarned(criteria->referredAchievement);
 }
 
 //if we got here then we could update our status
@@ -11710,14 +11719,14 @@ m_achievements[ achientry ]->cur_value = pvalue;
 
 }
 
-void Player::SendAchievmentEarned( uint32 archiId, uint32 at_stamp)
+void Player::SendAchievmentEarned(uint32 archiId, uint32 at_stamp)
 {
-WorldPacket data( SMSG_ACHIEVEMENT_EARNED, 30);
+WorldPacket data(SMSG_ACHIEVEMENT_EARNED, 30);
 data << GetNewGUID();
-data << uint32( archiId);
-if ( at_stamp)
-data << uint32( at_stamp); //seems to be something that increases in time. Also seems to a large enough value for time
-else data << uint32( UNIXTIME);
+data << uint32(archiId);
+if (at_stamp)
+data << uint32(at_stamp); //seems to be something that increases in time. Also seems to a large enough value for time
+else data << uint32(UNIXTIME);
 data << uint32(0);
 GetSession()->SendPacket(&data);
 }*/
@@ -11751,16 +11760,16 @@ void Player::SendAchievmentStatus(uint32 criteriaid, uint32 new_value, uint32 at
     EA 14 00 00 01 5E 0F 82 43 97 01 00 00 00 00 B4 82 94 08 00 00 00 00 00 00 00 00
     EA 14 00 00 01 62 0F 82 43 97 01 00 00 00 00 B4 82 94 08 00 00 00 00 00 00 00 00
     */
-    /*WorldPacket data( SMSG_CRITERIA_UPDATE, 30);
+    /*WorldPacket data(SMSG_CRITERIA_UPDATE, 30);
     data << uint32(criteriaid);
     data << uint8(1);
     data << uint8(1); //this is some ID or something maybe merge with previous value ? Maybe it is value for criteria ?
     data << GetNewGUID();
     data << uint32(0);
-    if ( at_stamp)
-    data << uint32( at_stamp / 8.50194274f); //seems to be something that increases in time. Also seems to a large enough value for time
+    if (at_stamp)
+    data << uint32(at_stamp / 8.50194274f); //seems to be something that increases in time. Also seems to a large enough value for time
     else
-    data << uint32( UNIXTIME / 8.50194274f); //seems to be something that increases in time. Also seems to a large enough value for time
+    data << uint32(UNIXTIME / 8.50194274f); //seems to be something that increases in time. Also seems to a large enough value for time
     data << uint32(0); //duration
     data << uint32(0); //duration left
     GetSession()->SendPacket(&data);*/
@@ -11772,10 +11781,10 @@ std::map<uint32,AchievementVal*>::iterator itr;
 for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
 {
 //        uint32 critentry = itr->first;
-//        AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupEntry( critentry);
-//        if ( !critentry) continue; //wtf ?
-//        if ( criteria->requiredAchievementRelatedCount > itr->second)
-SendAchievmentStatus( itr->first, itr->second->cur_value, itr->second->completed_at_stamp);
+//        AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupEntry(critentry);
+//        if (!critentry) continue; //wtf ?
+//        if (criteria->requiredAchievementRelatedCount > itr->second)
+SendAchievmentStatus(itr->first, itr->second->cur_value, itr->second->completed_at_stamp);
 }
 }
 
@@ -11785,11 +11794,11 @@ std::map<uint32,AchievementVal*>::iterator itr;
 for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
 {
 uint32 critentry = itr->first;
-AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupEntry( critentry);
-if ( !criteria)
+AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupEntry(critentry);
+if (!criteria)
 continue; //wtf ?
-if ( criteria->requiredAchievementRelatedCount <= itr->second->cur_value)
-SendAchievmentEarned( criteria->referredAchievement);
+if (criteria->requiredAchievementRelatedCount <= itr->second->cur_value)
+SendAchievmentEarned(criteria->referredAchievement);
 }
 }*/
 
@@ -11805,31 +11814,31 @@ std::map<uint32,AchievementVal*>::iterator itr;
 for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
 {
 uint32 critentry = itr->first;
-AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupEntry( critentry);
-if ( !criteria)
+AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupEntry(critentry);
+if (!criteria)
 continue; //wtf ?
-if ( criteria->requiredAchievementRelatedCount <= itr->second->cur_value)
+if (criteria->requiredAchievementRelatedCount <= itr->second->cur_value)
 {
 found_finished++;
-data << uint32( criteria->referredAchievement);
-data << uint32( itr->second->completed_at_stamp / 8.50194274f); // -sometimes it is durations
+data << uint32(criteria->referredAchievement);
+data << uint32(itr->second->completed_at_stamp / 8.50194274f); // -sometimes it is durations
 }
 }
-data << uint32( 0xFFFFFFFF); //maybe a terminator like a null terminated string ?
+data << uint32(0xFFFFFFFF); //maybe a terminator like a null terminated string ?
 */
 //now the block for those : SMSG_CRITERIA_UPDATE
 /*
             //sometimes this is duration left
-            data << uint32( criteria->ID);
-            data << uint8( 1);
-            data << uint8( itr->second->cur_value); //probably not since it does not fit into this size. Also seems to change from time to time
+            data << uint32(criteria->ID);
+            data << uint8(1);
+            data << uint8(itr->second->cur_value); //probably not since it does not fit into this size. Also seems to change from time to time
             data << GetNewGUID();
-            data << uint32( 0); //no idea. was always 0
-            data << uint32( UNIXTIME); //seems to be something that increases in time. Also seems to a large enough value for time
+            data << uint32(0); //no idea. was always 0
+            data << uint32(UNIXTIME); //seems to be something that increases in time. Also seems to a large enough value for time
             data << uint32(0); //duration
             data << uint32(0); //duration left
             */
-/*    if ( found_finished)
+/*    if (found_finished)
         GetSession()->SendPacket(&data);
         }*/
 
@@ -12615,13 +12624,13 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 
 
     //Mage: Fiery Payback
-    /*if ( FieryPaybackModHP35 == 1){
+    /*if (FieryPaybackModHP35 == 1){
 
-        if ( GetHealthPct() <= 35){
-        if ( HasAura( 44441))
-        CastSpell( GetGUID(), 44441, true);
+        if (GetHealthPct() <= 35){
+        if (HasAura(44441))
+        CastSpell(GetGUID(), 44441, true);
         }else
-        RemoveAllAuraById( 44441);
+        RemoveAllAuraById(44441);
         }*/
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12932,7 +12941,8 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
 
 void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 {
-    if (GetVehicleComponent() != NULL){
+    if (GetVehicleComponent() != NULL)
+    {
         GetVehicleComponent()->RemoveAccessories();
         GetVehicleComponent()->EjectAllPassengers();
     }
@@ -13294,7 +13304,8 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    if ((qst->time != 0) && HasTimedQuest()){
+    if ((qst->time != 0) && HasTimedQuest())
+    {
         sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, this);
         return;
     }
@@ -13351,7 +13362,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     if (qst->count_required_item || qst_giver->IsGameObject())    // gameobject quests deactivate
         UpdateNearbyGameObjects();
 
-    //ScriptSystem->OnQuestEvent(qst, TO< Creature* >( qst_giver), _player, QUEST_EVENT_ON_ACCEPT);
+    //ScriptSystem->OnQuestEvent(qst, TO< Creature* >(qst_giver), _player, QUEST_EVENT_ON_ACCEPT);
 
     sQuestMgr.OnQuestAccepted(this, qst, qst_giver);
 
@@ -13359,7 +13370,8 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     sHookInterface.OnQuestAccept(this, qst, qst_giver);
 }
 
-bool Player::LoadReputations(QueryResult *result){
+bool Player::LoadReputations(QueryResult *result)
+{
     if (result == NULL)
         return false;
 
@@ -13405,7 +13417,8 @@ bool Player::LoadReputations(QueryResult *result){
     return true;
 }
 
-bool Player::SaveReputations(bool NewCharacter, QueryBuffer *buf){
+bool Player::SaveReputations(bool NewCharacter, QueryBuffer *buf)
+{
     if (!NewCharacter && (buf == NULL))
         return false;
 
@@ -13422,7 +13435,8 @@ bool Player::SaveReputations(bool NewCharacter, QueryBuffer *buf){
         CharacterDatabase.ExecuteNA(ds.str().c_str());
 
 
-    for (ReputationMap::iterator itr = m_reputation.begin(); itr != m_reputation.end(); ++itr){
+    for (ReputationMap::iterator itr = m_reputation.begin(); itr != m_reputation.end(); ++itr)
+    {
         std::stringstream ss;
 
         ss << "INSERT INTO playerreputations VALUES('";
@@ -13725,14 +13739,17 @@ void Player::BuildPetSpellList(WorldPacket & data)
     data << uint64(0);
 }
 
-void Player::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid){
-    if (mountvehicleid == 0){
-        LOG_ERROR("Tried to add a vehicle component with 0 as vehicle id for player %u ( %s)", GetLowGUID(), GetName());
+void Player::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
+{
+    if (mountvehicleid == 0)
+    {
+        LOG_ERROR("Tried to add a vehicle component with 0 as vehicle id for player %u (%s)", GetLowGUID(), GetName());
         return;
     }
 
-    if (vehicle != NULL){
-        LOG_ERROR("Tried to add a vehicle component, but there's already one for player %u ( %s)", GetLowGUID(), GetName());
+    if (vehicle != NULL)
+    {
+        LOG_ERROR("Tried to add a vehicle component, but there's already one for player %u (%s)", GetLowGUID(), GetName());
         return;
     }
 
@@ -13740,7 +13757,8 @@ void Player::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid){
     vehicle->Load(this, creature_entry, vehicleid);
 }
 
-void Player::RemoveVehicleComponent(){
+void Player::RemoveVehicleComponent()
+{
     delete vehicle;
     vehicle = NULL;
 }

@@ -435,7 +435,7 @@ enum ECorpseFields
 };
 
 #define LOWGUID                                   OBJECT_FIELD_GUID
-#define HIGHGUID                                  ( OBJECT_FIELD_GUID + 1 )
+#define HIGHGUID                                  (OBJECT_FIELD_GUID + 1)
 
 #define UNIT_FIELD_STRENGTH                       UNIT_FIELD_STAT0
 #define UNIT_FIELD_AGILITY                        UNIT_FIELD_STAT1

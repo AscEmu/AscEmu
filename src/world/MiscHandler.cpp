@@ -92,7 +92,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (pLoot->items[lootSlot].looted){
+    if (pLoot->items[lootSlot].looted)
+    {
         LOG_DEBUG("Player %s GUID %u tried to loot an already looted item.", _player->GetName(), _player->GetLowGUID());
         return;
     }
@@ -213,7 +214,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         _player->GetSession()->SendPacket(&data);
     }
 
-    if (lootSrcItem != NULL){
+    if (lootSrcItem != NULL)
+    {
         pLoot->items[lootSlot].looted = true;
     }
 
@@ -524,7 +526,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                     {
                                         pGO->SetByte(GAMEOBJECT_BYTES_1, 0, 1);
                                         ///\todo redo this temporary fix, because for some reason hasloot is true even when we loot everything my guess is we need to set up some even that rechecks the GO in 10 seconds or something
-                                        //pGO->Despawn( 600000 + ( RandomUInt( 300000 ) ) );
+                                        //pGO->Despawn(600000 + (RandomUInt(300000)));
                                         return;
                                     }
 
@@ -608,9 +610,10 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         if (item->loot != NULL)
         {
             uint32 itemsNotLooted =
-                std::count_if(item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
+                std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
 
-            if ((itemsNotLooted == 0) && (item->loot->gold == 0)){
+            if ((itemsNotLooted == 0) && (item->loot->gold == 0))
+            {
                 delete item->loot;
                 item->loot = NULL;
             }
@@ -1185,7 +1188,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     }
 
     /*
-    if(uiDecompressedSize>100000)
+    if (uiDecompressedSize>100000)
     {
     Disconnect();
     return;
@@ -1569,7 +1572,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         case GAMEOBJECT_TYPE_DOOR:
         {
             // cebernic modified this state = 0 org =1
-            if ((obj->GetByte(GAMEOBJECT_BYTES_1, 0) == 0))  //&& (obj->GetUInt32Value(GAMEOBJECT_FLAGS) == 33) )
+            if ((obj->GetByte(GAMEOBJECT_BYTES_1, 0) == 0))  //&& (obj->GetUInt32Value(GAMEOBJECT_FLAGS) == 33))
                 obj->EventCloseDoor();
             else
             {
@@ -1954,12 +1957,12 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
             {
                 TalentEntry const* talent_info = dbcTalent.LookupRowForced(j);
 
-                //LOG_DEBUG( "HandleInspectOpcode: i(%i) j(%i)", i, j );
+                //LOG_DEBUG("HandleInspectOpcode: i(%i) j(%i)", i, j);
 
                 if (talent_info == NULL)
                     continue;
 
-                //LOG_DEBUG( "HandleInspectOpcode: talent_info->TalentTree(%i) talent_tab_id(%i)", talent_info->TalentTree, talent_tab_id );
+                //LOG_DEBUG("HandleInspectOpcode: talent_info->TalentTree(%i) talent_tab_id(%i)", talent_info->TalentTree, talent_tab_id);
 
                 if (talent_info->TalentTree != talent_tab_id)
                     continue;
@@ -1967,7 +1970,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
                 talent_max_rank = -1;
                 for (int32 k = 4; k > -1; --k)
                 {
-                    //LOG_DEBUG( "HandleInspectOpcode: k(%i) RankID(%i) HasSpell(%i) TalentTree(%i) Tab(%i)", k, talent_info->RankID[k - 1], player->HasSpell( talent_info->RankID[k - 1] ), talent_info->TalentTree, talent_tab_id );
+                    //LOG_DEBUG("HandleInspectOpcode: k(%i) RankID(%i) HasSpell(%i) TalentTree(%i) Tab(%i)", k, talent_info->RankID[k - 1], player->HasSpell(talent_info->RankID[k - 1]), talent_info->TalentTree, talent_tab_id);
                     if (talent_info->RankID[k] != 0 && player->HasSpell(talent_info->RankID[k]))
                     {
                         talent_max_rank = k;
@@ -1975,7 +1978,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
                     }
                 }
 
-                //LOG_DEBUG( "HandleInspectOpcode: RankID(%i) talent_max_rank(%i)", talent_info->RankID[talent_max_rank-1], talent_max_rank );
+                //LOG_DEBUG("HandleInspectOpcode: RankID(%i) talent_max_rank(%i)", talent_info->RankID[talent_max_rank-1], talent_max_rank);
 
                 if (talent_max_rank < 0)
                     continue;
@@ -1985,7 +1988,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
                 ++talent_count;
 
-                //LOG_DEBUG( "HandleInspectOpcode: talent(%i) talent_max_rank(%i) rank_id(%i) talent_index(%i) talent_tab_pos(%i) rank_index(%i) rank_slot(%i) rank_offset(%i) mask(%i)", talent_info->TalentID, talent_max_rank, talent_info->RankID[talent_max_rank-1], talent_index, talent_tab_pos, rank_index, rank_slot, rank_offset , mask);
+                //LOG_DEBUG("HandleInspectOpcode: talent(%i) talent_max_rank(%i) rank_id(%i) talent_index(%i) talent_tab_pos(%i) rank_index(%i) rank_slot(%i) rank_offset(%i) mask(%i)", talent_info->TalentID, talent_max_rank, talent_info->RankID[talent_max_rank-1], talent_index, talent_tab_pos, rank_index, rank_slot, rank_offset , mask);
             }
         }
 

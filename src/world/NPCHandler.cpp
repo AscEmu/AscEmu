@@ -115,7 +115,7 @@ void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
 void WorldSession::SendTrainerList(Creature* pCreature)
 {
     Trainer* pTrainer = pCreature->GetTrainer();
-    //if(pTrainer == 0 || !CanTrainAt(_player, pTrainer)) return;
+    //if (pTrainer == 0 || !CanTrainAt(_player, pTrainer)) return;
     if (pTrainer == NULL)
         return;
 
@@ -267,7 +267,7 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
         || (pSpell->Cost && !_player->HasGold(pSpell->Cost))
         || (pSpell->RequiredSkillLine && _player->_GetSkillLineCurrent(pSpell->RequiredSkillLine, true) < pSpell->RequiredSkillLineValue)
         || (pSpell->IsProfession && _player->GetPrimaryProfessionPoints() == 0)     //check level 1 professions if we can learn a new profession
-        )
+       )
         return TRAINER_STATUS_NOT_LEARNABLE;
     return TRAINER_STATUS_LEARNABLE;
 }

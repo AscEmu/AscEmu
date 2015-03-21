@@ -433,14 +433,14 @@ namespace Arcemu
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 /// Creates an worldpacket SMSG_GOSSIP_MESSAGE packet, fills it and sends it to the specified player.
-                /// \param Player * - player to send to.
+                /// \param Player*  - player to send to.
                 /// \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
                 void Send(Player*) const;
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 /// Creates a stackworldpacket SMSG_GOSSIP_MESSAGE, fills it and sends it to the specified player.
-                /// \param Player * - player to send to.
+                /// \param Player*  - player to send to.
                 /// \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
                 template<uint32>
@@ -450,7 +450,7 @@ namespace Arcemu
                 /// Sends a menu with just the text id and no options.
                 /// \param uint64 - the creature guid.
                 /// \param size_t - the text id.
-                /// \param Player * - the player to send to.
+                /// \param Player*  - the player to send to.
                 //////////////////////////////////////////////////////////////////////////////////////////
                 static void SendSimpleMenu(uint64, size_t, Player*);
 

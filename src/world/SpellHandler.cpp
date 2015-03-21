@@ -268,7 +268,8 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     if (!_player->isInRange(target_unit, MAX_INTERACTION_RANGE))
         return;
 
-    if (target_unit->IsVehicle()){
+    if (target_unit->IsVehicle())
+    {
         if (target_unit->GetVehicleComponent() != NULL)
             target_unit->GetVehicleComponent()->AddPassenger(_player);
         return;
@@ -279,12 +280,14 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 
     if (!_player->HasAurasWithNameHash(SPELL_HASH_LIGHTWELL_RENEW) && target_unit->RemoveAura(59907))
     {
-        SpellClickSpell *sp = SpellClickSpellStorage.LookupEntry(creature_id);
-        if (sp == NULL){
-            if (target_unit->IsCreature()){
-                Creature *c = TO< Creature* >(target_unit);
+        SpellClickSpell* sp = SpellClickSpellStorage.LookupEntry(creature_id);
+        if (sp == NULL)
+        {
+            if (target_unit->IsCreature())
+            {
+                Creature* c = TO< Creature* >(target_unit);
 
-                sChatHandler.BlueSystemMessage(this, "NPC Id %u ( %s ) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name);
+                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name);
                 LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
                 return;
             }
@@ -300,12 +303,14 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         return;
     }
 
-    SpellClickSpell *sp = SpellClickSpellStorage.LookupEntry(creature_id);
-    if (sp == NULL){
-        if (target_unit->IsCreature()){
-            Creature *c = TO< Creature* >(target_unit);
+    SpellClickSpell* sp = SpellClickSpellStorage.LookupEntry(creature_id);
+    if (sp == NULL)
+    {
+        if (target_unit->IsCreature())
+        {
+            Creature* c = TO< Creature* >(target_unit);
 
-            sChatHandler.BlueSystemMessage(this, "NPC Id %u ( %s ) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name);
+            sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name);
             LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
             return;
         }
@@ -369,7 +374,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         //autoshot 75
         if ((spellInfo->AttributesExB & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
         {
-            //sLog.outString( "HandleSpellCast: Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name );
+            //sLog.outString("HandleSpellCast: Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name);
             Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
             if (!weapon)
                 return;
@@ -471,7 +476,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     recvPacket >> spellId;
 
     // do not cancel ghost auras
-    if(spellId == 8326 || spellId == 9036)
+    if (spellId == 8326 || spellId == 9036)
 		return;
 
     if (_player->m_currentSpell && _player->m_currentSpell->GetProto()->Id == spellId)
@@ -480,11 +485,11 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     {
         SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
         Aura* aura = _player->FindAura(spellId);
-        if(aura)
+        if (aura)
 		{
-			if(!aura->IsPositive())
+			if (!aura->IsPositive())
 				return;
-			if(info->Attributes & ATTRIBUTES_NEGATIVE)
+			if (info->Attributes & ATTRIBUTES_NEGATIVE)
 				return;
 		}
         if (info != NULL && !(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
@@ -558,7 +563,8 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
     float missilespeed = 0;
     uint32 traveltime = 0;
 
-    if (castflags & 2){
+    if (castflags & 2)
+    {
         recvPacket >> missilepitch;
         recvPacket >> missilespeed;
 
@@ -639,7 +645,7 @@ void WorldSession::HandleCancelTotem(WorldPacket& recv_data)
 
     if (slot >= UNIT_SUMMON_SLOTS)
     {
-        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. ( tried to crash the server? )", _player->GetLowGUID(), _player->GetName(), slot);
+        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->GetLowGUID(), _player->GetName(), slot);
         return;
     }
 

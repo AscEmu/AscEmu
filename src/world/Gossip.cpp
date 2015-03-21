@@ -481,7 +481,8 @@ void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
-    switch (Id){
+    switch (Id)
+    {
         case 1:
             Plr->GetSession()->SendTabardHelp(TO_CREATURE(pObject));
             break;

@@ -682,7 +682,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         ARCEMU_INLINE bool IsSpellDisabled(uint32 spellid)
         {
-            if(m_disabled_spells.find(spellid) != m_disabled_spells.end())
+            if (m_disabled_spells.find(spellid) != m_disabled_spells.end())
                 return true;
             return false;
         }
@@ -732,9 +732,9 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 #endif
 
         void LoadVehicleAccessories();
-        std::vector< VehicleAccessoryEntry* >* GetVehicleAccessories( uint32 creature_entry );
+        std::vector< VehicleAccessoryEntry* >* GetVehicleAccessories(uint32 creature_entry);
         void LoadWorldStateTemplates();
-        std::multimap< uint32, WorldState >* GetWorldStatesForMap( uint32 map ) const;
+        std::multimap< uint32, WorldState >* GetWorldStatesForMap(uint32 map) const;
 
 #undef ENABLE_ALWAYS_SERIOUS_MODE_GCC_STL_HACK
 
@@ -751,8 +751,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         //////////////////////////////////////////////////////////////////////////////
         // I've been asked if there was an easter egg in the source code
         // No there isn't really, but now here's this easter octagon instead, enjoy!
-        // ( if you are artistic, female, blue eyed with good imagination, and
-        //   at least some sense of humor, this might even look like an egg. :P )
+        // (if you are artistic, female, blue eyed with good imagination, and
+        //   at least some sense of humor, this might even look like an egg. :P)
         //
         //                  ---------
         //                 /         \
