@@ -216,11 +216,11 @@ enum eFizzcrank
     GOSSIP_TEXTID_FIZZCRANK8    = 12463,
     GOSSIP_TEXTID_FIZZCRANK9    = 12464,
 
+    GOSSIP_OPTION_FIZZCRANK_1   = 190,      // Tell me what's going on out here, Fizzcrank.
+    GOSSIP_OPTION_FIZZCRANK_2   = 189,      // Go on.
+
     QUEST_THE_MECHAGNOMES       = 11708
 };
-
-#define GOSSIP_ITEM_GO_ON   "Go on."
-#define GOSSIP_ITEM_TELL_ME "Tell me what's going on out here, Fizzcrank."
 
 class FizzcrankGossip : public GossipScript
 {
@@ -229,10 +229,10 @@ class FizzcrankGossip : public GossipScript
         {
             GossipMenu* Menu;
 
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, pPlayer);
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
 
             if(sEAS.GetQuest(pPlayer, QUEST_THE_MECHAGNOMES))
-                Menu->AddItem(0, GOSSIP_ITEM_TELL_ME, 1);
+                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_1), 1);
 
             Menu->SendTo(pPlayer);
         }
@@ -244,42 +244,42 @@ class FizzcrankGossip : public GossipScript
             {
                 case 1:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer);
-                    Menu->AddItem(0, GOSSIP_ITEM_GO_ON, 2);
+                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 2);
                     Menu->SendTo(pPlayer);
                     break;
                 case 2:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer);
-                    Menu->AddItem(0, GOSSIP_ITEM_GO_ON, 3);
+                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 3);
                     Menu->SendTo(pPlayer);
                     break;
                 case 3:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer);
-                    Menu->AddItem(0, GOSSIP_ITEM_GO_ON, 4);
+                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 4);
                     Menu->SendTo(pPlayer);
                     break;
                 case 4:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer);
-                    Menu->AddItem(0, GOSSIP_ITEM_GO_ON, 5);
+                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 5);
                     Menu->SendTo(pPlayer);
                     break;
                 case 5:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer);
-                    Menu->AddItem(0, GOSSIP_ITEM_GO_ON, 6);
+                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 6);
                     Menu->SendTo(pPlayer);
                     break;
                 case 6:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer);
-                    Menu->AddItem(0, GOSSIP_ITEM_GO_ON, 7);
+                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 7);
                     Menu->SendTo(pPlayer);
                     break;
                 case 7:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer);
-                    Menu->AddItem(0, GOSSIP_ITEM_GO_ON, 8);
+                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 8);
                     Menu->SendTo(pPlayer);
                     break;
                 case 8:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer);
-                    Menu->AddItem(0, GOSSIP_ITEM_GO_ON, 9);
+                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 9);
                     Menu->SendTo(pPlayer);
                     break;
                 case 9:
@@ -356,8 +356,7 @@ void SetupBoreanTundra(ScriptMgr* mgr)
 
     // Mechagnomes
     // Fizzcrank Fullthrottle
-    GossipScript* fGossip = new FizzcrankGossip;
-    mgr->register_gossip_script(NPC_FIZZCRANK, fGossip);
+    mgr->register_gossip_script(NPC_FIZZCRANK, new FizzcrankGossip);
 
     // Surristrasz
     GossipScript* sGossip = new SurristraszGossip;
