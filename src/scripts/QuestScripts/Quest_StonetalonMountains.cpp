@@ -19,8 +19,8 @@
 #include "Setup.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Kaya Flathoof
-// Entry: 11856
+// Quest: "Protect Kaya" (Entry: 6523)
+// Kaya Flathoof (Entry: 11856)
 class ProtectKaya : public QuestScript
 {
     public:

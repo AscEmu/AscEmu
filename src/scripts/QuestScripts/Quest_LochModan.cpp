@@ -35,29 +35,45 @@ class ProtectingtheShipment : public QuestScript
             if(creat == NULL)
                 return;
             creat->m_escorter = mTarget;
-            creat->GetAIInterface()->setMoveType(11);
+            creat->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
             creat->GetAIInterface()->StopMovement(3000);
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
             creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
 
-            sEAS.CreateCustomWaypointMap(creat);
-            sEAS.WaypointCreate(creat, -5753.780762f, -3433.290039f, 301.628387f, 4.834769f, 0, 256, 1417);
-            sEAS.WaypointCreate(creat, -5744.062500f, -3476.653564f, 302.269287f, 5.580896f, 0, 256, 1417);
-            sEAS.WaypointCreate(creat, -5674.703125f, -3543.583984f, 303.273682f, 4.775867f, 0, 256, 1417);
-            sEAS.WaypointCreate(creat, -5670.187500f, -3595.618164f, 311.888153f, 4.791576f, 0, 256, 1417);
-            sEAS.WaypointCreate(creat, -5664.515625f, -3687.601563f, 317.954590f, 4.131842f, 0, 256, 1417);
-            sEAS.WaypointCreate(creat, -5705.745117f, -3755.254150f, 321.452118f, 4.457779f, 0, 256, 1417);
-            sEAS.WaypointCreate(creat, -5711.766113f, -3778.145752f, 322.827942f, 4.473486f, 0, 256, 1417);
-            sEAS.EnableWaypoints(creat);
         }
 };
 
-class Miran : public CreatureAIScript
+// Miran Waypoints
+static LocationExtra WaypointsMiran[] =
 {
+    {},
+    { -5753.780762f, -3433.290039f, 301.628387f, 4.834769f, Flag_Run }, //1
+    { -5744.062500f, -3476.653564f, 302.269287f, 5.580896f, Flag_Run },
+    { -5674.703125f, -3543.583984f, 303.273682f, 4.775867f, Flag_Run },
+    { -5670.187500f, -3595.618164f, 311.888153f, 4.791576f, Flag_Run },
+    { -5664.515625f, -3687.601563f, 317.954590f, 4.131842f, Flag_Run },
+    { -5705.745117f, -3755.254150f, 321.452118f, 4.457779f, Flag_Run },
+    { -5711.766113f, -3778.145752f, 322.827942f, 4.473486f, Flag_Run }  //7
+};
+
+class Miran : public MoonScriptCreatureAI
+{
+
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(Miran);
-        Miran(Creature* pCreature) : CreatureAIScript(pCreature) {}
+        MOONSCRIPT_FACTORY_FUNCTION(Miran, MoonScriptCreatureAI);
+        Miran(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        {
+            WPCount = 7;
+            WayPoints = WaypointsMiran;
+
+            for (int i = 1; i <= WPCount; ++i)
+            {
+                AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
+            }
+
+            pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
+        }
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)
         {
@@ -73,10 +89,13 @@ class Miran : public CreatureAIScript
                 plr->GetQuestLogForEntry(309)->SendQuestComplete();
             }
         }
+
+        int8 WPCount;
+        LocationExtra* WayPoints;
 };
 
 void SetupLochModan(ScriptMgr* mgr)
 {
     mgr->register_creature_script(1379, &Miran::Create);
-    /*mgr->register_quest_script(309, new ProtectingtheShipment());*/
+    mgr->register_quest_script(309, new ProtectingtheShipment());
 }
