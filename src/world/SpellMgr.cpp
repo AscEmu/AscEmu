@@ -115,6 +115,282 @@ Aura* SpellFactoryMgr::NewAura(SpellEntry* proto, int32 duration, Object* caster
     }
 }
 
+void SpellFactoryMgr::LoadSpellAreas()
+{
+	mSpellAreaMap.clear();     
+	mSpellAreaForQuestMap.clear();
+	mSpellAreaForActiveQuestMap.clear();
+	mSpellAreaForQuestEndMap.clear();
+	mSpellAreaForAuraMap.clear();
+
+	//                                                  0     1         2              3               4           5          6        7       8
+	QueryResult* result = WorldDatabase.Query("SELECT spell, area, quest_start, quest_start_active, quest_end, aura_spell, racemask, gender, autocast FROM spell_area");
+
+	if (!result)
+	{
+		Log.Success("SpellArea","Loaded 0 spell area requirements. DB table `spell_area` is empty.");
+		return;
+	}
+
+	uint32 count = 0;
+	do
+	{
+		Field* fields = result->Fetch();
+
+		uint32 spell = fields[0].GetUInt32();
+		SpellArea spellArea;
+		spellArea.spellId = spell;
+		spellArea.areaId = fields[1].GetUInt32();
+		spellArea.questStart = fields[2].GetUInt32();
+		spellArea.questStartCanActive = fields[3].GetBool();
+		spellArea.questEnd = fields[4].GetUInt32();
+		spellArea.auraSpell = fields[5].GetInt32();
+		spellArea.raceMask = fields[6].GetUInt32();
+		spellArea.gender = Gender(fields[7].GetUInt8());
+		spellArea.autocast = fields[8].GetBool();
+
+		{
+			bool ok = true;
+			SpellAreaMapBounds sa_bounds = GetSpellAreaMapBounds(spellArea.spellId);
+			for (SpellAreaMap::const_iterator itr = sa_bounds.first; itr != sa_bounds.second; ++itr)
+			{
+				if (spellArea.spellId != itr->second.spellId)
+					continue;
+				if (spellArea.areaId != itr->second.areaId)
+					continue;
+				if (spellArea.questStart != itr->second.questStart)
+					continue;
+				if (spellArea.auraSpell != itr->second.auraSpell)
+					continue;
+				if ((spellArea.raceMask & itr->second.raceMask) == 0)
+					continue;
+				if (spellArea.gender != itr->second.gender)
+					continue;
+
+				// duplicate by requirements
+				ok = false;
+				break;
+			}
+
+			if (!ok)
+			{
+				Log.Error("SpellArea", "Spell %u listed in `spell_area` already listed with similar requirements.", spell);
+				continue;
+			}
+		}
+
+		/*
+		if (spellArea.areaId && !AreaTriggerStorage.LookupEntry(spellArea.areaId))
+		{
+		printf("Spell %u listed in `spell_area` have wrong area (%u) requirement \n", spell, spellArea.areaId);
+		continue;
+		}
+		*/
+
+		if (spellArea.questStart && !QuestStorage.LookupEntry(spellArea.questStart))
+		{
+			Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong start quest (%u) requirement.", spell, spellArea.questStart);
+			continue;
+		}
+
+		if (spellArea.questEnd)
+		{
+			if (!QuestStorage.LookupEntry(spellArea.questEnd))
+			{
+				Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong end quest (%u) requirement.", spell, spellArea.questEnd);
+				continue;
+			}
+
+			if (spellArea.questEnd == spellArea.questStart && !spellArea.questStartCanActive)
+			{
+				Log.Error("SpellArea", "Spell %u listed in `spell_area` have quest (%u) requirement for start and end in same time.", spell, spellArea.questEnd);
+				continue;
+			}
+		}
+
+		if (spellArea.auraSpell)
+		{
+			SpellEntry const* spellInfo = dbcSpell.LookupEntryForced(abs(spellArea.auraSpell));
+			if (!spellInfo)
+			{
+				Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong aura spell (%u) requirement.", spell, abs(spellArea.auraSpell));
+				continue;
+			}
+
+			if (uint32(abs(spellArea.auraSpell)) == spellArea.spellId)
+			{
+				Log.Debug("SpellArea", "Spell %u listed in `spell_area` have aura spell (%u) requirement for itself.", spell, abs(spellArea.auraSpell));
+				continue;
+			}
+
+			// not allow autocast chains by auraSpell field (but allow use as alternative if not present)
+			if (spellArea.autocast && spellArea.auraSpell > 0)
+			{
+				bool chain = false;
+				SpellAreaForAuraMapBounds saBound = GetSpellAreaForAuraMapBounds(spellArea.spellId);
+				for (SpellAreaForAuraMap::const_iterator itr = saBound.first; itr != saBound.second; ++itr)
+				{
+					if (itr->second->autocast && itr->second->auraSpell > 0)
+					{
+						chain = true;
+						break;
+					}
+				}
+
+				if (chain)
+				{
+					Log.Debug("SpellArea", "Spell %u listed in `spell_area` have aura spell (%u) requirement that itself autocast from aura.", spell, spellArea.auraSpell);
+					continue;
+				}
+
+				SpellAreaMapBounds saBound2 = GetSpellAreaMapBounds(spellArea.auraSpell);
+				for (SpellAreaMap::const_iterator itr2 = saBound2.first; itr2 != saBound2.second; ++itr2)
+				{
+					if (itr2->second.autocast && itr2->second.auraSpell > 0)
+					{
+						chain = true;
+						break;
+					}
+				}
+
+				if (chain)
+				{
+					Log.Debug("SpellArea", "Spell %u listed in `spell_area` have aura spell (%u) requirement that itself autocast from aura.", spell, spellArea.auraSpell);
+					continue;
+				}
+			}
+		}
+
+		if (spellArea.raceMask && (spellArea.raceMask & RACEMASK_ALL_PLAYABLE) == 0)
+		{
+			Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong race mask (%u) requirement.", spell, spellArea.raceMask);
+			continue;
+		}
+
+		if (spellArea.gender != GENDER_NONE && spellArea.gender != GENDER_FEMALE && spellArea.gender != GENDER_MALE)
+		{
+			Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong gender (%u) requirement.", spell, spellArea.gender);
+			continue;
+		}
+
+		SpellArea const* sa = &mSpellAreaMap.insert(SpellAreaMap::value_type(spell, spellArea))->second;
+
+		// for search by current zone/subzone at zone/subzone change
+		if (spellArea.areaId)
+			mSpellAreaForAreaMap.insert(SpellAreaForAreaMap::value_type(spellArea.areaId, sa));
+
+		// for search at quest start/reward
+		if (spellArea.questStart)
+		{
+			if (spellArea.questStartCanActive)
+				mSpellAreaForActiveQuestMap.insert(SpellAreaForQuestMap::value_type(spellArea.questStart, sa));
+			else
+				mSpellAreaForQuestMap.insert(SpellAreaForQuestMap::value_type(spellArea.questStart, sa));
+		}
+
+		// for search at quest start/reward
+		if (spellArea.questEnd)
+			mSpellAreaForQuestEndMap.insert(SpellAreaForQuestMap::value_type(spellArea.questEnd, sa));
+
+		// for search at aura apply
+		if (spellArea.auraSpell)
+			mSpellAreaForAuraMap.insert(SpellAreaForAuraMap::value_type(abs(spellArea.auraSpell), sa));
+
+		++count;
+	} while (result->NextRow());
+
+	Log.Success("SpellArea", "Loaded %u spell area requirements.", count);
+}
+
+SpellAreaMapBounds SpellFactoryMgr::GetSpellAreaMapBounds(uint32 spell_id) const
+{
+	return SpellAreaMapBounds(mSpellAreaMap.lower_bound(spell_id), mSpellAreaMap.upper_bound(spell_id));
+}
+
+SpellAreaForQuestMapBounds SpellFactoryMgr::GetSpellAreaForQuestMapBounds(uint32 quest_id, bool active) const
+{
+	if (active)
+		return SpellAreaForQuestMapBounds(mSpellAreaForActiveQuestMap.lower_bound(quest_id), mSpellAreaForActiveQuestMap.upper_bound(quest_id));
+	else
+		return SpellAreaForQuestMapBounds(mSpellAreaForQuestMap.lower_bound(quest_id), mSpellAreaForQuestMap.upper_bound(quest_id));
+}
+
+SpellAreaForQuestMapBounds SpellFactoryMgr::GetSpellAreaForQuestEndMapBounds(uint32 quest_id) const
+{
+	return SpellAreaForQuestMapBounds(mSpellAreaForQuestEndMap.lower_bound(quest_id), mSpellAreaForQuestEndMap.upper_bound(quest_id));
+}
+
+SpellAreaForAuraMapBounds SpellFactoryMgr::GetSpellAreaForAuraMapBounds(uint32 spell_id) const
+{
+	return SpellAreaForAuraMapBounds(mSpellAreaForAuraMap.lower_bound(spell_id), mSpellAreaForAuraMap.upper_bound(spell_id));
+}
+
+SpellAreaForAreaMapBounds SpellFactoryMgr::GetSpellAreaForAreaMapBounds(uint32 area_id) const
+{
+	return SpellAreaForAreaMapBounds(mSpellAreaForAreaMap.lower_bound(area_id), mSpellAreaForAreaMap.upper_bound(area_id));
+}
+
+bool SpellArea::IsFitToRequirements(Player* player, uint32 newZone, uint32 newArea) const
+{
+	if (gender != GENDER_NONE)                   // not in expected gender
+		if (!player || gender != player->getGender())
+			return false;
+
+	if (raceMask)                                // not in expected race
+		if (!player || !(raceMask & player->getRaceMask()))
+			return false;
+
+	if (areaId)                                  // not in expected zone
+		if (newZone != areaId && newArea != areaId)
+			return false;
+
+	if (questStart)                              // not in expected required quest state
+		if (!player || !player->HasQuest(questStart))
+			return false;
+
+	if (questEnd)                                // not in expected forbidden quest state
+		if (!player || player->GetQuestRewardStatus(questEnd))
+			return false;
+
+	if (auraSpell)                               // not have expected aura
+		if (!player || (auraSpell > 0 && !player->HasAura(auraSpell)) || (auraSpell < 0 && player->HasAura(-auraSpell)))
+			return false;
+}
+
+bool SpellEntry::CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player)
+{
+	// normal case
+	if (RequiresAreaId > 0)
+	{
+		bool found = false;
+		AreaGroup* groupEntry = dbcAreaGroup.LookupEntry(RequiresAreaId);
+		while (groupEntry)
+		{
+			for (uint8 i = 0; i < 7; ++i)
+				if (groupEntry->AreaId[i] == zone_id || groupEntry->AreaId[i] == area_id)
+					found = true;
+			break;
+		}
+
+		if (!found)
+			return false;
+	}
+
+	// DB base check (if non empty then must fit at least single for allow)
+	SpellAreaMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaMapBounds(Id);
+	if (saBounds.first != saBounds.second)
+	{
+		for (SpellAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
+		{
+			if (itr->second.IsFitToRequirements(player, zone_id, area_id))
+				return true;
+		}
+		return false;
+	}
+
+	return false;
+}
+
 void SpellFactoryMgr::Setup()
 {
     SetupDeathKnight();

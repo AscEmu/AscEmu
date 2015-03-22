@@ -439,6 +439,7 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
+	MAKE_TASK(SpellFactoryMgr, LoadSpellAreas);
 
 #undef MAKE_TASK
 

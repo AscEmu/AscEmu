@@ -2314,6 +2314,7 @@ class SERVER_DECL Player : public Unit
         void _ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false, bool skip_stat_apply = false);
         void _EventAttack(bool offhand);
         void _EventExploration();
+		void CastSpellArea();
 
         /// Water level related stuff
         void SetNoseLevel();
