@@ -563,6 +563,18 @@ void QuestMgr::BuildQuestComplete(Player* plr, Quest* qst)
     if (qst->rewardtitleid > 0)
         plr->SetKnownTitle(static_cast<RankTitles>(qst->rewardtitleid), true);
 
+	// Some spells applied at quest reward
+	SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(qst->id, false);
+	if (saBounds.first != saBounds.second)
+	{
+		for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
+		{
+			if (itr->second->autocast && itr->second->IsFitToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
+				if (!plr->HasAura(itr->second->spellId))
+					plr->CastSpell(plr, itr->second->spellId, true);
+		}
+	}
+
     WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, 72);
 
     data << uint32(qst->id);
