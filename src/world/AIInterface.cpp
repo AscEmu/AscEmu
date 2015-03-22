@@ -2416,7 +2416,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                             destpoint = -1;
                     }
                 }
-                else if (m_moveType == MOVEMENTTYPE_FORWARDTHANSTOP)// move to end, then stop
+                else if (m_moveType == MOVEMENTTYPE_FORWARDTHENSTOP)// move to end, then stop
                 {
                     ++m_currentWaypoint;
                     if (m_currentWaypoint > GetWayPointsCount())

@@ -2026,7 +2026,7 @@ class AlarAI : public CreatureAIScript
 
             /******************* Additional Settings *******************/
 
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
+            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             _unit->GetAIInterface()->SetFly();
 
             FlameQuills = false;

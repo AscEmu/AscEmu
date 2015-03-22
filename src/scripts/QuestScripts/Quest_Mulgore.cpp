@@ -91,7 +91,7 @@ class The_Plains_Vision : public MoonScriptCreatureAI
             }
         }
 
-        int8 WPCount;
+        uint8 WPCount;
         LocationExtra* WayPoints;
 };
 

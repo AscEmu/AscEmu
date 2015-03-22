@@ -1035,7 +1035,7 @@ void MoonScriptCreatureAI::SetMoveType(MoveType pMoveType)
             _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_QUEST);
             break;
         case Move_ForwardThenStop:
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
+            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             break;
         default:
             sLog.outDebug("ArcScript: MoonScriptCreatureAI::SetMoveType() : Invalid move type!");
@@ -1059,7 +1059,7 @@ MoveType MoonScriptCreatureAI::GetMoveType()
             return Move_DontMoveWP;
         case MOVEMENTTYPE_QUEST:
             return Move_Quest;
-        case MOVEMENTTYPE_FORWARDTHANSTOP:
+        case MOVEMENTTYPE_FORWARDTHENSTOP:
             return Move_ForwardThenStop;
         default:
             sLog.outDebug("ArcScript: MoonScriptCreatureAI::GetMoveType() : Invalid move type!");

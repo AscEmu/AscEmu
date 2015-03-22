@@ -35,7 +35,7 @@ class ProtectKaya : public QuestScript
             if(creat == NULL)
                 return;
             creat->m_escorter = mTarget;
-            creat->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
+            creat->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             creat->GetAIInterface()->StopMovement(10);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
             creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);

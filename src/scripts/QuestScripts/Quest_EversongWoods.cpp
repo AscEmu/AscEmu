@@ -85,7 +85,7 @@ void ProspectorAnvilwardGossip::GossipSelectOption(Object* pObject, Player* Plr,
         {
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, ANVILWARD_SAY_1);
             Plr->Gossip_Complete();
-            pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
+            pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             //Every Gossip NPC has a "StopMovement(30000)" by default.... lets overwrite it.
             pCreature->GetAIInterface()->StopMovement(10);
         }break;

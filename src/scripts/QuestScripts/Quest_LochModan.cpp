@@ -35,7 +35,7 @@ class ProtectingtheShipment : public QuestScript
             if(creat == NULL)
                 return;
             creat->m_escorter = mTarget;
-            creat->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
+            creat->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             creat->GetAIInterface()->StopMovement(3000);
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
@@ -90,7 +90,7 @@ class Miran : public MoonScriptCreatureAI
             }
         }
 
-        int8 WPCount;
+        uint8 WPCount;
         LocationExtra* WayPoints;
 };
 

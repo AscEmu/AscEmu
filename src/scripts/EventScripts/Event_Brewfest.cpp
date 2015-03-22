@@ -82,7 +82,7 @@ void CorenDirebrewGossip::GossipSelectOption(Object* pObject, Player* Plr, uint3
         {
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You'll pay for this insult, $c!");
             Plr->Gossip_Complete();
-            pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHANSTOP);
+            pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             pCreature->MoveToWaypoint(1);
         }break;
     }
