@@ -47,6 +47,7 @@ Quest_SholazarBasin.cpp
 Quest_Silithus.cpp 
 Quest_SilvermoonCity.cpp 
 Quest_Silverpine_Forest.cpp 
+Quest_StonetalonMountains.cpp
 Quest_Stormwind.cpp 
 Quest_StranglethornVale.cpp 
 Quest_Tanaris.cpp 

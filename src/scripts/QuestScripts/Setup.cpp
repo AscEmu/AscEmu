@@ -67,6 +67,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     SetupSilithus(mgr);
     SetupSilvermoonCity(mgr);
     SetupSilverpineForest(mgr);
+    SetupStonetalonMountains(mgr);
     SetupStormwind(mgr);
     SetupStranglethornVale(mgr);
     SetupTanaris(mgr);

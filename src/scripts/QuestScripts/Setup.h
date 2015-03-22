@@ -64,6 +64,7 @@ void SetupShadowmoon(ScriptMgr* mgr);
 void SetupSilithus(ScriptMgr* mgr);
 void SetupSilvermoonCity(ScriptMgr* mgr);
 void SetupSilverpineForest(ScriptMgr* mgr);
+void SetupStonetalonMountains(ScriptMgr* mgr);
 void SetupStormwind(ScriptMgr* mgr);
 void SetupStranglethornVale(ScriptMgr* mgr);
 void SetupTanaris(ScriptMgr* mgr);
