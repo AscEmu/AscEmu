@@ -70,6 +70,12 @@ enum PlayerTeams
     MAX_PLAYER_TEAMS
 };
 
+enum Gender
+{
+	GENDER_MALE = 0,
+	GENDER_FEMALE = 1,
+	GENDER_NONE = 2
+};
 
 enum Classes
 {
