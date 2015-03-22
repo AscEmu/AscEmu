@@ -291,12 +291,11 @@ class FizzcrankGossip : public GossipScript
 
 };
 
-#define GOSSIP_ITEM_FREE_FLIGHT "I'd like passage to the Transitus Shield."
-#define GOSSIP_ITEM_FLIGHT      "May I use a drake to fly elsewhere?"
-
+//#define GOSSIP_ITEM_FREE_FLIGHT "I'd like passage to the Transitus Shield." this is not blizzlike...
 enum eSurristrasz
 {
     NPC_SURRISTRASZ             = 24795,
+    GI_SURRISTRASZ              = 191,   // "May I use a drake to fly elsewhere?"   
 
     SPELL_ABMER_TO_COLDARRA     = 46064
 };
@@ -306,14 +305,17 @@ class SurristraszGossip : public GossipScript
     public:
         void GossipHello(Object* pObject, Player* pPlayer)
         {
-            GossipMenu* Menu;
+            uint32 Text = objmgr.GetGossipTextForNpc(TO_CREATURE(pObject)->GetEntry());
 
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, pPlayer);
+            // check if there is a entry in the db
+            if (NpcTextStorage.LookupEntry(Text) == NULL) { return; }
 
-            Menu->AddItem(0, GOSSIP_ITEM_FREE_FLIGHT, 1);
-            Menu->AddItem(3, GOSSIP_ITEM_FLIGHT, 2);
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, pPlayer->GetSession()->language);
+            sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), pPlayer, menu);
 
-            Menu->SendTo(pPlayer);
+            menu.AddItem(ICON_FLIGHTMASTER, pPlayer->GetSession()->LocalizedGossipOption(GI_SURRISTRASZ), 1);
+
+            menu.Send(pPlayer);
         };
 
         void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
@@ -324,10 +326,6 @@ class SurristraszGossip : public GossipScript
             switch(IntId)
             {
                 case 1:
-                    pPlayer->Gossip_Complete();
-                    pPlayer->CastSpell(pPlayer, SPELL_ABMER_TO_COLDARRA, true);
-                    break;
-                case 2:
                     pPlayer->GetSession()->SendTaxiList(TO_CREATURE(pObject));
                     break;
             };
