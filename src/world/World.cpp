@@ -513,7 +513,7 @@ bool World::SetInitialWorldSettings()
     new AuctionMgr;
     sAuctionMgr.LoadAuctionHouses();
 
-    Log.Success("Lfg::Mgr", "Loading LFG rewards...");
+    Log.Success("LfgMgr", "Loading LFG rewards...");
     sLfgMgr.LoadRewards();
 
     m_queueUpdateTimer = mQueueUpdateInterval;

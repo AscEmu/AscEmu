@@ -3786,6 +3786,7 @@ void ObjectMgr::LoadAreaTrigger()
         ++count;
 
         uint32 Trigger_ID = fields[0].GetUInt32();
+        uint8 trigger_type = fields[1].GetUInt8();
 
         AreaTrigger at;
 
@@ -3809,7 +3810,7 @@ void ObjectMgr::LoadAreaTrigger()
             continue;
         }
 
-        if (at.x == 0 && at.y == 0 && at.z == 0)
+        if (at.x == 0 && at.y == 0 && at.z == 0 && (trigger_type == 1 || trigger_type == 4))    // check target coordinates only for teleport triggers
         {
             Log.Notice("AreaTrigger", "Area trigger (ID:%u) target coordinates not provided.", Trigger_ID);
             continue;
