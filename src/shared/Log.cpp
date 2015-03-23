@@ -52,19 +52,17 @@ SERVER_DECL tm g_localTime;
 void oLog::outFile(FILE* file, char* msg, const char* source)
 {
     char time_buffer[TIME_FORMAT_LENGTH];
-    char szltr_buffer[SZLTR_LENGTH];
     Time(time_buffer);
-    pdcds(SZLTR, szltr_buffer);
 
     if(source != NULL)
     {
-        fprintf(file, "%s%s%s: %s\n", time_buffer, szltr_buffer, source, msg);
-        printf("%s%s%s: %s\n", time_buffer, szltr_buffer, source, msg);
+        fprintf(file, "%s %s: %s\n", time_buffer, source, msg);
+        printf("%s %s: %s\n", time_buffer, source, msg);
     }
     else
     {
-        fprintf(file, "%s%s%s\n", time_buffer, szltr_buffer, msg);
-        printf("%s%s%s\n", time_buffer, szltr_buffer, msg);
+        fprintf(file, "%s %s\n", time_buffer, msg);
+        printf("%s %s\n", time_buffer, msg);
     }
 }
 
@@ -72,18 +70,16 @@ void oLog::outFile(FILE* file, char* msg, const char* source)
 void oLog::outFileSilent(FILE* file, char* msg, const char* source)
 {
     char time_buffer[TIME_FORMAT_LENGTH];
-    char szltr_buffer[SZLTR_LENGTH];
     Time(time_buffer);
-    pdcds(SZLTR, szltr_buffer);
 
     if(source != NULL)
     {
-        fprintf(file, "%s%s%s: %s\n", time_buffer, szltr_buffer, source, msg);
+        fprintf(file, "%s %s: %s\n", time_buffer, source, msg);
         // Don't use printf to prevent text from being shown in the console output.
     }
     else
     {
-        fprintf(file, "%s%s%s\n", time_buffer, szltr_buffer, msg);
+        fprintf(file, "%s %s\n", time_buffer, msg);
         // Don't use printf to prevent text from being shown in the console output.
     }
 }
@@ -197,6 +193,21 @@ void oLog::outDebug(const char* str, ...)
     outFile(m_errorFile, buf);
 }
 
+void oLog::outMap(const char* str, ...)
+{
+	if (m_fileLogLevel < 3 || m_normalFile == NULL)
+		return;
+
+	char buf[32768];
+	va_list ap;
+
+	va_start(ap, str);
+	vsnprintf(buf, 32768, str, ap);
+	va_end(ap);
+
+	outFile(m_normalFile, buf);
+}
+
 void oLog::logBasic(const char* file, int line, const char* fncname, const char* msg, ...)
 {
     if(m_normalFile == NULL)
@@ -205,7 +216,8 @@ void oLog::logBasic(const char* file, int line, const char* fncname, const char*
     char buf[ 32768 ];
     char message[ 32768 ];
 
-    snprintf(message, 32768, " [BSC] %s:%d %s %s", file, line, fncname, msg);
+    snprintf(message, 32768, "[BSC] %s %s", fncname, msg);
+    //snprintf(message, 32768, "[BSC] %s:%d %s %s", file, line, fncname, msg);
     va_list ap;
 
     va_start(ap, msg);
@@ -223,7 +235,8 @@ void oLog::logDetail(const char* file, int line, const char* fncname, const char
     char buf[ 32768 ];
     char message[ 32768 ];
 
-    snprintf(message, 32768, " [DTL] %s:%d %s %s", file, line, fncname, msg);
+    snprintf(message, 32768, "[DTL] %s %s", fncname, msg);
+    //snprintf(message, 32768, "[DTL] %s:%d %s %s", file, line, fncname, msg);
     va_list ap;
 
     va_start(ap, msg);
@@ -241,7 +254,8 @@ void oLog::logError(const char* file, int line, const char* fncname, const char*
     char buf[ 32768 ];
     char message[ 32768 ];
 
-    snprintf(message, 32768, " [ERR] %s:%d %s %s", file, line, fncname, msg);
+    snprintf(message, 32768, "[ERR] %s %s", fncname, msg);
+    //snprintf(message, 32768, "[ERR] %s:%d %s %s", file, line, fncname, msg);
     va_list ap;
 
     va_start(ap, msg);
@@ -259,7 +273,8 @@ void oLog::logDebug(const char* file, int line, const char* fncname, const char*
     char buf[ 32768 ];
     char message[ 32768 ];
 
-    snprintf(message, 32768, " [DBG] %s:%d %s %s", file, line, fncname, msg);
+    snprintf(message, 32768, "[DBG] %s %s", fncname, msg);
+    //snprintf(message, 32768, "[DBG] %s:%d %s %s", file, line, fncname, msg);
     va_list ap;
 
     va_start(ap, msg);
@@ -412,7 +427,7 @@ void oLog::Init(int32 fileLogLevel, LogType logType)
     else
     {
         tm* aTm = localtime(&UNIXTIME);
-        outBasic("[%-4d-%02d-%02d %02d:%02d:%02d] ", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+        outBasic("==================[%-4d-%02d-%02d]========[%02d:%02d:%02d]==================", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
     }
 
     m_errorFile = fopen(logErrorFilename, "a");
@@ -422,7 +437,7 @@ void oLog::Init(int32 fileLogLevel, LogType logType)
     {
         tm* aTm = localtime(&UNIXTIME);
         // We don't echo time and date again because outBasic above just echoed them.
-        outErrorSilent("[%-4d-%02d-%02d %02d:%02d:%02d] ", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+        outErrorSilent("==================[%-4d-%02d-%02d]========[%02d:%02d:%02d]==================", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
     }
 }
 
