@@ -2427,6 +2427,17 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     else
                         destpoint = m_currentWaypoint;
                 }
+                else if (m_moveType == MOVEMENTTYPE_QUEST)// move to end, then stop
+                {
+                    ++m_currentWaypoint;
+                    if (m_currentWaypoint > GetWayPointsCount())
+                    {
+                        //hmm maybe we should stop being path walker since we are waiting here anyway
+                        destpoint = -1;
+                    }
+                    else
+                        destpoint = m_currentWaypoint;
+                }
                 else if (m_moveType != MOVEMENTTYPE_QUEST && m_moveType != MOVEMENTTYPE_DONTMOVEWP)//4 Unused
                 {
                     // 1 -> 10 then 10 -> 1
@@ -3945,7 +3956,8 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 {
     if (m_AIState == STATE_EVADE)
         return;
-    if (pUnit == NULL || pUnit->IsDead() || m_Unit->IsDead()) return;
+    if (pUnit == NULL || pUnit->IsDead() || m_Unit->IsDead())
+        return;
 
     // set the target first
     if (pUnit->GetInstanceID() == m_Unit->GetInstanceID())
@@ -4027,7 +4039,9 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
 {
     if (m_AIState == STATE_EVADE)
         return;
-    if (pUnit == NULL) return;
+
+    if (pUnit == NULL)
+        return;
 
     if (pUnit->IsCreature())
     {
@@ -4083,11 +4097,23 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
             if (creature->m_spawn->channel_target_creature)
                 sEventMgr.AddEvent(creature, &Creature::ChannelLinkUpCreature, creature->m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, 0);
         }
+
+        if (m_moveType == MOVEMENTTYPE_QUEST)
+        {
+            WayPoint* wp = getWayPoint(getCurrentWaypoint());
+            m_returnX = wp->x;
+            m_returnY = wp->y;
+            m_returnZ = wp->z;
+        }
     }
 
     //reset ProcCount
     //ResetProcCounts();
-    SetSprint();
+    if (m_moveType == MOVEMENTTYPE_QUEST)
+        SetWalk();
+    else
+        SetSprint();
+
     LockAITargets(true);
     m_aiTargets.clear();
     LockAITargets(false);
@@ -4510,9 +4536,20 @@ void AIInterface::SetReturnPosition()
 {
     if (m_returnX != 0.0f && m_returnY != 0.0f && m_returnZ != 0.0f)  //already returning somewhere
         return;
-    m_returnX = m_Unit->GetSpawnX();
-    m_returnY = m_Unit->GetSpawnY();
-    m_returnZ = m_Unit->GetSpawnZ();
+
+    if (m_moveType == MOVEMENTTYPE_QUEST)
+    {
+        WayPoint* wp = getWayPoint(getCurrentWaypoint());
+        m_returnX = wp->x;
+        m_returnY = wp->y;
+        m_returnZ = wp->z;
+    }
+    else
+    {
+        m_returnX = m_Unit->GetSpawnX();
+        m_returnY = m_Unit->GetSpawnY();
+        m_returnZ = m_Unit->GetSpawnZ();
+    }
 }
 
 bool AIInterface::MoveCharge(float x, float y, float z)
