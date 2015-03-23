@@ -267,11 +267,11 @@ namespace VMAP
 			WorldModel* worldmodel = new WorldModel();
 			if(!worldmodel->readFile(basepath + filename + ".vmo"))
 			{
-				sLog.outError("VMapManager2: could not load '%s%s.vmo'!\n", basepath.c_str(), filename.c_str());
+				Log.Error("VMapManager2","Could not load '%s%s.vmo'!", basepath.c_str(), filename.c_str());
 				delete worldmodel;
 				return NULL;
 			}
-			sLog.outMap("VMapManager2: loading file '%s%s'.\n", basepath.c_str(), filename.c_str());
+			Log.Map("VMapManager2","Loading file '%s%s'.", basepath.c_str(), filename.c_str());
 			model = iLoadedModelFiles.insert(std::pair<std::string, ManagedModel>(filename, ManagedModel())).first;
 			model->second.setModel(worldmodel);
 		}
@@ -284,12 +284,12 @@ namespace VMAP
 		ModelFileMap::iterator model = iLoadedModelFiles.find(filename);
 		if(model == iLoadedModelFiles.end())
 		{
-			sLog.outError("VMapManager2: trying to unload non-loaded file '%s'!\n", filename.c_str());
+			Log.Error("VMapManager2","Trying to unload non-loaded file '%s'!", filename.c_str());
 			return;
 		}
 		if(model->second.decRefCount() == 0)
 		{
-			sLog.outMap("VMapManager2: unloading file '%s'\n", filename.c_str());
+			Log.Map("VMapManager2","Unloading file '%s'", filename.c_str());
 			delete model->second.getModel();
 			iLoadedModelFiles.erase(model);
 		}

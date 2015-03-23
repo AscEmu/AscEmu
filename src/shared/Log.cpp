@@ -193,21 +193,6 @@ void oLog::outDebug(const char* str, ...)
     outFile(m_errorFile, buf);
 }
 
-void oLog::outMap(const char* str, ...)
-{
-	if (m_fileLogLevel < 3 || m_normalFile == NULL)
-		return;
-
-	char buf[32768];
-	va_list ap;
-
-	va_start(ap, str);
-	vsnprintf(buf, 32768, str, ap);
-	va_end(ap);
-
-	outFile(m_normalFile, buf);
-}
-
 void oLog::logBasic(const char* file, int line, const char* fncname, const char* msg, ...)
 {
     if(m_normalFile == NULL)
@@ -358,6 +343,22 @@ void oLog::Debug(const char* source, const char* format, ...)
     va_end(ap);
 
     outFile(m_errorFile, buf, source);
+}
+
+void oLog::Map(const char* source, const char* format, ...)
+{
+    if (m_fileLogLevel < 3 || m_normalFile == NULL)
+        return;
+
+    char buf[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(buf, 32768, format, ap);
+    va_end(ap);
+
+    printf("%s: %s\n", source, buf);
+    //outFile(m_normalFile, buf, source);
 }
 
 void oLog::LargeErrorMessage(const char* source, ...)
