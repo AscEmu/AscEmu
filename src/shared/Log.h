@@ -26,10 +26,30 @@
 class WorldPacket;
 class WorldSession;
 
-#define SZLTR "\xe5\xcf\xfd\xed\xd3\xfb\x03\xeb"
-#define SZLTR_LENGTH 9
-#define TIME_FORMAT "[%m-%d-%Y][%H:%M]"
+#define TIME_FORMAT "[%H:%M:%S]"
 #define TIME_FORMAT_LENGTH 100
+
+#if PLATFORM == PLATFORM_WIN32
+
+#define TRED FOREGROUND_RED | FOREGROUND_INTENSITY
+#define TGREEN FOREGROUND_GREEN | FOREGROUND_INTENSITY
+#define TYELLOW FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY
+#define TNORMAL FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE
+#define TWHITE TNORMAL | FOREGROUND_INTENSITY
+#define TBLUE FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY
+#define TPURPLE FOREGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY
+
+#else
+
+#define TRED    1
+#define TGREEN  2
+#define TYELLOW 3
+#define TNORMAL 4
+#define TWHITE  5
+#define TBLUE   6
+#define TPURPLE 7
+
+#endif
 
 enum LogType
 {
@@ -71,6 +91,8 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void Warning(const char* source, const char* format, ...);
         //log level 2
         void Debug(const char* source, const char* format, ...);
+        //log level 3
+        void Map(const char* source, const char* format, ...);
 
         void SetLogging(bool enabled);
 
@@ -87,6 +109,11 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void outFile(FILE* file, char* msg, const char* source = NULL);
         void outFileSilent(FILE* file, char* msg, const char* source = NULL);   // Prints text to file without showing it to the user. Used for the startup banner.
         void Time(char* buffer);
+        void SetColor(int color);
+
+#if PLATFORM == PLATFORM_WIN32
+        HANDLE stdout_handle;
+#endif
 
         ARCEMU_INLINE char dcd(char in)
         {
