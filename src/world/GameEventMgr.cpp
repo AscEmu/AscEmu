@@ -76,12 +76,12 @@ void GameEventMgr::LoadFromDB()
             if (gameEvent.isValid())
             {
                 mGameEvents.insert(std::make_pair(dbResult.entry, new GameEvent(dbResult)));
-                Log.Success("GameEventMgr", "Event: %s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
+                Log.Success("GameEventMgr", "%s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
                 ++count;
             }
             else
             {
-                Log.Debug("GameEventMgr", "Event: %s game event Entry: %u isn't a world event and has length = 0, thus it can't be used.", dbResult.description.c_str(), dbResult.entry);
+                Log.Debug("GameEventMgr", "%s game event Entry: %u isn't a world event and has length = 0, thus it can't be used.", dbResult.description.c_str(), dbResult.entry);
             }
         } while (result->NextRow());
 
@@ -89,7 +89,7 @@ void GameEventMgr::LoadFromDB()
         Log.Success("GameEventMgr", "%u events loaded from table event_names", count);
     }
     // Loading event_saves from CharacterDB
-    Log.Notice("GameEventMgr", " Start loading event_save");
+    Log.Notice("GameEventMgr", "Start loading event_save");
     {
         const char* loadEventSaveQuery = "SELECT eventEntry, state, next_start FROM event_save";
         bool success = false;
@@ -112,7 +112,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    Log.Error("GameEventMgr", "could not find event for event_save entry %u", event_id);
+                    Log.Error("GameEventMgr", "Could not find event for event_save entry %u", event_id);
                     continue;
                 }
 
@@ -127,7 +127,7 @@ void GameEventMgr::LoadFromDB()
         Log.Success("GameEventMgr", "Loaded %u saved events loaded from table event_saves", count);
     }
     // Loading event_creature from WorldDB
-    Log.Notice("GameEventMgr", "start loading game event creature spawns");
+    Log.Notice("GameEventMgr", "Start loading game event creature spawns");
     {
         const char* loadEventCreatureSpawnsQuery = "SELECT eventEntry, id, entry, map, position_x, position_y, position_z, \
                                                     orientation, movetype, displayid, faction, flags, bytes0, bytes1, bytes2, \
@@ -155,7 +155,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    Log.Error("GameEventMgr", "could not find event for event_creature_spawns entry %u", event_id);
+                    Log.Error("GameEventMgr", "Could not find event for event_creature_spawns entry %u", event_id);
                     continue;
                 }
 
@@ -201,7 +201,7 @@ void GameEventMgr::LoadFromDB()
         Log.Success("GameEventMgr", "%u creature spawns for %u events from table event_creature_spawns loaded.", count, mGameEvents.size());
     }
     // Loading event_gameobject from WorldDB
-    Log.Notice("GameEventMgr", "start loading game event gameobject spawns");
+    Log.Notice("GameEventMgr", "Start loading game event gameobject spawns");
     {
         const char* loadEventGameobjectSpawnsQuery = "SELECT eventEntry, id, entry, map, position_x, position_y, \
                                                       position_z, facing, orientation1, orientation2, orientation3, \
@@ -226,7 +226,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    Log.Error("GameEventMgr", "could not find event for event_gameobject_spawns entry %u", event_id);
+                    Log.Error("GameEventMgr", "Could not find event for event_gameobject_spawns entry %u", event_id);
                     continue;
                 }
 
