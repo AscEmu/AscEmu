@@ -93,7 +93,7 @@ void LfgMgr::LoadRewards()
 
     if (!result)
     {
-        Log.Error("LfgMgr", "Loaded 0 lfg dungeon rewards.DB table `lfg_dungeon_rewards` is empty!\n");
+        Log.Error("LFGMgr", "Loaded 0 lfg dungeon rewards.DB table `lfg_dungeon_rewards` is empty!\n");
         return;
     }
 
@@ -114,25 +114,25 @@ void LfgMgr::LoadRewards()
 
         if (!dbcLFGDungeon.LookupEntry(dungeonId))
         {
-            Log.Debug("LfgMgr", "Dungeon %u specified in table `lfg_dungeon_rewards` does not exist!", dungeonId);
+            Log.Debug("LFGMgr", "Dungeon %u specified in table `lfg_dungeon_rewards` does not exist!", dungeonId);
             continue;
         }
 
         if (!maxLevel || maxLevel > 80)
         {
-            Log.Debug("LfgMgr", "Level %u specified for dungeon %u in table `lfg_dungeon_rewards` can never be reached!", maxLevel, dungeonId);
+            Log.Debug("LFGMgr", "Level %u specified for dungeon %u in table `lfg_dungeon_rewards` can never be reached!", maxLevel, dungeonId);
             maxLevel = 80;
         }
 
         if (firstQuestId && !QuestStorage.LookupEntry(firstQuestId))
         {
-            Log.Debug("LfgMgr", "First quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", firstQuestId, dungeonId);
+            Log.Debug("LFGMgr", "First quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", firstQuestId, dungeonId);
             firstQuestId = 0;
         }
 
         if (otherQuestId && !QuestStorage.LookupEntry(otherQuestId))
         {
-            Log.Debug("LfgMgr", "Other quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", otherQuestId, dungeonId);
+            Log.Debug("LFGMgr", "Other quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", otherQuestId, dungeonId);
             otherQuestId = 0;
         }
 
@@ -141,7 +141,7 @@ void LfgMgr::LoadRewards()
     }
     while (result->NextRow());
 
-    Log.Success("LFG::Mgr", ">> Loaded %u lfg dungeon rewards from DB", count);
+    Log.Success("LFGMgr", "Loaded %u lfg dungeon rewards from DB", count);
 }
 
 void LfgMgr::Update(uint32 diff)
@@ -212,7 +212,7 @@ void LfgMgr::Update(uint32 diff)
         while (!newToQueue.empty())
         {
             uint64 frontguid = newToQueue.front();
-            Log.Debug("LfgMgr", "Update: QueueId %u: checking %u newToQueue(%u), currentQueue(%u)", queueId, frontguid, uint32(newToQueue.size()), uint32(currentQueue.size()));
+            Log.Debug("LFGMgr", "Update: QueueId %u: checking %u newToQueue(%u), currentQueue(%u)", queueId, frontguid, uint32(newToQueue.size()), uint32(currentQueue.size()));
             firstNew.push_back(frontguid);
             newToQueue.pop_front();
 
@@ -267,7 +267,7 @@ void LfgMgr::Update(uint32 diff)
             LfgQueueInfo* queue = itQueue->second;
             if (!queue)
             {
-                Log.Debug("LfgMgr", "Update: %u queued with null queue info!", itQueue->first);
+                Log.Debug("LFGMgr", "Update: %u queued with null queue info!", itQueue->first);
                 continue;
             }
             uint32 dungeonId = (*queue->dungeons.begin());
@@ -313,11 +313,11 @@ void LfgMgr::AddToQueue(uint64 guid, uint8 queueId)
 
     LfgGuidList& list = m_newToQueue[queueId];
     if (std::find(list.begin(), list.end(), guid) != list.end())
-        Log.Debug("LfgMgr", "AddToQueue: %u already in new queue. ignoring", guid);
+        Log.Debug("LFGMgr", "AddToQueue: %u already in new queue. ignoring", guid);
     else
     {
         list.push_back(guid);
-        Log.Debug("LfgMgr", "AddToQueue: %u added to m_newToQueue (size: %u)", guid, uint32(list.size()));
+        Log.Debug("LFGMgr", "AddToQueue: %u added to m_newToQueue (size: %u)", guid, uint32(list.size()));
     }
 }
 
@@ -336,12 +336,12 @@ bool LfgMgr::RemoveFromQueue(uint64 guid)
     {
         delete it->second;
         m_QueueInfoMap.erase(it);
-        Log.Debug("LfgMgr", "RemoveFromQueue: %u removed", guid);
+        Log.Debug("LFGMgr", "RemoveFromQueue: %u removed", guid);
         return true;
     }
     else
     {
-        Log.Debug("LfgMgr", "RemoveFromQueue: %u not in queue", guid);
+        Log.Debug("LFGMgr", "RemoveFromQueue: %u not in queue", guid);
         return false;
     }
 
@@ -464,7 +464,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     bool isRaid = false;
     if (joinData.result == LFG_JOIN_OK)
     {
-        Log.Debug("LfgMgr", "JOIN QU LFG_JOIN_OK");
+        Log.Debug("LFGMgr", "JOIN QU LFG_JOIN_OK");
         bool isDungeon = false;
         for (LfgDungeonSet::const_iterator it = dungeons.begin(); it != dungeons.end() && joinData.result == LFG_JOIN_OK; ++it)
         {
@@ -510,7 +510,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     // Can't join. Send result
     if (joinData.result != LFG_JOIN_OK)
     {
-        Log.Debug("LfgMgr", "Join: %u joining with %u members. result: %u   cant join return", guid, grp ? grp->MemberCount() : 1, joinData.result);
+        Log.Debug("LFGMgr", "Join: %u joining with %u members. result: %u   cant join return", guid, grp ? grp->MemberCount() : 1, joinData.result);
         if (!dungeons.empty())                             // Only should show lockmap when have no dungeons available
             joinData.lockmap.clear();
         player->GetSession()->SendLfgJoinResult(joinData);
@@ -520,7 +520,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
     // \todo Raid browser not supported yet
     if (isRaid)
     {
-        Log.Debug("LfgMgr", "Join: %u trying to join raid browser and it's disabled.", guid);
+        Log.Debug("LFGMgr", "Join: %u trying to join raid browser and it's disabled.", guid);
         return;
     }
 
@@ -593,7 +593,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
         }
         AddToQueue(guid, uint8(player->GetTeam()));
     }
-    Log.Debug("LfgMgr", "Join: %u joined with %u members. dungeons: %u", guid, grp ? grp->MemberCount() : 1, uint8(dungeons.size()));
+    Log.Debug("LFGMgr", "Join: %u joined with %u members. dungeons: %u", guid, grp ? grp->MemberCount() : 1, uint8(dungeons.size()));
 }
 
 void LfgMgr::Leave(Player* player, Group* grp /* = NULL*/)
@@ -604,7 +604,7 @@ void LfgMgr::Leave(Player* player, Group* grp /* = NULL*/)
     uint64 guid = grp ? grp->GetGUID() : player->GetGUID();
     LfgState state = GetState(guid);
 
-    Log.Debug("LfgMgr", "Leave: %u", guid);
+    Log.Debug("LFGMgr", "Leave: %u", guid);
     switch (state)
     {
         case LFG_STATE_QUEUED:
@@ -668,14 +668,14 @@ void LfgMgr::OfferContinue(Group* grp)
         if (Player* leader = objmgr.GetPlayer(GET_LOWGUID_PART(grp->GetLeader()->guid)))
             leader->GetSession()->SendLfgOfferContinue(GetDungeon(gguid, false));
 
-        Log.Debug("LfgMgr", "offer continue player %u ", objmgr.GetPlayer(GET_LOWGUID_PART(grp->GetLeader()->guid)));
+        Log.Debug("LFGMgr", "offer continue player %u ", objmgr.GetPlayer(GET_LOWGUID_PART(grp->GetLeader()->guid)));
     }
 
 }
 
 LfgProposal* LfgMgr::FindNewGroups(LfgGuidList& check, LfgGuidList& all)
 {
-    Log.Debug("LfgMgr", "FindNewGroup: (%s) - all(%s)", ConcatenateGuids(check).c_str(), ConcatenateGuids(all).c_str());
+    Log.Debug("LFGMgr", "FindNewGroup: (%s) - all(%s)", ConcatenateGuids(check).c_str(), ConcatenateGuids(all).c_str());
 
     LfgProposal* pProposal = NULL;
     if (!check.size() || check.size() > 5 || !CheckCompatibility(check, pProposal))
@@ -701,7 +701,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
 
     if (check.size() > 5 || check.empty())
     {
-        Log.Debug("LfgMgr", "CheckCompatibility: (%s): Size wrong - Not compatibles", strGuids.c_str());
+        Log.Debug("LFGMgr", "CheckCompatibility: (%s): Size wrong - Not compatibles", strGuids.c_str());
         return false;
     }
 
@@ -712,7 +712,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     LfgAnswer answer = GetCompatibles(strGuids);
     if (answer != LFG_ANSWER_PENDING)
     {
-        Log.Debug("LfgMgr", "CheckCompatibility: (%s) compatibles (cached): %d", strGuids.c_str(), answer);
+        Log.Debug("LFGMgr", "CheckCompatibility: (%s) compatibles (cached): %d", strGuids.c_str(), answer);
         return bool(answer ? true : false);
     }
 
@@ -725,7 +725,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         // Check all-but-new compatibilities (New, A, B, C, D) --> check(A, B, C, D)
         if (!CheckCompatibility(check, pProposal))          // Group not compatible
         {
-            Log.Debug("LfgMgr", "CheckCompatibility: (%s) not compatibles (%s not compatibles)", strGuids.c_str(), ConcatenateGuids(check).c_str());
+            Log.Debug("LFGMgr", "CheckCompatibility: (%s) not compatibles (%s not compatibles)", strGuids.c_str(), ConcatenateGuids(check).c_str());
             SetCompatibles(strGuids, false);
             return false;
         }
@@ -743,7 +743,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         LfgQueueInfoMap::iterator itQueue = m_QueueInfoMap.find(guid);
         if (itQueue == m_QueueInfoMap.end() || GetState(guid) != LFG_STATE_QUEUED)
         {
-            Log.Debug("LfgMgr", "CheckCompatibility: %u is not queued but listed as queued!", (*it));
+            Log.Debug("LFGMgr", "CheckCompatibility: %u is not queued but listed as queued!", (*it));
             RemoveFromQueue(guid);
             return false;
         }
@@ -771,9 +771,9 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     {
         SetCompatibles(strGuids, false);
         if (numLfgGroups > 1)
-            Log.Debug("LfgMgr", "CheckCompatibility: (%s) More than one Lfggroup (%u)", strGuids.c_str(), numLfgGroups);
+            Log.Debug("LFGMgr", "CheckCompatibility: (%s) More than one Lfggroup (%u)", strGuids.c_str(), numLfgGroups);
         else
-            Log.Debug("LfgMgr", "CheckCompatibility: (%s) Too much players (%u)", strGuids.c_str(), numPlayers);
+            Log.Debug("LFGMgr", "CheckCompatibility: (%s) Too much players (%u)", strGuids.c_str(), numPlayers);
         return false;
     }
 
@@ -800,7 +800,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     {
         Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(it->first));
         if (!player)
-            Log.Debug("LfgMgr", "CheckCompatibility: (%s) Warning! %u offline! Marking as not compatibles!", strGuids.c_str(), it->first);
+            Log.Debug("LFGMgr", "CheckCompatibility: (%s) Warning! %u offline! Marking as not compatibles!", strGuids.c_str(), it->first);
         else
         {
             for (PlayerSet::const_iterator itPlayer = players.begin(); itPlayer != players.end() && player; ++itPlayer)
@@ -817,7 +817,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     if (players.size() != numPlayers || !CheckGroupRoles(rolesMap))
     {
         if (players.size() == numPlayers)
-            Log.Debug("LfgMgr", "CheckCompatibility: (%s) Roles not compatible", strGuids.c_str());
+            Log.Debug("LFGMgr", "CheckCompatibility: (%s) Roles not compatible", strGuids.c_str());
         SetCompatibles(strGuids, false);
         return false;
     }
@@ -850,7 +850,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
     // ----- Group is compatible, if we have MAXGROUPSIZE members then match is found
     if (numPlayers != 5)
     {
-        Log.Debug("LfgMgr", "CheckCompatibility: (%s) Compatibles but not match. Players(%u)", strGuids.c_str(), numPlayers);
+        Log.Debug("LFGMgr", "CheckCompatibility: (%s) Compatibles but not match. Players(%u)", strGuids.c_str(), numPlayers);
         uint8 Tanks_Needed = LFG_TANKS_NEEDED;
         uint8 Healers_Needed = LFG_HEALERS_NEEDED;
         uint8 Dps_Needed = LFG_DPS_NEEDED;
@@ -889,7 +889,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         }
         return true;
     }
-    Log.Debug("LfgMgr", "CheckCompatibility: (%s) MATCH! Group formed", strGuids.c_str());
+    Log.Debug("LFGMgr", "CheckCompatibility: (%s) MATCH! Group formed", strGuids.c_str());
 
     // GROUP FORMED!
 
@@ -1057,7 +1057,7 @@ void LfgMgr::RemoveFromCompatibles(uint64 guid)
     out << guid;
     std::string strGuid = out.str();
 
-    Log.Debug("LfgMgr", "RemoveFromCompatibles: Removing %u", guid);
+    Log.Debug("LFGMgr", "RemoveFromCompatibles: Removing %u", guid);
     for (LfgCompatibleMap::iterator itNext = m_CompatibleMap.begin(); itNext != m_CompatibleMap.end();)
     {
         LfgCompatibleMap::iterator it = itNext++;
@@ -1184,7 +1184,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
     LfgProposalPlayer* ppPlayer = itProposalPlayer->second;
 
     ppPlayer->accept = LfgAnswer(accept);
-    Log.Debug("LfgMgr", "UpdateProposal: Player %u of proposal %u selected: %u", guid, proposalId, accept);
+    Log.Debug("LFGMgr", "UpdateProposal: Player %u of proposal %u selected: %u", guid, proposalId, accept);
     if (!accept)
     {
         RemoveProposal(itProposal, LFG_UPDATETYPE_PROPOSAL_DECLINED);
@@ -1233,13 +1233,13 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             LfgProposalPlayer* player = pProposal->players[(*it)->GetGUID()];
             uint32 lowgroupguid = (*it)->GetGroup() ? GET_LOWGUID_PART((*it)->GetGroup()->GetGUID()) : 0;
             if (player->groupLowGuid != lowgroupguid)
-                Log.Debug("LfgMgr", "UpdateProposal: %u group mismatch: actual (%u) - queued (%u)", (*it)->GetGUID(), lowgroupguid, player->groupLowGuid);
+                Log.Debug("LFGMgr", "UpdateProposal: %u group mismatch: actual (%u) - queued (%u)", (*it)->GetGUID(), lowgroupguid, player->groupLowGuid);
 
             uint64 guid2 = player->groupLowGuid ? MAKE_NEW_GUID(player->groupLowGuid, 0, HIGHGUID_TYPE_GROUP) : (*it)->GetGUID();
             LfgQueueInfoMap::iterator itQueue = m_QueueInfoMap.find(guid2);
             if (itQueue == m_QueueInfoMap.end())
             {
-                Log.Debug("LfgMgr", "UpdateProposal: Queue info for guid %u not found!", guid);
+                Log.Debug("LFGMgr", "UpdateProposal: Queue info for guid %u not found!", guid);
                 waitTimesMap[(*it)->GetGUID()] = -1;
             }
             else
@@ -1275,12 +1275,12 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
                 uint64 gguid = grp->GetGUID();
                 SetState(gguid, LFG_STATE_PROPOSAL);
                 grp->AddMember(player->getPlayerInfo());
-                Log.Debug("LfgMgr", "Add Player In Group %s", player->GetNameString());
+                Log.Debug("LFGMgr", "Add Player In Group %s", player->GetNameString());
             }
             else if (group != grp)
             {
                 grp->AddMember(player->getPlayerInfo());
-                Log.Debug("LfgMgr", "Add Player In Group %s", player->GetNameString());
+                Log.Debug("LFGMgr", "Add Player In Group %s", player->GetNameString());
             }
 
             // Update timers
@@ -1350,7 +1350,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
     LfgProposal* pProposal = itProposal->second;
     pProposal->state = LFG_PROPOSAL_FAILED;
 
-    Log.Debug("LfgMgr", "RemoveProposal: Proposal %u, state FAILED, UpdateType %u", itProposal->first, type);
+    Log.Debug("LFGMgr", "RemoveProposal: Proposal %u, state FAILED, UpdateType %u", itProposal->first, type);
     // Mark all people that didn't answered as no accept
     if (type == LFG_UPDATETYPE_PROPOSAL_FAILED)
         for (LfgProposalPlayerMap::const_iterator it = pProposal->players.begin(); it != pProposal->players.end(); ++it)
@@ -1394,12 +1394,12 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
             if (it->second->accept == LFG_ANSWER_DENY)
             {
                 updateData.updateType = type;
-                Log.Debug("LfgMgr", "RemoveProposal: %u didn't accept. Removing from queue and compatible cache", guid);
+                Log.Debug("LFGMgr", "RemoveProposal: %u didn't accept. Removing from queue and compatible cache", guid);
             }
             else
             {
                 updateData.updateType = LFG_UPDATETYPE_REMOVED_FROM_QUEUE;
-                Log.Debug("LfgMgr", "RemoveProposal: %u in same group that someone that didn't accept. Removing from queue and compatible cache", guid);
+                Log.Debug("LFGMgr", "RemoveProposal: %u in same group that someone that didn't accept. Removing from queue and compatible cache", guid);
             }
             ClearState(guid);
             if (grp)
@@ -1412,7 +1412,7 @@ void LfgMgr::RemoveProposal(LfgProposalMap::iterator itProposal, LfgUpdateType t
         }
         else
         {
-            Log.Debug("LfgMgr", "RemoveProposal: Readding %u to queue.", guid);
+            Log.Debug("LFGMgr", "RemoveProposal: Readding %u to queue.", guid);
             SetState(guid, LFG_STATE_QUEUED);
             if (grp)
             {
@@ -1561,7 +1561,7 @@ void LfgMgr::UpdateBoot(Player* player, bool accept)
 
 void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*/)
 {
-    Log.Debug("LfgMgr", "TeleportPlayer: %u is being teleported %s", player->GetGUID(), out ? "out" : "in");
+    Log.Debug("LFGMgr", "TeleportPlayer: %u is being teleported %s", player->GetGUID(), out ? "out" : "in");
     if (out)
     {
         player->RemoveAura(LFG_SPELL_LUCK_OF_THE_DRAW);
@@ -1615,7 +1615,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
                 AreaTrigger const* at = objmgr.GetMapEntranceTrigger(dungeon->map);
                 if (!at)
                 {
-                    Log.Debug("LfgMgr", "TeleportPlayer: Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->GetGUID(), dungeon->map, dungeon->difficulty);
+                    Log.Debug("LFGMgr", "TeleportPlayer: Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->GetGUID(), dungeon->map, dungeon->difficulty);
                     error = LFG_TELEPORTERROR_INVALID_LOCATION;
                 }
                 else
@@ -1693,7 +1693,7 @@ std::string LfgMgr::ConcatenateGuids(LfgGuidList check)
 
 LfgState LfgMgr::GetState(uint64 guid)
 {
-    Log.Debug("LfgMgr", "GetState: %u", guid);
+    Log.Debug("LFGMgr", "GetState: %u", guid);
     if (HIGHGUID_TYPE_GROUP == guid)
         return m_Groups[guid].GetState();
     else
@@ -1702,19 +1702,19 @@ LfgState LfgMgr::GetState(uint64 guid)
 
 uint32 LfgMgr::GetDungeon(uint64 guid, bool asId /*= true*/)
 {
-    Log.Debug("LfgMgr", "GetDungeon: %u asId: %u", guid, asId);
+    Log.Debug("LFGMgr", "GetDungeon: %u asId: %u", guid, asId);
     return m_Groups[guid].GetDungeon(asId);
 }
 
 uint8 LfgMgr::GetRoles(uint64 guid)
 {
-    Log.Debug("LfgMgr", "GetRoles: %u", guid);
+    Log.Debug("LFGMgr", "GetRoles: %u", guid);
     return m_Players[guid].GetRoles();
 }
 
 const std::string& LfgMgr::GetComment(uint64 guid)
 {
-    Log.Debug("LfgMgr", "GetComment: %u", guid);
+    Log.Debug("LFGMgr", "GetComment: %u", guid);
     return m_Players[guid].GetComment();
 }
 
@@ -1730,43 +1730,43 @@ bool LfgMgr::IsTeleported(uint64 pguid)
 
 const LfgDungeonSet& LfgMgr::GetSelectedDungeons(uint64 guid)
 {
-    Log.Debug("LfgMgr", "GetSelectedDungeons: %u", guid);
+    Log.Debug("LFGMgr", "GetSelectedDungeons: %u", guid);
     return m_Players[guid].GetSelectedDungeons();
 }
 
 const LfgLockMap& LfgMgr::GetLockedDungeons(uint64 guid)
 {
-    Log.Debug("LfgMgr", "GetLockedDungeons: %u", guid);
+    Log.Debug("LFGMgr", "GetLockedDungeons: %u", guid);
     return m_Players[guid].GetLockedDungeons();
 }
 
 uint8 LfgMgr::GetKicksLeft(uint64 guid)
 {
-    Log.Debug("LfgMgr", "GetKicksLeft: %u", guid);
+    Log.Debug("LFGMgr", "GetKicksLeft: %u", guid);
     return m_Groups[guid].GetKicksLeft();
 }
 
 uint8 LfgMgr::GetVotesNeeded(uint64 guid)
 {
-    Log.Debug("LfgMgr", "GetVotesNeeded: %u", guid);
+    Log.Debug("LFGMgr", "GetVotesNeeded: %u", guid);
     return m_Groups[guid].GetVotesNeeded();
 }
 
 void LfgMgr::RestoreState(uint64 guid)
 {
-    Log.Debug("LfgMgr", "RestoreState: %u", guid);
+    Log.Debug("LFGMgr", "RestoreState: %u", guid);
     m_Groups[guid].RestoreState();
 }
 
 void LfgMgr::ClearState(uint64 guid)
 {
-    Log.Debug("LfgMgr", "ClearState: %u", guid);
+    Log.Debug("LFGMgr", "ClearState: %u", guid);
     m_Players[guid].ClearState();
 }
 
 void LfgMgr::SetState(uint64 guid, LfgState state)
 {
-    Log.Debug("LfgMgr", "SetState: %u state %u", guid, state);
+    Log.Debug("LFGMgr", "SetState: %u state %u", guid, state);
     if (IS_GROUP(guid))
         m_Groups[guid].SetState(state);
     else
@@ -1776,43 +1776,43 @@ void LfgMgr::SetState(uint64 guid, LfgState state)
 
 void LfgMgr::SetDungeon(uint64 guid, uint32 dungeon)
 {
-    Log.Debug("LfgMgr", "SetDungeon: %u dungeon %u", guid, dungeon);
+    Log.Debug("LFGMgr", "SetDungeon: %u dungeon %u", guid, dungeon);
     m_Groups[guid].SetDungeon(dungeon);
 }
 
 void LfgMgr::SetRoles(uint64 guid, uint8 roles)
 {
-    Log.Debug("LfgMgr", "SetRoles: %u roles: %u", guid, roles);
+    Log.Debug("LFGMgr", "SetRoles: %u roles: %u", guid, roles);
     m_Players[guid].SetRoles(roles);
 }
 
 void LfgMgr::SetComment(uint64 guid, const std::string& comment)
 {
-    Log.Debug("LfgMgr", "SetComment: %u comment: %s", guid, comment.c_str());
+    Log.Debug("LFGMgr", "SetComment: %u comment: %s", guid, comment.c_str());
     m_Players[guid].SetComment(comment);
 }
 
 void LfgMgr::SetSelectedDungeons(uint64 guid, const LfgDungeonSet& dungeons)
 {
-    Log.Debug("LfgMgr", "SetSelectedDungeons: %u", guid);
+    Log.Debug("LFGMgr", "SetSelectedDungeons: %u", guid);
     m_Players[guid].SetSelectedDungeons(dungeons);
 }
 
 void LfgMgr::SetLockedDungeons(uint64 guid, const LfgLockMap& lock)
 {
-    Log.Debug("LfgMgr", "SetLockedDungeons: %u", guid);
+    Log.Debug("LFGMgr", "SetLockedDungeons: %u", guid);
     m_Players[guid].SetLockedDungeons(lock);
 }
 
 void LfgMgr::DecreaseKicksLeft(uint64 guid)
 {
-    Log.Debug("LfgMgr", "DecreaseKicksLeft: %u", guid);
+    Log.Debug("LFGMgr", "DecreaseKicksLeft: %u", guid);
     m_Groups[guid].DecreaseKicksLeft();
 }
 
 void LfgMgr::RemovePlayerData(uint64 guid)
 {
-    Log.Debug("LfgMgr", "RemovePlayerData: %u", guid);
+    Log.Debug("LFGMgr", "RemovePlayerData: %u", guid);
     LfgPlayerDataMap::iterator it = m_Players.find(guid);
     if (it != m_Players.end())
         m_Players.erase(it);
@@ -1820,7 +1820,7 @@ void LfgMgr::RemovePlayerData(uint64 guid)
 
 void LfgMgr::RemoveGroupData(uint64 guid)
 {
-    Log.Debug("LfgMgr", "RemoveGroupData: %u", guid);
+    Log.Debug("LFGMgr", "RemoveGroupData: %u", guid);
     LfgGroupDataMap::iterator it = m_Groups.find(guid);
     if (it != m_Groups.end())
         m_Groups.erase(it);

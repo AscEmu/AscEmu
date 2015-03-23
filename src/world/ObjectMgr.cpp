@@ -3773,7 +3773,7 @@ void ObjectMgr::LoadAreaTrigger()
     QueryResult* result = WorldDatabase.Query("SELECT entry,  type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
     if (!result)
     {
-        Log.Notice("AreaTrigger", ">> Loaded 0 area trigger teleport definitions. DB table `areatriggers` is empty.");
+        Log.Notice("AreaTrigger", "Loaded 0 area trigger teleport definitions. DB table `areatriggers` is empty.");
         return;
     }
 
@@ -3821,5 +3821,5 @@ void ObjectMgr::LoadAreaTrigger()
     }
     while (result->NextRow());
 
-    Log.Success("AreaTrigger", ">> Loaded %u area trigger teleport definitions", count);
+    Log.Success("AreaTrigger", "Loaded %u area trigger teleport definitions", count);
 }
