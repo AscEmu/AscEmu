@@ -109,7 +109,7 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void outFile(FILE* file, char* msg, const char* source = NULL);
         void outFileSilent(FILE* file, char* msg, const char* source = NULL);   // Prints text to file without showing it to the user. Used for the startup banner.
         void Time(char* buffer);
-		void SetColor(int color);
+        void SetColor(int color);
 
 #if PLATFORM == PLATFORM_WIN32
         HANDLE stdout_handle;
