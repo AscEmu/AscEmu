@@ -1086,7 +1086,7 @@ class SERVER_DECL Unit : public Object
 
 		/// Stats
 		uint32 getLevel() { return m_uint32Values[UNIT_FIELD_LEVEL]; };
-		void setLevel(uint32 level) { SetUInt32Value(UNIT_FIELD_LEVEL, level); };
+		void setLevel(uint32 level);
 		void modLevel(int32 mod) { ModUnsigned32Value(UNIT_FIELD_LEVEL, mod); };
 		uint32 getClassMask() { return 1 << (getClass() - 1); }
 		uint32 getRaceMask() { return 1 << (getRace() - 1); }
