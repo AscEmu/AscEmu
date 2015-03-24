@@ -2704,7 +2704,8 @@ Pet* ObjectMgr::CreatePet(uint32 entry)
     return new Pet(Arcemu::Util::MAKE_PET_GUID(entry, guid));
 }
 
-void ObjectMgr::CreateCharCreationPet(uint32 entry, uint32 ownerGUID)
+// This is a cataclysm feature
+/*void ObjectMgr::CreateCharCreationPet(uint32 entry, uint32 ownerGUID)
 {
 	string name;
 	if (entry == 3122)
@@ -2739,7 +2740,7 @@ void ObjectMgr::CreateCharCreationPet(uint32 entry, uint32 ownerGUID)
 		<< 1 << "')";
 
 	CharacterDatabase.Execute(ss.str().c_str());
-}
+}*/
 
 Player* ObjectMgr::CreatePlayer(uint8 _class)
 {
