@@ -732,6 +732,8 @@ bool Storage_ReloadTable(const char* TableName)
     }
     else if (!stricmp(TableName, "points_of_interest"))
         PointOfInterestStorage.Reload();
+    else if (!stricmp(TableName, "player_xp_for_level"))
+        objmgr.LoadXpToLevelTable();
     else
         return false;
 
