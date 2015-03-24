@@ -2053,6 +2053,7 @@ class SERVER_DECL Player : public Unit
 
         void SetXp(uint32 xp) { SetUInt32Value(PLAYER_XP, xp); }
         uint32 GetXp() { return GetUInt32Value(PLAYER_XP); }
+        uint32 GetXpToLevel() { return GetUInt32Value(PLAYER_NEXT_LEVEL_XP); }
         void SetNextLevelXp(uint32 xp) { SetUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
 
         void SetTalentPointsForAllSpec(uint32 amt)
