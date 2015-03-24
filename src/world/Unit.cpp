@@ -8392,3 +8392,10 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
         *data << (float)GetMovementInfo()->unk13;
 }
+
+void Unit::setLevel(uint32 level)
+{
+    SetUInt32Value(UNIT_FIELD_LEVEL, level);
+    if (IsPlayer())
+        TO< Player* >(this)->SetNextLevelXp(objmgr.GetXPToLevel(level));
+}
