@@ -82,7 +82,7 @@ void ScriptMgr::LoadScripts()
         std::string fname = Path + findres.GetNext();
         Arcemu::DynLib* dl = new Arcemu::DynLib(fname.c_str());
 
-        loadmessage << "  " << dl->GetName() << " : ";
+        loadmessage << dl->GetName() << " : ";
 
         if (!dl->Load())
         {
@@ -120,7 +120,7 @@ void ScriptMgr::LoadScripts()
                 }
                 else
                 {
-                    loadmessage << ' ' << std::string(BUILD_HASH_STR) << " : ";
+                    loadmessage << std::string(BUILD_HASH_STR) << " : ";
 
                     if ((stype & SCRIPT_TYPE_SCRIPT_ENGINE) != 0)
                     {

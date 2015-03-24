@@ -335,5 +335,5 @@ void Map::LoadSpawns(bool reload)
         }
     }
 
-    Log.Notice("Map", "%u creatures / %u gameobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
+    Log.Notice("MapSpawns", "%u creatures / %u gameobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
 }

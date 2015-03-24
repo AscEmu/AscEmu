@@ -26,7 +26,7 @@
 #endif
 #include "../shared/ascemu_getopt.h"
 
-#define BANNER "AscEmu %s %s/%s-%s (%s) :: Logon Server"
+#define BANNER "<< AscEmu %s %s/%s-%s (%s) :: Logon Server >>"
 
 #ifndef WIN32
 #include <sched.h>
@@ -292,11 +292,11 @@ void LogonServer::Run(int argc, char** argv)
 
     struct arcemu_option longopts[] =
     {
-        { "checkconf",            arcemu_no_argument,                &do_check_conf,            1        },
-        { "screenloglevel",        arcemu_required_argument,        &screen_log_level,        1        },
-        { "fileloglevel",        arcemu_required_argument,        &file_log_level,        1        },
-        { "version",            arcemu_no_argument,                &do_version,            1        },
-        { "conf",                arcemu_required_argument,        NULL,                    'c'        },
+        { "checkconf",          arcemu_no_argument,              &do_check_conf,         1        },
+        { "screenloglevel",     arcemu_required_argument,        &screen_log_level,      1        },
+        { "fileloglevel",       arcemu_required_argument,        &file_log_level,        1        },
+        { "version",            arcemu_no_argument,              &do_version,            1        },
+        { "conf",               arcemu_required_argument,        NULL,                  'c'       },
         { 0, 0, 0, 0 }
     };
 
@@ -322,6 +322,7 @@ void LogonServer::Run(int argc, char** argv)
     sLog.Init(0, LOGON_LOG);
     
     sLog.outBasic(BANNER, BUILD_TAG, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic("==================================================================");
     sLog.outErrorSilent(BANNER, BUILD_TAG, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
 
     if(do_version)
@@ -351,7 +352,7 @@ void LogonServer::Run(int argc, char** argv)
     if(file_log_level != (int)DEF_VALUE_NOT_SET)
         sLog.SetFileLoggingLevel(file_log_level);
 
-    printf("The key combination <Ctrl-C> will safely shut down the server at any time.\n");
+    sLog.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
     Log.Success("System", "Initializing Random Number Generators...");
 
     Log.Success("Config", "Loading Config Files...");

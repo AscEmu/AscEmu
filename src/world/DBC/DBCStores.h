@@ -813,6 +813,7 @@ struct SpellEntry
     bool is_melee_spell;                                    /// CUSTOM,
     bool is_ranged_spell;                                   /// CUSTOM,
     bool noproc;
+	bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
 
     uint32 SchoolMask;                                      /// Custom
     uint32 CustomFlags;                                     /// Custom
