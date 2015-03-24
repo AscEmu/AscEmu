@@ -545,6 +545,14 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     pn->lastOnline = UNIXTIME;
     objmgr.AddPlayerInfo(pn);
 
+    if (pNewChar->getClass() == HUNTER)
+    {
+        uint32 entry = 3122;
+        if (pNewChar->GetTeam() == TEAM_ALLIANCE)
+            entry = 69;
+        objmgr.CreateCharCreationPet(entry, pNewChar->GetLowGUID());
+    }
+
     pNewChar->ok_to_remove = true;
     delete  pNewChar;
 
