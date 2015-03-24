@@ -558,6 +558,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         std::list<ItemPrototype*>* GetListForItemSet(uint32 setid);
 
         Pet* CreatePet(uint32 entry);
+        void ObjectMgr::CreateCharCreationPet(uint32 entry, uint32 ownerGUID);
 
         uint32 GenerateArenaTeamId();
 
