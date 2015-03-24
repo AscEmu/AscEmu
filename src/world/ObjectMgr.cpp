@@ -416,7 +416,7 @@ SpellEntry* ObjectMgr::GetNextSpellRank(SpellEntry* sp, uint32 level)
 void ObjectMgr::LoadPlayersInfo()
 {
     PlayerInfo* pn;
-    QueryResult* result = CharacterDatabase.Query("SELECT guid,name,race,class,level,gender,zoneid,timestamp,acct FROM characters");
+    QueryResult* result = CharacterDatabase.Query("SELECT guid, name, race, class, level, gender, zoneid, timestamp, acct FROM characters");
     uint32 period, c;
     if (result)
     {
@@ -3770,10 +3770,10 @@ void ObjectMgr::LoadAreaTrigger()
 
     _areaTriggerStore.clear();                                  // need for reload case
     //													0		1	2		3		4	5			6			7			8				9					10
-    QueryResult* result = WorldDatabase.Query("SELECT entry,  type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
+    QueryResult* result = WorldDatabase.Query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
     if (!result)
     {
-        Log.Notice("AreaTrigger", ">> Loaded 0 area trigger teleport definitions. DB table `areatriggers` is empty.");
+        Log.Notice("AreaTrigger", "Loaded 0 area trigger teleport definitions. DB table `areatriggers` is empty.");
         return;
     }
 
@@ -3821,5 +3821,5 @@ void ObjectMgr::LoadAreaTrigger()
     }
     while (result->NextRow());
 
-    Log.Success("AreaTrigger", ">> Loaded %u area trigger teleport definitions", count);
+    Log.Success("AreaTrigger", "Loaded %u area trigger teleport definitions", count);
 }

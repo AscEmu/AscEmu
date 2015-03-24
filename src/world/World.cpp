@@ -414,14 +414,20 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadPetSpellCooldowns);
     MAKE_TASK(ObjectMgr, LoadGuildCharters);
     MAKE_TASK(ObjectMgr, LoadGMTickets);
-    MAKE_TASK(AddonMgr, LoadFromDB);
-    MAKE_TASK(GameEventMgr, LoadFromDB);
-    MAKE_TASK(CalendarMgr, LoadFromDB);
     MAKE_TASK(ObjectMgr, SetHighestGuids);
     MAKE_TASK(ObjectMgr, LoadReputationModifiers);
     MAKE_TASK(ObjectMgr, LoadMonsterSay);
-    MAKE_TASK(WeatherMgr, LoadFromDB);
     MAKE_TASK(ObjectMgr, LoadGroups);
+    MAKE_TASK(ObjectMgr, LoadExtraCreatureProtoStuff);
+    MAKE_TASK(ObjectMgr, LoadExtraItemStuff);
+    MAKE_TASK(ObjectMgr, LoadExtraGameObjectStuff);
+    MAKE_TASK(ObjectMgr, LoadArenaTeams);
+    MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
+    MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey);
+    MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
+    MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
+    MAKE_TASK(ObjectMgr, LoadAreaTrigger);
+
 
 #ifdef ENABLE_ACHIEVEMENTS
     MAKE_TASK(ObjectMgr, LoadAchievementRewards);
@@ -429,17 +435,12 @@ bool World::SetInitialWorldSettings()
     //LoadMonsterSay() must have finished before calling LoadExtraCreatureProtoStuff()
     tl.wait();
 
-    MAKE_TASK(ObjectMgr, LoadExtraCreatureProtoStuff);
-    MAKE_TASK(ObjectMgr, LoadExtraItemStuff);
-    MAKE_TASK(ObjectMgr, LoadExtraGameObjectStuff);
     MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
-    MAKE_TASK(ObjectMgr, LoadArenaTeams);
-    MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
-    MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey);
-    MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
-    MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
-    MAKE_TASK(ObjectMgr, LoadAreaTrigger);
-	MAKE_TASK(SpellFactoryMgr, LoadSpellAreas);
+    MAKE_TASK(SpellFactoryMgr, LoadSpellAreas);
+    MAKE_TASK(WeatherMgr, LoadFromDB);
+    MAKE_TASK(AddonMgr, LoadFromDB);
+    MAKE_TASK(GameEventMgr, LoadFromDB);
+    MAKE_TASK(CalendarMgr, LoadFromDB);
 
 #undef MAKE_TASK
 
@@ -513,7 +514,7 @@ bool World::SetInitialWorldSettings()
     new AuctionMgr;
     sAuctionMgr.LoadAuctionHouses();
 
-    Log.Success("LfgMgr", "Loading LFG rewards...");
+    Log.Success("LFGMgr", "Loading LFG rewards...");
     sLfgMgr.LoadRewards();
 
     m_queueUpdateTimer = mQueueUpdateInterval;
