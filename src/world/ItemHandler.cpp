@@ -2323,3 +2323,144 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     LOG_DEBUG("Sent SMSG_ITEMREFUNDREQUEST.");
 }
+
+void WorldSession::SendItemQueryAndNameInfo(uint32 itemid)
+{
+	ItemPrototype* itemProto = ItemPrototypeStorage.LookupEntry(itemid);
+	if (!itemProto)
+	{
+		LOG_ERROR( "WORLD: Unknown item id 0x%.8X", itemid );
+		return;
+	} 
+	uint32 i;
+	size_t namelens;
+
+	LocalizedItem* li = (language>0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
+	if (li)
+		namelens = strlen(li->Name) + strlen(li->Description) + 602;
+	else
+		namelens = strlen(itemProto->Name1) + strlen(itemProto->Description) + 602;
+
+	WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, namelens );
+	data << itemProto->ItemId;
+	data << itemProto->Class;
+	data << itemProto->SubClass;
+	data << itemProto->unknown_bc;
+
+	if (li)
+		data << li->Name;
+	else
+		data << itemProto->Name1;
+
+	data << uint8(0) << uint8(0) << uint8(0);		// name 2,3,4
+	data << itemProto->DisplayInfoID;
+	data << itemProto->Quality;
+	data << itemProto->Flags;
+	data << itemProto->Flags2;
+	data << itemProto->BuyPrice;
+	data << itemProto->SellPrice;
+	data << itemProto->InventoryType;
+	data << itemProto->AllowableClass;
+	data << itemProto->AllowableRace;
+	data << itemProto->ItemLevel;
+	data << itemProto->RequiredLevel;
+	data << itemProto->RequiredSkill;
+	data << itemProto->RequiredSkillRank;
+	data << itemProto->RequiredSkillSubRank;
+	data << itemProto->RequiredPlayerRank1;
+	data << itemProto->RequiredPlayerRank2;
+	data << itemProto->RequiredFaction;
+	data << itemProto->RequiredFactionStanding;
+	data << itemProto->Unique;
+	data << itemProto->MaxCount;
+	data << itemProto->ContainerSlots;
+	data << itemProto->itemstatscount;
+
+	for (i = 0; i < itemProto->itemstatscount; i++)
+	{
+		data << itemProto->Stats[i].Type;
+		data << itemProto->Stats[i].Value;
+	}
+	data << itemProto->ScalingStatsEntry;
+	data << itemProto->ScalingStatsFlag;
+
+	for (i = 0; i < 2; i++)                  //VLack: seen this in Aspire code, originally this went up to 5, now only to 2
+	{
+		data << itemProto->Damage[i].Min;
+		data << itemProto->Damage[i].Max;
+		data << itemProto->Damage[i].Type;
+	}
+	data << itemProto->Armor;
+	data << itemProto->HolyRes;
+	data << itemProto->FireRes;
+	data << itemProto->NatureRes;
+	data << itemProto->FrostRes;
+	data << itemProto->ShadowRes;
+	data << itemProto->ArcaneRes;
+	data << itemProto->Delay;
+	data << itemProto->AmmoType;
+	data << itemProto->Range;
+
+	for (i = 0; i < 5; i++)
+    {
+		data << itemProto->Spells[i].Id;
+		data << itemProto->Spells[i].Trigger;
+		data << itemProto->Spells[i].Charges;
+		data << itemProto->Spells[i].Cooldown;
+		data << itemProto->Spells[i].Category;
+		data << itemProto->Spells[i].CategoryCooldown;
+	}
+	data << itemProto->Bonding;
+
+	if (li)
+		data << li->Description;
+	else
+		data << itemProto->Description;
+
+	data << itemProto->PageId;
+	data << itemProto->PageLanguage;
+	data << itemProto->PageMaterial;
+	data << itemProto->QuestId;
+	data << itemProto->LockId;
+	data << itemProto->LockMaterial;
+	data << itemProto->SheathID;
+	data << itemProto->RandomPropId;
+	data << itemProto->RandomSuffixId;
+	data << itemProto->Block;
+	data << itemProto->ItemSet;
+	data << itemProto->MaxDurability;
+	data << itemProto->ZoneNameID;
+	data << itemProto->MapID;
+	data << itemProto->BagFamily;
+	data << itemProto->TotemCategory;
+	data << itemProto->Sockets[0].SocketColor ;
+	data << itemProto->Sockets[0].Unk;
+	data << itemProto->Sockets[1].SocketColor ;
+	data << itemProto->Sockets[1].Unk ;
+	data << itemProto->Sockets[2].SocketColor ;
+	data << itemProto->Sockets[2].Unk ;
+	data << itemProto->SocketBonus;
+	data << itemProto->GemProperties;
+	data << itemProto->DisenchantReqSkill;
+	data << itemProto->ArmorDamageModifier;
+	data << itemProto->ExistingDuration;								// 2.4.2 Item duration in seconds
+	data << itemProto->ItemLimitCategory;
+	data << itemProto->HolidayId; //MesoX: HolidayId - points to HolidayNames.dbc
+	SendPacket(&data);
+
+	WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
+	ItemPrototype* proto=ItemPrototypeStorage.LookupEntry(itemid);
+	ItemName* metaName = ItemNameStorage.LookupEntry(itemid);
+	if (!metaName)
+		reply << "Unknown Item";
+	else
+	{
+		if (li)
+			reply << li->Name;
+		else
+			reply << proto->Name1;
+		reply << proto->InventoryType;
+	}
+
+	SendPacket(&reply);	
+ }
