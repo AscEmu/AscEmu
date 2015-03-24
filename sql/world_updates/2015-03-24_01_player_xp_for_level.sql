@@ -100,3 +100,5 @@ INSERT INTO `player_xp_for_level` VALUES ('76', '1620700');
 INSERT INTO `player_xp_for_level` VALUES ('77', '1637400');
 INSERT INTO `player_xp_for_level` VALUES ('78', '1653900');
 INSERT INTO `player_xp_for_level` VALUES ('79', '1670800');
+
+UPDATE `world_db_version` SET `LastUpdate` = '2015-03-24_01_player_xp_for_level';
