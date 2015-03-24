@@ -1031,8 +1031,8 @@ void Player::Update(unsigned long time_passed)
         m_explorationTimer = mstime + 3000;
     }
 
-	//Autocast Spells in Area
-	CastSpellArea();
+    //Autocast Spells in Area
+    CastSpellArea();
 
     if (m_pvpTimer)
     {
@@ -4501,7 +4501,7 @@ void Player::BuildPlayerRepop()
 void Player::RepopRequestedPlayer()
 {
     //if (HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
-	//	return;
+    //	return;
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_CHECKFORCHEATS); // cebernic:-> Remove this first
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_FORCED_RESURRECT);   //in case somebody resurrected us before this event happened
@@ -4867,7 +4867,7 @@ void Player::DeathDurabilityLoss(double percent)
 void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 {
     if (HasAuraWithName(SPELL_AURA_PREVENT_RESURRECTION))
-		return;
+        return;
 
     bool first = true;
     // float closestX = 0, closestY = 0, closestZ = 0, closestO = 0;
@@ -9680,7 +9680,7 @@ void Player::CalcDamage()
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
                 (((1 << it->GetProto()->SubClass) & i->second.subclass))
-               )
+                )
                 tmp += i->second.value;
         }
 
@@ -13356,17 +13356,17 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
     //ScriptSystem->OnQuestEvent(qst, TO< Creature* >(qst_giver), _player, QUEST_EVENT_ON_ACCEPT);
 
-	// Some spells applied at quest activation
-	SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(quest_id, true);
-	if (saBounds.first != saBounds.second)
-	{
-		for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
-		{
-			if (itr->second->autocast && itr->second->IsFitToRequirements(this, GetZoneId(), GetAreaID()))
-				if (!HasAura(itr->second->spellId))
-					CastSpell(this, itr->second->spellId, true);
-		}
-	}
+    // Some spells applied at quest activation
+    SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(quest_id, true);
+    if (saBounds.first != saBounds.second)
+    {
+        for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
+        {
+            if (itr->second->autocast && itr->second->IsFitToRequirements(this, GetZoneId(), GetAreaID()))
+                if (!HasAura(itr->second->spellId))
+                    CastSpell(this, itr->second->spellId, true);
+        }
+    }
 
     sQuestMgr.OnQuestAccepted(this, qst, qst_giver);
 
@@ -13824,55 +13824,55 @@ void Player::SendTeleportAckPacket(float x, float y, float z, float o)
 
 void Player::CastSpellArea()
 {
-	if (!IsInWorld())
-		return;
+    if (!IsInWorld())
+        return;
 
-	if (m_position.x > _maxX || m_position.x < _minX || m_position.y > _maxY || m_position.y < _minY)
-		return;
+    if (m_position.x > _maxX || m_position.x < _minX || m_position.y > _maxY || m_position.y < _minY)
+        return;
 
-	if (GetMapMgr()->GetCellByCoords(GetPositionX(), GetPositionY()) == NULL)
-		return;
+    if (GetMapMgr()->GetCellByCoords(GetPositionX(), GetPositionY()) == NULL)
+        return;
 
-	AreaTable* at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
-	if (at == NULL)
-		return;
+    AreaTable* at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+    if (at == NULL)
+        return;
 
-	uint32 AreaId = at->AreaId;
-	uint32 ZoneId = at->ZoneId;
+    uint32 AreaId = at->AreaId;
+    uint32 ZoneId = at->ZoneId;
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Cheks for Casting a Spell in Specified Area / Zone :D										  //
-	////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Cheks for Casting a Spell in Specified Area / Zone :D										  //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// Spells get Casted in specified Area
-	SpellAreaForAreaMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForAreaMapBounds(AreaId);
-	for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
-		if (itr->second->autocast && itr->second->IsFitToRequirements(this, ZoneId, AreaId))
-		{
-			if (!HasAura(itr->second->spellId))
-				CastSpell(this, itr->second->spellId, true);
-		}
+    // Spells get Casted in specified Area
+    SpellAreaForAreaMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForAreaMapBounds(AreaId);
+    for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
+        if (itr->second->autocast && itr->second->IsFitToRequirements(this, ZoneId, AreaId))
+        {
+            if (!HasAura(itr->second->spellId))
+                CastSpell(this, itr->second->spellId, true);
+        }
 
 
-	// Some spells applied at enter into zone (with subzones) 
-	SpellAreaForAreaMapBounds szBounds = sSpellFactoryMgr.GetSpellAreaForAreaMapBounds(ZoneId);
-	for (SpellAreaForAreaMap::const_iterator itr = szBounds.first; itr != szBounds.second; ++itr)
-		if (itr->second->autocast && itr->second->IsFitToRequirements(this, ZoneId, AreaId))
-			if (!HasAura(itr->second->spellId))
-				CastSpell(this, itr->second->spellId, true);
+    // Some spells applied at enter into zone (with subzones) 
+    SpellAreaForAreaMapBounds szBounds = sSpellFactoryMgr.GetSpellAreaForAreaMapBounds(ZoneId);
+    for (SpellAreaForAreaMap::const_iterator itr = szBounds.first; itr != szBounds.second; ++itr)
+        if (itr->second->autocast && itr->second->IsFitToRequirements(this, ZoneId, AreaId))
+            if (!HasAura(itr->second->spellId))
+                CastSpell(this, itr->second->spellId, true);
 
-	//Remove of Spells
-	for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-	{
-		if (m_auras[i] != 0)
-		{
-			if (m_auras[i]->GetSpellProto()->CheckLocation(GetMapId(), ZoneId, AreaId, this) == false)
-			{
-				SpellAreaMapBounds sab = sSpellFactoryMgr.GetSpellAreaMapBounds(m_auras[i]->GetSpellId());
-				if (sab.first != sab.second)
-					RemoveAura(m_auras[i]->GetSpellId());
-			}
-		}
-	}
+    //Remove of Spells
+    for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        if (m_auras[i] != 0)
+        {
+            if (m_auras[i]->GetSpellProto()->CheckLocation(GetMapId(), ZoneId, AreaId, this) == false)
+            {
+                SpellAreaMapBounds sab = sSpellFactoryMgr.GetSpellAreaMapBounds(m_auras[i]->GetSpellId());
+                if (sab.first != sab.second)
+                    RemoveAura(m_auras[i]->GetSpellId());
+            }
+        }
+    }
 }
 
