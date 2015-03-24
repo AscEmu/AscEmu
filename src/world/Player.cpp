@@ -1549,7 +1549,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
     SendLogXPGain(guid, xp, restxp, guid == 0 ? true : false);
 
     int32 newxp = GetXp() + xp;
-    int32 nextlevelxp = lvlinfo->XPToNextLevel;
+    int32 nextlevelxp = GetXpToLevel();
     uint32 level = getLevel();
     LevelInfo* li;
     bool levelup = false;
@@ -1560,7 +1560,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         li = objmgr.GetLevelInfo(getRace(), getClass(), level);
         if (li == NULL) return;
         newxp -= nextlevelxp;
-        nextlevelxp = li->XPToNextLevel;
+        nextlevelxp = objmgr.GetXPToLevel(level);
         levelup = true;
 
         if (level > 9)
@@ -1598,9 +1598,6 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         UpdateStats();
         //UpdateChances();
         UpdateGlyphs();
-
-        // Set next level conditions
-        SetNextLevelXp(lvlinfo->XPToNextLevel);
 
         // ScriptMgr hook for OnPostLevelUp
         sHookInterface.OnPostLevelUp(this);
@@ -5626,7 +5623,7 @@ void Player::AddCalculatedRestXP(uint32 seconds)
 
 
     // Define xp for a full bar (= 20 bubbles)
-    uint32 xp_to_lvl = uint32(lvlinfo->XPToNextLevel);
+    uint32 xp_to_lvl = GetXpToLevel();
 
     // get RestXP multiplier from config.
     float bubblerate = sWorld.getRate(RATE_RESTXP);
@@ -5770,19 +5767,20 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
                 if (isInFront(pObj)) // stealthed player is in front of us
                 {
                     // Detection Range = 5yds + (Detection Skill - Stealth Skill)/5
-                    if (getLevel() < PLAYER_LEVEL_CAP)
-                        detectRange = 5.0f + getLevel() + 0.2f * (float)(GetStealthDetectBonus() - pObj->GetStealthLevel());
-                    else
-                        detectRange = 85.0f + 0.2f * (float)(GetStealthDetectBonus() - pObj->GetStealthLevel());
+                    detectRange = 5.0f + getLevel() + 0.2f * (float)(GetStealthDetectBonus() - pObj->GetStealthLevel());
+
                     // Hehe... stealth skill is increased by 5 each level and detection skill is increased by 5 each level too.
                     // This way, a level 70 should easily be able to detect a level 4 rogue (level 4 because that's when you get stealth)
                     //    detectRange += 0.2f * (getLevel() - pObj->getLevel());
-                    if (detectRange < 1.0f) detectRange = 1.0f; // Minimum Detection Range = 1yd
+                    if (detectRange < 1.0f)
+                        detectRange = 1.0f;     // Minimum Detection Range = 1yd
                 }
                 else // stealthed player is behind us
                 {
-                    if (GetStealthDetectBonus() > 1000) return true; // immune to stealth
-                    else detectRange = 0.0f;
+                    if (GetStealthDetectBonus() > 1000)
+                        return true;            // immune to stealth
+                    else
+                        detectRange = 0.0f;
                 }
 
                 detectRange += GetBoundingRadius(); // adjust range for size of player
@@ -8312,9 +8310,6 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     uint32 PreviousLevel = getLevel();
     setLevel(Level);
 
-    // Set next level conditions
-    SetNextLevelXp(Info->XPToNextLevel);
-
     // Set stats
     for (uint8 i = 0; i < 5; ++i)
     {
@@ -8933,8 +8928,6 @@ void Player::CalculateBaseStats()
     }
     SetMaxHealth(lvlinfo->HP);
     SetBaseHealth(lvlinfo->HP - (lvlinfo->Stat[2] - levelone->Stat[2]) * 10);
-    SetNextLevelXp(lvlinfo->XPToNextLevel);
-
 
     if (GetPowerType() == POWER_TYPE_MANA)
     {
