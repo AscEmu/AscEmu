@@ -40,6 +40,24 @@ GameEvent* GameEventMgr::GetEventById(uint32 pEventId)
         return rEvent->second;
 }
 
+void GameEventMgr::StartArenaEvents()
+{
+    for (auto i = 57; i <= 60; ++i)
+    {
+        auto gameEvent = GetEventById(i);
+        if (gameEvent == nullptr)
+        {
+            Log.Error("GameEventMgr", "Missing arena event (id: %u)", i);
+            continue;
+        }
+
+        if (i - 52 == sWorld.Arena_Season && sWorld.Arena_Progress == 1)
+            gameEvent->SetState(GAMEEVENT_ACTIVE_FORCED);
+        else
+            gameEvent->SetState(GAMEEVENT_INACTIVE_FORCED);
+    }
+}
+
 void GameEventMgr::LoadFromDB()
 {
     // Loading event_names
@@ -73,16 +91,16 @@ void GameEventMgr::LoadFromDB()
 
             GameEvent gameEvent = GameEvent(dbResult);
 
-            if (gameEvent.isValid())
-            {
+            //if (gameEvent.isValid())
+            //{
                 mGameEvents.insert(std::make_pair(dbResult.entry, new GameEvent(dbResult)));
                 Log.Success("GameEventMgr", "%s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
                 ++count;
-            }
-            else
-            {
-                Log.Debug("GameEventMgr", "%s game event Entry: %u isn't a world event and has length = 0, thus it can't be used.", dbResult.description.c_str(), dbResult.entry);
-            }
+            //}
+            //else
+            //{
+            //    Log.Debug("GameEventMgr", "%s game event Entry: %u isn't a world event and has length = 0, thus it can't be used.", dbResult.description.c_str(), dbResult.entry);
+            //}
         } while (result->NextRow());
 
         delete result;
@@ -261,6 +279,8 @@ void GameEventMgr::LoadFromDB()
         }
         Log.Success("GameEventMgr", "%u gameobject spawns for %u events from table event_gameobject_spawns loaded.", count, mGameEvents.size());
     }
+
+    StartArenaEvents();
 }
 
 void GameEventMgr::GameEventMgrThread::Update()
@@ -270,6 +290,10 @@ void GameEventMgr::GameEventMgrThread::Update()
     for each (auto gameEventPair in sGameEventMgr.mGameEvents)
     {
         GameEvent* gameEvent = gameEventPair.second;
+
+        // Don't alter manual events
+        if (!gameEvent->isValid())
+            continue;
 
         auto startTime = time_t(gameEvent->start);
         if (startTime < now && now < gameEvent->end)
