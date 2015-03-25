@@ -216,6 +216,7 @@ class GameEventMgr : public Singleton < GameEventMgr >
     ~GameEventMgr();
 
     ActiveEvents const& GetActiveEventList() const { return mActiveEvents; }
+    void StartArenaEvents();
     void    LoadFromDB();
     GameEvent* GetEventById(uint32 pEventId);
 
