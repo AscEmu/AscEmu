@@ -200,8 +200,8 @@ class BlueDragonEgg : public GameObjectAIScript
 };
 
 
-
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// Quest: The Machagnomes ID: 11708
 enum eFizzcrank
 {
     NPC_FIZZCRANK               = 25590,
@@ -332,6 +332,101 @@ class SurristraszGossip : public GossipScript
         };
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Quest: Lefty Loosey, Righty Tighty ID: 11788
+// West Point Station Valve
+class WestPointStationValve : public GameObjectAIScript
+{
+    public:
+        ADD_GAMEOBJECT_FACTORY_FUNCTION(WestPointStationValve);
+        WestPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+
+        void OnActivate(Player* pPlayer)
+        {
+            if (!pPlayer->HasQuest(11788) || pPlayer->HasFinishedQuest(11788))
+                return;
+
+            if (pPlayer->GetQuestLogForEntry(11788)->GetMobCount(0) != 0)
+                return;
+
+            Creature* Twonky = sEAS.SpawnCreature(pPlayer, 25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f, 0);
+            if(Twonky->isAlive())
+                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            else
+                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+        }
+};
+
+// North Point Station Valve
+class NorthPointStationValve : public GameObjectAIScript
+{
+    public:
+        ADD_GAMEOBJECT_FACTORY_FUNCTION(NorthPointStationValve);
+        NorthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+
+        void OnActivate(Player* pPlayer)
+        {
+            if (!pPlayer->HasQuest(11788) || pPlayer->HasFinishedQuest(11788))
+                return;
+
+            if (pPlayer->GetQuestLogForEntry(11788)->GetMobCount(1) != 0)
+                return;
+
+            Creature* Ed210 = sEAS.SpawnCreature(pPlayer, 25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f, 0);
+            if(Ed210->isAlive())
+                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            else
+                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+        }
+};
+
+// Fizzcrank Pumping Station Valve
+class FizzcrankPumpingStationValve : public GameObjectAIScript
+{
+    public:
+        ADD_GAMEOBJECT_FACTORY_FUNCTION(FizzcrankPumpingStationValve);
+        FizzcrankPumpingStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+
+        void OnActivate(Player* pPlayer)
+        {
+            if (!pPlayer->HasQuest(11788) || pPlayer->HasFinishedQuest(11788))
+                return;
+
+            if (pPlayer->GetQuestLogForEntry(11788)->GetMobCount(2) != 0)
+                return;
+
+            Creature* MaxBlasto = sEAS.SpawnCreature(pPlayer, 25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f, 0);
+            if(MaxBlasto->isAlive())
+                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            else
+                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+        }
+};
+
+// South Point Station Valve
+class SouthPointStationValve : public GameObjectAIScript
+{
+    public:
+        ADD_GAMEOBJECT_FACTORY_FUNCTION(SouthPointStationValve);
+        SouthPointStationValve(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+
+        void OnActivate(Player* pPlayer)
+        {
+            if (!pPlayer->HasQuest(11788) || pPlayer->HasFinishedQuest(11788))
+                return;
+
+            if (pPlayer->GetQuestLogForEntry(11788)->GetMobCount(3) != 0)
+                return;
+
+            Creature* TheGrinder = sEAS.SpawnCreature(pPlayer, 25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f, 0);
+            if(TheGrinder->isAlive())
+                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            else
+                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+        }
+};
+
+
 void SetupBoreanTundra(ScriptMgr* mgr)
 {
     // Call to Arms!
@@ -359,4 +454,10 @@ void SetupBoreanTundra(ScriptMgr* mgr)
     // Surristrasz
     GossipScript* sGossip = new SurristraszGossip;
     mgr->register_gossip_script(NPC_SURRISTRASZ, sGossip);
+
+    // Quest: Lefty Loosey, Righty Tighty ID: 11788
+    mgr->register_gameobject_script(187984, &WestPointStationValve::Create);
+    mgr->register_gameobject_script(187985, &NorthPointStationValve::Create);
+    mgr->register_gameobject_script(187986, &FizzcrankPumpingStationValve::Create);
+    mgr->register_gameobject_script(187987, &SouthPointStationValve::Create);
 }
