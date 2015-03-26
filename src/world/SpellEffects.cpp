@@ -4874,7 +4874,6 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
     }
 
     p_caster->summonhandler.ExpireSummonsInSlot();
-	printf("MUERAN TOTEMS\n");
     p_caster->Energize(p_caster, GetProto()->Id, RetreivedMana, POWER_TYPE_MANA);
 }
 
