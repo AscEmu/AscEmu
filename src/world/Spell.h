@@ -2016,7 +2016,7 @@ class SERVER_DECL Spell : public EventableObject
         void Heal(int32 amount, bool ForceCrit = false);
 
         GameObject*     g_caster;
-        Unit*          u_caster;
+        Unit*           u_caster;
         Item*           i_caster;
         Player*         p_caster;
         Object*         m_caster;
@@ -2245,19 +2245,19 @@ class SERVER_DECL Spell : public EventableObject
         uint8   m_DelayStep;            //3.0.2 - spells can only be delayed twice.
 
         // Spell possibility's
-        bool m_CanRelect;
+        bool    m_CanRelect;
 
-        bool m_IsCastedOnSelf;
+        bool    m_IsCastedOnSelf;
 
-        bool hadEffect;
+        bool    hadEffect;
 
         uint32  m_spellState;
         int32   m_castTime;
         int32   m_timer;
-        int64 m_magnetTarget;
+        int64   m_magnetTarget;
 
         // Current Targets to be used in effect handler
-        Unit*      unitTarget;
+        Unit*       unitTarget;
         Item*       itemTarget;
         GameObject* gameObjTarget;
         Player*     playerTarget;
