@@ -278,12 +278,12 @@ enum PlayerMovementType
 
 enum PlayerSpeedType
 {
-    RUN                = 1,
+    RUN             = 1,
     RUNBACK         = 2,
     SWIM            = 3,
     SWIMBACK        = 4,
     WALK            = 5,
-    FLY                = 6,
+    FLY             = 6,
 };
 
 /*
@@ -2321,7 +2321,7 @@ class SERVER_DECL Player : public Unit
         void _ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false, bool skip_stat_apply = false);
         void _EventAttack(bool offhand);
         void _EventExploration();
-		void CastSpellArea();
+        void CastSpellArea();
 
         /// Water level related stuff
         void SetNoseLevel();
@@ -2398,8 +2398,6 @@ class SERVER_DECL Player : public Unit
         uint64 m_curSelection;
         // Raid
         uint8 m_targetIcon;
-        //Player Action Bar
-        // ActionButton mActions[PLAYER_ACTION_BUTTON_SIZE]; // Moved to dual spec
         // Player Reputation
         ReputationMap m_reputation;
         // Pointer to this char's game client

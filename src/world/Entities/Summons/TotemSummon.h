@@ -33,25 +33,14 @@ class TotemSummon : public Summon
 {
     public:
         TotemSummon(uint64 GUID);
-
-
         ~TotemSummon();
 
-
         void Load(CreatureProto* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
-
-
         void OnPushToWorld();
-
-
         void OnPreRemoveFromWorld();
-
-
         bool IsTotem() { return true; }
 
-
         Group* GetGroup();
-
 
         //////////////////////////////////////////////////////
         //void SetupSpells()
@@ -68,11 +57,9 @@ class TotemSummon : public Summon
         //
         //
         //////////////////////////////////////////////////////
+
         void SetupSpells();
-
-
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
-
 
     private:
 };

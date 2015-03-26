@@ -30,7 +30,6 @@ enum SummonType
     SUMMONTYPE_POSSESSED      =  4
 };
 
-
 /////////////////////////////////////////////////////////////////////////
 //class Summon
 //  Base class for Summoned creatures
@@ -40,8 +39,6 @@ class Summon : public Creature
 {
     public:
         Summon(uint64 GUID);
-
-
         ~Summon();
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,17 +55,10 @@ class Summon : public Creature
         //Return Value
         //  None
         //
-        //
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         virtual void Load(CreatureProto* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
-
-
         void OnPushToWorld();
-
-
         void OnPreRemoveFromWorld();
-
-
         bool SummonedToSlot()
         {
             if (summonslot != -1)
@@ -76,10 +66,7 @@ class Summon : public Creature
             else
                 return false;
         }
-
-
         bool IsSummon() { return true; }
-
 
         /////////////////////////////////////////////////////////
         //Unit* GetOwner()
@@ -91,20 +78,11 @@ class Summon : public Creature
         //Return Value
         //  Returns a pointer to the owner unit of this creature
         //
-        //
-        //
         /////////////////////////////////////////////////////////
         Unit* GetOwner() { return owner; }
-
-
         Object* GetPlayerOwner();
-
-
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
-
-
         void OnRemoveInRangeObject(Object* object);
-
 
     private:
         int32 summonslot;  // Summon slot of the creature in the owner's summonhandler, -1 means no slot
