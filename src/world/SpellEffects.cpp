@@ -2570,8 +2570,9 @@ void Spell::SpellEffectSummonTotem(uint32 i, SummonPropertiesEntry* spe, Creatur
     if (u_caster == NULL)
         return;
 
-    v.x += (float(spe->Slot) - 1.5f);
-    v.y += (float(spe->Slot) - 1.5f);
+    int slot = spe->Slot;
+    v.x += (slot < 3) ? -1.5f : 1.5f;
+    v.y += (slot % 2) ? -1.5f : 1.5f;
 
     float landh = u_caster->GetMapMgr()->GetLandHeight(v.x, v.y, v.z + 2);
     float landdiff = landh - v.z;
@@ -2618,7 +2619,6 @@ void Spell::SpellEffectSummonPossessed(uint32 i, SummonPropertiesEntry* spe, Cre
 
     p_caster->Possess(s->GetGUID(), 1000);
 }
-
 
 void Spell::SpellEffectSummonCompanion(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v)
 {
@@ -4397,7 +4397,6 @@ void Spell::SpellEffectActivateObject(uint32 i) // Activate Object
     sEventMgr.AddEvent(gameObjTarget, &GameObject::Deactivate, 0, GetDuration(), 1, 0);
 }
 
-
 void Spell::SpellEffectBuildingDamage(uint32 i)
 {
     if (gameObjTarget == NULL)
@@ -4421,8 +4420,6 @@ void Spell::SpellEffectBuildingDamage(uint32 i)
     // Baaaam
     gameObjTarget->Damage(damage, u_caster->GetGUID(), controller->GetGUID(), m_spellInfo->Id);
 }
-
-
 
 void Spell::SpellEffectEnchantHeldItem(uint32 i)
 {
@@ -4877,7 +4874,6 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
     }
 
     p_caster->summonhandler.ExpireSummonsInSlot();
-
     p_caster->Energize(p_caster, GetProto()->Id, RetreivedMana, POWER_TYPE_MANA);
 }
 
