@@ -426,6 +426,96 @@ class SouthPointStationValve : public GameObjectAIScript
         }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Quest: The Gearmaster 11798
+// The Gearmaster's Manual
+class TheGearmastersManual : public GameObjectAIScript
+{
+    public:
+        ADD_GAMEOBJECT_FACTORY_FUNCTION(TheGearmastersManual);
+        TheGearmastersManual(GameObject* goinstance) : GameObjectAIScript(goinstance) {};
+
+        void OnActivate(Player* pPlayer)
+        {
+            if (!pPlayer->HasQuest(11798) || pPlayer->HasFinishedQuest(11798))
+                return;
+
+            QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(11798);
+            if (qle->GetMobCount(0) == 0)
+            {
+                qle->SetMobCount(0, 1);
+                qle->SendUpdateAddKill(0);
+                qle->UpdatePlayerFields();
+            }
+
+            Creature* TheGrinder = sEAS.SpawnCreature(pPlayer, 25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f, 0);
+            if(TheGrinder->isAlive())
+                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            else
+                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+        }
+};
+
+///\todo: Change to spellevent (target player), npc say is not ready yet. Add Visual Aura on Spawn.
+class GearmasterMechazodAI : public CreatureAIScript
+{
+    public:
+        ADD_CREATURE_FACTORY_FUNCTION(GearmasterMechazodAI);
+        GearmasterMechazodAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        {
+            _unit->SetEquippedItem(0, 28487);       // Mainhand
+            _unit->SetEquippedItem(1, 11587);       // Offhand
+            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+            RegisterAIUpdateEvent(100);
+            phase = 0;
+        }
+
+        void AIUpdate()
+        {
+            switch (phase)
+            {
+                case 0:
+                {
+                    RemoveAIUpdateEvent();
+                    _unit->SendScriptTextChatMessage(8730);
+                    _unit->EventAddEmote(EMOTE_ONESHOT_TALK, 3500);
+                    RegisterAIUpdateEvent(7000);
+                    phase = 1;
+                }break;
+                case 1:
+                {
+                    _unit->SendScriptTextChatMessage(8731);
+                    _unit->EventAddEmote(EMOTE_ONESHOT_TALK, 3500);
+
+                    phase = 2;
+                }break;
+                case 2:
+                {
+                    _unit->SendScriptTextChatMessage(8732);
+                    _unit->EventAddEmote(EMOTE_ONESHOT_POINT, 2500);
+
+                    phase = 3;
+                }break;
+                case 3:
+                {
+                    _unit->SendScriptTextChatMessage(8733);
+                    _unit->EventAddEmote(EMOTE_ONESHOT_POINT, 2500);
+
+                    phase = 4;
+                }break;
+                case 4:
+                    _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
+                    _unit->GetAIInterface()->m_canMove = true;
+                    RemoveAIUpdateEvent();          // Remove Update, now we are in OnCombatStart
+                default:
+                    return;
+            }
+        }
+
+    protected:
+
+        uint32 phase;
+};
 
 void SetupBoreanTundra(ScriptMgr* mgr)
 {
@@ -460,4 +550,8 @@ void SetupBoreanTundra(ScriptMgr* mgr)
     mgr->register_gameobject_script(187985, &NorthPointStationValve::Create);
     mgr->register_gameobject_script(187986, &FizzcrankPumpingStationValve::Create);
     mgr->register_gameobject_script(187987, &SouthPointStationValve::Create);
+
+    // Quest: The Gearmaster 11798
+    mgr->register_gameobject_script(190334, &TheGearmastersManual::Create);
+    mgr->register_creature_script(25834, &GearmasterMechazodAI::Create);
 }
