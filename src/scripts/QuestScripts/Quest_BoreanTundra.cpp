@@ -479,28 +479,24 @@ class GearmasterMechazodAI : public CreatureAIScript
                 {
                     RemoveAIUpdateEvent();
                     _unit->SendScriptTextChatMessage(8730);
-                    _unit->EventAddEmote(EMOTE_ONESHOT_TALK, 3500);
                     RegisterAIUpdateEvent(7000);
                     phase = 1;
                 }break;
                 case 1:
                 {
                     _unit->SendScriptTextChatMessage(8731);
-                    _unit->EventAddEmote(EMOTE_ONESHOT_TALK, 3500);
 
                     phase = 2;
                 }break;
                 case 2:
                 {
                     _unit->SendScriptTextChatMessage(8732);
-                    _unit->EventAddEmote(EMOTE_ONESHOT_POINT, 2500);
 
                     phase = 3;
                 }break;
                 case 3:
                 {
                     _unit->SendScriptTextChatMessage(8733);
-                    _unit->EventAddEmote(EMOTE_ONESHOT_POINT, 2500);
 
                     phase = 4;
                 }break;
