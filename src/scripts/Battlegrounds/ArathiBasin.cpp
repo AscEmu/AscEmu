@@ -603,11 +603,11 @@ LocationVector ArathiBasin::GetStartingCoords(uint32 Team)
         return LocationVector(1314.932495f, 1311.246948f, -9.00952f, 3.802896f);
 }
 
-void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 id)
+void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
 {
     uint32 spellid = 0;
     int32 buffslot = -1;
-    switch(id)
+    switch(trigger)
     {
         case 3866:            // stables
             buffslot = AB_BUFF_STABLES;
@@ -629,19 +629,26 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 id)
             buffslot = AB_BUFF_LUMBERMILL;
             break;
 
-        case 3948:            // alliance/horde exits
-        case 3949:
-            {
+        case 3948:            // alliance exits
+        {
+            if (plr->GetTeam() != TEAM_ALLIANCE)
+                plr->SendAreaTriggerMessage("Only The Alliance can use that portal");
+            else
                 RemovePlayer(plr, false);
-                return;
-            }
-            break;
+        }break;
+        case 3949:          // horde exits
+        {
+            if (plr->GetTeam() != TEAM_HORDE)
+                plr->SendAreaTriggerMessage("Only The Horde can use that portal");
+            else
+                RemovePlayer(plr, false);
+        }break;
         case 4020:            // Trollbane Hall
         case 4021:            // Defiler's Den
             return;
             break;
         default:
-            sLog.Error("ArathiBasin", "Encountered unhandled areatrigger id %u", id);
+            sLog.Error("ArathiBasin", "Encountered unhandled areatrigger id %u", trigger);
             return;
             break;
     }

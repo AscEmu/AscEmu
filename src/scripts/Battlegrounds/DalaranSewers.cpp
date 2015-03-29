@@ -20,15 +20,16 @@
 
 #include "DalaranSewers.h"
 
-DalaranSewers::DalaranSewers( MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side ) : 
-Arena( mgr, id, lgroup, t, players_per_side ){
-}
+DalaranSewers::DalaranSewers(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : 
+Arena(mgr, id, lgroup, t, players_per_side)
+{ }
 
-DalaranSewers::~DalaranSewers(){
-}
+DalaranSewers::~DalaranSewers()
+{ }
 
-void DalaranSewers::OnCreate(){
-    GameObject *obj = NULL;
+void DalaranSewers::OnCreate()
+{
+    GameObject* obj = NULL;
     
     obj = SpawnGameObject(192643, 617, 1232.11f, 764.699f, 20.3f, 0.0f, 32, 1375, 2.0f);
     obj->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_STATE, 1);
@@ -46,14 +47,31 @@ void DalaranSewers::OnCreate(){
     Arena::OnCreate();
 }
 
-LocationVector DalaranSewers::GetStartingCoords( uint32 Team ){
+LocationVector DalaranSewers::GetStartingCoords(uint32 Team)
+{
     if(Team)
         return LocationVector(1363.3609f, 817.3569f, 14.8128f);
     else
         return LocationVector(1219.5115f, 765.0264f, 14.8253f);
 }
 
-bool DalaranSewers::HookHandleRepop( Player *plr ){
+void DalaranSewers::HookOnAreaTrigger(Player* plr, uint32 trigger)
+{
+    switch(trigger)
+    {
+        case 5347:
+        case 5348:
+            plr->RemoveAllAuraById(48018);      // Demonic Circle
+            break;
+        default:
+            sLog.Error("AlteracValley", "Encountered unhandled areatrigger id %u", trigger);
+            return;
+            break;
+    }
+}
+
+bool DalaranSewers::HookHandleRepop(Player* plr)
+{
     LocationVector dest;
     dest.ChangeCoords(1292.51f, 792.05f, 9.34f);
     plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);

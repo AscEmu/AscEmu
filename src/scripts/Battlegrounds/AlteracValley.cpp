@@ -1511,9 +1511,38 @@ void AlteracValley::HookOnMount(Player* plr)
 
 }
 
-void AlteracValley::HookOnAreaTrigger(Player* plr, uint32 id)
+void AlteracValley::HookOnAreaTrigger(Player* plr, uint32 trigger)
 {
-
+    switch(trigger)
+    {
+        case 95:
+        case 2608:            // alliance exits
+        {
+            if (plr->GetTeam() != TEAM_ALLIANCE)
+                plr->SendAreaTriggerMessage("Only The Alliance can use that portal");
+            else
+                RemovePlayer(plr, false);
+        }break;
+        case 2606:          // horde exits
+        {
+            if (plr->GetTeam() != TEAM_HORDE)
+                plr->SendAreaTriggerMessage("Only The Horde can use that portal");
+            else
+                RemovePlayer(plr, false);
+        }break;
+        case 3326:
+        case 3327:
+        case 3328:
+        case 3329:
+        case 3330:
+        case 3331:
+            //unmount
+            break;
+        default:
+            sLog.Error("AlteracValley", "Encountered unhandled areatrigger id %u", trigger);
+            return;
+            break;
+    }
 }
 
 bool AlteracValley::HookHandleRepop(Player* plr)
