@@ -86,7 +86,7 @@ class ArathiBasin : public CBattleground
         void HookFlagDrop(Player* plr, GameObject* obj);
         void HookFlagStand(Player* plr, GameObject* obj);
         void HookOnMount(Player* plr);
-        void HookOnAreaTrigger(Player* plr, uint32 id);
+        void HookOnAreaTrigger(Player* plr, uint32 trigger);
         bool HookHandleRepop(Player* plr);
         void OnAddPlayer(Player* plr);
         void OnRemovePlayer(Player* plr);

@@ -24,7 +24,8 @@
 #define IOC_NUM_REINFORCEMENTS 300
 #define IOC_POINTS_ON_KILL 1
 
-enum IOCGOs{
+enum IOCGOs
+{
     IOC_FLAGPOLE             = 195131,
     IOC_TELEPORTER_H_IN      = 195313,
     IOC_TELEPORTER_H_OUT     = 195314,
@@ -36,12 +37,14 @@ enum IOCGOs{
     IOC_DYNAMIC_GATE_ALLY    = 195703
 };
 
-enum IOCSpells{
+enum IOCSpells
+{
     IOC_REFINERY_BONUS   =  68719,
     IOC_QUARRY_BONUS     =  68720
 };
 
-enum ControlPoints{
+enum ControlPoints
+{
     IOC_CONTROL_POINT_REFINERY       = 0,
     IOC_CONTROL_POINT_QUARRY         = 1,
     IOC_CONTROL_POINT_DOCKS          = 2,
@@ -51,7 +54,8 @@ enum ControlPoints{
     IOC_CONTROL_POINT_HORDE_KEEP     = 6
 };
 
-enum GraveYards{
+enum GraveYards
+{
     IOC_GY_DOCKS          = 0,
     IOC_GY_HANGAR         = 1,
     IOC_GY_WORKSHOP       = 2,

@@ -20,15 +20,16 @@
 
 #include "RingOfValor.h"
 
-RingOfValor::RingOfValor( MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side ) : 
-Arena( mgr, id, lgroup, t, players_per_side ){
-}
+RingOfValor::RingOfValor(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : 
+Arena(mgr, id, lgroup, t, players_per_side)
+{ }
 
-RingOfValor::~RingOfValor(){
-}
+RingOfValor::~RingOfValor()
+{ }
 
-void RingOfValor::OnCreate(){
-    GameObject *obj = NULL;
+void RingOfValor::OnCreate()
+{
+    GameObject* obj = NULL;
     
     obj = SpawnGameObject(194030, 618, 763.93f, -295.0f, 26.0f, 0.0f, 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
@@ -62,14 +63,32 @@ void RingOfValor::OnCreate(){
     Arena::OnCreate();
 }
 
-LocationVector RingOfValor::GetStartingCoords( uint32 Team ){
+LocationVector RingOfValor::GetStartingCoords(uint32 Team)
+{
     if(Team)
         return LocationVector(763.6011f, -294.3227f, 28.4f);
     else
         return LocationVector(763.9755f, -274.0825f, 28.4f);
 }
 
-bool RingOfValor::HookHandleRepop( Player *plr ){
+void RingOfValor::HookOnAreaTrigger(Player* plr, uint32 trigger)
+{
+    switch(trigger)
+    {
+        case 5224:
+        case 5226:
+        case 5473:
+        case 5474:
+            break;
+        default:
+            sLog.Error("RuinsOfLordaeron", "Encountered unhandled areatrigger id %u", trigger);
+            return;
+            break;
+    }
+}
+
+bool RingOfValor::HookHandleRepop(Player* plr)
+{
     LocationVector dest;
     dest.ChangeCoords(762.91f, -284.28f, 28.28f);
     plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);

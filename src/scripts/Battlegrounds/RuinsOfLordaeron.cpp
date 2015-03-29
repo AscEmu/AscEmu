@@ -75,7 +75,21 @@ LocationVector RuinsOfLordaeron::GetStartingCoords(uint32 Team)
 
 }
 
-bool RuinsOfLordaeron::HookHandleRepop(Player* plr )
+void RuinsOfLordaeron::HookOnAreaTrigger(Player* plr, uint32 trigger)
+{
+    switch(trigger)
+    {
+        case 4696:
+        case 4697:
+            break;
+        default:
+            sLog.Error("RuinsOfLordaeron", "Encountered unhandled areatrigger id %u", trigger);
+            return;
+            break;
+    }
+}
+
+bool RuinsOfLordaeron::HookHandleRepop(Player* plr)
 {
     LocationVector dest(0, 0, 0, 0);
     dest.ChangeCoords(1286.112061f, 1668.334961f, 39.289127f);

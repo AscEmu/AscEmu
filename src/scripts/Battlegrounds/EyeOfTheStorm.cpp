@@ -308,6 +308,14 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
         case 4570:            // Mage Tower bonus
             bonusid = EOTS_TOWER_MAGE;
             break;
+        case 4512:
+        case 4515:
+        case 4517:
+        case 4519:
+        case 4530:
+        case 4531:
+        case 5866:
+            break;
         default:
             sLog.Error("EyeOfTheStorm", "Encountered unhandled areatrigger id %u", id);
             return;

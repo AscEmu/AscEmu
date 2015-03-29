@@ -37,6 +37,7 @@ class RingOfValor : public Arena
 
         void OnCreate();
         LocationVector GetStartingCoords(uint32 Team);
+        void HookOnAreaTrigger(Player* plr, uint32 trigger);
         bool HookHandleRepop(Player* plr);
 };
 

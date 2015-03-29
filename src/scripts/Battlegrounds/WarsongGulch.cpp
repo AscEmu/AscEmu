@@ -131,6 +131,15 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         case 3709:      // Berserking (Horde)
             buffslot = 5;
             break;
+        case 3649:
+        case 3688:
+        case 4628:
+        case 4629:
+            break;
+        default:
+            sLog.Error("WarsongGulch", "Encountered unhandled areatrigger id %u", id);
+            return;
+            break;
     }
 
     if(buffslot >= 0)
