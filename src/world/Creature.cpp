@@ -2303,14 +2303,11 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
     size_t CreatureNameLength = strlen((char*)name) + 1;
     size_t MessageLength = strlen((char*)ct->text) + 1;
 
-    // Add Emote if available. We check "0" because default in npc_script_text.emote = 0
-    Log.Debug("SendScriptTextChatMessage", "Sending Data: TextID: %u, Creature: %u, ID: %u, Type: %u, Lang: %u, Prob: %f, Emote: %u, Duration: %u, Sound: %u, Broad: %u", ct->id, ct->creature_entry, ct->text_id, ct->type, ct->language, ct->probability, ct->emote, ct->duration, ct->sound, ct->broadcast_id);
     if (ct->emote != 0)
         this->EventAddEmote(ct->emote, ct->duration);
 
     if (ct->sound != 0)
         this->PlaySoundToSet(ct->sound);
-
 
     // Send chat msg
     WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
@@ -2324,8 +2321,8 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
     data << uint32(MessageLength);      // the length of the message (needed to calculate the bubble)
     data << ct->text;                   // the text
     data << uint8(0x00);
-    SendMessageToSet(&data, true);      // sending this
 
+    SendMessageToSet(&data, true);      // sending this
 }
 
 void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
@@ -2339,6 +2336,9 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
             sEventMgr.AddEvent(TO_OBJECT(this), &Object::PlaySoundToSet, ct->sound, EVENT_UNK, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
+
+    if (ct->emote != 0)
+        this->EventAddEmote(ct->emote, ct->duration);
 
     const char* name = GetCreatureInfo()->Name;
     size_t CreatureNameLength = strlen((char*)name) + 1;
@@ -2355,6 +2355,7 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
     data << uint32(MessageLength);      // the length of the message (needed to calculate the bubble)
     data << ct->text;                   // the text
     data << uint8(0x00);
+
     SendMessageToSet(&data, true);      // sending this
 }
 
