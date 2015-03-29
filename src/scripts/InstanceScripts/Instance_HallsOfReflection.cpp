@@ -115,68 +115,50 @@ class JainaAI : public MoonScriptCreatureAI
                 Lich->SetDisplayId(11686); // HACK FIX makes invisible till needed
                 Lich->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 // 8 second delay from first chat..
-                _unit->SendScriptTextChatMessage(SAY_JAINA_01, 8000);
-                sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16634, EVENT_UNK, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_01, 8000);
+
                 // Uther talks about 12 seconds.
-                Uther->SendScriptTextChatMessage(SAY_UTHER_01, 12500);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16666, EVENT_UNK, 12500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_01, 12500);
+
                 // Jaina wait about 9-10 secs
-                _unit->SendScriptTextChatMessage(SAY_JAINA_05, 21000);
-                sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16635, EVENT_UNK, 21000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_05, 21000);
                 // Uther wait about 9-11 secs
-                Uther->SendScriptTextChatMessage(SAY_UTHER_02, 27000);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16667, EVENT_UNK, 27000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_02, 27000);
                 // Jaina wait about 9-10 sec.
-                _unit->SendScriptTextChatMessage(SAY_JAINA_06, 37000);
-                sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16636, EVENT_UNK, 37000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_06, 37000);
                 // Uther wait about 6 seconds to chat.
-                Uther->SendScriptTextChatMessage(SAY_UTHER_03, 44000);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16668, EVENT_UNK, 44000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_03, 44000);
                 // Jaina with a 15 sec delay.
-                _unit->SendScriptTextChatMessage(SAY_JAINA_07, 59000);
-                sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16637, EVENT_UNK, 59000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_07, 59000);
                 // Uther with a 8.5 sec delay chat
-                Uther->SendScriptTextChatMessage(SAY_UTHER_04, 67500);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16669, EVENT_UNK, 67500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_04, 67500);
                 // Jaina with a 16 sec delay
-                _unit->SendScriptTextChatMessage(SAY_JAINA_08, 83500);
-                sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16638, EVENT_UNK, 83500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_08, 83500);
                 // Uther with a 7 sec delay
-                Uther->SendScriptTextChatMessage(SAY_UTHER_05, 90500);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16670, EVENT_UNK, 90500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_05, 90500);
                 // Jaina delay with a 15 sec.
-                _unit->SendScriptTextChatMessage(SAY_JAINA_09, 105500);
-                sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16639, EVENT_UNK, 105500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_09, 105500);
                 // Uther delay with a 17 sec delay.
-                Uther->SendScriptTextChatMessage(SAY_UTHER_06, 122500);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16671, EVENT_UNK, 122500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_06, 122500);
                 // Uther with a 17 sec delay
-                Uther->SendScriptTextChatMessage(SAY_UTHER_07, 139500);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16672, EVENT_UNK, 139500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_07, 139500);
                 // Jaina with a 7 sec delay.
-                _unit->SendScriptTextChatMessage(SAY_JAINA_10, 146500);
-                sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16640, EVENT_UNK, 146500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_10, 146500);
                 // Uther with a 4 sec delay.
                 Uther->SendChatMessage(CHAT_MSG_EMOTE, LANG_UNIVERSAL, "shakes his head.", 150500); // WHAT
                 // Uther with a 4 sec delay
-                Uther->SendScriptTextChatMessage(SAY_UTHER_08, 154500);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16673, EVENT_UNK, 154500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_08, 154500);
                 // Jaina wuith a 14 sec delay.
-                _unit->SendScriptTextChatMessage(SAY_JAINA_11, 168500);
-                sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)16641, EVENT_UNK, 168500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                _unit->SendTimedScriptTextChatMessage(SAY_JAINA_11, 168500);
                 // Uther says nonono when lich king appear than despawns ;D 7 sec delay
-                Uther->SendScriptTextChatMessage(SAY_UTHER_09, 175500);
-                sEventMgr.AddEvent(TO_OBJECT(Uther), &Object::PlaySoundToSet, (uint32)16674, EVENT_UNK, 175500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Uther->SendTimedScriptTextChatMessage(SAY_UTHER_09, 175500);
                 Uther->Despawn(188000, 0); // Uther gets sent to the "frostmourne" when LK comes in and silences him ;P        
                 // Lich King 11 sec delay
-                Lich->SendScriptTextChatMessage(SAY_LICH_01, 186500);
-                sEventMgr.AddEvent(TO_OBJECT(Lich), &Object::PlaySoundToSet, (uint32)17225, EVENT_UNK, 186500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Lich->SendTimedScriptTextChatMessage(SAY_LICH_01, 186500);
                 // Lich King 8 sec delay
-                Lich->SendScriptTextChatMessage(SAY_LICH_02, 194500);
-                sEventMgr.AddEvent(TO_OBJECT(Lich), &Object::PlaySoundToSet, (uint32)17226, EVENT_UNK, 194500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Lich->SendTimedScriptTextChatMessage(SAY_LICH_02, 194500);
                 // Lich King 10 sec delay also he should spawn falric & marwyn with this & start the waves..
-                Lich->SendScriptTextChatMessage(SAY_LICH_03, 204500);
-                sEventMgr.AddEvent(TO_OBJECT(Lich), &Object::PlaySoundToSet, (uint32)17227, EVENT_UNK, 204500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                Lich->SendTimedScriptTextChatMessage(SAY_LICH_03, 204500);
             }
 
         }

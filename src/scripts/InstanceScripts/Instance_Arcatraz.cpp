@@ -139,11 +139,9 @@ class ZerekethAI : public MoonScriptBossAI
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_ZEREKETH_01);
-                    _unit->PlaySoundToSet(11253);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_ZEREKETH_02);
-                    _unit->PlaySoundToSet(11254);
                     break;
             }
             ResetTimer(SpeechTimer, (RandomUInt(10) + 40) * 1000);
@@ -409,9 +407,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                 shield->SetState(GAMEOBJECT_STATE_CLOSED);
 
             _unit->SendScriptTextChatMessage(SAY_MELLICHAR_01);
-            _unit->PlaySoundToSet(11222);
-            _unit->SendScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
-            sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)11223, EVENT_UNK, 27000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            _unit->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
 
             ParentClass::OnCombatStart(mTarget);
         }
@@ -465,7 +461,6 @@ class WardenMellicharAI : public MoonScriptBossAI
                     else if (NPC_orb1 && !NPC_orb1->IsAlive())
                     {
                         _unit->SendScriptTextChatMessage(SAY_MELLICHAR_03);
-                        _unit->PlaySoundToSet(11224);
                         SetPhase(1);
                         Phasepart = 0;
                         ResetTimer(Phase_Timer, 6000);
@@ -508,14 +503,11 @@ class WardenMellicharAI : public MoonScriptBossAI
                         Creature* millhouse = TO_CREATURE(ForceCreatureFind(CN_MILLHOUSE_MANASTORM));
                         if (millhouse)
                         {
-                            millhouse->SendScriptTextChatMessage(SAY_MILLHOUS_01, 2000);
-                            sEventMgr.AddEvent(TO_OBJECT(millhouse), &Object::PlaySoundToSet, (uint32)11171, EVENT_UNK, 2000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                            millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_01, 2000);
 
-                            _unit->SendScriptTextChatMessage(SAY_MELLICHAR_04, 13000);
-                            sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)11226, EVENT_UNK, 13000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                            _unit->SendTimedScriptTextChatMessage(SAY_MELLICHAR_04, 13000);
 
-                            millhouse->SendScriptTextChatMessage(SAY_MILLHOUS_02, 22000);
-                            sEventMgr.AddEvent(TO_OBJECT(millhouse), &Object::PlaySoundToSet, (uint32)11172, EVENT_UNK, 22000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                            millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_02, 22000);
                         }
                         SetPhase(2);
                         Phasepart = 0;
@@ -576,7 +568,6 @@ class WardenMellicharAI : public MoonScriptBossAI
                     else if (NPC_orb3 && !NPC_orb3->IsAlive())
                     {
                         _unit->SendScriptTextChatMessage(SAY_MELLICHAR_05);
-                        _unit->PlaySoundToSet(11227);
                         SetPhase(3);
                         Phasepart = 0;
                         ResetTimer(Phase_Timer, 8000);
@@ -631,7 +622,6 @@ class WardenMellicharAI : public MoonScriptBossAI
                     else if (NPC_orb4 && !NPC_orb4->IsAlive())
                     {
                         _unit->SendScriptTextChatMessage(SAY_MELLICHAR_06);
-                        _unit->PlaySoundToSet(11228);
                         SetPhase(4);
                         Phasepart = 0;
                         ResetTimer(Phase_Timer, 6000);

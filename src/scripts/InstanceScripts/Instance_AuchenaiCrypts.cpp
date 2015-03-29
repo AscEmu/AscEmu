@@ -455,15 +455,12 @@ class EXARCHMALADAARAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MALADAAR_01);
-                    _unit->PlaySoundToSet(10513);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_MALADAAR_02);
-                    _unit->PlaySoundToSet(10514);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_MALADAAR_03);
-                    _unit->PlaySoundToSet(10515);
                     break;
             }
 
@@ -479,11 +476,9 @@ class EXARCHMALADAARAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MALADAAR_04);
-                        _unit->PlaySoundToSet(10516);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_MALADAAR_05);
-                        _unit->PlaySoundToSet(10517);
                         break;
                 }
             }
@@ -503,7 +498,6 @@ class EXARCHMALADAARAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_MALADAAR_06);
-            _unit->PlaySoundToSet(10518);
 
             RemoveAIUpdateEvent();
         }
@@ -513,7 +507,6 @@ class EXARCHMALADAARAI : public CreatureAIScript
             if (_unit->GetHealthPct() <= 25 && !Avatar && !_unit->IsStunned())
             {
                 _unit->SendScriptTextChatMessage(SAY_MALADAAR_07);
-                _unit->PlaySoundToSet(10512);
 
                 _unit->setAttackTimer(3500, false);
                 _unit->GetAIInterface()->StopMovement(2000);

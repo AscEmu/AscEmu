@@ -1064,15 +1064,12 @@ class MennuTheBetrayerAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_01);
-                    _unit->PlaySoundToSet(10376);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_02);
-                    _unit->PlaySoundToSet(10378);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_03);
-                    _unit->PlaySoundToSet(10379);
                     break;
             }
 
@@ -1088,11 +1085,9 @@ class MennuTheBetrayerAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_04);
-                        _unit->PlaySoundToSet(10380);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_05);
-                        _unit->PlaySoundToSet(10381);
                         break;
                 }
             }
@@ -1109,8 +1104,6 @@ class MennuTheBetrayerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_06);
-            _unit->PlaySoundToSet(10382);
-
             RemoveAIUpdateEvent();
         }
 

@@ -1622,15 +1622,12 @@ class DarkweaverSythAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_02);
-                    _unit->PlaySoundToSet(10503);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_03);
-                    _unit->PlaySoundToSet(10504);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_04);
-                    _unit->PlaySoundToSet(10505);
                     break;
             }
 
@@ -1646,11 +1643,9 @@ class DarkweaverSythAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_05);
-                        _unit->PlaySoundToSet(10506);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_06);
-                        _unit->PlaySoundToSet(10507);
                         break;
                 }
             }
@@ -1669,7 +1664,6 @@ class DarkweaverSythAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_07);
-            _unit->PlaySoundToSet(10508);
 
             GameObject* LakkasCage = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-160.813f, 157.043f, 0.194095f, 183051);
             Creature* mLakka = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-160.813f, 157.043f, 0.194095f, 18956);
@@ -1717,7 +1711,6 @@ class DarkweaverSythAI : public CreatureAIScript
         void SummonElementalWave()
         {
             _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_01);
-            _unit->PlaySoundToSet(10502);
 
             _unit->CastSpell(_unit, spells[5].info, spells[5].instant);
             _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
@@ -1850,15 +1843,12 @@ class TalonKingIkissAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_02);
-                    _unit->PlaySoundToSet(10554);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_03);
-                    _unit->PlaySoundToSet(10555);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_04);
-                    _unit->PlaySoundToSet(10556);
                     break;
             }
 
@@ -1874,11 +1864,9 @@ class TalonKingIkissAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_05);
-                        _unit->PlaySoundToSet(10558);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_06);
-                        _unit->PlaySoundToSet(10559);
                         break;
                 }
             }
@@ -1895,7 +1883,6 @@ class TalonKingIkissAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_07);
-            _unit->PlaySoundToSet(10560);
 
             GameObject* IkissDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(43.079f, 149.505f, 0.034f, 183398);
             if (IkissDoor != NULL)

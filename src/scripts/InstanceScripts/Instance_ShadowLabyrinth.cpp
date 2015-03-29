@@ -1187,15 +1187,12 @@ class AmbassadorHellmawAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_02);
-                    _unit->PlaySoundToSet(10475);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_03);
-                    _unit->PlaySoundToSet(10476);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_04);
-                    _unit->PlaySoundToSet(10477);
                     break;
             }
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -1210,11 +1207,9 @@ class AmbassadorHellmawAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_06);
-                        _unit->PlaySoundToSet(10478);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_07);
-                        _unit->PlaySoundToSet(10479);
                         break;
                 }
             }
@@ -1231,8 +1226,6 @@ class AmbassadorHellmawAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_08);
-            _unit->PlaySoundToSet(10480);
-
             RemoveAIUpdateEvent();
         }
 
@@ -1355,15 +1348,12 @@ class BlackheartTheInciterAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_04);
-                    _unit->PlaySoundToSet(10496);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_06);
-                    _unit->PlaySoundToSet(10488);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_05);
-                    _unit->PlaySoundToSet(10487);
                     break;
             }
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -1378,11 +1368,9 @@ class BlackheartTheInciterAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_07);
-                        _unit->PlaySoundToSet(10489);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_08);
-                        _unit->PlaySoundToSet(10490);
                         break;
                 }
             }
@@ -1398,7 +1386,6 @@ class BlackheartTheInciterAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_10);
-            _unit->PlaySoundToSet(10491);
             RemoveAIUpdateEvent();
         }
 
@@ -1586,15 +1573,12 @@ class GrandmasterVorpilAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_02);
-                    _unit->PlaySoundToSet(10524);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_03);
-                    _unit->PlaySoundToSet(10525);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_04);
-                    _unit->PlaySoundToSet(10526);
                     break;
             }
             //_unit->CastSpell(_unit, spells[3].info, spells[3].instant);
@@ -1610,11 +1594,9 @@ class GrandmasterVorpilAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_06);
-                        _unit->PlaySoundToSet(10527);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_07);
-                        _unit->PlaySoundToSet(10528);
                         break;
                 }
             }
@@ -1631,8 +1613,6 @@ class GrandmasterVorpilAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_08);
-            _unit->PlaySoundToSet(10529);
-
             RemoveAIUpdateEvent();
         }
 

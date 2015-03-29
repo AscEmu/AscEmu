@@ -2671,8 +2671,7 @@ class ClawAI : public CreatureAIScript
                             Swamplord = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 17826);
                             if (Swamplord && Swamplord->isAlive())
                             {
-                                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Beast, obey me! Kill them at once!");
-                                _unit->PlaySoundToSet(10383);
+                                _unit->SendScriptTextChatMessage(1462);
                             }
                         }
 
@@ -2811,15 +2810,12 @@ class SwamplordMuselekAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_02);
-                    _unit->PlaySoundToSet(10384);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_03);
-                    _unit->PlaySoundToSet(10385);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_04);
-                    _unit->PlaySoundToSet(10386);
                     break;
             }
 
@@ -2842,11 +2838,9 @@ class SwamplordMuselekAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_05);
-                        _unit->PlaySoundToSet(10387);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_06);
-                        _unit->PlaySoundToSet(10388);
                         break;
                 }
             }
@@ -2863,8 +2857,6 @@ class SwamplordMuselekAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_07);
-            _unit->PlaySoundToSet(10389);
-
             RemoveAIUpdateEvent();
         }
 

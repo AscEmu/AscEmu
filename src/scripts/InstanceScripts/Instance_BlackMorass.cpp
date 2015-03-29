@@ -123,7 +123,6 @@ class ChronoLordAI : public CreatureAIScript
         {
             CastTime();
             _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_01);
-            _unit->PlaySoundToSet(10414);       // old soundId 10271
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -142,16 +141,12 @@ class ChronoLordAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        sound = 10415;              // old soundId 10271
-                        textId = SAY_CHRONOLORD_02;
+                        _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_02);
                         break;
                     case 1:
-                        sound = 10416;              // old soundId 10271
-                        textId = SAY_CHRONOLORD_03;
+                        _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_03);
                         break;
                 }
-                _unit->PlaySoundToSet(sound);
-                _unit->SendScriptTextChatMessage(textId);
             }
         }
 
@@ -167,7 +162,6 @@ class ChronoLordAI : public CreatureAIScript
         {
             CastTime();
             _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_04);
-            _unit->PlaySoundToSet(10417);       // old soundId 10271
             RemoveAIUpdateEvent();
         }
 
@@ -273,7 +267,6 @@ class TemporusAI : public CreatureAIScript
         {
             CastTime();
             _unit->SendScriptTextChatMessage(SAY_TEMPORUS_01);
-            _unit->PlaySoundToSet(10444);               // old soundId 10271
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -292,16 +285,12 @@ class TemporusAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        sound = 10445;              // old soundId 10271
-                        textId = SAY_TEMPORUS_02;
+                        _unit->SendScriptTextChatMessage(SAY_TEMPORUS_02);
                         break;
                     case 1:
-                        sound = 10446;              // old soundId 10271
-                        textId = SAY_TEMPORUS_03;
+                        _unit->SendScriptTextChatMessage(SAY_TEMPORUS_03);
                         break;
                 }
-                _unit->PlaySoundToSet(sound);
-                _unit->SendScriptTextChatMessage(textId);
             }
         }
 
@@ -317,7 +306,6 @@ class TemporusAI : public CreatureAIScript
         {
             CastTime();
             _unit->SendScriptTextChatMessage(SAY_TEMPORUS_04);
-            _unit->PlaySoundToSet(10447);           // old soundId 10271
             RemoveAIUpdateEvent();
         }
 
@@ -423,7 +411,6 @@ class AenusAI : public CreatureAIScript
         {
             CastTime();
             _unit->SendScriptTextChatMessage(SAY_AENUS_01);
-            _unit->PlaySoundToSet(10402);               // old soundId 10271
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
 
@@ -442,16 +429,12 @@ class AenusAI : public CreatureAIScript
                 switch (RandomUInt(1))
                 {
                     case 0:
-                        sound = 10404;              // old soundId 10271
-                        textId = SAY_AENUS_02;
+                        _unit->SendScriptTextChatMessage(SAY_AENUS_02);
                         break;
                     case 1:
-                        sound = 10403;              // old soundId 10271
-                        textId = SAY_AENUS_03;
+                        _unit->SendScriptTextChatMessage(SAY_AENUS_03);
                         break;
                 }
-                _unit->PlaySoundToSet(sound);
-                _unit->SendScriptTextChatMessage(textId);
             }
         }
 
@@ -467,7 +450,6 @@ class AenusAI : public CreatureAIScript
         {
             CastTime();
             _unit->SendScriptTextChatMessage(SAY_AENUS_04);
-            _unit->PlaySoundToSet(10405);           // old soundId 10271
             RemoveAIUpdateEvent();
         }
 

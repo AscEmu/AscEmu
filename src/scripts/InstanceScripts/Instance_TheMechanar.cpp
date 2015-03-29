@@ -1974,7 +1974,6 @@ class GatewatcherGyroKillAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_05);
-            _unit->PlaySoundToSet(11101);
         }
 
         void CastTime()
@@ -2002,11 +2001,9 @@ class GatewatcherGyroKillAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_06);
-                        _unit->PlaySoundToSet(11102);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_04);
-                        _unit->PlaySoundToSet(11103);
                         break;
                 }
             }
@@ -2017,7 +2014,6 @@ class GatewatcherGyroKillAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_01);
-            _unit->PlaySoundToSet(11106);
         }
 
         void AIUpdate()
@@ -2034,11 +2030,9 @@ class GatewatcherGyroKillAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_02);
-                    _unit->PlaySoundToSet(11104);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_03);
-                    _unit->PlaySoundToSet(11105);
                     break;
             }
         }
@@ -2151,7 +2145,6 @@ class GatewatcherIronHandAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_01);
-            _unit->PlaySoundToSet(11109);
         }
 
         void CastTime()
@@ -2179,11 +2172,9 @@ class GatewatcherIronHandAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_04);
-                        _unit->PlaySoundToSet(11110);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_05);
-                        _unit->PlaySoundToSet(11111);
                         break;
                 }
             }
@@ -2194,7 +2185,6 @@ class GatewatcherIronHandAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_06);
-            _unit->PlaySoundToSet(11114);
         }
 
         void AIUpdate()
@@ -2212,13 +2202,11 @@ class GatewatcherIronHandAI : public CreatureAIScript
                 case 0:
                 {
                     _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_02);
-                    _unit->PlaySoundToSet(11112);
                 }
                 break;
                 case 1:
                 {
                     _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_03);
-                    _unit->PlaySoundToSet(11113);
                 }
                 break;
             }
@@ -2338,7 +2326,6 @@ class MechanoLordCapacitusAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_MECH_LORD_06);
-            _unit->PlaySoundToSet(11162);
         }
 
         void CastTime()
@@ -2366,11 +2353,9 @@ class MechanoLordCapacitusAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MECH_LORD_03);
-                        _unit->PlaySoundToSet(11163);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_MECH_LORD_02);
-                        _unit->PlaySoundToSet(11164);
                         break;
                 }
             }
@@ -2381,7 +2366,6 @@ class MechanoLordCapacitusAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_MECH_LORD_01);
-            _unit->PlaySoundToSet(11167);
         }
 
         void AIUpdate()
@@ -2505,7 +2489,6 @@ class NethermancerSepethreaAI : public CreatureAIScript
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             //_unit->CastSpell(_unit, spells[0].info, spells[0].instant);
             _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_01);
-            _unit->PlaySoundToSet(11186);
         }
 
         void CastTime()
@@ -2534,11 +2517,9 @@ class NethermancerSepethreaAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_05);
-                        _unit->PlaySoundToSet(11187);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_06);
-                        _unit->PlaySoundToSet(11188);
                         break;
                 }
             }
@@ -2550,7 +2531,6 @@ class NethermancerSepethreaAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_07);
-            _unit->PlaySoundToSet(11192);
         }
 
         void AIUpdate()
@@ -2561,7 +2541,6 @@ class NethermancerSepethreaAI : public CreatureAIScript
             {
                 _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
                 _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_02);
-                _unit->PlaySoundToSet(11191);
             }
 
             float val = RandomFloat(100.0f);
@@ -2577,13 +2556,11 @@ class NethermancerSepethreaAI : public CreatureAIScript
                 case 0:
                 {
                     _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_03);
-                    _unit->PlaySoundToSet(11189);
                 }
                 break;
                 case 1:
                 {
                     _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_04);
-                    _unit->PlaySoundToSet(11190);
                 }
                 break;
             }
@@ -2723,7 +2700,6 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_PATHALEON_01);
-            _unit->PlaySoundToSet(11193);
         }
 
         void CastTime()
@@ -2752,11 +2728,9 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_PATHALEON_06);
-                        _unit->PlaySoundToSet(11194);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_PATHALEON_07);
-                        _unit->PlaySoundToSet(11195);
                         break;
                 }
             }
@@ -2768,7 +2742,6 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_PATHALEON_08);
-            _unit->PlaySoundToSet(11200);
         }
 
         void AIUpdate()
@@ -2783,7 +2756,6 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
                 SummonTimer = rand() % 16 + 30;    // 30 - 45
                 _unit->SendScriptTextChatMessage(SAY_PATHALEON_04);
-                _unit->PlaySoundToSet(11196);
             }
 
             float val = RandomFloat(100.0f);
@@ -2798,11 +2770,9 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_PATHALEON_02);
-                    _unit->PlaySoundToSet(11197);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_PATHALEON_03);
-                    _unit->PlaySoundToSet(11198);
                     break;
             }
         }

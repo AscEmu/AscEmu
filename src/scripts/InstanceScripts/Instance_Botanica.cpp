@@ -557,7 +557,6 @@ class CommanderSarannisAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_01);
-            _unit->PlaySoundToSet(11071);
         }
 
         void CastTime()
@@ -586,11 +585,9 @@ class CommanderSarannisAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_02);
-                        _unit->PlaySoundToSet(11072);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_03);
-                        _unit->PlaySoundToSet(11073);
                         break;
                 }
             }
@@ -602,7 +599,6 @@ class CommanderSarannisAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_07);
-            _unit->PlaySoundToSet(11079);
         }
 
         void AIUpdate()
@@ -611,7 +607,6 @@ class CommanderSarannisAI : public CreatureAIScript
             {
                 GuardAdds = true;    // need to add guard spawning =/
                 _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_06);
-                _unit->PlaySoundToSet(11078);
             }
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -625,11 +620,9 @@ class CommanderSarannisAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_04);
-                    _unit->PlaySoundToSet(11076);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_05);
-                    _unit->PlaySoundToSet(11077);
                     break;
             }
         }
@@ -767,7 +760,6 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_04);
-            _unit->PlaySoundToSet(11144);
         }
 
         void CastTime()
@@ -796,11 +788,9 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_03);
-                        _unit->PlaySoundToSet(11145);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_02);
-                        _unit->PlaySoundToSet(11146);
                         break;
                 }
             }
@@ -812,7 +802,6 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_06);
-            _unit->PlaySoundToSet(11149);
         }
 
         void AIUpdate()
@@ -866,13 +855,11 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                 case 0:
                 {
                     _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_01);
-                    _unit->PlaySoundToSet(11147);
                 }
                 break;
                 case 1:
                 {
                     _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_05);
-                    _unit->PlaySoundToSet(11148);
                 }
                 break;
             }
@@ -986,7 +973,6 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_THORNIN_01);
-            _unit->PlaySoundToSet(11205);
         }
 
         void CastTime()
@@ -1015,11 +1001,9 @@ class ThorngrinTheTenderAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_THORNIN_02);
-                        _unit->PlaySoundToSet(11206);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_THORNIN_03);
-                        _unit->PlaySoundToSet(11207);
                         break;
                 }
             }
@@ -1031,7 +1015,6 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_THORNIN_08);
-            _unit->PlaySoundToSet(11212);
         }
 
         void AIUpdate()
@@ -1054,11 +1037,9 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_THORNIN_06);
-                    _unit->PlaySoundToSet(11210);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_THORNIN_07);
-                    _unit->PlaySoundToSet(11211);
                     break;
             }
         }
@@ -1071,11 +1052,9 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_THORNIN_04);
-                    _unit->PlaySoundToSet(11208);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_THORNIN_05);
-                    _unit->PlaySoundToSet(11209);
                     break;
             }
         }
@@ -1344,7 +1323,6 @@ class WarpSplinterAI : public CreatureAIScript
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_01);
-            _unit->PlaySoundToSet(11230);
         }
 
         void CastTime()
@@ -1373,11 +1351,9 @@ class WarpSplinterAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_02);
-                        _unit->PlaySoundToSet(11231);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_03);
-                        _unit->PlaySoundToSet(11232);
                         break;
                 }
             }
@@ -1389,7 +1365,6 @@ class WarpSplinterAI : public CreatureAIScript
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_06);
-            _unit->PlaySoundToSet(11235);
         }
 
         void AIUpdate()
@@ -1419,11 +1394,9 @@ class WarpSplinterAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_04);
-                    _unit->PlaySoundToSet(11233);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_05);
-                    _unit->PlaySoundToSet(11234);
                     break;
             }
         }

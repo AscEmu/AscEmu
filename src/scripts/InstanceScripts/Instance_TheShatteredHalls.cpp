@@ -1572,19 +1572,15 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
                 {
                     case 0:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_02);
-                        GrandWarlock->PlaySoundToSet(10263);
                         break;
                     case 1:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_03);
-                        GrandWarlock->PlaySoundToSet(10264);
                         break;
                     case 2:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_04);
-                        GrandWarlock->PlaySoundToSet(10265);
                         break;
                     case 3:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_05);
-                        GrandWarlock->PlaySoundToSet(10266);
                         break;
                 }
             }
@@ -1624,15 +1620,12 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
                 {
                     case 0:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_06);
-                        GrandWarlock->PlaySoundToSet(10267);
                         break;
                     case 1:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_07);
-                        GrandWarlock->PlaySoundToSet(10268);
                         break;
                     case 2:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_08);
-                        GrandWarlock->PlaySoundToSet(10269);
                         break;
                 }
             }
@@ -1699,15 +1692,12 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_13);
-                        _unit->PlaySoundToSet(10271);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_14);
-                        _unit->PlaySoundToSet(10272);
                         break;
                     case 2:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_15);
-                        _unit->PlaySoundToSet(10273);
                         break;
                 }
 
@@ -1727,11 +1717,9 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_16);
-                        _unit->PlaySoundToSet(10274);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_17);
-                        _unit->PlaySoundToSet(10275);
                         break;
                 }
             }
@@ -1749,8 +1737,6 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_18);
-            _unit->PlaySoundToSet(10276);
-
             RemoveAIUpdateEvent();
         }
 
@@ -2349,15 +2335,12 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_01);
-                    _unit->PlaySoundToSet(10323);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_02);
-                    _unit->PlaySoundToSet(10324);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_03);
-                    _unit->PlaySoundToSet(10325);
                     break;
             }
 
@@ -2377,11 +2360,9 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_04);
-                        _unit->PlaySoundToSet(10326);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_05);
-                        _unit->PlaySoundToSet(10327);
                         break;
                 }
             }
@@ -2397,7 +2378,6 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_06);
-            _unit->PlaySoundToSet(10328);
             RemoveAIUpdateEvent();
         }
 
