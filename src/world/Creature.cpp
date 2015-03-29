@@ -2303,6 +2303,12 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
     size_t CreatureNameLength = strlen((char*)name) + 1;
     size_t MessageLength = strlen((char*)ct->text) + 1;
 
+    // Add Emote if available. We check "0" because default in npc_script_text.emote = 0
+    Log.Debug("SendScriptTextChatMessage", "Sending Data: TextID: %u, Creature: %u, ID: %u, Type: %u, Lang: %u, Prob: %f, Emote: %u, Duration: %u, Sound: %u, Broad: %u", ct->id, ct->creature_entry, ct->text_id, ct->type, ct->language, ct->probability, ct->emote, ct->duration, ct->sound, ct->broadcast_id);
+    if (ct->emote != 0)
+        this->EventAddEmote(EmoteType(ct->emote), uint32(ct->duration));
+
+    // Send chat msg
     WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
     data << uint8(ct->type);            // f.e. CHAT_MSG_MONSTER_SAY enum ChatMsg (perfect name for this enum XD)
     data << uint32(ct->language);       // f.e. LANG_UNIVERSAL enum Languages
@@ -2315,6 +2321,7 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
     data << ct->text;                   // the text
     data << uint8(0x00);
     SendMessageToSet(&data, true);      // sending this
+
 }
 
 void Creature::SendScriptTextChatMessage(uint32 textid, uint32 delay)
