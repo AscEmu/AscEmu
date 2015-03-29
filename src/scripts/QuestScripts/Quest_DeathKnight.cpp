@@ -22,23 +22,16 @@
 #include "../Common/Base.h"
 #include "../Common/EasyFunctions.h"
 
-class ScourgeGryphonOne : public GossipScript
+class GossipScourgeGryphon : public GossipScript
 {
     public:
         void GossipHello(Object* pObject, Player* plr)
         {
-            TaxiPath* path = sTaxiMgr.GetTaxiPath(1053);
-            plr->TaxiStart(path, 26308, 0);
-        }
-};
-
-class ScourgeGryphonTwo : public GossipScript
-{
-    public:
-        void GossipHello(Object* pObject, Player* plr)
-        {
-            TaxiPath* path = sTaxiMgr.GetTaxiPath(1054);
-            plr->TaxiStart(path, 26308, 0);
+            if (plr->HasQuest(12670) || plr->HasFinishedQuest(12670))
+            {
+                if (TaxiPath* path = sTaxiMgr.GetTaxiPath(pObject->GetEntry() == 29488 ? 1053 : 1054))
+                    plr->TaxiStart(path, 26308, 0);
+            }
         }
 };
 
@@ -119,14 +112,24 @@ class RuneforgingPreparationForBattle : QuestScripts
     /*If Player casted Spell 53341 or 53343 set quest as finished*/
 };
 
+class QuestInServiceOfLichKing : public QuestScript
+{
+    public:
+        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+        {
+            mTarget->PlaySound(14734);
+            sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14735, EVENT_UNK, 22500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14736, EVENT_UNK, 48500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        }
+};
+
 void SetupDeathKnight(ScriptMgr* mgr)
 {
-    GossipScript* SGO = new ScourgeGryphonOne();
-    mgr->register_gossip_script(29488, SGO);
-    GossipScript* SGT = new ScourgeGryphonTwo();
-    mgr->register_gossip_script(29501, SGT);
+    mgr->register_gossip_script(29488, new GossipScourgeGryphon);
+    mgr->register_gossip_script(29501, new GossipScourgeGryphon);
 
     mgr->register_hook(SERVER_HOOK_EVENT_ON_CAST_SPELL, (void*)PreparationForBattleQuestCast);
+    mgr->register_quest_script(12593, new QuestInServiceOfLichKing);
 
     // These gobs had already a script by Type (in gameobject_names Type = 1 = Button).
     /*mgr->register_gameobject_script(191588, &AcherusSoulPrison::Create);
