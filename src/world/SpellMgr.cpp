@@ -355,6 +355,8 @@ bool SpellArea::IsFitToRequirements(Player* player, uint32 newZone, uint32 newAr
 	if (auraSpell)                               // not have expected aura
 		if (!player || (auraSpell > 0 && !player->HasAura(auraSpell)) || (auraSpell < 0 && player->HasAura(-auraSpell)))
 			return false;
+
+        return true;
 }
 
 bool SpellEntry::CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player)
