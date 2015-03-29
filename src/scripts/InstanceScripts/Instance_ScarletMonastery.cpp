@@ -315,8 +315,6 @@ class MograineAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             _unit->SendScriptTextChatMessage(SAY_MORGRAINE_01);
-            _unit->PlaySoundToSet(5835);
-
             RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
@@ -332,7 +330,6 @@ class MograineAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MORGRAINE_02);
-                        _unit->PlaySoundToSet(5836);
                         break;
 
                 }
@@ -350,7 +347,6 @@ class MograineAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_MORGRAINE_03);
-            _unit->PlaySoundToSet(5837);
 
             GameObject* pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(1173.01f, 1389.91f, 31.9723f, GO_INQUISITORS_DOOR);
             if (pDoor == 0)
@@ -481,8 +477,6 @@ class WhitemaneAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             _unit->SendScriptTextChatMessage(SAY_WHITEMANE_01);
-            _unit->PlaySoundToSet(5838);
-
             RegisterAIUpdateEvent(_unit->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME));
         }
 
@@ -498,7 +492,6 @@ class WhitemaneAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WHITEMANE_02);
-                        _unit->PlaySoundToSet(5839);
                         break;
 
                 }
@@ -523,7 +516,7 @@ class WhitemaneAI : public CreatureAIScript
             // Play sound, and send text.
             /*_unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Light, give me strength!");
                    ^^ Notes for myself */
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Arise, my champion!");
+            _unit->SendScriptTextChatMessage(2106);
             //MoveToRes();
             CastSleep();
             CastRes();
@@ -554,8 +547,6 @@ class WhitemaneAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_WHITEMANE_03);
-            _unit->PlaySoundToSet(5840);
-
             RemoveAIUpdateEvent();
         }
 

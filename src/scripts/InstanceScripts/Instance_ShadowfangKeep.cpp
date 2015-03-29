@@ -180,7 +180,6 @@ class FenrusAI : public MoonScriptCreatureAI
     void OnDied(Unit* pKiller)
     {
         _unit->SendScriptTextChatMessage(SAY_FENRUS_01);
-        GetUnit()->PlaySoundToSet(5791);
 
         MoonScriptCreatureAI* voidwalker = NULL;
         // Spawn 4 x Arugal's Voidwalkers

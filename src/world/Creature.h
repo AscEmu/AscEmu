@@ -622,7 +622,7 @@ class SERVER_DECL Creature : public Unit
 
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
         void SendScriptTextChatMessage(uint32 textid);
-        void SendScriptTextChatMessage(uint32 textid, uint32 delay);
+        void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0);
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
 
         // Serialization

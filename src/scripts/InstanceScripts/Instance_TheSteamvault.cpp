@@ -1702,15 +1702,12 @@ class HydromancerThespiaAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_02);
-                    _unit->PlaySoundToSet(10361);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_03);
-                    _unit->PlaySoundToSet(10362);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_04);
-                    _unit->PlaySoundToSet(10363);
                     break;
             }
 
@@ -1726,11 +1723,9 @@ class HydromancerThespiaAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_05);
-                        _unit->PlaySoundToSet(10364);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_06);
-                        _unit->PlaySoundToSet(10365);
                         break;
                 }
             }
@@ -1747,8 +1742,6 @@ class HydromancerThespiaAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_07);
-            _unit->PlaySoundToSet(10366);
-
             RemoveAIUpdateEvent();
         }
 
@@ -1991,19 +1984,15 @@ class MekgineerSteamriggerAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_02);
-                    _unit->PlaySoundToSet(10368);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_03);
-                    _unit->PlaySoundToSet(10369);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_04);
-                    _unit->PlaySoundToSet(10370);
                     break;
                 case 3:
                     _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_05);
-                    _unit->PlaySoundToSet(10371);
                     break;
             }
 
@@ -2019,11 +2008,9 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_06);
-                        _unit->PlaySoundToSet(10372);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_07);
-                        _unit->PlaySoundToSet(10373);
                         break;
                 }
             }
@@ -2055,8 +2042,6 @@ class MekgineerSteamriggerAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_09);
-            _unit->PlaySoundToSet(10375);
-
             RemoveAIUpdateEvent();
         }
 
@@ -2103,7 +2088,6 @@ class MekgineerSteamriggerAI : public CreatureAIScript
             if (t > spells[3].casttime)
             {
                 _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_08);
-                _unit->PlaySoundToSet(10374);
 
                 _unit->CastSpell(_unit, spells[3].info, spells[3].instant);
 
@@ -2125,7 +2109,6 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                 }
 
                 _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_01);
-                _unit->PlaySoundToSet(10367);
 
                 GnomeCounter++;
             }
@@ -2361,15 +2344,12 @@ class WarlordKalitreshAI : public CreatureAIScript
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_03);
-                    _unit->PlaySoundToSet(10392);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_04);
-                    _unit->PlaySoundToSet(10393);
                     break;
                 case 2:
                     _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_05);
-                    _unit->PlaySoundToSet(10394);
                     break;
             }
 
@@ -2385,11 +2365,9 @@ class WarlordKalitreshAI : public CreatureAIScript
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_06);
-                        _unit->PlaySoundToSet(10395);
                         break;
                     case 1:
                         _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_07);
-                        _unit->PlaySoundToSet(10396);       // old sound 10366
                         break;
                 }
             }
@@ -2431,8 +2409,6 @@ class WarlordKalitreshAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_08);
-            _unit->PlaySoundToSet(10397);
-
             RemoveAIUpdateEvent();
         }
 
@@ -2485,7 +2461,6 @@ class WarlordKalitreshAI : public CreatureAIScript
                             _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
                             _unit->GetAIInterface()->m_canMove = false;
                             _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_02);
-                            _unit->PlaySoundToSet(10394);
 
                             if (!_unit->FindAura(36453))
                                 _unit->CastSpell(_unit, 31543, true);
