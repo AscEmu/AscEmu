@@ -448,8 +448,9 @@ class TheGearmastersManual : public GameObjectAIScript
                 qle->UpdatePlayerFields();
             }
 
-            Creature* TheGrinder = sEAS.SpawnCreature(pPlayer, 25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f, 0);
-            if(TheGrinder->isAlive())
+            Creature* GearmasterMechazod = sEAS.SpawnCreature(pPlayer, 25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f, 0);
+            GearmasterMechazod->SetTargetGUID(pPlayer->GetGUID());
+            if(GearmasterMechazod->isAlive())
                 _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
             else
                 _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
@@ -504,9 +505,11 @@ class GearmasterMechazodAI : public CreatureAIScript
                     phase = 4;
                 }break;
                 case 4:
+                {
                     _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
                     _unit->GetAIInterface()->m_canMove = true;
                     RemoveAIUpdateEvent();          // Remove Update, now we are in OnCombatStart
+                }break;
                 default:
                     return;
             }
