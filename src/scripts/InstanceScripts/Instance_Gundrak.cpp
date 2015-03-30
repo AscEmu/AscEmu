@@ -373,21 +373,32 @@ class SladranAI : public MoonScriptCreatureAI
 
         AddSpell(POWERFUL_BITE, Target_Current, 25, 0, 6);
         AddSpell(VENOM_BOLT, Target_RandomPlayerNotCurrent, 18, 1.5f, 8);
-
-        AddEmote(Event_OnCombatStart, "Drakkari gonna kill anybody who trespass on these lands!", Text_Yell, 14443);
-        AddEmote(Event_OnTargetDied, "Ye not breathin'! Good.", Text_Yell, 14446);
-        AddEmote(Event_OnTargetDied, "You scared now?", Text_Yell, 14447);
-        AddEmote(Event_OnTargetDied, "I'll eat you next, mon!", Text_Yell, 14448);
-        AddEmote(Event_OnDied, "I sssee now... Ssscourge wasss not... our greatessst enemy...", Text_Yell, 14449);
-    };
+    }
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(8749);     // Drakkari gonna kill anybody who trespass on these lands!
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
 
         ParentClass::OnCombatStart(pTarget);
-    };
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 3)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(4217);     // You not breathin'? Good.
+            break;
+            case 1:
+                _unit->SendScriptTextChatMessage(4218);     // Ssscared now?
+            break;
+            case 3:
+                _unit->SendScriptTextChatMessage(4219);     // I eat you next, mon.
+            break;
+        }
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
@@ -395,7 +406,12 @@ class SladranAI : public MoonScriptCreatureAI
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
 
         ParentClass::OnCombatStop(pTarget);
-    };
+    }
+
+    void OnDied(Unit* pKiller)
+    {
+        _unit->SendScriptTextChatMessage(4220);     // I sssee now... Ssscourge wasss not... our greatessst enemy....
+    }
 
     MoonInstanceScript* mInstance;
 };
@@ -413,21 +429,33 @@ class GalDarahAI : public MoonScriptCreatureAI
         mInstance = mInstance = GetInstanceScript();;
 
         AddSpell(WHIRLING_SLASH, Target_Self, 20, 0, 12);
-
-        AddEmote(Event_OnCombatStart, "I'm gonna spill your guts, mon!", Text_Yell, 14430);
-        AddEmote(Event_OnTargetDied, "What a rush!", Text_Yell, 14436);
-        AddEmote(Event_OnTargetDied, "Who needs gods, when WE ARE GODS!", Text_Yell, 14437);
-        AddEmote(Event_OnTargetDied, "I told ya so!", Text_Yell, 14438);
-        AddEmote(Event_OnDied, "Even the mighty... can fall.", Text_Yell, 14439);
-    };
+    }
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(4199);     // I'm gonna spill your guts, mon!
+
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
 
         ParentClass::OnCombatStart(pTarget);
-    };
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 3)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(4200);     // What a rush!
+            break;
+            case 1:
+                _unit->SendScriptTextChatMessage(4201);     // Who needs gods when we ARE gods?
+            break;
+            case 3:
+                _unit->SendScriptTextChatMessage(4202);     // I told ya so!
+            break;
+        }
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
@@ -435,7 +463,12 @@ class GalDarahAI : public MoonScriptCreatureAI
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
 
         ParentClass::OnCombatStop(pTarget);
-    };
+    }
+
+    void OnDied(Unit* pKiller)
+    {
+        _unit->SendScriptTextChatMessage(4203);     // Even the mighty... can fall.
+    }
 
     MoonInstanceScript* mInstance;
 };

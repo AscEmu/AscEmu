@@ -144,9 +144,12 @@ class RhahkZorAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(RhahkZorAI, MoonScriptCreatureAI);
     RhahkZorAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        // Rhahk'Zor Slam
-        AddSpell(6304, Target_Current, 8, 0, 3);
-        AddEmote(Event_OnCombatStart, "Van Cleef pay big for your heads!", Text_Yell, 5774);
+        AddSpell(6304, Target_Current, 8, 0, 3);    // Rhahk'Zor Slam
+    }
+
+    void OnCombatStart(Unit* pTarget)
+    {
+        _unit->SendScriptTextChatMessage(5495);     // VanCleef pay big for you heads!
     }
 };
 
@@ -280,9 +283,12 @@ class VanCleefAI : public MoonScriptBossAI
     MOONSCRIPT_FACTORY_FUNCTION(VanCleefAI, MoonScriptBossAI);
     VanCleefAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     {
-        AddEmote(Event_OnCombatStart, "None may challenge the brotherhood.", Text_Yell, 5780);
-        AddEmote(Event_OnDied, "The Brotherhood will prevail!", Text_Yell, 5784);
         AddSpell(3391, Target_Self, 25, 0, 0);    //Thrash (Gives the caster 2 extra attacks.)
+    }
+
+    void OnCombatStart(Unit* pTarget)
+    {
+        _unit->SendScriptTextChatMessage(7722);     // None may challenge the Brotherhood!
     }
 
     void OnTargetDied(Unit* pTarget)
@@ -297,17 +303,22 @@ class VanCleefAI : public MoonScriptBossAI
         ParentClass::OnTargetDied(pTarget);
     }
 
+    void OnDied(Unit* pKiller)
+    {
+        _unit->SendScriptTextChatMessage(7727);     // The Brotherhood shall prevail!
+    }
+
     void AIUpdate()
     {
         if (GetHealthPercent() <= 75 && GetPhase() == 1)
         {
-            Emote("Lap dogs, all of you.", Text_Yell, 5782);
+            _unit->SendScriptTextChatMessage(7723);     // Lapdogs, all of you!
             SetPhase(2);
         }
         else if (GetHealthPercent() <= 50 && GetPhase() == 2)
         {
-            Emote("Fools! Our cause is righteous.", Text_Yell, 5783);
-            // Defias Blackguard x 2
+            _unit->SendScriptTextChatMessage(7725);     // Fools! Our cause is righteous!
+
             for (int x = 0; x < 2; x++)
             {
                 MoonScriptCreatureAI* Guard = SpawnCreature(636);
@@ -323,7 +334,7 @@ class VanCleefAI : public MoonScriptBossAI
         }
         else if (GetHealthPercent() <= 25 && GetPhase() == 3)
         {
-            Emote("The brotherhood shall remain.", Text_Yell, 5784);
+            _unit->SendScriptTextChatMessage(7727);     // The Brotherhood shall prevail!
             SetPhase(4);
         }
         ParentClass::AIUpdate();

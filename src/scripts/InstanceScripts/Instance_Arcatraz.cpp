@@ -87,8 +87,8 @@ class InstanceTheArcatrazScript : public MoonInstanceScript
 class ZerekethAI : public MoonScriptBossAI
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(ZerekethAI, MoonScriptBossAI);
 
+        MOONSCRIPT_FACTORY_FUNCTION(ZerekethAI, MoonScriptBossAI);
         ZerekethAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
             AddSpell(SEED_OF_C, Target_RandomPlayer, 6.0f, 2, 20, 0, 100.0f);
@@ -98,21 +98,35 @@ class ZerekethAI : public MoonScriptBossAI
             else
                 AddSpell(SHADOW_NOVA_H, Target_Self, 15, 2, 15);
 
-            AddEmote(Event_OnCombatStart, "Life energy to... consume.", Text_Yell, 11250);
-            AddEmote(Event_OnTargetDied, "This vessel...is empty.", Text_Yell, 11251);
-            AddEmote(Event_OnTargetDied, "No... more... life.", Text_Yell, 11252);
-            AddEmote(Event_OnDied, "The Void... beckons.", Text_Yell, 11255);
         }
+
         void OnCombatStart(Unit* mTarget)
         {
+            _unit->SendScriptTextChatMessage(5496);     // Life energy to... consume.
+
             VoidTimer = AddTimer((RandomUInt(10) + 30) * 1000);
             SpeechTimer = AddTimer((RandomUInt(10) + 40) * 1000);
 
             ParentClass::OnCombatStart(mTarget);
         }
 
+        void OnTargetDied(Unit* mKiller)
+        {
+            switch (rand() % 2)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(5497);     // This vessel is empty.
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(5498);     // No... more... life.
+                    break;
+            }
+        }
+
         void OnDied(Unit* mKiller)
         {
+            _unit->SendScriptTextChatMessage(5501);     // The Void... beckons.
+
             //despawn voids
             Creature* creature = NULL;
             for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
@@ -208,6 +222,7 @@ class ZerekethAI : public MoonScriptBossAI
 class VoidZoneARC : public MoonScriptCreatureAI
 {
     public:
+
         MOONSCRIPT_FACTORY_FUNCTION(VoidZoneARC, MoonScriptCreatureAI);
         VoidZoneARC(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
@@ -215,7 +230,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
             SetCanMove(false);
             SetCanEnterCombat(false);
             RegisterAIUpdateEvent(1000);
-        };
+        }
 
         void AIUpdate()
         {
@@ -226,7 +241,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
 
             _unit->CastSpell(_unit, SpellId, true);
             RemoveAIUpdateEvent();
-        };
+        }
 };
 
 
@@ -235,6 +250,7 @@ class VoidZoneARC : public MoonScriptCreatureAI
 class DalliahTheDoomsayerAI : public MoonScriptBossAI
 {
     public:
+
         MOONSCRIPT_FACTORY_FUNCTION(DalliahTheDoomsayerAI, MoonScriptBossAI);
         DalliahTheDoomsayerAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
@@ -251,14 +267,30 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
             if (IsHeroic())
                 AddSpell(SHADOW_WAVE, Target_Current, 8.0f, 0, -1);
 
-            AddEmote(Event_OnCombatStart, "It is unwise to anger me.", Text_Yell, 11086);
-            AddEmote(Event_OnTargetDied, "Completely ineffective! Just like someone else I know!", Text_Yell, 11087);
-            AddEmote(Event_OnTargetDied, "You chose the wrong opponent!", Text_Yell, 11088);
-            AddEmote(Event_OnDied, "Now I'm really... angry...", Text_Yell, 11093);
+        }
+
+        void OnEnterCombat(Unit* mKiller)
+        {
+            _unit->SendScriptTextChatMessage(7368);     // It is unwise to anger me!
+        }
+
+        void OnTargetDied(Unit* mKiller)
+        {
+            switch (rand() % 2)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(7369);     // Completely ineffective.  Just like someone else I know.
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(7370);     // You chose the wrong opponent.
+                    break;
+            }
         }
 
         void OnDied(Unit* mKiller)
         {
+            _unit->SendScriptTextChatMessage(7375);     // Now I'm really angry.
+
             GameObject* door2 = NULL;
             door2 = GetNearestGameObject(184319);
             if (door2 != NULL)
@@ -277,6 +309,7 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
 class WrathScryerSoccothratesAI : public MoonScriptBossAI
 {
     public:
+
         MOONSCRIPT_FACTORY_FUNCTION(WrathScryerSoccothratesAI, MoonScriptBossAI);
         WrathScryerSoccothratesAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
@@ -285,15 +318,30 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
             AddSpell(FELFIRE_LINE_UP, Target_Self, 8.0f, 0, -1);
             AddSpell(KNOCK_AWAY, Target_Destination, 6.0f, 0, -1);
             AddSpell(CHARGE, Target_Current, 4.0f, 0, -1);
+        }
 
-            AddEmote(Event_OnCombatStart, "At last, a target for my frustrations!", Text_Yell, 11238);
-            AddEmote(Event_OnTargetDied, "Yes, that was quiet... satisfying.", Text_Yell, 11239);
-            AddEmote(Event_OnTargetDied, "Ha! Much better!", Text_Yell, 11240);
-            AddEmote(Event_OnDied, "Knew this was... the only way out.", Text_Yell, 11243);
+        void OnCombatStart(Unit* mKiller)
+        {
+            _unit->SendScriptTextChatMessage(7365);     // At last, a target for my frustrations!
+        }
+
+        void OnTargetDied(Unit* mKiller)
+        {
+            switch (rand() % 2)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(7364);     // Yes, that was quite satisfying.
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(8748);     // Ha! Much better!
+                    break;
+            }
         }
 
         void OnDied(Unit* mKiller)
         {
+            _unit->SendScriptTextChatMessage(7380);     // Knew this was... the only way out.
+
             GameObject* door1 = NULL;
             door1 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
@@ -312,8 +360,8 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
 class HarbringerSkyrissAI : public MoonScriptBossAI
 {
     public:
-        MOONSCRIPT_FACTORY_FUNCTION(HarbringerSkyrissAI, MoonScriptBossAI);
 
+        MOONSCRIPT_FACTORY_FUNCTION(HarbringerSkyrissAI, MoonScriptBossAI);
         HarbringerSkyrissAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
             AddSpell(MIND_REND, Target_Current, 15.0f, 0, -1);
@@ -332,18 +380,33 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
             Illusion33 = AddSpell(SUMMON_ILLUSION_33, Target_Self, 0, 0, -1, 0, 0, false, "", Text_Yell, 11131);
             Illusion33->mEnabled = false;
 
-            AddEmote(Event_OnCombatStart, "Bear witness to the agent of your demise!", Text_Yell, 11123);
-            AddEmote(Event_OnTargetDied, "Your fate is written!", Text_Yell, 11124);
-            AddEmote(Event_OnTargetDied, "The chaos I have sown here is but a taste....", Text_Yell, 11125);
-            AddEmote(Event_OnDied, "I am merely one of... infinite multitudes.", Text_Yell, 11126);
-
             IllusionCount = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
         {
+            _unit->SendScriptTextChatMessage(5034);     // Bear witness to the agent of your demise!
+
             IllusionCount = 0;
             ParentClass::OnCombatStart(mTarget);
+        }
+
+        void OnTargetDied(Unit* mKiller)
+        {
+            switch (rand() % 2)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(5035);     // Your fate is written.
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(5036);     // The chaos I have sown here is but a taste....
+                    break;
+            }
+        }
+
+        void OnDied(Unit* mKiller)
+        {
+            _unit->SendScriptTextChatMessage(5042);     // I am merely one of... infinite multitudes.
         }
 
         void AIUpdate()

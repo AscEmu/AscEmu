@@ -208,10 +208,6 @@ class Marwyn : public MoonScriptBossAI
                 AddSpell(N_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", Text_Yell, 16739);
                 AddSpell(N_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", Text_Yell, 16740);
                 AddSpell(N_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
-
-                AddEmote(Event_OnCombatStart, "Death is all that you will find here!", Text_Yell, 16734);
-                AddEmote(Event_OnTargetDied, "I saw the same look in his eyes when he died. Terenas could hardly believe it. Hahahaha!", Text_Yell, 16735);
-                AddEmote(Event_OnDied, "Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.", Text_Yell, 16737);
             }
             else // HEROIC MODE
             {
@@ -219,10 +215,6 @@ class Marwyn : public MoonScriptBossAI
                 AddSpell(H_SPELL_WELL, Target_RandomPlayer, 60, 0, 13, 0, 0, false, "Your flesh has decayed before your very eyes!", Text_Yell, 16739);
                 AddSpell(H_SPELL_CORRUPTFLESH, Target_Current, 40, 0, 20, 0, 0, false, "Waste away into nothingness!", Text_Yell, 16740);
                 AddSpell(H_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
-
-                AddEmote(Event_OnCombatStart, "Death is all that you will find here!", Text_Yell, 16734);
-                AddEmote(Event_OnTargetDied, "I saw the same look in his eyes when he died. Terenas could hardly believe it. Hahahaha!", Text_Yell, 16735);
-                AddEmote(Event_OnDied, "Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.", Text_Yell, 16737);
             }
         }
 
@@ -238,9 +230,24 @@ class Marwyn : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pKiller)
         {
+            _unit->SendScriptTextChatMessage(4105);     // Death is all that you will find here!
+
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
             ParentClass::OnCombatStart(pKiller);
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            switch (rand() % 2)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(5255);     // Choke on your suffering!
+                    break;
+            }
         }
 
         void OnCombatStop(Unit* Target)
@@ -252,6 +259,8 @@ class Marwyn : public MoonScriptBossAI
 
         void OnDied(Unit* pKiller)
         {
+            _unit->SendScriptTextChatMessage(5256);      // Yes... Run... Run to meet your destiny... Its bitter, cold embrace, awaits you.
+
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Finished);
             ParentClass::OnDied(pKiller);
@@ -273,11 +282,6 @@ class Falric : public MoonScriptBossAI
                 AddSpell(N_SPELL_QSTRIKE, Target_Current, 45, 0, 23);
                 AddSpell(N_SPELL_IMPEND, Target_Current, 60, 0, 9);
                 AddSpell(N_SPELL_HORROR, Target_Current, 40, 0, 20);
-
-                AddEmote(Event_OnCombatStart, "Men, women and children... None were spared the master's wrath. Your death will be no different.", Text_Yell, 16710);
-                AddEmote(Event_OnTargetDied, "The children of Stratholme fought with more ferocity!", Text_Yell, 16712);
-                AddEmote(Event_OnTargetDied, "Sniveling maggot!", Text_Yell, 16711);
-                AddEmote(Event_OnDied, "Marwyn, finish them...", Text_Yell, 16713);
             }
             else // HEROIC MODE
             {
@@ -285,11 +289,6 @@ class Falric : public MoonScriptBossAI
                 AddSpell(H_SPELL_IMPEND, Target_Current, 60, 0, 9);
                 AddSpell(H_SPELL_HORROR, Target_Current, 40, 0, 20);
                 AddSpell(H_SPELL_SHARED, Target_RandomPlayer, 45, 0, 20);
-
-                AddEmote(Event_OnCombatStart, "Men, women and children... None were spared the master's wrath. Your death will be no different.", Text_Yell, 16710);
-                AddEmote(Event_OnTargetDied, "The children of Stratholme fought with more ferocity!", Text_Yell, 16712);
-                AddEmote(Event_OnTargetDied, "Sniveling maggot!", Text_Yell, 16711);
-                AddEmote(Event_OnDied, "Marwyn, finish them...", Text_Yell, 16713);
             }
         }
 
@@ -304,9 +303,24 @@ class Falric : public MoonScriptBossAI
 
         void OnCombatStart(Unit* pKiller)
         {
+            _unit->SendScriptTextChatMessage(4084);      // Men, women, and children... None were spared the master's wrath. Your death will be no different.
+
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
             ParentClass::OnCombatStart(pKiller);
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            switch (rand() % 2)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(4086);     // The children of Stratholme fought with more ferocity!
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(4085);     // Sniveling maggot!
+                    break;
+            }
         }
 
         void OnCombatStop(Unit* Target)
@@ -318,6 +332,8 @@ class Falric : public MoonScriptBossAI
 
         void OnDied(Unit* pKiller)
         {
+            _unit->SendScriptTextChatMessage(4087);     // Marwyn, finish them...
+
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Finished);
             ParentClass::OnDied(pKiller);
@@ -347,7 +363,7 @@ class Falric : public MoonScriptBossAI
         MoonInstanceScript* mInstance;
 };
 
-void SetupHallsOfReflection(ScriptMgr * mgr)
+void SetupHallsOfReflection(ScriptMgr* mgr)
 {
     //Instance
     mgr->register_instance_script(MAP_HALLSOFREFLECTION, &HallsOfReflectionScript::Create);
