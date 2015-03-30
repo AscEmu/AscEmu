@@ -667,9 +667,7 @@ class LashlayerAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "None of your kind should be here. You have doomed only yourselves!");
-            _unit->PlaySoundToSet(8286);
-            //_unit->PlaySoundToSet(8287);
+            _unit->SendScriptTextChatMessage(2287);     // None of your kind should be here. You have doomed only yourselves!
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -1149,8 +1147,7 @@ class VaelastraszAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Forgive me, your death only adds to my failure.");
-            _unit->PlaySoundToSet(8284);
+            _unit->SendScriptTextChatMessage(2296);     // Forgive me, your death only adds to my failure.
         }
 
         void OnDied(Unit* mKiller)
@@ -1164,8 +1161,7 @@ class VaelastraszAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() <= 15 && m_spellcheck[0])
             {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!");
-                _unit->PlaySoundToSet(8285);
+                _unit->SendScriptTextChatMessage(2295);     // Nefarius' hate has made me stronger than ever before. You should have fled, while you could, mortals! The fury of Blackrock courses through my veins!
                 m_spellcheck[0] = false;
             }
 
