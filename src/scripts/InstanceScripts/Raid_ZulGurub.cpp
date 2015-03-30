@@ -98,10 +98,11 @@ class JeklikAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
+            _unit->SendScriptTextChatMessage(3201);     // Lord Hir'eek, grant me wings of vengeance!
+
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             // bat transform
             _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-            _unit->PlaySoundToSet(8417);
         }
 
         void OnCombatStop(Unit* mTarget)

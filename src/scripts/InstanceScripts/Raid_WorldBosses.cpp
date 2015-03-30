@@ -1509,9 +1509,9 @@ class KazzakAI : public CreatureAIScript
             spells[7].attackstoptimer = 1000;
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+
             //Spawn intro.
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I remember well the sting of defeat at the conclusion of the Third War. I have waited far too long for my revenge. Now the shadow of the Legion falls over this world. It is only a matter of time until all of your failed creation... is undone.");
-            _unit->PlaySoundToSet(11332);
+            _unit->SendScriptTextChatMessage(373);      // I remember well the sting of defeat at the conclusion...
 
         }
 
@@ -1523,12 +1523,10 @@ class KazzakAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "All mortals will perish!");
-                    _unit->PlaySoundToSet(11333);
+                    _unit->SendScriptTextChatMessage(374);      // All mortals will perish!
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Legion will conquer all!");
-                    _unit->PlaySoundToSet(11334);
+                    _unit->SendScriptTextChatMessage(375);      // The Legion will conquer all!
                     break;
             }
             CastTime();
@@ -1543,12 +1541,10 @@ class KazzakAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your own strength feeds me, $N!");
-                        _unit->PlaySoundToSet(11337);
+                        _unit->SendScriptTextChatMessage(379);      // Contemptible wretch!
                         break;
                     case 1:
-                        //    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "");
-                        _unit->PlaySoundToSet(11338);
+                        _unit->SendScriptTextChatMessage(378);      // Kirel narak!
                         break;
                 }
                 _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
@@ -1557,9 +1553,9 @@ class KazzakAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
+            _unit->SendScriptTextChatMessage(380);      // The universe will be remade.
+
             enrage = 0;
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The universe will be remade.");
-            _unit->PlaySoundToSet(11339);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
             CastTime();
@@ -1573,9 +1569,9 @@ class KazzakAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
+            _unit->SendScriptTextChatMessage(381);      // The Legion... will never... fall.
+
             enrage = 0;
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "");
-            _unit->PlaySoundToSet(11340);
             RemoveAIUpdateEvent();
             CastTime();
         }
@@ -1587,12 +1583,10 @@ class KazzakAI : public CreatureAIScript
             switch (RandomSpeach)
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Invaders, you dangle upon the precipice of oblivion! The Burning Legion comes and with it comes your end.");
-                    _unit->PlaySoundToSet(11335);
+                    _unit->SendScriptTextChatMessage(383);      // Invaders, you dangle upon the precipice of oblivion! The Burning...
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Kirel Narak!");
-                    _unit->PlaySoundToSet(11336);
+                    _unit->SendScriptTextChatMessage(384);      // Impudent whelps, you only delay the inevitable. Where one has fallen, ten shall rise. Such is the will of Kazzak...
                     break;
             }
         }
@@ -1683,7 +1677,10 @@ class KazzakAI : public CreatureAIScript
 #define ACLEAVE           8255                //This is Strong Cleave, maybe it should be 27794, normal cleave 250+ damage
 #define CONE_OF_COLD    30095
 #define MASS_TELEPORT            16807
-
+///\todo check for gossip azuregos ghost (AQ) "You seek to harm me $R?
+// Answer (race)
+// I am a treasure hunter in search of powerful artifacts. Give them to me and you will not be harmed.
+// give me all your money and you won't get hurt!
 class AzuregosAI : public CreatureAIScript
 {
     public:
@@ -1922,9 +1919,8 @@ class DoomwalkerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
+            _unit->SendScriptTextChatMessage(302);      // Do not proceed. You will be eliminated.
             enraged = false;
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Do not proceed. You will be eliminated.");
-            _unit->PlaySoundToSet(11344);
             RegisterAIUpdateEvent(1000);
             CastTime();
         }
@@ -1938,16 +1934,13 @@ class DoomwalkerAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Threat level zero.");
-                        _unit->PlaySoundToSet(11349);
+                        _unit->SendScriptTextChatMessage(307);      // Threat level zero.
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Directive accomplished.");
-                        _unit->PlaySoundToSet(11350);
+                        _unit->SendScriptTextChatMessage(308);      // Directive accomplished.
                         break;
                     case 2:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Target exterminated.");
-                        _unit->PlaySoundToSet(11351);
+                        _unit->SendScriptTextChatMessage(309);      // Target exterminated.
                         break;
                 }
                 _unit->CastSpell(mTarget, spells[1].info, spells[1].instant);
@@ -1965,10 +1958,9 @@ class DoomwalkerAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
+            _unit->SendScriptTextChatMessage(310);      // System failure in five, f-o-u-r...
             _unit->RemoveAura(AURA_OF_DEATH);
             enraged = false;
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "System failure in five... four...");
-            _unit->PlaySoundToSet(11352);
             RemoveAIUpdateEvent();
             CastTime();
         }
@@ -2033,12 +2025,10 @@ class DoomwalkerAI : public CreatureAIScript
                             switch (RandomSpeach)
                             {
                                 case 0:
-                                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Tectonic disruption commencing.");
-                                    _unit->PlaySoundToSet(11345);
+                                    _unit->SendScriptTextChatMessage(303);      // Tectonic disruption commencing.
                                     break;
                                 case 1:
-                                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Magnitude set. Release. ");
-                                    _unit->PlaySoundToSet(11346);
+                                    _unit->SendScriptTextChatMessage(304);      // Magnitude set. Release.
                                     break;
                             }
                         }
@@ -2048,12 +2038,10 @@ class DoomwalkerAI : public CreatureAIScript
                             switch (RandomSpeach)
                             {
                                 case 0:
-                                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Trajectory locked.");
-                                    _unit->PlaySoundToSet(11347);
+                                    _unit->SendScriptTextChatMessage(305);      // Trajectory locked.
                                     break;
                                 case 1:
-                                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Engage maximum speed.");
-                                    _unit->PlaySoundToSet(11348);
+                                    _unit->SendScriptTextChatMessage(306);      // Engage maximum speed.
                                     break;
                             }
                         }
