@@ -1803,8 +1803,7 @@ class NajentusAI : public CreatureAIScript
             spells[2].casttime = t + 60;
             spells[3].casttime = t + 20;
 
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You will die, in the name of Lady Vashj!");
-            _unit->PlaySoundToSet(11450);
+            _unit->SendScriptTextChatMessage(4720);     // You will die in the name of Lady Vashj!
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
@@ -1819,8 +1818,7 @@ class NajentusAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Lord Illidan will... crush you.");
-            _unit->PlaySoundToSet(11459);
+            _unit->SendScriptTextChatMessage(4710);     // Lord Illidan will... crush you!
 
             RemoveAIUpdateEvent();
         }
@@ -1830,13 +1828,11 @@ class NajentusAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Time for you to go!");
-                    _unit->PlaySoundToSet(11456);
+                    _unit->SendScriptTextChatMessage(4705);     // Time for you to go.
                     break;
                 default:
                     {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your success was short lived!");    // not sure
-                        _unit->PlaySoundToSet(11455);
+                        _unit->SendScriptTextChatMessage(4704); // Your success was short-lived!
                     }
             }
         }
@@ -1862,13 +1858,11 @@ class NajentusAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Stick around!");
-                        _unit->PlaySoundToSet(11451);
+                        _unit->SendScriptTextChatMessage(4702);     // Stick around!
                         break;
                     default:
                         {
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll deal with you later!");
-                            _unit->PlaySoundToSet(11452);
+                            _unit->SendScriptTextChatMessage(4703); // I'll deal with you later.
                         }
                 }
                 _unit->setAttackTimer(spells[3].attackstoptimer, false);
@@ -2022,8 +2016,7 @@ class SupremusAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Bear witness to the agent of your demise!");    // used when he kills Warden Mellichar
-            _unit->PlaySoundToSet(11123);
+            _unit->SendScriptTextChatMessage(5034);    // Bear witness to the agent of your demise! used when he kills Warden Mellichar
             timer = 0;
         }
 
@@ -2036,8 +2029,7 @@ class SupremusAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am merely one of... infinite multitudes.");
-            _unit->PlaySoundToSet(11126);
+            _unit->SendScriptTextChatMessage(5042);     // I am merely one of... infinite multitudes.
             RemoveAIUpdateEvent();
         }
 
@@ -2050,12 +2042,10 @@ class SupremusAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your fate is written!");    // this one needs verification
-                        _unit->PlaySoundToSet(11124);
+                        _unit->SendScriptTextChatMessage(5035);     // Your fate is written.
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The chaos I have sown here is but a taste....");
-                        _unit->PlaySoundToSet(11125);
+                        _unit->SendScriptTextChatMessage(5036);     // The chaos I have sown here is but a taste....
                         break;
                 }
             }
@@ -2119,8 +2109,7 @@ class SupremusAI : public CreatureAIScript
 
             if (timer >= 45)
             {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "We span the universe, as countless as the stars!");
-                _unit->PlaySoundToSet(11131);
+                _unit->SendScriptTextChatMessage(5041);     // We span the universe, as countless as the stars!
                 timer = 0;
                 m_phase = 2;
             }
@@ -2143,7 +2132,7 @@ class SupremusAI : public CreatureAIScript
 
                 else if (m_VolcanicGazer)
                 {
-                    //_unit->SendChatMessage(CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "The ground begins to crack open");
+                    _unit->SendScriptTextChatMessage(4690);     // The ground begins to crack open"
                     _unit->CastSpell(_unit, infoVolcanicGazer, false);
                     m_VolcanicGazer = false;
                     return;
@@ -2165,8 +2154,7 @@ class SupremusAI : public CreatureAIScript
 
             if (timer >= 45)
             {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "We span the universe, as countless as the stars!");
-                _unit->PlaySoundToSet(11131);
+                _unit->SendScriptTextChatMessage(5041);     // We span the universe, as countless as the stars!
                 timer = 0;
                 m_phase = 1;
 
@@ -2319,9 +2307,7 @@ class GurtoggAI : public CreatureAIScript
 
             spells[2].casttime = (uint32)time(NULL) + 10;
 
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Horde will crush you!");
-            _unit->PlaySoundToSet(11432);
-
+            _unit->SendScriptTextChatMessage(4642);     // Horde will crush you!"
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
             PhaseTimer = (uint32)time(NULL) + 60;
@@ -2335,10 +2321,7 @@ class GurtoggAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
 
             if (_unit->isAlive())
-            {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll rip the meat from your bones!");
-                _unit->PlaySoundToSet(11437);
-            }
+                _unit->SendScriptTextChatMessage(4648);     //I'll rip the meat from your bones!
 
             RemoveAIUpdateEvent();
 
@@ -2349,7 +2332,7 @@ class GurtoggAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->PlaySoundToSet(11439);
+            _unit->SendScriptTextChatMessage(4649);     // Aaaahrg...
 
             RemoveAIUpdateEvent();
         }
@@ -2359,14 +2342,11 @@ class GurtoggAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "More! I want more!");
-                    _unit->PlaySoundToSet(11434);
+                    _unit->SendScriptTextChatMessage(4644);     // "More! I want more!"
                     break;
-                default:
-                    {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Time to feast!");
-                        _unit->PlaySoundToSet(11433);
-                    }
+                case 2:
+                    _unit->SendScriptTextChatMessage(4643);     // Time to feast!"
+                    break;
             }
         }
 
@@ -2517,13 +2497,10 @@ class GurtoggAI : public CreatureAIScript
                     switch (RandomUInt(2))
                     {
                         case 1:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll rip the meat from your bones!");
-                            _unit->PlaySoundToSet(11438);
+                            _unit->SendScriptTextChatMessage(4648);     // I'll rip the meat from your bones!"
                             break;
-                        default:
-                            {
-                                _unit->PlaySoundToSet(11437);
-                            }
+                        case 2:
+                            _unit->PlaySoundToSet(11437);               // <babbling>
                     }
 
                     spells[7].casttime = t + spells[7].cooldown;
@@ -3092,8 +3069,7 @@ class ShahrazAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "So, business... or pleasure?");
-            _unit->PlaySoundToSet(11504);
+            _unit->SendScriptTextChatMessage(4653);     //So, business... or pleasure?"
 
             for (int i = 0; i < 6; i++)
                 spells[i].casttime = 0;
@@ -3115,9 +3091,7 @@ class ShahrazAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I wasn't finished.");
-            _unit->PlaySoundToSet(11511);
-
+            _unit->SendScriptTextChatMessage(4660);     // I wasn't finished.
             RemoveAIUpdateEvent();
         }
 
@@ -3126,14 +3100,11 @@ class ShahrazAI : public CreatureAIScript
             switch (RandomUInt(2))
             {
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "So much for a happy ending.");
-                    _unit->PlaySoundToSet(11509);
+                    _unit->SendScriptTextChatMessage(4658);     // So much for a happy ending.
                     break;
-                default:
-                    {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Easy come, easy go.");
-                        _unit->PlaySoundToSet(11508);
-                    }
+                case 2:
+                    _unit->SendScriptTextChatMessage(4657);     // Easy come, easy go.
+                    break;
             }
         }
 
@@ -3145,18 +3116,14 @@ class ShahrazAI : public CreatureAIScript
                 switch (RandomUInt(3))
                 {
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'm not impressed.");
-                        _unit->PlaySoundToSet(11502);
+                        _unit->SendScriptTextChatMessage(4651);     // I'm not impressed.
                         break;
                     case 2:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Enjoying yourselves?");
-                        _unit->PlaySoundToSet(11503);
+                        _unit->SendScriptTextChatMessage(4652);     // Enjoying yourselves?
                         break;
                     default:
-                        {
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You play, you pay.");
-                            _unit->PlaySoundToSet(11501);
-                        }
+                        _unit->SendScriptTextChatMessage(4650);     // You play, you pay.
+                        break;
                 }
 
                 SoundTimer = 0;
@@ -3164,9 +3131,7 @@ class ShahrazAI : public CreatureAIScript
 
             if (!Enraged && _unit->GetHealthPct() <= 20)
             {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Stop toying with my emotions!");
-                _unit->PlaySoundToSet(11510);
-
+                _unit->SendScriptTextChatMessage(4659);     // Stop toying with my emotions!
                 _unit->CastSpell(_unit, MS_ENRAGE, true);
 
                 Enraged = true;
@@ -3584,8 +3549,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Vengeance is mine!");
-            _unit->PlaySoundToSet(11513);
+            _unit->SendScriptTextChatMessage(4692);     // Vengeance is mine!
 
             for (int i = 0; i < 4; i++)
                 spells[i].casttime = 0;
@@ -3604,14 +3568,11 @@ class TeronGorefiendAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It gets worse...");
-                        _unit->PlaySoundToSet(11515);
+                        _unit->SendScriptTextChatMessage(4694);     // It gets worse...
                         break;
                     default:
-                        {
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have use for you!");
-                            _unit->PlaySoundToSet(11514);
-                        }
+                        _unit->SendScriptTextChatMessage(4693);     // I have use for you!
+                        break;
                 }
             }
         }
@@ -3626,9 +3587,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The wheel...spins...again....");
-            _unit->PlaySoundToSet(11521);
-
+            _unit->SendScriptTextChatMessage(4700);     // The wheel...spins...again....
             RemoveAIUpdateEvent();
         }
 
@@ -3761,7 +3720,7 @@ class TeronGorefiendAI : public CreatureAIScript
 };
 
 //Shade of AkamaAI
-
+///\todo all these texts seems to be incorrect... is the creature entry correct?
 #define CN_SHADE_OF_AKAMA 22841
 
 #define SINFUL_BEAM0 00000
