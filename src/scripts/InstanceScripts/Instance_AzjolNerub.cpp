@@ -98,15 +98,10 @@ class KrikthirAI : public MoonScriptCreatureAI
         {
             AddSpell(KRIKTHIR_CURSEOFFATIGUE_HC, Target_Self, 100, 0, 10);
             AddSpell(KRIKTHIR_MINDFLAY_HC, Target_RandomPlayer, 100, 0, 7, 0, 30);
-        };
-
-        AddEmote(Event_OnCombatStart, "This kingdom belongs to the Scourge! Only the dead may enter.", Text_Yell, 14075);
-        AddEmote(Event_OnTargetDied, "You were foolish to come.", Text_Yell, 14077);
-        AddEmote(Event_OnTargetDied, "As Anub'Arak commands!", Text_Yell, 14078);
-        AddEmote(Event_OnDied, "I should be grateful. But I long ago lost the capacity.", Text_Yell, 14087);
+        }
 
         mEnraged = false;
-    };
+    }
 
     void AIUpdate()
     {
@@ -114,19 +109,39 @@ class KrikthirAI : public MoonScriptCreatureAI
         {
             ApplyAura(KRIKTHIR_ENRAGE);
             mEnraged = true;
-        };
+        }
 
         ParentClass::AIUpdate();
-    };
+    }
+
+    void OnCombatStart(Unit* pTarget)
+    {
+        _unit->SendScriptTextChatMessage(3908);     // This kingdom belongs to the Scourge. Only the dead may enter!
+    }
+
+    void OnTargetDied(Unit* mKiller)
+    {
+        switch (rand() % 2)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(3910);     // As Anub'arak commands!
+                break;
+            case 1:
+                _unit->SendScriptTextChatMessage(3909);     // You were foolish to come.
+                break;
+        }
+    }
 
     void OnDied(Unit* pKiller)
     {
+        _unit->SendScriptTextChatMessage(3911);         // I should be grateful... but I long ago lost the capacity....
+
         GameObject* Doors = GetNearestGameObject(192395);
         if (Doors != NULL)
             Doors->Despawn(0, 0);
 
         ParentClass::OnDied(pKiller);
-    };
+    }
 
     bool mEnraged;
 };
@@ -163,7 +178,7 @@ class GashraAI : public MoonScriptCreatureAI
     {
         AddSpell(GASHRA_WEBWRAP, Target_RandomPlayer, 22, 0, 35, 0, 0);
         AddSpell(GASHRA_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
-    };
+    }
 
 };
 
@@ -176,7 +191,7 @@ class NarjilAI : public MoonScriptCreatureAI
         AddSpell(NARJIL_WEBWRAP, Target_RandomPlayer, 22, 0, 35, 0, 0);
         AddSpell(NARJIL_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
         AddSpell(NARJIL_BLINDINGWEBS, Target_ClosestPlayer, 16, 0, 9, 0, 0);
-    };
+    }
 
 };
 
@@ -189,7 +204,7 @@ class SilthikAI : public MoonScriptCreatureAI
         AddSpell(NARJIL_WEBWRAP, Target_RandomPlayer, 22, 0, 35, 0, 0);
         AddSpell(NARJIL_INFECTEDBITE, Target_ClosestPlayer, 35, 0, 12, 0, 0);
         AddSpell(SILTHIK_POISONSPRAY, Target_RandomPlayer, 30, 0, 15, 0, 0);
-    };
+    }
 
 };
 
@@ -201,7 +216,7 @@ class AnubShadowcasterAI : public MoonScriptCreatureAI
     {
         AddSpell(SHADOWCASTER_SHADOWBOLT, Target_RandomPlayer, 36, 0, 8);
         AddSpell(SHADOWCASTER_SHADOW_NOVA, Target_Self, 22, 0, 15);
-    };
+    }
 
 };
 

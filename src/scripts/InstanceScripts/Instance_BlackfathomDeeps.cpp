@@ -86,11 +86,14 @@ class LadySarevessAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(LadySarevessAI, MoonScriptCreatureAI);
         LadySarevessAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddEmote(Event_OnCombatStart, "You should not be here! Slay them!", Text_Yell, 5799);
-
             AddSpell(8435, Target_Current, 10, 2, 0);    // Forked Lightning
             AddSpell(865, Target_Self, 15, 0, 25);        // Frost Nova
             AddSpell(246, Target_Current, 15, 0, 10);    // Slow
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(7912);     // You should not be here! Slay them!
         }
 };
 
@@ -142,11 +145,18 @@ class KelrisAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(KelrisAI, MoonScriptCreatureAI);
         KelrisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddEmote(Event_OnCombatStart, "Who dares disturb my meditation?!", Text_Yell, 5802);
-            AddEmote(Event_OnTargetDied, "Dust to dust.", Text_Yell, 5803);
-
             AddSpell(8399, Target_RandomPlayer, 12, 1.3f, 0, 0, 0, false, "Sleep...", Text_Yell, 5804);    // Sleep
             AddSpell(15587, Target_Current, 16, 1.5f, 0);    // Mind Blast
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(3966);     // Who dares disturb my meditation?
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(3968);     // Dust to dust.
         }
 };
 
@@ -157,9 +167,6 @@ class AkumaiAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(AkumaiAI, MoonScriptCreatureAI);
         AkumaiAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddEmote(Event_OnCombatStart, "Who dares disturb my meditation?!", Text_Yell); // Should this really be here?
-            AddEmote(Event_OnTargetDied, "Dust to dust.", Text_Yell); // Should this really be here?
-
             AddSpell(3490, Target_Self, 12, 0, 0);    // Frenzied Rage
             AddSpell(3815, Target_Self, 16, 0, 45);    // Poison Cloud
         }

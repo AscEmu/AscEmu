@@ -152,11 +152,15 @@ class LadyAnacondraAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(LadyAnacondraAI, MoonScriptCreatureAI);
         LadyAnacondraAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddEmote(Event_OnCombatStart, "None can stand against the Serpent Lords!", Text_Yell, 5786);
             // Lightning Bolt
             AddSpell(9532, Target_Current, 30, 3, 0);
             // Sleep
             AddSpell(700, Target_RandomPlayerNotCurrent, 10, 1.5, 20);
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(8750);     // None can stand against the Serpent Lords!
         }
 };
 
@@ -166,13 +170,17 @@ class LordCobrahnAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(LordCobrahnAI, MoonScriptCreatureAI);
         LordCobrahnAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddEmote(Event_OnCombatStart, "You will never wake the dreamer!", Text_Yell, 5785);
             // Lightning Bolt
             LightningBolt = AddSpell(9532, Target_Current, 30, 3, 0);
             // Poison -- Spell ID Needs checked
             AddSpell(34969, Target_Current, 15, 0, 0);
             // Cobrahn Serpent Form
             SerpentForm = AddSpell(7965, Target_Self, 0, 0, 0);
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(8751);     // You will never wake the dreamer!
         }
 
         void AIUpdate()
@@ -201,13 +209,17 @@ class LordPythasAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(LordPythasAI, MoonScriptCreatureAI);
         LordPythasAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddEmote(Event_OnCombatStart, "The coils of death... Will crush you!", Text_Yell, 5787);
             // Lightning Bolt
             AddSpell(9532, Target_Current, 30, 3, 0);
             // Sleep
             AddSpell(700, Target_RandomPlayer, 10, 1.5, 0);
             // Thunderclap
             AddSpell(8147, Target_Self, 20, 0, 5);
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(8752);     // The coils of death... Will crush you!
         }
 };
 
@@ -217,11 +229,15 @@ class LordSerpentisAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(LordSerpentisAI, MoonScriptCreatureAI);
         LordSerpentisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddEmote(Event_OnCombatStart, "I am the serpent king, i can do anything!", Text_Yell, 5788);
             // Lightning Bolt
             AddSpell(9532, Target_Current, 30, 3, 0);
             // Sleep
             AddSpell(700, Target_RandomPlayer, 10, 1.5, 0);
+        }
+
+         void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(8753);     // I am the serpent king, i can do anything!
         }
 };
 

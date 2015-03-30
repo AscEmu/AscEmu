@@ -424,8 +424,6 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
             AddSpell(SKARVALD_CHARGE, Target_RandomPlayerNotCurrent, 35, 0, 8);
             AddSpell(STONE_STRIKE, Target_ClosestPlayer, 25, 0, 10);
 
-            AddEmote(Event_OnCombatStart, "Dalronn! See if you can muster the nerve to join my attack!", Text_Yell, 13229);
-
             mReplyTimer = INVALIDATE_TIMER;
             pDalronn = NULL;
             pDalronnGhost = NULL;
@@ -433,6 +431,7 @@ class SkarvaldTheConstructorAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
+            _unit->SendScriptTextChatMessage(4471);     // Dalronn! See if you can muster the nerve to join my attack!
             pDalronn = GetNearestCreature(CN_DALRONN);
             mReplyTimer = AddTimer(2500);
 
@@ -678,16 +677,20 @@ class PrinceKelesethAI : public MoonScriptCreatureAI
             else
                 mShadowBolt = AddSpell(KELESETH_SHADOW_BOLT, Target_Current, 100, 2, 2);
 
-            AddEmote(Event_OnDied, "I join... the night.", Text_Yell, 13225);
-        };
+        }
 
         void OnCombatStart(Unit* pTarget)
         {
+            _unit->SendScriptTextChatMessage(500);      // Your blood is mine!
             CastSpellNowNoScheduling(mAddSummon);
-            Emote("Your blood is mine!", Text_Yell, 13221);
 
             ParentClass::OnCombatStart(pTarget);
-        };
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(504);      // I join... the night.
+        }
 
         SpellDesc* mAddSummon;
         SpellDesc* mShadowBolt;
@@ -801,21 +804,29 @@ class IngvarThePlundererAI : public MoonScriptCreatureAI
                 AddSpell(INGVAR_ENRAGE, Target_Self, 45, 0, 4);
                 AddSpell(INGVAR_SMASH, Target_Self, 25, 3, 18);
                 AddSpell(INGVAR_ROAR, Target_Self, 25, 2, 10);
-            };
-
-            AddEmote(Event_OnTargetDied, "Mjul orm agn gjor!", Text_Yell, 13212);
-            AddEmote(Event_OnCombatStart, "I'll paint my face with your blood!", Text_Yell, 13207);
-            AddEmote(Event_OnDied, "My life for the... death god!", Text_Yell, 13213);
+            }
 
             SetAIUpdateFreq(1000);
-        };
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(4468);     // I'll paint my face with your blood!
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(4469);     // Mjul orm agn gjor!
+        }
 
         void OnDied(Unit* pKiller)
         {
+            _unit->SendScriptTextChatMessage(4470);     // My life for the... death god!
+
             //Ressurect event
             SpawnCreature(CN_INGVAR_UNDEAD, true);
             _unit->Despawn(1000, 0);
-        };
+        }
 };
 
 class IngvarUndeadAI : public MoonScriptCreatureAI
@@ -834,24 +845,24 @@ class IngvarUndeadAI : public MoonScriptCreatureAI
                 AddSpell(INGVAR_WOE_STRIKE, Target_ClosestUnit, 18, 0, 16);
             }
 
-
-            AddEmote(Event_OnDied, "No! I can do... better! I can...", Text_Yell, 13211);
-        };
+        }
 
         void OnLoad()
         {
             Player* pTarget = GetNearestPlayer();
             if (pTarget != NULL)
                 _unit->GetAIInterface()->AttackReaction(pTarget, 50, 0);
-        };
+        }
 
         void OnDied(Unit* pKiller)
         {
+            _unit->SendScriptTextChatMessage(6986);     // No! I can do... better! I can...
+
             if (mInstance)
                 mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Finished);
 
             ParentClass::OnDied(pKiller);
-        };
+        }
 
         MoonInstanceScript* mInstance;
 };

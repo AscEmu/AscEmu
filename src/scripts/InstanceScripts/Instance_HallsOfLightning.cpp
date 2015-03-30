@@ -208,16 +208,13 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
         AddPhaseSpell(3, AddSpell(SPELL_INTERCEPT, Target_RandomPlayerNotCurrent, 40, 0, 6));
         AddPhaseSpell(3, AddSpell(SPELL_PUMMEL, Target_Current, 40, 0, 5));
 
-        AddEmote(Event_OnCombatStart, "I am the greatest of my father's sons! Your end has come!", Text_Yell, 14149);
-        AddEmote(Event_OnTargetDied, "So ends your curse!", Text_Yell, 14153);
-        AddEmote(Event_OnTargetDied, "Flesh... is... weak!", Text_Yell, 14154);
-        AddEmote(Event_OnDied, "How can it be...? Flesh is not... stronger!", Text_Yell, 14156);
-
         mStanceTimer = INVALIDATE_TIMER;
     };
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(758);      // I am the greatest of my father's sons! Your end has come!
+
         mStanceTimer = AddTimer(TIMER_STANCE_CHANGE + (RandomUInt(7) * 1000));
         switchStance(RandomUInt(2));
 
@@ -226,6 +223,19 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
     };
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 2)
+        {
+           case 0:
+              _unit->SendScriptTextChatMessage(762);        // So ends your curse.
+           break;
+           case 1:
+              _unit->SendScriptTextChatMessage(763);        // Flesh... is... weak!
+           break;
+        }
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
@@ -262,6 +272,11 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
         ParentClass::AIUpdate();
     };
 
+    void OnDied(Unit* pKiller)
+    {
+        _unit->SendScriptTextChatMessage(765);      // How can it be...? Flesh is not... stronger!
+    }
+
     void switchStance(int32 pStance)
     {
         switch (pStance)
@@ -269,21 +284,21 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
             case STANCE_BATTLE:
                 ApplyAura(SPELL_BATTLE_AURA);
                 ApplyAura(SPELL_BATTLE_STANCE);
-                Emote("Defend yourself, for all the good it will do!", Text_Yell, 14151);
+                _unit->SendScriptTextChatMessage(760);      // Defend yourself, for all the good it will do!
                 Announce("General Bjarngrim switches to Battle Stance!");
                 SetPhase(1);
                 break;
             case STANCE_BERSERKER:
                 ApplyAura(SPELL_BERSERKER_AURA);
                 ApplyAura(SPELL_BERSERKER_STANCE);
-                Emote("GRAAAAAH! Behold the fury of iron and steel! ", Text_Yell, 14152);
+                _unit->SendScriptTextChatMessage(761);      // GRAAAAAH! Behold the fury of iron and steel!
                 Announce("General Bjarngrim switches to Berserker Stance!");
                 SetPhase(2);
                 break;
             case STANCE_DEFENSIVE:
                 ApplyAura(SPELL_DEFENSIVE_AURA);
                 ApplyAura(SPELL_DEFENSIVE_STANCE);
-                Emote("Give me your worst! ", Text_Yell, 14150);
+                _unit->SendScriptTextChatMessage(759);      // Give me your worst!
                 Announce("General Bjarngrim switches to Defensive Stance!");
                 SetPhase(3);
                 break;
@@ -331,12 +346,6 @@ class Volkhan : public MoonScriptCreatureAI
         mStomp->AddEmote("I will crush you beneath my boots!", Text_Yell, 13963);
         mStomp->AddEmote("All my work... undone!", Text_Yell, 13964);
 
-        AddEmote(Event_OnCombatStart, "It is you who have destroyed my children? You... shall... pay!", Text_Yell, 13960);
-        AddEmote(Event_OnTargetDied, "The armies of iron will conquer all!", Text_Yell, 13965);
-        AddEmote(Event_OnTargetDied, "Ha, pathetic!", Text_Yell, 13966);
-        AddEmote(Event_OnTargetDied, "You have cost me too much work!", Text_Yell, 13967);
-        AddEmote(Event_OnDied, "The master was right... to be concerned.", Text_Yell, 13968);
-
         m_cVolkhanWP.x = 1328.666870f;
         m_cVolkhanWP.y = -97.022758f;
         m_cVolkhanWP.z = 56.675297f;
@@ -350,6 +359,7 @@ class Volkhan : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(769);      // It is you who have destroyed my children? You... shall... pay!
         m_bStomp = false;
         mStompTimer = AddTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
         mPhase = 0;
@@ -358,7 +368,23 @@ class Volkhan : public MoonScriptCreatureAI
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
-    };
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 3)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(774);      // The armies of iron will conquer all!
+                break;
+            case 1:
+                _unit->SendScriptTextChatMessage(775);      // Feh! Pathetic!
+                break;
+            case 2:
+                _unit->SendScriptTextChatMessage(776);      // You have cost me too much work!
+                break;
+        }
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
@@ -366,7 +392,7 @@ class Volkhan : public MoonScriptCreatureAI
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
 
         ParentClass::OnCombatStop(pTarget);
-    };
+    }
 
     void AIUpdate()
     {
@@ -384,7 +410,7 @@ class Volkhan : public MoonScriptCreatureAI
                 DoStomp();
                 ResetTimer(mStompTimer, TIMER_STOMP + (RandomUInt(6) * 1000));
             }
-        };
+        }
 
         if (GetHealthPercent() <= (100 - (20 * mPhase)))
         {
@@ -394,7 +420,7 @@ class Volkhan : public MoonScriptCreatureAI
         }
 
         ParentClass::AIUpdate();
-    };
+    }
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)
     {
@@ -403,12 +429,12 @@ class Volkhan : public MoonScriptCreatureAI
             switch (RandomUInt(2))
             {
                 case 0:
-                    Emote("Life from the lifelessness... death for you.", Text_Yell, 13961);
+                    _unit->SendScriptTextChatMessage(770);      // Life from lifelessness... death for you.
                     break;
                 case 1:
-                    Emote("Nothing is wasted in the process. You will see....", Text_Yell, 13962);
+                    _unit->SendScriptTextChatMessage(771);      // Nothing is wasted in the process. You will see....
                     break;
-            };
+            }
 
             MoonScriptCreatureAI* pAnvil = GetNearestCreature(CN_VOLKHANS_ANVIL);
             if (pAnvil)
@@ -418,8 +444,8 @@ class Volkhan : public MoonScriptCreatureAI
 
             SetCanEnterCombat(true);
             _unit->GetAIInterface()->AttackReaction(GetNearestPlayer(), 1);   // hackfix
-        };
-    };
+        }
+    }
 
     void DoStomp()
     {
@@ -435,7 +461,12 @@ class Volkhan : public MoonScriptCreatureAI
         };
 
         m_bStomp = false;
-    };
+    }
+
+    void OnDied(Unit* pKiller)
+    {
+        _unit->SendScriptTextChatMessage(777);      // The master was right... to be concerned.
+    }
 
     SpellDesc* mTemper;
     SpellDesc* mStomp;
@@ -506,21 +537,33 @@ class IonarAI : public MoonScriptBossAI
 
         AddSpell(BALL_LIGHTNING, Target_RandomPlayerNotCurrent, 20, 1.5f, 5);
         AddSpell(STATIC_OVERLOAD, Target_RandomPlayerNotCurrent, 15, 0, 12);
-
-        AddEmote(Event_OnCombatStart, "You wish to confront the master? You must weather the storm!", Text_Yell, 14453);
-        AddEmote(Event_OnTargetDied, "Shocking, I know", Text_Yell, 14456);
-        AddEmote(Event_OnTargetDied, "You attempt the impossible", Text_Yell, 14457);
-        AddEmote(Event_OnTargetDied, "Your spark of life is..extinguished!", Text_Yell, 14458);
-        AddEmote(Event_OnDied, "Master... you have guests.", Text_Yell, 14459);
-    };
+    }
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(738);      // You wish to confront the master? You must first weather the storm!
+
         ParentClass::OnCombatStart(pTarget);
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
-    };
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 2)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(741);      // Shocking, I know.
+                break;
+            case 1:
+                _unit->SendScriptTextChatMessage(742);      // You attempt the impossible.
+                break;
+            case 2:
+                _unit->SendScriptTextChatMessage(743);      // Your spark of life is... extinguished.
+                break;
+        }
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
@@ -528,7 +571,12 @@ class IonarAI : public MoonScriptBossAI
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
-    };
+    }
+
+    void OnDied(Unit* pKiller)
+    {
+        _unit->SendScriptTextChatMessage(744);      // Master... you have guests.
+    }
 
     MoonInstanceScript* mInstance;
 };
@@ -555,20 +603,16 @@ class LokenAI : public MoonScriptCreatureAI
 
         Emote("I have witnessed the rise and fall of empires. The birth and extinction of entire species. Over countless millennia the foolishness of mortals has remained the only constant. Your presence here confirms this.", Text_Yell, 14160);
 
-        AddEmote(Event_OnCombatStart, "What hope is there for you? None!", Text_Yell, 14162);
-        AddEmote(Event_OnTargetDied, "Only mortal...", Text_Yell, 14166);
-        AddEmote(Event_OnTargetDied, "I... am... FOREVER!", Text_Yell, 14167);
-        AddEmote(Event_OnTargetDied, "What little time you had, you wasted!", Text_Yell, 14168);
-        AddEmote(Event_OnDied, "My death... heralds the end of this world.", Text_Yell, 14172);
-
         mNovaTimer = INVALIDATE_TIMER;
         mRespondTimer = AddTimer(TIMER_RESPOND);
         RegisterAIUpdateEvent(1000);
         mSpeech = 1;
-    };
+    }
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(801);      // What hope is there for you? None!
+
         ParentClass::OnCombatStart(pTarget);
         mSpeech = 1;
         ApplyAura(PULSING_SHOCKWAVE);
@@ -577,7 +621,7 @@ class LokenAI : public MoonScriptCreatureAI
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
-    };
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
@@ -586,13 +630,31 @@ class LokenAI : public MoonScriptCreatureAI
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
-    };
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 2)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(805);      // Only mortal...
+                break;
+            case 1:
+                _unit->SendScriptTextChatMessage(806);      // I... am... FOREVER!
+                break;
+            case 2:
+                _unit->SendScriptTextChatMessage(807);      // What little time you had, you wasted!
+                break;
+        }
+    }
 
     void OnDied(Unit* pKiller)
     {
+        _unit->SendScriptTextChatMessage(811);      // My death... heralds the end of this world.
+
         RemoveAuraOnPlayers(PULSING_SHOCKWAVE_AURA);
         ParentClass::OnDied(pKiller);
-    };
+    }
 
     void AIUpdate()
     {
@@ -601,13 +663,13 @@ class LokenAI : public MoonScriptCreatureAI
             switch (RandomUInt(2))
             {
                 case 0:
-                    Emote("You cannot hide from fate!", Text_Yell, 14163);
+                    _unit->SendScriptTextChatMessage(802);      // You cannot hide from fate!
                     break;
                 case 1:
-                    Emote("Come closer. I will make it quick.", Text_Yell, 14164);
+                    _unit->SendScriptTextChatMessage(803);      // Come closer. I will make it quick.
                     break;
                 case 2:
-                    Emote("Your flesh cannot hold out for long.", Text_Yell, 14165);
+                    _unit->SendScriptTextChatMessage(804);      // Your flesh cannot hold out for long.
                     break;
             };
 
@@ -624,13 +686,13 @@ class LokenAI : public MoonScriptCreatureAI
             switch (mSpeech)
             {
                 case 1:
-                    Emote("You stare blindly into the abyss!", Text_Yell, 14169);
+                    _unit->SendScriptTextChatMessage(808);      // You stare blindly into the abyss!
                     break;
                 case 2:
-                    Emote("Your ignorance is profound. Can you not see where this path leads?", Text_Yell, 14170);
+                    _unit->SendScriptTextChatMessage(809);      // Your ignorance is profound. Can you not see where this path leads?
                     break;
                 case 3:
-                    Emote("You cross the precipice of oblivion!", Text_Yell, 14171);
+                    _unit->SendScriptTextChatMessage(810);      // You cross the precipice of oblivion!
                     break;
                     ++mSpeech;
             };
@@ -638,7 +700,7 @@ class LokenAI : public MoonScriptCreatureAI
 
         if (IsTimerFinished(mRespondTimer))
         {
-            Emote("My master has shown me the future, and you have no place in it. Azeroth will be reborn in darkness. Yogg-Saron shall be released! The Pantheon shall fall!", Text_Yell, 14161);
+            _unit->SendScriptTextChatMessage(800);      // My master has shown me the future, and you have no place in it. Azeroth..
             RemoveTimer(mRespondTimer);
             RemoveAIUpdateEvent();
         };

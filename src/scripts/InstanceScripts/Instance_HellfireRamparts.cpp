@@ -97,27 +97,50 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
         else
             AddSpell(WATCHKEEPER_MORTAL_WOUND, Target_Current, 15, 0, 12);
 
-        AddEmote(Event_OnCombatStart, "What do we have here? ...", Text_Yell, 10331);
-        AddEmote(Event_OnCombatStart, "Heh... this may hurt a little.", Text_Yell, 10332);
-        AddEmote(Event_OnCombatStart, "I'm gonna enjoy this!", Text_Yell, 10333);
-        AddEmote(Event_OnTargetDied, "Say farewell!", Text_Yell, 10334);
-        AddEmote(Event_OnTargetDied, "Much too easy!", Text_Yell, 10335);
-
         mCalledForHelp = 0;
         _retaliation = false;
-    };
+    }
+
+    void OnCombatStart(Unit* pTarget)
+    {
+        switch (rand() % 3)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(4873);     // What have we here?
+                break;
+            case 1:
+                _unit->SendScriptTextChatMessage(4874);     // This may hurt a little....
+                break;
+            case 2:
+                _unit->SendScriptTextChatMessage(4875);     // I'm going to enjoy this...
+                break;
+        }
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 2)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(4876);     // Say farewell!
+                break;
+            case 1:
+                _unit->SendScriptTextChatMessage(4877);     // Much too easy.
+                break;
+        }
+    }
 
     void OnDied(Unit* mKiller)
     {
-        _unit->PlaySoundToSet(10336);
+        _unit->SendScriptTextChatMessage(4878);      // Hahah.. <cough> ..argh!
         ParentClass::OnDied(mKiller);
-    };
+    }
 
     void AIUpdate()
     {
         if (_unit->GetHealthPct() <= 40 && !mCalledForHelp)
         {
-            Emote("Heal me! QUICKLY!", Text_Yell, 10329);
+            _unit->SendScriptTextChatMessage(4871);      // Heal me, quickly!
             mCalledForHelp = true;
         };
 
@@ -162,18 +185,34 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
                 SpellDesc* pAura = AddSpell(OMOR_BANE_OF_TREACHERY, Target_RandomPlayer, 8, 2, 35, 0, 60, true);
                 pAura->AddEmote("A-Kreesh!", Text_Yell, 10278);
             }
-
-            AddEmote(Event_OnCombatStart, "I will not be defeated!", Text_Yell, 10279);
-            AddEmote(Event_OnCombatStart, "You dare stand against me?", Text_Yell, 10280);    // corrections
-            AddEmote(Event_OnCombatStart, "Your incidents will be your death!", Text_Yell, 10281);
-            AddEmote(Event_OnTargetDied, "Die weakling!", Text_Yell, 10282);
-            AddEmote(Event_OnDied, "It is... not over.", Text_Yell, 10284);
         }
 
         void OnCombatStart(Unit* pTarget)
         {
+            switch (rand() % 3)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(4856);     // I will not be defeated!
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(4855);     // You dare stand against ME?
+                    break;
+                case 2:
+                    _unit->SendScriptTextChatMessage(4857);     // Your insolence will be your death!
+                    break;
+            }
             ParentClass::OnCombatStart(pTarget);
             SetCanMove(false);
+        }
+
+        void OnTargetDied(Unit* pKiller)
+        {
+            _unit->SendScriptTextChatMessage(4860);     // Die, weakling!
+        }
+
+        void OnDied(Unit* pKiller)
+        {
+            _unit->SendScriptTextChatMessage(4861);     // It is... not over.
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -181,7 +220,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
             ParentClass::OnCombatStop(pTarget);
             if (IsAlive())
             {
-                Emote("I am victorious!", Text_Yell, 10283);
+                _unit->SendScriptTextChatMessage(4862);     // I am victorious!
             }
         }
 

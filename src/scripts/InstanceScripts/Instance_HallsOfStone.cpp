@@ -243,21 +243,39 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
         AddSpell(MAIDEN_PILLAR_OF_WOE, Target_RandomPlayerNotCurrent, 30, 0, 8);
         mShock = AddSpell(MAIDEN_SHOCK_OF_SORROW, Target_Self, 20, 0, 18);
         mShock->AddEmote("So much lost time... that you'll never get back!", Text_Yell, 13492);
-
-        //EMOTES
-        AddEmote(Event_OnCombatStart, "You shouldn't have come...now you will die! ", Text_Yell, 13487);
-        AddEmote(Event_OnTargetDied, "My burden grows heavier.", Text_Yell, 13488);
-        AddEmote(Event_OnTargetDied, "This is your own fault!", Text_Yell, 13489);
-        AddEmote(Event_OnTargetDied, "You had it coming!", Text_Yell, 13490);
-        AddEmote(Event_OnTargetDied, "Why must it be this way?", Text_Yell, 13491);
-        AddEmote(Event_OnDied, "I hope you all rot! I never...wanted...this.", Text_Yell, 13493);
-    };
+    }
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(4367);     // You shouldn't have come... now you will die!
+
         mShock->TriggerCooldown();
         ParentClass::OnCombatStart(pTarget);
-    };
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 4)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(4368);     // Why must it be this way?
+                break;
+            case 1:
+                _unit->SendScriptTextChatMessage(4369);     // You had it coming!
+                break;
+            case 2:
+                _unit->SendScriptTextChatMessage(4370);     // My burden grows heavier...
+                break;
+            case 3:
+                _unit->SendScriptTextChatMessage(4371);     // This is your fault!
+                break;
+        }
+    }
+
+    void OnDied(Unit* pTarget)
+    {
+        _unit->SendScriptTextChatMessage(4372);     // I hope you all rot! I never... wanted... this.
+    }
 
     protected:
 
@@ -278,17 +296,14 @@ class KrystallusAI : public MoonScriptCreatureAI
         mStomp = AddSpell(KRYSTALLUS_STOMP, Target_Self, 0, 0, 0);
         mShatter->AddEmote("Break.... you....", Text_Yell, 14178);
 
-        //EMOTES
-        AddEmote(Event_OnCombatStart, "Crush....", Text_Yell, 14176);
-        AddEmote(Event_OnTargetDied, "Ha.... ha... hah....", Text_Yell, 14177);
-        AddEmote(Event_OnDied, "Uuuuhhhhhhhhhh......", Text_Yell, 14179);
-
         mStompTimer = INVALIDATE_TIMER;
         mShatterTimer = INVALIDATE_TIMER;
     }
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(4363);      // Crush....
+
         mStompTimer = AddTimer(STOMP_TIMER);
         ParentClass::OnCombatStart(pTarget);
     };
@@ -309,6 +324,16 @@ class KrystallusAI : public MoonScriptCreatureAI
             SetCanMove(true);
             RemoveTimer(mShatterTimer);
         }
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        _unit->SendScriptTextChatMessage(4365);     // Uuuuhhhhhhhhhh......
+    }
+
+    void OnDied(Unit* pTarget)
+    {
+        _unit->SendScriptTextChatMessage(4364);     // 
     }
 
     protected:

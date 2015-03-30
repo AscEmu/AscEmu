@@ -105,17 +105,14 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
         mVortex = AddSpell(KELIDAN_FIRE_NOVA, Target_Self, 0, 0, 0);
         AddSpell(KELIDAN_CORRUPTION, Target_Current, 15, 0, 10);
 
-        AddEmote(Event_OnCombatStart, "Who dares interrupt--What is this, what have you done? You'll ruin everything!", Text_Yell);
-        AddEmote(Event_OnTargetDied, "Just as you deserve.", Text_Yell);
-        AddEmote(Event_OnTargetDied, "Your friends will soon be joining you.", Text_Yell);
-        AddEmote(Event_OnDied, "Good... luck. You'll need it.", Text_Yell);
-
         mBurningNovaTimer = INVALIDATE_TIMER;
         SetAIUpdateFreq(800);
     }
 
     void OnCombatStart(Unit* pTarget)
     {
+        _unit->SendScriptTextChatMessage(4841);     // Who dares interrupt--What is this; what have you done? You'll ruin everything!
+
         mBurningNovaTimer = AddTimer(15000);
         ParentClass::OnCombatStart(pTarget);
     }
@@ -133,10 +130,28 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
                 ResetTimer(mBurningNovaTimer, 30000);
 
                 ParentClass::AIUpdate();
-            };
-        };
+            }
+        }
 
         ParentClass::AIUpdate();
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        switch (rand() % 2)
+        {
+            case 0:
+                _unit->SendScriptTextChatMessage(4845);     // Just as you deserve!
+                break;
+            case 1:
+                _unit->SendScriptTextChatMessage(4846);     // Your friends will soon be joining you!
+                break;
+        }
+    }
+
+    void OnDied(Unit* pTarget)
+    {
+        _unit->SendScriptTextChatMessage(4848);     // Good...luck. You'll need it.
     }
 
     SpellDesc*      mShadowBoltVolley;
@@ -180,20 +195,44 @@ class TheMakerAI : public MoonScriptCreatureAI
         ADD_CREATURE_FACTORY_FUNCTION(TheMakerAI);
         TheMakerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            AddEmote(Event_OnCombatStart, "My work must not be interrupted.", Text_Yell, 10286);
-            AddEmote(Event_OnCombatStart, "Perhaps I can find a use for you.", Text_Yell, 10287);
-            AddEmote(Event_OnCombatStart, "Anger... Hate... These are tools I can use.", Text_Yell, 10288);
-            AddEmote(Event_OnTargetDied, "Let's see what I can make of you.", Text_Yell, 10289);
-            AddEmote(Event_OnTargetDied, "It is pointless to resist.", Text_Yell, 10290);
-            AddEmote(Event_OnDied, "Stay away from... me.", Text_Yell, 10291);
-
             AddSpell(DOMINATION, Target_RandomPlayer, 8.0f, 0, 30);
             AddSpell(ACID_SPRAY, Target_Self, 10.0f, 0, 20);
             AddSpell(THROW_BEAKER, Target_RandomPlayerDestination, 20.0f, 0, 0, 0, 40);
         }
 
+        void OnCombatStart(Unit* pTarget)
+        {
+            switch (rand() % 3)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(4849);     // My work must not be interrupted!
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(4850);     // Perhaps I can find a use for you...
+                    break;
+                case 2:
+                    _unit->SendScriptTextChatMessage(4851);     // Anger...hate... These are tools I can use.
+                    break;
+            }
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            switch (rand() % 2)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(4852);     // Let's see what I can make of you!
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(4853);     // It is pointless to resist.
+                    break;
+            }
+        }
+
         void OnDied(Unit* pKiller)
         {
+            _unit->SendScriptTextChatMessage(4854);     // Stay away from... Me!
+
             GameObject* pDoor = NULL;
             pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(327.155487f, 149.753418f, 9.559869f, GO_THE_MAKER);
             if (pDoor)

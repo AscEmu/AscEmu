@@ -229,16 +229,20 @@ class VexallusAI : public MoonScriptBossAI
         AddPhaseSpell(2, AddSpell(VEXALLUS_OVERLOAD, Target_Self, 85, 0, 3, 0, 0));
         mPureEnergy = AddSpell(VEXALLUS_SUMMON_PURE_ENERGY, Target_Self, 85, 0, 3);
 
-        AddEmote(Event_OnTargetDied, "Con...sume.", Text_Yell, 12393);
-
         mSummon = 0;
     }
 
     void OnCombatStart(Unit* pTarget)
     {
-        Emote("Drain... life...", Text_Yell, 12389);
+        _unit->SendScriptTextChatMessage(3003);     // Drain... life!
+
         SetPhase(1);
         ParentClass::OnCombatStart(pTarget);
+    }
+
+    void OnTargetDied(Unit* pTarget)
+    {
+        _unit->SendScriptTextChatMessage(3006);     // Con...sume.
     }
 
     void AIUpdate()
@@ -278,15 +282,13 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
         AddSpell(PRIESTESS_DELRISSA_POWERWORD_SHIELD, Target_RandomFriendly, 32, 0, 15, 0, 40);
         AddSpell(PRIESTESS_DELRISSA_RENEW, Target_RandomFriendly, 30, 0, 18, 0, 40);
 
-        AddEmote(Event_OnDied, "Not what I had... planned...", Text_Yell, 12397);
-
         mClearHateList = AddTimer(15000);
         mKilledPlayers = 0;
     };
 
     void OnCombatStart(Unit* pTarget)
     {
-        Emote("Annihilate them!", Text_Yell, 12395);
+        _unit->SendScriptTextChatMessage(3022);     // Annihilate them.
         //AggroRandomUnit();    // Want to aggro random unit ? Set it instead of calling premade
         // method that in this case recursively loops this procedure
 
@@ -301,26 +303,31 @@ class Priestess_DelrissaAI : public MoonScriptBossAI
         ++mKilledPlayers;
 
         if (mKilledPlayers == 1)
-            Emote("I call that a good start.", Text_Yell, 12405);
+            _unit->SendScriptTextChatMessage(3027);     // I call that a good start.
         else if (mKilledPlayers == 2)
-            Emote("I could have sworn there were more of you.", Text_Yell, 12407);
+            _unit->SendScriptTextChatMessage(3028);     // I could have sworn there were more of you...
         else if (mKilledPlayers == 3)
-            Emote("Not really much of a group, anymore, is it?", Text_Yell, 12409);
+            _unit->SendScriptTextChatMessage(3029);     // Not really much of a "group" anymore, is it?
         else if (mKilledPlayers == 4)
-            Emote("One is such a lonely number.", Text_Yell, 12410);
+            _unit->SendScriptTextChatMessage(3030);     // One is such a lonely number.
         else if (mKilledPlayers == 5)
-            Emote("It's been a kick, really.", Text_Yell, 12411);
+            _unit->SendScriptTextChatMessage(3031);     // It's been a kick, really.
 
         ParentClass::OnTargetDied(pTarget);
-    };
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
-        Emote("It's been a kick, really.", Text_Yell, 12411);
+        _unit->SendScriptTextChatMessage(3031);     // It's been a kick, really.
         mKilledPlayers = 0;
 
         ParentClass::OnCombatStop(pTarget);
-    };
+    }
+
+    void OnDied(Unit* pKiller)
+    {
+        _unit->SendScriptTextChatMessage(3032);     // Not what I had... planned.
+    }
 
     void AIUpdate()
     {

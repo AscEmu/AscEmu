@@ -94,35 +94,42 @@ class VishasAI : public MoonScriptCreatureAI
         {
             AddSpell(SP_VISHAS_SHADOW_WORD, Target_RandomPlayer, 20, 0, 8);
 
-            AddEmote(Event_OnCombatStart, "Tell me... tell me everything!", Text_Yell, 5847);
-            AddEmote(Event_OnTargetDied, "Purged by pain!", Text_Yell, 5848);
-
             m_uiSay = 0;
-        };
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(2110);     // Tell me... tell me everything!
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(2113);     // Purged by pain!
+        }
 
         void OnCombatStop(Unit* pTarget)
         {
             m_uiSay = 0;
 
             ParentClass::OnCombatStop(pTarget);
-        };
+        }
 
         void AIUpdate()
         {
             if (GetHealthPercent() <= 75 && m_uiSay == 0)
             {
-                Emote("Naughty secrets!", Text_Yell, 5849);
+                _unit->SendScriptTextChatMessage(2111);     // Naughty secrets!
                 m_uiSay = 1;
-            };
+            }
 
             if (GetHealthPercent() <= 25 && m_uiSay == 1)
             {
-                Emote("I'll rip the secrets from your flesh!", Text_Yell, 5850);
+                _unit->SendScriptTextChatMessage(2112);     // I'll rip the secrets from your flesh!
                 m_uiSay = 2;
-            };
+            }
 
             ParentClass::AIUpdate();
-        };
+        }
 
     private:
 
@@ -140,29 +147,36 @@ class ThalnosAI : public MoonScriptCreatureAI
             AddSpell(SP_THALNOS_SHADOW_BOLT, Target_RandomPlayer, 20, 3.0f, 2);
             AddSpell(SP_THALNOS_FLAME_SPIKE, Target_RandomPlayerDestination, 20, 3.0f, 14);
 
-            AddEmote(Event_OnCombatStart, "We hunger for vengeance.", Text_Yell, 5844);
-            AddEmote(Event_OnTargetDied, "More... More souls.", Text_Yell, 5845);
-
             m_bEmoted = false;
-        };
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(2107);     // We hunger for vengeance.
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(2109);     // More... More souls!
+        }
 
         void OnCombatStop(Unit* pTarget)
         {
             m_bEmoted = false;
 
             ParentClass::OnCombatStop(pTarget);
-        };
+        }
 
         void AIUpdate()
         {
             if (GetHealthPercent() <= 50 && m_bEmoted == false)
             {
-                Emote("No rest, for the angry dead.", Text_Yell, 5846);
+                _unit->SendScriptTextChatMessage(2108);     // No rest... for the angry dead!
                 m_bEmoted = true;
-            };
+            }
 
             ParentClass::AIUpdate();
-        };
+        }
 
     private:
 
@@ -179,8 +193,12 @@ class LokseyAI : public MoonScriptCreatureAI
         LokseyAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(SP_LOKSEY_BLOODLUST, Target_Self, 5, 0, 40);
-            AddEmote(Event_OnCombatStart, "Release the hounds!", Text_Yell, 5841);
-        };
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(2086);     // Release the hounds!
+        }
 };
 
 // Arcanist Doan
@@ -195,31 +213,34 @@ class DoanAI : public MoonScriptCreatureAI
             AddSpell(SP_DOAN_POLY, Target_SecondMostHated, 15, 1.5f, 10);
             AddSpell(SP_DOAN_ARCANE_EXP, Target_Self, 20, 0, 10);
 
-            AddEmote(Event_OnCombatStart, "You will not defile these mysteries!", Text_Yell, 5842);
-
             m_bShielded = false;
-        };
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(2099);     // You will not defile these mysteries!
+        }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
             if (GetHealthPercent() <= 50 && !m_bShielded)
                 Shield();
-        };
+        }
 
         void Shield()
         {
             _unit->CastSpell(_unit, SP_DOAN_SHIELD, true);
-            Emote("Burn in righteous fire!", Text_Yell, 5843);
+            _unit->SendScriptTextChatMessage(2100);     // Burn in righteous fire!
             _unit->CastSpell(_unit, SP_DOAN_NOVA, false);
             m_bShielded = true;
-        };
+        }
 
         void OnCombatStop(Unit* pTarget)
         {
             m_bShielded = false;
 
             ParentClass::OnCombatStop(pTarget);
-        };
+        }
 
     private:
 
@@ -240,11 +261,18 @@ class HerodAI : public MoonScriptCreatureAI
             AddSpell(SP_HEROD_WHIRLWINDSPELL, Target_Self, 12, 0, 12)->AddEmote("Blades of Light!", Text_Yell, 5832);
             AddSpell(SP_HEROD_CHARGE, Target_RandomPlayer, 6, 0, 20);
 
-            AddEmote(Event_OnCombatStart, "Ah, I've been waiting for a real challenge!", Text_Yell, 5830);
-            AddEmote(Event_OnTargetDied, "Ha, is that all?", Text_Yell, 5831);
-
             m_bEnraged = false;
-        };
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(2094);     // Ah - I've been waiting for a real challenge!
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(2087);     // Is that all?
+        }
 
         void OnCombatStop(Unit* pTarget)
         {
@@ -252,18 +280,18 @@ class HerodAI : public MoonScriptCreatureAI
             RemoveAura(SP_HEROD_ENRAGESPELL);
 
             ParentClass::OnCombatStop(pTarget);
-        };
+        }
 
         void AIUpdate()
         {
             if (GetHealthPercent() <= 40 && m_bEnraged == false)
             {
+                _unit->SendScriptTextChatMessage(2090);     // Light, give me strength!
                 ApplyAura(SP_HEROD_ENRAGESPELL);
-                Emote("Light, give me strength!", Text_Yell, 5833);
-            };
+            }
 
             ParentClass::AIUpdate();
-        };
+        }
 
         bool    m_bEnraged;
 };
