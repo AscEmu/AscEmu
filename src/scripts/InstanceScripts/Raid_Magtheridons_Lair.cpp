@@ -118,44 +118,28 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
                 if (Magtheridon)
                 {
-                    uint32 SoundID = 0;
-                    std::string Text = "";
-
                     switch (RandomUInt(6))
                     {
                         case 1:
-                            Text = "Wretched, meddling insects! Release me, and perhaps I will grant you a merciful death!";
-                            SoundID = 10247;
+                            _unit->SendScriptTextChatMessage(8735);     // Wretched, meddling insects! Release me, and perhaps I will grant you a merciful death!
                             break;
                         case 2:
-                            Text = "Vermin! Leeches! Take my blood and choke on it!";
-                            SoundID = 10248;
+                            _unit->SendScriptTextChatMessage(8736);     // Vermin! Leeches! Take my blood and choke on it!
                             break;
                         case 3:
-                            Text = "Illidan is an arrogant fool! I will crush him and reclaim Outland as my own!";
-                            SoundID = 10249;
+                            _unit->SendScriptTextChatMessage(8737);     // Illidan is an arrogant fool! I will crush him and reclaim Outland as my own!
                             break;
                         case 4:
-                            Text = "Away, you mindless parasites! My blood is my own!";
-                            SoundID = 10250;
+                            _unit->SendScriptTextChatMessage(8738);     // Away, you mindless parasites! My blood is my own!
                             break;
                         case 5:
-                            Text = "How long do you believe your pathetic sorcery can hold me?";
-                            SoundID = 10251;
+                            _unit->SendScriptTextChatMessage(8739);     // How long do you believe your pathetic sorcery can hold me?
                             break;
                         case 6:
-                            Text = "My blood will be the end of you!";
-                            SoundID = 10252;
+                            _unit->SendScriptTextChatMessage(8740);     // My blood will be the end of you!
                             break;
                         default:
-                            Text = "My blood will be the end of you!";
-                            SoundID = 10252;
-                    }
-
-                    if (SoundID && Text != "")
-                    {
-                        Magtheridon->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, Text.c_str());
-                        Magtheridon->PlaySoundToSet(SoundID);
+                            _unit->SendScriptTextChatMessage(8741);     // My blood will be the end of you!
                     }
                 }
                 // We reset YellTimer to default value to let Pit Lord say something again and again
@@ -329,20 +313,18 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     PhaseOneTimer++;
                     if (PhaseOneTimer == BANISH_TIMER - 2)
                     {
-                        Unit* Magtheridon = NULL;
+                        Creature* Magtheridon = NULL;
                         Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
                         if (Magtheridon)
                         {
                             if (RandomUInt(4) == 1)
                             {
                                 // on movies I saw only another text, but Magtheridon may use this one rarely too, so added here
-                                Magtheridon->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Thank you for releasing me. Now... die!");
-                                Magtheridon->PlaySoundToSet(10254);
+                                Magtheridon->SendScriptTextChatMessage(8742);    // Thank you for releasing me. Now... die!
                             }
                             else
                             {
-                                Magtheridon->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I... am... unleashed!");
-                                Magtheridon->PlaySoundToSet(10253);
+                                Magtheridon->SendScriptTextChatMessage(8743);    // I... am... unleashed!
                             }
 
                             Magtheridon->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -438,7 +420,7 @@ class ManticronCubeGO : public GameObjectAIScript
     public:
         ManticronCubeGO(GameObject*  pGameObject) : GameObjectAIScript(pGameObject)
         {
-            Magtheridon = CubeTrigger = NULL;
+            CubeTrigger = NULL;
         }
 
         void OnActivate(Player*  pPlayer)
@@ -572,8 +554,7 @@ class ManticronCubeGO : public GameObjectAIScript
             // If it's the first and the only one Cube triggering spell we use Magtheridon's yell
             if (Counter == 1 && !MagYell)
             {
-                Magtheridon->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Not again... NOT AGAIN!");
-                Magtheridon->PlaySoundToSet(10256);
+                Magtheridon->SendScriptTextChatMessage(8744);       // "Not again... NOT AGAIN!
 
                 MagYell = true;
             }
@@ -613,7 +594,7 @@ class ManticronCubeGO : public GameObjectAIScript
 
         bool MagYell;
         float x, y, z;
-        Unit* Magtheridon;
+        Creature* Magtheridon;
         Player* Channeler;
         Unit* CubeTrigger;
 };
@@ -1375,8 +1356,7 @@ class MagtheridonAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Legion... will consume you... all....");
-            _unit->PlaySoundToSet(10258);
+            _unit->SendScriptTextChatMessage(8745);     // The Legion... will consume you... all....
 
             RemoveAIUpdateEvent();
         }
@@ -1385,8 +1365,7 @@ class MagtheridonAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Did you think me weak? Soft? Who is the weak one now?!");
-                _unit->PlaySoundToSet(10255);
+                _unit->SendScriptTextChatMessage(8746);     // Did you think me weak? Soft? Who is the weak one now?!
             }
         }
 
@@ -1510,8 +1489,7 @@ class MagtheridonAI : public CreatureAIScript
                 timer_caveIn++;
                 if (timer_caveIn == 2)
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will not be taken so easily. Let the walls of this prison tremble... and FALL!!!");
-                    _unit->PlaySoundToSet(10257);
+                    _unit->SendScriptTextChatMessage(8747);     // I will not be taken so easily. Let the walls of this prison tremble... and FALL!!!
 
                     _unit->GetAIInterface()->StopMovement(2000);
                     _unit->setAttackTimer(2000, false);
@@ -1619,8 +1597,7 @@ class MagtheridonAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&

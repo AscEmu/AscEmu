@@ -259,8 +259,7 @@ class RageWinterchillAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Legion's final conquest has begun! Once again the subjugation of this world is within our grasp. Let none survive!");
-            _unit->PlaySoundToSet(11022);
+            _unit->SendScriptTextChatMessage(1590);     // The Legion's final conquest has begun! Once again the subjugation of this world is within our grasp. Let
 
             for (int i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
@@ -278,24 +277,16 @@ class RageWinterchillAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Crumble and rot!");
-                        _unit->PlaySoundToSet(11023);
+                        _unit->SendScriptTextChatMessage(1586);     // Crumble and rot!
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ashes to ashes, dust to dust");
-                        _unit->PlaySoundToSet(11055);
+                        _unit->SendScriptTextChatMessage(1587);     // Ashes to ashes, dust to dust
                         break;
                     case 2:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "All life must perish!");
-                        _unit->PlaySoundToSet(11025);
+                        _unit->SendScriptTextChatMessage(1584);     // All life must perish!");
                         break;
                     case 3:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your world is ours now!");
-                        _unit->PlaySoundToSet(11056);
-                        break;
-                    case 4:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Victory to the Legion!");
-                        _unit->PlaySoundToSet(11057);
+                        _unit->SendScriptTextChatMessage(1585);     // Victory to the Legion!");
                         break;
                 }
             }
@@ -311,9 +302,7 @@ class RageWinterchillAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You have won this battle, but not... the...war");
-            _unit->PlaySoundToSet(11026);
-
+            _unit->SendScriptTextChatMessage(1583);     // You have won this battle, but not... the...war
             RemoveAIUpdateEvent();
         }
 
@@ -377,8 +366,7 @@ class RageWinterchillAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -496,8 +484,7 @@ class AnetheronAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You are defenders of a doomed world. Flee here and perhaps you will prolong your pathetic lives!");
-            _unit->PlaySoundToSet(10977);
+            _unit->SendScriptTextChatMessage(1569);     // You are defenders of a doomed world. Flee here and perhaps you will prolong your pathetic lives!
 
             for (int i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
@@ -516,16 +503,14 @@ class AnetheronAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your hopes are lost.");
-                        _unit->PlaySoundToSet(10981);
+                        _unit->SendScriptTextChatMessage(1560);     // Your hopes are lost.
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Scream for me.");
-                        _unit->PlaySoundToSet(11038);
+                        _unit->SendScriptTextChatMessage(1561);     // Scream for me.
                         break;
                     case 2:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You look tired");
-                        _unit->PlaySoundToSet(10978);
+                        _unit->SendScriptTextChatMessage(1565);     // You look tired
+                        break;
                 }
             }
         }
@@ -540,9 +525,7 @@ class AnetheronAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The clock... is still...ticking.");
-            _unit->PlaySoundToSet(10982);
-
+            _unit->SendScriptTextChatMessage(1559);     // The clock... is still...ticking.
             RemoveAIUpdateEvent();
         }
 
@@ -625,8 +608,7 @@ class AnetheronAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -729,8 +711,7 @@ class KazrogalAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Cry for mercy! Your meaningless lives will soon be forfeit.");
-            _unit->PlaySoundToSet(11015);
+            _unit->SendScriptTextChatMessage(1582);     // Cry for mercy! Your meaningless lives will soon be forfeit.
 
             for (int i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
@@ -746,20 +727,16 @@ class KazrogalAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your death will be a painful one.");
-                        _unit->PlaySoundToSet(11016);
+                        _unit->SendScriptTextChatMessage(1580);     // Your death will be a painful one.
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You... are marked");
-                        _unit->PlaySoundToSet(11052);
+                        _unit->SendScriptTextChatMessage(1581);     // You... are marked
                         break;
                     case 2:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You... are nothing!");
-                        _unit->PlaySoundToSet(11053);
+                        _unit->SendScriptTextChatMessage(1578);     // You... are nothing!
                         break;
                     case 3:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Miserable nuisance!");
-                        _unit->PlaySoundToSet(11054);
+                        _unit->SendScriptTextChatMessage(1579);     // Miserable nuisance!
                         break;
                 }
             }
@@ -775,6 +752,7 @@ class KazrogalAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
+            ///\todo move this to db
             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "hahahahaa aahaah");
             _unit->PlaySoundToSet(11018);
 
@@ -869,8 +847,7 @@ class KazrogalAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -977,8 +954,7 @@ class AzgalorAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!");
-            _unit->PlaySoundToSet(10999);
+            _unit->SendScriptTextChatMessage(1576);     // Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!
 
             for (int i = 0; i < 3; i++)
                 spells[i].casttime = 0;
@@ -999,16 +975,13 @@ class AzgalorAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Reesh, hokta!");
-                        _unit->PlaySoundToSet(11001);
+                        _unit->SendScriptTextChatMessage(1571);     // Reesh, hokta!
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No one is going to save you!");
-                        _unit->PlaySoundToSet(11047);
+                        _unit->SendScriptTextChatMessage(1573);     // No one is going to save you!
                         break;
                     case 2:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Don't fight it");
-                        _unit->PlaySoundToSet(11048);
+                        _unit->SendScriptTextChatMessage(1572);     // Don't fight it
                         break;
                 }
             }
@@ -1024,9 +997,7 @@ class AzgalorAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your time is almost... up!");
-            _unit->PlaySoundToSet(11002);
-
+            _unit->SendScriptTextChatMessage(1570);     // Your time is almost... up!
             RemoveAIUpdateEvent();
         }
 
@@ -1099,8 +1070,7 @@ class AzgalorAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1412,8 +1382,7 @@ class ArchimondeAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your resistance is insignificant.");
-            _unit->PlaySoundToSet(10987);
+            _unit->SendScriptTextChatMessage(1591);     // Your resistance is insignificant.
 
             _unit->SetChannelSpellTargetGUID(0);
             _unit->SetChannelSpellId(0);
@@ -1443,16 +1412,13 @@ class ArchimondeAI : public CreatureAIScript
                 switch (RandomSpeach)
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your soul will languish for eternity.");
-                        _unit->PlaySoundToSet(10991);
+                        _unit->SendScriptTextChatMessage(1597);     // Your soul will languish for eternity.
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "All creation will be devoured!");
-                        _unit->PlaySoundToSet(11044);
+                        _unit->SendScriptTextChatMessage(1596);     // All creation will be devoured!
                         break;
                     case 2:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am the coming of the end!");
-                        _unit->PlaySoundToSet(11045);
+                        _unit->SendScriptTextChatMessage(1598);     // I am the coming of the end!
                         break;
                 }
 
@@ -1493,9 +1459,7 @@ class ArchimondeAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No, it cannot be! Nooo!");
-            _unit->PlaySoundToSet(10992);
-
+            _unit->SendScriptTextChatMessage(1600);     // No, it cannot be! Nooo!
             RemoveAIUpdateEvent();
         }
 
@@ -1592,8 +1556,7 @@ class ArchimondeAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
                 for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1667,12 +1630,10 @@ void SetupBattleOfMountHyjal(ScriptMgr* mgr)
 {
     mgr->register_instance_script(MAP_HYJALPAST, &MountHyjalScript::Create);
 
-    GossipScript* jainaGS = new JainaProudmooreGS;
-    mgr->register_gossip_script(CN_JAINA_PROUDMOORE, jainaGS);
+    mgr->register_gossip_script(CN_JAINA_PROUDMOORE, new JainaProudmooreGS);
     mgr->register_creature_script(CN_JAINA_PROUDMOORE, &JainaProudmooreAI::Create);
 
-    GossipScript* thrallGS = new ThrallGS;
-    mgr->register_gossip_script(CN_THRALL, thrallGS);
+    mgr->register_gossip_script(CN_THRALL, new ThrallGS);
     mgr->register_creature_script(CN_THRALL, &ThrallAI::Create);
 
     mgr->register_creature_script(CN_RAGE_WINTERCHILL, &RageWinterchillAI::Create);
