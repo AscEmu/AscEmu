@@ -478,25 +478,25 @@ class GearmasterMechazodAI : public CreatureAIScript
                 case 0:
                 {
                     RemoveAIUpdateEvent();
-                    _unit->SendScriptTextChatMessage(8730);
+                    _unit->SendScriptTextChatMessage(8736);
                     RegisterAIUpdateEvent(7000);
                     phase = 1;
                 }break;
                 case 1:
                 {
-                    _unit->SendScriptTextChatMessage(8731);
+                    _unit->SendScriptTextChatMessage(8737);
 
                     phase = 2;
                 }break;
                 case 2:
                 {
-                    _unit->SendScriptTextChatMessage(8732);
+                    _unit->SendScriptTextChatMessage(8738);
 
                     phase = 3;
                 }break;
                 case 3:
                 {
-                    _unit->SendScriptTextChatMessage(8733);
+                    _unit->SendScriptTextChatMessage(8739);
 
                     phase = 4;
                 }break;

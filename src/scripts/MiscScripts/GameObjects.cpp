@@ -1117,12 +1117,12 @@ class DeathGate3 : public GameObjectAIScript
             {
                 if(pPlayer->GetMapId() == 609)
                 {
-                    pPlayer->SafeTeleport(609, pPlayer->GetInstanceID(), 2354.496826f, -5661.948730f, 389.454865f, 0.365210f);
+                    pPlayer->CastSpell(pPlayer, 53098, true);
                 }
                 else
                 {
-                    pPlayer->SafeTeleport(0, pPlayer->GetInstanceID(), 2354.496826f, -5661.948730f, 389.454865f, 0.365210f);
-                };
+                    pPlayer->CastSpell(pPlayer, 53822, true);
+                }
             }
         }
 };

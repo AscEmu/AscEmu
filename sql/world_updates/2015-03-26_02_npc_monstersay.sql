@@ -1,3 +1,11 @@
+/*
+********************************************************************
+Updates for creature_spawns (misc quests)
+********************************************************************
+*/
+
+DELETE FROM `npc_monstersay` WHERE `entry` IN (25830,25831,25832,25833);
+
 INSERT INTO npc_monstersay
    (`entry`, `event`, `chance`, `language`, `type`, `monstername`, `text0`, `text1`, `text2`, `text3`, `text4`)
 VALUES
