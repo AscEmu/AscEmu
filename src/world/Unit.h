@@ -1985,8 +1985,8 @@ class SERVER_DECL Unit : public Object
 
         uint64 GetAuraUpdateMaskForRaid() const { return m_auraRaidUpdateMask; }
         void ResetAuraUpdateMaskForRaid() { m_auraRaidUpdateMask = 0; }
-
-
+        void SetAuraUpdateMaskForRaid(uint8 slot) { m_auraRaidUpdateMask |= (uint64(1) << slot); }
+        void UpdateAuraForGroup(uint8 slot);
         void HandleUpdateFieldChange(uint32 Index);
 
 	protected:

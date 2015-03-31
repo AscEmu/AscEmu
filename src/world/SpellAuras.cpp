@@ -916,6 +916,7 @@ void Aura::Remove()
 
 	// We will delete this on the next update, eluding some spell crashes :|
 	m_target->AddGarbageAura(this);
+    m_target->UpdateAuraForGroup(m_auraSlot);
 	m_target->m_auras[ m_auraSlot ] = NULL;
 
 	// only remove channel stuff if caster == target, then it's not removed twice, for example, arcane missiles applies a dummy aura to target

@@ -2535,6 +2535,9 @@ class SERVER_DECL Player : public Unit
 
         PlayerSpec m_specs[MAX_SPEC_COUNT];
 
+        uint8 m_roles;
+		uint32 GroupUpdateFlags;
+
     public:
         void SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself);
 
@@ -2543,7 +2546,15 @@ class SERVER_DECL Player : public Unit
 
         Object* GetPlayerOwner() { return this; };
 
+        void SetRoles(uint8 role) { m_roles = role; }
+		uint8 GetRoles() { return m_roles; }
         void SetBattlegroundEntryPoint();
+
+        uint32 GetGroupUpdateFlags() { return GroupUpdateFlags; }
+		void SetGroupUpdateFlags(uint32 flags);
+		void AddGroupUpdateFlag(uint32 flag);
+		uint16 GetGroupStatus();
+		void SendUpdateToOutOfRangeGroupMembers();
 
         void SendTeleportPacket(float x, float y, float z, float o);
         void SendTeleportAckPacket(float x, float y, float z, float o);

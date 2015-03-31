@@ -4579,7 +4579,7 @@ void Unit::AddAura(Aura* aur)
     aur->m_auraSlot = AuraSlot;
 
     m_auras[AuraSlot] = aur;
-
+    UpdateAuraForGroup(visualslot);
     ModVisualAuraStackCount(aur, 1);
 
     aur->ApplyModifiers(true);
@@ -8398,4 +8398,100 @@ void Unit::setLevel(uint32 level)
     SetUInt32Value(UNIT_FIELD_LEVEL, level);
     if (IsPlayer())
         TO< Player* >(this)->SetNextLevelXp(objmgr.GetXPToLevel(level));
+}
+
+void Unit::UpdateAuraForGroup(uint8 slot)
+{
+    if (slot >= 64)
+        return;
+
+    if (IsPlayer())
+    {
+        Player* player = TO_PLAYER(this);
+        if (player->GetGroup())
+        {
+            player->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_AURAS);
+            player->SetAuraUpdateMaskForRaid(slot);
+        }
+    }
+    else if (GetPlayerOwner())
+    {
+        if (GetPlayerOwner())
+        {
+            Player* owner = TO_PLAYER(GetPlayerOwner());
+            if (owner->GetGroup())
+            {
+                owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_AURAS);
+                SetAuraUpdateMaskForRaid(slot);
+            }
+        }
+    }
+}
+
+void Unit::HandleUpdateFieldChange(uint32 Index)
+{
+    Player* player = NULL;
+    bool pet = false;
+
+    if (!IsInWorld())
+        return;
+
+    if (IsPlayer())
+        player = TO_PLAYER(this);
+    else if (GetPlayerOwner())
+    {
+        player = TO_PLAYER(GetPlayerOwner());
+        pet = true;
+    }
+
+    if (player == NULL || !player->IsInWorld() || !player->GetGroup())
+        return;
+
+    uint32 Flags = 0;
+    switch (Index)
+    {
+        case UNIT_FIELD_HEALTH:
+            Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_HP : GROUP_UPDATE_FLAG_CUR_HP;
+            break;
+
+        case UNIT_FIELD_MAXHEALTH:
+            Flags = pet ? GROUP_UPDATE_FLAG_PET_MAX_HP : GROUP_UPDATE_FLAG_MAX_HP;
+            break;
+
+        case UNIT_FIELD_POWER1:
+        case UNIT_FIELD_POWER2:
+        case UNIT_FIELD_POWER3:
+        case UNIT_FIELD_POWER4:
+        case UNIT_FIELD_POWER5:
+        case UNIT_FIELD_POWER6:
+        case UNIT_FIELD_POWER7:
+            Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_POWER : GROUP_UPDATE_FLAG_CUR_POWER;
+            break;
+
+        case UNIT_FIELD_MAXPOWER1:
+        case UNIT_FIELD_MAXPOWER2:
+        case UNIT_FIELD_MAXPOWER3:
+        case UNIT_FIELD_MAXPOWER4:
+        case UNIT_FIELD_MAXPOWER5:
+        case UNIT_FIELD_MAXPOWER6:
+        case UNIT_FIELD_MAXPOWER7:
+            Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_POWER : GROUP_UPDATE_FLAG_MAX_POWER;
+            break;
+
+        case UNIT_FIELD_DISPLAYID:
+            Flags = pet ? GROUP_UPDATE_FLAG_PET_MODEL_ID : 0;
+        case UNIT_FIELD_LEVEL:
+            Flags = pet ? 0 : GROUP_UPDATE_FLAG_LEVEL;
+            break;
+        case UNIT_FIELD_BYTES_0:
+            Flags = pet ? GROUP_UPDATE_FLAG_PET_POWER_TYPE : GROUP_UPDATE_FLAG_POWER_TYPE;
+            break;
+        case UNIT_FIELD_BYTES_2:
+        case PLAYER_FLAGS:
+            Flags = pet ? 0 : GROUP_UPDATE_FLAG_STATUS;
+            break;
+        default:
+            break;
+    }
+    player->AddGroupUpdateFlag(Flags);
 }

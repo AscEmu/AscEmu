@@ -1107,6 +1107,8 @@ void Player::Update(unsigned long time_passed)
         delete pending_packet;
         pending_packet = m_cache->m_pendingPackets.pop();
     }
+
+    SendUpdateToOutOfRangeGroupMembers();
 }
 
 void Player::EventDismount(uint32 money, float x, float y, float z)
@@ -1405,8 +1407,11 @@ void Player::_EventExploration()
     {
         m_AreaID = AreaId;
         UpdatePvPArea();
+
+        AddGroupUpdateFlag(GROUP_UPDATE_FULL);
+
         if (GetGroup())
-            GetGroup()->UpdateOutOfRangePlayer(this, 128, true, NULL);
+            GetGroup()->UpdateOutOfRangePlayer(this, true, NULL);
     }
 
     // Zone update, this really should update to a parent zone if one exists.
@@ -13869,3 +13874,46 @@ void Player::CastSpellArea()
     }
 }
 
+void Player::SetGroupUpdateFlags(uint32 flags)
+{
+	if(GetGroup() == NULL)
+		return;
+	GroupUpdateFlags = flags;
+}
+
+void Player::AddGroupUpdateFlag(uint32 flag)
+{
+	if(GetGroup() == NULL)
+		return;
+	GroupUpdateFlags |= flag;
+}
+
+uint16 Player::GetGroupStatus()
+{
+    uint16 status = MEMBER_STATUS_ONLINE;
+    if (IsPvPFlagged())
+        status |= MEMBER_STATUS_PVP;
+    if (getDeathState() == CORPSE)
+        status |= MEMBER_STATUS_DEAD;
+    else if (IsDead())
+        status |= MEMBER_STATUS_GHOST;
+    if (IsFFAPvPFlagged())
+        status |= MEMBER_STATUS_PVP_FFA;
+    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK))
+        status |= MEMBER_STATUS_AFK;
+    if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DND))
+        status |= MEMBER_STATUS_DND;
+    return status;
+}
+
+void Player::SendUpdateToOutOfRangeGroupMembers()
+{
+    if (GroupUpdateFlags == GROUP_UPDATE_FLAG_NONE)
+        return;
+    if (Group* group = GetGroup())
+		group->UpdateOutOfRangePlayer(this, true, NULL);
+
+    GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
+	if (Pet* pet = GetSummon())
+		pet->ResetAuraUpdateMaskForRaid();
+}

@@ -865,8 +865,10 @@ void Pet::Remove(bool bUpdate, bool bSetOffline)
 {
     if (ScheduledForDeletion)
         return;
+
     ScheduledForDeletion = true;
     PrepareForRemove(bUpdate, bSetOffline);
+    m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_PET);
 
     if (IsInWorld())
         Unit::RemoveFromWorld(true);
@@ -1350,9 +1352,10 @@ void Pet::Rename(string NewName)
     // save new summoned name to db (.pet renamepet)
     if (m_Owner->getClass() == WARLOCK)
     {
-        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u",
-                                  m_name.data(), m_Owner->GetLowGUID(), GetEntry());
+        CharacterDatabase.Execute("UPDATE `playersummons` SET `name`='%s' WHERE `ownerguid`=%u AND `entry`=%u", m_name.data(), m_Owner->GetLowGUID(), GetEntry());
     }
+
+    m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
 }
 
 void Pet::ApplySummonLevelAbilities()
@@ -1611,6 +1614,8 @@ void Pet::LoadPetAuras(int32 id)
         RemoveAura(mod_auras[id]);
         CastSpell(this, mod_auras[id], true);
     }
+
+    m_Owner->AddGroupUpdateFlag(GROUP_UPDATE_PET);
 }
 
 void Pet::UpdateAP()
