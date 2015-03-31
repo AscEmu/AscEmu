@@ -52,6 +52,7 @@ Group::Group(bool Assign)
     m_difficulty = 0;
     m_raiddifficulty = 0;
     m_assistantLeader = m_mainAssist = m_mainTank = NULL;
+    updatecounter = 0;
 }
 
 Group::~Group()
@@ -69,13 +70,6 @@ Group::~Group()
 SubGroup::~SubGroup()
 {
 
-}
-
-void Group::SetLfgRoles(uint64 guid, const uint8 roles)
-{
-    Player* plr = objmgr.GetPlayer(GET_LOWGUID_PART(guid));
-
-    plr->getPlayerInfo()->role = roles;
 }
 
 void SubGroup::RemovePlayer(PlayerInfo* info)
@@ -178,6 +172,7 @@ void Group::SetLeader(Player* pPlayer, bool silent)
     {
         m_Leader = pPlayer->getPlayerInfo();
         m_dirty = true;
+
         if (!silent)
         {
             WorldPacket data(SMSG_GROUP_SET_LEADER, pPlayer->GetNameString()->size() + 1);
@@ -257,12 +252,12 @@ void Group::Update()
 
                 if (m_GroupType & GROUP_TYPE_LFD)
                 {
-                    data << uint8(0);	// unk
-                    data << uint32(0);	// unk
+                    data << uint8(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
+					data << uint32(sLfgMgr.GetDungeon(GetID()));
                 }
 
-                data << uint64(0x500000000004BC0CULL);
-                data << uint32(0);		// 3.3 - increments every time a group list update is being sent to client
+                data << uint64(GetID());            // Group guid
+                data << uint32(updatecounter++);    // 3.3 - increments every time a group list update is being sent to client
                 data << uint32(m_MemberCount - 1);	// we don't include self
 
                 for (j = 0; j < m_SubGroupCount; j++)
@@ -280,8 +275,12 @@ void Group::Update()
                             if ((*itr2) == NULL)
                                 continue;
 
-                            data << (*itr2)->name;
-                            data << (*itr2)->guid << uint32(0);	// highguid
+                            Player* plr = (*itr2)->m_loggedInPlayer;
+                            data << (plr ? plr->GetName() : (*itr2)->name);
+							if(plr)
+								data << plr->GetGUID();
+							else
+                                data << (*itr2)->guid << uint32(0);	// highguid
 
                             if ((*itr2)->m_loggedInPlayer != NULL)
                                 data << uint8(1);
@@ -300,7 +299,7 @@ void Group::Update()
                                 flags |= 4;
 
                             data << uint8(flags);
-                            data << uint8(0); // 3.3 - may have some use
+                            data << uint8(plr ? plr->GetRoles() : 0);   // Player roles
                         }
                     }
                 }
@@ -568,13 +567,6 @@ void Group::ExpandToRaid()
     m_dirty = true;
     Update();
     m_groupLock.Release();
-}
-
-void Group::ExpandToLFG()
-{
-    m_GroupType = GroupTypes(m_GroupType | GROUP_TYPE_LFD | GROUP_TYPE_UNK1);
-
-    Update();
 }
 
 void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
@@ -900,82 +892,165 @@ void Group::SaveToDB()
     CharacterDatabase.Execute(ss.str().c_str());
 }
 
-void Group::UpdateOutOfRangePlayer(Player* pPlayer, uint32 Flags, bool Distribute, WorldPacket* Packet)
+void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket* Packet)
 {
-    uint8 member_flags = 0x01;
+    uint32 mask = pPlayer->GetGroupUpdateFlags();
+    if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)                // if update power type, update current/max power also
+        mask |= (GROUP_UPDATE_FLAG_CUR_POWER | GROUP_UPDATE_FLAG_MAX_POWER);
+
+    if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)            // same for pets
+        mask |= (GROUP_UPDATE_FLAG_PET_CUR_POWER | GROUP_UPDATE_FLAG_PET_MAX_POWER);
     WorldPacket* data = Packet;
     if (!Packet)
         data = new WorldPacket(SMSG_PARTY_MEMBER_STATS, 500);
-
-    if (pPlayer->GetPowerType() != POWER_TYPE_MANA)
-        Flags |= GROUP_UPDATE_FLAG_POWER_TYPE;
-
-    if (pPlayer->GetCurrentVehicle() != NULL)
-        Flags |= GROUP_UPDATE_FLAG_VEHICLE_SEAT;
-
-    /*Flags |= GROUP_UPDATE_FLAG_PET_NAME;
-    Flags |= GROUP_UPDATE_FLAG_PET_UNK_1;*/
-
-    data->Initialize(SMSG_PARTY_MEMBER_STATS);
-    if ((Flags & GROUP_UPDATE_TYPE_FULL_REQUEST_REPLY) == GROUP_UPDATE_TYPE_FULL_REQUEST_REPLY)
-        *data << uint8(0);
+    if (pPlayer->m_isGmInvisible)
+        mask = GROUP_UPDATE_FLAG_STATUS;
+    uint32 byteCount = 0;
+    for (int i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
+        if (mask & (1 << i))
+            byteCount += GroupUpdateLength[i];
+    data->Initialize(SMSG_PARTY_MEMBER_STATS, 8 + 4 + byteCount);
     *data << pPlayer->GetNewGUID();
-    *data << Flags;
+    *data << mask;
 
-    if (Flags & GROUP_UPDATE_FLAG_ONLINE)
+    if (mask & GROUP_UPDATE_FLAG_STATUS)
     {
-        if (pPlayer->IsPvPFlagged())
-            member_flags |= 0x02;
-        if (pPlayer->getDeathState() == CORPSE)
-            member_flags |= 0x08;
-        else if (pPlayer->IsDead())
-            member_flags |= 0x10;
-
-        *data << member_flags << uint8(0);
+        if (pPlayer && !pPlayer->m_isGmInvisible)
+            *data << (uint16)pPlayer->GetGroupStatus();
+        else
+            *data << (uint16)MEMBER_STATUS_OFFLINE;
     }
 
-    if (Flags & GROUP_UPDATE_FLAG_HEALTH)
-        *data << uint32(pPlayer->GetHealth());
+    if (mask & GROUP_UPDATE_FLAG_CUR_HP)
+        *data << (uint32)pPlayer->GetHealth();
 
-    if (Flags & GROUP_UPDATE_FLAG_MAXHEALTH)
-        *data << uint32(pPlayer->GetMaxHealth());
+    if (mask & GROUP_UPDATE_FLAG_MAX_HP)
+        *data << (uint32)pPlayer->GetMaxHealth();
 
-    if (Flags & GROUP_UPDATE_FLAG_POWER_TYPE)
-        *data << uint8(pPlayer->GetPowerType());
+    uint8 powerType = pPlayer->GetPowerType();
+    if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
+        *data << (uint8)powerType;
 
-    if (Flags & GROUP_UPDATE_FLAG_POWER)
-        *data << uint16(pPlayer->GetPower(pPlayer->GetPowerType()));
+    if (mask & GROUP_UPDATE_FLAG_CUR_POWER)
+        *data << (uint16)pPlayer->GetPower(powerType);
 
-    if (Flags & GROUP_UPDATE_FLAG_MAXPOWER)
-        *data << uint16(pPlayer->GetMaxPower(pPlayer->GetPowerType()));
+    if (mask & GROUP_UPDATE_FLAG_MAX_POWER)
+        *data << (uint16)pPlayer->GetMaxPower(powerType);
 
-    if (Flags & GROUP_UPDATE_FLAG_LEVEL)
-        *data << uint16(pPlayer->getLevel());
+    if (mask & GROUP_UPDATE_FLAG_LEVEL)
+        *data << (uint16)pPlayer->getLevel();
 
-    if (Flags & GROUP_UPDATE_FLAG_ZONEID)
+    if (mask & GROUP_UPDATE_FLAG_ZONE)
+        *data << (uint16)pPlayer->GetZoneId();
+
+    if (mask & GROUP_UPDATE_FLAG_POSITION)
+        *data << (uint16)pPlayer->GetPositionX() << (uint16)pPlayer->GetPositionY();
+
+    if (mask & GROUP_UPDATE_FLAG_AURAS)
     {
-        *data << uint16(pPlayer->GetAreaID());
+        uint64 auramask = pPlayer->GetAuraUpdateMaskForRaid();
+        *data << uint64(auramask);
+        for (uint32 i = 0; i < 64; ++i)
+        {
+            if (auramask & (uint64(1) << i))
+            {
+                Aura * aurApp = pPlayer->GetAuraWithSlot(i);
+                *data << uint32(aurApp ? aurApp->GetSpellId() : 0);
+                *data << uint8(1);
+            }
+        }
     }
 
-    if (Flags & GROUP_UPDATE_FLAG_POSITION)
+    Pet* pet = pPlayer->GetSummon();
+    if (mask & GROUP_UPDATE_FLAG_PET_GUID)
     {
-        *data << int16(pPlayer->GetPositionX()) << int16(pPlayer->GetPositionY());			// wtf packed floats? O.o
-        pPlayer->m_last_group_position = pPlayer->GetPosition();
+        if (pet)
+            *data << (uint64)pet->GetGUID();
+        else
+            *data << (uint64)0;
     }
 
-    if (Flags & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
+    if (mask & GROUP_UPDATE_FLAG_PET_NAME)
     {
-        if (pPlayer->GetCurrentVehicle() != NULL)
-            *data << uint32(pPlayer->GetCurrentVehicle()->GetSeatEntryForPassenger(pPlayer));
+        if (pet)
+            *data << pet->GetName().c_str();
+        else
+            *data << (uint8)0;
     }
 
-    if (Flags & GROUP_UPDATE_TYPE_FULL_REQUEST_REPLY)
+    if (mask & GROUP_UPDATE_FLAG_PET_MODEL_ID)
     {
-        *data << uint64(0xFF00000000000000ULL);
-        *data << uint8(0);
-        *data << uint64(0xFF00000000000000ULL);
+        if (pet)
+            *data << (uint16)pet->GetDisplayId();
+        else
+            *data << (uint16)0;
     }
 
+    if (mask & GROUP_UPDATE_FLAG_PET_CUR_HP)
+    {
+        if (pet)
+            *data << (uint32)pet->GetHealth();
+        else
+            *data << (uint32)0;
+    }
+
+    if (mask & GROUP_UPDATE_FLAG_PET_MAX_HP)
+    {
+        if (pet)
+            *data << (uint32)pet->GetMaxHealth();
+        else
+            *data << (uint32)0;
+    }
+
+    if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
+    {
+        if (pet)
+            *data << (uint8)pet->GetPowerType();
+        else
+            *data << (uint8)0;
+    }
+
+    if (mask & GROUP_UPDATE_FLAG_PET_CUR_POWER)
+    {
+        if (pet)
+            *data << (uint16)pet->GetPower(pet->GetPowerType());
+        else
+            *data << (uint16)0;
+    }
+
+    if (mask & GROUP_UPDATE_FLAG_PET_MAX_POWER)
+    {
+        if (pet)
+            *data << (uint16)pet->GetMaxPower(pet->GetPowerType());
+        else
+            *data << (uint16)0;
+    }
+
+    if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
+    {
+        if (Vehicle* veh = pPlayer->GetCurrentVehicle())
+            *data << (uint32)veh->GetVehicleInfo()->seatID[pPlayer->GetMovementInfo()->transSeat];
+    }
+
+    if (mask & GROUP_UPDATE_FLAG_PET_AURAS)
+    {
+        if (pet)
+        {
+            uint64 auramask = pet->GetAuraUpdateMaskForRaid();
+            *data << uint64(auramask);
+            for (uint32 i = 0; i < 64; ++i)
+            {
+                if (auramask & (uint64(1) << i))
+                {
+                    Aura * aurApp = pet->GetAuraWithSlot(i);
+                    *data << uint32(aurApp ? aurApp->GetSpellId() : 0);
+                    *data << uint8(1);
+                }
+            }
+        }
+        else
+            *data << (uint64)0;
+    }
     if (Distribute && pPlayer->IsInWorld())
     {
         Player* plr;
@@ -1013,10 +1088,10 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     if (m_SubGroupCount > 8)
         return;
 
-    /* tell the other players about us */
-    UpdateOutOfRangePlayer(pPlayer, GROUP_UPDATE_TYPE_FULL_CREATE, true, &data2);
+    // tell the other players about us
+    UpdateOutOfRangePlayer(pPlayer, true, &data2);
 
-    /* tell us any other players we don't know about */
+    // tell us any other players we don't know about
     Player* plr;
     bool u1, u2;
     UpdateMask myMask;
@@ -1037,14 +1112,14 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
 
             if (!plr->IsVisible(pPlayer->GetGUID()))
             {
-                UpdateOutOfRangePlayer(plr, GROUP_UPDATE_TYPE_FULL_CREATE, false, &data);
+                UpdateOutOfRangePlayer(plr, false, &data);
                 pPlayer->GetSession()->SendPacket(&data);
             }
             else
             {
                 if (pPlayer->GetSubGroup() == plr->GetSubGroup())
                 {
-                    /* distribute quest fields to other players */
+                    // distribute quest fields to other players
                     hisMask.Clear();
                     myMask.Clear();
                     u1 = u2 = false;
@@ -1082,73 +1157,6 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     }
 
     m_groupLock.Release();
-}
-
-void Group::HandleUpdateFieldChange(uint32 Index, Player* pPlayer)
-{
-    uint32 Flags = 0;
-    switch (Index)
-    {
-        case UNIT_FIELD_HEALTH:
-            Flags = GROUP_UPDATE_FLAG_HEALTH;
-            break;
-
-        case UNIT_FIELD_MAXHEALTH:
-            Flags = GROUP_UPDATE_FLAG_MAXHEALTH;
-            break;
-
-        case UNIT_FIELD_POWER1:
-        case UNIT_FIELD_POWER2:
-        case UNIT_FIELD_POWER3:
-        case UNIT_FIELD_POWER4:
-        case UNIT_FIELD_POWER7:
-            Flags = GROUP_UPDATE_FLAG_POWER;
-            break;
-
-        case UNIT_FIELD_MAXPOWER1:
-        case UNIT_FIELD_MAXPOWER2:
-        case UNIT_FIELD_MAXPOWER3:
-        case UNIT_FIELD_MAXPOWER4:
-        case UNIT_FIELD_MAXPOWER7:
-            Flags = GROUP_UPDATE_FLAG_MAXPOWER;
-            break;
-
-        case UNIT_FIELD_LEVEL:
-            Flags = GROUP_UPDATE_FLAG_LEVEL;
-            break;
-        default:
-            break;
-    }
-
-    if (Flags != 0)
-    {
-        m_groupLock.Acquire();
-        UpdateOutOfRangePlayer(pPlayer, Flags, true, 0);
-        m_groupLock.Release();
-    }
-}
-
-void Group::HandlePartialChange(uint32 Type, Player* pPlayer)
-{
-    uint32 Flags = 0;
-
-    switch (Type)
-    {
-        case PARTY_UPDATE_FLAG_POSITION:
-            Flags = GROUP_UPDATE_FLAG_POSITION;
-            break;
-
-        case PARTY_UPDATE_FLAG_ZONEID:
-            Flags = GROUP_UPDATE_FLAG_ZONEID;
-            break;
-    }
-
-    if (Flags != 0)
-    {
-        m_groupLock.Acquire();
-        UpdateOutOfRangePlayer(pPlayer, Flags, true, 0);
-        m_groupLock.Release();
-    }
 }
 
 Group* Group::Create()
@@ -1228,7 +1236,6 @@ void Group::SetRaidDifficulty(uint32 diff)
 
 void Group::SendLootUpdates(Object* o)
 {
-
     // Build the actual update.
     ByteBuffer buf(500);
 
@@ -1286,7 +1293,6 @@ void Group::SendLootUpdates(Object* o)
             break;
         }
     }
-
 
     Unlock();
 }
@@ -1362,7 +1368,81 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
 
 #endif
 
-uint64 Group::GetGUID() const
+void Group::Teleport(WorldSession* m_session)
 {
-    return m_guid;
+	GroupMembersSet::iterator itr1, itr2;
+	uint32 i = 0;
+	SubGroup* sg1 = NULL;
+	SubGroup* sg2 = NULL;
+	Player * member = NULL;
+	m_groupLock.Acquire();
+	for(i = 0; i < m_SubGroupCount; i++)
+	{
+		sg1 = m_SubGroups[i];
+
+		if(sg1 != NULL)
+		{
+			for(itr1 = sg1->GetGroupMembersBegin(); itr1 != sg1->GetGroupMembersEnd(); ++itr1)
+			{
+				if((*itr1) == NULL)
+					continue;
+				member = (*itr1)->m_loggedInPlayer;
+				// skip offline players and not in world players
+				if(member == NULL || !member->IsInWorld())
+					continue;
+				sChatHandler.HandleSummonCommand(member->GetName(), m_session);
+				//member->SafeTeleport(map, instanceid, x, y, z, o);
+			}
+		}
+	}
+	m_groupLock.Release();
+}
+
+void Group::ExpandToLFG()
+{
+    m_GroupType = GroupTypes(m_GroupType | GROUP_TYPE_LFD | GROUP_TYPE_UNK1);
+    SaveToDB();
+    Update();
+}
+
+uint64 Group::GetLeaderGUID()
+{
+    if (m_Leader && m_Leader->m_loggedInPlayer)
+        return m_Leader->m_loggedInPlayer->GetGUID();
+    return (uint64)m_Leader->guid;
+}
+
+void Group::GoOffline(Player* p)
+{
+    uint32 mask = GROUP_UPDATE_FLAG_STATUS;
+    uint32 byteCount = 0;
+
+    for (int i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
+        if (mask & (1 << i))
+            byteCount += GroupUpdateLength[i];
+
+    WorldPacket data(SMSG_PARTY_MEMBER_STATS, 8 + 4 + byteCount);
+    data << p->GetNewGUID();
+    data << mask;
+    data << (uint16)MEMBER_STATUS_OFFLINE;
+
+    if (p->IsInWorld())
+    {
+        m_groupLock.Acquire();
+        for (uint32 i = 0; i < m_SubGroupCount; ++i)
+        {
+            if (m_SubGroups[i] == NULL)
+                continue;
+
+            for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd();)
+            {
+                Player* plr = (*itr)->m_loggedInPlayer;
+                ++itr;
+
+                if (plr && plr != p)
+                    plr->SendPacket(&data);
+            }
+        }
+        m_groupLock.Release();
+    }
 }

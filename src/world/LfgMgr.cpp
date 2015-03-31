@@ -1315,7 +1315,8 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             }
 
             m_teleport.push_back(pguid);
-            grp->SetLfgRoles(pguid, pProposal->players[pguid]->role);
+            if(Player* plr = objmgr.GetPlayer(pguid))
+				plr->SetRoles(pProposal->players[pguid]->role);
             SetState(pguid, LFG_STATE_DUNGEON);
         }
 
