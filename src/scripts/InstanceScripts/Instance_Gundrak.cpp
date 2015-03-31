@@ -377,7 +377,7 @@ class SladranAI : public MoonScriptCreatureAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        _unit->SendScriptTextChatMessage(8749);     // Drakkari gonna kill anybody who trespass on these lands!
+        _unit->SendScriptTextChatMessage(8754);     // Drakkari gonna kill anybody who trespass on these lands!
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_InProgress);
 

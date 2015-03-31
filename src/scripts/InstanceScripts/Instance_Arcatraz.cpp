@@ -333,7 +333,7 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
                     _unit->SendScriptTextChatMessage(7364);     // Yes, that was quite satisfying.
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(8748);     // Ha! Much better!
+                    _unit->SendScriptTextChatMessage(8753);     // Ha! Much better!
                     break;
             }
         }

@@ -1,8 +1,8 @@
 SET @CGUID:= 150535;
 SET @GGUID:= 202079;
 
-DELETE FROM `event_creature_spawns` WHERE `id` BETWEEN @CGUID+1 AND @CGUID+126;
-DELETE FROM `event_gameobject_spawns` WHERE `id` BETWEEN @GGUID+1 AND @GGUID+63;
+DELETE FROM `event_creature_spawns` WHERE `eventEntry` = 18;
+DELETE FROM `event_gameobject_spawns` WHERE `eventEntry` = 18;
 
 INSERT INTO `event_creature_spawns` VALUES (18, 150536, 12197, 0, -5042.00, -1264.00, 510.32, 4.49, 0, 12289, 1216, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2557, 0, 0, 0, 1, NULL);
 INSERT INTO `event_creature_spawns` VALUES (18, 150537, 13843, 0, -4900.00, -966.00, 501.45, 2.50, 0, 13850, 1216, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 12742, 0, 0, 0, 1, NULL);

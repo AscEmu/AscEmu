@@ -4,6 +4,7 @@ Updates for npc_script_text
 ********************************************************************
 */
 
+DELETE FROM `npc_script_text` WHERE `entry` = 8729;
 INSERT INTO npc_script_text
    (`entry`, `text`, `creature_entry`, `id`, `type`, `language`, `probability`, `emote`, `duration`, `sound`, `broadcast_id`)
 VALUES

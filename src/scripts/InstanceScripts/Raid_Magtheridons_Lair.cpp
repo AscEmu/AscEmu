@@ -121,25 +121,25 @@ class MagtheridonTriggerAI : public CreatureAIScript
                     switch (RandomUInt(6))
                     {
                         case 1:
-                            _unit->SendScriptTextChatMessage(8735);     // Wretched, meddling insects! Release me, and perhaps I will grant you a merciful death!
+                            _unit->SendScriptTextChatMessage(8740);     // Wretched, meddling insects! Release me, and perhaps I will grant you a merciful death!
                             break;
                         case 2:
-                            _unit->SendScriptTextChatMessage(8736);     // Vermin! Leeches! Take my blood and choke on it!
+                            _unit->SendScriptTextChatMessage(8741);     // Vermin! Leeches! Take my blood and choke on it!
                             break;
                         case 3:
-                            _unit->SendScriptTextChatMessage(8737);     // Illidan is an arrogant fool! I will crush him and reclaim Outland as my own!
+                            _unit->SendScriptTextChatMessage(8742);     // Illidan is an arrogant fool! I will crush him and reclaim Outland as my own!
                             break;
                         case 4:
-                            _unit->SendScriptTextChatMessage(8738);     // Away, you mindless parasites! My blood is my own!
+                            _unit->SendScriptTextChatMessage(8743);     // Away, you mindless parasites! My blood is my own!
                             break;
                         case 5:
-                            _unit->SendScriptTextChatMessage(8739);     // How long do you believe your pathetic sorcery can hold me?
+                            _unit->SendScriptTextChatMessage(8744);     // How long do you believe your pathetic sorcery can hold me?
                             break;
                         case 6:
-                            _unit->SendScriptTextChatMessage(8740);     // My blood will be the end of you!
+                            _unit->SendScriptTextChatMessage(8745);     // My blood will be the end of you!
                             break;
                         default:
-                            _unit->SendScriptTextChatMessage(8741);     // My blood will be the end of you!
+                            _unit->SendScriptTextChatMessage(8746);     // My blood will be the end of you!
                     }
                 }
                 // We reset YellTimer to default value to let Pit Lord say something again and again
@@ -320,11 +320,11 @@ class MagtheridonTriggerAI : public CreatureAIScript
                             if (RandomUInt(4) == 1)
                             {
                                 // on movies I saw only another text, but Magtheridon may use this one rarely too, so added here
-                                Magtheridon->SendScriptTextChatMessage(8742);    // Thank you for releasing me. Now... die!
+                                Magtheridon->SendScriptTextChatMessage(8747);    // Thank you for releasing me. Now... die!
                             }
                             else
                             {
-                                Magtheridon->SendScriptTextChatMessage(8743);    // I... am... unleashed!
+                                Magtheridon->SendScriptTextChatMessage(8748);    // I... am... unleashed!
                             }
 
                             Magtheridon->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
@@ -554,7 +554,7 @@ class ManticronCubeGO : public GameObjectAIScript
             // If it's the first and the only one Cube triggering spell we use Magtheridon's yell
             if (Counter == 1 && !MagYell)
             {
-                Magtheridon->SendScriptTextChatMessage(8744);       // "Not again... NOT AGAIN!
+                Magtheridon->SendScriptTextChatMessage(8749);       // "Not again... NOT AGAIN!
 
                 MagYell = true;
             }
@@ -1356,7 +1356,7 @@ class MagtheridonAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(8745);     // The Legion... will consume you... all....
+            _unit->SendScriptTextChatMessage(8750);     // The Legion... will consume you... all....
 
             RemoveAIUpdateEvent();
         }
@@ -1365,7 +1365,7 @@ class MagtheridonAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                _unit->SendScriptTextChatMessage(8746);     // Did you think me weak? Soft? Who is the weak one now?!
+                _unit->SendScriptTextChatMessage(8751);     // Did you think me weak? Soft? Who is the weak one now?!
             }
         }
 
@@ -1489,7 +1489,7 @@ class MagtheridonAI : public CreatureAIScript
                 timer_caveIn++;
                 if (timer_caveIn == 2)
                 {
-                    _unit->SendScriptTextChatMessage(8747);     // I will not be taken so easily. Let the walls of this prison tremble... and FALL!!!
+                    _unit->SendScriptTextChatMessage(8752);     // I will not be taken so easily. Let the walls of this prison tremble... and FALL!!!
 
                     _unit->GetAIInterface()->StopMovement(2000);
                     _unit->setAttackTimer(2000, false);

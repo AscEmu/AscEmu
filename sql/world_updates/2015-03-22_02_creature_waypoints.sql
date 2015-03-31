@@ -1,3 +1,11 @@
+/*
+********************************************************************
+Updates for npc_script_text
+********************************************************************
+*/
+
+DELETE FROM `creature_waypoints` WHERE `spawnid` = 57645;
+
 INSERT INTO creature_waypoints
    (`spawnid`, `waypointid`, `position_x`, `position_y`, `position_z`, `waittime`, `flags`, `forwardemoteoneshot`, `forwardemoteid`, `backwardemoteoneshot`, `backwardemoteid`, `forwardskinid`, `backwardskinid`)
 VALUES

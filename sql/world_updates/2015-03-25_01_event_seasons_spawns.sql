@@ -3,7 +3,7 @@
 Updates for event_creature_spawns (Arena Season 8 - 5)
 ********************************************************************
 */
-
+DELETE FROM `event_creature_spawns` WHERE `eventEntry` IN (60,59,58,57);
 INSERT INTO `event_creature_spawns`
    VALUES 
    ('60', '138810', '33933', '530', '3070.07', '3635.00', '143.78', '0.73', '0', '23768', '35', '0', '16777472', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', null),

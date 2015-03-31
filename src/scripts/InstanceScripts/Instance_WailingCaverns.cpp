@@ -160,7 +160,7 @@ class LadyAnacondraAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(8750);     // None can stand against the Serpent Lords!
+            _unit->SendScriptTextChatMessage(8755);     // None can stand against the Serpent Lords!
         }
 };
 
@@ -180,7 +180,7 @@ class LordCobrahnAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(8751);     // You will never wake the dreamer!
+            _unit->SendScriptTextChatMessage(8756);     // You will never wake the dreamer!
         }
 
         void AIUpdate()
@@ -219,7 +219,7 @@ class LordPythasAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(8752);     // The coils of death... Will crush you!
+            _unit->SendScriptTextChatMessage(8757);     // The coils of death... Will crush you!
         }
 };
 
@@ -237,7 +237,7 @@ class LordSerpentisAI : public MoonScriptCreatureAI
 
          void OnCombatStart(Unit* pTarget)
         {
-            _unit->SendScriptTextChatMessage(8753);     // I am the serpent king, i can do anything!
+            _unit->SendScriptTextChatMessage(8758);     // I am the serpent king, i can do anything!
         }
 };
 
