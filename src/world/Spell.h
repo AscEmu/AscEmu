@@ -1345,6 +1345,21 @@ class SpellCastTargets
         uint64 unkuint64_2;
         float m_destX, m_destY, m_destZ;
         string m_strTarget;
+
+        uint32 GetTargetMask() { return m_targetMask; }
+        bool HasSrc()
+		{
+			if (GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION)
+				return true;
+			return false;
+		}
+		bool HasDst() 
+		{
+			if (GetTargetMask() & TARGET_FLAG_DEST_LOCATION)
+				return true;
+			return false;
+		}
+		bool HasDstOrSrc() { return (HasSrc() || HasDst()); }
 };
 
 enum SpellState
@@ -1785,6 +1800,10 @@ class SERVER_DECL Spell : public EventableObject
         {
             return ((GetProto()->AttributesExE & attribute) > 0);
         }
+        ARCEMU_INLINE bool hasAttributeExF(uint32 attribute)
+        {
+            return ((GetProto()->AttributesExF & attribute) > 0);
+        }
         // Removes reagents, ammo, and items/charges
         void RemoveItems();
         // Calculates the i'th effect value
@@ -1963,10 +1982,7 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectLearnSpec(uint32 i);
         void SpellEffectActivateSpec(uint32 i);
         void SpellEffectActivateRunes(uint32 i);
-        void SpellEffectJumpTarget(uint32 i)
-        {
-
-        }
+        void SpellEffectJumpTarget(uint32 i);
         void SpellEffectJumpBehindTarget(uint32 i);
 
         // Spell Targets Handlers
