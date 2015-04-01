@@ -293,7 +293,7 @@ public:
     }
 
     void OnLoad(){
-        _unit->SetByte( UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_UNK_2 );
+        _unit->SetByte( UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER );
     }
 
     void OnLastPassengerLeft( Unit *passenger ){

@@ -652,26 +652,6 @@ typedef enum
     EMOTE_ZZOLD_STATE_KNEEL_NO_INTERRUPT = 470,
 } EmoteType;
 
-
-// byte flags value (UNIT_FIELD_BYTES_1,0)
-enum StandState
-{
-    STANDSTATE_STAND             = 0,
-    STANDSTATE_SIT               = 1,
-    STANDSTATE_SIT_CHAIR         = 2,
-    STANDSTATE_SLEEP             = 3,
-    STANDSTATE_SIT_LOW_CHAIR     = 4,
-    STANDSTATE_SIT_MEDIUM_CHAIR  = 5,
-    STANDSTATE_SIT_HIGH_CHAIR    = 6,
-    STANDSTATE_DEAD              = 7,
-    STANDSTATE_KNEEL             = 8,
-    STANDSTATE_FORM_ALL          = 0x00FF0000,
-    STANDSTATE_FLAG_ALWAYS_STAND = 0x01,                  // byte 4
-    STANDSTATE_FLAG_CREEP        = 0x02000000,
-    STANDSTATE_FLAG_UNTRACKABLE  = 0x04000000,
-    STANDSTATE_FLAG_ALL          = 0xFF000000,
-};
-
 enum UnitSpecialStates
 {
     UNIT_STATE_NORMAL    = 0x0000,
@@ -692,12 +672,32 @@ enum UnitSpecialStates
     UNIT_STATE_FROZEN    = 0x4000,
 };
 
+
+// byte flags value (UNIT_FIELD_BYTES_1,0)
+enum StandState
+{
+    STANDSTATE_STAND             = 0,
+    STANDSTATE_SIT               = 1,
+    STANDSTATE_SIT_CHAIR         = 2,
+    STANDSTATE_SLEEP             = 3,
+    STANDSTATE_SIT_LOW_CHAIR     = 4,
+    STANDSTATE_SIT_MEDIUM_CHAIR  = 5,
+    STANDSTATE_SIT_HIGH_CHAIR    = 6,
+    STANDSTATE_DEAD              = 7,
+    STANDSTATE_KNEEL             = 8,
+    STANDSTATE_SUBMERGED         = 9
+    //STANDSTATE_FORM_ALL          = 0x00FF0000,
+    //STANDSTATE_FLAG_CREEP        = 0x02000000,
+    //STANDSTATE_FLAG_UNTRACKABLE  = 0x04000000,
+    //STANDSTATE_FLAG_ALL          = 0xFF000000
+};
+
 // byte flags value (UNIT_FIELD_BYTES_1,2)
 enum UnitStandFlags
 {
     UNIT_STAND_FLAGS_UNK1         = 0x01,
     UNIT_STAND_FLAGS_CREEP        = 0x02,
-    UNIT_STAND_FLAGS_UNK3         = 0x04,
+    UNIT_STAND_FLAGS_UNTRACKABLE  = 0x04,
     UNIT_STAND_FLAGS_UNK4         = 0x08,
     UNIT_STAND_FLAGS_UNK5         = 0x10,
     UNIT_STAND_FLAGS_ALL          = 0xFF
@@ -707,7 +707,7 @@ enum UnitStandFlags
 enum UnitBytes1_Flags
 {
     UNIT_BYTE1_FLAG_ALWAYS_STAND = 0x01,
-    UNIT_BYTE1_FLAG_UNK_2        = 0x02,                    // Creature that can fly and are not on the ground appear to have this flag. If they are on the ground, flag is not present.
+    UNIT_BYTE1_FLAG_HOVER        = 0x02,    // It is called hover
     UNIT_BYTE1_FLAG_UNTRACKABLE  = 0x04,
     UNIT_BYTE1_FLAG_ALL          = 0xFF
 };
@@ -723,10 +723,14 @@ enum UnitBytes2_SheathState
 // UNIT_FIELD_BYTES_2, 1
 enum UnitBytes2_PvPFlags
 {
-    U_FIELD_BYTES_FLAG_PVP     = 0x01,
-    U_FIELD_BYTES_FLAG_FFA_PVP = 0x04,
-    U_FIELD_BYTES_FLAG_SANCTUARY  = 0x08,
-    U_FIELD_BYTES_FLAG_AURAS   = 0x10,
+    U_FIELD_BYTES_FLAG_PVP          = 0x01,
+    U_FIELD_BYTES_FLAG_UNK1         = 0x04,
+    U_FIELD_BYTES_FLAG_FFA_PVP      = 0x04,
+    U_FIELD_BYTES_FLAG_SANCTUARY    = 0x08,
+    U_FIELD_BYTES_FLAG_AURAS        = 0x10,
+    U_FIELD_BYTES_FLAG_UNK2         = 0x20,
+    U_FIELD_BYTES_FLAG_UNK3         = 0x40,
+    U_FIELD_BYTES_FLAG_UNK4         = 0x80
 };
 
 // byte flags value (UNIT_FIELD_BYTES_2,2)
@@ -739,31 +743,38 @@ enum UnitBytes2_PetFlags
 // byte value (UNIT_FIELD_BYTES_2,3)
 enum ShapeshiftForm
 {
-    FORM_NORMAL             = 0,
-    FORM_CAT                = 1,
-    FORM_TREE               = 2,
-    FORM_TRAVEL             = 3,
-    FORM_AQUA               = 4,
-    FORM_BEAR               = 5,
-    FORM_AMBIENT            = 6,
-    FORM_GHOUL              = 7,
-    FORM_DIREBEAR           = 8,
-    FORM_SKELETON           = 10,
-    FORM_SHADOWDANCE        = 13,
-    FORM_CREATUREBEAR       = 14,
-    FORM_GHOSTWOLF          = 16,
-    FORM_BATTLESTANCE       = 17,
-    FORM_DEFENSIVESTANCE    = 18,
-    FORM_BERSERKERSTANCE    = 19,
-    FORM_ZOMBIE             = 21,
-    FORM_METAMORPHOSIS      = 22,
-    FORM_UNDEAD             = 25,   // Lichborne?
-    FORM_SWIFT              = 27,
-    FORM_SHADOW             = 28,
-    FORM_FLIGHT             = 29,
-    FORM_STEALTH            = 30,
-    FORM_MOONKIN            = 31,
-    FORM_SPIRITOFREDEMPTION = 32,
+    FORM_NORMAL             = 0x00,
+    FORM_CAT                = 0x01,
+    FORM_TREE               = 0x02,
+    FORM_TRAVEL             = 0x03,
+    FORM_AQUA               = 0x04,
+    FORM_BEAR               = 0x05,
+    FORM_AMBIENT            = 0x06,
+    FORM_GHOUL              = 0x07,
+    FORM_DIREBEAR           = 0x08,
+    FORM_SKELETON           = 0x0A,
+    FORM_TEST_OF_STRENGTH   = 0x0B,
+    FORM_BLB_PLAYER         = 0x0C,
+    FORM_SHADOWDANCE        = 0x0D,
+    FORM_CREATUREBEAR       = 0x0E,
+    FORM_CREATURECAT        = 0x0F,
+    FORM_GHOSTWOLF          = 0x10,
+    FORM_BATTLESTANCE       = 0x11,
+    FORM_DEFENSIVESTANCE    = 0x12,
+    FORM_BERSERKERSTANCE    = 0x13,
+    FORM_TEST               = 0x14,
+    FORM_ZOMBIE             = 0x15,
+    FORM_METAMORPHOSIS      = 0x16,
+    FORM_UNK1               = 0x17,
+    FORM_UNK2               = 0x18,
+    FORM_UNDEAD             = 0x19,
+    FORM_MASTER_ANGLER      = 0x1A,
+    FORM_SWIFT              = 0x1B,
+    FORM_SHADOW             = 0x1C,
+    FORM_FLIGHT             = 0x1D,
+    FORM_STEALTH            = 0x1E,
+    FORM_MOONKIN            = 0x1F,
+    FORM_SPIRITOFREDEMPTION = 0x20
 };
 
 
@@ -806,18 +817,25 @@ enum UnitFieldFlags // UNIT_FIELD_FLAGS #46 - these are client flags
 
 enum UnitFieldFlags2
 {
-    UNIT_FLAG2_FEIGN_DEATH          = 0x0000001,
-    UNIT_FLAG2_UNK1                 = 0x0000002,    // Hides body and body armor. Weapons, shoulder and head armors still visible
-    UNIT_FLAG2_UNK2                 = 0x0000004,
-    UNIT_FLAG2_COMPREHEND_LANG      = 0x0000008,    // Allows target to understand itself while talking in different language
-    UNIT_FLAG2_MIRROR_IMAGE         = 0x0000010,
-    UNIT_FLAG2_UNK5                 = 0x0000020,
-    UNIT_FLAG2_FORCE_MOVE           = 0x0000040,    // Makes target to run forward
-    UNIT_FLAG2_DISARM_OFFHAND       = 0x0000080,
-    UNIT_FLAG2_UNK8                 = 0x0000100,
-    UNIT_FLAG2_UNK9                 = 0x0000200,
-    UNIT_FLAG2_DISARM_RANGED        = 0x0000400,
-    UNIT_FLAG2_ENABLE_POWER_REGEN   = 0x0000800,
+    UNIT_FLAG2_FEIGN_DEATH                  = 0x0000001,
+    UNIT_FLAG2_UNK1                         = 0x0000002,    // Hides body and body armor. Weapons, shoulder and head armors still visible
+    UNIT_FLAG2_UNK2                         = 0x0000004,
+    UNIT_FLAG2_COMPREHEND_LANG              = 0x0000008,    // Allows target to understand itself while talking in different language
+    UNIT_FLAG2_MIRROR_IMAGE                 = 0x0000010,
+    UNIT_FLAG2_UNK5                         = 0x0000020,
+    UNIT_FLAG2_FORCE_MOVE                   = 0x0000040,    // Makes target to run forward
+    UNIT_FLAG2_DISARM_OFFHAND               = 0x0000080,
+    UNIT_FLAG2_UNK8                         = 0x0000100,
+    UNIT_FLAG2_UNK9                         = 0x0000200,
+    UNIT_FLAG2_DISARM_RANGED                = 0x0000400,
+    UNIT_FLAG2_ENABLE_POWER_REGEN           = 0x0000800,
+    UNIT_FLAG2_RESTRICT_PARTY_INTERACTION   = 0x0001000,   // Restrict interaction to party or raid
+    UNIT_FLAG2_PREVENT_SPELL_CLICK          = 0x0002000,   // Prevent spellclick
+    UNIT_FLAG2_ALLOW_ENEMY_INTERACT         = 0x0004000,
+    UNIT_FLAG2_DISABLE_TURN                 = 0x0008000,
+    UNIT_FLAG2_UNK10                        = 0x0010000,
+    UNIT_FLAG2_PLAY_DEATH_ANIM              = 0x0020000,   // Plays special death animation upon death
+    UNIT_FLAG2_ALLOW_CHEAT_SPELLS           = 0x0040000    // Allows casting spells with AttributesExG & SP_ATTR_EX_G_IS_CHEAT_SPELL
 };
 
 enum UnitDynamicFlags
@@ -862,19 +880,25 @@ enum VisualState
 
 enum HitStatus
 {
-    HITSTATUS_UNK               = 0x01,
-    HITSTATUS_HITANIMATION      = 0x02,
-    HITSTATUS_DUALWIELD         = 0x04,
-    HITSTATUS_MISS              = 0x10,
+    HITSTATUS_NORMALSWING       = 0x00000000,
+    HITSTATUS_UNK               = 0x00000001,
+    HITSTATUS_HITANIMATION      = 0x00000002,
+    HITSTATUS_DUALWIELD         = 0x00000004,
+    HITSTATUS_UNK1              = 0x00000008,
+    HITSTATUS_MISS              = 0x00000010,
     HITSTATUS_ABSORBED          = 0x20 | 0x40,
     HITSTATUS_RESIST            = 0x80 | 0x100,
-    HITSTATUS_CRICTICAL         = 0x200,
-    HITSTATUS_BLOCK             = 0x2000,
-    HITSTATUS_CRUSHINGBLOW      = 0x8000,
-    HITSTATUS_GLANCING          = 0x10000,
-    HITSTATUS_NOACTION          = 0x10000,
-    HITSTATUS_SWINGNOHITSOUND   = 0x80000, // as in miss?
-    HITSTATUS_UNK2              = 0x00800000
+    HITSTATUS_CRICTICAL         = 0x00000200,
+    HITSTATUS_BLOCK             = 0x00002000,
+    HITSTATUS_CRUSHINGBLOW      = 0x00008000,
+    HITSTATUS_GLANCING          = 0x00010000,
+    HITSTATUS_Crushing          = 0x00020000,
+    HITSTATUS_NOACTION          = 0x00040000,
+    HITSTATUS_UNK2              = 0x00080000,
+    HITSTATUS_UNK3              = 0x00100000,
+    HITSTATUS_SWINGNOHITSOUND   = 0x00200000,
+    HITSTATUS_UNK4              = 0x00200000,
+    HITSTATUS_RAGE_GAIN         = 0x00800000
 };
 
 enum INVIS_FLAG

@@ -6493,9 +6493,9 @@ void Aura::SpellAuraModHealingPCT(bool apply)
 void Aura::SpellAuraUntrackable(bool apply)
 {
 	if (apply)
-		m_target->SetFlag(UNIT_FIELD_BYTES_1, STANDSTATE_FLAG_UNTRACKABLE);
+		m_target->SetFlag(UNIT_FIELD_BYTES_1, UNIT_STAND_FLAGS_UNTRACKABLE);
 	else
-		m_target->RemoveFlag(UNIT_FIELD_BYTES_1, STANDSTATE_FLAG_UNTRACKABLE);
+		m_target->RemoveFlag(UNIT_FIELD_BYTES_1, UNIT_STAND_FLAGS_UNTRACKABLE);
 }
 
 void Aura::SpellAuraModRangedAttackPower(bool apply)
