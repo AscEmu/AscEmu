@@ -2209,10 +2209,6 @@ class SERVER_DECL Player : public Unit
         /// Nose level of the character (needed for proper breathing)
         float m_noseLevel;
 
-        /* Mind Control */
-        void Possess(uint64 GUID, uint32 delay = 0);
-        void UnPossess();
-
         /* Last Speeds */
         void UpdateLastSpeeds()
         {
@@ -2558,6 +2554,14 @@ class SERVER_DECL Player : public Unit
 
         void SendTeleportPacket(float x, float y, float z, float o);
         void SendTeleportAckPacket(float x, float y, float z, float o);
+
+        bool camControle;
+        void SendCinematicCamera(uint32 id);
+        void SetClientControl(Unit* target, uint8 allowMove);
+        void SetMover(Unit* target)
+		{
+			GetSession()->m_MoverWoWGuid.Init(target->GetGUID());
+        }
 };
 
 class SkillIterator

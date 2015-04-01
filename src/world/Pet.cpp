@@ -1967,7 +1967,8 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
             if (uTagger != NULL && uTagger->IsPlayer())
             {
                 Player* pTagger = TO_PLAYER(uTagger);
-
+                if (pTagger == NULL && (uTagger->IsPet() || uTagger->IsSummon()) && uTagger->GetPlayerOwner())
+                    pTagger = TO_PLAYER(uTagger->GetPlayerOwner());
                 if (pTagger != NULL)
                 {
 

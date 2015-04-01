@@ -5548,6 +5548,13 @@ void Unit::DropAurasOnDeath()
         }
 }
 
+bool Unit::IsControlledByPlayer()
+{
+    if (IS_PLAYER_GUID(GetCharmedByGUID()) || IsPlayer())
+        return true;
+    return false;
+}
+
 void Unit::UpdateSpeed()
 {
     if (GetMount() == 0)
@@ -8494,4 +8501,115 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
             break;
     }
     player->AddGroupUpdateFlag(Flags);
+}
+
+void Unit::Possess(Unit* pTarget, uint32 delay)
+{
+    Player* pThis = NULL;
+    if (IsPlayer())
+        pThis = TO_PLAYER(this);
+    else // do not support creatures just yet
+        return;
+    if (!pThis)
+        return;
+    if (GetCharmedUnitGUID())
+        return;
+
+    Root();
+
+    if (delay != 0)
+    {
+        sEventMgr.AddEvent(this, &Unit::Possess, pTarget, uint32(0), 0, delay, 1, 0);
+        return;
+    }
+    if (pTarget == NULL)
+    {
+        Unroot();
+        return;
+    }
+
+    pThis->m_CurrentCharm = pTarget->GetGUID();
+    if (pTarget->IsCreature())
+    {
+        // unit-only stuff.
+        pTarget->setAItoUse(false);
+        pTarget->GetAIInterface()->StopMovement(0);
+        pTarget->m_redirectSpellPackets = pThis;
+    }
+
+    m_noInterrupt++;
+    SetCharmedUnitGUID(pTarget->GetGUID());
+    pTarget->SetCharmedByGUID(GetGUID());
+    pTarget->SetCharmTempVal(pTarget->GetFaction());
+    pThis->SetFarsightTarget(pTarget->GetGUID());
+    pTarget->SetFaction(GetFaction());
+    pTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
+
+    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+
+    // send "switch mover" packet
+    pThis->SetClientControl(pTarget, 1);
+
+    // update target faction set
+    pTarget->UpdateOppFactionSet();
+
+    if (!(pTarget->IsPet() && TO< Pet* >(pTarget) == pThis->GetSummon()))
+    {
+        WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
+        pTarget->BuildPetSpellList(data);
+        pThis->GetSession()->SendPacket(&data);
+    }
+}
+
+void Unit::UnPossess()
+{
+    Player* pThis = NULL;
+    if (IsPlayer())
+        pThis = TO_PLAYER(this);
+    else // creatures no support yet
+        return;
+    if (!pThis)
+        return;
+    if (!GetCharmedUnitGUID())
+        return;
+
+    Unit* pTarget = GetMapMgr()->GetUnit(GetCharmedUnitGUID());
+    if (!pTarget)
+        return;
+
+    pThis->m_CurrentCharm = 0;
+
+    pThis->SpeedCheatReset();
+
+    if (pTarget->IsCreature())
+    {
+        // unit-only stuff.
+        pTarget->setAItoUse(true);
+        pTarget->m_redirectSpellPackets = 0;
+    }
+
+    m_noInterrupt--;
+    pThis->SetFarsightTarget(0);
+    SetCharmedUnitGUID(0);
+    pTarget->SetCharmedByGUID(0);
+    SetCharmedUnitGUID(0);
+
+    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+    pTarget->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
+    pTarget->SetFaction(pTarget->GetCharmTempVal());
+    pTarget->UpdateOppFactionSet();
+
+    // send "switch mover" packet
+    pThis->SetClientControl(pTarget, 0);
+
+    if (!(pTarget->IsPet() && TO< Pet* >(pTarget) == pThis->GetSummon()))
+        pThis->SendEmptyPetSpellList();
+
+    Unroot();
+
+    if (!pTarget->IsPet() && (pTarget->GetCreatedByGUID() == GetGUID()))
+    {
+        sEventMgr.AddEvent(TO< Object* >(pTarget), &Object::Delete, 0, 1, 1, 0);
+        return;
+    }
 }

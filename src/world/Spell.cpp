@@ -270,6 +270,16 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
             LOG_DEBUG("[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
             break;
     }
+    if (u_caster && m_spellInfo->AttributesExF & FLAGS7_CAST_BY_CHARMER)
+    {
+        Unit* u = u_caster->GetMapMgrUnit(u_caster->GetCharmedByGUID());
+        if (u)
+        {
+            u_caster = u;
+            if (u->IsPlayer())
+                p_caster = TO<Player*>(u);
+        }
+    }
 
     m_spellState = SPELL_STATE_NULL;
 
