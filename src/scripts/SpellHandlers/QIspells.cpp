@@ -1770,7 +1770,7 @@ bool SymbolOfLife(uint32 i, Spell* pSpell) // Alliance ress. quests
     if (!questOk)
         return true;
 
-    target->SetStandState(0);
+    target->SetStandState(STANDSTATE_STAND);
     target->setDeathState(ALIVE);
 
     target->Despawn(10 * 1000, 1 * 60 * 1000);
@@ -1800,7 +1800,7 @@ bool FilledShimmeringVessel(uint32 i, Spell* pSpell) // Blood Elf ress. quest
     if (qle == NULL)
         return true;
 
-    target->SetStandState(0);
+    target->SetStandState(STANDSTATE_STAND);
     target->setDeathState(ALIVE);
 
     target->Despawn(30 * 1000, 1 * 60 * 1000);
@@ -2321,7 +2321,7 @@ bool TheSeersRelic(uint32 i, Spell* pSpell)
     if (pTarget->GetEntry() != 16852)
         return true;
 
-    pTarget->SetStandState(0);
+    pTarget->SetStandState(STANDSTATE_STAND);
     pTarget->setDeathState(ALIVE);
     pTarget->Despawn(30 * 1000, 1 * 60 * 1000);
 
@@ -3130,7 +3130,7 @@ bool SpragglesCanteen(uint32 i, Spell* pSpell)
     if (qle == NULL)
         return true;
 
-    target->SetStandState(0);
+    target->SetStandState(STANDSTATE_STAND);
     target->setDeathState(ALIVE);
 
     target->Despawn(30 * 1000, 1 * 60 * 1000);

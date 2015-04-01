@@ -5463,6 +5463,15 @@ int32 Unit::getDetectRangeMod(uint64 guid)
     return 0;
 }
 
+bool Unit::IsSitting()
+{
+    uint8 s = GetStandState();
+    return
+        s == STANDSTATE_SIT_CHAIR        || s == STANDSTATE_SIT_LOW_CHAIR  ||
+        s == STANDSTATE_SIT_MEDIUM_CHAIR || s == STANDSTATE_SIT_HIGH_CHAIR ||
+        s == STANDSTATE_SIT;
+}
+
 void Unit::SetStandState(uint8 standstate)
 {
     //only take actions if standstate did change.

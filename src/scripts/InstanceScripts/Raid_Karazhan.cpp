@@ -1621,7 +1621,7 @@ class ShadeofAranAI : public CreatureAIScript
                         _unit->CastSpell(_unit, info_mass_polymorph, true);
                         _unit->setAttackTimer(2000, false);
                     }
-                    else if (_unit->GetStandState() != 1)
+                    else if (_unit->GetStandState() != STANDSTATE_SIT)
                     {
                         _unit->setAttackTimer(3000, false);
                         _unit->CastSpell(_unit, info_conjure, false);

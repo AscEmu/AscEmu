@@ -68,7 +68,7 @@ class SavannahProwler : public CreatureAIScript
         void OnCombatStart(Unit* pTarget)
         {
             if(_unit->GetStandState() == STANDSTATE_SLEEP)
-                _unit->SetStandState(0);
+                _unit->SetStandState(STANDSTATE_STAND);
         }
 
         static CreatureAIScript* Create(Creature* c) { return new SavannahProwler(c); }
