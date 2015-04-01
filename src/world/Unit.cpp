@@ -4347,7 +4347,7 @@ void Unit::AddAura(Aura* aur)
                         if (!aur->IsPositive()
                             && m_auras[x]->m_casterGuid != aur->m_casterGuid
                             && (m_auras[x]->GetSpellProto()->c_is_flags & SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF) == 0
-                           )
+                            )
                         {
                             continue;
                         }
@@ -5776,7 +5776,7 @@ void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 s
             && (m_auras[x]->GetSpellProto()->BGR_one_buff_on_target & buff_type) // aura is in same group
             && m_auras[x]->GetSpellId() != skip // make sure to not do self removes in case aura will stack
             && (!sguid || (sguid && m_auras[x]->m_casterGuid == sguid)) // we either remove everything or just buffs from us
-           )
+            )
             m_auras[x]->Remove();
     }
 }
@@ -6249,7 +6249,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
             && m_auras[x]->GetSpellProto()->School == School
             && (!m_auras[x]->IsPositive() || Positive)
             && (!Immune && m_auras[x]->GetSpellProto()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
-           )
+            )
             m_auras[x]->Remove();
 }
 
