@@ -616,7 +616,7 @@ enum AttributesExF // 6
     FLAGS7_UNUSED6                          = 0x00008000,   // 54368, 67892
     FLAGS7_UNUSED7                          = 0x00010000,
     FLAGS7_UNK19                            = 0x00020000,   // Mountspells?
-    FLAGS7_UNK20                            = 0x00040000,
+    FLAGS7_CAST_BY_CHARMER                  = 0x00040000,
     FLAGS7_UNK21                            = 0x00080000,
     FLAGS7_UNK22                            = 0x00100000,
     FLAGS7_UNK23                            = 0x00200000,

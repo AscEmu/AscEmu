@@ -612,6 +612,8 @@ void MapMgr::ChangeObjectLocation(Object* obj)
                 fRange = 0.0f;
             else if (curObj->IsPlayer() && TO< Player* >(curObj)->GetFarsightTarget() == obj->GetGUID())
                 fRange = 0.0f;                      //Mind Vision, Eye of Kilrogg
+            else if(plObj != NULL && plObj->camControle)
+				fRange = 0.0f;
             else
                 fRange = m_UpdateDistance; // normal distance
 
@@ -726,7 +728,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     MapCell* cell;
 
     //If the object announcing it's position is a special one, then it should do so in a much wider area - like the distance between the two transport towers in Orgrimmar, or more. - By: VLack
-    if (obj->IsGameObject() && (TO< GameObject* >(obj)->GetOverrides() & GAMEOBJECT_ONMOVEWIDE))
+    if (obj->IsGameObject() && (TO< GameObject* >(obj)->GetOverrides() & GAMEOBJECT_ONMOVEWIDE) || plObj && plObj->camControle)
     {
         endX = cellX + 5 <= _sizeX ? cellX + 6 : (_sizeX - 1);
         endY = cellY + 5 <= _sizeY ? cellY + 6 : (_sizeY - 1);
@@ -781,6 +783,8 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
         //If the object we're checking for possible removal is a transport or other special object, and we are players on the same map, don't remove it, and add it whenever possible...
         else if (plObj && curObj->IsGameObject() && (TO< GameObject* >(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
             fRange = 0.0f;
+        else if(plObj != NULL && plObj->camControle)
+			fRange = 0.0f;
         else
             fRange = m_UpdateDistance;                  // normal distance
 

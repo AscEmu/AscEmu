@@ -474,6 +474,8 @@ Player::Player(uint32 guid)
 
     ChampioningFactionID = 0;
     mountvehicleid = 0;
+
+    camControle = false;
 }
 
 void Player::OnLogin()
@@ -9957,111 +9959,6 @@ void Player::SetNoseLevel()
     }
 }
 
-void Player::Possess(uint64 GUID, uint32 delay)
-{
-    if (m_CurrentCharm)
-        return;
-
-    Root();
-
-    if (delay != 0)
-    {
-        sEventMgr.AddEvent(this, &Player::Possess, GUID, uint32(0), 0, delay, 1, 0);
-        return;
-    }
-
-    Unit* pTarget = m_mapMgr->GetUnit(GUID);
-    if (pTarget == NULL)
-    {
-        Unroot();
-        return;
-    }
-
-    m_CurrentCharm = GUID;
-    if (pTarget->IsCreature())
-    {
-        // unit-only stuff.
-        pTarget->setAItoUse(false);
-        pTarget->GetAIInterface()->StopMovement(0);
-        pTarget->m_redirectSpellPackets = this;
-    }
-
-    m_noInterrupt++;
-    SetCharmedUnitGUID(pTarget->GetGUID());
-    pTarget->SetCharmedByGUID(GetGUID());
-    pTarget->SetCharmTempVal(pTarget->GetFaction());
-    SetFarsightTarget(pTarget->GetGUID());
-    pTarget->SetFaction(GetFaction());
-    pTarget->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
-
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
-
-    /* send "switch mover" packet */
-    WorldPacket data1(SMSG_CLIENT_CONTROL_UPDATE, 10);
-    data1 << pTarget->GetNewGUID() << uint8(1);
-    m_session->SendPacket(&data1);
-
-    /* update target faction set */
-    pTarget->UpdateOppFactionSet();
-
-
-    if (!(pTarget->IsPet() && TO< Pet* >(pTarget) == GetSummon()))
-    {
-        WorldPacket data(SMSG_PET_SPELLS, 4 * 4 + 20);
-        pTarget->BuildPetSpellList(data);
-        m_session->SendPacket(&data);
-    }
-
-}
-
-void Player::UnPossess()
-{
-    if (m_CurrentCharm == 0)
-        return;
-
-    Unit* pTarget = GetMapMgr()->GetUnit(m_CurrentCharm);
-    if (!pTarget)
-        return;
-
-    m_CurrentCharm = 0;
-
-    SpeedCheatReset();
-
-    if (pTarget->IsCreature())
-    {
-        // unit-only stuff.
-        pTarget->setAItoUse(true);
-        pTarget->m_redirectSpellPackets = 0;
-    }
-
-    m_noInterrupt--;
-    SetFarsightTarget(0);
-    SetCharmedUnitGUID(0);
-    pTarget->SetCharmedByGUID(0);
-    SetCharmedUnitGUID(0);
-
-    RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
-    pTarget->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED_CREATURE | UNIT_FLAG_PVP_ATTACKABLE);
-    pTarget->SetFaction(pTarget->GetCharmTempVal());
-    pTarget->UpdateOppFactionSet();
-
-    /* send "switch mover" packet */
-    WorldPacket data(SMSG_CLIENT_CONTROL_UPDATE, 10);
-    data << pTarget->GetNewGUID() << uint8(0);
-    m_session->SendPacket(&data);
-
-    if (!(pTarget->IsPet() && TO< Pet* >(pTarget) == GetSummon()))
-        SendEmptyPetSpellList();
-
-    Unroot();
-
-    if (!pTarget->IsPet() && (pTarget->GetCreatedByGUID() == GetGUID()))
-    {
-        sEventMgr.AddEvent(TO< Object* >(pTarget), &Object::Delete, 0, 1, 1, 0);
-        return;
-    }
-}
-
 void Player::SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position)
 {
     m_summonInstanceId = InstanceID;
@@ -12779,7 +12676,8 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
             if (uTagger != NULL && uTagger->IsPlayer())
             {
                 Player* pTagger = TO_PLAYER(uTagger);
-
+                if(pTagger == NULL && (uTagger->IsPet() || uTagger->IsSummon()) && uTagger->GetPlayerOwner())
+                    pTagger = TO_PLAYER(uTagger->GetPlayerOwner());
                 if (pTagger != NULL)
                 {
 
@@ -13916,4 +13814,21 @@ void Player::SendUpdateToOutOfRangeGroupMembers()
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
 	if (Pet* pet = GetSummon())
 		pet->ResetAuraUpdateMaskForRaid();
+}
+
+void Player::SetClientControl(Unit* target, uint8 allowMove)
+{
+    WorldPacket ack(SMSG_CLIENT_CONTROL_UPDATE, 200);
+    ack << target->GetNewGUID() << uint8(allowMove);
+    SendPacket(&ack);
+    if (target == this)
+        SetMover(this);
+}
+
+void Player::SendCinematicCamera(uint32 id)
+{
+    camControle = true;
+    GetMapMgr()->ChangeObjectLocation(this);
+    SetPosition(GetPositionX() + 0.01, GetPositionY() + 0.01, GetPositionZ() + 0.01, GetOrientation());
+    GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &id);
 }

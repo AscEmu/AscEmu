@@ -1257,7 +1257,7 @@ class SERVER_DECL Unit : public Object
 		bool SetAurDuration(uint32 spellId, Unit* caster, uint32 duration);
 		bool SetAurDuration(uint32 spellId, uint32 duration);
 		void DropAurasOnDeath();
-
+        bool IsControlledByPlayer();
 		//******************************************************
 		// Auras that can affect only one target at a time
 		//******************************************************
@@ -1306,7 +1306,8 @@ class SERVER_DECL Unit : public Object
 		uint32 m_triggerSpell;
 		uint32 m_triggerDamage;
 		uint32 m_canMove;
-
+        void Possess(Unit* pTarget, uint32 delay = 0);
+		void UnPossess();
 		SummonHandler summonhandler;
 
 		// Spell Effect Variables
@@ -1720,8 +1721,6 @@ class SERVER_DECL Unit : public Object
 			else
 				return false;
 		}
-
-		virtual void UnPossess() {}
 
 		virtual bool isTrainingDummy() { return false; }
 

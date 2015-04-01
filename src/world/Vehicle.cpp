@@ -189,6 +189,8 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
             WorldPacket spells(SMSG_PET_SPELLS, 100);
             owner->BuildPetSpellList(spells);
             passenger->SendPacket(&spells);
+
+            static_cast<Player*>(passenger)->SetMover(owner);
         }
     }
 
@@ -290,6 +292,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
 
             // send null spells if needed
             static_cast<Player*>(passenger)->SendEmptyPetSpellList();
+            static_cast<Player*>(passenger)->SetMover(passenger);
         }
     }
 

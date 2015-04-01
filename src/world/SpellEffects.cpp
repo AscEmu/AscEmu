@@ -2617,7 +2617,7 @@ void Spell::SpellEffectSummonPossessed(uint32 i, SummonPropertiesEntry* spe, Cre
     s->SetCreatedBySpell(m_spellInfo->Id);
     s->PushToWorld(p_caster->GetMapMgr());
 
-    p_caster->Possess(s->GetGUID(), 1000);
+    p_caster->Possess(s, 1000);
 }
 
 void Spell::SpellEffectSummonCompanion(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v)
