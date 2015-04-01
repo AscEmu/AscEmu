@@ -1552,6 +1552,7 @@ class SERVER_DECL Unit : public Object
         }
         void EventChill(Unit* proc_target, bool is_victim = false);
 
+        bool IsSitting();
         void SetStandState(uint8 standstate);
 
         StandState GetStandState()

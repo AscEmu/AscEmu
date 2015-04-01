@@ -1461,7 +1461,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
             if (unitTarget->GetEntry() == 16483)
             {
                 unitTarget->RemoveAura(29152);
-                unitTarget->SetStandState(0);
+                unitTarget->SetStandState(STANDSTATE_STAND);
                 static const char* testo[12] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
                 char msg[150];
                 snprintf(msg, 150, "Many thanks to you %s. I'd best get to the crash site and see how I can help out. Until we meet again...", testo[p_caster->getClass()]);

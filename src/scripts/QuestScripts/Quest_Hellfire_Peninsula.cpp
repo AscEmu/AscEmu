@@ -326,7 +326,7 @@ class HellfireDeadNPC : public CreatureAIScript
 
         void OnLoad()
         {
-            _unit->SetStandState(7);
+            _unit->SetStandState(STANDSTATE_DEAD);
             _unit->setDeathState(CORPSE);
             _unit->GetAIInterface()->m_canMove = false;
         }

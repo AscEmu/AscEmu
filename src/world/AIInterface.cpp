@@ -302,12 +302,12 @@ void AIInterface::Update(unsigned long time_passed)
             else if ((*next_timed_emote)->type == 2)   //emotestate
             {
                 m_Unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, (*next_timed_emote)->value);
-                m_Unit->SetStandState(0);
+                m_Unit->SetStandState(STANDSTATE_STAND);
             }
             else if ((*next_timed_emote)->type == 3)   //oneshot emote
             {
                 m_Unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-                m_Unit->SetStandState(0);
+                m_Unit->SetStandState(STANDSTATE_STAND);
                 m_Unit->Emote((EmoteType)(*next_timed_emote)->value);           // Animation
             }
             if ((*next_timed_emote)->msg)

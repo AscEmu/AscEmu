@@ -21,7 +21,6 @@
 
 #include "StdAfx.h"
 
-
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -135,19 +134,18 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP && !_player->IsSitting())
     {
         if (p_User->CombatStatus.IsInCombat() || p_User->IsMounted())
         {
             _player->GetItemInterface()->BuildInventoryChangeError(tmpItem, NULL, INV_ERR_CANT_DO_IN_COMBAT);
             return;
         }
-
-        if (p_User->GetStandState() != 1)
+        else
             p_User->SetStandState(STANDSTATE_SIT);
         // loop through the auras and removing existing eating spells
     }
-    else   // cebernic: why not stand up
+    /*else   // cebernic: why not stand up (because reasons...)
     {
         if (!p_User->CombatStatus.IsInCombat() && !p_User->IsMounted())
         {
@@ -156,7 +154,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
                 p_User->SetStandState(STANDSTATE_STAND);
             }
         }
-    }
+    }*/
 
     // cebernic: remove stealth on using item
     if (!(spellInfo->AuraInterruptFlags & ATTRIBUTESEX_NOT_BREAK_STEALTH))

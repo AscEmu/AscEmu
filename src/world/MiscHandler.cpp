@@ -1489,7 +1489,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     _player->SetByte(PLAYER_BYTES_2, 0, static_cast<uint8>(newfacial));
     _player->ModGold(-(int32)cost);
 
-    _player->SetStandState(0);                              // stand up
+    _player->SetStandState(STANDSTATE_STAND);                              // stand up
 #ifdef ENABLE_ACHIEVEMENTS
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
