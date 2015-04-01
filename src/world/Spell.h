@@ -249,23 +249,23 @@ enum SPELL_LOG
 
 enum SpellCastTargetFlags
 {
-    TARGET_FLAG_SELF                = 0x0000, // they are checked in following order
-    TARGET_FLAG_UNK1                = 0x0001,
-    TARGET_FLAG_UNIT                = 0x0002,
-    TARGET_FLAG_UNK2                = 0x0004,
-    TARGET_FLAG_UNK3                = 0x0008,
-    TARGET_FLAG_ITEM                = 0x0010,
-    TARGET_FLAG_SOURCE_LOCATION     = 0x0020,
-    TARGET_FLAG_DEST_LOCATION       = 0x0040,
-    TARGET_FLAG_OBJECT_CASTER       = 0x0080,
-    TARGET_FLAG_UNIT_CASTER         = 0x0100,
-    TARGET_FLAG_CORPSE              = 0x0200, // PvP Corpse
-    TARGET_FLAG_UNIT_CORPSE         = 0x0400, // Gathering professions
-    TARGET_FLAG_OBJECT              = 0x0800,
-    TARGET_FLAG_TRADE_ITEM          = 0x1000,
-    TARGET_FLAG_STRING              = 0x2000,
-    TARGET_FLAG_OPEN_LOCK           = 0x4000, // opening object/lock
-    TARGET_FLAG_CORPSE2             = 0x8000, // for resurrection spells
+    TARGET_FLAG_SELF                = 0x00000, // they are checked in following order
+    TARGET_FLAG_UNK1                = 0x00001,
+    TARGET_FLAG_UNIT                = 0x00002,
+    TARGET_FLAG_UNK2                = 0x00004,
+    TARGET_FLAG_UNK3                = 0x00008,
+    TARGET_FLAG_ITEM                = 0x00010,
+    TARGET_FLAG_SOURCE_LOCATION     = 0x00020,
+    TARGET_FLAG_DEST_LOCATION       = 0x00040,
+    TARGET_FLAG_OBJECT_CASTER       = 0x00080,
+    TARGET_FLAG_UNIT_CASTER         = 0x00100,
+    TARGET_FLAG_CORPSE              = 0x00200, // PvP Corpse
+    TARGET_FLAG_UNIT_CORPSE         = 0x00400, // Gathering professions
+    TARGET_FLAG_OBJECT              = 0x00800,
+    TARGET_FLAG_TRADE_ITEM          = 0x01000,
+    TARGET_FLAG_STRING              = 0x02000,
+    TARGET_FLAG_OPEN_LOCK           = 0x04000, // opening object/lock
+    TARGET_FLAG_CORPSE2             = 0x08000, // for resurrection spells
     TARGET_FLAG_GLYPH               = 0x20000
 };
 
@@ -638,7 +638,7 @@ enum AttributesExG // 7
     SP_ATTR_EX_G_UNK1                       = 0x00000001,
     SP_ATTR_EX_G_UNK2                       = 0x00000002,
     SP_ATTR_EX_G_UNK3                       = 0x00000004,
-    SP_ATTR_EX_G_UNK4                       = 0x00000008,
+    SP_ATTR_EX_G_IS_CHEAT_SPELL             = 0x00000008,
     SP_ATTR_EX_G_UNK5                       = 0x00000010,
     SP_ATTR_EX_G_UNK6                       = 0x00000020,   // shaman player totem summon?
     SP_ATTR_EX_G_UNK7                       = 0x00000040,

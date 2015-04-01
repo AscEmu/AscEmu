@@ -1934,7 +1934,7 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
     if (!Caster || !Target || !Dmg)
         return;
 
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 70);
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 108);
 
     uint32 Overkill = 0;
 
@@ -1973,7 +1973,7 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
     }
 
 
-    if (HitStatus & HITSTATUS_UNK2)
+    if (HitStatus & HITSTATUS_RAGE_GAIN)
     {
         data << uint32(0);              // unknown
     }
