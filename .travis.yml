@@ -12,12 +12,22 @@ branches:
 # define complier for build
 compiler:
   - gcc
-  - clang
+  #- clang (currently not used)
 
 before_install:
- - sudo apt-get update -qq
+ - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
+ - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+ - sudo apt-get -qq update
+ - sudo apt-get -qq install build-essential libtool gcc-4.8 g++-4.8 make cmake
+ - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
  - sudo apt-get install -qq libbz2-dev libncurses5-dev libmysqlclient-dev libreadline-dev libsdl1.2-dev libssl-dev zlib1g-dev
 
+install:
+ - mkdir bin
+ - cd bin
+ - cmake ../
+
 script:
-  - test -d _build || mkdir _build
-  - cd _build
+ - cd ..
+ - cd bin
+ - make -j 10
