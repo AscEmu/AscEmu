@@ -26,6 +26,7 @@
 #define MISC_SCRIPTS_SETUP_H
 
 void SetupBrewfest(ScriptMgr* mgr);
+void SetupDarkmoonFaire(ScriptMgr* mgr);
 void SetupDayOfTheDead(ScriptMgr* mgr);
 void SetupL70ETC(ScriptMgr* mgr);
 void SetupWinterVeil(ScriptMgr* mgr);

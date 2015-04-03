@@ -17,11 +17,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "WorldPacket.h"
+#include "StackBuffer.h"
+
 #pragma once
 
 struct Quest;
 class Creature;
 class Item;
+class Player;
+class Object;
+class GameObject;
 
 enum Icons
 {
@@ -349,19 +355,15 @@ namespace Arcemu
         class Menu;
         class Item
         {
+            public:
                 uint16 id_;
                 bool coded_;
                 uint8 icon_;
                 uint32 boxmoney_;
-                string boxmessage_;
-                string text_;
-            public:
+                std::string boxmessage_;
+                std::string text_;
                 Item(size_t, uint8);
                 Item(size_t, uint8, const char*, bool = false, size_t = 0, const char* = NULL);
-
-                friend WorldPacket & operator<<(WorldPacket &, const Gossip::Item &);
-                template<uint32 size>
-                friend StackBuffer<size>& operator<<(StackBuffer<size>&, const Gossip::Item &);
 
                 friend class Menu;
         };
@@ -475,12 +477,6 @@ namespace Arcemu
                 //////////////////////////////////////////////////////////////////////////////////////////
                 static void Complete(Player*);
 
-                friend WorldPacket & operator<<(WorldPacket &, const Gossip::Menu &);
-
-                template<uint32 size>
-                friend StackBuffer<size>& operator<<(StackBuffer<size>&, const Gossip::Menu &);
-
-            protected:
                 uint32 textid_;
                 uint32 language_;                   /// For localized quest texts.
                 uint64 guid_;

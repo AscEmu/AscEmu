@@ -43,14 +43,14 @@ Gossip::Item::Item(size_t itemid, uint8 icon, const char* text, bool coded/*= fa
     boxmessage_ = (boxmessage != NULL) ? boxmessage : "";
 }
 
-WorldPacket& Gossip::operator<<(WorldPacket& packet, const Gossip::Item & item)
+WorldPacket& operator<<(WorldPacket& packet, const Gossip::Item & item)
 {
     packet << uint32(item.id_) << item.icon_ << item.coded_ << item.boxmoney_ << item.text_ << item.boxmessage_;
     return packet;
 }
 
 template<uint32 size>
-StackBuffer<size>& Gossip::operator<<(StackBuffer<size>& packet, const Gossip::Item & item)
+StackBuffer<size>& operator<<(StackBuffer<size>& packet, const Gossip::Item & item)
 {
     packet << uint32(item.id_) << item.icon_ << item.coded_ << item.boxmoney_ << item.text_ << item.boxmessage_;
     return packet;
@@ -105,7 +105,7 @@ void Gossip::Menu::RemoveQuest(Quest* quest)
         questlist_.erase(itr);
 }
 
-WorldPacket& Gossip::operator<<(WorldPacket& packet, const Gossip::Menu & menu)
+WorldPacket& operator<<(WorldPacket& packet, const Gossip::Menu & menu)
 {
     packet << menu.guid_;
     packet << uint32(0);
@@ -131,7 +131,7 @@ WorldPacket& Gossip::operator<<(WorldPacket& packet, const Gossip::Menu & menu)
 }
 
 template<uint32 size>
-StackBuffer<size>& Gossip::operator<<(StackBuffer<size> & packet, const Gossip::Menu & menu)
+StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & menu)
 {
     packet << menu.guid_;
     packet << uint32(0);
