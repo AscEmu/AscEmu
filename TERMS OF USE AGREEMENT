@@ -78,8 +78,12 @@ license set forth in this Section 7;
 you acknowledge and agree that we shall have the right (but not obligation), in our sole discretion, to refuse to
 publish or to remove or block access to any Content you provide at any time and for any reason, with or without notice.
 
+9. Copyright and "link-back"
+If you use commits/pullrequests or codeparts made for or by the ascemu community, you agree to fill the following lines into the header
+section of your files:
+* Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-9. LIMITATION OF LIABILITY
+10. LIMITATION OF LIABILITY
 **************************
 YOU EXPRESSLY UNDERSTAND AND AGREE THAT WE SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INDICENTAL,
 CONSEQUENTIAL OR EXEMPLARY DAMAGES, INCLUDING BUT NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA 
@@ -98,6 +102,6 @@ effort to do so, within a reasonable time frame, if we determine that removal is
 You agree, through your use of this service, that you will not use this bulletin board to post any material which is knowingly
 false and/or defamatory, inaccurate, abusive, vulgar, hateful, harassing, obscene, profane, sexually oriented, threatening, invasive
 of a person's privacy, or otherwise violative of any law.
-You agree not to post any copyrighted material unless the copyright is owned by you or by this bulletin board. If you have read,
+You agree not to post any copyrighted material unless the copyright is owned by you. If you have read,
 understood and agree to these rules and conditions, you may use and view the content of our services. 
 If you disagree, remove all files and folders related to the AscEmu project you downloaded through GitHub's services immediately.
