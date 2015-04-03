@@ -38,7 +38,7 @@ class Guild;
 struct GuildRank;
 class Pet;
 class Charter;
-class LFGMatch;
+class LfgMatch;
 struct LevelInfo;
 class SpeedCheatDetector;
 

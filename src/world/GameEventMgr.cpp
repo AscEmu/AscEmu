@@ -287,7 +287,11 @@ void GameEventMgr::GameEventMgrThread::Update()
 {
     //Log.Notice("GameEventMgr", "Tick!");
     auto now = time(0);
+    #if COMPILER == COMPILER_MICROSOFT
     for each (auto gameEventPair in sGameEventMgr.mGameEvents)
+    #else
+    for (auto gameEventPair : sGameEventMgr.mGameEvents)
+    #endif
     {
         GameEvent* gameEvent = gameEventPair.second;
 
