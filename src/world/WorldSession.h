@@ -31,6 +31,13 @@ class MapMgr;
 class Creature;
 struct TrainerSpell;
 
+struct LfgUpdateData;       // forward declare
+struct LfgJoinResultData;
+struct LfgPlayerBoot;
+struct LfgProposal;
+struct LfgReward;
+struct LfgRoleCheck;
+
 //#define SESSION_CAP 5
 #define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
 

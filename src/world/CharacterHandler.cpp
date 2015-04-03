@@ -82,7 +82,7 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     if (res != E_CHAR_NAME_SUCCESS)
     {
         WorldPacket data(SMSG_CHAR_CUSTOMIZE, 1);
-        data << uint8(CHAR_NAME_NO_NAME);
+        data << uint8(E_CHAR_NAME_NO_NAME);
         SendPacket(&data);
         return;
     }
@@ -103,7 +103,7 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     if (info != NULL && info->guid != guid)
     {
         WorldPacket data(SMSG_CHAR_CUSTOMIZE, 1);
-        data << uint8(CHAR_CREATE_NAME_IN_USE);
+        data << uint8(E_CHAR_CREATE_NAME_IN_USE);
         SendPacket(&data);
         return;
     }
@@ -1209,7 +1209,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     else
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(CHAR_CREATE_ERROR);
+        data << uint8(E_CHAR_CREATE_ERROR);
         SendPacket(&data);
         return;
     }
@@ -1224,7 +1224,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         if (!(lflag & used_loginFlag))
         {
             WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-            data << uint8(CHAR_CREATE_ERROR);
+            data << uint8(E_CHAR_CREATE_ERROR);
             SendPacket(&data);
             return;
         }
@@ -1234,7 +1234,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     if (!objmgr.GetPlayerCreateInfo(race, info->cl))
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(CHAR_CREATE_ERROR);
+        data << uint8(E_CHAR_CREATE_ERROR);
         SendPacket(&data);
         return;
     }
@@ -1268,7 +1268,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     if (newinfo != NULL && newinfo->guid != guid)
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(CHAR_CREATE_NAME_IN_USE);
+        data << uint8(E_CHAR_CREATE_NAME_IN_USE);
         SendPacket(&data);
         return;
     }

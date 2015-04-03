@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
@@ -18,6 +18,7 @@
  */
 
 #include "LfgMgr.h"
+#include "Common.h"
 
 void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lock)
 {
@@ -216,7 +217,9 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             data << uint32(qRew->reward_xp);
             data << uint32(reward->reward[done].variableMoney);
             data << uint32(reward->reward[done].variableXP);
-            data << uint8(qRew->reward_itemcount);
+            data << uint8(0);
+            ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision
+            /*data << uint8(qRew->reward_itemcount);
             if (qRew->reward_itemcount)
             {
                 ItemPrototype const* iProto = NULL;
@@ -231,7 +234,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
                     data << uint32(iProto ? iProto->DisplayInfoID : 0);
                     data << uint32(qRew->reward_itemcount[i]);
                 }
-            }
+            }*/
         }
         else
         {
@@ -498,7 +501,8 @@ void WorldSession::SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgW
 
 void WorldSession::SendLfgPlayerReward(uint32 rdungeonEntry, uint32 sdungeonEntry, uint8 done, const LfgReward* reward, const Quest* qRew)
 {
-    if (!rdungeonEntry || !sdungeonEntry || !qRew)
+    ///\todo FIXME 
+    /*if (!rdungeonEntry || !sdungeonEntry || !qRew)
         return;
 
     uint8 itemNum = uint8(qRew ? qRew->reward_itemcount : 0);
@@ -516,7 +520,7 @@ void WorldSession::SendLfgPlayerReward(uint32 rdungeonEntry, uint32 sdungeonEntr
     data << uint32(reward->reward[done].variableMoney);
     data << uint32(reward->reward[done].variableXP);
     data << uint8(itemNum);
-    /*
+
     if (itemNum)
     {
     ItemTemplate const* iProto = NULL;
