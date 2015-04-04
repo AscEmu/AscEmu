@@ -276,6 +276,7 @@ void GameEventMgr::LoadFromDB()
                 //mGOBGuidList.insert(GOBGuidList::value_type(event_id, id));
 
             } while (result->NextRow());
+            delete result;
         }
         Log.Success("GameEventMgr", "%u gameobject spawns for %u events from table event_gameobject_spawns loaded.", count, mGameEvents.size());
     }
