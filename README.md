@@ -2,6 +2,10 @@
 ﻿
 `master (3.3.5)`[![master Build Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu)
 
+`coverity check`<a href="https://scan.coverity.com/projects/4747">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/4747/badge.svg"/>
+</a>
 
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
