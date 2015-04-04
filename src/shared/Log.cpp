@@ -52,7 +52,7 @@ SERVER_DECL tm g_localTime;
 void oLog::SetColor(int color)
 {
 #if PLATFORM != PLATFORM_WIN32
-	static const char* colorstrings[TBLUE+1] = {
+    static const char* colorstrings[TBLUE+1] = {
    "",
     "\033[22;31m",
     "\033[22;32m",
@@ -150,6 +150,7 @@ void oLog::outError(const char* err, ...)
     va_end(ap);
     SetColor(TRED);
     printf("%s\n", buf);
+    SetColor(TNORMAL);
     outFile(m_errorFile, buf);
 }
 
@@ -182,6 +183,7 @@ void oLog::outBasic(const char* str, ...)
     va_end(ap);
     SetColor(TBLUE);
     printf("%s\n", buf);
+    SetColor(TNORMAL);
     outFile(m_normalFile, buf);
 }
 
@@ -198,6 +200,7 @@ void oLog::outDetail(const char* str, ...)
     va_end(ap);
     SetColor(TWHITE);
     printf("%s\n", buf);
+    SetColor(TNORMAL);
     outFile(m_normalFile, buf);
 }
 
@@ -214,6 +217,7 @@ void oLog::outDebug(const char* str, ...)
     va_end(ap);
     SetColor(TYELLOW);
     printf("%s\n", buf);
+    SetColor(TNORMAL);
     outFile(m_errorFile, buf);
 }
 
@@ -234,6 +238,7 @@ void oLog::logBasic(const char* file, int line, const char* fncname, const char*
     va_end(ap);
     SetColor(TWHITE);
     printf("%s\n", buf);
+    SetColor(TNORMAL);
     outFile(m_normalFile, buf);
 }
 
@@ -254,6 +259,7 @@ void oLog::logDetail(const char* file, int line, const char* fncname, const char
     va_end(ap);
     SetColor(TWHITE);
     printf("%s\n", buf);
+    SetColor(TNORMAL);
     outFile(m_normalFile, buf);
 }
 
@@ -274,6 +280,7 @@ void oLog::logError(const char* file, int line, const char* fncname, const char*
     va_end(ap);
     SetColor(TRED);
     printf("%s\n", buf);
+    SetColor(TNORMAL);
     outFile(m_errorFile, buf);
 }
 
@@ -310,6 +317,7 @@ void oLog::Notice(const char* source, const char* format, ...)
     va_end(ap);
     SetColor(TGREEN);
     printf("%s: %s\n", source, buf);
+    SetColor(TNORMAL);
     outFile(m_normalFile, buf, source);
 }
 
@@ -326,6 +334,7 @@ void oLog::Warning(const char* source, const char* format, ...)
     va_end(ap);
     SetColor(TWHITE);
     printf("%s: %s\n", source, buf);
+    SetColor(TNORMAL);
     outFile(m_normalFile, buf, source);
 }
 
@@ -358,6 +367,7 @@ void oLog::Error(const char* source, const char* format, ...)
     va_end(ap);
     SetColor(TRED);
     printf("%s: %s\n", source, buf);
+    SetColor(TNORMAL);
     outFile(m_errorFile, buf, source);
 }
 
@@ -374,6 +384,7 @@ void oLog::Debug(const char* source, const char* format, ...)
     va_end(ap);
     SetColor(TYELLOW);
     printf("%s: %s\n", source, buf);
+    SetColor(TNORMAL);
     outFile(m_errorFile, buf, source);
 }
 
