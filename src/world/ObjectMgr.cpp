@@ -3899,3 +3899,131 @@ void ObjectMgr::LoadAreaTrigger()
 
     Log.Success("AreaTrigger", "Loaded %u area trigger teleport definitions", count);
 }
+
+void ObjectMgr::LoadEventScripts()
+{
+    Log.Notice("ObjectMgr", "Loading Event Scripts...");
+
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM event_scripts WHERE event_id > 0 ORDER BY event_id");
+
+    if (!result)
+    {
+        Log.Notice("ObjectMgr", "Loaded 0 event_scripts. DB table `event_scripts` is empty.");
+        return;
+    }
+
+    uint32 count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 event_id = fields[0].GetUInt32();
+        simpleEventScripts eventscript;
+
+        eventscript.eventId = event_id;
+        eventscript.function = ScriptCommands(fields[1].GetUInt32());
+        eventscript.scripttype = EasyScriptTypes(fields[2].GetUInt32());
+        eventscript.data_1 = fields[3].GetUInt32();
+        eventscript.data_2 = fields[4].GetUInt32();
+        eventscript.data_3 = fields[5].GetUInt32();
+        eventscript.data_4 = fields[6].GetUInt32();
+        eventscript.data_5 = fields[7].GetUInt32();
+        eventscript.x = fields[8].GetUInt32();
+        eventscript.y = fields[9].GetUInt32();
+        eventscript.z = fields[10].GetUInt32();
+        eventscript.o = fields[11].GetUInt32();
+        eventscript.delay = fields[12].GetUInt32();
+        eventscript.nextevent = fields[13].GetUInt32();
+
+        simpleEventScripts* sa = &mEventScriptMaps.insert(EventScriptMaps::value_type(event_id, eventscript))->second;
+
+        // for search by spellid ( data_1 is spell id )
+        if (eventscript.data_1 && eventscript.scripttype == SCRIPT_TYPE_SPELL_EFFECT)
+            mSpellEffectMaps.insert(SpellEffectMaps::value_type(eventscript.data_1, sa));
+
+
+        ++count;
+    } while (result->NextRow());
+
+    Log.Success("ObjectMgr", "Loaded event_scripts for %u events...", count);
+}
+
+EventScriptBounds ObjectMgr::GetEventScripts(uint32 event_id) const
+{
+    return EventScriptBounds(mEventScriptMaps.lower_bound(event_id), mEventScriptMaps.upper_bound(event_id));
+}
+
+SpellEffectMapBounds ObjectMgr::GetSpellEffectBounds(uint32 data_1) const
+{
+    return SpellEffectMapBounds(mSpellEffectMaps.lower_bound(data_1), mSpellEffectMaps.upper_bound(data_1));
+}
+
+bool ObjectMgr::CheckforScripts(Player* plr, uint32 event_id)
+{
+    EventScriptBounds sab = objmgr.GetEventScripts(event_id);
+    for (EventScriptMaps::const_iterator itr = sab.first; itr != sab.second; ++itr)
+    {
+        sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second.eventId, EVENT_EVENT_SCRIPTS, itr->second.delay, 1, 0);
+        return true;
+    }
+
+    return false;
+}
+
+bool ObjectMgr::CheckforDummySpellScripts(Player* plr, uint32 data_1)
+{
+    SpellEffectMapBounds seb = objmgr.GetSpellEffectBounds(data_1);
+    for (SpellEffectMaps::const_iterator itr = seb.first; itr != seb.second; ++itr)
+    {
+        sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second->eventId, EVENT_EVENT_SCRIPTS, itr->second->delay, 1, 0);
+        return true;
+    }
+
+    return false;
+}
+
+void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
+{
+    EventScriptBounds sab = objmgr.GetEventScripts(next_event);
+
+    for (EventScriptMaps::const_iterator itr = sab.first; itr != sab.second; ++itr)
+    {
+        if (itr->second.scripttype == SCRIPT_TYPE_SPELL_EFFECT || SCRIPT_TYPE_DUMMY)
+        {
+            switch (itr->second.function)
+            {
+            case SCRIPT_COMMAND_RESPAWN_GAMEOBJECT:
+            {
+                Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
+                if (target == NULL)
+                    return;
+
+                TO_GAMEOBJECT(target)->Despawn(1000, itr->second.data_2);
+
+                break;
+            }
+
+            case SCRIPT_COMMAND_KILL_CREDIT:
+            {
+                QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
+                if (pQuest != NULL)
+                {
+                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->required_mobcount[itr->second.data_5])
+                    {
+                        pQuest->SetMobCount(itr->second.data_5, pQuest->GetMobCount(itr->second.data_5) + 1);
+                        pQuest->SendUpdateAddKill(itr->second.data_5);
+                        pQuest->UpdatePlayerFields();
+                    }
+                }
+                break;
+            }
+            }
+        }
+
+        if (itr->second.nextevent != NULL)
+        {
+            objmgr.CheckforScripts(plr, itr->second.nextevent);
+        }
+    }
+
+}
