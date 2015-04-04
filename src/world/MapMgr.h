@@ -124,6 +124,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		CreatureSet::iterator creature_iterator;            /// required by owners despawning creatures and deleting *(++itr)
 		uint64 GenerateCreatureGUID(uint32 entry);
 		Creature* CreateCreature(uint32 entry);
+        Creature* CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
 
 		Creature* GetCreature(uint32 guid)
 		{

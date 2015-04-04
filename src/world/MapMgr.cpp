@@ -1690,6 +1690,17 @@ Creature* MapMgr::CreateCreature(uint32 entry)
     return new Creature(guid);
 }
 
+Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO)
+{
+    auto creature = CreateCreature(pEntry);
+    auto cp = CreatureProtoStorage.LookupEntry(pEntry);
+    if (cp == nullptr || cp == NULL)
+        return nullptr;
+
+    creature->Load(cp, pX, pY, pZ, pO);
+    creature->AddToWorld(this);
+    return creature;
+}
 
 Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
 {

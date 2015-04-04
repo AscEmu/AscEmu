@@ -1176,6 +1176,8 @@ class SERVER_DECL Unit : public Object
         bool m_invisible;
         uint8 m_invisFlag;
         int32 m_invisDetect[INVIS_FLAG_TOTAL];
+        void SetInvisFlag(uint8 pInvisFlag) { m_invisFlag = pInvisFlag; m_invisible = pInvisFlag != INVIS_FLAG_NORMAL; UpdateVisibility(); }
+        uint8 GetInvisFlag() { return m_invisFlag; }
 
         //************************************************************************************************************************
         // AURAS
