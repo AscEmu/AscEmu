@@ -437,6 +437,7 @@ bool World::SetInitialWorldSettings()
 
     MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
     MAKE_TASK(SpellFactoryMgr, LoadSpellAreas);
+    MAKE_TASK(ObjectMgr, LoadEventScripts);
     MAKE_TASK(WeatherMgr, LoadFromDB);
     MAKE_TASK(AddonMgr, LoadFromDB);
     MAKE_TASK(GameEventMgr, LoadFromDB);

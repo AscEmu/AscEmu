@@ -1516,6 +1516,9 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
     Player* plyr = GetPlayer();
 
+    //Event Scripts
+    objmgr.CheckforScripts(plyr, obj->GetInfo()->sound9);
+
     CALL_GO_SCRIPT_EVENT(obj, OnActivate)(_player);
     CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(obj, _player);
 
