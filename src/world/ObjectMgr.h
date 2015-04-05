@@ -304,7 +304,7 @@ enum ScriptCommands
     SCRIPT_COMMAND_TEMP_SUMMON_CREATURE = 10,
     SCRIPT_COMMAND_OPEN_DOOR = 11,
     SCRIPT_COMMAND_CLOSE_DOOR = 12,
-    SCRIPT_COMMAND_ACTIVATE_OBJECT = 13,        // Implemented ( data_1 (Go id), data_2 (target go id) when dont wanna use get pos then type in x y z the coords, delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )                
+    SCRIPT_COMMAND_ACTIVATE_OBJECT = 13,        // Implemented ( data_1 (Go id), when dont wanna use get pos then type in x y z the coords, delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )                
     SCRIPT_COMMAND_REMOVE_AURA = 14,
     SCRIPT_COMMAND_CAST_SPELL = 15,
     SCRIPT_COMMAND_PLAY_SOUND = 16,
