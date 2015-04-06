@@ -196,7 +196,7 @@ class TheMomentofTruth : public GossipScript
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
             if(plr->HasQuest(10201) && plr->GetItemInterface()->GetItemCount(28500, 0))
-                Menu->AddItem(0, "Try this", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(497), 1);     // Try this
 
             Menu->SendTo(plr);
         }

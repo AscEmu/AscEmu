@@ -30,11 +30,6 @@ enum eGossipTexts
     DIREBREW_2 = 15859,
 };
 
-/// Gossip Options
-#define DIREBREW_MENU_1 "Insult Coren Direbrew's brew."
-#define DIREBREW_MENU_2 "Fight."
-#define DIREBREW_MENU_3 "Apologize."
-
 #define BOSS_DIREBREW 23872
 
 #define NPC_ILSA 26764
@@ -56,7 +51,7 @@ void CorenDirebrewGossip::GossipHello(Object* pObject, Player * Plr)
 {
     GossipMenu* Menu;
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), DIREBREW_1, Plr);
-    Menu->AddItem(0, DIREBREW_MENU_1, 1);
+    Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(439), 1);     // Insult Coren Direbrew's brew.
     Menu->SendTo(Plr);
 }
 
@@ -74,8 +69,8 @@ void CorenDirebrewGossip::GossipSelectOption(Object* pObject, Player* Plr, uint3
     {
         case 1:
         {
-            Menu->AddItem(0, DIREBREW_MENU_2, 2);/// Fight.
-            Menu->AddItem(0, DIREBREW_MENU_3, 3);/// Apologize.
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(440), 1);     // Fight.
+            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(441), 1);     // Apologize.
             Menu->SendTo(Plr);
         }break;
         case 2:

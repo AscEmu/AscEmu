@@ -335,7 +335,7 @@ class LumpGossipScript : public GossipScript
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-            Menu->AddItem(0, "Why are Boulderfist out this far? You know this is Kurenai territory!", 1);
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(469), 1);     // Why are Boulderfist out this far? You know this is Kurenai territory!
             Menu->SendTo(plr);
         };
 

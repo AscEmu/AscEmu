@@ -32,7 +32,7 @@ class SCRIPT_DECL DearestNatalia1 : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7736, Plr);
 
             if(en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
-                Menu->AddItem(0, "Hello, Rutgar. The Commander has sent me here to gather some information about his missing wife.", 3);
+                Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(477), 3);     // Hello, Rutgar. The Commander has sent me here to gather some information about his missing wife.
 
             Menu->SendTo(Plr);
         }
@@ -48,49 +48,49 @@ class SCRIPT_DECL DearestNatalia1 : public GossipScript
                 case 3:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7755, Plr);
-                        Menu->AddItem(0, "That sounds dangerous.", 4);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(478), 4);     // That sounds dangerous.
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 4:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7756, Plr);
-                        Menu->AddItem(0, "What happened to her after that?", 5);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(479), 5);     // What happened to her after that?
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 5:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7757, Plr);
-                        Menu->AddItem(0, "Natalia?", 6);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(480), 6);     // Natalia?
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 6:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7758, Plr);
-                        Menu->AddItem(0, "What demands?", 7);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(481), 7);     // What demands?
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 7:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7759, Plr);
-                        Menu->AddItem(0, "Lost it? What do you mean?", 8);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(482), 8);     // Lost it? What do you mean?
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 8:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7760, Plr);
-                        Menu->AddItem(0, "Possessed by what?", 9);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(483), 9);     // Possessed by what?
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 9:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7761, Plr);
-                        Menu->AddItem(0, "I'll be back once I straighten this mess out.", 10);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(484), 10);     // I'll be back once I straighten this mess out.
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -121,7 +121,7 @@ class SCRIPT_DECL DearestNatalia2 : public GossipScript
 
             // you need to speak to Rutgar first !!
             if(en && (en->GetMobCount(0) < en->GetQuest()->required_mobcount[0]) && (en->GetMobCount(1) == 1))
-                Menu->AddItem(0, "Hello, Frankal. I've heard that you might have some information as to the whereabouts of Mistress Natalia Mar'alith.", 3);
+                Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(485), 3);     // Hello, Frankal. I've heard that you might have some information as to the whereabouts of Mistress Natalia Mar'alith.
 
             Menu->SendTo(Plr);
         }
@@ -137,49 +137,49 @@ class SCRIPT_DECL DearestNatalia2 : public GossipScript
                 case 3:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7762, Plr);
-                        Menu->AddItem(0, "That's what I like to hear.", 4);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(486), 4);     // That's what I like to hear.
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 4:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7763, Plr);
-                        Menu->AddItem(0, "That's odd.", 5);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(487), 5);     // That's odd.
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 5:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7764, Plr);
-                        Menu->AddItem(0, "You couldn't handle a lone night elf priestess?", 6);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(488), 6);     // You couldn't handle a lone night elf priestess?
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 6:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7765, Plr);
-                        Menu->AddItem(0, "I've been meaning to ask you about that monkey.", 7);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(489), 7);     // I've been meaning to ask you about that monkey.
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 7:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7766, Plr);
-                        Menu->AddItem(0, "Then what?", 8);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(490), 8);     // Then what?
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 8:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7767, Plr);
-                        Menu->AddItem(0, "What a story! So she went into Hive'Regal and that was the last you saw of her?", 9);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(491), 9);     // What a story! So she went into Hive'Regal and that was the last you saw of her?
                         Menu->SendTo(Plr);
                     }
                     break;
                 case 9:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7768, Plr);
-                        Menu->AddItem(0, "Thanks for the information, Frankal.", 10);
+                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(492), 10);     // Thanks for the information, Frankal.
                         Menu->SendTo(Plr);
                     }
                     break;
