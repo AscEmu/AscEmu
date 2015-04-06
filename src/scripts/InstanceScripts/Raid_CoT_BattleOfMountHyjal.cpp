@@ -723,7 +723,7 @@ class KazrogalAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach = rand() % 3;
+                int RandomSpeach = rand() % 4;
                 switch (RandomSpeach)
                 {
                     case 0:

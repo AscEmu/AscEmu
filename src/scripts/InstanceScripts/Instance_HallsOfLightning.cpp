@@ -551,7 +551,7 @@ class IonarAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 2)
+        switch (rand() % 3)
         {
             case 0:
                 _unit->SendScriptTextChatMessage(741);      // Shocking, I know.
@@ -634,7 +634,7 @@ class LokenAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 2)
+        switch (rand() % 3)
         {
             case 0:
                 _unit->SendScriptTextChatMessage(805);      // Only mortal...

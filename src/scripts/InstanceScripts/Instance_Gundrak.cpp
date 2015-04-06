@@ -394,7 +394,7 @@ class SladranAI : public MoonScriptCreatureAI
             case 1:
                 _unit->SendScriptTextChatMessage(4218);     // Ssscared now?
             break;
-            case 3:
+            case 2:
                 _unit->SendScriptTextChatMessage(4219);     // I eat you next, mon.
             break;
         }
@@ -451,7 +451,7 @@ class GalDarahAI : public MoonScriptCreatureAI
             case 1:
                 _unit->SendScriptTextChatMessage(4201);     // Who needs gods when we ARE gods?
             break;
-            case 3:
+            case 2:
                 _unit->SendScriptTextChatMessage(4202);     // I told ya so!
             break;
         }

@@ -177,8 +177,6 @@ class BloodscalpClanHeads : public QuestScript
             if(skull2)
                 skull2->Despawn(5000, 0);
 
-            if(Kin_weelay == NULL)
-                return;
             string msg = "There, ";
             msg += mTarget->GetName();
             msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";

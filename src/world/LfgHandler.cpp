@@ -61,10 +61,10 @@ void WorldSession::HandleLfgJoinOpcode(WorldPacket& recv_data)
 
     if ((GetPlayer()->GetGroup() && GetPlayer()->GetGroup()->GetLeader()->guid != GetPlayer()->GetGUID() && (GetPlayer()->GetGroup()->MemberCount() == 5 || !GetPlayer()->GetGroup()->isLFGGroup())))
     {
+        Log.Debug("LfgHandler", "Unable to JoinQueue");
+
         recv_data.clear();
         return;
-
-        Log.Debug("LfgHandler", "Unable to JoinQueue");
     }
 
     uint8 numDungeons;

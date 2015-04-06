@@ -273,7 +273,7 @@ public:
         switch (timer){
         case 2: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
         case 3:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-        case 14:  _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!");
+        case 14:  _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
         case 17:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
         case 42:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
         case 55:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
@@ -288,7 +288,7 @@ public:
         case 110: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
         case 137: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
         case 140: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-        case 142: _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!");
+        case 142: _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "WERE GANA ROCK YOU CRAAAAAAZY!!!"); break;
         case 313: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
         case 194: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
         case 200:{
@@ -688,8 +688,9 @@ public:
         {
             _unit->Despawn(1000, 300000);
         }break;
-        timer++;
+        
         }
+        timer++;
     }
 protected:
     uint32 timer;
