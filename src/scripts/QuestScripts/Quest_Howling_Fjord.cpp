@@ -103,10 +103,10 @@ class Plaguethis_Gossip : public GossipScript
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-            Menu->AddItem(0, "Where would you like to fly too ?", 2);
-            if(plr->HasQuest(11332))
-                Menu->AddItem(0, "Greer, i need a gryphon to ride and some bombs to drop on New Agamand!", 1);
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(464), 2);     // Where would you like to fly too ?
 
+            if(plr->HasQuest(11332))
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(465), 1);     // Greer, i need a Gryphon to ride and some bombs to drop on New Agamand!
 
             Menu->SendTo(plr);
         }

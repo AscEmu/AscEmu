@@ -96,7 +96,7 @@ class JeanPierrePoulain : public GossipScript
             }
             else
             {
-                Menu->AddItem(0, "I'll take the flight."    ,1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(446), 1);     // I'll take the flight.
                 Menu->SendTo(plr);
             }
 }            
@@ -125,17 +125,17 @@ public:
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14785, plr);
-            Menu->AddItem(0, "Borean Tundra"    , 1);
-            Menu->AddItem(0, "Howling Fjord"  , 2);
-            Menu->AddItem(0, "Sholazar Basin"    , 3);
-            Menu->AddItem(0, "Icecrown"      , 4);
-            Menu->AddItem(0, "Storm Peaks"        , 5);
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
             
             uint8 chance = RandomUInt(1);
 
             if (chance == 1)
-                Menu->AddItem(0, "Underground..."        ,6);
-            
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
+
             Menu->SendTo(plr);
         }
     }

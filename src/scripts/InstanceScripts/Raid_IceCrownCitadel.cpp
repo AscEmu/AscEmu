@@ -181,22 +181,22 @@ public:
 
         GossipMenu* menu = NULL;
         objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 1/*Its not one... need to be checked*/, player);
-        menu->AddItem(ICON_CHAT, "Teleport to Light's Hammer.", 0);
+        menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
-            menu->AddItem(ICON_CHAT, "Teleport to Oratory of The Damned.", 1);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(516), 1);      // Teleport to Oratory of The Damned.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_LADY_DEATHWHISPER) == State_Finished)
-            menu->AddItem(ICON_CHAT, "Teleport to Rampart of Skulls.", 2);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(517), 2);      // Teleport to Rampart of Skulls.
 
         // GunshipBattle has to be finished...
-        //menu->AddItem(ICON_CHAT, "Teleport to Deathbringer's Rise.", 3);
+        //menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(518), 3);        // Teleport to Deathbringer's Rise.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_VALITHRIA_DREAMWALKER) == State_Finished)
-            menu->AddItem(ICON_CHAT, "Teleport to the Upper Spire.", 4);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(519), 4);      // Teleport to the Upper Spire.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_COLDFLAME) == State_Finished)
-            menu->AddItem(ICON_CHAT, "Teleport to Sindragosa's Lair.", 5);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(520), 5);      // Teleport to Sindragosa's Lair.
 
         menu->SendTo(player);
     }

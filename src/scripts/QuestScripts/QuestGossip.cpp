@@ -30,7 +30,7 @@ class Lady_Jaina : public GossipScript
             if(plr->HasQuest(558))
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7012, plr);
-                Menu->AddItem(0, "Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(505), 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
                 Menu->SendTo(plr);
             }
         }
@@ -67,7 +67,7 @@ class Cairne : public GossipScript
             if(plr->HasQuest(925))
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7013, plr);
-                Menu->AddItem(0, "Give me hoofprint.", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(506), 1);     // Give me hoofprint.
                 Menu->SendTo(plr);
             }
         }
@@ -117,7 +117,7 @@ public:
         // and item 39740: Kirin Tor Signet
         if ( ( plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796) ) && plr->HasItemCount(39740, 1, false) )
         {
-            menu.AddItem(0, "Teleport me to Dalaran.", 1);
+            menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
         }
         menu.Send(plr);
     }
