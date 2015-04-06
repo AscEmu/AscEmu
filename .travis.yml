@@ -31,6 +31,7 @@ before_install:
   - sudo apt-get -qq install zlib1g-dev libssl-dev libpcre3-dev libmysqlclient-dev gcc-4.8 g++-4.8
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90
+  - travis_wait
 
 addons:
  coverity_scan:
