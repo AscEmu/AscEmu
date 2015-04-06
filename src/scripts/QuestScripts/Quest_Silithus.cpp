@@ -198,13 +198,6 @@ class SCRIPT_DECL DearestNatalia2 : public GossipScript
         }
 };
 
-#define GOSSIP1 "What do you know of it"
-#define GOSSIP2 "I am listening, Demitrian."
-#define GOSSIP3 "Continue, please."
-#define GOSSIP4 "A battle?"
-#define GOSSIP5 "<Nod>"
-#define GOSSIP6 "Caught unaware? How?"
-#define GOSSIP7 "o what did Ragnaros do next?"
 
 class highlord_demitrianGossip : public GossipScript
 {
@@ -218,7 +211,7 @@ class highlord_demitrianGossip : public GossipScript
             {
                 if (pPlayer->HasItemCount(19016, 0, false))
                 {
-                menu.AddItem(0, GOSSIP1, 1);
+                menu.AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(507), 1);  // What do you know of it
                 }
             }
             menu.Send(pPlayer);
@@ -228,7 +221,7 @@ class highlord_demitrianGossip : public GossipScript
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 6842, pPlayer->GetSession()->language);
 
-            menu.AddItem(0, GOSSIP2, 2);
+            menu.AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(508), 2);      // I am listening, Demitrian.
             menu.Send(pPlayer);
         };
 
@@ -236,7 +229,7 @@ class highlord_demitrianGossip : public GossipScript
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 6843, pPlayer->GetSession()->language);
 
-            menu.AddItem(0, GOSSIP3, 3);
+            menu.AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(509), 3);        // Continue, please.
             menu.Send(pPlayer);
         };
 
@@ -244,7 +237,7 @@ class highlord_demitrianGossip : public GossipScript
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 6844, pPlayer->GetSession()->language);
 
-            menu.AddItem(0, GOSSIP4, 4);
+            menu.AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(510), 4);        // A battle?
             menu.Send(pPlayer);
         };
 
@@ -252,7 +245,7 @@ class highlord_demitrianGossip : public GossipScript
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 6867, pPlayer->GetSession()->language);
 
-            menu.AddItem(0, GOSSIP5, 5);
+            menu.AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(511), 5);        // <Nod>
             menu.Send(pPlayer);
         };
 
@@ -261,7 +254,7 @@ class highlord_demitrianGossip : public GossipScript
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 6868, pPlayer->GetSession()->language);
 
-            menu.AddItem(0, GOSSIP6, 6);
+            menu.AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(512), 6);        // Caught unaware? How?
             menu.Send(pPlayer);
         };
 
@@ -269,7 +262,7 @@ class highlord_demitrianGossip : public GossipScript
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 6869, pPlayer->GetSession()->language);
 
-            menu.AddItem(0, GOSSIP7, 7);
+            menu.AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(513), 7);        // Oh what did Ragnaros do next?
             menu.Send(pPlayer);
         };
 

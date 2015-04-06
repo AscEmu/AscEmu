@@ -17,7 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Raid_Ulduar.h"
 
@@ -31,7 +30,7 @@ static float UlduarTeleCoords[9][4] =
     { 1859.65f, -24.9121f, 448.811f, 0.0f },
     { 2086.26f, -23.9948f, 421.316f, 0.0f },
     { 2518.16f, 2569.03f, 412.299f, 0.0f },
-    { 1854.82f,    -11.5608f, 334.175f, 0.0f }
+    { 1854.82f, -11.5608f, 334.175f, 0.0f }
 };
 
 class UlduarTeleporterAI : public GameObjectAIScript
@@ -51,15 +50,15 @@ class UlduarTeleporterAI : public GameObjectAIScript
             GossipMenu* menu = NULL;
             objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 0, player);
 
-            menu->AddItem(ICON_CHAT, "Expedition Base Camp.", 0);
-            menu->AddItem(ICON_CHAT, "Formation Grounds", 1);
-            menu->AddItem(ICON_CHAT, "Colossal Forge", 2);
-            menu->AddItem(ICON_CHAT, "Scrapyard", 3);
-            menu->AddItem(ICON_CHAT, "Antechamber of Ulduar", 4);
-            menu->AddItem(ICON_CHAT, "Shattered Walkway", 5);
-            menu->AddItem(ICON_CHAT, "Conservatory of Life", 6);
-            menu->AddItem(ICON_CHAT, "Spark of Imagination", 7);
-            menu->AddItem(ICON_CHAT, "Prison of Yogg-Saron", 8);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(521), 0);      // Expedition Base Camp.
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(522), 1);      // Formation Grounds
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(523), 2);      // Colossal Forge
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(524), 3);      // Scrapyard
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(525), 4);      // Antechamber of Ulduar
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(526), 5);      // Shattered Walkway
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(527), 6);      // Conservatory of Life
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(528), 7);      // Spark of Imagination
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(529), 8);      // Prison of Yogg-Saron
 
             menu->SendTo(player);
         }

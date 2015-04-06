@@ -117,7 +117,7 @@ public:
         // and item 39740: Kirin Tor Signet
         if ( ( plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796) ) && plr->HasItemCount(39740, 1, false) )
         {
-            menu.AddItem(0, "Teleport me to Dalaran.", 1);
+            menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
         }
         menu.Send(plr);
     }

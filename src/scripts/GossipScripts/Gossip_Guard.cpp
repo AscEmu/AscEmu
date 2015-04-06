@@ -1432,7 +1432,7 @@ class TeldrassilGuard : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4316, plr);
 
             Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, "Rut'Theran Ferry", 2);
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(530), 2);                 // Rut'Theran Ferry
             Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
             Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
             Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 5);
