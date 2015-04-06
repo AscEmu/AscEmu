@@ -1118,6 +1118,9 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
 void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
 {
+    if (objmgr.CheckforDummySpellScripts(TO_PLAYER(u_caster), m_spellInfo->Id))
+        return;
+
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
         return;
 
