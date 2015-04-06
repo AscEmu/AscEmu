@@ -3905,7 +3905,7 @@ void ObjectMgr::LoadEventScripts()
     Log.Notice("ObjectMgr", "Loading Event Scripts...");
 
     bool success = false;
-    const char* eventScriptsQuery = "SELECT * FROM event_scripts WHERE event_id > 0 ORDER BY event_id";
+    const char* eventScriptsQuery = "SELECT event_id, function, script_type, data_1, data_2, data_3, data_4, data_5, x, y, z, o, delay, next_event FROM event_scripts WHERE event_id > 0 ORDER BY event_id";
     auto result = WorldDatabase.Query(&success, eventScriptsQuery);
 
     if (!success)
