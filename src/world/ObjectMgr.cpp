@@ -3904,12 +3904,22 @@ void ObjectMgr::LoadEventScripts()
 {
     Log.Notice("ObjectMgr", "Loading Event Scripts...");
 
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM event_scripts WHERE event_id > 0 ORDER BY event_id");
+    bool success = false;
+    const char* eventScriptsQuery = "SELECT * FROM event_scripts WHERE event_id > 0 ORDER BY event_id";
+    auto result = WorldDatabase.Query(&success, eventScriptsQuery);
 
-    if (!result)
+    if (!success)
     {
-        Log.Notice("ObjectMgr", "Loaded 0 event_scripts. DB table `event_scripts` is empty.");
+        Log.Error("ObjectMgr", "Failed on Loading Queries from event_scripts.");
         return;
+    }
+    else
+    {
+        if (!result)
+        {
+            Log.Notice("ObjectMgr", "Loaded 0 event_scripts. DB table `event_scripts` is empty.");
+            return;
+        }
     }
 
     uint32 count = 0;
@@ -3918,11 +3928,11 @@ void ObjectMgr::LoadEventScripts()
         Field* fields = result->Fetch();
 
         uint32 event_id = fields[0].GetUInt32();
-        simpleEventScripts eventscript;
+        SimpleEventScript eventscript;
 
         eventscript.eventId = event_id;
-        eventscript.function = ScriptCommands(fields[1].GetUInt32());
-        eventscript.scripttype = EasyScriptTypes(fields[2].GetUInt32());
+        eventscript.function = ScriptCommands(fields[1].GetInt8());
+        eventscript.scripttype = EasyScriptTypes(fields[2].GetInt8());
         eventscript.data_1 = fields[3].GetUInt32();
         eventscript.data_2 = fields[4].GetUInt32();
         eventscript.data_3 = fields[5].GetUInt32();
@@ -3935,11 +3945,11 @@ void ObjectMgr::LoadEventScripts()
         eventscript.delay = fields[12].GetUInt32();
         eventscript.nextevent = fields[13].GetUInt32();
 
-        simpleEventScripts* sa = &mEventScriptMaps.insert(EventScriptMaps::value_type(event_id, eventscript))->second;
+        SimpleEventScript* SimpleEventScript = &mEventScriptMaps.insert(EventScriptMaps::value_type(event_id, eventscript))->second;
 
         // for search by spellid ( data_1 is spell id )
-        if (eventscript.data_1 && eventscript.scripttype == SCRIPT_TYPE_SPELL_EFFECT)
-            mSpellEffectMaps.insert(SpellEffectMaps::value_type(eventscript.data_1, sa));
+        if (eventscript.data_1 && eventscript.scripttype == EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT)
+            mSpellEffectMaps.insert(SpellEffectMaps::value_type(eventscript.data_1, SimpleEventScript));
 
 
         ++count;
@@ -3960,8 +3970,8 @@ SpellEffectMapBounds ObjectMgr::GetSpellEffectBounds(uint32 data_1) const
 
 bool ObjectMgr::CheckforScripts(Player* plr, uint32 event_id)
 {
-    EventScriptBounds sab = objmgr.GetEventScripts(event_id);
-    for (EventScriptMaps::const_iterator itr = sab.first; itr != sab.second; ++itr)
+    EventScriptBounds EventScript = objmgr.GetEventScripts(event_id);
+    for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
     {
         sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second.eventId, EVENT_EVENT_SCRIPTS, itr->second.delay, 1, 0);
         return true;
@@ -3972,8 +3982,8 @@ bool ObjectMgr::CheckforScripts(Player* plr, uint32 event_id)
 
 bool ObjectMgr::CheckforDummySpellScripts(Player* plr, uint32 data_1)
 {
-    SpellEffectMapBounds seb = objmgr.GetSpellEffectBounds(data_1);
-    for (SpellEffectMaps::const_iterator itr = seb.first; itr != seb.second; ++itr)
+    SpellEffectMapBounds EventScript = objmgr.GetSpellEffectBounds(data_1);
+    for (SpellEffectMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
     {
         sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second->eventId, EVENT_EVENT_SCRIPTS, itr->second->delay, 1, 0);
         return true;
@@ -3984,15 +3994,15 @@ bool ObjectMgr::CheckforDummySpellScripts(Player* plr, uint32 data_1)
 
 void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
 {
-    EventScriptBounds sab = objmgr.GetEventScripts(next_event);
+    EventScriptBounds EventScript = objmgr.GetEventScripts(next_event);
 
-    for (EventScriptMaps::const_iterator itr = sab.first; itr != sab.second; ++itr)
+    for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
     {
-        if (itr->second.scripttype == SCRIPT_TYPE_SPELL_EFFECT || SCRIPT_TYPE_DUMMY)
+        if (itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT || itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_DUMMY)
         {
             switch (itr->second.function)
             {
-            case SCRIPT_COMMAND_RESPAWN_GAMEOBJECT:
+            case ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT:
             {
                 Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
                 if (target == NULL)
@@ -4003,7 +4013,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 break;
             }
 
-            case SCRIPT_COMMAND_KILL_CREDIT:
+            case ScriptCommands::SCRIPT_COMMAND_KILL_CREDIT:
             {
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
                 if (pQuest != NULL)
@@ -4020,11 +4030,11 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             }
         }
 
-        if (itr->second.scripttype == SCRIPT_TYPE_GAMEOBJECT || SCRIPT_TYPE_DUMMY)
+        if (itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_GAMEOBJECT || itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_DUMMY)
         {
             switch (itr->second.function)
             {
-            case SCRIPT_COMMAND_ACTIVATE_OBJECT:
+            case ScriptCommands::SCRIPT_COMMAND_ACTIVATE_OBJECT:
             {
                 if ((itr->second.x || itr->second.y || itr->second.z) == NULL)
                 {
