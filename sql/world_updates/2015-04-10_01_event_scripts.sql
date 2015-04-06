@@ -29,4 +29,7 @@ INSERT INTO `event_scripts` VALUES ('2', '9', '5', '300184', '30000', '0', '0', 
 INSERT INTO `event_scripts` VALUES ('3', '9', '5', '188112', '30000', '0', '0', '0', '0', '0', '0', '0', '0', '0');
 INSERT INTO `event_scripts` VALUES ('4', '13', '2', '193019', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');
 
+-- This is a Lever in Dalaran , to open the Door when you  exit the instance.
 UPDATE `gameobject_names` SET `sound9`='4' WHERE (`entry`='193020')
+
+UPDATE `world_db_version` SET `LastUpdate` = '2015-04-05_01_event_scripts';
