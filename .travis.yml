@@ -49,4 +49,7 @@ install:
 script:
  - cd ..
  - cd bin
- - make -j 10
+ #- make -j 10
+ - gcc --version
+ - g++ --version
+ - cmake --version
