@@ -215,10 +215,30 @@ public:
     {
         Arcemu::Gossip::Menu::Complete(player);
 
-        if (Id >= 7)
+        if (Id >= 6)
             return;
-        else
-            player->SafeTeleport(ICCTeleCoords[Id][0], player->GetInstanceID(), ICCTeleCoords[Id][1], ICCTeleCoords[Id][2], ICCTeleCoords[Id][3], ICCTeleCoords[Id][4]);
+
+        switch (Id)
+        {
+            case 0:
+                player->CastSpell(player, 70781, true);     // Light's Hammer
+                break;
+            case 1:
+                player->CastSpell(player, 70856, true);     // Oratory of The Damned
+                break;
+            case 2:
+                player->CastSpell(player, 70857, true);     // Rampart of Skulls
+                break;
+            case 3:
+                player->CastSpell(player, 70858, true);     // Deathbringer's Rise
+                break;
+            case 4:
+                player->CastSpell(player, 70859, true);     // Upper Spire
+                break;
+            case 5:
+                player->CastSpell(player, 70861, true);     // Sindragosa's Lair
+                break;
+        }
     }
 };
 

@@ -609,6 +609,20 @@ void SetupMiscSpellhandlers(ScriptMgr* mgr)
     mgr->register_dummy_spell( 66550, &IOCTeleporterOut );
     mgr->register_dummy_spell( 66551, &IOCTeleporterIn );
 
+    uint32 SpellTeleports[] =
+    {
+        // ICCTeleports
+        70781,
+        70856,
+        70857,
+        70858,
+        70859,
+        70861,
+        0
+    };
+
+    mgr->register_dummy_spell(SpellTeleports, &TeleportToCoordinates);
+
     mgr->register_dummy_spell(11189, &FrostWarding);
     mgr->register_dummy_spell(28332, &FrostWarding);
 
