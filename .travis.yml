@@ -39,7 +39,7 @@ addons:
      description: "3.3.5 World of Warcraft game server"
    notification_email: autokaori@gmail.com
    build_command_prepend: "make clean"
-   build_command:   "make -j 1" # use a single worker to avoid running out of memory
+   build_command:   "make -j 2" # use limited workers to avoid running out of memory
    branch_pattern: coverity_scan
 
 install:
