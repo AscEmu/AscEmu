@@ -224,32 +224,74 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lord Marrowgar
-//#define LM_BERSERK 47008
-//#define BONE_SLICE 69055
-#define BONE_SPIKE 69057
-//#define BONE_STORM 69076
-//#define SOUL_FEAST 71203
+#define LM_BERSERK 47008
+#define BONE_SLICE 69055
+#define BONE_SPIKE 69057        // Not shure about this
+#define BONE_STORM 69076
+#define SOUL_FEAST 71203        // Needs a script
 
 class LordMarrowgarAI : public MoonScriptBossAI
 {
     public:
+
+        bool m_spellcheck[4];
+        SP_AI_Spell spells[4];
 
         MOONSCRIPT_FACTORY_FUNCTION(LordMarrowgarAI, MoonScriptBossAI);
         LordMarrowgarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
             _unit->SendScriptTextChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
 
-            RegisterAIUpdateEvent(60000);
+            nrspells = 4;
+
+            spells[0].info = dbcSpell.LookupEntry(BONE_SLICE);
+            spells[0].targettype = TARGET_ATTACKING;
+            spells[0].instant = true;
+            spells[0].cooldown = 15;
+            spells[0].perctrigger = 50.0f;
+            spells[0].attackstoptimer = 10000;
+
+            spells[1].info = dbcSpell.LookupEntry(BONE_STORM);
+            spells[1].targettype = TARGET_VARIOUS;
+            spells[1].instant = true;
+            spells[1].cooldown = 60000;
+            spells[1].perctrigger = 75.0f;
+            spells[1].attackstoptimer = 60000;
+
+            spells[2].info = dbcSpell.LookupEntry(LM_BERSERK);
+            spells[2].targettype = TARGET_ATTACKING;
+            spells[2].instant = true;
+            spells[2].cooldown = 15;
+            spells[2].perctrigger = 50.0f;
+            spells[2].attackstoptimer = 10000;
+
+            spells[3].info = dbcSpell.LookupEntry(SOUL_FEAST);
+            spells[3].targettype = TARGET_RANDOM_SINGLE;
+            spells[3].instant = true;
+            spells[3].cooldown = 20;
+            spells[3].perctrigger = 50.0f;
+            spells[3].attackstoptimer = 12000;
         }
 
         void AIUpdate()
         {
-            BoneSpike();
+            switch (rand() % 2)
+            {
+                case 0:
+                {
+                    float val = RandomFloat(100.0f);
+                    SpellCast(val);
+                }break;
+                case 1:
+                    BoneSpike();
+                    break;
+            }
         }
 
         void OnCombatStart(Unit* pTarget)
         {
             _unit->SendScriptTextChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
+            RegisterAIUpdateEvent(60000);
         }
 
         void BoneSpike()
@@ -320,7 +362,58 @@ class LordMarrowgarAI : public MoonScriptBossAI
         {
             _unit->SendScriptTextChatMessage(930);      // I see... Only darkness.
         }
+
+        void SpellCast(float val)
+        {
+            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+            {
+                float comulativeperc = 0;
+                Unit* target = NULL;
+                for (int i = 0; i < nrspells; i++)
+                {
+                    if (!spells[i].perctrigger)
+                        continue;
+
+                    if (m_spellcheck[i])
+                    {
+                        target = _unit->GetAIInterface()->getNextTarget();
+                        switch (spells[i].targettype)
+                        {
+                            case TARGET_SELF:
+                            case TARGET_VARIOUS:
+                                _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
+                            case TARGET_RANDOM_SINGLE:
+                            case TARGET_ATTACKING:
+                                _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                                break;
+                            case TARGET_DESTINATION:
+                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                break;
+                        }
+                        m_spellcheck[i] = false;
+                        return;
+                    }
+
+                    if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+                    {
+                        _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                        m_spellcheck[i] = true;
+                    }
+                    comulativeperc += spells[i].perctrigger;
+                }
+
+                RemoveAIUpdateEvent();
+                RegisterAIUpdateEvent(50000);
+            }
+        }
+
+    protected:
+
+        int nrspells;
 };
+
+#define IMPALED 69065
 
 class BoneSpikeAI : public MoonScriptBossAI
 {
@@ -329,9 +422,10 @@ class BoneSpikeAI : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(BoneSpikeAI, MoonScriptBossAI);
         BoneSpikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
             _unit->Despawn(8000, 0);
         }
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
