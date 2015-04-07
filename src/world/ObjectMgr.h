@@ -288,7 +288,7 @@ struct SimpleEventScript
     uint32 nextevent;
 };
 
-enum ScriptCommands : uint8
+enum class ScriptCommands : uint8
 {
     SCRIPT_COMMAND_TALK                 = 0,
     SCRIPT_COMMAND_EMOTE                = 1,
@@ -316,7 +316,7 @@ enum ScriptCommands : uint8
     SCRIPT_COMMAND_PLAYMOVIE            = 23
 };
 
-enum EasyScriptTypes : uint8
+enum class EasyScriptTypes : uint8
 {
     SCRIPT_TYPE_SPELL_EFFECT            = 1,
     SCRIPT_TYPE_GAMEOBJECT              = 2,
