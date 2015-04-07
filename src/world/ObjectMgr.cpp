@@ -3930,25 +3930,25 @@ void ObjectMgr::LoadEventScripts()
         uint32 event_id = fields[0].GetUInt32();
         SimpleEventScript eventscript;
 
-        eventscript.eventId = event_id;
-        eventscript.function = ScriptCommands(fields[1].GetInt8());
-        eventscript.scripttype = EasyScriptTypes(fields[2].GetInt8());
-        eventscript.data_1 = fields[3].GetUInt32();
-        eventscript.data_2 = fields[4].GetUInt32();
-        eventscript.data_3 = fields[5].GetUInt32();
-        eventscript.data_4 = fields[6].GetUInt32();
-        eventscript.data_5 = fields[7].GetUInt32();
-        eventscript.x = fields[8].GetUInt32();
-        eventscript.y = fields[9].GetUInt32();
-        eventscript.z = fields[10].GetUInt32();
-        eventscript.o = fields[11].GetUInt32();
-        eventscript.delay = fields[12].GetUInt32();
-        eventscript.nextevent = fields[13].GetUInt32();
+        eventscript.eventId     = event_id;
+        eventscript.function    = static_cast<uint8>(ScriptCommands(fields[1].GetUInt8()));
+        eventscript.scripttype  = static_cast<uint8>(EasyScriptTypes(fields[2].GetUInt8()));
+        eventscript.data_1      = fields[3].GetUInt32();
+        eventscript.data_2      = fields[4].GetUInt32();
+        eventscript.data_3      = fields[5].GetUInt32();
+        eventscript.data_4      = fields[6].GetUInt32();
+        eventscript.data_5      = fields[7].GetUInt32();
+        eventscript.x           = fields[8].GetUInt32();
+        eventscript.y           = fields[9].GetUInt32();
+        eventscript.z           = fields[10].GetUInt32();
+        eventscript.o           = fields[11].GetUInt32();
+        eventscript.delay       = fields[12].GetUInt32();
+        eventscript.nextevent   = fields[13].GetUInt32();
 
         SimpleEventScript* SimpleEventScript = &mEventScriptMaps.insert(EventScriptMaps::value_type(event_id, eventscript))->second;
 
         // for search by spellid ( data_1 is spell id )
-        if (eventscript.data_1 && eventscript.scripttype == EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT)
+        if (eventscript.data_1 && eventscript.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT))
             mSpellEffectMaps.insert(SpellEffectMaps::value_type(eventscript.data_1, SimpleEventScript));
 
 
@@ -3998,11 +3998,11 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
 
     for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
     {
-        if (itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT || itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_DUMMY)
+        if (itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT) || itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_DUMMY))
         {
             switch (itr->second.function)
             {
-            case ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT:
+            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT):
             {
                 Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
                 if (target == NULL)
@@ -4013,7 +4013,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 break;
             }
 
-            case ScriptCommands::SCRIPT_COMMAND_KILL_CREDIT:
+            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_KILL_CREDIT):
             {
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
                 if (pQuest != NULL)
@@ -4030,11 +4030,11 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             }
         }
 
-        if (itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_GAMEOBJECT || itr->second.scripttype == EasyScriptTypes::SCRIPT_TYPE_DUMMY)
+        if (itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_GAMEOBJECT) || itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_DUMMY))
         {
             switch (itr->second.function)
             {
-            case ScriptCommands::SCRIPT_COMMAND_ACTIVATE_OBJECT:
+            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_ACTIVATE_OBJECT):
             {
                 if ((itr->second.x || itr->second.y || itr->second.z) == NULL)
                 {
