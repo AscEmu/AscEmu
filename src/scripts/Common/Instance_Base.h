@@ -130,6 +130,7 @@ class MoonInstanceScript : public InstanceScript
         Creature* FindClosestCreatureOnMap(uint32 pEntry, float pX, float pY, float pZ);
         Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
         Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId);
+        Creature* PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction = 0);
         CreatureSet FindCreaturesOnMap(uint32 pEntry);
 
         // GameObject

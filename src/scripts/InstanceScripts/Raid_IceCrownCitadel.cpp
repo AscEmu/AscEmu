@@ -16,11 +16,11 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
 #include "Raid_IceCrownCitadel.h"
 
-////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //ICC zone: 4812
 //Prepared creature entry:
 //
@@ -34,7 +34,7 @@
 //#define CN_THE_LICHKING             36597
 //
 ///\todo  start boss scripts
-////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Event: GunshipBattle
 //
 //Affects:
@@ -42,7 +42,7 @@
 //
 //Devnotes:
 //Far away from implementing this :(
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 enum IceCrown_Encounters
 {
     DATA_LORD_MARROWGAR,
@@ -54,7 +54,8 @@ enum IceCrown_Encounters
     ICC_DATA_END
 };
 
-///////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////
 //IceCrownCitadel Instance
 class IceCrownCitadelScript : public MoonInstanceScript
 {
@@ -151,10 +152,12 @@ class IceCrownCitadelScript : public MoonInstanceScript
             switch (player->GetTeam())
             {
                 case TEAM_ALLIANCE:
-                    sChatHandler.SystemMessage(player->GetSession(), "Team = Alliance");
+                    for (uint32 i = 0; i < 13; i++)
+                        PushCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
                     break;
                 case TEAM_HORDE:
-                    sChatHandler.SystemMessage(player->GetSession(), "Team = Horde");
+                    for (uint32 i = 0; i < 13; i++)
+                        PushCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
                     break;
             }
         }
