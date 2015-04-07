@@ -224,12 +224,11 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lord Marrowgar
-// LM_BERSERK    = 47008
-// BONE_SLICE    = 69055
-// BONE_SPIKE    = 69057
-// BONE_STORM    = 69076
-// SOUL_FEAST    = 71203
-// ...
+//#define LM_BERSERK 47008
+//#define BONE_SLICE 69055
+#define BONE_SPIKE 69057
+//#define BONE_STORM 69076
+//#define SOUL_FEAST 71203
 
 class LordMarrowgarAI : public MoonScriptBossAI
 {
@@ -237,14 +236,103 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
         MOONSCRIPT_FACTORY_FUNCTION(LordMarrowgarAI, MoonScriptBossAI);
         LordMarrowgarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
-        { }
+        {
+            _unit->SendScriptTextChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
+
+            RegisterAIUpdateEvent(60000);
+        }
+
+        void AIUpdate()
+        {
+            BoneSpike();
+        }
 
         void OnCombatStart(Unit* pTarget)
         {
             _unit->SendScriptTextChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
         }
+
+        void BoneSpike()
+        {
+            switch (rand() % 3)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(925);      // Bound by bone!
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(926);      // Stick around!
+                    break;
+                case 2:
+                    _unit->SendScriptTextChatMessage(927);      // The only escape is death!
+                    break;
+            }
+
+            std::vector<Player*> TargetTable;
+            set<Object*>::iterator itr = _unit->GetInRangePlayerSetBegin();
+
+            for (; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            {
+                if (isHostile(_unit, (*itr)))
+                {
+                    Player* RandomTarget = NULL;
+                    RandomTarget = TO<Player*>(*itr);
+                    if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
+                        TargetTable.push_back(RandomTarget);
+                }
+            }
+
+            if (!TargetTable.size())
+                return;
+
+            size_t RandTarget = rand() % TargetTable.size();
+            Unit* RTarget = TargetTable[RandTarget];
+
+            if (!RTarget)
+                return;
+
+            _unit->CastSpell(RTarget, dbcSpell.LookupEntry(BONE_SPIKE), false);
+
+            TargetTable.clear();
+
+            float dcX = RTarget->GetPositionX();
+            float dcY = RTarget->GetPositionY();
+            float dcZ = RTarget->GetPositionZ();
+
+            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_BONE_SPIKE, dcX, dcY, dcZ, 0, true, false, 0, 0);
+
+            TargetTable.clear();
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            switch (rand() % 2)
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(928);      // More bones for the offering!
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(929);      // Languish in damnation!
+                    break;
+            }
+        }
+
+        void OnDied(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(930);      // I see... Only darkness.
+        }
 };
 
+class BoneSpikeAI : public MoonScriptBossAI
+{
+    public:
+
+        MOONSCRIPT_FACTORY_FUNCTION(BoneSpikeAI, MoonScriptBossAI);
+        BoneSpikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        {
+            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->Despawn(8000, 0);
+        }
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lady Deathwhisper
@@ -296,8 +384,11 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_go_gossip_script(GO_TELE_5, new ICCTeleporterGossip());
 
     //Bosses
-    //mgr->register_creature_script(CN_LORD_MARROWGAR, &LordMarrowgarAI::Create);
+    mgr->register_creature_script(CN_LORD_MARROWGAR, &LordMarrowgarAI::Create);
     //mgr->register_creature_script(CN_LADY_DEATHWHISPER, &LadyDeathwhisperAI::Create);
     //mgr->register_creature_script(CN_VALITHRIA_DREAMWALKER, &ValithriaDreamwalkerAI::Create);
     //mgr->register_creature_script(CN_COLDFLAME, &ColdFlameAI::Create);
+
+    //Misc
+    mgr->register_creature_script(CN_BONE_SPIKE, &BoneSpikeAI::Create);
 }
