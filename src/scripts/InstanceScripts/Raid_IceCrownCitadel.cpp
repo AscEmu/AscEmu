@@ -164,7 +164,7 @@ class IceCrownCitadelScript : public MoonInstanceScript
 
 };
 
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // IceCrown Teleporter
 class ICCTeleporterAI : public GameObjectAIScript
 {
@@ -183,7 +183,7 @@ public:
             return;
 
         GossipMenu* menu = NULL;
-        objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 1/*Its not one... need to be checked*/, player);
+        objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 15221, player);
         menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
@@ -222,7 +222,7 @@ public:
     }
 };
 
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lord Marrowgar
 // LM_BERSERK    = 47008
 // BONE_SLICE    = 69055
@@ -231,7 +231,22 @@ public:
 // SOUL_FEAST    = 71203
 // ...
 
-///////////////////////////////////////////////////////
+class LordMarrowgarAI : public MoonScriptBossAI
+{
+    public:
+
+        MOONSCRIPT_FACTORY_FUNCTION(LordMarrowgarAI, MoonScriptBossAI);
+        LordMarrowgarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        { }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
+        }
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lady Deathwhisper
 // MANA_BARRIER = 70842
 // DEATH_AND_DECAY = 71001

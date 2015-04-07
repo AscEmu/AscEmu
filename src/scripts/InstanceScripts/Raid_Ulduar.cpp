@@ -48,7 +48,7 @@ class UlduarTeleporterAI : public GameObjectAIScript
         void OnActivate(Player* player)
         {
             GossipMenu* menu = NULL;
-            objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 0, player);
+            objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 31024, player);
 
             menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(521), 0);      // Expedition Base Camp.
             menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(522), 1);      // Formation Grounds
