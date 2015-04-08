@@ -4563,11 +4563,11 @@ class SCRIPT_DECL AkamaGossip : public GossipScript
                     GossipHello(pObject, pPlayer);
                     break;
                 case 1:
-                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pAI->ForceWaypointMove(1);
                     break;
                 case 2:
-                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pAI->ForceWaypointMove(17);
                     pAI->SetWieldWeapon(false);
                     break;
@@ -4616,7 +4616,7 @@ class AkamaAI : public MoonScriptBossAI
                 AddWaypoint(CreateWaypoint(i, 0, Flag_Run, ToIllidan[i]));
             }
 
-            _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+            _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             _unit->SetDualWield(true);
 
             mUdaloAI = mOlumAI = NULL;
@@ -4780,7 +4780,7 @@ class AkamaAI : public MoonScriptBossAI
                     _unit->SetFacing(2.113512f);
                     break;
                 case 17:
-                    _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+                    _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     RemoveAIUpdateEvent();
 
                     mScenePart = 0;

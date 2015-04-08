@@ -75,7 +75,7 @@ class LordDawnstar : public CreatureAIScript
 
         void OnLoad()
         {
-            _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+            _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             _unit->SetStandState(STANDSTATE_DEAD);
             _unit->setDeathState(CORPSE);
             _unit->GetAIInterface()->m_canMove = false;

@@ -781,7 +781,7 @@ enum ShapeshiftForm
 enum UnitFieldFlags // UNIT_FIELD_FLAGS #46 - these are client flags
 {
     //                                            Hex    Bit     Decimal  Comments
-    UNIT_FLAG_UNKNOWN_1                  = 0x00000001, // 1            1
+    UNIT_FLAG_SERVER_CONTROLLED          = 0x00000001, // 1            1
     UNIT_FLAG_NOT_ATTACKABLE_2           = 0x00000002, // 2            2  client won't let you attack them
     UNIT_FLAG_LOCK_PLAYER                = 0x00000004, // 3            4  ? does nothing to client (probably wrong) - only taxi code checks this
     UNIT_FLAG_PVP_ATTACKABLE             = 0x00000008, // 4            8  makes players and NPCs attackable / not attackable

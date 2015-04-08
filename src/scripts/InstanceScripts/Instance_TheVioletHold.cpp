@@ -213,7 +213,7 @@ public:
             case 4:
             {
                 _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
-                _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+                _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 TheVioletHoldScript* pInstance = (TheVioletHoldScript*)_unit->GetMapMgr()->GetScript();
                 pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_InProgress);
 
@@ -305,7 +305,7 @@ public:
 
             case 2:
             {
-                      TO_CREATURE(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                      TO_CREATURE(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                       pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_NONE);
                       //pCreature->MoveToWaypoint(1);
                       pCreature->GetAIInterface()->StopMovement(10);

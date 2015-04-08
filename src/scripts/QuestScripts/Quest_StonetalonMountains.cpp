@@ -38,7 +38,7 @@ class ProtectKaya : public QuestScript
             creat->GetAIInterface()->setMoveType(MOVEMENTTYPE_QUEST);
             creat->GetAIInterface()->StopMovement(10);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             // Prevention "not starting from spawn after attacking"
             creat->GetAIInterface()->SetAllowedToEnterCombat(true);
             creat->SetFaction(1801);

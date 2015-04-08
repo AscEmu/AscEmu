@@ -39,7 +39,7 @@ class Quest_JourneytoUndercity : public QuestScript // never extend std::tr1::en
             creat->PlaySoundToSet(10896);
             creat->CastSpell(creat, dbcSpell.LookupEntry(36568), false);
 
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             // Players can't interact with Sylvanas for 180000 ms.
             // Cast creat to an object because the EventSetUInt32Value method is in Object class.

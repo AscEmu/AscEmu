@@ -1273,7 +1273,7 @@ class ArthasGossip : public GossipScript
                 break;
                 case 1:
                 {
-                    TO_CREATURE(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                    TO_CREATURE(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     TO_CREATURE(pObject)->GetScript()->OnReachWP(1000, 0);
                 }
                 break;

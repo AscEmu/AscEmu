@@ -188,7 +188,7 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
             if (Id == 1)
                 if (JainaAI* pJaina = TO< JainaAI* >(TO_CREATURE(pObject)->GetScript()))
                     pJaina->StartInstance();
-            pObject->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            pObject->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             plr->Gossip_Complete();
         }
 };

@@ -2112,7 +2112,7 @@ bool AIInterface::showWayPoints(Player* pPlayer, bool Backwards)
                 pWayPoint->SetEmoteState(wp->forwardemoteid);
             }
             pWayPoint->setLevel(wp->id);
-            pWayPoint->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            pWayPoint->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             pWayPoint->SetFaction(pPlayer->GetFaction());
             pWayPoint->SetHealth(1);
             pWayPoint->SetMaxHealth(1);

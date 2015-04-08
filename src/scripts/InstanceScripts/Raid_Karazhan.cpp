@@ -732,7 +732,7 @@ class BarnesGS : public GossipScript
                         pCreature->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
                         pCreature->GetAIInterface()->setMoveType(11);
                         pCreature->GetAIInterface()->setWaypointToMove(0);
-                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                         pCreature->PlaySoundToSet(9357);
                         WayStartBBW[pCreature->GetInstanceID()] = 2;
                     }

@@ -38,7 +38,7 @@ class HomewardBound : public QuestScript
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Please help me, you gotta protect me and stuff, I can't fight on my own!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
             sEAS.WaypointCreate(creat, -5005.66f, -882.705f, -6.05186f, 3.098398f, 0, 256, 9900);
