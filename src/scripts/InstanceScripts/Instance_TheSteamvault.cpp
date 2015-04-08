@@ -1697,8 +1697,7 @@ class HydromancerThespiaAI : public CreatureAIScript
             for (int i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (rand() % 3)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_02);
@@ -1718,8 +1717,7 @@ class HydromancerThespiaAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_05);
@@ -1832,7 +1830,7 @@ class HydromancerThespiaAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -1979,8 +1977,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
 
             Gnomes.clear();
 
-            int RandomSpeach = rand() % 4;
-            switch (RandomSpeach)
+            switch (rand() % 4)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_02);
@@ -2003,8 +2000,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_06);
@@ -2201,7 +2197,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -2339,8 +2335,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             if (Gate)
                 Gate->SetState(GAMEOBJECT_STATE_CLOSED);
 
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (rand() % 3)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_03);
@@ -2360,8 +2355,7 @@ class WarlordKalitreshAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_06);
@@ -2583,7 +2577,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;

@@ -236,7 +236,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -450,8 +450,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
 
             Avatar = false;
 
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (rand() % 3)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MALADAAR_01);
@@ -471,8 +470,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MALADAAR_04);
@@ -603,7 +601,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;

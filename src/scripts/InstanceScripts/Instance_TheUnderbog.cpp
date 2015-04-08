@@ -2399,7 +2399,7 @@ class HungarfenAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                 {
@@ -2721,7 +2721,7 @@ class ClawAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -2805,8 +2805,7 @@ class SwamplordMuselekAI : public CreatureAIScript
             for (int i = 0; i < 5; i++)
                 spells[i].casttime = 0;
 
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (rand() % 3)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_02);
@@ -2833,8 +2832,7 @@ class SwamplordMuselekAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_05);
@@ -3136,7 +3134,7 @@ class TheBlackStalkerAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;

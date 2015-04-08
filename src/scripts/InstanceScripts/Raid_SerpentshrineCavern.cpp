@@ -418,7 +418,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            Unit*  RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+            Unit* RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
 
             if (!RTarget)
                 return;
@@ -1125,7 +1125,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            Unit*  RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+            Unit* RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
 
             if (!RTarget)
                 return;
@@ -1589,8 +1589,7 @@ class MorogrimAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (rand() % 3)
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Only the strong survive.");
@@ -1627,8 +1626,7 @@ class MorogrimAI : public CreatureAIScript
                 {
                     _unit->SendChatMessageAlternateEntry(17165, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "The violent earthquake has alerted nearby Murlocs!");
 
-                    int RandomSpeach = rand() % 2;
-                    switch (RandomSpeach)
+                    switch (rand() % 2)
                     {
                         case 0:
                             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Destroy them my subjects!");
@@ -1656,8 +1654,7 @@ class MorogrimAI : public CreatureAIScript
                     {
                         _unit->SendChatMessageAlternateEntry(CN_MOROGRIM_TIDEWALKER, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, " summons Watery Globules!");
 
-                        int RandomSpeach = rand() % 2;
-                        switch (RandomSpeach)
+                        switch (rand() % 2)
                         {
                             case 0:
                                 _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Soon it will be finished.");
@@ -2371,7 +2368,7 @@ class VashjAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            Unit*  RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+            Unit* RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
 
             if (!RTarget)
                 return;

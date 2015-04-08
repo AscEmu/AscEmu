@@ -1617,8 +1617,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
             Summons = 0;
 
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (rand() % 3)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_02);
@@ -1638,8 +1637,7 @@ class DarkweaverSythAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_05);
@@ -1838,8 +1836,7 @@ class TalonKingIkissAI : public CreatureAIScript
 
             Blink = false;
 
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (rand() % 3)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_02);
@@ -1859,8 +1856,7 @@ class TalonKingIkissAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_05);
@@ -1998,7 +1994,7 @@ class TalonKingIkissAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -2041,7 +2037,7 @@ class TalonKingIkissAI : public CreatureAIScript
             }
 
             size_t RandTarget = rand() % TargetTable.size();
-            Unit*  RTarget = TargetTable[RandTarget];
+            Unit* RTarget = TargetTable[RandTarget];
 
             if (!RTarget)
             {

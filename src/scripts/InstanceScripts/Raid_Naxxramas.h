@@ -3333,7 +3333,7 @@ class SapphironAI : public CreatureAIScript
 
             size_t RandTarget = rand() % TargetTable.size();
 
-            Unit*  RTarget = TargetTable[RandTarget];
+            Unit* RTarget = TargetTable[RandTarget];
 
             if (RTarget == NULL)
                 return;
@@ -3757,10 +3757,10 @@ class KelthuzadAI : public CreatureAIScript
 
     void OnTargetDied(Unit* mTarget)
     {
-        if (_unit->GetHealthPct() == 0) return;
+        if (_unit->GetHealthPct() == 0)
+            return;
 
-        uint32 RandomSpeach = rand() % 2;
-        switch (RandomSpeach)
+        switch (rand() % 2)
         {
             case 0:
                 _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The dark void awaits you!");
@@ -3899,8 +3899,7 @@ class KelthuzadAI : public CreatureAIScript
 
             if (PhaseTimer == 5)
             {
-                uint32 RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (rand() % 3)
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pray for mercy!");
@@ -4130,7 +4129,7 @@ class KelthuzadAI : public CreatureAIScript
 
             size_t RandTarget = rand() % TargetTable.size();
 
-            Unit*  RTarget = TargetTable[RandTarget];
+            Unit* RTarget = TargetTable[RandTarget];
 
             if (!RTarget)
                 return;
@@ -4152,8 +4151,7 @@ class KelthuzadAI : public CreatureAIScript
 
     void ChainSound()
     {
-        uint32 RandomSpeach = rand() % 2;
-        switch (RandomSpeach)
+        switch (rand() % 2)
         {
             case 0:
                 _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your soul is bound to me now!");
@@ -4166,7 +4164,10 @@ class KelthuzadAI : public CreatureAIScript
         }
     }
 
-    bool GetDespawnTrash() { return DespawnTrash; }
+    bool GetDespawnTrash()
+    {
+        return DespawnTrash;
+    }
 
     protected:
 

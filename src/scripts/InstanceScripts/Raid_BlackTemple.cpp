@@ -1959,7 +1959,7 @@ class NajentusAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -2037,9 +2037,7 @@ class SupremusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(5035);     // Your fate is written.
@@ -2473,7 +2471,7 @@ class GurtoggAI : public CreatureAIScript
 
                     size_t RandTarget = rand() % TargetTable.size();
 
-                    Unit*  RTarget = TargetTable[RandTarget];
+                    Unit* RTarget = TargetTable[RandTarget];
 
                     if (!RTarget)
                         return;
@@ -2593,7 +2591,7 @@ class GurtoggAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -3272,7 +3270,7 @@ class ShahrazAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -3694,7 +3692,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -3758,10 +3756,7 @@ class ShadeofakamaAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (rand() % 3)
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will not last much longer...");

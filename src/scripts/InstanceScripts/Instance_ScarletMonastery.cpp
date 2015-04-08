@@ -348,18 +348,13 @@ class MograineAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomFloat(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MORGRAINE_02);
                         break;
-
                 }
             }
         }
@@ -513,15 +508,11 @@ class WhitemaneAI : public CreatureAIScript
 
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomFloat(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WHITEMANE_02);
                         break;
-
                 }
             }
         }
@@ -692,16 +683,12 @@ class FairbanksAI : public CreatureAIScript
 
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomFloat(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ha! Had enough?");       /// \todo can anybody verify this?
                         _unit->PlaySoundToSet(0000);
                         break;
-
                 }
             }
         }

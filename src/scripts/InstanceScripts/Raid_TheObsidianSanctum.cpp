@@ -172,8 +172,7 @@ void SpellFunc_FlameTsunami(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI,
     {
         pCreatureAI->GetUnit()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "The lava surrounding Sartharion churns!");
 
-        uint32 RandomSpeach = rand() % 4;
-        switch (RandomSpeach)
+        switch (rand() % 4)
         {
             case 0:
                 pCreatureAI->Emote("Such flammable little insects....", Text_Yell, 14100);

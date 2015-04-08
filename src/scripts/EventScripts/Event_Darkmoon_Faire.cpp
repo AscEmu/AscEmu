@@ -182,9 +182,8 @@ class SetupCarnies_Gossip : public GossipScript
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
-            int randGossip;
-            randGossip = rand() % 4;
-            switch(randGossip)
+
+            switch(rand() % 4)
             {
                 case 0:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), BARK_SETUP_CARNIES_1, plr);
@@ -233,9 +232,7 @@ class Flik_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            int randGossip;
-            randGossip = rand() % 4;
-            switch(randGossip)
+            switch(rand() % 4)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_FLIK_1);
@@ -270,9 +267,7 @@ class FliksFrog_Gossip : public GossipScript
         {
             GossipMenu* Menu;
 
-            int randGossip;
-            randGossip = rand() % 2;
-            switch(randGossip)
+            switch(rand() % 2)
             {
                 case 0:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60011, plr);
@@ -313,9 +308,7 @@ class GevasGrimegate_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            int randGossip;
-            randGossip = rand() % 4;
-            switch(randGossip)
+            switch(rand() % 4)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_GEVAS_GRIMEGATE_1);
@@ -354,9 +347,7 @@ class Lhara_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            int randGossip;
-            randGossip = rand() % 4;
-            switch(randGossip)
+            switch(rand() % 4)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_LHARA_1);
@@ -539,9 +530,7 @@ class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            int randGossip;
-            randGossip = rand() % 4;
-            switch(randGossip)
+            switch(rand() % 4)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_1);
@@ -794,9 +783,7 @@ class Sayge_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            int randGossip;
-            randGossip = rand() % 4;
-            switch(randGossip)
+            switch(rand() % 4)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SAYGE_1);
@@ -937,9 +924,7 @@ class SilasDarkmoon_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            int randGossip;
-            randGossip = rand() % 6;
-            switch (randGossip)
+            switch (rand() % 6)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_1);
@@ -986,9 +971,7 @@ class StampThunderhorn_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            int randGossip;
-            randGossip = rand() % 5;
-            switch(randGossip)
+            switch(rand() % 5)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_STAMP_THUNDERHORN_1);
@@ -1031,9 +1014,7 @@ class Sylannia_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            int randGossip;
-            randGossip = rand() % 4;
-            switch(randGossip)
+            switch(rand() % 4)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SYLANNIA_1);

@@ -578,10 +578,7 @@ class CommanderSarannisAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_02);
@@ -614,9 +611,7 @@ class CommanderSarannisAI : public CreatureAIScript
 
         void ArcaneSound()
         {
-            int RandomArcane;
-            RandomArcane = rand() % 30;
-            switch (RandomArcane)
+            switch (rand() % 30)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_04);
@@ -781,10 +776,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_03);
@@ -819,9 +811,8 @@ class HighBotanistFreywinnAI : public CreatureAIScript
         void PlantColorSeedling()
         {
             PlantTimer = rand() % 6 + 5;    //5-10 sec (as in my DB attack time is 1000)
-            uint32 RandomPlant;
-            RandomPlant = rand() % 4;
-            switch (RandomPlant)
+
+            switch (rand() % 4)
             {
                 case 0:
                 {
@@ -848,9 +839,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
 
         void TreeSound()
         {
-            uint32 RandomTree;
-            RandomTree = rand() % 2;
-            switch (RandomTree)
+            switch (rand() % 2)
             {
                 case 0:
                 {
@@ -994,10 +983,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_THORNIN_02);
@@ -1344,10 +1330,7 @@ class WarpSplinterAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_02);

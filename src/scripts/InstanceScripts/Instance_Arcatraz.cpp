@@ -182,7 +182,7 @@ class ZerekethAI : public MoonScriptBossAI
 
             size_t RandTarget = rand() % TargetTable.size();
 
-            Player*  RTarget = TargetTable[RandTarget];
+            Player* RTarget = TargetTable[RandTarget];
 
             if (!RTarget)
                 return;

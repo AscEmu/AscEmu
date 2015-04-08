@@ -1251,9 +1251,8 @@ class KruulAI : public CreatureAIScript
         {
             hounds_timer = 45;
             enrage = 0;
-            int RandomSpeach;
-            RandomSpeach = rand() % 5;
-            switch (RandomSpeach)
+
+            switch (rand() % 5)
             {
                 case 0:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Azeroth has cowered too long under our shadow! Now, feel the power of the Burning Crusade, and despair!");
@@ -1518,9 +1517,8 @@ class KazzakAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             enrage = 0;
-            int RandomSpeach;
-            RandomSpeach = rand() % 2;
-            switch (RandomSpeach)
+
+            switch (rand() % 2)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(374);      // All mortals will perish!
@@ -1536,9 +1534,7 @@ class KazzakAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(379);      // Contemptible wretch!
@@ -1578,9 +1574,7 @@ class KazzakAI : public CreatureAIScript
 
         void RandomSpeech()
         {
-            int RandomSpeach;
-            RandomSpeach = rand() % 20; // 10% chance should do, he talks a lot tbh =P
-            switch (RandomSpeach)
+            switch (rand() % 20)        // 10% chance should do, he talks a lot tbh =P
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(383);      // Invaders, you dangle upon the precipice of oblivion! The Burning...
@@ -1929,9 +1923,7 @@ class DoomwalkerAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (rand() % 3)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(307);      // Threat level zero.
@@ -1990,8 +1982,7 @@ class DoomwalkerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                int RandomSpeach;
-                RandomSpeach = rand() % 2;
+
                 for (int i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
@@ -2022,7 +2013,7 @@ class DoomwalkerAI : public CreatureAIScript
                         if (m_spellcheck[0] == true)  //Earthquake
                         {
                             _unit->GetAIInterface()->WipeHateList();
-                            switch (RandomSpeach)
+                            switch (rand() % 2)
                             {
                                 case 0:
                                     _unit->SendScriptTextChatMessage(303);      // Tectonic disruption commencing.
@@ -2035,7 +2026,7 @@ class DoomwalkerAI : public CreatureAIScript
                         if (m_spellcheck[3] == true)  //Overrun
                         {
                             _unit->GetAIInterface()->WipeHateList();
-                            switch (RandomSpeach)
+                            switch (rand() % 2)
                             {
                                 case 0:
                                     _unit->SendScriptTextChatMessage(305);      // Trajectory locked.

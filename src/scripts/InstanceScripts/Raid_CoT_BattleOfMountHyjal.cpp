@@ -268,10 +268,7 @@ class RageWinterchillAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 5;
-                switch (RandomSpeach)
+                switch (rand() % 5)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(1586);     // Crumble and rot!
@@ -386,7 +383,7 @@ class RageWinterchillAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -496,8 +493,7 @@ class AnetheronAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (rand() % 3)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(1560);     // Your hopes are lost.
@@ -628,7 +624,7 @@ class AnetheronAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -720,8 +716,7 @@ class KazrogalAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach = rand() % 4;
-                switch (RandomSpeach)
+                switch (rand() % 4)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(1580);     // Your death will be a painful one.
@@ -867,7 +862,7 @@ class KazrogalAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -966,10 +961,7 @@ class AzgalorAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (rand() % 3)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(1571);     // Reesh, hokta!
@@ -1090,7 +1082,7 @@ class AzgalorAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -1405,8 +1397,7 @@ class ArchimondeAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (rand() % 3)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(1597);     // Your soul will languish for eternity.
@@ -1576,7 +1567,7 @@ class ArchimondeAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
