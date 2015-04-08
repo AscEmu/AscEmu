@@ -38,6 +38,7 @@ LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 5242
 
     use_crypto = false;
     authenticated = 0;
+    seed = 0;
 
     LOG_DETAIL("Created LogonCommServerSocket %u", m_fd);
 }

@@ -1739,6 +1739,10 @@ class SERVER_DECL DBCStorage
             m_numrows = 0;
             m_stringlength = 0;
             m_stringData = NULL;
+            rows = 0;
+            cols = 0;
+            useless_shit = 0;
+            header = 0;
         }
 
         ~DBCStorage()

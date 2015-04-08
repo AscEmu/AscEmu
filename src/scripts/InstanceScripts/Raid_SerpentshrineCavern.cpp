@@ -633,6 +633,17 @@ class LeotherasAI : public CreatureAIScript
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
+            nrspells = 1;
+            SwitchTimer = 0;
+            WhirlwindTimer = 0;
+            EnrageTimer = 0;
+            Enraged = false;
+            mInWhirlwind = false;
+            IsMorphing = false;
+            Phase = 0;              //nightelf form
+            FinalPhaseSubphase = 0;
+            FinalPhaseTimer = 0;
+
             LeotherasEventGreyheartToKill[_unit->GetInstanceID()] = 0;
             FirstCheck();
         }
@@ -669,14 +680,8 @@ class LeotherasAI : public CreatureAIScript
             if (LeotherasEventGreyheartToKill[_unit->GetInstanceID()] != 0)
                 return;
 
-            Phase = 0; //nightelf form
             SwitchTimer = 40 + rand() % 5; //wowwiki says 45, bosskillers says 40
             WhirlwindTimer = 15;
-            mInWhirlwind = false;
-            FinalPhaseSubphase = 0;
-            FinalPhaseTimer = 0;
-            IsMorphing = false;
-            Enraged = false;
             EnrageTimer = 599; //10 minutes
 
             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Finally my banishment ends!");
@@ -1476,6 +1481,7 @@ class FathomGuardCaribdisAI : public MoonScriptCreatureAI
         {
             AddSpell(TIDAL_SURGE, Target_Self, 20.0f, 0, 10);
             AddSpell(SUMMON_CYCLONE, Target_Self, 2.0f, 0, 0);
+            HealingWaveTimer = 0;
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -1947,6 +1953,14 @@ class VashjAI : public CreatureAIScript
             _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
 
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
+
+            TaintedElementalTimer = 0;
+            Phase = 0;
+            EnchantedElementalTimer = 0;
+            CoilfangStriderTimer = 0;
+            CoilfangEliteTimer = 0;
+            SporebatTimer = 0;
+            ForkedLightningTimer = 0;
         }
 
         void ResetCastTime()
@@ -2547,6 +2561,10 @@ class ToxicSporeBatAI : public CreatureAIScript
             _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
             _unit->GetAIInterface()->setWaypointToMove(1);
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+
+            QuillsCount = 0;
+            NextWP = 0;
+            FlyWay = 0;
         }
 
         void OnCombatStart(Unit* mTarget)

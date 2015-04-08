@@ -57,6 +57,8 @@ GameObject::GameObject(uint64 guid)
 	m_overrides = 0;
 	hitpoints = 0;
 	maxhitpoints = 0;
+    range = 0;
+    checkrate = 0;
 }
 
 GameObject::~GameObject()

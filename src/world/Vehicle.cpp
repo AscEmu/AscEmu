@@ -27,6 +27,7 @@ Vehicle::Vehicle()
     vehicle_info = NULL;
     passengercount = 0;
     freeseats = 0;
+    creature_entry = 0;
     std::fill(seats.begin(), seats.end(), reinterpret_cast<VehicleSeat*>(NULL));
     installed_accessories.clear();
 }

@@ -44,6 +44,8 @@ LogonCommHandler::LogonCommHandler()
     if (pLimit == 0) pLimit = 1;
     server_population = 0;
 
+    _realmType = 0;
+
     // cleanup
     servers.clear();
     realms.clear();

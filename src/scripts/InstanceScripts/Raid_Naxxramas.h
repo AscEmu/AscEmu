@@ -1044,6 +1044,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : MoonScri
     //_unit->GetAIInterface()->m_spells.push_back(NewSpell)
 
     mRazuviousAI = NULL;
+    mIsControlled = false;
 };
 
 void DeathKnightUnderstudyAI::Destroy()
@@ -3682,6 +3683,8 @@ class KelthuzadAI : public CreatureAIScript
         SpawnTimer = 0;
         GCounter = 0;
         m_phase = 0;
+        HelpDialog = 0;
+        WaveTimer = 0;
     }
 
     void OnCombatStart(Unit* mTarget)
@@ -4209,6 +4212,13 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
 
         OnStart = false;
 
+        LastPosX = 0;
+        LastPosY = 0;
+        LastPosZ = 0;
+
+        newposx = 0;
+        newposy = 0;
+
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
     }
 
@@ -4328,6 +4338,12 @@ class UnstoppableAbominationAI : public CreatureAIScript
         _unit->m_noRespawn = true;
 
         OnStart = false;
+
+        LastPosX = 0;
+        LastPosY = 0;
+        LastPosZ = 0;
+        newposx = 0;
+        newposy = 0;
 
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
     }

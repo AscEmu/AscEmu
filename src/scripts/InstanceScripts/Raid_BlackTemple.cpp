@@ -3744,6 +3744,7 @@ class ShadeofakamaAI : public CreatureAIScript
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 2000;
 
+            hm = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -5620,6 +5621,22 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
             mFoA1 = mFoA2 = NULL;
             mAllow = true;
+
+            mPhaseBackup = 0;
+            mScenePart = 0;
+            mTimeLeft = 0;
+            mParasiticTimer = 0;
+            mMovementTimer = 0;
+            mFireWallTimer = 0;
+            mLastFireWall = 0;
+            mMiscEventPart = 0;
+            mShadowDemonsTimer = 0;
+            mFlameBurstTimer = 0;
+            mPlaySound = 0;
+            mDemonTimer = 0;
+            mYellTimer = 0;
+            mEnrageTimer = 0;
+            mCurrentWaypoint = 0;
         }
 
         void OnCombatStart(Unit*  pTarget)

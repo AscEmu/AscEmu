@@ -2043,6 +2043,11 @@ class AlarAI : public CreatureAIScript
             _unit->GetAIInterface()->setWaypointToMove(1);
             Flying = true;
             CastTime();
+
+            QuillsCount = 0;
+            NextWP = 0;
+            m_entry = 0;
+            FlyWay = 0;
         }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
@@ -2839,8 +2844,6 @@ class FlameStrikeAI : public MoonScriptCreatureAI
             RemoveAIUpdateEvent();
             Despawn(8500);
         }
-
-        int32    mDespawnTimer;
 };
 
 // Phoenix AI
@@ -3115,6 +3118,12 @@ class KaelThasAI : public MoonScriptBossAI
             AddEmote(Event_OnDied, "For...Quel...thalas!", Text_Yell, 11274);
             mAIUpdateFrequency = 30000;
 
+            mArcaneDisruptionTimer = 0;
+            mShockBarrierTimer = 0;
+            mFlameStrikeTimer = 0;
+            mPhoenixTimer = 0;
+            mEventTimer = 0;
+
             for (int i = 0; i < 4; ++i)
             {
                 Creature* pCreature = TO_CREATURE(ForceCreatureFind(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z));
@@ -3125,6 +3134,7 @@ class KaelThasAI : public MoonScriptBossAI
 
                 SpawnCreature(Advisors[i].addition, Advisors[i].x, Advisors[i].y, Advisors[i].z, Advisors[i].o);
             }
+
         }
 
         void OnCombatStart(Unit*  mTarget)

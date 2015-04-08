@@ -114,6 +114,7 @@ class OnyxiaAI : public CreatureAIScript
             m_kAway = false;
             m_wBuffet = false;
             m_Cleave = false;
+            m_currentWP = 0;
         }
 
         void OnCombatStart(Unit* mTarget)

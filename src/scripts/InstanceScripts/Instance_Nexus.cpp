@@ -474,7 +474,10 @@ class OrmorokAI : public MoonScriptBossAI
 class CrystalSpikeAI : public MoonScriptBossAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(CrystalSpikeAI, MoonScriptBossAI);
-    CrystalSpikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature) {};
+    CrystalSpikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    {
+        m_part = 0;
+    }
 
     void OnLoad()
     {
@@ -484,7 +487,6 @@ class CrystalSpikeAI : public MoonScriptBossAI
 
         Despawn(4500, 0);
         RegisterAIUpdateEvent(500);
-        m_part = 0;
 
         ParentClass::OnLoad();
     };

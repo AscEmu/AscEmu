@@ -152,7 +152,10 @@ class FunnyDragon : public CreatureAIScript
 {
     public:
         ADD_CREATURE_FACTORY_FUNCTION(FunnyDragon);
-        FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature) {}
+        FunnyDragon(Creature* pCreature) : CreatureAIScript(pCreature)
+        {
+            i = 0;      // rename this....
+        }
 
         void OnLoad()
         {

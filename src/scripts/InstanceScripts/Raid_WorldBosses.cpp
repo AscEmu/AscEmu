@@ -950,13 +950,14 @@ class LethonAI : public CreatureAIScript
             spells[5].cooldown = -1;
             spells[5].perctrigger = 0.0f;
             spells[5].attackstoptimer = 1000;
+
+            Shade1 = false;
+            Shade2 = false;
+            Shade3 = false;
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            Shade1 = false;
-            Shade2 = false;
-            Shade3 = false;
             CastTime();
             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I can sense the SHADOW on your hearts. There can be no rest for the wicked!");
             RegisterAIUpdateEvent(1000); //Attack time is to slow on this boss
@@ -989,15 +990,11 @@ class LethonAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            Shade1 = false;
-            Shade2 = false;
-            Shade3 = false;
             CastTime();
             RemoveAIUpdateEvent();
         }
 
         void AIUpdate()
-
         {
             std::list<Player*> mTargets;
             // M4ksiu: Someone who wrote this hadn't thought about it much, so it should be rewritten
@@ -1512,12 +1509,12 @@ class KazzakAI : public CreatureAIScript
             //Spawn intro.
             _unit->SendScriptTextChatMessage(373);      // I remember well the sting of defeat at the conclusion...
 
+            enrage = 0;
+
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            enrage = 0;
-
             switch (rand() % 2)
             {
                 case 0:
@@ -1567,7 +1564,6 @@ class KazzakAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(381);      // The Legion... will never... fall.
 
-            enrage = 0;
             RemoveAIUpdateEvent();
             CastTime();
         }
@@ -1726,6 +1722,7 @@ class AzuregosAI : public CreatureAIScript
             spells[4].perctrigger = 0.0f;
             spells[4].attackstoptimer = 1000;
 
+            masstele = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -1909,12 +1906,12 @@ class DoomwalkerAI : public CreatureAIScript
             spells[5].perctrigger = 0.0f;
             spells[5].attackstoptimer = 1000;
 
+            enraged = false;
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             _unit->SendScriptTextChatMessage(302);      // Do not proceed. You will be eliminated.
-            enraged = false;
             RegisterAIUpdateEvent(1000);
             CastTime();
         }
@@ -1938,6 +1935,7 @@ class DoomwalkerAI : public CreatureAIScript
                 _unit->CastSpell(mTarget, spells[1].info, spells[1].instant);
             }
         }
+
         void OnCombatStop(Unit* mTarget)
         {
             _unit->RemoveAura(AURA_OF_DEATH);
@@ -1952,7 +1950,6 @@ class DoomwalkerAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(310);      // System failure in five, f-o-u-r...
             _unit->RemoveAura(AURA_OF_DEATH);
-            enraged = false;
             RemoveAIUpdateEvent();
             CastTime();
         }

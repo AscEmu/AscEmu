@@ -53,6 +53,8 @@ Group::Group(bool Assign)
     m_raiddifficulty = 0;
     m_assistantLeader = m_mainAssist = m_mainTank = NULL;
     updatecounter = 0;
+    m_Id = 0;
+    m_guid = 0;
 }
 
 Group::~Group()
