@@ -281,7 +281,9 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
         SetMoveType(Move_DontMoveWP);
         for (int i = 1; i < MAX_THRALLWP1; ++i)
             AddWaypoint(CreateWaypoint(i, 0, Flag_Walk, ThrallWP1[i]));
-    };
+
+        m_currentWp = 0;
+    }
 
     void StartEscort(Player* pPlayer)
     {
@@ -291,18 +293,18 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
 
         _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
         SetMoveType(Move_ForwardThenStop);
-    };
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
         ParentClass::OnCombatStop(pTarget);
         SetWaypointToMove(m_currentWp);
-    };
+    }
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)
     {
         m_currentWp = iWaypointId;
-    };
+    }
 
     uint32 m_currentWp;
 };

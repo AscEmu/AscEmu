@@ -1538,8 +1538,9 @@ void Object::_setFaction()
     else if (IsGameObject())
     {
         factT = dbcFactionTemplate.LookupEntryForced(TO< GameObject* >(this)->GetFaction());
-        if (!factT)
-            LOG_ERROR("Game Object does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", TO< GameObject* >(this)->GetFaction(), GetEntry());
+        // A "dead" object is not able to choose/have a faction
+        //if (!factT)
+        //    LOG_ERROR("Game Object does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", TO< GameObject* >(this)->GetFaction(), GetEntry());
     }
 
     if (!factT)

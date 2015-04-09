@@ -152,7 +152,8 @@ class DancingRuneWeaponAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(DancingRuneWeaponAI);
         DancingRuneWeaponAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-
+            dpsCycle = 0;
+            dpsSpell = 0;
         }
 
         void OnLoad()
@@ -202,7 +203,6 @@ class DancingRuneWeaponAI : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
-            dpsCycle = 0;
         }
 
         void OnCombatStop(Unit* mTarget)

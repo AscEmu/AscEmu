@@ -339,8 +339,14 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
 
     m_target_constraint = objmgr.GetSpellTargetConstraintForSpell(info->Id);
 
-    m_missilePitch = 0.0f;
+    m_missilePitch = 0;
     m_missileTravelTime = 0;
+    m_IsCastedOnSelf = false;
+    m_castTime = 0;
+    m_timer = 0;
+    m_magnetTarget = 0;
+    Dur = 0;
+    m_rune_avail_before = 0;
 }
 
 Spell::~Spell()

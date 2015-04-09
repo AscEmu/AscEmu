@@ -1959,7 +1959,7 @@ class NajentusAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -2037,9 +2037,7 @@ class SupremusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(5035);     // Your fate is written.
@@ -2473,7 +2471,7 @@ class GurtoggAI : public CreatureAIScript
 
                     size_t RandTarget = rand() % TargetTable.size();
 
-                    Unit*  RTarget = TargetTable[RandTarget];
+                    Unit* RTarget = TargetTable[RandTarget];
 
                     if (!RTarget)
                         return;
@@ -2593,7 +2591,7 @@ class GurtoggAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -3272,7 +3270,7 @@ class ShahrazAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -3694,7 +3692,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -3746,6 +3744,7 @@ class ShadeofakamaAI : public CreatureAIScript
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 2000;
 
+            hm = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -3758,10 +3757,7 @@ class ShadeofakamaAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (rand() % 3)
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will not last much longer...");
@@ -4568,11 +4564,11 @@ class SCRIPT_DECL AkamaGossip : public GossipScript
                     GossipHello(pObject, pPlayer);
                     break;
                 case 1:
-                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pAI->ForceWaypointMove(1);
                     break;
                 case 2:
-                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                    pAIOwner->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pAI->ForceWaypointMove(17);
                     pAI->SetWieldWeapon(false);
                     break;
@@ -4621,7 +4617,7 @@ class AkamaAI : public MoonScriptBossAI
                 AddWaypoint(CreateWaypoint(i, 0, Flag_Run, ToIllidan[i]));
             }
 
-            _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+            _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             _unit->SetDualWield(true);
 
             mUdaloAI = mOlumAI = NULL;
@@ -4785,7 +4781,7 @@ class AkamaAI : public MoonScriptBossAI
                     _unit->SetFacing(2.113512f);
                     break;
                 case 17:
-                    _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+                    _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                     RemoveAIUpdateEvent();
 
                     mScenePart = 0;
@@ -5625,6 +5621,22 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
             mFoA1 = mFoA2 = NULL;
             mAllow = true;
+
+            mPhaseBackup = 0;
+            mScenePart = 0;
+            mTimeLeft = 0;
+            mParasiticTimer = 0;
+            mMovementTimer = 0;
+            mFireWallTimer = 0;
+            mLastFireWall = 0;
+            mMiscEventPart = 0;
+            mShadowDemonsTimer = 0;
+            mFlameBurstTimer = 0;
+            mPlaySound = 0;
+            mDemonTimer = 0;
+            mYellTimer = 0;
+            mEnrageTimer = 0;
+            mCurrentWaypoint = 0;
         }
 
         void OnCombatStart(Unit*  pTarget)

@@ -92,6 +92,8 @@ MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScri
     mAIUpdateFrequency = DEFAULT_UPDATE_FREQUENCY;
     mBaseAttackTime = _unit->GetBaseAttackTime(MELEE);
     mDespawnWhenInactive = false;
+    mTimerCount = 0;
+    mEventCount = 0;
 }
 
 MoonScriptCreatureAI::~MoonScriptCreatureAI()

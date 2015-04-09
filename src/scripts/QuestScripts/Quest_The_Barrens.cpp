@@ -84,7 +84,7 @@ class TheEscape : public QuestScript
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do this, you gotta protect me and stuff, I can't fight on my own!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
 
             sEAS.CreateCustomWaypointMap(creat);
@@ -330,7 +330,7 @@ class FreeFromtheHold : public QuestScript
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Enough talk, help me get back to Ratchet will you? Let me know when you're ready and we'll make our break!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
             sEAS.WaypointCreate(creat, -1607.61f, -3846.03f, 14.3572f, 3.098398f, 0, 256, 19805);

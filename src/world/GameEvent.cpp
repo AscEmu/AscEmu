@@ -35,6 +35,8 @@ void GameEvent::CreateNPCs()
             c->SwitchToCustomWaypoints();
         }
 
+        c->SetFaction(npc.faction);
+
         c->mEvent = this;
         bool addToWorld = true;
         if (mEventScript != nullptr)
@@ -64,6 +66,10 @@ void GameEvent::CreateObjects()
         GameObject* g = mapmgr->CreateGameObject(gobj.entry);
         g->CreateFromProto(gobj.entry, gobj.map_id, gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing);
         g->SetScale(gobj.scale);
+
+        if (gobj.faction != 0)
+            g->SetFaction(gobj.faction);
+
         bool addToWorld = true;
         if (mEventScript != nullptr)
         {

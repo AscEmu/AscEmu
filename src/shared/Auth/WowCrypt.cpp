@@ -19,15 +19,17 @@
  */
 
 #include "WowCrypt.h"
-
 #include <algorithm>
-
 #include <openssl/hmac.h>
 
 
 WowCrypt::WowCrypt()
 {
     m_initialized = false;
+    m_clientDecrypt.x = 0;
+    m_clientDecrypt.y = 0;
+    m_serverEncrypt.x = 0;
+    m_serverEncrypt.y = 0;
 }
 
 

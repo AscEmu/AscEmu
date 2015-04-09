@@ -39,7 +39,7 @@ class ProtectingtheShipment : public QuestScript
             creat->GetAIInterface()->StopMovement(3000);
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
         }
 };

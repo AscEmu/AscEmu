@@ -1013,8 +1013,7 @@ class PandemoniusAI : public CreatureAIScript
             for (int i = 0; i < 2; i++)
                 spells[i].casttime = 0;
 
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (rand() % 3)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_01);
@@ -1034,8 +1033,7 @@ class PandemoniusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_PANDEMONIUS_04);
@@ -1150,7 +1148,7 @@ class PandemoniusAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -1322,7 +1320,7 @@ class TavarokAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -1415,8 +1413,7 @@ class NexusPrinceShaffarAI : public CreatureAIScript
             spells[3].casttime = t + RandomUInt(10);
             spells[4].casttime = t + spells[4].cooldown;
 
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (rand() % 3)
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_02);
@@ -1435,8 +1432,7 @@ class NexusPrinceShaffarAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (rand() % 2)
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_NEXUSPRINCE_06);
@@ -1571,7 +1567,7 @@ class NexusPrinceShaffarAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;

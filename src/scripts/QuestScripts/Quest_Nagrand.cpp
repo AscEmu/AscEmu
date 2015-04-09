@@ -318,7 +318,7 @@ class NotOnMyWatch : public CreatureAIScript
                 _unit->GetAIInterface()->WipeHateList();
                 _unit->GetAIInterface()->WipeTargetList();
                 _unit->SetStandState(STANDSTATE_SIT);
-                _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+                _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
                 _unit->Despawn(180000, 0);
 

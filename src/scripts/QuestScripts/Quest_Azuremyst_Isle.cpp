@@ -38,7 +38,7 @@ class TotemofCoo : public QuestScript
             pAkida->GetAIInterface()->StopMovement(1000);
             pAkida->GetAIInterface()->SetAllowedToEnterCombat(false);
             pAkida->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me I shall result you on a place!");
-            pAkida->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            pAkida->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             pAkida->CastSpell(pAkida, 25035, true);   // Apparition Effect
 
             sEAS.CreateCustomWaypointMap(pAkida);
@@ -114,7 +114,7 @@ class TotemofTikti : public QuestScript
             Coo->GetAIInterface()->setMoveType(11);
             Coo->GetAIInterface()->StopMovement(3000);
             Coo->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me!");
-            Coo->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            Coo->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(Coo);
             sEAS.WaypointCreate(Coo, -3926.076660f, -12755.158203f, 99.080429f, 5.031188f, 0, 256, 16993);
@@ -161,7 +161,7 @@ class TotemofYor : public QuestScript
             Tikti->GetAIInterface()->setMoveType(WALK);
             Tikti->GetAIInterface()->StopMovement(3000);
             Tikti->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me!");
-            Tikti->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            Tikti->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(Tikti);
             sEAS.WaypointCreate(Tikti, -3881.700928f, -13111.898438f, 5.814010f, 1.855801f, 0, 256, 16999);
@@ -205,7 +205,7 @@ class TotemofVark : public QuestScript
 
             Yor->m_escorter = mTarget;
             Yor->GetAIInterface()->StopMovement(1000);
-            Yor->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            Yor->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             char msg[256];
             snprintf((char*)msg, 256, "Come, %s . Let us leave the water together, purified.", mTarget->GetName());
             Yor->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);

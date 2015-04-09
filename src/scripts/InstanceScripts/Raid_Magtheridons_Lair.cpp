@@ -813,7 +813,7 @@ class HellfireWarderAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -1042,7 +1042,7 @@ class HellfireChannelerAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -1207,7 +1207,7 @@ class BurningAbyssalAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;
@@ -1620,7 +1620,7 @@ class MagtheridonAI : public CreatureAIScript
 
                 size_t RandTarget = rand() % TargetTable.size();
 
-                Unit*  RTarget = TargetTable[RandTarget];
+                Unit* RTarget = TargetTable[RandTarget];
 
                 if (!RTarget)
                     return;

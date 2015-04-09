@@ -732,7 +732,7 @@ class BarnesGS : public GossipScript
                         pCreature->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
                         pCreature->GetAIInterface()->setMoveType(11);
                         pCreature->GetAIInterface()->setWaypointToMove(0);
-                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                         pCreature->PlaySoundToSet(9357);
                         WayStartBBW[pCreature->GetInstanceID()] = 2;
                     }
@@ -1157,6 +1157,11 @@ class CuratorAI : public CreatureAIScript
             spells[3].instant = true;
             spells[3].cooldown = 0;
             spells[3].attackstoptimer = 1000;
+
+            evocation = false;
+            enrage = false;
+            berserk = false;
+            Timer = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -1938,6 +1943,7 @@ class WaterEleAI : public CreatureAIScript
 
         WaterEleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            WaterBolt = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -1982,6 +1988,7 @@ class ShadowofAranAI : public CreatureAIScript
 
         ShadowofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            ShadowPyro = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -3351,6 +3358,8 @@ class NetherspiteAI : public CreatureAIScript
             spells[2].info = dbcSpell.LookupEntry(NETHERBURN);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
+
+            VoidTimer = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -4802,9 +4811,6 @@ class CycloneOZ : public CreatureAIScript
         {
             _unit->CastSpell(_unit, dbcSpell.LookupEntry(CYCLONE_KNOCK), true);
         }
-
-    protected:
-        int nrspells;
 };
 
 //Romulo & Julianne

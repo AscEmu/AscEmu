@@ -37,7 +37,7 @@ class SunkenTreasure : public QuestScript
             creat->GetAIInterface()->setMoveType(11);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Defens Me!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
             sEAS.WaypointCreate(creat, -2078.054443f, -2091.207764f, 9.526212f, 4.770276f, 0, 256, 4049);

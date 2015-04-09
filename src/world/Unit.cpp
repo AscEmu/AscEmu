@@ -322,6 +322,7 @@ Unit::Unit()
         m_detectRangeMOD[i] = 0;
     }
 
+    detectRange = 0;
     trackStealth = false;
 
     m_threatModifyer = 0;
@@ -399,6 +400,13 @@ Unit::Unit()
     m_noFallDamage = false;
     z_axisposition = 0.0f;
     m_safeFall = 0;
+
+    m_cTimer = 0;
+    m_temp_summon = false;
+    m_meleespell_ecn = 0;
+    m_manaShieldId = 0;
+    m_charmtemp = 0;
+    m_auraRaidUpdateMask = 0;
 }
 
 Unit::~Unit()

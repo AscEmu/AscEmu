@@ -2663,12 +2663,13 @@ StitchedColossusAI::StitchedColossusAI(Creature* pCreature) : MoonScriptCreature
         AddSpell(STITCHED_COLOSSUS_MASSIVE_STOMP_HEROIC, Target_Self, 8, 0, 15);
     else
         AddSpell(STITCHED_COLOSSUS_MASSIVE_STOMP_NORMAL, Target_Self, 8, 0, 15);
+
+    mEnraged = false;
 };
 
 void StitchedColossusAI::OnCombatStart(Unit* pTarget)
 {
     ParentClass::OnCombatStart(pTarget);
-    mEnraged = false;
 };
 
 void StitchedColossusAI::AIUpdate()

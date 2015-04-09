@@ -93,6 +93,9 @@ class ZerekethAI : public MoonScriptBossAI
         {
             AddSpell(SEED_OF_C, Target_RandomPlayer, 6.0f, 2, 20, 0, 100.0f);
 
+            SpeechTimer = 0;
+            VoidTimer = 0;
+
             if (!IsHeroic())
                 AddSpell(SHADOW_NOVA, Target_Self, 15, 2, 15);
             else
@@ -182,7 +185,7 @@ class ZerekethAI : public MoonScriptBossAI
 
             size_t RandTarget = rand() % TargetTable.size();
 
-            Player*  RTarget = TargetTable[RandTarget];
+            Player* RTarget = TargetTable[RandTarget];
 
             if (!RTarget)
                 return;

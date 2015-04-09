@@ -59,6 +59,7 @@ class NalorakkAI : public MoonScriptBossAI
 
             // Bear Form
             Morph = AddSpell(42377, Target_Self, 0, 0, 0, 0, 0, false, "You call on da beast, you gonna get more dan you bargain for!", Text_Yell, 12072);
+            MorphTimer = 0;
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -141,6 +142,8 @@ class AkilzonAI : public MoonScriptBossAI
             AddEmote(Event_OnTargetDied, "Stop your cryin'!", Text_Yell, 12018);
             AddEmote(Event_OnTargetDied, "Ya got nothin'!", Text_Yell, 12017);
             AddEmote(Event_OnDied, "You can't... kill... me spirit!", Text_Yell, 12019);
+
+            mSummonTime = 0;
         }
 
         void OnCombatStart(Unit* pTarget)
@@ -229,6 +232,11 @@ class HalazziAI : public MoonScriptBossAI
             AddEmote(Event_OnTargetDied, "You all gonna fail...", Text_Yell, 12027);
             AddEmote(Event_OnDied, "Chaga... choka'jinn.", Text_Yell, 12028);
             mLynx = NULL;
+
+            mTotemTimer = 0;
+            CurrentHealth = 0;
+            MaxHealth = 0;
+            SplitCount = 0;
         }
 
         void OnCombatStart(Unit* pTarget)
