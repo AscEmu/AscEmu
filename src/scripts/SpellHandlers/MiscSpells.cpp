@@ -632,6 +632,16 @@ void SetupMiscSpellhandlers(ScriptMgr* mgr)
         70858,
         70859,
         70861,
+        // Ulduar Teleports
+        64014,
+        64032,
+        64028,
+        64031,
+        64030,
+        64029,
+        64024,
+        64025,
+        65042,
         0
     };
     mgr->register_dummy_spell(SpellTeleports, &TeleportToCoordinates);
