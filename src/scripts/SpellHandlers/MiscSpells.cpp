@@ -604,10 +604,15 @@ bool SOTATeleporter(uint32 i, Spell* s)
     return true;
 }
 
-bool DiseasedWolf(uint32 i, Aura* pAura, bool apply)
+bool GeneralDummyAura(uint32 i, Aura* pAura, bool apply)
 {
-    // This spell is just being used to apply visual effect to the diseased wolves in Northshire.
-    // It does nothing else but applying a GFX on wolves that looks like a green, poisonous smoke.
+    // This handler is being used to apply visual effect.
+    return true;
+}
+
+bool GeneralDummyEffect(uint32 i, Spell* pSpell)
+{
+    // This applies the dummy effect (nothing more needed for this spell)
     return true;
 }
 
@@ -629,7 +634,6 @@ void SetupMiscSpellhandlers(ScriptMgr* mgr)
         70861,
         0
     };
-
     mgr->register_dummy_spell(SpellTeleports, &TeleportToCoordinates);
 
     mgr->register_dummy_spell(11189, &FrostWarding);
@@ -702,8 +706,20 @@ void SetupMiscSpellhandlers(ScriptMgr* mgr)
         58622,
         0
     };
-
     mgr->register_script_effect(teleportToCoordinates, &TeleportToCoordinates);
 
-    mgr->register_dummy_aura(71764, &DiseasedWolf);
+    uint32 auraWithoutNeededEffect[] =
+    {
+        71764,      // DiseasedWolf just apply GFX
+        33209,      // Gossip NPC Periodic - Despawn (Aura hidden, Cast time hidden, no clue what it should do)
+        0
+    };
+    mgr->register_dummy_aura(auraWithoutNeededEffect, &GeneralDummyAura);
+
+    uint32 spellWithoutNeededEffect[] =
+    {
+        29403,      // Holiday Breath of Fire, Effect (NPC) Triggered by 29421 Apply Aura 29402 (Aura is hidden)
+        0
+    };
+    mgr->register_dummy_spell(spellWithoutNeededEffect, &GeneralDummyEffect);
 }
