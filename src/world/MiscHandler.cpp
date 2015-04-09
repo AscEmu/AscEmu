@@ -1738,15 +1738,20 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_GOOBER:
         {
-            plyr->CastSpell(guid, goinfo->Unknown1, false);
+                if (Arcemu::Gossip::Script* pGossipScript = sScriptMgr.get_go_gossip(goinfo->ID))
+                    pGossipScript->OnHello(obj, plyr);
+                else
+                {
+                    plyr->CastSpell(guid, goinfo->Unknown1, false);
 
-            // show page
-            if (goinfo->sound7)
-            {
-                WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
-                data << obj->GetGUID();
-                plyr->GetSession()->SendPacket(&data);
-            }
+                    // show page
+                    if (goinfo->sound7)
+                    {
+                        WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
+                        data << obj->GetGUID();
+                        plyr->GetSession()->SendPacket(&data);
+                    }
+                }
         }
         break;
         case GAMEOBJECT_TYPE_CAMERA://eye of azora
