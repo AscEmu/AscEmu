@@ -35,7 +35,12 @@ void GameEvent::CreateNPCs()
             c->SwitchToCustomWaypoints();
         }
 
+        // Set up spawn specific information
+        c->SetDisplayId(npc.displayid);
         c->SetFaction(npc.faction);
+
+        if (npc.mountdisplayid != 0)
+            c->SetMount(npc.mountdisplayid);
 
         c->mEvent = this;
         bool addToWorld = true;
@@ -65,10 +70,14 @@ void GameEvent::CreateObjects()
 
         GameObject* g = mapmgr->CreateGameObject(gobj.entry);
         g->CreateFromProto(gobj.entry, gobj.map_id, gobj.position_x, gobj.position_y, gobj.position_z, gobj.facing);
+
+        // Set up spawn specific information
         g->SetScale(gobj.scale);
 
         if (gobj.faction != 0)
             g->SetFaction(gobj.faction);
+
+        g->SetFlags(gobj.flags);
 
         bool addToWorld = true;
         if (mEventScript != nullptr)
