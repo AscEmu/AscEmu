@@ -712,6 +712,10 @@ void SetupMiscSpellhandlers(ScriptMgr* mgr)
     {
         71764,      // DiseasedWolf just apply GFX
         33209,      // Gossip NPC Periodic - Despawn (Aura hidden, Cast time hidden, no clue what it should do)
+        57764,      // Hover (Anim Override) just apply GFX (not walking or swimming...)
+        35357,      // Spawn Effect, Serverside (Aura hidden, Cast time hidden)
+        45948,      ///\todo units with this aura are not allowed to fly (never seen it on a player)
+        46011,      // See ^
         0
     };
     mgr->register_dummy_aura(auraWithoutNeededEffect, &GeneralDummyAura);
@@ -719,6 +723,9 @@ void SetupMiscSpellhandlers(ScriptMgr* mgr)
     uint32 spellWithoutNeededEffect[] =
     {
         29403,      // Holiday Breath of Fire, Effect (NPC) Triggered by 29421 Apply Aura 29402 (Aura is hidden)
+        52124,      // Sky Darkener Assault. Triggered by 52147 (Apply Aura: Periodically trigger spell) (Aura is hidden)
+        53274,      // Icebound Visage (Aura is hidden)
+        53275,      // See ^
         0
     };
     mgr->register_dummy_spell(spellWithoutNeededEffect, &GeneralDummyEffect);
