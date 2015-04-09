@@ -456,6 +456,8 @@ class WardenMellicharAI : public MoonScriptBossAI
             orb2 = NULL;
             orb3 = NULL;
             orb4 = NULL;
+            Phasepart = 0;
+            NPC_ID_Spawn = 0;
         }
 
         void OnCombatStart(Unit* mTarget)

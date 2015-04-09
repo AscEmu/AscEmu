@@ -111,7 +111,17 @@ AIInterface::AIInterface()
     m_waypointsLoadedFromDB(false),
     m_waypoints(NULL),
     m_is_in_instance(false),
-    skip_reset_hp(false)
+    skip_reset_hp(false),
+
+    m_walkMode(0),
+    FollowDistance_backup(0),
+    m_AIType(AITYPE_LONER),
+    m_walkSpeed(0),
+    m_splinetrajectoryVertical(0),
+    m_splinetrajectoryTime(0),
+    m_currentSplineTotalMoveTime(0),
+    m_MovementType(MOVEMENTTYPE_NONE),
+    m_guardTimer(0)
 {
     m_aiTargets.clear();
     m_assistTargets.clear();

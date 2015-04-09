@@ -4510,6 +4510,12 @@ class SoulWeaverAI : public CreatureAIScript
 
         OnStart = false;
 
+        LastPosX = 0;
+        LastPosY = 0;
+        LastPosZ = 0;
+        newposx = 0;
+        newposy = 0;
+
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
     }
 

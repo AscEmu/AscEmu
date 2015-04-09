@@ -2086,6 +2086,12 @@ class IllhoofAI : public CreatureAIScript
                     spells[2].perctrigger = 0.0f;
                     spells[2].attackstoptimer = 1000;
             */
+
+            ReSummon = false;
+            ImpTimer = 0;
+            ReKilrek = 0;
+            DemonChain = 0;
+
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -3622,6 +3628,11 @@ class NightbaneAI : public CreatureAIScript
             {
                 _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, FLY));
             }
+
+            m_phase = 0;
+            m_currentWP = 0;
+            mTailSweepTimer = 0;
+            m_FlyPhaseTimer = 0;
         }
 
         void OnCombatStart(Unit* mTarget)

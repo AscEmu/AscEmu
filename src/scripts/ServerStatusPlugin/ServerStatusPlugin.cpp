@@ -83,7 +83,7 @@ void StatDumperThread::OnShutdown()
 
 StatDumperThread::StatDumperThread()
 {
-
+    running = false;
 }
 
 StatDumperThread::~StatDumperThread()

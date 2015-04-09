@@ -5190,6 +5190,7 @@ class MaievAI : public MoonScriptBossAI
             mYellTimer = mScenePart = mTrapTimer = 0;
             mSummonTrap = false;
             mIllidanAI = NULL;
+            mTimeLeft = 0;
         }
 
         void OnCombatStart(Unit*  pTarget)

@@ -1235,6 +1235,9 @@ class KarathressAI : public CreatureAIScript
             AdvisorsLeft = 3;
             BlessingOfTidesCounter = 0;
 
+            EnrageTimer = 0;
+            Enraged = false;
+            CataclysmicBoltTimer = 0;
         }
         /* we don't need to use that, as long we handle advisors counter with events
             void CheckAdvisors()

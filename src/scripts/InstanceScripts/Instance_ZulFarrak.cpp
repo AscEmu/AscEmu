@@ -96,10 +96,12 @@ class ThekaAI : public CreatureAIScript
 
         ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-
             morph = dbcSpell.LookupEntry(SP_THEKA_TRANSFORM);
-
             plague = dbcSpell.LookupEntry(SP_THEKA_FEVERED_PLAGUE);
+
+            plaguecount = 0;
+            randomplague = 0;
+            morphcheck = false;
         }
 
         void OnCombatStart(Unit* mTarget)

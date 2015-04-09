@@ -30,7 +30,7 @@ class RC4Engine
             Setup(keybytes, keylen);
         }
 
-        RC4Engine() : Initialized(false) {}
+        RC4Engine() : Initialized(false){}
 
         //! Destructor
         ~RC4Engine() { }
