@@ -1901,7 +1901,7 @@ bool HighmessasCleansingSeeds(uint32 i, Spell* pSpell)
     if (pSpell->p_caster == NULL || !pSpell->p_caster->IsInWorld())
         return true;
 
-    Player*  pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->p_caster;
     QuestLogEntry* pQuest = sEAS.GetQuest(pPlayer, 11677);
     if (!pQuest)
         return true;
@@ -2977,9 +2977,9 @@ bool Carcass(uint32 i, Spell* pSpell) // Becoming a Shadoweave Tailor
     if (pSpell->p_caster == NULL)
         return true;
 
-    Player*    pPlayer = pSpell->p_caster;
-    QuestLogEntry*    pQuest = pPlayer->GetQuestLogForEntry(10804);
-    Creature*    NetherDrake = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21648);
+    Player* pPlayer = pSpell->p_caster;
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10804);
+    Creature* NetherDrake = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21648);
     GameObject* FlayerCarcass = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 185155);
 
     if (FlayerCarcass == NULL)
@@ -3010,13 +3010,13 @@ bool ForceofNeltharakuSpell(uint32 i, Spell* pSpell) // Becoming a Shadoweave Ta
     if (pSpell->p_caster == NULL)
         return true;
 
-    Player*    pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->p_caster;
     Creature* pTarget = pPlayer->GetMapMgr()->GetCreature(GET_LOWGUID_PART(pPlayer->GetSelection()));
 
     if (pTarget == NULL)
         return true;
 
-    QuestLogEntry*     pQuest = pPlayer->GetQuestLogForEntry(10854);
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10854);
     if (pQuest == NULL)
         return true;
 
@@ -3043,8 +3043,8 @@ bool UnlockKarynakuChains(uint32 i, Spell* pSpell) // Becoming a Shadoweave Tail
     if (pSpell->p_caster == NULL)
         return true;
 
-    Player*    pPlayer = pSpell->p_caster;
-    QuestLogEntry*     pQuest = pPlayer->GetQuestLogForEntry(10872);
+    Player* pPlayer = pSpell->p_caster;
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10872);
     if (pQuest == NULL)
         return true;
 
@@ -3315,10 +3315,10 @@ bool CastFishingNet(uint32 i, Spell* pSpell)
 bool InducingVision(uint32 i, Spell* pSpell)
 {
     if (!pSpell->p_caster) return true;
-    Player *mTarget = pSpell->p_caster;
+    Player* mTarget = pSpell->p_caster;
     if (mTarget == NULL || mTarget->GetMapMgr() == NULL || mTarget->GetMapMgr()->GetInterface() == NULL)
         return true;
-    Creature *creat = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(2983, -2238.994873f, -408.009552f, -9.424423f, 5.753043f, true, false, 0, 0);
+    Creature* creat = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(2983, -2238.994873f, -408.009552f, -9.424423f, 5.753043f, true, false, 0, 0);
     creat->GetAIInterface()->setMoveType(11);
 
     sEAS.CreateCustomWaypointMap(creat);

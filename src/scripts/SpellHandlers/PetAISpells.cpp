@@ -1,8 +1,28 @@
+/*
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Setup.h"
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(ArmyOfTheDeadGhoulAI);
         ArmyOfTheDeadGhoulAI(Creature* c) : CreatureAIScript(c)
         {
@@ -14,11 +34,11 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 
             RegisterAIUpdateEvent(200);
 
-            if(_unit->IsSummon())
+            if (_unit->IsSummon())
             {
                 Summon* s = TO< Summon* >(_unit);
 
-                float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f ;
+                float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
 
                 s->SetMinDamage(s->GetMinDamage() + parent_bonus);
                 s->SetMaxDamage(s->GetMaxDamage() + parent_bonus);
@@ -31,14 +51,12 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
             RemoveAIUpdateEvent();
             _unit->GetAIInterface()->m_canMove = true;
         }
-
-    private:
-
 };
 
 class ShadowFiendAI : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(ShadowFiendAI);
         ShadowFiendAI(Creature* c) : CreatureAIScript(c)
         {
@@ -46,14 +64,12 @@ class ShadowFiendAI : public CreatureAIScript
 
         void OnLoad()
         {
-
-            if(_unit->IsPet())
+            if (_unit->IsPet())
             {
                 Pet* s = TO< Pet* >(_unit);
                 Player* owner = s->GetPetOwner();
 
-
-                float owner_bonus = static_cast< float >(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
+                float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
                 s->BaseAttackType = SCHOOL_SHADOW; // Melee hits are supposed to do damage with the shadow school
                 s->SetBaseAttackTime(MELEE, 1500); // Shadowfiend is supposed to do 10 attacks, sometimes it can be 11
                 s->SetMinDamage(s->GetMinDamage() + owner_bonus);
@@ -62,21 +78,19 @@ class ShadowFiendAI : public CreatureAIScript
                 s->BaseDamage[1] += owner_bonus;
 
                 Unit* uTarget = s->GetMapMgr()->GetUnit(owner->GetTargetGUID());
-                if((uTarget != NULL) && isAttackable(owner, uTarget))
+                if ((uTarget != NULL) && isAttackable(owner, uTarget))
                 {
                     s->GetAIInterface()->AttackReaction(uTarget, 1);
                     s->GetAIInterface()->setNextTarget(uTarget);
                 }
             }
         }
-
-    private:
-
 };
 
 class MirrorImageAI : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(MirrorImageAI);
         MirrorImageAI(Creature* c) : CreatureAIScript(c)
         {
@@ -84,7 +98,7 @@ class MirrorImageAI : public CreatureAIScript
 
         void OnLoad()
         {
-            if(_unit->IsSummon())
+            if (_unit->IsSummon())
             {
                 Summon* s = TO< Summon* >(_unit);
                 Unit* owner = s->GetOwner();
@@ -93,7 +107,7 @@ class MirrorImageAI : public CreatureAIScript
                 owner->CastSpell(_unit, 58838, true);   // inherit threat list
 
                 // Mage mirror image spell
-                if(_unit->GetCreatedBySpell() == 58833)
+                if (_unit->GetCreatedBySpell() == 58833)
                 {
                     _unit->SetMaxHealth(2500);
                     _unit->SetHealth(2500);
@@ -103,7 +117,6 @@ class MirrorImageAI : public CreatureAIScript
                     SpellRange* range = NULL;
 
                     AI_Spell sp1;
-
                     sp1.entryId = 59638;
                     sp1.spell = dbcSpell.LookupEntryForced(sp1.entryId);
                     sp1.spellType = STYPE_DAMAGE;
@@ -136,19 +149,16 @@ class MirrorImageAI : public CreatureAIScript
                     sp2.maxrange = GetMaxRange(range);
 
                     _unit->GetAIInterface()->addSpellToList(&sp2);
-
                 }
             }
-
         }
-
-    private:
 };
 
 
 class DancingRuneWeaponAI : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(DancingRuneWeaponAI);
         DancingRuneWeaponAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -161,32 +171,29 @@ class DancingRuneWeaponAI : public CreatureAIScript
             _unit->SetDisplayId(_unit->GetCreatureInfo()->Female_DisplayID);
             _unit->SetBaseAttackTime(MELEE, 2000);
 
-            if(_unit->IsSummon())
+            if (_unit->IsSummon())
             {
                 Summon* s = TO< Summon* >(_unit);
-
                 Unit* owner = s->GetOwner();
 
-                if(owner->IsPlayer())
+                if (owner->IsPlayer())
                 {
                     Player* pOwner = TO< Player* >(owner);
-
                     Item* item = pOwner->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    if(item != NULL)
-                    {
 
-                        for(int s = 0; s < 5; s++)
+                    if (item != NULL)
+                    {
+                        for (int s = 0; s < 5; s++)
                         {
-                            if(item->GetProto()->Spells[s].Id == 0)
+                            if (item->GetProto()->Spells[s].Id == 0)
                                 continue;
 
-                            if(item->GetProto()->Spells[s].Trigger == CHANCE_ON_HIT)
+                            if (item->GetProto()->Spells[s].Trigger == CHANCE_ON_HIT)
                                 procSpell[s] = item->GetProto()->Spells[s].Id;
                         }
 
                         s->SetEquippedItem(MELEE, item->GetEntry());
                         s->SetBaseAttackTime(MELEE, item->GetProto()->Delay);
-
                     }
 
                     pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);
@@ -197,8 +204,10 @@ class DancingRuneWeaponAI : public CreatureAIScript
             }
         }
 
-        void OnDied(Unit* mKiller) { RemoveAIUpdateEvent(); }
-
+        void OnDied(Unit* mKiller)
+        {
+            RemoveAIUpdateEvent();
+        }
 
         void OnCombatStart(Unit* mTarget)
         {
@@ -214,9 +223,9 @@ class DancingRuneWeaponAI : public CreatureAIScript
         void AIUpdate()
         {
             Unit* curtarget = _unit->GetAIInterface()->getNextTarget();
-            if(_unit->GetCurrentSpell() == NULL && curtarget)
+            if (_unit->GetCurrentSpell() == NULL && curtarget)
             {
-                switch(dpsCycle)
+                switch (dpsCycle)
                 {
                     case 0:
                         dpsSpell = 49921; // Plague Strike
@@ -248,11 +257,11 @@ class DancingRuneWeaponAI : public CreatureAIScript
                         break;
                 }
                 dpsCycle++;
-                if(dpsCycle > 11)
+                if (dpsCycle > 11)
                     dpsCycle = 0;
 
                 SpellEntry* MyNextSpell = dbcSpell.LookupEntryForced(dpsSpell);
-                if(MyNextSpell != NULL)
+                if (MyNextSpell != NULL)
                     _unit->CastSpell(curtarget, MyNextSpell, true);
 
             }
@@ -260,19 +269,19 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
         void OnHit(Unit* mTarget, float fAmount)
         {
-            for(int p = 0; p < 5; p++)
+            for (int p = 0; p < 5; p++)
             {
-                if(procSpell[p] != 0)
+                if (procSpell[p] != 0)
                 {
                     SpellEntry* mProc = dbcSpell.LookupEntryForced(procSpell[p]);
-                    if(!mProc)
+                    if (!mProc)
                         return;
                     int x = rand() % 100;
                     uint32 proc = mProc->procChance;
-                    if(proc < 1)
+                    if (proc < 1)
                         proc = 10; // Got to be fair :P
 
-                    if((uint32)x <= proc)
+                    if ((uint32)x <= proc)
                     {
                         Unit* Vic = mProc->self_cast_only ? _unit : mTarget;
                         _unit->CastSpell(Vic, mProc, true);
@@ -281,25 +290,31 @@ class DancingRuneWeaponAI : public CreatureAIScript
             }
         }
     private:
+
         int dpsCycle;
         int dpsSpell;
         int procSpell[5];
 };
 
-class FrostBroodVanquisherAI : public CreatureAIScript{
-public:
-    ADD_CREATURE_FACTORY_FUNCTION( FrostBroodVanquisherAI );
-    FrostBroodVanquisherAI( Creature *c ) : CreatureAIScript( c ){
-    }
+class FrostBroodVanquisherAI : public CreatureAIScript
+{
+    public:
 
-    void OnLoad(){
-        _unit->SetByte( UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER );
-    }
+        ADD_CREATURE_FACTORY_FUNCTION(FrostBroodVanquisherAI);
+        FrostBroodVanquisherAI(Creature* c) : CreatureAIScript(c)
+        {
+        }
 
-    void OnLastPassengerLeft( Unit *passenger ){
-        if( _unit->GetSummonedByGUID() == passenger->GetGUID() )
-            _unit->Despawn( 1 * 1000, 0 );
-    }
+        void OnLoad()
+        {
+            _unit->SetByte(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+        }
+
+        void OnLastPassengerLeft(Unit *passenger)
+        {
+            if (_unit->GetSummonedByGUID() == passenger->GetGUID())
+                _unit->Despawn(1 * 1000, 0);
+        }
 };
 
 void SetupPetAISpells(ScriptMgr* mgr)
@@ -308,5 +323,5 @@ void SetupPetAISpells(ScriptMgr* mgr)
     mgr->register_creature_script(19668, &ShadowFiendAI::Create);
     mgr->register_creature_script(27893, &DancingRuneWeaponAI::Create);
     mgr->register_creature_script(31216, &MirrorImageAI::Create);
-    mgr->register_creature_script( 28670, &FrostBroodVanquisherAI::Create );
+    mgr->register_creature_script(28670, &FrostBroodVanquisherAI::Create);
 };
