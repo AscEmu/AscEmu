@@ -212,6 +212,7 @@ class AntusulAI : public CreatureAIScript
         AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
+            spawns = spawns2 = attack = firstspawn = secondspawn = false;
             servant = dbcSpell.LookupEntry(SP_ANTUSUL_SERVANTS);
             //healing_ward = dbcSpell.LookupEntry(SP_ANTUSUL_HEALINGWARD);
             //earthgrab_ward = dbcSpell.LookupEntry(SP_ANTUSUL_EARTHGRABWARD);

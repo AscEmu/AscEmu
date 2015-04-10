@@ -297,6 +297,10 @@ class TaerarAI : public CreatureAIScript
             spells[6].perctrigger = 0.0f;
             spells[6].attackstoptimer = 1000;
 
+            Shades = false;
+            Shade_timer = 0;
+            Summoned = 0;
+
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -1182,12 +1186,12 @@ class KruulAI : public CreatureAIScript
 {
     public:
         ADD_CREATURE_FACTORY_FUNCTION(KruulAI);
-        SP_AI_Spell spells[7];
-        bool m_spellcheck[7];
+        SP_AI_Spell spells[6];
+        bool m_spellcheck[6];
 
         KruulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 7;
+            nrspells = 6;
             for (int i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
@@ -1242,6 +1246,13 @@ class KruulAI : public CreatureAIScript
             spells[6].perctrigger = 0.0f;
             spells[6].attackstoptimer = 1000;
 
+            hounds_timer = 0;
+            enrage = 0;
+            Rand = 0;
+            RandX = 0;
+            RandY = 0;
+            enrage = 0;
+            Summoned = 0;
         }
 
         void OnCombatStart(Unit* mTarget)

@@ -84,6 +84,15 @@ class HydrossTheUnstableAI : public CreatureAIScript
             _unit->GetProto()->AttackType = 4;
             //frost immunity
             _unit->SchoolImmunityList[SCHOOL_FROST] = 1;
+
+            MarkCount = 0;
+            form = false;
+            MarkTimer = 0;
+            minspell = 0;
+            maxspell = 0;
+            Enraged = false;
+            EnrageTimer = 0;
+            spell_water_tomb = 0;
         }
 
         void ResetCastTime()

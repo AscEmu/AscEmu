@@ -4682,6 +4682,12 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         OnStart = false;
 
         RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+
+        LastPosX = 0;
+        LastPosY = 0;
+        LastPosZ = 0;
+        newposx = 0;
+        newposy = 0;
     }
 
     void OnCombatStart(Unit* mTarget)

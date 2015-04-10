@@ -54,7 +54,12 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
     public:
 
         ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI);
-        TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+        TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        {
+            min = 0;
+            max = 0;
+            finall = 0;
+        }
 
         void OnDied(Unit* mKiller)
         {
@@ -65,7 +70,6 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
                 {
                     if(Rand(90))
                     {
-                        uint32 min,max,finall;
                         switch(_unit->GetEntry())
                         {
                             case 22307:
@@ -93,6 +97,12 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
                 }
             }
         }
+
+    private:
+
+        uint32 min;
+        uint32 max;
+        uint32 finall;
 };
 
 // Taken in the Night

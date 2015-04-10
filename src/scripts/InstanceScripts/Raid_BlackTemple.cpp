@@ -2011,6 +2011,9 @@ class SupremusAI : public CreatureAIScript
             infoHurtfulStrike = dbcSpell.LookupEntry(HURTFUL_STRIKE);
             infoMoltenPunch =  dbcSpell.LookupEntry(MOLTEN_PUNCH);
             infoVolcanicGazer =  dbcSpell.LookupEntry(VOLCANIC_GAZER);
+
+            timer = 0;
+            m_phase = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2066,8 +2069,8 @@ class SupremusAI : public CreatureAIScript
                 default:
                     {
                         m_phase = 1;
-                    };
-            };
+                    }
+            }
         }
 
         void PhaseOne()
@@ -7028,6 +7031,8 @@ class FlameOfAzzinothAI : public MoonScriptCreatureAI
                 _unit->GetAIInterface()->AttackReaction(pTarget, 200);
                 OnCombatStart(pTarget);
             }
+
+            mBlaze = 0;
         }
 
         void OnCombatStart(Unit*  pTarget)

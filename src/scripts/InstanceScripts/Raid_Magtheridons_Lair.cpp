@@ -421,6 +421,12 @@ class ManticronCubeGO : public GameObjectAIScript
         ManticronCubeGO(GameObject*  pGameObject) : GameObjectAIScript(pGameObject)
         {
             CubeTrigger = NULL;
+            MagYell = false;
+            x = 0;
+            y = 0;
+            z = 0;
+            Magtheridon = 0;
+            Channeler = 0;
         }
 
         void OnActivate(Player*  pPlayer)
