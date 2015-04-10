@@ -1741,14 +1741,21 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_GOOBER:
         {
-            plyr->CastSpell(guid, goinfo->Unknown1, false);
-
-            // show page
-            if (goinfo->sound7)
+            if (Arcemu::Gossip::Script* pGossipScript = sScriptMgr.get_go_gossip(goinfo->ID))
             {
-                WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
-                data << obj->GetGUID();
-                plyr->GetSession()->SendPacket(&data);
+                pGossipScript->OnHello(obj, plyr);
+            }
+            else
+            {
+                plyr->CastSpell(guid, goinfo->Unknown1, false);
+
+                // show page
+                if (goinfo->sound7)
+                {
+                    WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
+                    data << obj->GetGUID();
+                    plyr->GetSession()->SendPacket(&data);
+                }
             }
         }
         break;
