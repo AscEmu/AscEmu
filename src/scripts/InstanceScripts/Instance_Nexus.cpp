@@ -40,6 +40,9 @@ class AnomalusAI : public MoonScriptBossAI
                 AddSpell(SPARK, Target_RandomPlayer, 80, 0, 3);
 
             mSummon = 0;
+            mRift = false;
+            mSummonTimer = 0;
+
         };
 
         void OnCombatStart(Unit* mTarget)

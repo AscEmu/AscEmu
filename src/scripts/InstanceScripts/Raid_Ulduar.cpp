@@ -20,19 +20,64 @@
 #include "Setup.h"
 #include "Raid_Ulduar.h"
 
-static float UlduarTeleCoords[9][4] =
+//////////////////////////////////////////////////////////////////////////////////////////
+//Ulduar Instance
+class UlduarScript : public MoonInstanceScript
 {
-    { -706.122f, -92.6024f, 429.876f, 0.0f },
-    { 131.248f, -35.3802f, 409.804f, 0.0f },
-    { 553.233f, -12.3247f, 409.679f, 0.0f },
-    { 926.292f, -11.4635f, 418.595f, -0.017452f },
-    { 1498.05f, -24.3509f, 420.966f, 0.034906f },
-    { 1859.65f, -24.9121f, 448.811f, 0.0f },
-    { 2086.26f, -23.9948f, 421.316f, 0.0f },
-    { 2518.16f, 2569.03f, 412.299f, 0.0f },
-    { 1854.82f, -11.5608f, 334.175f, 0.0f }
+    public:
+
+        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(UlduarScript, MoonInstanceScript);
+        UlduarScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+        {
+            // Way to select bosses
+            BuildEncounterMap();
+            if (mEncounters.size() == 0)
+                return;
+
+            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            {
+                if ((*Iter).second.mState != State_Finished)
+                    continue;
+            }
+        }
+
+        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = (EncounterState)pData;
+        }
+
+        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return 0;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return 0;
+
+            return (*Iter).second.mState;
+        }
+
+        void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+        {
+            EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = State_Finished;
+
+        }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//Ulduar Teleporter
 class UlduarTeleporterAI : public GameObjectAIScript
 {
     public:
@@ -47,18 +92,37 @@ class UlduarTeleporterAI : public GameObjectAIScript
 
         void OnActivate(Player* player)
         {
-            GossipMenu* menu = NULL;
-            objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 31024, player);
+            UlduarScript* pInstance = (UlduarScript*)player->GetMapMgr()->GetScript();
+            if (!pInstance)
+                return;
 
+            GossipMenu* menu = NULL;
+            objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 14424, player);
             menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(521), 0);      // Expedition Base Camp.
+
+            // Unlock after engaging Flame Leviathan
             menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(522), 1);      // Formation Grounds
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(523), 2);      // Colossal Forge
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(524), 3);      // Scrapyard
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(525), 4);      // Antechamber of Ulduar
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(526), 5);      // Shattered Walkway
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(527), 6);      // Conservatory of Life
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(528), 7);      // Spark of Imagination
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(529), 8);      // Prison of Yogg-Saron
+
+            if (pInstance->GetInstanceData(Data_EncounterState, CN_FLAME_LEVIATHAN) == State_Finished)
+                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(523), 2);      // Colossal Forge
+
+            if (pInstance->GetInstanceData(Data_EncounterState, CN_XT_002_DECONSTRUCTOR) == State_Finished)
+            {
+                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(524), 3);      // Scrapyard
+                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(525), 4);      // Antechamber of Ulduar
+            }
+
+            if (pInstance->GetInstanceData(Data_EncounterState, CN_KOLOGARN) == State_Finished)
+                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(526), 5);      // Shattered Walkway
+
+            if (pInstance->GetInstanceData(Data_EncounterState, CN_AURIAYA) == State_Finished)
+                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(527), 6);      // Conservatory of Life
+
+            if (pInstance->GetInstanceData(Data_EncounterState, CN_MIMIRON) == State_Finished)
+                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(528), 7);      // Spark of Imagination
+
+            if (pInstance->GetInstanceData(Data_EncounterState, CN_GENERAL_VEZAX) == State_Finished)
+                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(529), 8);      // Prison of Yogg-Saron
 
             menu->SendTo(player);
         }
@@ -68,9 +132,7 @@ class UlduarTeleporterGossip : public GossipScript
 {
     public:
 
-        UlduarTeleporterGossip() : GossipScript()
-        {
-        }
+        UlduarTeleporterGossip() : GossipScript(){}
 
         void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode)
         {
@@ -78,13 +140,46 @@ class UlduarTeleporterGossip : public GossipScript
 
             if (Id >= 9)
                 return;
-            else
-                player->SafeTeleport(603, player->GetInstanceID(), UlduarTeleCoords[Id][0], UlduarTeleCoords[Id][1],  UlduarTeleCoords[Id][2], UlduarTeleCoords[Id][3]);
+            
+            switch (Id)
+            {
+                case 0:
+                    player->CastSpell(player, 64014, true);     // Expedition Base Camp
+                    break;
+                case 1:
+                    player->CastSpell(player, 64032, true);     // Formation Grounds
+                    break;
+                case 2:
+                    player->CastSpell(player, 64028, true);     // Colossal Forge
+                    break;
+                case 3:
+                    player->CastSpell(player, 64031, true);     // Scrapyard
+                    break;
+                case 4:
+                    player->CastSpell(player, 64030, true);     // Antechamber of Ulduar
+                    break;
+                case 5:
+                    player->CastSpell(player, 64029, true);     // Shattered Walkway
+                    break;
+                case 6:
+                    player->CastSpell(player, 64024, true);     // Conservatory of Life
+                    break;
+                case 7:
+                    player->CastSpell(player, 64025, true);     // Spark of Imagination
+                    break;
+                case 8:
+                    player->CastSpell(player, 65042, true);     // Prison of Yogg-Saron
+                    break;
+            }
         }
 };
 
 void SetupUlduar(ScriptMgr* mgr)
 {
+    //Instance
+    mgr->register_instance_script(603, &UlduarScript::Create);
+
+    //Teleporter
     mgr->register_gameobject_script(194569, &UlduarTeleporterAI::Create);
     mgr->register_go_gossip_script(194569, new UlduarTeleporterGossip());
 };

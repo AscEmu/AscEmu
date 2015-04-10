@@ -3123,6 +3123,7 @@ class KaelThasAI : public MoonScriptBossAI
             mFlameStrikeTimer = 0;
             mPhoenixTimer = 0;
             mEventTimer = 0;
+            mAdvisorPhase = PHASE_SPEECH;
 
             for (int i = 0; i < 4; ++i)
             {
