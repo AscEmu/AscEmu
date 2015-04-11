@@ -187,7 +187,10 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
 class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI, MoonScriptCreatureAI);
-    HeadlessHorsemanWispInvisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature) {}
+    HeadlessHorsemanWispInvisAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        mHeadlessHorseman = 0;
+    }
 
     void AIUpdate()
     {

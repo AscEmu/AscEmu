@@ -1,4 +1,4 @@
-/****************************************************************************
+/*
  *
  * SpellHandler Plugin
  * Copyright (c) 2007 Team Ascent
@@ -20,36 +20,35 @@
 /*
     How to add a new item spell to the dummy spell handler:
 
-        1) Add a new function to handle the spell at the end of this file but before the
-           SetupItemSpells_1() function. SetupItemSpells_1() must always be the last function.
+    1) Add a new function to handle the spell at the end of this file but before the
+    SetupItemSpells_1() function. SetupItemSpells_1() must always be the last function.
 
-        2) Register the dummy spell by adding a new line to the end of the list in the
-           SetupItemSpells_1() function.
+    2) Register the dummy spell by adding a new line to the end of the list in the
+    SetupItemSpells_1() function.
 
     Please look at how the other spells are handled and try to use the
     same variable names and formatting style in your new spell handler.
 */
 
-// *****************************************************************************
 
 bool GnomishTransporter(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
     pSpell->p_caster->EventAttackStop();
     pSpell->p_caster->SafeTeleport(1, 0, LocationVector(-7169.41f, -3838.63f, 8.72f));
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool NoggenFoggerElixr(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
     uint32 chance = RandomUInt(2);
 
-    switch(chance)
+    switch (chance)
     {
         case 0:
             pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(16591), true);
@@ -64,48 +63,45 @@ bool NoggenFoggerElixr(uint32 i, Spell* pSpell)
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool HallowsEndCandy(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
     int newspell = 24924 + RandomUInt(3);
 
     SpellEntry* spInfo = dbcSpell.LookupEntryForced(newspell);
-    if(!spInfo) return true;
+    if (!spInfo) return true;
 
     pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool DeviateFish(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
     int newspell = 8064 + RandomUInt(4);
 
     SpellEntry* spInfo = dbcSpell.LookupEntryForced(newspell);
-    if(!spInfo) return true;
+    if (!spInfo) return true;
 
     pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool CookedDeviateFish(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
     int chance = 0;
     int newspell = 0;
 
     chance = RandomUInt(1);
 
-    switch(chance)
+    switch (chance)
     {
         case 0:
             newspell = 8219; // Flip Out (60 min) (turns you into a ninja)
@@ -115,33 +111,32 @@ bool CookedDeviateFish(uint32 i, Spell* pSpell)
             break;
     }
 
-    if(newspell)
+    if (newspell)
     {
         SpellEntry* spInfo = dbcSpell.LookupEntryForced(newspell);
-        if(!spInfo) return true;
+        if (!spInfo) return true;
 
         pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
     }
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool HolidayCheer(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->m_caster) return true;
+    if (!pSpell->m_caster)
+        return true;
 
     Unit* target;
     float dist = pSpell->GetRadius(i);
 
-    for(ObjectSet::iterator itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
+    for (ObjectSet::iterator itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
     {
-        if((*itr)->IsUnit())
+        if ((*itr)->IsUnit())
             target = TO_UNIT(*itr);
         else
             continue;
 
-        if(pSpell->m_caster->CalcDistance(target) > dist || isAttackable(pSpell->m_caster, target))
+        if (pSpell->m_caster->CalcDistance(target) > dist || isAttackable(pSpell->m_caster, target))
             continue;
 
         target->Emote(EMOTE_ONESHOT_LAUGH);
@@ -149,22 +144,22 @@ bool HolidayCheer(uint32 i, Spell* pSpell)
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool NetOMatic(uint32 i, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if(!pSpell->p_caster || !target) return true;
+    if (!pSpell->p_caster || !target)
+        return true;
 
     SpellEntry* spInfo = dbcSpell.LookupEntryForced(13099);
-    if(!spInfo) return true;
+    if (!spInfo)
+        return true;
 
     int chance = RandomUInt(99) + 1;
 
-    if(chance < 51) // nets target: 50%
+    if (chance < 51) // nets target: 50%
         pSpell->p_caster->CastSpell(target, spInfo, true);
 
-    else if(chance < 76) // nets you instead: 25%
+    else if (chance < 76) // nets you instead: 25%
         pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
 
     else // nets you and target: 25%
@@ -175,32 +170,29 @@ bool NetOMatic(uint32 i, Spell* pSpell)
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool BanishExile(uint32 i, Spell* pSpell)
 {
     Unit*   target = pSpell->GetUnitTarget();
-    if(!pSpell->p_caster || !target) return true;
+    if (!pSpell->p_caster || !target)
+        return true;
 
     pSpell->p_caster->SpellNonMeleeDamageLog(target, pSpell->m_spellInfo->Id, target->GetUInt32Value(UNIT_FIELD_HEALTH), true);
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool ForemansBlackjack(uint32 i, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if(!pSpell->p_caster || !target || !target->IsCreature())
+    if (!pSpell->p_caster || !target || !target->IsCreature())
         return true;
 
     // check to see that we have the correct creature
     Creature* c_target = TO_CREATURE(target);
-    if(c_target->GetEntry() != 10556 || !c_target->HasAura(17743))
+    if (c_target->GetEntry() != 10556 || !c_target->HasAura(17743))
         return true;
 
     // Start moving again
-    if(target->GetAIInterface())
+    if (target->GetAIInterface())
         target->GetAIInterface()->StopMovement(0);
 
     // Remove Zzz aura
@@ -219,16 +211,15 @@ bool ForemansBlackjack(uint32 i, Spell* pSpell)
 
     // Add timed event to return lazy peon to Zzz after 5-10 minutes (spell 17743)
     SpellEntry* pSpellEntry = dbcSpell.LookupEntry(17743);
-    sEventMgr.AddEvent(target , &Unit::EventCastSpell , target , pSpellEntry , EVENT_UNK, 300000 + RandomUInt(300000) , 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(target, &Unit::EventCastSpell, target, pSpellEntry, EVENT_UNK, 300000 + RandomUInt(300000), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool NetherWraithBeacon(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
     float SSX = pSpell->p_caster->GetPositionX();
     float SSY = pSpell->p_caster->GetPositionY();
@@ -239,31 +230,29 @@ bool NetherWraithBeacon(uint32 i, Spell* pSpell)
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool NighInvulnBelt(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
     int chance = RandomUInt(99) + 1;
 
-    if(chance > 10) // Buff - Nigh-Invulnerability - 30456
+    if (chance > 10)    // Buff - Nigh-Invulnerability - 30456
         pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(30456), true);
-    else // Malfunction - Complete Vulnerability - 30457
+    else                // Malfunction - Complete Vulnerability - 30457
         pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(30457), true);
 
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool ReindeerTransformation(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
-    if(pSpell->p_caster->GetMount() != 0)
+    if (pSpell->p_caster->GetMount() != 0)
     {
-        if(pSpell->p_caster->m_setflycheat)
+        if (pSpell->p_caster->m_setflycheat)
             pSpell->p_caster->SetMount(22724);
         else
             pSpell->p_caster->SetMount(15902);
@@ -271,13 +260,11 @@ bool ReindeerTransformation(uint32 i, Spell* pSpell)
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool WinterWondervolt(uint32 i, Spell* pSpell)
 {
-    Unit*   target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->GetUnitTarget();
 
-    if(target == NULL || !target->IsPlayer())
+    if (target == NULL || !target->IsPlayer())
         return true;
 
     uint32 outfitspells[] =
@@ -292,10 +279,10 @@ bool WinterWondervolt(uint32 i, Spell* pSpell)
     uint32 gender = target->getGender();
     uint32 spellid = 0;
 
-    if(team == TEAM_HORDE)
-        spellid = outfitspells[ 2 + gender ];
+    if (team == TEAM_HORDE)
+        spellid = outfitspells[2 + gender];
     else
-        spellid = outfitspells[ gender ];
+        spellid = outfitspells[gender];
 
 
     target->CastSpell(target, spellid, true);
@@ -303,16 +290,14 @@ bool WinterWondervolt(uint32 i, Spell* pSpell)
     return true;
 }
 
-// -----------------------------------------------------------------------------
-
 bool ScryingCrystal(uint32 i, Spell* pSpell)
 {
     QuestLogEntry* en = pSpell->p_caster->GetQuestLogForEntry(9824);
-    if(pSpell->p_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pSpell->p_caster->GetPositionX(),
-            pSpell->p_caster->GetPositionY(), pSpell->p_caster->GetPositionZ(), 300078) && en)
+    if (pSpell->p_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pSpell->p_caster->GetPositionX(),
+        pSpell->p_caster->GetPositionY(), pSpell->p_caster->GetPositionZ(), 300078) && en)
     {
 
-        if(en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+        if (en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
         {
             en->SetMobCount(0, 1);
             en->SendUpdateAddKill(0);
@@ -320,10 +305,10 @@ bool ScryingCrystal(uint32 i, Spell* pSpell)
             return false;
         }
     }
-    else if(pSpell->p_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pSpell->p_caster->GetPositionX(),
-            pSpell->p_caster->GetPositionY(), pSpell->p_caster->GetPositionZ(), 300142) && en)
+    else if (pSpell->p_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pSpell->p_caster->GetPositionX(),
+        pSpell->p_caster->GetPositionY(), pSpell->p_caster->GetPositionZ(), 300142) && en)
     {
-        if(en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
+        if (en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
         {
             en->SetMobCount(1, 1);
             en->SendUpdateAddKill(1);
@@ -336,8 +321,9 @@ bool ScryingCrystal(uint32 i, Spell* pSpell)
 
 bool MinionsOfGurok(uint32 i, Spell* pSpell)
 {
-    Unit*   target = pSpell->GetUnitTarget();
-    if(!pSpell->p_caster || !target || !target->IsCreature() || target->GetEntry() != 17157) return true;
+    Unit* target = pSpell->GetUnitTarget();
+    if (!pSpell->p_caster || !target || !target->IsCreature() || target->GetEntry() != 17157)
+        return true;
 
     TO_CREATURE(target)->Despawn(500, 360000);
 
@@ -356,18 +342,18 @@ bool MinionsOfGurok(uint32 i, Spell* pSpell)
 bool PurifyBoarMeat(uint32 i, Spell* pSpell)
 {
     uint32 bormeat = RandomUInt(2);
-    switch(bormeat)
+    switch (bormeat)
     {
         case 0:
-            {
-                pSpell->p_caster->CastSpell(pSpell->p_caster, 29277, true);
-            }
-            break;
+        {
+            pSpell->p_caster->CastSpell(pSpell->p_caster, 29277, true);
+        }
+        break;
         case 1:
-            {
-                pSpell->p_caster->CastSpell(pSpell->p_caster, 29278, true);
-            }
-            break;
+        {
+            pSpell->p_caster->CastSpell(pSpell->p_caster, 29278, true);
+        }
+        break;
     }
 
     return true;
@@ -375,7 +361,8 @@ bool PurifyBoarMeat(uint32 i, Spell* pSpell)
 
 bool WarpRiftGenerator(uint32 i, Spell* pSpell)
 {
-    if(!pSpell->p_caster) return true;
+    if (!pSpell->p_caster)
+        return true;
 
     float SSX = pSpell->p_caster->GetPositionX();
     float SSY = pSpell->p_caster->GetPositionY();
@@ -390,13 +377,13 @@ bool WarpRiftGenerator(uint32 i, Spell* pSpell)
 bool OrbOfTheSindorei(uint32 i, Aura* pAura, bool apply)
 {
     Unit* target = pAura->GetTarget();
-    if(!target->IsPlayer())
+    if (!target->IsPlayer())
         return true;
-    if(apply)
+    if (apply)
     {
         uint32 spellid = 0;
 
-        if(target->getGender() == 0)
+        if (target->getGender() == 0)
             spellid = 46355;
         else
             spellid = 46356;
@@ -412,12 +399,11 @@ bool ScalingMountDummyAura(uint32 i, Aura* pAura, bool apply)
     // Remove dummy aura on application, dummy effect will occur directly after
     pAura->Remove();
     return true;
-
 }
 
 bool BigBlizzardBear(uint32 i, Spell* pSpell)
 {
-    if (Player *plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->GetPlayerTarget())
     {
         uint32 newspell = 58997;
         if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
@@ -429,7 +415,7 @@ bool BigBlizzardBear(uint32 i, Spell* pSpell)
 
 bool WingedSteed(uint32 i, Spell* pSpell)
 {
-    if (Player *plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->GetPlayerTarget())
     {
         uint32 newspell = 54726;
         if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
@@ -442,12 +428,11 @@ bool WingedSteed(uint32 i, Spell* pSpell)
 
 bool HeadlessHorsemanMount(uint32 i, Spell* pSpell)
 {
-    if (Player *plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->GetPlayerTarget())
     {
         uint32 newspell = 51621;
         AreaTable* pArea = dbcArea.LookupEntry(plr->GetAreaID());
-        if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 &&
-            ((pArea->AreaFlags & 1024 && plr->GetMapId() != 571) ||
+        if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->AreaFlags & 1024 && plr->GetMapId() != 571) ||
             (pArea->AreaFlags & 1024 && plr->GetMapId() == 571 && plr->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING)))))
 
         {
@@ -466,7 +451,7 @@ bool HeadlessHorsemanMount(uint32 i, Spell* pSpell)
 
 bool MagicBroomMount(uint32 i, Spell* pSpell)
 {
-    if (Player *plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->GetPlayerTarget())
     {
         uint32 newspell = 42680;
         AreaTable* pArea = dbcArea.LookupEntry(plr->GetAreaID());
@@ -474,12 +459,12 @@ bool MagicBroomMount(uint32 i, Spell* pSpell)
             ((pArea->AreaFlags & 1024 && plr->GetMapId() != 571) ||
             (pArea->AreaFlags & 1024 && plr->GetMapId() == 571 && plr->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING)))))
         {
-            if(plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
+            if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 42668;
             else
                 newspell = 42667;
         }
-        else if(plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
+        else if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 150)
             newspell = 42683;
         plr->CastSpell(plr, newspell, true);
     }
@@ -489,7 +474,7 @@ bool MagicBroomMount(uint32 i, Spell* pSpell)
 
 bool MagicRoosterMount(uint32 i, Spell* pSpell)
 {
-    if (Player *plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->GetPlayerTarget())
         plr->CastSpell(plr, 66122, true);
 
     return true;
@@ -498,15 +483,14 @@ bool MagicRoosterMount(uint32 i, Spell* pSpell)
 bool Invincible(uint32 i, Spell* pSpell)
 {
     // Apply the new aura in the 3rd effect call
-    if (Player *plr = pSpell->GetPlayerTarget())
+    if (Player* plr = pSpell->GetPlayerTarget())
     {
         uint32 newspell = 72281;
         AreaTable* pArea = dbcArea.LookupEntry(plr->GetAreaID());
-        if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 &&
-            ((pArea->AreaFlags & 1024 && plr->GetMapId() != 571) ||
+        if (pArea && (plr->_GetSkillLineCurrent(SKILL_RIDING, true) >= 225 && ((pArea->AreaFlags & 1024 && plr->GetMapId() != 571) ||
             (pArea->AreaFlags & 1024 && plr->GetMapId() == 571 && plr->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING)))))
         {
-            if(plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
+            if (plr->_GetSkillLineCurrent(SKILL_RIDING, true) == 300)
                 newspell = 72284;
             else
                 newspell = 72283;
@@ -524,7 +508,7 @@ bool Poultryizer(uint32 i, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!unitTarget || !unitTarget->isAlive())
+    if (!unitTarget || !unitTarget->isAlive())
         return false;
 
     s->u_caster->CastSpell(unitTarget->GetGUID(), 30501, true);
@@ -536,14 +520,14 @@ bool SixDemonBag(uint32 i, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!unitTarget || !unitTarget->isAlive())
+    if (!unitTarget || !unitTarget->isAlive())
         return false;
 
     uint32 ClearSpellId[6] = { 8401, 8408, 930, 118, 1680, 10159 };
     uint32 randid = RandomUInt(5);
-    uint32 spelltocast = ClearSpellId[ randid ];
+    uint32 spelltocast = ClearSpellId[randid];
 
-    s->u_caster->CastSpell(unitTarget,  spelltocast, true);
+    s->u_caster->CastSpell(unitTarget, spelltocast, true);
 
     return true;
 }
@@ -554,19 +538,19 @@ bool ExtractGas(uint32 i, Spell* s)
     uint32 cloudtype = 0;
     Creature* creature = NULL;
 
-    if(!s->p_caster)
+    if (!s->p_caster)
         return false;
 
-    for(Object::InRangeSet::iterator itr = s->p_caster->GetInRangeSetBegin(); itr != s->p_caster->GetInRangeSetEnd(); ++itr)
+    for (Object::InRangeSet::iterator itr = s->p_caster->GetInRangeSetBegin(); itr != s->p_caster->GetInRangeSetEnd(); ++itr)
     {
-        if((*itr)->IsCreature())
+        if ((*itr)->IsCreature())
         {
             creature = TO< Creature* >((*itr));
             cloudtype = creature->GetEntry();
 
-            if(cloudtype == 24222 || cloudtype == 17408 || cloudtype == 17407 || cloudtype == 17378)
+            if (cloudtype == 24222 || cloudtype == 17408 || cloudtype == 17407 || cloudtype == 17378)
             {
-                if(s->p_caster->GetDistance2dSq((*itr)) < 400)
+                if (s->p_caster->GetDistance2dSq((*itr)) < 400)
                 {
                     s->p_caster->SetSelection(creature->GetGUID());
                     check = true;
@@ -576,7 +560,7 @@ bool ExtractGas(uint32 i, Spell* s)
         }
     }
 
-    if(!check)
+    if (!check)
         return false;
 
     uint32 item = 0;
@@ -584,12 +568,12 @@ bool ExtractGas(uint32 i, Spell* s)
 
     count = 3 + (rand() % 3);
 
-    if(cloudtype == 24222) item = 22572; //-air
-    if(cloudtype == 17408) item = 22576; //-mana
-    if(cloudtype == 17407) item = 22577; //-shadow
-    if(cloudtype == 17378) item = 22578; //-water
+    if (cloudtype == 24222) item = 22572; //-air
+    if (cloudtype == 17408) item = 22576; //-mana
+    if (cloudtype == 17407) item = 22577; //-shadow
+    if (cloudtype == 17378) item = 22578; //-water
 
-    if(item == 0)
+    if (item == 0)
         return false;
 
     s->p_caster->GetItemInterface()->AddItemById(item, count, 0);
@@ -600,10 +584,10 @@ bool ExtractGas(uint32 i, Spell* s)
 
 bool BrittleArmor(uint32 i, Spell* s)
 {
-    if(s->u_caster == NULL)
+    if (s->u_caster == NULL)
         return false;
 
-    for(int j = 0; j < 20; j++)
+    for (int j = 0; j < 20; j++)
         s->u_caster->CastSpell(s->u_caster, 24575, true);
 
     return true;
@@ -611,7 +595,6 @@ bool BrittleArmor(uint32 i, Spell* s)
 
 bool RequiresNoAmmo(uint32 i, Aura* a, bool apply)
 {
-
     a->SpellAuraConsumeNoAmmo(apply);
 
     return true;
@@ -630,12 +613,12 @@ bool RequiresNoAmmo(uint32 i, Aura* a, bool apply)
 ////////////////////////////////////////////////////////////////////////
 bool NitroBoosts(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == NULL)
         return true;
 
     uint32 engineeringskill = s->p_caster->_GetSkillLineCurrent(SKILL_ENGINEERING);
 
-    if(engineeringskill >= 400)
+    if (engineeringskill >= 400)
         s->p_caster->CastSpell(s->p_caster, 54861, true);
 
     return true;
@@ -659,7 +642,7 @@ bool NitroBoosts(uint32 i, Spell* s)
 //////////////////////////////////////////////////////////////////////
 bool ShrinkRay(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == NULL)
         return true;
 
     uint32 spellids[] =
@@ -668,16 +651,16 @@ bool ShrinkRay(uint32 i, Spell* s)
         13010  // shrink
     };
 
-    uint32 chance =  RandomUInt(5);
+    uint32 chance = RandomUInt(5);
     bool malfunction = false;
 
-    if(chance == 5)
+    if (chance == 5)
         malfunction = true;
 
-    if(!malfunction)
+    if (!malfunction)
     {
 
-        s->p_caster->CastSpell(s->GetUnitTarget(), spellids[ 1 ], true);
+        s->p_caster->CastSpell(s->GetUnitTarget(), spellids[1], true);
 
     }
     else
@@ -685,71 +668,63 @@ bool ShrinkRay(uint32 i, Spell* s)
         uint32 spellindex = RandomUInt(1);
         uint32 who = RandomUInt(3);
 
-        switch(who)
+        switch (who)
         {
 
             case 0:  // us
-                {
-
-                    s->p_caster->CastSpell(s->p_caster, spellids[ spellindex ], true);
-
-                }
-                break;
+            {
+                s->p_caster->CastSpell(s->p_caster, spellids[spellindex], true);
+            }
+            break;
 
             case 1:  // them
-                {
-
-                    // if it's a malfunction it will only grow the target, since shrinking is normal
-                    s->p_caster->CastSpell(s->GetUnitTarget(), spellids[ 0 ], true);
-
-                }
-                break;
+            {
+                // if it's a malfunction it will only grow the target, since shrinking is normal
+                s->p_caster->CastSpell(s->GetUnitTarget(), spellids[0], true);
+            }
+            break;
 
             case 2:  // our party
+            {
+                for (std::set< Object* >::iterator itr = s->p_caster->GetInRangePlayerSetBegin(); itr != s->p_caster->GetInRangePlayerSetEnd(); ++itr)
                 {
+                    Player* p = TO_PLAYER(*itr);
 
-                    for(std::set< Object* >::iterator itr = s->p_caster->GetInRangePlayerSetBegin(); itr != s->p_caster->GetInRangePlayerSetEnd(); ++itr)
-                    {
-                        Player* p = TO_PLAYER(*itr);
+                    if ((p->GetPhase() & s->p_caster->GetPhase()) == 0)
+                        continue;
 
-                        if((p->GetPhase() & s->p_caster->GetPhase()) == 0)
-                            continue;
+                    if (p->GetGroup()->GetID() != s->p_caster->GetGroup()->GetID())
+                        continue;
 
-                        if(p->GetGroup()->GetID() != s->p_caster->GetGroup()->GetID())
-                            continue;
-
-                        s->p_caster->CastSpell(p, spellids[ spellindex ], true);
-                    }
-
+                    s->p_caster->CastSpell(p, spellids[spellindex], true);
                 }
-                break;
+            }
+            break;
 
             case 3:  // every attacking enemy
+            {
+                for (std::set< Object* >::iterator itr = s->p_caster->GetInRangeOppFactsSetBegin(); itr != s->p_caster->GetInRangeOppFactsSetEnd(); ++itr)
                 {
+                    Object* o = *itr;
 
-                    for(std::set< Object* >::iterator itr = s->p_caster->GetInRangeOppFactsSetBegin(); itr != s->p_caster->GetInRangeOppFactsSetEnd(); ++itr)
-                    {
-                        Object* o = *itr;
+                    if ((o->GetPhase() & s->p_caster->GetPhase()) == 0)
+                        continue;
 
-                        if((o->GetPhase() & s->p_caster->GetPhase()) == 0)
-                            continue;
+                    if (!o->IsCreature())
+                        continue;
 
-                        if(!o->IsCreature())
-                            continue;
+                    Unit* u = TO_UNIT(o);
 
-                        Unit* u = TO_UNIT(o);
+                    if (u->GetTargetGUID() != s->p_caster->GetGUID())
+                        continue;
 
-                        if(u->GetTargetGUID() != s->p_caster->GetGUID())
-                            continue;
+                    if (!isAttackable(s->p_caster, u))
+                        continue;
 
-                        if(!isAttackable(s->p_caster, u))
-                            continue;
-
-                        s->p_caster->CastSpell(u, spellids[ spellindex ], true);
-                    }
-
+                    s->p_caster->CastSpell(u, spellids[spellindex], true);
                 }
-                break;
+            }
+            break;
         }
     }
 
@@ -772,12 +747,12 @@ bool ChampioningTabards(uint32 i, Aura* a, bool apply)
 {
     Player* p_caster = a->GetPlayerCaster();
 
-    if(p_caster == NULL)
+    if (p_caster == NULL)
         return true;
 
-    uint32 Faction = a->GetSpellProto()->EffectMiscValue[ 0 ];
+    uint32 Faction = a->GetSpellProto()->EffectMiscValue[0];
 
-    if(apply)
+    if (apply)
         p_caster->SetChampioningFaction(Faction);
     else
         p_caster->SetChampioningFaction(0);
@@ -801,7 +776,7 @@ bool Spinning(uint32 i, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
-    if(p_caster == NULL)
+    if (p_caster == NULL)
         return true;
 
     float neworientation = RandomFloat(M_PI_FLOAT * 2);
@@ -834,12 +809,12 @@ bool ListeningToMusic(uint32 i, Aura* a, bool apply)
     Unit* m_target = a->GetTarget();
     Player* p_target = NULL;
 
-    if(m_target->IsPlayer())
+    if (m_target->IsPlayer())
         p_target = TO_PLAYER(m_target);
     else
         return true;
 
-    if(apply)
+    if (apply)
     {
         p_target->SetEmoteState(EMOTE_STATE_DANCE);
     }
@@ -866,42 +841,46 @@ bool ListeningToMusic(uint32 i, Aura* a, bool apply)
 //////////////////////////////////////////////////////////////////
 bool DrinkDummyAura(uint32 i, Aura* a, bool apply)
 {
-    if(!apply)
+    if (!apply)
         return true;
 
-    float famount = 2.2f * (a->GetSpellProto()->EffectBasePoints[ 1 ] / 5);
-    int32 amount = static_cast< int32 >(Arcemu::round(famount));
+    float famount = 2.2f * (a->GetSpellProto()->EffectBasePoints[1] / 5);
+    int32 amount = static_cast<int32>(Arcemu::round(famount));
 
     a->EventPeriodicDrink(amount);
 
     return true;
 }
 
-bool X53Mount( uint32 i, Aura *a, bool apply ){
-    if( a->GetTarget() == NULL )
+bool X53Mount(uint32 i, Aura *a, bool apply)
+{
+    if (a->GetTarget() == NULL)
         return true;
 
-    if( !a->GetTarget()->IsPlayer() )
+    if (!a->GetTarget()->IsPlayer())
         return true;
 
-    if( apply ){
+    if (apply)
+    {
         uint32 newspell = 0;
-        Player *p = TO< Player* >( a->GetTarget() );
-        AreaTable *area = dbcArea.LookupEntry( p->GetAreaID() );
-        uint32 skill = p->_GetSkillLineCurrent( SKILL_RIDING, true );
+        Player* p = TO< Player* >(a->GetTarget());
+        AreaTable* area = dbcArea.LookupEntry(p->GetAreaID());
+        uint32 skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
 
-        if( skill >= 225 &&
-            ( ( ( area->AreaFlags & 1024 ) && p->GetMapId() != 571 ) ||
-            ( ( area->AreaFlags & 1024 ) && p->GetMapId() == 571 && p->HasSpellwithNameHash( SPELL_HASH_COLD_WEATHER_FLYING ) ) ) ){
-                if( skill == 300 ){
-                    if( p->HasSpellWithAuraNameAndBasePoints( SPELL_AURA_ENABLE_FLIGHT2, 310 ) )
-                        newspell = 76154;
-                    else
-                        newspell = 75972;
-                }else
-                    newspell = 75957;
+        if (skill >= 225 && (((area->AreaFlags & 1024) && p->GetMapId() != 571) ||
+            ((area->AreaFlags & 1024) && p->GetMapId() == 571 && p->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING))))
+        {
+            if (skill == 300)
+            {
+                if (p->HasSpellWithAuraNameAndBasePoints(SPELL_AURA_ENABLE_FLIGHT2, 310))
+                    newspell = 76154;
+                else
+                    newspell = 75972;
+            }
+            else
+                newspell = 75957;
         }
-        a->GetTarget()->CastSpell( a->GetTarget(), newspell, true );
+        a->GetTarget()->CastSpell(a->GetTarget(), newspell, true);
     }
     return true;
 }
@@ -933,14 +912,7 @@ void SetupItemSpells_1(ScriptMgr* mgr)
     mgr->register_dummy_spell(29200, &PurifyBoarMeat);          // Purify Boar meat spell
     mgr->register_script_effect(35036, &WarpRiftGenerator);     // Summon a Warp Rift in Void Ridge
     mgr->register_dummy_aura(46354, &OrbOfTheSindorei);         // Orb of the Sin'dorei
-    
-    /*mgr->register_dummy_aura(65917, &ScalingMountDummyAura);    // Magic Rooster Mount
-    mgr->register_dummy_aura(58983, &ScalingMountDummyAura);    // Big Blizzard Bear mount
-    mgr->register_dummy_aura(54729, &ScalingMountDummyAura);    // DK flying mount
-    mgr->register_dummy_aura(48025, &ScalingMountDummyAura);    // Headless Horseman Mount
-    mgr->register_dummy_aura(47977, &ScalingMountDummyAura);    // Magic Broom Mount
-    mgr->register_dummy_aura(72286, &ScalingMountDummyAura);    // Invincible Aura*/
-    
+
     mgr->register_dummy_spell(65917, &MagicRoosterMount);       // Magic Rooster Mount
     mgr->register_dummy_spell(58983, &BigBlizzardBear);         // Big Blizzard Bear mount
     mgr->register_dummy_spell(54729, &WingedSteed);             // DK flying mount
@@ -968,7 +940,6 @@ void SetupItemSpells_1(ScriptMgr* mgr)
         57822,
         0
     };
-
     mgr->register_dummy_aura(championingspellids, &ChampioningTabards);
 
     mgr->register_dummy_spell(64385, &Spinning);
@@ -997,8 +968,4 @@ void SetupItemSpells_1(ScriptMgr* mgr)
     };
     mgr->register_dummy_aura(DrinkDummySpellIDs, &DrinkDummyAura);
     mgr->register_dummy_aura(75973, &X53Mount);
-
-
-// REGISTER NEW DUMMY SPELLS ABOVE THIS LINE
-// *****************************************************************************
 }
