@@ -8402,7 +8402,7 @@ void Aura::SpellAuraReduceEffectDuration(bool apply)
 // Target = vehicle
 void Aura::HandleAuraControlVehicle(bool apply)
 {
-	return;
+	//return; Dead code reason...
 
 	if (!GetCaster()->IsUnit())
 		return;
