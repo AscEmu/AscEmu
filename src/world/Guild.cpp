@@ -765,6 +765,7 @@ void Guild::AddGuildMember(PlayerInfo* pMember, WorldSession* pClient, int32 For
     {
         pMember->m_loggedInPlayer->SetGuildId(m_guildId);
         pMember->m_loggedInPlayer->SetGuildRank(r->iId);
+        pMember->m_loggedInPlayer->SendGuildMOTD();
     }
 
     CharacterDatabase.Execute("INSERT INTO guild_data VALUES(%u, %u, %u, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_guildId, pMember->guid, r->iId);
@@ -816,14 +817,11 @@ void Guild::RemoveGuildMember(PlayerInfo* pMember, WorldSession* pClient)
         m_members.erase(itr);
     }
 
+    Player* plr = objmgr.GetPlayer(pMember->guid);
     if (pClient && pClient->GetPlayer()->getPlayerInfo() != pMember)
     {
-        if (pMember->m_loggedInPlayer)
-        {
-            Player* plr = objmgr.GetPlayer(pMember->guid);
-            if (plr)
-                sChatHandler.SystemMessageToPlr(plr, "You have been kicked from the guild by %s", pClient->GetPlayer()->GetName());
-        }
+        if (plr)
+            sChatHandler.SystemMessageToPlr(plr, "You have been kicked from the guild by %s", pClient->GetPlayer()->GetName());
         LogGuildEvent(GUILD_EVENT_REMOVED, 2, pMember->name, pClient->GetPlayer()->GetName());
         AddGuildLogEntry(GUILD_LOG_EVENT_REMOVAL, 2, pClient->GetPlayer()->GetLowGUID(), pMember->guid);
     }
@@ -839,10 +837,11 @@ void Guild::RemoveGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     pMember->guild = NULL;
     pMember->guildMember = NULL;
 
-    if (pMember->m_loggedInPlayer)
+    if (plr)
     {
-        pMember->m_loggedInPlayer->SetGuildRank(0);
-        pMember->m_loggedInPlayer->SetGuildId(0);
+        plr->SetGuildRank(0);
+        plr->SetGuildId(0);
+        plr->SendGuildMOTD();
     }
 }
 
