@@ -23,6 +23,13 @@
 
 struct SpellEntry;
 
+enum DynamicObjectType
+{
+    DYNAMIC_OBJECT_PORTAL           = 0x0,      // unused
+    DYNAMIC_OBJECT_AREA_SPELL       = 0x1,
+    DYNAMIC_OBJECT_FARSIGHT_FOCUS   = 0x2,
+};
+
 typedef std::set<uint64> DynamicObjectList;
 
 class SERVER_DECL DynamicObject : public Object
@@ -32,7 +39,7 @@ class SERVER_DECL DynamicObject : public Object
         DynamicObject(uint32 high, uint32 low);
         ~DynamicObject();
 
-        void Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius);
+        void Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius, uint32 type);
         void UpdateTargets();
 
         void AddInRangeObject(Object* pObj);
