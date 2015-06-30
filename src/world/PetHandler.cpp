@@ -537,20 +537,16 @@ void WorldSession::HandlePetCancelAura(WorldPacket& recvPacket)
     CHECK_INWORLD_RETURN
 
     uint64 guid;
-    uint16 spellid;
+    uint32 spellid;
 
     recvPacket >> guid >> spellid;
 
-    std::list<Pet*> summons = _player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-    {
-        if ((*itr)->GetGUID() == guid)  //guid should be the pet guid
-        {
-            if (!(*itr)->RemoveAura(spellid))
-                LOG_ERROR("PET SYSTEM: Player " I64FMT " failed to cancel aura %u from pet", _player->GetGUID(), spellid);
-            break;
-        }
-    }
+    SpellEntry* info = dbcSpell.LookupEntryForced(spellid);
+    if (info != NULL && info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL))
+        return;
+    Creature* pet = _player->GetMapMgr()->GetCreature(guid);
+    if (pet != NULL && (pet->GetPlayerOwner() == _player || _player->GetCurrentVehicle() && _player->GetCurrentVehicle()->IsControler(_player)))
+        pet->RemoveAura(spellid);
 }
 
 void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
