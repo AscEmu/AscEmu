@@ -1402,12 +1402,31 @@ void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 
 void WorldSession::SendMOTD()
 {
-    WorldPacket data(SMSG_MOTD, 100);
+    WorldPacket data(SMSG_MOTD, 50);
+    data << (uint32)0;
+    uint32 linecount = 0;
+    std::string str_motd = sWorld.GetMotd();
+    std::string::size_type pos, nextpos;
 
-    data << uint32(4);
-    data << sWorld.GetMotd();
+    pos = 0;
+    while ((nextpos = str_motd.find('@', pos)) != std::string::npos)
+    {
+        if (nextpos != pos)
+        {
+            data << str_motd.substr(pos, nextpos - pos);
+            ++linecount;
+        }
+        pos = nextpos + 1;
+    }
+        if (pos < str_motd.length())
+        {
+            data << str_motd.substr(pos);
+            ++linecount;
+        }
 
-    SendPacket(&data);
+        data.put(0, linecount);
+
+        SendPacket(&data);
 }
 
 void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
