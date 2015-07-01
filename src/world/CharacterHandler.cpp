@@ -1039,23 +1039,8 @@ void WorldSession::FullLogin(Player* plr)
     //Issue a message telling all guild members that this player has signed on
     if (plr->IsInGuild())
     {
-        Guild* pGuild = plr->m_playerInfo->guild;
-        if (pGuild)
-        {
-            WorldPacket data(SMSG_GUILD_EVENT, 50);
-
-            data << uint8(GUILD_EVENT_MOTD);
-            data << uint8(1);
-
-            if (pGuild->GetMOTD())
-                data << pGuild->GetMOTD();
-            else
-                data << uint8(0);
-
-            SendPacket(&data);
-
-            pGuild->LogGuildEvent(GUILD_EVENT_HASCOMEONLINE, 1, plr->GetName());
-        }
+        plr->SendGuildMOTD();
+        plr->m_playerInfo->guild->LogGuildEvent(GUILD_EVENT_HASCOMEONLINE, 1, plr->GetName());
     }
 
     // Send online status to people having this char in friendlist

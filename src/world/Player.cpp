@@ -13816,6 +13816,17 @@ void Player::SendUpdateToOutOfRangeGroupMembers()
 		pet->ResetAuraUpdateMaskForRaid();
 }
 
+void Player::SendGuildMOTD()
+{
+    if (!GetGuild())
+        return;
+    WorldPacket data(SMSG_GUILD_EVENT, 50);
+    data << uint8(GUILD_EVENT_MOTD);
+    data << uint8(1);
+    data << GetGuild()->GetMOTD();
+    SendPacket(&data);	
+}
+
 void Player::SetClientControl(Unit* target, uint8 allowMove)
 {
     WorldPacket ack(SMSG_CLIENT_CONTROL_UPDATE, 200);

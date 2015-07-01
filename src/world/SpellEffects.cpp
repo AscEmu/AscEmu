@@ -2273,7 +2273,7 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
     {
         Unit* caster = g_caster->m_summoner;
         dynObj->Create(caster, this, g_caster->GetPositionX(), g_caster->GetPositionY(),
-                       g_caster->GetPositionZ(), dur, r);
+                       g_caster->GetPositionZ(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         m_AreaAura = true;
         return;
     }
@@ -2283,7 +2283,7 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
         case TARGET_FLAG_SELF:
         {
             dynObj->Create(u_caster, this, m_caster->GetPositionX(),
-                           m_caster->GetPositionY(), m_caster->GetPositionZ(), dur, r);
+                           m_caster->GetPositionY(), m_caster->GetPositionZ(), dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_UNIT:
@@ -2295,7 +2295,7 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
             }
 
             dynObj->Create(u_caster, this, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(),
-                           dur, r);
+                           dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_OBJECT:
@@ -2307,19 +2307,19 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
             }
 
             dynObj->Create(u_caster, this, unitTarget->GetPositionX(), unitTarget->GetPositionY(), unitTarget->GetPositionZ(),
-                           dur, r);
+                           dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_SOURCE_LOCATION:
         {
             dynObj->Create(u_caster, this, m_targets.m_srcX,
-                           m_targets.m_srcY, m_targets.m_srcZ, dur, r);
+                           m_targets.m_srcY, m_targets.m_srcZ, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         case TARGET_FLAG_DEST_LOCATION:
         {
             dynObj->Create(u_caster ? u_caster : g_caster->m_summoner, this,
-                           m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, dur, r);
+                           m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         default:
@@ -4163,17 +4163,7 @@ void Spell::SpellEffectAddFarsight(uint32 i) // Add Farsight
     if (z == 0) z = m_targets.m_srcZ;
 
     DynamicObject* dynObj = p_caster->GetMapMgr()->CreateDynamicObject();
-    dynObj->Create(u_caster, this, x, y, z, GetDuration(), GetRadius(i));
-
-    /*
-    if (dynObj == NULL) //i <3 burlex :P
-    {
-    delete dynObj;
-    return;
-    }
-    */
-    dynObj->SetUInt32Value(OBJECT_FIELD_TYPE, 65);
-    dynObj->SetUInt32Value(DYNAMICOBJECT_BYTES, 0x80000002);
+    dynObj->Create(u_caster, this, x, y, z, GetDuration(), GetRadius(i), DYNAMIC_OBJECT_FARSIGHT_FOCUS);
     dynObj->SetInstanceID(p_caster->GetInstanceID());
     p_caster->SetFarsightTarget(dynObj->GetGUID());
 

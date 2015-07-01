@@ -7322,4 +7322,15 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
         sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
     }
+
+    // Fan of knives
+    sp = CheckAndReturnSpellEntry(51723);
+    if (sp != NULL)
+    {
+        //sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+        //sp->EffectTriggerSpell[1] = 52874;
+        sp->EffectMechanic[0] = MECHANIC_SHACKLED;
+        sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
+        sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
+    }
 }

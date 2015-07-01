@@ -2698,6 +2698,18 @@ void Unit::RegeneratePower(bool isinterrupted)
             }
             break;
 
+            case POWER_TYPE_FOCUS:
+            {
+                m_P_regenTimer = 350; // This seems to be the exact Blizzlike timer
+                uint32 cur = GetPower(POWER_TYPE_FOCUS);
+                uint32 mm = GetMaxPower(POWER_TYPE_FOCUS);
+                if (cur >= mm)
+                    return;
+                cur += 2;
+                SetPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
+            }
+            break;
+
             case POWER_TYPE_RUNIC_POWER:
             {
                 if (!CombatStatus.IsInCombat())
