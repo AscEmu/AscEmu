@@ -27,8 +27,8 @@ Guild::Guild()
     m_guildId = 0;
     m_guildLeader = 0;
     m_guildName = NULL;
-    m_guildInfo = NULL;
-    m_motd = NULL;
+    m_guildInfo = "Set guild info";
+    m_motd = "Set message of the day";
     m_backgroundColor = 0;
     m_emblemColor = 0;
     m_emblemStyle = 0;
