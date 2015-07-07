@@ -3205,6 +3205,7 @@ void ApplyNormalFixes()
     /**********************************************************
      *    Holy Nova
      **********************************************************/
+    /* Works fine without these Hacks....
     sp = CheckAndReturnSpellEntry(15237);
     if (sp != NULL)
     {
@@ -3258,7 +3259,7 @@ void ApplyNormalFixes()
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 48076;
-    }
+    }*/
 
     //Priest: Blessed Recovery
     sp = CheckAndReturnSpellEntry(27811);

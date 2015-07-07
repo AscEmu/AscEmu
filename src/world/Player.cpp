@@ -13746,7 +13746,20 @@ void Player::CastSpellArea()
         if (itr->second->autocast && itr->second->IsFitToRequirements(this, ZoneId, AreaId))
         {
             if (!HasAura(itr->second->spellId))
-                CastSpell(this, itr->second->spellId, true);
+            {
+                switch (itr->second->spellId)
+                {
+                    case 58600:     // Restricted Flight Area (e.g. Dalaran)
+                    case 58730:
+                        if (HasAura(SPELL_AURA_ENABLE_FLIGHT2) || HasAura(SPELL_AURA_ENABLE_FLIGHT) /*|| FlyCheat == true*/)
+                            CastSpell(this, itr->second->spellId, true);
+                        break;
+                    default:
+                        CastSpell(this, itr->second->spellId, true);
+                        break;
+
+                }
+            }
         }
 
 
@@ -13755,7 +13768,20 @@ void Player::CastSpellArea()
     for (SpellAreaForAreaMap::const_iterator itr = szBounds.first; itr != szBounds.second; ++itr)
         if (itr->second->autocast && itr->second->IsFitToRequirements(this, ZoneId, AreaId))
             if (!HasAura(itr->second->spellId))
-                CastSpell(this, itr->second->spellId, true);
+            {
+                switch (itr->second->spellId)
+                {
+                    case 58600:     // Restricted Flight Area (e.g. Dalaran)
+                    case 58730:
+                        if (HasAura(SPELL_AURA_ENABLE_FLIGHT2) || HasAura(SPELL_AURA_ENABLE_FLIGHT) /*|| FlyCheat == true*/)
+                            CastSpell(this, itr->second->spellId, true);
+                        break;
+                    default:
+                        CastSpell(this, itr->second->spellId, true);
+                        break;
+
+                }
+            }
 
     //Remove of Spells
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
