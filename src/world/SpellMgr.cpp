@@ -356,6 +356,19 @@ bool SpellArea::IsFitToRequirements(Player* player, uint32 newZone, uint32 newAr
 		if (!player || (auraSpell > 0 && !player->HasAura(auraSpell)) || (auraSpell < 0 && player->HasAura(-auraSpell)))
 			return false;
 
+    // Misc Conditions
+    switch (spellId)
+    {
+        case 58600: //Restricted Flight Zone (Dalaran)
+        {
+            if (!player)
+                return false;
+
+            if (!player->HasAura(SPELL_AURA_ENABLE_FLIGHT2) && !player->HasAura(SPELL_AURA_FLY))
+                return false;
+            break;
+        }
+    }
         return true;
 }
 
