@@ -13857,7 +13857,7 @@ void Player::SendGuildMOTD()
     WorldPacket data(SMSG_GUILD_EVENT, 50);
     data << uint8(GUILD_EVENT_MOTD);
     data << uint8(1);
-    data << (GetGuild()->GetMOTD() ? GetGuild()->GetMOTD() : "");
+    data << GetGuild()->GetMOTD();
     SendPacket(&data);	
 }
 
