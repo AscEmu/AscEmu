@@ -357,7 +357,7 @@ class SERVER_DECL Guild
         void SetMOTD(const char* szNewMotd, WorldSession* pClient);
 
         // Gets MOTD
-        ARCEMU_INLINE const char* GetMOTD() const { return m_motd; }
+        ARCEMU_INLINE const char* GetMOTD() const { return (m_motd ? m_motd : ""); }
 
         // Sets guild information, updates in database
         void SetGuildInformation(const char* szGuildInformation, WorldSession* pClient);
