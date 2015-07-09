@@ -248,7 +248,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Hunter.h"
 #include "Shaman.h"
 
-#include "MapManagement\MapManagementGlobals.hpp"
+#include "MapManagement/MapManagementGlobals.hpp"
 
 #endif
 
