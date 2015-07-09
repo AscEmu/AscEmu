@@ -43,7 +43,7 @@ namespace DBC
             this->Clear();
         }
 
-        T const* DBCStorage<T>::LookupEntry(uint32 id) const
+        T const* LookupEntry(uint32 id) const
         {
             if (id >= m_row_count)
             {
