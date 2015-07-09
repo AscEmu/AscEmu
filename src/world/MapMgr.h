@@ -21,7 +21,7 @@
 #ifndef _MAPMGR_H
 #define _MAPMGR_H
 
-#include "MapManagement\MapManagementGlobals.hpp"
+#include "MapManagement/MapManagementGlobals.hpp"
 
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
