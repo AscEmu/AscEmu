@@ -62,7 +62,8 @@ class The_Plains_Vision : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(The_Plains_Vision, MoonScriptCreatureAI);
         The_Plains_Vision(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            switch (_unit->GetMapMgr()->GetAreaID(_unit->GetPositionX(), _unit->GetPositionY()))
+            auto area = _unit->GetArea();
+            switch (area->id)
             {
             case 222: // Mulgore
             {

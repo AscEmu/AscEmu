@@ -97,6 +97,21 @@ Object::~Object()
     sEventMgr.RemoveEvents(this);
 }
 
+::DBC::Structures::AreaTableEntry const* Object::GetArea()
+{
+    if (!this->IsInWorld()) return nullptr;
+
+    auto map_mgr = this->GetMapMgr();
+    if (!map_mgr) return nullptr;
+
+    auto area_flag = map_mgr->GetAreaFlag(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ());
+    auto at = MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
+    if (!at)
+        at = MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(this->GetMapId());
+
+    return at;
+}
+
 void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
 {
     m_mapId = mapid;

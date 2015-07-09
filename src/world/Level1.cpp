@@ -184,7 +184,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
         obj = m_session->GetPlayer();
 
     char buf[328];
-    AreaTable* at = dbcArea.LookupEntryForced(obj->GetMapMgr()->GetAreaID(obj->GetPositionX(), obj->GetPositionY()));
+    auto at = obj->GetArea();
     if (!at)
     {
         snprintf((char*)buf, 328, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
@@ -192,8 +192,16 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
         SystemMessage(m_session, buf);
         return true;
     }
+    auto out_map_id = obj->GetMapId();
+    auto out_zone_id = at->zone; // uint32 at_old->ZoneId
+    auto out_area_id = at->id; // uint32 at_old->AreaId
+    auto out_x = obj->GetPositionX();
+    auto out_y = obj->GetPositionY();
+    auto out_z = obj->GetPositionZ();
+    auto out_o = obj->GetOrientation();
+    auto out_area_name = at->area_name[0]; // enUS, hardcoded until locale is implemented properly
     snprintf((char*)buf, 328, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
-             (unsigned int)obj->GetMapId(), at->ZoneId, at->AreaId, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(), at->name);
+        out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != NULL && *args == '1')
@@ -201,7 +209,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
         FILE* gpslog = fopen(FormatOutputString("logs", "gps", false).c_str(), "at");
         if (gpslog)
         {
-            fprintf(gpslog, "%d, %u, %u, %f, %f, %f, %f, \'%s\'", (unsigned int)obj->GetMapId(), at->ZoneId, at->AreaId, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(), at->name);
+            fprintf(gpslog, "%d, %u, %u, %f, %f, %f, %f, \'%s\'", out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name);
             // ".gps 1 comment" will save comment after the gps data
             if (*(args + 1) == ' ')
                 fprintf(gpslog, ",%s\n", args + 2);

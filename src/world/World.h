@@ -200,7 +200,6 @@ enum REALM_TYPE
     REALM_PVE = 0,
     REALM_PVP = 1,
 };
-struct AreaTable;
 
 class BasicTaskExecutor : public ThreadBase
 {
@@ -528,9 +527,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         }
 
         std::string GenerateName(uint32 type = 0);
-
-        std::map<uint32, AreaTable*> mAreaIDToTable;
-        std::map<uint32, AreaTable*> mZoneIDToTable;
 
         uint32 AddQueuedSocket(WorldSocket* Socket);
         void RemoveQueuedSocket(WorldSocket* Socket);

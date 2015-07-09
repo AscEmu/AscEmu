@@ -288,6 +288,8 @@ class SERVER_DECL Object : public EventableObject
 		const float & GetSpawnZ() const { return m_spawnLocation.z; }
 		const float & GetSpawnO() const { return m_spawnLocation.o; }
 
+        ::DBC::Structures::AreaTableEntry const* GetArea();
+
 		const LocationVector & GetPosition() { return m_position; }
 		LocationVector & GetPositionNC() { return m_position; }
 		LocationVector* GetPositionV() { return &m_position; }

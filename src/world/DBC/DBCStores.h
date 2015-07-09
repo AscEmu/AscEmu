@@ -20,6 +20,8 @@
 #ifndef _SPELLSTORE_H
 #define _SPELLSTORE_H
 
+#include "DBCGlobals.hpp"
+
 #pragma pack(push,1)
 
 struct WorldMapOverlay
@@ -1084,45 +1086,6 @@ struct AreaGroup
     uint32 AreaId[7];
 };
 
-struct AreaTable
-{
-    uint32 AreaId;
-    uint32 mapId;
-    uint32 ZoneId;
-    uint32 explorationFlag;
-    uint32 AreaFlags;
-    //uint32 unk2;
-    //uint32 unk3;
-    //uint32 unk4;
-    uint32 EXP;//not XP
-    //uint32 unk5;
-    uint32 level;
-    const char* name;
-    //uint32 nameAlt1;
-    //uint32 nameAlt2;
-    //uint32 nameAlt3;
-    //uint32 nameAlt4;
-    //uint32 nameAlt5;
-    //uint32 nameAlt6;
-    //uint32 nameAlt7;
-    //uint32 nameAlt8;
-    //uint32 nameAlt9;
-    //uint32 nameAlt10;
-    //uint32 nameAlt11;
-    //uint32 nameAlt12;
-    //uint32 nameAlt13;
-    //uint32 nameAlt14;
-    //uint32 nameAlt15;
-    //uint32 nameFlags;
-    uint32 category;
-    //uint32 unk7;
-    //uint32 unk8;
-    //uint32 unk9;
-    //uint32 unk10;
-    //uint32 unk11;
-    //uint32 unk12;
-};
-
 struct FactionTemplateDBC
 {
     uint32 ID;
@@ -2010,7 +1973,7 @@ extern SERVER_DECL DBCStorage<emoteentry> dbcEmoteEntry;
 extern SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
 extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
 extern SERVER_DECL DBCStorage<AreaGroup> dbcAreaGroup;
-extern SERVER_DECL DBCStorage<AreaTable> dbcArea;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL DBCStorage<FactionTemplateDBC> dbcFactionTemplate;
 extern SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
 extern SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
@@ -2061,5 +2024,7 @@ extern SERVER_DECL DBCStorage<VehicleEntry> dbcVehicle;
 extern SERVER_DECL DBCStorage<VehicleSeatEntry> dbcVehicleSeat;
 
 bool LoadDBCs();
+
+const WMOAreaTableEntry* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
 #endif // _SPELLSTORE_H

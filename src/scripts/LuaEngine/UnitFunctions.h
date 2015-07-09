@@ -5553,7 +5553,8 @@ class LuaUnit
     static int GetAreaId(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        RET_NUMBER(ptr->GetMapMgr()->GetAreaID(ptr->GetPositionX(), ptr->GetPositionY()));
+        auto area = ptr->GetArea();
+        RET_NUMBER(area ? area->id : -1);
     }
 
     static int ResetPetTalents(lua_State* L, Unit* ptr)
@@ -6206,14 +6207,14 @@ class LuaUnit
 
         uint32 field = luaL_checkint(L, 1);
 
-        AreaTable *a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+        auto a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
         if (a == NULL)
             return 0;
 
-        uint32 zone = a->ZoneId;
+        uint32 zone = a->zone;
 
         if (zone == 0)
-            zone = a->AreaId;
+            zone = a->id;
 
         if (zone == 0)
             return 0;
@@ -6236,14 +6237,14 @@ class LuaUnit
         uint32 field = luaL_checkint(L, 1);
         uint32 value = luaL_checkint(L, 2);
 
-        AreaTable *a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
+        auto a = ptr->GetMapMgr()->GetArea(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ());
         if (a == NULL)
             return 0;
 
-        uint32 zone = a->ZoneId;
+        uint32 zone = a->zone;
 
         if (zone == 0)
-            zone = a->AreaId;
+            zone = a->id;
 
         if (zone == 0)
             return 0;

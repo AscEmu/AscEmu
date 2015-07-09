@@ -1899,16 +1899,11 @@ void MapMgr::CallScriptUpdate()
     mInstanceScript->UpdateEvent();
 };
 
-uint16 MapMgr::GetAreaID(float x, float y)
+const uint16 MapMgr::GetAreaFlag(float x, float y, float z, bool *is_outdoors /* = nullptr */)
 {
-    uint32 exploreFlag = _terrain->GetAreaFlag(x, y);
-
-    std::map<uint32, AreaTable*>::iterator itr = sWorld.mAreaIDToTable.find(exploreFlag);
-
-    if (itr == sWorld.mAreaIDToTable.end())
-        return 0;
-    return itr->second->AreaId;
+    return MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(_terrain, _mapId, x, y, z, is_outdoors);
 }
+
 
 void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
 {

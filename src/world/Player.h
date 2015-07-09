@@ -1987,7 +1987,7 @@ class SERVER_DECL Player : public Unit
         // Hack fix here!
         void ForceZoneUpdate();
 
-        bool HasAreaExplored(AreaTable const*);
+        bool HasAreaExplored(::DBC::Structures::AreaTableEntry const*);
         bool HasOverlayUncovered(uint32 overlayID);
 
         /*****************

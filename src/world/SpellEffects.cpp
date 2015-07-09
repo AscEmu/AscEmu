@@ -1754,10 +1754,10 @@ void Spell::SpellEffectBind(uint32 i)
     if (GetProto()->EffectMiscValue[i])
     {
         areaid = GetProto()->EffectMiscValue[i];
-        AreaTable* at = dbcArea.LookupEntryForced(areaid);
+        auto at = MapManagement::AreaManagement::AreaStorage::GetAreaById(areaid);
         if (!at)
             return;
-        mapid = at->mapId;
+        mapid = at->map_id;
     }
 
     playerTarget->SetBindPoint(playerTarget->GetPositionX(), playerTarget->GetPositionY(), playerTarget->GetPositionZ(), mapid, areaid);

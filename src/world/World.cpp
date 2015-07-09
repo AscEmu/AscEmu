@@ -341,7 +341,32 @@ bool World::SetInitialWorldSettings()
     }
 
     /* Convert area table ids/flags */
-    for (DBCStorage<AreaTable>::iterator itr = dbcArea.begin(); itr != dbcArea.end(); ++itr)
+    /* TODO: Why are we doing this? Is it still necessary after DBC rework? */
+    /*for (uint32 i = 0; i < sAreaStore.GetNumRows(); ++i)
+    {
+        auto at = sAreaStore.LookupEntry(i);
+        if (!at) continue;
+
+        uint32 area_ = at->id;
+        uint32 flag_ = at->explore_flag;
+        uint32 zone_ = at->zone;
+
+        mAreaIDToTable[flag_] = at;
+        if (mZoneIDToTable.find(zone_) != mZoneIDToTable.end())
+        {
+            if (mZoneIDToTable[zone_]->flags != 312 &&
+                mAreaIDToTable[flag_]->flags == 312)
+            {
+                // over ride.
+                mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
+            }
+        }
+        else
+        {
+            mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
+        }
+    }*/
+    /*for (DBCStorage<AreaTable>::iterator itr = dbcArea.begin(); itr != dbcArea.end(); ++itr)
     {
         AreaTable* at = *itr;
 
@@ -363,7 +388,7 @@ bool World::SetInitialWorldSettings()
         {
             mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
         }
-    }
+    }*/
 
     new ObjectMgr;
     new QuestMgr;

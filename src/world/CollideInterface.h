@@ -154,17 +154,16 @@ class CCollideInterface
                 return true;
 
             WMOAreaTableEntry* wmoArea = sWorld.GetWMOAreaData(rootid, adtid, groupid);
-            AreaTable* area = NULL;
 
             if (wmoArea != NULL)
             {
-                area = dbcArea.LookupEntryForced(wmoArea->areaId);
+                auto area = sAreaStore.LookupEntry(wmoArea->areaId);
 
                 if (area != NULL)
                 {
-                    if (area->AreaFlags & 0x04000000)  /// outdoor
+                    if (area->flags & 0x04000000)  /// outdoor
                         return true;
-                    if (area->AreaFlags & 0x02000000)  /// indoor
+                    if (area->flags & 0x02000000)  /// indoor
                         return false;
                 }
 

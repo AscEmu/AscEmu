@@ -1949,13 +1949,15 @@ void Spell::SendCastResult(uint8 result)
             if (GetProto()->RequiresAreaId > 0)
             {
                 AreaGroup* ag = dbcAreaGroup.LookupEntry(GetProto()->RequiresAreaId);
-                uint16 plrarea = plr->GetMapMgr()->GetAreaID(plr->GetPositionX(), plr->GetPositionY());
+                auto area = p_caster->GetArea();
                 for (uint8 i = 0; i < 7; i++)
-                    if (ag->AreaId[i] != 0 && ag->AreaId[i] != plrarea)
+                {
+                    if (ag->AreaId[i] != 0 && ag->AreaId[i] != area->id)
                     {
                         Extra = ag->AreaId[i];
                         break;
                     }
+                }
             }
             break;
         case SPELL_FAILED_TOTEMS:
@@ -3289,8 +3291,8 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (GetProto()->Id == 7266)
         {
-            AreaTable* at = dbcArea.LookupEntry(p_caster->GetAreaID());
-            if (at->AreaFlags & AREA_CITY_AREA)
+            auto at = p_caster->GetArea();
+            if (at->flags & AREA_CITY_AREA)
                 return SPELL_FAILED_NO_DUELING;
             // instance & stealth checks
             if (p_caster->GetMapMgr() && p_caster->GetMapMgr()->GetMapInfo() && p_caster->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
@@ -3549,15 +3551,16 @@ uint8 Spell::CanCast(bool tolerate)
         if (GetProto()->RequiresAreaId > 0)
         {
             AreaGroup* ag = dbcAreaGroup.LookupEntry(GetProto()->RequiresAreaId);
-            uint32 plrarea = p_caster->GetMapMgr()->GetAreaID(p_caster->GetPositionX(), p_caster->GetPositionY());
-            if (plrarea != 0xFFFF)//disabling Area checks for maps with no Map_XY.bin file.
+            auto area = p_caster->GetArea();
+            for (i = 0; i < 7; ++i)
             {
-                AreaTable* at = dbcArea.LookupEntry(plrarea);
-                for (i = 0; i < 7; i++)
-                    if (ag->AreaId[i] == plrarea || (at->ZoneId != 0 && ag->AreaId[i] == at->ZoneId))    //we check both Area and Zone but only if Zone is a valid one, so != 0.
-                        break;
-                if (i == 7)
-                    return SPELL_FAILED_REQUIRES_AREA;
+                if (ag->AreaId[i] == area->id || (area->zone != 0 && ag->AreaId[i] == area->zone))
+                    break;
+            }
+
+            if (i == 7)
+            {
+                return SPELL_FAILED_REQUIRES_AREA;
             }
         }
 
@@ -3938,9 +3941,9 @@ uint8 Spell::CanCast(bool tolerate)
                     // allow attacks in duels
                     if (p_caster->DuelingWith != target && !isFriendly(p_caster, target))
                     {
-                        AreaTable* atCaster = dbcArea.LookupEntry(p_caster->GetAreaID());
-                        AreaTable* atTarget = dbcArea.LookupEntry(TO< Player* >(target)->GetAreaID());
-                        if (atCaster->AreaFlags & 0x800 || atTarget->AreaFlags & 0x800)
+                        auto atCaster = p_caster->GetArea();
+                        auto atTarget = target->GetArea();
+                        if (atCaster->flags & 0x800 || atTarget->flags & 0x800)
                             return SPELL_FAILED_NOT_HERE;
                     }
                 }
