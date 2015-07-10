@@ -20,10 +20,10 @@
 #ifndef _DBC_GLOBALS_H
 #define _DBC_GLOBALS_H
 
-#include "StdAfx.h"
 #include "DBCStorage.hpp"
 #include "DBCLoader.hpp"
 #include "DBCStructures.hpp"
+#include "Log.h"
 
 namespace DBC
 {

@@ -20,10 +20,10 @@
 #ifndef _DBC_STORAGE_H
 #define _DBC_STORAGE_H
 
-#include "StdAfx.h"
-#include "DBCLoader.hpp"
-#include "DBCSQL.hpp"
 #include "Common.h"
+#include "DBCSQL.hpp"
+#include "DBCLoader.hpp"
+#include "Database/Field.h"
 
 namespace DBC
 {
@@ -88,7 +88,7 @@ namespace DBC
             uint32 sql_highest_index = 0;
             Field* fields = NULL;
             /* SQL not yet implemented */
-            auto result = NULL;
+            auto result = 0;
             /* Load data from SQL */
             if (sql)
             {

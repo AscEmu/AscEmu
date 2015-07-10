@@ -17,7 +17,6 @@
  *
  */
 
-#include "Common.h"
 #include "DBCRecord.hpp"
 
 namespace DBC

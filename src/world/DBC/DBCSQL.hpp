@@ -20,20 +20,24 @@
 #ifndef _DBC_SQL_H
 #define _DBC_SQL_H
 
-#include "StdAfx.h"
+#include <string>
+#include "Common.h"
+#include "DBCLoader.hpp" // Used in constructor
 
 namespace DBC
 {
     namespace SQL
     {
+        using std::string;
+
         struct SqlDbc
         {
-            std::string const* format_string;
-            std::string const* index_name;
-            std::string sql_table_name;
+            string const* format_string;
+            string const* index_name;
+            string sql_table_name;
             int32 index_pos;
             int32 sql_index_pos;
-            SqlDbc(std::string const* dbc_filename, std::string const* dbc_format, std::string const* id_name, char const* format);
+            SqlDbc(string const* dbc_filename, string const* dbc_format, string const* id_name, char const* format);
         private:
             SqlDbc(SqlDbc const& right) = delete;
             SqlDbc& operator=(SqlDbc const& right) = delete;

@@ -20,7 +20,11 @@
 #ifndef _MAP_MANAGEMENT_AREA_MANAGEMENT_AREA_STORAGE_H
 #define _MAP_MANAGEMENT_AREA_MANAGEMENT_AREA_STORAGE_H
 
-#include "StdAfx.h"
+#include "Common.h"
+#include "DBC/DBCStorage.hpp"
+#include "DBC/DBCStructures.hpp"
+
+class TerrainHolder;
 
 namespace MapManagement
 {
@@ -29,17 +33,32 @@ namespace MapManagement
         typedef std::map<uint16, uint32> AreaFlagByAreaID;
         typedef std::map<uint32, uint32> AreaFlagByMapID;
 
+        // Temporary 
+        typedef std::map<uint32, uint32> MapEntryPair;
+        struct WMOTriple
+        {
+            int32 group_id;
+            int32 root_id;
+            int32 adt_id;
+            uint32 area_id;
+        };
+
         class AreaStorage
         {
         protected:
             static DBC::DBCStorage<DBC::Structures::AreaTableEntry>* m_storage;
+            static MapEntryPair m_map_storage;
+            static std::vector<WMOTriple*> m_wmo_triple_collection;
             static AreaFlagByAreaID m_area_flag_by_id_collection;
             static AreaFlagByMapID m_area_flag_by_map_id_collection;
 
         public:
             static void Initialise(DBC::DBCStorage<DBC::Structures::AreaTableEntry>* dbc_storage);
+            static MapEntryPair* GetMapCollection();
 
             static DBC::DBCStorage<DBC::Structures::AreaTableEntry>* GetStorage();
+            static void AddWMOTripleEntry(int32 group_id, int32 root_id, int32 adt_id, uint32 area_id);
+            static WMOTriple* GetWMOTriple(int32 group_id, int32 root_id, int32 adt_id);
 
             /* Get Area */
             //static DBC::Structures::AreaTableEntry const* GetAreaByPosition(uint32 map_id, float x, float y, float z);
@@ -63,8 +82,8 @@ namespace MapManagement
             static void GetZoneAndIdByFlag(uint32& zone_id, uint32& area_id, uint16 area_flag, uint32 map_id);
 
             /* Misc */
-            static bool AreaStorage::IsOutdoorWMO(uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, WMOAreaTableEntry const* wmo_entry, ::DBC::Structures::AreaTableEntry const* at_entry);
-            static const bool GetAreaInfo(TerrainHolder* terrain, uint32 map_id, float x, float y, float z, uint32 &mogp_flags, int32 &adt_id, int32 &root_id, int32 &group_id);
+            /* This was removed due to compile issues on Linux - will be redone when code is better structured */
+            /*static bool IsOutdoorWMO(uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, WMOAreaTableEntry const* wmo_entry, ::DBC::Structures::AreaTableEntry const* at_entry);*/
             static const uint16 GetFlagByPosition(TerrainHolder* terrain, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
         };
     } // </ AreaManagementNamespace>

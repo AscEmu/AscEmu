@@ -20,7 +20,6 @@
 #ifndef _DBC_LOADER_H
 #define _DBC_LOADER_H
 
-#include "StdAfx.h"
 #include "DBCRecord.hpp"
 
 namespace DBC
@@ -39,8 +38,6 @@ namespace DBC
         FT_SQL_PRESENT = 'p',                                     //Used in sql format to mark column present in sql dbc
         FT_SQL_ABSENT = 'a'                                       //Used in sql format to mark column absent in sql dbc
     };
-
-    class DBCRecord;
 
     class DBCLoader
     {

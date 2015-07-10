@@ -17,7 +17,6 @@
  *
  */
 
-#include "Common.h"
 #include "AreaStorage.hpp"
 
 namespace MapManagement
@@ -25,8 +24,15 @@ namespace MapManagement
     namespace AreaManagement
     {
         DBC::DBCStorage<DBC::Structures::AreaTableEntry>* AreaStorage::m_storage;
+        MapEntryPair AreaStorage::m_map_storage;
+        std::vector<WMOTriple*> AreaStorage::m_wmo_triple_collection;
         AreaFlagByAreaID AreaStorage::m_area_flag_by_id_collection;
         AreaFlagByMapID AreaStorage::m_area_flag_by_map_id_collection;
+
+        MapEntryPair* AreaStorage::GetMapCollection()
+        {
+            return &AreaStorage::m_map_storage;
+        }
 
         void AreaStorage::Initialise(DBC::DBCStorage<DBC::Structures::AreaTableEntry>* dbc_storage)
         {
@@ -45,6 +51,16 @@ namespace MapManagement
                 }
             }
 
+        }
+
+        void AreaStorage::AddWMOTripleEntry(int32 group_id, int32 root_id, int32 adt_id, uint32 area_id)
+        {
+            auto triple = new WMOTriple();
+            triple->group_id = group_id;
+            triple->root_id = root_id;
+            triple->adt_id = adt_id;
+            triple->area_id = area_id;
+            m_wmo_triple_collection.push_back(triple);
         }
 
         DBC::DBCStorage<DBC::Structures::AreaTableEntry>* AreaStorage::GetStorage()
@@ -77,8 +93,13 @@ namespace MapManagement
 
         DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaByMapId(uint32 map_id)
         {
-            if (MapEntry const* map_entry = dbcMap.LookupEntry(map_id))
-                return AreaStorage::GetAreaById(map_entry->linked_zone);
+            for (auto map_object : m_map_storage)
+            {
+                if (map_object.first == map_id)
+                {
+                    return AreaStorage::GetAreaById(map_object.second);
+                }
+            }
 
             return nullptr;
         }
@@ -98,8 +119,6 @@ namespace MapManagement
             AreaStorage::GetZoneAndIdByFlag(_out_zone_id, _out_area_id, area_flag, map_id);
         }
 
-
-
         void AreaStorage::GetZoneAndIdByFlag(uint32& zone_id, uint32& area_id, uint16 area_flag, uint32 map_id)
         {
             auto area = AreaStorage::GetAreaByFlag(area_flag);
@@ -111,7 +130,7 @@ namespace MapManagement
             area_id = area ? area->id : 0;
             zone_id = area ? ((area->zone != 0) ? area->zone : area->id) : 0;
         }
-
+        /*
         bool AreaStorage::IsOutdoorWMO(uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, WMOAreaTableEntry const* wmo_entry, ::DBC::Structures::AreaTableEntry const* at_entry)
         {
             bool outdoor = true;
@@ -143,26 +162,7 @@ namespace MapManagement
             }
 
             return outdoor;
-        }
-
-        const bool AreaStorage::GetAreaInfo(TerrainHolder* terrain, uint32 map_id, float x, float y, float z, uint32 &mogp_flags, int32 &adt_id, int32 &root_id, int32 &group_id)
-        {
-            float vmap_z = z;
-            auto vmap_manager = VMAP::VMapFactory::createOrGetVMapManager();
-            if (vmap_manager->getAreaInfo(map_id, x, y, vmap_z, mogp_flags, adt_id, root_id, group_id))
-            {
-                if (auto tile = terrain->GetTile(x, y))
-                {
-                    float map_height = tile->m_map.GetHeight(x, y);
-                    if (z + 2.0f > map_height && map_height > vmap_z)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            return false;
-        }
+        }*/
 
         uint32 AreaStorage::GetIdByFlag(uint32 area_flag)
         {
@@ -193,21 +193,39 @@ namespace MapManagement
             return area->id;
         }
 
+        WMOTriple* AreaStorage::GetWMOTriple(int32 group_id, int32 root_id, int32 adt_id)
+        {
+            for (auto triple : m_wmo_triple_collection)
+            {
+                if (triple->group_id == group_id)
+                {
+                    if (triple->root_id == root_id)
+                    {
+                        if (triple->adt_id == adt_id)
+                        {
+                            return triple;
+                        }
+                    }
+                }
+            }
+
+            return nullptr;
+        }
+
         const uint16 AreaStorage::GetFlagByPosition(TerrainHolder* terrain, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors)
         {
             uint32 mogp_flags;
             int32 adt_id, root_id, group_id;
-            WMOAreaTableEntry const* wmo_entry = nullptr;
             ::DBC::Structures::AreaTableEntry const* at_entry = nullptr;
             bool have_area_info = false;
 
-            if (GetAreaInfo(terrain, map_id, x, y, z, mogp_flags, adt_id, root_id, group_id))
+            if (terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id))
             {
                 have_area_info = true;
-                wmo_entry = GetWMOAreaTableEntryByTriple(root_id, adt_id, group_id);
-                if (wmo_entry)
+                auto wmo_triple = AreaStorage::GetWMOTriple(root_id, adt_id, group_id);
+                if (wmo_triple)
                 {
-                    at_entry = AreaStorage::GetAreaById(wmo_entry->areaId);
+                    at_entry = AreaStorage::GetAreaById(wmo_triple->area_id);
                 }
             }
 
@@ -231,7 +249,7 @@ namespace MapManagement
                 }
             }
 
-            if (_out_is_outdoors)
+            /*if (_out_is_outdoors)
             {
                 if (have_area_info)
                 {
@@ -241,7 +259,7 @@ namespace MapManagement
                 {
                     *_out_is_outdoors = true;
                 }
-            }
+            }*/
             return area_flag;
         }
     } // </ AreaManagementNamespace>

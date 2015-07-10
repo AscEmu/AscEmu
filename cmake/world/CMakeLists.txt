@@ -200,12 +200,12 @@ SET( headers
 	Creature.h
 	DatabaseCleaner.h
 	DayWatcherThread.h
-	DBC/DBCStores.h
+    DBC/DBCGlobals.hpp
     DBC/DBCLoader.hpp
     DBC/DBCRecord.hpp
-    DBC/DBCStorage.hpp
     DBC/DBCSQL.hpp
-    DBC/DBCGlobals.hpp
+    DBC/DBCStorage.hpp
+	DBC/DBCStores.h
     DBC/DBCStructures.hpp
 	DeathKnight.h
 	Definitions.h

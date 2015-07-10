@@ -196,6 +196,9 @@ class TerrainTile
 class TerrainHolder
 {
     public:
+        // This should be in AreaStorage.cpp
+        const bool GetAreaInfo(float x, float y, float z, uint32 &mogp_flags, int32 &adt_id, int32 &root_id, int32 &group_id);
+
         uint32 m_mapid;
         TerrainTile* m_tiles[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
         FastMutex m_lock[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];

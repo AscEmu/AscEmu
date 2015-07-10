@@ -230,6 +230,25 @@ float TileMap::GetHeight(float x, float y)
     return GetHeightF(x, y, x_int, y_int);
 }
 
+const bool TerrainHolder::GetAreaInfo(float x, float y, float z, uint32 &mogp_flags, int32 &adt_id, int32 &root_id, int32 &group_id)
+{
+    float vmap_z = z;
+    auto vmap_manager = VMAP::VMapFactory::createOrGetVMapManager();
+    if (vmap_manager->getAreaInfo(m_mapid, x, y, vmap_z, mogp_flags, adt_id, root_id, group_id))
+    {
+        if (auto tile = this->GetTile(x, y))
+        {
+            float map_height = tile->m_map.GetHeight(x, y);
+            if (z + 2.0f > map_height && map_height > vmap_z)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 void TileMap::Load(char* filename)
 {
     sLog.Debug("Terrain", "Loading %s", filename);
