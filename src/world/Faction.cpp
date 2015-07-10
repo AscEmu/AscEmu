@@ -100,10 +100,10 @@ bool isHostile(Object* objA, Object* objB)
         Player* a = TO< Player* >(objA->GetPlayerOwner());
         Player* b = TO< Player* >(objB->GetPlayerOwner());
 
-        AreaTable* atA = dbcArea.LookupEntry(a->GetAreaID());
-        AreaTable* atB = dbcArea.LookupEntry(b->GetAreaID());
+        auto atA = a->GetArea();
+        auto atB = b->GetArea();
 
-        if (((atA && atA->AreaFlags & 0x800) != 0) || ((atB && atB->AreaFlags & 0x800) != 0))
+        if (((atA && atA->flags & 0x800) != 0) || ((atB && atB->flags & 0x800) != 0))
             return false;
 
         if (hostile)

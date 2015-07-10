@@ -21,6 +21,8 @@
 #ifndef _MAPMGR_H
 #define _MAPMGR_H
 
+#include "MapManagement/MapManagementGlobals.hpp"
+
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
 #define IS_PERSISTENT_INSTANCE(p) (((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty >= MODE_HEROIC) || (p)->m_mapInfo->type == INSTANCE_RAID)
@@ -93,6 +95,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
     friend class MapCell;
     friend class MapScriptInterface;
     public:
+        const uint16 GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr);
 
         /// This will be done in regular way soon
         std::set<MapCell*> m_forcedcells;
@@ -218,8 +221,14 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		bool GetLiquidInfo(float x, float y, float z, float & liquidlevel, uint32 & liquidtype) { return _terrain->GetLiquidInfo(x, y, z, liquidlevel, liquidtype); }
 		float GetLiquidHeight(float x, float y) { return _terrain->GetLiquidHeight(x, y); }
 		uint8 GetLiquidType(float x, float y) { return _terrain->GetLiquidType(x, y); }
-		uint16 GetAreaID(float x, float y);
-		AreaTable* GetArea(float x, float y, float z) { return _terrain->GetArea(x, y, z); }
+        const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z)
+        {
+            auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(_terrain, _mapId, x, y, z, nullptr);
+            if (area_flag)
+                return MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
+            else
+                return MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(_mapId);
+        }
 		bool InLineOfSight(float x, float y, float z, float x2, float y2, float z2) { return _terrain->InLineOfSight(x, y, z, x2, y2, z2); }
 
 		uint32 GetMapId() { return _mapId; }

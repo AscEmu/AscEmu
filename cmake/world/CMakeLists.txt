@@ -1,7 +1,10 @@
 PROJECT(world)
 SET( prefix ${ROOT_PATH}/src/world )
 SET(sources
-  DBC/DBCStores.cpp
+    DBC/DBCStores.cpp
+    DBC/DBCLoader.cpp
+    DBC/DBCRecord.cpp
+    DBC/DBCSQL.cpp
 	AchievementMgr.cpp 
 	CollideInterface.cpp 
 	VoiceChatHandler.cpp 
@@ -77,6 +80,7 @@ SET(sources
 	LogonCommHandler.cpp 
 	MailHandler.cpp
    MailMgr.cpp   
+    MapManagement/AreaManagement/AreaStorage.cpp
 	MapCell.cpp 
 	Map.cpp 
 	MapScriptInterface.cpp 
@@ -197,6 +201,12 @@ SET( headers
 	DatabaseCleaner.h
 	DayWatcherThread.h
 	DBC/DBCStores.h
+    DBC/DBCLoader.hpp
+    DBC/DBCRecord.hpp
+    DBC/DBCStorage.hpp
+    DBC/DBCSQL.hpp
+    DBC/DBCGlobals.hpp
+    DBC/DBCStructures.hpp
 	DeathKnight.h
 	Definitions.h
 	Druid.h
@@ -231,6 +241,9 @@ SET( headers
 	Mage.h
 	MailMgr.h
 	MainServerDefines.h
+    MapManagement/MapManagementGlobals.hpp
+    MapManagement/AreaManagement/AreaStorage.hpp
+    MapManagement/AreaManagement/AreaManagementGlobals.hpp
 	Map.h
 	MapCell.h
 	MapMgr.h

@@ -976,7 +976,9 @@ class LuaGameObject
 		static int GetAreaId(lua_State* L, GameObject* ptr)
 		{
 			TEST_GO_RET()
-			lua_pushnumber(L, (ptr->GetMapMgr()->GetAreaID(ptr->GetPositionX(), ptr->GetPositionY())));
+
+            auto area = ptr->GetArea();
+			lua_pushnumber(L, area ? area->id : 0);
 			return 1;
 		}
 
@@ -1254,14 +1256,14 @@ class LuaGameObject
 
 			uint32 field = luaL_checkint( L, 1 );
 
-			AreaTable *a = ptr->GetMapMgr()->GetArea( ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ() );
+			auto a = ptr->GetMapMgr()->GetArea( ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ() );
 			if( a == NULL )
 				return 0;
 
-			uint32 zone = a->ZoneId;
+			uint32 zone = a->zone;
 
 			if( zone == 0 )
-				zone = a->AreaId;
+				zone = a->id;
 
 			if( zone == 0 )
 				return 0;
@@ -1284,14 +1286,14 @@ class LuaGameObject
 			uint32 field = luaL_checkint( L, 1 );
 			uint32 value = luaL_checkint( L, 2 );
 
-			AreaTable *a = ptr->GetMapMgr()->GetArea( ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ() );
+			auto a = ptr->GetMapMgr()->GetArea( ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ() );
 			if( a == NULL )
 				return 0;
 
-			uint32 zone = a->ZoneId;
+			uint32 zone = a->zone;
 
 			if( zone == 0 )
-				zone = a->AreaId;
+				zone = a->id;
 
 			if( zone == 0 )
 				return 0;

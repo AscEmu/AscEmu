@@ -324,15 +324,14 @@ class TerrainHolder
             TerrainTile* tile = GetTile(x, y);
 
             if (tile == NULL)
+            {
+                // No generated map for this area (usually instances)
                 return 0;
+            }
             uint32 rv = tile->m_map.GetArea(x, y);
             tile->DecRef();
             return rv;
         }
-
-        AreaTable* GetArea(float x, float y, float z);
-
-        AreaTable* GetArea2D(float x, float y);
 
         bool GetLiquidInfo(float x, float y, float z, float & liquidlevel, uint32 & liquidtype)
         {

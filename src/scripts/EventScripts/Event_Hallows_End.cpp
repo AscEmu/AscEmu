@@ -118,7 +118,9 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         AddEmote(Event_OnDied, "So eager you are, for my blood to spill. Yet to vanquish me, 'tis my head you must kill!", Text_Yell, 11969);
         Emote("Prepare yourselves, the bells have tolled! Shelter your weak, your young, and your old! Each of you shall pay the final sum. Cry for mercy, the reckoning has come!", Text_Yell, 11966);    //On Spawn?
 
-        switch (_unit->GetMapMgr()->GetAreaID(_unit->GetPositionX(), _unit->GetPositionY()))
+        auto area = _unit->GetArea();
+
+        switch (area->id)
         {
         case 87: /// Goldshire
         {
@@ -136,6 +138,9 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)
     {
+        auto area = _unit->GetArea();
+        auto area_id = area ? area->id : 0;
+
         if (iWaypointId == uint32(WPCount))   /// Reached end
         {
             StopWaypointMovement();
@@ -152,7 +157,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         }
         else
         {
-            switch (_unit->GetMapMgr()->GetAreaID(_unit->GetPositionX(), _unit->GetPositionY()))
+            switch (area_id)
             {
             case 87: /// Goldshire
             {
