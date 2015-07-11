@@ -20,7 +20,6 @@
 #ifndef _MAP_MANAGEMENT_AREA_MANAGEMENT_GLOBALS_H
 #define _MAP_MANAGEMENT_AREA_MANAGEMENT_GLOBALS_H
 
-#include "StdAfx.h"
 #include "AreaStorage.hpp"
 
 namespace MapManagement

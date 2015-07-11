@@ -20,7 +20,7 @@
 #ifndef _DBC_RECORD_H
 #define _DBC_RECORD_H
 
-#include "StdAfx.h"
+#include "Common.h"
 
 namespace DBC
 {

@@ -17,7 +17,6 @@
  *
  */
 
-#include "StdAfx.h"
 #include "DBCLoader.hpp"
 
 namespace DBC
@@ -61,7 +60,7 @@ namespace DBC
             return m_fields_offset[id];
         }
 
-        return NULL;
+        return 0;
     }
 
     uint32 DBCLoader::GetFormatRecordSize(const char* dbc_format, int32* index_pos /* = NULL */)

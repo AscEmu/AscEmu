@@ -20,7 +20,7 @@
 #ifndef _DBC_STRUCTURES_H
 #define _DBC_STRUCTURES_H
 
-#include "StdAfx.h"
+#include "Common.h"
 
 namespace DBC
 {

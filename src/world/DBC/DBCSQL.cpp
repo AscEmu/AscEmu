@@ -17,8 +17,6 @@
  *
  */
 
-#include "Common.h"
-#include "DBCLoader.hpp"
 #include "DBCSQL.hpp"
 
 namespace DBC

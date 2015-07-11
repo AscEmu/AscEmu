@@ -404,7 +404,6 @@ bool LoadDBCs()
     LOAD_DBC("DBC/AreaGroup.dbc", areagroupFormat, true, dbcAreaGroup, true);
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaStore, dbc_path, "AreaTable.dbc");
-    MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
 
     LOAD_DBC("DBC/FactionTemplate.dbc", factiontemplatedbcFormat, true, dbcFactionTemplate, false);
     LOAD_DBC("DBC/Faction.dbc", factiondbcFormat, true, dbcFaction, true);
@@ -441,20 +440,27 @@ bool LoadDBCs()
     LOAD_DBC("DBC/QuestXP.dbc", questxpformat, true, dbcQuestXP, false);
     LOAD_DBC("DBC/MailTemplate.dbc", mailTemplateEntryFormat, true, dbcMailTemplateEntry, true);
     LOAD_DBC("DBC/WMOAreaTable.dbc", wmoareaformat, true, dbcWMOAreaTable, false);
-    auto rowCount = dbcWMOAreaTable.GetNumRows();
-    for (auto i = 0; i < 51119; ++i) // This is a hack, dbc loading needs rework
-    {
-        if (auto entry = dbcWMOAreaTable.LookupEntry(i))
-        {
-            sWMOAreaInfoByTripple.insert(WMOAreaInfoByTripple::value_type(WMOAreaTableTripple(entry->rootId, entry->adtId, entry->groupId), entry));
-        }
-    }
     LOAD_DBC("DBC/SummonProperties.dbc", summonpropertiesformat, true, dbcSummonProperties, false);
     LOAD_DBC("DBC/NameGen.dbc", namegenentryformat, true, dbcNameGen, true);
     LOAD_DBC("DBC/LFGDungeons.dbc", LFGDungeonEntryformat, true, dbcLFGDungeon, false); //Is it not important to handle it?
     LOAD_DBC("DBC/Vehicle.dbc", VehicleEntryfmt, true, dbcVehicle, true);
     LOAD_DBC("DBC/VehicleSeat.dbc", VehicleSeatEntryfmt, true, dbcVehicleSeat, false);
 
+    MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
+    auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
+    for (auto map_object : dbcMap)
+    {
+        area_map_collection->insert(std::pair<uint32, uint32>(map_object->id, map_object->linked_zone));
+    }
+    //auto wmo_row_count = dbcWMOAreaTable.GetNumRows();
+    for (auto i = 0; i < 51119; ++i) // This is a hack, dbc loading needs rework
+    {
+        if (auto entry = dbcWMOAreaTable.LookupEntry(i))
+        {
+            sWMOAreaInfoByTripple.insert(WMOAreaInfoByTripple::value_type(WMOAreaTableTripple(entry->rootId, entry->adtId, entry->groupId), entry));
+            MapManagement::AreaManagement::AreaStorage::AddWMOTripleEntry(entry->groupId, entry->rootId, entry->adtId, entry->areaId);
+        }
+    }
     return true;
 }
 
