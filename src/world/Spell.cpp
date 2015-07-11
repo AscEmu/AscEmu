@@ -1923,26 +1923,31 @@ void Spell::finish(bool successful)
     DecRef();
 }
 
-void Spell::SendCastResult(uint8 result)
+void Spell::SendCastResult(uint8 result, uint32 extraerrormsg)
 {
-    uint32 Extra = 0;
-    if (result == SPELL_CANCAST_OK) return;
+    if (result == SPELL_CANCAST_OK)
+        return;
 
     SetSpellFailed();
 
-    if (!m_caster->IsInWorld()) return;
+    if (!m_caster->IsInWorld())
+        return;
 
     Player* plr = p_caster;
 
     if (!plr && u_caster)
         plr = u_caster->m_redirectSpellPackets;
-    if (!plr) return;
+    if (!plr)
+        return;
 
-    // for some reason, the result extra is not working for anything, including SPELL_FAILED_REQUIRES_SPELL_FOCUS
+    WorldPacket data(SMSG_CAST_FAILED, (4 + 1 + 1));
+	data << uint8(extra_cast_number);       // cast count
+	data << uint32(GetProto()->Id);         // Spell ID
+	data << uint8(result);                  // The problem
     switch (result)
     {
         case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
-            Extra = GetProto()->RequiresSpellFocus;
+            data << uint32(GetProto()->RequiresSpellFocus);
             break;
 
         case SPELL_FAILED_REQUIRES_AREA:
@@ -1954,23 +1959,30 @@ void Spell::SendCastResult(uint8 result)
                 {
                     if (ag->AreaId[i] != 0 && ag->AreaId[i] != area->id)
                     {
-                        Extra = ag->AreaId[i];
+                        data << uint32(ag->AreaId[i]);
                         break;
                     }
+                    else
+                        data << uint32(0);
                 }
             }
             break;
         case SPELL_FAILED_TOTEMS:
-            Extra = GetProto()->Totem[1] ? GetProto()->Totem[1] : GetProto()->Totem[0];
+            if (GetProto()->Totem[0])
+                data << uint32(GetProto()->Totem[0]);
+            if (GetProto()->Totem[1])
+                data << uint32(GetProto()->Totem[1]);
             break;
-
         case SPELL_FAILED_ONLY_SHAPESHIFT:
-            Extra = GetProto()->RequiredShapeShift;
+            data << uint32(GetProto()->RequiredShapeShift);
             break;
-            //case SPELL_FAILED_TOTEM_CATEGORY: seems to be fully client sided.
+        case SPELL_FAILED_CUSTOM_ERROR:
+            data << uint32(extraerrormsg);
+            break;
     }
+    plr->SendPacket(&data);
 
-    plr->SendCastResult(GetProto()->Id, result, extra_cast_number, Extra);
+    //plr->SendCastResult(GetProto()->Id, result, extra_cast_number, extraerrormsg);
 }
 
 // uint16 0xFFFF
