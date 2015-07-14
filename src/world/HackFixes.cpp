@@ -1237,6 +1237,17 @@ void ApplyNormalFixes()
         //////////////////////////////////////////
 
         // Insert shaman spell fixes here
+        if (sp->NameHash == SPELL_HASH_FLAMETONGUE_ATTACK)
+        {
+            //sp->Effect[1] = SPELL_EFFECT_DUMMY;
+            sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+        }
+
+        if (sp->NameHash == SPELL_HASH_FROSTBRAND_ATTACK)
+        {
+            //sp->Effect[1] = SPELL_EFFECT_DUMMY;
+            sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+        }
 
         // Flametongue Totem passive target fix
         if (sp->NameHash == SPELL_HASH_FLAMETONGUE_TOTEM && sp->Attributes & ATTRIBUTES_PASSIVE)
