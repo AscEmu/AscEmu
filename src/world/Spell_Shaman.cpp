@@ -21,5 +21,58 @@
 
 #include "StdAfx.h"
 
+class FireNova : public Spell
+{
+    SPELL_FACTORY_FUNCTION(FireNova);
+    bool HasFireTotem = false;
+    uint8 CanCast(bool tolerate)
+    {
+        uint8 result = Spell::CanCast(tolerate);
+
+        if (result == SPELL_CANCAST_OK)
+        {
+            if (u_caster)
+            {
+                // If someone has a better solutionen, your welcome :-)
+                int totem_ids[32] = {
+                //Searing Totems
+                2523, 3902, 3903, 3904, 7400, 7402, 15480, 31162, 31164, 31165,
+                //Magma Totems
+                8929, 7464, 7435, 7466, 15484, 31166, 31167,
+                //Fire Elementel
+                15439,
+                //Flametongue Totems
+                5950, 6012, 7423, 10557, 15485, 31132, 31158, 31133,
+                //Frost Resistance Totems
+                5926, 7412, 7413, 15486, 31171, 31172
+                };
+                Unit* totem;
+                for (int i = 0; i < 32; i++)
+                {
+                    totem = u_caster->summonhandler.GetSummonWithEntry(totem_ids[i]); // fire totem rank 1
+                    if (totem != NULL)
+                    {
+                        HasFireTotem = true;
+                        CastSpell(totem);
+                    }
+                }
+                if (!HasFireTotem)
+                {
+                    SetExtraCastResult(SPELL_EXTRA_ERROR_MUST_HAVE_FIRE_TOTEM);
+                    result = SPELL_FAILED_CUSTOM_ERROR;
+                }
+            }
+        }
+        return result;
+    }
+
+    void CastSpell(Unit* totem)
+    {
+        totem->CastSpellAoF(totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), dbcSpell.LookupEntryForced(8349), true);
+    }
+};
+
 void SpellFactoryMgr::SetupShaman()
-{}
+{
+    AddSpellById(1535, FireNova::Create);
+}

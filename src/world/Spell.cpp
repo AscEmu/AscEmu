@@ -1923,27 +1923,11 @@ void Spell::finish(bool successful)
     DecRef();
 }
 
-void Spell::SendCastResult(uint8 result, uint32 extraerrormsg)
+void Spell::WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo, uint8 castCount, uint8 result, SpellExtraError extraError)
 {
-    if (result == SPELL_CANCAST_OK)
-        return;
-
-    SetSpellFailed();
-
-    if (!m_caster->IsInWorld())
-        return;
-
-    Player* plr = p_caster;
-
-    if (!plr && u_caster)
-        plr = u_caster->m_redirectSpellPackets;
-    if (!plr)
-        return;
-
-    WorldPacket data(SMSG_CAST_FAILED, (4 + 1 + 1));
-	data << uint8(extra_cast_number);       // cast count
-	data << uint32(GetProto()->Id);         // Spell ID
-	data << uint8(result);                  // The problem
+    data << uint8(castCount);       // cast count
+    data << uint32(spellInfo);      // Spell ID
+    data << uint8(result);          // The problem
     switch (result)
     {
         case SPELL_FAILED_REQUIRES_SPELL_FOCUS:
@@ -1977,12 +1961,46 @@ void Spell::SendCastResult(uint8 result, uint32 extraerrormsg)
             data << uint32(GetProto()->RequiredShapeShift);
             break;
         case SPELL_FAILED_CUSTOM_ERROR:
-            data << uint32(extraerrormsg);
+            data << uint32(extraError);
+            break;
+        default:
             break;
     }
-    plr->SendPacket(&data);
+}
 
-    //plr->SendCastResult(GetProto()->Id, result, extra_cast_number, extraerrormsg);
+void Spell::SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError)
+{
+    uint32 spellInfo = GetProto()->Id;
+
+    WorldPacket data(SMSG_CAST_FAILED, 1 + 4 + 1);
+    WriteCastResult(data, caster, spellInfo, castCount, result, extraError);
+
+    caster->GetSession()->SendPacket(&data);
+}
+
+void Spell::SetExtraCastResult(SpellExtraError result)
+{
+    m_extraError = result;
+}
+
+void Spell::SendCastResult(uint8 result)
+{
+    if (result == SPELL_CANCAST_OK)
+        return;
+
+    SetSpellFailed();
+
+    if (!m_caster->IsInWorld())
+        return;
+
+    Player* plr = p_caster;
+
+    if (!plr && u_caster)
+        plr = u_caster->m_redirectSpellPackets;
+    if (!plr)
+        return;
+
+    SendCastResult(p_caster, 0, result, m_extraError);
 }
 
 // uint16 0xFFFF

@@ -108,6 +108,25 @@ bool SummonHandler::HasSummonInSlot(uint8 slot)
         return false;
 }
 
+Unit* SummonHandler::GetSummonInSlot(uint8 slot)
+{
+    return summonslots[slot];
+}
+
+Unit* SummonHandler::GetSummonWithEntry(uint32 entry)
+{
+    for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)
+        if ((*itr) != NULL && (*itr)->GetEntry() == entry)
+            return (*itr);
+
+    for (std::tr1::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
+    {
+        if ((*itr) != NULL && (*itr)->GetEntry() == entry)
+            return (*itr);
+    }
+    return NULL;
+}
+
 void SummonHandler::SetPvPFlags()
 {
     for (std::set< Unit* >::iterator itr = guardians.begin(); itr != guardians.end(); ++itr)

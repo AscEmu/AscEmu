@@ -163,7 +163,8 @@ class SERVER_DECL SummonHandler
         bool HasSummonInSlot(uint8 slot);
 
 
-
+        Unit* GetSummonInSlot(uint8 slot);
+        Unit* GetSummonWithEntry(uint32 entry);
         ///////////////////////////////////////////////////////////////////////////
         //void SetPvPFlags()
         //  Flags all summons for PvP
