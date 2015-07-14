@@ -1237,6 +1237,62 @@ void ApplyNormalFixes()
         //////////////////////////////////////////
 
         // Insert shaman spell fixes here
+        // Fire Nova Ranks (Linked spells)
+        if (sp->NameHash == SPELL_HASH_FIRE_NOVA)
+        {
+            switch (sp->Id)
+            {
+                case 1535:
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 8349;
+                } break;
+                case 8498:      //Rank 2
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 8502;
+                } break;
+                case 8499:      //Rank 3
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 8503;
+                } break;
+                case 11314:     //Rank 4
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 11306;
+                } break;
+                case 11315:     //Rank 5
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 11307;
+                } break;
+                case 25546:     //Rank 6
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 25535;
+                } break;
+                case 25547:     //Rank 7
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 25537;
+                } break;
+                case 61649:     //Rank 8
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 61650;
+                } break;
+                case 61657:     //Rank 9
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 61654;
+                } break;
+                default:
+                    break;
+
+            }
+        }
+
         if (sp->NameHash == SPELL_HASH_FLAMETONGUE_ATTACK)
         {
             //sp->Effect[1] = SPELL_EFFECT_DUMMY;
