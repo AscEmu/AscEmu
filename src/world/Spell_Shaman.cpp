@@ -49,7 +49,7 @@ class FireNova : public Spell
                 Unit* totem;
                 for (int i = 0; i < 32; i++)
                 {
-                    totem = u_caster->summonhandler.GetSummonWithEntry(totem_ids[i]); // fire totem rank 1
+                    totem = u_caster->summonhandler.GetSummonWithEntry(totem_ids[i]);   // Get possible firetotem
                     if (totem != NULL)
                     {
                         HasFireTotem = true;
@@ -68,11 +68,21 @@ class FireNova : public Spell
 
     void CastSpell(Unit* totem)
     {
-        totem->CastSpellAoF(totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), dbcSpell.LookupEntryForced(8349), true);
+        uint32 fireNovaSpells = Spell::GetProto()->Id;
+        //Cast spell. NOTICE All ranks are linked with a extra spell in HackFixes.cpp
+        totem->CastSpellAoF(totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), dbcSpell.LookupEntryForced(fireNovaSpells), true);
     }
 };
 
 void SpellFactoryMgr::SetupShaman()
 {
-    AddSpellById(1535, FireNova::Create);
+    AddSpellById(1535, FireNova::Create);   //Rank 1
+    AddSpellById(8498, FireNova::Create);   //Rank 2
+    AddSpellById(8499, FireNova::Create);   //Rank 3
+    AddSpellById(11314, FireNova::Create);  //Rank 4
+    AddSpellById(11315, FireNova::Create);  //Rank 5
+    AddSpellById(25546, FireNova::Create);  //Rank 6
+    AddSpellById(25547, FireNova::Create);  //Rank 7
+    AddSpellById(61649, FireNova::Create);  //Rank 8
+    AddSpellById(61657, FireNova::Create);  //Rank 9
 }
