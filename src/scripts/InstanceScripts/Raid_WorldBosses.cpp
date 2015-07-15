@@ -1191,7 +1191,7 @@ class KruulAI : public CreatureAIScript
 
         KruulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 6;
+            nrspells = 7;
             for (int i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;

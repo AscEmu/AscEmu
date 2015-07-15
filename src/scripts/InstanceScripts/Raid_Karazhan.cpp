@@ -4103,7 +4103,7 @@ class DorotheeAI : public CreatureAIScript
                         Unit* RandomTarget = NULL;
                         RandomTarget = TO_UNIT(*itr);
 
-                        if (RandomTarget == _unit->GetAIInterface()->GetMostHated() && i == 3)
+                        if (RandomTarget == _unit->GetAIInterface()->GetMostHated() && i == 2)
                             continue;
 
                         if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && ((RandomTarget->GetHealthPct() >= minhp2cast && RandomTarget->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))))

@@ -204,7 +204,7 @@ class VenoxisAI : public CreatureAIScript
         VenoxisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             // -- Number of spells to add --
-            nrspells = 3;
+            nrspells = 4;
 
             // --- Initialization ---
             for (int i = 0; i < nrspells; i++)
