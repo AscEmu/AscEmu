@@ -3115,6 +3115,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                                 break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_DESTINATION:
                                 _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
                                 break;
