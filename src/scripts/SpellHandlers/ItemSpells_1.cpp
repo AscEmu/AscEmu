@@ -524,7 +524,7 @@ bool SixDemonBag(uint32 i, Spell* s)
         return false;
 
     uint32 ClearSpellId[6] = { 8401, 8408, 930, 118, 1680, 10159 };
-    uint32 randid = RandomUInt(5);
+    uint32 randid = rand() % 6 + 1;
     uint32 spelltocast = ClearSpellId[randid];
 
     s->u_caster->CastSpell(unitTarget, spelltocast, true);
@@ -665,8 +665,8 @@ bool ShrinkRay(uint32 i, Spell* s)
     }
     else
     {
-        uint32 spellindex = RandomUInt(1);
-        uint32 who = RandomUInt(3);
+        uint32 spellindex = rand() % 1;
+        uint32 who = rand() % 3;
 
         switch (who)
         {

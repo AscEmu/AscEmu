@@ -3147,9 +3147,9 @@ class SapphironAI : public CreatureAIScript
                         {
                             uint32 Block = 0;
                             if (i == 0)
-                                Block = RandomUInt(3) + 1;
+                                Block = rand() % 3 + 1;
                             else
-                                Block = RandomUInt(3) + 10;
+                                Block = rand() % 3 + 10;
 
                             GameObject* IceBlock = NULL;
                             IceBlock = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
@@ -3939,7 +3939,7 @@ class KelthuzadAI : public CreatureAIScript
 
             else if (!WaveTimer && PhaseTimer > 5)
             {
-                uint32 SpawnPoint = RandomUInt(7);
+                uint32 SpawnPoint = rand() % 6;
                 uint32 RandomSU = 0;
                 if (PhaseTimer > 250)
                     RandomSU = RandomUInt(4);
@@ -4017,7 +4017,7 @@ class KelthuzadAI : public CreatureAIScript
             if (HelpDialog == 10 || HelpDialog == 12 || HelpDialog == 14 || HelpDialog == 16 || HelpDialog == 18)
             {
                 Unit* Guardian = NULL;
-                uint32 i = RandomUInt(4);
+                uint32 i = rand() % 4;
                 Guardian = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_GUARDIAN_OF_ICECROWN, Guardians[i].x, Guardians[i].y, Guardians[i].z, Guardians[i].o, true, false, 0, 0);
                 if (Guardian != NULL)
                 {
