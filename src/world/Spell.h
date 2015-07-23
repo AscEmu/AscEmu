@@ -1826,7 +1826,11 @@ class SERVER_DECL Spell : public EventableObject
         ARCEMU_INLINE void SetUnitTarget(Unit* punit) { unitTarget = punit; }
 
         // Send Packet functions
+        void SetExtraCastResult(SpellExtraError result);
+        void SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError);
+        void WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo, uint8 castCount, uint8 result, SpellExtraError extraError);
         void SendCastResult(uint8 result);
+        void SetCustomCastResultMessage(SpellExtraError result);
         void SendSpellStart();
         void SendSpellGo();
         void SendLogExecute(uint32 damage, uint64 & targetGuid);
@@ -1846,6 +1850,7 @@ class SERVER_DECL Spell : public EventableObject
         uint32 pSpellId;
         SpellEntry* ProcedOnSpell; //some spells need to know the origins of the proc too
         SpellCastTargets m_targets;
+        SpellExtraError m_extraError;
 
         void CreateItem(uint32 itemId);
 

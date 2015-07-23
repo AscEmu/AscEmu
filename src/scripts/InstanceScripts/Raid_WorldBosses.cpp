@@ -1001,31 +1001,38 @@ class LethonAI : public CreatureAIScript
         void AIUpdate()
         {
             std::list<Player*> mTargets;
-            // M4ksiu: Someone who wrote this hadn't thought about it much, so it should be rewritten
+            // \todo Someone who wrote this hadn't thought about it much, so it should be rewritten
             Unit* Target = _unit->GetAIInterface()->getNextTarget();
             if (Target != NULL && !_unit->isInRange(Target, 20.0f))
                 _unit->CastSpell(Target, TELEPORT, true);
 
-            if ((_unit->GetHealthPct() == 25 && Shade3 == false) || (_unit->GetHealthPct() == 50 && Shade2 == false) || (_unit->GetHealthPct() == 75 && Shade1 == false))
+
+            //Made it like this because if lethon gets healed, he should spawn the adds again at the same pct. (Only spawn once at 75,50,25)
+            switch (_unit->GetHealthPct())
             {
-                //Made it like this because if lethon gets healed, he should spawn the adds again at the same pct. (Only spawn once at 75,50,25)
-                switch (_unit->GetHealthPct())
+                case 25:
                 {
-                    case 25:
+                    if (!Shade3)
                         Shade3 = true;
-                    case 50:
-                        Shade2 = true;
-                    case 75:
-                        Shade1 = true;
-                }
-                // Summon a spirit for each player
-                std::list<Player*>::iterator itr = mTargets.begin();
-                for (; itr != mTargets.end(); ++itr)
+                }break;
+                case 50:
                 {
-                    _unit->CastSpellAoF((*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), spells[4].info, spells[4].instant);
-                }
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[4].speech.c_str());
+                    if (!Shade2)
+                        Shade2 = true;
+                }break;
+                case 75:
+                {
+                    if (!Shade1)
+                        Shade1 = true;
+                }break;
             }
+            // Summon a spirit for each player
+            std::list<Player*>::iterator itr = mTargets.begin();
+            for (; itr != mTargets.end(); ++itr)
+            {
+                _unit->CastSpellAoF((*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), spells[4].info, spells[4].instant);
+            }
+            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[4].speech.c_str());
 
             float val = RandomFloat(100.0f);
             SpellCast(val);
@@ -1191,7 +1198,7 @@ class KruulAI : public CreatureAIScript
 
         KruulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            nrspells = 6;
+            nrspells = 7;
             for (int i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
