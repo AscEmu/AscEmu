@@ -223,7 +223,11 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		uint8 GetLiquidType(float x, float y) { return _terrain->GetLiquidType(x, y); }
         const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z)
         {
-            auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(_terrain, _mapId, x, y, z, nullptr);
+            uint32 mogp_flags;
+            int32 adt_id, root_id, group_id;
+            bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
+            auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
+            auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, _mapId, x, y, z, nullptr);
             if (area_flag)
                 return MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
             else

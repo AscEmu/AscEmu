@@ -219,6 +219,7 @@ class TerrainHolder
                     UnloadTile(i, j);
         }
 
+        uint16 GetAreaFlagWithoutAdtId(float x, float y);
         TerrainTile* GetTile(float x, float y);
         TerrainTile* GetTile(int32 tx, int32 ty)
         {

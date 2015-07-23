@@ -24,8 +24,6 @@
 #include "DBC/DBCStorage.hpp"
 #include "DBC/DBCStructures.hpp"
 
-class TerrainHolder;
-
 namespace MapManagement
 {
     namespace AreaManagement
@@ -75,16 +73,14 @@ namespace MapManagement
             /* Get ID */
             static uint32 GetIdByFlag(uint32 area_flag);
             static uint32 GetIdByMapId(uint32 map_id);
-            static uint32 GetIdByPosition(TerrainHolder* terrain, uint32 map_id, float x, float y, float z);
 
             /* Get ID & Zone */
-            static const void GetZoneAndIdByPosition(TerrainHolder* terrain, uint32 map_id, float x, float y, float z, uint32& _out_zone_id, uint32& _out_area_id);
             static void GetZoneAndIdByFlag(uint32& zone_id, uint32& area_id, uint16 area_flag, uint32 map_id);
 
             /* Misc */
             /* This was removed due to compile issues on Linux - will be redone when code is better structured */
             /*static bool IsOutdoorWMO(uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, WMOAreaTableEntry const* wmo_entry, ::DBC::Structures::AreaTableEntry const* at_entry);*/
-            static const uint16 GetFlagByPosition(TerrainHolder* terrain, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
+            static const uint16 GetFlagByPosition(uint16 area_flag_without_adt_id, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
         };
     } // </ AreaManagementNamespace>
 } // </ MapManagementNamespace>
