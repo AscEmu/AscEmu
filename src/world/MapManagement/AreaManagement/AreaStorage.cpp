@@ -112,12 +112,6 @@ namespace MapManagement
 
             return m_storage->LookupEntry(area_flag);
         }
-        
-        const void AreaStorage::GetZoneAndIdByPosition(TerrainHolder* terrain, uint32 map_id, float x, float y, float z, uint32& _out_zone_id, uint32& _out_area_id)
-        {
-            auto area_flag = AreaStorage::GetFlagByPosition(terrain, map_id, x, y, z, nullptr);
-            AreaStorage::GetZoneAndIdByFlag(_out_zone_id, _out_area_id, area_flag, map_id);
-        }
 
         void AreaStorage::GetZoneAndIdByFlag(uint32& zone_id, uint32& area_id, uint16 area_flag, uint32 map_id)
         {
@@ -182,17 +176,6 @@ namespace MapManagement
                 return 0;
         }
 
-        uint32 AreaStorage::GetIdByPosition(TerrainHolder* terrain, uint32 map_id, float x, float y, float z)
-        {
-            auto area_flag = AreaStorage::GetFlagByPosition(terrain, map_id, x, y, z, nullptr);
-            auto area = AreaStorage::GetAreaByFlag(area_flag);
-            if (!area)
-            {
-                area = AreaStorage::GetAreaByMapId(map_id);
-            }
-            return area->id;
-        }
-
         WMOTriple* AreaStorage::GetWMOTriple(int32 group_id, int32 root_id, int32 adt_id)
         {
             for (auto triple : m_wmo_triple_collection)
@@ -212,16 +195,11 @@ namespace MapManagement
             return nullptr;
         }
 
-        const uint16 AreaStorage::GetFlagByPosition(TerrainHolder* terrain, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors)
+        const uint16 AreaStorage::GetFlagByPosition(uint16 area_flag_without_adt_id, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors)
         {
-            uint32 mogp_flags;
-            int32 adt_id, root_id, group_id;
             ::DBC::Structures::AreaTableEntry const* at_entry = nullptr;
-            bool have_area_info = false;
-
-            if (terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id))
+            if (have_area_info)
             {
-                have_area_info = true;
                 auto wmo_triple = AreaStorage::GetWMOTriple(root_id, adt_id, group_id);
                 if (wmo_triple)
                 {
@@ -233,20 +211,16 @@ namespace MapManagement
 
             if (at_entry)
             {
-                area_flag = at_entry->explore_flag;
+                return at_entry->explore_flag;
             }
             else
             {
-                auto tile = terrain->GetTile(x, y);
-                if (tile)
+                if (area_flag_without_adt_id)
                 {
-                    area_flag = tile->m_map.GetArea(x, y);
+                    return area_flag_without_adt_id;
                 }
-
-                if (!tile || area_flag == 0)
-                {
-                    area_flag = AreaStorage::GetFlagByMapId(map_id);
-                }
+                
+                return AreaStorage::GetFlagByMapId(map_id);
             }
 
             /*if (_out_is_outdoors)
@@ -260,7 +234,9 @@ namespace MapManagement
                     *_out_is_outdoors = true;
                 }
             }*/
-            return area_flag;
+            
+            // Unused
+            //return area_flag;
         }
     } // </ AreaManagementNamespace>
 } // </ MapManagementNamespace>

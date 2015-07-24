@@ -21,6 +21,16 @@
 #include "StdAfx.h"
 #include "TerrainMgr.h"
 
+uint16 TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
+{
+    auto tile = this->GetTile(x, y);
+    if (tile)
+    {
+        return tile->m_map.GetArea(x, y);
+    }
+
+    return 0;
+}
 
 TerrainTile* TerrainHolder::GetTile(float x, float y)
 {

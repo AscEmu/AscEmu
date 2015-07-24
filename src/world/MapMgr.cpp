@@ -1901,7 +1901,11 @@ void MapMgr::CallScriptUpdate()
 
 const uint16 MapMgr::GetAreaFlag(float x, float y, float z, bool *is_outdoors /* = nullptr */)
 {
-    return MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(_terrain, _mapId, x, y, z, is_outdoors);
+    uint32 mogp_flags;
+    int32 adt_id, root_id, group_id;
+    bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
+    auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
+    return MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, _mapId, x, y, z, nullptr);
 }
 
 
