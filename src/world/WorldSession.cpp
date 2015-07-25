@@ -45,6 +45,12 @@ WorldSession::WorldSession(uint32 id, string Name, WorldSocket* sock) :
     floodLines(0),
     floodTime(UNIXTIME),
     language(0),
+    m_lastPing(0),
+    m_wLevel(0),
+    _accountFlags(0),
+    has_dk(false),
+    _latency(0),
+    client_build(0),
     m_muted(0)
 {
     memset(movement_packet, 0, sizeof(movement_packet));

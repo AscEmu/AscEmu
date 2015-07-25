@@ -41,6 +41,7 @@ LogonCommClientSocket::LogonCommClientSocket(SOCKET fd) : Socket(fd, 724288, 262
     latency = 0;
     use_crypto = false;
     authenticated = 0;
+    pingtime = 0;
 
     LOG_DEBUG("Created LogonCommClientSocket %u", m_fd);
 }

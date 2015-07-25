@@ -295,6 +295,8 @@ Pet::Pet(uint64 guid) : Creature(guid)
     m_AISpellStore.clear();
     mSpells.clear();
     mPi = NULL;
+    m_Owner = NULL;
+    m_OwnerGuid = NULL;
 }
 
 Pet::~Pet()

@@ -36,6 +36,7 @@ m_hiCorpseGuid(0),
 m_hiGuildId(0),
 m_hiPetGuid(0),
 m_hiArenaTeamId(0),
+TransportersCount(0),
 m_hiPlayerGuid(1)
 {
     memset(m_InstanceBossInfoMap, 0, sizeof(InstanceBossInfoMap*) * NUM_MAPS);

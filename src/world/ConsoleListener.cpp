@@ -170,6 +170,7 @@ ConsoleSocket::ConsoleSocket(SOCKET iFd) : Socket(iFd, 10000, 1000)
     m_pConsole = new RemoteConsole(this);
     m_state = STATE_USER;
     m_failedLogins = 0;
+    m_requestNo = 0;
 }
 
 ConsoleSocket::~ConsoleSocket()

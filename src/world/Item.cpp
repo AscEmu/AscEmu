@@ -45,6 +45,8 @@ Item::Item()//this is called when constructing as container
 
     for (uint32 i = 0; i < 3; ++i)
         OnUseSpellIDs[i] = 0;
+
+    m_isDirty = false;
 }
 
 void Item::Init(uint32 high, uint32 low)

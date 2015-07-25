@@ -56,6 +56,8 @@ WorldSocket::WorldSocket(SOCKET fd)
     _latency(0),
     mQueued(false),
     m_nagleEanbled(false),
+    mClientSeed(0),
+    mClientBuild(0),
     m_fullAccountName(NULL)
 {
 
