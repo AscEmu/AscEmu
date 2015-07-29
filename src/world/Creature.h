@@ -273,12 +273,38 @@ enum NPCFlags
 
 enum CreatureFlag1
 {
-    CREATURE_FLAG1_TAMEABLE         = 0x00001,
-    CREATURE_FLAG1_HERBLOOT         = 0x00100,
-    CREATURE_FLAG1_MININGLOOT       = 0x00200,
-    CREATURE_FLAG1_FIGHT_MOUNTED    = 0x00800,
-    CREATURE_FLAG1_ENGINEERLOOT     = 0x08000,
-    CREATURE_FLAG1_EXOTIC           = 0x10000,
+    CREATURE_FLAG1_TAMEABLE             = 0x00000001,       // creature is tameable by hunter
+    CREATURE_FLAG1_GHOST                = 0x00000002,       // creature are also visible for dead players.
+    CREATURE_FLAG1_BOSS                 = 0x00000004,       // creature is a boss "??"
+    CREATURE_FLAG1_UNK3                 = 0x00000008,
+    CREATURE_FLAG1_UNK4                 = 0x00000010,
+    CREATURE_FLAG1_UNK5                 = 0x00000020,
+    CREATURE_FLAG1_UNK6                 = 0x00000040,
+    CREATURE_FLAG1S_DEAD_INTERACT       = 0x00000080,       // player can interact with the creature while creature is dead.
+    CREATURE_FLAG1_HERBLOOT             = 0x00000100,       // lootable by herbalist
+    CREATURE_FLAG1_MININGLOOT           = 0x00000200,       // lootable by miner
+    CREATURE_FLAG1_DONT_LOG_DEATH       = 0x00000400,       // death event will not show up in combat log
+    CREATURE_FLAG1_FIGHT_MOUNTED        = 0x00000800,       // creature keeps mounted by entering combat
+    CREATURE_FLAG1_AID_PLAYERS          = 0x00001000,
+    CREATURE_FLAG1_UNK13                = 0x00002000,
+    CREATURE_FLAG1_UNK14                = 0x00004000,
+    CREATURE_FLAG1_ENGINEERLOOT         = 0x00008000,
+    CREATURE_FLAG1_EXOTIC               = 0x00010000,
+    CREATURE_FLAG1_UNK17                = 0x00020000,
+    CREATURE_FLAG1_UNK18                = 0x00040000,
+    CREATURE_FLAG1S_PROJECT_COLL        = 0x00080000,
+    CREATURE_FLAG1_UNK20                = 0x00100000,
+    CREATURE_FLAG1_UNK21                = 0x00200000,
+    CREATURE_FLAG1_UNK22                = 0x00400000,
+    CREATURE_FLAG1_UNK23                = 0x00800000,
+    CREATURE_FLAG1_UNK24                = 0x01000000,
+    CREATURE_FLAG1_UNK25                = 0x02000000,
+    CREATURE_FLAG1_PARTY_MEMBER         = 0x04000000,
+    CREATURE_FLAG1_UNK27                = 0x08000000,
+    CREATURE_FLAG1_UNK28                = 0x10000000,
+    CREATURE_FLAG1_UNK29                = 0x20000000,
+    CREATURE_FLAG1_UNK30                = 0x40000000,
+    CREATURE_FLAG1_UNK31                = 0x80000000
 };
 
 enum FAMILY
