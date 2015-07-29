@@ -29,7 +29,7 @@ Anything else like "fun-content" is NOT useful!
 ## Install
 HowTo install (detailed guides on our wiki)
 * [Windows](http://www.ascemu.org//wiki/index.php?title=3.3.5_Windows)
-* [Ubuntu](http://www.ascemu.org/wiki/index.php?title=3.3.5_Ubuntu) (outdated)
+* [Ubuntu](http://www.ascemu.org/wiki/index.php?title=3.3.5_Ubuntu)
 * [Mac OSX](http://www.ascemu.org/wiki/index.php?title=3.3.5_Mac_OSX) (outdated)
 
 
