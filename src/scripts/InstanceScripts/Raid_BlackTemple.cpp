@@ -2827,6 +2827,11 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
             Phase = 0;
             mEnslavedSoulTimer = -1;
             SpawnedEnsalvedSoul = false;
+            DeadSoulCount = 0;
+            mEoS = NULL;
+            mEoD = NULL;
+            mEoA = NULL;
+
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2949,7 +2954,6 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                         {
 
                             Creature* creature = NULL;
-                            DeadSoulCount = 0;
                             for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                             {
                                 if ((*itr)->IsCreature())

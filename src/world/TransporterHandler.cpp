@@ -452,7 +452,11 @@ void Transporter::TransportPassengers(uint32 mapid, uint32 oldmap, float x, floa
 }
 
 Transporter::Transporter(uint64 guid) : GameObject(guid)
-{}
+{
+    m_pathTime = 0;
+    m_timer = 0;
+    m_period = 0;
+}
 
 Transporter::~Transporter()
 {

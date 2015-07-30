@@ -791,6 +791,14 @@ Aura::Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool
 	m_interrupted = -1;
 	m_flags = 0;
 	// fixed_amount = 0;//used only por percent values to be able to recover value correctly.No need to init this if we are not using it
+
+    m_casterfaction = 0;
+    m_modList[3].m_type = 0;
+    m_modList[3].m_amount = 0;
+    m_modList[3].m_miscValue = 0;
+    m_modList[3].i = 0;
+    m_modList[3].realamount = 0;
+    mod = 0;
 }
 
 Aura::~Aura()

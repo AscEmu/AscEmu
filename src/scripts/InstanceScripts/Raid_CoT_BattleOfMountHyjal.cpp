@@ -1416,7 +1416,7 @@ class ArchimondeAI : public CreatureAIScript
                     uint32 SpellID = 0;
                     if (mTarget->getClass() == WARRIOR || mTarget->getClass() == ROGUE || mTarget->getClass() == MAGE)
                         SpellID = SOUL_CHARGEO;
-                    if (mTarget->getClass() == PRIEST || mTarget->getClass() == PALADIN || mTarget->getClass() == WARLOCK)
+                    else if (mTarget->getClass() == PRIEST || mTarget->getClass() == PALADIN || mTarget->getClass() == WARLOCK)
                         SpellID = SOUL_CHARGER;
                     else
                         SpellID = SOUL_CHARGEG;

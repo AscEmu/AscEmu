@@ -353,6 +353,8 @@ class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
             }
             Ogre->MoveTo(_unit);
             RegisterAIUpdateEvent(1000);
+
+            NdGo == NULL;
         }
 
         void AIUpdate()
@@ -387,7 +389,6 @@ class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
         }
 
         Player*                    plr;
-        GameObject*                Keg;
         GameObject*                NdGo;
         MoonScriptCreatureAI*    Ogre;
 };

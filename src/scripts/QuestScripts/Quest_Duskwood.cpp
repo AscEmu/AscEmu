@@ -42,6 +42,7 @@ class ElizaAI : public MoonScriptCreatureAI
             mElizaCombatTimer = AddTimer(4000);
 
             RegisterAIUpdateEvent(1000);
+            mElizaGuard = NULL;
         }
         void AIUpdate()
         {
@@ -54,7 +55,6 @@ class ElizaAI : public MoonScriptCreatureAI
             }
             if(GetHealthPercent() >= 10 && GetHealthPercent() <= 98 && !IsCasting())
             {
-                // Correct me if I'm wrong but I saw only 1 guard spawning
                 mElizaGuard = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 1871);
                 if(mElizaGuard == NULL)
                 {
