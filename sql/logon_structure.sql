@@ -26,6 +26,7 @@ CREATE TABLE `accounts` (
   `forceLanguage` varchar(5) collate utf8_unicode_ci NOT NULL default 'enUS',
   `muted` int(30) NOT NULL default '0',
   `banreason` varchar(255) collate utf8_unicode_ci default NULL,
+  `joindate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY  (`acct`),
   UNIQUE KEY `a` (`login`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Account Information';
