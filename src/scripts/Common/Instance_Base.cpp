@@ -23,6 +23,7 @@
 MoonInstanceScript::MoonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 {
     mUpdateFrequency = DEFAULT_UPDATE_FREQUENCY;
+    mTimerIdCounter = 0;
 };
 
 MoonInstanceScript::~MoonInstanceScript()

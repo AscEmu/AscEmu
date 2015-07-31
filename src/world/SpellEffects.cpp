@@ -4996,11 +4996,12 @@ void Spell::SpellEffectSkinPlayerCorpse(uint32 i)
         // remove owner association
         corpse->SetOwner(0);
         corpse->SetCorpseState(CORPSE_STATE_BONES);
-        corpse->DeleteFromDB();
-        objmgr.CorpseAddEventDespawn(corpse);
 
         // send loot
         p_caster->SendLoot(corpse->GetGUID(), LOOT_SKINNING, corpse->GetMapId());
+
+        corpse->DeleteFromDB();
+        objmgr.CorpseAddEventDespawn(corpse);
     }
 }
 

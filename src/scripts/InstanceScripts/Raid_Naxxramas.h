@@ -4688,6 +4688,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         LastPosZ = 0;
         newposx = 0;
         newposy = 0;
+        LastTarget = NULL;
     }
 
     void OnCombatStart(Unit* mTarget)

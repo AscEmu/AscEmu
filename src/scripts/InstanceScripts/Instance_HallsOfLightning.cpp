@@ -355,12 +355,12 @@ class Volkhan : public MoonScriptCreatureAI
         AddWaypoint(CreateWaypoint(1, 0, Flag_Run, m_cVolkhanWP));
         mStompTimer = INVALIDATE_TIMER;
         mPhase = 0;
+        m_bStomp = false;
     }
 
     void OnCombatStart(Unit* pTarget)
     {
         _unit->SendScriptTextChatMessage(769);      // It is you who have destroyed my children? You... shall... pay!
-        m_bStomp = false;
         mStompTimer = AddTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
         mPhase = 0;
 
@@ -468,7 +468,6 @@ class Volkhan : public MoonScriptCreatureAI
         _unit->SendScriptTextChatMessage(777);      // The master was right... to be concerned.
     }
 
-    SpellDesc* mTemper;
     SpellDesc* mStomp;
     Location m_cVolkhanWP;
     bool m_bStomp;
@@ -683,7 +682,7 @@ class LokenAI : public MoonScriptCreatureAI
 
         if (GetHealthPercent() <= (100 - (25 * mSpeech)))
         {
-            switch (mSpeech)
+            switch (mSpeech) //rand() % 2
             {
                 case 1:
                     _unit->SendScriptTextChatMessage(808);      // You stare blindly into the abyss!
@@ -694,8 +693,9 @@ class LokenAI : public MoonScriptCreatureAI
                 case 3:
                     _unit->SendScriptTextChatMessage(810);      // You cross the precipice of oblivion!
                     break;
-                    ++mSpeech;
             };
+
+            ++mSpeech;
         };
 
         if (IsTimerFinished(mRespondTimer))

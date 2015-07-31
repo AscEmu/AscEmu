@@ -2924,6 +2924,12 @@ Charter::Charter(Field* fields)
         if (Signatures[i])
             ++SignatureCount;
     }
+
+    // Unknown... really?
+    Unk1 = 0;
+    Unk2 = 0;
+    Unk3 = 0;
+    PetitionSignerCount = 0;
 }
 
 void Charter::AddSignature(uint32 PlayerGuid)

@@ -476,6 +476,24 @@ Player::Player(uint32 guid)
     mountvehicleid = 0;
 
     camControle = false;
+
+    isTurning = false;
+    m_bgTeam = 0;
+    myRace = NULL;
+    myClass = NULL;
+    OnlineTime = (uint32)UNIXTIME;
+    lvlinfo = NULL;
+    load_health = 0;
+    load_mana = 0;
+    m_noseLevel = 0;
+    m_StableSlotCount = 0;
+    m_team = 0;
+    m_timeSyncCounter = 0;
+    m_timeSyncTimer = 0;
+    m_timeSyncClient = 0;
+    m_timeSyncServer = 0;
+    m_roles = 0;
+    GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
 }
 
 void Player::OnLogin()
@@ -3366,7 +3384,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     else
         _AddLanguages(false);
 
-    OnlineTime = (uint32)UNIXTIME;
     if (GetGuildId())
         SetUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
 
