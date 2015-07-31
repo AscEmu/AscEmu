@@ -1462,6 +1462,18 @@ class ShadeofAranAI : public CreatureAIScript
             info_conjure = dbcSpell.LookupEntry(CONJURE);
             info_drink = dbcSpell.LookupEntry(DRINK);
             info_pyroblast = dbcSpell.LookupEntry(AOE_PYROBLAST);
+
+            drinking = false;
+            enraged = false;
+            summoned = false;
+            explode = false;
+            slow = false;
+            LastSuperSpell = 0;
+            m_time_enrage = 0;
+            m_time_special = 0;
+            m_time_pyroblast = 0;
+            m_time_conjure = 0;
+            FlameWreathTimer = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2786,6 +2798,12 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 SetLinkedCreature(infernalDummy);
                 infernalDummy->SetLinkedCreature(this);
             }
+
+            ranX = 0;
+            ranY = 0;
+            m_infernal = false;
+            m_enfeebleoff = -1;
+            m_spawn_infernal = 0;
         }
 
         void OnCombatStart(Unit* mTarget)

@@ -347,6 +347,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     m_magnetTarget = 0;
     Dur = 0;
     m_rune_avail_before = 0;
+    m_extraError = SPELL_EXTRA_ERROR_NONE;
 }
 
 Spell::~Spell()

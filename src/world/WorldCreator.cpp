@@ -33,6 +33,7 @@ InstanceMgr::InstanceMgr()
     memset(m_instances, 0, sizeof(InstanceMap*) * NUM_MAPS);
     memset(m_singleMaps, 0, sizeof(MapMgr*) * NUM_MAPS);
     memset(&m_nextInstanceReset, 0, sizeof(time_t) * NUM_MAPS);
+    m_InstanceHigh = 0;
 }
 
 void InstanceMgr::Load(TaskList* l)

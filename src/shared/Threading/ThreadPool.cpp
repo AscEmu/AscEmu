@@ -44,6 +44,7 @@ CThreadPool::CThreadPool()
     _threadsRequestedSinceLastCheck = 0;
     _threadsEaten = 0;
     _threadsFreedSinceLastCheck = 0;
+    _threadsToExit = 0;
 }
 
 bool CThreadPool::ThreadExit(Thread* t)
