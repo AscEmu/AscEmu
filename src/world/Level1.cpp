@@ -203,6 +203,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     snprintf((char*)buf, 328, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
         out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
+    SystemMessage(m_session, "Use for report: .worldport %d %f %f %f", out_map_id, out_x, out_y, out_z);
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != NULL && *args == '1')
     {
