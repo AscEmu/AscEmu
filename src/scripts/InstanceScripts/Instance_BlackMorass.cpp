@@ -136,8 +136,6 @@ class ChronoLordAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                uint32 sound = 0;
-                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
@@ -280,8 +278,6 @@ class TemporusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                uint32 sound = 0;
-                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
@@ -424,8 +420,6 @@ class AenusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                uint32 sound = 0;
-                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
