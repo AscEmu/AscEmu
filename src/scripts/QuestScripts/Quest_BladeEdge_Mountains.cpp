@@ -354,7 +354,7 @@ class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
             Ogre->MoveTo(_unit);
             RegisterAIUpdateEvent(1000);
 
-            NdGo == NULL;
+            NdGo = NULL;
         }
 
         void AIUpdate()

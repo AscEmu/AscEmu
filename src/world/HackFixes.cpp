@@ -5630,7 +5630,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(61177); // Northrend Inscription Research
     if (sp != NULL)
     {
-        sp->Effect[1] = 0;
+        sp->Effect[1] = SPELL_EFFECT_NULL;
         //sp->EffectBaseDice[1] = 0;
         sp->EffectBasePoints[1] = 0;
         sp->EffectImplicitTargetA[1] = 0;
@@ -5639,7 +5639,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(61288); // Minor Inscription Research
     if (sp != NULL)
     {
-        sp->Effect[1] = 0;
+        sp->Effect[1] = SPELL_EFFECT_NULL;
         //sp->EffectBaseDice[1] = 0;
         sp->EffectBasePoints[1] = 0;
         sp->EffectImplicitTargetA[1] = 0;
@@ -5648,7 +5648,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60893); // Northrend Alchemy Research
     if (sp != NULL)
     {
-        sp->Effect[1] = 0;
+        sp->Effect[1] = SPELL_EFFECT_NULL;
         //sp->EffectBaseDice[1] = 0;
         sp->EffectBasePoints[1] = 0;
         sp->EffectImplicitTargetA[1] = 0;
@@ -6045,7 +6045,7 @@ void ApplyNormalFixes()
     // Eye of Acherus, our phase shift mode messes up the control :/
     sp = CheckAndReturnSpellEntry(51852);
     if (sp != NULL)
-        sp->Effect[0] = 0;
+        sp->Effect[0] = SPELL_EFFECT_NULL;
 
 
     //Spell Focus Trigger (Mystical Skyfire Diamond)
@@ -7157,8 +7157,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->Effect[0] = SPELL_EFFECT_DUMMY;
-        sp->Effect[1] = 0;
-        sp->Effect[2] = 0;
+        sp->Effect[1] = SPELL_EFFECT_NULL;
+        sp->Effect[2] = SPELL_EFFECT_NULL;
     }
 
     //PvP Librams of Justice
@@ -7369,8 +7369,8 @@ void ApplyNormalFixes()
 	if (sp)
 	{
 		sp->EffectBasePoints[0] = 0;
-		sp->Effect[1] = NULL;
-		sp->Effect[2] = NULL;
+		sp->Effect[1] = SPELL_EFFECT_NULL;
+		sp->Effect[2] = SPELL_EFFECT_NULL;
 		sp->TargetAuraState = 0;
 		sp->casterAuraSpell = 0;
 		sp->CasterAuraState = 0;
