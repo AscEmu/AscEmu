@@ -113,28 +113,28 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
     int32 buffslot = -1;
     switch(id)
     {
-        case 3686:      // Speed
+        case AREATRIGGER_A_SPEED:           // Speed
             buffslot = 0;
             break;
-        case 3687:      // Speed (Horde)
+        case AREATRIGGER_H_SPEED:           // Speed (Horde)
             buffslot = 1;
             break;
-        case 3706:      // Restoration
+        case AREATRIGGER_A_RESTORATION:      // Restoration
             buffslot = 2;
             break;
-        case 3708:      // Restoration (Horde)
+        case AREATRIGGER_H_RESTORATION:      // Restoration (Horde)
             buffslot = 3;
             break;
-        case 3707:      // Berserking
+        case AREATRIGGER_A_BERSERKING:      // Berserking
             buffslot = 4;
             break;
-        case 3709:      // Berserking (Horde)
+        case AREATRIGGER_H_BERSERKING:      // Berserking (Horde)
             buffslot = 5;
             break;
-        case 3649:
-        case 3688:
-        case 4628:
-        case 4629:
+        case AREATRIGGER_WSG_ENCOUNTER_01:
+        case AREATRIGGER_WSG_ENCOUNTER_02:
+        case AREATRIGGER_WSG_ENCOUNTER_03:
+        case AREATRIGGER_WSG_ENCOUNTER_04:
             break;
         default:
             sLog.Error("WarsongGulch", "Encountered unhandled areatrigger id %u", id);
@@ -158,7 +158,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         return;
     }
 
-    if(((id == 3646 && plr->IsTeamAlliance()) || (id == 3647 && plr->IsTeamHorde())) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->GetLowGUID()))
+    if(((id == AREATRIGGER_WSG_A_SPAWN && plr->IsTeamAlliance()) || (id == AREATRIGGER_WSG_H_SPAWN && plr->IsTeamHorde())) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->GetLowGUID()))
     {
         if(m_flagHolders[plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE] != 0 || m_dropFlags[plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE]->IsInWorld())
         {
