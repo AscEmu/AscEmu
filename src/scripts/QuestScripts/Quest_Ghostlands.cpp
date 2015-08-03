@@ -67,9 +67,6 @@ class Prisoner12 : public GossipScript
                             en->SendUpdateAddKill(0);
                             en->UpdatePlayerFields();
 
-                            if(!Prisoner12)
-                                return;
-
                             Prisoner12->Despawn(5000, 6 * 60 * 1000);
                             Prisoner12->SetStandState(STANDSTATE_STAND);
                             Prisoner12->SetEmoteState(7);

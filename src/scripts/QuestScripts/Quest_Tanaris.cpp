@@ -73,8 +73,6 @@ class SpiritScreeches : public GossipScript
                             en->SendUpdateAddKill(0);
                             en->UpdatePlayerFields();
                         }
-                        if(!spirit)
-                            return;
 
                         spirit->Despawn(1, 0);
                         return;

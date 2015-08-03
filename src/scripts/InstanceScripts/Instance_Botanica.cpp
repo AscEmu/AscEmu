@@ -829,7 +829,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                     _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
                 }
                 break;
-                case 4:
+                case 3:
                 {
                     _unit->CastSpell(_unit, spells[3].info, spells[3].instant);
                 }
