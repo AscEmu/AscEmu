@@ -76,8 +76,13 @@ int arcemu_getopt_long_only(int ___argc, char* const* ___argv, const char* __sho
             }
 
             // store argument in optarg
-            if(par)
-                strncpy(arcemu_optarg, par, sizeof(arcemu_optarg));
+            if (par)
+            {
+                auto result = snprintf(arcemu_optarg, sizeof(arcemu_optarg), "%s", par);
+                /* If an error has occurred or the buffer was not large enough for this argument */
+                if (result < 0 || result > sizeof(arcemu_optarg))
+                    return 1;
+            }
 
             if(__longopts[i].flag != 0)
             {
