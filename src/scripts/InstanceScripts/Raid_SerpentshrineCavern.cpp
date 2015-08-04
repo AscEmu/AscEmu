@@ -2451,6 +2451,12 @@ class TaintedElementalAI : public CreatureAIScript
             _unit->GetAIInterface()->m_canMove = false;
         }
 
+        ~TaintedElementalAI()
+        {
+            if (this->spell_poison_spit)
+                delete this->spell_poison_spit;
+        }
+
         void OnCombatStart(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
