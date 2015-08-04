@@ -77,7 +77,7 @@ int arcemu_getopt_long_only(int ___argc, char* const* ___argv, const char* __sho
 
             // store argument in optarg
             if(par)
-                strncpy(arcemu_optarg, par, 514);
+                strncpy(arcemu_optarg, par, sizeof(arcemu_optarg));
 
             if(__longopts[i].flag != 0)
             {
