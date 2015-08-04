@@ -4043,7 +4043,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             {
             case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_ACTIVATE_OBJECT):
             {
-                if ((itr->second.x || itr->second.y || itr->second.z) == NULL)
+                if ((itr->second.x || itr->second.y || itr->second.z) == 0)
                 {
                     Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
                     if (target == NULL)
@@ -4078,7 +4078,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             }
         }
 
-        if (itr->second.nextevent != NULL)
+        if (itr->second.nextevent != 0)
         {
             objmgr.CheckforScripts(plr, itr->second.nextevent);
         }

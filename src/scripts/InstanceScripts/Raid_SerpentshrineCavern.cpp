@@ -1384,6 +1384,8 @@ class FathomGuardSharkissAI : public MoonScriptCreatureAI
             AddSpell(MULTI_SHOT, Target_Current, 10.0f, 0, 0);
             AddSpell(LEECHING_THROW, Target_Current, 10.0f, 0, 0);
             AddSpell(THE_BEAST_WITHIN, Target_Current, 10.0f, 0, 40);
+
+            CurrentPet = NULL;
         }
 
         void OnCombatStart(Unit* pTarget)
