@@ -358,13 +358,16 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
     {
         pItem = GetInventoryItem(ContainerSlot, slot);
 
-        if (pItem == NULL) { return NULL; }
+        if (pItem == NULL)
+        {
+            return NULL;
+        }
 
         if (pItem->GetProto()->ContainerSlots > 0 && pItem->IsContainer() && TO< Container* >(pItem)->HasItems())
         {
             // sounds weird? no. this will trigger a callstack display due to my other debug code.
             pItem->DeleteFromDB();
-            return false;
+            return NULL;
         }
 
         m_pItems[(int)slot] = NULL;

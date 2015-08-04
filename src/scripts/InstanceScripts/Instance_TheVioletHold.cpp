@@ -173,7 +173,7 @@ public:
         if (!pInstance)
             return;
 
-        if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted || pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == NULL)
+        if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted)
         {
             mEncounters.insert(EncounterMap::value_type(MAP_VIOLET_HOLD, State_NotStarted));
         }
