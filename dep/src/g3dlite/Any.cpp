@@ -1139,7 +1139,7 @@ namespace G3D
             }
 
             // Pointer the value being read
-            Any a = NULL;
+            Any a;
             std::string key;
 
             if (m_type == TABLE)
