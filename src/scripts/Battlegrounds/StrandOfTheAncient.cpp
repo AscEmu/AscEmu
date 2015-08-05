@@ -226,6 +226,31 @@ CBattleground(mgr, id, lgroup, t)
     m_zoneid = 4384;
     std::fill(&canon[0], &canon[SOTA_NUM_CANONS], reinterpret_cast<Creature*>(NULL));
     std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], reinterpret_cast<Creature*>(NULL));
+
+    Attackers = 0;
+    Defenders = 0;
+    BattleRound = 0;
+    RoundTime = 0;
+    roundprogress = SOTA_ROUND_PREPARATION;
+
+    int i;
+
+    for (i = 0; i < BUFF_COUNT; ++i)
+        m_buffs[i] = NULL;
+
+    for (i = 0; i < 4; ++i)
+        m_boats[i] = NULL;
+
+    for (i = 0; i < GATE_COUNT; ++i)
+    {
+        m_gates[i] = NULL;
+        m_gateSigils[i] = NULL;
+        m_gateTransporters[i] = NULL;
+    }
+
+    m_relic = NULL;
+    m_endgate = NULL;
+
 }
 
 StrandOfTheAncient::~StrandOfTheAncient()
