@@ -243,8 +243,8 @@ void LogonConsole::AccountCreate(char* str)
     pass.append(password);
 
     std::stringstream query;
-    query << "INSERT INTO `accounts`( `login`,`password`,`encrypted_password`,`gm`,`banned`,`email`,`flags`,`banreason`) VALUES ( '";
-    query << name << "','',";
+    query << "INSERT INTO `accounts`( `login`,`encrypted_password`,`gm`,`banned`,`email`,`flags`,`banreason`) VALUES ( '";
+    query << name << "',";
     query << "SHA( UPPER( '" << pass << "' ) ),'0','0','";
     query << email << "','";
     query << 24 << "','' );";
