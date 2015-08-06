@@ -4018,6 +4018,11 @@ class DorotheeAI : public CreatureAIScript
             spells[1].instant = false;
             spells[1].perctrigger = 100.0f;
             spells[1].attackstoptimer = 1000;
+
+            summontito = 0;
+            tito = NULL;
+            titoSpawned = false;
+            titoDeadSpeech = false;
         }
 
         void OnCombatStart(Unit* mTarget)

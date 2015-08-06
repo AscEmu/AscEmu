@@ -1597,6 +1597,8 @@ PlaguedWarriorAI::PlaguedWarriorAI(Creature* pCreature) : MoonScriptCreatureAI(p
 {
     AddSpell(PLAGUED_WARRIOR_STRIKE, Target_Current, 10, 0, 5, 0, 8);
     AddSpell(PLAGUED_WARRIOR_CLEAVE, Target_Current, 10, 0, 10, 0, 8);
+
+    mNothAI = NULL;
 };
 
 void PlaguedWarriorAI::Destroy()

@@ -1386,6 +1386,7 @@ class FathomGuardSharkissAI : public MoonScriptCreatureAI
             AddSpell(THE_BEAST_WITHIN, Target_Current, 10.0f, 0, 40);
 
             CurrentPet = NULL;
+            SummonPetTimer = 0;
         }
 
         void OnCombatStart(Unit* pTarget)
