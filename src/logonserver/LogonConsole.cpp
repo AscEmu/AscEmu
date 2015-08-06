@@ -131,6 +131,7 @@ void LogonConsole::ProcessCmd(char* cmd)
         {   "help", &LogonConsole::TranslateHelp},
         {   "account create", &LogonConsole::AccountCreate },
         {   "account set gm", &LogonConsole::AccountSetGm },
+        {   "account set password", &LogonConsole::AccountSetPassword },
         {    "reload", &LogonConsole::ReloadAccts},
         {    "rehash", &LogonConsole::TranslateRehash},
         {    "netstatus", &LogonConsole::NetworkStatus},
@@ -194,6 +195,7 @@ void LogonConsole::ProcessHelp(char* command)
         printf("    Help, ?: Prints this help text.\n");
         printf("    account create: Creates a new account\n");
         printf("    account set gm: Sets gm access to account\n");
+        printf("    account set password: Sets a new password for an account\n");
         printf("    Reload: Reloads accounts.\n");
         printf("    Netstatus: Shows network status.\n");
         printf("    info:  shows some information about the server.\n");
@@ -304,6 +306,53 @@ void LogonConsole::AccountSetGm(char* str)
     AccountMgr::getSingleton().ReloadAccounts(true);
 
     std::cout << "Account gmlevel set." << std::endl;
+}
+
+void LogonConsole::AccountSetPassword(char* str)
+{
+    char name[ 512 ];
+    char password[ 512 ];
+
+    int count = sscanf(str, "%s %s", name, password);
+    if(count != 2)
+    {
+        std::cout << "usage: account set password <name> <password>" << std::endl;
+        std::cout << "example: account set password ghostcrawler NewPassWoRd" << std::endl;
+        return;
+    }
+
+    {
+        std::string aname(name);
+
+        for(std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
+            *itr = toupper(*itr);
+
+        if(AccountMgr::getSingleton().GetAccount(aname) == NULL)
+        {
+            std::cout << "There's no account with name " << name << std::endl;
+            return;
+        }
+    }
+
+    std::string pass;
+    pass.assign(name);
+    pass.push_back(':');
+    pass.append(password);
+
+    std::stringstream query;
+    query << "UPDATE `accounts` SET `encrypted_password` = ";
+    query << "SHA( UPPER( '" << pass << "' ) ) WHERE `login` = '";
+    query << name << "'";
+
+    if(!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    {
+        std::cout << "Couldn't update password in database. Aborting." << std::endl;
+        return;
+    }
+
+    AccountMgr::getSingleton().ReloadAccounts(true);
+
+    std::cout << "Account password updated." << std::endl;
 }
 
 //------------------------------------------------------------------------------
