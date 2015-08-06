@@ -129,6 +129,7 @@ void LogonConsole::ProcessCmd(char* cmd)
         { "?", &LogonConsole::TranslateHelp },
         { "help", &LogonConsole::TranslateHelp },
         { "account create", &LogonConsole::AccountCreate },
+        { "account delete", &LogonConsole::AccountDelete },
         { "account set gm", &LogonConsole::AccountSetGm },
         { "account set password", &LogonConsole::AccountSetPassword },
         { "reload", &LogonConsole::ReloadAccts },
@@ -193,6 +194,7 @@ void LogonConsole::ProcessHelp(char* command)
         printf("Console:--------help--------\n");
         printf("    Help, ?: Prints this help text.\n");
         printf("    account create: Creates a new account\n");
+        printf("    account delete: Deletes an account\n");
         printf("    account set gm: Sets gm access to account\n");
         printf("    account set password: Sets a new password for an account\n");
         printf("    Reload: Reloads accounts.\n");
@@ -224,19 +226,7 @@ void LogonConsole::AccountCreate(char* str)
         return;
     }
 
-    {
-        // need to pass uppercase names to check if account exists
-        std::string aname(name);
-
-        for (std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
-            *itr = toupper(*itr);
-
-        if (AccountMgr::getSingleton().GetAccount(aname) != NULL)
-        {
-            std::cout << "There's already an account with name " << name << std::endl;
-            return;
-        }
-    }
+    checkAccountName(name, ACC_NAME_NOT_EXIST);
 
     std::string pass;
     pass.assign(name);
@@ -261,6 +251,35 @@ void LogonConsole::AccountCreate(char* str)
     std::cout << "Account created." << std::endl;
 }
 
+void LogonConsole::AccountDelete(char* str)
+{
+    char name[512];
+
+    int count = sscanf(str, "%s", name);
+    if (count != 1)
+    {
+        std::cout << "usage: account delete <name>" << std::endl;
+        std::cout << "example: account delete ghostcrawler" << std::endl;
+        return;
+    }
+
+    checkAccountName(name, ACC_NAME_DO_EXIST);
+
+    std::stringstream query;
+    query << "DELETE FROM `accounts` WHERE `login` = '";
+    query << name << "';";
+
+    if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    {
+        std::cout << "Couldn't delete account. Aborting." << std::endl;
+        return;
+    }
+
+    AccountMgr::getSingleton().ReloadAccounts(true);
+
+    std::cout << "Account deleted." << std::endl;
+}
+
 void LogonConsole::AccountSetGm(char* str)
 {
     char name[512];
@@ -274,18 +293,7 @@ void LogonConsole::AccountSetGm(char* str)
         return;
     }
 
-    {
-        std::string aname(name);
-
-        for (std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
-            *itr = toupper(*itr);
-
-        if (AccountMgr::getSingleton().GetAccount(aname) == NULL)
-        {
-            std::cout << "There's no account with name " << name << std::endl;
-            return;
-        }
-    }
+    checkAccountName(name, ACC_NAME_DO_EXIST);
 
     std::string pass;
     pass.assign(name);
@@ -320,18 +328,7 @@ void LogonConsole::AccountSetPassword(char* str)
         return;
     }
 
-    {
-        std::string aname(name);
-
-        for (std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
-            *itr = toupper(*itr);
-
-        if (AccountMgr::getSingleton().GetAccount(aname) == NULL)
-        {
-            std::cout << "There's no account with name " << name << std::endl;
-            return;
-        }
-    }
+    checkAccountName(name, ACC_NAME_DO_EXIST);
 
     std::string pass;
     pass.assign(name);
@@ -352,6 +349,36 @@ void LogonConsole::AccountSetPassword(char* str)
     AccountMgr::getSingleton().ReloadAccounts(true);
 
     std::cout << "Account password updated." << std::endl;
+}
+
+void LogonConsole::checkAccountName(string name, uint8 type)
+{
+    std::string aname(name);
+
+    for (std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
+        *itr = toupper(*itr);
+
+    switch (type)
+    {
+        case ACC_NAME_DO_EXIST:
+        {
+            if (AccountMgr::getSingleton().GetAccount(aname) == NULL)
+            {
+                std::cout << "There's no account with name " << name << std::endl;
+                return;
+            }
+
+        } break;
+        case ACC_NAME_NOT_EXIST:
+        {
+            if (AccountMgr::getSingleton().GetAccount(aname) != NULL)
+            {
+                std::cout << "There's already an account with name " << name << std::endl;
+                return;
+            }
+
+        } break;
+    }
 }
 
 //------------------------------------------------------------------------------

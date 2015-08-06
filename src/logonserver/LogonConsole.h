@@ -24,6 +24,13 @@
 #include "Common.h"
 #include "CThreads.h"
 
+enum checkType
+{
+    CHECK_LOG_NONE = 0,
+    ACC_NAME_DO_EXIST = 1,
+    ACC_NAME_NOT_EXIST = 2
+};
+
 class LogonConsoleThread : public ThreadBase
 {
     public:
@@ -66,8 +73,11 @@ class LogonConsole : public Singleton < LogonConsole >
 
         //AccountHandling
         void AccountCreate(char* str);
+        void AccountDelete(char* str);
         void AccountSetGm(char* str);
         void AccountSetPassword(char* str);
+
+        void checkAccountName(string name, uint8 type);
 };
 
 #define sLogonConsole LogonConsole::getSingleton()
