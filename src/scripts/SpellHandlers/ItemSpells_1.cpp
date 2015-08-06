@@ -31,6 +31,12 @@
 */
 
 
+bool BreathOfFire(uint32 i, Spell* pSpell)
+{
+    /* No handler required */
+    return true;
+}
+
 bool GnomishTransporter(uint32 i, Spell* pSpell)
 {
     if (!pSpell->p_caster)
@@ -890,6 +896,7 @@ bool X53Mount(uint32 i, Aura *a, bool apply)
 
 void SetupItemSpells_1(ScriptMgr* mgr)
 {
+    mgr->register_dummy_spell(29403, &BreathOfFire);            // Fiery Festival Brew
     mgr->register_dummy_spell(23453, &GnomishTransporter);      // Gnomish Transporter
     mgr->register_dummy_spell(16589, &NoggenFoggerElixr);       // Noggenfogger
     mgr->register_dummy_spell(24930, &HallowsEndCandy);         // Hallows End Candy

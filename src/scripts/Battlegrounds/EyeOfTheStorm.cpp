@@ -171,6 +171,7 @@ EyeOfTheStorm::EyeOfTheStorm(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : 
     m_dropFlag = NULL;
 
     m_zoneid = 3820;
+    m_bubbles[i] = NULL;
 }
 
 EyeOfTheStorm::~EyeOfTheStorm()

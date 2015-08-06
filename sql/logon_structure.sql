@@ -15,7 +15,6 @@ DROP TABLE IF EXISTS `accounts`;
 CREATE TABLE `accounts` (
   `acct` int(10) unsigned NOT NULL auto_increment COMMENT 'Unique ID',
   `login` varchar(32) collate utf8_unicode_ci NOT NULL COMMENT 'Login username',
-  `password` varchar(32) collate utf8_unicode_ci NOT NULL COMMENT 'Login password',
   `encrypted_password` varchar(42) collate utf8_unicode_ci NOT NULL default '',
   `gm` varchar(32) collate utf8_unicode_ci NOT NULL default '' COMMENT 'Game permissions',
   `banned` int(10) unsigned NOT NULL,

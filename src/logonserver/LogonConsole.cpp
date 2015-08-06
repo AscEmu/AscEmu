@@ -51,10 +51,10 @@ void LogonConsole::Kill()
     ir[1].Event.KeyEvent.wRepeatCount = 1;
     ir[1].Event.KeyEvent.wVirtualKeyCode = 13;
     ir[1].Event.KeyEvent.wVirtualScanCode = 28;
-    WriteConsoleInput(GetStdHandle(STD_INPUT_HANDLE), ir, 2, & dwTmp);
+    WriteConsoleInput(GetStdHandle(STD_INPUT_HANDLE), ir, 2, &dwTmp);
 #endif
     LOG_BASIC("Waiting for console thread to terminate....");
-    while(_thread != NULL)
+    while (_thread != NULL)
     {
         Arcemu::Sleep(100);
     }
@@ -75,7 +75,7 @@ bool LogonConsoleThread::run()
     struct timeval tv;
 #endif
 
-    while(!kill.GetVal())
+    while (!kill.GetVal())
     {
 #ifndef WIN32
         tv.tv_sec = 1;
@@ -95,13 +95,13 @@ bool LogonConsoleThread::run()
         // Read in single line from "stdin"
         fgets(cmd, 80, stdin);
 
-        if(kill.GetVal())
+        if (kill.GetVal())
             break;
 
         len = strlen(cmd);
-        for(i = 0; i < len; ++i)
+        for (i = 0; i < len; ++i)
         {
-            if(cmd[i] == '\n' || cmd[i] == '\r')
+            if (cmd[i] == '\n' || cmd[i] == '\r')
                 cmd[i] = '\0';
         }
         sLogonConsole.ProcessCmd(cmd);
@@ -126,25 +126,26 @@ void LogonConsole::ProcessCmd(char* cmd)
 
     SCmd cmds[] =
     {
-
-        {    "?", &LogonConsole::TranslateHelp},
-        {   "help", &LogonConsole::TranslateHelp},
-        {   "createaccount", &LogonConsole::CreateAccount },
-        {    "reload", &LogonConsole::ReloadAccts},
-        {    "rehash", &LogonConsole::TranslateRehash},
-        {    "netstatus", &LogonConsole::NetworkStatus},
-        {    "shutdown", &LogonConsole::TranslateQuit},
-        {    "exit", &LogonConsole::TranslateQuit},
-        {    "info", &LogonConsole::Info},
+        { "?", &LogonConsole::TranslateHelp },
+        { "help", &LogonConsole::TranslateHelp },
+        { "account create", &LogonConsole::AccountCreate },
+        { "account set gm", &LogonConsole::AccountSetGm },
+        { "account set password", &LogonConsole::AccountSetPassword },
+        { "reload", &LogonConsole::ReloadAccts },
+        { "rehash", &LogonConsole::TranslateRehash },
+        { "netstatus", &LogonConsole::NetworkStatus },
+        { "shutdown", &LogonConsole::TranslateQuit },
+        { "exit", &LogonConsole::TranslateQuit },
+        { "info", &LogonConsole::Info },
     };
 
     char cmd2[80];
     strcpy(cmd2, cmd);
-    for(size_t i = 0; i < strlen(cmd); ++i)
+    for (size_t i = 0; i < strlen(cmd); ++i)
         cmd2[i] = static_cast<char>(tolower(cmd[i]));
 
-    for(size_t i = 0; i < sizeof(cmds) / sizeof(SCmd); i++)
-        if(strncmp(cmd2, cmds[i].name, strlen(cmds[i].name)) == 0)
+    for (size_t i = 0; i < sizeof(cmds) / sizeof(SCmd); i++)
+        if (strncmp(cmd2, cmds[i].name, strlen(cmds[i].name)) == 0)
         {
             (this->*(cmds[i].tr))(cmd + strlen(cmds[i].name));
             return;
@@ -168,7 +169,7 @@ void LogonConsole::NetworkStatus(char* str)
 void LogonConsole::TranslateQuit(char* str)
 {
     int delay = str != NULL ? atoi(str) : 5000;
-    if(!delay)
+    if (!delay)
         delay = 5000;
     else
         delay *= 1000;
@@ -187,11 +188,13 @@ void LogonConsole::TranslateHelp(char* str)
 }
 void LogonConsole::ProcessHelp(char* command)
 {
-    if(command == NULL)
+    if (command == NULL)
     {
         printf("Console:--------help--------\n");
         printf("    Help, ?: Prints this help text.\n");
-        printf("    createaccount: Creates new accounts\n");
+        printf("    account create: Creates a new account\n");
+        printf("    account set gm: Sets gm access to account\n");
+        printf("    account set password: Sets a new password for an account\n");
         printf("    Reload: Reloads accounts.\n");
         printf("    Netstatus: Shows network status.\n");
         printf("    info:  shows some information about the server.\n");
@@ -207,17 +210,17 @@ void LogonConsole::Info(char* str)
     std::cout << "RAM Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentRAMUsage() << "MB" << std::endl;
 }
 
-void LogonConsole::CreateAccount(char* str)
+void LogonConsole::AccountCreate(char* str)
 {
-    char name[ 512 ];
-    char password[ 512 ];
-    char email[ 512 ];
+    char name[512];
+    char password[512];
+    char email[512];
 
     int count = sscanf(str, "%s %s %s", name, password, email);
-    if(count != 3)
+    if (count != 3)
     {
-        std::cout << "usage: createaccount <name> <password> <email>" << std::endl;
-        std::cout << "example: createaccount ghostcrawler Ih4t3p4l4dins greg.street@blizzard.com" << std::endl;
+        std::cout << "usage: account create <name> <password> <email>" << std::endl;
+        std::cout << "example: account create ghostcrawler Ih4t3p4l4dins greg.street@blizzard.com" << std::endl;
         return;
     }
 
@@ -225,10 +228,10 @@ void LogonConsole::CreateAccount(char* str)
         // need to pass uppercase names to check if account exists
         std::string aname(name);
 
-        for(std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
+        for (std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
             *itr = toupper(*itr);
 
-        if(AccountMgr::getSingleton().GetAccount(aname) != NULL)
+        if (AccountMgr::getSingleton().GetAccount(aname) != NULL)
         {
             std::cout << "There's already an account with name " << name << std::endl;
             return;
@@ -241,13 +244,13 @@ void LogonConsole::CreateAccount(char* str)
     pass.append(password);
 
     std::stringstream query;
-    query << "INSERT INTO `accounts`( `login`,`password`,`encrypted_password`,`gm`,`banned`,`email`,`flags`,`banreason`) VALUES ( '";
-    query << name << "','',";
+    query << "INSERT INTO `accounts`( `login`,`encrypted_password`,`gm`,`banned`,`email`,`flags`,`banreason`) VALUES ( '";
+    query << name << "',";
     query << "SHA( UPPER( '" << pass << "' ) ),'0','0','";
     query << email << "','";
     query << 24 << "','' );";
 
-    if(!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
     {
         std::cout << "Couldn't save new account to database. Aborting." << std::endl;
         return;
@@ -256,6 +259,99 @@ void LogonConsole::CreateAccount(char* str)
     AccountMgr::getSingleton().ReloadAccounts(true);
 
     std::cout << "Account created." << std::endl;
+}
+
+void LogonConsole::AccountSetGm(char* str)
+{
+    char name[512];
+    char gmlevel[512];
+
+    int count = sscanf(str, "%s %s", name, gmlevel);
+    if (count != 2)
+    {
+        std::cout << "usage: account set gm <name> <gmlevel>" << std::endl;
+        std::cout << "example: account set gm ghostcrawler az" << std::endl;
+        return;
+    }
+
+    {
+        std::string aname(name);
+
+        for (std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
+            *itr = toupper(*itr);
+
+        if (AccountMgr::getSingleton().GetAccount(aname) == NULL)
+        {
+            std::cout << "There's no account with name " << name << std::endl;
+            return;
+        }
+    }
+
+    std::string pass;
+    pass.assign(name);
+    pass.push_back(':');
+
+    std::stringstream query;
+    query << "UPDATE `accounts` SET `gm` = '";
+    query << gmlevel << "' WHERE `login` = '";
+    query << name << "'";
+
+    if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    {
+        std::cout << "Couldn't update gmlevel to database. Aborting." << std::endl;
+        return;
+    }
+
+    AccountMgr::getSingleton().ReloadAccounts(true);
+
+    std::cout << "Account gmlevel set." << std::endl;
+}
+
+void LogonConsole::AccountSetPassword(char* str)
+{
+    char name[512];
+    char password[512];
+
+    int count = sscanf(str, "%s %s", name, password);
+    if (count != 2)
+    {
+        std::cout << "usage: account set password <name> <password>" << std::endl;
+        std::cout << "example: account set password ghostcrawler NewPassWoRd" << std::endl;
+        return;
+    }
+
+    {
+        std::string aname(name);
+
+        for (std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
+            *itr = toupper(*itr);
+
+        if (AccountMgr::getSingleton().GetAccount(aname) == NULL)
+        {
+            std::cout << "There's no account with name " << name << std::endl;
+            return;
+        }
+    }
+
+    std::string pass;
+    pass.assign(name);
+    pass.push_back(':');
+    pass.append(password);
+
+    std::stringstream query;
+    query << "UPDATE `accounts` SET `encrypted_password` = ";
+    query << "SHA( UPPER( '" << pass << "' ) ) WHERE `login` = '";
+    query << name << "'";
+
+    if (!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    {
+        std::cout << "Couldn't update password in database. Aborting." << std::endl;
+        return;
+    }
+
+    AccountMgr::getSingleton().ReloadAccounts(true);
+
+    std::cout << "Account password updated." << std::endl;
 }
 
 //------------------------------------------------------------------------------

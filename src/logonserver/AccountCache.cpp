@@ -29,7 +29,7 @@ void AccountMgr::ReloadAccounts(bool silent)
     if(!silent) sLog.outString("[AccountMgr] Reloading Accounts...");
 
     // Load *all* accounts.
-    QueryResult* result = sLogonSQL->Query("SELECT acct, login, password, encrypted_password, gm, flags, banned, forceLanguage, muted FROM accounts");
+    QueryResult* result = sLogonSQL->Query("SELECT acct, login, encrypted_password, gm, flags, banned, forceLanguage, muted FROM accounts");
     Field* field;
     string AccountName;
     set<string> account_list;
@@ -103,13 +103,12 @@ void AccountMgr::AddAccount(Field* field)
     Account* acct = new Account;
     Sha1Hash hash;
     string Username     = field[1].GetString();
-    string Password        = field[2].GetString();
-    string EncryptedPassword = field[3].GetString();
-    string GMFlags        = field[4].GetString();
+    string EncryptedPassword = field[2].GetString();
+    string GMFlags        = field[3].GetString();
 
     acct->AccountId                = field[0].GetUInt32();
-    acct->AccountFlags            = field[5].GetUInt8();
-    acct->Banned                = field[6].GetUInt32();
+    acct->AccountFlags            = field[4].GetUInt8();
+    acct->Banned                = field[5].GetUInt32();
     if((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)   //1 = perm ban?
     {
         //Accounts should be unbanned once the date is past their set expiry date.
@@ -123,16 +122,16 @@ void AccountMgr::AddAccount(Field* field)
     acct->Locale[1] = 'n';
     acct->Locale[2] = 'U';
     acct->Locale[3] = 'S';
-    if(strcmp(field[7].GetString(), "enUS"))
+    if(strcmp(field[6].GetString(), "enUS"))
     {
         // non-standard language forced
-        memcpy(acct->Locale, field[7].GetString(), 4);
+        memcpy(acct->Locale, field[6].GetString(), 4);
         acct->forcedLocale = true;
     }
     else
         acct->forcedLocale = false;
 
-    acct->Muted = field[8].GetUInt32();
+    acct->Muted = field[7].GetUInt32();
     if((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)   //1 = perm ban?
     {
         //Accounts should be unbanned once the date is past their set expiry date.
@@ -140,9 +139,8 @@ void AccountMgr::AddAccount(Field* field)
         //LOG_DEBUG("Account %s's mute has expired.",acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE acct=%u", acct->AccountId);
     }
-    // Convert username/password to uppercase. this is needed ;)
+    // Convert username to uppercase. this is needed ;)
     arcemu_TOUPPER(Username);
-    arcemu_TOUPPER(Password);
 
     // prefer encrypted passwords over nonencrypted
     if(EncryptedPassword.size() > 0)
@@ -173,10 +171,8 @@ void AccountMgr::AddAccount(Field* field)
     }
     else
     {
-        // Prehash the I value.
-        hash.UpdateData((Username + ":" + Password));
-        hash.Finalize();
-        memcpy(acct->SrpHash, hash.GetDigest(), 20);
+        // This should never happen...
+        LOG_ERROR("Account `%s` has no encrypted password!", Username.c_str());
     }
 
     AccountDatabase[Username] = acct;
@@ -187,9 +183,8 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     uint32 id = field[0].GetUInt32();
     Sha1Hash hash;
     string Username     = field[1].GetString();
-    string Password        = field[2].GetString();
-    string EncryptedPassword = field[3].GetString();
-    string GMFlags        = field[4].GetString();
+    string EncryptedPassword = field[2].GetString();
+    string GMFlags        = field[3].GetString();
 
     if(id != acct->AccountId)
     {
@@ -199,8 +194,8 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     }
 
     acct->AccountId                = field[0].GetUInt32();
-    acct->AccountFlags            = field[5].GetUInt8();
-    acct->Banned                = field[6].GetUInt32();
+    acct->AccountFlags            = field[4].GetUInt8();
+    acct->Banned                = field[5].GetUInt32();
     if((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)  //1 = perm ban?
     {
         //Accounts should be unbanned once the date is past their set expiry date.
@@ -209,7 +204,7 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE acct=%u", acct->AccountId);
     }
     acct->SetGMFlags(GMFlags.c_str());
-    if(strcmp(field[7].GetString(), "enUS"))
+    if(strcmp(field[6].GetString(), "enUS"))
     {
         // non-standard language forced
         memcpy(acct->Locale, field[7].GetString(), 4);
@@ -218,7 +213,7 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     else
         acct->forcedLocale = false;
 
-    acct->Muted = field[8].GetUInt32();
+    acct->Muted = field[7].GetUInt32();
     if((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)  //1 = perm ban?
     {
         //Accounts should be unbanned once the date is past their set expiry date.
@@ -226,9 +221,8 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
         LOG_DEBUG("Account %s's mute has expired.", acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE acct=%u", acct->AccountId);
     }
-    // Convert username/password to uppercase. this is needed ;)
+    // Convert username to uppercase. this is needed ;)
     arcemu_TOUPPER(Username);
-    arcemu_TOUPPER(Password);
 
     // prefer encrypted passwords over nonencrypted
     if(EncryptedPassword.size() > 0)
@@ -259,10 +253,8 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     }
     else
     {
-        // Prehash the I value.
-        hash.UpdateData((Username + ":" + Password));
-        hash.Finalize();
-        memcpy(acct->SrpHash, hash.GetDigest(), 20);
+        // This should never happen...
+        LOG_ERROR("Account `%s` has no encrypted password!", Username.c_str());
     }
 }
 
