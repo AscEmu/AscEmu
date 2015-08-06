@@ -27,20 +27,22 @@
 class LogonConsoleThread : public ThreadBase
 {
     public:
-        Arcemu::Threading::AtomicBoolean kill;
-        LogonConsoleThread();
-        ~LogonConsoleThread();
-        bool run();
+    Arcemu::Threading::AtomicBoolean kill;
+    LogonConsoleThread();
+    ~LogonConsoleThread();
+    bool run();
 };
 
-class LogonConsole :  public Singleton < LogonConsole >
+class LogonConsole : public Singleton < LogonConsole >
 {
-        friend class LogonConsoleThread;
+    friend class LogonConsoleThread;
 
     public:                        // Public methods:
+
         void Kill();
 
     protected:                    // Protected methods:
+
         LogonConsoleThread* _thread;
 
         // Process one command
@@ -62,6 +64,7 @@ class LogonConsole :  public Singleton < LogonConsole >
 
         void Info(char* str);
 
+        //AccountHandling
         void AccountCreate(char* str);
         void AccountSetGm(char* str);
         void AccountSetPassword(char* str);
@@ -69,4 +72,5 @@ class LogonConsole :  public Singleton < LogonConsole >
 
 #define sLogonConsole LogonConsole::getSingleton()
 
-#endif
+
+#endif      // __LOGONCONSOLE_H
