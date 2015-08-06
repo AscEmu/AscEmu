@@ -62,7 +62,8 @@ class LogonConsole :  public Singleton < LogonConsole >
 
         void Info(char* str);
 
-        void CreateAccount(char* str);
+        void AccountCreate(char* str);
+        void AccountSetGm(char* str);
 };
 
 #define sLogonConsole LogonConsole::getSingleton()

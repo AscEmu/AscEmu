@@ -129,7 +129,8 @@ void LogonConsole::ProcessCmd(char* cmd)
 
         {    "?", &LogonConsole::TranslateHelp},
         {   "help", &LogonConsole::TranslateHelp},
-        {   "createaccount", &LogonConsole::CreateAccount },
+        {   "account create", &LogonConsole::AccountCreate },
+        {   "account set gm", &LogonConsole::AccountSetGm },
         {    "reload", &LogonConsole::ReloadAccts},
         {    "rehash", &LogonConsole::TranslateRehash},
         {    "netstatus", &LogonConsole::NetworkStatus},
@@ -191,7 +192,8 @@ void LogonConsole::ProcessHelp(char* command)
     {
         printf("Console:--------help--------\n");
         printf("    Help, ?: Prints this help text.\n");
-        printf("    createaccount: Creates new accounts\n");
+        printf("    account create: Creates a new account\n");
+        printf("    account set gm: Sets gm access to account\n");
         printf("    Reload: Reloads accounts.\n");
         printf("    Netstatus: Shows network status.\n");
         printf("    info:  shows some information about the server.\n");
@@ -207,7 +209,7 @@ void LogonConsole::Info(char* str)
     std::cout << "RAM Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentRAMUsage() << "MB" << std::endl;
 }
 
-void LogonConsole::CreateAccount(char* str)
+void LogonConsole::AccountCreate(char* str)
 {
     char name[ 512 ];
     char password[ 512 ];
@@ -216,8 +218,8 @@ void LogonConsole::CreateAccount(char* str)
     int count = sscanf(str, "%s %s %s", name, password, email);
     if(count != 3)
     {
-        std::cout << "usage: createaccount <name> <password> <email>" << std::endl;
-        std::cout << "example: createaccount ghostcrawler Ih4t3p4l4dins greg.street@blizzard.com" << std::endl;
+        std::cout << "usage: account create <name> <password> <email>" << std::endl;
+        std::cout << "example: account create ghostcrawler Ih4t3p4l4dins greg.street@blizzard.com" << std::endl;
         return;
     }
 
@@ -256,6 +258,52 @@ void LogonConsole::CreateAccount(char* str)
     AccountMgr::getSingleton().ReloadAccounts(true);
 
     std::cout << "Account created." << std::endl;
+}
+
+void LogonConsole::AccountSetGm(char* str)
+{
+    char name[ 512 ];
+    char gmlevel[ 512 ];
+
+    int count = sscanf(str, "%s %s", name, gmlevel);
+    if(count != 2)
+    {
+        std::cout << "usage: account set gm <name> <gmlevel>" << std::endl;
+        std::cout << "example: account set gm ghostcrawler az" << std::endl;
+        return;
+    }
+
+    {
+        std::string aname(name);
+
+        for(std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
+            *itr = toupper(*itr);
+
+        if(AccountMgr::getSingleton().GetAccount(aname) == NULL)
+        {
+            std::cout << "There's no account with name " << name << std::endl;
+            return;
+        }
+    }
+
+    std::string pass;
+    pass.assign(name);
+    pass.push_back(':');
+
+    std::stringstream query;
+    query << "UPDATE `accounts` SET `gm` = '";
+    query << gmlevel << "' WHERE `login` = '";
+    query << name << "'";
+
+    if(!sLogonSQL->WaitExecuteNA(query.str().c_str()))
+    {
+        std::cout << "Couldn't update gmlevel to database. Aborting." << std::endl;
+        return;
+    }
+
+    AccountMgr::getSingleton().ReloadAccounts(true);
+
+    std::cout << "Account gmlevel set." << std::endl;
 }
 
 //------------------------------------------------------------------------------
