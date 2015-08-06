@@ -34,10 +34,7 @@ namespace luaSql
 			else
 			{
 				Field* field = &(res->Fetch()[column]);
-				if(field == NULL)
-					lua_pushnil(L);
-				else
-					PUSH_SQLFIELD(L, field);
+			    PUSH_SQLFIELD(L, field);
 			}
 		}
 		else
