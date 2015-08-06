@@ -368,6 +368,10 @@ class BigBadWolfAI : public CreatureAIScript
             spells[3].instant = true;
             spells[3].cooldown = 0;
             spells[3].attackstoptimer = 1000;
+
+            m_threattimer = 0;
+            ThreatAdd = false;
+            RTarget = NULL;
         }
 
         void OnCombatStart(Unit* mTarget)

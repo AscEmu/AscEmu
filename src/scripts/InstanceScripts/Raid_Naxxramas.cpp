@@ -1626,7 +1626,9 @@ PlaguedChampionAI::PlaguedChampionAI(Creature* pCreature) : MoonScriptCreatureAI
     {
         AddSpell(PLAGUED_CHAMPION_MORTAL_STRIKE_NORMAL, Target_Current, 8, 0, 10, 0, 8);
         AddSpell(PLAGUED_CHAMPION_SHADOW_SHOCK_NORMAL, Target_Self, 10, 0, 10);
-    };
+    }
+
+    mNothAI = NULL;
 };
 
 void PlaguedChampionAI::Destroy()
@@ -1649,6 +1651,8 @@ PlaguedGuardianAI::PlaguedGuardianAI(Creature* pCreature) : MoonScriptCreatureAI
         AddSpell(PLAGUED_GUARDIAN_ARCANE_EXPLOSION_HEROIC, Target_Self, 10, 1.5, 10);
     else
         AddSpell(PLAGUED_GUARDIAN_ARCANE_EXPLOSION_NORMAL, Target_Self, 10, 1.5, 10);
+
+    mNothAI = NULL;
 };
 
 void PlaguedGuardianAI::Destroy()
