@@ -33,6 +33,7 @@ class Prisoner12 : public GossipScript
                 return;
             GossipMenu* Menu;
             Creature* Prisoner12 = TO_CREATURE(pObject);
+
             if(Prisoner12 == NULL)
                 return;
 
@@ -90,6 +91,7 @@ class Prisoner22 : public GossipScript
 
             GossipMenu* Menu;
             Creature* Prisoner22 = TO_CREATURE(pObject);
+
             if(Prisoner22 == NULL)
                 return;
 
@@ -106,6 +108,7 @@ class Prisoner22 : public GossipScript
                 return;
 
             Creature* Prisoner22 = TO_CREATURE(pObject);
+
             if(Prisoner22 == NULL)
                 return;
 
@@ -124,9 +127,6 @@ class Prisoner22 : public GossipScript
                             en->SendUpdateAddKill(1);
                             en->UpdatePlayerFields();
 
-                            if(!Prisoner22)
-                                return;
-
                             Prisoner22->Despawn(5000, 6 * 60 * 1000);
                             Prisoner22->SetStandState(STANDSTATE_STAND);
                             Prisoner22->SetEmoteState(7);
@@ -138,7 +138,6 @@ class Prisoner22 : public GossipScript
         }
 
 };
-
 
 class Prisoner32 : public GossipScript
 {
@@ -166,6 +165,7 @@ class Prisoner32 : public GossipScript
                 return;
 
             Creature* Prisoner32 = TO_CREATURE(pObject);
+
             if(Prisoner32 == NULL)
                 return;
 
@@ -183,9 +183,6 @@ class Prisoner32 : public GossipScript
                             en->SetMobCount(2, en->GetMobCount(2) + 1);
                             en->SendUpdateAddKill(2);
                             en->UpdatePlayerFields();
-
-                            if(!Prisoner32)
-                                return;
 
                             Prisoner32->Despawn(5000, 6 * 60 * 1000);
                             Prisoner32->SetStandState(STANDSTATE_STAND);
@@ -221,6 +218,7 @@ class VanquishingAquantion : public GameObjectAIScript
         void OnActivate(Player* pPlayer)
         {
             QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(9174);
+
             if(qle == NULL)
                 return;
 

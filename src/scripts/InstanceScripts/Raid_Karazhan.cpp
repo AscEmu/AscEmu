@@ -368,6 +368,10 @@ class BigBadWolfAI : public CreatureAIScript
             spells[3].instant = true;
             spells[3].cooldown = 0;
             spells[3].attackstoptimer = 1000;
+
+            m_threattimer = 0;
+            ThreatAdd = false;
+            RTarget = NULL;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -4018,6 +4022,11 @@ class DorotheeAI : public CreatureAIScript
             spells[1].instant = false;
             spells[1].perctrigger = 100.0f;
             spells[1].attackstoptimer = 1000;
+
+            summontito = 0;
+            tito = NULL;
+            titoSpawned = false;
+            titoDeadSpeech = false;
         }
 
         void OnCombatStart(Unit* mTarget)
