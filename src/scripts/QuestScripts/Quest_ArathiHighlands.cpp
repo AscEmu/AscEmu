@@ -31,8 +31,9 @@ class SunkenTreasure : public QuestScript
             float SSZ = mTarget->GetPositionZ();
 
             Creature* creat = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ, 2768);
-            if(creat == NULL)
+            if (creat == nullptr)
                 return;
+
             creat->m_escorter = mTarget;
             creat->GetAIInterface()->setMoveType(11);
             creat->GetAIInterface()->StopMovement(3000);
@@ -62,6 +63,7 @@ class SunkenTreasure : public QuestScript
 class Professor_Phizzlethorpe : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(Professor_Phizzlethorpe);
         Professor_Phizzlethorpe(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
@@ -72,10 +74,13 @@ class Professor_Phizzlethorpe : public CreatureAIScript
                 _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Thanks, I found the fact that, it searched");
                 _unit->Despawn(5000, 1000);
                 sEAS.DeleteWaypoints(_unit);
-                if(_unit->m_escorter == NULL)
+
+                if (_unit->m_escorter == nullptr)
                     return;
+
                 Player* plr = _unit->m_escorter;
-                _unit->m_escorter = NULL;
+                _unit->m_escorter = nullptr;
+
                 plr->GetQuestLogForEntry(665)->SendQuestComplete();
             }
         }

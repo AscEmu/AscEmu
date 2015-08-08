@@ -27,10 +27,11 @@ typedef std::vector< QuestDefinition > QuestCreature;
 class TotemofCoo : public QuestScript
 {
     public:
+
         void OnQuestStart(Player* pPlayer, QuestLogEntry* pQuest)
         {
             Creature* pAkida = sEAS.SpawnCreature(pPlayer, 17379, -4183.043457f, -12511.419922f, 44.361786f, 6.05629f, 0);
-            if(pAkida == NULL)
+            if (pAkida == nullptr)
                 return;
 
             pAkida->m_escorter = pPlayer;
@@ -57,12 +58,12 @@ class TotemofCoo : public QuestScript
         void OnQuestComplete(Player* pPlayer, QuestLogEntry* pQuest)
         {
             uint64 PlayerGuid = pPlayer->GetGUID();
-            for(QuestCreature::iterator itr = mAkidas.begin(); itr != mAkidas.end(); ++itr)
+            for (QuestCreature::iterator itr = mAkidas.begin(); itr != mAkidas.end(); ++itr)
             {
-                if(itr->first == PlayerGuid)
+                if (itr->first == PlayerGuid)
                 {
                     Creature* pAkida = itr->second;
-                    if(pAkida != NULL)                            // Can't happen, but whatever :)
+                    if (pAkida != nullptr)                            // Can't happen, but whatever :)
                     {
                         pAkida->CastSpell(pAkida, 30428, true);    // Disparition Effect
                         pAkida->Despawn(5000, 0);
@@ -76,12 +77,12 @@ class TotemofCoo : public QuestScript
         void OnQuestCancel(Player* pPlayer)
         {
             uint64 PlayerGuid = pPlayer->GetGUID();
-            for(QuestCreature::iterator itr = mAkidas.begin(); itr != mAkidas.end(); ++itr)
+            for (QuestCreature::iterator itr = mAkidas.begin(); itr != mAkidas.end(); ++itr)
             {
-                if(itr->first == PlayerGuid)
+                if (itr->first == PlayerGuid)
                 {
                     Creature* pAkida = itr->second;
-                    if(pAkida != NULL)                            // Can't happen, but whatever :)
+                    if (pAkida != nullptr)                            // Can't happen, but whatever :)
                     {
                         pAkida->CastSpell(pAkida, 30428, true);    // Disparition Effect
                         pAkida->Despawn(5000, 0);
@@ -101,11 +102,11 @@ class TotemofTikti : public QuestScript
 
         void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
         {
-            if(!mTarget || !mTarget->GetMapMgr() || !mTarget->GetMapMgr()->GetInterface())
+            if (!mTarget || !mTarget->GetMapMgr() || !mTarget->GetMapMgr()->GetInterface())
                 return;
 
             Coo = sEAS.SpawnCreature(mTarget, 17391, -3926.974365f, -12752.285156f, 97.672722f, 4.926801f, 0);
-            if(!Coo)
+            if (!Coo)
                 return;
 
             Coo->CastSpell(Coo, 25035, true);  // Apparition Effect
@@ -128,7 +129,7 @@ class TotemofTikti : public QuestScript
             string msg = "Ritk kin'chikx azul azure summit...";
             Coo->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 6000);
 
-            if(mTarget->CalcDistance(Coo, mTarget) <= 10)
+            if (mTarget->CalcDistance(Coo, mTarget) <= 10)
                 sEventMgr.AddEvent(TO_UNIT(Coo), &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30424), EVENT_CREATURE_UPDATE, 8750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             string msg2 = "Coo xip fly... Jump ilos river. Find Tikti.";
@@ -139,7 +140,8 @@ class TotemofTikti : public QuestScript
         }
 
     private:
-        Creature*  Coo;
+
+        Creature* Coo;
 };
 
 class TotemofYor : public QuestScript
@@ -148,11 +150,11 @@ class TotemofYor : public QuestScript
 
         void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
         {
-            if(!mTarget || !mTarget->GetMapMgr() || !mTarget->GetMapMgr()->GetInterface())
+            if (!mTarget || !mTarget->GetMapMgr() || !mTarget->GetMapMgr()->GetInterface())
                 return;
 
             Tikti = sEAS.SpawnCreature(mTarget, 17392, -3875.430664f, -13125.011719f, 6.822148f, 2.020735f, 0);
-            if(!Tikti)
+            if (!Tikti)
                 return;
 
             mTarget->CastSpell(Tikti, 25035, true);  // Apparition Effect
@@ -170,10 +172,11 @@ class TotemofYor : public QuestScript
 
             Unit* Totem = TO_UNIT(Tikti);
             Unit* Plr = TO_UNIT(mTarget);
+
             string msg = "[Furbolg] Far you mixik tak come. Gaze upon the kitch'kal river. Follow. Ilog to Yor.";
             Tikti->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 15000);
 
-            if(mTarget->CalcDistance(Tikti, mTarget) <= 10)
+            if (mTarget->CalcDistance(Tikti, mTarget) <= 10)
                 sEventMgr.AddEvent(TO_UNIT(Tikti), &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30430), EVENT_CREATURE_UPDATE, 18000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             string msg2 = "[Furbolg] Go... Search yitix'kil bottom river. South!";
@@ -185,7 +188,8 @@ class TotemofYor : public QuestScript
         }
 
     private:
-        Creature*  Tikti;
+
+        Creature* Tikti;
 };
 
 class TotemofVark : public QuestScript
@@ -194,11 +198,11 @@ class TotemofVark : public QuestScript
 
         void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
         {
-            if(!mTarget || !mTarget->GetMapMgr() || !mTarget->GetMapMgr()->GetInterface())
+            if (!mTarget || !mTarget->GetMapMgr() || !mTarget->GetMapMgr()->GetInterface())
                 return;
 
             Yor = sEAS.SpawnCreature(mTarget, 17393, -4634.246582f, -13071.686523f, -14.755350f, 1.569997f, 0);
-            if(!Yor)
+            if (!Yor)
                 return;
 
             Yor->CastSpell(Yor, 25035, true);   // Apparition Effect
@@ -219,37 +223,41 @@ class TotemofVark : public QuestScript
             //We have to set up these pointers first to resolve ambiguity in the event manager template
             Unit* Totem = TO_UNIT(Yor);
             Unit* Plr = TO_UNIT(mTarget);
+
             // Change to Stillpine form
             sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30446), EVENT_CREATURE_UPDATE, 15500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             string msg2 = "[Furbolg] We go now, together. We will seek Vark.";
             Yor->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 26500);
+
             // Change to nightsaber form
             sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30448), EVENT_CREATURE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             string msg3 = "[Furbolg] Follow me to Vark.";
             Yor->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 31000);
-            if(mTarget->CalcDistance(Totem, Plr) <= 10)
+
+            if (mTarget->CalcDistance(Totem, Plr) <= 10)
                 sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30448), EVENT_CREATURE_UPDATE, 31000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
-        // NEED TO MAKE THE PATH TO THE TOTEM OF VARK
+    // NEED TO MAKE THE PATH TO THE TOTEM OF VARK
     private:
-        Creature*  Yor;
+
+        Creature* Yor;
 };
 
 // Chieftain Oomooroo
-
 class ChieftainOomoorooQAI : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(ChieftainOomoorooQAI);
-        ChieftainOomoorooQAI(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+        ChieftainOomoorooQAI(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
         void OnDied(Unit* mKiller)
         {
-            if(mKiller->IsPlayer())
+            if (mKiller->IsPlayer())
             {
                 QuestLogEntry* pQuest = TO_PLAYER(mKiller)->GetQuestLogForEntry(9573);
-                if(pQuest != NULL && pQuest->GetMobCount(1) < pQuest->GetQuest()->required_mobcount[1])
+                if (pQuest != nullptr && pQuest->GetMobCount(1) < pQuest->GetQuest()->required_mobcount[1])
                 {
                     pQuest->SetMobCount(1, pQuest->GetMobCount(1) + 1);
                     pQuest->SendUpdateAddKill(1);
@@ -258,7 +266,6 @@ class ChieftainOomoorooQAI : public CreatureAIScript
             }
         }
 };
-
 
 
 void SetupAzuremystIsle(ScriptMgr* mgr)
