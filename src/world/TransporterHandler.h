@@ -113,6 +113,23 @@ typedef std::map<uint32, Object*> TransportNPCMap;
 
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path);
 
+struct TransporterDataQueryResult
+{
+    uint32 entry;
+    std::string name;
+    uint32 period;
+};
+
+struct TransporterCreaturesQueryResult
+{
+    uint32 transport_entry;
+    uint32 creature_entry;
+    float position_x;
+    float position_y;
+    float position_z;
+    float orientation;
+};
+
 extern Mutex m_transportGuidGen;
 extern uint32 m_transportGuidMax;
 
@@ -121,6 +138,8 @@ class Transporter : public GameObject
     public:
         Transporter(uint64 guid);
         ~Transporter();
+
+        std::vector<TransporterCreaturesQueryResult> creature_transport_data;
 
         bool CreateAsTransporter(uint32 EntryID, const char* Name, int32 Time);
         void UpdatePosition();

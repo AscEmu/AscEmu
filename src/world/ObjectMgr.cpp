@@ -2851,19 +2851,13 @@ void ObjectMgr::AddTransport(Transporter* pTransporter)
 
 Transporter* ObjectMgr::GetTransporterByEntry(uint32 entry)
 {
-    Transporter* rv = 0;
+    Transporter* ret = nullptr;
     _TransportLock.Acquire();
-    HM_NAMESPACE::hash_map<uint32, Transporter*>::iterator itr = mTransports.begin();
-    for (; itr != mTransports.end(); ++itr)
-    {
-        if (itr->second->GetEntry() == entry)
-        {
-            rv = itr->second;
-            break;
-        }
-    }
+    auto transporter = mTransports.find(entry);
+    if (transporter != mTransports.end())
+        ret = transporter->second;
     _TransportLock.Release();
-    return rv;
+    return ret;
 }
 
 void ObjectMgr::LoadGuildCharters()
