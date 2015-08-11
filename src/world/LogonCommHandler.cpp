@@ -127,7 +127,7 @@ void LogonCommHandler::Startup()
     LoadRealmConfiguration();
 
     Log.Notice("LogonCommClient", "Loading forced permission strings...");
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM account_forced_permissions");
+    QueryResult* result = CharacterDatabase.Query("SELECT login, permissions FROM account_forced_permissions");
     if (result != NULL)
     {
         do

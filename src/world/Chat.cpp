@@ -99,7 +99,7 @@ ARCEMU_INLINE void* allocate_and_copy(uint32 len, void* pointer)
 
 void CommandTableStorage::Load()
 {
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM command_overrides");
+    QueryResult* result = CharacterDatabase.Query("SELECT command_name, access_level FROM command_overrides");
     if (!result) return;
 
     do
