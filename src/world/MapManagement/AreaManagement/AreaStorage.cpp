@@ -104,7 +104,7 @@ namespace MapManagement
             return nullptr;
         }
 
-        ::DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaById(uint32 area_id)
+        DBC::Structures::AreaTableEntry const* AreaStorage::GetAreaById(uint32 area_id)
         {
             int32 area_flag = AreaStorage::GetFlagById(area_id);
             if (area_flag < 0)
