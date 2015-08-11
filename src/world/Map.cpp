@@ -191,7 +191,7 @@ void Map::LoadSpawns(bool reload)
         }
     }
 
-    result = WorldDatabase.Query("SELECT * FROM creature_staticspawns WHERE Map = %u", this->_mapId);
+    result = WorldDatabase.Query("SELECT * FROM creature_staticspawns WHERE map = %u", this->_mapId);
     if (result)
     {
         if (CheckResultLengthCreatures(result))
@@ -238,7 +238,7 @@ void Map::LoadSpawns(bool reload)
     }
 
     GameObjectSpawnCount = 0;
-    result = WorldDatabase.Query("SELECT * FROM gameobject_staticspawns WHERE Map = %u", this->_mapId);
+    result = WorldDatabase.Query("SELECT * FROM gameobject_staticspawns WHERE map = %u", this->_mapId);
     if (result)
     {
         if (CheckResultLengthGameObject(result))

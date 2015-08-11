@@ -251,10 +251,17 @@ bool AddonMgr::AppendPublicKey(WorldPacket & data, std::string & AddonName, uint
 
 void AddonMgr::LoadFromDB()
 {
-    QueryResult* result = CharacterDatabase.Query("SELECT id, name, crc, banned, showinlist FROM clientaddons");
+    const char* loadClientAddons = "SELECT id, name, crc, banned, showinlist FROM clientaddons";
+    bool success = false;
+    QueryResult* result = CharacterDatabase.Query(&success, loadClientAddons);
+    if (!success)
+    {
+        Log.Error("AddonMgr", "Query failed: %s", loadClientAddons);
+        return;
+    }
     if (!result)
     {
-        LOG_ERROR("Query failed: SELECT * FROM clientaddons");
+        Log.Notice("AddonMgr", "No defined ClientAddons");
         return;
     }
 
