@@ -255,7 +255,7 @@ class MaidenOfGriefAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 4)
+        switch (RandomUInt(3))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(4368);     // Why must it be this way?

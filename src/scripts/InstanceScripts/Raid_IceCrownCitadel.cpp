@@ -295,7 +295,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
         void AIUpdate()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                 {
@@ -316,7 +316,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
         void BoneSpike()
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(925);      // Bound by bone!
@@ -367,7 +367,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(928);      // More bones for the offering!

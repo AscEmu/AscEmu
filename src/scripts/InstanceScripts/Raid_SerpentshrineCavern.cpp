@@ -135,7 +135,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             {
                 if (!form)
                 {
-                    switch (rand() % 2)
+                    switch (RandomUInt(1))
                     {
                         case 0:
                             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "They have forced me to this...");
@@ -150,7 +150,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                 }
                 else
                 {
-                    switch (rand() % 2)
+                    switch (RandomUInt(1))
                     {
                         case 0:
                             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL,  "I will purge you from this place.");
@@ -689,7 +689,7 @@ class LeotherasAI : public CreatureAIScript
             if (LeotherasEventGreyheartToKill[_unit->GetInstanceID()] != 0)
                 return;
 
-            SwitchTimer = 40 + rand() % 5; //wowwiki says 45, bosskillers says 40
+            SwitchTimer = 40 + RandomUInt(5); //wowwiki says 45, bosskillers says 40
             WhirlwindTimer = 15;
             EnrageTimer = 599; //10 minutes
 
@@ -721,18 +721,16 @@ class LeotherasAI : public CreatureAIScript
             {
                 if (Phase) //blood elf form
                 {
-                    switch (rand() % 3)
+                    switch (RandomUInt(2))
                     {
                         case 0:
                             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Kill! KILL!");
                             _unit->PlaySoundToSet(11314);
                             break;
-
                         case 1:
                             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "That's right! Yes!");
                             _unit->PlaySoundToSet(11315);
                             break;
-
                         case 2:
                             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Who's the master now?");
                             _unit->PlaySoundToSet(11316);
@@ -741,7 +739,7 @@ class LeotherasAI : public CreatureAIScript
                 }
                 else //demon form
                 {
-                    switch (rand() % 3)
+                    switch (RandomUInt(2))
                     {
                         case 0:
                             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have no equal.");
@@ -899,7 +897,7 @@ class LeotherasAI : public CreatureAIScript
                 {
                     if (_unit->GetCurrentSpell() == NULL)
                     {
-                        if (rand() % 2)
+                        if (RandomUInt(1))
                         {
                             _unit->CastSpell(_unit->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
                         }
@@ -920,8 +918,8 @@ class LeotherasAI : public CreatureAIScript
                     _unit->GetAIInterface()->setCurrentAgent(AGENT_MELEE);
                     SwitchToHumanForm();
                     Phase = 0;
-                    WhirlwindTimer = 10 + rand() % 5;
-                    SwitchTimer = 40 + rand() % 5; //wowwiki says 45, bosskillers says 40
+                    WhirlwindTimer = 10 + RandomUInt(5);
+                    SwitchTimer = 40 + RandomUInt(5); //wowwiki says 45, bosskillers says 40
                     _unit->GetAIInterface()->ClearHateList(); //reset aggro
                 }
             }
@@ -1197,7 +1195,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
             {
                 if (_unit->GetCurrentSpell() == NULL)
                 {
-                    if (rand() % 2)
+                    if (RandomUInt(1))
                     {
                         _unit->CastSpell(_unit->GetAIInterface()->getNextTarget(), info_chaos_blast, false);
                     }
@@ -1421,12 +1419,11 @@ class FathomGuardSharkissAI : public MoonScriptCreatureAI
                 SummonPetTimer--;
                 if (!SummonPetTimer)
                 {
-                    switch (rand() % 2)
+                    switch (RandomUInt(1))
                     {
                         case 0:
                             CurrentPet = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_FATHOM_LURKER, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, true, false, 0, 0);
                             break;
-
                         case 1:
                             CurrentPet = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_FATHOM_SPOREBAT, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, true, false, 0, 0);
                             break;
@@ -1610,7 +1607,7 @@ class MorogrimAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                switch (rand() % 3)
+                switch (RandomUInt(2))
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Only the strong survive.");
@@ -1647,7 +1644,7 @@ class MorogrimAI : public CreatureAIScript
                 {
                     _unit->SendChatMessageAlternateEntry(17165, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, "The violent earthquake has alerted nearby Murlocs!");
 
-                    switch (rand() % 2)
+                    switch (RandomUInt(1))
                     {
                         case 0:
                             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Destroy them my subjects!");
@@ -1675,7 +1672,7 @@ class MorogrimAI : public CreatureAIScript
                     {
                         _unit->SendChatMessageAlternateEntry(CN_MOROGRIM_TIDEWALKER, CHAT_MSG_MONSTER_EMOTE, LANG_UNIVERSAL, " summons Watery Globules!");
 
-                        switch (rand() % 2)
+                        switch (RandomUInt(1))
                         {
                             case 0:
                                 _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Soon it will be finished.");
@@ -1995,23 +1992,20 @@ class VashjAI : public CreatureAIScript
             SporebatTimer = 0;
             ForkedLightningTimer = 5;
 
-            switch (rand() % 4)
+            switch (RandomUInt(3))
             {
                 case 0:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll split you from stem to stern!");
                     _unit->PlaySoundToSet(11532);
                     break;
-
                 case 1:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Victory to Lord Illidan!");
                     _unit->PlaySoundToSet(11533);
                     break;
-
                 case 2:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I spit on you, surface filth!");
                     _unit->PlaySoundToSet(11534);
                     break;
-
                 case 3:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Death to the outsiders!");
                     _unit->PlaySoundToSet(11535);
@@ -2059,13 +2053,12 @@ class VashjAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your time ends now!");
                     _unit->PlaySoundToSet(11541);
                     break;
-
                 case 1:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You have failed!");
                     _unit->PlaySoundToSet(11542);
@@ -2149,14 +2142,14 @@ class VashjAI : public CreatureAIScript
             if (!ForkedLightningTimer)
             {
                 CastSpellOnRandomTarget(3, 0, 0);
-                ForkedLightningTimer = 2 + rand() % 6;
+                ForkedLightningTimer = 2 + RandomUInt(5);
             }
 
             //spawn creatures
             EnchantedElementalTimer--;
             if (!EnchantedElementalTimer)
             {
-                uint32 pos = rand() % 8;
+                uint32 pos = RandomUInt(7);
                 Creature* elemental = NULL;
                 elemental = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ENCHANTED_ELEMENTAL, ElementalSpawnPoints[pos].x, ElementalSpawnPoints[pos].y, ElementalSpawnPoints[pos].z, ElementalSpawnPoints[pos].o, true, false, 0, 0);
                 if (elemental)
@@ -2193,7 +2186,7 @@ class VashjAI : public CreatureAIScript
                     wp->backwardskinid = 0;
                     elemental->GetAIInterface()->addWayPoint(wp);
                 }
-                EnchantedElementalTimer = 10 + rand() % 5;
+                EnchantedElementalTimer = 10 + RandomUInt(5);
             }
             CoilfangStriderTimer--;
             if (!CoilfangStriderTimer)
@@ -2221,7 +2214,7 @@ class VashjAI : public CreatureAIScript
             CoilfangEliteTimer--;
             if (!CoilfangEliteTimer)
             {
-                uint32 pos = rand() % 4;
+                uint32 pos = RandomUInt(3);
                 Creature* summoned = NULL;
                 summoned = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_COILFANG_ELITE, CoilfangEliteSpawnPoints[pos].x, CoilfangEliteSpawnPoints[pos].y, CoilfangEliteSpawnPoints[pos].z, CoilfangEliteSpawnPoints[pos].o, true, false, 0, 0);
                 if (summoned)
@@ -2245,7 +2238,7 @@ class VashjAI : public CreatureAIScript
             TaintedElementalTimer--;
             if (!TaintedElementalTimer)
             {
-                uint32 pos = rand() % 8;
+                uint32 pos = RandomUInt(7);
                 _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_TAINTED_ELEMENTAL, ElementalSpawnPoints[pos].x, ElementalSpawnPoints[pos].y, ElementalSpawnPoints[pos].z, ElementalSpawnPoints[pos].o, true, false, 0, 0);
                 TaintedElementalTimer = 120;
             }
@@ -2276,29 +2269,27 @@ class VashjAI : public CreatureAIScript
 
         void Shoot(Unit* target)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
-                case 0:
-                    //shoot
+                case 0: //shoot
                     _unit->CastSpell(target, info_shot, true);
                     break;
-
-                case 1:
-                    //multishot
+                case 1: //multishot
                     _unit->CastSpell(target, info_multishot, true);
                     break;
             }
 
-            switch (rand() % 6)
+            switch (RandomUInt(5))
             {
                 case 0:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Straight to the heart!");
                     _unit->PlaySoundToSet(11536);
                     break;
-
                 case 1:
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Seek your mark!");
                     _unit->PlaySoundToSet(11537);
+                    break;
+                default:
                     break;
             }
         }

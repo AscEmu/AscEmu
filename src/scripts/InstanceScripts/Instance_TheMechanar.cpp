@@ -1994,7 +1994,7 @@ class GatewatcherGyroKillAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_06);
@@ -2021,15 +2021,15 @@ class GatewatcherGyroKillAI : public CreatureAIScript
 
         void SawBladesSound()
         {
-            int RandomSawBlades;
-            RandomSawBlades = rand() % 30;
-            switch (RandomSawBlades)
+            switch (RandomUInt(5))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_02);
                     break;
                 case 1:
                     _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_03);
+                    break;
+                default:
                     break;
             }
         }
@@ -2162,7 +2162,7 @@ class GatewatcherIronHandAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_04);
@@ -2189,20 +2189,14 @@ class GatewatcherIronHandAI : public CreatureAIScript
 
         void HammerSound()
         {
-            uint32 RandomHammer;
-            RandomHammer = rand() % 10;
-            switch (RandomHammer)
+            switch (RandomUInt(8))
             {
                 case 0:
-                {
                     _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_02);
-                }
-                break;
+                    break;
                 case 1:
-                {
                     _unit->SendScriptTextChatMessage(SAY_GW_GYRO_KILL_03);
-                }
-                break;
+                    break;
             }
         }
 
@@ -2340,7 +2334,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MECH_LORD_03);
@@ -2501,7 +2495,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_05);
@@ -2537,20 +2531,16 @@ class NethermancerSepethreaAI : public CreatureAIScript
 
         void DragonsBreathSound()
         {
-            uint32 RandomDragonsBreath;
-            RandomDragonsBreath = rand() % 10;
-            switch (RandomDragonsBreath)
+            switch (RandomUInt(8))
             {
                 case 0:
-                {
                     _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_03);
-                }
-                break;
+                    break;
                 case 1:
-                {
                     _unit->SendScriptTextChatMessage(SAY_NETH_SEPETHREA_04);
-                }
-                break;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -2625,7 +2615,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
 
         PathaleonTheCalculatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            SummonTimer = rand() % 16 + 30;    // 30 - 45 sec
+            SummonTimer = RandomUInt(30, 45);   // 30 - 45 sec
             nrspells = 7;
             for (int i = 0; i < nrspells; i++)
             {
@@ -2684,7 +2674,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            SummonTimer = rand() % 16 + 30;
+            SummonTimer = RandomUInt(30, 45);
             CastTime();
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
             _unit->SendScriptTextChatMessage(SAY_PATHALEON_01);
@@ -2698,7 +2688,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            SummonTimer = rand() % 16 + 30;
+            SummonTimer = RandomUInt(30, 45);
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -2709,7 +2699,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_PATHALEON_06);
@@ -2723,7 +2713,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            SummonTimer = rand() % 16 + 30;
+            SummonTimer = RandomUInt(30, 45);
             CastTime();
             RemoveAIUpdateEvent();
             _unit->SendScriptTextChatMessage(SAY_PATHALEON_08);
@@ -2739,7 +2729,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
                 _unit->CastSpell(_unit, spells[4].info, spells[4].instant);
                 _unit->CastSpell(_unit, spells[5].info, spells[5].instant);
                 _unit->CastSpell(_unit, spells[6].info, spells[6].instant);
-                SummonTimer = rand() % 16 + 30;    // 30 - 45
+                SummonTimer = RandomUInt(30, 45);    // 30 - 45
                 _unit->SendScriptTextChatMessage(SAY_PATHALEON_04);
             }
 
@@ -2749,9 +2739,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
 
         void DominationSound()
         {
-            int RandomDomination;
-            RandomDomination = rand() % 2;
-            switch (RandomDomination)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_PATHALEON_02);

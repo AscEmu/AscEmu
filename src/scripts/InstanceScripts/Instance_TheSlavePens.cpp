@@ -1059,7 +1059,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
             TotemCounter = 0;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_01);
@@ -1079,7 +1079,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MENNU_BETRAYER_04);
@@ -1195,7 +1195,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
                     Spawned = true;
                 }
 
-                uint32 i = rand() % 4;
+                uint32 i = RandomUInt(3);
                 if (SummonedTotems[i])
                     Counter++;
                 else

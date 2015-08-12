@@ -239,7 +239,7 @@ class Marwyn : public MoonScriptBossAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
@@ -312,7 +312,7 @@ class Falric : public MoonScriptBossAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(4086);     // The children of Stratholme fought with more ferocity!

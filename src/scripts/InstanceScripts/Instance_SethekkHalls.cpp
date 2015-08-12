@@ -1617,7 +1617,7 @@ class DarkweaverSythAI : public CreatureAIScript
 
             Summons = 0;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_02);
@@ -1637,7 +1637,7 @@ class DarkweaverSythAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_DARKW_SYNTH_05);
@@ -1836,7 +1836,7 @@ class TalonKingIkissAI : public CreatureAIScript
 
             Blink = false;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_02);
@@ -1856,7 +1856,7 @@ class TalonKingIkissAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_TALRON_K_IKISS_05);

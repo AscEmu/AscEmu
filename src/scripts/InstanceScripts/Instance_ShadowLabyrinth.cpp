@@ -1182,7 +1182,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
                 spells[i].casttime = 0;
             spells[1].casttime = (uint32)time(NULL) + 25;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_02);
@@ -1201,7 +1201,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_AMBASSADOR_HELMAW_06);
@@ -1341,7 +1341,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
                 spells[i].casttime = 0;
             spells[2].casttime = (uint32)time(NULL) + 20;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_04);
@@ -1360,7 +1360,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_BLACKHEART_INCITER_07);
@@ -1564,7 +1564,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
 
             Teleported = false;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_02);
@@ -1584,7 +1584,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GRD_VORPIL_06);

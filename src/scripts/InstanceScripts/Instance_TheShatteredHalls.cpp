@@ -1567,7 +1567,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
             GrandWarlock = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
             if (GrandWarlock)
             {
-                switch (rand() % 4)        // must be verified + emotes?
+                switch (RandomUInt(3))        // must be verified + emotes?
                 {
                     case 0:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_02);
@@ -1614,7 +1614,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
                     GrandWarlock->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
                 }
 
-                switch (rand() % 3)    // those need to be verified too
+                switch (RandomUInt(2))    // those need to be verified too
                 {
                     case 0:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_06);
@@ -1685,7 +1685,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
 
             if (Started)
             {
-                switch (rand() % 3)
+                switch (RandomUInt(2))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_13);
@@ -1709,7 +1709,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_16);
@@ -2326,7 +2326,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_01);
@@ -2348,7 +2348,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_04);

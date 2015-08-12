@@ -226,7 +226,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 2)
+        switch (RandomUInt(1))
         {
            case 0:
               _unit->SendScriptTextChatMessage(762);        // So ends your curse.
@@ -372,7 +372,7 @@ class Volkhan : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(774);      // The armies of iron will conquer all!
@@ -550,7 +550,7 @@ class IonarAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(741);      // Shocking, I know.
@@ -633,7 +633,7 @@ class LokenAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(805);      // Only mortal...

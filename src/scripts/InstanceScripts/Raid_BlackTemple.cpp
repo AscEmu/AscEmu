@@ -2040,7 +2040,7 @@ class SupremusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(5035);     // Your fate is written.
@@ -3764,7 +3764,7 @@ class ShadeofakamaAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                switch (rand() % 3)
+                switch (RandomUInt(2))
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I will not last much longer...");
@@ -3773,6 +3773,8 @@ class ShadeofakamaAI : public CreatureAIScript
                     case 1:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It is time to free your soul from Illidan's grasp!");
                         //_unit->PlaySoundToSet(11510);
+                        break;
+                    default:
                         break;
 
                 }
@@ -6298,9 +6300,9 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
             float ychange = sqrt(distance * distance - xchange * xchange);
 
-            if (rand() % 2 == 1)
+            if (RandomUInt(1) == 1)
                 xchange *= -1;
-            if (rand() % 2 == 1)
+            if (RandomUInt(1) == 1)
                 ychange *= -1;
 
             float newposx = _unit->GetPositionX() + xchange;

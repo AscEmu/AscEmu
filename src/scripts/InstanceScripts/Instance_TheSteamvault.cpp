@@ -1697,7 +1697,7 @@ class HydromancerThespiaAI : public CreatureAIScript
             for (int i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_02);
@@ -1717,7 +1717,7 @@ class HydromancerThespiaAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_HYDROMACER_THESPIA_05);
@@ -1977,7 +1977,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
 
             Gnomes.clear();
 
-            switch (rand() % 4)
+            switch (RandomUInt(3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_02);
@@ -2000,7 +2000,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MEKGINEER_STEAMRIGGER_06);
@@ -2335,7 +2335,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             if (Gate)
                 Gate->SetState(GAMEOBJECT_STATE_CLOSED);
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_03);
@@ -2355,7 +2355,7 @@ class WarlordKalitreshAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_06);

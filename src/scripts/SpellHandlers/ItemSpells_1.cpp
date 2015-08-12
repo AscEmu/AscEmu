@@ -338,9 +338,9 @@ bool MinionsOfGurok(uint32 i, Spell* pSpell)
     float SSZ = target->GetPositionZ();
     float SSO = target->GetOrientation();
 
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + rand() % 8 - 4, SSY + rand() % 8 - 4, SSZ, SSO, true, false, 0, 0);
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + rand() % 8 - 4, SSY + rand() % 8 - 4, SSZ, SSO, true, false, 0, 0);
-    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + rand() % 8 - 4, SSY + rand() % 8 - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + RandomUInt(8) - 4, SSY + RandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + RandomUInt(8) - 4, SSY + RandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
+    pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(18181, SSX + RandomUInt(8) - 4, SSY + RandomUInt(8) - 4, SSZ, SSO, true, false, 0, 0);
 
     return true;
 }
@@ -530,7 +530,7 @@ bool SixDemonBag(uint32 i, Spell* s)
         return false;
 
     uint32 ClearSpellId[6] = { 8401, 8408, 930, 118, 1680, 10159 };
-    uint32 randid = rand() % 6 + 1;
+    uint32 randid = RandomUInt(1, 6);
     uint32 spelltocast = ClearSpellId[randid];
 
     s->u_caster->CastSpell(unitTarget, spelltocast, true);
@@ -572,7 +572,7 @@ bool ExtractGas(uint32 i, Spell* s)
     uint32 item = 0;
     uint32 count = 0;
 
-    count = 3 + (rand() % 3);
+    count = 3 + (RandomUInt(3));
 
     if (cloudtype == 24222) item = 22572; //-air
     if (cloudtype == 17408) item = 22576; //-mana
@@ -671,8 +671,8 @@ bool ShrinkRay(uint32 i, Spell* s)
     }
     else
     {
-        uint32 spellindex = rand() % 1;
-        uint32 who = rand() % 3;
+        uint32 spellindex = RandomUInt(1);
+        uint32 who = RandomUInt(3);
 
         switch (who)
         {

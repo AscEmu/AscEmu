@@ -360,7 +360,7 @@ void SpellFunc_MaexxnaWebWrap(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureA
         if (pTarget == NULL || !pTarget->IsPlayer() || pTarget->HasAura(MAEXXNA_WEB_WRAP) || Maexxna->GetUnit() == NULL || Maexxna->GetUnit()->GetMapMgr() == NULL)
             return;
 
-        uint32 Id = rand() % 2;
+        uint32 Id = RandomUInt(1);
         if (!Maexxna->mLeftWall)
             Id += 3;
 
@@ -1437,7 +1437,7 @@ void NothThePlaguebringerAI::AIUpdate()
             PlaguedChampionAI* ChampionAI = NULL;
             for (uint32 i = 0; i < Champions; ++i)
             {
-                Id = rand() % 3 + 1;
+                Id = RandomUInt(1, 3);
                 if (PosTaken[Id])
                 {
                     for (uint32 j = 0; j < 4; ++j)
@@ -1465,7 +1465,7 @@ void NothThePlaguebringerAI::AIUpdate()
             PlaguedGuardianAI* GuardianAI = NULL;
             for (uint32 i = 0; i < SpawnLimit - Champions; ++i)
             {
-                Id = rand() % 3 + 1;
+                Id = RandomUInt(1, 3);
                 if (PosTaken[Id])
                 {
                     for (uint32 j = 0; j < 4; ++j)

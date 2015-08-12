@@ -232,7 +232,7 @@ class TelestraBossAI : public MoonScriptBossAI
         {
             if (GetPhase() == 1 && GetHealthPercent() <= (mPhaseRepeat * 25))
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(4330);      // There's plenty of me to go around.

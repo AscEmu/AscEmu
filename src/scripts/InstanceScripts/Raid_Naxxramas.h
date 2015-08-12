@@ -3147,9 +3147,9 @@ class SapphironAI : public CreatureAIScript
                         {
                             uint32 Block = 0;
                             if (i == 0)
-                                Block = rand() % 3 + 1;
+                                Block = RandomUInt(1, 3);
                             else
-                                Block = rand() % 3 + 10;
+                                Block = RandomUInt(10, 3);
 
                             GameObject* IceBlock = NULL;
                             IceBlock = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
@@ -3763,7 +3763,7 @@ class KelthuzadAI : public CreatureAIScript
         if (_unit->GetHealthPct() == 0)
             return;
 
-        switch (rand() % 2)
+        switch (RandomUInt(1))
         {
             case 0:
                 _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The dark void awaits you!");
@@ -3837,7 +3837,7 @@ class KelthuzadAI : public CreatureAIScript
 
                     while (Counter == 0)
                     {
-                        if (FrozenWastes[i] == false && (rand() % 3 == 0 || SpawnCounter > 0))
+                        if (FrozenWastes[i] == false && (RandomUInt(3) == 0 || SpawnCounter > 0))
                         {
                             for (int x = 0; x < 10; x++)
                             {
@@ -3849,7 +3849,7 @@ class KelthuzadAI : public CreatureAIScript
                             Counter++;
                         }
 
-                        if (Abominations[i] == false && (rand() % 3 == 0 || SpawnCounter > 0))
+                        if (Abominations[i] == false && (RandomUInt(3) == 0 || SpawnCounter > 0))
                         {
                             for (int x = 0; x < 3; x++)
                             {
@@ -3861,7 +3861,7 @@ class KelthuzadAI : public CreatureAIScript
                             Counter++;
                         }
 
-                        if (SoulWeavers[i] == false && ((rand() % 3 == 0 && Counter < 2) || Counter == 0 || SpawnCounter > 0))
+                        if (SoulWeavers[i] == false && ((RandomUInt(3) == 0 && Counter < 2) || Counter == 0 || SpawnCounter > 0))
                         {
                             uint32 SpawnID = i;
                             _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SOUL_WEAVER, SoulWeaver[SpawnID].x, SoulWeaver[SpawnID].y, SoulWeaver[SpawnID].z, SoulWeaver[SpawnID].o, true, false, 0, 0);
@@ -3887,7 +3887,7 @@ class KelthuzadAI : public CreatureAIScript
                     SoulWeavers[i] = false;
                 }
 
-                WaveTimer = rand() % 6 + 10;
+                WaveTimer = RandomUInt(10, 16);
                 EventStart = false;
                 SpawnCounter = 0;
                 PhaseTimer = 310;
@@ -3902,7 +3902,7 @@ class KelthuzadAI : public CreatureAIScript
 
             if (PhaseTimer == 5)
             {
-                switch (rand() % 3)
+                switch (RandomUInt(2))
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Pray for mercy!");
@@ -3939,7 +3939,7 @@ class KelthuzadAI : public CreatureAIScript
 
             else if (!WaveTimer && PhaseTimer > 5)
             {
-                uint32 SpawnPoint = rand() % 6;
+                uint32 SpawnPoint = RandomUInt(6);
                 uint32 RandomSU = 0;
                 if (PhaseTimer > 250)
                     RandomSU = RandomUInt(4);
@@ -3974,7 +3974,7 @@ class KelthuzadAI : public CreatureAIScript
                 }
 
                 _unit->GetMapMgr()->GetInterface()->SpawnCreature(UnitType, Waves[SpawnPoint].x, Waves[SpawnPoint].y, Waves[SpawnPoint].z, Waves[SpawnPoint].o, true, false, 0, 0);
-                WaveTimer = rand() % 11 + 10;
+                WaveTimer = RandomUInt(11, 20);
             }
         }
     }
@@ -4017,7 +4017,7 @@ class KelthuzadAI : public CreatureAIScript
             if (HelpDialog == 10 || HelpDialog == 12 || HelpDialog == 14 || HelpDialog == 16 || HelpDialog == 18)
             {
                 Unit* Guardian = NULL;
-                uint32 i = rand() % 4;
+                uint32 i = RandomUInt(3);
                 Guardian = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_GUARDIAN_OF_ICECROWN, Guardians[i].x, Guardians[i].y, Guardians[i].z, Guardians[i].o, true, false, 0, 0);
                 if (Guardian != NULL)
                 {
@@ -4154,7 +4154,7 @@ class KelthuzadAI : public CreatureAIScript
 
     void ChainSound()
     {
-        switch (rand() % 2)
+        switch (RandomUInt(1))
         {
             case 0:
                 _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your soul is bound to me now!");
@@ -4277,9 +4277,9 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
 
                     float ychange = sqrt(distance * distance - xchange * xchange);
 
-                    if (rand() % 2 == 1)
+                    if (RandomUInt(1) == 1)
                         xchange *= -1;
-                    if (rand() % 2 == 1)
+                    if (RandomUInt(1) == 1)
                         ychange *= -1;
 
                     newposx = 3715.845703f + xchange;
@@ -4406,9 +4406,9 @@ class UnstoppableAbominationAI : public CreatureAIScript
 
                     float ychange = sqrt(distance * distance - xchange * xchange);
 
-                    if (rand() % 2 == 1)
+                    if (RandomUInt(1) == 1)
                         xchange *= -1;
-                    if (rand() % 2 == 1)
+                    if (RandomUInt(1) == 1)
                         ychange *= -1;
 
                     newposx = 3715.845703f + xchange;
@@ -4577,9 +4577,9 @@ class SoulWeaverAI : public CreatureAIScript
 
                     float ychange = sqrt(distance * distance - xchange * xchange);
 
-                    if (rand() % 2 == 1)
+                    if (RandomUInt(1) == 1)
                         xchange *= -1;
-                    if (rand() % 2 == 1)
+                    if (RandomUInt(1) == 1)
                         ychange *= -1;
 
                     newposx = 3715.845703f + xchange;
@@ -4740,9 +4740,9 @@ class GuardianOfIcecrownAI : public CreatureAIScript
 
                     float ychange = sqrt(distance * distance - xchange * xchange);
 
-                    if (rand() % 2 == 1)
+                    if (RandomUInt(1) == 1)
                         xchange *= -1;
-                    if (rand() % 2 == 1)
+                    if (RandomUInt(1) == 1)
                         ychange *= -1;
 
                     newposx = 3715.845703f + xchange;

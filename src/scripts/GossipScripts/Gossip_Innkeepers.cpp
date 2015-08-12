@@ -101,7 +101,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
                 else
                 {
                     int32 trickspell = 0;
-                    switch(rand() % 9)
+                    switch (RandomUInt(5))
                     {
                         case 0:
                             trickspell = 24753;                     // cannot cast, random 30sec

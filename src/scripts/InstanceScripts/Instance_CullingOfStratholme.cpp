@@ -82,7 +82,7 @@ class MeathookAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MEATHOOK_02);
@@ -262,7 +262,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_SALRAM_FLESH_03);
@@ -439,7 +439,7 @@ class ChronoLordEpochAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_CHRONOLORD_EPOCH_06);
@@ -742,7 +742,7 @@ class MalganisAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MALGANIS_04);

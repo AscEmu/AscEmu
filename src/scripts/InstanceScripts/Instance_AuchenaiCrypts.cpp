@@ -450,7 +450,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
 
             Avatar = false;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_MALADAAR_01);
@@ -470,7 +470,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MALADAAR_04);

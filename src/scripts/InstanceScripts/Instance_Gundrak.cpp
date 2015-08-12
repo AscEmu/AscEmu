@@ -386,7 +386,7 @@ class SladranAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(4217);     // You not breathin'? Good.
@@ -443,7 +443,7 @@ class GalDarahAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(4200);     // What a rush!

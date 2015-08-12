@@ -1509,16 +1509,14 @@ class ShadeofAranAI : public CreatureAIScript
             }
             else
             {
-                switch (rand() % 3)
+                switch (RandomUInt(2))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(2031);     // Please, no more. My son... he's gone mad!
                         break;
-
                     case 1:
                         _unit->SendScriptTextChatMessage(2032);     // I'll not be tortured again!
                         break;
-
                     case 2:
                         _unit->SendScriptTextChatMessage(2033);     // Who are you? What do you want? Stay away from me!
                         break;
@@ -1576,7 +1574,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2042);     // I want this nightmare to be over!
@@ -1706,7 +1704,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void FlameWreath()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2034);     // I'll show you this beaten dog still has some teeth!
@@ -1751,7 +1749,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void Blizzard()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2036);     // I'll freeze you all!
@@ -1766,7 +1764,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void AoEExplosion()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2038);     // Yes, yes, my son is quite powerful... but I have powers of my own!
@@ -2198,7 +2196,7 @@ class IllhoofAI : public CreatureAIScript
 
         void spawnSummoningPortals()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2053);     // Come, you dwellers in the dark. Rally to my call!
@@ -2214,7 +2212,7 @@ class IllhoofAI : public CreatureAIScript
 
         void PlrSacrifice()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2051);     // Please, accept this humble offering, oh great one.
@@ -2894,7 +2892,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2027);     // You are, but a plaything, unfit even to amuse.
@@ -3048,7 +3046,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
 
         void SummonInfernal()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2029);     // You face not Malchezaar alone, but the legions I command!
@@ -4076,9 +4074,9 @@ class DorotheeAI : public CreatureAIScript
 
             float ychange = sqrt(distance * distance - xchange * xchange);
 
-            if (rand() % 2 == 1)
+            if (RandomUInt(1) == 1)
                 xchange *= -1;
-            if (rand() % 2 == 1)
+            if (RandomUInt(1) == 1)
                 ychange *= -1;
 
             float newposx = _unit->GetPositionX() + xchange;
@@ -4942,7 +4940,7 @@ class RomuloAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2003);     // Thou smilest... upon the stroke that... murders me.
@@ -5128,7 +5126,7 @@ class JulianneAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(1998);     // Romulo, I come! Oh... this do I drink to thee!

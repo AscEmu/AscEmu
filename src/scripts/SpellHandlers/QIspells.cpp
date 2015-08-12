@@ -927,7 +927,7 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     Creature* whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 20021);
     if (whelp)
     {
-        if (rand() % 2 == 0)
+        if (RandomUInt(1) == 0)
         {
             Creature* adolescent = sEAS.SpawnCreature(pPlayer, 21817, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
             adolescent->Despawn(5 * 60 * 1000, 0);
@@ -944,7 +944,7 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21817);
     if (whelp)
     {
-        if (rand() % 10 < 8)
+        if (RandomUInt(10) < 8)
         {
             Creature* mature = sEAS.SpawnCreature(pPlayer, 21820, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
             mature->Despawn(5 * 60 * 1000, 0);
@@ -961,7 +961,7 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21821);
     if (whelp)
     {
-        if (rand() % 10 < 8)
+        if (RandomUInt(10) < 8)
         {
             Creature* mature = sEAS.SpawnCreature(pPlayer, 21820, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
             mature->Despawn(5 * 60 * 1000, 0);
@@ -979,7 +979,7 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21823);
     if (whelp)
     {
-        if (rand() % 2 == 0)
+        if (RandomUInt(1) == 0)
         {
             Creature* adolescent = sEAS.SpawnCreature(pPlayer, 21817, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
             adolescent->Despawn(5 * 60 * 1000, 0);
