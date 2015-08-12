@@ -542,7 +542,7 @@ bool ExtractGas(uint32 i, Spell* s)
 {
     bool check = false;
     uint32 cloudtype = 0;
-    Creature* creature = NULL;
+    Creature* creature = nullptr;
 
     if (!s->p_caster)
         return false;
@@ -574,13 +574,14 @@ bool ExtractGas(uint32 i, Spell* s)
 
     count = 3 + (RandomUInt(3));
 
-    if (cloudtype == 24222) item = 22572; //-air
-    if (cloudtype == 17408) item = 22576; //-mana
-    if (cloudtype == 17407) item = 22577; //-shadow
-    if (cloudtype == 17378) item = 22578; //-water
-
-    if (item == 0)
-        return false;
+    if (cloudtype == 24222)
+        item = 22572; //-air
+    if (cloudtype == 17408)
+        item = 22576; //-mana
+    if (cloudtype == 17407)
+        item = 22577; //-shadow
+    if (cloudtype == 17378)
+        item = 22578; //-water
 
     s->p_caster->GetItemInterface()->AddItemById(item, count, 0);
     creature->Despawn(3500, creature->GetProto()->RespawnTime);
