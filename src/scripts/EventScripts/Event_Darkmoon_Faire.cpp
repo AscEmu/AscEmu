@@ -183,7 +183,7 @@ class SetupCarnies_Gossip : public GossipScript
         {
             GossipMenu* Menu;
 
-            switch(rand() % 4)
+            switch(RandomUInt(0, 3))
             {
                 case 0:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), BARK_SETUP_CARNIES_1, plr);
@@ -232,7 +232,7 @@ class Flik_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch(rand() % 4)
+            switch (RandomUInt(0, 3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_FLIK_1);
@@ -252,7 +252,7 @@ class Flik_Bark : public CreatureAIScript
             }
 
             int rndTimer;
-            rndTimer = rand() % 240 + 120;              // Generate a random value between: 2-4mins
+            rndTimer = RandomUInt(120, 240);              // Generate a random value between: 2-4mins
             rndTimer = rndTimer * 1000;                 // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);              // Modify timer to new random value
         }
@@ -267,7 +267,7 @@ class FliksFrog_Gossip : public GossipScript
         {
             GossipMenu* Menu;
 
-            switch(rand() % 2)
+            switch (RandomUInt(0, 1))
             {
                 case 0:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60011, plr);
@@ -308,7 +308,7 @@ class GevasGrimegate_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch(rand() % 4)
+            switch (RandomUInt(0, 4))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_GEVAS_GRIMEGATE_1);
@@ -328,7 +328,7 @@ class GevasGrimegate_Bark : public CreatureAIScript
             }
 
             int rndTimer;
-            rndTimer = rand() % 300 + 180;             // Generate a random value between: 3-5mins
+            rndTimer = RandomUInt(180, 300);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
         }
@@ -347,7 +347,7 @@ class Lhara_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch(rand() % 4)
+            switch (RandomUInt(0, 4))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_LHARA_1);
@@ -367,7 +367,7 @@ class Lhara_Bark : public CreatureAIScript
             }
 
             int rndTimer;
-            rndTimer = rand() % 360 + 240;             // Generate a random value between: 4-6mins
+            rndTimer = RandomUInt(240, 360);             // Generate a random value between: 4-6mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
         }
@@ -424,7 +424,7 @@ class Morja_Bark : public CreatureAIScript
             _unit->SendScriptTextChatMessage(BARK_MORJA_1);
 
             int rndTimer;
-            rndTimer = rand() % 360 + 240;              // Generate a random value between: 4-6mins
+            rndTimer = RandomUInt(240, 360);              // Generate a random value between: 4-6mins
             rndTimer = rndTimer * 1000;                 // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);              // Modify timer to new random value
         }
@@ -530,7 +530,7 @@ class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch(rand() % 4)
+            switch (RandomUInt(0, 3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_1);
@@ -550,7 +550,7 @@ class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
             }
 
             int rndTimer;
-            rndTimer = rand() % 180 + 300;             // Generate a random value between: 3-5mins
+            rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
         }
@@ -783,7 +783,7 @@ class Sayge_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch(rand() % 4)
+            switch (RandomUInt(0, 3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SAYGE_1);
@@ -803,7 +803,7 @@ class Sayge_Bark : public CreatureAIScript
             }
 
             int rndTimer;
-            rndTimer = rand() % 180 + 300;             // Generate a random value between: 3-5mins
+            rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
         }
@@ -924,7 +924,7 @@ class SilasDarkmoon_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch (rand() % 6)
+            switch (RandomUInt(0, 5))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_1);
@@ -952,7 +952,7 @@ class SilasDarkmoon_Bark : public CreatureAIScript
             }
 
             int rndTimer;
-            rndTimer = rand() % 300 + 240;             // Generate a random value between: 3-5mins
+            rndTimer = RandomUInt(240, 360);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
         }
@@ -971,7 +971,7 @@ class StampThunderhorn_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch(rand() % 5)
+            switch (RandomUInt(0, 4))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_STAMP_THUNDERHORN_1);
@@ -995,7 +995,7 @@ class StampThunderhorn_Bark : public CreatureAIScript
             }
 
             int rndTimer;
-            rndTimer = rand() % 300 + 180;             // Generate a random value between: 3-5mins
+            rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
         }
@@ -1014,7 +1014,7 @@ class Sylannia_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch(rand() % 4)
+            switch (RandomUInt(0, 3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SYLANNIA_1);
@@ -1034,7 +1034,7 @@ class Sylannia_Bark : public CreatureAIScript
             }
 
             int rndTimer;
-            rndTimer = rand() % 360 + 180;             // Generate a random value between: 3-6mins
+            rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-6mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
         }

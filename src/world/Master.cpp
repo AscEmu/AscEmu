@@ -573,7 +573,7 @@ bool Master::Run(int argc, char** argv)
 }
 
 static const char *REQUIRED_CHAR_DB_VERSION = "2015-03-21_01_mailbox";
-static const char *REQUIRED_WORLD_DB_VERSION = "2015-08-02_01_creature_waypoints";
+static const char *REQUIRED_WORLD_DB_VERSION = "2015-08-11_02_column_size";
 
 bool Master::CheckDBVersion()
 {
