@@ -37,14 +37,10 @@ class Lady_Jaina : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature*  pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
-            if(pObject == NULL)
-                return;
-
             switch(IntId)
             {
                 case 0: // Return to start
-                    GossipHello(pCreature, plr);
+                    GossipHello(pObject, plr);
                     break;
                 case 1: // Give Item
                     {
@@ -75,14 +71,10 @@ class Cairne : public GossipScript
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             GossipMenu* Menu;
-            Creature*  pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
-            if(pObject == NULL)
-                return;
-
             switch(IntId)
             {
                 case 0: // Return to start
-                    GossipHello(pCreature, plr);
+                    GossipHello(pObject, plr);
                     break;
                 case 1: // Give Item
                     {

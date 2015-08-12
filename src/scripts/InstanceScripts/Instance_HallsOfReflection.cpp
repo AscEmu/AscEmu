@@ -166,6 +166,9 @@ class JainaAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, CN_LICH);
+            if (!Lich)
+                return;
+
             Lich->SetDisplayId(30721);
             Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f, 3.93f);
             RemoveAIUpdateEvent();

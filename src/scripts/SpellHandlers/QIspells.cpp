@@ -2741,13 +2741,15 @@ bool LeyLine(uint32 i, Spell* pSpell)
 
 bool ManaRemnants(uint32 i, Spell* pSpell)
 {
-    if (pSpell->p_caster == NULL)
-        return true;
-
     Player* pPlayer = pSpell->p_caster;
-    QuestLogEntry* qle;
+    if (!pPlayer)
+        return false;
 
     Creature* Ward = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 40404);
+    if (!Ward)
+        return false;
+
+    QuestLogEntry* qle;
 
     uint32 quests[] = { 11496, 11523 };
     for (uint32 i = 0; i < 2; i++)
