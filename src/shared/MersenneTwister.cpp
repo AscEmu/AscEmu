@@ -292,11 +292,15 @@ int CRandomMersenne::IRandom(int min, int max)
 {
     // Output random integer in the interval min <= x <= max
     // Relative error on frequencies < 2^-32
-    if(max <= min)
-    {
-        if(max == min) return min;
-        else return 0x80000000;
-    }
+
+    // Range == 0, so don't bother with random calculations
+    if (max == min)
+        return max;
+
+    // max < min, so throw an exception instead of assuming intention
+    if(max < min)
+        throw std::domain_error("max < min when calling CRandomMersenne::IRandom");
+
     // Multiply interval with random and truncate
     int r = int((max - min + 1) * Random()) + min;
     if(r > max) r = max;
