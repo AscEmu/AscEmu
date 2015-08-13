@@ -45,62 +45,62 @@
 /// Blastenheimer 5000 Ultra Cannon
 class Blastenheimer5000 : public GameObjectAIScript
 {
-public:
-    Blastenheimer5000(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
-    {
-        mPlayerGuid = 0;
-    };
-
-    static GameObjectAIScript* Create(GameObject* pGameObject)
-    {
-        return new Blastenheimer5000(pGameObject);
-    };
-
-    void OnActivate(Player* pPlayer)
-    {
-        if (mPlayerGuid != 0)
-            return;
-
-        pPlayer->CastSpell(pPlayer, 24832, true);
-        pPlayer->SetMovement(MOVE_ROOT, 1);
-        _gameobject->PlaySoundToSet(8476);
-        mPlayerGuid = static_cast<uint32>(pPlayer->GetGUID());
-        RegisterAIUpdateEvent(2200);
-    };
-
-    void AIUpdate()
-    {
-        Player* CurrentPlayer = objmgr.GetPlayer(mPlayerGuid);
-        if (CurrentPlayer == NULL)
+    public:
+        Blastenheimer5000(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
         {
-            RemoveAIUpdateEvent();
             mPlayerGuid = 0;
-            return;
-        };
-
-        if (CurrentPlayer->GetMapId() == 530)           /// Shattrath
-        {
-            CurrentPlayer->SafeTeleport(530, 0, -1742.640869f, 5454.712402f, -7.928009f, 4.606363f);
         }
-        else if (CurrentPlayer->GetMapId() == 0)        /// Elwynn Forest
+
+        static GameObjectAIScript* Create(GameObject* pGameObject)
         {
-            CurrentPlayer->SafeTeleport(0, 0, -9569.150391f, -14.753426f, 68.051422f, 4.874008f);
+            return new Blastenheimer5000(pGameObject);
         }
-        else if (CurrentPlayer->GetMapId() == 1)        /// Mulgore
+
+        void OnActivate(Player* pPlayer)
         {
-            CurrentPlayer->SafeTeleport(1, 0, -1326.711914f, 86.301125f, 133.093918f, 3.510725f);
-        };
+            if (mPlayerGuid != 0)
+                return;
 
-        CurrentPlayer->SetMovement(MOVE_UNROOT, 1);
-        CurrentPlayer->CastSpell(CurrentPlayer, 42867, true);   // 24742
-        _gameobject->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
-        mPlayerGuid = 0;
-        RemoveAIUpdateEvent();
-    };
+            pPlayer->CastSpell(pPlayer, 24832, true);
+            pPlayer->SetMovement(MOVE_ROOT, 1);
+            _gameobject->PlaySoundToSet(8476);
+            mPlayerGuid = static_cast<uint32>(pPlayer->GetGUID());
+            RegisterAIUpdateEvent(2200);
+        }
 
-protected:
+        void AIUpdate()
+        {
+            Player* CurrentPlayer = objmgr.GetPlayer(mPlayerGuid);
+            if (CurrentPlayer == NULL)
+            {
+                RemoveAIUpdateEvent();
+                mPlayerGuid = 0;
+                return;
+            }
 
-    uint32    mPlayerGuid;
+            if (CurrentPlayer->GetMapId() == 530)           /// Shattrath
+            {
+                CurrentPlayer->SafeTeleport(530, 0, -1742.640869f, 5454.712402f, -7.928009f, 4.606363f);
+            }
+            else if (CurrentPlayer->GetMapId() == 0)        /// Elwynn Forest
+            {
+                CurrentPlayer->SafeTeleport(0, 0, -9569.150391f, -14.753426f, 68.051422f, 4.874008f);
+            }
+            else if (CurrentPlayer->GetMapId() == 1)        /// Mulgore
+            {
+                CurrentPlayer->SafeTeleport(1, 0, -1326.711914f, 86.301125f, 133.093918f, 3.510725f);
+            }
+
+            CurrentPlayer->SetMovement(MOVE_UNROOT, 1);
+            CurrentPlayer->CastSpell(CurrentPlayer, 42867, true);   // 24742
+            _gameobject->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
+            mPlayerGuid = 0;
+            RemoveAIUpdateEvent();
+        }
+
+    protected:
+
+        uint32 mPlayerGuid;
 };
 
 /*
@@ -179,11 +179,12 @@ GameObject* Console;
 class SetupCarnies_Gossip : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
 
-            switch(RandomUInt(0, 3))
+            switch (RandomUInt(3))
             {
                 case 0:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), BARK_SETUP_CARNIES_1, plr);
@@ -220,10 +221,10 @@ class SetupCarnies_Gossip : public GossipScript
 };
 
 
-// Flik
 class Flik_Bark : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(Flik_Bark);
         Flik_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -232,7 +233,7 @@ class Flik_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch (RandomUInt(0, 3))
+            switch (RandomUInt(3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_FLIK_1);
@@ -251,7 +252,7 @@ class Flik_Bark : public CreatureAIScript
                     break;
             }
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(120, 240);              // Generate a random value between: 2-4mins
             rndTimer = rndTimer * 1000;                 // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);              // Modify timer to new random value
@@ -263,11 +264,12 @@ class Flik_Bark : public CreatureAIScript
 class FliksFrog_Gossip : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
 
-            switch (RandomUInt(0, 1))
+            switch (RandomUInt(1))
             {
                 case 0:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60011, plr);
@@ -292,23 +294,22 @@ class FliksFrog_Gossip : public GossipScript
                     break;
             }
         }
-
 };
 
 
-/// Gevas Grimegate
-class GevasGrimegate_Bark : public CreatureAIScript
+class GelvasGrimegate_Bark : public CreatureAIScript
 {
     public:
-        ADD_CREATURE_FACTORY_FUNCTION(GevasGrimegate_Bark);
-        GevasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
+
+        ADD_CREATURE_FACTORY_FUNCTION(GelvasGrimegate_Bark);
+        GelvasGrimegate_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             RegisterAIUpdateEvent(60000);             // Start initial update after: 1mins
         }
 
         void AIUpdate()
         {
-            switch (RandomUInt(0, 4))
+            switch (RandomUInt(4))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_GEVAS_GRIMEGATE_1);
@@ -327,7 +328,7 @@ class GevasGrimegate_Bark : public CreatureAIScript
                     break;
             }
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(180, 300);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
@@ -335,10 +336,10 @@ class GevasGrimegate_Bark : public CreatureAIScript
 };
 
 
-// Lhara
 class Lhara_Bark : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(Lhara_Bark);
         Lhara_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -347,7 +348,7 @@ class Lhara_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch (RandomUInt(0, 4))
+            switch (RandomUInt(4))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_LHARA_1);
@@ -366,7 +367,7 @@ class Lhara_Bark : public CreatureAIScript
                     break;
             }
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(240, 360);             // Generate a random value between: 4-6mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
@@ -374,10 +375,10 @@ class Lhara_Bark : public CreatureAIScript
 };
 
 
-// Maxima Blastenheimer
 class MaximaBlastenheimer_Gossip : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
@@ -409,10 +410,10 @@ class MaximaBlastenheimer_Gossip : public GossipScript
 };
 
 
-// Morja
 class Morja_Bark : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(Morja_Bark);
         Morja_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -423,7 +424,7 @@ class Morja_Bark : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(BARK_MORJA_1);
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(240, 360);              // Generate a random value between: 4-6mins
             rndTimer = rndTimer * 1000;                 // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);              // Modify timer to new random value
@@ -431,97 +432,97 @@ class Morja_Bark : public CreatureAIScript
 };
 
 
-// Professor Thaddeus Paleo
 class ProfessorThaddeusPaleo_Gossip : public GossipScript
 {
     public:
-        void GossipHello(Object* pObject, Player* plr)
+    void GossipHello(Object* pObject, Player* plr)
+    {
+        GossipMenu* Menu;
+        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60016, plr);
+
+        if (pObject->GetUInt32Value(UNIT_NPC_FLAGS) & UNIT_NPC_FLAG_VENDOR)
+            Menu->AddItem(Arcemu::Gossip::ICON_VENDOR, plr->GetSession()->LocalizedGossipOption(GI_BROWS_GOODS), 1);
+        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ME_DARKMOON_CARDS), 2);
+
+        Menu->SendTo(plr);
+    }
+
+    void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
+    {
+        GossipMenu* Menu;
+        Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+        if (!pObject->IsCreature())
+            return;
+
+        switch (IntId)
         {
-            GossipMenu* Menu;
-            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60016, plr);
+            case 1:
+                plr->GetSession()->SendInventoryList(pCreature);
+                break;
 
-            if(pObject->GetUInt32Value(UNIT_NPC_FLAGS) & UNIT_NPC_FLAG_VENDOR)
-                Menu->AddItem(Arcemu::Gossip::ICON_VENDOR, plr->GetSession()->LocalizedGossipOption(GI_BROWS_GOODS), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ME_DARKMOON_CARDS), 2);
+            case 2:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60017, plr);
 
-            Menu->SendTo(plr);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BEAST_DECK), 5);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_PORTAL_DECK), 6);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ELEMENTALS_DECK), 7);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_WARLORDS_DECK), 8);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_FURIES_DECK), 9);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_LUNACY_DECK), 10);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BLESSINGS_DECK), 11);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_STORMS_DECK), 12);
+
+                Menu->SendTo(plr);
+                break;
+
+            case 5:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60018, plr);
+                Menu->SendTo(plr);
+                break;
+
+            case 6:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60019, plr);
+                Menu->SendTo(plr);
+                break;
+
+            case 7:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60020, plr);
+                Menu->SendTo(plr);
+                break;
+
+            case 8:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60021, plr);
+                Menu->SendTo(plr);
+                break;
+
+            case 9:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60022, plr);
+                Menu->SendTo(plr);
+                break;
+
+            case 10:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60023, plr);
+                Menu->SendTo(plr);
+                break;
+
+            case 11:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60024, plr);
+                Menu->SendTo(plr);
+                break;
+
+            case 12:
+                objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60025, plr);
+                Menu->SendTo(plr);
+                break;
         }
-
-        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
-        {
-            GossipMenu* Menu;
-            Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
-            if(!pObject->IsCreature())
-                return;
-
-            switch(IntId)
-            {
-                case 1:
-                    plr->GetSession()->SendInventoryList(pCreature);
-                    break;
-
-                case 2:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60017, plr);
-
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BEAST_DECK), 5);
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_PORTAL_DECK), 6);
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ELEMENTALS_DECK), 7);
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_WARLORDS_DECK), 8);
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_FURIES_DECK), 9);
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_LUNACY_DECK), 10);
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BLESSINGS_DECK), 11);
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_STORMS_DECK), 12);
-
-                    Menu->SendTo(plr);
-                    break;
-
-                case 5:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60018, plr);
-                    Menu->SendTo(plr);
-                    break;
-
-                case 6:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60019, plr);
-                    Menu->SendTo(plr);
-                    break;
-
-                case 7:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60020, plr);
-                    Menu->SendTo(plr);
-                    break;
-
-                case 8:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60021, plr);
-                    Menu->SendTo(plr);
-                    break;
-
-                case 9:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60022, plr);
-                    Menu->SendTo(plr);
-                    break;
-
-                case 10:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60023, plr);
-                    Menu->SendTo(plr);
-                    break;
-
-                case 11:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60024, plr);
-                    Menu->SendTo(plr);
-                    break;
-
-                case 12:
-                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60025, plr);
-                    Menu->SendTo(plr);
-                    break;
-            }
-        }
+    }
 };
 
 
 class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(ProfessorThaddeusPaleo_Bark);
         ProfessorThaddeusPaleo_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -530,7 +531,7 @@ class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch (RandomUInt(0, 3))
+            switch (RandomUInt(3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_PROFESSOR_THADDEUS_PALEO_1);
@@ -549,7 +550,7 @@ class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
                     break;
             }
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
@@ -562,6 +563,7 @@ class ProfessorThaddeusPaleo_Bark : public CreatureAIScript
 class Sayge_Gossip : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
@@ -775,6 +777,7 @@ class Sayge_Gossip : public GossipScript
 class Sayge_Bark : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(Sayge_Bark);
         Sayge_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -783,7 +786,7 @@ class Sayge_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch (RandomUInt(0, 3))
+            switch (RandomUInt(3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SAYGE_1);
@@ -802,7 +805,7 @@ class Sayge_Bark : public CreatureAIScript
                     break;
             }
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
@@ -815,6 +818,7 @@ class Sayge_Bark : public CreatureAIScript
 class SelinaDourman_Gossip : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
@@ -877,14 +881,13 @@ class SelinaDourman_Gossip : public GossipScript
                     break;
             }
         }
-
 };
 
 
-// Silas Darkmoon
 class SilasDarkmoon_Gossip : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
@@ -910,12 +913,13 @@ class SilasDarkmoon_Gossip : public GossipScript
                     break;
             }
         }
-
 };
+
 
 class SilasDarkmoon_Bark : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(SilasDarkmoon_Bark);
         SilasDarkmoon_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -924,7 +928,7 @@ class SilasDarkmoon_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch (RandomUInt(0, 5))
+            switch (RandomUInt(5))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SILAS_DARKMOON_1);
@@ -951,7 +955,7 @@ class SilasDarkmoon_Bark : public CreatureAIScript
                     break;
             }
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(240, 360);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
@@ -959,10 +963,10 @@ class SilasDarkmoon_Bark : public CreatureAIScript
 };
 
 
-// Stamp Thunderhorn
 class StampThunderhorn_Bark : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(StampThunderhorn_Bark);
         StampThunderhorn_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -971,7 +975,7 @@ class StampThunderhorn_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch (RandomUInt(0, 4))
+            switch (RandomUInt(4))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_STAMP_THUNDERHORN_1);
@@ -994,7 +998,7 @@ class StampThunderhorn_Bark : public CreatureAIScript
                     break;
             }
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-5mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
@@ -1002,10 +1006,10 @@ class StampThunderhorn_Bark : public CreatureAIScript
 };
 
 
-// Sylannia
 class Sylannia_Bark : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(Sylannia_Bark);
         Sylannia_Bark(Creature* pCreature) : CreatureAIScript(pCreature)
         {
@@ -1014,7 +1018,7 @@ class Sylannia_Bark : public CreatureAIScript
 
         void AIUpdate()
         {
-            switch (RandomUInt(0, 3))
+            switch (RandomUInt(3))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(BARK_SYLANNIA_1);
@@ -1033,12 +1037,13 @@ class Sylannia_Bark : public CreatureAIScript
                     break;
             }
 
-            int rndTimer;
+            uint32 rndTimer;
             rndTimer = RandomUInt(180, 360);             // Generate a random value between: 3-6mins
             rndTimer = rndTimer * 1000;             // Convert to milliseconds
             ModifyAIUpdateEvent(rndTimer);             // Modify timer to new random value
         }
 };
+
 
 void SetupDarkmoonFaire(ScriptMgr* mgr)
 {
@@ -1056,7 +1061,7 @@ void SetupDarkmoonFaire(ScriptMgr* mgr)
 
     //CreatureScripts
     mgr->register_creature_script(14860, &Flik_Bark::Create);
-    mgr->register_creature_script(14828, &GevasGrimegate_Bark::Create);
+    mgr->register_creature_script(14828, &GelvasGrimegate_Bark::Create);
     mgr->register_creature_script(14846, &Lhara_Bark::Create);
     mgr->register_creature_script(14871, &Morja_Bark::Create);
 

@@ -61,7 +61,7 @@ class Darrowshire_Spirit : public GossipScript
 
             Menu->SendTo(plr);
 
-            if(!pObject || !pObject->IsCreature())
+            if(!pObject->IsCreature())
                 return;
 
             Creature* Spirit = TO_CREATURE(pObject);

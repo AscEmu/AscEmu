@@ -115,7 +115,7 @@ class ZerekethAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(5497);     // This vessel is empty.
@@ -279,7 +279,7 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(7369);     // Completely ineffective.  Just like someone else I know.
@@ -330,7 +330,7 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(7364);     // Yes, that was quite satisfying.
@@ -396,7 +396,7 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(5035);     // Your fate is written.

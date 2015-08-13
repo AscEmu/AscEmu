@@ -2233,7 +2233,7 @@ class AlarAI : public CreatureAIScript
         {
             CastSpell(5);
             CastSpell(4);
-            if ((rand() % 100) < 2)
+            if ((RandomUInt(1, 100)) < 2)
             {
                 Unit* target = GetRandomTarget();
                 Creature* patch;

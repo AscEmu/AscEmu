@@ -2805,7 +2805,7 @@ class SwamplordMuselekAI : public CreatureAIScript
             for (int i = 0; i < 5; i++)
                 spells[i].casttime = 0;
 
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_02);
@@ -2832,7 +2832,7 @@ class SwamplordMuselekAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_SWAMPLORD_MUSEL_05);
@@ -3021,7 +3021,7 @@ class TheBlackStalkerAI : public CreatureAIScript
             for (int i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
-            spells[3].casttime = (uint32)time(NULL) + spells[3].cooldown + rand() % 6;
+            spells[3].casttime = (uint32)time(NULL) + spells[3].cooldown + RandomUInt(5);
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
         }
@@ -3046,7 +3046,7 @@ class TheBlackStalkerAI : public CreatureAIScript
             {
                 _unit->CastSpell(_unit, spells[3].info, spells[3].instant);
 
-                spells[3].casttime = (uint32)time(NULL) + spells[3].cooldown + rand() % 6;
+                spells[3].casttime = (uint32)time(NULL) + spells[3].cooldown + RandomUInt(5);
             }
 
             float val = RandomFloat(100.0f);

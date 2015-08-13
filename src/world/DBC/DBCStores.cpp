@@ -367,7 +367,7 @@ bool LoadDBCs()
 {
     uint32 available_dbc_locales = 0xFFFFFFFF;
     DBC::StoreProblemList bad_dbc_files;
-    std::string dbc_path = "./dbc/";
+    std::string dbc_path = "./DBC/";
 
     LOAD_DBC("DBC/WorldMapOverlay.dbc", WorldMapOverlayStoreFormat, true, dbcWorldMapOverlayStore, true);
 #ifdef ENABLE_ACHIEVEMENTS

@@ -350,10 +350,12 @@ class MograineAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MORGRAINE_02);
+                        break;
+                    default:
                         break;
                 }
             }
@@ -508,10 +510,12 @@ class WhitemaneAI : public CreatureAIScript
 
             if (_unit->GetHealthPct() > 0)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WHITEMANE_02);
+                        break;
+                    default:
                         break;
                 }
             }
@@ -683,11 +687,13 @@ class FairbanksAI : public CreatureAIScript
 
             if (_unit->GetHealthPct() > 0)
             {
-                switch (rand() % 2)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ha! Had enough?");       /// \todo can anybody verify this?
                         _unit->PlaySoundToSet(0000);
+                        break;
+                    default:
                         break;
                 }
             }

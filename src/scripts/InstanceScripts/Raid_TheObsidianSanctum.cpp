@@ -96,7 +96,7 @@ class ObsidianSanctumScript : public MoonInstanceScript
         ObsidianSanctumScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
             memset(m_creatureGuid, 0, sizeof(m_creatureGuid));
-        };
+        }
 
         void OnCreaturePushToWorld(Creature* pCreature)
         {
@@ -116,8 +116,8 @@ class ObsidianSanctumScript : public MoonInstanceScript
                     break;
                 default:
                     break;
-            };
-        };
+            }
+        }
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
@@ -128,8 +128,8 @@ class ObsidianSanctumScript : public MoonInstanceScript
                     break;
                 default:
                     break;
-            };
-        };
+            }
+        }
 
         void DoDrakeAura(uint8 pData)
         {
@@ -147,7 +147,7 @@ class ObsidianSanctumScript : public MoonInstanceScript
                     break;
                 default:
                     break;
-            };
+            }
 
             Creature* pSartharion = GetCreature(BOSS_SARTHARION);
             if (pSartharion == NULL)
@@ -155,7 +155,7 @@ class ObsidianSanctumScript : public MoonInstanceScript
 
             pSartharion->CastSpell(pSartharion, pSpellEntry, true);
             pSartharion->RemoveAura(pSpellEntry);   // unproper hackfix
-        };
+        }
 
         Creature* GetCreature(uint8 pData)
         {
@@ -163,7 +163,7 @@ class ObsidianSanctumScript : public MoonInstanceScript
                 return NULL;
 
             return GetCreatureByGuid(m_creatureGuid[pData]);
-        };
+        }
 };
 
 void SpellFunc_FlameTsunami(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -172,7 +172,7 @@ void SpellFunc_FlameTsunami(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI,
     {
         pCreatureAI->GetUnit()->SendChatMessage(CHAT_MSG_RAID_BOSS_EMOTE, LANG_UNIVERSAL, "The lava surrounding Sartharion churns!");
 
-        switch (rand() % 4)
+        switch (RandomUInt(3))
         {
             case 0:
                 pCreatureAI->Emote("Such flammable little insects....", Text_Yell, 14100);
@@ -186,14 +186,13 @@ void SpellFunc_FlameTsunami(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI,
             case 3:
                 pCreatureAI->Emote("All will be reduced to ash!", Text_Yell, 14103);
                 break;
-        };
+        }
 
-        uint32 RndSide = rand() % 2;
         Creature* Tsunami = NULL;
 
         for (int i = 0; i < 3; ++i)
         {
-            switch (RndSide)
+            switch (RandomUInt(1))
             {
                 case 0:
                     Tsunami = pCreatureAI->GetUnit()->GetMapMgr()->GetInterface()->SpawnCreature(CN_FLAME_TSUNAMI, TSUNAMI_SPAWN[i].x, TSUNAMI_SPAWN[i].y, TSUNAMI_SPAWN[i].z, TSUNAMI_SPAWN[i].o, true, true, 0, 0);
@@ -206,11 +205,11 @@ void SpellFunc_FlameTsunami(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI,
 
                     if (Tsunami != NULL)
                         Tsunami->GetAIInterface()->MoveTo(TSUNAMI_MOVE[i + 3].x, TSUNAMI_MOVE[i + 3].y, TSUNAMI_MOVE[i + 3].z, TSUNAMI_MOVE[i + 3].o);
-            };
+            }
 
             Tsunami = NULL;
-        };
-    };
+        }
+    }
 };
 
 void SpellFunc_LavaSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -220,7 +219,7 @@ void SpellFunc_LavaSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
 
     for (int i = 0; i < 2; ++i)
     {
-        uint32 j = rand() % 6;
+        uint32 j = RandomUInt(5);
         pCreatureAI->SpawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), true);
     };
 };

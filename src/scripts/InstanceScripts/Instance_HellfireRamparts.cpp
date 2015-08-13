@@ -103,7 +103,7 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
 
     void OnCombatStart(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(4873);     // What have we here?
@@ -119,7 +119,7 @@ class WatchkeeperGargolmarAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 2)
+        switch (RandomUInt(1))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(4876);     // Say farewell!
@@ -189,7 +189,7 @@ class OmorTheUnscarredAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(4856);     // I will not be defeated!

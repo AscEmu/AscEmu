@@ -119,6 +119,9 @@ class MirrorImageAI : public CreatureAIScript
                     AI_Spell sp1;
                     sp1.entryId = 59638;
                     sp1.spell = dbcSpell.LookupEntryForced(sp1.entryId);
+                    if (!sp1.spell)
+                        return;
+
                     sp1.spellType = STYPE_DAMAGE;
                     sp1.agent = AGENT_SPELL;
                     sp1.spelltargetType = TTYPE_SINGLETARGET;
@@ -136,6 +139,9 @@ class MirrorImageAI : public CreatureAIScript
                     AI_Spell sp2;
                     sp2.entryId = 59637;
                     sp2.spell = dbcSpell.LookupEntryForced(sp2.entryId);
+                    if (!sp2.spell)
+                        return;
+
                     sp2.spellType = STYPE_DAMAGE;
                     sp2.agent = AGENT_SPELL;
                     sp2.spelltargetType = TTYPE_SINGLETARGET;

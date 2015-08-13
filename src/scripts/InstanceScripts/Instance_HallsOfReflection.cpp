@@ -166,6 +166,9 @@ class JainaAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, CN_LICH);
+            if (!Lich)
+                return;
+
             Lich->SetDisplayId(30721);
             Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f, 3.93f);
             RemoveAIUpdateEvent();
@@ -239,7 +242,7 @@ class Marwyn : public MoonScriptBossAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
@@ -312,7 +315,7 @@ class Falric : public MoonScriptBossAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(4086);     // The children of Stratholme fought with more ferocity!

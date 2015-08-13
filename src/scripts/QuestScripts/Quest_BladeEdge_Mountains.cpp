@@ -40,6 +40,9 @@ class WyrmcultBlackwhelp : public CreatureAIScript
             if (a != nullptr)
             {
                 Unit* Caster = a->GetUnitCaster();
+                if (!Caster)
+                    return;
+
                 if (Caster->IsPlayer())
                 {
 
