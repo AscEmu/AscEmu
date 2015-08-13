@@ -1412,7 +1412,7 @@ void NothThePlaguebringerAI::AIUpdate()
             ResetTimer(mPhaseSwitchTimer, 70000);
             ResetTimer(mSkeletonTimer, 8000);
             if (IsHeroic())
-                ResetTimer(mBlinkTimer, 28000 + (rand() % 12 + 1) * 1000);
+                ResetTimer(mBlinkTimer, 28000 + (RandomUInt(12)) * 1000);
 
             return;
         };
@@ -1967,7 +1967,7 @@ void LoathebAI::AIUpdate()
         SporeAI* Spore = NULL;
         for (uint32 i = 0; i < 3; ++i)
         {
-            Id = rand () % 3 + 1;
+            Id = RandomUInt(3);
             if (PosTaken[Id])
             {
                 for (uint32 j = 0; j < 4; ++j)

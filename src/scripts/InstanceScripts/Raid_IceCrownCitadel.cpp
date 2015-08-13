@@ -346,19 +346,19 @@ class LordMarrowgarAI : public MoonScriptBossAI
             if (!TargetTable.size())
                 return;
 
-            size_t RandTarget = rand() % TargetTable.size();
-            Unit* RTarget = TargetTable[RandTarget];
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            if (!RTarget)
+            if (random_target == nullptr)
                 return;
 
-            _unit->CastSpell(RTarget, dbcSpell.LookupEntry(BONE_SPIKE), false);
+            _unit->CastSpell(random_target, dbcSpell.LookupEntry(BONE_SPIKE), false);
 
             TargetTable.clear();
 
-            float dcX = RTarget->GetPositionX();
-            float dcY = RTarget->GetPositionY();
-            float dcZ = RTarget->GetPositionZ();
+            float dcX = random_target->GetPositionX();
+            float dcY = random_target->GetPositionY();
+            float dcZ = random_target->GetPositionZ();
 
             _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_BONE_SPIKE, dcX, dcY, dcZ, 0, true, false, 0, 0);
 

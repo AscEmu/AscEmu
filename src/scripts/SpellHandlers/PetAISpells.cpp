@@ -282,7 +282,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                     SpellEntry* mProc = dbcSpell.LookupEntryForced(procSpell[p]);
                     if (!mProc)
                         return;
-                    int x = rand() % 100;
+                    int x = RandomUInt(99);
                     uint32 proc = mProc->procChance;
                     if (proc < 1)
                         proc = 10; // Got to be fair :P
