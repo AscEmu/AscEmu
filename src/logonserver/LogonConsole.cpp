@@ -32,7 +32,8 @@ void LogonConsole::TranslateRehash(char* str)
 
 void LogonConsole::Kill()
 {
-    _thread->kill.SetVal(true);
+    if (_thread != nullptr)
+        _thread->kill.SetVal(true);
 #ifdef WIN32
     /* write the return keydown/keyup event */
     DWORD dwTmp;
@@ -54,7 +55,7 @@ void LogonConsole::Kill()
     WriteConsoleInput(GetStdHandle(STD_INPUT_HANDLE), ir, 2, &dwTmp);
 #endif
     LOG_BASIC("Waiting for console thread to terminate....");
-    while (_thread != NULL)
+    while (_thread != nullptr)
     {
         Arcemu::Sleep(100);
     }

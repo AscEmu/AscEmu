@@ -84,6 +84,9 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     CreatureInfo* victimI;
     victimI = TO_CREATURE(pVictim)->GetCreatureInfo();
 
+    if (victimI == nullptr)
+        return 0;
+
     if (victimI->Type == UNIT_TYPE_CRITTER)
         return 0;
     uint32 VictimLvl = pVictim->getLevel();

@@ -76,6 +76,9 @@ int32 HonorHandler::CalculateHonorPointsForKill(uint32 playerLevel, uint32 victi
 
 void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 {
+    if (pVictim == nullptr)
+        return;
+
     if (pVictim->m_honorless)
         return;
 

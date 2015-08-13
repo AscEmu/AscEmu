@@ -695,12 +695,14 @@ Unit* Aura::GetUnitCaster()
 
 Object* Aura::GetCaster()
 {
+    if (m_target == nullptr)
+        return nullptr;
 	if (m_casterGuid == m_target->GetGUID())
 		return m_target;
 	if (m_target->GetMapMgr())
 		return m_target->GetMapMgr()->_GetObject(m_casterGuid);
 	else
-		return NULL;
+        return nullptr;
 }
 
 Aura::Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
@@ -5431,16 +5433,16 @@ void Aura::SpellAuraModPercStat(bool apply)
 
 void Aura::SpellAuraSplitDamage(bool apply)
 {
-	Unit* source = NULL; // This is the Unit whose damage we are splitting
-	Unit* destination = NULL; // This is the Unit that shares the beating
+	Unit* source = nullptr;         // This is the Unit whose damage we are splitting
+    Unit* destination = nullptr;    // This is the Unit that shares the beating
 	Object* caster = GetCaster();
 
 	// We don't want to split our damage with the owner
-	if ((m_spellProto->Effect[ mod->i ] == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
-	        (caster != NULL) &&
-	        (m_target != NULL) &&
-	        caster->IsPet() &&
-	        caster->GetGUID() == m_target->GetGUID())
+	if ((m_spellProto->Effect[mod->i] == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
+        (caster != nullptr) &&
+        (m_target != nullptr) &&
+	    caster->IsPet() &&
+	    caster->GetGUID() == m_target->GetGUID())
 		return;
 
 	if (m_areaAura)
