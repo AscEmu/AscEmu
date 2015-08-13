@@ -3018,7 +3018,12 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
             if (tSrcItem != NULL)
             {
-                m_pOwner->GetItemInterface()->SafeAddItem(tSrcItem, dstslot, static_cast<int16>(Slot));
+                auto result = m_pOwner->GetItemInterface()->SafeAddItem(tSrcItem, dstslot, static_cast<int16>(Slot));
+                if (!result)
+                {
+                    Log.Error("SwapItemSlots", "Error while adding item %u to player %s", tSrcItem->GetEntry(), m_pOwner->GetNameString());
+                    return;
+                }
             }
         }
     }

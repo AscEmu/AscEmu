@@ -1694,7 +1694,7 @@ Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, floa
 {
     auto creature = CreateCreature(pEntry);
     auto cp = CreatureProtoStorage.LookupEntry(pEntry);
-    if (cp == nullptr || cp == NULL)
+    if (cp == nullptr)
         return nullptr;
 
     creature->Load(cp, pX, pY, pZ, pO);
