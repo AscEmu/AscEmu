@@ -400,7 +400,7 @@ Unit::Unit()
     m_noFallDamage = false;
     z_axisposition = 0.0f;
     m_safeFall = 0;
-
+    detectRange = 0.0f;
     m_cTimer = 0;
     m_temp_summon = false;
     m_meleespell_ecn = 0;
