@@ -447,7 +447,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
         }
 
     private:
-        int nrspells;
+        uint8 nrspells;
         int minspell;
         int maxspell;
         bool form; //false = water | true = poison
@@ -591,7 +591,7 @@ class LurkerAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 //------------------------------------
@@ -974,7 +974,7 @@ class LeotherasAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 SwitchTimer;
         uint32 WhirlwindTimer;
         uint32 EnrageTimer;
@@ -1158,7 +1158,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
         }
 
     private:
-        int nrspells;
+        uint8 nrspells;
 };
 
 class ShadowofLeotherasAI : public CreatureAIScript
@@ -2414,7 +2414,7 @@ class VashjAI : public CreatureAIScript
         uint32 Phase;
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 EnchantedElementalTimer;
         uint32 CoilfangStriderTimer;
         uint32 CoilfangEliteTimer;
@@ -2946,7 +2946,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         uint32 m_entry;
         uint32 FlyWay;
         uint32 Phase;
-        int nrspells;
+        uint8 nrspells;
 };
 
 

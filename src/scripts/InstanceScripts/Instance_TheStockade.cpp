@@ -279,7 +279,7 @@ class HamhockAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // BazilAI
@@ -757,7 +757,7 @@ class PrisonerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ConvictAI

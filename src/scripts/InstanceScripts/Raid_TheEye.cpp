@@ -193,7 +193,7 @@ class AStarScryerAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // STAR SCRYER
@@ -359,7 +359,7 @@ class StarScryerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ASTROMANCER
@@ -589,7 +589,7 @@ class AstromancerLordAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // BLOODWARDER VINDICATOR
@@ -762,7 +762,7 @@ class BloodVindicatorAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // BLOODWARDER LEGIONNARE
@@ -935,7 +935,7 @@ class BloodLegionnareAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // BLOODWARDER MARSHAL
@@ -1108,7 +1108,7 @@ class BloodMarshalAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // PHOENIX HAWK
@@ -1283,7 +1283,7 @@ class PhoenixHawkAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CRYSTALCORE SENTINEL
@@ -1456,7 +1456,7 @@ class CrystalSentinelAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CRYSTALCORE MECHANIC
@@ -1622,7 +1622,7 @@ class CrystalMechanicAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2398,7 +2398,7 @@ class AlarAI : public CreatureAIScript
         uint32 FlyWay;
         uint32 Phase;
         uint32 nDeath;
-        int nrspells;
+        uint8 nrspells;
         uint32 timer, lasttime;
         bool Flying;
 };
@@ -2492,7 +2492,7 @@ class EmberAlarAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2559,7 +2559,7 @@ class PatchAlarAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 /*

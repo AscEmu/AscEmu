@@ -1980,7 +1980,7 @@ class NajentusAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 //------------------------------------
@@ -2628,7 +2628,7 @@ class GurtoggAI : public CreatureAIScript
         uint32 LastThreat;
         uint32 PhaseTimer;
         uint32 Phase;
-        int nrspells;
+        uint8 nrspells;
 };
 
 //----------------------------------------------------------------------//
@@ -3298,7 +3298,7 @@ class ShahrazAI : public CreatureAIScript
         uint32 SoundTimer;
         uint32 AuraChange;
         bool Enraged;
-        int nrspells;
+        uint8 nrspells;
 };
 
 //-----------------------The Illidari Council---------------------------//
@@ -3716,7 +3716,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 //Shade of AkamaAI
@@ -3951,7 +3951,7 @@ class ShadeofakamaAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
         int hm;
 };
 

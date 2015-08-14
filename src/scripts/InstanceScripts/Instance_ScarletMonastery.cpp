@@ -454,7 +454,7 @@ class MograineAI : public CreatureAIScript
     protected:
 
         uint32 mPhase;
-        int nrspells;
+        uint8 nrspells;
         int Timer;
 };
 
@@ -640,7 +640,7 @@ class WhitemaneAI : public CreatureAIScript
     protected:
 
         uint32 mPhase;  // NPC has 2 phases
-        int nrspells;
+        uint8 nrspells;
         int Timer;
 };
 
@@ -780,7 +780,7 @@ class FairbanksAI : public CreatureAIScript
     protected:
 
         uint32 mPhase;  // NPC has 2 phases
-        int nrspells;
+        uint8 nrspells;
         int Timer;
 };
 

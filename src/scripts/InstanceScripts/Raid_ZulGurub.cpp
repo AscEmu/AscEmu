@@ -174,7 +174,7 @@ class JeklikAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 /*
@@ -320,7 +320,7 @@ class VenoxisAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 /*

@@ -513,7 +513,7 @@ class BigBadWolfAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
         int m_threattimer;
         bool ThreatAdd;
         Unit* RTarget;
@@ -681,7 +681,7 @@ class THEBIGBADWOLFAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1334,7 +1334,7 @@ class CuratorAI : public CreatureAIScript
         bool evocation;
         bool enrage;
         bool berserk;
-        int nrspells;
+        uint8 nrspells;
         uint32 Timer;
 };
 
@@ -1926,7 +1926,7 @@ class ShadeofAranAI : public CreatureAIScript
         bool slow;
         float FWTargPosX[3];
         float FWTargPosY[3];
-        int nrspells;
+        uint8 nrspells;
         int LastSuperSpell;
         uint32 m_time_enrage;
         uint32 m_time_special;
@@ -2298,7 +2298,7 @@ class IllhoofAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
         bool ReSummon;
         uint32 ImpTimer;
         uint32 ReKilrek;
@@ -2454,7 +2454,7 @@ class KilrekAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Fiendish Imp
@@ -2622,7 +2622,7 @@ class FiendishImpAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class DemonChains : public CreatureAIScript
@@ -3203,7 +3203,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
     protected:
         float ranX;
         float ranY;
-        int nrspells;
+        uint8 nrspells;
         int m_phase;
         bool m_infernal;
         uint32 m_enfeebleoff;
@@ -3506,7 +3506,7 @@ class NetherspiteAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 VoidTimer;
 };
 
@@ -3974,7 +3974,7 @@ class NightbaneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 m_phase;
         uint32 m_FlyPhaseTimer;
         uint32 m_currentWP;
@@ -4207,7 +4207,7 @@ class DorotheeAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         Unit* tito;
         bool titoSpawned;
         bool titoDeadSpeech;
@@ -4327,7 +4327,7 @@ class TitoAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_STRAWMAN    17543
@@ -4468,7 +4468,7 @@ class StrawmanAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_TINHEAD    17547
@@ -4609,7 +4609,7 @@ class TinheadAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_ROAR    17546
@@ -4806,7 +4806,7 @@ class CroneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_CYCLONEOZ            22104
@@ -5031,7 +5031,7 @@ class RomuloAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_JULIANNE 17534
@@ -5209,7 +5209,7 @@ class JulianneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupKarazhan(ScriptMgr* mgr)

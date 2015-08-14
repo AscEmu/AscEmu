@@ -199,7 +199,7 @@ class ArcaneServantAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Bloodwarder CenturionAI
@@ -342,7 +342,7 @@ class BloodwarderCenturionAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Bloodwarder PhysicianAI
@@ -478,7 +478,7 @@ class BloodwarderPhysicianAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Bloodwarder SlayerAI
@@ -620,7 +620,7 @@ class BloodwarderSlayerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Mechanar CrusherAI
@@ -734,7 +734,7 @@ class MechanarCrusherAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Mechanar DrillerAI
@@ -869,7 +869,7 @@ class MechanarDrillerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Mechanar TinkererAI
@@ -1022,7 +1022,7 @@ class MechanarTinkererAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Mechanar WreckerAI
@@ -1150,7 +1150,7 @@ class MechanarWreckerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Raging FlamesAI
@@ -1271,7 +1271,7 @@ class RagingFlamesAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sunseeker AstromageAI
@@ -1406,7 +1406,7 @@ class SunseekerAstromageAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sunseeker EngineerAI
@@ -1541,7 +1541,7 @@ class SunseekerEngineerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sunseeker NetherbinderAI
@@ -1682,7 +1682,7 @@ class SunseekerNetherbinderAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Tempest-Forge DestroyerAI
@@ -1802,7 +1802,7 @@ class TempestForgeDestroyerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Tempest-Forge PatrollerAI
@@ -1922,7 +1922,7 @@ class TempestForgePatrollerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -2087,7 +2087,7 @@ class GatewatcherGyroKillAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Gatewatcher Iron-Hand AI
@@ -2255,7 +2255,7 @@ class GatewatcherIronHandAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Mechano-Lord Capacitus AI
@@ -2409,7 +2409,7 @@ class MechanoLordCapacitusAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Nethermancer Sepethrea AI
@@ -2598,7 +2598,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
     protected:
 
         int SummonTimer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2806,7 +2806,7 @@ class PathaleonTheCalculatorAI : public CreatureAIScript
     protected:
 
         uint32 SummonTimer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 /// \todo Data needed for: Nether Wraith, Mechanar Crusher (maybe not enough?)

@@ -430,7 +430,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define IMPALED 69065

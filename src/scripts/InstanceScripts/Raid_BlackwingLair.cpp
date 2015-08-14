@@ -129,7 +129,7 @@ class DTcaptainAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -243,7 +243,7 @@ class DTflamescaleAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 /*
@@ -364,7 +364,7 @@ class DTwyrmkinAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 /*
 Each Pack contains one or two. Wyrmkin are relatively fragile level 61+ mobs with ~90k HP.
@@ -479,7 +479,7 @@ class TechnicianAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 /*
 Relatively low HP. Has a ranged aoe grenade that inflicts moderate damage to anyone in the area of effect.
@@ -590,7 +590,7 @@ class BlackWarlockAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -730,7 +730,7 @@ class LashlayerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -839,7 +839,7 @@ class FiremawAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Ebonroc AI
@@ -947,7 +947,7 @@ class EbonrocAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Flamegor AI
@@ -1055,7 +1055,7 @@ class FlamegorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1212,7 +1212,7 @@ class VaelastraszAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class VaelastraszGossip : public GossipScript

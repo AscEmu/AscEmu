@@ -216,7 +216,7 @@ class EmerissAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Taerar AI
@@ -447,7 +447,7 @@ class TaerarAI : public CreatureAIScript
         Creature* Summoned;
         bool Shades;
         int Shade_timer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Shades of Taerar AI
@@ -575,7 +575,7 @@ class ShadeofTaerarAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -763,7 +763,7 @@ class YsondreAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Demented Druid Spirit AI
@@ -883,7 +883,7 @@ class DementedDruidSpiritAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Lethon AI
@@ -1092,7 +1092,7 @@ class LethonAI : public CreatureAIScript
         bool Shade1; //75%
         bool Shade2; //50%
         bool Shade3; //25%
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1429,7 +1429,7 @@ class KruulAI : public CreatureAIScript
         int hounds_timer;
         int enrage;
         Creature* Summoned;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Doom Lord Kazzak (Lord Kazzak does not exist anymore, he is promoted and replaced by Highlord Kruul instead)
@@ -1674,7 +1674,7 @@ class KazzakAI : public CreatureAIScript
     protected:
 
         int enrage;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Azuregos
@@ -1853,7 +1853,7 @@ class AzuregosAI : public CreatureAIScript
     protected:
 
         int masstele;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Doomwalker
@@ -2071,7 +2071,7 @@ class DoomwalkerAI : public CreatureAIScript
     protected:
 
         bool enraged; //Just to make sure
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Teremus The Devourer
@@ -2204,7 +2204,7 @@ class TeremusAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupWorldBosses(ScriptMgr* mgr)

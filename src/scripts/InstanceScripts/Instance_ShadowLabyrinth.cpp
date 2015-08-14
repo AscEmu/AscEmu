@@ -178,7 +178,7 @@ class CabalAcolyteAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CabalDeathswornAI
@@ -282,7 +282,7 @@ class CabalDeathswornAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CabalFanaticAI
@@ -375,7 +375,7 @@ class CabalFanaticAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CabalShadowPriestAI
@@ -474,7 +474,7 @@ class CabalShadowPriestAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CabalSpellbinderAI
@@ -573,7 +573,7 @@ class CabalSpellbinderAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CabalWarlockAI
@@ -672,7 +672,7 @@ class CabalWarlockAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CabalZealotAI
@@ -771,7 +771,7 @@ class CabalZealotAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 /*
@@ -907,7 +907,7 @@ class CabalRitualistAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // FelOverseerAI
@@ -1038,7 +1038,7 @@ class FelOverseerAI : public CreatureAIScript
     protected:
 
         int HealCooldown;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // MaliciousInstructorAI
@@ -1137,7 +1137,7 @@ class MaliciousInstructorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1287,7 +1287,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1499,7 +1499,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // GrandmasterVorpilAI
@@ -1672,7 +1672,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
     protected:
 
         bool Teleported;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // MurmurAI
@@ -1960,7 +1960,7 @@ class MurmurAI : public CreatureAIScript
     protected:
 
         bool SonicBoom;
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupShadowLabyrinth(ScriptMgr* mgr)

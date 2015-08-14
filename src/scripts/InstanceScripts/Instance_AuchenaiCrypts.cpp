@@ -257,7 +257,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -383,7 +383,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
     protected:
 
         bool Appear;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -622,7 +622,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
     protected:
 
         bool Avatar;
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupAuchenaiCrypts(ScriptMgr* mgr)

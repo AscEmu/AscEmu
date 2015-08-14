@@ -1325,7 +1325,7 @@ class StickedSpewerAI : public CreatureAIScript
 
     protected:
 
-    int nrspells;
+    uint8 nrspells;
 };
 
 
@@ -1428,7 +1428,7 @@ class SurgicalAssistantAI : public CreatureAIScript
 
     protected:
 
-    int nrspells;
+    uint8 nrspells;
 };
 
 
@@ -1537,7 +1537,7 @@ class SludgeBelcherAI : public CreatureAIScript
 
     protected:
 
-    int nrspells;
+    uint8 nrspells;
 };
 
 // BOSS'S
@@ -1653,7 +1653,7 @@ class GrobbulusAI : public CreatureAIScript
 
     protected:
 
-    int nrspells;
+    uint8 nrspells;
 };
 
 
@@ -1774,7 +1774,7 @@ class GluthAI : public CreatureAIScript
 
     protected:
 
-    int nrspells;
+    uint8 nrspells;
 };
 
 // ---- Deathknight Wing ----
@@ -1878,7 +1878,7 @@ class BonyConstructAI : public CreatureAIScript
 
     protected:
 
-    int nrspells;
+    uint8 nrspells;
 };
 
 
@@ -1981,7 +1981,7 @@ class DeathLordAI : public CreatureAIScript
 
     protected:
 
-    int nrspells;
+    uint8 nrspells;
 };
 
 // -- BOSS'S --
@@ -2107,7 +2107,7 @@ class RazuviousAI : public CreatureAIScript
 
     protected:
 
-    int nrspells;
+    uint8 nrspells;
 };
 // - The Four Horsemen: -
 
@@ -2263,7 +2263,7 @@ class KorthazzAI : public CreatureAIScript
 
     bool m_attackstart;
     uint32 tountcooldown, tountcont;
-    int nrspells;
+    uint8 nrspells;
 };
 
 /*
@@ -2441,7 +2441,7 @@ class BlaumeuxAI : public CreatureAIScript
 
     bool m_attackstart;
     uint32 tountcooldown, tountcont;
-    int nrspells;
+    uint8 nrspells;
 };
 
 /*
@@ -2615,7 +2615,7 @@ class ZeliekAI : public CreatureAIScript
 
     bool m_attackstart;
     uint32 tountcooldown, tountcont;
-    int nrspells;
+    uint8 nrspells;
 };
 
 // -- Sapphiron Encounter by M4ksiu -- //
@@ -3411,7 +3411,7 @@ class SapphironAI : public CreatureAIScript
     uint32 ChillCounter;
     uint32 PhaseTimer;
     uint32 m_phase;
-    int nrspells;
+    uint8 nrspells;
 };
 
 // -- Kel'thuzad Encounter by M4ksiu -- //
@@ -4179,7 +4179,7 @@ class KelthuzadAI : public CreatureAIScript
     uint32 WaveTimer;
     uint32 GCounter;
     uint32 m_phase;
-    int nrspells;
+    uint8 nrspells;
 };
 
 // The Lich KingAI
@@ -4473,7 +4473,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
     float newposx;
     float newposy;
     bool OnStart;
-    int nrspells;
+    uint8 nrspells;
 };
 
 // Soul Weaver AI
@@ -4644,7 +4644,7 @@ class SoulWeaverAI : public CreatureAIScript
     float newposx;
     float newposy;
     bool OnStart;
-    int nrspells;
+    uint8 nrspells;
 };
 
 // Guardian of Icecrown AI
@@ -4773,7 +4773,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
     float newposx;
     float newposy;
     bool OnStart;
-    int nrspells;
+    uint8 nrspells;
 };
 
 void SetupNaxxramas(ScriptMgr* pScriptMgr);

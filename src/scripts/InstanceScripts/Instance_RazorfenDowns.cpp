@@ -211,7 +211,7 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -370,7 +370,7 @@ class PlaguemawTheRottingAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class RagglesnoutAI : public CreatureAIScript
@@ -494,7 +494,7 @@ class RagglesnoutAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -619,7 +619,7 @@ class TutenKashAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupRazorfenDowns(ScriptMgr* mgr)

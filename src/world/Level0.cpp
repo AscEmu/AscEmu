@@ -511,8 +511,9 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
         }
         Spell* SpellPtr = sSpellFactoryMgr.NewSpell(Pl, Sp, false, NULL);
         AuraPtr = sSpellFactoryMgr.NewAura(Sp, SpellPtr->GetDuration(), Pl, Pl);
-        Pl->AddAura(AuraPtr); // Serves purpose to just add the aura to our auraslots
         SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", AuraPtr->m_visualSlot, SpellID, Flags, Flags, StackCount);
+        Pl->AddAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
+
         delete SpellPtr;
     }
     return true;

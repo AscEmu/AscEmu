@@ -195,7 +195,7 @@ class CoilfangChampionAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CoilfangObserverAI
@@ -310,7 +310,7 @@ class CoilfangObserverAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -429,7 +429,7 @@ class CoilfangDefenderAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -562,7 +562,7 @@ class CoilfangScaleHealerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -678,7 +678,7 @@ class CoilfangSoothsayerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -802,7 +802,7 @@ class CoilfangTechnicianAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CoilfangRayAI
@@ -917,7 +917,7 @@ class CoilfangRayAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1221,7 +1221,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
     protected:
 
         uint32 TotemCounter;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Rokmar the CracklerAI
@@ -1417,7 +1417,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
     protected:
 
         bool Enraged;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1599,7 +1599,7 @@ class QuagmirranAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 

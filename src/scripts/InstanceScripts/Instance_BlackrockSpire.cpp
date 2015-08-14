@@ -195,7 +195,7 @@ class GeneralDrakkisathAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -308,7 +308,7 @@ class PyroguardEmbersserAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Warchief Rend Blackhand AI by Soulshifter
@@ -421,7 +421,7 @@ class RendBlackhandAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -554,7 +554,7 @@ class GythAI : public CreatureAIScript
     protected:
 
         bool HasSummoned;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -667,7 +667,7 @@ class TheBeastAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -804,7 +804,7 @@ class HighlordOmokkAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -917,7 +917,7 @@ class ShadowHunterVoshAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1048,7 +1048,7 @@ class WarMasterVooneAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1167,7 +1167,7 @@ class MotherSmolderwebAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1304,7 +1304,7 @@ class UrokDoomhowlAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1417,7 +1417,7 @@ class QuartermasterZigrisAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1544,7 +1544,7 @@ class HalyconAI : public CreatureAIScript
     protected:
 
         bool HasSummoned;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1689,7 +1689,7 @@ class OverlordWyrmthalakAI : public CreatureAIScript
     protected:
 
         bool HasSummoned;
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupBlackrockSpire(ScriptMgr* mgr)
