@@ -8516,6 +8516,7 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
 
         case UNIT_FIELD_DISPLAYID:
             Flags = pet ? GROUP_UPDATE_FLAG_PET_MODEL_ID : 0;
+            break;
         case UNIT_FIELD_LEVEL:
             Flags = pet ? 0 : GROUP_UPDATE_FLAG_LEVEL;
             break;

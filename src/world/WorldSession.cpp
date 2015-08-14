@@ -498,6 +498,8 @@ void WorldSession::SendNotification(const char* message, ...)
     va_start(ap, message);
     char msg1[1024];
     vsnprintf(msg1, 1024, message, ap);
+    va_end(ap);
+
     WorldPacket data(SMSG_NOTIFICATION, strlen(msg1) + 1);
     data << msg1;
     SendPacket(&data);

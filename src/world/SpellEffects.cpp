@@ -4423,17 +4423,11 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
         return;
 
     uint32 Duration = 1800; // Needs to be found in dbc.. I guess?
-    switch (GetProto()->NameHash)
-    {
-        case SPELL_HASH_WINDFURY_WEAPON: // Windfury Weapon Effect
-        {
-            Duration = 10;
-        }
-        case SPELL_HASH_FLAMETONGUE_WEAPON: // Flametongue Weapon Effect
-        {
-            Duration = 10;
-        }
-    }
+
+
+    if (GetProto()->NameHash == SPELL_HASH_WINDFURY_WEAPON || GetProto()->NameHash == SPELL_HASH_FLAMETONGUE_WEAPON)
+        Duration = 10;
+
     EnchantEntry* Enchantment = dbcEnchant.LookupEntryForced(GetProto()->EffectMiscValue[i]);
 
     if (!Enchantment)

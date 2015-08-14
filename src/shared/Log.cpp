@@ -422,6 +422,8 @@ void oLog::LargeErrorMessage(const char* source, ...)
         pointer = va_arg(ap, char*);
     }
 
+    va_end(ap);
+
     outError("*********************************************************************");
     outError("*                        MAJOR ERROR/WARNING                        *");
     outError("*                        ===================                        *");
