@@ -1510,8 +1510,8 @@ bool AIInterface::FindFriends(float dist)
         if (!ci)
             return result;
 
-        float x = m_Unit->GetPositionX() + (float)((float)(rand() % 150 + 100) / 1000.0f);
-        float y = m_Unit->GetPositionY() + (float)((float)(rand() % 150 + 100) / 1000.0f);
+        float x = m_Unit->GetPositionX() + ((RandomFloat(150.f) + 100.f) / 1000.0f);
+        float y = m_Unit->GetPositionY() + ((RandomFloat(150.f) + 100.f) / 1000.0f);
         float z = m_Unit->GetMapMgr()->GetLandHeight(x, y, m_Unit->GetPositionZ() + 2);
 
         if (fabs(z - m_Unit->GetPositionZ()) > 10.0f)

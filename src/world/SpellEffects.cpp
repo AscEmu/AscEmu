@@ -1616,11 +1616,11 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                         //maybe we should use CalculateEffect(uint32 i) to gain SM benefits
                         int32 value = 0;
                         int32 basePoints = spellInfo->EffectBasePoints[i] + 1; //+(m_caster->getLevel()*basePointsPerLevel);
-                        int32 randomPoints = spellInfo->EffectDieSides[i];
+                        uint32 randomPoints = spellInfo->EffectDieSides[i];
                         if (randomPoints <= 1)
                             value = basePoints;
                         else
-                            value = basePoints + rand() % randomPoints;
+                            value = basePoints + RandomUInt(randomPoints);
                         //the value is in percent. Until now it's a fixed 10%
                         Heal(unitTarget->GetMaxHealth()*value / 100);
                     }
