@@ -530,7 +530,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                     else
                     {
                         uint32 mobs[2] = { 27598, 27600 };
-                        mob_entry = mobs[Rand(1)];
+                        mob_entry = mobs[RandomUInt(1)];
                     }
                     CreatureProto* cp = CreatureProtoStorage.LookupEntry(mob_entry);
                     CreatureInfo* ci = CreatureNameStorage.LookupEntry(mob_entry);

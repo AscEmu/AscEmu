@@ -2565,8 +2565,8 @@ class ToxicSporeBatAI : public CreatureAIScript
             Phase = 0;
             FlameQuills = false;
             Meteor = false;
-            PositionChange = rand() % 8 + 15;
-            PhoenixSummon = rand() % 6 + 17;
+            PositionChange = RandomUInt(15, 23);
+            PhoenixSummon = RandomUInt(17, 23);
             _unit->GetAIInterface()->SetFly();
             _unit->GetAIInterface()->StopMovement(0);
             _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
@@ -2589,9 +2589,9 @@ class ToxicSporeBatAI : public CreatureAIScript
             Phase = 1;
             FlameQuills = false;
             Meteor = false;
-            PositionChange = rand() % 8 + 15;    // 30-45sec /*** if attack time 1000 (%15+31) ***/
-            PhoenixSummon = rand() % 6 + 17;    // 34-44sec /*** if attack time 1000 (%11+34) ***/
-            FlyWay = rand() % 2;
+            PositionChange = RandomUInt(30, 45);    // 30-45sec /*** if attack time 1000 (%15+31) ***/
+            PhoenixSummon = RandomUInt(34, 44);    // 34-44sec /*** if attack time 1000 (%11+34) ***/
+            FlyWay = RandomUInt(1);
             switch (FlyWay)
             {
                 case 0:    // Clock like
@@ -2618,8 +2618,8 @@ class ToxicSporeBatAI : public CreatureAIScript
             Phase = 0;
             FlameQuills = false;
             Meteor = false;
-            PhoenixSummon = rand() % 6 + 17;
-            PositionChange = rand() % 8 + 15;
+            PhoenixSummon = RandomUInt(17, 23);
+            PositionChange = RandomUInt(15, 23);
             CastTime();
             _unit->GetAIInterface()->StopMovement(0);
             _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
@@ -2635,8 +2635,8 @@ class ToxicSporeBatAI : public CreatureAIScript
             Phase = 0;
             FlameQuills = false;
             Meteor = false;
-            PositionChange = rand() % 8 + 15;
-            PhoenixSummon = rand() % 6 + 17;
+            PositionChange = RandomUInt(15, 23);
+            PhoenixSummon = RandomUInt(17, 23);
             CastTime();
             //RemoveAIUpdateEvent();
         }
@@ -2708,14 +2708,14 @@ class ToxicSporeBatAI : public CreatureAIScript
             if (!PhoenixSummon--)
             {
                 _unit->CastSpell(_unit, spells[0].info, spells[0].instant);
-                PhoenixSummon = rand() % 6 + 17;
+                PhoenixSummon = RandomUInt(17, 23);
             }
 
             if (!PositionChange)
             {
                 _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
                 _unit->GetAIInterface()->setWaypointToMove(NextWP);
-                PositionChange = rand() % 8 + 17;    // added 4 sec fit time + time needed to move to next pos.
+                PositionChange = RandomUInt(15, 23);    // added 4 sec fit time + time needed to move to next pos.
             }
 
             else
@@ -2936,8 +2936,8 @@ class ToxicSporeBatAI : public CreatureAIScript
         bool FlameQuills;
         uint32 QuillsCount;
         bool Meteor;
-        int PositionChange;
-        int PhoenixSummon;
+        uint32 PositionChange;
+        uint32 PhoenixSummon;
         uint32 NextWP;
         uint32 m_entry;
         uint32 FlyWay;
@@ -3029,7 +3029,7 @@ class UnderbogColossusAI : public MoonScriptCreatureAI
         UnderbogColossusAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             //these mobs pick from a random set of abilities
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     AddSpell(RAMPANT_INFECTION, Target_Self, 5.0f, 0, 0);
@@ -3050,21 +3050,18 @@ class UnderbogColossusAI : public MoonScriptCreatureAI
         void OnDied(Unit* pKiller)
         {
             //There will also be a choice of abilities he might use as he dies:
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     //cast toxic pool
                     _unit->CastSpell(_unit, dbcSpell.LookupEntry(TOXIC_POOL), true);
                     break;
-
                 case 1:
                     //spawn two colossus lurkers
                     _unit->GetMapMgr()->GetInterface()->SpawnCreature(22347, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, true, false, 0, 0);
                     _unit->GetMapMgr()->GetInterface()->SpawnCreature(22347, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, true, false, 0, 0);
                     break;
-
                 default:
-                    //Nothing!
                     break;
 
                     ///\todo Many small adds

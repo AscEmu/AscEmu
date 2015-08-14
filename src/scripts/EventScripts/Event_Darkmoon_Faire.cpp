@@ -761,13 +761,29 @@ class Sayge_Gossip : public GossipScript
                     pCreature->CastSpell(plr, 23765, true);
 
                     // TEMP fix for spell not adding item to  player's inventory.
-                    if (plr->GetItemInterface()->CalculateFreeSlots(ItemPrototypeStorage.LookupEntry(19422)))
+                    auto proto = ItemPrototypeStorage.LookupEntry(19422);
+                    if (proto == nullptr)
+                        return;
+
+                    auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                    if (!slotresult.Result)
                     {
-                        plr->GetItemInterface()->AddItemToFreeSlot(objmgr.CreateItem(19422, plr)); //Darkmoon Faire Fortune
+                        plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                        return;
                     }
                     else
                     {
-                        sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedGossipOption(GI_DF_NOT_ENOUGH_SLOTS));
+                        auto item = objmgr.CreateItem(19422, plr);
+                        if (item == nullptr)
+                            return;
+
+                        auto result = plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
+                        if (!result)
+                        {
+                            Log.Error("Event_Darkmoon_Faire", "Error while adding item %u to player %s", item->GetEntry(), plr->GetNameString());
+                            item->DeleteMe();
+                            return;
+                        }
                     }
                     break;
             }

@@ -242,8 +242,16 @@ public:
         {
             if (pPlayer->GetItemInterface()->GetItemCount(32971, false) == 0)
             {
-                Item* itm = objmgr.CreateItem(32971, pPlayer);
-                pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+                auto itm = objmgr.CreateItem(32971, pPlayer);
+                if (itm == nullptr)
+                    return;
+
+                auto result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+                if (!result)
+                {
+                    Log.Error("Event_Hallows_End", "Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
+                    itm->DeleteMe();
+                }
             }
             else
             {

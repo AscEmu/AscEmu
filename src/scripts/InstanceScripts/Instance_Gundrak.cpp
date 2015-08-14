@@ -426,7 +426,7 @@ class GalDarahAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(GalDarahAI, MoonScriptCreatureAI);
     GalDarahAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        mInstance = mInstance = GetInstanceScript();;
+        mInstance = GetInstanceScript();
 
         AddSpell(WHIRLING_SLASH, Target_Self, 20, 0, 12);
     }

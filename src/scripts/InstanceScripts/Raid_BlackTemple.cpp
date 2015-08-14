@@ -1957,21 +1957,20 @@ class NajentusAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_FRIEND:
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -2472,17 +2471,16 @@ class GurtoggAI : public CreatureAIScript
                     if (!TargetTable.size())
                         return;
 
-                    size_t RandTarget = rand() % TargetTable.size();
+                    auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                    auto random_target = TargetTable[random_index];
 
-                    Unit* RTarget = TargetTable[RandTarget];
-
-                    if (!RTarget)
+                    if (random_target == nullptr)
                         return;
 
-                    _unit->CastSpell(RTarget, spells[7].info, spells[7].instant);
+                    _unit->CastSpell(random_target, spells[7].info, spells[7].instant);
                     _unit->CastSpell(_unit, spells[8].info, spells[8].instant);
 
-                    LastThreat = _unit->GetAIInterface()->getThreatByPtr(RTarget);
+                    LastThreat = _unit->GetAIInterface()->getThreatByPtr(random_target);
 
                     Unit* Target = _unit->GetAIInterface()->GetMostHated();
                     uint32 MostHatedThreat = 0;
@@ -2491,7 +2489,7 @@ class GurtoggAI : public CreatureAIScript
                         MostHatedThreat = _unit->GetAIInterface()->getThreatByPtr(Target);
                     }
 
-                    _unit->GetAIInterface()->AttackReaction(RTarget, MostHatedThreat + 100000, 0);
+                    _unit->GetAIInterface()->AttackReaction(random_target, MostHatedThreat + 100000, 0);
 
                     TargetTable.clear();
 
@@ -2592,21 +2590,20 @@ class GurtoggAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_FRIEND:
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -2617,11 +2614,11 @@ class GurtoggAI : public CreatureAIScript
                     //Aura* aura = new Aura*(spells[7].info, 30000, _unit, RTarget);
                     //if (aura)
                     //    RTarget->AddAura(aura);
-                    RTarget->CastSpell(RTarget, spells[7].info, spells[7].instant);
+                    random_target->CastSpell(random_target, spells[7].info, spells[7].instant);
 
-                    LastThreat = _unit->GetAIInterface()->getThreatByPtr(RTarget);
+                    LastThreat = _unit->GetAIInterface()->getThreatByPtr(random_target);
                     Unit* Target = _unit->GetAIInterface()->getNextTarget();
-                    RTarget->GetAIInterface()->AttackReaction(RTarget, _unit->GetAIInterface()->getThreatByPtr(Target) + 100000, 0);
+                    random_target->GetAIInterface()->AttackReaction(random_target, _unit->GetAIInterface()->getThreatByPtr(Target) + 100000, 0);
                 }
             }
         }
@@ -3275,21 +3272,20 @@ class ShahrazAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_FRIEND:
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -3697,21 +3693,20 @@ class TeronGorefiendAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_FRIEND:
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 

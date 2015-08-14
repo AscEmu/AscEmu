@@ -1457,8 +1457,8 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
         ItemGUID = GUID.GetOldGuid();
 
         // Let's see if we even have this item
-        Item* item = _player->GetItemInterface()->GetItemByGUID(ItemGUID);
-        if (item == NULL)
+        auto item = _player->GetItemInterface()->GetItemByGUID(ItemGUID);
+        if (item == nullptr)
         {
             // Nope we don't probably WPE hack :/
             result = 1;
@@ -1473,9 +1473,9 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
             continue;
 
         // Let's see if we have an item in the destination slot
-        Item* dstslotitem = _player->GetItemInterface()->GetInventoryItem(dstslot);
+        auto dstslotitem = _player->GetItemInterface()->GetInventoryItem(dstslot);
 
-        if (dstslotitem == NULL)
+        if (dstslotitem == nullptr)
         {
             // we have no item equipped in the slot, so let's equip
             AddItemResult additemresult;
@@ -1489,8 +1489,14 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
                 if (additemresult != ADD_ITEM_RESULT_OK)
                 {
                     // We failed for w/e reason, so let's revert
-                    _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
-                    result = 1;
+                    auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
+                    if (!check)
+                    {
+                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->GetEntry(), _player->GetNameString());
+                        result = 0;
+                    }
+                    else
+                        result = 1;
                 }
             }
             else

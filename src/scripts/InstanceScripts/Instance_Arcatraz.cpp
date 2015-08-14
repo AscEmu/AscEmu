@@ -183,16 +183,15 @@ class ZerekethAI : public MoonScriptBossAI
             if (!TargetTable.size())
                 return;
 
-            size_t RandTarget = rand() % TargetTable.size();
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            Player* RTarget = TargetTable[RandTarget];
-
-            if (!RTarget)
+            if (random_target == nullptr)
                 return;
 
-            float vzX = RandomUInt(5) * cos(RandomFloat(6.28f)) + RTarget->GetPositionX();
-            float vzY = RandomUInt(5) * cos(RandomFloat(6.28f)) + RTarget->GetPositionY();
-            float vzZ = RTarget->GetPositionZ();
+            float vzX = RandomUInt(5) * cos(RandomFloat(6.28f)) + random_target->GetPositionX();
+            float vzY = RandomUInt(5) * cos(RandomFloat(6.28f)) + random_target->GetPositionY();
+            float vzZ = random_target->GetPositionZ();
             MoonScriptCreatureAI* VoidZone = SpawnCreature(CN_VOIDZONEARC, vzX, vzY, vzZ);
             VoidZone->GetUnit()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             VoidZone->GetUnit()->m_noRespawn = true;
@@ -201,7 +200,7 @@ class ZerekethAI : public MoonScriptBossAI
                 VoidZone->Despawn();
                 return;
             }
-            RTarget = NULL;
+            random_target = NULL;
             VoidZone->Despawn(60000, 0);
         }
 
