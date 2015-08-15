@@ -1354,7 +1354,7 @@ void NothThePlaguebringerAI::AIUpdate()
             if (IsHeroic() && IsTimerFinished(mBlinkTimer))
             {
                 CastSpellNowNoScheduling(mCriple);
-                ResetTimer(mBlinkTimer, 28000 + (rand() % 12 +1) * 1000);
+                ResetTimer(mBlinkTimer, 28000 + (RandomUInt(1, 12) * 1000));
             };
         };
 
