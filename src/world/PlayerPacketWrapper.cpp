@@ -105,11 +105,7 @@ void Player::SendLogXPGain(uint64 guid, uint32 NormalXP, uint32 RestedXP, bool t
     {
         data << uint64(guid);
         data << uint32(NormalXP);
-
-        if (type)
-            data << uint8(1);
-        else
-            data << uint8(0);
+        data << uint8(0);
 
         data << uint32(RestedXP);
         data << float(1.0f);
@@ -119,11 +115,7 @@ void Player::SendLogXPGain(uint64 guid, uint32 NormalXP, uint32 RestedXP, bool t
     {
         data << uint64(0);            // does not need to be set for questxp
         data << uint32(NormalXP);
-
-        if (type)
-            data << uint8(1);
-        else
-            data << uint8(0);
+        data << uint8(1);
 
         data << uint8(0);
     }

@@ -358,13 +358,16 @@ uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, int type, uint32* 
     uint32 count = 0;
     uint32 rating = 0;
 
-    if (group == NULL || group->GetLeader() == NULL) return 0;
+    if (group == NULL || group->GetLeader() == NULL)
+        return 0;
 
     plr = group->GetLeader()->m_loggedInPlayer;
-    if (plr == NULL) return 0;
+    if (plr == NULL)
+        return 0;
 
     team = plr->m_arenaTeams[type - BATTLEGROUND_ARENA_2V2];
-    if (team == NULL) return 0;
+    if (team == NULL)
+        return 0;
 
     GroupMembersSet::iterator itx;
     for (itx = group->GetSubGroup(0)->GetGroupMembersBegin(); itx != group->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
@@ -386,7 +389,7 @@ uint32 CBattlegroundManager::GetArenaGroupQInfo(Group* group, int type, uint32* 
 
     *avgRating = count > 0 ? rating / count : 0;
 
-    return team ? team->m_id : 0;
+    return team->m_id;
 }
 
 void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, int nteam)
@@ -1124,7 +1127,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch)
 {
     WorldPacket data(SMSG_BATTLEFIELD_STATUS, 30);
-    if (Status == 0)
+    if (Status == BGSTATUS_NOFLAGS)
         data << uint32(0) << uint64(0);
     else
     {
@@ -1186,8 +1189,6 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
                     data << uint8(0);
                 else
                     data << uint8(1);
-                break;
-            case BGSTATUS_NOFLAGS:
                 break;
         }
     }

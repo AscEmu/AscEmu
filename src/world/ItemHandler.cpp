@@ -247,7 +247,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
             {
                 data.Initialize(SMSG_INVENTORY_CHANGE_FAILURE);
                 data << error;
-                data << (srcitem ? srcitem->GetGUID() : uint64(0));
+                data << srcitem->GetGUID();
                 data << dstitem->GetGUID();
                 data << uint8(0);
 

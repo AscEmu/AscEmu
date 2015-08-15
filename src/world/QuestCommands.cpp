@@ -646,7 +646,7 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
 
         SendMultilineMessage(m_session, recout.c_str());
 
-        count++;
+        ++count;
 
         if (count == 25)
         {
@@ -861,7 +861,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 
                         SendMultilineMessage(m_session, recout.c_str());
 
-                        count++;
+                        ++count;
 
                         if (count == 25)
                         {
@@ -908,7 +908,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 
             SendMultilineMessage(m_session, recout.c_str());
 
-            count++;
+            ++count;
 
             if (count == 25)
             {

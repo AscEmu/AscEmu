@@ -162,7 +162,11 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
     {
         Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
         //added it for script engine
-        if (!quest_giver) return;
+        if (quest_giver)
+            qst_giver = quest_giver;
+        else
+            return;
+
         ItemPrototype* itemProto = quest_giver->GetProto();
 
         if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->IsSoulbound())     // SoulBind item will be used after SoulBind()
@@ -174,10 +178,6 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         if (itemProto->Bonding == ITEM_BIND_ON_USE)
             quest_giver->SoulBind();
 
-        if (quest_giver)
-            qst_giver = quest_giver;
-        else
-            return;
         bValid = true;
         status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, 1, false);
     }

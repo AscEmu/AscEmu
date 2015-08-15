@@ -143,8 +143,6 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 
     objmgr.RemoveGMTicket(ticket->guid);
 
-    if (!plr)
-        return true;
     if (!plr->IsInWorld())
         return true;
 
