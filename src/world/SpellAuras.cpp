@@ -4891,7 +4891,7 @@ bool isFeignDeathResisted(uint32 playerlevel, uint32 moblevel)
 		if (fMobRes > 100)
 			fMobRes = 100;
 
-		if ((rand() % 100) < fMobRes)
+        if (RandomUInt(1, 100) < fMobRes)
 			return true;
 	}
 

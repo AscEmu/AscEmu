@@ -400,7 +400,7 @@ Unit::Unit()
     m_noFallDamage = false;
     z_axisposition = 0.0f;
     m_safeFall = 0;
-
+    detectRange = 0.0f;
     m_cTimer = 0;
     m_temp_summon = false;
     m_meleespell_ecn = 0;
@@ -8516,6 +8516,7 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
 
         case UNIT_FIELD_DISPLAYID:
             Flags = pet ? GROUP_UPDATE_FLAG_PET_MODEL_ID : 0;
+            break;
         case UNIT_FIELD_LEVEL:
             Flags = pet ? 0 : GROUP_UPDATE_FLAG_LEVEL;
             break;

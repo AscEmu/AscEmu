@@ -1616,11 +1616,11 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                         //maybe we should use CalculateEffect(uint32 i) to gain SM benefits
                         int32 value = 0;
                         int32 basePoints = spellInfo->EffectBasePoints[i] + 1; //+(m_caster->getLevel()*basePointsPerLevel);
-                        int32 randomPoints = spellInfo->EffectDieSides[i];
+                        uint32 randomPoints = spellInfo->EffectDieSides[i];
                         if (randomPoints <= 1)
                             value = basePoints;
                         else
-                            value = basePoints + rand() % randomPoints;
+                            value = basePoints + RandomUInt(randomPoints);
                         //the value is in percent. Until now it's a fixed 10%
                         Heal(unitTarget->GetMaxHealth()*value / 100);
                     }
@@ -4423,17 +4423,11 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
         return;
 
     uint32 Duration = 1800; // Needs to be found in dbc.. I guess?
-    switch (GetProto()->NameHash)
-    {
-        case SPELL_HASH_WINDFURY_WEAPON: // Windfury Weapon Effect
-        {
-            Duration = 10;
-        }
-        case SPELL_HASH_FLAMETONGUE_WEAPON: // Flametongue Weapon Effect
-        {
-            Duration = 10;
-        }
-    }
+
+
+    if (GetProto()->NameHash == SPELL_HASH_WINDFURY_WEAPON || GetProto()->NameHash == SPELL_HASH_FLAMETONGUE_WEAPON)
+        Duration = 10;
+
     EnchantEntry* Enchantment = dbcEnchant.LookupEntryForced(GetProto()->EffectMiscValue[i]);
 
     if (!Enchantment)

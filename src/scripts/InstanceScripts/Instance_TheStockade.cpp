@@ -279,7 +279,7 @@ class HamhockAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // BazilAI
@@ -355,12 +355,18 @@ class BazilAI : public CreatureAIScript
                         target = NULL;
                     }
 
-                    if (target_list.size())
-                        target = *(target_list.begin() + rand() % target_list.size());
-                    if (target)
-                        _unit->CastSpell(target, spell.info, spell.instant);
+                    if (!target_list.size())
+                        return;
 
-                    target = NULL;
+                    auto random_index = RandomUInt(0, target_list.size() - 1);
+                    auto random_target = target_list[random_index];
+
+                    if (random_target == nullptr)
+                        return;
+
+                    _unit->CastSpell(random_target, spell.info, spell.instant);
+
+                    random_target = nullptr;
 
                     if (spell.speech != "")
                     {
@@ -751,7 +757,7 @@ class PrisonerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ConvictAI

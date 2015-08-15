@@ -2470,12 +2470,13 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
             dtPolyRef startref;
             nav->query->findNearestPoly(start, extents, &filter, &startref, NULL);
 
-            float point, pointNormal;
+            float point;
+            float hitNormal[3];
             float result[3];
             int numvisited;
             dtPolyRef visited[MAX_PATH_LENGTH];
 
-            dtStatus rayresult = nav->query->raycast(startref, start, end, &filter, &point, &pointNormal, visited, &numvisited, MAX_PATH_LENGTH);
+            dtStatus rayresult = nav->query->raycast(startref, start, end, &filter, &point, hitNormal, visited, &numvisited, MAX_PATH_LENGTH);
 
             if (point <= 1.0f)
             {

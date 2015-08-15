@@ -494,6 +494,7 @@ Player::Player(uint32 guid)
     m_timeSyncServer = 0;
     m_roles = 0;
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
+    m_FirstLogin = false;
 }
 
 void Player::OnLogin()

@@ -86,6 +86,35 @@ World::World()
     LastTotalTrafficInKB = 0.0;
     LastTotalTrafficOutKB = 0.0;
     LastTrafficQuery = 0;
+
+    arenaSettings.A3V3_MAX = 3;
+    arenaSettings.A3V3_MIN = 3;
+    arenaSettings.A5V5_MAX = 5;
+    arenaSettings.A5V5_MIN = 5;
+
+    m_limits.enable = true;
+    m_limits.autoattackDamageCap = 10000;
+    m_limits.spellDamageCap = 30000;
+    m_limits.healthCap = 100000;
+    m_limits.manaCap = 80000;
+    m_limits.honorpoints = 75000;
+    m_limits.arenapoints = 5000;
+    m_limits.disconnect = false;
+    m_limits.broadcast = true;
+
+    GMTTimeZone = 0;
+    realmtype = 1;
+    TimeOut = 180;
+    m_queueUpdateTimer = 5000;
+    m_KickAFKPlayers = false;
+    m_reqGmForCommands = false;
+    m_lfgForNonLfg = false;
+    m_useAccountData = false;
+    m_AdditionalFun = false;
+    GoldCapEnabled = true;
+    GoldLimit = 214748;
+    GoldStartAmount = 0;
+    CacheVersion = 0;
 }
 
 void CleanupRandomNumberGenerators();

@@ -840,7 +840,7 @@ class HellfireWarderAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Hellfire Channeler
@@ -1068,7 +1068,7 @@ class HellfireChannelerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Burning Abyssal AI
@@ -1232,7 +1232,7 @@ class BurningAbyssalAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Magtheridon
@@ -1644,7 +1644,7 @@ class MagtheridonAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
         int timer_quake;
         int timer_enrage;
         int timer_caveIn;

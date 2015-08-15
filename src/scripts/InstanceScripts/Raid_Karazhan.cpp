@@ -475,9 +475,8 @@ class BigBadWolfAI : public CreatureAIScript
                                     if (!TargetTable.size())
                                         return;
 
-                                    size_t RandTarget = rand() % TargetTable.size();
-
-                                    RTarget = TargetTable[RandTarget];
+                                    auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                                    auto random_target = TargetTable[random_index];
 
                                     if (!RTarget)
                                         return;
@@ -514,7 +513,7 @@ class BigBadWolfAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
         int m_threattimer;
         bool ThreatAdd;
         Unit* RTarget;
@@ -682,7 +681,7 @@ class THEBIGBADWOLFAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1273,9 +1272,10 @@ class CuratorAI : public CreatureAIScript
             if (!Target_List.size())
                 return;
 
-            size_t Target = rand() % Target_List.size();
-            Unit* RTarget = Target_List[Target];
-            if (!RTarget)
+            auto random_index = RandomUInt(0, Target_List.size() - 1);
+            Unit* random_target = Target_List[random_index];
+
+            if (random_target == nullptr)
                 return;
 
             switch (RandomUInt(1))
@@ -1298,7 +1298,7 @@ class CuratorAI : public CreatureAIScript
                     {
                         AstralFlare = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASTRALFLARE, dX + 3,
                                       dY + 3, _unit->GetPositionZ(), 0, true, false, 0, 0);
-                        AstralFlare->GetAIInterface()->AttackReaction(RTarget, 1, 0);
+                        AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                         AstralFlare = NULL;
                     }
                     break;
@@ -1306,7 +1306,7 @@ class CuratorAI : public CreatureAIScript
                     {
                         AstralFlare = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASTRALFLARE, dX + 3,
                                       dY - 3, _unit->GetPositionZ(), 0, true, false, 0, 0);
-                        AstralFlare->GetAIInterface()->AttackReaction(RTarget, 1, 0);
+                        AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                         AstralFlare = NULL;
                     }
                     break;
@@ -1314,7 +1314,7 @@ class CuratorAI : public CreatureAIScript
                     {
                         AstralFlare = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASTRALFLARE, dX - 3,
                                       dY - 3, _unit->GetPositionZ(), 0, true, false, 0, 0);
-                        AstralFlare->GetAIInterface()->AttackReaction(RTarget, 1, 0);
+                        AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                         AstralFlare = NULL;
                     }
                     break;
@@ -1322,7 +1322,7 @@ class CuratorAI : public CreatureAIScript
                     {
                         AstralFlare = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASTRALFLARE, dX - 3,
                                       dY + 3, _unit->GetPositionZ(), 0, true, false, 0, 0);
-                        AstralFlare->GetAIInterface()->AttackReaction(RTarget, 1, 0);
+                        AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                         AstralFlare = NULL;
                     }
                     break;
@@ -1334,7 +1334,7 @@ class CuratorAI : public CreatureAIScript
         bool evocation;
         bool enrage;
         bool berserk;
-        int nrspells;
+        uint8 nrspells;
         uint32 Timer;
 };
 
@@ -1898,20 +1898,19 @@ class ShadeofAranAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -1927,7 +1926,7 @@ class ShadeofAranAI : public CreatureAIScript
         bool slow;
         float FWTargPosX[3];
         float FWTargPosY[3];
-        int nrspells;
+        uint8 nrspells;
         int LastSuperSpell;
         uint32 m_time_enrage;
         uint32 m_time_special;
@@ -2238,12 +2237,13 @@ class IllhoofAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            size_t RandTarget = rand() % TargetTable.size();
-            Unit* RTarget = TargetTable[RandTarget];
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            if (!RTarget) return;
+            if (random_target == nullptr)
+                return;
 
-            _unit->CastSpell(RTarget, dbcSpell.LookupEntry(SACRIFICE), false);
+            _unit->CastSpell(random_target, dbcSpell.LookupEntry(SACRIFICE), false);
 
             TargetTable.clear();
 
@@ -2298,7 +2298,7 @@ class IllhoofAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
         bool ReSummon;
         uint32 ImpTimer;
         uint32 ReKilrek;
@@ -2433,20 +2433,19 @@ class KilrekAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -2455,7 +2454,7 @@ class KilrekAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Fiendish Imp
@@ -2623,7 +2622,7 @@ class FiendishImpAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class DemonChains : public CreatureAIScript
@@ -3181,20 +3180,19 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -3205,7 +3203,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
     protected:
         float ranX;
         float ranY;
-        int nrspells;
+        uint8 nrspells;
         int m_phase;
         bool m_infernal;
         uint32 m_enfeebleoff;
@@ -3308,14 +3306,13 @@ class MAxesAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            size_t RandTarget = rand() % TargetTable.size();
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            Unit* RTarget = TargetTable[RandTarget];
-
-            if (!RTarget)
+            if (random_target == nullptr)
                 return;
 
-            _unit->GetAIInterface()->taunt(RTarget, true);
+            _unit->GetAIInterface()->taunt(random_target, true);
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -3449,15 +3446,15 @@ class NetherspiteAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
-                float vzX = 5 * cos(RandomFloat(6.28f)) + RTarget->GetPositionX();
-                float vzY = 5 * cos(RandomFloat(6.28f)) + RTarget->GetPositionY();
-                float vzZ = RTarget->GetPositionZ();
+
+                float vzX = 5 * cos(RandomFloat(6.28f)) + random_target->GetPositionX();
+                float vzY = 5 * cos(RandomFloat(6.28f)) + random_target->GetPositionY();
+                float vzZ = random_target->GetPositionZ();
                 _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_VOIDZONE, vzX, vzY, vzZ, 0, true, false, 0, 0);
                 TargetTable.clear();
             }
@@ -3509,7 +3506,7 @@ class NetherspiteAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 VoidTimer;
 };
 
@@ -3956,18 +3953,19 @@ class NightbaneAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                Unit* RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -3976,7 +3974,7 @@ class NightbaneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 m_phase;
         uint32 m_FlyPhaseTimer;
         uint32 m_currentWP;
@@ -4145,11 +4143,10 @@ class DorotheeAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 TargetTable.clear();
@@ -4210,7 +4207,7 @@ class DorotheeAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         Unit* tito;
         bool titoSpawned;
         bool titoDeadSpeech;
@@ -4330,7 +4327,7 @@ class TitoAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_STRAWMAN    17543
@@ -4471,7 +4468,7 @@ class StrawmanAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_TINHEAD    17547
@@ -4612,7 +4609,7 @@ class TinheadAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_ROAR    17546
@@ -4809,7 +4806,7 @@ class CroneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_CYCLONEOZ            22104
@@ -5034,7 +5031,7 @@ class RomuloAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_JULIANNE 17534
@@ -5212,7 +5209,7 @@ class JulianneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupKarazhan(ScriptMgr* mgr)

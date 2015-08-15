@@ -212,7 +212,7 @@ class AlzzinTheWildshaper : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -337,7 +337,7 @@ class CaptainKromcrush : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -462,7 +462,7 @@ class ChoRushTheObserver : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -605,7 +605,7 @@ class GuardFengus : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -739,7 +739,7 @@ class GuardMolDar : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -873,7 +873,7 @@ class GuardSlipKik : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1007,7 +1007,7 @@ class Hydrospawn : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1241,7 +1241,7 @@ class IllyanaRavenoak : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1375,7 +1375,7 @@ class Immolthar : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1590,7 +1590,7 @@ class KingGordok : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1715,7 +1715,7 @@ class Lethtendris : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1937,7 +1937,7 @@ class MagisterKalendris : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2062,7 +2062,7 @@ class PrinceTortheldrin : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2196,7 +2196,7 @@ class Pusillin : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2321,7 +2321,7 @@ class SkarrTheUnbreakable : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2458,7 +2458,7 @@ class TendrisWarpwood : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2583,7 +2583,7 @@ class ZevrimThornhoof : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2726,7 +2726,7 @@ class GordokMageLord : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2851,7 +2851,7 @@ class GordokReaver : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2985,7 +2985,7 @@ class GordokBrute : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -3110,7 +3110,7 @@ class FelLash : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupDireMaul(ScriptMgr* mgr)

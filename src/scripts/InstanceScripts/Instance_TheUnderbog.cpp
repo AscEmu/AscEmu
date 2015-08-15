@@ -214,7 +214,7 @@ class BOGGIANTAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Claw AI
@@ -346,7 +346,7 @@ class CLAWAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Underbat AI
@@ -473,7 +473,7 @@ class UNDERBATAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Fen Ray AI
@@ -705,7 +705,7 @@ class LYKULSTINGERAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -843,7 +843,7 @@ class LYKULWASPAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -990,7 +990,7 @@ class WRATHFINWARRIORAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Wrathfin Sentry AI
@@ -1118,7 +1118,7 @@ class WRATHFINSENTRYAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Wrathfin Myrmidon AI
@@ -1358,7 +1358,7 @@ class UNDERBOGLORDAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1499,7 +1499,7 @@ class MURKBLOODSPEARMANAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1667,7 +1667,7 @@ class MURKBLOODORACLEAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1810,7 +1810,7 @@ class MURKBLOODHEALERAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Murkblood Tribesman AI
@@ -1937,7 +1937,7 @@ class MURKBLOODTRIBESMANAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 /*
@@ -2094,7 +2094,7 @@ class UNDERBOGSHAMBLERAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2411,7 +2411,7 @@ class HungarfenAI : public CreatureAIScript
     protected:
 
         bool FourSpores;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Ghaz'anAI
@@ -2550,7 +2550,7 @@ class GhazanAI : public CreatureAIScript
     protected:
 
         bool Enraged;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ClawAI
@@ -2738,7 +2738,7 @@ class ClawAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Swamplord Musel'ekAI
@@ -2956,7 +2956,7 @@ class SwamplordMuselekAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -3150,7 +3150,7 @@ class TheBlackStalkerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 /// \note Wasp/Stinger must be checked. Please check it (because for sure

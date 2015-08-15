@@ -199,7 +199,7 @@ class CoilfangEngineerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -328,7 +328,7 @@ class CoilfangOracleAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CoilfangWarriorAI
@@ -456,7 +456,7 @@ class CoilfangWarriorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -592,7 +592,7 @@ class CoilfangSirenAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -734,7 +734,7 @@ class BogOverlordAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CoilfangSorceressAI
@@ -862,7 +862,7 @@ class CoilfangSorceressAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CoilfangLeperAI
@@ -1025,7 +1025,7 @@ class CoilfangLeperAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CoilfangSlavemasterAI
@@ -1147,7 +1147,7 @@ class CoilfangSlavemasterAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CoilfangWaterElementalAI
@@ -1268,7 +1268,7 @@ class CoilfangWaterElementalAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // CoilfangMyrmidonAI
@@ -1396,7 +1396,7 @@ class CoilfangMyrmidonAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // TidalSurgerAI
@@ -1526,7 +1526,7 @@ class TidalSurgerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // SteamSurgerAI
@@ -1640,7 +1640,7 @@ class SteamSurgerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 /////////////////////////////////////////////////////////////
@@ -1851,7 +1851,7 @@ class HydromancerThespiaAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 //---- Steamrigger encounter ----//
@@ -2218,7 +2218,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
     protected:
 
         uint8 GnomeCounter;
-        int nrspells;
+        uint8 nrspells;
 };
 
 //---- Warlord Kalitresh Encounter ----//
@@ -2627,7 +2627,7 @@ class WarlordKalitreshAI : public CreatureAIScript
         uint32 RagePhaseTimer;
         uint32 EnrageTimer;
         uint32 RagePhase;
-        int nrspells;
+        uint8 nrspells;
 };
 
 /** \todo Check all spells/creatures and evenatually balance them (if needed!)

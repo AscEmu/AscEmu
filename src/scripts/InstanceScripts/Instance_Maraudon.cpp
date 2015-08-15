@@ -212,7 +212,7 @@ class CelebrasTheCursedAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -337,7 +337,7 @@ class LordVyletongueAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -462,7 +462,7 @@ class MeshlokTheHarvesterAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -605,7 +605,7 @@ class PrincessTheradrasAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -739,7 +739,7 @@ class RazorlashAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -864,7 +864,7 @@ class TinkererGizlockAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -989,7 +989,7 @@ class NoxxionAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupMaraudon(ScriptMgr* mgr)

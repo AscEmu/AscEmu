@@ -406,7 +406,7 @@ class RageWinterchillAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // AnetheronAI
@@ -646,7 +646,7 @@ class AnetheronAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // KazrogalAI
@@ -884,7 +884,7 @@ class KazrogalAI : public CreatureAIScript
     protected:
 
         uint32 MarkDeto;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // AzgalorAI
@@ -1110,7 +1110,7 @@ class AzgalorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Archimonde Channel TriggerAI
@@ -1607,7 +1607,7 @@ class ArchimondeAI : public CreatureAIScript
 
     protected:
         Creature* Trigger;
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupBattleOfMountHyjal(ScriptMgr* mgr)

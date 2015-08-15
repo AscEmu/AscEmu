@@ -290,7 +290,7 @@ class Revelosh : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -423,7 +423,7 @@ class Grimlok : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -547,7 +547,7 @@ class Baelog : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -680,7 +680,7 @@ class GalgannFirehammer : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -804,7 +804,7 @@ class Ironaya : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupUldaman(ScriptMgr* mgr)

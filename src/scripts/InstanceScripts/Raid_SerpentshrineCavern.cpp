@@ -427,18 +427,19 @@ class HydrossTheUnstableAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            Unit* RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            if (!RTarget)
+            if (random_target == nullptr)
                 return;
 
             switch (spells[i].targettype)
             {
                 case TARGET_RANDOM_SINGLE:
-                    _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                    _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                     break;
                 case TARGET_RANDOM_DESTINATION:
-                    _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                    _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                     break;
             }
 
@@ -446,7 +447,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
         }
 
     private:
-        int nrspells;
+        uint8 nrspells;
         int minspell;
         int maxspell;
         bool form; //false = water | true = poison
@@ -590,7 +591,7 @@ class LurkerAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 //------------------------------------
@@ -973,7 +974,7 @@ class LeotherasAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 SwitchTimer;
         uint32 WhirlwindTimer;
         uint32 EnrageTimer;
@@ -1137,18 +1138,19 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            Unit* RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            if (!RTarget)
+            if (random_target == nullptr)
                 return;
 
             switch (spells[i].targettype)
             {
                 case TARGET_RANDOM_SINGLE:
-                    _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                    _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                     break;
                 case TARGET_RANDOM_DESTINATION:
-                    _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                    _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                     break;
             }
 
@@ -1156,7 +1158,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
         }
 
     private:
-        int nrspells;
+        uint8 nrspells;
 };
 
 class ShadowofLeotherasAI : public CreatureAIScript
@@ -1324,13 +1326,14 @@ class KarathressAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                RandomTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                if (!RandomTarget)
+                if (random_target == nullptr)
                     return;
                 //let's force this effect
-                info_cataclysmic_bolt->EffectBasePoints[0] = RandomTarget->GetUInt32Value(UNIT_FIELD_MAXHEALTH) / 2;
-                _unit->CastSpell(RandomTarget, info_cataclysmic_bolt, true);
+                info_cataclysmic_bolt->EffectBasePoints[0] = random_target->GetUInt32Value(UNIT_FIELD_MAXHEALTH) / 2;
+                _unit->CastSpell(random_target, info_cataclysmic_bolt, true);
                 TargetTable.clear();
             }
 
@@ -2388,18 +2391,19 @@ class VashjAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            Unit* RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            if (!RTarget)
+            if (random_target == nullptr)
                 return;
 
             switch (spells[i].targettype)
             {
                 case TARGET_RANDOM_SINGLE:
-                    _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                    _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                     break;
                 case TARGET_RANDOM_DESTINATION:
-                    _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                    _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                     break;
             }
 
@@ -2410,7 +2414,7 @@ class VashjAI : public CreatureAIScript
         uint32 Phase;
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 EnchantedElementalTimer;
         uint32 CoilfangStriderTimer;
         uint32 CoilfangEliteTimer;
@@ -2942,7 +2946,7 @@ class ToxicSporeBatAI : public CreatureAIScript
         uint32 m_entry;
         uint32 FlyWay;
         uint32 Phase;
-        int nrspells;
+        uint8 nrspells;
 };
 
 

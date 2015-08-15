@@ -177,7 +177,7 @@ class EtherealDarkcasterAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -277,7 +277,7 @@ class EtherealPriestAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // EtherealTheurgistAI
@@ -376,7 +376,7 @@ class EtherealTheurgistAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -470,7 +470,7 @@ class EtherealSorcererAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // NexusStalkerAI
@@ -575,7 +575,7 @@ class NexusStalkerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // NexusTerrorAI
@@ -668,7 +668,7 @@ class NexusTerrorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -763,7 +763,7 @@ class ManaLeechAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // EtherealSpellbinderAI
@@ -873,7 +873,7 @@ class EtherealSpellbinderAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -967,7 +967,7 @@ class EtherealWraithAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1169,7 +1169,7 @@ class PandemoniusAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // TavarokAI
@@ -1340,7 +1340,7 @@ class TavarokAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1586,7 +1586,7 @@ class NexusPrinceShaffarAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // YorAI
@@ -1697,7 +1697,7 @@ class YorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupManaTombs(ScriptMgr* mgr)

@@ -291,7 +291,7 @@ class AnubShiah : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -416,7 +416,7 @@ class BaelGar : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -550,7 +550,7 @@ class EmperorDagranThaurissan : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -675,7 +675,7 @@ class Eviscerator : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -800,7 +800,7 @@ class FineousDarkvire : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -934,7 +934,7 @@ class GeneralAngerforge : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1068,7 +1068,7 @@ class GolemLordArgelmach : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1193,7 +1193,7 @@ class GoroshTheDervish : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1318,7 +1318,7 @@ class Grizzle : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1452,7 +1452,7 @@ class HedrumTheCreeper : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class HighInterrogatorGerstahn : public CreatureAIScript
@@ -1585,7 +1585,7 @@ class HighInterrogatorGerstahn : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class HoundmasterGrebmar : public CreatureAIScript
@@ -1709,7 +1709,7 @@ class HoundmasterGrebmar : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1843,7 +1843,7 @@ class HurleyBlackbreath : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1977,7 +1977,7 @@ class LordIncendius : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2111,7 +2111,7 @@ class LordRoccor : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2235,7 +2235,7 @@ class Magmus : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class OkThorTheBreaker : public CreatureAIScript
@@ -2359,7 +2359,7 @@ class OkThorTheBreaker : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class Phalanx : public CreatureAIScript
@@ -2492,7 +2492,7 @@ class Phalanx : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class PrincessMoiraBronzebeard : public CreatureAIScript
@@ -2616,7 +2616,7 @@ class PrincessMoiraBronzebeard : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class PyromancerLoregrain : public CreatureAIScript
@@ -2740,7 +2740,7 @@ class PyromancerLoregrain : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupBlackrockDepths(ScriptMgr* mgr)

@@ -173,7 +173,7 @@ class AvianDarkhawkAI : public CreatureAIScript
     protected:
 
         Unit* target;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Avian Ripper AI
@@ -266,7 +266,7 @@ class AvianRipperAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Avian Warhawk AI
@@ -372,7 +372,7 @@ class AvianWarhawkAI : public CreatureAIScript
     protected:
 
         Unit* target;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Cobalt Serpent AI
@@ -477,7 +477,7 @@ class CobaltSerpentAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Time-Lost Controller AI
@@ -576,7 +576,7 @@ class TimeLostControllerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Time-Lost Scryer AI
@@ -675,7 +675,7 @@ class TimeLostScryerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -769,7 +769,7 @@ class TimeLostShadowmageAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sethekk Guard AI
@@ -868,7 +868,7 @@ class SethekkGuardAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sethekk Initiate AI
@@ -961,7 +961,7 @@ class SethekkInitiateAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sethekk Oracle AI
@@ -1060,7 +1060,7 @@ class SethekkOracleAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sethekk Prophet AI
@@ -1159,7 +1159,7 @@ class SethekkProphetAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sethekk Ravenguard AI
@@ -1258,7 +1258,7 @@ class SethekkRavenguardAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sethekk Shaman AI
@@ -1351,7 +1351,7 @@ class SethekkShamanAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Sethekk Talon Lord AI
@@ -1450,8 +1450,7 @@ class SethekkTalonLordAI : public CreatureAIScript
 
     protected:
 
-        Unit* target;
-        int nrspells;
+        uint8 nrspells;
 };
 
 ////////////////////////////////////////////////////
@@ -1765,7 +1764,7 @@ class DarkweaverSythAI : public CreatureAIScript
     protected:
 
         uint32 Summons;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Talon King IkissAI
@@ -2055,7 +2054,7 @@ class TalonKingIkissAI : public CreatureAIScript
     protected:
 
         bool Blink;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // AnzuAI
@@ -2295,7 +2294,7 @@ class ANZUAI : public CreatureAIScript
 
         bool Banished;
         uint32 Summon;
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupSethekkHalls(ScriptMgr* mgr)

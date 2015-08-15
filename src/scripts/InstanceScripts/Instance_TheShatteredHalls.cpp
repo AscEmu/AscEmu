@@ -188,7 +188,7 @@ class FelOrcConvertAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -307,7 +307,7 @@ class ShatteredHandHeathenAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandLegionnaireAI
@@ -431,7 +431,7 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandSavageAI
@@ -556,7 +556,7 @@ class ShatteredHandSavageAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -700,7 +700,7 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandAssassinAI
@@ -830,7 +830,7 @@ class ShatteredHandAssassinAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandGladiatorAI
@@ -940,7 +940,7 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandHoundmasterAI
@@ -1051,7 +1051,7 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandReaverAI
@@ -1178,7 +1178,7 @@ class ShatteredHandReaverAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandSentryAI
@@ -1306,7 +1306,7 @@ class ShatteredHandSentryAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandSharpshooterAI
@@ -1406,7 +1406,7 @@ class ShatteredHandSharpshooterAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandBrawlerAI
@@ -1530,7 +1530,7 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1917,7 +1917,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
     protected:
 
         bool Started;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -2024,7 +2024,7 @@ class BloodGuardPorungAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // WarbringerOmroggAI
@@ -2387,7 +2387,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 

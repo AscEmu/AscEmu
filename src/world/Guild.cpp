@@ -188,6 +188,8 @@ void Guild::AddGuildLogEntry(uint8 iEvent, uint8 iParamCount, ...)
     for (; i < 3; ++i)
         ev->iEventData[i] = 0;
 
+    va_end(ap);
+
     CharacterDatabase.Execute("INSERT INTO guild_logs VALUES(%u, %u, %u, %u, %u, %u, %u)",
                               ev->iLogId, m_guildId, ev->iTimeStamp, ev->iEvent, ev->iEventData[0], ev->iEventData[1], ev->iEventData[2]);
 

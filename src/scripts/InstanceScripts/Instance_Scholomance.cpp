@@ -197,7 +197,7 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
     protected:
 
         uint32 FRENZY_LIMITER;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Instructor MaliciaAI
@@ -314,7 +314,7 @@ class InstructorMaliciaAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // The RavenianAI
@@ -425,7 +425,7 @@ class TheRavenianAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Lady Illucia BarovAI
@@ -542,7 +542,7 @@ class LadyIlluciaBarovAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Ras ForstwhisperAI
@@ -666,7 +666,7 @@ class RasForstwhisperAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Jandice BarovAI
@@ -771,7 +771,7 @@ class JandiceBarovAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // KormokAI
@@ -877,7 +877,7 @@ class KormokAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // VectusAI
@@ -993,7 +993,7 @@ class VectusAI : public CreatureAIScript
     protected:
 
         uint32 FRENZY_LIMITER;
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Lord Alexei BarovAI
@@ -1099,7 +1099,7 @@ class LordAlexeiBarovAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Lorekeeper PolkeltAI
@@ -1210,7 +1210,7 @@ class LorekeeperPolkeltAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Darkmaster GandlingAI
@@ -1316,7 +1316,7 @@ class DarkmasterGandlingAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupScholomance(ScriptMgr* mgr)

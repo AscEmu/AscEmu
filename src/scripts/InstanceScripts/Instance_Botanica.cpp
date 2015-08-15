@@ -177,7 +177,7 @@ class BloodProtectorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -285,7 +285,7 @@ class BloodGreenkeeperAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -389,7 +389,7 @@ class SunchemistAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -506,7 +506,7 @@ class SunResearcherAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -675,7 +675,7 @@ class CommanderSarannisAI : public CreatureAIScript
     protected:
 
         bool GuardAdds;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -911,7 +911,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
     protected:
 
         uint32 PlantTimer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1102,7 +1102,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
     protected:
 
         bool Enraged;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1253,7 +1253,7 @@ class LajAI : public CreatureAIScript
     protected:
 
         uint32 TeleportTimer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1429,7 +1429,7 @@ class WarpSplinterAI : public CreatureAIScript
     protected:
 
         uint32 SummonTimer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupBotanica(ScriptMgr* mgr)

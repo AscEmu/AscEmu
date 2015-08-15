@@ -219,7 +219,7 @@ class ChronoLordAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -361,7 +361,7 @@ class TemporusAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -503,7 +503,7 @@ class AenusAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupTheBlackMorass(ScriptMgr* mgr)

@@ -969,7 +969,7 @@ class SERVER_DECL CombatStatusHandler
         uint64 m_primaryAttackTarget;
 
     public:
-        CombatStatusHandler() : m_lastStatus(false), m_primaryAttackTarget(0) {}
+        CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
         AttackerMap m_attackers;
         void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.
         void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.
