@@ -2174,13 +2174,15 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_UNIT)
     {
         pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
-        if (!pCreature)return;
+        if (!pCreature)
+            return;
         pLoot = &pCreature->loot;
     }
     else if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_GAMEOBJECT) // cebernic added it support gomastergive
     {
         pGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(creatureguid));
-        if (!pGameObject)return;
+        if (!pGameObject)
+            return;
         pGameObject->SetByte(GAMEOBJECT_BYTES_1, 0, 0);
         pLoot = &pGameObject->loot;
     }
@@ -2192,9 +2194,6 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
         pObj = pCreature;
     else
         pObj = pGameObject;
-
-    if (!pObj)
-        return;
 
     if (slotid >= pLoot->items.size())
     {

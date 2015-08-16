@@ -25,71 +25,80 @@ CalendarMgr::~CalendarMgr() {};
 
 void CalendarMgr::LoadFromDB()
 {
-    // Loading calendar_events
+    Log.Notice("CalendarMgr", "Start loading calendar_events");
     {
-        QueryResult* result = CharacterDatabase.Query("SELECT entry, creator, title, description, type, dungeon, date, flags FROM calendar_events");
-        if (!result)
+        const char* loadCalendarEvents = "SELECT entry, creator, title, description, type, dungeon, date, flags FROM calendar_events";
+        bool success = false;
+        QueryResult* result = CharacterDatabase.Query(&success, loadCalendarEvents);
+        if (!success)
         {
-            Log.Debug("CalendarMgr", "Table calendar_events is empty.");
+            Log.Error("CalendarMgr", "Query failed: %s", loadCalendarEvents);
             return;
         }
-        if (result == 0)
-            return;
-
-        uint32 count = 0;
-
-        do
+        if (result)
         {
-            Field* fields = result->Fetch();
+            uint32 count = 0;
+            do
+            {
+                Field* fields = result->Fetch();
 
-            uint64 entry = fields[0].GetUInt32();
-            uint32 creator = fields[1].GetUInt32();
-            std::string title = fields[2].GetString();
-            std::string description = fields[3].GetString();
-            CalendarEventType type = CalendarEventType(fields[4].GetUInt32());
-            uint32 dungeon = fields[5].GetUInt32();
-            time_t date = fields[6].GetUInt32();
-            uint32 flags = fields[7].GetUInt32();
+                uint64 entry = fields[0].GetUInt32();
+                uint32 creator = fields[1].GetUInt32();
+                std::string title = fields[2].GetString();
+                std::string description = fields[3].GetString();
+                CalendarEventType type = CalendarEventType(fields[4].GetUInt32());
+                uint32 dungeon = fields[5].GetUInt32();
+                time_t date = fields[6].GetUInt32();
+                uint32 flags = fields[7].GetUInt32();
 
-            CalendarEvent* calendarEvent = new CalendarEvent(entry, creator, title, description, type, dungeon, time_t(date), flags);
-            _events.insert(calendarEvent);
+                CalendarEvent* calendarEvent = new CalendarEvent(entry, creator, title, description, type, dungeon, time_t(date), flags);
+                _events.insert(calendarEvent);
 
-            Log.Debug("CalendarMgr", "Title %s loaded", calendarEvent->title.c_str()); // remove me ;-)
+                Log.Debug("CalendarMgr", "Title %s loaded", calendarEvent->title.c_str()); // remove me ;-)
 
-            ++count;
-        } while (result->NextRow());
+                ++count;
+            }
+            while (result->NextRow());
+            delete result;
 
+            Log.Success("CalendarMgr", "%u calendar events loaded from table calendar_events", count);
+        }
     }
-    Log.Success("CalendarMgr", "%u entries loaded from table calendar_events", _events.size());
+
+    Log.Notice("CalendarMgr", "Start loading calendar_invites");
     {
-        QueryResult* result = CharacterDatabase.Query("SELECT invite_id, event, invitee, sender, status, statustime, rank, text FROM calendar_invites");
-        if (!result)
+        const char* loadCalendarInvites = "SELECT id, event, invitee, sender, status, statustime, rank, text FROM calendar_invites";
+        bool success = false;
+        QueryResult* result = CharacterDatabase.Query(&success, loadCalendarInvites);
+        if (!success)
         {
-            Log.Debug("CalendarMgr", "Table calendar_invites is empty.");
+            Log.Debug("CalendarMgr", "Query failed: %s", loadCalendarInvites);
             return;
         }
-        if (result == 0)
-            return;
-
-        uint32 count = 0;
-        do
+        if (result)
         {
-            Field* fields = result->Fetch();
+            uint32 count = 0;
+            do
+            {
+                Field* fields = result->Fetch();
 
-            uint32 invite_id = fields[0].GetUInt32();               // entry of the calendar event (unique)
-            uint32 event = fields[1].GetUInt32();             // id of the character
-            uint32 invitee = fields[2].GetUInt32();
-            uint32 sender = fields[3].GetUInt32();
-            CalendarInviteStatus status = CalendarInviteStatus(fields[4].GetUInt32());
-            time_t statustime = fields[5].GetUInt32();
-            uint32 rank = fields[6].GetUInt32();
-            std::string text = fields[7].GetString();
+                uint32 invite_id = fields[0].GetUInt32();       // unique invite id
+                uint32 event = fields[1].GetUInt32();           // entry of the calendar event
+                uint32 invitee = fields[2].GetUInt32();         // player id
+                uint32 sender = fields[3].GetUInt32();          // player id
+                CalendarInviteStatus status = CalendarInviteStatus(fields[4].GetUInt32());
+                time_t statustime = fields[5].GetUInt32();
+                uint32 rank = fields[6].GetUInt32();
+                std::string text = fields[7].GetString();
 
-            CalendarInvite* invite = new CalendarInvite(invite_id, event, invitee, sender, status, time_t(statustime), rank, text);
-            _invites[event].push_back(invite);
+                CalendarInvite* invite = new CalendarInvite(invite_id, event, invitee, sender, status, time_t(statustime), rank, text);
+                _invites[event].push_back(invite);
 
-            ++count;
-        } while (result->NextRow());
+                ++count;
+            }
+            while (result->NextRow());
+            delete result;
+            Log.Success("CalendarMgr", "Loaded %u calendar invites", count);
+        }
     }
-    Log.Success("CalendarMgr", "Loaded %u calendar invites", _invites.size());
 }

@@ -113,9 +113,24 @@ SET(headers
     Instance_WailingCaverns.h 
     Instance_TheStockade.h 
     Instance_ZulFarrak.h
-    Raid_Naxxramas.h
-    Raid_Ulduar.h
+	Raid_BlackTemple.h 
+    Raid_BlackwingLair.h 
+    Raid_CoT_BattleOfMountHyjal.h 
+    Raid_GruulsLair.h
     Raid_IceCrownCitadel.h
+    Raid_Karazhan.h 
+    Raid_Magtheridons_Lair.h 
+    Raid_MoltenCore.h 
+    Raid_Naxxramas.h 
+    Raid_OnyxiasLair.h 
+    Raid_SerpentshrineCavern.h
+    Raid_SunwellPlateau.h  
+    Raid_TheEye.h 
+    Raid_TheObsidianSanctum.h 
+    Raid_Ulduar.h 
+    Raid_ZulGurub.h 
+    Raid_WorldBosses.h 
+    Raid_ZulAman.h
     Setup.h
     ../Common/Base.h
     ../Common/EasyFunctions.h
