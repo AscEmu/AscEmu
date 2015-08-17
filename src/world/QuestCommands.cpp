@@ -623,45 +623,39 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
         SendMultilineMessage(m_session, recout.c_str());
         return true;
     }
-
-    recout = "|cff00ff00Quest item matches: itemid: count -> Name\n\n";
-    SendMultilineMessage(m_session, recout.c_str());
-
-    uint32 count = 0;
-
-    do
+    else
     {
-        Field* fields = result->Fetch();
-        uint32 id = fields[0].GetUInt32();
-        string itemid = MyConvertIntToString(id);
-        string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
-        ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(id);
-        recout = "|cff00ccff";
-        recout += itemid.c_str();
-        recout += ": ";
-        recout += itemcnt.c_str();
-        recout += " -> ";
-        recout += tmpItem->Name1;
-        recout += "\n";
-
+        recout = "|cff00ff00Quest item matches: itemid: count -> Name\n\n";
         SendMultilineMessage(m_session, recout.c_str());
 
-        ++count;
-
-        if (count == 25)
+        uint32 count = 0;
+        do
         {
-            RedSystemMessage(m_session, "More than 25 results returned. aborting.");
-            break;
+            Field* fields = result->Fetch();
+            uint32 id = fields[0].GetUInt32();
+            string itemid = MyConvertIntToString(id);
+            string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
+            ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(id);
+            recout = "|cff00ccff";
+            recout += itemid.c_str();
+            recout += ": ";
+            recout += itemcnt.c_str();
+            recout += " -> ";
+            recout += tmpItem->Name1;
+            recout += "\n";
+
+            SendMultilineMessage(m_session, recout.c_str());
+
+            ++count;
+
+            if (count == 25)
+            {
+                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                break;
+            }
         }
-    }
-    while (result->NextRow());
-
-    delete result;
-
-    if (count == 0)
-    {
-        recout = "|cff00ccffNo matches found.\n\n";
-        SendMultilineMessage(m_session, recout.c_str());
+        while (result->NextRow());
+        delete result;
     }
 
     return true;
