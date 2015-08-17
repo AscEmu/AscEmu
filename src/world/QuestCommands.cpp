@@ -821,57 +821,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
     Quest* qst;
     Field* fields;
 
-    if (quest_giver == 0)
-    {
-        Player* plr = getSelectedChar(m_session, true);
-        if (!plr)
-        {
-            plr = m_session->GetPlayer();
-            SystemMessage(m_session, "Auto-targeting self.");
-        }
-
-        if (plr)
-        {
-            if (plr->HasQuests())
-            {
-                QueryResult* playerResult = CharacterDatabase.Query("SELECT quest_id FROM questlog WHERE player_guid=%u", plr->GetLowGUID());
-                if (playerResult)
-                {
-                    do
-                    {
-                        fields = playerResult->Fetch();
-                        quest_id = fields[0].GetUInt32();
-
-                        qst = QuestStorage.LookupEntry(quest_id);
-
-                        string qid = MyConvertIntToString(quest_id);
-                        const char* qname = qst->title;
-
-                        recout = "|cff00ccff";
-                        recout += qid.c_str();
-                        recout += ": ";
-                        recout += qname;
-                        recout += "\n";
-
-                        SendMultilineMessage(m_session, recout.c_str());
-
-                        ++count;
-
-                        if (count == 25)
-                        {
-                            RedSystemMessage(m_session, "More than 25 results returned. aborting.");
-                            break;
-                        }
-
-                    }
-                    while (playerResult->NextRow());
-
-                    delete playerResult;
-                }
-            }
-        }
-    }
-    else
+    if (quest_giver != 0)
     {
         QueryResult* creatureResult = WorldDatabase.Query("SELECT quest FROM creature_quest_starter WHERE id = %u", quest_giver);
 

@@ -436,6 +436,9 @@ Player* Group::FindFirstPlayer()
 
 void Group::RemovePlayer(PlayerInfo* info)
 {
+    if (info == nullptr)
+        return;
+
     WorldPacket data(50);
     Player* pPlayer = info->m_loggedInPlayer;
 
