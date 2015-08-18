@@ -19,24 +19,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
+#include "Raid_ZulAman.h"
 
-// NalorakkAI
-#define CN_NALORAKK                    23576
+///\todo move AddEmote to database
 
-// Troll Form spells
-#define NALORAKK_MANGLE                44955
-#define NALORAKK_SURGE                25787    // 42402 - correct spell hits creature casting spell
-// Bear Form spells
-#define NALORAKK_LACERATING_SLASH    42395
-#define NALORAKK_REND_FLESH            42397
-#define NALORAKK_DEAFENING_ROAR        42398
-// Common spells
-#define NALORAKK_BRUTAL_SWIPE        42384
-// Other spells
-#define NALORAKK_BERSERK            41924
-
+//NalorakkAI
 class NalorakkAI : public MoonScriptBossAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(NalorakkAI, MoonScriptBossAI);
@@ -120,14 +109,6 @@ class NalorakkAI : public MoonScriptBossAI
 };
 
 //Akil'zon <Eagle Avatar>
-#define CN_AKILZON                    23574
-#define CN_SOARING_EAGLE            24858 //SUMMONS  Akil'zon <Eagle Avatar>
-
-#define AKILZON_STATIC_DISRUPTION    44008 //INSTANT
-#define AKILZON_CALL_LIGHTING        43661 //INSTANT 
-#define AKILZON_GUST_OF_WIND        43621 //INSTANT
-#define AKILZON_ELECTRICAL_STORM    43648
-
 class AkilzonAI : public MoonScriptBossAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(AkilzonAI, MoonScriptBossAI);
@@ -183,8 +164,6 @@ class AkilzonAI : public MoonScriptBossAI
 };
 
 //SOARING_EAGLE Summon Akil'zon
-#define EAGLE_SWOOP         44732 //INSTANT
-
 class SoaringEagleAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(SoaringEagleAI, MoonScriptCreatureAI);
@@ -195,20 +174,8 @@ class SoaringEagleAI : public MoonScriptCreatureAI
         }
 };
 
+
 //Halazzi <Lynx Avatar>
-#define CN_HALAZZI                         23577
-#define CN_LYNX_SPIRIT                   24143
-#define CN_TOTEM                         24224
-#define HALAZZI_ENRAGE                     44779
-
-//Phase 1
-#define HALAZZI_SABER_LASH                 43267 //43267 //43268 ///40810 //40816
-//Phase 2
-#define HALAZZI_FLAME_SHOCK                 43303
-#define HALAZZI_EARTH_SHOCK                 43305 //INSTANT , VARIOUS
-//Phase 3
-//Halazzi now drops his totems more frequently as well as doing more damage.
-
 class HalazziAI : public MoonScriptBossAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(HalazziAI, MoonScriptBossAI);
