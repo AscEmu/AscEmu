@@ -216,6 +216,7 @@ class AntusulAI : public CreatureAIScript
             servant = dbcSpell.LookupEntry(SP_ANTUSUL_SERVANTS);
             //healing_ward = dbcSpell.LookupEntry(SP_ANTUSUL_HEALINGWARD);
             //earthgrab_ward = dbcSpell.LookupEntry(SP_ANTUSUL_EARTHGRABWARD);
+            secondspawncount = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -409,8 +410,8 @@ class AntusulAI : public CreatureAIScript
         Creature* trigger;
 
         SpellEntry* servant;
-        SpellEntry* healing_ward;
-        SpellEntry* earthgrab_ward;
+        //SpellEntry* healing_ward;
+        //SpellEntry* earthgrab_ward;
 };
 
 

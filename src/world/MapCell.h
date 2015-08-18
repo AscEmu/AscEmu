@@ -32,7 +32,7 @@ class SERVER_DECL MapCell
     friend class MapMgr;
     public:
 
-        MapCell() {};
+    MapCell() : _x(0), _y(0), _active(false), _loaded(false), _unloadpending(false), _playerCount(0), _mapmgr(nullptr) {};
         ~MapCell();
 
         typedef std::set<Object*> ObjectSet;
@@ -77,9 +77,11 @@ class SERVER_DECL MapCell
         void CorpseGoneIdle(Object* corpse);
     private:
 
-        uint16 _x, _y;
+        uint16 _x;
+        uint16 _y;
         ObjectSet _objects;
-        bool _active, _loaded;
+        bool _active;
+        bool _loaded;
         bool _unloadpending;
 
         uint16 _playerCount;

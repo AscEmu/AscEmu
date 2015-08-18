@@ -350,6 +350,7 @@ class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
             _unit->SetFaction(35);
 
             SetCanMove(false);
+            NdGo = nullptr;
 
             plr = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
             Ogre = GetNearestCreature(CN_BLADESPIRE_OGRE_1);
@@ -367,8 +368,6 @@ class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
             }
             Ogre->MoveTo(_unit);
             RegisterAIUpdateEvent(1000);
-
-            NdGo = nullptr;
         }
 
         void AIUpdate()
