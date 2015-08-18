@@ -1791,21 +1791,25 @@ void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
         std::string messagebody = Reward->text;
         
         //Create Item
-        Item * pItem = Reward->itemId ? objmgr.CreateItem(Reward->itemId, GetPlayer()) : NULL;
+        Item* pItem = Reward->itemId ? objmgr.CreateItem(Reward->itemId, GetPlayer()) : nullptr;
 
-        if (pItem != NULL)
+        if (pItem != nullptr)
         {
             pItem->SaveToDB(-1, -1, true, NULL);
             //Sending mail
-            sMailSystem.SendAutomatedMessage(CREATURE, Sender, receiver, messageheader,
-            messagebody, 0, 0, pItem ? pItem->GetGUID() : 0, 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
+            sMailSystem.SendAutomatedMessage(CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, pItem->GetGUID(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
 
             //removing pItem
             pItem->DeleteMe();
-            pItem = NULL;
+            pItem = nullptr;
 
             //removing sender
             pCreature->Delete();
+        }
+        else
+        {
+            sLog.Error("AchievementMgr", "Can not create item for message! (nullptr)");
+            return;
         }
     }
 }
