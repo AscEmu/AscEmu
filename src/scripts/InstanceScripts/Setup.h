@@ -178,6 +178,7 @@ enum InstanceMaps
     MAP_CF_STEAMVAULT       = 545,  //Coilfang: The Steamvault
     MAP_CF_THE_UNDERBOG     = 546,  //Coilfang: The Underbog
     MAP_CF_SLAVE_PENS       = 547,  //Coilfang: The Slave Pens
+    MAP_CF_SERPENTSHRINE_CA = 548,  //Coilfang: Serpentshrine Cavern
 
     MAP_TK_THE_ARCATRAZ     = 552,  //Tempest Keep: The Arcatraz
     MAP_TK_THE_BOTANICA     = 553,  //Tempest Keep: The Botanica
