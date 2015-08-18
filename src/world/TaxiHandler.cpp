@@ -161,14 +161,7 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     }
 
     // Check for valid node
-    if (!taxinode)
-    {
-        data << uint32(1);
-        SendPacket(&data);
-        return;
-    }
-
-    if (!taxipath || !taxipath->GetNodeCount())
+    if (!taxipath->GetNodeCount())
     {
         data << uint32(2);
         SendPacket(&data);
