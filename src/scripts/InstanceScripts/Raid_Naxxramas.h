@@ -3168,7 +3168,7 @@ class SapphironAI : public CreatureAIScript
                             if (i == 0)
                                 Block = RandomUInt(3) + 7;
                             else
-                                Block = RandomUInt(9) + 13;
+                                Block = RandomUInt(8) + 13;
 
                             GameObject* IceBlock = NULL;
                             IceBlock = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
