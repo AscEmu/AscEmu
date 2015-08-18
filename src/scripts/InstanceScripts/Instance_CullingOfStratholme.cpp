@@ -989,9 +989,9 @@ class UtherAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(UtherAI);
         UtherAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 90000, RUN));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 90000, Flag_Run));
             check = true;
         }
 
@@ -1093,13 +1093,13 @@ class ArthasAI : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(ArthasAI);
         ArthasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 10500, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, RUN));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 10500, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Flag_Run));
 
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);

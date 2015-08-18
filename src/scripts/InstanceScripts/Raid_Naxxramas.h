@@ -2855,11 +2855,6 @@ class ChillTriggerAI : public CreatureAIScript
 #define FROSTWYRM_WATERFALL_DOOR    181225
 #define ICE_BLOCK_GO                181247
 
-// Move types
-#define WALK    0
-#define RUN        256
-#define FLY        768
-
 // Immunities
 #define IMMUNITY_DISEASE            6681
 #define IMMUNITY_SHADOW                7743
@@ -2879,7 +2874,7 @@ class SapphironAI : public CreatureAIScript
 
     SapphironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 3000, RUN));
+        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 3000, Flag_Run));
 
         nrspells = 2;
         for (int i = 0; i < nrspells; i++)

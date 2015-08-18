@@ -1800,10 +1800,6 @@ class TidewalkerLurkerAI : public CreatureAIScript
 #define TOXIC_SPORES 38575
 #define SHOCK_BLAST 38509
 
-#define WALK 0
-#define RUN 256
-#define FLY 768
-
 static LocationExtra ElementalSpawnPoints[] =
 {
     {8.3f, -835.3f, 21.9f, 5},
@@ -1956,7 +1952,7 @@ class VashjAI : public CreatureAIScript
             wp->z = 42.900517f;
             wp->o = 0.0f;
             wp->waittime = 0;
-            wp->flags = RUN;
+            wp->flags = Flag_Run;
             wp->forwardemoteoneshot = false;
             wp->forwardemoteid = 0;
             wp->backwardemoteoneshot = false;
@@ -2164,7 +2160,7 @@ class VashjAI : public CreatureAIScript
                     wp->z = ElementalSpawnPoints2[pos].z;
                     wp->o = ElementalSpawnPoints2[pos].o;
                     wp->waittime = 0;
-                    wp->flags = WALK;
+                    wp->flags = Flag_Walk;
                     wp->forwardemoteoneshot = false;
                     wp->forwardemoteid = 0;
                     wp->backwardemoteoneshot = false;
@@ -2180,7 +2176,7 @@ class VashjAI : public CreatureAIScript
                     wp->z = 42.900517f;
                     wp->o = 0.0f;
                     wp->waittime = 0;
-                    wp->flags = WALK;
+                    wp->flags = Flag_Walk;
                     wp->forwardemoteoneshot = false;
                     wp->forwardemoteid = 0;
                     wp->backwardemoteoneshot = false;
@@ -2536,18 +2532,18 @@ class ToxicSporeBatAI : public CreatureAIScript
 
             m_entry = pCreature->GetEntry();
 
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(9, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(12, 0, FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(9, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(12, 0, Flag_Fly));
 
             /************************** Spells ****************************/
 
