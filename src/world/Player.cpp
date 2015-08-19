@@ -13574,18 +13574,21 @@ void Player::AddQuestKill(uint32 questid, uint8 reqid, uint32 delay)
         return;
     }
 
-    QuestLogEntry* qle = GetQuestLogForEntry(questid);
-    Quest* qst = qle->GetQuest();
-
-    if (qle->GetMobCount(reqid) >= qst->required_mobcount[reqid])
+    auto quest_entry = GetQuestLogForEntry(questid);
+    if (quest_entry == nullptr)
         return;
 
-    qle->IncrementMobCount(reqid);
-    qle->SendUpdateAddKill(reqid);
-    qle->UpdatePlayerFields();
+    auto quest = quest_entry->GetQuest();
 
-    if (qle->CanBeFinished())
-        qle->SendQuestComplete();
+    if (quest_entry->GetMobCount(reqid) >= quest->required_mobcount[reqid])
+        return;
+
+    quest_entry->IncrementMobCount(reqid);
+    quest_entry->SendUpdateAddKill(reqid);
+    quest_entry->UpdatePlayerFields();
+
+    if (quest_entry->CanBeFinished())
+        quest_entry->SendQuestComplete();
 }
 
 bool Player::CanBuyAt(VendorRestrictionEntry* vendor)

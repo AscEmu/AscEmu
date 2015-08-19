@@ -4109,10 +4109,13 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
 
         if (m_moveType == MOVEMENTTYPE_QUEST)
         {
-            WayPoint* wp = getWayPoint(getCurrentWaypoint());
-            m_returnX = wp->x;
-            m_returnY = wp->y;
-            m_returnZ = wp->z;
+            auto waypoint = getWayPoint(getCurrentWaypoint());
+            if (waypoint != nullptr)
+            {
+                m_returnX = waypoint->x;
+                m_returnY = waypoint->y;
+                m_returnZ = waypoint->z;
+            }
         }
     }
 
@@ -4582,10 +4585,13 @@ void AIInterface::SetReturnPosition()
 
     if (m_moveType == MOVEMENTTYPE_QUEST)
     {
-        WayPoint* wp = getWayPoint(getCurrentWaypoint());
-        m_returnX = wp->x;
-        m_returnY = wp->y;
-        m_returnZ = wp->z;
+        auto waypoint = getWayPoint(getCurrentWaypoint());
+        if (waypoint != nullptr)
+        {
+            m_returnX = waypoint->x;
+            m_returnY = waypoint->y;
+            m_returnZ = waypoint->z;
+        }
     }
     else
     {

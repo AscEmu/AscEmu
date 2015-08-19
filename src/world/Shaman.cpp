@@ -58,7 +58,9 @@ void World::InitShamanSpells()
     }
     if (sp = dbcSpell.LookupEntryForced(16166))
     {
-        sp->DurationIndex = dbcSpell.LookupEntryForced(64701)->DurationIndex;
+        auto source_spell = dbcSpell.LookupEntryForced(64701);
+        if (source_spell != nullptr)
+            sp->DurationIndex = source_spell->DurationIndex;
     }
 
 }

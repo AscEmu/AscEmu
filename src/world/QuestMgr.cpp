@@ -230,13 +230,16 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     if (quest_giver->IsItem())
     {
         Quest* pQuest = QuestStorage.LookupEntry(TO< Item* >(quest_giver)->GetProto()->QuestId);
-        QuestRelation qr;
-        qr.qst = pQuest;
-        qr.type = 1;
+        if (pQuest)
+        {
+            QuestRelation qr;
+            qr.qst = pQuest;
+            qr.type = 1;
 
-        uint32 tmp_status = CalcQuestStatus(quest_giver, plr, &qr);
-        if (tmp_status > status)
-            status = tmp_status;
+            uint32 tmp_status = CalcQuestStatus(quest_giver, plr, &qr);
+            if (tmp_status > status)
+                status = tmp_status;
+        }
     }
 
     for (itr = q_begin; itr != q_end; ++itr)

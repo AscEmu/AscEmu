@@ -1513,15 +1513,17 @@ void Aura::EventUpdateAA(float r)
 
 	for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
 	{
-		Unit* u = m_target->GetMapMgr()->GetUnit(*itr);
+		auto unit = m_target->GetMapMgr()->GetUnit(*itr);
+        if (unit == nullptr)
+            return;
 
-		if (u->HasAura(m_spellProto->Id))
+		if (unit->HasAura(m_spellProto->Id))
 			continue;
 
-		Aura* a = sSpellFactoryMgr.NewAura(m_spellProto, GetDuration(), m_target, u, true);
+		Aura* a = sSpellFactoryMgr.NewAura(m_spellProto, GetDuration(), m_target, unit, true);
 		a->m_areaAura = true;
 		a->AddMod(mod->m_type, mod->m_amount , mod->m_miscValue, mod->i);
-		u->AddAura(a);
+		unit->AddAura(a);
 	}
 }
 
