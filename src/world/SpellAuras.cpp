@@ -796,6 +796,14 @@ Aura::Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool
 
     m_casterfaction = 0;
     mod = 0;
+    for (uint8 i = 0; i < 3; ++i)
+    {
+        m_modList[i].m_type = 0;
+        m_modList[i].m_amount = 0;
+        m_modList[i].m_miscValue = 0;
+        m_modList[i].i = 0;
+        m_modList[i].realamount = 0;
+    }
 }
 
 Aura::~Aura()
