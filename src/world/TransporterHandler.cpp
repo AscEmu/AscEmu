@@ -515,7 +515,7 @@ void ObjectMgr::LoadTransporters()
             }
             else
             {
-                Log.Success("TransporterHandler", "%s, Entry: %u, Period: %u loaded", dbResult.name.c_str(), dbResult.entry, dbResult.period);
+                Log.Debug("TransporterHandler", "%s, Entry: %u, Period: %u loaded", dbResult.name.c_str(), dbResult.entry, dbResult.period);
                 AddTransport(pTransporter);
                 ++count;
             }

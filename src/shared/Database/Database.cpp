@@ -38,6 +38,8 @@ Database::Database() : CThread()
     Connections = NULL;
     mConnectionCount = -1;   // Not connected.
     ThreadRunning = true;
+    mPort = 3306;
+    qt = nullptr;
 }
 
 Database::~Database()

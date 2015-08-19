@@ -31,6 +31,32 @@ DayWatcherThread::DayWatcherThread()
 {
     m_running = true;
     m_dirty = false;
+    last_arena_time = 0;
+    local_last_arena_time.tm_sec = 0;
+    local_last_arena_time.tm_min = 0;
+    local_last_arena_time.tm_hour = 0;
+    local_last_arena_time.tm_mday = 0;
+    local_last_arena_time.tm_mon = 0;
+    local_last_arena_time.tm_year = 0;
+    local_last_arena_time.tm_wday = 0;
+    local_last_arena_time.tm_yday = 0;
+    local_last_arena_time.tm_isdst = 0;
+    // local_last_arena_time.tm_gmtoff = 0;
+    // local_last_arena_time.tm_zone = 0;
+    last_daily_time = 0;
+    local_last_daily_time.tm_sec = 0;
+    local_last_daily_time.tm_min = 0;
+    local_last_daily_time.tm_hour = 0;
+    local_last_daily_time.tm_mday = 0;
+    local_last_daily_time.tm_mon = 0;
+    local_last_daily_time.tm_year = 0;
+    local_last_daily_time.tm_wday = 0;
+    local_last_daily_time.tm_yday = 0;
+    local_last_daily_time.tm_isdst = 0;
+    // local_last_daily_time.tm_gmtoff = 0;
+    // local_last_daily_time.tm_zone = 0;
+    arena_period = WEEKLY;
+    daily_period = WEEKLY;
 }
 
 DayWatcherThread::~DayWatcherThread()

@@ -303,7 +303,7 @@ class WebbedCreature : public CreatureAIScript
             else
             {
                 uint32 Id[ 8 ] = { 17681, 17321, 17330, 17522, 17673, 17336, 17346, 17589 };
-                RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(1, 8)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(7)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
                 if(RandomCreature != NULL)
                 {
                     RandomCreature->m_noRespawn = true;

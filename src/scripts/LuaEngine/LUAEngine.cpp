@@ -2074,7 +2074,7 @@ class LuaGossip : public Arcemu::Gossip::Script
 class LuaQuest : public QuestScript
 {
 	public:
-		LuaQuest() : QuestScript() {}
+        LuaQuest() : QuestScript(), m_binding(nullptr) {}
 		~LuaQuest()
 		{
 			typedef HM_NAMESPACE::hash_map<uint32, LuaQuest*> QuestType;

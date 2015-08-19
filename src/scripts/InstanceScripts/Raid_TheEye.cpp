@@ -1905,9 +1905,6 @@ class AlarAuxClass: public Object
         CreatureAIScript* alar;
 };
 
-#define WALK 0
-#define RUN 256
-#define FLY 768
 
 #define CN_ALAR 19514
 
@@ -1955,7 +1952,7 @@ class AlarAI : public CreatureAIScript
 
             for (int i = 1; i < 12; i++)
             {
-                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, RUN));    // FLY stucks my client
+                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Flag_Fly));
             }
 
             /************************** Spells ******************************/

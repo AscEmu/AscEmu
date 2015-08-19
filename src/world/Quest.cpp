@@ -155,10 +155,14 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(Quest* qst)
 QuestLogEntry::QuestLogEntry()
 {
     mInitialized = false;
-    m_quest = NULL;
+    m_quest = nullptr;
     mDirty = false;
     m_slot = -1;
     completed = 0;
+    m_plr = nullptr;
+    iscastquest = false;
+    isemotequest = false;
+    expirytime = 0;
 }
 
 QuestLogEntry::~QuestLogEntry()
@@ -166,8 +170,8 @@ QuestLogEntry::~QuestLogEntry()
 
 void QuestLogEntry::Init(Quest* quest, Player* plr, uint32 slot)
 {
-    ARCEMU_ASSERT(quest != NULL);
-    ARCEMU_ASSERT(plr != NULL);
+    ARCEMU_ASSERT(quest != nullptr);
+    ARCEMU_ASSERT(plr != nullptr);
 
     m_quest = quest;
     m_plr = plr;
@@ -248,7 +252,7 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
     ss << m_quest->id;
     ss << ";";
 
-    if (buf == NULL)
+    if (buf == nullptr)
         CharacterDatabase.Execute(ss.str().c_str());
     else
         buf->AddQueryStr(ss.str());
@@ -267,7 +271,7 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
 
     ss << ")";
 
-    if (buf == NULL)
+    if (buf == nullptr)
         CharacterDatabase.Execute(ss.str().c_str());
     else
         buf->AddQueryStr(ss.str());

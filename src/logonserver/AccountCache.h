@@ -39,6 +39,11 @@ struct Account
     {
         GMFlags = NULL;
         SessionKey = NULL;
+        AccountId = 0;
+        AccountFlags = 0;
+        Banned = 0;
+        Muted = 0;
+        forcedLocale = false;
     }
 
     ~Account()

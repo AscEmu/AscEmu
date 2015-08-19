@@ -2855,11 +2855,6 @@ class ChillTriggerAI : public CreatureAIScript
 #define FROSTWYRM_WATERFALL_DOOR    181225
 #define ICE_BLOCK_GO                181247
 
-// Move types
-#define WALK    0
-#define RUN        256
-#define FLY        768
-
 // Immunities
 #define IMMUNITY_DISEASE            6681
 #define IMMUNITY_SHADOW                7743
@@ -2879,7 +2874,7 @@ class SapphironAI : public CreatureAIScript
 
     SapphironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 3000, RUN));
+        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 3000, Flag_Run));
 
         nrspells = 2;
         for (int i = 0; i < nrspells; i++)
@@ -3168,7 +3163,7 @@ class SapphironAI : public CreatureAIScript
                             if (i == 0)
                                 Block = RandomUInt(3) + 7;
                             else
-                                Block = RandomUInt(9) + 13;
+                                Block = RandomUInt(8) + 13;
 
                             GameObject* IceBlock = NULL;
                             IceBlock = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);

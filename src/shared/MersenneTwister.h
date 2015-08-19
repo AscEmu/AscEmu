@@ -160,6 +160,7 @@ class CRandomMersenne                  // Encapsulate random number generator
         {
             RandomInit(seed);
             LastInterval = 0;
+            RLimit = 0;
         }
 
         void RandomInit(uint32 seed);       // Re-seed

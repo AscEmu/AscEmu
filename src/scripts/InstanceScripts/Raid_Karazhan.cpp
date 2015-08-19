@@ -3560,9 +3560,6 @@ class VoidZoneAI : public CreatureAIScript
 #define CN_NIGHTBANE 17225
 #define CN_RESTLESS_SKELETON 17261 // not needed if spell works
 
-#define WALK 0
-#define RUN 256
-#define FLY 768
 
 // ground spells
 #define BELLOWING_ROAR 36922
@@ -3644,7 +3641,7 @@ class NightbaneAI : public CreatureAIScript
 
             for (int i = 1; i < 5; i++)
             {
-                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, FLY));
+                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Flag_Fly));
             }
 
             m_phase = 0;

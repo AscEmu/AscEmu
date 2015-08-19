@@ -21,6 +21,7 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
+#include "Raid_SerpentshrineCavern.h"
 
 
 #ifdef WIN32
@@ -32,10 +33,6 @@
 //------------------------------------
 //    -= Hydross the Unstable =-
 //------------------------------------
-#define CN_HYDROSS_THE_UNSTABLE 21216
-#define CN_TAINTED_SPAWN_OF_HYDROSS 22036
-#define CN_PURE_SPAWN_OF_HYDROSS 22035
-
 #define WATER_TOMB 38235
 #define VILE_SLUDGE 38246
 #define MARK_OF_HYDROSS1    38215
@@ -112,8 +109,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             Enraged = false;
             EnrageTimer = 600;
 
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I cannot allow you to interfere!");
-            _unit->PlaySoundToSet(11289);
+            _unit->SendScriptTextChatMessage(4749);     // I cannot allow you to interfere!
 
             RegisterAIUpdateEvent(1000);
         }
@@ -138,13 +134,11 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     switch (RandomUInt(1))
                     {
                         case 0:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "They have forced me to this...");
-                            _unit->PlaySoundToSet(11291);
+                            _unit->SendScriptTextChatMessage(4751);     // They have forced me to this...
                             break;
 
                         case 1:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have no choice.");
-                            _unit->PlaySoundToSet(11292);
+                            _unit->SendScriptTextChatMessage(4752);     // I had no choice.");
                             break;
                     }
                 }
@@ -153,13 +147,11 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     switch (RandomUInt(1))
                     {
                         case 0:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL,  "I will purge you from this place.");
-                            _unit->PlaySoundToSet(11298);
+                            _unit->SendScriptTextChatMessage(4755);     // I will purge you from this place.
                             break;
 
                         case 1:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You are no better than they!");
-                            _unit->PlaySoundToSet(11299);
+                            _unit->SendScriptTextChatMessage(4756);     // You are no better than they!
                             break;
                     }
                 }
@@ -168,8 +160,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You are the disease, not I.");
-            _unit->PlaySoundToSet(11300);
+            _unit->SendScriptTextChatMessage(4757);     // You are the disease, not I..
 
             RemoveAIUpdateEvent();
         }
@@ -230,7 +221,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     maxspell = 1;
                     form = true;
                     _unit->SetDisplayId(5498);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Aaghh, the poison...");
+                    _unit->SendScriptTextChatMessage(4754);     // Aaghh, the poison...
                     _unit->PlaySoundToSet(11297);
                     _unit->GetProto()->AttackType = 3;
                     _unit->SchoolImmunityList[SCHOOL_FROST] = 0;
@@ -314,7 +305,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     maxspell = 0;
                     form = false;
                     _unit->SetDisplayId(20162);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Better, much better.");
+                    _unit->SendScriptTextChatMessage(4750);     // Better, much better.
                     _unit->PlaySoundToSet(11290);
                     _unit->GetProto()->AttackType = 4;
                     _unit->SchoolImmunityList[SCHOOL_FROST] = 1;
@@ -461,10 +452,6 @@ class HydrossTheUnstableAI : public CreatureAIScript
 //------------------------------------
 //    -= The Lurker Below=-
 //------------------------------------
-#define CN_THE_LURKER_BELOW 21217
-#define CN_CN_COILFANG_AMBUSHER 21865
-#define CN_CN_COILFANG_GUARDIAN 21873
-
 #define WHIRL 37363
 #define GEYSER 37478
 #define SPOUT 37433
@@ -602,12 +589,6 @@ class LurkerAI : public CreatureAIScript
  - Some phase timers
  - Insidious whispers
 */
-
-#define CN_LEOTHERAS_THE_BLIND 21215
-#define CN_INNER_DEMON 21857
-#define CN_GREYHEART_SPELLBINDER 21806
-#define CN_SHADOW_OF_LEOTHERAS 21875
-
 #define MIND_BLAST 37531
 #define WHIRLWINDLEO 40653
 #define INSIDIOUS_WHISPER 37676
@@ -694,8 +675,7 @@ class LeotherasAI : public CreatureAIScript
             WhirlwindTimer = 15;
             EnrageTimer = 599; //10 minutes
 
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Finally my banishment ends!");
-            _unit->PlaySoundToSet(11312);
+            _unit->SendScriptTextChatMessage(4772);     // Finally my banishment ends!
 
             RegisterAIUpdateEvent(1000);
         }
@@ -725,16 +705,13 @@ class LeotherasAI : public CreatureAIScript
                     switch (RandomUInt(2))
                     {
                         case 0:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Kill! KILL!");
-                            _unit->PlaySoundToSet(11314);
+                            _unit->SendScriptTextChatMessage(4778);     // Kill! KILL!
                             break;
                         case 1:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "That's right! Yes!");
-                            _unit->PlaySoundToSet(11315);
+                            _unit->SendScriptTextChatMessage(4779);     // That's right! Yes!
                             break;
                         case 2:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Who's the master now?");
-                            _unit->PlaySoundToSet(11316);
+                            _unit->SendScriptTextChatMessage(4780);     // Who's the master now?
                             break;
                     }
                 }
@@ -743,16 +720,13 @@ class LeotherasAI : public CreatureAIScript
                     switch (RandomUInt(2))
                     {
                         case 0:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I have no equal.");
-                            _unit->PlaySoundToSet(11306);
+                            _unit->SendScriptTextChatMessage(4775);     // I have no equal.
                             break;
                         case 1:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Perish, mortal.");
-                            _unit->PlaySoundToSet(11307);
+                            _unit->SendScriptTextChatMessage(4776);     // Perish, mortal.
                             break;
                         case 2:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Yes, YES! Ahahah!");
-                            _unit->PlaySoundToSet(11308);
+                            _unit->SendScriptTextChatMessage(4777);     // Yes, YES! Ahahah!
                             break;
                     }
                 }
@@ -761,8 +735,7 @@ class LeotherasAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You cannot kill me! Fools, I'll be back! I'll... aarghh...");
-            _unit->PlaySoundToSet(11317);
+            _unit->SendScriptTextChatMessage(4783);     // You cannot kill me! Fools, I'll be back! I'll... aarghh...
             RemoveAIUpdateEvent();
         }
 
@@ -818,8 +791,7 @@ class LeotherasAI : public CreatureAIScript
                     {
                         //switch to AGENT_SPELL
                         _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Be gone trifling elf. I'm in control now");
-                        _unit->PlaySoundToSet(11304);
+                        _unit->SendScriptTextChatMessage(4773);     // Be gone trifling elf. I'm in control now
                         SwitchToDemonForm();
                         Phase = 1;
                         SwitchTimer = 60; //60 seconds
@@ -842,8 +814,7 @@ class LeotherasAI : public CreatureAIScript
                             _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
                             _unit->GetAIInterface()->m_canMove = false;
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "No... no! What have you done? I am the master! Do you hear me? I am... aaggh! Can't... contain him.");
-                            _unit->PlaySoundToSet(11313);
+                            _unit->SendScriptTextChatMessage(4781);     // No... no! What have you done? I am the master! Do you hear me? I am... aaggh! Can't... contain him.
                             FinalPhaseTimer = 10;
                             FinalPhaseSubphase++;
                             break;
@@ -1221,14 +1192,6 @@ class ShadowofLeotherasAI : public CreatureAIScript
 //------------------------------------
 //    -= Fathom-Lord Karathress =-
 //------------------------------------
-#define CN_FATHOM_LORD_KARATHRESS 21214
-#define CN_FATHOM_GUARD_SHARKKIS 21966
-#define CN_FATHOM_GUARD_TIDALVESS 21965
-#define CN_FATHOM_LURKER 22119
-#define CN_FATHOM_SPOREBAT 22120
-#define CN_FATHOM_GUARD_CARIBDIS 21964
-#define CN_SEER_OLUM 22820
-
 #define CATACLYSMIC_BOLT 38441
 #define BLESSING_OF_THE_TIDES 38449
 #define KARATHRESS_ENRAGE 39249
@@ -1271,8 +1234,7 @@ class KarathressAI : public CreatureAIScript
             CataclysmicBoltTimer = 10;
             EnrageTimer = 600;
             Enraged = false;
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Guards, attention! We have visitors ...");
-            _unit->PlaySoundToSet(11277);
+            _unit->SendScriptTextChatMessage(4740);     // Guards, attention!We have visitors ...
             RegisterAIUpdateEvent(1000);
         }
 
@@ -1285,8 +1247,7 @@ class KarathressAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Her ... excellency ... awaits!");
-            _unit->PlaySoundToSet(11285);
+            _unit->SendScriptTextChatMessage(4748);     // Her ... excellency ... awaits!
             RemoveAIUpdateEvent();
 
             //spawn seer olum and despawn him in 3 minutes
@@ -1298,8 +1259,7 @@ class KarathressAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am rid of you.");
-            _unit->PlaySoundToSet(11284);
+            _unit->SendScriptTextChatMessage(4747);     // I am rid of you.
         }
 
         void AIUpdate()
@@ -1342,8 +1302,7 @@ class KarathressAI : public CreatureAIScript
             {
                 if (BlessingOfTidesCounter < AdvisorsLeft)
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your overconfidence will be your undoing! Guards, lend me your strength!");
-                    _unit->PlaySoundToSet(11278);
+                    _unit->SendScriptTextChatMessage(4741);     // Your overconfidence will be your undoing! Guards, lend me your strength!
                     _unit->CastSpell(_unit, dbcSpell.LookupEntry(BLESSING_OF_THE_TIDES), true);
                     BlessingOfTidesCounter++;
                 }
@@ -1404,8 +1363,7 @@ class FathomGuardSharkissAI : public MoonScriptCreatureAI
             if (FLK)
             {
                 FLK->CastSpell(FLK, dbcSpell.LookupEntry(38455), true); //Power of Sharkkis
-                FLK->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I am more powerful than ever!");
-                FLK->PlaySoundToSet(11280);
+                FLK->SendScriptTextChatMessage(4743);     // I am more powerful than ever!
                 if (TO< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                     TO< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
                 FLK->RemoveAura(BLESSING_OF_THE_TIDES);
@@ -1472,8 +1430,7 @@ class FathomGuardTidalvessAI : public MoonScriptCreatureAI
             if (FLK)
             {
                 FLK->CastSpell(FLK, dbcSpell.LookupEntry(38452), true); //Power of Tidalvess
-                FLK->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Go on, kill them! I'll be the better for it!");
-                FLK->PlaySoundToSet(11279);
+                FLK->SendScriptTextChatMessage(4742);     // Go on, kill them! I'll be the better for it!
                 if (TO< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                     TO< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
                 FLK->RemoveAura(BLESSING_OF_THE_TIDES);
@@ -1530,8 +1487,7 @@ class FathomGuardCaribdisAI : public MoonScriptCreatureAI
             if (FLK)
             {
                 FLK->CastSpell(FLK, dbcSpell.LookupEntry(38451), true); //Power of Caribdis
-                FLK->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "More knowledge, more power!");
-                FLK->PlaySoundToSet(11281);
+                FLK->SendScriptTextChatMessage(4744);     // More knowledge, more power!
                 if (TO< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                     TO< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
                 FLK->RemoveAura(BLESSING_OF_THE_TIDES);
@@ -1546,8 +1502,6 @@ class FathomGuardCaribdisAI : public MoonScriptCreatureAI
 //------------------------------------
 //    -= Morogrim Tidewalker =-
 //------------------------------------
-#define CN_MOROGRIM_TIDEWALKER 21213
-#define CN_TIDEWALKER_LURKER 21920 //Murlocks that he spawns after earthquake
 
 #define TIDAL_WAVE 37730
 #define WATERY_GRAVE 38049
@@ -1580,8 +1534,7 @@ class MorogrimAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Flood of the deep, take you!");
-            _unit->PlaySoundToSet(11321);
+            _unit->SendScriptTextChatMessage(4784);     // Flood of the deep, take you!
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
@@ -1600,8 +1553,7 @@ class MorogrimAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Great... currents of... Ageon.");
-            _unit->PlaySoundToSet(11329);
+            _unit->SendScriptTextChatMessage(4792);     // Great... currents of... Ageon.
 
             RemoveAIUpdateEvent();
         }
@@ -1613,15 +1565,13 @@ class MorogrimAI : public CreatureAIScript
                 switch (RandomUInt(2))
                 {
                     case 0:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Only the strong survive.");
-                        _unit->PlaySoundToSet(11328);
+                        _unit->SendScriptTextChatMessage(4791);     // Only the strong survive.
                         break;
                     case 1:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Struggling only makes it worse.");
-                        _unit->PlaySoundToSet(11327);
+                        _unit->SendScriptTextChatMessage(4790);     // Struggling only makes it worse.
                         break;
                     case 2:
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "It is done!");
+                        _unit->SendScriptTextChatMessage(4789);     // It is done!
                         _unit->PlaySoundToSet(11326);
                         break;
                 }
@@ -1650,12 +1600,10 @@ class MorogrimAI : public CreatureAIScript
                     switch (RandomUInt(1))
                     {
                         case 0:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Destroy them my subjects!");
-                            _unit->PlaySoundToSet(11323);
+                            _unit->SendScriptTextChatMessage(4786);     // Destroy them my subjects!
                             break;
                         case 1:
-                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "By the Tides, kill them at once!");
-                            _unit->PlaySoundToSet(11322);
+                            _unit->SendScriptTextChatMessage(4785);     // By the Tides, kill them at once!
                             break;
                     }
                     _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
@@ -1678,12 +1626,10 @@ class MorogrimAI : public CreatureAIScript
                         switch (RandomUInt(1))
                         {
                             case 0:
-                                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Soon it will be finished.");
-                                _unit->PlaySoundToSet(11325);
+                                _unit->SendScriptTextChatMessage(4788);     // Soon it will be finished.
                                 break;
                             case 1:
-                                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "There is nowhere to hide!");
-                                _unit->PlaySoundToSet(11324);
+                                _unit->SendScriptTextChatMessage(4787);     // There is nowhere to hide!
                                 break;
                         }
                         _unit->CastSpell(target, spells[3].info, spells[3].instant);
@@ -1781,14 +1727,6 @@ class TidewalkerLurkerAI : public CreatureAIScript
  - Right Shield generators coords
 */
 
-#define CN_LADY_VASHJ 21212
-#define CN_ENCHANTED_ELEMENTAL 21958
-#define CN_COILFANG_STRIDER 22056
-#define CN_TAINTED_ELEMENTAL 22009
-#define CN_COILFANG_ELITE 22055
-#define CN_TOXIC_SPORE_BAT 22140
-#define CN_SHIELD_GENERATOR_CHANNEL 19870
-
 #define SHOOT 37770
 #define ENTANGLE 38316
 #define SPAWN_ELEMENTAL 37053
@@ -1800,65 +1738,6 @@ class TidewalkerLurkerAI : public CreatureAIScript
 #define TOXIC_SPORES 38575
 #define SHOCK_BLAST 38509
 
-#define WALK 0
-#define RUN 256
-#define FLY 768
-
-static LocationExtra ElementalSpawnPoints[] =
-{
-    {8.3f, -835.3f, 21.9f, 5},
-    {53.4f, -835.3f, 21.9f, 4.5f},
-    {96.0f, -861.9f, 21.8f, 4},
-    {96.0f, -986.4f, 21.4f, 2.5f},
-    {54.4f, -1010.6f, 22.0f, 1.8f},
-    {9.8f, -1012.0f, 21.7f, 1.4f},
-    { -35.0f, -987.6f, 21.5f, 0.8f},
-    { -58.9f, -901.6f, 21.5f, 6.0f}
-};
-
-static LocationExtra ElementalSpawnPoints2[] =
-{
-    {16.305f, -867.82f, 41.09f, 0},
-    {43.853f, -868.338f, 41.097f, 0},
-    {71.55f, -885.12f, 40.87f, 0},
-    {70.96f, -962.56f, 41.09f, 0},
-    {45.227f, -977.987f, 41.09f, 0},
-    {17.35f, -979.27f, 41.01f, 0},
-    { -9.89f, -963.63f, 41.09f, 0},
-    { -25.37f, -910.266f, 41.09f, 0}
-};
-
-static LocationExtra CoilfangEliteSpawnPoints[] =
-{
-    {14.837f, -949.106f, 41.53f, 0},
-    {14.857f, -897.68f, 41.536f, 0},
-    {29.79f, -923.35f, 42.9f, 0},
-    {44.269f, -948.832f, 41.54f, 0}
-};
-
-static float ShieldGeneratorCoords[4][3] =
-{
-    {49.256f, -902.354f, 42.9769f},
-    {9.78695f, -902.882f, 42.9f},
-    {10.4122f, -944.613f, 42.8262f},
-    {49.687f, -944.406f, 42.7324f}
-};
-
-static Location fly[] =
-{
-    { 29.769f, -866.190f, 43 },
-    { 1.135f, -874.345f, 43 },
-    { -19.719f, -894.950f, 43 },
-    { -27.4222f, -923.572f, 43 },
-    { -19.739f, -951.907f, 43 },
-    { 1.059f, -973.314f, 43 },
-    { 30.071f, -980.424f, 43 },
-    { 58.665f, -973.410f, 43 },
-    { 79.353f, -952.011f, 43 },
-    { 87.552f, -923.175f, 43 },
-    { 79.068f, -894.570f, 43 },
-    { 58.503f, -873.295f, 43 }
-};
 
 class EnchantedElementalAI : public CreatureAIScript
 {
@@ -1956,7 +1835,7 @@ class VashjAI : public CreatureAIScript
             wp->z = 42.900517f;
             wp->o = 0.0f;
             wp->waittime = 0;
-            wp->flags = RUN;
+            wp->flags = Flag_Run;
             wp->forwardemoteoneshot = false;
             wp->forwardemoteid = 0;
             wp->backwardemoteoneshot = false;
@@ -1998,20 +1877,16 @@ class VashjAI : public CreatureAIScript
             switch (RandomUInt(3))
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I'll split you from stem to stern!");
-                    _unit->PlaySoundToSet(11532);
+                    _unit->SendScriptTextChatMessage(4759);     // I'll split you from stem to stern!");
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Victory to Lord Illidan!");
-                    _unit->PlaySoundToSet(11533);
+                    _unit->SendScriptTextChatMessage(4760);     // Victory to Lord Illidan!
                     break;
                 case 2:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "I spit on you, surface filth!");
-                    _unit->PlaySoundToSet(11534);
+                    _unit->SendScriptTextChatMessage(4761);     // I spit on you, surface filth!
                     break;
                 case 3:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Death to the outsiders!");
-                    _unit->PlaySoundToSet(11535);
+                    _unit->SendScriptTextChatMessage(4762);     // Death to the outsiders!
                     break;
             }
 
@@ -2049,8 +1924,7 @@ class VashjAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Lord Illidan, I... I am... sorry.");
-            _unit->PlaySoundToSet(11544);
+            _unit->SendScriptTextChatMessage(4771);     // Lord Illidan, I... I am... sorry.
             RemoveAIUpdateEvent();
         }
 
@@ -2059,12 +1933,10 @@ class VashjAI : public CreatureAIScript
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Your time ends now!");
-                    _unit->PlaySoundToSet(11541);
+                    _unit->SendScriptTextChatMessage(4768);     // Your time ends now!
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You have failed!");
-                    _unit->PlaySoundToSet(11542);
+                    _unit->SendScriptTextChatMessage(4769);     // You have failed!
                     break;
             }
         }
@@ -2107,8 +1979,7 @@ class VashjAI : public CreatureAIScript
                     _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
                     _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
                     _unit->GetAIInterface()->setWaypointToMove(1);
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The time is now! Leave none standing!");
-                    _unit->PlaySoundToSet(11539);
+                    _unit->SendScriptTextChatMessage(4764);     // The time is now! Leave none standing!
                     _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
                     _unit->CastSpell(_unit, dbcSpell.LookupEntry(VASHJ_SHIELD), true);
                     _unit->GetAIInterface()->setOutOfCombatRange(3000);
@@ -2164,7 +2035,7 @@ class VashjAI : public CreatureAIScript
                     wp->z = ElementalSpawnPoints2[pos].z;
                     wp->o = ElementalSpawnPoints2[pos].o;
                     wp->waittime = 0;
-                    wp->flags = WALK;
+                    wp->flags = Flag_Walk;
                     wp->forwardemoteoneshot = false;
                     wp->forwardemoteid = 0;
                     wp->backwardemoteoneshot = false;
@@ -2180,7 +2051,7 @@ class VashjAI : public CreatureAIScript
                     wp->z = 42.900517f;
                     wp->o = 0.0f;
                     wp->waittime = 0;
-                    wp->flags = WALK;
+                    wp->flags = Flag_Walk;
                     wp->forwardemoteoneshot = false;
                     wp->forwardemoteid = 0;
                     wp->backwardemoteoneshot = false;
@@ -2263,8 +2134,7 @@ class VashjAI : public CreatureAIScript
 
                 _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
                 _unit->RemoveAura(VASHJ_SHIELD);
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "You may want to take cover.");
-                _unit->PlaySoundToSet(11540);
+                _unit->SendScriptTextChatMessage(4765);     // You may want to take cover.
                 _unit->GetAIInterface()->m_canMove = true;
                 Phase = 3;
             }
@@ -2285,12 +2155,10 @@ class VashjAI : public CreatureAIScript
             switch (RandomUInt(5))
             {
                 case 0:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Straight to the heart!");
-                    _unit->PlaySoundToSet(11536);
+                    _unit->SendScriptTextChatMessage(4766);     // "Straight to the heart!
                     break;
                 case 1:
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Seek your mark!");
-                    _unit->PlaySoundToSet(11537);
+                    _unit->SendScriptTextChatMessage(4767);     // Seek your mark!
                     break;
                 default:
                     break;
@@ -2536,18 +2404,18 @@ class ToxicSporeBatAI : public CreatureAIScript
 
             m_entry = pCreature->GetEntry();
 
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(9, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(12, 0, FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(9, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(12, 0, Flag_Fly));
 
             /************************** Spells ****************************/
 
@@ -2955,7 +2823,6 @@ class ToxicSporeBatAI : public CreatureAIScript
 //------------------------------------
 
 //Coilfang Ambusher
-#define CN_COILFANG_AMBUSHER 21865
 #define CA_MULTI_SHOT 27021
 
 class CoilfangAmbusherAI : public MoonScriptCreatureAI
@@ -2969,7 +2836,6 @@ class CoilfangAmbusherAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Fathom-Witch
-#define CN_COILFANG_FATHOM_WITCH 21299
 #define SHADOW_BOLT 27209
 #define WHIRLWIND_KNOCKBACK 34109
 
@@ -2985,7 +2851,6 @@ class CoilfangFathomWitchAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Guardian
-#define CN_COILFANG_GUARDIAN 21873
 #define CLEAVE 38260
 
 class CoilfangGuardianAI : public MoonScriptCreatureAI
@@ -2999,7 +2864,6 @@ class CoilfangGuardianAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Priestess
-#define CN_COILFANG_PRIESTESS 21220
 #define HOLY_NOVA 38589
 #define SMITE 25364
 #define SPIRIT_OF_REDEMPTION 35618
@@ -3017,7 +2881,6 @@ class CoilfangPriestessAI : public MoonScriptCreatureAI
 };
 
 //Underbog Colossus
-#define CN_UNDERBOG_COLOSSUS 21251
 #define ACID_GEYSER 37959
 #define ATROPIC_BLOW 39015
 #define SPORE_QUAKE 38976
@@ -3077,7 +2940,6 @@ class UnderbogColossusAI : public MoonScriptCreatureAI
 };
 
 //Tidewalker Warrior
-#define CN_TIDEWALKER_WARRIOR 21225
 #define TW_CLEAVE 38260
 #define TW_BLOODTHIRST 30335 //INSTANT
 #define TW_FRENZY 37605
@@ -3095,7 +2957,6 @@ class TidewalkerWarriorAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Serpentguard
-#define CN_COILFANG_SERPENTGUARD 21298
 #define CSERP_CLEAVE 38260
 #define CSERP_REFLECTION 36096
 #define CSERP_DEVOTION 38603
@@ -3113,7 +2974,6 @@ class CoilfangSerpentguardAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Shatterer
-#define CN_COILFANG_SHATTERER 21301
 #define CSHATT_ARMOR 38591
 
 class CoilfangShattererAI : public MoonScriptCreatureAI
@@ -3127,7 +2987,6 @@ class CoilfangShattererAI : public MoonScriptCreatureAI
 };
 
 //Coilfang Strider
-#define CN_COILFANG_STRIDER 22056
 #define CSTRID_SCREAM 10890
 
 class CoilfangStriderAI : public MoonScriptCreatureAI
@@ -3222,7 +3081,7 @@ void SetupSerpentshrineCavern(ScriptMgr* mgr)
     mgr->register_gameobject_script(185051, &TaintedCoreGO::Create);
 
     // Serpentsrine Cavern instance script
-    mgr->register_instance_script(548, &SerpentshrineCavern::Create);
+    mgr->register_instance_script(MAP_CF_SERPENTSHRINE_CA, &SerpentshrineCavern::Create);
 
     //Trash mobs
     mgr->register_creature_script(CN_COILFANG_AMBUSHER, &CoilfangAmbusherAI::Create);

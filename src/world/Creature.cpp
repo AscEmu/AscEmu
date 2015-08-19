@@ -1753,7 +1753,8 @@ void Creature::LoadWaypointGroup(uint32 pWaypointGroup)
                                      WHERE group_id = %u ORDER BY waypoint_id ASC";
     QueryResult* result = WorldDatabase.Query(getWaypointsQuery, pWaypointGroup);
 
-    if (!result) return;
+    if (!result)
+        return;
 
     do
     {
@@ -1772,7 +1773,7 @@ void Creature::LoadWaypointGroup(uint32 pWaypointGroup)
         wp->forwardskinid = fields[11].GetUInt32();
         wp->backwardskinid = fields[12].GetUInt32();
 
-        this->LoadCustomWaypoint(wp->x, wp->y, wp->z, wp->o, wp->waittime, wp->flags, wp->forwardskinid, wp->forwardemoteid, wp->backwardemoteoneshot, wp->backwardemoteid, wp->forwardskinid, wp->backwardskinid);
+        this->LoadCustomWaypoint(wp->x, wp->y, wp->z, wp->o, wp->waittime, wp->flags, wp->forwardemoteoneshot, wp->forwardemoteid, wp->backwardemoteoneshot, wp->backwardemoteid, wp->forwardskinid, wp->backwardskinid);
     } while (result->NextRow());
 
     delete result;

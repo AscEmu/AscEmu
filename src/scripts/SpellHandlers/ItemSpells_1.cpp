@@ -530,7 +530,7 @@ bool SixDemonBag(uint32 i, Spell* s)
         return false;
 
     uint32 ClearSpellId[6] = { 8401, 8408, 930, 118, 1680, 10159 };
-    uint32 randid = RandomUInt(1, 6);
+    uint32 randid = RandomUInt(5);
     uint32 spelltocast = ClearSpellId[randid];
 
     s->u_caster->CastSpell(unitTarget, spelltocast, true);

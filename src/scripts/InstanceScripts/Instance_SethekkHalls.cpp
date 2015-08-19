@@ -105,6 +105,8 @@ class AvianDarkhawkAI : public CreatureAIScript
             spells[0].perctrigger = 5.0f;
             spells[0].attackstoptimer = 1000;
 
+            target = nullptr;
+
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -303,6 +305,8 @@ class AvianWarhawkAI : public CreatureAIScript
             spells[2].instant = true;
             spells[2].perctrigger = 12.0f;
             spells[2].attackstoptimer = 1000;
+
+            target = nullptr;
 
         }
 

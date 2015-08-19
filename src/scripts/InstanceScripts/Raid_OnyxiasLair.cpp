@@ -19,60 +19,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
+#include "Raid_OnyxiasLair.h"
 
 
 // This script covers Onyxia's mind
-
-//Creature Name
-#define CN_ONYXIA 10184
-
-#define WALK 0
-#define RUN 256
-#define FLY 768
-//0 = walk, 256 = run, 768 = fly
-
-//Phase 1,3 Spells
-#define FLAME_BREATH 18435 //Corrected http://www.wowhead.com/?spell=18435
-#define KNOCK_AWAY 19633 //Reduce thread script effect main target
-#define WING_BUFFET 18500 // self
-#define CLEAVE 68868//15579,16044,19642,29832 //target Corrected 
-#define TAIL_SWEEP 68867
-
-//Phase 2 Spells
-#define SCRIPTABLE_FIREBALL 18392 //Corrected http://www.wowhead.com/?spell=18392
-//Script it
-#define ENTANGLING_FLAMES 20019
-//Onyxia's Breath (Deep Breath)
-#define DEEP_BREATH 17086
-
-//Phase 3 Spells
-#define AOE_FEAR 18431//With Activate Object
-
-static Location coords[] =
-{
-    { 0, 0, 0, 0 },
-    { -75.945f, -219.245f, -83.375f, 0.004947f },
-    { -72.945f, -219.245f, -80.779f, 0.004947f },
-    { 42.621f, -217.195f, -66.056f, 3.014011f },
-    { 12.270f, -254.694f, -67.997f, 2.395585f },
-    { -79.020f, -252.374f, -68.965f, 0.885179f },
-    { -80.257f, -174.240f, -69.293f, 5.695741f },
-    { 27.875f, -178.547f, -66.041f, 3.908957f },
-    { -4.868f, -217.171f, -86.710f, M_PI_FLOAT }
-};
-
-static Location whelpCoords[] =
-{
-    { -30.812f, -166.395f, -89.000f, 5.160f },
-    { -30.233f, -264.158f, -89.896f, 1.129f },
-    { -35.813f, -169.427f, -90.000f, 5.384f },
-    { -36.104f, -260.961f, -90.600f, 1.111f },
-    { -34.643f, -164.080f, -90.000f, 5.364f },
-    { -35.377f, -267.320f, -91.000f, 1.111f }
-};
-
 class OnyxiaAI : public CreatureAIScript
 {
     public:
@@ -87,14 +39,14 @@ class OnyxiaAI : public CreatureAIScript
             m_aoeFearCooldown = 30;
             m_fCastCount = 5;
             _unit->GetAIInterface()->setMoveType(4);
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 2000, RUN));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, FLY));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 2000, Flag_Run));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Flag_Fly));
 
             infoFear = dbcSpell.LookupEntry(AOE_FEAR);
             infoCleave = dbcSpell.LookupEntry(CLEAVE);
@@ -124,7 +76,7 @@ class OnyxiaAI : public CreatureAIScript
             m_whelpCooldown = 7;
             _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
             _unit->SetStandState(0);
-            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "How fortuitous, usually I must leave my lair to feed!");
+            _unit->SendScriptTextChatMessage(1725);     //How fortuitous, usually I must leave my lair to feed!
             if (m_useSpell)
                 RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
