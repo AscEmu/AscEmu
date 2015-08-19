@@ -704,6 +704,7 @@ class FrostTombAI : public MoonScriptCreatureAI
         FrostTombAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             SetAIUpdateFreq(1000);
+            plr = nullptr;
         };
 
         void OnLoad()
@@ -716,13 +717,13 @@ class FrostTombAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             ParentClass::AIUpdate();
-            if (plr == NULL || plr->IsDead() || !plr->HasAura(FROST_TOMB_SPELL))
+            if (plr == nullptr || plr->IsDead() || !plr->HasAura(FROST_TOMB_SPELL))
                 Despawn();
         };
 
         void OnDied(Unit* pKilled)
         {
-            if (plr != NULL && plr->HasAura(FROST_TOMB_SPELL))
+            if (plr != nullptr && plr->HasAura(FROST_TOMB_SPELL))
                 plr->RemoveAura(FROST_TOMB_SPELL);
 
             ParentClass::OnDied(pKilled);

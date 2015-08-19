@@ -2404,6 +2404,7 @@ class ToxicSporeBatAI : public CreatureAIScript
 
             m_entry = pCreature->GetEntry();
 
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(0, 0, Flag_Fly));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, Flag_Fly));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Fly));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Flag_Fly));
@@ -2415,7 +2416,6 @@ class ToxicSporeBatAI : public CreatureAIScript
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(9, 0, Flag_Fly));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, Flag_Fly));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(12, 0, Flag_Fly));
 
             /************************** Spells ****************************/
 

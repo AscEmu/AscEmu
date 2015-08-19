@@ -1193,8 +1193,8 @@ class KruulAI : public CreatureAIScript
 {
     public:
         ADD_CREATURE_FACTORY_FUNCTION(KruulAI);
-        SP_AI_Spell spells[6];
-        bool m_spellcheck[6];
+        SP_AI_Spell spells[7];
+        bool m_spellcheck[7];
 
         KruulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
