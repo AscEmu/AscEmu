@@ -1754,12 +1754,13 @@ bool SymbolOfLife(uint32 i, Spell* pSpell) // Alliance ress. quests
     if (!targetOk)
         return true;
 
+    QuestLogEntry* quest_entry;
 
     for (uint8 j = 0; j < 3; j++)
     {
         if (plr->HasQuest(quests[j]))
         {
-            auto quest_entry = plr->GetQuestLogForEntry(quests[j]);
+            quest_entry = plr->GetQuestLogForEntry(quests[j]);
             if (quest_entry != nullptr)
                 questOk = true;
 
