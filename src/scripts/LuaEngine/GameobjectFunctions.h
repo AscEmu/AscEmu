@@ -903,6 +903,9 @@ class LuaGameObject
 				}
 			}
 			Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
+            if (pInstance == nullptr)
+                return 0;
+
 			if(pInstance->m_creatorGuid != 0)  // creator guid is 0 if its owned by a group.
 			{
 				Player* owner = pInstance->m_mapMgr->GetPlayer(pInstance->m_creatorGuid);
@@ -928,8 +931,12 @@ class LuaGameObject
 				}
 			}
 			Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
-			lua_pushnumber(L, pInstance->m_difficulty);
-			return 1;
+            if (pInstance != nullptr)
+            {
+                lua_pushnumber(L, pInstance->m_difficulty);
+                return 1;
+            }
+            return 0;
 		}
 
 		static int SetDungeonDifficulty(lua_State* L, GameObject* ptr)
@@ -945,9 +952,13 @@ class LuaGameObject
 				}
 			}
 			Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
-			pInstance->m_difficulty = difficulty;
-			lua_pushboolean(L, 1);
-			return 1;
+            if (pInstance != nullptr)
+            {
+                pInstance->m_difficulty = difficulty;
+                lua_pushboolean(L, 1);
+                return 1;
+            }
+            return 0;
 		}
 		static int HasFlag(lua_State* L, GameObject* ptr)
 		{

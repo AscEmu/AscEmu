@@ -43,6 +43,8 @@ class ChickenEscapee : public CreatureAIScript
             if(a != NULL)
             {
                 Unit* Caster = a->GetUnitCaster();
+                if (Caster == nullptr)
+                    return;
                 if(Caster->IsPlayer())
                 {
 

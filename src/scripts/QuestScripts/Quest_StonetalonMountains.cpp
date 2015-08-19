@@ -66,7 +66,11 @@ class KayaFlathoof : public CreatureAIScript
                         return;
                     Player* plr = _unit->m_escorter;
                     _unit->m_escorter = NULL;
-                    plr->GetQuestLogForEntry(6523)->SendQuestComplete();
+
+                    auto quest_entry = plr->GetQuestLogForEntry(6523);
+                    if (quest_entry == nullptr)
+                        return;
+                    quest_entry->SendQuestComplete();
                 }break;
                 case 17:
                 {
@@ -81,7 +85,10 @@ class KayaFlathoof : public CreatureAIScript
                 return;
             Player* plr = _unit->m_escorter;
             _unit->m_escorter = NULL;
-            plr->GetQuestLogForEntry(6523)->Fail(false);
+
+            auto quest_entry = plr->GetQuestLogForEntry(6523);
+            if (quest_entry != nullptr)
+                quest_entry->Fail(false);
         }
 
 };

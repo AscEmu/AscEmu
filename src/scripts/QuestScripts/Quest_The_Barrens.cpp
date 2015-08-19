@@ -306,7 +306,11 @@ class Wizzlecranks_Shredder : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(863)->SendQuestComplete();
+
+                auto quest_entry = plr->GetQuestLogForEntry(863);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };
@@ -454,7 +458,11 @@ class Gilthares_Firebough : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(898)->SendQuestComplete();
+
+                auto quest_entry = plr->GetQuestLogForEntry(898);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };

@@ -71,7 +71,11 @@ class Deathstalker_Erland : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(435)->SendQuestComplete();
+
+                auto quest_entry = plr->GetQuestLogForEntry(435);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };

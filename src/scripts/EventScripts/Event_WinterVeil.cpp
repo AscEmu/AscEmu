@@ -101,6 +101,9 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         else
         {
             Item* itm = objmgr.CreateItem(Winteritem, pPlayer);
+            if (itm == nullptr)
+                return;
+
             itm->SetStackCount(5);
             pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
             pUnit->CastSpell(pPlayer, 26218, true);

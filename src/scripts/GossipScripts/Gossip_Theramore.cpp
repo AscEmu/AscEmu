@@ -36,7 +36,11 @@ class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
-            plr->GetQuestLogForEntry(11142)->SendQuestComplete();
+            auto quest_entry = plr->GetQuestLogForEntry(11142);
+            if (quest_entry == nullptr)
+                return;
+            quest_entry->SendQuestComplete();
+
             plr->TaxiStart(sTaxiMgr.GetTaxiPath(724), 1147, 0);     // Gryph
         }
 
