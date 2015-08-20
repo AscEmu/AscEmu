@@ -450,7 +450,7 @@ void Group::RemovePlayer(PlayerInfo* info)
     }
 
     SubGroup* sg = NULL;
-    if (info->subGroup >= 0 && info->subGroup <= 8)
+    if (info->subGroup >= 0 && info->subGroup < 8)
         sg = m_SubGroups[info->subGroup];
 
     if (sg == NULL || sg->m_GroupMembers.find(info) == sg->m_GroupMembers.end())
@@ -675,7 +675,7 @@ void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
     m_groupLock.Acquire();
     SubGroup* sg = NULL;
 
-    if (info->subGroup > 0 && info->subGroup <= 8)
+    if (info->subGroup > 0 && info->subGroup < 8)
         sg = m_SubGroups[info->subGroup];
 
     if (sg == NULL || sg->m_GroupMembers.find(info) == sg->m_GroupMembers.end())

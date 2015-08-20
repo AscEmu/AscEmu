@@ -684,8 +684,8 @@ bool ItemInterface::SafeFullRemoveItemByGuid(uint64 guid)
 /// Gets a item from Inventory
 Item* ItemInterface::GetInventoryItem(int16 slot)
 {
-    if (slot < 0 || slot > MAX_INVENTORY_SLOT)
-        return NULL;
+    if (slot < 0 || slot >= MAX_INVENTORY_SLOT)
+        return nullptr;
 
     return m_pItems[(int)slot];
 }
@@ -695,8 +695,8 @@ Item* ItemInterface::GetInventoryItem(int8 ContainerSlot, int16 slot)
 {
     if (ContainerSlot <= INVENTORY_SLOT_NOT_SET)
     {
-        if (slot < 0 || slot > MAX_INVENTORY_SLOT)
-            return NULL;
+        if (slot < 0 || slot >= MAX_INVENTORY_SLOT)
+            return nullptr;
 
         return m_pItems[(int)slot];
     }
