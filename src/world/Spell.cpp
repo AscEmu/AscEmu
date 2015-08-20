@@ -799,7 +799,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /************************************************************************/
     /* Check if the target has a % resistance to this mechanic              */
     /************************************************************************/
-    if (GetProto()->MechanicsType < MECHANIC_END)
+    if (m_spellInfo->MechanicsType < MECHANIC_END)
     {
         float res = u_victim->MechanicsResistancesPCT[m_spellInfo->MechanicsType];
         if (Rand(res))
