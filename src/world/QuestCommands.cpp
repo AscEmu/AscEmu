@@ -635,14 +635,20 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
             uint32 id = fields[0].GetUInt32();
             string itemid = MyConvertIntToString(id);
             string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
-            ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(id);
-            recout = "|cff00ccff";
-            recout += itemid.c_str();
-            recout += ": ";
-            recout += itemcnt.c_str();
-            recout += " -> ";
-            recout += tmpItem->Name1;
-            recout += "\n";
+            auto tmpItem = ItemPrototypeStorage.LookupEntry(id);
+            if (tmpItem != nullptr)
+            {
+                recout = "|cff00ccff";
+                recout += itemid.c_str();
+                recout += ": ";
+                recout += itemcnt.c_str();
+                recout += " -> ";
+                recout += tmpItem->Name1;
+                recout += "\n";
+            }
+            else
+                recout = "|cffff0000Invalid Item!\n";
+
 
             SendMultilineMessage(m_session, recout.c_str());
 

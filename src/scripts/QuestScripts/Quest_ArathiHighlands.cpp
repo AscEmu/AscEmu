@@ -81,7 +81,10 @@ class Professor_Phizzlethorpe : public CreatureAIScript
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = nullptr;
 
-                plr->GetQuestLogForEntry(665)->SendQuestComplete();
+                auto quest_entry = plr->GetQuestLogForEntry(665);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };

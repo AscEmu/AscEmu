@@ -79,7 +79,11 @@ class Corporal_Keeshan : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(219)->SendQuestComplete();
+
+                auto quest_entry = plr->GetQuestLogForEntry(219);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };

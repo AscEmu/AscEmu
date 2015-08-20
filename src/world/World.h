@@ -239,7 +239,7 @@ class TaskList
         set<Task*> tasks;
         Mutex queueLock;
     public:
-        TaskList() : thread_count(0) {};
+        TaskList() : thread_count(0), running(false) {};
         Task* GetTask();
         void AddTask(Task* task);
         void RemoveTask(Task* task)

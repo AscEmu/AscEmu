@@ -291,7 +291,7 @@ class WebbedCreature : public CreatureAIScript
             {
                 // Creatures from Bloodmyst Isle
                 uint32 Id[ 51 ] = { 17681, 17887, 17550, 17323, 17338, 17341, 17333, 17340, 17353, 17320, 17339, 17337, 17715, 17322, 17494, 17654, 17342, 17328, 17331, 17325, 17321, 17330, 17522, 17329, 17524, 17327, 17661, 17352, 17334, 17326, 17324, 17673, 17336, 17346, 17589, 17609, 17608, 17345, 17527, 17344, 17347, 17525, 17713, 17523, 17348, 17606, 17604, 17607, 17610, 17358, 17588 };
-                RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(1, 51)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
+                RandomCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(Id[RandomUInt(50)], _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
                 if(RandomCreature != NULL)
                 {
                     RandomCreature->m_noRespawn = true;

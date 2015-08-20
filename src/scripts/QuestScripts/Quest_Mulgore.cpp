@@ -52,7 +52,7 @@ static LocationExtra WaypointPlainVision[] =
     { -1541.813232f, 316.415649f, 49.910889f, 1.248783f, Flag_Run },
     { -1526.979126f, 329.664001f, 61.835552f, 1.182024f, Flag_Run },
     { -1524.173584f, 335.237610f, 63.325703f, 1.173092f, Flag_Run },
-    { -1513.968506f, 355.759338f, 63.064487f, 1.119193f, Flag_Run } //23
+    { -1513.968506f, 355.759338f, 63.064487f, 1.119193f, Flag_Run } //22
 };
 
 class The_Plains_Vision : public MoonScriptCreatureAI
@@ -62,19 +62,12 @@ class The_Plains_Vision : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(The_Plains_Vision, MoonScriptCreatureAI);
         The_Plains_Vision(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            auto area = _unit->GetArea();
-            switch (area->id)
-            {
-            case 222: // Mulgore
-            {
-                WPCount = 23;
-                WayPoints = WaypointPlainVision;
-                _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            }
-            break;
-            }
+            WPCount = 22;
+            WayPoints = WaypointPlainVision;
+            _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
-            for (int i = 1; i <= WPCount; ++i)
+
+            for (int i = 1; i < WPCount; ++i)
             {
                 AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
             }

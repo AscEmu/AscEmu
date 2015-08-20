@@ -198,8 +198,8 @@ class VenoxisAI : public CreatureAIScript
 {
     public:
         ADD_CREATURE_FACTORY_FUNCTION(VenoxisAI);
-        SP_AI_Spell spells[3];
-        bool m_spellcheck[3];
+        SP_AI_Spell spells[4];
+        bool m_spellcheck[4];
 
         VenoxisAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {

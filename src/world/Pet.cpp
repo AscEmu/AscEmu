@@ -583,6 +583,9 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     m_phase = m_Owner->GetPhase();
     mPi = pi;
     creature_info = CreatureNameStorage.LookupEntry(mPi->entry);
+    if (creature_info == nullptr)
+        return;
+
     proto = CreatureProtoStorage.LookupEntry(mPi->entry);
     myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
 

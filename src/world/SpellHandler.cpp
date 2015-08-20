@@ -482,6 +482,9 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     else
     {
         SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
+        if (info == nullptr)
+            return;
+
         Aura* aura = _player->FindAura(spellId);
         if (aura)
 		{
@@ -490,7 +493,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 			if (info->Attributes & ATTRIBUTES_NEGATIVE)
 				return;
 		}
-        if (info != NULL && !(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
+        if (!(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
         {
             _player->RemoveAllAuraById(spellId);
             LOG_DEBUG("Removing all auras with ID: %u", spellId);

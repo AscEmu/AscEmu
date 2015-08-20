@@ -1754,14 +1754,15 @@ bool SymbolOfLife(uint32 i, Spell* pSpell) // Alliance ress. quests
     if (!targetOk)
         return true;
 
-    QuestLogEntry* qle;
+    QuestLogEntry* quest_entry;
 
     for (uint8 j = 0; j < 3; j++)
     {
         if (plr->HasQuest(quests[j]))
         {
-            qle = plr->GetQuestLogForEntry(quests[j]);
-            questOk = true;
+            quest_entry = plr->GetQuestLogForEntry(quests[j]);
+            if (quest_entry != nullptr)
+                questOk = true;
 
             break;
         }
@@ -1775,9 +1776,9 @@ bool SymbolOfLife(uint32 i, Spell* pSpell) // Alliance ress. quests
 
     target->Despawn(10 * 1000, 1 * 60 * 1000);
 
-    qle->SetMobCount(0, 1);
-    qle->SendUpdateAddKill(0);
-    qle->UpdatePlayerFields();
+    quest_entry->SetMobCount(0, 1);
+    quest_entry->SendUpdateAddKill(0);
+    quest_entry->UpdatePlayerFields();
 
     return true;
 }

@@ -121,8 +121,10 @@ class Plaguethis_Gossip : public GossipScript
             {
                 case 1:
                     {
-                        Item* item;
-                        item = objmgr.CreateItem(33634 , plr);
+                        auto item = objmgr.CreateItem(33634 , plr);
+                        if (item == nullptr)
+                            return;
+
                         item->SetStackCount(10);
 
                         if(!plr->GetItemInterface()->AddItemToFreeSlot(item))

@@ -346,7 +346,11 @@ class WestPointStationValve : public GameObjectAIScript
             if (!pPlayer->HasQuest(11788) || pPlayer->HasFinishedQuest(11788))
                 return;
 
-            if (pPlayer->GetQuestLogForEntry(11788)->GetMobCount(0) != 0)
+            auto quest_entry = pPlayer->GetQuestLogForEntry(11788);
+            if (quest_entry == nullptr)
+                return;
+
+            if (quest_entry->GetMobCount(0) != 0)
                 return;
 
             Creature* Twonky = sEAS.SpawnCreature(pPlayer, 25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f, 0);
@@ -369,7 +373,11 @@ class NorthPointStationValve : public GameObjectAIScript
             if (!pPlayer->HasQuest(11788) || pPlayer->HasFinishedQuest(11788))
                 return;
 
-            if (pPlayer->GetQuestLogForEntry(11788)->GetMobCount(1) != 0)
+            auto quest_entry = pPlayer->GetQuestLogForEntry(11788);
+            if (quest_entry == nullptr)
+                return;
+
+            if (quest_entry->GetMobCount(1) != 0)
                 return;
 
             Creature* Ed210 = sEAS.SpawnCreature(pPlayer, 25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f, 0);
@@ -392,7 +400,11 @@ class FizzcrankPumpingStationValve : public GameObjectAIScript
             if (!pPlayer->HasQuest(11788) || pPlayer->HasFinishedQuest(11788))
                 return;
 
-            if (pPlayer->GetQuestLogForEntry(11788)->GetMobCount(2) != 0)
+            auto quest_entry = pPlayer->GetQuestLogForEntry(11788);
+            if (quest_entry == nullptr)
+                return;
+
+            if (quest_entry->GetMobCount(2) != 0)
                 return;
 
             Creature* MaxBlasto = sEAS.SpawnCreature(pPlayer, 25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f, 0);
@@ -415,7 +427,11 @@ class SouthPointStationValve : public GameObjectAIScript
             if (!pPlayer->HasQuest(11788) || pPlayer->HasFinishedQuest(11788))
                 return;
 
-            if (pPlayer->GetQuestLogForEntry(11788)->GetMobCount(3) != 0)
+            auto quest_entry = pPlayer->GetQuestLogForEntry(11788);
+            if (quest_entry == nullptr)
+                return;
+
+            if (quest_entry->GetMobCount(3) != 0)
                 return;
 
             Creature* TheGrinder = sEAS.SpawnCreature(pPlayer, 25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f, 0);
@@ -440,12 +456,15 @@ class TheGearmastersManual : public GameObjectAIScript
             if (!pPlayer->HasQuest(11798) || pPlayer->HasFinishedQuest(11798))
                 return;
 
-            QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(11798);
-            if (qle->GetMobCount(0) == 0)
+            auto quest_entry = pPlayer->GetQuestLogForEntry(11798);
+            if (quest_entry == nullptr)
+                return;
+
+            if (quest_entry->GetMobCount(0) == 0)
             {
-                qle->SetMobCount(0, 1);
-                qle->SendUpdateAddKill(0);
-                qle->UpdatePlayerFields();
+                quest_entry->SetMobCount(0, 1);
+                quest_entry->SendUpdateAddKill(0);
+                quest_entry->UpdatePlayerFields();
             }
 
             Creature* GearmasterMechazod = sEAS.SpawnCreature(pPlayer, 25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f, 0);

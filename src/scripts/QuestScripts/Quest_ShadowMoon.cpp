@@ -415,8 +415,9 @@ void FlanisSwiftwing_Gossip::GossipSelectOption(Object* pObject, Player* plr, ui
         return;
     if(IntId == 1)
     {
-        Item* item;
-        item = objmgr.CreateItem(30658 , plr);
+        auto item = objmgr.CreateItem(30658 , plr);
+        if (item == nullptr)
+            return;
         item->SetStackCount(1);
         if(!plr->GetItemInterface()->AddItemToFreeSlot(item))
         {

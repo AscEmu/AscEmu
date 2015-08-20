@@ -87,6 +87,8 @@ World::World()
     LastTotalTrafficOutKB = 0.0;
     LastTrafficQuery = 0;
 
+    arenaSettings.A2V2_MIN = 2;
+    arenaSettings.A2V2_MAX = 2;
     arenaSettings.A3V3_MAX = 3;
     arenaSettings.A3V3_MIN = 3;
     arenaSettings.A5V5_MAX = 5;
@@ -111,10 +113,40 @@ World::World()
     m_lfgForNonLfg = false;
     m_useAccountData = false;
     m_AdditionalFun = false;
+
     GoldCapEnabled = true;
     GoldLimit = 214748;
     GoldStartAmount = 0;
+
     CacheVersion = 0;
+
+    announce_gmtagcolor = 1;
+    announce_namecolor = 4;
+    announce_msgcolor = 6;
+
+    antihack_teleport = false;
+    antihack_speed = false;
+    antihack_flight = false;
+    flyhack_threshold = 0;
+    no_antihack_on_gm = true;
+
+    instance_TakeGroupLeaderID = false;
+    instance_SlidingExpiration = false;
+    instance_DailyHeroicInstanceResetHour = 5;
+    instance_CheckTriggerPrerequisites = true;
+
+    bgsettings.AV_MIN = 10;
+    bgsettings.AV_MAX = 40;
+    bgsettings.AB_MIN = 5;
+    bgsettings.AB_MAX = 15;
+    bgsettings.WSG_MIN = 5;
+    bgsettings.WSG_MAX = 10;
+    bgsettings.EOTS_MIN = 5;
+    bgsettings.EOTS_MAX = 15;
+    bgsettings.SOTA_MIN = 5;
+    bgsettings.SOTA_MAX = 15;
+    bgsettings.IOC_MIN = 10;
+    bgsettings.IOC_MAX = 40;
 }
 
 void CleanupRandomNumberGenerators();
@@ -1843,7 +1875,7 @@ void CharacterLoaderThread::OnShutdown()
 
 CharacterLoaderThread::CharacterLoaderThread()
 {
-
+    running = false;
 }
 
 CharacterLoaderThread::~CharacterLoaderThread()
