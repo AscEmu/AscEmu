@@ -2449,15 +2449,15 @@ void WorldSession::SendItemQueryAndNameInfo(uint32 itemid)
 	SendPacket(&data);
 
 	WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
-	ItemPrototype* proto=ItemPrototypeStorage.LookupEntry(itemid);
+	ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(itemid);
 	ItemName* metaName = ItemNameStorage.LookupEntry(itemid);
-	if (!metaName)
+	if (!metaName || !proto)
 		reply << "Unknown Item";
 	else
 	{
 		if (li)
 			reply << li->Name;
-		else
+        else
 			reply << proto->Name1;
 		reply << proto->InventoryType;
 	}
