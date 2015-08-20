@@ -314,7 +314,7 @@ class MograineAI : public CreatureAIScript
             nrspells = 3;
             mPhase = 0;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -406,7 +406,7 @@ class MograineAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -472,7 +472,7 @@ class WhitemaneAI : public CreatureAIScript
             nrspells = 3;
             mPhase = 0;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -596,7 +596,7 @@ class WhitemaneAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -658,7 +658,7 @@ class FairbanksAI : public CreatureAIScript
             nrspells = 2;
             mPhase = 0;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -735,7 +735,7 @@ class FairbanksAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 

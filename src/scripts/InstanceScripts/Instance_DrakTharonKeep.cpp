@@ -251,7 +251,7 @@ class TrollgoreAI : public CreatureAIScript
 
         void Destroy()
         {
-            for (uint32 i = 0; i < spells.size(); ++i)
+            for (uint8 i = 0; i < spells.size(); ++i)
             {
                 if (spells[i] != NULL)
                     delete spells[i];
@@ -606,7 +606,7 @@ class NovosTheSummonerAI : public CreatureAIScript
 
         void Destroy()
         {
-            for (uint32 i = 0; i < spells.size(); ++i)
+            for (uint8 i = 0; i < spells.size(); ++i)
             {
                 if (spells[i] != NULL)
                     delete spells[i];
@@ -746,7 +746,7 @@ class CrystalHandlerAI : public CreatureAIScript
 
         void Destroy()
         {
-            for (uint32 i = 0; i < spells.size(); ++i)
+            for (uint8 i = 0; i < spells.size(); ++i)
             {
                 if (spells[i] != NULL)
                     delete spells[i];
@@ -899,7 +899,7 @@ class KingDreadAI : public CreatureAIScript
 
         void Destroy()
         {
-            for (uint32 i = 0; i < spells.size(); ++i)
+            for (uint8 i = 0; i < spells.size(); ++i)
             {
                 if (spells[i] != NULL)
                     delete spells[i];
@@ -1122,7 +1122,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
         void Destroy()
         {
-            for (uint32 i = 0; i < spells.size(); ++i)
+            for (uint8 i = 0; i < spells.size(); ++i)
             {
                 if (spells[i] != NULL)
                     delete spells[i];

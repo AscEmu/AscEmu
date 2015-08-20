@@ -181,7 +181,7 @@ class AnubShiah : public CreatureAIScript
         AnubShiah(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -213,7 +213,7 @@ class AnubShiah : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -247,7 +247,7 @@ class AnubShiah : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -306,7 +306,7 @@ class BaelGar : public CreatureAIScript
         BaelGar(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -338,7 +338,7 @@ class BaelGar : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -372,7 +372,7 @@ class BaelGar : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -431,7 +431,7 @@ class EmperorDagranThaurissan : public CreatureAIScript
         EmperorDagranThaurissan(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -472,7 +472,7 @@ class EmperorDagranThaurissan : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -506,7 +506,7 @@ class EmperorDagranThaurissan : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -565,7 +565,7 @@ class Eviscerator : public CreatureAIScript
         Eviscerator(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -597,7 +597,7 @@ class Eviscerator : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -631,7 +631,7 @@ class Eviscerator : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -690,7 +690,7 @@ class FineousDarkvire : public CreatureAIScript
         FineousDarkvire(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -722,7 +722,7 @@ class FineousDarkvire : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -756,7 +756,7 @@ class FineousDarkvire : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -815,7 +815,7 @@ class GeneralAngerforge : public CreatureAIScript
         GeneralAngerforge(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -856,7 +856,7 @@ class GeneralAngerforge : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -890,7 +890,7 @@ class GeneralAngerforge : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -949,7 +949,7 @@ class GolemLordArgelmach : public CreatureAIScript
         GolemLordArgelmach(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -990,7 +990,7 @@ class GolemLordArgelmach : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1024,7 +1024,7 @@ class GolemLordArgelmach : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1083,7 +1083,7 @@ class GoroshTheDervish : public CreatureAIScript
         GoroshTheDervish(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1115,7 +1115,7 @@ class GoroshTheDervish : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1149,7 +1149,7 @@ class GoroshTheDervish : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1208,7 +1208,7 @@ class Grizzle : public CreatureAIScript
         Grizzle(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1240,7 +1240,7 @@ class Grizzle : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1274,7 +1274,7 @@ class Grizzle : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1333,7 +1333,7 @@ class HedrumTheCreeper : public CreatureAIScript
         HedrumTheCreeper(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1374,7 +1374,7 @@ class HedrumTheCreeper : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1408,7 +1408,7 @@ class HedrumTheCreeper : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1466,7 +1466,7 @@ class HighInterrogatorGerstahn : public CreatureAIScript
         HighInterrogatorGerstahn(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1507,7 +1507,7 @@ class HighInterrogatorGerstahn : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1541,7 +1541,7 @@ class HighInterrogatorGerstahn : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1599,7 +1599,7 @@ class HoundmasterGrebmar : public CreatureAIScript
         HoundmasterGrebmar(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1631,7 +1631,7 @@ class HoundmasterGrebmar : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1665,7 +1665,7 @@ class HoundmasterGrebmar : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1724,7 +1724,7 @@ class HurleyBlackbreath : public CreatureAIScript
         HurleyBlackbreath(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1765,7 +1765,7 @@ class HurleyBlackbreath : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1799,7 +1799,7 @@ class HurleyBlackbreath : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1858,7 +1858,7 @@ class LordIncendius : public CreatureAIScript
         LordIncendius(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1899,7 +1899,7 @@ class LordIncendius : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1933,7 +1933,7 @@ class LordIncendius : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1992,7 +1992,7 @@ class LordRoccor : public CreatureAIScript
         LordRoccor(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2033,7 +2033,7 @@ class LordRoccor : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -2067,7 +2067,7 @@ class LordRoccor : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -2126,7 +2126,7 @@ class Magmus : public CreatureAIScript
         Magmus(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2157,7 +2157,7 @@ class Magmus : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -2191,7 +2191,7 @@ class Magmus : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -2249,7 +2249,7 @@ class OkThorTheBreaker : public CreatureAIScript
         OkThorTheBreaker(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2281,7 +2281,7 @@ class OkThorTheBreaker : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -2315,7 +2315,7 @@ class OkThorTheBreaker : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -2373,7 +2373,7 @@ class Phalanx : public CreatureAIScript
         Phalanx(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2414,7 +2414,7 @@ class Phalanx : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -2448,7 +2448,7 @@ class Phalanx : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -2506,7 +2506,7 @@ class PrincessMoiraBronzebeard : public CreatureAIScript
         PrincessMoiraBronzebeard(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2538,7 +2538,7 @@ class PrincessMoiraBronzebeard : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -2572,7 +2572,7 @@ class PrincessMoiraBronzebeard : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -2630,7 +2630,7 @@ class PyromancerLoregrain : public CreatureAIScript
         PyromancerLoregrain(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2662,7 +2662,7 @@ class PyromancerLoregrain : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -2696,7 +2696,7 @@ class PyromancerLoregrain : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 

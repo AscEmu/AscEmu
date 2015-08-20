@@ -152,11 +152,11 @@ class IceCrownCitadelScript : public MoonInstanceScript
             switch (player->GetTeam())
             {
                 case TEAM_ALLIANCE:
-                    for (uint32 i = 0; i < 13; i++)
+                    for (uint8 i = 0; i < 13; i++)
                         PushCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
                     break;
                 case TEAM_HORDE:
-                    for (uint32 i = 0; i < 13; i++)
+                    for (uint8 i = 0; i < 13; i++)
                         PushCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
                     break;
             }
@@ -389,7 +389,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger)
                         continue;

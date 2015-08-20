@@ -92,7 +92,7 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
         AmnennarTheColdbringerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -133,7 +133,7 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -167,7 +167,7 @@ class AmnennarTheColdbringerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -260,7 +260,7 @@ class PlaguemawTheRottingAI : public CreatureAIScript
         PlaguemawTheRottingAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -292,7 +292,7 @@ class PlaguemawTheRottingAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -326,7 +326,7 @@ class PlaguemawTheRottingAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -384,7 +384,7 @@ class RagglesnoutAI : public CreatureAIScript
         RagglesnoutAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -416,7 +416,7 @@ class RagglesnoutAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -450,7 +450,7 @@ class RagglesnoutAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -509,7 +509,7 @@ class TutenKashAI : public CreatureAIScript
         TutenKashAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -541,7 +541,7 @@ class TutenKashAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -575,7 +575,7 @@ class TutenKashAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 

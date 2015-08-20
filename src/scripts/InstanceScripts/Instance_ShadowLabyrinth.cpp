@@ -94,7 +94,7 @@ class CabalAcolyteAI : public CreatureAIScript
         CabalAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -142,7 +142,7 @@ class CabalAcolyteAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -193,7 +193,7 @@ class CabalDeathswornAI : public CreatureAIScript
         CabalDeathswornAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -246,7 +246,7 @@ class CabalDeathswornAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -297,7 +297,7 @@ class CabalFanaticAI : public CreatureAIScript
         CabalFanaticAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -339,7 +339,7 @@ class CabalFanaticAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -390,7 +390,7 @@ class CabalShadowPriestAI : public CreatureAIScript
         CabalShadowPriestAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -438,7 +438,7 @@ class CabalShadowPriestAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -489,7 +489,7 @@ class CabalSpellbinderAI : public CreatureAIScript
         CabalSpellbinderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -537,7 +537,7 @@ class CabalSpellbinderAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -588,7 +588,7 @@ class CabalWarlockAI : public CreatureAIScript
         CabalWarlockAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -636,7 +636,7 @@ class CabalWarlockAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -687,7 +687,7 @@ class CabalZealotAI : public CreatureAIScript
         CabalZealotAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -735,7 +735,7 @@ class CabalZealotAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -800,7 +800,7 @@ class CabalRitualistAI : public CreatureAIScript
         CabalRitualistAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 6;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -871,7 +871,7 @@ class CabalRitualistAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -923,7 +923,7 @@ class FelOverseerAI : public CreatureAIScript
         {
             HealCooldown = 1;
             nrspells = 5;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1001,7 +1001,7 @@ class FelOverseerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1053,7 +1053,7 @@ class MaliciousInstructorAI : public CreatureAIScript
         MaliciousInstructorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1101,7 +1101,7 @@ class MaliciousInstructorAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1155,7 +1155,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
         AmbassadorHellmawAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -1178,7 +1178,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < 2; i++)
+            for (uint8 i = 0; i < 2; i++)
                 spells[i].casttime = 0;
             spells[1].casttime = (uint32)time(NULL) + 25;
 
@@ -1248,7 +1248,7 @@ class AmbassadorHellmawAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1303,7 +1303,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
         BlackheartTheInciterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -1337,7 +1337,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
         // sound corrections needed!
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
                 spells[i].casttime = 0;
             spells[2].casttime = (uint32)time(NULL) + 20;
 
@@ -1406,7 +1406,7 @@ class BlackheartTheInciterAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1519,7 +1519,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
         GrandmasterVorpilAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -1558,7 +1558,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 spells[i].casttime = 0;
 
             Teleported = false;
@@ -1629,7 +1629,7 @@ class GrandmasterVorpilAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1687,7 +1687,7 @@ class MurmurAI : public CreatureAIScript
         MurmurAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -1732,7 +1732,7 @@ class MurmurAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
                 spells[i].casttime = 0;
             spells[3].casttime = (uint32)time(NULL) + 5;
 
@@ -1814,7 +1814,7 @@ class MurmurAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 

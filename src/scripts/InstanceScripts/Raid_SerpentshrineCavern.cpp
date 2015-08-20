@@ -94,7 +94,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
 
         void ResetCastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -357,7 +357,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = minspell; i <= maxspell; i++)
+                for (uint8 i = minspell; i <= maxspell; i++)
                 {
                     if (m_spellcheck[i])
                     {
@@ -471,7 +471,7 @@ class LurkerAI : public CreatureAIScript
             nrspells = 4;
 
             // --- Initialization ---
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -543,7 +543,7 @@ class LurkerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -903,7 +903,7 @@ class LeotherasAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < 1; i++)
+                for (uint8 i = 0; i < 1; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1050,7 +1050,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1539,7 +1539,7 @@ class MorogrimAI : public CreatureAIScript
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
             uint32 t = (uint32)time(NULL);
-            for (int i = 1; i < 4; i++)
+            for (uint8 i = 1; i < 4; i++)
                 spells[i].casttime = t + spells[i].cooldown;
         }
 
@@ -1608,10 +1608,10 @@ class MorogrimAI : public CreatureAIScript
                     }
                     _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
 
-                    for (int i = 0; i < 6; i++)
+                    for (uint8 i = 0; i < 6; i++)
                         _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_TIDEWALKER_LURKER, 370.82f, -723.93f, -13.9f, 0, true, false, 0, 0);
 
-                    for (int i = 0; i < 6; i++)
+                    for (uint8 i = 0; i < 6; i++)
                         _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_TIDEWALKER_LURKER, 527.90f, -721.88f, -7.14f, 0, true, false, 0, 0);
 
                     spells[1].casttime = t + spells[1].cooldown;
@@ -1859,7 +1859,7 @@ class VashjAI : public CreatureAIScript
 
         void ResetCastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -2196,7 +2196,7 @@ class VashjAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -2420,7 +2420,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             /************************** Spells ****************************/
 
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2481,7 +2481,7 @@ class ToxicSporeBatAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -2613,7 +2613,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -3009,7 +3009,7 @@ class SerpentshrineCavern : public MoonInstanceScript
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(SerpentshrineCavern, MoonInstanceScript);
         SerpentshrineCavern(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            for (int i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
                 mBridgePart[i] = 0;
         }
 
@@ -3036,7 +3036,7 @@ class SerpentshrineCavern : public MoonInstanceScript
 
             GameObject* pBridgePart = NULL;
 
-            for (int i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
             {
                 pBridgePart = GetGameObjectByGuid(mBridgePart[i]);
                 if (pBridgePart != NULL)

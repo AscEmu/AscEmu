@@ -1756,7 +1756,7 @@ class NajentusAI : public CreatureAIScript
         {
             nrspells = 4;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1796,7 +1796,7 @@ class NajentusAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             uint32 t = (uint32)time(NULL);
@@ -1883,7 +1883,7 @@ class NajentusAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -2218,7 +2218,7 @@ class GurtoggAI : public CreatureAIScript
         {
             nrspells = 5;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2300,7 +2300,7 @@ class GurtoggAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < 9; i++)
+            for (uint8 i = 0; i < 9; i++)
             {
                 spells[i].casttime = 0;
             }
@@ -2518,7 +2518,7 @@ class GurtoggAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if ((i == 3 || i == 4) && Phase != 1)
                         continue;
@@ -2936,7 +2936,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                             RemoveTimer(mEnslavedSoulTimer);
                             SpawnedEnsalvedSoul = true;
                             MoonScriptCreatureAI* pSpawnedEnsalvedSoul;
-                            for (int i = 0; i < 10; i++)
+                            for (uint8 i = 0; i < 10; i++)
                             {
                                 pSpawnedEnsalvedSoul = SpawnCreature(CN_ENSLAVED_SOUL);
                                 if (pSpawnedEnsalvedSoul)
@@ -3007,7 +3007,7 @@ class ShahrazAI : public CreatureAIScript
         {
             nrspells = 2;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -3073,7 +3073,7 @@ class ShahrazAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(4653);     //So, business... or pleasure?"
 
-            for (int i = 0; i < 6; i++)
+            for (uint8 i = 0; i < 6; i++)
                 spells[i].casttime = 0;
 
             AuraChange = (uint32)time(NULL) + 15;
@@ -3202,7 +3202,7 @@ class ShahrazAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -3509,7 +3509,7 @@ class TeronGorefiendAI : public CreatureAIScript
         TeronGorefiendAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -3552,7 +3552,7 @@ class TeronGorefiendAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(4692);     // Vengeance is mine!
 
-            for (int i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 spells[i].casttime = 0;
 
             uint32 t = (uint32)time(NULL);
@@ -3623,7 +3623,7 @@ class TeronGorefiendAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -3735,7 +3735,7 @@ class ShadeofakamaAI : public CreatureAIScript
         ShadeofakamaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -3802,7 +3802,7 @@ class ShadeofakamaAI : public CreatureAIScript
             if (_unit->GetHealthPct() <= 85 && hm == 100)
             {
                 Creature* cre = NULL;
-                for (int i = 0; i < 2; i++)
+                for (uint8 i = 0; i < 2; i++)
                 {
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23421,
                             _unit->GetPositionX(), _unit->GetPositionY(),
@@ -3818,7 +3818,7 @@ class ShadeofakamaAI : public CreatureAIScript
             else if (_unit->GetHealthPct() <= 70 && hm == 85)
             {
                 Creature* cre = NULL;
-                for (int i = 0; i < 2; i++)
+                for (uint8 i = 0; i < 2; i++)
                 {
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23215,
                             _unit->GetPositionX(), _unit->GetPositionY(),
@@ -3834,7 +3834,7 @@ class ShadeofakamaAI : public CreatureAIScript
             else if (_unit->GetHealthPct() <= 55 && hm == 70)
             {
                 Creature* cre = NULL;
-                for (int i = 0; i < 2; i++)
+                for (uint8 i = 0; i < 2; i++)
                 {
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23216,
                             _unit->GetPositionX(), _unit->GetPositionY(),
@@ -3850,7 +3850,7 @@ class ShadeofakamaAI : public CreatureAIScript
             else if (_unit->GetHealthPct() <= 40 && hm == 55)
             {
                 Creature* cre = NULL;
-                for (int i = 0; i < 2; i++)
+                for (uint8 i = 0; i < 2; i++)
                 {
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23523,
                             _unit->GetPositionX(), _unit->GetPositionY(),
@@ -3866,7 +3866,7 @@ class ShadeofakamaAI : public CreatureAIScript
             else if (_unit->GetHealthPct() <= 25 && hm == 40)
             {
                 Creature* cre = NULL;
-                for (int i = 0; i < 5; i++)
+                for (uint8 i = 0; i < 5; i++)
                 {
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23318,
                             _unit->GetPositionX(), _unit->GetPositionY(),
@@ -3882,7 +3882,7 @@ class ShadeofakamaAI : public CreatureAIScript
             else if (_unit->GetHealthPct() <= 10 && hm == 25)
             {
                 Creature* cre = NULL;
-                for (int i = 0; i < 5; i++)
+                for (uint8 i = 0; i < 5; i++)
                 {
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23524,
                             _unit->GetPositionX(), _unit->GetPositionY(),
@@ -3908,7 +3908,7 @@ class ShadeofakamaAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -4616,7 +4616,7 @@ class AkamaAI : public MoonScriptBossAI
             SetCanEnterCombat(false);
             SetPhase(1);
 
-            for (int i = 1; i < AKAMA_WAYPOINT_SIZE; ++i)
+            for (uint8 i = 1; i < AKAMA_WAYPOINT_SIZE; ++i)
             {
                 AddWaypoint(CreateWaypoint(i, 0, Flag_Run, ToIllidan[i]));
             }
@@ -5615,7 +5615,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             SetMoveType(Move_DontMoveWP);
             SetPhase(1);
 
-            for (int i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
+            for (uint8 i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
             {
                 AddWaypoint(CreateWaypoint(i, 0, Flag_Fly, ForIllidan[i]));
             }
@@ -5697,7 +5697,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             {
                 pTrigger->Despawn(0, 0);
             }
-            for (int i = 0; i < 2; ++i)
+            for (uint8 i = 0; i < 2; ++i)
             {
                 Creature* pBlade = TO_CREATURE(ForceCreatureFind(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z));
                 if (pBlade != NULL)
@@ -5940,14 +5940,14 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         }
                         break;
                     case 1:
-                        for (int i = 0; i < 2; ++i)
+                        for (uint8 i = 0; i < 2; ++i)
                         {
                             _unit->CastSpellAoF(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, dbcSpell.LookupEntry(ILLIDAN_THROW_GLAIVE1), false);
                         }
                         SetWieldWeapon(false);
                         break;
                     case 2:
-                        for (int i = 0; i < 2; ++i)
+                        for (uint8 i = 0; i < 2; ++i)
                         {
                             Creature* pBlade = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, UnitPos[i].o, true, false, 0, 0);
                             if (pBlade != NULL)
@@ -5991,7 +5991,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         }
                         break;
                     case 5:
-                        for (int i = 0 ; i < 2; ++i)
+                        for (uint8 i = 0 ; i < 2; ++i)
                         {
                             Creature* Blade = TO_CREATURE(ForceCreatureFind(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z));
                             if (Blade != NULL)
@@ -6846,7 +6846,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
 
                 if (mTriggerAIList.size() == 0 && pIllidan->isAlive() && GetRangeToUnit(pIllidan) <= 5.0f && !pAI->IsCasting())
                 {
-                    for (int i = 0; i < 8; ++i)
+                    for (uint8 i = 0; i < 8; ++i)
                     {
                         MoonScriptCreatureAI* pTriggerAI = SpawnCreature(CN_CAGE_TRAP_TRIGGER, _unit->GetPositionX() + PositionAdds[i][0], _unit->GetPositionY() + PositionAdds[i][1], _unit->GetPositionZ(), _unit->GetOrientation());
                         if (pTriggerAI != NULL)

@@ -302,7 +302,7 @@ class OnyxiaAI : public CreatureAIScript
             if (!m_whelpCooldown)
             {
                 Creature* cre = NULL;
-                for (int i = 0; i < 6; i++)
+                for (uint8 i = 0; i < 6; i++)
                 {
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11262,
                             whelpCoords[i].x, whelpCoords[i].y,
@@ -342,7 +342,7 @@ class OnyxiaAI : public CreatureAIScript
             if (!m_whelpCooldown)
             {
                 Creature* cre = NULL;
-                for (int i = 0; i < 6; i++)
+                for (uint8 i = 0; i < 6; i++)
                 {
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11262,
                             whelpCoords[i].x, whelpCoords[i].y,

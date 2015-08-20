@@ -73,15 +73,15 @@ class UtgardeKeepScript : public MoonInstanceScript
             mDalronnGUID = 0;
             mIngvarGUID = 0;
 
-            for (int i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
                 m_fmData[i] = ForgeMasterData();
 
             mDalronnDoorsGUID = 0;
 
-            for (int i = 0; i < 2; ++i)
+            for (uint8 i = 0; i < 2; ++i)
                 mIngvarDoors[i] = 0;
 
-            for (int i = 0; i < UTGARDE_DATA_END; ++i)
+            for (uint8 i = 0; i < UTGARDE_DATA_END; ++i)
                 mUtgardeData[i] = 0;
         };
 
@@ -164,7 +164,7 @@ class UtgardeKeepScript : public MoonInstanceScript
                         if (pData == State_Finished)
                         {
                             GameObject* pGO = NULL;
-                            for (int i = 0; i < 2; ++i)
+                            for (uint8 i = 0; i < 2; ++i)
                             {
                                 pGO = GetGameObjectByGuid(mIngvarDoors[i]);
                                 if (pGO)
@@ -660,7 +660,7 @@ void SpellFunc_KelesethAddSummon(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
 {
     if (pCreatureAI != NULL)
     {
-        for (uint32 i = 0; i < 5; ++i)
+        for (uint8 i = 0; i < 5; ++i)
             pCreatureAI->SpawnCreature(KELESETH_SKELETON_ADD, 163.376f + i + 4, 252.901f - i + 5, 42.868f, 0, true);
     };
 };

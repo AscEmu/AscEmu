@@ -95,7 +95,7 @@ class CoilfangChampionAI : public CreatureAIScript
         CoilfangChampionAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -117,7 +117,7 @@ class CoilfangChampionAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -151,7 +151,7 @@ class CoilfangChampionAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -210,7 +210,7 @@ class CoilfangObserverAI : public CreatureAIScript
         CoilfangObserverAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -232,7 +232,7 @@ class CoilfangObserverAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -266,7 +266,7 @@ class CoilfangObserverAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -328,7 +328,7 @@ class CoilfangDefenderAI : public CreatureAIScript
         CoilfangDefenderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -351,7 +351,7 @@ class CoilfangDefenderAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -385,7 +385,7 @@ class CoilfangDefenderAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -446,7 +446,7 @@ class CoilfangScaleHealerAI : public CreatureAIScript
         CoilfangScaleHealerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -484,7 +484,7 @@ class CoilfangScaleHealerAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -518,7 +518,7 @@ class CoilfangScaleHealerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -578,7 +578,7 @@ class CoilfangSoothsayerAI : public CreatureAIScript
         CoilfangSoothsayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -600,7 +600,7 @@ class CoilfangSoothsayerAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -634,7 +634,7 @@ class CoilfangSoothsayerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -695,7 +695,7 @@ class CoilfangTechnicianAI : public CreatureAIScript
         CoilfangTechnicianAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -724,7 +724,7 @@ class CoilfangTechnicianAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -758,7 +758,7 @@ class CoilfangTechnicianAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -817,7 +817,7 @@ class CoilfangRayAI : public CreatureAIScript
         CoilfangRayAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -839,7 +839,7 @@ class CoilfangRayAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -873,7 +873,7 @@ class CoilfangRayAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1003,12 +1003,12 @@ class MennuTheBetrayerAI : public CreatureAIScript
         MennuTheBetrayerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
 
-            for (int i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 SummonedTotems[i] = false;
 
             spells[0].info = dbcSpell.LookupEntry(LIGHTNING_BOLT);
@@ -1051,10 +1051,10 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
-            for (int i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 SummonedTotems[i] = false;
 
             TotemCounter = 0;
@@ -1123,7 +1123,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1179,7 +1179,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
             {
                 if (Counter >= 2)
                 {
-                    for (int i = 0; i < 4; i++)
+                    for (uint8 i = 0; i < 4; i++)
                     {
                         if (!SummonedTotems[i])
                         {
@@ -1211,7 +1211,7 @@ class MennuTheBetrayerAI : public CreatureAIScript
 
             if (TotemCounter == 4)
             {
-                for (int i = 0; i < 4; i++)
+                for (uint8 i = 0; i < 4; i++)
                     SummonedTotems[i] = false;
 
                 TotemCounter = 0;
@@ -1235,7 +1235,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
         RokmarTheCracklerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -1276,7 +1276,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -1317,7 +1317,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1432,7 +1432,7 @@ class QuagmirranAI : public CreatureAIScript
         QuagmirranAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1463,7 +1463,7 @@ class QuagmirranAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -1494,7 +1494,7 @@ class QuagmirranAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 

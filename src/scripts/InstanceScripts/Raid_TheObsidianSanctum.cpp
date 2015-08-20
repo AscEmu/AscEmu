@@ -131,7 +131,7 @@ void SpellFunc_FlameTsunami(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI,
 
         Creature* Tsunami = NULL;
 
-        for (int i = 0; i < 3; ++i)
+        for (uint8 i = 0; i < 3; ++i)
         {
             switch (RandomUInt(1))
             {
@@ -158,7 +158,7 @@ void SpellFunc_LavaSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     if (pCreatureAI == NULL)
         return;
 
-    for (int i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         uint32 j = RandomUInt(5);
         pCreatureAI->SpawnCreature(CN_LAVA_BLAZE, pTarget->GetPositionX() + j, pTarget->GetPositionY() + j, pTarget->GetPositionZ(), pTarget->GetOrientation(), true);
@@ -186,7 +186,7 @@ class SartharionAI : public MoonScriptBossAI
             AddEmote(Event_OnTargetDied, "This is why we call you lesser beings.", Text_Yell, 14097);
             AddEmote(Event_OnCombatStart, "It is my charge to watch over these eggs. I will see you burn before any harm comes to them!", Text_Yell, 14093);
 
-            for (int i = 0; i < OS_DATA_END - 1; i++)
+            for (uint8 i = 0; i < OS_DATA_END - 1; i++)
             {
                 m_bDrakes[i] = false;
                 m_cDrakes[i] = NULL;
@@ -233,7 +233,7 @@ class SartharionAI : public MoonScriptBossAI
 
             if (GetHealthPercent() <= 10 && m_bEnraged == false)   // enrage phase
             {
-                for (uint32 i = 0; i < 3; ++i)
+                for (uint8 i = 0; i < 3; ++i)
                     CastSpellNowNoScheduling(mSummonLava);
 
                 m_bEnraged = true;
