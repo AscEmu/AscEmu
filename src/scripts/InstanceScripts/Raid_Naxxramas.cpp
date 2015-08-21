@@ -1374,7 +1374,7 @@ void NothThePlaguebringerAI::AIUpdate()
             PlaguedWarriorAI* WarriorAI = NULL;
             for (uint8 i = 0; i < SkelLimit; ++i)
             {
-                Id = RandomUInt(SkelLimit);
+                Id = RandomUInt(0, (SkelLimit - 1));    // SkellPosPhase1 is 0-indexed
                 if (PosTaken[Id])
                 {
                     for (uint32 j = 0; j < 3; ++j)
