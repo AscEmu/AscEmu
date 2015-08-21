@@ -92,7 +92,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
         MagtheridonTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             // We set default value for KillerdChanneler array to avoid any unexpected situations
-            for (int i = 0; i < 5; i++)
+            for (uint8 i = 0; i < 5; i++)
             {
                 KilledChanneler[i] = false;
             }
@@ -152,7 +152,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 ChannelersTable.clear();
                 // In order to recreate channeler "list" we need ot look for them in hardcoded spawn positions
                 Unit* Channeler;
-                for (int i = 0; i < 5; i++)
+                for (uint8 i = 0; i < 5; i++)
                 {
                     Channeler = NULL;
                     Channeler = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(Channelers[i].x, Channelers[i].y, Channelers[i].z, 17256);
@@ -439,7 +439,7 @@ class ManticronCubeGO : public GameObjectAIScript
             // If we don't have Magtheridon we try to find it (with normal "getting creature" it was NOT working mostly).
             if (!Magtheridon)
             {
-                for (int i = 0; i < 6; i++)
+                for (uint8 i = 0; i < 6; i++)
                 {
                     if (Magtheridon)
                         continue;
@@ -521,7 +521,7 @@ class ManticronCubeGO : public GameObjectAIScript
             if (!Channeler)
             {
                 uint32 Counter = 0;
-                for (int i = 0; i < 5; i++)
+                for (uint8 i = 0; i < 5; i++)
                 {
                     Unit* GlobalCubeTrigger = NULL;
                     GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
@@ -549,7 +549,7 @@ class ManticronCubeGO : public GameObjectAIScript
 
             // We count Cubes that channel spell on Magtheridon
             uint32 Counter = 0;
-            for (int i = 0; i < 5; i++)
+            for (uint8 i = 0; i < 5; i++)
             {
                 Unit* GlobalCubeTrigger = NULL;
                 GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
@@ -640,7 +640,7 @@ class HellfireWarderAI : public CreatureAIScript
         HellfireWarderAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 7;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
                 spells[i].casttime = 0;
@@ -719,7 +719,7 @@ class HellfireWarderAI : public CreatureAIScript
         {
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
         }
 
@@ -747,7 +747,7 @@ class HellfireWarderAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -861,7 +861,7 @@ class HellfireChannelerAI : public CreatureAIScript
         HellfireChannelerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
                 spells[i].casttime = 0;
@@ -921,7 +921,7 @@ class HellfireChannelerAI : public CreatureAIScript
             _unit->SetChannelSpellTargetGUID(0);
             _unit->SetChannelSpellId(0);
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
         }
 
@@ -972,7 +972,7 @@ class HellfireChannelerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1087,7 +1087,7 @@ class BurningAbyssalAI : public CreatureAIScript
         BurningAbyssalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
                 spells[i].casttime = 0;
@@ -1111,7 +1111,7 @@ class BurningAbyssalAI : public CreatureAIScript
         {
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
         }
 
@@ -1139,7 +1139,7 @@ class BurningAbyssalAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1260,7 +1260,7 @@ class MagtheridonAI : public CreatureAIScript
         MagtheridonAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = true;
                 spells[i].casttime = 0;
@@ -1323,7 +1323,7 @@ class MagtheridonAI : public CreatureAIScript
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
@@ -1341,7 +1341,7 @@ class MagtheridonAI : public CreatureAIScript
                 return;
 
             GameObject*  Gate = NULL;
-            for (int i = 0; i < 6; i++)
+            for (uint8 i = 0; i < 6; i++)
             {
                 Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                 if (Gate)
@@ -1399,7 +1399,7 @@ class MagtheridonAI : public CreatureAIScript
                 {
                     _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
 
-                    for (int i = 0; i < 6; i++)
+                    for (uint8 i = 0; i < 6; i++)
                     {
                         Unit* Trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                         if (Trigger)
@@ -1457,7 +1457,7 @@ class MagtheridonAI : public CreatureAIScript
                 {
                     _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
 
-                    for (int i = 0; i < 6; i++)
+                    for (uint8 i = 0; i < 6; i++)
                     {
                         Unit* Trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                         if (Trigger)
@@ -1504,7 +1504,7 @@ class MagtheridonAI : public CreatureAIScript
                 if (timer_caveIn == 3)
                 {
                     GameObject*  Gate = NULL;
-                    for (int i = 0; i < 6; i++)
+                    for (uint8 i = 0; i < 6; i++)
                     {
                         Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                         if (Gate)
@@ -1518,7 +1518,7 @@ class MagtheridonAI : public CreatureAIScript
 
                 if (timer_caveIn == 5)
                 {
-                    for (int i = 0; i < 6; i++)
+                    for (uint8 i = 0; i < 6; i++)
                     {
                         Unit* Trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CaveInPos[i].x, CaveInPos[i].y, CaveInPos[i].z, 17474);
                         if (Trigger)
@@ -1552,7 +1552,7 @@ class MagtheridonAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 

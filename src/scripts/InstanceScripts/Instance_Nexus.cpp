@@ -249,7 +249,7 @@ class TelestraBossAI : public MoonScriptBossAI
                 SetAllowTargeting(false);
                 ApplyAura(60191);
 
-                for (int i = 0; i < 3; ++i)
+                for (uint8 i = 0; i < 3; ++i)
                 {
                     mAddArray[i] = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_TELESTRA_FIRE + i, FormSpawns[i].x, FormSpawns[i].y, FormSpawns[i].z, FormSpawns[i].o, true, true, 0, 0);
                     if (mAddArray[i] != NULL)
@@ -260,7 +260,7 @@ class TelestraBossAI : public MoonScriptBossAI
 
             if (GetPhase() == 2)
             {
-                for (int i = 0; i < 3; ++i)
+                for (uint8 i = 0; i < 3; ++i)
                 {
                     if (mAddArray[i] != NULL)
                     {
@@ -300,7 +300,7 @@ class TelestraBossAI : public MoonScriptBossAI
 
         void OnCombatStop(Unit* pTarget)
         {
-            for (int i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
             {
                 if (mAddArray[i] != NULL)
                 {
@@ -319,7 +319,7 @@ class TelestraBossAI : public MoonScriptBossAI
         {
             _unit->SendScriptTextChatMessage(4328);      // Damn the... luck.
 
-            for (int i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
             {
                 if (mAddArray[i] != NULL)
                 {
@@ -611,7 +611,7 @@ class NexusScript : public MoonInstanceScript
 
             mCSCount = 0;
 
-            for (uint32 i = 0; i < NEXUS_END; ++i)
+            for (uint8 i = 0; i < NEXUS_END; ++i)
                 m_uiEncounters[i] = State_NotStarted;
         };
 

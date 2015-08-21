@@ -93,7 +93,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
         SHIRRAKTHEDEADWATCHERAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -131,7 +131,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -161,7 +161,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -272,7 +272,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
         AvatarOfTheMartyredAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -343,7 +343,7 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -398,7 +398,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
         EXARCHMALADAARAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -444,7 +444,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 spells[i].casttime = 0;
 
             Avatar = false;
@@ -525,7 +525,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 

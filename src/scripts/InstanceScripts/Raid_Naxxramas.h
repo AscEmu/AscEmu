@@ -1239,7 +1239,7 @@ class StickedSpewerAI : public CreatureAIScript
         nrspells = 2;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -1289,7 +1289,7 @@ class StickedSpewerAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -1348,7 +1348,7 @@ class SurgicalAssistantAI : public CreatureAIScript
         nrspells = 1;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -1392,7 +1392,7 @@ class SurgicalAssistantAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -1451,7 +1451,7 @@ class SludgeBelcherAI : public CreatureAIScript
         nrspells = 2;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -1501,7 +1501,7 @@ class SludgeBelcherAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -1566,7 +1566,7 @@ class GrobbulusAI : public CreatureAIScript
         nrspells = 2;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -1617,7 +1617,7 @@ class GrobbulusAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -1678,7 +1678,7 @@ class GluthAI : public CreatureAIScript
         nrspells = 3;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -1738,7 +1738,7 @@ class GluthAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -1798,7 +1798,7 @@ class BonyConstructAI : public CreatureAIScript
         nrspells = 1;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -1842,7 +1842,7 @@ class BonyConstructAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -1901,7 +1901,7 @@ class DeathLordAI : public CreatureAIScript
         nrspells = 1;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -1945,7 +1945,7 @@ class DeathLordAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -2005,7 +2005,7 @@ class RazuviousAI : public CreatureAIScript
         nrspells = 2;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -2071,7 +2071,7 @@ class RazuviousAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -2130,7 +2130,7 @@ class KorthazzAI : public CreatureAIScript
         nrspells = 2;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -2225,7 +2225,7 @@ class KorthazzAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -2308,7 +2308,7 @@ class BlaumeuxAI : public CreatureAIScript
         nrspells = 2;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -2403,7 +2403,7 @@ class BlaumeuxAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -2481,7 +2481,7 @@ class ZeliekAI : public CreatureAIScript
         nrspells = 2;
 
         // --- Initialization ---
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -2577,7 +2577,7 @@ class ZeliekAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -2877,7 +2877,7 @@ class SapphironAI : public CreatureAIScript
         _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 3000, Flag_Run));
 
         nrspells = 2;
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
             spells[i].casttime = 0;
@@ -2939,7 +2939,7 @@ class SapphironAI : public CreatureAIScript
 
     void OnCombatStart(Unit* mTarget)
     {
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = 0;
 
         spells[3].casttime = (uint32)time(NULL) + spells[3].cooldown;
@@ -2977,7 +2977,7 @@ class SapphironAI : public CreatureAIScript
         if (BreathTrigger != NULL)
             BreathTrigger->Despawn(0, 0);
 
-        for (int i = 1; i < 21; i++)
+        for (uint8 i = 1; i < 21; i++)
         {
             GameObject* IceBlock = NULL;
             IceBlock = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
@@ -3112,7 +3112,7 @@ class SapphironAI : public CreatureAIScript
                     if (FlightActions >= 5)
                     {
                         uint32 LastOne = 0;
-                        for (int i = 0; i < 2; i++)
+                        for (uint8 i = 0; i < 2; i++)
                         {
                             uint32 Block = 0;
                             while (LastOne == Block)
@@ -3138,7 +3138,7 @@ class SapphironAI : public CreatureAIScript
 
                     if (FlightActions == 2)
                     {
-                        for (int i = 0; i < 2; i++)
+                        for (uint8 i = 0; i < 2; i++)
                         {
                             uint32 Block = 0;
                             if (i == 0)
@@ -3157,13 +3157,13 @@ class SapphironAI : public CreatureAIScript
 
                     if (FlightActions == 4)
                     {
-                        for (int i = 0; i < 2; i++)
+                        for (uint8 i = 0; i < 2; i++)
                         {
                             uint32 Block = 0;
                             if (i == 0)
                                 Block = RandomUInt(3) + 7;
                             else
-                                Block = RandomUInt(8) + 13;
+                                Block = RandomUInt(7) + 13;
 
                             GameObject* IceBlock = NULL;
                             IceBlock = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
@@ -3201,7 +3201,7 @@ class SapphironAI : public CreatureAIScript
 
             if (FlightActions == 6)
             {
-                for (int i = 1; i < 21; i++)
+                for (uint8 i = 1; i < 21; i++)
                 {
                     GameObject* IceBlock = NULL;
                     IceBlock = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(IceBlocks[i].x, IceBlocks[i].y, IceBlocks[i].z, ICE_BLOCK_GO);
@@ -3252,7 +3252,7 @@ class SapphironAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -3589,13 +3589,13 @@ class KelthuzadAI : public CreatureAIScript
     {
         nrspells = 6;
 
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
             spells[i].casttime = 0;
         }
 
-        for (int i = 0; i < 7; i++)
+        for (uint8 i = 0; i < 7; i++)
         {
             FrozenWastes[i] = false;
             Abominations[i] = false;
@@ -3720,7 +3720,7 @@ class KelthuzadAI : public CreatureAIScript
         if (KelGate != NULL)
             KelGate->SetState(GAMEOBJECT_STATE_OPEN);
 
-        for (int i = 0; i < 4; i++)
+        for (uint8 i = 0; i < 4; i++)
         {
             GameObject*  WindowGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
@@ -3747,7 +3747,7 @@ class KelthuzadAI : public CreatureAIScript
 
     void CastTime()
     {
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = 0;
     }
 
@@ -3775,7 +3775,7 @@ class KelthuzadAI : public CreatureAIScript
         if (KelGate != NULL)
             KelGate->SetState(GAMEOBJECT_STATE_OPEN);
 
-        for (int i = 0; i < 4; i++)
+        for (uint8 i = 0; i < 4; i++)
         {
             GameObject*  WindowGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
             if (WindowGate != NULL)
@@ -3824,7 +3824,7 @@ class KelthuzadAI : public CreatureAIScript
             SpawnTimer++;
             if (SpawnTimer == 5 || SpawnTimer == 10)
             {
-                for (int i = 0; i < 7; i++)
+                for (uint8 i = 0; i < 7; i++)
                 {
                     int Counter = 0;
 
@@ -3873,7 +3873,7 @@ class KelthuzadAI : public CreatureAIScript
 
             if (SpawnCounter == 2)
             {
-                for (int i = 0; i < 7; i++)
+                for (uint8 i = 0; i < 7; i++)
                 {
                     FrozenWastes[i] = false;
                     Abominations[i] = false;
@@ -3999,7 +3999,7 @@ class KelthuzadAI : public CreatureAIScript
                     _unit->PlaySoundToSet(8824);
                 }
 
-                for (int i = 0; i < 4; i++)
+                for (uint8 i = 0; i < 4; i++)
                 {
                     GameObject*  WindowGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Guardians[i].x, Guardians[i].y, Guardians[i].z, 200002);
                     if (WindowGate)
@@ -4043,7 +4043,7 @@ class KelthuzadAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -4260,7 +4260,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         }
         if (OnStart == false)
         {
-            for (int i = 0; i < 7; i++)
+            for (uint8 i = 0; i < 7; i++)
             {
                 if (_unit->GetPositionX() == Waves[i].x && _unit->GetPositionY() == Waves[i].y && _unit->GetPositionZ() == Waves[i].z)
                 {
@@ -4314,7 +4314,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
     UnstoppableAbominationAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         nrspells = 1;
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
             spells[i].casttime = 0;
@@ -4348,7 +4348,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
 
         //RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = 0;
     }
 
@@ -4389,7 +4389,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         }
         if (OnStart == false)
         {
-            for (int i = 0; i < 7; i++)
+            for (uint8 i = 0; i < 7; i++)
             {
                 if (_unit->GetPositionX() == Waves[i].x && _unit->GetPositionY() == Waves[i].y && _unit->GetPositionZ() == Waves[i].z)
                 {
@@ -4423,7 +4423,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -4485,7 +4485,7 @@ class SoulWeaverAI : public CreatureAIScript
     SoulWeaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         nrspells = 1;
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
             spells[i].casttime = 0;
@@ -4519,7 +4519,7 @@ class SoulWeaverAI : public CreatureAIScript
 
         //RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
             spells[i].casttime = 0;
     }
 
@@ -4560,7 +4560,7 @@ class SoulWeaverAI : public CreatureAIScript
         }
         if (OnStart == false)
         {
-            for (int i = 0; i < 7; i++)
+            for (uint8 i = 0; i < 7; i++)
             {
                 if (_unit->GetPositionX() == Waves[i].x && _unit->GetPositionY() == Waves[i].y && _unit->GetPositionZ() == Waves[i].z)
                 {
@@ -4594,7 +4594,7 @@ class SoulWeaverAI : public CreatureAIScript
         {
             float comulativeperc = 0;
             Unit* target = NULL;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 if (!spells[i].perctrigger) continue;
 
@@ -4656,7 +4656,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
     GuardianOfIcecrownAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
         nrspells = 1;
-        for (int i = 0; i < nrspells; i++)
+        for (uint8 i = 0; i < nrspells; i++)
         {
             m_spellcheck[i] = false;
         }
@@ -4723,7 +4723,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         }
         if (OnStart == false)
         {
-            for (int i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
             {
                 if (_unit->GetPositionX() == Guardians[i].x && _unit->GetPositionY() == Guardians[i].y && _unit->GetPositionZ() == Guardians[i].z)
                 {

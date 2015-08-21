@@ -182,7 +182,9 @@ void World::InitPriestSpells()
     if (sp = dbcSpell.LookupEntryForced(64044))
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_FEAR;
-        dbcSpell.LookupEntryForced(64058)->NameHash += 1;
+        auto spell_entry = dbcSpell.LookupEntryForced(64058);
+        if (spell_entry != nullptr)
+            spell_entry->NameHash += 1;
         //dbcSpell.LookupEntryForced(64058)->NotRmoveTrigger = true;
     }
 

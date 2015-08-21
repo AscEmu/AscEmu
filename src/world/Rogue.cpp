@@ -89,13 +89,14 @@ void World::InitRogueSpells()
         if (sp = dbcSpell.LookupEntryForced(58426))
         {
             auto source_spell = dbcSpell.LookupEntryForced(58428);
-            if (source_spell != nullptr)
+            auto target_spell = dbcSpell.LookupEntryForced(58427);
+            if (source_spell != nullptr && target_spell != nullptr)
             {
                 sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
                 sp->EffectTriggerSpell[0] = 58427;
                 sp->procFlags = PROC_ON_CAST_SPELL;
                 sp->procChance = 100;
-                dbcSpell.LookupEntryForced(58427)->DurationIndex = source_spell->DurationIndex;
+                target_spell->DurationIndex = source_spell->DurationIndex;
             }
         }
 

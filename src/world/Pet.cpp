@@ -740,7 +740,9 @@ void Pet::InitializeMe(bool first)
     SetUInt32Value(UNIT_FIELD_PETNUMBER, GetUIdFromGUID());
     SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
 
-    myFamily = dbcCreatureFamily.LookupEntry(GetCreatureInfo()->Family);
+    auto creature_info = GetCreatureInfo();
+    if (creature_info != nullptr)
+        myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
 
     SetPetDiet();
     _setFaction();

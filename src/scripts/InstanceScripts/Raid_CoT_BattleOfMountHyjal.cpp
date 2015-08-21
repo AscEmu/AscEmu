@@ -213,7 +213,7 @@ class RageWinterchillAI : public CreatureAIScript
         RageWinterchillAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -258,7 +258,7 @@ class RageWinterchillAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(1590);     // The Legion's final conquest has begun! Once again the subjugation of this world is within our grasp. Let
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -314,7 +314,7 @@ class RageWinterchillAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -429,7 +429,7 @@ class AnetheronAI : public CreatureAIScript
         AnetheronAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -481,7 +481,7 @@ class AnetheronAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(1569);     // You are defenders of a doomed world. Flee here and perhaps you will prolong your pathetic lives!
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             uint32 t = (uint32)time(NULL);
@@ -544,7 +544,7 @@ class AnetheronAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -668,7 +668,7 @@ class KazrogalAI : public CreatureAIScript
         KazrogalAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -706,7 +706,7 @@ class KazrogalAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(1582);     // Cry for mercy! Your meaningless lives will soon be forfeit.
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
@@ -766,7 +766,7 @@ class KazrogalAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -906,7 +906,7 @@ class AzgalorAI : public CreatureAIScript
         AzgalorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
 
@@ -947,7 +947,7 @@ class AzgalorAI : public CreatureAIScript
         {
             _unit->SendScriptTextChatMessage(1576);     // Abandon all hope! The legion has returned to finish what was begun so many years ago. This time there will be no escape!
 
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
                 spells[i].casttime = 0;
 
             uint32 t = (uint32)time(NULL);
@@ -1010,7 +1010,7 @@ class AzgalorAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1298,7 +1298,7 @@ class ArchimondeAI : public CreatureAIScript
         ArchimondeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1379,7 +1379,7 @@ class ArchimondeAI : public CreatureAIScript
                 Trigger->SetChannelSpellId(0);
             }
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             uint32 t = (uint32)time(NULL);
@@ -1492,7 +1492,7 @@ class ArchimondeAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 

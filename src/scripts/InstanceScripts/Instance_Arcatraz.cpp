@@ -428,7 +428,7 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
 
     protected:
 
-        uint32 IllusionCount;
+        uint8 IllusionCount;
         SpellDesc* Illusion66;
         SpellDesc* Illusion33;
 };
@@ -768,7 +768,7 @@ class WardenMellicharAI : public MoonScriptBossAI
 
     protected:
 
-        uint32 Phasepart;
+        uint8 Phasepart;
         uint32 NPC_ID_Spawn;
         uint32 Spawncounter;
         int32 Phase_Timer;

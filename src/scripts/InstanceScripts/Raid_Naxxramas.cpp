@@ -479,7 +479,7 @@ void NaxxramasWorshipperAI::AIUpdate()
             DataPacket << static_cast< uint32 >(0x00000000);    //unk3
             DataPacket << static_cast< uint32 >(PET_SPELL_ATTACK);
 
-            for (uint32 i = 1; i < 10; ++i)
+            for (uint8 i = 1; i < 10; ++i)
             {
                 if (Iter != Spells.end())
                 {
@@ -572,7 +572,7 @@ void SpellFunc_NaxxramasFollowerCharge(SpellDesc* pThis, MoonScriptCreatureAI* p
 GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
 {
     MoonScriptCreatureAI* AddAI = NULL;
-    for (uint32 i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         AddAI = SpawnCreature(CN_NAXXRAMAS_WORSHIPPER, 3353.364502f + Worshippers[i].x, -3620.322998f, 260.996857f, 4.725017f);
         if (AddAI != NULL)
@@ -585,7 +585,7 @@ GrandWidowFaerlinaAI::GrandWidowFaerlinaAI(Creature* pCreature) : MoonScriptBoss
 
     if (IsHeroic())
     {
-        for (uint32 i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             AddAI = SpawnCreature(CN_NAXXRAMAS_FOLLOWER, 3353.364502f + Followers[i].x, -3620.322998f, 260.996857f, 4.725017f);
             if (AddAI != NULL)
@@ -669,7 +669,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
     if (IsAlive())
     {
         MoonScriptCreatureAI* AddAI = NULL;
-        for (uint32 i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             AddAI = SpawnCreature(CN_NAXXRAMAS_WORSHIPPER, 3353.364502f + Worshippers[i].x, -3620.322998f, 260.996857f, 4.725017f);
             if (AddAI != NULL)
@@ -682,7 +682,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
 
         if (IsHeroic())
         {
-            for (uint32 i = 0; i < 2; ++i)
+            for (uint8 i = 0; i < 2; ++i)
             {
                 AddAI = SpawnCreature(CN_NAXXRAMAS_FOLLOWER, 3353.364502f + Followers[i].x, -3620.322998f, 260.996857f, 4.725017f);
                 if (AddAI != NULL)
@@ -809,7 +809,7 @@ AnubRekhanAI::AnubRekhanAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
     if (IsHeroic())
     {
         CryptGuardAI* CryptAI = NULL;
-        for (uint32 i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             CryptAI = TO< CryptGuardAI* >(SpawnCreature(CN_CRYPT_GUARD, CryptGuards[i].x, CryptGuards[i].y, CryptGuards[i].z, CryptGuards[i].o));
             if (CryptAI != NULL)
@@ -886,7 +886,7 @@ void AnubRekhanAI::OnCombatStop(Unit* pTarget)
     if (IsHeroic() && IsAlive())
     {
         CryptGuardAI* CryptAI = NULL;
-        for (uint32 i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             CryptAI = TO< CryptGuardAI* >(SpawnCreature(CN_CRYPT_GUARD, CryptGuards[i].x, CryptGuards[i].y, CryptGuards[i].z, CryptGuards[i].o));
             if (CryptAI != NULL)
@@ -1013,7 +1013,7 @@ void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, MoonScriptCreatur
             AnubRekhan->mUsedCorpseGuids.insert(static_cast<uint32>(PlayerPtr->GetGUID()));
 
             CorpseScarabAI* ScarabAI = NULL;
-            for (uint32 i = 0; i < 5; ++i)
+            for (uint8 i = 0; i < 5; ++i)
             {
                 ScarabAI = TO< CorpseScarabAI* >(AnubRekhan->SpawnCreature(CN_CORPSE_SCARAB, PlayerCorpses[Id].second.x, PlayerCorpses[Id].second.y, PlayerCorpses[Id].second.z, PlayerCorpses[Id].second.o));
                 if (ScarabAI != NULL)
@@ -1065,7 +1065,7 @@ void SpellFunc_AnubRekhanCorpseScarabsCryptGuard(SpellDesc* pThis, MoonScriptCre
             O = CreaturePtr->GetOrientation();
 
             CorpseScarabAI* ScarabAI = NULL;
-            for (uint32 i = 0; i < 10; ++i)
+            for (uint8 i = 0; i < 10; ++i)
             {
                 ScarabAI = TO< CorpseScarabAI* >(AnubRekhan->SpawnCreature(CN_CORPSE_SCARAB, X, Y, Z, O));
                 if (ScarabAI != NULL)
@@ -1365,14 +1365,14 @@ void NothThePlaguebringerAI::AIUpdate()
                 SkelLimit = 3;
 
             bool PosTaken[3];
-            for (uint32 i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
             {
                 PosTaken[i] = false;
             };
 
             uint32 Id = 0;
             PlaguedWarriorAI* WarriorAI = NULL;
-            for (uint32 i = 0; i < SkelLimit; ++i)
+            for (uint8 i = 0; i < SkelLimit; ++i)
             {
                 Id = RandomUInt(SkelLimit);
                 if (PosTaken[Id])
@@ -1429,13 +1429,13 @@ void NothThePlaguebringerAI::AIUpdate()
                 Champions = SpawnLimit - mPhaseCounter + 1;
 
             bool PosTaken[4];
-            for (uint32 i = 0; i < 4; ++i)
+            for (uint8 i = 0; i < 4; ++i)
             {
                 PosTaken[i] = false;
             };
 
             PlaguedChampionAI* ChampionAI = NULL;
-            for (uint32 i = 0; i < Champions; ++i)
+            for (uint8 i = 0; i < Champions; ++i)
             {
                 Id = RandomUInt(1, 3);
                 if (PosTaken[Id])
@@ -1463,7 +1463,7 @@ void NothThePlaguebringerAI::AIUpdate()
             };
 
             PlaguedGuardianAI* GuardianAI = NULL;
-            for (uint32 i = 0; i < SpawnLimit - Champions; ++i)
+            for (uint8 i = 0; i < SpawnLimit - Champions; ++i)
             {
                 Id = RandomUInt(1, 3);
                 if (PosTaken[Id])
@@ -1704,7 +1704,7 @@ uint32 HeiganTheUncleanAI::CalculateTriggerArea(float pPosX, float pPosY)
         return 3;
 
     float slope = pPosY / pPosX;
-    for (uint32 i = 0; i < 3; ++i)
+    for (uint8 i = 0; i < 3; ++i)
         if (slope > HeiganEruptionSlope[i])
             return i;
 
@@ -1958,14 +1958,14 @@ void LoathebAI::AIUpdate()
     if (IsTimerFinished(mSporeTimer))
     {
         bool PosTaken[4];
-        for (uint32 i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             PosTaken[i] = false;
         };
 
         uint32 Id = 0;
         SporeAI* Spore = NULL;
-        for (uint32 i = 0; i < 3; ++i)
+        for (uint8 i = 0; i < 3; ++i)
         {
             Id = RandomUInt(3);
             if (PosTaken[Id])

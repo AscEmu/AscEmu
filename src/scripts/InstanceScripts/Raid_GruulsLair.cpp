@@ -122,7 +122,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
 
             mAliveAdds = 0;
             mLastYell = -1;
-            for (int i = 0; i < 4; ++i)
+            for (uint8 i = 0; i < 4; ++i)
             {
                 Unit* pAdd = ForceCreatureFind(Adds[i]);
                 if (pAdd != NULL && pAdd->isAlive())
