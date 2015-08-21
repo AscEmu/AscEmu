@@ -69,7 +69,7 @@ class TotemofCoo : public QuestScript
                         pAkida->Despawn(5000, 0);
                     }
 
-                    mAkidas.erase(itr);
+                    itr = mAkidas.erase(itr);
                 }
             }
         }
@@ -88,7 +88,7 @@ class TotemofCoo : public QuestScript
                         pAkida->Despawn(5000, 0);
                     }
 
-                    mAkidas.erase(itr);
+                    itr = mAkidas.erase(itr);
                 }
             }
         }
