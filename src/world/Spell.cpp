@@ -1058,7 +1058,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         }
 
         // aura state removal
-        if (GetProto()->CasterAuraState && GetProto()->CasterAuraState != AURASTATE_FLAG_JUDGEMENT)
+        if (GetProto() != nullptr && GetProto()->CasterAuraState != AURASTATE_FLAG_JUDGEMENT)
             u_caster->RemoveFlag(UNIT_FIELD_AURASTATE, GetProto()->CasterAuraState);
     }
 
