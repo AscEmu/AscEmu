@@ -173,6 +173,7 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -291,6 +292,7 @@ class InstructorMaliciaAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -402,6 +404,7 @@ class TheRavenianAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -519,6 +522,7 @@ class LadyIlluciaBarovAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -643,6 +647,7 @@ class RasForstwhisperAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -748,6 +753,7 @@ class JandiceBarovAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -854,6 +860,7 @@ class KormokAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -969,6 +976,7 @@ class VectusAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -1076,6 +1084,7 @@ class LordAlexeiBarovAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -1187,6 +1196,7 @@ class LorekeeperPolkeltAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
@@ -1293,6 +1303,7 @@ class DarkmasterGandlingAI : public CreatureAIScript
                             case TARGET_SELF:
                             case TARGET_VARIOUS:
                                 _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;

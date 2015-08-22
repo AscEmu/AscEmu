@@ -2866,7 +2866,7 @@ class SwamplordMuselekAI : public CreatureAIScript
                     {
                         uint32 t = (uint32)time(NULL);
                         uint32 RangedSpell = RandomUInt(100);
-                        if (RangedSpell >= 0 && RangedSpell <= 20 && t > spells[2].casttime)
+                        if (RangedSpell <= 20 && t > spells[2].casttime)
                         {
                             _unit->CastSpell(target, spells[2].info, spells[2].instant);
                             _unit->setAttackTimer(spells[2].attackstoptimer, false);

@@ -2050,7 +2050,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
                     Gnome = *itr;
                     if (!Gnome->isAlive() || !Gnome->IsInWorld())
                     {
-                        Gnomes.erase(itr);
+                        itr = Gnomes.erase(itr);
                         continue;
                     }
 

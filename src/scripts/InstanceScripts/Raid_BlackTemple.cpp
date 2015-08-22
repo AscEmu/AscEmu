@@ -1081,7 +1081,7 @@ class IllidariArchonAI : public MoonScriptCreatureAI
                     for (SpellDescList::iterator itr = mScheduledSpells.begin(); itr != mScheduledSpells.end(); ++itr)
                     {
                         if ((*itr)->mInfo->Id == pDeath->mInfo->Id)
-                            mScheduledSpells.erase(itr);
+                            itr = mScheduledSpells.erase(itr);
                     }
 
                 pDeath->mEnabled = false;
@@ -2500,6 +2500,7 @@ class GurtoggAI : public CreatureAIScript
                             break;
                         case 2:
                             _unit->PlaySoundToSet(11437);               // <babbling>
+                            break;
                     }
 
                     spells[7].casttime = t + spells[7].cooldown;
@@ -2536,6 +2537,7 @@ class GurtoggAI : public CreatureAIScript
                                 break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_DESTINATION:
                                 _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
                                 break;

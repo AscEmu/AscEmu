@@ -4431,7 +4431,8 @@ class UnstoppableAbominationAI : public CreatureAIScript
                 {
                     target = _unit->GetAIInterface()->getNextTarget();
 
-                    if (i == 0 && _unit->GetDistance2dSq(target) > 25.0f) return;
+                    if (_unit->GetDistance2dSq(target) > 25.0f)
+                        return;
 
                     switch (spells[i].targettype)
                     {
@@ -4602,7 +4603,8 @@ class SoulWeaverAI : public CreatureAIScript
                 {
                     target = _unit->GetAIInterface()->getNextTarget();
 
-                    if (i == 0 && _unit->GetDistance2dSq(target) > 64.0f) return;    // 8yards
+                    if (_unit->GetDistance2dSq(target) > 64.0f) // 8yards
+                        return;
 
                     switch (spells[i].targettype)
                     {

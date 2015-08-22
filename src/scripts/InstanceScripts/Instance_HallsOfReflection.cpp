@@ -205,6 +205,8 @@ class Marwyn : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(Marwyn, MoonScriptBossAI);
         Marwyn(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
+            mInstance = GetInstanceScript();
+
             if (IsHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_OBLITERATE, Target_Current, 45, 0, 30); // Timer may be off on this.
@@ -280,6 +282,8 @@ class Falric : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(Falric, MoonScriptBossAI);
         Falric(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
+            mInstance = GetInstanceScript();
+
             if (IsHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_QSTRIKE, Target_Current, 45, 0, 23);
