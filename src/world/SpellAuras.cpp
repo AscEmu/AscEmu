@@ -838,8 +838,10 @@ void Aura::Remove()
 		if (m_spellProto->Effect[x] == SPELL_EFFECT_TRIGGER_SPELL && !m_spellProto->always_apply)
 		{
 			// I'm not sure about this! FIX ME!!
-			if (dbcSpell.LookupEntryForced(GetSpellProto()->EffectTriggerSpell[x])->DurationIndex < m_spellProto->DurationIndex)
-				m_target->RemoveAura(GetSpellProto()->EffectTriggerSpell[x]);
+            auto spell_entry = dbcSpell.LookupEntryForced(GetSpellProto()->EffectTriggerSpell[x]);
+            if (spell_entry != nullptr)
+                if (spell_entry->DurationIndex < m_spellProto->DurationIndex)
+				    m_target->RemoveAura(GetSpellProto()->EffectTriggerSpell[x]);
 		}
 		else if (IsAreaAura() && m_casterGuid == m_target->GetGUID())
 			ClearAATargets();

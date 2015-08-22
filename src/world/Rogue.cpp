@@ -69,8 +69,12 @@ void World::InitRogueSpells()
     sp = dbcSpell.LookupEntryForced(31665);
     if (sp)
     {
-        sp->DurationIndex = dbcSpell.LookupEntryForced(31666)->DurationIndex;
-        sp->RankNumber = 4;
+        auto source_spell = dbcSpell.LookupEntryForced(31666);
+        if (source_spell != nullptr)
+        {
+            sp->DurationIndex = source_spell->DurationIndex;
+            sp->RankNumber = 4;
+        }
     }
     sp = dbcSpell.LookupEntryForced(31666);
     if (sp)

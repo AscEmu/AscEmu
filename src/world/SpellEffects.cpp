@@ -879,15 +879,18 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             {
                 if (p_caster != NULL)
                 {
-                    Item* itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    if (p_caster->HasAura(12329))
-                        dmg = (((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.4;
-                    else if (p_caster->HasAura(12950))
-                        dmg = (((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.8;
-                    else if (p_caster->HasAura(20496))
-                        dmg = (((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 1.2;
-                    else
-                        dmg = ((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                    auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    if (item != nullptr)
+                    {
+                        if (p_caster->HasAura(12329))
+                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.4;
+                        else if (p_caster->HasAura(12950))
+                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.8;
+                        else if (p_caster->HasAura(20496))
+                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 1.2;
+                        else
+                            dmg = ((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                    }
                 }
             }break;
             // Slam
@@ -902,8 +905,9 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             {
                 if (p_caster != NULL)
                 {
-                    Item* itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    dmg = ((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                    auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    if (item != nullptr)
+                        dmg = ((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
                 }
             }break;
             case 6343:
