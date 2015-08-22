@@ -6140,11 +6140,8 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     float dist = CalcDistance(this, target);
     float maxr = GetMaxRange(range) + 2.52f;
 
-    if (spellinfo->SpellGroupType)
-    {
-        SM_FFValue(this->SM_FRange, &maxr, spellinfo->SpellGroupType);
-        SM_PFValue(this->SM_PRange, &maxr, spellinfo->SpellGroupType);
-    }
+    SM_FFValue(this->SM_FRange, &maxr, spellinfo->SpellGroupType);
+    SM_PFValue(this->SM_PRange, &maxr, spellinfo->SpellGroupType);
 
     //float bonusRange = 0;
     // another hackfix: bonus range from hunter talent hawk eye: +2/4/6 yard range to ranged weapons
@@ -10861,11 +10858,8 @@ void Player::Cooldown_Add(SpellEntry* pSpell, Item* pItemCaster)
     if (pSpell->RecoveryTime > 0)
     {
         cool_time = pSpell->RecoveryTime;
-        if (pSpell->SpellGroupType)
-        {
-            SM_FIValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
-            SM_PIValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
-        }
+        SM_FIValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
+        SM_PIValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
 
         _Cooldown_Add(COOLDOWN_TYPE_SPELL, pSpell->Id, mstime + cool_time, pSpell->Id, pItemCaster ? pItemCaster->GetProto()->ItemId : 0);
     }
@@ -10884,11 +10878,8 @@ void Player::Cooldown_AddStart(SpellEntry* pSpell)
     else
         atime = float2int32(pSpell->StartRecoveryTime * GetCastSpeedMod());
 
-    if (pSpell->SpellGroupType)
-    {
-        SM_FIValue(SM_FGlobalCooldown, &atime, pSpell->SpellGroupType);
-        SM_PIValue(SM_PGlobalCooldown, &atime, pSpell->SpellGroupType);
-    }
+    SM_FIValue(SM_FGlobalCooldown, &atime, pSpell->SpellGroupType);
+    SM_PIValue(SM_PGlobalCooldown, &atime, pSpell->SpellGroupType);
 
     if (atime < 0)
         return;

@@ -2982,7 +2982,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
             hitchance = std::max(hitchance, 100.0f + vsk * 0.6f + hitmodifier);     //not wowwiki but more balanced
     }
 
-    if (ability && ability->SpellGroupType)
+    if (ability != nullptr)
     {
         SM_FFValue(SM_FHitchance, &hitchance, ability->SpellGroupType);
 #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
@@ -3687,7 +3687,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                         hit_status |= HITSTATUS_CRICTICAL;
                         int32 dmgbonus = dmg.full_damage;
                         //sLog.outString("DEBUG: Critical Strike! Full_damage: %u" , dmg.full_damage);
-                        if (ability && ability->SpellGroupType)
+                        if (ability != nullptr)
                         {
                             int32 dmg_bonus_pct = 100;
                             SM_FIValue(SM_PCriticalDamage, &dmg_bonus_pct, ability->SpellGroupType);
@@ -4340,7 +4340,7 @@ void Unit::AddAura(Aura* aur)
             {
                 int charges = aur->GetSpellProto()->procCharges;
                 Unit* ucaster = aur->GetUnitCaster();
-                if (aur->GetSpellProto()->SpellGroupType && ucaster != NULL)
+                if (ucaster != nullptr)
                 {
                     SM_FIValue(ucaster->SM_FCharges, &charges, aur->GetSpellProto()->SpellGroupType);
                     SM_PIValue(ucaster->SM_PCharges, &charges, aur->GetSpellProto()->SpellGroupType);
@@ -5191,8 +5191,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellEntry* spellInfo, int32 base_dm
     if ((pVictim->HasAuraWithMechanics(MECHANIC_ENSNARED) || pVictim->HasAuraWithMechanics(MECHANIC_DAZED)) && caster->IsPlayer())
         plus_damage += static_cast<float>(TO<Player*>(caster)->m_IncreaseDmgSnaredSlowed);
 
-    if (spellInfo->SpellGroupType)
-    {
+
         int32 bonus_damage = 0;
         SM_FIValue(caster->SM_FPenalty, &bonus_damage, spellInfo->SpellGroupType);
         SM_FIValue(caster->SM_FDamageBonus, &bonus_damage, spellInfo->SpellGroupType);
@@ -5202,7 +5201,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellEntry* spellInfo, int32 base_dm
         SM_FIValue(caster->SM_PDamageBonus, &dmg_bonus_pct, spellInfo->SpellGroupType);
 
         plus_damage += static_cast<float>((base_dmg + bonus_damage) * dmg_bonus_pct / 100);
-    }
+
 
     return static_cast<int32>(plus_damage);
 }
@@ -8079,8 +8078,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellEntry* spell)
                 CritChance += static_cast<float>(TO<Player*>(this)->m_RootedCritChanceBonus);
         }
 
-        if (spell->SpellGroupType)
-            SM_FFValue(SM_CriticalChance, &CritChance, spell->SpellGroupType);
+        SM_FFValue(SM_CriticalChance, &CritChance, spell->SpellGroupType);
 
         if (victim->IsPlayer())
             resilience_type = PLAYER_RATING_MODIFIER_SPELL_CRIT_RESILIENCE;
@@ -8113,9 +8111,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellEntry* spell)
 float Unit::GetCriticalDamageBonusForSpell(Object* victim, SpellEntry* spell, float amount)
 {
     int32 critical_bonus = 100;
-
-    if (spell->SpellGroupType)
-        SM_FIValue(SM_PCriticalDamage, &critical_bonus, spell->SpellGroupType);
+    SM_FIValue(SM_PCriticalDamage, &critical_bonus, spell->SpellGroupType);
 
     if (critical_bonus > 0)
     {
@@ -8162,8 +8158,7 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellEntry* spell)
     if (victim->IsUnit() && TO_UNIT(victim)->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD) && spell->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
         crit_chance += 50;
 
-    if (spell->SpellGroupType)
-        SM_FIValue(this->SM_CriticalChance, &crit_chance, spell->SpellGroupType);
+    SM_FIValue(this->SM_CriticalChance, &crit_chance, spell->SpellGroupType);
 
     return Rand(crit_chance);
 }
@@ -8171,8 +8166,7 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellEntry* spell)
 float Unit::GetCriticalHealBonusForSpell(Object* victim, SpellEntry* spell, float amount)
 {
     int32 critical_bonus = 100;
-    if (spell->SpellGroupType)
-        SM_FIValue(this->SM_PCriticalDamage, &critical_bonus, spell->SpellGroupType);
+    SM_FIValue(this->SM_PCriticalDamage, &critical_bonus, spell->SpellGroupType);
 
     if (critical_bonus > 0)
     {

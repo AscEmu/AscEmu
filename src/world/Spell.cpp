@@ -614,7 +614,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
     else
     {
         r = GetProto()->base_range_or_radius_sqr;
-        if (GetProto()->SpellGroupType && u_caster)
+        if (u_caster != nullptr)
         {
             SM_FFValue(u_caster->SM_FRadius, &r, GetProto()->SpellGroupType);
             SM_PFValue(u_caster->SM_PRadius, &r, GetProto()->SpellGroupType);
@@ -668,7 +668,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
     else
     {
         r = GetProto()->base_range_or_radius_sqr;
-        if (GetProto()->SpellGroupType && u_caster)
+        if (u_caster != nullptr)
         {
             SM_FFValue(u_caster->SM_FRadius, &r, GetProto()->SpellGroupType);
             SM_PFValue(u_caster->SM_PRadius, &r, GetProto()->SpellGroupType);
@@ -882,18 +882,15 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
         resistchance += min;
     }
 
-    if (GetProto()->Effect[effindex] == SPELL_EFFECT_DISPEL && GetProto()->SpellGroupType)
+    if (GetProto()->Effect[effindex] == SPELL_EFFECT_DISPEL)
     {
         SM_FFValue(u_victim->SM_FRezist_dispell, &resistchance, GetProto()->SpellGroupType);
         SM_PFValue(u_victim->SM_PRezist_dispell, &resistchance, GetProto()->SpellGroupType);
     }
 
-    if (GetProto()->SpellGroupType)
-    {
         float hitchance = 0;
         SM_FFValue(u_caster->SM_FHitchance, &hitchance, GetProto()->SpellGroupType);
         resistchance -= hitchance;
-    }
 
     if (hasAttribute(ATTRIBUTES_IGNORE_INVULNERABILITY))
         resistchance = 0.0f;
@@ -947,7 +944,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     {
         m_castTime = GetCastTime(dbcSpellCastTime.LookupEntry(GetProto()->CastingTimeIndex));
 
-        if (m_castTime && GetProto()->SpellGroupType && u_caster != NULL)
+        if (m_castTime && u_caster != nullptr)
         {
             SM_FIValue(u_caster->SM_FCastTime, (int32*)&m_castTime, GetProto()->SpellGroupType);
             SM_PIValue(u_caster->SM_PCastTime, (int32*)&m_castTime, GetProto()->SpellGroupType);
@@ -1614,13 +1611,12 @@ void Spell::AddTime(uint32 type)
             cancel();
             return;
         }
-        if (GetProto()->SpellGroupType)
-        {
-            float ch = 0;
-            SM_FFValue(u_caster->SM_PNonInterrupt, &ch, GetProto()->SpellGroupType);
-            if (Rand(ch))
-                return;
-        }
+
+        float ch = 0;
+        SM_FFValue(u_caster->SM_PNonInterrupt, &ch, GetProto()->SpellGroupType);
+        if (Rand(ch))
+            return;
+
         if (p_caster != NULL)
         {
             if (Rand(p_caster->SpellDelayResist[type]))
@@ -2580,7 +2576,7 @@ bool Spell::HasPower()
     }
 
     //apply modifiers
-    if (GetProto()->SpellGroupType && u_caster)
+    if (u_caster != nullptr)
     {
         SM_FIValue(u_caster->SM_FCost, &cost, GetProto()->SpellGroupType);
         SM_PIValue(u_caster->SM_PCost, &cost, GetProto()->SpellGroupType);
@@ -2721,7 +2717,7 @@ bool Spell::TakePower()
     }
 
     //apply modifiers
-    if (GetProto()->SpellGroupType && u_caster)
+    if (u_caster != nullptr)
     {
         SM_FIValue(u_caster->SM_FCost, &cost, GetProto()->SpellGroupType);
         SM_PIValue(u_caster->SM_PCost, &cost, GetProto()->SpellGroupType);
@@ -3879,7 +3875,7 @@ uint8 Spell::CanCast(bool tolerate)
     /**
      *	Some Unit caster range check
      */
-    if (u_caster && GetProto()->SpellGroupType)
+    if (u_caster != nullptr)
     {
         SM_FFValue(u_caster->SM_FRange, &maxRange, GetProto()->SpellGroupType);
         SM_PFValue(u_caster->SM_PRange, &maxRange, GetProto()->SpellGroupType);
@@ -5211,8 +5207,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         if (ForceCrit || ((critical = Rand(critchance)) != 0))
         {
             int32 critical_bonus = 100;
-            if (GetProto()->SpellGroupType)
-                SM_FIValue(u_caster->SM_PCriticalDamage, &critical_bonus, GetProto()->SpellGroupType);
+            SM_FIValue(u_caster->SM_PCriticalDamage, &critical_bonus, GetProto()->SpellGroupType);
 
             if (critical_bonus > 0)
             {

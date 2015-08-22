@@ -2158,7 +2158,7 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
 
 		int32 val = mod->m_amount;
 		Unit* c = GetUnitCaster();
-		if (c && GetSpellProto()->SpellGroupType)
+		if (c != nullptr)
 		{
 			SM_FIValue(c->SM_FMiscEffect, &val, GetSpellProto()->SpellGroupType);
 			SM_PIValue(c->SM_PMiscEffect, &val, GetSpellProto()->SpellGroupType);
@@ -2285,8 +2285,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 	if (c != NULL)
 	{
 		add += float2int32(add * (m_target->HealTakenPctMod[m_spellProto->School] + c->HealDonePctMod[GetSpellProto()->School]));
-		if (m_spellProto->SpellGroupType)
-			SM_PIValue(c->SM_PDOT, &add, m_spellProto->SpellGroupType);
+        SM_PIValue(c->SM_PDOT, &add, m_spellProto->SpellGroupType);
 
 		if (this->DotCanCrit())
 		{
@@ -4046,7 +4045,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 		// Initialize charges
 		charges = GetSpellProto()->procCharges;
 		Unit* ucaster = GetUnitCaster();
-		if (ucaster != NULL && GetSpellProto()->SpellGroupType)
+		if (ucaster != nullptr)
 		{
 			SM_FIValue(ucaster->SM_FCharges, &charges, GetSpellProto()->SpellGroupType);
 			SM_PIValue(ucaster->SM_PCharges, &charges, GetSpellProto()->SpellGroupType);
@@ -4288,11 +4287,9 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
 	amount += bonus;
 
-	if (sp->SpellGroupType)
-	{
-		SM_FIValue(m_caster->SM_FDOT, (int32*)&amount, sp->SpellGroupType);
-		SM_PIValue(m_caster->SM_PDOT, (int32*)&amount, sp->SpellGroupType);
-	}
+    SM_FIValue(m_caster->SM_FDOT, (int32*)&amount, sp->SpellGroupType);
+    SM_PIValue(m_caster->SM_PDOT, (int32*)&amount, sp->SpellGroupType);
+
 
 	if (DotCanCrit())
 	{
@@ -4412,7 +4409,7 @@ void Aura::SpellAuraModHitChance(bool apply)
 	int32 val = mod->m_amount;
 
 	Unit* c = GetUnitCaster();
-	if (c && GetSpellProto()->SpellGroupType)
+	if (c != nullptr)
 	{
 		SM_FIValue(c->SM_FMiscEffect, &val, GetSpellProto()->SpellGroupType);
 		SM_PIValue(c->SM_PMiscEffect, &val, GetSpellProto()->SpellGroupType);
@@ -6248,7 +6245,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
 		// Initialize charges
 		charges = GetSpellProto()->procCharges;
 		Unit* ucaster = GetUnitCaster();
-		if (ucaster != NULL && GetSpellProto()->SpellGroupType)
+		if (ucaster != nullptr)
 		{
 			SM_FIValue(ucaster->SM_FCharges, &charges, GetSpellProto()->SpellGroupType);
 			SM_PIValue(ucaster->SM_PCharges, &charges, GetSpellProto()->SpellGroupType);
@@ -8871,11 +8868,8 @@ void AbsorbAura::SpellAuraSchoolAbsorb(bool apply)
 	Unit* caster = GetUnitCaster();
 	if (caster != NULL)
 	{
-		if (GetSpellProto()->SpellGroupType)
-		{
-			SM_FIValue(caster->SM_FMiscEffect, &val, GetSpellProto()->SpellGroupType);
-			SM_PIValue(caster->SM_PMiscEffect, &val, GetSpellProto()->SpellGroupType);
-		}
+        SM_FIValue(caster->SM_FMiscEffect, &val, GetSpellProto()->SpellGroupType);
+        SM_PIValue(caster->SM_PMiscEffect, &val, GetSpellProto()->SpellGroupType);
 
 		//This will fix talents that affects damage absorbed.
 		int flat = 0;

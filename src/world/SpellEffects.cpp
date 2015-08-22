@@ -579,7 +579,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
             if (reduce && chaindamage)
             {
-                if (GetProto()->SpellGroupType && u_caster)
+                if (u_caster != nullptr)
                 {
                     SM_FIValue(u_caster->SM_PJumpReduce, &reduce, GetProto()->SpellGroupType);
                 }
@@ -1594,7 +1594,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
         else
         {
             int32 reduce = GetProto()->EffectDieSides[i] + 1;
-            if (GetProto()->SpellGroupType && u_caster)
+            if (u_caster != nullptr)
             {
                 SM_FIValue(u_caster->SM_PJumpReduce, &reduce, GetProto()->SpellGroupType);
             }
@@ -3992,11 +3992,10 @@ void Spell::SpellEffectThreat(uint32 i) // Threat
         return;
 
     int32 amount = GetProto()->EffectBasePoints[i];
-    if (GetProto()->SpellGroupType)
-    {
-        SM_FIValue(u_caster->SM_FMiscEffect, &amount, GetProto()->SpellGroupType);
-        SM_PIValue(u_caster->SM_PMiscEffect, &amount, GetProto()->SpellGroupType);
-    }
+
+    SM_FIValue(u_caster->SM_FMiscEffect, &amount, GetProto()->SpellGroupType);
+    SM_PIValue(u_caster->SM_PMiscEffect, &amount, GetProto()->SpellGroupType);
+
 
     bool chck = unitTarget->GetAIInterface()->modThreatByPtr(u_caster, amount);
     if (!chck)
@@ -4480,11 +4479,8 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
         case 21169: //Reincarnation. Resurrect with 20% health and mana
         {
             int32 amt = 20;
-            if (GetProto()->SpellGroupType)
-            {
-                SM_FIValue(unitTarget->SM_FMiscEffect, &amt, GetProto()->SpellGroupType);
-                SM_PIValue(unitTarget->SM_PMiscEffect, &amt, GetProto()->SpellGroupType);
-            }
+            SM_FIValue(unitTarget->SM_FMiscEffect, &amt, GetProto()->SpellGroupType);
+            SM_PIValue(unitTarget->SM_PMiscEffect, &amt, GetProto()->SpellGroupType);
             health = uint32((unitTarget->GetMaxHealth() * amt) / 100);
             mana = uint32((unitTarget->GetMaxPower(POWER_TYPE_MANA) * amt) / 100);
         }
@@ -4823,11 +4819,10 @@ void Spell::SpellEffectSummonDeadPet(uint32 i)
         pPet = p_caster->GetSummon();
         if (pPet == NULL)//no pets to Revive
             return;
-        if (GetProto()->SpellGroupType)
-        {
-            SM_FIValue(p_caster->SM_FMiscEffect, &damage, GetProto()->SpellGroupType);
-            SM_PIValue(p_caster->SM_PMiscEffect, &damage, GetProto()->SpellGroupType);
-        }
+
+        SM_FIValue(p_caster->SM_FMiscEffect, &damage, GetProto()->SpellGroupType);
+        SM_PIValue(p_caster->SM_PMiscEffect, &damage, GetProto()->SpellGroupType);
+
         pPet->SetHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
     }
 }

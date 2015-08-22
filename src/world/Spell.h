@@ -2115,7 +2115,7 @@ class SERVER_DECL Spell : public EventableObject
                         }
                     }
 
-                    if (GetProto()->SpellGroupType && u_caster)
+                    if (u_caster != nullptr)
                     {
                         SM_FIValue(u_caster->SM_FDur, (int32*)&this->Dur, GetProto()->SpellGroupType);
                         SM_PIValue(u_caster->SM_PDur, (int32*)&this->Dur, GetProto()->SpellGroupType);
@@ -2147,7 +2147,7 @@ class SERVER_DECL Spell : public EventableObject
             if (bRadSet[i])return Rad[i];
             bRadSet[i] = true;
             Rad[i] = ::GetRadius(dbcSpellRadius.LookupEntry(GetProto()->EffectRadiusIndex[i]));
-            if (GetProto()->SpellGroupType && u_caster)
+            if (u_caster != nullptr)
             {
                 SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetProto()->SpellGroupType);
                 SM_PFValue(u_caster->SM_PRadius, &Rad[i], GetProto()->SpellGroupType);
