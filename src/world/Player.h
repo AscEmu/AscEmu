@@ -802,6 +802,12 @@ class PlayerSpec
         PlayerSpec()
         {
             tp = 0;
+            for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; i++)
+            {
+                mActions[i].Action = 0;
+                mActions[i].Type = 0;
+                mActions[i].Misc = 0;
+            }
         }
 
         void SetTP(uint32 points){ tp = points; }

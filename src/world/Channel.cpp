@@ -933,5 +933,5 @@ void ChannelMgr::RemoveChannel(Channel* chn)
 
 ChannelMgr::ChannelMgr()
 {
-
+    seperatechannels = false;
 }

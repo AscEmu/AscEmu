@@ -495,7 +495,11 @@ class SERVER_DECL Storage
 
         /** False constructor to fool compiler
          */
-        Storage() {}
+        Storage()
+        {
+            _indexName = nullptr;
+            _formatString = nullptr;
+        }
         virtual ~Storage() {}
 
         /** Makes an iterator, w00t!

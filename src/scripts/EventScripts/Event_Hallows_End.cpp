@@ -34,8 +34,7 @@ class BlackCat : public MoonScriptCreatureAI
 /// HEADLESS HORSEMAN ENCOUNTER
 static LocationExtra WaypointGoldshire[] =
 {
-    {},
-    { -9502.733398f, 31.395960f, 60.433193f, 1.217366f, Flag_Fly }, ///1
+    { -9502.733398f, 31.395960f, 60.433193f, 1.217366f, Flag_Fly }, // 0
     { -9493.925781f, 55.272415f, 60.433193f, 0.781469f, Flag_Fly },
     { -9483.589844f, 63.685684f, 60.433193f, 6.224273f, Flag_Fly },
     { -9463.258789f, 62.515587f, 60.433193f, 6.204639f, Flag_Fly },
@@ -44,34 +43,33 @@ static LocationExtra WaypointGoldshire[] =
     { -9473.457031f, 29.496262f, 77.199722f, 1.394081f, Flag_Fly },
     { -9471.234275f, 44.239151f, 75.393852f, 1.241714f, Flag_Fly },
     { -9459.474609f, 81.118446f, 71.725540f, 1.720021f, Flag_Fly },
-    { -9467.220703f, 88.311104f, 71.786453f, 2.572178f, Flag_Fly },    ///10
-    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Flag_Fly }, ///11 Starting round (3 rounds left)
+    { -9467.220703f, 88.311104f, 71.786453f, 2.572178f, Flag_Fly }, // 9
+    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Flag_Fly }, // 10 Starting round (3 rounds left)
     { -9506.228516f, 36.876194f, 89.180916f, 6.167746f, Flag_Fly },
     { -9437.569396f, 34.403599f, 75.426025f, 1.270783f, Flag_Fly },
     { -9448.488281f, 85.930862f, 75.290497f, 2.909909f, Flag_Fly },
-    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Flag_Fly }, ///15
-    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Flag_Fly }, ///16 Next round (2 rounds left)
+    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Flag_Fly }, // 14
+    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Flag_Fly }, // 15 Next round (2 rounds left)
     { -9506.228516f, 36.876194f, 89.180916f, 6.167746f, Flag_Fly },
     { -9437.569396f, 34.403599f, 75.426025f, 1.270783f, Flag_Fly },
     { -9448.488281f, 85.930862f, 75.290497f, 2.909909f, Flag_Fly },
-    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Flag_Fly }, ///20
-    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Flag_Fly }, ///21 Next round (1 rounds left)
+    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Flag_Fly }, // 19
+    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Flag_Fly }, // 20 Next round (1 rounds left)
     { -9506.228516f, 36.876194f, 89.180916f, 6.167746f, Flag_Fly },
     { -9437.569396f, 34.403599f, 75.426025f, 1.270783f, Flag_Fly },
     { -9448.488281f, 85.930862f, 75.290497f, 2.909909f, Flag_Fly },
-    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Flag_Fly }, ///25
-    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Flag_Fly }, ///26 Next round (0 rounds left)
+    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Flag_Fly }, // 24
+    { -9486.188477f, 83.939690f, 82.718826f, 3.569634f, Flag_Fly }, // 25 Next round (0 rounds left)
     { -9506.228516f, 36.876194f, 89.180916f, 6.167746f, Flag_Fly },
     { -9437.569396f, 34.403599f, 75.426025f, 1.270783f, Flag_Fly },
     { -9448.488281f, 85.930862f, 75.290497f, 2.909909f, Flag_Fly },
-    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Flag_Fly } /// 30
+    { -9477.427734f, 86.952667f, 70.950249f, 3.318317f, Flag_Fly }  // 29
 };
 
 /// Headless HorsemanAI
-#define CN_HEADLESS_HORSEMAN                23682
-#define HEADLESS_HORSEMAN_CLEAVE            42587
-#define HEADLESS_HORSEMAN_CONFLAGRATION        42380
-
+#define CN_HEADLESS_HORSEMAN 23682
+#define HEADLESS_HORSEMAN_CLEAVE 42587
+#define HEADLESS_HORSEMAN_CONFLAGRATION 42380
 class HeadlessHorsemanAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanAI, MoonScriptCreatureAI);
@@ -81,9 +79,9 @@ class HeadlessHorsemanAI : public MoonScriptCreatureAI
     }
 };
 
-/// Headless Horseman - Fire
-#define CN_HEADLESS_HORSEMAN_FIRE                23537
 
+// Headless Horseman - Fire
+#define CN_HEADLESS_HORSEMAN_FIRE                23537
 class HeadlessHorsemanFireAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanFireAI, MoonScriptCreatureAI);
@@ -93,7 +91,8 @@ class HeadlessHorsemanFireAI : public MoonScriptCreatureAI
     }
 };
 
-/// Shade of the HorsemanAI
+
+// Shade of the HorsemanAI
 #define CN_SHADE_OF_THE_HORSEMAN                23543
 #define SHADE_OF_THE_HORSEMAN_SUMMON            42394  ///Don't think this one is the correct spell
 /*
@@ -118,21 +117,26 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         AddEmote(Event_OnDied, "So eager you are, for my blood to spill. Yet to vanquish me, 'tis my head you must kill!", Text_Yell, 11969);
         Emote("Prepare yourselves, the bells have tolled! Shelter your weak, your young, and your old! Each of you shall pay the final sum. Cry for mercy, the reckoning has come!", Text_Yell, 11966);    //On Spawn?
 
+        WPCount = 0;
+        WayPoints = nullptr;
+
         auto area = _unit->GetArea();
-
-        switch (area->id)
+        if (area != nullptr)
         {
-        case 87: /// Goldshire
-        {
-            WPCount = 30;
-            WayPoints = WaypointGoldshire;
-        }
-        break;
-        }
-
-        for (int i = 1; i <= WPCount; ++i)
-        {
-            AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
+            switch (area->id)
+            {
+                case 87: /// Goldshire
+                {
+                    WPCount = 29;
+                    WayPoints = WaypointGoldshire;
+                    for (int i = 0; i <= WPCount; ++i)
+                    {
+                        AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
+                    }
+                } break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -159,14 +163,15 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
         {
             switch (area_id)
             {
-            case 87: /// Goldshire
-            {
-                if (iWaypointId == 6)
+                case 87: /// Goldshire
                 {
-                    _unit->CastSpell(_unit, 42118, true);
-                }
-            }
-            break;
+                    if (iWaypointId == 6)
+                    {
+                        _unit->CastSpell(_unit, 42118, true);
+                    }
+                } break;
+                default:
+                    break;
             }
         }
         ParentClass::OnReachWP(iWaypointId, bForwards);
@@ -174,21 +179,21 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
 
     void OnDied(Unit* pKiller)
     {
-        GameObject* Pumpkin = sEAS.SpawnGameobject(TO_PLAYER(pKiller), 2883, _unit->GetPositionX() + RandomFloat(5.0f), _unit->GetPositionY() + RandomFloat(5.0f), _unit->GetPositionZ(), 0, 1, 0, 0, 0, 0);
-        if (Pumpkin != NULL)
+        auto Pumpkin = sEAS.SpawnGameobject(TO_PLAYER(pKiller), 2883, _unit->GetPositionX() + RandomFloat(5.0f), _unit->GetPositionY() + RandomFloat(5.0f), _unit->GetPositionZ(), 0, 1, 0, 0, 0, 0);
+        if (Pumpkin != nullptr)
             _unit->CastSpell(Pumpkin->GetGUID(), 42277, true);
 
         ParentClass::OnDied(pKiller);
     }
 
-    int8        WPCount;
-    LocationExtra*        WayPoints;
-    SpellDesc*    mSummon;
+    int8 WPCount;
+    LocationExtra* WayPoints;
+    SpellDesc* mSummon;
 };
 
-/// Headless Horseman - Wisp Invis
-#define CN_HEADLESS_HORSEMAN_WISP_INVIS                24034///                        42394
 
+// Headless Horseman - Wisp Invis
+#define CN_HEADLESS_HORSEMAN_WISP_INVIS 24034    // 42394
 class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
 {
     MOONSCRIPT_FACTORY_FUNCTION(HeadlessHorsemanWispInvisAI, MoonScriptCreatureAI);
@@ -218,48 +223,50 @@ class HeadlessHorsemanWispInvisAI : public MoonScriptCreatureAI
     MoonScriptCreatureAI*    mHeadlessHorseman;
 };
 
+
 class WaterBarrel : public GameObjectAIScript
 {
-public:
-    WaterBarrel(GameObject*  goinstance) : GameObjectAIScript(goinstance) {}
-    static GameObjectAIScript* Create(GameObject* GO) { return new WaterBarrel(GO); }
+    public:
 
-    void OnActivate(Player* pPlayer)
-    {
-        SlotResult slotresult;
-        ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(32971);
-        if (!proto)
-            return;
+        WaterBarrel(GameObject*  goinstance) : GameObjectAIScript(goinstance) {}
+        static GameObjectAIScript* Create(GameObject* GO) { return new WaterBarrel(GO); }
 
-        slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
-
-        if (!slotresult.Result)
+        void OnActivate(Player* pPlayer)
         {
-            pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-            return;
-        }
-        else
-        {
-            if (pPlayer->GetItemInterface()->GetItemCount(32971, false) == 0)
-            {
-                auto itm = objmgr.CreateItem(32971, pPlayer);
-                if (itm == nullptr)
-                    return;
+            SlotResult slotresult;
+            ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(32971);
+            if (!proto)
+                return;
 
-                auto result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
-                if (!result)
-                {
-                    Log.Error("Event_Hallows_End", "Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
-                    itm->DeleteMe();
-                }
-            }
-            else
+            slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
+
+            if (!slotresult.Result)
             {
                 pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                 return;
             }
+            else
+            {
+                if (pPlayer->GetItemInterface()->GetItemCount(32971, false) == 0)
+                {
+                    auto itm = objmgr.CreateItem(32971, pPlayer);
+                    if (itm == nullptr)
+                        return;
+
+                    auto result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+                    if (!result)
+                    {
+                        Log.Error("Event_Hallows_End", "Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
+                        itm->DeleteMe();
+                    }
+                }
+                else
+                {
+                    pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                    return;
+                }
+            }
         }
-    }
 };
 
 void SetupHallowsEnd(ScriptMgr* mgr)
