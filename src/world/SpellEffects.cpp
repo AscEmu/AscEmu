@@ -1643,7 +1643,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 
             case 34299: //Druid: Improved Leader of the PAck
             {
-                if (unitTarget != nullptr && (!unitTarget->IsPlayer() || !unitTarget->isAlive()))
+                if (unitTarget == nullptr || !unitTarget->IsPlayer() || !unitTarget->isAlive())
                     break;
 
                 Player* mPlayer = TO< Player* >(unitTarget);
@@ -1660,8 +1660,9 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
             break;
             case 22845: // Druid: Frenzied Regeneration
             {
-                if (unitTarget != nullptr && (!unitTarget->IsPlayer() || !unitTarget->isAlive()))
+                if (unitTarget == nullptr || !unitTarget->IsPlayer() || !unitTarget->isAlive())
                     break;
+
                 Player* mPlayer = TO< Player* >(unitTarget);
                 if (!mPlayer->IsInFeralForm() ||
                     (mPlayer->GetShapeShift() != FORM_BEAR &&
