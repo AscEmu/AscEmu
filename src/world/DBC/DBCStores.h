@@ -940,6 +940,32 @@ struct SpellEntry
 
         SpellFactoryFunc = NULL;
         AuraFactoryFunc = NULL;
+        proc_interval = 0;
+        BGR_one_buff_on_target = 0;
+        BGR_one_buff_from_caster_on_self = 0;
+        c_is_flags = 0;
+        RankNumber = 0;
+        NameHash = 0;
+        talent_tree = 0;
+        in_front_status = 0;
+        ThreatForSpell = 0;
+        ThreatForSpellCoef = 0;
+        spell_coef_flags = 0;
+        base_range_or_radius_sqr = 0;
+        cone_width = 0;
+        casttime_coef = 0;
+        fixed_dddhcoef = 0;
+        fixed_hotdotcoef = 0;
+        Dspell_coef_override = 0;
+        OTspell_coef_override = 0;
+        ai_target_type = 0;
+        self_cast_only = 0;
+        apply_on_shapeshift_change = 0;
+        always_apply = 0;
+        is_melee_spell = 0;
+        is_ranged_spell = 0;
+        noproc = 0;
+        SchoolMask = 0;
     }
 };
 

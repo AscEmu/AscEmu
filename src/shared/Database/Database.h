@@ -50,7 +50,7 @@ class SERVER_DECL AsyncQuery
 
     public:
 
-        AsyncQuery(SQLCallbackBase* f) : func(f) {}
+        AsyncQuery(SQLCallbackBase* f) : func(f), db(nullptr) {}
         ~AsyncQuery();
         void AddQuery(const char* format, ...);
         void Perform();
