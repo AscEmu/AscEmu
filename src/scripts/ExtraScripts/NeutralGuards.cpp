@@ -22,21 +22,22 @@
 class ShatteredSunSpawner : public CreatureAIScript
 {
     public:
+
         ADD_CREATURE_FACTORY_FUNCTION(ShatteredSunSpawner);
         ShatteredSunSpawner(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
         void OnCombatStart(Unit* mTarget)
         {
-            if(mTarget != NULL && mTarget->IsPlayer())
+            if (mTarget != NULL && mTarget->IsPlayer())
             {
-                for(uint32 i = 0; i < 3; ++i)
+                for (uint32 i = 0; i < 3; ++i)
                 {
                     float x = mTarget->GetPositionX() + RandomUInt(20) - 10;
                     float y = mTarget->GetPositionY() + RandomUInt(20) - 10;
                     float z = mTarget->GetPositionZ();
                     Creature* guard = _unit->GetMapMgr()->GetInterface()->SpawnCreature(26253, x, y, z, 0, true, false, _unit->GetUInt32Value(UNIT_FIELD_FACTIONTEMPLATE), 50);
 
-                    if(guard != NULL)
+                    if (guard != NULL)
                     {
                         guard->SetGuardWaypoints();
                         guard->GetAIInterface()->AttackReaction(mTarget, 1, 0);

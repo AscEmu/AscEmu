@@ -22,6 +22,7 @@
 class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
 {
     public:
+
         void OnHello(Object* pObject, Player* plr)
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1519);
@@ -33,7 +34,7 @@ class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 0);
-            if(1 == Id)
+            if (1 == Id)
                 menu.setTextID(1521);
             else
                 menu.setTextID(1646);
@@ -47,6 +48,7 @@ class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
 class TrentonLighthammer_Gossip : public Arcemu::Gossip::Script
 {
     public:
+
         void OnHello(Object* pObject, Player* plr)
         {
             Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1758, plr, 1, ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
