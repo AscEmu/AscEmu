@@ -38,7 +38,9 @@ bool HotStreak(uint32 i, Aura* pAura, bool apply)
 {
     if(i == 0)
     {
-        Unit* caster = pAura->GetUnitCaster();
+        auto caster = pAura->GetUnitCaster();
+        if (caster == nullptr)
+            return true;
 
         if(apply)
         {

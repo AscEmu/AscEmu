@@ -579,7 +579,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
             if (reduce && chaindamage)
             {
-                if (GetProto()->SpellGroupType && u_caster)
+                if (u_caster != nullptr)
                 {
                     SM_FIValue(u_caster->SM_PJumpReduce, &reduce, GetProto()->SpellGroupType);
                 }
@@ -879,15 +879,18 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             {
                 if (p_caster != NULL)
                 {
-                    Item* itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    if (p_caster->HasAura(12329))
-                        dmg = (((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.4;
-                    else if (p_caster->HasAura(12950))
-                        dmg = (((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.8;
-                    else if (p_caster->HasAura(20496))
-                        dmg = (((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 1.2;
-                    else
-                        dmg = ((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                    auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    if (item != nullptr)
+                    {
+                        if (p_caster->HasAura(12329))
+                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.4;
+                        else if (p_caster->HasAura(12950))
+                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.8;
+                        else if (p_caster->HasAura(20496))
+                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 1.2;
+                        else
+                            dmg = ((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                    }
                 }
             }break;
             // Slam
@@ -902,8 +905,9 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             {
                 if (p_caster != NULL)
                 {
-                    Item* itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    dmg = ((itm->GetProto()->Damage[0].Min + itm->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                    auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    if (item != nullptr)
+                        dmg = ((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
                 }
             }break;
             case 6343:
@@ -1590,7 +1594,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
         else
         {
             int32 reduce = GetProto()->EffectDieSides[i] + 1;
-            if (GetProto()->SpellGroupType && u_caster)
+            if (u_caster != nullptr)
             {
                 SM_FIValue(u_caster->SM_PJumpReduce, &reduce, GetProto()->SpellGroupType);
             }
@@ -1639,7 +1643,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 
             case 34299: //Druid: Improved Leader of the PAck
             {
-                if (!unitTarget->IsPlayer() || !unitTarget->isAlive())
+                if (unitTarget != nullptr && (!unitTarget->IsPlayer() || !unitTarget->isAlive()))
                     break;
 
                 Player* mPlayer = TO< Player* >(unitTarget);
@@ -1656,7 +1660,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
             break;
             case 22845: // Druid: Frenzied Regeneration
             {
-                if (!unitTarget->IsPlayer() || !unitTarget->isAlive())
+                if (unitTarget != nullptr && (!unitTarget->IsPlayer() || !unitTarget->isAlive()))
                     break;
                 Player* mPlayer = TO< Player* >(unitTarget);
                 if (!mPlayer->IsInFeralForm() ||
@@ -3988,11 +3992,10 @@ void Spell::SpellEffectThreat(uint32 i) // Threat
         return;
 
     int32 amount = GetProto()->EffectBasePoints[i];
-    if (GetProto()->SpellGroupType)
-    {
-        SM_FIValue(u_caster->SM_FMiscEffect, &amount, GetProto()->SpellGroupType);
-        SM_PIValue(u_caster->SM_PMiscEffect, &amount, GetProto()->SpellGroupType);
-    }
+
+    SM_FIValue(u_caster->SM_FMiscEffect, &amount, GetProto()->SpellGroupType);
+    SM_PIValue(u_caster->SM_PMiscEffect, &amount, GetProto()->SpellGroupType);
+
 
     bool chck = unitTarget->GetAIInterface()->modThreatByPtr(u_caster, amount);
     if (!chck)
@@ -4476,11 +4479,8 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
         case 21169: //Reincarnation. Resurrect with 20% health and mana
         {
             int32 amt = 20;
-            if (GetProto()->SpellGroupType)
-            {
-                SM_FIValue(unitTarget->SM_FMiscEffect, &amt, GetProto()->SpellGroupType);
-                SM_PIValue(unitTarget->SM_PMiscEffect, &amt, GetProto()->SpellGroupType);
-            }
+            SM_FIValue(unitTarget->SM_FMiscEffect, &amt, GetProto()->SpellGroupType);
+            SM_PIValue(unitTarget->SM_PMiscEffect, &amt, GetProto()->SpellGroupType);
             health = uint32((unitTarget->GetMaxHealth() * amt) / 100);
             mana = uint32((unitTarget->GetMaxPower(POWER_TYPE_MANA) * amt) / 100);
         }
@@ -4819,11 +4819,10 @@ void Spell::SpellEffectSummonDeadPet(uint32 i)
         pPet = p_caster->GetSummon();
         if (pPet == NULL)//no pets to Revive
             return;
-        if (GetProto()->SpellGroupType)
-        {
-            SM_FIValue(p_caster->SM_FMiscEffect, &damage, GetProto()->SpellGroupType);
-            SM_PIValue(p_caster->SM_PMiscEffect, &damage, GetProto()->SpellGroupType);
-        }
+
+        SM_FIValue(p_caster->SM_FMiscEffect, &damage, GetProto()->SpellGroupType);
+        SM_PIValue(p_caster->SM_PMiscEffect, &damage, GetProto()->SpellGroupType);
+
         pPet->SetHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
     }
 }

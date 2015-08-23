@@ -84,9 +84,13 @@ class Miran : public MoonScriptCreatureAI
                 sEAS.DeleteWaypoints(_unit);
                 if(_unit->m_escorter == NULL)
                     return;
-                Player* plr = _unit->m_escorter;
+                auto player = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(309)->SendQuestComplete();
+
+                auto quest_entry = player->GetQuestLogForEntry(309);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 

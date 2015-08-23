@@ -1759,13 +1759,16 @@ class LuaUnit
         Player* pl = TO_PLAYER(ptr);
         if (!pl->HasFinishedQuest(questid))
         {
-            QuestLogEntry* qle = pl->GetQuestLogForEntry(questid);
-            qle->SetMobCount(objective, qle->GetQuest()->required_mobcount[objective]);
-            qle->SendUpdateAddKill(objective);
-            if (qle->CanBeFinished())
+            auto questlog_entry = pl->GetQuestLogForEntry(questid);
+            if (questlog_entry != nullptr)
             {
-                qle->SendQuestComplete();
-                qle->UpdatePlayerFields();
+                questlog_entry->SetMobCount(objective, questlog_entry->GetQuest()->required_mobcount[objective]);
+                questlog_entry->SendUpdateAddKill(objective);
+                if (questlog_entry->CanBeFinished())
+                {
+                    questlog_entry->SendQuestComplete();
+                    questlog_entry->UpdatePlayerFields();
+                }
             }
         }
         return 0;

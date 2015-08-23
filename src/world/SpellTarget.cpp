@@ -248,7 +248,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     //range
     range /= jumps; //hacky, needs better implementation!
 
-    if (m_spellInfo->SpellGroupType && u_caster != NULL)
+    if (u_caster != nullptr)
         SM_FIValue(u_caster->SM_FAdditionalTargets, (int32*)&jumps, m_spellInfo->SpellGroupType);
 
     AddTarget(i, TargetType, firstTarget);

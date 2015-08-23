@@ -1075,7 +1075,7 @@ class IllidariArchonAI : public MoonScriptCreatureAI
                     for (SpellDescList::iterator itr = mQueuedSpells.begin(); itr != mQueuedSpells.end(); ++itr)
                     {
                         if ((*itr)->mInfo->Id == pDeath->mInfo->Id)
-                            mQueuedSpells.erase(itr);
+                            itr = mQueuedSpells.erase(itr);
                     }
                 if (!mScheduledSpells.empty())
                     for (SpellDescList::iterator itr = mScheduledSpells.begin(); itr != mScheduledSpells.end(); ++itr)

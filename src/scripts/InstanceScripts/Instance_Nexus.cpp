@@ -142,8 +142,13 @@ class ChaoticRiftAI : public MoonScriptBossAI
         ChaoticRiftAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            AddSpell(SUMMON_MANA_WRAITH, Target_Self, 30, 0, dbcSpell.LookupEntryForced(SUMMON_MANA_WRAITH)->RecoveryTime);
-            AddSpell(CHAOTIC_ENERGY_BURST, Target_RandomPlayer, 30, 0, dbcSpell.LookupEntryForced(CHAOTIC_ENERGY_BURST)->RecoveryTime);
+            auto spell_mana_wrath = dbcSpell.LookupEntryForced(SUMMON_MANA_WRAITH);
+            if (spell_mana_wrath != nullptr)
+                AddSpell(SUMMON_MANA_WRAITH, Target_Self, 30, 0, spell_mana_wrath->RecoveryTime);
+
+            auto spell_energy_burst = dbcSpell.LookupEntryForced(CHAOTIC_ENERGY_BURST);
+            if (spell_energy_burst != nullptr)
+                AddSpell(CHAOTIC_ENERGY_BURST, Target_RandomPlayer, 30, 0, spell_energy_burst->RecoveryTime);
         };
 
         void OnLoad()

@@ -3339,7 +3339,7 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellEntry* sp, Unit* Attacker)
     else
         mod += damage;
 
-    if (sp != NULL && sp->SpellGroupType && Attacker)
+    if (sp != nullptr)
     {
         SM_FIValue(Attacker->SM_FThreat, &mod, sp->SpellGroupType);
         SM_PIValue(Attacker->SM_PThreat, &mod, sp->SpellGroupType);
