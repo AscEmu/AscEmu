@@ -10846,11 +10846,9 @@ void Player::Cooldown_Add(SpellEntry* pSpell, Item* pItemCaster)
     if (pSpell->CategoryRecoveryTime > 0 && pSpell->Category)
     {
         cool_time = pSpell->CategoryRecoveryTime;
-        if (pSpell->SpellGroupType)
-        {
-            SM_FIValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
-            SM_PIValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
-        }
+
+        SM_FIValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
+        SM_PIValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
 
         _Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + cool_time, pSpell->Id, pItemCaster ? pItemCaster->GetProto()->ItemId : 0);
     }

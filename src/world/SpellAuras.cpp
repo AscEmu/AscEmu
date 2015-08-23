@@ -2221,26 +2221,23 @@ void Aura::EventPeriodicHeal(uint32 amount)
 				}
 			}
 		}
-	}
 
-	if (c != NULL && m_spellProto->SpellGroupType)
-	{
-		/*
-		int penalty_pct = 0;
-		int penalty_flt = 0;
-		SM_FIValue(c->SM_PPenalty, &penalty_pct, GetSpellProto()->SpellGroupType);
-		bonus += bonus * (penalty_pct / 100);
-		SM_FIValue(c->SM_FPenalty, &penalty_flt, GetSpellProto()->SpellGroupType);
-		bonus += penalty_flt;
-		*/
-		SM_PIValue(c->SM_PPenalty, &bonus, m_spellProto->SpellGroupType);
+        /*
+        int penalty_pct = 0;
+        int penalty_flt = 0;
+        SM_FIValue(c->SM_PPenalty, &penalty_pct, GetSpellProto()->SpellGroupType);
+        bonus += bonus * (penalty_pct / 100);
+        SM_FIValue(c->SM_FPenalty, &penalty_flt, GetSpellProto()->SpellGroupType);
+        bonus += penalty_flt;
+        */
+        SM_PIValue(c->SM_PPenalty, &bonus, m_spellProto->SpellGroupType);
 #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-		int spell_flat_modifers = 0;
-		int spell_pct_modifers = 0;
-		SM_FIValue(c->SM_FPenalty, &spell_flat_modifers, GetSpellProto()->SpellGroupType);
-		SM_FIValue(c->SM_PPenalty, &spell_pct_modifers, GetSpellProto()->SpellGroupType);
-		if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
-			LOG_DEBUG("!!!!!HEAL : spell dmg bonus(p=24) mod flat %d , spell dmg bonus(p=24) pct %d , spell dmg bonus %d, spell group %u", spell_flat_modifers, spell_pct_modifers, bonus, GetSpellProto()->SpellGroupType);
+        int spell_flat_modifers = 0;
+        int spell_pct_modifers = 0;
+        SM_FIValue(c->SM_FPenalty, &spell_flat_modifers, GetSpellProto()->SpellGroupType);
+        SM_FIValue(c->SM_PPenalty, &spell_pct_modifers, GetSpellProto()->SpellGroupType);
+        if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
+            LOG_DEBUG("!!!!!HEAL : spell dmg bonus(p=24) mod flat %d , spell dmg bonus(p=24) pct %d , spell dmg bonus %d, spell group %u", spell_flat_modifers, spell_pct_modifers, bonus, GetSpellProto()->SpellGroupType);
 #endif
 	}
 
