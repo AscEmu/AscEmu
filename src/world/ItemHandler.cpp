@@ -1174,8 +1174,8 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
     else
     {
         // create new item
-        if (slot == INVENTORY_SLOT_NOT_SET)
-            slot = c->FindFreeSlot();
+        /*if (slot == INVENTORY_SLOT_NOT_SET) This cannot be true CID 52838
+            slot = c->FindFreeSlot();*/
 
         if (slot == ITEM_NO_SLOT_AVAILABLE)
         {

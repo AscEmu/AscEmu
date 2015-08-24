@@ -3837,12 +3837,12 @@ void Aura::SpellAuraModShapeshift(bool apply)
         tgt.m_unitTarget = m_target->GetGUID();
         sp->prepare(&tgt);
 
-        if (spellId2 != 0)
+        /*if (spellId2 != 0) This cannot be true CID 52824
         {
             spellInfo = dbcSpell.LookupEntry(spellId2);
             sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
             sp->prepare(&tgt);
-        }
+        }*/
 
         // remove the caster from impairing movements
         if (freeMovements)
