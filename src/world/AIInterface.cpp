@@ -726,7 +726,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                                 m_Unit->CastOnMeleeSpell();
                             }
                             else
-                                m_Unit->Strike(getNextTarget(), (agent == AGENT_MELEE ? MELEE : RANGED), NULL, 0, 0, 0, false, false);
+                                m_Unit->Strike(getNextTarget(), MELEE, NULL, 0, 0, 0, false, false);
 
 #ifdef ENABLE_CREATURE_DAZE
                             //now if the target is facing his back to us then we could just cast dazed on him :P
