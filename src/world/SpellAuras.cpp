@@ -1881,8 +1881,6 @@ void Aura::EventPeriodicDamage(uint32 amount)
             abs_dmg += ms_abs_dmg;
         }
 
-
-        if (ress < 0) ress = 0;
         res = static_cast<float>(ress);
         dealdamage dmg;
         dmg.school_type = school;
