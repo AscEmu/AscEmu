@@ -1822,7 +1822,8 @@ void Spell::finish(bool successful)
         if (GetProto()->NameHash == SPELL_HASH_LIGHTNING_BOLT || GetProto()->NameHash == SPELL_HASH_CHAIN_LIGHTNING)
         {
             //Maelstrom Weapon
-            p_caster->RemoveAllAuras(53817, u_caster->GetGUID());
+            if (u_caster != nullptr)
+                p_caster->RemoveAllAuras(53817, u_caster->GetGUID());
         }
     }
 
@@ -2546,10 +2547,13 @@ bool Spell::HasPower()
     int32 cost;
     if (GetProto()->ManaCostPercentage) //Percentage spells cost % of !!!BASE!!! mana
     {
-        if (GetProto()->powerType == POWER_TYPE_MANA)
-            cost = (u_caster->GetBaseMana() * GetProto()->ManaCostPercentage) / 100;
-        else
-            cost = (u_caster->GetBaseHealth() * GetProto()->ManaCostPercentage) / 100;
+        if (u_caster != nullptr)
+        {
+            if (GetProto()->powerType == POWER_TYPE_MANA)
+                cost = (u_caster->GetBaseMana() * GetProto()->ManaCostPercentage) / 100;
+            else
+                cost = (u_caster->GetBaseHealth() * GetProto()->ManaCostPercentage) / 100;
+        }
     }
     else
     {
@@ -2984,13 +2988,19 @@ void Spell::HandleAddAura(uint64 guid)
     }
     else if (GetProto()->Id == 19574)
     {
-        if (u_caster->HasAurasWithNameHash(SPELL_HASH_THE_BEAST_WITHIN))
-            u_caster->CastSpell(u_caster, 34471, true);
+        if (u_caster != nullptr)
+        {
+            if (u_caster->HasAurasWithNameHash(SPELL_HASH_THE_BEAST_WITHIN))
+                u_caster->CastSpell(u_caster, 34471, true);
+        }
     }
     else if (GetProto()->NameHash == SPELL_HASH_RAPID_KILLING)
     {
-        if (u_caster->HasAurasWithNameHash(SPELL_HASH_RAPID_RECUPERATION))
-            spellid = 56654;
+        if (u_caster != nullptr)
+        {
+            if (u_caster->HasAurasWithNameHash(SPELL_HASH_RAPID_RECUPERATION))
+                spellid = 56654;
+        }
     }
 
     switch (GetProto()->NameHash)
@@ -4484,20 +4494,23 @@ void Spell::RemoveItems()
         }
     }
     // Ammo Removal
-    if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
+    if (p_caster != nullptr)
     {
-        if (p_caster && !p_caster->m_requiresNoAmmo)
-            p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->GetUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
-    }
-
-    // Reagent Removal
-    if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(FLAGS6_REAGENT_REMOVAL)))
-    {
-        for (uint32 i = 0; i < 8; i++)
+        if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
         {
-            if (GetProto()->Reagent[i])
+            if (!p_caster->m_requiresNoAmmo)
+                p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->GetUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
+        }
+
+        // Reagent Removal
+        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(FLAGS6_REAGENT_REMOVAL)))
+        {
+            for (uint32 i = 0; i < 8; i++)
             {
-                p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(GetProto()->Reagent[i], GetProto()->ReagentCount[i], &i_caster);
+                if (GetProto()->Reagent[i])
+                {
+                    p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(GetProto()->Reagent[i], GetProto()->ReagentCount[i], &i_caster);
+                }
             }
         }
     }

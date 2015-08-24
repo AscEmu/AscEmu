@@ -1415,9 +1415,12 @@ void Group::ExpandToLFG()
 
 uint64 Group::GetLeaderGUID()
 {
-    if (m_Leader && m_Leader->m_loggedInPlayer)
-        return m_Leader->m_loggedInPlayer->GetGUID();
-    return (uint64)m_Leader->guid;
+    if (m_Leader != nullptr)
+    {
+        if (m_Leader->m_loggedInPlayer)
+            return m_Leader->m_loggedInPlayer->GetGUID();
+        return (uint64)m_Leader->guid;
+    }
 }
 
 void Group::GoOffline(Player* p)

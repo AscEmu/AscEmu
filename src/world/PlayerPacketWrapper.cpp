@@ -668,7 +668,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
                 }
             }
 
-    if (sendtoself)
+    if (sendtoself && groupbuf != nullptr)
         PushUpdateData(groupbuf, 1);
 }
 

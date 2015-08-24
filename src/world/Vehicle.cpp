@@ -76,6 +76,9 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
     this->creature_entry = creature_entry;
     this->owner = owner;
 
+    if (owner == nullptr)
+        return;
+
     switch (vehicle_info->powerType)
     {
         case POWER_TYPE_STEAM:

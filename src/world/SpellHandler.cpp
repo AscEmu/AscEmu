@@ -279,7 +279,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     if (!_player->HasAurasWithNameHash(SPELL_HASH_LIGHTWELL_RENEW) && target_unit->RemoveAura(59907))
     {
         SpellClickSpell* sp = SpellClickSpellStorage.LookupEntry(creature_id);
-        if (sp == NULL)
+        if (sp == nullptr)
         {
             if (target_unit->IsCreature())
             {
@@ -290,10 +290,12 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
                 return;
             }
         }
+        else
+        {
+            cast_spell_id = sp->SpellID;
+            target_unit->CastSpell(_player, cast_spell_id, true);
+        }
 
-        cast_spell_id = sp->SpellID;
-
-        target_unit->CastSpell(_player, cast_spell_id, true);
 
         if (!target_unit->HasAura(59907))
             TO_CREATURE(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
@@ -313,18 +315,18 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
             return;
         }
     }
+    else
+    {
+        cast_spell_id = sp->SpellID;
 
-    cast_spell_id = sp->SpellID;
+        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
+        if (spellInfo == nullptr)
+            return;
 
-    if (cast_spell_id == 0)
-        return;
-
-    SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
-    if (spellInfo == NULL)
-        return;
-    Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
-    SpellCastTargets targets(target_guid);
-    spell->prepare(&targets);
+        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
+        SpellCastTargets targets(target_guid);
+        spell->prepare(&targets);
+    }
 }
 
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)

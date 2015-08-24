@@ -828,7 +828,8 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     dmg = (p_caster->GetAP() * 0.5);
             }break;
             case 64382:
-                dmg = (p_caster->GetAP() * 0.5);
+                if (p_caster != nullptr)
+                    dmg = (p_caster->GetAP() * 0.5);
                 break;
                 // Heroic Strike, commented ones don't have bonus.
                 /*case 78:
@@ -1050,14 +1051,17 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 64422: // Sonic Screech, Auriaya encounter
             case 64688:
             {
-                int splitCount = 0;
-                for (std::set<Object*>::iterator itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
+                if (u_caster != nullptr)
                 {
-                    if ((*itr)->isInFront(u_caster))
-                        splitCount++;
-                };
-                if (splitCount > 1)
-                    dmg /= splitCount;
+                    int splitCount = 0;
+                    for (std::set<Object*>::iterator itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
+                    {
+                        if ((*itr)->isInFront(u_caster))
+                            splitCount++;
+                    };
+                    if (splitCount > 1)
+                        dmg /= splitCount;
+                }
             }
             break;
 
@@ -2323,8 +2327,10 @@ void Spell::SpellEffectPersistentAA(uint32 i) // Persistent Area Aura
         break;
         case TARGET_FLAG_DEST_LOCATION:
         {
-            dynObj->Create(u_caster ? u_caster : g_caster->m_summoner, this,
-                           m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+            if (u_caster != nullptr)
+                dynObj->Create(u_caster, this, m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
+            else if (g_caster != nullptr)
+                dynObj->Create(g_caster->m_summoner, this, m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, dur, r, DYNAMIC_OBJECT_AREA_SPELL);
         }
         break;
         default:
@@ -2671,7 +2677,7 @@ void Spell::SpellEffectSummonVehicle(uint32 i, SummonPropertiesEntry *spe, Creat
         return;
 
     // If it has no vehicle id, then we can't really do anything with it as a vehicle :/
-    if ((proto->vehicleid == 0) && (p_caster == NULL) && (!p_caster->GetSession()->HasGMPermissions()))
+    if ((proto->vehicleid == 0) && (p_caster == nullptr))
         return;
 
     Creature* c = u_caster->GetMapMgr()->CreateCreature(proto->Id);
