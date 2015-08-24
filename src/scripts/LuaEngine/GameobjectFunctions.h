@@ -705,7 +705,7 @@ class LuaGameObject
             uint32 zone_id = CHECK_ULONG(L, 1);
             uint32 type = CHECK_ULONG(L, 2);
             float Density = CHECK_FLOAT(L, 3); //min: 0.30 max: 2.00
-            if (Density < 0.30f || Density > 2.0f || !zone_id || !type)
+            if (Density < 0.30f || Density > 2.0f || !zone_id)
                 return 0;
 
             uint32 sound;
@@ -714,8 +714,13 @@ class LuaGameObject
 
             switch (type)
             {
-                case 2:                                             //rain
-                case 4:
+                case 0:                             //sunny
+                case 1:                             //fog
+                    Density = 0;
+                    sound = 0;
+                    break;
+                case 2:                             //rain
+                case 4:                             //heavy rain
                     if (Density < 0.40f)
                         sound = 8533;
                     else if (Density < 0.70f)
@@ -723,7 +728,7 @@ class LuaGameObject
                     else
                         sound = 8535;
                     break;
-                case 8:                                             //snow
+                case 8:                             //snow
                     if (Density < 0.40f)
                         sound = 8536;
                     else if (Density < 0.70f)
@@ -731,7 +736,7 @@ class LuaGameObject
                     else
                         sound = 8538;
                     break;
-                case 16:                                             //storm
+                case 16:                            //storm
                     if (Density < 0.40f)
                         sound = 8556;
                     else if (Density < 0.70f)
@@ -739,18 +744,15 @@ class LuaGameObject
                     else
                         sound = 8558;
                     break;
-                default:											//no sound
-                    sound = 0;
-                    break;
+                default:					        //no valid type
+                    return 0;
             }
             WorldPacket data(SMSG_WEATHER, 9);
             data.Initialize(SMSG_WEATHER);
-            if (type == 0)  // set all parameter to 0 for sunny.
-                data << uint32(0) << float(0) << uint32(0) << uint8(0);
-            else if (type == 1)  // No sound/density for fog
-                data << type << float(0) << uint32(0) << uint8(0);
-            else
-                data << type << Density << sound << uint8(0);
+            data << type;
+            data << Density;
+            data << sound;
+            data << uint8(0);
 
             sWorld.SendZoneMessage(&data, zone_id, 0);
 

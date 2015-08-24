@@ -120,6 +120,7 @@ World::World()
 
     CacheVersion = 0;
 
+    announce_tagcolor = 2;
     announce_gmtagcolor = 1;
     announce_namecolor = 4;
     announce_msgcolor = 6;
@@ -147,6 +148,34 @@ World::World()
     bgsettings.SOTA_MAX = 15;
     bgsettings.IOC_MIN = 10;
     bgsettings.IOC_MAX = 40;
+
+    Arena_Season = 8;
+    Arena_Progress = 1;
+    ArenaQueueDiff = 150;
+
+    m_useIrc = false;
+    UnloadMapFiles = false;
+    BreathingEnabled = false;
+    SpeedhackProtection = false;
+    ExtraTalents = false;
+    MaxProfs = 0;
+
+    SendStatsOnJoin = false;
+
+    Collision = false;
+    DisableFearMovement = false;
+    compression_threshold = false;
+
+    flood_lines = 0;
+    flood_seconds = 0;
+    flood_message = false;
+
+    BCSystemEnable = false;
+    BCInterval = 10;
+    BCTriggerPercentCap = 2;
+    BCOrderMode = 0;
+
+    realmAllowTBCcharacters = true;
 }
 
 void CleanupRandomNumberGenerators();

@@ -911,14 +911,14 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
     pGroup->Unlock();
     if (active_player_count < 1) //killer is always close to the victim. This should never execute
     {
-        if (PlayerInGroup == 0)
+        /*if (PlayerInGroup == 0) This cannot be true CID 52876
         {
             PlayerInfo* pleaderinfo = pGroup->GetLeader();
             if (!pleaderinfo->m_loggedInPlayer)
                 return;
 
             PlayerInGroup = pleaderinfo->m_loggedInPlayer;
-        }
+        }*/
 
         xp = CalculateXpToGive(pVictim, PlayerInGroup);
         PlayerInGroup->GiveXP(xp, pVictim->GetGUID(), true);
@@ -938,14 +938,14 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
         else if (pGroup->GetGroupType() == GROUP_TYPE_RAID)
             xp_mod = 0.5f;
 
-        if (pHighLvlPlayer == 0)
+        /*if (pHighLvlPlayer == 0) This cannot be true CID 52744
         {
             PlayerInfo* pleaderinfo = pGroup->GetLeader();
             if (!pleaderinfo->m_loggedInPlayer)
                 return;
 
             pHighLvlPlayer = pleaderinfo->m_loggedInPlayer;
-        }
+        }*/
 
         xp = CalculateXpToGive(pVictim, pHighLvlPlayer);
         //I'm not sure about this formula is correct or not. Maybe some brackets are wrong placed ?

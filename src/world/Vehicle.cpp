@@ -76,6 +76,9 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
     this->creature_entry = creature_entry;
     this->owner = owner;
 
+    if (owner == nullptr)
+        return;
+
     switch (vehicle_info->powerType)
     {
         case POWER_TYPE_STEAM:
@@ -385,8 +388,8 @@ void Vehicle::MovePassengerToSeat(Unit* passenger, uint32 seat)
         }
 
     // Passenger is not in this vehicle
-    if (oldseatid == MAX_VEHICLE_SEATS)
-        return;
+    /*if (oldseatid == MAX_VEHICLE_SEATS) oldseatid must be between 0 and 7 CID 53115
+        return;*/
 
     if (seats[seat] == NULL)
         return;
@@ -412,8 +415,8 @@ void Vehicle::MovePassengerToNextSeat(Unit* passenger)
         }
 
     // Passenger is not in this vehicle
-    if (oldseatid == MAX_VEHICLE_SEATS)
-        return;
+    /*if (oldseatid == MAX_VEHICLE_SEATS) oldseatid must be between 0 and 7 CID 53174
+        return;*/
 
     // Now find a next seat if possible
     uint32 newseatid = oldseatid;

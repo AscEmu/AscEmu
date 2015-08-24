@@ -209,20 +209,10 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     if (msg.money > 0)
         cost += msg.money;
 
-    if (cost < 0)
-    {
-        SendMailError(MAIL_ERR_INTERNAL_ERROR);
-        return;
-    }
 
     if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(GetPermissionCount() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
     {
         cost += 30;
-        if (cost < 30)  //Overflow prevention for those silly WPE hoez.
-        {
-            SendMailError(MAIL_ERR_INTERNAL_ERROR);
-            return;
-        }
     }
 
     // check that we have enough in our backpack

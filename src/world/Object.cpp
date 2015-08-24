@@ -1793,8 +1793,6 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         sp->prepare(&targets);
     }
 
-    if (ress < 0) ress = 0;
-
     res = static_cast< float >(ress);
     dealdamage dmg;
     dmg.school_type = spellInfo->School;

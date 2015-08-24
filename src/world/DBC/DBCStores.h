@@ -966,6 +966,32 @@ struct SpellEntry
         is_ranged_spell = 0;
         noproc = 0;
         SchoolMask = 0;
+        SpellVisual = 0;
+        field114 = 0;
+        spellIconID = 0;
+        activeIconID = 0;
+        spellPriority = 0;
+        Name = nullptr;
+        Rank = nullptr;
+        Description = 0;
+        BuffDescription = 0;
+        ManaCostPercentage = 0;
+        StartRecoveryCategory = 0;
+        StartRecoveryTime = 0;
+        MaxTargetLevel = 0;
+        SpellFamilyName = 0;
+        MaxTargets = 0;
+        Spell_Dmg_Type = 0;
+        PreventionType = 0;
+        StanceBarOrder = 0;
+        MinFactionID = 0;
+        MinReputation = 0;
+        RequiredAuraVision = 0;
+        RequiresAreaId = 0;
+        School = 0;
+        RuneCostID = 0;
+        SpellDifficultyID = 0;
+        DiminishStatus = 0;
     }
 };
 
