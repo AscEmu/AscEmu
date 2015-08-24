@@ -41,8 +41,10 @@ DayWatcherThread::DayWatcherThread()
     local_last_arena_time.tm_wday = 0;
     local_last_arena_time.tm_yday = 0;
     local_last_arena_time.tm_isdst = 0;
-    // local_last_arena_time.tm_gmtoff = 0;
-    // local_last_arena_time.tm_zone = 0;
+#ifndef WIN32
+    local_last_arena_time.tm_gmtoff = 0;
+    local_last_arena_time.tm_zone = 0;
+#endif
     last_daily_time = 0;
     local_last_daily_time.tm_sec = 0;
     local_last_daily_time.tm_min = 0;
@@ -53,10 +55,27 @@ DayWatcherThread::DayWatcherThread()
     local_last_daily_time.tm_wday = 0;
     local_last_daily_time.tm_yday = 0;
     local_last_daily_time.tm_isdst = 0;
-    // local_last_daily_time.tm_gmtoff = 0;
-    // local_last_daily_time.tm_zone = 0;
+#ifndef WIN32
+    local_last_daily_time.tm_gmtoff = 0;
+    local_last_daily_time.tm_zone = 0;
+#endif
     arena_period = WEEKLY;
     daily_period = WEEKLY;
+    m_busy = false;
+    currenttime = 0;
+    local_currenttime.tm_sec = 0;
+    local_currenttime.tm_min = 0;
+    local_currenttime.tm_hour = 0;
+    local_currenttime.tm_mday = 0;
+    local_currenttime.tm_mon = 0;
+    local_currenttime.tm_year = 0;
+    local_currenttime.tm_wday = 0;
+    local_currenttime.tm_yday = 0;
+    local_currenttime.tm_isdst = 0;
+#ifndef WIN32
+    local_currenttime.tm_gmtoff = 0;
+    local_currenttime.tm_zone = 0;
+#endif
 }
 
 DayWatcherThread::~DayWatcherThread()

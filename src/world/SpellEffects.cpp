@@ -561,7 +561,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
             if (reduce && chaindamage)
             {
-                if (GetProto()->SpellGroupType && u_caster)
+                if (u_caster != nullptr)
                 {
                     SM_FIValue(u_caster->SM_PJumpReduce, &reduce, GetProto()->SpellGroupType);
                 }
@@ -1643,7 +1643,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 
             case 34299: //Druid: Improved Leader of the PAck
             {
-                if (unitTarget != nullptr && (!unitTarget->IsPlayer() || !unitTarget->isAlive()))
+                if (unitTarget == nullptr || !unitTarget->IsPlayer() || !unitTarget->isAlive())
                     break;
 
                 Player* mPlayer = TO< Player* >(unitTarget);
@@ -1660,8 +1660,9 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
             break;
             case 22845: // Druid: Frenzied Regeneration
             {
-                if (unitTarget != nullptr && (!unitTarget->IsPlayer() || !unitTarget->isAlive()))
+                if (unitTarget == nullptr || !unitTarget->IsPlayer() || !unitTarget->isAlive())
                     break;
+
                 Player* mPlayer = TO< Player* >(unitTarget);
                 if (!mPlayer->IsInFeralForm() ||
                     (mPlayer->GetShapeShift() != FORM_BEAR &&
@@ -4799,11 +4800,8 @@ void Spell::SpellEffectSummonDeadPet(uint32 i)
     Pet* pPet = p_caster->GetSummon();
     if (pPet)
     {
-        if (GetProto()->SpellGroupType)
-        {
-            SM_FIValue(p_caster->SM_FMiscEffect, &damage, GetProto()->SpellGroupType);
-            SM_PIValue(p_caster->SM_PMiscEffect, &damage, GetProto()->SpellGroupType);
-        }
+        SM_FIValue(p_caster->SM_FMiscEffect, &damage, GetProto()->SpellGroupType);
+        SM_PIValue(p_caster->SM_PMiscEffect, &damage, GetProto()->SpellGroupType);
 
         pPet->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
         pPet->SetHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));

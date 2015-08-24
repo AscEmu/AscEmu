@@ -23,6 +23,7 @@
 class MasterHammersmith : public Arcemu::Gossip::Script
 {
     public:
+
         void OnHello(Object* pObject, Player* plr)
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7245);
@@ -35,19 +36,19 @@ class MasterHammersmith : public Arcemu::Gossip::Script
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
             uint32 textid = 0;
-            if(1 == Id)
+            if (1 == Id)
             {
-                if(!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
+                if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
                     textid = 20001;
-                else if(!plr->HasSpell(9787))
+                else if (!plr->HasSpell(9787))
                     textid = 20002;
-                else if(plr->HasSpell(17040))
+                else if (plr->HasSpell(17040))
                     textid = 20003;
-                else if(plr->HasSpell(17041) || plr->HasSpell(17039) || plr->HasSpell(9788))
+                else if (plr->HasSpell(17041) || plr->HasSpell(17039) || plr->HasSpell(9788))
                     textid = 20004;
                 else
                 {
-                    if(!plr->HasGold(600))
+                    if (!plr->HasGold(600))
                         textid = 20005;
                     else
                     {
@@ -60,21 +61,21 @@ class MasterHammersmith : public Arcemu::Gossip::Script
             }
             else
             {
-                if(!plr->HasSpell(17040))
+                if (!plr->HasSpell(17040))
                     textid = 20007;
 
-                else if((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
-                        || (!plr->HasGold(1000000) && plr->getLevel() > 65))
-                    textid = 20008;
+                else if ((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
+                         || (!plr->HasGold(1000000) && plr->getLevel() > 65))
+                         textid = 20008;
 
                 else
                 {
                     int32 unlearnGold;
-                    if(plr->getLevel() <= 50)
+                    if (plr->getLevel() <= 50)
                         unlearnGold = 250000;
-                    if(plr->getLevel() > 50 && plr->getLevel() <= 65)
+                    if (plr->getLevel() > 50 && plr->getLevel() <= 65)
                         unlearnGold = 500000;
-                    if(plr->getLevel() > 65)
+                    if (plr->getLevel() > 65)
                         unlearnGold = 1000000;
 
                     plr->ModGold(-unlearnGold);
@@ -92,6 +93,7 @@ class MasterHammersmith : public Arcemu::Gossip::Script
 class MasterSwordsmith : public Arcemu::Gossip::Script
 {
     public:
+
         void OnHello(Object* pObject, Player* plr)
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7247);
@@ -103,22 +105,22 @@ class MasterSwordsmith : public Arcemu::Gossip::Script
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
             uint32 textid = 0;
-            if(1 == Id)
+            if (1 == Id)
             {
-                if(!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
+                if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
                     textid = 20001;
 
-                else if(!plr->HasSpell(9787))
+                else if (!plr->HasSpell(9787))
                     textid = 20002;
 
-                else if(plr->HasSpell(17039))
+                else if (plr->HasSpell(17039))
                     textid = 20003;
 
-                else if(plr->HasSpell(17041) || plr->HasSpell(17040) || plr->HasSpell(9788))
+                else if (plr->HasSpell(17041) || plr->HasSpell(17040) || plr->HasSpell(9788))
                     textid = 20004;
                 else
                 {
-                    if(!plr->HasGold(600))
+                    if (!plr->HasGold(600))
                         textid = 20005;
                     else
                     {
@@ -131,20 +133,20 @@ class MasterSwordsmith : public Arcemu::Gossip::Script
             }
             else
             {
-                if(!plr->HasSpell(17039))
+                if (!plr->HasSpell(17039))
                     textid = 20007;
 
-                else if((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
-                        || (!plr->HasGold(1000000) && plr->getLevel() > 65))
-                    textid = 20008;
+                else if ((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
+                         || (!plr->HasGold(1000000) && plr->getLevel() > 65))
+                         textid = 20008;
                 else
                 {
                     int32 unlearnGold;
-                    if(plr->getLevel() <= 50)
+                    if (plr->getLevel() <= 50)
                         unlearnGold = 250000;
-                    if(plr->getLevel() > 50 && plr->getLevel() <= 65)
+                    if (plr->getLevel() > 50 && plr->getLevel() <= 65)
                         unlearnGold = 500000;
-                    if(plr->getLevel() > 65)
+                    if (plr->getLevel() > 65)
                         unlearnGold = 1000000;
 
                     plr->ModGold(-unlearnGold);
@@ -160,6 +162,7 @@ class MasterSwordsmith : public Arcemu::Gossip::Script
 class MasterAxesmith : public Arcemu::Gossip::Script
 {
     public:
+
         void OnHello(Object* pObject, Player* plr)
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 7243);
@@ -171,22 +174,22 @@ class MasterAxesmith : public Arcemu::Gossip::Script
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
             uint32 textid = 0;
-            if(1 == Id)
+            if (1 == Id)
             {
-                if(!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
+                if (!plr->_HasSkillLine(164) || plr->_GetSkillLineCurrent(164, false) < 300)
                     textid = 20001;
 
-                else if(!plr->HasSpell(9787))
+                else if (!plr->HasSpell(9787))
                     textid = 20002;
 
-                else if(plr->HasSpell(17041))
+                else if (plr->HasSpell(17041))
                     textid = 20003;
 
-                else if(plr->HasSpell(17039) || plr->HasSpell(17040) || plr->HasSpell(9788))
+                else if (plr->HasSpell(17039) || plr->HasSpell(17040) || plr->HasSpell(9788))
                     textid = 20004;
                 else
                 {
-                    if(!plr->HasGold(600))
+                    if (!plr->HasGold(600))
                         textid = 20005;
 
                     else
@@ -200,20 +203,20 @@ class MasterAxesmith : public Arcemu::Gossip::Script
             }
             else
             {
-                if(!plr->HasSpell(17041))
+                if (!plr->HasSpell(17041))
                     textid = 20007;
 
-                else if((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
-                        || (!plr->HasGold(1000000) && plr->getLevel() > 65))
-                    textid = 20008;
+                else if ((!plr->HasGold(250000) && plr->getLevel() <= 50) || (!plr->HasGold(500000) && plr->getLevel() > 50 && plr->getLevel() <= 65)
+                         || (!plr->HasGold(1000000) && plr->getLevel() > 65))
+                         textid = 20008;
                 else
                 {
                     int32 unlearnGold;
-                    if(plr->getLevel() <= 50)
+                    if (plr->getLevel() <= 50)
                         unlearnGold = 250000;
-                    if(plr->getLevel() > 50 && plr->getLevel() <= 65)
+                    if (plr->getLevel() > 50 && plr->getLevel() <= 65)
                         unlearnGold = 500000;
-                    if(plr->getLevel() > 65)
+                    if (plr->getLevel() > 65)
                         unlearnGold = 1000000;
 
                     plr->ModGold(-unlearnGold);
@@ -228,7 +231,7 @@ class MasterAxesmith : public Arcemu::Gossip::Script
 
 void SetupTrainerScript(ScriptMgr* mgr)
 {
-    mgr->register_creature_gossip(11191, new MasterHammersmith);        // Lilith the Lithe
-    mgr->register_creature_gossip(11193, new MasterSwordsmith);        // Seril Scourgebane
-    mgr->register_creature_gossip(11192, new MasterAxesmith);            // Kilram
+    mgr->register_creature_gossip(11191, new MasterHammersmith);    // Lilith the Lithe
+    mgr->register_creature_gossip(11193, new MasterSwordsmith);     // Seril Scourgebane
+    mgr->register_creature_gossip(11192, new MasterAxesmith);       // Kilram
 }

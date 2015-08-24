@@ -30,8 +30,7 @@ class MapFile::MapFileImpl
         Array<MapFileEntry> segments;
         Array<MapFileEntry> entries;
 
-        MapFileImpl(const char* filename) :
-            loadAddr(0), m_file(filename), m_err(MapFile::ERROR_NONE)
+        MapFileImpl(const char* filename) : loadAddr(0), m_file(filename), m_err(MapFile::ERROR_NONE), m_errLine(0)
         {
             m_file.readString(name, sizeof(name));
 

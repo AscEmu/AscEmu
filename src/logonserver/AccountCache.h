@@ -44,6 +44,7 @@ struct Account
         Banned = 0;
         Muted = 0;
         forcedLocale = false;
+        UsernamePtr = nullptr;
     }
 
     ~Account()

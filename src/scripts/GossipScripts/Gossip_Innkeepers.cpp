@@ -27,6 +27,7 @@
 class InnkeeperGossip : public Arcemu::Gossip::Script
 {
     public:
+
         void OnHello(Object* pObject, Player* Plr);
         void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code);
         void Destroy() { delete this; }
@@ -35,19 +36,20 @@ class InnkeeperGossip : public Arcemu::Gossip::Script
 void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
 {
     Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
-    if(pCreature == NULL)
+    if (pCreature == NULL)
         return;
+
     uint32 TextID = 820;
     uint32 Text = objmgr.GetGossipTextForNpc(pCreature->GetEntry());
-    if(Text != 0)
+    if (Text != 0)
     {
         GossipText* text = NpcTextStorage.LookupEntry(Text);
-        if(text != 0)
+        if (text != 0)
             TextID = Text;
     }
     Arcemu::Gossip::Menu menu(pCreature->GetGUID(), TextID, 0);
 
-// Halow's End started?
+    // Halow's End started?
     tm * ct = localtime(&UNIXTIME);
     if (ct->tm_mon == 9 && (ct->tm_mday > 17 && ct->tm_mday <= 31))
     {
@@ -56,7 +58,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     }
 
 
-    if(pCreature->isVendor())
+    if (pCreature->isVendor())
         menu.AddItem(Arcemu::Gossip::ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1);
 
     menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 2);
@@ -73,10 +75,10 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
 void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code)
 {
     Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
-    if(pCreature == NULL)
+    if (pCreature == NULL)
         return;
 
-    switch(Id)
+    switch (Id)
     {
         case 1:     // VENDOR
             Plr->GetSession()->SendInventoryList(pCreature);
@@ -89,7 +91,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
             Arcemu::Gossip::Menu::SendQuickMenu(pCreature->GetGUID(), 1853, Plr, 2, ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
             break;
         case 4:     // EVENT OF HALLOWEEN
-            if(!Plr->HasAura(SPELL_TRICK_OR_TREATED))
+            if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))
             {
                 pCreature->CastSpell(Plr, SPELL_TRICK_OR_TREATED, true);
 
@@ -110,7 +112,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
                             trickspell = 24713;                     // lepper gnome costume
                             break;
                         case 2:
-                            if(Plr->getGender() == 0)
+                            if (Plr->getGender() == 0)
                             {
                                 trickspell = 24735;                 // male ghost costume
                             }
@@ -120,7 +122,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
                             }
                             break;
                         case 3:
-                            if(Plr->getGender() == 0)
+                            if (Plr->getGender() == 0)
                             {
                                 trickspell = 24711;                 // male ninja costume
                             }
@@ -130,7 +132,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
                             }
                             break;
                         case 4:
-                            if(Plr->getGender() == 0)
+                            if (Plr->getGender() == 0)
                             {
                                 trickspell = 24708;                 // male pirate costume
                             }

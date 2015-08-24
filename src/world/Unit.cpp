@@ -3313,7 +3313,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
     }
     hitchance = 100.0f - misschance;            // base miss chances are worked out further down
 
-    if (ability && ability->SpellGroupType)
+    if (ability != nullptr)
     {
         SM_FFValue(SM_CriticalChance, &crit, ability->SpellGroupType);
         SM_FFValue(SM_FHitchance, &hitchance, ability->SpellGroupType);

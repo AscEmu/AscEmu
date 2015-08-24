@@ -81,7 +81,19 @@ struct __LootItem
     LooterSet has_looted;
     uint32 ffa_loot;
     bool looted;
-    __LootItem(){ looted = false; }
+
+    __LootItem()
+    {
+        looted = false;
+        item.itemproto = nullptr;
+        item.displayid = 0;
+        iItemsCount = 0;
+        iRandomProperty = nullptr;
+        iRandomSuffix = nullptr;
+        roll = nullptr;
+        passed = false;
+        ffa_loot = 0;
+    }
 };
 
 

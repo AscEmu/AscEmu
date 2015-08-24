@@ -5141,16 +5141,15 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         if (unitTarget->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD) && m_spellInfo->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
             critchance += 50;
 
-        if (GetProto()->SpellGroupType)
-        {
-            int penalty_pct = 0;
-            int penalty_flt = 0;
-            SM_FIValue(u_caster->SM_PPenalty, &penalty_pct, GetProto()->SpellGroupType);
-            bonus += amount * penalty_pct / 100;
-            SM_FIValue(u_caster->SM_FPenalty, &penalty_flt, GetProto()->SpellGroupType);
-            bonus += penalty_flt;
-            SM_FIValue(u_caster->SM_CriticalChance, &critchance, GetProto()->SpellGroupType);
-        }
+
+        int penalty_pct = 0;
+        int penalty_flt = 0;
+        SM_FIValue(u_caster->SM_PPenalty, &penalty_pct, GetProto()->SpellGroupType);
+        bonus += amount * penalty_pct / 100;
+        SM_FIValue(u_caster->SM_FPenalty, &penalty_flt, GetProto()->SpellGroupType);
+        bonus += penalty_flt;
+        SM_FIValue(u_caster->SM_CriticalChance, &critchance, GetProto()->SpellGroupType);
+
 
         if (p_caster != NULL)
         {
@@ -5201,8 +5200,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         amount += amount * (int32)(u_caster->HealDonePctMod[school]);
         amount += float2int32(amount * unitTarget->HealTakenPctMod[school]);
 
-        if (GetProto()->SpellGroupType)
-            SM_PIValue(u_caster->SM_PDamageBonus, &amount, GetProto()->SpellGroupType);
+        SM_PIValue(u_caster->SM_PDamageBonus, &amount, GetProto()->SpellGroupType);
 
         if (ForceCrit || ((critical = Rand(critchance)) != 0))
         {

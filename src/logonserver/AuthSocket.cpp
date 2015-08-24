@@ -49,6 +49,16 @@ AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
     _authSocketLock.Acquire();
     _authSockets.insert(this);
     _authSocketLock.Release();
+    m_challenge.cmd = 0;
+    m_challenge.error = 0;
+    m_challenge.size = 0;
+    m_challenge.version1 = 0;
+    m_challenge.version2 = 0;
+    m_challenge.version3 = 0;
+    m_challenge.build = 0;
+    m_challenge.timezone_bias = 0;
+    m_challenge.ip = 0;
+    m_challenge.I_len = 0;
 }
 
 AuthSocket::~AuthSocket()

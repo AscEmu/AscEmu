@@ -23,10 +23,12 @@
 //  GossipScript subclass for turning on/off Player experience gain
 class XpEliminatorGossip : public Arcemu::Gossip::Script
 {
+    public:
+
         void OnHello(Object* pObject, Player* plr)
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14736);
-            if(plr->CanGainXp())
+            if (plr->CanGainXp())
                 menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DISABLE_XP_GAIN), 1, 100000, plr->GetSession()->LocalizedGossipOption(GI_BOXMSG_DISABLE_XP_GAIN));
             else
                 menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_ENABLE_XP_GAIN), 1, 100000, plr->GetSession()->LocalizedGossipOption(GI_BOXMSG_ENABLE_XP_GAIN));
@@ -37,7 +39,7 @@ class XpEliminatorGossip : public Arcemu::Gossip::Script
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
             // turning xp gains on/off costs 10g each time
-            if(plr->HasGold(100000))
+            if (plr->HasGold(100000))
             {
                 plr->ModGold(-100000);
                 plr->ToggleXpGain();
@@ -51,9 +53,6 @@ class XpEliminatorGossip : public Arcemu::Gossip::Script
 
 void SetupXpEliminatorGossip(ScriptMgr* mgr)
 {
-
-    Arcemu::Gossip::Script* xegs = new XpEliminatorGossip();
-
-    mgr->register_creature_gossip(35364, xegs);    // Slahtzt the Horde NPC
-    mgr->register_creature_gossip(35365, xegs);    // Besten the Alliance NPC
+    mgr->register_creature_gossip(35364, new XpEliminatorGossip);    // Slahtzt the Horde NPC
+    mgr->register_creature_gossip(35365, new XpEliminatorGossip);    // Besten the Alliance NPC
 }
