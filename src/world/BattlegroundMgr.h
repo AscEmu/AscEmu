@@ -229,6 +229,8 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
         /// Arena map IDs
         std::vector<uint32> arenaMaps;
 
+        /// All battlegrounds that are available in random BG queue
+        std::vector<uint32> avalibleInRandom;
     public:
         CBattlegroundManager();
         ~CBattlegroundManager();

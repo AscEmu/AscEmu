@@ -38,6 +38,12 @@ CBattlegroundManager::CBattlegroundManager()
         m_maxBattlegroundId[i] = 0;
     }
 
+    /// These battlegrounds will be available in Random Battleground queue
+    avalibleInRandom.push_back(BATTLEGROUND_ALTERAC_VALLEY);
+    avalibleInRandom.push_back(BATTLEGROUND_WARSONG_GULCH);
+    avalibleInRandom.push_back(BATTLEGROUND_ARATHI_BASIN);
+    avalibleInRandom.push_back(BATTLEGROUND_EYE_OF_THE_STORM);
+    avalibleInRandom.push_back(BATTLEGROUND_STRAND_OF_THE_ANCIENT);
 }
 
 CBattlegroundManager::~CBattlegroundManager()
@@ -50,7 +56,6 @@ void CBattlegroundManager::RegisterBgFactory(uint32 map, BattlegroundFactoryMeth
         return;
 
     bgFactories[map] = method;
-
 }
 
 void CBattlegroundManager::RegisterArenaFactory(uint32 map, ArenaFactoryMethod method)
@@ -71,7 +76,6 @@ void CBattlegroundManager::RegisterMapForBgType(uint32 type, uint32 map)
         return;
 
     bgMaps[type] = map;
-
 }
 
 void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session, uint32 BattlegroundType, uint8 from)
@@ -150,10 +154,6 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
 
     pck >> guid >> bgtype >> instance;
 
-    // Random battlegrounds aren't yet implemented
-    if (bgtype == BATTLEGROUND_RANDOM)
-        return;
-
     if ((bgtype >= BATTLEGROUND_NUM_TYPES) || (bgtype == 0) ||
         ((bgMaps.find(bgtype) == bgMaps.end()) && bgtype != BATTLEGROUND_RANDOM))
     {
@@ -184,8 +184,6 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
     m_queuedPlayers[bgtype][lgroup].push_back(pguid);
     Log.Notice("BattlegroundManager", "Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->GetLowGUID(), (instance + 1));
 
-    /* send the battleground status packet */
-    SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, bgtype, instance, 0, bgMaps[bgtype], 0);
     m_session->GetPlayer()->m_bgIsQueued = true;
     m_session->GetPlayer()->m_bgQueueInstanceId = instance;
     m_session->GetPlayer()->m_bgQueueType = bgtype;
@@ -196,6 +194,9 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
     m_session->GetPlayer()->m_bgEntryPointZ = m_session->GetPlayer()->GetPositionZ();
     m_session->GetPlayer()->m_bgEntryPointMap = m_session->GetPlayer()->GetMapId();
     m_session->GetPlayer()->m_bgEntryPointInstance = m_session->GetPlayer()->GetInstanceID();
+
+    /* send the battleground status packet */
+    SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, bgtype, instance, 0, bgMaps[bgtype], 0);
 
     m_queueLock.Release();
 
@@ -507,14 +508,14 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
             tempPlayerVec[1].clear();
 
             // We try to add the players who queued for a specific Bg/Arena instance to
-            // the Bg/Arena where they queued to, and add the rest to another list 
+            // the Bg/Arena where they queued to, and add the rest to another list
             for (it3 = m_queuedPlayers[i][j].begin(); it3 != m_queuedPlayers[i][j].end();)
             {
                 it4 = it3++;
                 plrguid = *it4;
                 plr = objmgr.GetPlayer(plrguid);
 
-                // Player has left the game or switched level group since queuing (by leveling for example) 
+                // Player has left the game or switched level group since queuing (by leveling for example)
                 if (!plr || GetLevelGrouping(plr->getLevel()) != j)
                 {
                     m_queuedPlayers[i][j].erase(it4);
@@ -527,7 +528,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                     iitr = m_instances[i].find(plr->m_bgQueueInstanceId);
                     if (iitr == m_instances[i].end())
                     {
-                        // queue no longer valid, since instance has closed since queuing 
+                        // queue no longer valid, since instance has closed since queuing
                         plr->GetSession()->SystemMessage(plr->GetSession()->LocalizedWorldSrv(52), plr->m_bgQueueInstanceId);
                         plr->m_bgIsQueued = false;
                         plr->m_bgQueueType = 0;
@@ -553,60 +554,76 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 }
             }
 
-            // Now that we have a list of players who didn't queue for a specific instance
-            // try to add them to a Bg/Arena that is already under way 
-            for (iitr = m_instances[i].begin(); iitr != m_instances[i].end(); ++iitr)
-            {
-                if (iitr->second->HasEnded() || iitr->second->GetLevelGroup() != j)
-                    continue;
 
-                if (IS_ARENA(i))
+            /// Now that we have a list of players who didn't queue for a specific instance
+            /// try to add them to a Bg/Arena that is already under way
+            std::vector<uint32> tryJoinVec;
+            if (i == BATTLEGROUND_RANDOM)
+            {
+                tryJoinVec = avalibleInRandom;
+            }
+            else
+            {
+                tryJoinVec.push_back(i);
+            }
+
+            for (uint32 bgIndex = 0; bgIndex < tryJoinVec.size(); bgIndex++)
+            {
+                uint32 tmpJoinBgType = tryJoinVec[bgIndex];
+
+                for (iitr = m_instances[tmpJoinBgType].begin(); iitr != m_instances[tmpJoinBgType].end(); ++iitr)
                 {
-                    arena = TO< Arena* >(iitr->second);
-                    if (arena->Rated())
+                    if (iitr->second->HasEnded() || iitr->second->GetLevelGroup() != j)
                         continue;
 
-                    factionMap[0] = arena->GetTeamFaction(0);
-                    factionMap[1] = arena->GetTeamFaction(1);
-
-                    team = arena->GetFreeTeam();
-                    while ((team >= 0) && (tempPlayerVec[factionMap[team]].size() > 0))
+                    if (IS_ARENA(i))
                     {
-                        plrguid = *tempPlayerVec[factionMap[team]].begin();
-                        tempPlayerVec[factionMap[team]].pop_front();
-                        plr = objmgr.GetPlayer(plrguid);
-                        if (plr)
+                        arena = TO< Arena* >(iitr->second);
+                        if (arena->Rated())
+                            continue;
+
+                        factionMap[0] = arena->GetTeamFaction(0);
+                        factionMap[1] = arena->GetTeamFaction(1);
+
+                        team = arena->GetFreeTeam();
+                        while ((team >= 0) && (tempPlayerVec[factionMap[team]].size() > 0))
                         {
-                            plr->m_bgTeam = team;
-                            arena->AddPlayer(plr, team);
-                            team = arena->GetFreeTeam();
+                            plrguid = *tempPlayerVec[factionMap[team]].begin();
+                            tempPlayerVec[factionMap[team]].pop_front();
+                            plr = objmgr.GetPlayer(plrguid);
+                            if (plr)
+                            {
+                                plr->m_bgTeam = team;
+                                arena->AddPlayer(plr, team);
+                                team = arena->GetFreeTeam();
+                            }
+                            ErasePlayerFromList(plrguid, &m_queuedPlayers[i][j]);
                         }
-                        ErasePlayerFromList(plrguid, &m_queuedPlayers[i][j]);
                     }
-                }
-                else
-                {
-                    bg = iitr->second;
-                    int size = (int)min(tempPlayerVec[0].size(), tempPlayerVec[1].size());
-                    for (int counter = 0; (counter < size) && (bg->IsFull() == false); counter++)
+                    else
                     {
-                        AddPlayerToBgTeam(bg, &tempPlayerVec[0], i, j, 0);
-                        AddPlayerToBgTeam(bg, &tempPlayerVec[1], i, j, 1);
-                    }
+                        bg = iitr->second;
+                        int size = (int)min(tempPlayerVec[0].size(), tempPlayerVec[1].size());
+                        for (int counter = 0; (counter < size) && (bg->IsFull() == false); counter++)
+                        {
+                            AddPlayerToBgTeam(bg, &tempPlayerVec[0], i, j, 0);
+                            AddPlayerToBgTeam(bg, &tempPlayerVec[1], i, j, 1);
+                        }
 
-                    while (tempPlayerVec[0].size() > 0 && bg->HasFreeSlots(0, bg->GetType()))
-                    {
-                        AddPlayerToBgTeam(bg, &tempPlayerVec[0], i, j, 0);
-                    }
-                    while (tempPlayerVec[1].size() > 0 && bg->HasFreeSlots(1, bg->GetType()))
-                    {
-                        AddPlayerToBgTeam(bg, &tempPlayerVec[1], i, j, 1);
+                        while (tempPlayerVec[0].size() > 0 && bg->HasFreeSlots(0, bg->GetType()))
+                        {
+                            AddPlayerToBgTeam(bg, &tempPlayerVec[0], i, j, 0);
+                        }
+                        while (tempPlayerVec[1].size() > 0 && bg->HasFreeSlots(1, bg->GetType()))
+                        {
+                            AddPlayerToBgTeam(bg, &tempPlayerVec[1], i, j, 1);
+                        }
                     }
                 }
             }
 
             // Now that that we added everyone we could to a running Bg/Arena
-            // We shall see if we can start a new one! 
+            // We shall see if we can start a new one!
             if (IS_ARENA(i))
             {
                 // enough players to start a round?
@@ -685,12 +702,43 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
             }
             else
             {
-                uint32 minPlayers = BattlegroundManager.GetMinimumPlayers(i);
-                if (forceStart || (tempPlayerVec[0].size() >= minPlayers && tempPlayerVec[1].size() >= minPlayers))
+                uint32 bgToStart = i;
+                if (i == BATTLEGROUND_RANDOM)
                 {
-                    if (CanCreateInstance(i, j))
+                    if (!forceStart)
                     {
-                        bg = CreateInstance(i, j);
+                        std::vector<uint32> bgPossible;
+                        for (uint32 bgIndex = 0; bgIndex < avalibleInRandom.size(); bgIndex++)
+                        {
+                            uint32 tmpJoinBgType = avalibleInRandom[bgIndex];
+
+                            uint32 minPlayers = BattlegroundManager.GetMinimumPlayers(tmpJoinBgType);
+                            if((tempPlayerVec[0].size() >= minPlayers && tempPlayerVec[1].size() >= minPlayers))
+                            {
+                                bgPossible.push_back(tmpJoinBgType);
+                            }
+                        }
+
+                        if (bgPossible.size() > 0)
+                        {
+                            uint32 num = RandomUInt(0, bgPossible.size() - 1);
+                            bgToStart = bgPossible[num];
+                        }
+                    }
+                    else
+                    {
+                        uint32 num = RandomUInt(0, avalibleInRandom.size() - 1);
+                        bgToStart = avalibleInRandom[num];
+                    }
+                }
+
+
+                uint32 minPlayers = BattlegroundManager.GetMinimumPlayers(bgToStart);
+                if (forceStart || ((tempPlayerVec[0].size() >= minPlayers && tempPlayerVec[1].size() >= minPlayers) && bgToStart != BATTLEGROUND_RANDOM))
+                {
+                    if (CanCreateInstance(bgToStart, j))
+                    {
+                        bg = CreateInstance(bgToStart, j);
                         if (bg == NULL)
                         {
                             m_queueLock.Release();
