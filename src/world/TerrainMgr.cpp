@@ -297,7 +297,7 @@ void TileMap::Load(char* filename)
 void TileMap::LoadLiquidData(FILE* f, TileMapHeader & header)
 {
     TileMapLiquidHeader liquidHeader;
-    fseek(f, header.liquidMapOffset, SEEK_SET);
+
     if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
         return;
 
@@ -326,7 +326,7 @@ void TileMap::LoadLiquidData(FILE* f, TileMapHeader & header)
 void TileMap::LoadHeightData(FILE* f, TileMapHeader & header)
 {
     TileMapHeightHeader mapHeader;
-    fseek(f, header.heightMapOffset, SEEK_SET);
+
     if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
         return;
 
@@ -366,7 +366,6 @@ void TileMap::LoadAreaData(FILE* f, TileMapHeader & header)
 {
     TileMapAreaHeader areaHeader;
 
-    fseek(f, header.areaMapOffset, SEEK_SET);
     if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
         return;
 
