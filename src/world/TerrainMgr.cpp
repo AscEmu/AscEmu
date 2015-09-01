@@ -298,6 +298,9 @@ void TileMap::LoadLiquidData(FILE* f, TileMapHeader & header)
 {
     TileMapLiquidHeader liquidHeader;
     fseek(f, header.liquidMapOffset, SEEK_SET);
+    if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
+        return;
+
     fread(&liquidHeader, 1, sizeof(liquidHeader), f);
 
     m_defaultLiquidType = liquidHeader.liquidType;
@@ -324,6 +327,9 @@ void TileMap::LoadHeightData(FILE* f, TileMapHeader & header)
 {
     TileMapHeightHeader mapHeader;
     fseek(f, header.heightMapOffset, SEEK_SET);
+    if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
+        return;
+
     fread(&mapHeader, 1, sizeof(mapHeader), f);
 
     m_tileHeight = mapHeader.gridHeight;
@@ -361,6 +367,9 @@ void TileMap::LoadAreaData(FILE* f, TileMapHeader & header)
     TileMapAreaHeader areaHeader;
 
     fseek(f, header.areaMapOffset, SEEK_SET);
+    if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
+        return;
+
     fread(&areaHeader, 1, sizeof(areaHeader), f);
 
     m_area = areaHeader.gridArea;
