@@ -1147,11 +1147,12 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
     // [2010-11-7 18:30] <@dfighter> c.) teleport behind the target
     // [2010-11-7 18:34] <@dfighter> d.) teleport to caster's position
 
+    /* Always true @Zyres
     if (m_spellInfo->EffectCustomFlag == 0)
     {
         LOG_ERROR("Spell %u (%s) has a teleport effect, but has no teleport flag.", spellId, m_spellInfo->Name);
         return;
-    }
+    }*/
 
     // Portals
     if (m_spellInfo->HasCustomFlagForEffect(i, TELEPORT_TO_COORDINATES))

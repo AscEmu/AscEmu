@@ -94,7 +94,7 @@ Item::~Item()
     EnchantmentMap::iterator itr;
     for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        if (itr->second.Enchantment->type == 0 && itr->second.Slot == 0 && itr->second.ApplyTime == 0 && itr->second.Duration == 0)
+        if (itr->second.Slot == 0 && itr->second.ApplyTime == 0 && itr->second.Duration == 0)
         {
             delete itr->second.Enchantment;
             itr->second.Enchantment = NULL;

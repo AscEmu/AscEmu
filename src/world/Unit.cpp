@@ -2353,7 +2353,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 //http://www.wowhead.com/?item=32486 Ashtongue Talisman of Equilibrium
                 case 40452: //Mangle has a 40% chance to grant 140 Strength for 8 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->NameHash != SPELL_HASH_MANGLE__BEAR_ || CastingSpell->NameHash != SPELL_HASH_MANGLE__CAT_)
+                    if (CastingSpell == NULL)
+                        continue;
+                    if (CastingSpell->NameHash != SPELL_HASH_MANGLE__BEAR_ && CastingSpell->NameHash != SPELL_HASH_MANGLE__CAT_)
                         continue;
                 }
                 break;
