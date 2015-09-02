@@ -24,10 +24,11 @@
 class Lady_Jaina : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
-            if(plr->HasQuest(558))
+            if (plr->HasQuest(558))
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7012, plr);
                 Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(505), 1);     // Lady Jaina, this may sound like an odd request... but I have a young ward who is quite shy. You are a hero to him, and he asked me to get your autograph.
@@ -37,30 +38,30 @@ class Lady_Jaina : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            switch(IntId)
+            switch (IntId)
             {
                 case 0: // Return to start
                     GossipHello(pObject, plr);
                     break;
                 case 1: // Give Item
-                    {
-                        plr->CastSpell(plr, dbcSpell.LookupEntry(23122), true);
-                        plr->Gossip_Complete();
-                        break;
-                    }
+                {
+                    plr->CastSpell(plr, dbcSpell.LookupEntry(23122), true);
+                    plr->Gossip_Complete();
                     break;
+                }
+                break;
             }
         }
-
 };
 
 class Cairne : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
-            if(plr->HasQuest(925))
+            if (plr->HasQuest(925))
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7013, plr);
                 Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(506), 1);     // Give me hoofprint.
@@ -71,83 +72,79 @@ class Cairne : public GossipScript
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             GossipMenu* Menu;
-            switch(IntId)
+            switch (IntId)
             {
                 case 0: // Return to start
                     GossipHello(pObject, plr);
                     break;
                 case 1: // Give Item
-                    {
-                        objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7014, plr);
-                        Menu->SendTo(plr);
-                        plr->CastSpell(plr, dbcSpell.LookupEntry(23123), true);
-                        break;
-                    }
+                {
+                    objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7014, plr);
+                    Menu->SendTo(plr);
+                    plr->CastSpell(plr, dbcSpell.LookupEntry(23123), true);
                     break;
+                }
+                break;
             }
         }
-
 };
 
-#define TELEPORT_SPELL 68328
+
+#define DALARAN_TELEPORT_SPELL 68328
 
 class TeleportQ_Gossip : public GossipScript
 {
-public:
-    void GossipHello( Object* pObject, Player* plr )
-    {
-        uint32 Text = objmgr.GetGossipTextForNpc(TO_CREATURE(pObject)->GetEntry());
+    public:
 
-        // check if there is a entry in the db
-        if ( NpcTextStorage.LookupEntry(Text) == NULL ) { return; }
-
-        Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
-        sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), plr, menu);
-
-        // Requirements:
-        // one of these quests: 12791, 12794, 12796
-        // and item 39740: Kirin Tor Signet
-        if ( ( plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796) ) && plr->HasItemCount(39740, 1, false) )
+        void GossipHello(Object* pObject, Player* plr)
         {
-            menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
-        }
-        menu.Send(plr);
-    }
+            uint32 Text = objmgr.GetGossipTextForNpc(TO_CREATURE(pObject)->GetEntry());
 
-    void GossipSelectOption(Object* pObject, Player*  plr, uint32 Id, uint32 IntId, const char* Code)
-    {
-        if( IntId == 1 )
-        {
-            plr->CastSpell(plr, TELEPORT_SPELL, true);
+            // check if there is a entry in the db
+            if (NpcTextStorage.LookupEntry(Text) == NULL)
+                return;
+
+            Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
+            sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), plr, menu);
+
+            // Requirements:
+            // one of these quests: 12791, 12794, 12796
+            // and item 39740: Kirin Tor Signet
+            if ((plr->HasQuest(12791) || plr->HasQuest(12794) || plr->HasQuest(12796)) && plr->HasItemCount(39740, 1, false))
+            {
+                menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(514), 1);        // Teleport me to Dalaran.
+            }
+            menu.Send(plr);
         }
-        plr->Gossip_Complete();
-    }
+
+        void GossipSelectOption(Object* pObject, Player*  plr, uint32 Id, uint32 IntId, const char* Code)
+        {
+            if (IntId == 1)
+            {
+                plr->CastSpell(plr, DALARAN_TELEPORT_SPELL, true);
+            }
+            plr->Gossip_Complete();
+        }
 };
 
 void SetupQuestGossip(ScriptMgr* mgr)
 {
-    GossipScript* LJ = new Lady_Jaina();
-    GossipScript* CB = new Cairne();
-
-    mgr->register_gossip_script(4968, LJ);
-    mgr->register_gossip_script(3057, CB);
+    mgr->register_gossip_script(4968, new Lady_Jaina());
+    mgr->register_gossip_script(3057, new Cairne());
 
     // **** Dalaran quests start **** //
-    GossipScript* TeleportQGossip = new TeleportQ_Gossip;
-
     // Horde
-    mgr->register_gossip_script(26471, TeleportQGossip);
-    mgr->register_gossip_script(29155, TeleportQGossip);
-    mgr->register_gossip_script(29159, TeleportQGossip);
-    mgr->register_gossip_script(29160, TeleportQGossip);
-    mgr->register_gossip_script(29162, TeleportQGossip);
+    mgr->register_gossip_script(26471, new TeleportQ_Gossip);
+    mgr->register_gossip_script(29155, new TeleportQ_Gossip);
+    mgr->register_gossip_script(29159, new TeleportQ_Gossip);
+    mgr->register_gossip_script(29160, new TeleportQ_Gossip);
+    mgr->register_gossip_script(29162, new TeleportQ_Gossip);
     // Alliance
-    mgr->register_gossip_script(23729, TeleportQGossip);
-    mgr->register_gossip_script(26673, TeleportQGossip);
-    mgr->register_gossip_script(27158, TeleportQGossip);
-    mgr->register_gossip_script(29158, TeleportQGossip);
-    mgr->register_gossip_script(29161, TeleportQGossip);
+    mgr->register_gossip_script(23729, new TeleportQ_Gossip);
+    mgr->register_gossip_script(26673, new TeleportQ_Gossip);
+    mgr->register_gossip_script(27158, new TeleportQ_Gossip);
+    mgr->register_gossip_script(29158, new TeleportQ_Gossip);
+    mgr->register_gossip_script(29161, new TeleportQ_Gossip);
     // Both
-    mgr->register_gossip_script(29169, TeleportQGossip);
-    // **** Dalaran Quests end **** //
+    mgr->register_gossip_script(29169, new TeleportQ_Gossip);
 }
