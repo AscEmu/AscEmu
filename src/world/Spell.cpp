@@ -1837,8 +1837,8 @@ void Spell::finish(bool successful)
     */
     if (i_caster && i_caster->GetOwner() && cancastresult == SPELL_CANCAST_OK && !GetSpellFailed())
     {
-        uint32 x;
-        for (x = 0; x < 5; x++)
+        uint8 x;
+        for (x = 0; x < MAX_ITEM_PROTO_SPELLS; x++)
         {
             if (i_caster->GetProto()->Spells[x].Trigger == USE)
             {
