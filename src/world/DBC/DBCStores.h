@@ -992,6 +992,32 @@ struct SpellEntry
         RuneCostID = 0;
         SpellDifficultyID = 0;
         DiminishStatus = 0;
+        targetAuraSpellNot = 0;
+        CastingTimeIndex = 0;
+        RecoveryTime = 0;
+        CategoryRecoveryTime = 0;
+        InterruptFlags = 0;
+        AuraInterruptFlags = 0;
+        ChannelInterruptFlags = 0;
+        procFlags = 0;
+        procChance = 0;
+        procCharges = 0;
+        maxLevel = 0;
+        baseLevel = 0;
+        spellLevel = 0;
+        DurationIndex = 0;
+        powerType = 0;
+        manaCost = 0;
+        manaCostPerlevel = 0;
+        manaPerSecond = 0;
+        manaPerSecondPerLevel = 0;
+        rangeIndex = 0;
+        speed = 0;
+        modalNextSpell = 0;
+        maxstack = 0;
+        EquippedItemClass = 0;
+        EquippedItemSubClass = 0;
+        RequiredItemFlags = 0;
     }
 };
 

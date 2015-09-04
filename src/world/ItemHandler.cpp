@@ -61,12 +61,13 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
         return;
 
     uint32 c = count;
-    Item* i1 = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
+
+    auto i1 = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
     if (!i1)
         return;
-    Item* i2 = _player->GetItemInterface()->GetInventoryItem(DstInvSlot, DstSlot);
+    auto i2 = _player->GetItemInterface()->GetInventoryItem(DstInvSlot, DstSlot);
 
-    uint32 itemMaxStack1 = (i1) ? ((i1->GetOwner()->ItemStackCheat) ? 0x7fffffff : i1->GetProto()->MaxCount) : 0;
+    uint32 itemMaxStack1 = (i1->GetOwner()->ItemStackCheat) ? 0x7fffffff : i1->GetProto()->MaxCount;
     uint32 itemMaxStack2 = (i2) ? ((i2->GetOwner()->ItemStackCheat) ? 0x7fffffff : i2->GetProto()->MaxCount) : 0;
     if ((i1 && i1->wrapped_item_id) || (i2 && i2->wrapped_item_id) || (c > itemMaxStack1))
     {

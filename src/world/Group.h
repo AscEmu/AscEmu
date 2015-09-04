@@ -265,7 +265,7 @@ class SERVER_DECL Group
 			return false;
 		}
 		void ExpandToLFG();
-		uint64 GetLeaderGUID();
+		//uint64 GetLeaderGUID(); unused
 		uint32 GetMembersCount() { return m_MemberCount; }
 
 		uint64 GetGUID() { return uint64(GetID()); }

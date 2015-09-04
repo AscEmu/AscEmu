@@ -140,10 +140,7 @@ class ElderKuruti : public GossipScript
                     if(!plr->GetItemInterface()->GetItemCount(24573, true))
                     {
                         sEAS.AddItem(24573, plr);
-                        if(plr->GetItemInterface()->GetItemCount(24573, true))
-                            SendQuickMenu(9231);
                     }
-                    else
                         SendQuickMenu(9231);
                     break;
             }

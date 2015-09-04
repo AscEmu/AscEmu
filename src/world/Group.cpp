@@ -1413,6 +1413,7 @@ void Group::ExpandToLFG()
     Update();
 }
 
+/* unused
 uint64 Group::GetLeaderGUID()
 {
     if (m_Leader != nullptr)
@@ -1422,6 +1423,7 @@ uint64 Group::GetLeaderGUID()
         return (uint64)m_Leader->guid;
     }
 }
+*/
 
 void Group::GoOffline(Player* p)
 {
