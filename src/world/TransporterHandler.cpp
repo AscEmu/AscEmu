@@ -38,7 +38,7 @@ bool Transporter::CreateAsTransporter(uint32 EntryID, const char* Name, int32 Ti
     //Maybe this would be the perfect way, so there would be no extra checks in Object.cpp:
     //but these fields seems to change often and between server flavours (ArcEmu, Aspire, name another one) - by: VLack aka. VLsoft
     if (pInfo)
-        pInfo->Type = GAMEOBJECT_TYPE_TRANSPORT;
+        pInfo->type = GAMEOBJECT_TYPE_TRANSPORT;
     else
         LOG_ERROR("Transporter id[%i] name[%s] - can't set GAMEOBJECT_TYPE - it will behave badly!", EntryID, Name);
 
@@ -89,7 +89,7 @@ bool FillPathVector(uint32 PathID, TransportPath & Path)
 bool Transporter::GenerateWaypoints()
 {
     TransportPath path;
-    FillPathVector(GetInfo()->SpellFocus, path);
+    FillPathVector(GetInfo()->parameter_0, path);
 
     if (path.Size() == 0) return false;
 
@@ -344,7 +344,7 @@ void Transporter::UpdatePosition()
         if (mCurrentWaypoint->second.delayed)
         {
             //Transprter Script = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
-            switch (GetInfo()->DisplayID)
+            switch (GetInfo()->display_id)
             {
                 case 3015:
                 case 7087:
@@ -363,7 +363,7 @@ void Transporter::UpdatePosition()
                 }
                 break;
             }
-            TransportGossip(GetInfo()->DisplayID);
+            TransportGossip(GetInfo()->display_id);
         }
     }
 }
@@ -499,15 +499,15 @@ void ObjectMgr::LoadTransporters()
             dbResult.name = field[1].GetString();
             dbResult.period = field[2].GetUInt32();
 
-            GameObjectInfo* goInfo = GameObjectNameStorage.LookupEntry(dbResult.entry);
-            if (goInfo == nullptr)
+            auto gameobject_info = GameObjectNameStorage.LookupEntry(dbResult.entry);
+            if (gameobject_info == nullptr)
             {
                 Log.Error("TransporterHandler", "Transporter gameobject %u not available in GameObjectNameStorage!", dbResult.entry);
                 continue;
             }
 
             Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | dbResult.entry);
-            pTransporter->SetInfo(goInfo);
+            pTransporter->SetInfo(gameobject_info);
             if (!pTransporter->CreateAsTransporter(dbResult.entry, "", dbResult.period))
             {
                 Log.Error("TransporterHandler", "Transporter %s failed creation for some reason.", dbResult.name.c_str());

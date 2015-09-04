@@ -154,8 +154,8 @@ static uint32 resourcesToGainBR = 160;
 void ArathiBasin::SpawnBuff(uint32 x)
 {
     uint32 chosen_buffid = buffentries[RandomUInt(2)];
-    GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(chosen_buffid);
-    if(goi == NULL)
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(chosen_buffid);
+    if (gameobject_info == nullptr)
         return;
 
     if(m_buffs[x] == NULL)
@@ -180,7 +180,7 @@ void ArathiBasin::SpawnBuff(uint32 x)
         {
             m_buffs[x]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
             m_buffs[x]->SetEntry(chosen_buffid);
-            m_buffs[x]->SetInfo(goi);
+            m_buffs[x]->SetInfo(gameobject_info);
         }
 
         m_buffs[x]->PushToWorld(m_mapMgr);
@@ -189,25 +189,24 @@ void ArathiBasin::SpawnBuff(uint32 x)
 
 void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 {
-    GameObjectInfo* gi, * gi_aura;
-    gi = GameObjectNameStorage.LookupEntry(ControlPointGoIds[Id][Type]);
-    if(gi == NULL)
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(ControlPointGoIds[Id][Type]);
+    if (gameobject_info == nullptr)
         return;
 
-    gi_aura = gi->sound3 ? GameObjectNameStorage.LookupEntry(gi->sound3) : NULL;
+    auto gi_aura = gameobject_info->parameter_3 ? GameObjectNameStorage.LookupEntry(gameobject_info->parameter_3) : nullptr;
 
     if(m_controlPoints[Id] == NULL)
     {
-        m_controlPoints[Id] = SpawnGameObject(gi->ID, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        m_controlPoints[Id] = SpawnGameObject(gameobject_info->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
                                               ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         m_controlPoints[Id]->SetParentRotation(2, ControlPointRotations[Id][0]);
         m_controlPoints[Id]->SetParentRotation(3, ControlPointRotations[Id][1]);
         m_controlPoints[Id]->SetState(GAMEOBJECT_STATE_CLOSED);
-        m_controlPoints[Id]->SetType(static_cast<uint8>(gi->Type));
+        m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
         m_controlPoints[Id]->SetAnimProgress(100);
         m_controlPoints[Id]->Activate();
-        m_controlPoints[Id]->SetDisplayId(gi->DisplayID);
+        m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
 
         switch(Type)
         {
@@ -236,9 +235,9 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         // assign it a new guid (client needs this to see the entry change?)
         m_controlPoints[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-        m_controlPoints[Id]->SetEntry(gi->ID);
-        m_controlPoints[Id]->SetDisplayId(gi->DisplayID);
-        m_controlPoints[Id]->SetType(static_cast<uint8>(gi->Type));
+        m_controlPoints[Id]->SetEntry(gameobject_info->entry);
+        m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
+        m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
 
         switch(Type)
         {
@@ -257,11 +256,11 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
                 break;
         }
 
-        m_controlPoints[Id]->SetInfo(gi);
+        m_controlPoints[Id]->SetInfo(gameobject_info);
         m_controlPoints[Id]->PushToWorld(m_mapMgr);
     }
 
-    if(gi_aura == NULL)
+    if(gi_aura == nullptr)
     {
         // remove it if it exists
         if(m_controlPointAuras[Id] != NULL && m_controlPointAuras[Id]->IsInWorld())
@@ -272,7 +271,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
     if(m_controlPointAuras[Id] == NULL)
     {
-        m_controlPointAuras[Id] = SpawnGameObject(gi_aura->ID, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        m_controlPointAuras[Id] = SpawnGameObject(gi_aura->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
                                   ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         m_controlPointAuras[Id]->SetParentRotation(2, ControlPointRotations[Id][0]);
@@ -290,8 +289,8 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         // re-spawn the aura
         m_controlPointAuras[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-        m_controlPointAuras[Id]->SetEntry(gi_aura->ID);
-        m_controlPointAuras[Id]->SetDisplayId(gi_aura->DisplayID);
+        m_controlPointAuras[Id]->SetEntry(gi_aura->entry);
+        m_controlPointAuras[Id]->SetDisplayId(gi_aura->display_id);
         m_controlPointAuras[Id]->SetInfo(gi_aura);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }
@@ -660,7 +659,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
     if(m_buffs[x] && m_buffs[x]->IsInWorld())
     {
         // apply the spell
-        spellid = m_buffs[x]->GetInfo()->sound3;
+        spellid = m_buffs[x]->GetInfo()->parameter_3;
         m_buffs[x]->RemoveFromWorld(false);
 
         // respawn it in buffrespawntime

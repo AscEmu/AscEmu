@@ -207,7 +207,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             break;
         }
         //The above 3 checks FAIL to identify transports, thus their flags remain 0x58, and this is BAAAAAAD! Later they don't get position x,y,z,o updates, so they appear randomly by a client-calculated path, they always face north, etc... By: VLack
-        if (flags != 0x0352 && IsGameObject() && TO< GameObject* >(this)->GetInfo()->Type == GAMEOBJECT_TYPE_TRANSPORT && !(TO< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
+        if (flags != 0x0352 && IsGameObject() && TO< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT && !(TO< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
             flags = 0x0352;
     }
 
@@ -654,7 +654,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
         {
             GameObject* go = TO_GAMEOBJECT(this);
             QuestLogEntry* qle;
-            GameObjectInfo* info;
+            GameObjectInfo* gameobject_info;
             if (go->HasQuests())
             {
                 std::list<QuestRelation*>::iterator itr;
@@ -679,8 +679,8 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
             }
             else
             {
-                info = go->GetInfo();
-                if (info && (info->goMap.size() || info->itemMap.size()))
+                gameobject_info = go->GetInfo();
+                if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
                 {
                     for (GameObjectGOMap::iterator itr = go->GetInfo()->goMap.begin(); itr != go->GetInfo()->goMap.end(); ++itr)
                     {
@@ -825,7 +825,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
     ARCEMU_ASSERT(!isnan(newX) && !isnan(newY) && !isnan(newOrientation));
 
     //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
-    if (IsGameObject() && TO< GameObject* >(this)->GetInfo()->Type == GAMEOBJECT_TYPE_TRANSPORT)
+    if (IsGameObject() && TO< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT)
         updateMap = true;
 
     //if (m_position.x != newX || m_position.y != newY)

@@ -6619,15 +6619,12 @@ void Player::UpdateNearbyGameObjects()
             bool activate_quest_object = false;
             GameObject* go = TO_GAMEOBJECT(obj);
             QuestLogEntry* qle = NULL;
-            GameObjectInfo* info = go->GetInfo();
+            auto gameobject_info = go->GetInfo();
 
             bool deactivate = false;
-            if (info &&
-                (info->goMap.size() || info->itemMap.size()))
+            if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
             {
-                for (GameObjectGOMap::iterator GOitr = go->GetInfo()->goMap.begin();
-                     GOitr != go->GetInfo()->goMap.end();
-                     ++GOitr)
+                for (GameObjectGOMap::iterator GOitr = go->GetInfo()->goMap.begin(); GOitr != go->GetInfo()->goMap.end(); ++GOitr)
                 {
                     if ((qle = GetQuestLogForEntry(GOitr->first->id)) != 0)
                     {

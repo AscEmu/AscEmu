@@ -505,18 +505,18 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         if( controlpoint[ Id ].worldstate != 0 )
             SetWorldState( controlpoint[ Id ].worldstate, 0 );
 
-        gi_aura = gi->sound3 ? GameObjectNameStorage.LookupEntry(gi->sound3) : NULL;
+        gi_aura = gi->parameter_3 ? GameObjectNameStorage.LookupEntry(gi->parameter_3) : NULL;
 
         if( controlpoint[ Id ].banner == NULL)
         {
-                controlpoint[ Id ].banner = SpawnGameObject(gi->ID, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+                controlpoint[ Id ].banner = SpawnGameObject(gi->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
                 ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
                 controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_STATE, 1);
-                controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPE_ID, gi->Type);
+                controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPE_ID, gi->type);
                 controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_ANIMPROGRESS, 100);
                 controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DYNAMIC, 1);
-                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi->DisplayID);
+                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi->display_id);
 
                 switch(Type)
                 {
@@ -545,9 +545,9 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
 
                 // assign it a new guid (client needs this to see the entry change?)
                 controlpoint[ Id ].banner->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-                controlpoint[ Id ].banner->SetUInt32Value(OBJECT_FIELD_ENTRY, gi->ID);
-                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi->DisplayID);
-                controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPE_ID, gi->Type);
+                controlpoint[ Id ].banner->SetUInt32Value(OBJECT_FIELD_ENTRY, gi->entry);
+                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi->display_id);
+                controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPE_ID, gi->type);
 
                 switch(Type)
                 {
@@ -608,7 +608,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
 
         if(controlpoint[ Id ].aura == NULL)
         {
-                controlpoint[ Id ].aura = SpawnGameObject(gi_aura->ID, 628, ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+                controlpoint[ Id ].aura = SpawnGameObject(gi_aura->entry, 628, ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
                 ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 5.0f);
 
                 controlpoint[ Id ].aura->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_STATE, 1);
@@ -624,8 +624,8 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
 
                 // re-spawn the aura
                 controlpoint[ Id ].aura->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-                controlpoint[ Id ].aura->SetUInt32Value(OBJECT_FIELD_ENTRY, gi_aura->ID);
-                controlpoint[ Id ].aura->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi_aura->DisplayID);
+                controlpoint[ Id ].aura->SetUInt32Value(OBJECT_FIELD_ENTRY, gi_aura->entry);
+                controlpoint[ Id ].aura->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi_aura->display_id);
                 controlpoint[ Id ].aura->SetInfo(gi_aura);
                 controlpoint[ Id ].aura->PushToWorld(m_mapMgr);
         }       

@@ -1198,7 +1198,7 @@ void ObjectMgr::ProcessGameobjectQuests()
     QueryResult* result = WorldDatabase.Query("SELECT * FROM gameobject_quest_item_binding");
     QueryResult* result2 = WorldDatabase.Query("SELECT * FROM gameobject_quest_pickup_binding");
 
-    GameObjectInfo* gon;
+    GameObjectInfo* gameobject_info;
     Quest* qst;
 
     if (result)
@@ -1206,10 +1206,10 @@ void ObjectMgr::ProcessGameobjectQuests()
         do
         {
             Field* fields = result->Fetch();
-            gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
+            gameobject_info = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
             qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
-            if (gon && qst)
-                gon->itemMap[qst].insert(make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
+            if (gameobject_info && qst)
+                gameobject_info->itemMap[qst].insert(make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
 
         }
         while (result->NextRow());
@@ -1221,10 +1221,10 @@ void ObjectMgr::ProcessGameobjectQuests()
         do
         {
             Field* fields = result2->Fetch();
-            gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
+            gameobject_info = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
             qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
-            if (gon && qst)
-                gon->goMap.insert(make_pair(qst, fields[2].GetUInt32()));
+            if (gameobject_info && qst)
+                gameobject_info->goMap.insert(make_pair(qst, fields[2].GetUInt32()));
 
         }
         while (result2->NextRow());

@@ -768,7 +768,7 @@ bool ChatHandler::HandleGOSelectByGUID(const char *args, WorldSession* m_session
     }
 
     m_session->GetPlayer()->m_GM_SelectedGO = go->GetGUID();
-    GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.", go->GetInfo()->Name, m_session->GetPlayer()->CalcDistance(go));
+    GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.", go->GetInfo()->name, m_session->GetPlayer()->CalcDistance(go));
     return true;
 }
 
@@ -844,7 +844,7 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
     m_session->GetPlayer()->m_GM_SelectedGO = GObj->GetGUID();
 
     GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.",
-                       GameObjectNameStorage.LookupEntry(GObj->GetEntry())->Name, m_session->GetPlayer()->CalcDistance(GObj));
+                       GameObjectNameStorage.LookupEntry(GObj->GetEntry())->name, m_session->GetPlayer()->CalcDistance(GObj));
 
     return true;
 }
@@ -886,7 +886,7 @@ bool ChatHandler::HandleGODelete(const char* args, WorldSession* m_session)
             GObj->m_spawn = NULL;
         }
     }
-    sGMLog.writefromsession(m_session, "deleted game object entry %u on map %u at X:%f Y:%f Z:%f Name %s", GObj->GetEntry(), GObj->GetMapId(), GObj->GetPositionX(), GObj->GetPositionY(), GObj->GetPositionZ(), GameObjectNameStorage.LookupEntry(GObj->GetEntry())->Name);
+    sGMLog.writefromsession(m_session, "deleted game object entry %u on map %u at X:%f Y:%f Z:%f Name %s", GObj->GetEntry(), GObj->GetMapId(), GObj->GetPositionX(), GObj->GetPositionY(), GObj->GetPositionZ(), GameObjectNameStorage.LookupEntry(GObj->GetEntry())->name);
     GObj->Despawn(0, 0); // We do not need to delete the object because GameObject::Despawn with no time => ExpireAndDelete() => _Expire() => delete GObj;
 
     m_session->GetPlayer()->m_GM_SelectedGO = 0;
@@ -909,8 +909,8 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
     if (pSave)
         Save = (atoi(pSave) > 0 ? true : false);
 
-    GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(EntryID);
-    if (!goi)
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(EntryID);
+    if (gameobject_info == nullptr)
     {
         sstext << "GameObject Info '" << EntryID << "' Not Found" << '\0';
         SystemMessage(m_session, sstext.str().c_str());
@@ -970,7 +970,7 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
         go->SaveToDB();
         go->m_loadedFromDB = true;
     }
-    sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(gs->entry)->Name, gs->entry, chr->GetMapId(), gs->x, gs->y, gs->z, Save ? ", saved in DB" : "");
+    sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(gs->entry)->name, gs->entry, chr->GetMapId(), gs->x, gs->y, gs->z, Save ? ", saved in DB" : "");
     return true;
 }
 
@@ -1021,13 +1021,13 @@ bool ChatHandler::HandleGOPhaseCommand(const char* args, WorldSession* m_session
         go->SaveToDB();
         go->m_loadedFromDB = true;
     }
-    sGMLog.writefromsession(m_session, "phased gameobject %s to %u, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(gs->entry)->Name, newphase, gs->entry, m_session->GetPlayer()->GetMapId(), gs->x, gs->y, gs->z, Save ? ", saved in DB" : "");
+    sGMLog.writefromsession(m_session, "phased gameobject %s to %u, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(gs->entry)->name, newphase, gs->entry, m_session->GetPlayer()->GetMapId(), gs->x, gs->y, gs->z, Save ? ", saved in DB" : "");
     return true;
 }
 
 bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 {
-    GameObjectInfo* GOInfo = NULL;
+    GameObjectInfo* gameobject_info = nullptr;
     GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
     if (!GObj)
     {
@@ -1141,21 +1141,22 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 
     SystemMessage(m_session, "%s Distance:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->CalcDistance(m_session->GetPlayer()));
 
-    GOInfo = GameObjectNameStorage.LookupEntry(GObj->GetEntry());
-    if (!GOInfo)
+    gameobject_info = GameObjectNameStorage.LookupEntry(GObj->GetEntry());
+    if (!gameobject_info)
     {
         RedSystemMessage(m_session, "This GameObject doesn't have template, you won't be able to get some information nor to spawn a GO with this entry.");
         return true;
     }
 
-    if (GOInfo->Name)
-        SystemMessage(m_session, "%s Name:%s%s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GOInfo->Name);
+    if (gameobject_info->name)
+        SystemMessage(m_session, "%s Name:%s%s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject_info->name);
     SystemMessage(m_session, "%s Size:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetScale());
     SystemMessage(m_session, "%s Parent Rotation O1:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(1));
     SystemMessage(m_session, "%s Parent Rotation O2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(2));
     SystemMessage(m_session, "%s Parent Rotation O3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(3));
 
-    if (GOInfo->Type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING){
+    if (gameobject_info->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    {
         SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetHP(), GObj->GetMaxHP());
     }
 
@@ -1182,7 +1183,7 @@ bool ChatHandler::HandleGOEnable(const char* args, WorldSession* m_session)
         GObj->Activate();
         BlueSystemMessage(m_session, "Gameobject activated.");
     }
-    sGMLog.writefromsession(m_session, "activated/deactivated gameobject %s, entry %u", GameObjectNameStorage.LookupEntry(GObj->GetEntry())->Name, GObj->GetEntry());
+    sGMLog.writefromsession(m_session, "activated/deactivated gameobject %s, entry %u", GameObjectNameStorage.LookupEntry(GObj->GetEntry())->name, GObj->GetEntry());
     return true;
 }
 
@@ -1225,7 +1226,7 @@ bool ChatHandler::HandleGOScale(const char* args, WorldSession* m_session)
     if (!scale) scale = 1;
     go->SetScale(scale);
     BlueSystemMessage(m_session, "Set scale to %.3f", scale);
-    sGMLog.writefromsession(m_session, "set scale on gameobject %s to %.3f, entry %u", GameObjectNameStorage.LookupEntry(go->GetEntry())->Name, scale, go->GetEntry());
+    sGMLog.writefromsession(m_session, "set scale on gameobject %s to %.3f, entry %u", GameObjectNameStorage.LookupEntry(go->GetEntry())->name, scale, go->GetEntry());
     uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
     go->RemoveFromWorld(true);
     go->SetNewGuid(NewGuid);
@@ -1472,7 +1473,7 @@ bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession* session)
         return true;
     }
 
-    if (go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    if (go->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
         RedSystemMessage(session, "The selected GO must be a destructible building!");
         return true;
@@ -1512,7 +1513,7 @@ bool ChatHandler::HandleGORebuildCommand(const char *args, WorldSession* session
         return true;
     }
 
-    if (go->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    if (go->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
         RedSystemMessage(session, "The selected GO must be a destructible building!");
         return true;

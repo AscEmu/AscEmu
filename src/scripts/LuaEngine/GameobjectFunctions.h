@@ -190,7 +190,7 @@ class LuaGameObject
             TEST_GO()
             if (!ptr->GetInfo())
                 return 0;
-            lua_pushstring(L, ptr->GetInfo()->Name);
+            lua_pushstring(L, ptr->GetInfo()->name);
             return 1;
         }
 
@@ -1220,7 +1220,7 @@ class LuaGameObject
         {
             TEST_GO();
 
-            if (ptr->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+            if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
             if (lua_gettop(L) != 3)
@@ -1239,7 +1239,7 @@ class LuaGameObject
         {
             TEST_GO();
 
-            if (ptr->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+            if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
             ptr->Rebuild();
@@ -1252,7 +1252,7 @@ class LuaGameObject
         {
             TEST_GO();
 
-            if (ptr->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+            if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
             lua_pushinteger(L, ptr->GetHP());
@@ -1264,7 +1264,7 @@ class LuaGameObject
         {
             TEST_GO();
 
-            if (ptr->GetInfo()->Type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+            if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
             lua_pushinteger(L, ptr->GetMaxHP());

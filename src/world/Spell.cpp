@@ -3554,16 +3554,16 @@ uint8 Spell::CanCast(bool tolerate)
                 if (!(p_caster->GetPhase() & (*itr)->GetPhase()))    //We can't see this, can't be the focus, skip further checks
                     continue;
 
-                GameObjectInfo* info = TO_GAMEOBJECT(*itr)->GetInfo();
-                if (!info)
+                auto gameobject_info = TO_GAMEOBJECT(*itr)->GetInfo();
+                if (!gameobject_info)
                 {
                     LOG_DEBUG("Warning: could not find info about game object %u", (*itr)->GetEntry());
                     continue;
                 }
 
                 // professions use rangeIndex 1, which is 0yds, so we will use 5yds, which is standard interaction range.
-                if (info->sound1)
-                    focusRange = float(info->sound1);
+                if (gameobject_info->parameter_1)
+                    focusRange = float(gameobject_info->parameter_1);
                 else
                     focusRange = GetMaxRange(dbcSpellRange.LookupEntry(GetProto()->rangeIndex));
 
@@ -3571,7 +3571,7 @@ uint8 Spell::CanCast(bool tolerate)
                 if (!IsInrange(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), (*itr), (focusRange * focusRange)))
                     continue;
 
-                if (info->SpellFocus == GetProto()->RequiresSpellFocus)
+                if (gameobject_info->parameter_0 == GetProto()->RequiresSpellFocus)
                 {
                     found = true;
                     break;

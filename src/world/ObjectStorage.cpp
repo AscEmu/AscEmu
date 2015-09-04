@@ -532,10 +532,10 @@ void ObjectMgr::LoadExtraItemStuff()
 void ObjectMgr::LoadExtraGameObjectStuff()
 {
     StorageContainerIterator<GameObjectInfo> * itr = GameObjectNameStorage.MakeIterator();
-    GameObjectInfo* goi;
+    GameObjectInfo* gameobject_info;
     while(!itr->AtEnd())
     {
-        goi = itr->Get();
+        gameobject_info = itr->Get();
 
         if (!itr->Inc())
             break;

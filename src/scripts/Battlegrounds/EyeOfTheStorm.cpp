@@ -333,7 +333,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
         uint32 x = (uint32)bonusid;
         if(EOTSm_buffs[x] && EOTSm_buffs[x]->IsInWorld())
         {
-            spellid = EOTSm_buffs[x]->GetInfo()->sound3;
+            spellid = EOTSm_buffs[x]->GetInfo()->parameter_3;
             SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
             if(sp)
             {
@@ -558,42 +558,42 @@ void EyeOfTheStorm::EventResetFlag()
 
 void EyeOfTheStorm::OnCreate()
 {
-    GameObjectInfo* goi;
+    GameObjectInfo* gameobject_info;
     uint32 i;
 
     /* create gameobjects */
     for(i = 0; i < EOTS_TOWER_COUNT; ++i)
     {
-        goi = GameObjectNameStorage.LookupEntry(EOTSTowerIds[i]);
-        if(goi == NULL)
+        gameobject_info = GameObjectNameStorage.LookupEntry(EOTSTowerIds[i]);
+        if (gameobject_info == nullptr)
         {
             Log.LargeErrorMessage("EOTS is being created and you are missing gameobjects. Terminating.", NULL);
             abort();
             return;
         }
 
-        m_CPStatusGO[i] = m_mapMgr->CreateGameObject(goi->ID);
-        m_CPStatusGO[i]->CreateFromProto(goi->ID, m_mapMgr->GetMapId(), EOTSTCLocations[i][0], EOTSTCLocations[i][1], EOTSTCLocations[i][2], 0);
+        m_CPStatusGO[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
+        m_CPStatusGO[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSTCLocations[i][0], EOTSTCLocations[i][1], EOTSTCLocations[i][2], 0);
         m_CPStatusGO[i]->PushToWorld(m_mapMgr);
 
-        goi = GameObjectNameStorage.LookupEntry(EOTS_BANNER_NEUTRAL);
-        if(goi == NULL)
+        gameobject_info = GameObjectNameStorage.LookupEntry(EOTS_BANNER_NEUTRAL);
+        if (gameobject_info == nullptr)
         {
             Log.LargeErrorMessage("EOTS is being created and you are missing gameobjects. Terminating.", NULL);
             abort();
             return;
         }
 
-        m_CPBanner[i] = m_mapMgr->CreateGameObject(goi->ID);
-        m_CPBanner[i]->CreateFromProto(goi->ID, m_mapMgr->GetMapId(), EOTSCPLocations[i][0], EOTSCPLocations[i][1], EOTSCPLocations[i][2], 0);
+        m_CPBanner[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
+        m_CPBanner[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations[i][0], EOTSCPLocations[i][1], EOTSCPLocations[i][2], 0);
         m_CPBanner[i]->PushToWorld(m_mapMgr);
 
-        m_CPBanner2[i] = m_mapMgr->CreateGameObject(goi->ID);
-        m_CPBanner2[i]->CreateFromProto(goi->ID, m_mapMgr->GetMapId(), EOTSCPLocations2[i][0], EOTSCPLocations2[i][1], EOTSCPLocations2[i][2], 0);
+        m_CPBanner2[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
+        m_CPBanner2[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations2[i][0], EOTSCPLocations2[i][1], EOTSCPLocations2[i][2], 0);
         m_CPBanner2[i]->PushToWorld(m_mapMgr);
 
-        m_CPBanner3[i] = m_mapMgr->CreateGameObject(goi->ID);
-        m_CPBanner3[i]->CreateFromProto(goi->ID, m_mapMgr->GetMapId(), EOTSCPLocations3[i][0], EOTSCPLocations3[i][1], EOTSCPLocations3[i][2], 0);
+        m_CPBanner3[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
+        m_CPBanner3[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations3[i][0], EOTSCPLocations3[i][1], EOTSCPLocations3[i][2], 0);
         m_CPBanner3[i]->PushToWorld(m_mapMgr);
     }
 

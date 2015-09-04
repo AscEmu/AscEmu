@@ -2324,7 +2324,7 @@ bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_sessi
     }
 
     trans->SetPeriod(np);
-    BlueSystemMessage(m_session, "Period of %s set to %u.", trans->GetInfo()->Name, np);
+    BlueSystemMessage(m_session, "Period of %s set to %u.", trans->GetInfo()->name, np);
     return true;
 }
 
@@ -3214,25 +3214,25 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
 
     GreenSystemMessage(m_session, "Starting search of object `%s`...", x.c_str());
     uint32 t = getMSTime();
-    GameObjectInfo* i;
+    GameObjectInfo* gameobject_info;
     uint32 count = 0;
     string y;
     string recout;
     while (!itr->AtEnd())
     {
-        i = itr->Get();
-        y = string(i->Name);
+        gameobject_info = itr->Get();
+        y = string(gameobject_info->name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
         {
             //string objectID=MyConvertIntToString(i->ID);
             string Name;
             std::stringstream strm;
-            strm << i->ID;
+            strm << gameobject_info->entry;
             strm << ", Display ";
-            strm << i->DisplayID;
+            strm << gameobject_info->display_id;
             //string ObjectID = i.c_str();
-            const char* objectName = i->Name;
+            const char* objectName = gameobject_info->name;
             recout = "|cfffff000Object ";
             recout += strm.str();
             recout += "|cffFFFFFF: ";

@@ -174,9 +174,9 @@ class SCRIPT_DECL EasyFunctions
             if (plr == NULL)
                 return NULL;
 
-            GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(entry_id);
-            if (goi == NULL)
-                return NULL;
+            auto gameobject_info = GameObjectNameStorage.LookupEntry(entry_id);
+            if (gameobject_info == nullptr)
+                return nullptr;
 
             GameObject* pC = plr->GetMapMgr()->CreateGameObject(entry_id);
             //pC->spawnid=0;

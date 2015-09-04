@@ -77,38 +77,38 @@ typedef HM_NAMESPACE::hash_map<Quest*, std::map<uint32, uint32> > GameObjectItem
 #pragma pack(push,1)
 struct GameObjectInfo
 {
-	uint32 ID;
-	uint32 Type;
-	uint32 DisplayID;
-	const char* Name;
-	char* Category;
-	char* Castbartext;
+	uint32 entry;
+	uint32 type;
+	uint32 display_id;
+	const char* name;
+	char* category_name;
+	char* cast_bar_text;
 	char* Unkstr;
-    uint32 SpellFocus;
-	uint32 sound1;
-	uint32 sound2;
-	uint32 sound3;
-	uint32 sound4;
-	uint32 sound5;
-	uint32 sound6;
-	uint32 sound7;
-	uint32 sound8;
-	uint32 sound9;
-	uint32 Unknown1;
-	uint32 Unknown2;
-	uint32 Unknown3;
-	uint32 Unknown4;
-	uint32 Unknown5;
-	uint32 Unknown6;
-	uint32 Unknown7;
-	uint32 Unknown8;
-	uint32 Unknown9;
-	uint32 Unknown10;
-	uint32 Unknown11;
-	uint32 Unknown12;
-	uint32 Unknown13;
-	uint32 Unknown14;
-	float Size;
+    uint32 parameter_0;
+    uint32 parameter_1;
+    uint32 parameter_2;
+    uint32 parameter_3;
+    uint32 parameter_4;
+    uint32 parameter_5;
+    uint32 parameter_6;
+    uint32 parameter_7;
+    uint32 parameter_8;
+    uint32 parameter_9;
+    uint32 parameter_10;
+    uint32 parameter_11;
+    uint32 parameter_12;
+    uint32 parameter_13;
+    uint32 parameter_14;
+    uint32 parameter_15;
+    uint32 parameter_16;
+    uint32 parameter_17;
+    uint32 parameter_18;
+    uint32 parameter_19;
+    uint32 parameter_20;
+    uint32 parameter_21;
+    uint32 parameter_22;
+    uint32 parameter_23;
+	float size;
 	uint32 QuestItems[6];
 
 	// Quests
@@ -278,7 +278,7 @@ class SERVER_DECL GameObject : public Object
 		void CalcMineRemaining(bool force)
 		{
 			if (force || !usage_remaining)
-				usage_remaining = GetInfo()->sound4 + RandomUInt(GetInfo()->sound5 - GetInfo()->sound4) - 1;
+                usage_remaining = GetInfo()->parameter_4 + RandomUInt(GetInfo()->parameter_5 - GetInfo()->parameter_4) - 1;
 		}
 
 		bool CanFish() { return (usage_remaining > 0); }
@@ -286,7 +286,7 @@ class SERVER_DECL GameObject : public Object
 		void CalcFishRemaining(bool force)
 		{
 			if (force || !usage_remaining)
-				usage_remaining = GetInfo()->sound2 + RandomUInt(GetInfo()->sound3 - GetInfo()->sound2) - 1;
+                usage_remaining = GetInfo()->parameter_2 + RandomUInt(GetInfo()->parameter_3 - GetInfo()->parameter_2) - 1;
 		}
 
 		bool HasLoot();

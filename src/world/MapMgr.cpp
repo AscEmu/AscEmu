@@ -1736,8 +1736,8 @@ Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
 // Spawns the object too, without which you can not interact with the object
 GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale)
 {
-    GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(entryID);
-    if (!goi)
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(entryID);
+    if (!gameobject_info)
     {
         LOG_DEBUG("Error looking up entry in CreateAndSpawnGameObject");
         return NULL;

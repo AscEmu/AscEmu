@@ -2321,7 +2321,7 @@ GameObjectAIScript* CreateLuaGameObjectScript(GameObject* src)
     LuaGameObjectScript* script = NULL;
     if (src != NULL)
     {
-        uint32 id = src->GetInfo()->ID;
+        uint32 id = src->GetInfo()->entry;
         LuaObjectBinding* pBinding = NULL;
         pBinding = sLuaMgr.getGameObjectBinding(id);
         if (pBinding != NULL)
