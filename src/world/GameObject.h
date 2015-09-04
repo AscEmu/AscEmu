@@ -23,18 +23,18 @@
 
 enum GO_STATE
 {
-	GAMEOBJECT_STATE_OPEN              =  0,
-	GAMEOBJECT_STATE_CLOSED            =  1,
-	GAMEOBJECT_STATE_ALTERNATIVE_OPEN  =  2
+    GAMEOBJECT_STATE_OPEN               = 0,
+    GAMEOBJECT_STATE_CLOSED             = 1,
+    GAMEOBJECT_STATE_ALTERNATIVE_OPEN   = 2
 };
 
 enum GO_FLAGS
 {
-	GAMEOBJECT_FLAG_NONSELECTABLE  = 0x1,
-	GAMEOBJECT_FLAG_LOCKED         = 0x2,
-	GAMEOBJECT_FLAG_UNTARGETABLE   = 0x4,
-	GAMEOBJECT_FLAG_DAMAGED        = 0x200,
-	GAMEOBJECT_FLAG_DESTROYED      = 0x400
+    GAMEOBJECT_FLAG_NONSELECTABLE   = 0x001,
+    GAMEOBJECT_FLAG_LOCKED          = 0x002,
+    GAMEOBJECT_FLAG_UNTARGETABLE    = 0x004,
+    GAMEOBJECT_FLAG_DAMAGED         = 0x200,
+    GAMEOBJECT_FLAG_DESTROYED       = 0x400
 };
 
 class Player;
@@ -43,20 +43,20 @@ class GameObjectTemplate;
 
 struct GOQuestItem
 {
-	uint32 itemid;
-	uint32 requiredcount;
+    uint32 itemid;
+    uint32 requiredcount;
 };
 
 struct GOQuestGameObject
 {
-	uint32 goid;
-	uint32 requiredcount;
+    uint32 goid;
+    uint32 requiredcount;
 };
 
 enum GAMEOBJECT_FLAG_BIT
 {
-    GAMEOBJECT_UNCLICKABLE = 0x01,
-    GAMEOBJECT_CLICKABLE = 0x20,
+    GAMEOBJECT_UNCLICKABLE  = 0x01,
+    GAMEOBJECT_CLICKABLE    = 0x20,
 };
 
 enum GAMEOBJECT_OVERRIDES
@@ -77,13 +77,13 @@ typedef HM_NAMESPACE::hash_map<Quest*, std::map<uint32, uint32> > GameObjectItem
 #pragma pack(push,1)
 struct GameObjectInfo
 {
-	uint32 entry;
-	uint32 type;
-	uint32 display_id;
-	const char* name;
-	char* category_name;
-	char* cast_bar_text;
-	char* Unkstr;
+    uint32 entry;
+    uint32 type;
+    uint32 display_id;
+    const char* name;
+    char* category_name;
+    char* cast_bar_text;
+    char* Unkstr;
     uint32 parameter_0;
     uint32 parameter_1;
     uint32 parameter_2;
@@ -108,234 +108,235 @@ struct GameObjectInfo
     uint32 parameter_21;
     uint32 parameter_22;
     uint32 parameter_23;
-	float size;
-	uint32 QuestItems[6];
+    float size;
+    uint32 QuestItems[6];
 
-	// Quests
-	GameObjectGOMap goMap;
-	GameObjectItemMap itemMap;
+    // Quests
+    GameObjectGOMap goMap;
+    GameObjectItemMap itemMap;
 };
 #pragma pack(pop)
 
 enum GAMEOBJECT_BYTES
 {
-    GAMEOBJECT_BYTES_STATE			= 0,
-    GAMEOBJECT_BYTES_TYPE_ID		= 1,
-    GAMEOBJECT_BYTES_UNK = 2,        ///\todo unknown atm
-    GAMEOBJECT_BYTES_ANIMPROGRESS	= 3,
+    GAMEOBJECT_BYTES_STATE          = 0,
+    GAMEOBJECT_BYTES_TYPE_ID        = 1,
+    GAMEOBJECT_BYTES_UNK            = 2,    ///\todo unknown atm
+    GAMEOBJECT_BYTES_ANIMPROGRESS   = 3,
 };
 
 enum GAMEOBJECT_TYPES
 {
-    GAMEOBJECT_TYPE_DOOR					= 0,
-    GAMEOBJECT_TYPE_BUTTON					= 1,
-    GAMEOBJECT_TYPE_QUESTGIVER				= 2,
-    GAMEOBJECT_TYPE_CHEST					= 3,
-    GAMEOBJECT_TYPE_BINDER					= 4,
-    GAMEOBJECT_TYPE_GENERIC					= 5,
-    GAMEOBJECT_TYPE_TRAP					= 6,
-    GAMEOBJECT_TYPE_CHAIR					= 7,
-    GAMEOBJECT_TYPE_SPELL_FOCUS				= 8,
-    GAMEOBJECT_TYPE_TEXT					= 9,
-    GAMEOBJECT_TYPE_GOOBER					= 10,
-    GAMEOBJECT_TYPE_TRANSPORT				= 11,
-    GAMEOBJECT_TYPE_AREADAMAGE				= 12,
-    GAMEOBJECT_TYPE_CAMERA					= 13,
-    GAMEOBJECT_TYPE_MAP_OBJECT				= 14,
-    GAMEOBJECT_TYPE_MO_TRANSPORT			= 15,
-    GAMEOBJECT_TYPE_DUEL_ARBITER			= 16,
-    GAMEOBJECT_TYPE_FISHINGNODE				= 17,
-    GAMEOBJECT_TYPE_RITUAL					= 18,
-    GAMEOBJECT_TYPE_MAILBOX					= 19,
-    GAMEOBJECT_TYPE_AUCTIONHOUSE			= 20,
-    GAMEOBJECT_TYPE_GUARDPOST				= 21,
-    GAMEOBJECT_TYPE_SPELLCASTER				= 22,
-    GAMEOBJECT_TYPE_MEETINGSTONE			= 23,
-    GAMEOBJECT_TYPE_FLAGSTAND				= 24,
-    GAMEOBJECT_TYPE_FISHINGHOLE				= 25,
-    GAMEOBJECT_TYPE_FLAGDROP				= 26,
-    GAMEOBJECT_TYPE_MINI_GAME				= 27,
-    GAMEOBJECT_TYPE_LOTTERY_KIOSK			= 28,
-    GAMEOBJECT_TYPE_CAPTURE_POINT			= 29,
-    GAMEOBJECT_TYPE_AURA_GENERATOR			= 30,
-    GAMEOBJECT_TYPE_DUNGEON_DIFFICULTY		= 31,
-    GAMEOBJECT_TYPE_BARBER_CHAIR			= 32,
-    GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING	= 33,
-    GAMEOBJECT_TYPE_GUILD_BANK				= 34,
-    GAMEOBJECT_TYPE_TRAPDOOR				= 35
+    GAMEOBJECT_TYPE_DOOR                    = 0,
+    GAMEOBJECT_TYPE_BUTTON                  = 1,
+    GAMEOBJECT_TYPE_QUESTGIVER              = 2,
+    GAMEOBJECT_TYPE_CHEST                   = 3,
+    GAMEOBJECT_TYPE_BINDER                  = 4,
+    GAMEOBJECT_TYPE_GENERIC                 = 5,
+    GAMEOBJECT_TYPE_TRAP                    = 6,
+    GAMEOBJECT_TYPE_CHAIR                   = 7,
+    GAMEOBJECT_TYPE_SPELL_FOCUS             = 8,
+    GAMEOBJECT_TYPE_TEXT                    = 9,
+    GAMEOBJECT_TYPE_GOOBER                  = 10,
+    GAMEOBJECT_TYPE_TRANSPORT               = 11,
+    GAMEOBJECT_TYPE_AREADAMAGE              = 12,
+    GAMEOBJECT_TYPE_CAMERA                  = 13,
+    GAMEOBJECT_TYPE_MAP_OBJECT              = 14,
+    GAMEOBJECT_TYPE_MO_TRANSPORT            = 15,
+    GAMEOBJECT_TYPE_DUEL_ARBITER            = 16,
+    GAMEOBJECT_TYPE_FISHINGNODE             = 17,
+    GAMEOBJECT_TYPE_RITUAL                  = 18,
+    GAMEOBJECT_TYPE_MAILBOX                 = 19,
+    GAMEOBJECT_TYPE_AUCTIONHOUSE            = 20,
+    GAMEOBJECT_TYPE_GUARDPOST               = 21,
+    GAMEOBJECT_TYPE_SPELLCASTER             = 22,
+    GAMEOBJECT_TYPE_MEETINGSTONE            = 23,
+    GAMEOBJECT_TYPE_FLAGSTAND               = 24,
+    GAMEOBJECT_TYPE_FISHINGHOLE             = 25,
+    GAMEOBJECT_TYPE_FLAGDROP                = 26,
+    GAMEOBJECT_TYPE_MINI_GAME               = 27,
+    GAMEOBJECT_TYPE_LOTTERY_KIOSK           = 28,
+    GAMEOBJECT_TYPE_CAPTURE_POINT           = 29,
+    GAMEOBJECT_TYPE_AURA_GENERATOR          = 30,
+    GAMEOBJECT_TYPE_DUNGEON_DIFFICULTY      = 31,
+    GAMEOBJECT_TYPE_BARBER_CHAIR            = 32,
+    GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING   = 33,
+    GAMEOBJECT_TYPE_GUILD_BANK              = 34,
+    GAMEOBJECT_TYPE_TRAPDOOR                = 35
 };
 
 #define CALL_GO_SCRIPT_EVENT(obj, func) if (obj->IsGameObject() && TO< GameObject* >(obj)->GetScript() != NULL) TO< GameObject* >(obj)->GetScript()->func
 
 class SERVER_DECL GameObject : public Object
 {
-	public:
+    public:
+
         /// LUA Stuff
-		GameObject(uint64 guid);
-		~GameObject();
+        GameObject(uint64 guid);
+        ~GameObject();
 
         GameEvent* mEvent = nullptr;
 
-		GameObjectInfo* GetInfo() { return pInfo; }
-		void SetInfo(GameObjectInfo* goi) { pInfo = goi; }
+        GameObjectInfo* GetInfo() { return pInfo; }
+        void SetInfo(GameObjectInfo* goi) { pInfo = goi; }
 
-		bool CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0 = 0.0f, float r1 = 0.0f, float r2 = 0.0f, float r3 = 0.0f, uint32 overrides = 0);
+        bool CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0 = 0.0f, float r1 = 0.0f, float r2 = 0.0f, float r3 = 0.0f, uint32 overrides = 0);
 
-		bool Load(GOSpawn* spawn);
+        bool Load(GOSpawn* spawn);
 
-		virtual void Update(uint32 p_time);
+        virtual void Update(uint32 p_time);
 
-		void Spawn(MapMgr* m);
-		void Despawn(uint32 delay, uint32 respawntime);
-		Loot loot;
+        void Spawn(MapMgr* m);
+        void Despawn(uint32 delay, uint32 respawntime);
+        Loot loot;
 
-		//void _EnvironmentalDamageUpdate();
-		// Serialization
-		void SaveToDB();
-		void SaveToFile(std::stringstream & name);
-		//bool LoadFromDB(uint32 guid);
-		//void LoadFromDB(GameObjectTemplate *t);
-		void DeleteFromDB();
-		void EventCloseDoor();
-		void EventCastSpell(uint32 guid, uint32 sp, bool triggered);
-		void SetRotation(float rad);
-		uint64 m_rotation;
-		void UpdateRotation();
+        //void _EnvironmentalDamageUpdate();
+        // Serialization
+        void SaveToDB();
+        void SaveToFile(std::stringstream & name);
+        //bool LoadFromDB(uint32 guid);
+        //void LoadFromDB(GameObjectTemplate *t);
+        void DeleteFromDB();
+        void EventCloseDoor();
+        void EventCastSpell(uint32 guid, uint32 sp, bool triggered);
+        void SetRotation(float rad);
+        uint64 m_rotation;
+        void UpdateRotation();
 
-		//Fishing stuff
-		void UseFishingNode(Player* player);
-		void EndFishing(Player* player, bool abort);
-		void FishHooked(Player* player);
+        //Fishing stuff
+        void UseFishingNode(Player* player);
+        void EndFishing(Player* player, bool abort);
+        void FishHooked(Player* player);
 
-		// Quests
-		void _LoadQuests();
-		bool HasQuests() { return m_quests != NULL; };
-		void AddQuest(QuestRelation* Q);
-		void DeleteQuest(QuestRelation* Q);
-		Quest* FindQuest(uint32 quest_id, uint8 quest_relation);
-		uint16 GetQuestRelation(uint32 quest_id);
-		uint32 NumOfQuests();
-		std::list<QuestRelation*>::iterator QuestsBegin() { return m_quests->begin(); };
-		std::list<QuestRelation*>::iterator QuestsEnd() { return m_quests->end(); };
-		void SetQuestList(std::list<QuestRelation*>* qst_lst) { m_quests = qst_lst; };
+        // Quests
+        void _LoadQuests();
+        bool HasQuests() { return m_quests != NULL; };
+        void AddQuest(QuestRelation* Q);
+        void DeleteQuest(QuestRelation* Q);
+        Quest* FindQuest(uint32 quest_id, uint8 quest_relation);
+        uint16 GetQuestRelation(uint32 quest_id);
+        uint32 NumOfQuests();
+        std::list<QuestRelation*>::iterator QuestsBegin() { return m_quests->begin(); };
+        std::list<QuestRelation*>::iterator QuestsEnd() { return m_quests->end(); };
+        void SetQuestList(std::list<QuestRelation*>* qst_lst) { m_quests = qst_lst; };
 
-		void SetSummoned(Unit* mob)
-		{
-			m_summoner = mob;
-			m_summonedGo = true;
-		}
-		void _Expire();
+        void SetSummoned(Unit* mob)
+        {
+            m_summoner = mob;
+            m_summonedGo = true;
+        }
+        void _Expire();
 
-		void ExpireAndDelete();
+        void ExpireAndDelete();
 
-		void Deactivate();
-		void Activate();
+        void Deactivate();
+        void Activate();
 
-		bool isQuestGiver()
-		{
-			//from GameObject::CreateFromProto - SetType(pInfo->Type);
-			if (GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
-				return true;
-			else
-				return false;
-		};
+        bool isQuestGiver()
+        {
+            //from GameObject::CreateFromProto - SetType(pInfo->Type);
+            if (GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+                return true;
+            else
+                return false;
+        };
 
-		/// Quest data
-		std::list<QuestRelation*>* m_quests;
+        /// Quest data
+        std::list<QuestRelation*>* m_quests;
 
-		uint32* m_ritualmembers;
-		uint32 m_ritualcaster, m_ritualtarget;
-		uint16 m_ritualspell;
+        uint32* m_ritualmembers;
+        uint32 m_ritualcaster, m_ritualtarget;
+        uint16 m_ritualspell;
 
-		void InitAI();
-		SpellEntry* spell;
+        void InitAI();
+        SpellEntry* spell;
 
-		float range;
-		uint8 checkrate;
-		uint16 counter;
+        float range;
+        uint8 checkrate;
+        uint16 counter;
         int32 charges;      /// used for type==22,to limit number of usages.
         bool invisible;     /// invisible
-		uint8 invisibilityFlag;
-		Unit* m_summoner;
-		int8 bannerslot;
-		int8 bannerauraslot;
+        uint8 invisibilityFlag;
+        Unit* m_summoner;
+        int8 bannerslot;
+        int8 bannerauraslot;
 
-		void CallScriptUpdate();
+        void CallScriptUpdate();
 
-		GameObjectAIScript* GetScript() { return myScript; }
+        GameObjectAIScript* GetScript() { return myScript; }
 
         void TrapSearchTarget();	/// Traps need to find targets faster :P
 
-		bool HasAI() { return spell != 0; }
+        bool HasAI() { return spell != 0; }
 
-		GOSpawn* m_spawn;
-		void OnPushToWorld();
-		void OnRemoveInRangeObject(Object* pObj);
-		void RemoveFromWorld(bool free_guid);
+        GOSpawn* m_spawn;
+        void OnPushToWorld();
+        void OnRemoveInRangeObject(Object* pObj);
+        void RemoveFromWorld(bool free_guid);
 
-		bool CanMine() {return (usage_remaining > 0);}
-		void UseMine() { if (usage_remaining) usage_remaining--;}
-		void CalcMineRemaining(bool force)
-		{
-			if (force || !usage_remaining)
+        bool CanMine() { return (usage_remaining > 0); }
+        void UseMine() { if (usage_remaining) usage_remaining--; }
+        void CalcMineRemaining(bool force)
+        {
+            if (force || !usage_remaining)
                 usage_remaining = GetInfo()->parameter_4 + RandomUInt(GetInfo()->parameter_5 - GetInfo()->parameter_4) - 1;
-		}
+        }
 
-		bool CanFish() { return (usage_remaining > 0); }
-		void CatchFish() { if (usage_remaining) usage_remaining--; }
-		void CalcFishRemaining(bool force)
-		{
-			if (force || !usage_remaining)
+        bool CanFish() { return (usage_remaining > 0); }
+        void CatchFish() { if (usage_remaining) usage_remaining--; }
+        void CalcFishRemaining(bool force)
+        {
+            if (force || !usage_remaining)
                 usage_remaining = GetInfo()->parameter_2 + RandomUInt(GetInfo()->parameter_3 - GetInfo()->parameter_2) - 1;
-		}
+        }
 
-		bool HasLoot();
-		uint32 GetGOReqSkill();
-		MapCell* m_respawnCell;
+        bool HasLoot();
+        uint32 GetGOReqSkill();
+        MapCell* m_respawnCell;
 
-		void SetState(uint8 state);
-		uint8 GetState();
+        void SetState(uint8 state);
+        uint8 GetState();
 
-		uint32 GetOverrides() { return m_overrides; }
+        uint32 GetOverrides() { return m_overrides; }
 
-		//Easy Functions
-		void SetDisplayId(uint32 id) { SetUInt32Value(GAMEOBJECT_DISPLAYID, id); }
-		uint32 GetDisplayId() { return GetUInt32Value(GAMEOBJECT_DISPLAYID); }
+        //Easy Functions
+        void SetDisplayId(uint32 id) { SetUInt32Value(GAMEOBJECT_DISPLAYID, id); }
+        uint32 GetDisplayId() { return GetUInt32Value(GAMEOBJECT_DISPLAYID); }
 
-		void SetParentRotation(uint8 rot, float value) { SetFloatValue(GAMEOBJECT_PARENTROTATION + rot, value); }
-		float GetParentRotation(uint8 rot) { return GetFloatValue(GAMEOBJECT_PARENTROTATION + rot); }
+        void SetParentRotation(uint8 rot, float value) { SetFloatValue(GAMEOBJECT_PARENTROTATION + rot, value); }
+        float GetParentRotation(uint8 rot) { return GetFloatValue(GAMEOBJECT_PARENTROTATION + rot); }
 
-		void SetFaction(uint32 id)
-		{
-			SetUInt32Value(GAMEOBJECT_FACTION, id);
-			_setFaction();
-		}
-		uint32 GetFaction() { return GetUInt32Value(GAMEOBJECT_FACTION); }
+        void SetFaction(uint32 id)
+        {
+            SetUInt32Value(GAMEOBJECT_FACTION, id);
+            _setFaction();
+        }
+        uint32 GetFaction() { return GetUInt32Value(GAMEOBJECT_FACTION); }
 
-		void SetLevel(uint32 level) { SetUInt32Value(GAMEOBJECT_LEVEL, level); }
-		uint32 GetLevel() { return GetUInt32Value(GAMEOBJECT_LEVEL); }
+        void SetLevel(uint32 level) { SetUInt32Value(GAMEOBJECT_LEVEL, level); }
+        uint32 GetLevel() { return GetUInt32Value(GAMEOBJECT_LEVEL); }
 
-		void SetType(uint8 type) { SetByte(GAMEOBJECT_BYTES_1, 1, type); }
-		uint8 GetType() { return GetByte(GAMEOBJECT_BYTES_1, 1); }
-		
-		void SetFlags(uint32 flags){ SetUInt32Value(GAMEOBJECT_FLAGS, flags); }		
-		uint32 GetFlags(){ return GetUInt32Value(GAMEOBJECT_FLAGS); }
-		void RemoveFlags(uint32 flags){ RemoveFlag(GAMEOBJECT_FLAGS, flags); }
-		
+        void SetType(uint8 type) { SetByte(GAMEOBJECT_BYTES_1, 1, type); }
+        uint8 GetType() { return GetByte(GAMEOBJECT_BYTES_1, 1); }
+
+        void SetFlags(uint32 flags) { SetUInt32Value(GAMEOBJECT_FLAGS, flags); }
+        uint32 GetFlags() { return GetUInt32Value(GAMEOBJECT_FLAGS); }
+        void RemoveFlags(uint32 flags) { RemoveFlag(GAMEOBJECT_FLAGS, flags); }
+
         bool HasFlags(uint32 flags)
         {
-			if (HasFlag(GAMEOBJECT_FLAGS, flags) != 0)
-				return true;
-			else
-				return false;
-		}
-		
-		void SetArtKit(uint8 artkit){ SetByte(GAMEOBJECT_BYTES_1, 2, artkit); }
-		uint8 GetArtkKit(){ return GetByte(GAMEOBJECT_BYTES_1, 2); }
+            if (HasFlag(GAMEOBJECT_FLAGS, flags) != 0)
+                return true;
+            else
+                return false;
+        }
 
-		void SetAnimProgress(uint8 progress){ SetByte(GAMEOBJECT_BYTES_1, 3, progress); }
-		uint8 GetAnimProgress(){ return GetByte(GAMEOBJECT_BYTES_1, 3); }
-		
+        void SetArtKit(uint8 artkit) { SetByte(GAMEOBJECT_BYTES_1, 2, artkit); }
+        uint8 GetArtkKit() { return GetByte(GAMEOBJECT_BYTES_1, 2); }
+
+        void SetAnimProgress(uint8 progress) { SetByte(GAMEOBJECT_BYTES_1, 3, progress); }
+        uint8 GetAnimProgress() { return GetByte(GAMEOBJECT_BYTES_1, 3); }
+
         //////////////////////////////////////////////////////////////////////////////////////////
         /// void Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
         /// Damages the destructible GameObject with a spell
@@ -348,7 +349,7 @@ class SERVER_DECL GameObject : public Object
         /// \returns none
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		void Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID,  uint32 SpellID);
+        void Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -360,7 +361,7 @@ class SERVER_DECL GameObject : public Object
         /// \returns none
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		void Rebuild();
+        void Rebuild();
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -372,7 +373,7 @@ class SERVER_DECL GameObject : public Object
         /// \returns the current hitpoints of the GameObject
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		uint32 GetHP(){ return hitpoints; }
+        uint32 GetHP() { return hitpoints; }
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -384,7 +385,8 @@ class SERVER_DECL GameObject : public Object
         /// \returns the maximum hitpoints of the GameObject
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		uint32 GetMaxHP(){ return maxhitpoints; }
+        uint32 GetMaxHP() { return maxhitpoints; }
+
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// void Restock()
@@ -395,15 +397,15 @@ class SERVER_DECL GameObject : public Object
         /// \returns none
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		void ReStock();
+        void ReStock();
 
-	protected:
+    protected:
 
-		bool m_summonedGo;
-		bool m_deleted;
-		GameObjectInfo* pInfo;
-		GameObjectAIScript* myScript;
-		uint32 _fields[GAMEOBJECT_END];
+        bool m_summonedGo;
+        bool m_deleted;
+        GameObjectInfo* pInfo;
+        GameObjectAIScript* myScript;
+        uint32 _fields[GAMEOBJECT_END];
         uint32 usage_remaining;         ///used for mining to mark times it can be mined
         uint32 m_overrides;             ///See enum GAMEOBJECT_OVERRIDES!
 
@@ -420,11 +422,11 @@ class SERVER_DECL GameObject : public Object
         /// \returns none
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		void SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID);
-		
-		
-		uint32 hitpoints;
-		uint32 maxhitpoints;
+        void SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID);
+
+
+        uint32 hitpoints;
+        uint32 maxhitpoints;
 
 };
 
