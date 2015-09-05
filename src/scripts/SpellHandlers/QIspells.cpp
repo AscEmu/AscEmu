@@ -920,10 +920,6 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     if (!pPlayer->HasQuest(10609))
         return true;
 
-    srand((int)time(NULL));
-    int random = static_cast<int>(rand() * 4.33);
-    srand(random * 23);
-
     Creature* whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 20021);
     if (whelp)
     {

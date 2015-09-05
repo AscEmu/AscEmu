@@ -1689,7 +1689,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 {
                     Player* psacrifice = NULL;
                     // kill the sacrifice player
-                    psacrifice = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[(int)(rand() % (gameobject_info->parameter_0 - 1))]);
+                    psacrifice = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[RandomUInt(gameobject_info->parameter_0 - 1)]);
                     Player* pCaster = obj->GetMapMgr()->GetPlayer(obj->m_ritualcaster);
                     if (!psacrifice || !pCaster)
                         return;

@@ -1839,10 +1839,10 @@ void Creature::SetGuardWaypoints()
     GetAIInterface()->setMoveType(1);
     for (int i = 1; i <= 4; i++)
     {
-        float ang = rand() / 100.0f;
-        float ran = (rand() % (100)) / 10.0f;
+        float ang = RandomFloat(100.0f) / 100.0f;
+        float ran = RandomFloat(100.0f) / 10.0f;
         while (ran < 1)
-            ran = (rand() % (100)) / 10.0f;
+            ran = RandomFloat(100.0f) / 10.0f;
 
         WayPoint* wp = new WayPoint;
         wp->id = i;

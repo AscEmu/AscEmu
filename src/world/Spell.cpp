@@ -4590,7 +4590,7 @@ exit:
     if (randomPoints <= 1)
         value = basePoints;
     else
-        value = basePoints + rand() % randomPoints;
+        value = basePoints + (int32)RandomUInt(randomPoints);
 
     int32 comboDamage = (int32)GetProto()->EffectPointsPerComboPoint[i];
     if (comboDamage && p_caster != NULL)

@@ -1731,7 +1731,7 @@ class ShadeofAranAI : public CreatureAIScript
             }
 
             while(Targets.size() > 3)
-                Targets.erase(Targets.begin() + rand() % Targets.size());
+                Targets.erase(Targets.begin() + RandomUInt(Targets.size()));
 
             uint32 i = 0;
             for (std::vector<Player*>::iterator itr = Targets.begin(); itr != Targets.end(); ++itr)
@@ -3084,7 +3084,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             }
 
             while(Targets.size() > 5)
-                Targets.erase(Targets.begin() + rand() % Targets.size());
+                Targets.erase(Targets.begin() + RandomUInt(Targets.size()));
 
             int i = 0;
             for (std::vector<Player*>::iterator E_Itr = Targets.begin(); E_Itr != Targets.end(); ++E_Itr)
