@@ -1357,8 +1357,17 @@ void World::Rehash(bool load)
 {
     if (load)
     {
-        Config.MainConfig.SetSource(CONFDIR "/world.conf", true);
-        Config.OptionalConfig.SetSource(CONFDIR "/optional.conf", true);
+        // This will only happen if someone deleted/renamed the con-files after the server started...
+        if (!Config.MainConfig.SetSource(CONFDIR "/world.conf", true))
+        {
+            LOG_ERROR("Rehash: file world.conf not available o.O !");
+            return;
+        }
+        if (!Config.OptionalConfig.SetSource(CONFDIR "/optional.conf", true))
+        {
+            LOG_ERROR("Rehash: file optional.conf not available o.O !");
+            return;
+        }
     }
     if (!ChannelMgr::getSingletonPtr())
         new ChannelMgr;
