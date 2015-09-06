@@ -261,22 +261,26 @@ const bool TerrainHolder::GetAreaInfo(float x, float y, float z, uint32 &mogp_fl
 
 void TileMap::Load(char* filename)
 {
-    sLog.Debug("Terrain", "Loading %s", filename);
+    sLog.Debug("TerrainMgr", "Loading %s", filename);
     FILE* f = fopen(filename, "rb");
 
     if (f == NULL)
     {
-        sLog.Error("Terrain", "%s does not exist", filename);
+        sLog.Error("TerrainMgr", "%s does not exist", filename);
         return;
     }
 
     TileMapHeader header;
 
-    fread(&header, 1, sizeof(header), f);
+    if (fread(&header, sizeof(header), 1, f) != 1)
+    {
+        fclose(f);
+        return;
+    }
 
     if (header.buildMagic != 12340)  //wow version
     {
-        sLog.Error("Terrain", "%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, 12340);
+        sLog.Error("TerrainMgr", "%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, 12340);
         fclose(f);
         return;
     }

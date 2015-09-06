@@ -216,14 +216,12 @@ bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleInfoCommand(const char* args, WorldSession* m_session)
 {
-    WorldPacket data;
-
-
     //uint32 clientsNum = (uint32)sWorld.GetSessionCount();
 
-    int gm = 0;
-    int count = 0;
-    int avg = 0;
+    uint16 gm = 0;
+    uint16 count = 0;
+    float avg = 0;
+
     PlayerStorageMap::const_iterator itr;
     objmgr._playerslock.AcquireReadLock();
     for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
@@ -237,12 +235,14 @@ bool ChatHandler::HandleInfoCommand(const char* args, WorldSession* m_session)
         }
     }
     objmgr._playerslock.ReleaseReadLock();
+
     GreenSystemMessage(m_session, "Server Revision: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
     GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
-    GreenSystemMessage(m_session, "Current Players: |r%d (%d GMs) (%u Peak)", count, gm, sWorld.PeakSessionCount);
+    GreenSystemMessage(m_session, "Current GMs: |r%u GMs", gm);
+    GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", gm > 0 ? (count - gm) : count, sWorld.PeakSessionCount);
     GreenSystemMessage(m_session, "Active Thread Count: |r%u", ThreadPool.GetActiveThreadCount());
     GreenSystemMessage(m_session, "Free Thread Count: |r%u", ThreadPool.GetFreeThreadCount());
-    GreenSystemMessage(m_session, "Average Latency: |r%.3fms", ((float)avg / (float)count));
+    GreenSystemMessage(m_session, "Average Latency: |r%.3fms", count > 0 ? (avg / count) : avg);
     GreenSystemMessage(m_session, "CPU Usage: %3.2f %%", sWorld.GetCPUUsage());
     GreenSystemMessage(m_session, "RAM Usage: %4.2f MB", sWorld.GetRAMUsage());
     GreenSystemMessage(m_session, "SQL Query Cache Size (World): |r%u queries delayed", WorldDatabase.GetQueueSize());

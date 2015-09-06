@@ -155,7 +155,11 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         buf = new char[length + 1];
         fseek(f, 0, SEEK_SET);
 
-        fread(buf, length, 1, f);
+        if (fread(buf, length, 1, f) != 1)
+        {
+            sLog.outError("Could not read %s.", file);
+            return false;
+        }
         buf[length] = '\0';
         string buffer = string(buf);
         delete [] buf;

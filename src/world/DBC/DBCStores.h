@@ -1821,11 +1821,31 @@ class SERVER_DECL DBCStorage
                 return false;
 
             /* read the number of rows, and allocate our block on the heap */
-            fread(&header, 4, 1, f);
-            fread(&rows, 4, 1, f);
-            fread(&cols, 4, 1, f);
-            fread(&useless_shit, 4, 1, f);
-            fread(&string_length, 4, 1, f);
+            if (fread(&header, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
+            if (fread(&rows, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
+            if (fread(&cols, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
+            if (fread(&useless_shit, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
+            if (fread(&string_length, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
             pos = ftell(f);
 
             if (load_strings)
@@ -1834,7 +1854,8 @@ class SERVER_DECL DBCStorage
                 m_stringData = (char*)malloc(string_length);
                 m_stringlength = string_length;
                 if (m_stringData)
-                    fread(m_stringData, string_length, 1, f);
+                    if (fread(m_stringData, string_length, 1, f) != 1)
+                        return false;
             }
 
             if (fseek(f, pos, SEEK_SET) != 0)
@@ -1897,7 +1918,12 @@ class SERVER_DECL DBCStorage
                     continue;
                 }
 
-                fread(&val, 4, 1, f);
+                if (fread(&val, 4, 1, f) != 1)
+                {
+                    ++t;
+                    continue;
+                }
+
                 if (*t == 'x')
                 {
                     ++t;
