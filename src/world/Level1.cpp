@@ -284,7 +284,8 @@ bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_sess
         uint16 ofs = GetItemIDFromLink(args, &itemid);
         if (itemid == 0)
             return false;
-        sscanf(args + ofs, "%u %d", &count, &randomprop); // these may be empty
+        if (sscanf(args + ofs, "%u %d", &count, &randomprop) != 2)
+            return false; // these may be empty
     }
 
     Player* chr = getSelectedChar(m_session, false);

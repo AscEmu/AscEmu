@@ -81,7 +81,8 @@ ArenaTeam::ArenaTeam(Field* f)
     m_stat_gamesplayedseason = 0;
     m_stat_gameswonseason = 0;
     m_stat_gameswonweek = 0;
-    sscanf(f[z++].GetString(), "%u %u %u %u", &m_stat_gamesplayedweek, &m_stat_gameswonweek, &m_stat_gamesplayedseason, &m_stat_gameswonseason);
+    if (sscanf(f[z++].GetString(), "%u %u %u %u", &m_stat_gamesplayedweek, &m_stat_gameswonweek, &m_stat_gamesplayedseason, &m_stat_gameswonseason) != 3)
+        return;
 
     m_stat_ranking = f[z++].GetUInt32();
     for (i = 0; i < m_slots; ++i)
