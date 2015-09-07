@@ -104,8 +104,14 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
                 return;
 
             itm->SetStackCount(5);
-            pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
-            pUnit->CastSpell(pPlayer, 26218, true);
+            auto item_add_result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+            if (!item_add_result)
+            {
+                Log.Error("Event_WinterVeil", "Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
+                itm->DeleteMe();
+            }
+            else
+                pUnit->CastSpell(pPlayer, 26218, true);
         }
     }
 }

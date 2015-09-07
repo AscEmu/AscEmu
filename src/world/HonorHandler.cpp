@@ -215,7 +215,8 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         if (PvPTokenItem)
                         {
                             PvPTokenItem->SoulBind();
-                            pAffectedPlayer->GetItemInterface()->AddItemToFreeSlot(PvPTokenItem);
+                            if (!pAffectedPlayer->GetItemInterface()->AddItemToFreeSlot(PvPTokenItem))
+                                PvPTokenItem->DeleteMe();
                         }
                     }
                 }
