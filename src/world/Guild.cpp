@@ -429,6 +429,7 @@ void Guild::DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
 
 bool Guild::LoadFromDB(Field* f)
 {
+    m_lock.Acquire();
     m_guildId = f[0].GetUInt32();
     m_guildName = strdup(f[1].GetString());
     m_guildLeader = f[2].GetUInt32();
@@ -481,6 +482,7 @@ bool Guild::LoadFromDB(Field* f)
     }
     while (result->NextRow());
     delete result;
+    m_lock.Release();
 
     // load members
     result = CharacterDatabase.Query("SELECT * FROM guild_data WHERE guildid = %u", m_guildId);

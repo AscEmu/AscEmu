@@ -730,6 +730,8 @@ void Group::LoadFromDB(Field* fields)
 
     uint32 g;
     m_updateblock = true;
+
+    m_groupLock.Acquire();
     m_Id = fields[0].GetUInt32();
 
     ObjectMgr::getSingleton().AddGroup(this);
@@ -795,6 +797,8 @@ void Group::LoadFromDB(Field* fields)
     free(ids);
 
     m_updateblock = false;
+
+    m_groupLock.Release();
 }
 
 void Group::SaveToDB()
