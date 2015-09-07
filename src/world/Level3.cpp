@@ -3295,8 +3295,12 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
         if (FindXinYString(x, i->lowercase_name) || localizedFound)
         {
             // Print out the name in a cool highlighted fashion
-            SendHighlightedName(m_session, "Creature", localizedFound ? li->Name : i->Name, localizedFound ? liName : i->lowercase_name, x, i->Id);
-            ++count;
+            if (li != nullptr)
+            {
+                SendHighlightedName(m_session, "Creature", localizedFound ? li->Name : i->Name, localizedFound ? liName : i->lowercase_name, x, i->Id);
+                ++count;
+            }
+
             if (count == 25)
             {
                 RedSystemMessage(m_session, "More than 25 results returned. aborting.");

@@ -55,21 +55,23 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
         LOG_ERROR("Can't load a vehicle without vehicle id or data belonging to it.");
         ARCEMU_ASSERT(false);
     }
-
-    for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    else
     {
-        uint32 seatid = vehicle_info->seatID[i];
-
-        if (seatid != 0)
+        for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
         {
-            VehicleSeatEntry *seatinfo = dbcVehicleSeat.LookupEntry(seatid);
-            if (seatinfo == NULL)
-            {
-                LOG_ERROR("Invalid seat id %u for seat %u for vehicle id %u", seatid, i, vehicleid);
-                continue;
-            }
+            uint32 seatid = vehicle_info->seatID[i];
 
-            seats[i] = new VehicleSeat(seatinfo);
+            if (seatid != 0)
+            {
+                VehicleSeatEntry *seatinfo = dbcVehicleSeat.LookupEntry(seatid);
+                if (seatinfo == NULL)
+                {
+                    LOG_ERROR("Invalid seat id %u for seat %u for vehicle id %u", seatid, i, vehicleid);
+                    continue;
+                }
+
+                seats[i] = new VehicleSeat(seatinfo);
+            }
         }
     }
 

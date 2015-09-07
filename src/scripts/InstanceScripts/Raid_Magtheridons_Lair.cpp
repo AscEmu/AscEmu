@@ -525,8 +525,9 @@ class ManticronCubeGO : public GameObjectAIScript
                 {
                     Unit* GlobalCubeTrigger = NULL;
                     GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
-                    if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
-                        Counter++;
+                    if (Magtheridon != nullptr)
+                        if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+                            Counter++;
                 }
 
                 if (!Counter)
@@ -553,8 +554,9 @@ class ManticronCubeGO : public GameObjectAIScript
             {
                 Unit* GlobalCubeTrigger = NULL;
                 GlobalCubeTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(CubeTriggers[i].x, CubeTriggers[i].y, CubeTriggers[i].z, 17376);
-                if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
-                    Counter++;
+                if (Magtheridon != nullptr)
+                    if (GlobalCubeTrigger && GlobalCubeTrigger->GetChannelSpellId() == SHADOW_GRASP && CubeTrigger->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT) == Magtheridon->GetGUID())
+                        Counter++;
             }
 
             // If it's the first and the only one Cube triggering spell we use Magtheridon's yell

@@ -817,16 +817,19 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
     if (bExpires || m_Owner == NULL)     // don't update expiring pets
         return;
 
-    PlayerPet* pi = m_Owner->GetPlayerPet(m_PetNumber);
-    pi->active = !bSetToOffline;
-    pi->entry = GetEntry();
+    auto player_pet = m_Owner->GetPlayerPet(m_PetNumber);
+    if (player_pet == nullptr)
+        return;
+
+    player_pet->active = !bSetToOffline;
+    player_pet->entry = GetEntry();
     std::stringstream ss;
 
-    pi->name = GetName();
-    pi->number = m_PetNumber;
-    pi->xp = GetXP();
-    pi->level = getLevel();
-    pi->happinessupdate = m_HappinessTimer;
+    player_pet->name = GetName();
+    player_pet->number = m_PetNumber;
+    player_pet->xp = GetXP();
+    player_pet->level = getLevel();
+    player_pet->happinessupdate = m_HappinessTimer;
 
     // save actionbar
     ss.rdbuf()->str("");
@@ -842,22 +845,22 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
         ss << ",";
     }
 
-    pi->actionbar = ss.str();
-    pi->reset_cost = reset_cost;
-    pi->reset_time = reset_time;
-    pi->petstate = m_State;
-    pi->alive = isAlive();
-    pi->current_power = GetPower(GetPowerType());
-    pi->talentpoints = GetTPs();
-    pi->current_hp = GetHealth();
-    pi->current_happiness = GetPower(POWER_TYPE_HAPPINESS);
+    player_pet->actionbar = ss.str();
+    player_pet->reset_cost = reset_cost;
+    player_pet->reset_time = reset_time;
+    player_pet->petstate = m_State;
+    player_pet->alive = isAlive();
+    player_pet->current_power = GetPower(GetPowerType());
+    player_pet->talentpoints = GetTPs();
+    player_pet->current_hp = GetHealth();
+    player_pet->current_happiness = GetPower(POWER_TYPE_HAPPINESS);
 
     uint32 renamable = GetByte(UNIT_FIELD_BYTES_2, 2);
 
     if (renamable == PET_RENAME_ALLOWED)
-        pi->renamable = 1;
+        player_pet->renamable = 1;
     else
-        pi->renamable = 0;
+        player_pet->renamable = 0;
 }
 
 void Pet::Dismiss()     //Abandon pet
