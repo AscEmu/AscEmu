@@ -1859,7 +1859,10 @@ class SERVER_DECL DBCStorage
             }
 
             if (fseek(f, pos, SEEK_SET) != 0)
+            {
+                fclose(f);
                 return false;
+            }
 
             m_heapBlock = (T*)malloc(rows * sizeof(T));
             ASSERT(m_heapBlock);

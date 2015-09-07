@@ -268,8 +268,10 @@ void CCollideInterface::ActivateMap(uint32 mapid)
         if (fread(&params, sizeof(params), 1, f) != 1)
         {
             m_navmaplock.Release();
+            fclose(f);
             return;
         }
+
         fclose(f);
 
         NavMeshData* d = new NavMeshData;

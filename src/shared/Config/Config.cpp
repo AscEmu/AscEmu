@@ -158,6 +158,9 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         if (fread(buf, length, 1, f) != 1)
         {
             sLog.outError("Could not read %s.", file);
+            // delete buf and close the file before returning
+            delete[] buf;
+            fclose(f);
             return false;
         }
         buf[length] = '\0';
