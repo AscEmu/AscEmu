@@ -732,8 +732,8 @@ void StrandOfTheAncient::SpawnControlPoint(SOTAControlPoints point, SOTACPStates
         cp.pole->PushToWorld(m_mapMgr);
     }
     else{
-        Arcemu::Util::ArcemuAssert(cp.banner != NULL);
-        cp.banner->Despawn(0, 0);
+        if (cp.banner->IsInWorld())
+            cp.banner->RemoveFromWorld(false);
     }
 
     cp.banner = SpawnGameObject(FlagIDs[point][team], FlagPositions[point], 0, faction, 1.0f);

@@ -922,32 +922,35 @@ class LuaUnit
             int id = luaL_checkint(L, 1);
         int count = luaL_checkint(L, 2);
 
-        Player* plr = TO_PLAYER(ptr);
-        ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(id);
-        if (proto == NULL)
+        auto player = TO_PLAYER(ptr);
+        auto item_proto = ItemPrototypeStorage.LookupEntry(id);
+        if (item_proto == nullptr)
             return 0;
 
-        Item* add = plr->GetItemInterface()->FindItemLessMax(id, count, false);
-        if (add == NULL)
+        auto item_add = player->GetItemInterface()->FindItemLessMax(id, count, false);
+        if (item_add == nullptr)
         {
-            add = objmgr.CreateItem(id, plr);
-            add->SetStackCount(count);
-            if (plr->GetItemInterface()->AddItemToFreeSlot(add))
-                plr->SendItemPushResult(false, true, false, true, plr->GetItemInterface()->LastSearchItemBagSlot(),
-                plr->GetItemInterface()->LastSearchItemSlot(), count, add->GetEntry(), add->GetItemRandomSuffixFactor(),
-                add->GetItemRandomPropertyId(), add->GetStackCount());
+            item_add = objmgr.CreateItem(id, player);
+            if (item_add == nullptr)
+                return 0;
+
+            item_add->SetStackCount(count);
+            if (player->GetItemInterface()->AddItemToFreeSlot(item_add))
+                player->SendItemPushResult(false, true, false, true, player->GetItemInterface()->LastSearchItemBagSlot(),
+                player->GetItemInterface()->LastSearchItemSlot(), count, item_add->GetEntry(), item_add->GetItemRandomSuffixFactor(),
+                item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
             else
-                delete add;
+                delete item_add;
         }
         else
         {
-            add->ModStackCount(count);
-            add->SetDirty();
-            plr->SendItemPushResult(false, true, false, false,
-                                    static_cast<uint8>(plr->GetItemInterface()->GetBagSlotByGuid(add->GetGUID())), 0xFFFFFFFF,
-                                    count, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
+            item_add->ModStackCount(count);
+            item_add->SetDirty();
+            player->SendItemPushResult(false, true, false, false,
+                                       static_cast<uint8>(player->GetItemInterface()->GetBagSlotByGuid(item_add->GetGUID())), 0xFFFFFFFF,
+                                       count, item_add->GetEntry(), item_add->GetItemRandomSuffixFactor(), item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
         }
-        PUSH_ITEM(L, add);
+        PUSH_ITEM(L, item_add);
         return 1;
     }
     static int GetInstanceID(lua_State* L, Unit* ptr)

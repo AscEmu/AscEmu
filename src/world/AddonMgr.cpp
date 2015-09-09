@@ -230,7 +230,8 @@ bool AddonMgr::AppendPublicKey(WorldPacket & data, std::string & AddonName, uint
                 uint32 length = 264/*ftell(f)*/;
                 fseek(f, 0, SEEK_SET);
                 buf.resize(length);
-                fread((void*)buf.contents(), length, 1, f);
+                if (fread((void*)buf.contents(), length, 1, f) != 1)
+                    return false;
                 fclose(f);
 
                 mAddonData[AddonName] = buf;

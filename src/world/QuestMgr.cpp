@@ -849,7 +849,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                                             // (auto-dirty's it)
                                             qle->IncrementMobCount(j);
                                             qle->SendUpdateAddKill(j);
-                                            CALL_QUESTSCRIPT_EVENT(qle, OnCreatureKill)(entry, plr, qle);
+                                            CALL_QUESTSCRIPT_EVENT(qle, OnCreatureKill)(entry, gplr, qle);
                                             qle->UpdatePlayerFields();
 
                                             if (qle->CanBeFinished())

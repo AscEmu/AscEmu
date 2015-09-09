@@ -728,10 +728,11 @@ void Group::LoadFromDB(Field* fields)
 {
 #define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = objmgr.GetPlayerInfo(g); }
 
+    m_groupLock.Acquire();
+
     uint32 g;
     m_updateblock = true;
 
-    m_groupLock.Acquire();
     m_Id = fields[0].GetUInt32();
 
     ObjectMgr::getSingleton().AddGroup(this);

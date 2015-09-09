@@ -785,7 +785,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         for (LfgRolesMap::const_iterator itRoles = it->second->roles.begin(); itRoles != it->second->roles.end(); ++itRoles)
         {
             // Assign new leader
-            if (itRoles->second & ROLE_LEADER && (!leader || rand() % 1))
+            if (itRoles->second & ROLE_LEADER && (!leader || RandomUInt(1)))
                 leader = itRoles->first;
 
             rolesMap[itRoles->first] = itRoles->second;

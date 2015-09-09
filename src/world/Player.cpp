@@ -11079,13 +11079,14 @@ void Player::_LoadPlayerCooldowns(QueryResult* result)
     while (result->NextRow());
 }
 
+//disabled
+/*
 void Player::_FlyhackCheck()
 {
     if (!sWorld.antihack_flight || transporter_info.guid != 0 || GetTaxiState() || (sWorld.no_antihack_on_gm && GetSession()->HasGMPermissions()))
         return;
     return;
-    //disabled
-    /*
+
     MovementInfo * mi = GetSession()->GetMovementInfo();
     if (!mi) return; //wtf?
 
@@ -11119,9 +11120,8 @@ void Player::_FlyhackCheck()
     GetSession()->SendPacket(&data);
     }
     }
-    */
-
 }
+*/
 
 /************************************************************************/
 /* SOCIAL                                                               */

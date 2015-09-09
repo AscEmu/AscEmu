@@ -3809,6 +3809,12 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
         uint32 petno = p_caster->GetUnstabledPetNumber();
         if (petno)
         {
+            if (p_caster->GetPlayerPet(petno) == nullptr)
+            {
+                SendCastResult(SPELL_FAILED_ALREADY_HAVE_SUMMON);
+                return;
+            }
+
             if (p_caster->GetPlayerPet(petno)->alive)
             {
                 p_caster->SpawnPet(petno);

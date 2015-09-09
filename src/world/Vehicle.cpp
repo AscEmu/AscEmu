@@ -78,7 +78,7 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
     this->creature_entry = creature_entry;
     this->owner = owner;
 
-    if (owner == nullptr)
+    if (owner == nullptr || vehicle_info == nullptr)
         return;
 
     switch (vehicle_info->powerType)

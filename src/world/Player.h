@@ -2445,7 +2445,7 @@ class SERVER_DECL Player : public Unit
         map<uint32, uint32> m_forcedReactions;
 
         uint32 m_flyhackCheckTimer;
-        void _FlyhackCheck();
+        //void _FlyhackCheck(); disabled not working not used. Zyres.
 
         bool m_passOnLoot;
         uint32 m_tradeSequence;
