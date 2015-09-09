@@ -745,11 +745,16 @@ bool ChatHandler::HandleGenerateWaypoints(const char* args, WorldSession* m_sess
 
     for (int i = 0; i < n; i++)
     {
-        float ang = rand() / 100.0f;
-        float ran = (rand() % (r * 10)) / 10.0f;
+        if (r < 1)
+        {
+            SystemMessage(m_session, "Usage: waypoint range must be 1 or higher");
+            return true;
+        }
+        float ang = RandomFloat(100.0f);
+        float ran = r < 2 ? 1 : RandomFloat(r);
         while (ran < 1)
         {
-            ran = (rand() % (r * 10)) / 10.0f;
+            ran = RandomFloat(r);
         }
 
         float x = cr->GetPositionX() + ran * sin(ang);

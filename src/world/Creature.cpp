@@ -487,7 +487,7 @@ void Creature::generateLoot()
 
         /* To hide your discrete values a bit, add another random
          * amount between -(chunk_size/2) and +(chunk_size/2). */
-        gold_fp += chunk_size * (rand() / (RAND_MAX + 1.0) - 0.5);
+        gold_fp += (chunk_size * (RandomFloat(1.0f) - 0.5f));
 
         /*
          * In theory we can end up with a negative amount. Give at
