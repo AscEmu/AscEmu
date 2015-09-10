@@ -487,7 +487,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
                 if (iter->item.itemproto)
                 {
-                    iter->roll = new LootRoll(60000, (m_Group != NULL ? m_Group->MemberCount() : 1), guid, x, itemProto->ItemId, factor, uint32(ipid), GetMapMgr());
+                    iter->roll = new LootRoll(60000, m_Group->MemberCount(), guid, x, itemProto->ItemId, factor, uint32(ipid), GetMapMgr());
 
                     data2.Initialize(SMSG_LOOT_START_ROLL);
                     data2 << guid;
