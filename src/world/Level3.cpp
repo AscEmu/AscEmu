@@ -3095,20 +3095,23 @@ void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefi
 {
     char message[1024];
     char start[50];
-    start[0] = message[0] = 0;
+    start[0] = 0;
+    message[0] = 0;
 
     snprintf(start, 50, "%s %u: %s", prefix, (unsigned int)id, MSG_COLOR_WHITE);
 
-    auto hlen = highlight.length();
+    auto highlight_length = highlight.length();
     string fullname = string(full_name);
     auto offset = lowercase_name.find(highlight);
-    auto remaining = fullname.size() - offset - hlen;
+    auto remaining = fullname.size() - offset - highlight_length;
+
     strcat(message, start);
     strncat(message, fullname.c_str(), offset);
     strcat(message, MSG_COLOR_LIGHTRED);
-    strncat(message, (fullname.c_str() + offset), hlen);
+    strncat(message, (fullname.c_str() + offset), highlight_length);
     strcat(message, MSG_COLOR_WHITE);
-    if (remaining > 0) strncat(message, (fullname.c_str() + offset + hlen), remaining);
+    if (remaining > 0)
+        strncat(message, (fullname.c_str() + offset + highlight_length), remaining);
 
     SystemMessage(m_session, message);
 }

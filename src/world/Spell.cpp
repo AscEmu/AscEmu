@@ -2692,10 +2692,13 @@ bool Spell::TakePower()
     int32 cost;
     if (GetProto()->ManaCostPercentage) //Percentage spells cost % of !!!BASE!!! mana
     {
-        if (GetProto()->powerType == POWER_TYPE_MANA)
-            cost = (u_caster->GetBaseMana() * GetProto()->ManaCostPercentage) / 100;
-        else
-            cost = (u_caster->GetBaseHealth() * GetProto()->ManaCostPercentage) / 100;
+        if (u_caster != nullptr)
+        {
+            if (GetProto()->powerType == POWER_TYPE_MANA)
+                cost = (u_caster->GetBaseMana() * GetProto()->ManaCostPercentage) / 100;
+            else
+                cost = (u_caster->GetBaseHealth() * GetProto()->ManaCostPercentage) / 100;
+        }
     }
     else
     {

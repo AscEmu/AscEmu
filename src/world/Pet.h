@@ -41,20 +41,20 @@ enum PET_FOOD
     PET_FOOD_RAW_FISH       /// not used in pet diet
 };
 
-enum PET_ACTION
+enum PetReactState
 {
-    PET_ACTION_STAY,
-    PET_ACTION_FOLLOW,
-    PET_ACTION_ATTACK,
-    PET_ACTION_DISMISS,
-    PET_ACTION_CASTING,
+    PET_STATE_PASSIVE       = 0,
+    PET_STATE_DEFENSIVE     = 1,
+    PET_STATE_AGGRESSIVE    = 2
 };
 
-enum PET_STATE
+enum PetCommands
 {
-    PET_STATE_PASSIVE,
-    PET_STATE_DEFENSIVE,
-    PET_STATE_AGGRESSIVE
+    PET_ACTION_STAY     = 0,
+    PET_ACTION_FOLLOW   = 1,
+    PET_ACTION_ATTACK   = 2,
+    PET_ACTION_DISMISS  = 3,
+    PET_ACTION_CASTING  = 4
 };
 
 enum PetActionFeedback
@@ -71,7 +71,7 @@ enum PET_RENAME
     PET_RENAME_ALLOWED        = 0x03
 };
 
-enum PET_SPELL
+enum PetSpells
 {
     PET_SPELL_PASSIVE   = 0x06000000,
     PET_SPELL_DEFENSIVE,
@@ -86,6 +86,7 @@ enum StableState
     STABLE_STATE_ACTIVE     = 1,
     STABLE_STATE_PASSIVE    = 2
 };
+
 enum HappinessState
 {
     UNHAPPY     = 1,
@@ -296,12 +297,12 @@ class SERVER_DECL Pet : public Creature
 #define PET_HAPPINESS_UPDATE_VALUE 333000
 #define PET_HAPPINESS_UPDATE_TIMER 7500
 
-#define PET_ACTION_ACTION   0x700
-#define PET_ACTION_STATE    0x600
+#define PET_ACTION_ACTION   0x700       //1792
+#define PET_ACTION_STATE    0x600       //1536
 
 ///\todo grep see the way pet spells contain the same flag?
-#define PET_ACTION_SPELL    0xC100
-#define PET_ACTION_SPELL_1  0x8100
-#define PET_ACTION_SPELL_2  0x0100
+#define PET_ACTION_SPELL    0xC100      //49408
+#define PET_ACTION_SPELL_1  0x8100      //33024
+#define PET_ACTION_SPELL_2  0x0100      //256
 
 #endif // _PET_H

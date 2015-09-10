@@ -486,8 +486,10 @@ void HandleConsoleInput(BaseConsole* pConsole, const char* szInput)
     // let's tokenize into arguments.
     vector<const char*> tokens;
 
-    q = (char*)szInput;
-    p = strchr(q, ' ');
+
+    if (q != nullptr)
+        p = strchr(q, ' ');
+
     while (p != NULL)
     {
         *p = 0;

@@ -3166,18 +3166,24 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         Counter = 0;
         while (Counter < PLAYER_ACTION_BUTTON_COUNT)
         {
+            if (start == nullptr)
+                break;
+
             end = strchr(start, ',');
-            if (!end)break;
+            if (!end)
+                break;
             *end = 0;
             m_specs[s].mActions[Counter].Action = (uint16)atol(start);
             start = end + 1;
             end = strchr(start, ',');
-            if (!end)break;
+            if (!end)
+                break;
             *end = 0;
             m_specs[s].mActions[Counter].Misc = (uint8)atol(start);
             start = end + 1;
             end = strchr(start, ',');
-            if (!end)break;
+            if (!end)
+                break;
             *end = 0;
             m_specs[s].mActions[Counter++].Type = (uint8)atol(start);
             start = end + 1;
@@ -3187,24 +3193,31 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     start = (char*)get_next_field.GetString();//buff;
     do
     {
+        if (start == nullptr)
+            break;
+
         end = strchr(start, ',');
-        if (!end)break;
+        if (!end)
+            break;
         *end = 0;
         LoginAura la;
         la.id = atol(start);
         start = end + 1;
         end = strchr(start, ',');
-        if (!end)break;
+        if (!end)
+            break;
         *end = 0;
         la.dur = atol(start);
         start = end + 1;
         end = strchr(start, ',');
-        if (!end)break;
+        if (!end)
+            break;
         *end = 0;
         la.positive = (start != NULL);
         start = end + 1;
         end = strchr(start, ',');
-        if (!end)break;
+        if (!end)
+            break;
         *end = 0;
         la.charges = atol(start);
         start = end + 1;
