@@ -3099,10 +3099,10 @@ void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefi
 
     snprintf(start, 50, "%s %u: %s", prefix, (unsigned int)id, MSG_COLOR_WHITE);
 
-    string::size_type hlen = highlight.length();
+    auto hlen = highlight.length();
     string fullname = string(full_name);
-    string::size_type offset = lowercase_name.find(highlight);
-    string::size_type remaining = fullname.size() - offset - hlen;
+    auto offset = lowercase_name.find(highlight);
+    auto remaining = fullname.size() - offset - hlen;
     strcat(message, start);
     strncat(message, fullname.c_str(), offset);
     strcat(message, MSG_COLOR_LIGHTRED);
@@ -3276,43 +3276,64 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 
     GreenSystemMessage(m_session, "Starting search of creature `%s`...", x.c_str());
     uint32 t = getMSTime();
-    CreatureInfo* i;
+    CreatureInfo* creature_info;
     uint32 count = 0;
+    string y;
+    string recout;
     while (!itr->AtEnd())
     {
-        i = itr->Get();
-        LocalizedCreatureName* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(i->Id, m_session->language) : NULL;
-
-        std::string liName = std::string(li ? li->Name : "");
-
-        arcemu_TOLOWER(liName);
-
-        bool localizedFound = false;
-
-        if (FindXinYString(x, liName))
-            localizedFound = true;
-
-        if (FindXinYString(x, i->lowercase_name) || localizedFound)
+        creature_info = itr->Get();
+        y = string(creature_info->Name);
+        arcemu_TOLOWER(y);
+        if (FindXinYString(x, y))
         {
-            // Print out the name in a cool highlighted fashion
-            if (li != nullptr)
+            //string objectID=MyConvertIntToString(i->ID);
+            string Name;
+            std::stringstream strm;
+            strm << creature_info->Id;
+            strm << ", DisplayIds: ";
+            strm << creature_info->Male_DisplayID;
+            if (creature_info->Female_DisplayID != 0)
             {
-                SendHighlightedName(m_session, "Creature", localizedFound ? li->Name : i->Name, localizedFound ? liName : i->lowercase_name, x, i->Id);
-                ++count;
+                strm << ", ";
+                strm << creature_info->Female_DisplayID;
+            }
+            if (creature_info->Male_DisplayID2 != 0)
+            {
+                strm << ", ";
+                strm << creature_info->Male_DisplayID2;
+            }
+            if (creature_info->Female_DisplayID2 != 0)
+            {
+                strm << ", ";
+                strm << creature_info->Female_DisplayID2;
             }
 
-            if (count == 25)
+            //string ObjectID = i.c_str();
+            const char* creature_name = creature_info->Name;
+            recout = "|cfffff000Creature ";
+            recout += strm.str();
+            recout += "|cffFFFFFF: ";
+            recout += creature_name;
+            recout = recout + Name;
+            SendMultilineMessage(m_session, recout.c_str());
+
+            ++count;
+            if (count == 25 || count > 25)
             {
                 RedSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }
-        if (!itr->Inc())
-            break;
+        if (!itr->Inc()) break;
     }
     itr->Destruct();
-
-    GreenSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
+    if (count == 0)
+    {
+        recout = "|cff00ccffNo matches found.";
+        SendMultilineMessage(m_session, recout.c_str());
+    }
+    BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
     return true;
 }
 
