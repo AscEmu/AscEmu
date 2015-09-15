@@ -177,7 +177,7 @@ class UlduarTeleporterGossip : public GossipScript
 void SetupUlduar(ScriptMgr* mgr)
 {
     //Instance
-    mgr->register_instance_script(603, &UlduarScript::Create);
+    mgr->register_instance_script(MAP_ULDUAR, &UlduarScript::Create);
 
     //Teleporter
     mgr->register_gameobject_script(194569, &UlduarTeleporterAI::Create);

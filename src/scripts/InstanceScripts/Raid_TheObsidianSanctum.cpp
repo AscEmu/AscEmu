@@ -394,6 +394,6 @@ void SetupTheObsidianSanctum(ScriptMgr* mgr)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     ///////// Instance
-    mgr->register_instance_script(MAP_OS, &ObsidianSanctumScript::Create);
+    mgr->register_instance_script(MAP_OBSIDIAN_SANCTUM, &ObsidianSanctumScript::Create);
 };
 

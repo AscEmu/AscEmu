@@ -870,7 +870,7 @@ class IngvarUndeadAI : public MoonScriptCreatureAI
 
 void SetupUtgardeKeep(ScriptMgr* mgr)
 {
-    mgr->register_instance_script(574, &UtgardeKeepScript::Create);
+    mgr->register_instance_script(MAP_UTGARDE_KEEP, &UtgardeKeepScript::Create);
     //////////////////////////////////////////////////////////////////////////////////////////
     ///////// Mobs
     mgr->register_creature_script(CN_DRAGONFLAYER_FORGE_MASTER, &DragonflayerForgeMasterAI::Create);
