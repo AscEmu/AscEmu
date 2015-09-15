@@ -18,3 +18,71 @@
 
 #include "Setup.h"
 #include "Instance_UtgardePinnacle.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//UtgardePinnacle Instance
+class InstanceUtgardePinnacle : public MoonInstanceScript
+{
+    public:
+
+    MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(InstanceUtgardePinnacle, MoonInstanceScript);
+    InstanceUtgardePinnacle(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
+    {
+        // Way to select bosses
+        BuildEncounterMap();
+        if (mEncounters.size() == 0)
+            return;
+
+        for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+        {
+            if ((*Iter).second.mState != State_Finished)
+                continue;
+        }
+    }
+
+    void OnGameObjectPushToWorld(GameObject* pGameObject) {}
+
+    void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+    {
+        if (pType != Data_EncounterState || pIndex == 0)
+            return;
+
+        EncounterMap::iterator Iter = mEncounters.find(pIndex);
+        if (Iter == mEncounters.end())
+            return;
+
+        (*Iter).second.mState = (EncounterState)pData;
+    }
+
+    uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+    {
+        if (pType != Data_EncounterState || pIndex == 0)
+            return 0;
+
+        EncounterMap::iterator Iter = mEncounters.find(pIndex);
+        if (Iter == mEncounters.end())
+            return 0;
+
+        return (*Iter).second.mState;
+    }
+
+    void OnCreatureDeath(Creature* pCreature, Unit* pUnit)
+    {
+        EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
+        if (Iter == mEncounters.end())
+            return;
+
+        (*Iter).second.mState = State_Finished;
+
+        return;
+    }
+};
+
+
+void SetupUtgardePinnacle(ScriptMgr* mgr)
+{
+    //Instance
+    mgr->register_instance_script(MAP_UTGARDE_PINNACLE, &InstanceUtgardePinnacle::Create);
+    
+    //Bosses
+}

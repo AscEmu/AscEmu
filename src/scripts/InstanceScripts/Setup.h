@@ -61,6 +61,7 @@ void SetupTheSteamvault(ScriptMgr* mgr);
 void SetupTheUnderbog(ScriptMgr* mgr);
 void SetupUldaman(ScriptMgr* mgr);
 void SetupUtgardeKeep(ScriptMgr* mgr);
+void SetupUtgardePinnacle(ScriptMgr* mgr);
 void SetupTheStockade(ScriptMgr* mgr);
 void SetupTheVioletHold(ScriptMgr* mgr);
 void SetupWailingCaverns(ScriptMgr* mgr);
@@ -192,6 +193,7 @@ enum InstanceMaps
     MAP_BLACK_TEMPLE        = 564,  //Black Temple
 
     MAP_UTGARDE_KEEP        = 574,  //Utgarde Keep
+    MAP_UTGARDE_PINNACLE    = 575,  //Utgarde Pinnacle
 
     MAP_NEXUS               = 576,  //Nexus
     MAP_MAGISTERS_TERRACE   = 585,  //Magister's Terrace
@@ -242,7 +244,6 @@ enum InstanceMaps
     568	Zul'Aman
     572	Ruins of Lordaeron
 
-    575	Utgarde Pinnacle
     578	The Oculus
     580	The Sunwell
     595	The Culling of Stratholme
