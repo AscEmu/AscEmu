@@ -83,19 +83,17 @@ enum CreatureSay
     */
 
     //GortokPalehoof Say
-    /*
-    4491 What this place? I will destroy you!
-    4492 You die! That what master wants.
-    4493 An easy task!
-    */
+    SAY_GROTOK_PALEHOOF_01 = 4491,      // What this place? I will destroy you!
+    SAY_GROTOK_PALEHOOF_02 = 4492,      // You die!That what master wants.
+    SAY_GROTOK_PALEHOOF_03 = 4493,      // An easy task!
 
     //SkadiTheRuthless Say
+    SAY_SKADI_RUTHLESS_START = 4494,    // What mongrels dare intrude here ? Look alive, my brothers!A feast for the one that brings me their heads!
+    SAY_SKADI_RUTHLESS_KILL_01 = 4495,  // Not so brash now, are you?
+    SAY_SKADI_RUTHLESS_KILL_02 = 4496,  // I'll mount your skull from the highest tower!
+    SAY_SKADI_RUTHLESS_DIE = 4498,      // ARGH! You call that... an attack? I'll...  show... aghhhh...
     /*
-    4494 What mongrels dare intrude here? Look alive, my brothers!  A feast for the one that brings me their heads!
-    4495 Not so brash now, are you?
-    4496 I'll mount your skull from the highest tower!
     4497 Skadi the Ruthless is within range of the harpoon launchers!
-    4498 ARGH! You call that... an attack? I'll...  show... aghhhh...
     4499 Skadi the Ruthless is within range of the harpoon launchers!
     4500 You motherless knaves! Your corpses will make fine morsels for my new drake!
     4501 Sear them to the bone!
@@ -104,19 +102,25 @@ enum CreatureSay
     */
 
     //KingYmiron Say
-    /*
-    4504 You invade my home and then dare to challenge me?  I will tear the hearts from your chests and offer them as gifts to the death god! Rualg nja gaborr!
-    4505 Your death is only the beginning.
-    4506 You have failed your people!
-    4507 There is a reason I am king!
-    4508 Breathe no more!
-    4509 What... awaits me... now?
-    4510 Bjorn of the Black Storm! Honor me now with your presence!
+    SAY_KING_YMIRON_START = 4504,       //You invade my home and then dare to challenge me?  I will tear the hearts from your chests and offer them as gifts to the death god! Rualg nja gaborr!
+    SAY_KING_YMIRON_KILL_01 = 4505,     //Your death is only the beginning.
+    SAY_KING_YMIRON_KILL_02 = 4506,     //You have failed your people!
+    SAY_KING_YMIRON_KILL_03 = 4507,     //There is a reason I am king!
+    SAY_KING_YMIRON_KILL_04 = 4508,     //Breathe no more!
+    SAY_KING_YMIRON_DIE = 4509,         //What... awaits me... now?
+    /*4510 Bjorn of the Black Storm! Honor me now with your presence!
     4511 Haldor of the Rocky Cliffs! Grant me your strength!
     4512 Ranulf of the Screaming Abyss!  Snuff these maggots with darkest night!
     4513 Tor of the Brutal Siege, bestow your might upon me!
     */
+};
 
+enum GameobjectEntry
+{
+    GO_GORTOK_SPHERE = 188593,
+    GO_MIRROR = 191745,
+    GO_SKADI_DOOR = 192173,
+    GO_YMIRON_DOOR = 192174
 };
 
 #endif // _INSTANCE_UTGARDE_PINNACLE_H
