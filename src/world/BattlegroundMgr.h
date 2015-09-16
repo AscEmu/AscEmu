@@ -331,6 +331,22 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
 
         /* Returns the maximum number of players (Only valid for battlegrounds) */
         uint32 GetMaximumPlayers(uint32 dbcIndex);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /// static void GetRbgBonus(Player *pl, uint32 *honorWin, uint32 *honorLost, uint32 *arenaPoints)
+        /// \note   Calculates honor bonus for playing RBG
+        ///         If nullptr is passed for any argument except *arenaLost, it will cause crush
+        ///
+        /// \param  Player *pl  -  Pointer to player object
+        /// \param  uint32 *honorWin  -  Bonus honor for winning
+        /// \param  uint32 *honorLost -  Bonus honor for losing
+        /// \param  uint32 *arenaWin -  Arena points rewarded for winning
+        /// \param  uint32 *arenaLost -  Arena points rewarded losing
+        ///
+        /// \return none
+        ///
+        //////////////////////////////////////////////////////////////////////////////////////////
+        static void GetRbgBonus(Player *pl, uint32 *honorWin, uint32 *honorLost, uint32 *arenaWin, uint32 *arenaLost = nullptr);
 };
 
 #define BattlegroundManager CBattlegroundManager::getSingleton()

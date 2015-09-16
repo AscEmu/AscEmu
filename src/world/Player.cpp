@@ -109,6 +109,8 @@ Player::Player(uint32 guid)
     m_bgIsQueued(false),
     m_bgQueueType(0),
     m_bgQueueInstanceId(0),
+    m_bgIsRbg(false),
+    m_bgIsRbgWon(false),
     // Autoshot variables
     m_AutoShotDuration(0),
     m_AutoShotAttackTimer(0),
@@ -2614,6 +2616,13 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         ss << uint32(1);
     else
         ss << uint32(0);
+    
+    ss << "', '";
+
+    if (m_bgIsRbgWon)
+        ss << uint32(1);
+    else
+        ss << uint32(0);
 
     ss << "')";
 
@@ -2791,7 +2800,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    const uint32 fieldcount = 91;
+    const uint32 fieldcount = 92;
 
     if (result->GetFieldCount() != fieldcount)
     {
@@ -3358,6 +3367,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         resettalents = true;
     else
         resettalents = false;
+
+    // Load player's RGB daily data
+    if (get_next_field.GetUInt32() == 1)
+        m_bgIsRbgWon = true;
+    else
+        m_bgIsRbgWon = false;
 
     HonorHandler::RecalculateHonorFields(this);
 

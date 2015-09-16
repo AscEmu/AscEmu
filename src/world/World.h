@@ -646,6 +646,12 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             uint32 SOTA_MAX;
             uint32 IOC_MIN;
             uint32 IOC_MAX;
+            uint32 RBG_FIRST_WIN_HONOR;
+            uint32 RBG_FIRST_WIN_ARENA;
+            uint32 RBG_WIN_HONOR;
+            uint32 RBG_WIN_ARENA;
+            uint32 RBG_LOSE_HONOR;
+            uint32 RBG_LOSE_ARENA;
         }bgsettings;
 
         struct ArenaSettings{

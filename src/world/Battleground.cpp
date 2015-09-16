@@ -500,8 +500,37 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     /* teleport out */
     if (!logout)
     {
-        if (!m_ended && !plr->GetSession()->HasGMPermissions())
-            plr->CastSpell(plr, BG_DESERTER, true);
+        if (!m_ended)
+        {
+            if(!plr->GetSession()->HasGMPermissions())
+                plr->CastSpell(plr, BG_DESERTER, true);
+        }
+        else
+        {
+            if(plr->m_bgIsRbg)
+            {
+                uint32 honorPointsWin = 0;
+                uint32 honorPointsLose = 0;
+                uint32 arenaPointsWin = 0;
+                uint32 arenaPointsLose = 0;
+                CBattlegroundManager::GetRbgBonus(plr, &honorPointsWin, &honorPointsLose, &arenaPointsWin, &arenaPointsLose);
+                
+                if(plr->GetTeam() == m_winningteam)
+                {
+                    /// Player is in the victory team
+                    plr->m_bgIsRbgWon = true;
+                    HonorHandler::AddHonorPointsToPlayer(plr, honorPointsWin);
+                    plr->m_arenaPoints += arenaPointsWin;
+                }
+                else
+                {
+                    /// Player is in defeated team
+                    HonorHandler::AddHonorPointsToPlayer(plr, honorPointsLose);
+                    plr->m_arenaPoints += arenaPointsLose;
+                }
+                
+            }
+        }
 
         if (!IS_INSTANCE(plr->m_bgEntryPointMap))
         {

@@ -68,7 +68,6 @@ void CBattlegroundManager::RegisterArenaFactory(uint32 map, ArenaFactoryMethod m
     arenaFactories.push_back(method);
 }
 
-
 void CBattlegroundManager::RegisterMapForBgType(uint32 type, uint32 map)
 {
     std::map< uint32, uint32 >::iterator itr = bgMaps.find(type);
@@ -99,17 +98,21 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     data << uint32(0);                                     // 3.3.3 winArena
     data << uint32(0);                                     // 3.3.3 lossHonor
 
-    uint8 isRandom = 0;
+    uint8 isRandom = 1;
     data << uint8(isRandom);                               // 3.3.3 isRandom
 
     // Random bgs
     if (isRandom == 1)
     {
+        uint32 honorPointsWin = 0;
+        uint32 honorPointsLose = 0;
+        uint32 arenaPointsWin = 0;
+        GetRbgBonus(m_session->GetPlayer(), &honorPointsWin, &honorPointsLose, &arenaPointsWin);
         // rewards
         data << uint8(0);                                  // win random
-        data << uint32(0);                                 // Reward honor if won
-        data << uint32(0);                                 // Reward arena point if won
-        data << uint32(0);                                 // Lost honor if lost
+        data << uint32(honorPointsWin);                    // Reward honor if won
+        data << uint32(arenaPointsWin);                    // Reward arena point if won
+        data << uint32(honorPointsLose);                   // Lost honor if lost
     }
 
     if (IS_ARENA(BattlegroundType))
@@ -146,13 +149,23 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
 void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, WorldPacket& pck)
 {
 
+    Player *plr = m_session->GetPlayer();
     uint64 guid;
-    uint32 pguid = m_session->GetPlayer()->GetLowGUID();
-    uint32 lgroup = GetLevelGrouping(m_session->GetPlayer()->getLevel());
+    uint32 pguid = plr->GetLowGUID();
+    uint32 lgroup = GetLevelGrouping(plr->getLevel());
     uint32 bgtype;
     uint32 instance;
 
     pck >> guid >> bgtype >> instance;
+
+    if(bgtype == BATTLEGROUND_RANDOM)
+    {
+        plr->m_bgIsRbg = true;
+    }
+    else
+    {
+        plr->m_bgIsRbg = false;
+    }
 
     if ((bgtype >= BATTLEGROUND_NUM_TYPES) || (bgtype == 0) ||
         ((bgMaps.find(bgtype) == bgMaps.end()) && bgtype != BATTLEGROUND_RANDOM))
@@ -184,19 +197,19 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
     m_queuedPlayers[bgtype][lgroup].push_back(pguid);
     Log.Notice("BattlegroundManager", "Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->GetLowGUID(), (instance + 1));
 
-    m_session->GetPlayer()->m_bgIsQueued = true;
-    m_session->GetPlayer()->m_bgQueueInstanceId = instance;
-    m_session->GetPlayer()->m_bgQueueType = bgtype;
+    plr->m_bgIsQueued = true;
+    plr->m_bgQueueInstanceId = instance;
+    plr->m_bgQueueType = bgtype;
 
     /* Set battleground entry point */
-    m_session->GetPlayer()->m_bgEntryPointX = m_session->GetPlayer()->GetPositionX();
-    m_session->GetPlayer()->m_bgEntryPointY = m_session->GetPlayer()->GetPositionY();
-    m_session->GetPlayer()->m_bgEntryPointZ = m_session->GetPlayer()->GetPositionZ();
-    m_session->GetPlayer()->m_bgEntryPointMap = m_session->GetPlayer()->GetMapId();
-    m_session->GetPlayer()->m_bgEntryPointInstance = m_session->GetPlayer()->GetInstanceID();
+    plr->m_bgEntryPointX = plr->GetPositionX();
+    plr->m_bgEntryPointY = plr->GetPositionY();
+    plr->m_bgEntryPointZ = plr->GetPositionZ();
+    plr->m_bgEntryPointMap = plr->GetMapId();
+    plr->m_bgEntryPointInstance = plr->GetInstanceID();
 
     /* send the battleground status packet */
-    SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, bgtype, instance, 0, bgMaps[bgtype], 0);
+    SendBattlefieldStatus(plr, BGSTATUS_INQUEUE, bgtype, instance, 0, bgMaps[bgtype], 0);
 
     m_queueLock.Release();
 
@@ -1170,8 +1183,6 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 
 }
 
-
-
 void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch)
 {
     WorldPacket data(SMSG_BATTLEFIELD_STATUS, 30);
@@ -1392,4 +1403,28 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
     m_session->GetPlayer()->m_bgEntryPointInstance = m_session->GetPlayer()->GetInstanceID();
 
     m_queueLock.Release();
+}
+
+void CBattlegroundManager::GetRbgBonus(Player *pl, uint32 *honorWin, uint32 *honorLost, uint32 *arenaWin, uint32 *arenaLost /* = nullptr */)
+{
+    /// Calculate RBG bonus honor and arena points
+    uint32 oneKill = HonorHandler::CalculateHonorPointsForKill(pl->getLevel(), pl->getLevel());
+
+    if(pl->m_bgIsRbgWon)
+    {
+        /// Player has already won a random battleground today
+        *honorWin = oneKill * sWorld.bgsettings.RBG_WIN_HONOR;
+        *arenaWin = sWorld.bgsettings.RBG_WIN_ARENA;
+    }
+    else
+    {
+        /// First RBG in the day
+        *honorWin = oneKill * sWorld.bgsettings.RBG_FIRST_WIN_HONOR;
+        *arenaWin = sWorld.bgsettings.RBG_FIRST_WIN_ARENA;
+    }
+
+    *honorLost = oneKill * sWorld.bgsettings.RBG_LOSE_HONOR;
+
+    if(arenaLost != nullptr)
+        *arenaLost = sWorld.bgsettings.RBG_LOSE_ARENA;
 }

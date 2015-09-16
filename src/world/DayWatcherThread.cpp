@@ -214,6 +214,7 @@ void DayWatcherThread::update_daily()
 {
     Log.Notice("DayWatcherThread", "Running Daily Quest Reset...");
     CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
+    CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'"); /// Reset RBG
     objmgr.ResetDailies();
     last_daily_time = UNIXTIME;
     dupe_tm_pointer(localtime(&last_daily_time), &local_last_daily_time);
