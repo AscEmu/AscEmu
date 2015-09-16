@@ -21,6 +21,8 @@
 #ifndef _BATTLEGROUND_H
 #define _BATTLEGROUND_H
 
+enum PlayerTeams;
+
 class SERVER_DECL CBattleground : public EventableObject
 {
 
@@ -78,6 +80,8 @@ class SERVER_DECL CBattleground : public EventableObject
         bool m_isWeekend;
 
     public:
+        void EndBattleground(PlayerTeams winningTeam);
+
         void AddHonorToTeam(uint32 team, uint32 amount);
 
         void CastSpellOnTeam(uint32 team, uint32 spell);

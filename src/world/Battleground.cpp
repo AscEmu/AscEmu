@@ -370,6 +370,49 @@ Creature* CBattleground::SpawnCreature(uint32 entry, LocationVector &v, uint32 f
     return SpawnCreature(entry, v.x, v.y, v.z, v.o, faction);
 }
 
+void CBattleground::EndBattleground(PlayerTeams winningTeam)
+{
+    this->Lock();
+    this->m_ended = true;
+    this->m_winningteam = winningTeam;
+
+    auto losingTeam = winningTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE;
+    for (auto winningPlr : m_players[losingTeam])
+    {
+        if (winningPlr->m_bgIsRbg)
+        {
+            uint32 honorPointsWin = 0;
+            uint32 honorPointsLose = 0;
+            uint32 arenaPointsWin = 0;
+            uint32 arenaPointsLose = 0;
+            CBattlegroundManager::GetRbgBonus(winningPlr, &honorPointsWin, &honorPointsLose, &arenaPointsWin, &arenaPointsLose);
+
+            if (winningPlr->GetTeam() == m_winningteam)
+            {
+                /// Player is in the victory team
+                winningPlr->m_bgIsRbgWon = true;
+                HonorHandler::AddHonorPointsToPlayer(winningPlr, honorPointsWin);
+                winningPlr->m_arenaPoints += arenaPointsWin;
+            }
+            winningPlr->RecalculateHonor();
+        }
+    }
+    for (auto losingPlr : m_players[losingTeam])
+    {
+        if (losingPlr->m_bgIsRbg)
+        {
+            uint32 honorPointsWin = 0;
+            uint32 honorPointsLose = 0;
+            uint32 arenaPointsWin = 0;
+            uint32 arenaPointsLose = 0;
+            CBattlegroundManager::GetRbgBonus(losingPlr, &honorPointsWin, &honorPointsLose, &arenaPointsWin, &arenaPointsLose);
+            HonorHandler::AddHonorPointsToPlayer(losingPlr, honorPointsLose);
+            losingPlr->m_arenaPoints += arenaPointsLose;
+        }
+    }
+    this->Unlock();
+}
+
 void CBattleground::AddHonorToTeam(uint32 team, uint32 amount)
 {
     m_mainLock.Acquire();
@@ -528,7 +571,6 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
                     HonorHandler::AddHonorPointsToPlayer(plr, honorPointsLose);
                     plr->m_arenaPoints += arenaPointsLose;
                 }
-                
             }
         }
 
