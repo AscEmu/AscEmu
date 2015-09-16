@@ -135,6 +135,8 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         case AREATRIGGER_WSG_ENCOUNTER_02:
         case AREATRIGGER_WSG_ENCOUNTER_03:
         case AREATRIGGER_WSG_ENCOUNTER_04:
+        case AREATRIGGER_WSG_A_SPAWN:
+        case AREATRIGGER_WSG_H_SPAWN:
             break;
         default:
             sLog.Error("WarsongGulch", "Encountered unhandled areatrigger id %u", id);
