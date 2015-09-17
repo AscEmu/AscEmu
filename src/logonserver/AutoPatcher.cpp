@@ -141,7 +141,7 @@ PatchMgr::PatchMgr()
             continue;
 
         read_fd = open(Buffer3, O_RDONLY);
-        if(read_fd <= 0)
+        if(read_fd < 0)
         {
             LOG_ERROR("Cannot open %s", Buffer3);
             continue;
