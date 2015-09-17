@@ -454,7 +454,7 @@ class ProfessorThaddeusPaleo_Gossip : public GossipScript
 
     void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
     {
-        GossipMenu* Menu;
+        GossipMenu* Menu = nullptr;
         Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
         if (!pObject->IsCreature())
             return;
@@ -499,10 +499,14 @@ class ProfessorThaddeusPaleo_Gossip : public GossipScript
             case 12:
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60025, plr);
                 break;
+            default:
+                return;
         }
 
         if (Menu != nullptr)
+        {
             Menu->SendTo(plr);
+        }
     }
 };
 
