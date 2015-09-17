@@ -345,6 +345,7 @@ void LogonServer::Run(int argc, char** argv)
             printf("Die directive received: %s", die.c_str());
         */
         sLog.Close();
+        delete config_file;
         return;
     }
 
