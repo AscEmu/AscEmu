@@ -21,6 +21,7 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
+#include "PlayerDefines.hpp"
 #include "PlayerCache.h"
 
 struct BGScore;
@@ -62,13 +63,6 @@ class SpeedCheatDetector;
 #define ACHIEVEMENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
 #endif
 #define LOGIN_CIENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
-
-enum PlayerTeam : uint32
-{
-    TEAM_ALLIANCE = 0,
-    TEAM_HORDE    = 1,
-    MAX_PLAYER_TEAMS
-};
 
 enum Gender
 {
@@ -1174,7 +1168,7 @@ class SERVER_DECL Player : public Unit
 
         void EventPortToGM(Player* p);
         /*! \deprecated This function returns a uint32 (the underlying type of the enum) instead of a PlayerTeam (the enum itself)
-         *  \todo Move existing code using GetTeam to GetTeamReal, then refactor to remove GetTeam and rename GetTeamReal to GetTeam 
+         *  \todo Move existing code using GetTeam to GetTeamReal, then refactor to remove GetTeam and rename GetTeamReal to GetTeam
          *  \sa Player::GetTeamReal */
         uint32 GetTeam() { return m_team; }
 
@@ -1838,7 +1832,7 @@ class SERVER_DECL Player : public Unit
                 m_MountSpellId = 0;
             }
         }
-        
+
         bool IsVehicle()
         {
             if (mountvehicleid != 0)

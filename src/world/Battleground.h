@@ -21,7 +21,7 @@
 #ifndef _BATTLEGROUND_H
 #define _BATTLEGROUND_H
 
-enum PlayerTeam : uint32;
+#include "PlayerDefines.hpp"
 
 /*!
  * Base class for battleground scripts (see: AlteracValley, ArathiBasin, EyeOfTheStorm, IsleOfConquest, WarsongGulch)

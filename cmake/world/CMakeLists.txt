@@ -258,6 +258,7 @@ SET( headers
 	Paladin.h
 	Pet.h
 	Player.h
+    PlayerDefines.hpp
 	PlayerCache.h
 	Entities/Summons/PossessedSummon.h
 	Priest.h
