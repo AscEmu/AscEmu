@@ -19,7 +19,7 @@
 #ifndef _PLAYER_DEFINES_H
 #define _PLAYER_DEFINES_H
 
-enum PlayerTeam : uint32
+enum PlayerTeam : int
 {
     TEAM_ALLIANCE = 0,
     TEAM_HORDE    = 1,
