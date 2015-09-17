@@ -2619,7 +2619,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     
     ss << "', ";
 
-    ss << uint8(this->HasWonRbgToday());
+    ss << uint32(this->HasWonRbgToday());
 
     ss << ")";
 
