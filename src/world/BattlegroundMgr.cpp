@@ -98,21 +98,23 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
     data << uint32(0);                                     // 3.3.3 winArena
     data << uint32(0);                                     // 3.3.3 lossHonor
 
-    uint8 isRandom = 1;
+    uint8 isRandom = BattlegroundType == BATTLEGROUND_RANDOM;
     data << uint8(isRandom);                               // 3.3.3 isRandom
 
     // Random bgs
     if (isRandom == 1)
     {
-        uint32 honorPointsWin = 0;
-        uint32 honorPointsLose = 0;
-        uint32 arenaPointsWin = 0;
-        GetRbgBonus(m_session->GetPlayer(), &honorPointsWin, &honorPointsLose, &arenaPointsWin);
+        auto hasWonRbgToday = m_session->GetPlayer()->HasWonRbgToday();
+        uint32 honorPointsForWinning, honorPointsForLosing,arenaPointsForWinning, arenaPointsForLosing;
+
+        m_session->GetPlayer()->FillRandomBattlegroundReward(true, honorPointsForWinning, arenaPointsForWinning);
+        m_session->GetPlayer()->FillRandomBattlegroundReward(false, honorPointsForLosing, arenaPointsForLosing);
+
         // rewards
-        data << uint8(0);                                  // win random
-        data << uint32(honorPointsWin);                    // Reward honor if won
-        data << uint32(arenaPointsWin);                    // Reward arena point if won
-        data << uint32(honorPointsLose);                   // Lost honor if lost
+        data << uint8(hasWonRbgToday);
+        data << uint32(honorPointsForWinning);
+        data << uint32(arenaPointsForWinning);
+        data << uint32(honorPointsForLosing);
     }
 
     if (IS_ARENA(BattlegroundType))
@@ -160,11 +162,11 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
 
     if(bgtype == BATTLEGROUND_RANDOM)
     {
-        plr->m_bgIsRbg = true;
+        plr->SetQueuedForRbg(true);
     }
     else
     {
-        plr->m_bgIsRbg = false;
+        plr->SetQueuedForRbg(false);
     }
 
     if ((bgtype >= BATTLEGROUND_NUM_TYPES) || (bgtype == 0) ||
@@ -1403,28 +1405,4 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
     m_session->GetPlayer()->m_bgEntryPointInstance = m_session->GetPlayer()->GetInstanceID();
 
     m_queueLock.Release();
-}
-
-void CBattlegroundManager::GetRbgBonus(Player *pl, uint32 *honorWin, uint32 *honorLost, uint32 *arenaWin, uint32 *arenaLost /* = nullptr */)
-{
-    /// Calculate RBG bonus honor and arena points
-    uint32 oneKill = HonorHandler::CalculateHonorPointsForKill(pl->getLevel(), pl->getLevel());
-
-    if(pl->m_bgIsRbgWon)
-    {
-        /// Player has already won a random battleground today
-        *honorWin = oneKill * sWorld.bgsettings.RBG_WIN_HONOR;
-        *arenaWin = sWorld.bgsettings.RBG_WIN_ARENA;
-    }
-    else
-    {
-        /// First RBG in the day
-        *honorWin = oneKill * sWorld.bgsettings.RBG_FIRST_WIN_HONOR;
-        *arenaWin = sWorld.bgsettings.RBG_FIRST_WIN_ARENA;
-    }
-
-    *honorLost = oneKill * sWorld.bgsettings.RBG_LOSE_HONOR;
-
-    if(arenaLost != nullptr)
-        *arenaLost = sWorld.bgsettings.RBG_LOSE_ARENA;
 }

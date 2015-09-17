@@ -18,6 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Battleground.h"
 #include "StdAfx.h"
 
 CBattleground::CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_type(type), m_levelGroup(levelgroup)
@@ -370,47 +371,74 @@ Creature* CBattleground::SpawnCreature(uint32 entry, LocationVector &v, uint32 f
     return SpawnCreature(entry, v.x, v.y, v.z, v.o, faction);
 }
 
-void CBattleground::EndBattleground(PlayerTeams winningTeam)
+/*!
+ * Starts the current battleground
+ * \sa CBattleground::EndBattleground */
+void CBattleground::StartBattleground()
+{
+    this->OnStart();
+}
+
+/*!
+ * Ends the current battleground
+ * \param winningTeam PlayerTeam that won the battleground
+ * \sa CBattleground::StartBattleground 
+ * \todo Move reward calculations to seperate functions */
+void CBattleground::EndBattleground(PlayerTeam winningTeam)
 {
     this->Lock();
     this->m_ended = true;
     this->m_winningteam = winningTeam;
+    this->m_nextPvPUpdateTime = 0;
 
     auto losingTeam = winningTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE;
-    for (auto winningPlr : m_players[losingTeam])
-    {
-        if (winningPlr->m_bgIsRbg)
-        {
-            uint32 honorPointsWin = 0;
-            uint32 honorPointsLose = 0;
-            uint32 arenaPointsWin = 0;
-            uint32 arenaPointsLose = 0;
-            CBattlegroundManager::GetRbgBonus(winningPlr, &honorPointsWin, &honorPointsLose, &arenaPointsWin, &arenaPointsLose);
 
-            if (winningPlr->GetTeam() == m_winningteam)
-            {
-                /// Player is in the victory team
-                winningPlr->m_bgIsRbgWon = true;
-                HonorHandler::AddHonorPointsToPlayer(winningPlr, honorPointsWin);
-                winningPlr->m_arenaPoints += arenaPointsWin;
-            }
-            winningPlr->RecalculateHonor();
-        }
-    }
-    for (auto losingPlr : m_players[losingTeam])
+    /* If we still need to handle reward calculations */
+    if (this->HandleFinishBattlegroundRewardCalculation(winningTeam))
     {
-        if (losingPlr->m_bgIsRbg)
+        for (auto winningPlr : m_players[winningTeam])
         {
-            uint32 honorPointsWin = 0;
-            uint32 honorPointsLose = 0;
-            uint32 arenaPointsWin = 0;
-            uint32 arenaPointsLose = 0;
-            CBattlegroundManager::GetRbgBonus(losingPlr, &honorPointsWin, &honorPointsLose, &arenaPointsWin, &arenaPointsLose);
-            HonorHandler::AddHonorPointsToPlayer(losingPlr, honorPointsLose);
-            losingPlr->m_arenaPoints += arenaPointsLose;
+            if (winningPlr->QueuedForRbg())
+            {
+                winningPlr->ApplyRandomBattlegroundReward(true);
+                winningPlr->SetHasWonRbgToday(true);
+            }
+
+            winningPlr->SaveToDB(false);
         }
+        for (auto losingPlr : m_players[losingTeam])
+        {
+            if (losingPlr->QueuedForRbg())
+            {
+                losingPlr->ApplyRandomBattlegroundReward(false);
+            }
+
+            losingPlr->SaveToDB(false);
+        }
+
+        this->AddHonorToTeam(winningTeam, 3 * 185);
+        this->AddHonorToTeam(losingTeam, 1 * 185);
     }
+
+    this->PlaySoundToAll(winningTeam == TEAM_ALLIANCE ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
+
+    this->UpdatePvPData();
+
     this->Unlock();
+}
+
+/*! \returns True if battleground has started
+ *  \sa CBattleground::HasEnded */
+bool CBattleground::HasStarted()
+{
+    return this->m_started;
+}
+
+/*! \returns True if battleground has ended
+ *  \sa CBattleground::HasStarted */
+bool CBattleground::HasEnded()
+{
+    return this->m_ended;
 }
 
 void CBattleground::AddHonorToTeam(uint32 team, uint32 amount)
@@ -456,6 +484,13 @@ void CBattleground::SendChatMessage(uint32 Type, uint64 Guid, const char* Format
     WorldPacket* data = sChatHandler.FillMessageData(Type, 0, msg, Guid, 0);
     DistributePacketToAll(data);
     delete data;
+}
+
+/*! \returns True if CBattleground should handle calculations, false if calculations were handled completely
+ *  \param winningTeam PlayerTeam of the team that won the battleground */
+bool CBattleground::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    return true;
 }
 
 void CBattleground::DistributePacketToAll(WorldPacket* packet)
@@ -547,31 +582,6 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
         {
             if(!plr->GetSession()->HasGMPermissions())
                 plr->CastSpell(plr, BG_DESERTER, true);
-        }
-        else
-        {
-            if(plr->m_bgIsRbg)
-            {
-                uint32 honorPointsWin = 0;
-                uint32 honorPointsLose = 0;
-                uint32 arenaPointsWin = 0;
-                uint32 arenaPointsLose = 0;
-                CBattlegroundManager::GetRbgBonus(plr, &honorPointsWin, &honorPointsLose, &arenaPointsWin, &arenaPointsLose);
-                
-                if(plr->GetTeam() == m_winningteam)
-                {
-                    /// Player is in the victory team
-                    plr->m_bgIsRbgWon = true;
-                    HonorHandler::AddHonorPointsToPlayer(plr, honorPointsWin);
-                    plr->m_arenaPoints += arenaPointsWin;
-                }
-                else
-                {
-                    /// Player is in defeated team
-                    HonorHandler::AddHonorPointsToPlayer(plr, honorPointsLose);
-                    plr->m_arenaPoints += arenaPointsLose;
-                }
-            }
         }
 
         if (!IS_INSTANCE(plr->m_bgEntryPointMap))
@@ -691,13 +701,8 @@ void CBattleground::EventCountdown()
         m_mainLock.Release();
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
-        Start();
+        this->StartBattleground();
     }
-}
-
-void CBattleground::Start()
-{
-    OnStart();
 }
 
 void CBattleground::SetWorldState(uint32 Index, uint32 Value)

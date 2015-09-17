@@ -63,7 +63,7 @@ class SpeedCheatDetector;
 #endif
 #define LOGIN_CIENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
 
-enum PlayerTeams
+enum PlayerTeam : uint32
 {
     TEAM_ALLIANCE = 0,
     TEAM_HORDE    = 1,
@@ -900,7 +900,9 @@ class SERVER_DECL Player : public Unit
         void _ModifySkillMaximum(uint32 SkillLine, uint32 NewMax);
         void _LearnSkillSpells(uint32 SkillLine, uint32 Current);
 
-        void RecalculateHonor();
+        void UpdatePvPCurrencies();
+        void FillRandomBattlegroundReward(bool wonBattleground, uint32 &honorPoints, uint32 &arenaPoints);
+        void ApplyRandomBattlegroundReward(bool wonBattleground);
 
         LfgMatch* m_lfgMatch;
         uint32 m_lfgInviterGuid;
@@ -1171,8 +1173,14 @@ class SERVER_DECL Player : public Unit
         std::set<uint32> quest_mobs;
 
         void EventPortToGM(Player* p);
+        /*! \deprecated This function returns a uint32 (the underlying type of the enum) instead of a PlayerTeam (the enum itself)
+         *  \todo Move existing code using GetTeam to GetTeamReal, then refactor to remove GetTeam and rename GetTeamReal to GetTeam 
+         *  \sa Player::GetTeamReal */
         uint32 GetTeam() { return m_team; }
-        uint32 GetTeamInitial() { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
+
+    PlayerTeam GetTeamReal();
+
+    uint32 GetTeamInitial() { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
         void SetTeam(uint32 t) { m_team = t; m_bgTeam = t; }
         void ResetTeam() { m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; m_bgTeam = m_team; }
         bool IsTeamHorde() { return m_team == TEAM_HORDE; }
@@ -1693,8 +1701,17 @@ class SERVER_DECL Player : public Unit
         bool m_bgIsQueued;
         uint32 m_bgQueueType;
         uint32 m_bgQueueInstanceId;
-        bool m_bgIsRbg;         /// Is joined BG through RBG system
-        bool m_bgIsRbgWon;      /// Weather RBG has been won today
+        protected:
+            /*! True if player queued for Random Battleground */
+            bool m_bgIsRbg;
+            /*! True if player has won a Random Battleground today */
+            bool m_bgIsRbgWon;
+        public:
+            bool QueuedForRbg();
+            void SetQueuedForRbg(bool value);
+            bool HasWonRbgToday();
+            void SetHasWonRbgToday(bool value);
+
         void EventRepeatSpell();
         void EventCastRepeatedSpell(uint32 spellid, Unit* target);
         int32 CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot);
@@ -2113,10 +2130,14 @@ class SERVER_DECL Player : public Unit
         void SetHonorCurrency(uint32 value) { SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value); }
         void ModHonorCurrency(uint32 value) { ModUnsigned32Value(PLAYER_FIELD_HONOR_CURRENCY, value); }
         uint32 GetHonorCurrency() { return GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY); }
+        void AddHonor(uint32 honorPoints, bool sendUpdate);
+        void UpdateHonor();
 
         void SetArenaCurrency(uint32 value) { SetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value); }
         void ModArenaCurrency(uint32 value) { ModUnsigned32Value(PLAYER_FIELD_ARENA_CURRENCY, value); }
         uint32 GetArenaCurrency() { return GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY); }
+        void AddArenaPoints(uint32 arenaPoints, bool sendUpdate);
+        void UpdateArenaPoints();
 
         void SetGlyph(uint32 slot, uint32 id) { SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, id); }
         uint32 GetGlyph(uint32 slot) { return GetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot); }

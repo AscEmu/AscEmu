@@ -33,6 +33,7 @@ class EyeOfTheStorm : public CBattleground
         EyeOfTheStorm(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~EyeOfTheStorm();
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         void HookOnPlayerDeath(Player* plr);
         void HookFlagDrop(Player* plr, GameObject* obj);
         void HookFlagStand(Player* plr, GameObject* obj);

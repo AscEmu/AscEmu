@@ -652,23 +652,22 @@ void IsleOfConquest::SpawnGraveyard( uint32 id, uint32 team ){
 
 
 void IsleOfConquest::Finish( uint32 losingTeam ){
-        if( m_ended )
+        if( this->HasEnded() )
             return;
 
-        m_ended = true;
         sEventMgr.RemoveEvents(this);
         sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120 * 1000, 1,0);
 
-        if( losingTeam == TEAM_ALLIANCE )
-            m_winningteam = TEAM_HORDE;
-        else
-            m_winningteam = TEAM_ALLIANCE;
+        this->EndBattleground(losingTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
+}
 
-        AddHonorToTeam( m_winningteam, 3 * 185 );
-        AddHonorToTeam( losingTeam, 1 * 185 );
-        CastSpellOnTeam( m_winningteam, 67033 );
-
-        UpdatePvPData();
+/*! Handles end of battleground rewards (marks etc)
+*  \param winningTeam Team that won the battleground
+*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool IsleOfConquest::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 67033);
+    return true;
 }
 
 void IsleOfConquest::HookOnAreaTrigger(Player* plr, uint32 id)

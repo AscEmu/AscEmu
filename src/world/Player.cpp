@@ -2617,14 +2617,11 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     else
         ss << uint32(0);
     
-    ss << "', '";
+    ss << "', ";
 
-    if (m_bgIsRbgWon)
-        ss << uint32(1);
-    else
-        ss << uint32(0);
+    ss << uint8(this->HasWonRbgToday());
 
-    ss << "')";
+    ss << ")";
 
     if (bNewCharacter)
         CharacterDatabase.WaitExecuteNA(ss.str().c_str());
@@ -6230,6 +6227,34 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     return 0;
 }
 
+/*! \returns True if player's current battleground was queued for as a random battleground
+ *  \sa Player::SetQueuedForRbg */
+bool Player::QueuedForRbg()
+{
+    return this->m_bgIsRbg;
+}
+
+/*! Used to set whether player's current battleground was queued for as a random battleground
+ *  \param value Value to assign to m_bgIsRbg
+ *  \sa Player::QueuedForRbg */
+void Player::SetQueuedForRbg(bool value)
+{
+    this->m_bgIsRbg = value;
+}
+
+/*! \returns True if player has won a Random Battleground today */
+bool Player::HasWonRbgToday()
+{
+    return this->m_bgIsRbgWon;
+}
+
+/*! Used to set whether a player has won a random battleground today 
+ *  \param value Value to assign to m_bgIsRbgWon */
+void Player::SetHasWonRbgToday(bool value)
+{
+    this->m_bgIsRbgWon = value;
+}
+
 void Player::EventRepeatSpell()
 {
     if (!m_curSelection || !IsInWorld())
@@ -8959,6 +8984,62 @@ void Player::PvPToggle()
 #endif
 }
 
+/*! Increments the player's honor
+ *  \param honorPoints Number of honor points to add to the player
+ *  \param sendUpdate True if UpdateHonor should be called after applying change
+ *  \todo Remove map check (func does not work on map 559, 562, 572) */
+void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
+{
+    this->HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, NULL);
+    this->m_procCounter = 0;
+
+    if (this->GetMapId() == 559 || this->GetMapId() == 562 || this->GetMapId() == 572)
+        return;
+
+    this->m_honorPoints += honorPoints;
+    this->m_honorToday += honorPoints;
+    if (this->m_honorPoints > sWorld.m_limits.honorpoints)
+        this->m_honorPoints = sWorld.m_limits.honorpoints;
+
+    if (sendUpdate)
+        this->UpdateHonor();
+}
+
+/*! Updates the honor related fields and sends updated values to the player
+ *  \todo Validate whether this function is unsafe to call while not in world */
+void Player::UpdateHonor()
+{
+    this->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
+    this->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
+    this->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
+    this->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, this->m_killsLifetime);
+    this->SetHonorCurrency(this->m_honorPoints);
+
+    this->UpdateKnownCurrencies(43308, true); //Honor Points
+}
+
+/*! Increments the player's arena points
+*  \param arenaPoints Number of arena points to add to the player
+*  \param sendUpdate True if UpdateArenaPoints should be called after applying change */
+void Player::AddArenaPoints(uint32 arenaPoints, bool sendUpdate)
+{
+    this->m_arenaPoints += arenaPoints;
+    if (this->m_arenaPoints > sWorld.m_limits.arenapoints)
+        this->m_arenaPoints = sWorld.m_limits.arenapoints;
+
+    if (sendUpdate)
+        this->UpdateArenaPoints();
+}
+
+/*! Updates the arena point related fields and sends updated values to the player
+*  \todo Validate whether this function is unsafe to call while not in world */
+void Player::UpdateArenaPoints()
+{
+    this->SetArenaCurrency(this->m_arenaPoints);
+
+    this->UpdateKnownCurrencies(43307, true);
+}
+
 void Player::ResetPvPTimer()
 {
     m_pvpTimer = sWorld.getIntRate(INTRATE_PVPTIMER);
@@ -9838,6 +9919,15 @@ void Player::EventPortToGM(Player* p)
     SafeTeleport(p->GetMapId(), p->GetInstanceID(), p->GetPosition());
 }
 
+/*! \returns TEAM_ALLIANCE if m_team equals 0, and TEAM_HORDE otherwise
+ *  \note Use this function instead of Player::GetTeam for any new code
+ *  \todo Refactor m_team to be a PlayerTeam instead of a uint32 and return m_team directly
+ *  \sa Player::GetTeam */
+PlayerTeam Player::GetTeamReal()
+{
+    return m_team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE;
+}
+
 void Player::AddComboPoints(uint64 target, int8 count)
 {
     // GetTimeLeft() checked in SpellAura, so we won't lose points
@@ -10471,9 +10561,52 @@ void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
     }
 }
 
-void Player::RecalculateHonor()
+/*! Calls UpdateHonor and UpdateArenaPoints
+ *  \sa Player::UpdateHonor, Player::UpdateArenaPoints */
+void Player::UpdatePvPCurrencies()
 {
-    HonorHandler::RecalculateHonorFields(this);
+    this->UpdateHonor();
+    this->UpdateArenaPoints();
+}
+
+/*! Fills parameters with reward for winning a random battleground 
+ *  \param wonBattleground True if the player won the battleground
+ *  \param &honorPoints Amount of honor the player would receieve
+ *  \param &arenaPoints Number of arena points the player would receive */
+void Player::FillRandomBattlegroundReward(bool wonBattleground, uint32& honorPoints, uint32& arenaPoints)
+{
+    auto honorForSingleKill = HonorHandler::CalculateHonorPointsForKill(this->getLevel(), this->getLevel());
+
+    if (wonBattleground)
+    {
+        if (this->m_bgIsRbgWon)
+        {
+            honorPoints = sWorld.bgsettings.RBG_WIN_HONOR * honorForSingleKill;
+            arenaPoints = sWorld.bgsettings.RBG_WIN_ARENA;
+        }
+        else
+        {
+            honorPoints = sWorld.bgsettings.RBG_FIRST_WIN_HONOR * honorForSingleKill;
+            arenaPoints = sWorld.bgsettings.RBG_FIRST_WIN_ARENA;
+        }
+    }
+    else
+    {
+        honorPoints = sWorld.bgsettings.RBG_LOSE_HONOR * honorForSingleKill;
+        arenaPoints = sWorld.bgsettings.RBG_LOSE_ARENA;
+    }
+}
+
+/*! Increments the player's honor and arena points by the reward for winning an rbg
+ *  \param wonBattleground True if the player won the battleground
+ *  \note This does not set m_wonRbgToday */
+void Player::ApplyRandomBattlegroundReward(bool wonBattleground)
+{
+    uint32 honorPoints, arenaPoints;
+    this->FillRandomBattlegroundReward(wonBattleground, honorPoints, arenaPoints);
+    this->AddHonor(honorPoints, false);
+    this->AddArenaPoints(arenaPoints, false);
+    this->UpdatePvPCurrencies();
 }
 
 //wooot, crappy code rulez.....NOT

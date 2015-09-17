@@ -3698,9 +3698,7 @@ class LuaUnit
         TEST_PLAYER()
             Player* plr = TO_PLAYER(ptr);
         uint32 honor = CHECK_ULONG(L, 1);
-        plr->m_honorToday += honor;
-        plr->m_honorPoints += honor;
-        plr->RecalculateHonor();
+        plr->AddHonor(honor, true);
         return 0;
     }
 
@@ -3709,11 +3707,18 @@ class LuaUnit
         TEST_PLAYER()
             Player* plr = TO_PLAYER(ptr);
         uint32 honor = CHECK_ULONG(L, 1);
-        if (plr->m_honorToday < honor || plr->m_honorPoints < honor)
-            return 0;
-        plr->m_honorToday -= honor;
-        plr->m_honorPoints -= honor;
-        plr->RecalculateHonor();
+
+        if (plr->m_honorPoints < honor)
+            plr->m_honorPoints = 0;
+        else
+            plr->m_honorPoints -= honor;
+
+        if (plr->m_honorToday < honor)
+            plr->m_honorToday = 0;
+        else
+            plr->m_honorToday -= honor;
+
+        plr->UpdateHonor();
         return 0;
     }
 
@@ -4860,10 +4865,9 @@ class LuaUnit
         TEST_PLAYER()
             uint32 pnts = luaL_checkint(L, 1);
         Player* plr = TO_PLAYER(ptr);
-        if (pnts)
+        if (pnts > 0)
         {
-            plr->m_arenaPoints += pnts;
-            plr->RecalculateHonor();
+            plr->AddArenaPoints(pnts, true);
         }
         return 0;
     }
@@ -4877,8 +4881,12 @@ class LuaUnit
         if (npts >= 0)
         {
             plr->m_arenaPoints = npts;
-            plr->RecalculateHonor();
         }
+        else
+        {
+            plr->m_arenaPoints = 0;
+        }
+        plr->UpdateArenaPoints();
         return 0;
     }
 

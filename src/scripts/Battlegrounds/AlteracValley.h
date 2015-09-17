@@ -160,6 +160,7 @@ class AlteracValley : public CBattleground
 
         void EventAssaultControlPoint(uint32 x);
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         void HookOnPlayerDeath(Player* plr);
         void HookFlagDrop(Player* plr, GameObject* obj);
         void HookFlagStand(Player* plr, GameObject* obj);

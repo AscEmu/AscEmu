@@ -313,10 +313,10 @@ void DayWatcherThread::update_arena()
                 plr = objmgr.GetPlayer(guid);
                 if (plr)
                 {
-                    plr->m_arenaPoints = arenapoints;
+                    plr->AddArenaPoints(arenapoints, false);
 
                     /* update visible fields (must be done through an event because of no uint lock */
-                    sEventMgr.AddEvent(plr, &Player::RecalculateHonor, EVENT_PLAYER_UPDATE, 100, 1, 0);
+                    sEventMgr.AddEvent(plr, &Player::UpdateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
 
                     /* send a little message :> */
                     sChatHandler.SystemMessage(plr->GetSession(), "Your arena points have been updated! Check your PvP tab!");

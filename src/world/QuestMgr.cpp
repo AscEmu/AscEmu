@@ -1357,8 +1357,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint3
         plr->AddToFinishedQuests(qst->id);
         if (qst->bonusarenapoints != 0)
         {
-            plr->m_arenaPoints += qst->bonusarenapoints;
-            plr->RecalculateHonor();
+            plr->AddArenaPoints(qst->bonusarenapoints, true);
         }
 
 #ifdef ENABLE_ACHIEVEMENTS
