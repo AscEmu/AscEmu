@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 03/14/2015
+Last update: 09/17/2015
 *********************************************************************
 */
 
@@ -259,6 +259,7 @@ CREATE TABLE `characters` (
   `CanGainXp` int(10) unsigned NOT NULL DEFAULT '1',
   `data` longtext,
   `resettalents` INT UNSIGNED DEFAULT '0' NOT NULL,
+  `rbg_daily` TINYINT(1) NOT NULL DEFAULT '0' COMMENT 'Boolean already won a daily rbg?',
   PRIMARY KEY (`guid`),
   KEY `acct` (`acct`),
   KEY `name` (`name`),
