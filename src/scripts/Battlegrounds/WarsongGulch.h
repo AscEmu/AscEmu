@@ -49,6 +49,7 @@ class WarsongGulch : public CBattleground
         WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~WarsongGulch();
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         void HookOnPlayerDeath(Player* plr);
         void HookFlagDrop(Player* plr, GameObject* obj);
         void HookFlagStand(Player* plr, GameObject* obj);
@@ -66,7 +67,7 @@ class WarsongGulch : public CBattleground
         void SpawnBuff(uint32 x);
         LocationVector GetStartingCoords(uint32 Team);
         void HookOnFlagDrop(Player* plr);
-        void ReturnFlag(uint32 team);
+        void ReturnFlag(PlayerTeam team);
 
         void EventReturnFlags();
 

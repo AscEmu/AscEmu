@@ -50,7 +50,7 @@ bool ChatHandler::HandleStartBGCommand(const char* args, WorldSession* m_session
     }
     m_session->GetPlayer()->m_bg->SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, m_session->LocalizedWorldSrv(49), m_session->LocalizedWorldSrv(m_session->GetPlayer()->m_bg->GetNameID()));
     sEventMgr.RemoveEvents(m_session->GetPlayer()->m_bg, EVENT_BATTLEGROUND_COUNTDOWN);
-    m_session->GetPlayer()->m_bg->Start();
+    m_session->GetPlayer()->m_bg->StartBattleground();
     return true;
 }
 

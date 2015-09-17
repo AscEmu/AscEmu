@@ -1807,24 +1807,12 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
 
 void AlteracValley::Finish(uint32 losingTeam)
 {
-    if(m_ended) return;
+    if(this->HasEnded()) return;
 
-    m_ended = true;
     sEventMgr.RemoveEvents(this);
     sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     
-    if( losingTeam == TEAM_ALLIANCE )
-        m_winningteam = TEAM_HORDE;
-    else
-        m_winningteam = TEAM_ALLIANCE;
-    
-    AddHonorToTeam( m_winningteam, 3 * 185 );
-    AddHonorToTeam( losingTeam, 1 * 185 );
-    CastSpellOnTeam( m_winningteam, 43475 );
-    CastSpellOnTeam( m_winningteam, 69160 );
-    CastSpellOnTeam( m_winningteam, 69501 );
-
-    UpdatePvPData();
+    this->EndBattleground(losingTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
 }
 
 
@@ -1910,6 +1898,14 @@ void AlteracValley::EventUpdateResources()
 void AlteracValley::EventAssaultControlPoint(uint32 x)
 {
     m_nodes[x]->Capture();
+}
+
+bool AlteracValley::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 43475);
+    CastSpellOnTeam(winningTeam, 69160);
+    CastSpellOnTeam(winningTeam, 69501);
+    return true;
 }
 
 void AlteracValley::Herald(const char* format, ...)

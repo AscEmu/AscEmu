@@ -21,6 +21,11 @@
 #ifndef _BATTLEGROUND_H
 #define _BATTLEGROUND_H
 
+enum PlayerTeam : uint32;
+
+/*!
+ * Base class for battleground scripts (see: AlteracValley, ArathiBasin, EyeOfTheStorm, IsleOfConquest, WarsongGulch)
+ */
 class SERVER_DECL CBattleground : public EventableObject
 {
 
@@ -67,17 +72,23 @@ class SERVER_DECL CBattleground : public EventableObject
         /* countdown stuff */
         uint32 m_countdownStage;
 
-        /* winner stuff */
-        bool m_ended;
-        uint8 m_winningteam;
-
         /* resurrect queue */
         map<Creature*, set<uint32> > m_resurrectMap;
         uint32 m_lastResurrect;
 
         bool m_isWeekend;
+private:
 
+    /*! True if battleground has ended */
+    bool m_ended;
+    /*! Team that won the battleground, set when m_ended is set */
+    uint8 m_winningteam;
     public:
+        void StartBattleground();
+        void EndBattleground(PlayerTeam winningTeam);
+        bool HasStarted();
+        bool HasEnded();
+
         void AddHonorToTeam(uint32 team, uint32 amount);
 
         void CastSpellOnTeam(uint32 team, uint32 spell);
@@ -87,6 +98,7 @@ class SERVER_DECL CBattleground : public EventableObject
         void SendChatMessage(uint32 Type, uint64 Guid, const char* Format, ...);
 
         /* Hook Functions */
+        virtual bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam);
         virtual void HookOnPlayerDeath(Player* plr) = 0;
 
         virtual void HookOnPlayerResurrect(Player* player){}
@@ -128,11 +140,6 @@ class SERVER_DECL CBattleground : public EventableObject
         /* Creating a battleground requires a pre-existing map manager */
         CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 type);
         virtual ~CBattleground();
-
-        /* Has it ended? */
-        bool HasEnded() { return m_ended; }
-        /* Has it started? */
-        bool HasStarted() { return m_started; }
 
         /* Send the pvp log data of all players to this player. */
         void SendPVPData(Player* plr);
@@ -192,7 +199,6 @@ class SERVER_DECL CBattleground : public EventableObject
         virtual uint32 GetNameID() { return 34;}
         void EventCountdown();
 
-        virtual void Start();
         virtual void OnStart() {}
         void Close();
         virtual void OnClose() {}

@@ -82,6 +82,7 @@ class ArathiBasin : public CBattleground
         ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~ArathiBasin();
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         void HookOnPlayerDeath(Player* plr);
         void HookFlagDrop(Player* plr, GameObject* obj);
         void HookFlagStand(Player* plr, GameObject* obj);

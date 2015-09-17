@@ -237,6 +237,16 @@ EyeOfTheStorm::~EyeOfTheStorm()
 
 }
 
+/*! Handles end of battleground rewards (marks etc)
+*  \param winningTeam Team that won the battleground
+*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool EyeOfTheStorm::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 43477);
+    CastSpellOnTeam(winningTeam, 69156);
+    return true;
+}
+
 void EyeOfTheStorm::RepopPlayersOfTeam(int32 team, Creature* sh)
 {
     map<Creature*, set<uint32> >::iterator itr = m_resurrectMap.find(sh);
@@ -875,34 +885,12 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
     {
         m_points[team] = 1600;
 
-        m_ended = true;
-        m_winningteam = static_cast<uint8>(team);
-        m_nextPvPUpdateTime = 0;
-
         sEventMgr.RemoveEvents(this);
         sEventMgr.AddEvent(TO<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        m_mainLock.Acquire();
-
-        AddHonorToTeam(m_winningteam, 3 * 185);
-
-        CastSpellOnTeam(m_winningteam, 43477);
-        CastSpellOnTeam(m_winningteam, 69156);
-
-        if(m_winningteam == TEAM_ALLIANCE)
-        { 
-            AddHonorToTeam(TEAM_HORDE, 1 * 185);
-            PlaySoundToAll(SOUND_ALLIANCEWINS);
-        }
-        else
-        { 
-            AddHonorToTeam(TEAM_ALLIANCE, 1 * 185);
-            PlaySoundToAll(SOUND_HORDEWINS);
-        }
-
-        m_mainLock.Release();
         SetWorldState(WORLDSTATE_EOTS_ALLIANCE_VICTORYPOINTS + team, m_points[team]);
-        UpdatePvPData();
+
+        this->EndBattleground(team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
         return true;
     }
 

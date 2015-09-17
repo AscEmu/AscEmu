@@ -35,6 +35,7 @@ protected:
         Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
         virtual ~Arena();
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         bool HookHandleRepop(Player* plr);
         void OnAddPlayer(Player* plr);
         void OnRemovePlayer(Player* plr);
@@ -80,8 +81,6 @@ protected:
 
         /// Returns the faction of the team
         uint32 GetTeamFaction(uint32 team);
-
-        void Finish();
         ARCEMU_INLINE uint8 Rated() { return rated_match; }
         ARCEMU_INLINE uint32 GetArenaTeamType() { return m_arenateamtype; }
         ARCEMU_INLINE ArenaTeam** GetTeams() { return m_teams; }

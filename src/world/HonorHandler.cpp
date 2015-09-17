@@ -36,17 +36,7 @@ void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
 {
-    pPlayer->HandleProc(PROC_ON_GAIN_EXPIERIENCE, pPlayer, NULL);
-    pPlayer->m_procCounter = 0;
-
-    if (pPlayer->GetMapId() == 559 || pPlayer->GetMapId() == 562 || pPlayer->GetMapId() == 572)
-        return;
-    pPlayer->m_honorPoints += uAmount;
-    pPlayer->m_honorToday += uAmount;
-    if (pPlayer->m_honorPoints > sWorld.m_limits.honorpoints)
-        pPlayer->m_honorPoints = sWorld.m_limits.honorpoints;
-
-    RecalculateHonorFields(pPlayer);
+    pPlayer->AddHonor(uAmount, true);
 }
 
 int32 HonorHandler::CalculateHonorPointsForKill(uint32 playerLevel, uint32 victimLevel)
@@ -249,16 +239,8 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
 void HonorHandler::RecalculateHonorFields(Player* pPlayer)
 {
-    pPlayer->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(pPlayer->m_killsToday) | (pPlayer->m_killsYesterday << 16));
-    pPlayer->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, pPlayer->m_honorToday);
-    pPlayer->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, pPlayer->m_honorYesterday);
-    pPlayer->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, pPlayer->m_killsLifetime);
-    pPlayer->SetHonorCurrency(pPlayer->m_honorPoints);
-    pPlayer->SetArenaCurrency(pPlayer->m_arenaPoints);
-
-    // Currency tab - (Blizz Placeholders)
-    pPlayer->UpdateKnownCurrencies(43307, true); //Arena Points
-    pPlayer->UpdateKnownCurrencies(43308, true); //Honor Points
+    if (pPlayer != nullptr)
+        pPlayer->UpdatePvPCurrencies();
 }
 
 bool ChatHandler::HandleAddKillCommand(const char* args, WorldSession* m_session)

@@ -449,6 +449,18 @@ ArathiBasin::~ArathiBasin()
 
 }
 
+/*! Handles end of battleground rewards (marks etc)
+ *  \param winningTeam Team that won the battleground
+ *  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool ArathiBasin::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 43484);
+    CastSpellOnTeam(winningTeam, 69153);
+    CastSpellOnTeam(winningTeam, 69499);
+    CastSpellOnTeam(winningTeam, 69500);
+    return true;
+}
+
 void ArathiBasin::EventUpdateResources(uint32 Team)
 {
     uint32 resource_fields[2] = { WORLDSTATE_AB_ALLIANCE_RESOURCES, WORLDSTATE_AB_HORDE_RESOURCES };
@@ -512,35 +524,10 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     // check for winning condition
     if(current_resources == RESOURCES_WINVAL)
     {
-        m_ended = true;
-        m_winningteam = static_cast<uint8>(Team);
-        m_nextPvPUpdateTime = 0;
-
         sEventMgr.RemoveEvents(this);
         sEventMgr.AddEvent(TO<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        m_winningteam = Team;        
-
-        AddHonorToTeam(m_winningteam, 3 * 185);
-
-        // Winning spells for AB
-        CastSpellOnTeam(m_winningteam, 43484);
-        CastSpellOnTeam(m_winningteam, 69153);
-        CastSpellOnTeam(m_winningteam, 69499);
-        CastSpellOnTeam(m_winningteam, 69500);
-
-        if (m_winningteam == TEAM_ALLIANCE)
-        {
-            AddHonorToTeam(TEAM_HORDE, 1 * 185);
-            PlaySoundToAll(SOUND_ALLIANCEWINS);
-        }
-        else
-        {
-            AddHonorToTeam(TEAM_ALLIANCE, 1 * 185);
-            PlaySoundToAll(SOUND_HORDEWINS);
-        }
-
-        UpdatePvPData();
+        this->EndBattleground(Team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
     }
 }
 

@@ -18,6 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Battleground.h"
 #include "StdAfx.h"
 
 CBattleground::CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_type(type), m_levelGroup(levelgroup)
@@ -370,6 +371,76 @@ Creature* CBattleground::SpawnCreature(uint32 entry, LocationVector &v, uint32 f
     return SpawnCreature(entry, v.x, v.y, v.z, v.o, faction);
 }
 
+/*!
+ * Starts the current battleground
+ * \sa CBattleground::EndBattleground */
+void CBattleground::StartBattleground()
+{
+    this->OnStart();
+}
+
+/*!
+ * Ends the current battleground
+ * \param winningTeam PlayerTeam that won the battleground
+ * \sa CBattleground::StartBattleground 
+ * \todo Move reward calculations to seperate functions */
+void CBattleground::EndBattleground(PlayerTeam winningTeam)
+{
+    this->Lock();
+    this->m_ended = true;
+    this->m_winningteam = winningTeam;
+    this->m_nextPvPUpdateTime = 0;
+
+    auto losingTeam = winningTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE;
+
+    /* If we still need to handle reward calculations */
+    if (this->HandleFinishBattlegroundRewardCalculation(winningTeam))
+    {
+        for (auto winningPlr : m_players[winningTeam])
+        {
+            if (winningPlr->QueuedForRbg())
+            {
+                winningPlr->ApplyRandomBattlegroundReward(true);
+                winningPlr->SetHasWonRbgToday(true);
+            }
+
+            winningPlr->SaveToDB(false);
+        }
+        for (auto losingPlr : m_players[losingTeam])
+        {
+            if (losingPlr->QueuedForRbg())
+            {
+                losingPlr->ApplyRandomBattlegroundReward(false);
+            }
+
+            losingPlr->SaveToDB(false);
+        }
+
+        this->AddHonorToTeam(winningTeam, 3 * 185);
+        this->AddHonorToTeam(losingTeam, 1 * 185);
+    }
+
+    this->PlaySoundToAll(winningTeam == TEAM_ALLIANCE ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
+
+    this->UpdatePvPData();
+
+    this->Unlock();
+}
+
+/*! \returns True if battleground has started
+ *  \sa CBattleground::HasEnded */
+bool CBattleground::HasStarted()
+{
+    return this->m_started;
+}
+
+/*! \returns True if battleground has ended
+ *  \sa CBattleground::HasStarted */
+bool CBattleground::HasEnded()
+{
+    return this->m_ended;
+}
+
 void CBattleground::AddHonorToTeam(uint32 team, uint32 amount)
 {
     m_mainLock.Acquire();
@@ -413,6 +484,13 @@ void CBattleground::SendChatMessage(uint32 Type, uint64 Guid, const char* Format
     WorldPacket* data = sChatHandler.FillMessageData(Type, 0, msg, Guid, 0);
     DistributePacketToAll(data);
     delete data;
+}
+
+/*! \returns True if CBattleground should handle calculations, false if calculations were handled completely
+ *  \param winningTeam PlayerTeam of the team that won the battleground */
+bool CBattleground::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    return true;
 }
 
 void CBattleground::DistributePacketToAll(WorldPacket* packet)
@@ -500,8 +578,11 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     /* teleport out */
     if (!logout)
     {
-        if (!m_ended && !plr->GetSession()->HasGMPermissions())
-            plr->CastSpell(plr, BG_DESERTER, true);
+        if (!m_ended)
+        {
+            if(!plr->GetSession()->HasGMPermissions())
+                plr->CastSpell(plr, BG_DESERTER, true);
+        }
 
         if (!IS_INSTANCE(plr->m_bgEntryPointMap))
         {
@@ -620,13 +701,8 @@ void CBattleground::EventCountdown()
         m_mainLock.Release();
         //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
-        Start();
+        this->StartBattleground();
     }
-}
-
-void CBattleground::Start()
-{
-    OnStart();
 }
 
 void CBattleground::SetWorldState(uint32 Index, uint32 Value)

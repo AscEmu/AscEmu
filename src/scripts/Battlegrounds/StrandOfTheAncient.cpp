@@ -298,6 +298,15 @@ LocationVector StrandOfTheAncient::GetStartingCoords(uint32 team)
         return sotaDefenderStartingPosition;
 }
 
+/*! Handles end of battleground rewards (marks etc)
+*  \param winningTeam Team that won the battleground
+*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool StrandOfTheAncient::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 61213);
+    return true;
+}
+
 void StrandOfTheAncient::HookOnPlayerDeath(Player* plr)
 {
     plr->m_bgScore.Deaths++;
@@ -658,22 +667,9 @@ void StrandOfTheAncient::FinishRound()
 void StrandOfTheAncient::Finish(uint32 winningteam)
 {
     sEventMgr.RemoveEvents(this);
-    m_ended = true;
-    m_winningteam = winningteam;
-
-    uint32 losingteam;
-    if (winningteam == TEAM_ALLIANCE)
-        losingteam = TEAM_HORDE;
-    else
-        losingteam = TEAM_ALLIANCE;
-
-    AddHonorToTeam(winningteam, 3 * 185);
-    AddHonorToTeam(losingteam, 1 * 185);
-    CastSpellOnTeam(m_winningteam, 61213);
-
-    UpdatePvPData();
-
     sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120 * 1000, 1, 0);
+
+    this->EndBattleground(winningteam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
 }
 
 void StrandOfTheAncient::TimeTick()

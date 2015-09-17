@@ -1615,6 +1615,15 @@ void World::Rehash(bool load)
     bgsettings.IOC_MIN = Config.MainConfig.GetIntDefault("Battleground", "IOC_MIN", 10);
     bgsettings.IOC_MAX = Config.MainConfig.GetIntDefault("Battleground", "IOC_MAX", 15);
 
+    bgsettings.RBG_FIRST_WIN_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_HONOR", 30);
+    bgsettings.RBG_FIRST_WIN_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_ARENA", 25);
+    
+    bgsettings.RBG_WIN_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_HONOR", 15);
+    bgsettings.RBG_WIN_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_ARENA", 0);
+    
+    bgsettings.RBG_LOSE_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_HONOR", 5);
+    bgsettings.RBG_LOSE_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_ARENA", 0);
+
     arenaSettings.A2V2_MIN = Config.MainConfig.GetIntDefault("Arena", "2V2_MIN", 2);
     arenaSettings.A2V2_MAX = Config.MainConfig.GetIntDefault("Arena", "2V2_MAX", 2);
 

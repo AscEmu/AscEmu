@@ -108,6 +108,18 @@ WarsongGulch::~WarsongGulch()
 
 }
 
+/*! Handles end of battleground rewards (marks etc)
+*  \param winningTeam Team that won the battleground
+*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool WarsongGulch::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 69158);
+    CastSpellOnTeam(winningTeam, 69496);
+    CastSpellOnTeam(winningTeam, 69497);
+    CastSpellOnTeam(winningTeam, 69498);
+    return true;
+}
+
 void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
 {
     int32 buffslot = -1;
@@ -135,6 +147,8 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         case AREATRIGGER_WSG_ENCOUNTER_02:
         case AREATRIGGER_WSG_ENCOUNTER_03:
         case AREATRIGGER_WSG_ENCOUNTER_04:
+        case AREATRIGGER_WSG_A_SPAWN:
+        case AREATRIGGER_WSG_H_SPAWN:
             break;
         default:
             sLog.Error("WarsongGulch", "Encountered unhandled areatrigger id %u", id);
@@ -214,33 +228,10 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         m_scores[plr->GetTeam()]++;
         if(m_scores[plr->GetTeam()] == 3)
         {
-            /* victory! */
-            m_ended = true;
-            m_winningteam = (uint8)plr->GetTeam();
-            m_nextPvPUpdateTime = 0;
-
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
             sEventMgr.AddEvent(TO<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            AddHonorToTeam(m_winningteam, 3 * 185);
-
-            CastSpellOnTeam(m_winningteam, 69158);
-            CastSpellOnTeam(m_winningteam, 69496);
-            CastSpellOnTeam(m_winningteam, 69497);
-            CastSpellOnTeam(m_winningteam, 69498);
-
-            if (m_winningteam == TEAM_ALLIANCE)
-            {
-                AddHonorToTeam(TEAM_HORDE, 1 * 185);
-                PlaySoundToAll(SOUND_ALLIANCEWINS);
-            }
-            else
-            {
-                AddHonorToTeam(TEAM_ALLIANCE, 1 * 185);
-                PlaySoundToAll(SOUND_HORDEWINS);
-            }
-
-            m_mainLock.Release();
+            this->EndBattleground(plr->GetTeamReal());
         }
 
         /* increment the score world state */
@@ -280,7 +271,7 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
 
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
-    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeam(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeamReal(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     if(plr->IsTeamHorde())
         SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Alliance flag was dropped by %s!", plr->GetName());
@@ -355,7 +346,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
         SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Horde's flag has been taken by %s !", plr->GetName());
 }
 
-void WarsongGulch::ReturnFlag(uint32 team)
+void WarsongGulch::ReturnFlag(PlayerTeam team)
 {
     if(m_dropFlags[team]->IsInWorld())
         m_dropFlags[team]->RemoveFromWorld(false);
