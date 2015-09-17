@@ -307,7 +307,7 @@ void LogonServer::Run(int argc, char** argv)
         {
             case 'c':
                 /* Log filename was set */
-                config_file = new char[strlen(arcemu_optarg)];
+                config_file = new char[strlen(arcemu_optarg) + 1];
                 strcpy(config_file, arcemu_optarg);
                 break;
             case 0:
