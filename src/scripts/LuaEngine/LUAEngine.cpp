@@ -826,7 +826,7 @@ static int SuspendLuaThread(lua_State* L)
 
 static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
 {
-    const char* funcName = strdup(luaL_checkstring(L, 1));
+    auto funcName = strdup(luaL_checkstring(L, 1));
     int delay = luaL_checkint(L, 2);
     int repeats = luaL_checkint(L, 3);
     if (!delay || repeats < 0 || !funcName)
@@ -842,7 +842,7 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
     int ref = luaL_ref(L, LUA_REGISTRYINDEX); //empty
     if (ref == LUA_REFNIL || ref == LUA_NOREF)
     {
-        delete funcName;
+        free(funcName);
         return luaL_error(L, "Error in RegisterTimedEvent! Failed to create a valid reference.");
     }
     TimedEvent* te = TimedEvent::Allocate(&sLuaMgr, new CallbackP2<LuaEngine, const char*, int>(&sLuaMgr, &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
