@@ -18,6 +18,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if COMPILER == COMPILER_GNU
+    // Required on gcc
+    #include "StdAfx.h"
+#endif
+
 #include "ArathiBasin.h"
 
 #define BASE_RESOURCES_GAIN 10
