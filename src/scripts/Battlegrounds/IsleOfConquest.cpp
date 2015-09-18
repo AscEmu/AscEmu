@@ -441,11 +441,11 @@ void IsleOfConquest::OnCreate(){
 
 void IsleOfConquest::OnStart()
 {
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
     if( m_started )
         return;
 
-    m_mainLock.Acquire();
-    
     m_started = true;
     
     for(uint32 i = 0; i < 2; ++i){
@@ -453,8 +453,6 @@ void IsleOfConquest::OnStart()
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
-    
-    m_mainLock.Release();
 
     OpenGates();
     PlaySoundToAll( SOUND_BATTLEGROUND_BEGIN );

@@ -22,6 +22,8 @@
 #define _BATTLEGROUND_H
 
 #include "PlayerDefines.hpp"
+#include <mutex>
+#include <atomic>
 
 /*!
  * Base class for battleground scripts (see: AlteracValley, ArathiBasin, EyeOfTheStorm, IsleOfConquest, WarsongGulch)
@@ -40,24 +42,21 @@ class SERVER_DECL CBattleground : public EventableObject
         uint32 m_type;
         uint32 m_levelGroup;
         uint32 m_deltaRating[2];
-        uint32 m_invisGMs;
+        std::atomic<uint32> m_invisGMs;
         uint32 m_honorPerKill;
         uint32 m_zoneid;
+        std::recursive_mutex m_mutex;
 
     public:
         /* Team->Player Map */
         set<Player*> m_players[2];
-        void Lock() { m_mainLock.Acquire(); }
-        void Unlock() { m_mainLock.Release(); }
-        void AddInvisGM() {Lock(); m_invisGMs++; Unlock();}
-        void RemoveInvisGM() {Lock(); m_invisGMs--; Unlock();}
-    protected:
 
+    void AddInvisGM();
+    void RemoveInvisGM();
+    std::recursive_mutex& GetMutex();
+protected:
         /* PvP Log Data Map */
         map<uint32, BGScore> m_pvpData;
-
-        /* Lock for all player data */
-        Mutex m_mainLock;
 
         /* Player count per team */
         uint32 m_playerCountPerTeam;

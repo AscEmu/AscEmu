@@ -489,20 +489,19 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     m_resources[Team] = current_resources;
     if((current_resources - m_lastRepGainResources[Team]) >= resourcesToGainBR)
     {
-        m_mainLock.Acquire();
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for(set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             uint32 fact = (*itr)->IsTeamHorde() ? 510 : 509; //The Defilers : The League of Arathor
             (*itr)->ModStanding(fact, 10);
         }
-        m_mainLock.Release();
         m_lastRepGainResources[Team] += resourcesToGainBR;
     }
 
     if((current_resources - m_lastHonorGainResources[Team]) >= resourcesToGainBH)
     {
         uint32 honorToAdd = m_honorPerKill;
-        m_mainLock.Acquire();
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for(set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
@@ -510,7 +509,6 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
         }
 
         UpdatePvPData();
-        m_mainLock.Release();
         m_lastHonorGainResources[Team] += resourcesToGainBH;
     }
 
@@ -735,7 +733,8 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
 
     if(m_capturedBases[Team] >= 4)
     {
-        m_mainLock.Acquire();
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
         for(set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             if(Team)
@@ -753,7 +752,6 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
                     (*itr)->GetQuestLogForEntry(8115)->SendQuestComplete();
             }
         }
-        m_mainLock.Release();
     }
 
     // respawn the control point with the correct aura

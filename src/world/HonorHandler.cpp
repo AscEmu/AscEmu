@@ -96,11 +96,12 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
     {
         if (pPlayer->m_bg)
         {
+            std::lock_guard<std::recursive_mutex> lock(pPlayer->m_bg->GetMutex());
+
             // hackfix for battlegrounds (since the groups there are disabled, we need to do this manually)
             vector<Player*> toadd;
             uint32 t = pPlayer->m_bgTeam;
             toadd.reserve(15);        // shouldn't have more than this
-            pPlayer->m_bg->Lock();
             set<Player*> * s = &pPlayer->m_bg->m_players[t];
 
             for (set<Player*>::iterator itr = s->begin(); itr != s->end(); ++itr)
@@ -130,8 +131,6 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                     }
                 }
             }
-
-            pPlayer->m_bg->Unlock();
         }
         else
         {

@@ -599,8 +599,9 @@ void StrandOfTheAncient::PrepareRound()
     SpawnGraveyard(SOTA_GY_DEFENDER, Defenders);
 
     if (BattleRound == 2){
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
         // Teleport players to their place and cast preparation on them
-        m_mainLock.Acquire();
 
         for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
         {
@@ -616,17 +617,15 @@ void StrandOfTheAncient::PrepareRound()
             p->CastSpell(p, BG_PREPARATION, true);
         }
 
-        m_mainLock.Release();
-
         sEventMgr.AddEvent(this, &StrandOfTheAncient::StartRound, EVENT_SOTA_START_ROUND, 1 * 10 * 1000, 1, 0);
     }
 };
 
 void StrandOfTheAncient::StartRound()
 {
-    roundprogress = SOTA_ROUND_STARTED;
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    m_mainLock.Acquire();
+    roundprogress = SOTA_ROUND_STARTED;
 
     for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); itr++){
         Player *p = *itr;
@@ -634,8 +633,6 @@ void StrandOfTheAncient::StartRound()
         p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[SOTA_ROUND_STARTED]);
         p->RemoveAura(BG_PREPARATION);
     }
-
-    m_mainLock.Release();
 
     RemoveAuraFromTeam(Defenders, BG_PREPARATION);
 

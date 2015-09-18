@@ -868,8 +868,9 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
     m_points[team] += points;
     if((m_points[team] - m_lastHonorGainPoints[team]) >= resourcesToGainBH)
     {
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
         uint32 honorToAdd = m_honorPerKill;
-        m_mainLock.Acquire();
         for(set<Player*>::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
@@ -877,7 +878,6 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
         }
 
         UpdatePvPData();
-        m_mainLock.Release();
         m_lastHonorGainPoints[team] += resourcesToGainBH;
     }
 
