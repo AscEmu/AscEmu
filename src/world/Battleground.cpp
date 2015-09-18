@@ -21,6 +21,21 @@
 #include "PlayerDefines.hpp"
 #include "StdAfx.h"
 
+uint32 CBattleground::GetId()
+{
+    return m_id;
+}
+
+uint32 CBattleground::GetLevelGroup()
+{
+    return m_levelGroup;
+}
+
+MapMgr* CBattleground::GetMapMgr()
+{
+    return m_mapMgr;
+}
+
 CBattleground::CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 type) : m_mapMgr(mgr), m_id(id), m_type(type), m_levelGroup(levelgroup), m_invisGMs(0)
 {
     m_nextPvPUpdateTime = 0;
@@ -86,6 +101,16 @@ void CBattleground::UpdatePvPData()
 
         m_nextPvPUpdateTime = UNIXTIME + 2;
     }
+}
+
+uint32 CBattleground::GetStartTime()
+{
+    return m_startTime;
+}
+
+uint32 CBattleground::GetType()
+{
+    return m_type;
 }
 
 void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
@@ -194,6 +219,12 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
     }
 
 }
+
+uint8 CBattleground::Rated()
+{
+    return 0;
+}
+
 void CBattleground::AddPlayer(Player* plr, uint32 team)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -233,6 +264,11 @@ void CBattleground::OnPlayerPushed(Player* plr)
         if (plr->m_isGmInvisible == false)    //do not join invisible gm's into bg groups.
             m_groups[plr->m_bgTeam]->AddMember(plr->getPlayerInfo());
     }
+}
+
+void CBattleground::SetIsWeekend(bool isweekend)
+{
+    
 }
 
 void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
@@ -499,6 +535,14 @@ bool CBattleground::HandleFinishBattlegroundRewardCalculation(PlayerTeam winning
     return true;
 }
 
+void CBattleground::HookOnPlayerResurrect(Player* player)
+{
+}
+
+void CBattleground::HookOnUnitDied(Unit* victim)
+{
+}
+
 void CBattleground::DistributePacketToAll(WorldPacket* packet)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
@@ -631,6 +675,11 @@ void CBattleground::EventCreate()
     OnCreate();
 }
 
+uint32 CBattleground::GetNameID()
+{
+    return 34;
+}
+
 int32 CBattleground::event_GetInstanceID()
 {
     return m_mapMgr->GetInstanceID();
@@ -707,6 +756,11 @@ void CBattleground::EventCountdown()
     }
 }
 
+void CBattleground::OnStart()
+{
+    
+}
+
 void CBattleground::SetWorldState(uint32 Index, uint32 Value)
 {
     if (m_zoneid == 0)
@@ -752,6 +806,11 @@ void CBattleground::Close()
 
     /* shut down the map thread. this will delete the battleground from the current context. */
     m_mapMgr->SetThreadState(THREADSTATE_TERMINATE);
+}
+
+void CBattleground::OnClose()
+{
+    
 }
 
 Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, uint32 horde)
@@ -820,6 +879,11 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 Creature* CBattleground::SpawnSpiritGuide(LocationVector &v, uint32 faction)
 {
     return SpawnSpiritGuide(v.x, v.y, v.z, v.o, faction);
+}
+
+uint32 CBattleground::GetLastResurrect()
+{
+    return m_lastResurrect;
 }
 
 void CBattleground::QueuePlayerForResurrect(Player* plr, Creature* spirit_healer)
@@ -902,6 +966,21 @@ bool CBattleground::CanPlayerJoin(Player* plr, uint32 type)
     return HasFreeSlots(plr->m_bgTeam, type) && (GetLevelGrouping(plr->getLevel()) == GetLevelGroup()) && (!plr->HasAura(BG_DESERTER));
 }
 
+bool CBattleground::CreateCorpse(Player* plr)
+{
+    return true;
+}
+
+bool CBattleground::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell)
+{
+    return false;
+}
+
+bool CBattleground::HookQuickLockOpen(GameObject* go, Player* player, Spell* spell)
+{
+    return false;
+}
+
 void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
 {
     float dd;
@@ -932,6 +1011,11 @@ void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
     }
 
     m_lock.Release();
+}
+
+uint64 CBattleground::GetFlagHolderGUID(uint32 faction) const
+{
+    return 0;
 }
 
 uint32 CBattleground::GetFreeSlots(uint32 t, uint32 type)
