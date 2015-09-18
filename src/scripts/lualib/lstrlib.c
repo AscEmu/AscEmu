@@ -330,7 +330,11 @@ static const char *start_capture (MatchState *ms, const char *s,
                                     const char *p, int what) {
   const char *res;
   int level = ms->level;
-  if (level >= LUA_MAXCAPTURES) luaL_error(ms->L, "too many captures");
+  if (level >= LUA_MAXCAPTURES)
+  {
+      luaL_error(ms->L, "too many captures");
+      return 0;
+  }
   ms->capture[level].init = s;
   ms->capture[level].len = what;
   ms->level = level+1;
@@ -473,10 +477,14 @@ static void push_onecapture (MatchState *ms, int i, const char *s,
   }
   else {
     ptrdiff_t l = ms->capture[i].len;
-    if (l == CAP_UNFINISHED) luaL_error(ms->L, "unfinished capture");
+    if (l == CAP_UNFINISHED)
+    {
+        luaL_error(ms->L, "unfinished capture");
+        return;
+    }
     if (l == CAP_POSITION)
       lua_pushinteger(ms->L, ms->capture[i].init - ms->src_init + 1);
-    else
+    else if (l >= 0)
       lua_pushlstring(ms->L, ms->capture[i].init, l);
   }
 }
