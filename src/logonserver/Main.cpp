@@ -26,7 +26,7 @@
 #endif
 #include "../shared/ascemu_getopt.h"
 
-#define BANNER "<< AscEmu %s %s/%s-%s (%s) :: Logon Server >>"
+#define BANNER "<< AscEmu %s/%s-%s (%s) :: Logon Server >>"
 
 #ifndef WIN32
 #include <sched.h>
@@ -321,9 +321,9 @@ void LogonServer::Run(int argc, char** argv)
 
     sLog.Init(0, LOGON_LOG);
     
-    sLog.outBasic(BANNER, BUILD_TAG, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
     sLog.outBasic("==================================================================");
-    sLog.outErrorSilent(BANNER, BUILD_TAG, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
 
     if(do_version)
     {

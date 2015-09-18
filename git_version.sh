@@ -19,7 +19,6 @@ fi
 echo "#ifndef GIT_VERSION_HPP" > src/shared/git_version.h
 echo "#define GIT_VERSION_HPP" >> src/shared/git_version.h
 echo "" >> src/shared/git_version.h
-echo "#define BUILD_TAG \"$tag\"" >> src/shared/git_version.h
 echo "#define BUILD_HASH 0x$version" >> src/shared/git_version.h
 echo "#define COMMIT_TIMESTAMP $timestamp" >> src/shared/git_version.h
 echo "#define BUILD_HASH_STR \"$version\"" >> src/shared/git_version.h

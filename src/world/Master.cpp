@@ -22,7 +22,7 @@
 #include "StdAfx.h"
 
 
-#define BANNER "<< AscEmu %s %s/%s-%s (%s) :: World Server >>"
+#define BANNER "<< AscEmu %s/%s-%s (%s) :: World Server >>"
 
 #ifndef WIN32
 #include <sched.h>
@@ -162,9 +162,9 @@ bool Master::Run(int argc, char** argv)
 
     sLog.Init(0, WORLD_LOG);
 
-    sLog.outBasic(BANNER, BUILD_TAG, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
     sLog.outBasic("==================================================================");
-    sLog.outErrorSilent(BANNER, BUILD_TAG, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
 
     if (do_version)
     {

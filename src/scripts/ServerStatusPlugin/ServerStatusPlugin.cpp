@@ -260,9 +260,9 @@ void StatDumper::DumpStats()
     {
         // Dump server information.
 #ifdef WIN32
-        fprintf(f, "    <platform>AscEmu %s %s/%s-Win-%s (www.AscEmu.org)</platform>\n", BUILD_TAG, BUILD_HASH_STR, CONFIG, ARCH);
+        fprintf(f, "    <platform>AscEmu %s/%s-Win-%s (www.AscEmu.org)</platform>\n", BUILD_HASH_STR, CONFIG, ARCH);
 #else
-        fprintf(f, "    <platform>AscEmu %s %s/%s-%s (www.AscEmu.org)</platform>\n", BUILD_TAG, BUILD_HASH_STR, PLATFORM_TEXT, ARCH);
+        fprintf(f, "    <platform>AscEmu %s/%s-%s (www.AscEmu.org)</platform>\n", BUILD_HASH_STR, PLATFORM_TEXT, ARCH);
 #endif
 
         char uptime[80];

@@ -1072,9 +1072,9 @@ void WorldSession::FullLogin(Player* plr)
 
 
 #ifdef WIN32
-    _player->BroadcastMessage("Server: %sAscEmu %s - %s-Windows-%s", MSG_COLOR_WHITE, BUILD_TAG, CONFIG, ARCH);
+    _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
 #else
-    _player->BroadcastMessage("Server: %sAscEmu %s - %s-%s", MSG_COLOR_WHITE, BUILD_TAG, PLATFORM_TEXT, ARCH);
+    _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
 #endif
 
     // Revision
