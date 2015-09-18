@@ -196,12 +196,9 @@ void LuaEngine::LoadScripts()
     RegisterCoreFunctions();
     Log.Notice("LuaEngine", "Loading Scripts...");
 
-    char filename[200];
-
     for (set<string>::iterator itr = rtn.luaFiles.begin(); itr != rtn.luaFiles.end(); ++itr)
     {
-        strcpy(filename, itr->c_str());
-        if (luaL_loadfile(lu, filename) != 0)
+        if (luaL_loadfile(lu, itr->c_str()) != 0)
         {
             Log.Error("LuaEngine", "loading %s failed.(could not load)", itr->c_str());
             report(lu);
@@ -844,7 +841,10 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
     lua_xmove(L, thread, lua_gettop(L) - 1); //thread
     int ref = luaL_ref(L, LUA_REGISTRYINDEX); //empty
     if (ref == LUA_REFNIL || ref == LUA_NOREF)
+    {
+        delete funcName;
         return luaL_error(L, "Error in RegisterTimedEvent! Failed to create a valid reference.");
+    }
     TimedEvent* te = TimedEvent::Allocate(&sLuaMgr, new CallbackP2<LuaEngine, const char*, int>(&sLuaMgr, &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
     EventInfoHolder* ek = new EventInfoHolder;
     ek->funcName = funcName;
