@@ -1,6 +1,3 @@
-#child CMakeLists use this variable to access the source file directories. 
-#e.g ${SCRIPTS_PATH}/LuaEngine to access the source files for LuaEngine.
-
 if( NOT BUILD_ASCEMUSCRIPTS )
   message( WARNING, "BUILD_ASCEMUSCRIPTS option is set to false. Script libraries will not be built." )
   return()
@@ -23,16 +20,15 @@ SET( BUILD_MISCSCRIPTS TRUE CACHE BOOL "Build ascMiscScripts." )
 SET( BUILD_LUAENGINE TRUE CACHE BOOL "Build Ascemu Lua Engine ( ALE ).")
 SET( BUILD_LUABRIDGE FALSE CACHE BOOL "Build luabridge.")
 
+# add our modules
+add_subdirectory(Battlegrounds)
+add_subdirectory(Spellhandlers)
+add_subdirectory(EventScripts)
+add_subdirectory(ExtraScripts)
+add_subdirectory(GossipScripts)
+add_subdirectory(InstanceScripts)
+add_subdirectory(luabridge)
+add_subdirectory(LuaEngine)
+add_subdirectory(MiscScripts)
+add_subdirectory(QuestScripts)
 
-add_subdirectory( eventscripts)
-add_subdirectory( instancescripts )
-add_subdirectory( extrascripts )
-add_subdirectory( gossipscripts )
-add_subdirectory( questscripts )
-add_subdirectory( miscscripts )
-#add_subdirectory( lualib ) #Used by luabridge and luaengine modules.
-add_subdirectory( luabridge ) 
-add_subdirectory( luaengine )
-
-unset(SCRIPTS_PATH)
-unset(include_dirs)

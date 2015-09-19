@@ -1,3 +1,8 @@
+# add crashreport tool if we are not on windows
+IF(NOT WIN32)
+	add_subdirectory(crashreport)
+ENDIF()
+
 # add our executable related folders
 add_subdirectory(shared)
 add_subdirectory(logonserver)

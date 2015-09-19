@@ -116,14 +116,7 @@ add_subdirectory(dep)
 add_subdirectory(src)
 
 #add modules
-add_subdirectory(cmake/spellhandlers)
-add_subdirectory(cmake/battlegrounds)
-
-
-IF(NOT WIN32)
-	add_subdirectory(cmake/crashreport)
-ENDIF()
-add_subdirectory(cmake/scripts)
+add_subdirectory(src/scripts)
 
 
 INSTALL(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
