@@ -22,7 +22,7 @@ SET( BUILD_LUABRIDGE FALSE CACHE BOOL "Build luabridge.")
 
 # add our modules
 add_subdirectory(Battlegrounds)
-add_subdirectory(Spellhandlers)
+add_subdirectory(SpellHandlers)
 add_subdirectory(EventScripts)
 add_subdirectory(ExtraScripts)
 add_subdirectory(GossipScripts)
