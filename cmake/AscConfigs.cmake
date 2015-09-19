@@ -1,0 +1,10 @@
+IF( WIN32 )
+	SET(ASCEMU_CONFIGSFILE_PATH configs CACHE PATH "Path where the ascemu config files are.")
+ELSE( WIN32 )
+	SET(ASCEMU_CONFIGSFILE_PATH etc CACHE PATH "Path where the ascemu config files are.")
+ENDIF( WIN32 )
+
+SET(ASCEMU_SCRIPTLIB_PATH "modules" CACHE PATH "The directory which contains the 'lib' directory that has the script libraries." )
+SET(BUILD_ASCEMUSCRIPTS TRUE CACHE BOOL "Set to false to NOT build script libraries." )
+SET(BUILD_TOOLS TRUE CACHE BOOL "Build Ascemu tools" )
+SET(VISUALSTUDIO_COMPILERHEAPLIMIT 400 CACHE STRING "Visual Studio compiler heap limit. Ignore on darwin and unix platforms.")
