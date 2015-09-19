@@ -15,6 +15,6 @@ IF(NEED_ZLIB_PCRE)
 ENDIF()
 
 # add lualib if we need it for LuaEngin or LuaBridge
-IF(BUILD_LUABRIDGE OR BUILD_LUAENGINE)
+#IF(BUILD_LUABRIDGE OR BUILD_LUAENGINE)
 	add_subdirectory(lualib)
-ENDIF()
+#ENDIF()
