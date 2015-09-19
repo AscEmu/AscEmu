@@ -111,6 +111,11 @@ endif()
 # set apple compiler flags
 include(cmake/AppleCompilerFlags.cmake)
 
+# add lualib if we need it for LuaEngin or LuaBridge
+IF(BUILD_LUABRIDGE OR BUILD_LUAENGINE)
+	add_subdirectory(cmake/lualib)
+ENDIF()
+
 add_subdirectory(cmake/g3dlite)
 add_subdirectory(cmake/vmaplib)
 add_subdirectory(cmake/recast)
