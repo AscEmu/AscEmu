@@ -67,9 +67,7 @@ IF( NOT WIN32 )
 	find_package(Threads REQUIRED)
 	find_package(MySQL REQUIRED)
 ELSE()
-	add_subdirectory(cmake/zlib)
-	add_subdirectory(cmake/pcre)
-	SET(MYSQL_LIBRARY "")
+	SET(NEED_ZLIB_PCRE TRUE)
 ENDIF()
 
 IF(WIN32)	#On windows, we have to specify the includes for libeay and mysql libs.
@@ -110,12 +108,6 @@ endif()
 
 # set apple compiler flags
 include(cmake/AppleCompilerFlags.cmake)
-
-#add dependencies
-add_subdirectory(cmake/g3dlite)
-add_subdirectory(cmake/vmaplib)
-add_subdirectory(cmake/recast)
-add_subdirectory(cmake/detour)
 
 #add dependecies
 add_subdirectory(dep)

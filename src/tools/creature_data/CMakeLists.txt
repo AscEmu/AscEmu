@@ -18,11 +18,15 @@ IF( NOT WIN32 AND NOT IS_64BIT )
 	add_definitions( -D_FILE_OFFSET_BITS=64 )
 ENDIF( NOT WIN32 AND NOT IS_64BIT )
 
-include_directories( ${DEPENDENCY_INCLUDE_ROOT}/dbcfile ${DEPENDENCY_INCLUDE_ROOT}/loadlib ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new )
+include_directories(
+   ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new
+   ${DEPENDENCY_INCLUDE_ROOT}/dbcfile
+   ${DEPENDENCY_INCLUDE_ROOT}/loadlib
+   )
 
 ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} ${HEADERS} )
 
-target_link_libraries( ${PROJECT_NAME} dbcfile )
+target_link_libraries( ${PROJECT_NAME} dbcfile ${ZLIB_LIBRARIES})
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH} )
 
