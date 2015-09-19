@@ -111,29 +111,27 @@ endif()
 # set apple compiler flags
 include(cmake/AppleCompilerFlags.cmake)
 
-# add lualib if we need it for LuaEngin or LuaBridge
-IF(BUILD_LUABRIDGE OR BUILD_LUAENGINE)
-	add_subdirectory(cmake/lualib)
-ENDIF()
-
+#add dependencies
 add_subdirectory(cmake/g3dlite)
 add_subdirectory(cmake/vmaplib)
 add_subdirectory(cmake/recast)
 add_subdirectory(cmake/detour)
-add_subdirectory(cmake/shared)
-add_subdirectory(cmake/logon)
-add_subdirectory(cmake/world)
+
+#add dependecies
+add_subdirectory(dep)
+
+#add executables
+add_subdirectory(src)
+
+#add modules
 add_subdirectory(cmake/spellhandlers)
 add_subdirectory(cmake/battlegrounds)
+
 
 IF(NOT WIN32)
 	add_subdirectory(cmake/crashreport)
 ENDIF()
 add_subdirectory(cmake/scripts)
-
-IF( BUILD_TOOLS )
-	add_subdirectory(cmake/tools)
-ENDIF( BUILD_TOOLS )
 
 
 INSTALL(FILES ${INSTALLED_DEPENDENCIES} DESTINATION .)
