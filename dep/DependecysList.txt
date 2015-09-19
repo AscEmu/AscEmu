@@ -1,0 +1,5 @@
+Opensource software in this folder:
+
+Folder: lualib
+   Web: http://www.lua.org
+   Version: 5.1.5 (2007/12/27)
