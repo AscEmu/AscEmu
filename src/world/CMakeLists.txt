@@ -1,12 +1,16 @@
-PROJECT(world)
-SET( prefix ${ROOT_PATH}/src/world )
-SET(sources
-    DBC/DBCStores.cpp
-    DBC/DBCLoader.cpp
-    DBC/DBCRecord.cpp
-    DBC/DBCSQL.cpp
-	AchievementMgr.cpp 
-	CollideInterface.cpp 
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+
+# set up our project name
+project(world)
+
+set(prefix ${ROOT_PATH}/src/world)
+set(sources
+   DBC/DBCStores.cpp
+   DBC/DBCLoader.cpp
+   DBC/DBCRecord.cpp
+   DBC/DBCSQL.cpp
+   AchievementMgr.cpp 
+   CollideInterface.cpp 
 	VoiceChatHandler.cpp 
 	DayWatcherThread.cpp 
 	CommonScheduleThread.cpp 
@@ -48,9 +52,9 @@ SET(sources
 	EventableObject.cpp 
 	EventMgr.cpp 
 	Faction.cpp
-    GameEvent.cpp
-    GameEventMgr.cpp
-    GameEventMgrCommands.cpp
+   GameEvent.cpp
+   GameEventMgr.cpp
+   GameEventMgrCommands.cpp
 	GameObject.cpp 
 	GMTicket.cpp 
 	GMTicketCommands.cpp
@@ -80,7 +84,7 @@ SET(sources
 	LogonCommHandler.cpp 
 	MailHandler.cpp
    MailMgr.cpp   
-    MapManagement/AreaManagement/AreaStorage.cpp
+   MapManagement/AreaManagement/AreaStorage.cpp
 	MapCell.cpp 
 	Map.cpp 
 	MapScriptInterface.cpp 
@@ -170,9 +174,10 @@ SET(sources
 	Rogue.cpp
 	Shaman.cpp
 	Warlock.cpp
-	Warrior.cpp )
+	Warrior.cpp
+   )
 
-SET( headers
+set(headers
 	AchievementMgr.h
 	AddonMgr.h
 	AIInterface.h
@@ -304,34 +309,28 @@ SET( headers
 	WorldStates.h
    WorldStrings.h
 	WUtil.h
-)
+   )
 	
-
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
+foreach(src IN ITEMS ${sources})
+  set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
+foreach(src IN ITEMS ${headers})
+   set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
 include(PCHSupport)
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH} )
+include_directories( ${GLOBAL_INCLUDE_DIRS})
+link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
 
-SET(WIN_RESOURCE_FILE ${ROOT_PATH}/src/world/resources.rc)
+set(WIN_RESOURCE_FILE ${ROOT_PATH}/src/world/resources.rc)
 
-ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE} )
+add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE})
 
-IF( CMAKE_GENERATOR MATCHES Visual*)
+if(CMAKE_GENERATOR MATCHES Visual*)
 	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h ${prefix}/StdAfx.cpp)
-ENDIF()
+endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 
 add_dependencies( ${PROJECT_NAME} shared g3dlite vmaplib detour recast)
-target_link_libraries( ${PROJECT_NAME} shared  g3dlite vmaplib detour recast ${PCRE_LIBRARIES} )
+target_link_libraries( ${PROJECT_NAME} shared  g3dlite vmaplib detour recast ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
-
-
-
-
-

@@ -1,7 +1,10 @@
-PROJECT(shared)
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-SET( prefix ${ROOT_PATH}/src/shared )
-SET( sources
+# set up our project name
+project(shared)
+
+set(prefix ${ROOT_PATH}/src/shared)
+set(sources
     CThreads.cpp 
     CrashHandler.cpp 
     Log.cpp 
@@ -34,9 +37,10 @@ SET( sources
     Database/MySQLDatabase.cpp 
     Database/CreateInterface.cpp 
     Network/CircularBuffer.cpp 
-    Network/Socket.cpp  )
+    Network/Socket.cpp
+	)
 	
-set( headers 
+set(headers 
 	ascemu_getopt.h
 	ascemuConfig.h
 	Array.h
@@ -110,32 +114,31 @@ set( headers
 	Threading/Threading.h
 	Threading/ThreadPool.h
 	Threading/ThreadStarter.h
-)
+	)
 
-IF(WIN32)
-	SET( sources ${sources} Network/SocketMgrWin32.cpp  Network/SocketOpsWin32.cpp  Network/SocketWin32.cpp StackWalker.cpp StackTrace.cpp )
-ELSEIF(IS_FREEBSD OR APPLE)
-	SET( sources ${sources}  Network/SocketMgrFreeBSD.cpp  Network/SocketFreeBSD.cpp  Network/SocketOpsFreeBSD.cpp )
-ELSE(WIN32)
-	SET( sources ${sources}  Network/SocketMgrLinux.cpp  Network/SocketLinux.cpp  Network/SocketOpsLinux.cpp )
-ENDIF(WIN32)
+if(WIN32)
+   set(sources ${sources} Network/SocketMgrWin32.cpp Network/SocketOpsWin32.cpp Network/SocketWin32.cpp StackWalker.cpp StackTrace.cpp)
+elseif(IS_FREEBSD OR APPLE)
+   set(sources ${sources} Network/SocketMgrFreeBSD.cpp Network/SocketFreeBSD.cpp Network/SocketOpsFreeBSD.cpp)
+else(WIN32)
+   set(sources ${sources} Network/SocketMgrLinux.cpp Network/SocketLinux.cpp Network/SocketOpsLinux.cpp)
+endif(WIN32)
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
+foreach(src IN ITEMS ${sources})
+   set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET(HEADERS ${HEADERS} ${prefix}/${src} )
+foreach(src IN ITEMS ${headers})
+   set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-IF( IS_64BIT )
-	link_directories( ${DEPENDENCY_DLLS64} )
-ELSE()
-	link_directories( ${DEPENDENCY_DLLS} )
-ENDIF()
-link_directories( ${DEPENDENCY_LIBS} )
+include_directories(${GLOBAL_INCLUDE_DIRS})
+if(IS_64BIT)
+   link_directories(${DEPENDENCY_DLLS64})
+else()
+	link_directories(${DEPENDENCY_DLLS})
+endif()
+link_directories(${DEPENDENCY_LIBS})
 
-ADD_LIBRARY( ${PROJECT_NAME} STATIC ${SRCS} ${HEADERS} )
+add_library(${PROJECT_NAME} STATIC ${SRCS} ${HEADERS})
 
-target_link_libraries( ${PROJECT_NAME} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${MYSQL_LIBRARY} ${OPENSSL_LIBRARIES} ${EXTRA_LIBS} )
-
+target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${MYSQL_LIBRARY} ${OPENSSL_LIBRARIES} ${EXTRA_LIBS})

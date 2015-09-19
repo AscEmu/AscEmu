@@ -1,16 +1,21 @@
-PROJECT(logon CXX)
-SET( prefix ${ROOT_PATH}/src/logonserver)
-SET( sources
-  AccountCache.cpp
-  AuthSocket.cpp
-  AutoPatcher.cpp
-  LogonCommServer.cpp
-  LogonConsole.cpp
-  LogonOpcodes.cpp
-  LogonStdAfx.cpp
-  Main.cpp)
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
- SET( headers
+# set up our project name
+project(logon CXX)
+
+set(prefix ${ROOT_PATH}/src/logonserver)
+set(sources
+   AccountCache.cpp
+   AuthSocket.cpp
+   AutoPatcher.cpp
+   LogonCommServer.cpp
+   LogonConsole.cpp
+   LogonOpcodes.cpp
+   LogonStdAfx.cpp
+   Main.cpp
+   )
+
+set(headers
 	AccountCache.h
 	AuthSocket.h
 	AuthStructs.h
@@ -21,31 +26,33 @@ SET( sources
 	LogonStdAfx.h
 	Main.h
 	PeriodicFunctionCall_Thread.h
-)
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
+   )
+
+foreach(src IN ITEMS ${sources})
+   set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
+foreach(src IN ITEMS ${headers})
+   set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
+include_directories( ${GLOBAL_INCLUDE_DIRS})
+link_directories(${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS})
 
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-link_directories( ${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS} )
-IF( IS_64BIT )
-	link_directories( ${DEPENDENCY_DLLS64} )
-ENDIF()
+if(IS_64BIT)
+	link_directories(${DEPENDENCY_DLLS64})
+endif()
 
 include(PCHSupport)
 
-SET(WIN_RESOURCE_FILE ${ROOT_PATH}/src/logonserver/resources.rc)
-ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE} )
+set(WIN_RESOURCE_FILE ${ROOT_PATH}/src/logonserver/resources.rc)
+add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE})
 
-IF( CMAKE_GENERATOR MATCHES Visual*)
+if(CMAKE_GENERATOR MATCHES Visual*)
 	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${prefix}/LogonStdAfx.cpp)
-ENDIF()
+endif()
+
 #Link our shared lib.
-target_link_libraries( ${PROJECT_NAME} shared ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES} )
+target_link_libraries(${PROJECT_NAME} shared ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES})
+
 #Provide make install rules.
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
-
