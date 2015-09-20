@@ -16,3 +16,6 @@ Folder: zlib
    Web: http://www.zlib.net/
    Version: 1.2.3 (2005/07/18)
 
+Folder: recastnavigation
+   Web: https://github.com/memononen/recastnavigation
+   Version: ??? (2010/??/??)

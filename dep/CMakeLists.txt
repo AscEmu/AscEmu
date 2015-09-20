@@ -1,10 +1,11 @@
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+
 # add our dependecies
 add_subdirectory(bzip2)
 add_subdirectory(dbcfile)
 add_subdirectory(loadlib)
 add_subdirectory(vmaplib)
-add_subdirectory(detour)
-add_subdirectory(recast)
+add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
 add_subdirectory(libmpq_new)
 
