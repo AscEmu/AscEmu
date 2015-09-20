@@ -39,7 +39,7 @@ include_directories( ${GLOBAL_INCLUDE_DIRS})
 link_directories(${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS})
 
 if(IS_64BIT)
-	link_directories(${DEPENDENCY_DLLS64})
+   link_directories(${DEPENDENCY_DLLS64})
 endif()
 
 include(PCHSupport)
@@ -48,7 +48,7 @@ set(WIN_RESOURCE_FILE ${ROOT_PATH}/src/logonserver/resources.rc)
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE})
 
 if(CMAKE_GENERATOR MATCHES Visual*)
-	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${prefix}/LogonStdAfx.cpp)
+   ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${prefix}/LogonStdAfx.cpp)
 endif()
 
 #Link our shared lib.

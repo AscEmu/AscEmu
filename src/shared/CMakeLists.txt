@@ -140,5 +140,4 @@ endif()
 link_directories(${DEPENDENCY_LIBS})
 
 add_library(${PROJECT_NAME} STATIC ${SRCS} ${HEADERS})
-
 target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${MYSQL_LIBRARY} ${OPENSSL_LIBRARIES} ${EXTRA_LIBS})

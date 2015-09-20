@@ -1,27 +1,31 @@
-PROJECT(mmaps_generator CXX)
-SET( prefix ${ROOT_PATH}/src/tools/mmaps_generator)
-SET( sources
-    generator.cpp
-	IntermediateValues.cpp
-	MapBuilder.cpp
-	TerrainBuilder.cpp
-	VMapExtensions.cpp
-)
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-SET( headers
+# set up project name
+project(mmaps_generator CXX)
+
+set(prefix ${ROOT_PATH}/src/tools/mmaps_generator)
+set(sources
+   generator.cpp
+   IntermediateValues.cpp
+   MapBuilder.cpp
+   TerrainBuilder.cpp
+   VMapExtensions.cpp
+   )
+
+set(headers
    IntermediateValues.h
    MoveMapSharedDefines.h
    MapBuilder.h
    TerrainBuilder.h
    CompilerDefs.h
    Define.h
-)
+   )
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
+foreach(src IN ITEMS ${sources})
+   set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
+foreach(src IN ITEMS ${headers})
+   set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
 include_directories(
@@ -33,11 +37,9 @@ include_directories(
   ${RECASTNAVIGATION}/recast/include
   ${DEPENDENCY_ROOT}/g3dlite/include
   )
-link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH} )
+  
+link_directories(${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
 
-ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS}  ${HEADERS} )
-
-target_link_libraries( ${PROJECT_NAME} shared  g3dlite vmaplib detour recast ${PCRE_LIBRARIES} )
-
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH} )
-
+add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
+target_link_libraries(${PROJECT_NAME} shared  g3dlite vmaplib detour recast ${PCRE_LIBRARIES})
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

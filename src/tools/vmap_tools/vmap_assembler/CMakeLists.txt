@@ -1,21 +1,29 @@
-PROJECT(vmap_assembler CXX)
-SET( prefix ${ROOT_PATH}/src/tools/vmap_tools/vmap_assembler)
-SET( sources
-vmap_assembler.cpp
-)
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
+# set up project name
+project(vmap_assembler CXX)
+
+set(prefix ${ROOT_PATH}/src/tools/vmap_tools/vmap_assembler)
+
+set(sources
+   vmap_assembler.cpp
+   )
+
+foreach(src IN ITEMS ${sources})
+   set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
 
-include_directories( ${DEPENDENCY_ROOT}/vmaplib/include ${DEPENDENCY_ROOT}/g3dlite/include )
+include_directories(
+   ${DEPENDENCY_ROOT}/vmaplib/include
+   ${DEPENDENCY_ROOT}/g3dlite/include
+   )
 
-ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} )
+add_executable(${PROJECT_NAME} ${SRCS})
 
-IF( APPLE )
-	target_link_libraries( ${PROJECT_NAME} vmaplib g3dlite ${ZLIB_LIBRARIES} "-framework Carbon" )
-ELSE( APPLE )
-	target_link_libraries( ${PROJECT_NAME} vmaplib g3dlite ${ZLIB_LIBRARIES} )
-ENDIF( APPLE )
+if(APPLE)
+	target_link_libraries(${PROJECT_NAME} vmaplib g3dlite ${ZLIB_LIBRARIES} "-framework Carbon")
+else()
+	target_link_libraries(${PROJECT_NAME} vmaplib g3dlite ${ZLIB_LIBRARIES})
+endif()
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH} )
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

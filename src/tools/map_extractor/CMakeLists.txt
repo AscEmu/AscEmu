@@ -1,26 +1,15 @@
-PROJECT(map_extractor CXX)
-SET( prefix ${ROOT_PATH}/src/tools/map_extractor)
-SET( sources
-	Map.cpp
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+
+file(GLOB map_extractor_source *.cpp *.h)
+set(map_extractor_SRCS
+  ${map_extractor_source}
 )
-SET( headers
-   Map.h
-)
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
-foreach(src IN ITEMS ${headers} )
-  SET( HEADERS ${HEADERS} ${prefix}/${src} )
-endforeach(src)
 
 include_directories(
   ${DEPENDENCY_ROOT}/libmpq_new
   ${DEPENDENCY_ROOT}/dbcfile 
   ${DEPENDENCY_ROOT}/loadlib )
 
-ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} )
-
-target_link_libraries( ${PROJECT_NAME} dbcfile loadlib ${ZLIB_LIBRARIES} )
-
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH} )
-
+add_executable(map_extractor ${map_extractor_SRCS})
+target_link_libraries(map_extractor dbcfile loadlib ${ZLIB_LIBRARIES})
+install(TARGETS map_extractor RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
