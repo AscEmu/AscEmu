@@ -29,17 +29,17 @@ foreach(src IN ITEMS ${headers})
 endforeach(src)
 
 include_directories(
-  ${DEPENDENCY_ROOT}/libmpq_new
-  ${DEPENDENCY_ROOT}/dbcfile 
-  ${DEPENDENCY_ROOT}/loadlib
-  ${DEPENDENCY_ROOT}/vmaplib
-  ${RECASTNAVIGATION}/detour/include
-  ${RECASTNAVIGATION}/recast/include
-  ${DEPENDENCY_ROOT}/g3dlite/include
-  )
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${ROOT_PATH}/src/shared
+   ${DEPENDENCY_ROOT}/pcre/include
+   ${DEPENDENCY_ROOT}/g3dlite/include
+   ${DEPENDENCY_ROOT}/vmaplib/include
+   ${DEPENDENCY_ROOT}/loadlib
+   ${RECASTNAVIGATION}/detour/include
+   ${RECASTNAVIGATION}/recast/include
+   ${DEPENDENCY_LIBS}
+   )
   
-link_directories(${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
-
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} shared  g3dlite vmaplib detour recast ${PCRE_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} shared g3dlite vmaplib loadlib detour recast ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
