@@ -21,7 +21,7 @@ ENDIF( NOT WIN32 AND NOT IS_64BIT )
 include_directories(
    ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new
    ${DEPENDENCY_INCLUDE_ROOT}/dbcfile
-   ${DEPENDENCY_INCLUDE_ROOT}/loadlib
+   ${DEPENDENCY_ROOT}/loadlib
    )
 
 ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} ${HEADERS} )
