@@ -10,7 +10,7 @@ Folder: libmpq (Currently unused libmpq_new is in use)
 
 Folder: bzip2
    Web: http://www.bzip.org/
-   Version: 1.0.5
+   Version: 1.0.5 (2007/12/10)
    
 Folder: zlib
    Web: http://www.zlib.net/
@@ -19,3 +19,15 @@ Folder: zlib
 Folder: recastnavigation
    Web: https://github.com/memononen/recastnavigation
    Version: ??? (2010/??/??)
+   
+Folder: loadlib
+   Web: 
+   Version:
+   
+Folder: openssl
+   Web:
+   Version:
+   
+Folder: pcre
+   Web: http://www.pcre.org
+   Version: 7.4 (2007/09/21)

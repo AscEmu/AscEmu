@@ -1,21 +1,19 @@
-PROJECT(dbcfile)
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-set(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME} )
+# set up our project name
+project(dbcfile)
+
+set(prefix ${DEPENDENCY_ROOT}/${PROJECT_NAME})
 
 set(sources
-dbcfile.cpp
-)
+   dbcfile.cpp
+   )
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
+foreach(src IN ITEMS ${sources})
+   set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
 
-include_directories( ${DEPENDENCY_INCLUDE_ROOT}/${PROJECT_NAME} ${DEPENDENCY_ROOT}/loadlib ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new )
-link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH} )
-add_library(${PROJECT_NAME} STATIC ${SRCS} )
-target_link_libraries( ${PROJECT_NAME} libmpq_new )
-
-unset(sources)
-unset(SRCS)
-unset(prefix)
-
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${DEPENDENCY_ROOT}/loadlib ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new)
+link_directories(${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
+add_library(${PROJECT_NAME} STATIC ${SRCS})
+target_link_libraries( ${PROJECT_NAME} libmpq_new)

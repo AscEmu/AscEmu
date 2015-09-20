@@ -60,7 +60,7 @@ set(GLOBAL_INCLUDE_DIRS
    ${DEPENDENCY_INCLUDE_ROOT}
    ${DEPENDENCY_INCLUDE_ROOT}/g3dlite
    ${DEPENDENCY_INCLUDE_ROOT}/vmaplib
-   ${DEPENDENCY_INCLUDE_ROOT}/pcre
+   ${DEPENDENCY_ROOT}/pcre/include
    ${DEPENDENCY_ROOT}/zlib
    ${RECASTNAVIGATION}/recast/include
    ${RECASTNAVIGATION}/detour/include
@@ -82,7 +82,7 @@ endif()
 if(WIN32)
    set(GLOBAL_INCLUDE_DIRS
    ${GLOBAL_INCLUDE_DIRS} 
-   ${DEPENDENCY_INCLUDE_ROOT}/openssl
+   ${DEPENDENCY_ROOT}/openssl
    ${DEPENDENCY_INCLUDE_ROOT}/mysql
    )
 else()  #On apple n linux, mysql.h should have been found.
