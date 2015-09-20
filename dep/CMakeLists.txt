@@ -9,12 +9,10 @@ add_subdirectory(g3dlite)
 add_subdirectory(libmpq_new)
 
 # add zlib and pcre for windows compile
-IF(NEED_ZLIB_PCRE)
+if(NEED_ZLIB_PCRE)
 	add_subdirectory(zlib)
 	add_subdirectory(pcre)
-ENDIF()
+endif()
 
 # add lualib if we need it for LuaEngin or LuaBridge
-#IF(BUILD_LUABRIDGE OR BUILD_LUAENGINE)
-	add_subdirectory(lualib)
-#ENDIF()
+add_subdirectory(lualib)

@@ -7,3 +7,11 @@ Folder: lualib
 Folder: libmpq (Currently unused libmpq_new is in use)
    Web: https://github.com/mbroemme/libmpq/
    Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
+
+Folder: bzip2
+   Web: http://www.bzip.org/
+   Version: 1.0.5
+   
+Folder: zlib
+   Web: http://www.zlib.net/
+   Version: 1.2.3 (2005/07/18)

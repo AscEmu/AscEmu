@@ -1,27 +1,32 @@
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+
+# set up our project name
 project(zlib C)
 
-SET( prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME} )
+set(prefix ${DEPENDENCY_ROOT}/${PROJECT_NAME})
 
-SET(sources
-adler32.c
-compress.c
-crc32.c
-deflate.c
-example.c
-gzio.c
-infback.c
-inffast.c
-inflate.c
-inftrees.c
-trees.c
-uncompr.c
-zutil.c)
+set(sources
+   adler32.c
+   compress.c
+   crc32.c
+   deflate.c
+   example.c
+   gzio.c
+   infback.c
+   inffast.c
+   inflate.c
+   inftrees.c
+   trees.c
+   uncompr.c
+   zutil.c
+   )
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
+foreach(src IN ITEMS ${sources})
+   set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
 
-include_directories( ${DEPENDENCY_INCLUDE_ROOT}/zlib)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_library(${PROJECT_NAME} STATIC ${SRCS} )
-#Set it to the project name.
+
+#set it to the project name.
 set(ZLIB_LIBRARIES ${PROJECT_NAME} CACHE INTERNAL "Zlib Libraries")
