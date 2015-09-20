@@ -1,20 +1,22 @@
-if(NOT BUILD_LUABRIDGE )
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+
+if(NOT BUILD_LUABRIDGE)
   message("\tluabridge was skipped because BUILD_LUABRIDGE is unchecked.")
   return()
 endif(NOT BUILD_LUABRIDGE)
-if( BUILD_LUAENGINE )
+
+if(BUILD_LUAENGINE)
 	message(ERROR, "\tBUILD_LUAENGINE is enabled but the LuaEngine cannot run together with luabridge.")
 	return()
-endif( BUILD_LUAENGINE )
+endif(BUILD_LUAENGINE)
 
+# set up our project name
 project(luabridge)
 
-#prefix variable - points to the folder which contains the source files.
-#	used to point Cmake to the source files.
-SET( prefix ${SCRIPTS_PATH}/${PROJECT_NAME} )
+set(prefix ${SCRIPTS_PATH}/${PROJECT_NAME})
 
 #SRCS - contains the source files that compose this project.
-SET( SRCS
+set(SRCS
   ${prefix}/interpreter/LUAEngine.cpp 
   ${prefix}/luabridge_src/luabridge.cpp 
   ${prefix}/object_functions/aura_functions.cpp
@@ -32,9 +34,10 @@ SET( SRCS
   ${prefix}/object_functions/taxi_functions.cpp 
   ${prefix}/object_functions/unit_functions.cpp 
   ${prefix}/object_functions/creature_functions.cpp
-  ${prefix}/object_functions/lua_hooks.cpp  )
+  ${prefix}/object_functions/lua_hooks.cpp
+  )
   
- SET( HEADERS
+set(HEADERS
   ${prefix}/interpreter/class_decls.h
   ${prefix}/interpreter/lua_defs.h
   ${prefix}/interpreter/lua_instance.h
@@ -45,17 +48,13 @@ SET( SRCS
   ${prefix}/object_functions/lua_gameobject.h
   )
 
-include_directories( ${include_dirs} ${prefix}/interpreter )
+include_directories(${include_dirs} ${prefix}/interpreter)
 include(PCHSupport)
-add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS} )
-add_dependencies( ${PROJECT_NAME} ${dependancies} lualib )
-target_link_libraries( ${PROJECT_NAME} ${linkages} lualib )
+add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
+add_dependencies(${PROJECT_NAME} ${script_dependencies} lualib)
+target_link_libraries(${PROJECT_NAME} ${script_linkages} lualib)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 
-if( CMAKE_GENERATOR MATCHES Visual*)
-	ADD_NATIVE_PRECOMPILED_HEADER( ${PROJECT_NAME} LUAEngine.h ${prefix}/interpreter/LUAEngine.cpp)
-ENDIF()
-
-#Cleap up our variables(Not required.)
-unset( prefix)
-unset( SRCS )
+if(CMAKE_GENERATOR MATCHES Visual*)
+   ADD_NATIVE_PRECOMPILED_HEADER( ${PROJECT_NAME} LUAEngine.h ${prefix}/interpreter/LUAEngine.cpp)
+endif()

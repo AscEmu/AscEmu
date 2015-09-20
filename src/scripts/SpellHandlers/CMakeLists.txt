@@ -1,34 +1,37 @@
-PROJECT(SpellHandlers)
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-SET( prefix ${ROOT_PATH}/src/scripts/${PROJECT_NAME} )
+project(SpellHandlers)
+
+set(prefix ${ROOT_PATH}/src/scripts/${PROJECT_NAME})
 
 #sources -contains source files for our library.
-SET( sources
-DeathKnightSpells.cpp
-DruidSpells.cpp
-HunterSpells.cpp
-ItemSpells_1.cpp
-MageSpells.cpp
-PaladinSpells.cpp
-PetAISpells.cpp
-PriestSpells.cpp
-QIspells.cpp
-RogueSpells.cpp
-Setup.cpp
-ShamanSpells.cpp
-WarlockSpells.cpp
-WarriorSpells.cpp
-MiscSpells.cpp )
+set(sources
+   DeathKnightSpells.cpp
+   DruidSpells.cpp
+   HunterSpells.cpp
+   ItemSpells_1.cpp
+   MageSpells.cpp
+   PaladinSpells.cpp
+   PetAISpells.cpp
+   PriestSpells.cpp
+   QIspells.cpp
+   RogueSpells.cpp
+   Setup.cpp
+   ShamanSpells.cpp
+   WarlockSpells.cpp
+   WarriorSpells.cpp
+   MiscSpells.cpp
+   )
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
+foreach(src IN ITEMS ${sources})
+   set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
 
-include_directories( ${GLOBAL_INCLUDE_DIRS} )
-add_library( ${PROJECT_NAME} SHARED ${SRCS} )
-add_dependencies( ${PROJECT_NAME} shared world )
-add_definitions( -DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING )
-target_link_libraries( ${PROJECT_NAME} world )
+include_directories(${GLOBAL_INCLUDE_DIRS})
+add_library(${PROJECT_NAME} SHARED ${SRCS})
+add_dependencies(${PROJECT_NAME} ${script_dependencies})
+add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
+target_link_libraries(${PROJECT_NAME} ${script_linkages})
 
 include(PCHSupport)
 IF( CMAKE_GENERATOR MATCHES Visual*)

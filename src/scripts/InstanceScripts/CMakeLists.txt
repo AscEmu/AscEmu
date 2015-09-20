@@ -1,11 +1,16 @@
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+
 if(NOT BUILD_INSTANCESCRIPTS )
   message("\tInstanceScripts was skipped because BUILD_INSTANCESCRIPTS is unchecked.")
   return()
 endif(NOT BUILD_INSTANCESCRIPTS)
 
-PROJECT(InstanceScripts)
-SET(prefix ${SCRIPTS_PATH}/InstanceScripts)
+# set up our project name
+project(InstanceScripts)
 
+set(prefix ${SCRIPTS_PATH}/InstanceScripts)
+
+#sources -contains source files for our library.
 set(sources
     Instance_Arcatraz.cpp 
     Instance_AuchenaiCrypts.cpp 
@@ -72,7 +77,7 @@ set(sources
     Setup.cpp
     )
 
-SET(headers
+set(headers
     Instance_Arcatraz.h 
     Instance_AuchenaiCrypts.h 
     Instance_AzjolNerub.h 
@@ -115,7 +120,7 @@ SET(headers
     Instance_WailingCaverns.h 
     Instance_TheStockade.h 
     Instance_ZulFarrak.h
-	Raid_BlackTemple.h 
+    Raid_BlackTemple.h 
     Raid_BlackwingLair.h 
     Raid_CoT_BattleOfMountHyjal.h 
     Raid_GruulsLair.h
@@ -140,24 +145,20 @@ SET(headers
     )
 
 foreach(src IN ITEMS ${sources})
-  SET(SRCS ${SRCS} ${prefix}/${src})
+   set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
 foreach(src IN ITEMS ${headers})
-  SET(HEADERS ${HEADERS} ${prefix}/${src})
+   set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
 include_directories(${include_dirs} ${prefix})
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
-add_dependencies(${PROJECT_NAME} ${dependancies})
-target_link_libraries(${PROJECT_NAME} ${linkages})
+add_dependencies(${PROJECT_NAME} ${script_dependencies})
+target_link_libraries(${PROJECT_NAME} ${script_linkages})
 
 include(PCHSupport)
-IF(CMAKE_GENERATOR MATCHES Visual*)
-	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
-ENDIF()
+if(CMAKE_GENERATOR MATCHES Visual*)
+   ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
+endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
-#Cleap up our variables(Not required.)
-unset(prefix)
-unset(SRCS)
-unset(sources)
