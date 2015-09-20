@@ -37,8 +37,9 @@ include_directories(
    ${DEPENDENCY_ROOT}/loadlib
    ${RECASTNAVIGATION}/detour/include
    ${RECASTNAVIGATION}/recast/include
-   ${DEPENDENCY_LIBS}
    )
+
+link_directories(${DEPENDENCY_LIBS})
   
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
 target_link_libraries(${PROJECT_NAME} shared g3dlite vmaplib loadlib detour recast ${PCRE_LIBRARIES})
