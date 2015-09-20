@@ -5,6 +5,6 @@ add_subdirectory(vmap_assembler)
 
 if(WIN32)
 	install(FILES ${ROOT_PATH}/src/tools/vmap_tools/vmaps.bat DESTINATION ${ASCEMU_TOOLS_PATH})
-else(WIN32)
+else()
 	install(FILES ${ROOT_PATH}/src/tools/vmap_tools/vmaps.sh DESTINATION ${ASCEMU_TOOLS_PATH})
-endif(WIN32)
+endif()

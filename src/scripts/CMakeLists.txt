@@ -1,7 +1,10 @@
+# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+
+#check if scripts are selected
 if(NOT BUILD_ASCEMUSCRIPTS)
   message(WARNING, "BUILD_ASCEMUSCRIPTS option is set to false. Script libraries will not be built.")
   return()
-endif(NOT BUILD_ASCEMUSCRIPTS)
+endif()
 
 message("Configuring scripts :")
 set(SCRIPTS_PATH ${ROOT_PATH}/src/scripts)

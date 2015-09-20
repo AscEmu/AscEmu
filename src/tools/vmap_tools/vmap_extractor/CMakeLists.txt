@@ -34,7 +34,7 @@ endforeach(src)
 
 if(NOT WIN32 AND NOT IS_64BIT)
 	add_definitions(-D_FILE_OFFSET_BITS=64)
-endif(NOT WIN32 AND NOT IS_64BIT)
+endif()
 
 include_directories(
    ${DEPENDENCY_ROOT}/libmpq_new
