@@ -2468,7 +2468,7 @@ Arcemu::Gossip::Script* CreateLuaGOGossipScript(uint32 id)
 
 void LuaEngine::Startup()
 {
-    Log.Notice("LuaEngineMgr", "AsCemu LuaEngine ( ALE ) %s: Loaded", ARCH);
+    Log.Notice("LuaEngineMgr", "AscEmu LuaEngine (ALE) %s: Loaded", ARCH);
     //Create a new global state that will server as the lua universe.
     lu = luaL_newstate();
 
