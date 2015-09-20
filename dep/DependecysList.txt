@@ -31,3 +31,8 @@ Folder: openssl
 Folder: pcre
    Web: http://www.pcre.org
    Version: 7.4 (2007/09/21)
+   
+Folder: g3dlite
+   Web: http://g3d.sourceforge.net/
+   Version: (2010/01/30)
+   

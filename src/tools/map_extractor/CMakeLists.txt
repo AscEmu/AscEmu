@@ -14,7 +14,7 @@ foreach(src IN ITEMS ${headers} )
 endforeach(src)
 
 include_directories(
-  ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new
+  ${DEPENDENCY_ROOT}/libmpq_new
   ${DEPENDENCY_ROOT}/dbcfile 
   ${DEPENDENCY_ROOT}/loadlib )
 

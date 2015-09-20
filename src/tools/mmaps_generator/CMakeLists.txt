@@ -25,13 +25,13 @@ foreach(src IN ITEMS ${headers} )
 endforeach(src)
 
 include_directories(
-  ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new
-  ${DEPENDENCY_INCLUDE_ROOT}/dbcfile 
-  ${DEPENDENCY_INCLUDE_ROOT}/loadlib
-  ${DEPENDENCY_INCLUDE_ROOT}/vmaplib
-  ${DEPENDENCY_INCLUDE_ROOT}/recast
-  ${DEPENDENCY_INCLUDE_ROOT}/detour
-  ${DEPENDENCY_INCLUDE_ROOT}/g3dlite
+  ${DEPENDENCY_ROOT}/libmpq_new
+  ${DEPENDENCY_ROOT}/dbcfile 
+  ${DEPENDENCY_ROOT}/loadlib
+  ${DEPENDENCY_ROOT}/vmaplib
+  ${RECASTNAVIGATION}/detour/include
+  ${RECASTNAVIGATION}/recast/include
+  ${DEPENDENCY_ROOT}/g3dlite/include
   )
 link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH} )
 

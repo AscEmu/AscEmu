@@ -15,6 +15,6 @@ foreach(src IN ITEMS ${sources})
    set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${DEPENDENCY_ROOT}/libmpq_new)
 add_library(${PROJECT_NAME} STATIC ${SRCS})
 target_link_libraries(${PROJECT_NAME} libmpq_new)

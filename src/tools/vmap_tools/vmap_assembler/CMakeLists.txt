@@ -8,7 +8,7 @@ foreach(src IN ITEMS ${sources} )
   SET( SRCS ${SRCS} ${prefix}/${src} )
 endforeach(src)
 
-include_directories( ${DEPENDENCY_INCLUDE_ROOT}/vmaplib ${DEPENDENCY_INCLUDE_ROOT}/g3dlite )
+include_directories( ${DEPENDENCY_ROOT}/vmaplib/include ${DEPENDENCY_ROOT}/g3dlite/include )
 
 ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} )
 

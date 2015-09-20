@@ -58,13 +58,12 @@ set(GLOBAL_INCLUDE_DIRS
    ${ROOT_PATH}/src/world
    ${ROOT_PATH}/src/logonserver
    ${DEPENDENCY_INCLUDE_ROOT}
-   ${DEPENDENCY_INCLUDE_ROOT}/g3dlite
-   ${DEPENDENCY_INCLUDE_ROOT}/vmaplib
+   ${DEPENDENCY_ROOT}/g3dlite/include
+   ${DEPENDENCY_ROOT}/vmaplib/include
    ${DEPENDENCY_ROOT}/pcre/include
    ${DEPENDENCY_ROOT}/zlib
    ${RECASTNAVIGATION}/recast/include
    ${RECASTNAVIGATION}/detour/include
-   ${DEPENDENCY_INCLUDE_ROOT}/g3dlite
    )
 
 #find our needed packages

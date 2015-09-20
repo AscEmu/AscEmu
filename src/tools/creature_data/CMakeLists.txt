@@ -19,7 +19,7 @@ IF( NOT WIN32 AND NOT IS_64BIT )
 ENDIF( NOT WIN32 AND NOT IS_64BIT )
 
 include_directories(
-   ${DEPENDENCY_INCLUDE_ROOT}/libmpq_new
+   ${DEPENDENCY_ROOT}/libmpq_new
    ${DEPENDENCY_ROOT}/dbcfile
    ${DEPENDENCY_ROOT}/loadlib
    )
