@@ -42,7 +42,7 @@ namespace LuaTaxi
     int AddPathNode(lua_State* L, TaxiPath* tp)
     {
         if (!tp) return 0;
-        uint32 mapid = luaL_checkint(L, 1);
+        uint32 mapid = luaL_checkinteger(L, 1);
         float x = CHECK_FLOAT(L, 2);
         float y = CHECK_FLOAT(L, 3);
         float z = CHECK_FLOAT(L, 4);
@@ -60,7 +60,7 @@ namespace LuaTaxi
     /*int GetNodeX(lua_State * L, TaxiPath * tp)
     {
     if (!tp) return 0;
-    uint32 index = luaL_checkint(L, 1);
+    uint32 index = luaL_checkinteger(L, 1);
     TaxiPathNode* tpn = tp->GetPathNode(index);
     if (tpn != NULL)
     lua_pushinteger(L, tpn->x);
@@ -72,7 +72,7 @@ namespace LuaTaxi
     int GetNodeY(lua_State * L, TaxiPath * tp)
     {
     if (!tp) return 0;
-    uint32 index = luaL_checkint(L, 1);
+    uint32 index = luaL_checkinteger(L, 1);
     TaxiPathNode* tpn = tp->GetPathNode(index);
     if (tpn != NULL)
     lua_pushinteger(L, tpn->y);
@@ -84,7 +84,7 @@ namespace LuaTaxi
     int GetNodeZ(lua_State * L, TaxiPath * tp)
     {
     if (!tp) return 0;
-    uint32 index = luaL_checkint(L, 1);
+    uint32 index = luaL_checkinteger(L, 1);
     TaxiPathNode* tpn = tp->GetPathNode(index);
     if (tpn != NULL)
     lua_pushinteger(L, tpn->z);
@@ -96,7 +96,7 @@ namespace LuaTaxi
     int GetNodeMapId(lua_State * L, TaxiPath * tp)
     {
     if (!tp) return 0;
-    uint32 index = luaL_checkint(L, 1);
+    uint32 index = luaL_checkinteger(L, 1);
     TaxiPathNode* tpn = tp->GetPathNode(index);
     if (tpn != NULL)
     lua_pushinteger(L, tpn->mapid);

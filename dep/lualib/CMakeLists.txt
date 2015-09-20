@@ -6,7 +6,10 @@ set( sources
 lapi.c
 lauxlib.c
 lbaselib.c
+lbitlib.c
 lcode.c
+lcorolib.c
+lctype.c
 ldblib.c
 ldebug.c
 ldo.c
@@ -30,15 +33,18 @@ ltable.c
 ltablib.c
 ltm.c
 lua.c
+luac.c
 lundump.c
+lutf8lib.c
 lvm.c
-lzio.c
-print.c )
+lzio.c )
+#print.c )
 
 SET( headers
 lapi.h
 lauxlib.h
 lcode.h
+lctype.h
 ldebug.h
 ldo.h
 lfunc.h
@@ -49,11 +55,13 @@ lmem.h
 lobject.h
 lopcodes.h
 lparser.h
+lprefix.h
 lstate.h
 lstring.h
 ltable.h
 ltm.h
 lua.h
+lua.hpp
 luaconf.h
 lualib.h
 lundump.h

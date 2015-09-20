@@ -30,8 +30,8 @@ namespace luPacket
 
     int CreatePacket(lua_State* L, WorldPacket* packet)
     {
-        int opcode = luaL_checkint(L, 1);
-        int size = luaL_checkint(L, 2);
+        int opcode = luaL_checkinteger(L, 1);
+        int size = luaL_checkinteger(L, 2);
         if (opcode >= NUM_MSG_TYPES)
             luaL_error(L, "CreatePacket got opcode %d greater than max opcode %d.", opcode, NUM_MSG_TYPES);
         else
@@ -199,37 +199,37 @@ namespace luPacket
 
     int WriteByte(lua_State* L, WorldPacket* packet)
     {
-        int8 byte = (int8)luaL_checkint(L, 1);
+        int8 byte = (int8)luaL_checkinteger(L, 1);
         (*packet) << byte;
         return 0;
     }
     int WriteUByte(lua_State* L, WorldPacket* packet)
     {
-        uint8 byte = (uint8)luaL_checkint(L, 1);
+        uint8 byte = (uint8)luaL_checkinteger(L, 1);
         (*packet) << byte;
         return 0;
     }
     int WriteShort(lua_State* L, WorldPacket* packet)
     {
-        int16 val = (int16)luaL_checkint(L, 1);
+        int16 val = (int16)luaL_checkinteger(L, 1);
         (*packet) << val;
         return 0;
     }
     int WriteUShort(lua_State* L, WorldPacket* packet)
     {
-        uint16 val = (uint16)luaL_checkint(L, 1);
+        uint16 val = (uint16)luaL_checkinteger(L, 1);
         (*packet) << val;
         return 0;
     }
     int WriteLong(lua_State* L, WorldPacket* packet)
     {
-        int32 val = (int32)luaL_checkint(L, 1);
+        int32 val = (int32)luaL_checkinteger(L, 1);
         (*packet) << val;
         return 0;
     }
     int WriteULong(lua_State* L, WorldPacket* packet)
     {
-        uint32 val = (uint32)luaL_checkint(L, 1);
+        uint32 val = (uint32)luaL_checkinteger(L, 1);
         (*packet) << val;
         return 0;
     }

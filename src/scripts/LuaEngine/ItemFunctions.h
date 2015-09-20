@@ -28,9 +28,9 @@ namespace luaItem
     ///////GOSSIP///////
     int GossipCreateMenu(lua_State* L, Item* ptr)
     {
-        int text_id = luaL_checkint(L, 1);
+        int text_id = luaL_checkinteger(L, 1);
         Player* plr = CHECK_PLAYER(L, 2);
-        int autosend = luaL_checkint(L, 3);
+        int autosend = luaL_checkinteger(L, 3);
 
         if (Menu != NULL)
             delete Menu;
@@ -45,12 +45,12 @@ namespace luaItem
 
     int GossipMenuAddItem(lua_State* L, Item* ptr)
     {
-        int icon = luaL_checkint(L, 1);
+        int icon = luaL_checkinteger(L, 1);
         const char* menu_text = luaL_checkstring(L, 2);
-        int IntId = luaL_checkint(L, 3);
-        bool coded = (luaL_checkint(L, 4)) ? true : false;
+        int IntId = luaL_checkinteger(L, 3);
+        bool coded = (luaL_checkinteger(L, 4)) ? true : false;
         const char* boxmessage = luaL_optstring(L, 5, "");
-        uint32 boxmoney = luaL_optint(L, 6, 0);
+        uint32 boxmoney = luaL_optinteger(L, 6, 0);
 
         if (Menu == NULL)
         {
@@ -98,9 +98,9 @@ namespace luaItem
         Player* plr = CHECK_PLAYER(L, 1);
         float x = CHECK_FLOAT(L, 2);
         float y = CHECK_FLOAT(L, 3);
-        int icon = luaL_checkint(L, 4);
-        int flags = luaL_checkint(L, 5);
-        int data = luaL_checkint(L, 6);
+        int icon = luaL_checkinteger(L, 4);
+        int flags = luaL_checkinteger(L, 5);
+        int data = luaL_checkinteger(L, 6);
         const char* name = luaL_checkstring(L, 7);
 
         plr->Gossip_SendPOI(x, y, icon, flags, data, name);
@@ -112,9 +112,9 @@ namespace luaItem
         if (ptr == NULL)
             return 0;
 
-        uint32 text_id = luaL_checkint(L, 1);
+        uint32 text_id = luaL_checkinteger(L, 1);
         Player *player = CHECK_PLAYER(L, 2);
-        uint32 itemid = luaL_checkint(L, 3);
+        uint32 itemid = luaL_checkinteger(L, 3);
         uint8 itemicon = CHECK_UINT8(L, 4);
         const char *itemtext = luaL_checkstring(L, 5);
         uint32 requiredmoney = CHECK_ULONG(L, 6);
@@ -142,10 +142,10 @@ namespace luaItem
 
     int AddEnchantment(lua_State* L, Item* ptr)
     {
-        int entry = luaL_checkint(L, 1);
-        int duration = luaL_checkint(L, 2);
+        int entry = luaL_checkinteger(L, 1);
+        int duration = luaL_checkinteger(L, 2);
         bool permanent = (duration == 0) ? true : false;
-        bool temp = (luaL_checkint(L, 3) == 1) ? true : false;
+        bool temp = (luaL_checkinteger(L, 3) == 1) ? true : false;
 
         EnchantEntry* eentry = dbcEnchant.LookupEntry(entry);
 
@@ -161,7 +161,7 @@ namespace luaItem
 
     int RemoveEnchantment(lua_State* L, Item* ptr)
     {
-        int slot = luaL_checkint(L, 1);
+        int slot = luaL_checkinteger(L, 1);
         bool temp = CHECK_BOOL(L, 2);
 
         if (slot == -1)	ptr->RemoveAllEnchantments(temp);
@@ -191,7 +191,7 @@ namespace luaItem
 
     int GetSpellId(lua_State* L, Item* ptr)
     {
-        uint32 index = luaL_checkint(L, 1);
+        uint32 index = luaL_checkinteger(L, 1);
         if (!ptr || index >= 5)
             return 0;
         ItemPrototype* proto = ptr->GetProto();
@@ -201,7 +201,7 @@ namespace luaItem
 
     int GetSpellTrigger(lua_State* L, Item* ptr)
     {
-        uint32 index = luaL_checkint(L, 1);
+        uint32 index = luaL_checkinteger(L, 1);
         if (!ptr || index >= 5)
             return 0;
         ItemPrototype* proto = ptr->GetProto();
@@ -221,10 +221,10 @@ namespace luaItem
         //TEST_UNIT()
         if ((lua_gettop(L) != 3) || (lua_gettop(L) != 5))
             return 0;
-        uint32 itemid = luaL_checkint(L, 1);
-        uint32 mincount = luaL_checkint(L, 2);
-        uint32 maxcount = luaL_checkint(L, 3);
-        bool perm = ((luaL_optint(L, 4, 0) == 1) ? true : false);
+        uint32 itemid = luaL_checkinteger(L, 1);
+        uint32 mincount = luaL_checkinteger(L, 2);
+        uint32 maxcount = luaL_checkinteger(L, 3);
+        bool perm = ((luaL_optinteger(L, 4, 0) == 1) ? true : false);
         if (perm)
         {
             float chance = CHECK_FLOAT(L, 5);
@@ -239,7 +239,7 @@ namespace luaItem
 
     int GetItemLink(lua_State* L, Item* ptr)
     {
-        uint32 lang = luaL_optint(L, 1, LANG_UNIVERSAL);
+        uint32 lang = luaL_optinteger(L, 1, LANG_UNIVERSAL);
         if (!ptr)
             return 0;
         lua_pushstring(L, ptr->GetItemLink(lang).c_str());
@@ -247,17 +247,17 @@ namespace luaItem
     }
     int SetByteValue(lua_State* L, Item* ptr)
     {
-        uint32 index = luaL_checkint(L, 1);
-        uint32 index1 = luaL_checkint(L, 2);
-        uint8 value = luaL_checkint(L, 3);
+        uint32 index = luaL_checkinteger(L, 1);
+        uint32 index1 = luaL_checkinteger(L, 2);
+        uint8 value = luaL_checkinteger(L, 3);
         ptr->SetByte(index, index1, value);
         return 1;
     }
 
     int GetByteValue(lua_State* L, Item* ptr)
     {
-        uint32 index = luaL_checkint(L, 1);
-        uint32 index1 = luaL_checkint(L, 2);
+        uint32 index = luaL_checkinteger(L, 1);
+        uint32 index1 = luaL_checkinteger(L, 2);
         lua_pushinteger(L, ptr->GetByte(index, index1));
         return 1;
     }
@@ -323,8 +323,8 @@ namespace luaItem
 
     int ModifyEnchantmentTime(lua_State* L, Item* ptr)
     {
-        uint32 slot = luaL_checkint(L, 1);
-        uint32 duration = luaL_checkint(L, 2);
+        uint32 slot = luaL_checkinteger(L, 1);
+        uint32 duration = luaL_checkinteger(L, 2);
         if (!ptr)
             return 0;
         ptr->ModifyEnchantmentTime(slot, duration);
@@ -333,7 +333,7 @@ namespace luaItem
 
     int SetStackCount(lua_State* L, Item* ptr)
     {
-        uint32 count = luaL_checkint(L, 1);
+        uint32 count = luaL_checkinteger(L, 1);
         if (!ptr || !count || count > 1000)
             return 0;
         ptr->SetStackCount(count);
@@ -342,8 +342,8 @@ namespace luaItem
 
     int HasFlag(lua_State* L, Item* ptr)
     {
-        uint32 index = luaL_checkint(L, 1);
-        uint32 flag = luaL_checkint(L, 2);
+        uint32 index = luaL_checkinteger(L, 1);
+        uint32 flag = luaL_checkinteger(L, 2);
         lua_pushboolean(L, ptr->HasFlag(index, flag) ? 1 : 0);
         return 1;
     }
@@ -427,8 +427,8 @@ namespace luaItem
 
     int ModUInt32Value(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
-        int value = luaL_checkint(L, 2);
+        int field = luaL_checkinteger(L, 1);
+        int value = luaL_checkinteger(L, 2);
         if (ptr)
             ptr->ModSignedInt32Value(field, value);
         return 0;
@@ -436,7 +436,7 @@ namespace luaItem
 
     int ModFloatValue(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
+        int field = luaL_checkinteger(L, 1);
         float value = CHECK_FLOAT(L, 2);
         if (ptr)
             ptr->ModFloatValue(field, value);
@@ -445,8 +445,8 @@ namespace luaItem
 
     int SetUInt32Value(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
-        int value = luaL_checkint(L, 2);
+        int field = luaL_checkinteger(L, 1);
+        int value = luaL_checkinteger(L, 2);
         if (ptr)
             ptr->SetUInt32Value(field, value);
         return 0;
@@ -463,8 +463,8 @@ namespace luaItem
 
     int RemoveFlag(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
-        int value = luaL_checkint(L, 2);
+        int field = luaL_checkinteger(L, 1);
+        int value = luaL_checkinteger(L, 2);
         if (ptr)
             ptr->RemoveFlag(field, value);
         return 0;
@@ -472,8 +472,8 @@ namespace luaItem
 
     int SetFlag(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
-        int value = luaL_checkint(L, 2);
+        int field = luaL_checkinteger(L, 1);
+        int value = luaL_checkinteger(L, 2);
         if (ptr)
             ptr->SetFlag(field, value);
         return 0;
@@ -481,7 +481,7 @@ namespace luaItem
 
     int SetFloatValue(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
+        int field = luaL_checkinteger(L, 1);
         float value = CHECK_FLOAT(L, 2);
         if (ptr)
             ptr->SetFloatValue(field, value);
@@ -490,7 +490,7 @@ namespace luaItem
 
     int GetUInt32Value(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
+        int field = luaL_checkinteger(L, 1);
         if (ptr)
             lua_pushnumber(L, ptr->GetUInt32Value(field));
         return 1;
@@ -498,7 +498,7 @@ namespace luaItem
 
     int GetUInt64Value(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
+        int field = luaL_checkinteger(L, 1);
         if (ptr)
             PUSH_GUID(L, ptr->GetUInt64Value(field));
         return 1;
@@ -506,7 +506,7 @@ namespace luaItem
 
     int GetFloatValue(lua_State* L, Item* ptr)
     {
-        int field = luaL_checkint(L, 1);
+        int field = luaL_checkinteger(L, 1);
         if (ptr)
             lua_pushnumber(L, ptr->GetFloatValue(field));
         return 1;

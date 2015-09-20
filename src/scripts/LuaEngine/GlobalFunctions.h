@@ -36,20 +36,20 @@ namespace luaGlobalFunctions
 {
     static int PerformIngameSpawn(lua_State* L)
     {
-        uint32 spawntype = luaL_checkint(L, 1);
-        uint32 entry = luaL_checkint(L, 2);
-        uint32 map = luaL_checkint(L, 3);
+        uint32 spawntype = luaL_checkinteger(L, 1);
+        uint32 entry = luaL_checkinteger(L, 2);
+        uint32 map = luaL_checkinteger(L, 3);
         float x = CHECK_FLOAT(L, 4);
         float y = CHECK_FLOAT(L, 5);
         float z = CHECK_FLOAT(L, 6);
         float o = CHECK_FLOAT(L, 7);
-        uint32 faction = luaL_checkint(L, 8); //also scale as percentage
-        uint32 duration = luaL_checkint(L, 9);
-        uint32 equip1 = luaL_optint(L, 10, 1);
-        uint32 equip2 = luaL_optint(L, 11, 1);
-        uint32 equip3 = luaL_optint(L, 12, 1);
+        uint32 faction = luaL_checkinteger(L, 8); //also scale as percentage
+        uint32 duration = luaL_checkinteger(L, 9);
+        uint32 equip1 = luaL_optinteger(L, 10, 1);
+        uint32 equip2 = luaL_optinteger(L, 11, 1);
+        uint32 equip3 = luaL_optinteger(L, 12, 1);
         //13: instance id
-        uint32 save = luaL_optint(L, 14, 0);
+        uint32 save = luaL_optinteger(L, 14, 0);
         if (x && y && z && entry)
         {
             if (spawntype == 1)  //Unit
@@ -61,7 +61,7 @@ namespace luaGlobalFunctions
                 MapMgr* mapMgr = sInstanceMgr.GetMapMgr(map);
                 if (!mapMgr)
                     return 0;
-                int32 instanceid = luaL_optint(L, 13, mapMgr->GetInstanceID());
+                int32 instanceid = luaL_optinteger(L, 13, mapMgr->GetInstanceID());
                 Creature* pCreature = mapMgr->CreateCreature(entry);
                 pCreature->Load(p, x, y, z, o);
                 pCreature->SetFaction(faction);
@@ -143,15 +143,15 @@ namespace luaGlobalFunctions
 
     static int logcol(lua_State* L)
     {
-        luaL_checkint(L, 1);
+        luaL_checkinteger(L, 1);
         return 0;
     }
 
     static int WorldDBQuery(lua_State* L)
     {
         const char* qStr = luaL_checkstring(L, 1);
-        uint32 fID = luaL_optint(L, 2, 0); //column
-        uint32 rID = luaL_optint(L, 3, 0); //row
+        uint32 fID = luaL_optinteger(L, 2, 0); //column
+        uint32 rID = luaL_optinteger(L, 3, 0); //row
         if (!qStr) return 0;
         QueryResult* result = WorldDatabase.Query(qStr);
         lua_settop(L, 0);
@@ -162,8 +162,8 @@ namespace luaGlobalFunctions
     static int CharDBQuery(lua_State* L)
     {
         const char* qStr = luaL_checkstring(L, 1);
-        uint32 fID = luaL_optint(L, 2, 0); //column
-        uint32 rID = luaL_optint(L, 3, 0); //row
+        uint32 fID = luaL_optinteger(L, 2, 0); //column
+        uint32 rID = luaL_optinteger(L, 3, 0); //row
         if (!qStr) return 0;
         QueryResult* result = CharacterDatabase.Query(qStr);
         lua_settop(L, 0);
@@ -194,7 +194,7 @@ namespace luaGlobalFunctions
     static int SendWorldMessage(lua_State* L)
     {
         const char* message = luaL_checkstring(L, 1);
-        uint32 MsgType = luaL_checkint(L, 2);
+        uint32 MsgType = luaL_checkinteger(L, 2);
         if (!message || !MsgType)
         {
             lua_pushnil(L);
@@ -321,7 +321,7 @@ namespace luaGlobalFunctions
 
     /*static int GetInstanceIdsByMap(lua_State * L)
     {
-    uint32 mapid = luaL_checkint(L,1);
+    uint32 mapid = luaL_checkinteger(L,1);
     uint32 ret = NULL;
     uint32 count = 0;
     lua_newtable(L);
@@ -343,7 +343,7 @@ namespace luaGlobalFunctions
     /*
     static int SendPvPCaptureMessage(lua_State * L)
     {
-    uint32 zoneid = luaL_checkint(L, 1);
+    uint32 zoneid = luaL_checkinteger(L, 1);
     const char* msg = luaL_checkstring(L, 2);
     AreaTable * at = dbcArea.LookupEntry(zoneid);
     if(!zoneid || !msg || !at)
@@ -359,7 +359,7 @@ namespace luaGlobalFunctions
         Player* ret = NULL;
         uint32 count = 0;
         lua_newtable(L);
-        uint32 mapid = luaL_checkint(L, 1);
+        uint32 mapid = luaL_checkinteger(L, 1);
         MapMgr* mgr = sInstanceMgr.GetMapMgr(mapid);
         if (!mgr)
             return 0;
@@ -379,7 +379,7 @@ namespace luaGlobalFunctions
         Player* ret = NULL;
         uint32 count = 0;
         lua_newtable(L);
-        uint32 zoneid = luaL_checkint(L, 1);
+        uint32 zoneid = luaL_checkinteger(L, 1);
         objmgr._playerslock.AcquireReadLock();
         HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
         for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
@@ -399,23 +399,23 @@ namespace luaGlobalFunctions
 
     static int SendMail(lua_State* L)
     {
-        uint32 type = luaL_checkint(L, 1);
+        uint32 type = luaL_checkinteger(L, 1);
         uint64 sender_guid = CHECK_GUID(L, 2);
         uint64 recipient_guid = CHECK_GUID(L, 3);
         string subject = luaL_checkstring(L, 4);
         string body = luaL_checkstring(L, 5);
-        uint32 money = luaL_checkint(L, 6);
-        uint32 cod = luaL_checkint(L, 7);
+        uint32 money = luaL_checkinteger(L, 6);
+        uint32 cod = luaL_checkinteger(L, 7);
         uint64 item_guid = CHECK_GUID(L, 8);
-        uint32 stationery = luaL_checkint(L, 9);
-        uint32 deliverdelay = luaL_optint(L, 10, 0);
+        uint32 stationery = luaL_checkinteger(L, 9);
+        uint32 deliverdelay = luaL_optinteger(L, 10, 0);
         sMailSystem.SendAutomatedMessage(type, sender_guid, recipient_guid, subject, body, money, cod, item_guid, stationery, body.empty() ? MAIL_CHECK_MASK_COPIED : MAIL_CHECK_MASK_HAS_BODY, deliverdelay);
         return 0;
     }
 
     static int GetTaxiPath(lua_State* L)
     {
-        uint32 path = luaL_checkint(L, 1);
+        uint32 path = luaL_checkinteger(L, 1);
         TaxiPath* tp = sTaxiMgr.GetTaxiPath(path);
         if (tp != NULL)
             PUSH_TAXIPATH(L, tp);
@@ -432,7 +432,7 @@ namespace luaGlobalFunctions
         int valindex = 3;
         if (lua_gettop(L) == 4)
         {
-            subindex = luaL_optint(L, 3, 0);
+            subindex = luaL_optinteger(L, 3, 0);
             valindex++;
         }
         SpellEntry* proto = dbcSpell.LookupEntryForced(entry);
@@ -470,7 +470,7 @@ namespace luaGlobalFunctions
     {
         uint32 entry = luaL_checkinteger(L, 1);
         const char* var = luaL_checkstring(L, 2);
-        int subindex = luaL_optint(L, 3, 0);
+        int subindex = luaL_optinteger(L, 3, 0);
         SpellEntry* proto = dbcSpell.LookupEntryForced(entry);
         if (!entry || !var || subindex < 0 || !proto)
         {
@@ -570,7 +570,7 @@ namespace luaGlobalFunctions
     }
     int RemoveTimedEvent(lua_State* L)
     {
-        int ref = luaL_checkint(L, 1);
+        int ref = luaL_checkinteger(L, 1);
         sLuaEventMgr.RemoveEventByRef(ref);
         return 0;
     }
@@ -587,7 +587,7 @@ namespace luaGlobalFunctions
     }
     int HasTimedEvent(lua_State* L)
     {
-        int ref = luaL_checkint(L, 1);
+        int ref = luaL_checkinteger(L, 1);
         lua_pushboolean(L, sLuaEventMgr.HasEvent(ref) ? 1 : 0);
         return 1;
     }
@@ -654,13 +654,13 @@ namespace luaGlobalFunctions
 
     int GetInstanceCreature(lua_State* L)
     {
-        uint32 map = luaL_checkint(L, 1);
-        uint32 iid = luaL_checkint(L, 2);
+        uint32 map = luaL_checkinteger(L, 1);
+        uint32 iid = luaL_checkinteger(L, 2);
         uint64 guid = 0;
         uint32 spawnId = 0;
         const char* type = luaL_typename(L, 3);
         if (!strcmp(type, "number"))
-            spawnId = luaL_checkint(L, 3);
+            spawnId = luaL_checkinteger(L, 3);
         else
             guid = CHECK_GUID(L, 3);
 
@@ -680,8 +680,8 @@ namespace luaGlobalFunctions
 
     int GetInstancePlayerCount(lua_State* L)
     {
-        uint32 map = luaL_checkint(L, 1);
-        uint32 iid = luaL_checkint(L, 2);
+        uint32 map = luaL_checkinteger(L, 1);
+        uint32 iid = luaL_checkinteger(L, 2);
 
         Instance* pInstance = sInstanceMgr.GetInstanceByIds(map, iid);
         if (pInstance == NULL)
@@ -693,8 +693,8 @@ namespace luaGlobalFunctions
 
     int GetPlayersInInstance(lua_State* L)
     {
-        uint32 map = luaL_checkint(L, 1);
-        uint32 iid = luaL_checkint(L, 2);
+        uint32 map = luaL_checkinteger(L, 1);
+        uint32 iid = luaL_checkinteger(L, 2);
 
         Instance* pInstance = sInstanceMgr.GetInstanceByIds(map, iid);
         if (pInstance == NULL)

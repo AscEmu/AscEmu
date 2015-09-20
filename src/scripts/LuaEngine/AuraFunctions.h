@@ -84,7 +84,7 @@ namespace LuaAura
     int SetDuration(lua_State* L, Aura* aura)
     {
         if (!aura) return 0;
-        int32 duration = luaL_checkint(L, 1);
+        int32 duration = luaL_checkinteger(L, 1);
         aura->SetDuration(duration);
         sEventMgr.ModifyEventTimeLeft(aura, EVENT_AURA_REMOVE, duration);
         return 0;
@@ -101,7 +101,7 @@ namespace LuaAura
     {
         if (!aura)
             RET_BOOL(false);
-        uint32 negativery = luaL_optint(L, 1, 1);
+        uint32 negativery = luaL_optinteger(L, 1, 1);
         aura->SetNegative(negativery);
         RET_BOOL(true);
     }
@@ -110,7 +110,7 @@ namespace LuaAura
     {
         if (!aura)
             RET_BOOL(false);
-        uint32 positivery = luaL_optint(L, 1, 1);
+        uint32 positivery = luaL_optinteger(L, 1, 1);
         aura->SetPositive(positivery);
         RET_BOOL(true);
     }
@@ -129,7 +129,7 @@ namespace LuaAura
         int subindex = 0;
         if (lua_gettop(L) == 3)
         {
-            subindex = luaL_optint(L, 2, 0);
+            subindex = luaL_optinteger(L, 2, 0);
         }
         if (!aura || !var || subindex < 0)
         {
@@ -168,7 +168,7 @@ namespace LuaAura
     int GetVar(lua_State* L, Aura* aura)
     {
         const char* var = luaL_checkstring(L, 1);
-        int subindex = luaL_optint(L, 2, 0);
+        int subindex = luaL_optinteger(L, 2, 0);
         if (!aura || !var || subindex < 0)
         {
             lua_pushnil(L);
