@@ -35,4 +35,7 @@ Folder: pcre
 Folder: g3dlite
    Web: http://g3d.sourceforge.net/
    Version: (2010/01/30)
-   
+
+Folder: mysql (dev-files)
+   Web: http://www.mysql.com/
+   Version:

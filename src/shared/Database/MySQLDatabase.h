@@ -24,7 +24,7 @@
 #if PLATFORM == PLATFORM_APPLE
 #include <mysql.h>
 #else
-#include <mysql/mysql.h>
+#include <mysql.h>
 #endif
 
 

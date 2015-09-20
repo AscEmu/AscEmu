@@ -82,7 +82,7 @@ if(WIN32)
    set(GLOBAL_INCLUDE_DIRS
    ${GLOBAL_INCLUDE_DIRS} 
    ${DEPENDENCY_ROOT}/openssl
-   ${DEPENDENCY_INCLUDE_ROOT}/mysql
+   ${DEPENDENCY_ROOT}/mysql
    )
 else()  #On apple n linux, mysql.h should have been found.
    set(GLOBAL_INCLUDE_DIRS
