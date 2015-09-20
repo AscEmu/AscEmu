@@ -447,7 +447,7 @@ static int CreateLuaEvent(lua_State* L)
     if (!strcmp(luaL_typename(L, 1), "function") || delay > 0)
     {
         lua_settop(L, 1);
-        int functionRef = luaL_ref(L, true);
+        int functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
         TimedEvent* ev = TimedEvent::Allocate(World::getSingletonPtr(), new CallbackP1<LuaEngine, int>(&sLuaMgr, &LuaEngine::CallFunctionByReference, functionRef), 0, delay, repeats);
         ev->eventType = LUA_EVENTS_END + functionRef; //Create custom reference by adding the ref number to the max lua event type to get a unique reference for every function.
         sWorld.event_AddEvent(ev);
@@ -515,7 +515,7 @@ static int ExtractfRefFromCString(lua_State* L, const char* functionName)
         {
             lua_getglobal(L, functionName);
             if (lua_isfunction(L, -1) && !lua_iscfunction(L, -1))
-                functionRef = luaL_ref(L, true);
+                functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
             else
                 luaL_error(L, "Reference creation failed! (%s) is not a valid Lua function. \n", functionName);
         }
@@ -527,7 +527,7 @@ static int ExtractfRefFromCString(lua_State* L, const char* functionName)
                 lua_getfield(L, -1, token);
                 if (lua_isfunction(L, -1) && !lua_iscfunction(L, -1))
                 {
-                    functionRef = luaL_ref(L, true);
+                    functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
                     break;
                 }
                 else if (lua_istable(L, -1))
@@ -617,7 +617,7 @@ static int RegisterServerHook(lua_State* L)
     if (!ev || typeName == NULL) return 0;
     //For functions directly passed in, skip all that code and register the reference.
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 2));
     if (functionRef > 0)
@@ -642,7 +642,7 @@ static int RegisterDummySpell(lua_State* L)
         luaL_error(L, "LuaEngineMgr : RegisterDummySpell failed! Spell %d already has a registered Lua function!", entry);
     }
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 2));
     if (functionRef > 0)
@@ -663,7 +663,7 @@ static int RegisterUnitEvent(lua_State* L)
 
     if (!entry || !ev || typeName == NULL) return 0;
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     if (functionRef > 0)
@@ -684,7 +684,7 @@ static int RegisterInstanceEvent(lua_State* L)
 
     if (!map || !ev || typeName == NULL) return 0;
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     if (functionRef > 0)
@@ -705,7 +705,7 @@ static int RegisterQuestEvent(lua_State* L)
 
     if (!entry || !ev || typeName == NULL) return 0;
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     if (functionRef > 0)
@@ -726,7 +726,7 @@ static int RegisterGameObjectEvent(lua_State* L)
 
     if (!entry || !ev || typeName == NULL) return 0;
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     if (functionRef > 0)
@@ -747,7 +747,7 @@ static int RegisterUnitGossipEvent(lua_State* L)
 
     if (!entry || !ev || typeName == NULL) return 0;
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     if (functionRef > 0)
@@ -767,7 +767,7 @@ static int RegisterItemGossipEvent(lua_State* L)
 
     if (!entry || !ev || typeName == NULL) return 0;
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     if (functionRef > 0)
@@ -787,7 +787,7 @@ static int RegisterGOGossipEvent(lua_State* L)
 
     if (!entry || !ev || typeName == NULL) return 0;
     if (!strcmp(typeName, "function"))
-        functionRef = (uint16)luaL_ref(L, true);
+        functionRef = (uint16)luaL_ref(L, LUA_REGISTRYINDEX);
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
         functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     if (functionRef > 0)
@@ -1406,7 +1406,7 @@ class LuaCreature : public CreatureAIScript
     LuaCreature(Creature* creature) : CreatureAIScript(creature), m_binding(NULL) {}
     ~LuaCreature()
     {}
-    ARCEMU_INLINE void SetUnit(Creature* ncrc) { _unit = ncrc; }
+    inline void SetUnit(Creature* ncrc) { _unit = ncrc; }
     void OnCombatStart(Unit* mTarget)
     {
         CHECK_BINDING_ACQUIRELOCK
@@ -1801,7 +1801,7 @@ class LuaGameObjectScript : public GameObjectAIScript
     public:
     LuaGameObjectScript(GameObject* go) : GameObjectAIScript(go), m_binding(NULL) {}
     ~LuaGameObjectScript() {}
-    ARCEMU_INLINE GameObject* getGO() { return _gameobject; }
+    inline GameObject* getGO() { return _gameobject; }
     void OnCreate()
     {
         CHECK_BINDING_ACQUIRELOCK

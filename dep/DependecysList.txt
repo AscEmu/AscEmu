@@ -2,7 +2,7 @@ Opensource software in this folder:
 
 Folder: lualib
    Web: http://www.lua.org
-   Version: 5.1.5 (2007/12/27)
+   Version: 5.3.1 (2015/06/03)
    
 Folder: libmpq (Currently unused libmpq_new is in use)
    Web: https://github.com/mbroemme/libmpq/
