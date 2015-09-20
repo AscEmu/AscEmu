@@ -1,27 +1,13 @@
-PROJECT(libmpq)
+file(GLOB libmpq_sources libmpq/*.c libmpq/*.h)
 
-set(prefix ${DEPENDENCY_SOURCES}/${PROJECT_NAME} )
-
-set(sources
-common.cpp
-explode.cpp
-extract.cpp
-huffman.cpp
-mpq.cpp
-mpq_libmpq.cpp
-parser.cpp
-wave.cpp
+set(libmpq_SRCS
+  ${libmpq_sources}
 )
 
-foreach(src IN ITEMS ${sources} )
-  SET( SRCS ${SRCS} ${prefix}/${src} )
-endforeach(src)
+if(NOT WIN32 AND NOT IS_64BIT)
+	add_definitions(-D_FILE_OFFSET_BITS=64)
+endif(NOT WIN32 AND NOT IS_64BIT)
 
-include_directories( ${DEPENDENCY_INCLUDE_ROOT}/${PROJECT_NAME} ${DEPENDENCY_INCLUDE_ROOT}/zlib )
-add_library(${PROJECT_NAME} STATIC ${SRCS} )
-target_link_libraries( ${PROJECT_NAME} ${ZLIB_LIBRARIES} )
-
-unset(sources)
-unset(SRCS)
-unset(prefix)
-
+include_directories(libmpq ${DEPENDENCY_INCLUDE_ROOT}/zlib ${DEPENDENCY_INCLUDE_ROOT}/bzip2 ${DEPENDENCY_INCLUDE_ROOT}/loadlib)
+add_library(libmpq STATIC ${libmpq_SRCS})
+target_link_libraries(libmpq ${ZLIB_LIBRARIES} bzip2)
