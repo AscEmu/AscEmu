@@ -19,6 +19,7 @@
  *
  */
 
+#include "CommonTypes.hpp"
 #include "LogonCommClient.h"
 
 #pragma pack(push, 1)
