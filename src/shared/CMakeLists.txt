@@ -49,6 +49,7 @@ set(headers
 	CallBack.h
 	CircularQueue.h
 	Common.h
+    CommonTypes.hpp
 	CrashHandler.h
 	crc32.h
 	CRefcounter.h
