@@ -89,91 +89,91 @@ class StormwindGuard : public GossipScript
                 case 1:     // Auction House
                     {
                         SendQuickMenu(3834);
-                        Plr->Gossip_SendPOI(1);
+                        Plr->Gossip_SendSQLPOI(1);
                     }
                     break;
 
                 case 2:     // Bank of Stormwind
                     {
                         SendQuickMenu(764);
-                        Plr->Gossip_SendPOI(2);
+                        Plr->Gossip_SendSQLPOI(2);
                     }
                     break;
 
                 case 3:     // Stormwind Harbor
                     {
                         SendQuickMenu(13439);
-                        Plr->Gossip_SendPOI(3);
+                        Plr->Gossip_SendSQLPOI(3);
                     }
                     break;
 
                 case 4:     // Deeprun Tram
                     {
                         SendQuickMenu(3813);
-                        Plr->Gossip_SendPOI(4);
+                        Plr->Gossip_SendSQLPOI(4);
                     }
                     break;
 
                 case 5:     // The Inn
                     {
                         SendQuickMenu(3860);
-                        Plr->Gossip_SendPOI(5);
+                        Plr->Gossip_SendSQLPOI(5);
                     }
                     break;
 
                 case 6:     // Gryphon Master
                     {
                         SendQuickMenu(879);
-                        Plr->Gossip_SendPOI(6);
+                        Plr->Gossip_SendSQLPOI(6);
                     }
                     break;
 
                 case 7:     // Guild Master
                     {
                         SendQuickMenu(882);
-                        Plr->Gossip_SendPOI(7);
+                        Plr->Gossip_SendSQLPOI(7);
                     }
                     break;
 
                 case 8:     // Mailbox
                     {
                         SendQuickMenu(3861);
-                        Plr->Gossip_SendPOI(8);
+                        Plr->Gossip_SendSQLPOI(8);
                     }
                     break;
 
                 case 9:     // Stable Master
                     {
                         SendQuickMenu(5984);
-                        Plr->Gossip_SendPOI(9);
+                        Plr->Gossip_SendSQLPOI(9);
                     }
                     break;
 
                 case 10:     // Weapons Master
                     {
                         SendQuickMenu(4516);
-                        Plr->Gossip_SendPOI(10);
+                        Plr->Gossip_SendSQLPOI(10);
                     }
                     break;
 
                 case 11:    // Officers' Lounge
                     {
                         SendQuickMenu(7047);
-                        Plr->Gossip_SendPOI(11);
+                        Plr->Gossip_SendSQLPOI(11);
                     }
                     break;
 
                 case 12:    // Battlemaster
                     {
                         SendQuickMenu(10218);
-                        Plr->Gossip_SendPOI(12);
+                        Plr->Gossip_SendSQLPOI(12);
                     }
                     break;
 
                 case 13:     // Barber
                     {
                         SendQuickMenu(13882);
-                        Plr->Gossip_SendPOI(13);
+                        Plr->Gossip_SendSQLPOI(13);
                     }
                     break;
 
@@ -219,154 +219,154 @@ class StormwindGuard : public GossipScript
 
                 case 16: //Druid
                     {
-                        Plr->Gossip_SendPOI(14);
+                        Plr->Gossip_SendSQLPOI(14);
                         SendQuickMenu(902);
                     }
                     break;
 
                 case 17: //Hunter
                     {
-                        Plr->Gossip_SendPOI(15);
+                        Plr->Gossip_SendSQLPOI(15);
                         SendQuickMenu(905);
                     }
                     break;
 
                 case 18: //Mage
                     {
-                        Plr->Gossip_SendPOI(16);
+                        Plr->Gossip_SendSQLPOI(16);
                         SendQuickMenu(899);
                     }
                     break;
 
                 case 19: //Paladin
                     {
-                        Plr->Gossip_SendPOI(17);
+                        Plr->Gossip_SendSQLPOI(17);
                         SendQuickMenu(904);
                     }
                     break;
 
                 case 20: //Priest
                     {
-                        Plr->Gossip_SendPOI(18);
+                        Plr->Gossip_SendSQLPOI(18);
                         SendQuickMenu(903);
                     }
                     break;
 
                 case 21: //Rogue
                     {
-                        Plr->Gossip_SendPOI(19);
+                        Plr->Gossip_SendSQLPOI(19);
                         SendQuickMenu(900);
                     }
                     break;
 
                 case 22: //Shaman
                     {
-                        Plr->Gossip_SendPOI(20);
+                        Plr->Gossip_SendSQLPOI(20);
                         SendQuickMenu(10106);
                     }
                     break;
 
                 case 23: //Warlock
                     {
-                        Plr->Gossip_SendPOI(21);
+                        Plr->Gossip_SendSQLPOI(21);
                         SendQuickMenu(906);
                     }
                     break;
 
                 case 24: //Warrior
                     {
-                        Plr->Gossip_SendPOI(22);
+                        Plr->Gossip_SendSQLPOI(22);
                         SendQuickMenu(901);
                     }
                     break;
 
                 case 25: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(23);
+                        Plr->Gossip_SendSQLPOI(23);
                         SendQuickMenu(919);
                     }
                     break;
 
                 case 26: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(24);
+                        Plr->Gossip_SendSQLPOI(24);
                         SendQuickMenu(920);
                     }
                     break;
 
                 case 27: //Cooking
                     {
-                        Plr->Gossip_SendPOI(25);
+                        Plr->Gossip_SendSQLPOI(25);
                         SendQuickMenu(921);
                     }
                     break;
 
                 case 28: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(26);
+                        Plr->Gossip_SendSQLPOI(26);
                         SendQuickMenu(941);
                     }
                     break;
 
                 case 29: //Engineering
                     {
-                        Plr->Gossip_SendPOI(27);
+                        Plr->Gossip_SendSQLPOI(27);
                         SendQuickMenu(922);
                     }
                     break;
 
                 case 30: //First Aid
                     {
-                        Plr->Gossip_SendPOI(28);
+                        Plr->Gossip_SendSQLPOI(28);
                         SendQuickMenu(923);
                     }
                     break;
 
                 case 31: //Fishing
                     {
-                        Plr->Gossip_SendPOI(29);
+                        Plr->Gossip_SendSQLPOI(29);
                         SendQuickMenu(940);
                     }
                     break;
 
                 case 32: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(30);
+                        Plr->Gossip_SendSQLPOI(30);
                         SendQuickMenu(924);
                     }
                     break;
 
                 case 33: //Inscription
                     {
-                        Plr->Gossip_SendPOI(31);
+                        Plr->Gossip_SendSQLPOI(31);
                         SendQuickMenu(13881);
                     }
                     break;
 
                 case 34: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(32);
+                        Plr->Gossip_SendSQLPOI(32);
                         SendQuickMenu(925);
                     }
                     break;
 
                 case 35: //Mining
                     {
-                        Plr->Gossip_SendPOI(33);
+                        Plr->Gossip_SendSQLPOI(33);
                         SendQuickMenu(927);
                     }
                     break;
 
                 case 36: //Skinning
                     {
-                        Plr->Gossip_SendPOI(34);
+                        Plr->Gossip_SendSQLPOI(34);
                         SendQuickMenu(928);
                     }
                     break;
 
                 case 37: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(35);
+                        Plr->Gossip_SendSQLPOI(35);
                         SendQuickMenu(929);
                     }
                     break;
@@ -410,63 +410,63 @@ class DarnassusGuard : public GossipScript
                 case 1:     // Auction House
                     {
                         SendQuickMenu(3833);
-                        Plr->Gossip_SendPOI(36);
+                        Plr->Gossip_SendSQLPOI(36);
                     }
                     break;
 
                 case 2:        // The Bank
                     {
                         SendQuickMenu(3017);
-                        Plr->Gossip_SendPOI(37);
+                        Plr->Gossip_SendSQLPOI(37);
                     }
                     break;
 
                 case 3:        // Hippogryph Master
                     {
                         SendQuickMenu(3018);
-                        Plr->Gossip_SendPOI(38);
+                        Plr->Gossip_SendSQLPOI(38);
                     }
                     break;
 
                 case 4:        // Guild Master
                     {
                         SendQuickMenu(3019);
-                        Plr->Gossip_SendPOI(39);
+                        Plr->Gossip_SendSQLPOI(39);
                     }
                     break;
 
                 case 5:        // The Inn
                     {
                         SendQuickMenu(3020);
-                        Plr->Gossip_SendPOI(40);
+                        Plr->Gossip_SendSQLPOI(40);
                     }
                     break;
 
                 case 6:        // Mailbox
                     {
                         SendQuickMenu(3021);
-                        Plr->Gossip_SendPOI(41);
+                        Plr->Gossip_SendSQLPOI(41);
                     }
                     break;
 
                 case 7:        // Stable Master
                     {
                         SendQuickMenu(5980);
-                        Plr->Gossip_SendPOI(42);
+                        Plr->Gossip_SendSQLPOI(42);
                     }
                     break;
 
                 case 8:        // Weapons Trainer
                     {
                         SendQuickMenu(4517);
-                        Plr->Gossip_SendPOI(43);
+                        Plr->Gossip_SendSQLPOI(43);
                     }
                     break;
 
                 case 9:    // Battlemaster
                     {
                         SendQuickMenu(7519);
-                        Plr->Gossip_SendPOI(44);
+                        Plr->Gossip_SendSQLPOI(44);
                     }
                     break;
 
@@ -501,111 +501,111 @@ class DarnassusGuard : public GossipScript
 
                 case 12:    // Druid
                     {
-                        Plr->Gossip_SendPOI(45);
+                        Plr->Gossip_SendSQLPOI(45);
                         SendQuickMenu(3024);
                     }
                     break;
 
                 case 13:    // Hunter
                     {
-                        Plr->Gossip_SendPOI(46);
+                        Plr->Gossip_SendSQLPOI(46);
                         SendQuickMenu(3023);
                     }
                     break;
 
                 case 14:    // Priest
                     {
-                        Plr->Gossip_SendPOI(47);
+                        Plr->Gossip_SendSQLPOI(47);
                         SendQuickMenu(3025);
                     }
                     break;
 
                 case 15:    // Rogue
                     {
-                        Plr->Gossip_SendPOI(48);
+                        Plr->Gossip_SendSQLPOI(48);
                         SendQuickMenu(3026);
                     }
                     break;
 
                 case 16:    // Warrior
                     {
-                        Plr->Gossip_SendPOI(49);
+                        Plr->Gossip_SendSQLPOI(49);
                         SendQuickMenu(3033);
                     }
                     break;
 
                 case 17: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(50);
+                        Plr->Gossip_SendSQLPOI(50);
                         SendQuickMenu(3035);
                     }
                     break;
 
                 case 18: //Cooking
                     {
-                        Plr->Gossip_SendPOI(51);
+                        Plr->Gossip_SendSQLPOI(51);
                         SendQuickMenu(3036);
                     }
                     break;
 
                 case 19: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(52);
+                        Plr->Gossip_SendSQLPOI(52);
                         SendQuickMenu(3337);
                     }
                     break;
 
                 case 20: //First Aid
                     {
-                        Plr->Gossip_SendPOI(53);
+                        Plr->Gossip_SendSQLPOI(53);
                         SendQuickMenu(3037);
                     }
                     break;
 
                 case 21: //Fishing
                     {
-                        Plr->Gossip_SendPOI(54);
+                        Plr->Gossip_SendSQLPOI(54);
                         SendQuickMenu(3038);
                     }
                     break;
 
                 case 22: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(55);
+                        Plr->Gossip_SendSQLPOI(55);
                         SendQuickMenu(3039);
                     }
                     break;
                 case 23: //Inscription
                     {
-                        Plr->Gossip_SendPOI(56);
+                        Plr->Gossip_SendSQLPOI(56);
                         SendQuickMenu(13886);
                     }
                     break;
 
                 case 24: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(57);
+                        Plr->Gossip_SendSQLPOI(57);
                         SendQuickMenu(3040);
                     }
                     break;
 
                 case 25: //Skinning
                     {
-                        Plr->Gossip_SendPOI(58);
+                        Plr->Gossip_SendSQLPOI(58);
                         SendQuickMenu(3042);
                     }
                     break;
 
                 case 26: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(59);
+                        Plr->Gossip_SendSQLPOI(59);
                         SendQuickMenu(3044);
                     }
                     break;
 
                 case 27: //Lexicon of Power
                     {
-                        Plr->Gossip_SendPOI(60);
+                        Plr->Gossip_SendSQLPOI(60);
                         SendQuickMenu(14174);
                     }
                     break;
@@ -666,14 +666,14 @@ class GoldshireGuard : public GossipScript
                 case 4:     //Inn
                     {
                         SendQuickMenu(4263);
-                        Plr->Gossip_SendPOI(61);
+                        Plr->Gossip_SendSQLPOI(61);
                     }
                     break;
 
                 case 5:     //Stable Master
                     {
                         SendQuickMenu(5983);
-                        Plr->Gossip_SendPOI(62);
+                        Plr->Gossip_SendSQLPOI(62);
                     }
                     break;
 
@@ -730,28 +730,28 @@ class GoldshireGuard : public GossipScript
 
                 case 10: //Mage
                     {
-                        Plr->Gossip_SendPOI(63);
+                        Plr->Gossip_SendSQLPOI(63);
                         SendQuickMenu(4268);
                     }
                     break;
 
                 case 11: //Paladin
                     {
-                        Plr->Gossip_SendPOI(64);
+                        Plr->Gossip_SendSQLPOI(64);
                         SendQuickMenu(4269);
                     }
                     break;
 
                 case 12: //Priest
                     {
-                        Plr->Gossip_SendPOI(65);
+                        Plr->Gossip_SendSQLPOI(65);
                         SendQuickMenu(4267);
                     }
                     break;
 
                 case 13: //Rogue
                     {
-                        Plr->Gossip_SendPOI(66);
+                        Plr->Gossip_SendSQLPOI(66);
                         SendQuickMenu(4270);
                     }
                     break;
@@ -764,35 +764,35 @@ class GoldshireGuard : public GossipScript
 
                 case 15: //Warlock
                     {
-                        Plr->Gossip_SendPOI(67);
+                        Plr->Gossip_SendSQLPOI(67);
                         SendQuickMenu(4272);
                     }
                     break;
 
                 case 16: //Warrior
                     {
-                        Plr->Gossip_SendPOI(68);
+                        Plr->Gossip_SendSQLPOI(68);
                         SendQuickMenu(4271);
                     }
                     break;
 
                 case 17: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(69);
+                        Plr->Gossip_SendSQLPOI(69);
                         SendQuickMenu(4274);
                     }
                     break;
 
                 case 18: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(70);
+                        Plr->Gossip_SendSQLPOI(70);
                         SendQuickMenu(4275);
                     }
                     break;
 
                 case 19: //Cooking
                     {
-                        Plr->Gossip_SendPOI(71);
+                        Plr->Gossip_SendSQLPOI(71);
                         SendQuickMenu(4276);
                     }
                     break;
@@ -811,35 +811,35 @@ class GoldshireGuard : public GossipScript
 
                 case 22: //First Aid
                     {
-                        Plr->Gossip_SendPOI(72);
+                        Plr->Gossip_SendSQLPOI(72);
                         SendQuickMenu(4279);
                     }
                     break;
 
                 case 23: //Fishing
                     {
-                        Plr->Gossip_SendPOI(73);
+                        Plr->Gossip_SendSQLPOI(73);
                         SendQuickMenu(4280);
                     }
                     break;
 
                 case 24: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(74);
+                        Plr->Gossip_SendSQLPOI(74);
                         SendQuickMenu(4281);
                     }
                     break;
 
                 case 25: //Inscription
                     {
-                        Plr->Gossip_SendPOI(75);
+                        Plr->Gossip_SendSQLPOI(75);
                         SendQuickMenu(13881);
                     }
                     break;
 
                 case 26: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(76);
+                        Plr->Gossip_SendSQLPOI(76);
                         SendQuickMenu(4282);
                     }
                     break;
@@ -852,14 +852,14 @@ class GoldshireGuard : public GossipScript
 
                 case 28: //Skinning
                     {
-                        Plr->Gossip_SendPOI(77);
+                        Plr->Gossip_SendSQLPOI(77);
                         SendQuickMenu(4284);
                     }
                     break;
 
                 case 29: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(78);
+                        Plr->Gossip_SendSQLPOI(78);
                         SendQuickMenu(4285);
                     }
                     break;
@@ -903,70 +903,70 @@ class UndercityGuard : public GossipScript
                 case 1:     // The bank
                     {
                         SendQuickMenu(3514);
-                        Plr->Gossip_SendPOI(79);
+                        Plr->Gossip_SendSQLPOI(79);
                     }
                     break;
 
                 case 2:     // The bat handler
                     {
                         SendQuickMenu(3515);
-                        Plr->Gossip_SendPOI(80);
+                        Plr->Gossip_SendSQLPOI(80);
                     }
                     break;
 
                 case 3:     // The guild master
                     {
                         SendQuickMenu(3516);
-                        Plr->Gossip_SendPOI(81);
+                        Plr->Gossip_SendSQLPOI(81);
                     }
                     break;
 
                 case 4:     // The inn
                     {
                         SendQuickMenu(3517);
-                        Plr->Gossip_SendPOI(82);
+                        Plr->Gossip_SendSQLPOI(82);
                     }
                     break;
 
                 case 5:     // The mailbox
                     {
                         SendQuickMenu(3518);
-                        Plr->Gossip_SendPOI(83);
+                        Plr->Gossip_SendSQLPOI(83);
                     }
                     break;
 
                 case 6:     // The auction house
                     {
                         SendQuickMenu(3520);
-                        Plr->Gossip_SendPOI(84);
+                        Plr->Gossip_SendSQLPOI(84);
                     }
                     break;
 
                 case 7:     // The zeppelin master
                     {
                         SendQuickMenu(3519);
-                        Plr->Gossip_SendPOI(85);
+                        Plr->Gossip_SendSQLPOI(85);
                     }
                     break;
 
                 case 8:     // The weapon master
                     {
                         SendQuickMenu(4521);
-                        Plr->Gossip_SendPOI(86);
+                        Plr->Gossip_SendSQLPOI(86);
                     }
                     break;
 
                 case 9:     // The stable master
                     {
                         SendQuickMenu(5979);
-                        Plr->Gossip_SendPOI(87);
+                        Plr->Gossip_SendSQLPOI(87);
                     }
                     break;
 
                 case 10:    // The battlemaster
                     {
                         SendQuickMenu(7527);
-                        Plr->Gossip_SendPOI(88);
+                        Plr->Gossip_SendSQLPOI(88);
                     }
                     break;
 
@@ -1004,132 +1004,132 @@ class UndercityGuard : public GossipScript
 
                 case 13: //Mage
                     {
-                        Plr->Gossip_SendPOI(89);
+                        Plr->Gossip_SendSQLPOI(89);
                         SendQuickMenu(3513);
                     }
                     break;
 
                 case 14: //Paladin
                     {
-                        Plr->Gossip_SendPOI(90);
+                        Plr->Gossip_SendSQLPOI(90);
                         SendQuickMenu(3521);
                     }
                     break;
 
                 case 15: //Priest
                     {
-                        Plr->Gossip_SendPOI(91);
+                        Plr->Gossip_SendSQLPOI(91);
                         SendQuickMenu(3521);
                     }
                     break;
 
                 case 16: //Rogue
                     {
-                        Plr->Gossip_SendPOI(92);
+                        Plr->Gossip_SendSQLPOI(92);
                         SendQuickMenu(3526);
                     }
                     break;
 
                 case 17: //Warlock
                     {
-                        Plr->Gossip_SendPOI(93);
+                        Plr->Gossip_SendSQLPOI(93);
                         SendQuickMenu(3526);
                     }
                     break;
 
                 case 18: //Warrior
                     {
-                        Plr->Gossip_SendPOI(94);
+                        Plr->Gossip_SendSQLPOI(94);
                         SendQuickMenu(3527);
                     }
                     break;
 
                 case 19: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(95);
+                        Plr->Gossip_SendSQLPOI(95);
                         SendQuickMenu(3528);
                     }
                     break;
 
                 case 20: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(96);
+                        Plr->Gossip_SendSQLPOI(96);
                         SendQuickMenu(3529);
                     }
                     break;
 
                 case 21: //Cooking
                     {
-                        Plr->Gossip_SendPOI(97);
+                        Plr->Gossip_SendSQLPOI(97);
                         SendQuickMenu(3530);
                     }
                     break;
 
                 case 22: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(98);
+                        Plr->Gossip_SendSQLPOI(98);
                         SendQuickMenu(3531);
                     }
                     break;
 
                 case 23: //Engineering
                     {
-                        Plr->Gossip_SendPOI(99);
+                        Plr->Gossip_SendSQLPOI(99);
                         SendQuickMenu(3532);
                     }
                     break;
 
                 case 24: //First Aid
                     {
-                        Plr->Gossip_SendPOI(100);
+                        Plr->Gossip_SendSQLPOI(100);
                         SendQuickMenu(3533);
                     }
                     break;
 
                 case 25: //Fishing
                     {
-                        Plr->Gossip_SendPOI(101);
+                        Plr->Gossip_SendSQLPOI(101);
                         SendQuickMenu(3534);
                     }
                     break;
 
                 case 26: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(102);
+                        Plr->Gossip_SendSQLPOI(102);
                         SendQuickMenu(3535);
                     }
                     break;
 
                 case 27: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(103);
+                        Plr->Gossip_SendSQLPOI(103);
                         SendQuickMenu(3536);
                     }
                     break;
 
                 case 28: //Mining
                     {
-                        Plr->Gossip_SendPOI(104);
+                        Plr->Gossip_SendSQLPOI(104);
                         SendQuickMenu(3537);
                     }
                     break;
 
                 case 29: //Skinning
                     {
-                        Plr->Gossip_SendPOI(105);
+                        Plr->Gossip_SendSQLPOI(105);
                         SendQuickMenu(3538);
                     }
                     break;
 
                 case 30: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(106);
+                        Plr->Gossip_SendSQLPOI(106);
                         SendQuickMenu(3539);
                     }
                     break;
                 case 32:     // Locksmith
                     {
-                        Plr->Gossip_SendPOI(107);
+                        Plr->Gossip_SendSQLPOI(107);
                         SendQuickMenu(14916);
                     }break;
             }
@@ -1172,84 +1172,84 @@ class UndercityGuardOverseer : public GossipScript
                 case 1:     // The auction house
                     {
                         SendQuickMenu(14900);
-                        Plr->Gossip_SendPOI(108);
+                        Plr->Gossip_SendSQLPOI(108);
                     }
                     break;
 
                 case 2:     // The bank
                     {
                         SendQuickMenu(14901);
-                        Plr->Gossip_SendPOI(109);
+                        Plr->Gossip_SendSQLPOI(109);
                     }
                     break;
 
                 case 3:     // Barber
                     {
                         SendQuickMenu(14902);
-                        Plr->Gossip_SendPOI(110);
+                        Plr->Gossip_SendSQLPOI(110);
                     }
                     break;
 
                 case 4:     // The bat handler
                     {
                         SendQuickMenu(14903);
-                        Plr->Gossip_SendPOI(111);
+                        Plr->Gossip_SendSQLPOI(111);
                     }
                     break;
 
                 case 5:    // The battlemaster
                     {
                         SendQuickMenu(14904);
-                        Plr->Gossip_SendPOI(112);
+                        Plr->Gossip_SendSQLPOI(112);
                     }
                     break;
 
                 case 6:     // The guild master
                     {
                         SendQuickMenu(14911);
-                        Plr->Gossip_SendPOI(113);
+                        Plr->Gossip_SendSQLPOI(113);
                     }
                     break;
 
                 case 7:     // The inn
                     {
                         SendQuickMenu(14913);
-                        Plr->Gossip_SendPOI(114);
+                        Plr->Gossip_SendSQLPOI(114);
                     }
                     break;
 
                 case 8:     // Locksmith
                     {
                         SendQuickMenu(14916);
-                        Plr->Gossip_SendPOI(115);
+                        Plr->Gossip_SendSQLPOI(115);
                     }
                     break;
 
                 case 9:     // The mailbox
                     {
                         SendQuickMenu(14918);
-                        Plr->Gossip_SendPOI(116);
+                        Plr->Gossip_SendSQLPOI(116);
                     }
                     break;
 
                 case 10:     // The stable master
                     {
                         SendQuickMenu(14924);
-                        Plr->Gossip_SendPOI(117);
+                        Plr->Gossip_SendSQLPOI(117);
                     }
                     break;
 
                 case 11:     // The weapon master
                     {
                         SendQuickMenu(14928);
-                        Plr->Gossip_SendPOI(118);
+                        Plr->Gossip_SendSQLPOI(118);
                     }
                     break;
 
                 case 12:     // The zeppelin master
                     {
                         SendQuickMenu(14929);
-                        Plr->Gossip_SendPOI(119);
+                        Plr->Gossip_SendSQLPOI(119);
                     }
                     break;
 
@@ -1289,133 +1289,133 @@ class UndercityGuardOverseer : public GossipScript
                 case 15: //Mage
                     {
                         SendQuickMenu(3513);
-                        Plr->Gossip_SendPOI(120);
+                        Plr->Gossip_SendSQLPOI(120);
                     }
                     break;
 
                 case 16: //Paladin
                     {
                         SendQuickMenu(3521);
-                        Plr->Gossip_SendPOI(121);
+                        Plr->Gossip_SendSQLPOI(121);
                     }
                     break;
 
                 case 17: //Priest
                     {
                         SendQuickMenu(3521);
-                        Plr->Gossip_SendPOI(122);
+                        Plr->Gossip_SendSQLPOI(122);
                     }
                     break;
 
                 case 18: //Rogue
                     {
                         SendQuickMenu(3526);
-                        Plr->Gossip_SendPOI(123);
+                        Plr->Gossip_SendSQLPOI(123);
                     }
                     break;
 
                 case 19: //Warlock
                     {
                         SendQuickMenu(3526);
-                        Plr->Gossip_SendPOI(124);
+                        Plr->Gossip_SendSQLPOI(124);
                     }
                     break;
 
                 case 20: //Warrior
                     {
                         SendQuickMenu(3527);
-                        Plr->Gossip_SendPOI(125);
+                        Plr->Gossip_SendSQLPOI(125);
                     }
                     break;
 
                 case 21: //Alchemy
                     {
                         SendQuickMenu(3528);
-                        Plr->Gossip_SendPOI(126);
+                        Plr->Gossip_SendSQLPOI(126);
                     }
                     break;
 
                 case 22: //Blacksmithing
                     {
                         SendQuickMenu(3529);
-                        Plr->Gossip_SendPOI(127);
+                        Plr->Gossip_SendSQLPOI(127);
                     }
                     break;
 
                 case 23: //Cooking
                     {
                         SendQuickMenu(3530);
-                        Plr->Gossip_SendPOI(128);
+                        Plr->Gossip_SendSQLPOI(128);
                     }
                     break;
 
                 case 24: //Enchanting
                     {
                         SendQuickMenu(3531);
-                        Plr->Gossip_SendPOI(129);
+                        Plr->Gossip_SendSQLPOI(129);
                     }
                     break;
 
                 case 25: //Engineering
                     {
                         SendQuickMenu(3532);
-                        Plr->Gossip_SendPOI(130);
+                        Plr->Gossip_SendSQLPOI(130);
                     }
                     break;
 
                 case 26: //First Aid
                     {
                         SendQuickMenu(3533);
-                        Plr->Gossip_SendPOI(131);
+                        Plr->Gossip_SendSQLPOI(131);
                     }
                     break;
 
                 case 27: //Fishing
                     {
                         SendQuickMenu(3534);
-                        Plr->Gossip_SendPOI(132);
+                        Plr->Gossip_SendSQLPOI(132);
                     }
                     break;
 
                 case 28: //Herbalism
                     {
                         SendQuickMenu(3535);
-                        Plr->Gossip_SendPOI(133);
+                        Plr->Gossip_SendSQLPOI(133);
                     }
                     break;
 
                 case 29: //Inscription
                     {
                         SendQuickMenu(14914);
-                        Plr->Gossip_SendPOI(134);
+                        Plr->Gossip_SendSQLPOI(134);
                     }
                     break;
 
                 case 30: //Leatherworking
                     {
                         SendQuickMenu(3536);
-                        Plr->Gossip_SendPOI(135);
+                        Plr->Gossip_SendSQLPOI(135);
                     }
                     break;
 
                 case 31: //Mining
                     {
                         SendQuickMenu(3537);
-                        Plr->Gossip_SendPOI(136);
+                        Plr->Gossip_SendSQLPOI(136);
                     }
                     break;
 
                 case 32: //Skinning
                     {
                         SendQuickMenu(3538);
-                        Plr->Gossip_SendPOI(137);
+                        Plr->Gossip_SendSQLPOI(137);
                     }
                     break;
 
                 case 33: //Tailoring
                     {
                         SendQuickMenu(3539);
-                        Plr->Gossip_SendPOI(138);
+                        Plr->Gossip_SendSQLPOI(138);
                     }
                     break;
 
@@ -1471,14 +1471,14 @@ class TeldrassilGuard : public GossipScript
 
                 case 4:        // The Inn
                     {
-                        Plr->Gossip_SendPOI(139);
+                        Plr->Gossip_SendSQLPOI(139);
                         SendQuickMenu(4320);
                     }
                     break;
 
                 case 5:        // Stable Master
                     {
-                        Plr->Gossip_SendPOI(140);
+                        Plr->Gossip_SendSQLPOI(140);
                         SendQuickMenu(5982);
                     }
                     break;
@@ -1514,63 +1514,63 @@ class TeldrassilGuard : public GossipScript
 
                 case 8: //Druid
                     {
-                        Plr->Gossip_SendPOI(141);
+                        Plr->Gossip_SendSQLPOI(141);
                         SendQuickMenu(4323);
                     }
                     break;
 
                 case 9: // Hunter
                     {
-                        Plr->Gossip_SendPOI(142);
+                        Plr->Gossip_SendSQLPOI(142);
                         SendQuickMenu(4324);
                     }
                     break;
 
                 case 10: // Priest
                     {
-                        Plr->Gossip_SendPOI(143);
+                        Plr->Gossip_SendSQLPOI(143);
                         SendQuickMenu(4325);
                     }
                     break;
 
                 case 11: // Rogue
                     {
-                        Plr->Gossip_SendPOI(144);
+                        Plr->Gossip_SendSQLPOI(144);
                         SendQuickMenu(4326);
                     }
                     break;
 
                 case 12: // Warrior
                     {
-                        Plr->Gossip_SendPOI(145);
+                        Plr->Gossip_SendSQLPOI(145);
                         SendQuickMenu(4327);
                     }
                     break;
 
                 case 13: // Alchemy
                     {
-                        Plr->Gossip_SendPOI(146);
+                        Plr->Gossip_SendSQLPOI(146);
                         SendQuickMenu(4329);
                     }
                     break;
 
                 case 14: // Cooking
                     {
-                        Plr->Gossip_SendPOI(147);
+                        Plr->Gossip_SendSQLPOI(147);
                         SendQuickMenu(4330);
                     }
                     break;
 
                 case 15: // Enchanting
                     {
-                        Plr->Gossip_SendPOI(148);
+                        Plr->Gossip_SendSQLPOI(148);
                         SendQuickMenu(4331);
                     }
                     break;
 
                 case 16: // First Aid
                     {
-                        Plr->Gossip_SendPOI(149);
+                        Plr->Gossip_SendSQLPOI(149);
                         SendQuickMenu(4332);
                     }
                     break;
@@ -1583,28 +1583,28 @@ class TeldrassilGuard : public GossipScript
 
                 case 18: // Herbalism
                     {
-                        Plr->Gossip_SendPOI(150);
+                        Plr->Gossip_SendSQLPOI(150);
                         SendQuickMenu(4334);
                     }
                     break;
 
                 case 19: // Inscription
                     {
-                        Plr->Gossip_SendPOI(151);
+                        Plr->Gossip_SendSQLPOI(151);
                         SendQuickMenu(13886);
                     }
                     break;
 
                 case 20: // Leatherworking
                     {
-                        Plr->Gossip_SendPOI(152);
+                        Plr->Gossip_SendSQLPOI(152);
                         SendQuickMenu(4335);
                     }
                     break;
 
                 case 21: // Skinning
                     {
-                        Plr->Gossip_SendPOI(153);
+                        Plr->Gossip_SendSQLPOI(153);
                         SendQuickMenu(4336);
                     }
                     break;
@@ -1677,14 +1677,14 @@ class SilvermoonGuard : public GossipScript
                 case 3:     // Dragonhawk Master
                     {
                         SendQuickMenu(9323);
-                        Plr->Gossip_SendPOI(154);
+                        Plr->Gossip_SendSQLPOI(154);
                     }
                     break;
 
                 case 4:     // Guild Master
                     {
                         SendQuickMenu(9324);
-                        Plr->Gossip_SendPOI(155);
+                        Plr->Gossip_SendSQLPOI(155);
                     }
                     break;
 
@@ -1702,28 +1702,28 @@ class SilvermoonGuard : public GossipScript
                 case 6:     // Mailbox
                     {
                         SendQuickMenu(9326);
-                        Plr->Gossip_SendPOI(156);
+                        Plr->Gossip_SendSQLPOI(156);
                     }
                     break;
 
                 case 7:     // Stable Master
                     {
                         SendQuickMenu(9327);
-                        Plr->Gossip_SendPOI(157);
+                        Plr->Gossip_SendSQLPOI(157);
                     }
                     break;
 
                 case 8:     // Weapon Master
                     {
                         SendQuickMenu(9328);
-                        Plr->Gossip_SendPOI(158);
+                        Plr->Gossip_SendSQLPOI(158);
                     }
                     break;
 
                 case 9:     // Battlemasters
                     {
                         SendQuickMenu(9329);
-                        Plr->Gossip_SendPOI(159);
+                        Plr->Gossip_SendSQLPOI(159);
                     }
                     break;
 
@@ -1768,21 +1768,21 @@ class SilvermoonGuard : public GossipScript
 
                 case 12: //Mana Loom
                     {
-                        Plr->Gossip_SendPOI(160);
+                        Plr->Gossip_SendSQLPOI(160);
                         SendQuickMenu(10502);
                     }
                     break;
 
                 case 13: //To the west - Auction House no. 1
                     {
-                        Plr->Gossip_SendPOI(161);
+                        Plr->Gossip_SendSQLPOI(161);
                         SendQuickMenu(9318);
                     }
                     break;
 
                 case 14: //To the east - Auction House no. 2
                     {
-                        Plr->Gossip_SendPOI(162);
+                        Plr->Gossip_SendSQLPOI(162);
                         SendQuickMenu(9319);
                     }
                     break;
@@ -1790,179 +1790,179 @@ class SilvermoonGuard : public GossipScript
                 case 15:     // The bank - The west.
                     {
                         SendQuickMenu(9321);
-                        Plr->Gossip_SendPOI(163);
+                        Plr->Gossip_SendSQLPOI(163);
                     }
                     break;
 
                 case 16:     // The bank - The east.
                     {
                         SendQuickMenu(9322);
-                        Plr->Gossip_SendPOI(164);
+                        Plr->Gossip_SendSQLPOI(164);
                     }
                     break;
 
                 case 17: //The Silvermoon City Inn
                     {
-                        Plr->Gossip_SendPOI(165);
+                        Plr->Gossip_SendSQLPOI(165);
                         SendQuickMenu(9325);
                     }
                     break;
 
                 case 18: //The Wayfarer's Rest tavern
                     {
-                        Plr->Gossip_SendPOI(166);
+                        Plr->Gossip_SendSQLPOI(166);
                         SendQuickMenu(9603);
                     }
                     break;
 
                 case 19: //Druid
                     {
-                        Plr->Gossip_SendPOI(167);
+                        Plr->Gossip_SendSQLPOI(167);
                         SendQuickMenu(9330);
                     }
                     break;
 
                 case 20: //Hunter
                     {
-                        Plr->Gossip_SendPOI(168);
+                        Plr->Gossip_SendSQLPOI(168);
                         SendQuickMenu(9332);
                     }
                     break;
 
                 case 21: //Mage
                     {
-                        Plr->Gossip_SendPOI(169);
+                        Plr->Gossip_SendSQLPOI(169);
                         SendQuickMenu(9333);
                     }
                     break;
 
                 case 22: //Paladin
                     {
-                        Plr->Gossip_SendPOI(170);
+                        Plr->Gossip_SendSQLPOI(170);
                         SendQuickMenu(9334);
                     }
                     break;
 
                 case 23: //Priest
                     {
-                        Plr->Gossip_SendPOI(171);
+                        Plr->Gossip_SendSQLPOI(171);
                         SendQuickMenu(9335);
                     }
                     break;
 
                 case 24: //Rogue
                     {
-                        Plr->Gossip_SendPOI(172);
+                        Plr->Gossip_SendSQLPOI(172);
                         SendQuickMenu(9336);
                     }
                     break;
 
                 case 25: //Warlock
                     {
-                        Plr->Gossip_SendPOI(173);
+                        Plr->Gossip_SendSQLPOI(173);
                         SendQuickMenu(9337);
                     }
                     break;
 
                 case 26: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(174);
+                        Plr->Gossip_SendSQLPOI(174);
                         SendQuickMenu(9339);
                     }
                     break;
 
                 case 27: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(175);
+                        Plr->Gossip_SendSQLPOI(175);
                         SendQuickMenu(9340);
                     }
                     break;
 
                 case 28: //Cooking
                     {
-                        Plr->Gossip_SendPOI(176);
+                        Plr->Gossip_SendSQLPOI(176);
                         SendQuickMenu(9624);
                     }
                     break;
 
                 case 29: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(177);
+                        Plr->Gossip_SendSQLPOI(177);
                         SendQuickMenu(9341);
                     }
                     break;
 
                 case 30: //Engineering
                     {
-                        Plr->Gossip_SendPOI(178);
+                        Plr->Gossip_SendSQLPOI(178);
                         SendQuickMenu(9342);
                     }
                     break;
 
                 case 31: //First Aid
                     {
-                        Plr->Gossip_SendPOI(179);
+                        Plr->Gossip_SendSQLPOI(179);
                         SendQuickMenu(9343);
                     }
                     break;
 
                 case 32: //Fishing
                     {
-                        Plr->Gossip_SendPOI(180);
+                        Plr->Gossip_SendSQLPOI(180);
                         SendQuickMenu(9344);
                     }
                     break;
 
                 case 33: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(181);
+                        Plr->Gossip_SendSQLPOI(181);
                         SendQuickMenu(9345);
                     }
                     break;
                 case 34: //Inscription
                     {
-                        Plr->Gossip_SendPOI(182);
+                        Plr->Gossip_SendSQLPOI(182);
                         SendQuickMenu(13893);
                     }
                     break;
 
                 case 35: //Jewelcrafting
                     {
-                        Plr->Gossip_SendPOI(183);
+                        Plr->Gossip_SendSQLPOI(183);
                         SendQuickMenu(9346);
                     }
                     break;
 
                 case 36: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(184);
+                        Plr->Gossip_SendSQLPOI(184);
                         SendQuickMenu(9347);
                     }
                     break;
 
                 case 37: //Mining
                     {
-                        Plr->Gossip_SendPOI(185);
+                        Plr->Gossip_SendSQLPOI(185);
                         SendQuickMenu(9348);
                     }
                     break;
 
                 case 38: //Skinning
                     {
-                        Plr->Gossip_SendPOI(186);
+                        Plr->Gossip_SendSQLPOI(186);
                         SendQuickMenu(9349);
                     }
                     break;
 
                 case 39: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(187);
+                        Plr->Gossip_SendSQLPOI(187);
                         SendQuickMenu(9350);
                     }
                     break;
                 case 40: //Lexicon of Power
                     {
-                        Plr->Gossip_SendPOI(188);
+                        Plr->Gossip_SendSQLPOI(188);
                         SendQuickMenu(14174);
                     }
                     break;
@@ -2006,62 +2006,62 @@ class ExodarGuard : public GossipScript
                 case 1:     // Auction House
                     {
                         SendQuickMenu(9528);
-                        Plr->Gossip_SendPOI(189);
+                        Plr->Gossip_SendSQLPOI(189);
                     }
                     break;
 
                 case 2:     // The Bank
                     {
                         SendQuickMenu(9529);
-                        Plr->Gossip_SendPOI(190);
+                        Plr->Gossip_SendSQLPOI(190);
                     }
                     break;
 
                 case 3:     // Hippogryph Master
                     {
                         SendQuickMenu(9530);
-                        Plr->Gossip_SendPOI(191);
+                        Plr->Gossip_SendSQLPOI(191);
                     }
                     break;
 
                 case 4:     // Guild Master
                     {
                         SendQuickMenu(9539);
-                        Plr->Gossip_SendPOI(192);
+                        Plr->Gossip_SendSQLPOI(192);
                     }
                     break;
 
                 case 5:     // The Inn
                     {
                         SendQuickMenu(9545);
-                        Plr->Gossip_SendPOI(193);
+                        Plr->Gossip_SendSQLPOI(193);
                     }
                     break;
 
                 case 6:     // Mailbox
                     {
                         SendQuickMenu(10254);
-                        Plr->Gossip_SendPOI(194);
+                        Plr->Gossip_SendSQLPOI(194);
                     }
                     break;
 
                 case 7:     // Stable Master
                     {
                         SendQuickMenu(9558);
-                        Plr->Gossip_SendPOI(195);
+                        Plr->Gossip_SendSQLPOI(195);
                     }
                     break;
 
                 case 8:     // Weapon Master
                     {
                         SendQuickMenu(9565);
-                        Plr->Gossip_SendPOI(196);
+                        Plr->Gossip_SendSQLPOI(196);
                     }
                     break;
 
                 case 9:     // Battlemasters
                     {
-                    Plr->Gossip_SendPOI(197);
+                    Plr->Gossip_SendSQLPOI(197);
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9531, Plr);
                     Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 12);
                     Menu->SendTo(Plr);
@@ -2107,161 +2107,161 @@ class ExodarGuard : public GossipScript
 
                 case 12://Arena Battlemaster Exodar
                     {
-                        Plr->Gossip_SendPOI(198);
+                        Plr->Gossip_SendSQLPOI(198);
                         SendQuickMenu(10223);
                     }
                     break;
 
                 case 13: //Druid
                     {
-                        Plr->Gossip_SendPOI(199);
+                        Plr->Gossip_SendSQLPOI(199);
                         SendQuickMenu(9534);
                     }
                     break;
 
                 case 14: //Hunter
                     {
-                        Plr->Gossip_SendPOI(200);
+                        Plr->Gossip_SendSQLPOI(200);
                         SendQuickMenu(9544);
                     }
                     break;
 
                 case 15: //Mage
                     {
-                        Plr->Gossip_SendPOI(201);
+                        Plr->Gossip_SendSQLPOI(201);
                         SendQuickMenu(9550);
                     }
                     break;
 
                 case 16: //Paladin
                     {
-                        Plr->Gossip_SendPOI(202);
+                        Plr->Gossip_SendSQLPOI(202);
                         SendQuickMenu(9553);
                     }
                     break;
 
                 case 17: //Priest
                     {
-                        Plr->Gossip_SendPOI(203);
+                        Plr->Gossip_SendSQLPOI(203);
                         SendQuickMenu(9554);
                     }
                     break;
 
                 case 18: //Shaman
                     {
-                        Plr->Gossip_SendPOI(204);
+                        Plr->Gossip_SendSQLPOI(204);
                         SendQuickMenu(9556);
                     }
                     break;
 
                 case 19: //Warrior
                     {
-                        Plr->Gossip_SendPOI(205);
+                        Plr->Gossip_SendSQLPOI(205);
                         SendQuickMenu(9562);
                     }
                     break;
 
                 case 20: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(206);
+                        Plr->Gossip_SendSQLPOI(206);
                         SendQuickMenu(9527);
                     }
                     break;
 
                 case 21: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(207);
+                        Plr->Gossip_SendSQLPOI(207);
                         SendQuickMenu(9532);
                     }
                     break;
 
                 case 22: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(208);
+                        Plr->Gossip_SendSQLPOI(208);
                         SendQuickMenu(9535);
                     }
                     break;
 
                 case 23: //Engineering
                     {
-                        Plr->Gossip_SendPOI(209);
+                        Plr->Gossip_SendSQLPOI(209);
                         SendQuickMenu(9536);
                     }
                     break;
 
                 case 24: //First Aid
                     {
-                        Plr->Gossip_SendPOI(210);
+                        Plr->Gossip_SendSQLPOI(210);
                         SendQuickMenu(9537);
                     }
                     break;
 
                 case 25: //Fishing
                     {
-                        Plr->Gossip_SendPOI(211);
+                        Plr->Gossip_SendSQLPOI(211);
                         SendQuickMenu(9538);
                     }
                     break;
 
                 case 26: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(212);
+                        Plr->Gossip_SendSQLPOI(212);
                         SendQuickMenu(9543);
                     }
                     break;
 
                 case 27: //Inscription
                     {
-                        Plr->Gossip_SendPOI(213);
+                        Plr->Gossip_SendSQLPOI(213);
                         SendQuickMenu(13887);
                     }
                     break;
 
                 case 28: //Jewelcrafting
                     {
-                        Plr->Gossip_SendPOI(214);
+                        Plr->Gossip_SendSQLPOI(214);
                         SendQuickMenu(9547);
                     }
                     break;
 
                 case 29: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(215);
+                        Plr->Gossip_SendSQLPOI(215);
                         SendQuickMenu(9549);
                     }
                     break;
 
                 case 30: //Mining
                     {
-                        Plr->Gossip_SendPOI(216);
+                        Plr->Gossip_SendSQLPOI(216);
                         SendQuickMenu(9552);
                     }
                     break;
 
                 case 31: //Skinning
                     {
-                        Plr->Gossip_SendPOI(217);
+                        Plr->Gossip_SendSQLPOI(217);
                         SendQuickMenu(9557);
                     }
                     break;
 
                 case 32: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(218);
+                        Plr->Gossip_SendSQLPOI(218);
                         SendQuickMenu(9350);
                     }
                     break;
 
                 case 33: //Cooking
                     {
-                        Plr->Gossip_SendPOI(219);
+                        Plr->Gossip_SendSQLPOI(219);
                         SendQuickMenu(9559);
                     }
                     break;
 
                 case 34: //Lexicon of Power
                     {
-                        Plr->Gossip_SendPOI(220);
+                        Plr->Gossip_SendSQLPOI(220);
                         SendQuickMenu(14174);
                     }
                     break;
@@ -2306,77 +2306,77 @@ class OrgrimmarGuard : public GossipScript
                 case 1:     // The bank
                     {
                         SendQuickMenu(2554);
-                        Plr->Gossip_SendPOI(221);
+                        Plr->Gossip_SendSQLPOI(221);
                     }
                     break;
 
                 case 2:     // The wind rider master
                     {
                         SendQuickMenu(2555);
-                        Plr->Gossip_SendPOI(222);
+                        Plr->Gossip_SendSQLPOI(222);
                     }
                     break;
 
                 case 3:     // The guild master
                     {
                         SendQuickMenu(2556);
-                        Plr->Gossip_SendPOI(223);
+                        Plr->Gossip_SendSQLPOI(223);
                     }
                     break;
 
                 case 4:     // The inn
                     {
                         SendQuickMenu(2557);
-                        Plr->Gossip_SendPOI(224);
+                        Plr->Gossip_SendSQLPOI(224);
                     }
                     break;
 
                 case 5:     // The mailbox
                     {
                         SendQuickMenu(2558);
-                        Plr->Gossip_SendPOI(225);
+                        Plr->Gossip_SendSQLPOI(225);
                     }
                     break;
 
                 case 6:     // The auction house
                     {
                         SendQuickMenu(3075);
-                        Plr->Gossip_SendPOI(226);
+                        Plr->Gossip_SendSQLPOI(226);
                     }
                     break;
 
                 case 7:     // The zeppelin master
                     {
                         SendQuickMenu(3173);
-                        Plr->Gossip_SendPOI(227);
+                        Plr->Gossip_SendSQLPOI(227);
                     }
                     break;
 
                 case 8:     // The weapon master
                     {
                         SendQuickMenu(4519);
-                        Plr->Gossip_SendPOI(228);
+                        Plr->Gossip_SendSQLPOI(228);
                     }
                     break;
 
                 case 9:     // The stable master
                     {
                         SendQuickMenu(5974);
-                        Plr->Gossip_SendPOI(229);
+                        Plr->Gossip_SendSQLPOI(229);
                     }
                     break;
 
                 case 10:    // The officers' lounge
                     {
                         SendQuickMenu(7046);
-                        Plr->Gossip_SendPOI(230);
+                        Plr->Gossip_SendSQLPOI(230);
                     }
                     break;
 
                 case 11:    // The battlemaster
                     {
                         SendQuickMenu(7521);
-                        Plr->Gossip_SendPOI(231);
+                        Plr->Gossip_SendSQLPOI(231);
                     }
                     break;
 
@@ -2420,140 +2420,140 @@ class OrgrimmarGuard : public GossipScript
 
                 case 14: //Hunter
                     {
-                        Plr->Gossip_SendPOI(232);
+                        Plr->Gossip_SendSQLPOI(232);
                         SendQuickMenu(2559);
                     }
                     break;
 
                 case 15: //Mage
                     {
-                        Plr->Gossip_SendPOI(233);
+                        Plr->Gossip_SendSQLPOI(233);
                         SendQuickMenu(2560);
                     }
                     break;
 
                 case 16: //Priest
                     {
-                        Plr->Gossip_SendPOI(234);
+                        Plr->Gossip_SendSQLPOI(234);
                         SendQuickMenu(2561);
                     }
                     break;
 
                 case 17: //Shaman
                     {
-                        Plr->Gossip_SendPOI(235);
+                        Plr->Gossip_SendSQLPOI(235);
                         SendQuickMenu(2562);
                     }
                     break;
 
                 case 18: //Rogue
                     {
-                        Plr->Gossip_SendPOI(236);
+                        Plr->Gossip_SendSQLPOI(236);
                         SendQuickMenu(2563);
                     }
                     break;
 
                 case 19: //Warlock
                     {
-                        Plr->Gossip_SendPOI(237);
+                        Plr->Gossip_SendSQLPOI(237);
                         SendQuickMenu(2564);
                     }
                     break;
 
                 case 20: //Warrior
                     {
-                        Plr->Gossip_SendPOI(238);
+                        Plr->Gossip_SendSQLPOI(238);
                         SendQuickMenu(2565);
                     }
                     break;
 
                 case 21: //Paladin
                     {
-                        Plr->Gossip_SendPOI(239);
+                        Plr->Gossip_SendSQLPOI(239);
                         SendQuickMenu(2566);
                     }
                     break;
 
                 case 22: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(340);
+                        Plr->Gossip_SendSQLPOI(340);
                         SendQuickMenu(2497);
                     }
                     break;
 
                 case 23: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(241);
+                        Plr->Gossip_SendSQLPOI(241);
                         SendQuickMenu(2499);
                     }
                     break;
 
                 case 24: //Cooking
                     {
-                        Plr->Gossip_SendPOI(242);
+                        Plr->Gossip_SendSQLPOI(242);
                         SendQuickMenu(2500);
                     }
                     break;
 
                 case 25: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(243);
+                        Plr->Gossip_SendSQLPOI(243);
                         SendQuickMenu(2501);
                     }
                     break;
 
                 case 26: //Engineering
                     {
-                        Plr->Gossip_SendPOI(244);
+                        Plr->Gossip_SendSQLPOI(244);
                         SendQuickMenu(2653);
                     }
                     break;
 
                 case 27: //First Aid
                     {
-                        Plr->Gossip_SendPOI(245);
+                        Plr->Gossip_SendSQLPOI(245);
                         SendQuickMenu(2502);
                     }
                     break;
 
                 case 28: //Fishing
                     {
-                        Plr->Gossip_SendPOI(246);
+                        Plr->Gossip_SendSQLPOI(246);
                         SendQuickMenu(2503);
                     }
                     break;
 
                 case 29: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(247);
+                        Plr->Gossip_SendSQLPOI(247);
                         SendQuickMenu(2504);
                     }
                     break;
 
                 case 30: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(248);
+                        Plr->Gossip_SendSQLPOI(248);
                         SendQuickMenu(2513);
                     }
                     break;
 
                 case 31: //Mining
                     {
-                        Plr->Gossip_SendPOI(249);
+                        Plr->Gossip_SendSQLPOI(249);
                         SendQuickMenu(2515);
                     }
                     break;
 
                 case 32: //Skinning
                     {
-                        Plr->Gossip_SendPOI(250);
+                        Plr->Gossip_SendSQLPOI(250);
                         SendQuickMenu(2516);
                     }
                     break;
 
                 case 33: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(251);
+                        Plr->Gossip_SendSQLPOI(251);
                         SendQuickMenu(2518);
                     }
                     break;
@@ -2596,63 +2596,63 @@ class ThunderbluffGuard : public GossipScript
                 case 1:     // The bank
                     {
                         SendQuickMenu(1292);
-                        Plr->Gossip_SendPOI(252);
+                        Plr->Gossip_SendSQLPOI(252);
                     }
                     break;
 
                 case 2:     // The wind rider master
                     {
                         SendQuickMenu(1293);
-                        Plr->Gossip_SendPOI(253);
+                        Plr->Gossip_SendSQLPOI(253);
                     }
                     break;
 
                 case 3:     // The guild master
                     {
                         SendQuickMenu(1291);
-                        Plr->Gossip_SendPOI(254);
+                        Plr->Gossip_SendSQLPOI(254);
                     }
                     break;
 
                 case 4:     // The inn
                     {
                         SendQuickMenu(3153);
-                        Plr->Gossip_SendPOI(255);
+                        Plr->Gossip_SendSQLPOI(255);
                     }
                     break;
 
                 case 5:     // The mailbox
                     {
                         SendQuickMenu(3154);
-                        Plr->Gossip_SendPOI(256);
+                        Plr->Gossip_SendSQLPOI(256);
                     }
                     break;
 
                 case 6:     // The auction house
                     {
                         SendQuickMenu(3155);
-                        Plr->Gossip_SendPOI(257);
+                        Plr->Gossip_SendSQLPOI(257);
                     }
                     break;
 
                 case 7:     // The weapon master
                     {
                         SendQuickMenu(4520);
-                        Plr->Gossip_SendPOI(258);
+                        Plr->Gossip_SendSQLPOI(258);
                     }
                     break;
 
                 case 8:     // The stable master
                     {
                         SendQuickMenu(5977);
-                        Plr->Gossip_SendPOI(259);
+                        Plr->Gossip_SendSQLPOI(259);
                     }
                     break;
 
                 case 9:    // The battlemaster
                     {
                         SendQuickMenu(7527);
-                        Plr->Gossip_SendPOI(260);
+                        Plr->Gossip_SendSQLPOI(260);
                     }
                     break;
 
@@ -2689,119 +2689,119 @@ class ThunderbluffGuard : public GossipScript
 
                 case 12: //Druid
                     {
-                        Plr->Gossip_SendPOI(261);
+                        Plr->Gossip_SendSQLPOI(261);
                         SendQuickMenu(1294);
                     }
                     break;
 
                 case 13: //Hunter
                     {
-                        Plr->Gossip_SendPOI(262);
+                        Plr->Gossip_SendSQLPOI(262);
                         SendQuickMenu(1295);
                     }
                     break;
 
                 case 14: //Mage
                     {
-                        Plr->Gossip_SendPOI(263);
+                        Plr->Gossip_SendSQLPOI(263);
                         SendQuickMenu(1296);
                     }
                     break;
 
                 case 15: //Priest
                     {
-                        Plr->Gossip_SendPOI(264);
+                        Plr->Gossip_SendSQLPOI(264);
                         SendQuickMenu(1297);
                     }
                     break;
 
                 case 16: //Shaman
                     {
-                        Plr->Gossip_SendPOI(265);
+                        Plr->Gossip_SendSQLPOI(265);
                         SendQuickMenu(1298);
                     }
                     break;
 
                 case 17: //Warrior
                     {
-                        Plr->Gossip_SendPOI(266);
+                        Plr->Gossip_SendSQLPOI(266);
                         SendQuickMenu(1299);
                     }
                     break;
 
                 case 18: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(267);
+                        Plr->Gossip_SendSQLPOI(267);
                         SendQuickMenu(1332);
                     }
                     break;
 
                 case 19: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(268);
+                        Plr->Gossip_SendSQLPOI(268);
                         SendQuickMenu(1333);
                     }
                     break;
 
                 case 20: //Cooking
                     {
-                        Plr->Gossip_SendPOI(269);
+                        Plr->Gossip_SendSQLPOI(269);
                         SendQuickMenu(1334);
                     }
                     break;
 
                 case 21: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(270);
+                        Plr->Gossip_SendSQLPOI(270);
                         SendQuickMenu(1335);
                     }
                     break;
 
                 case 22: //First Aid
                     {
-                        Plr->Gossip_SendPOI(271);
+                        Plr->Gossip_SendSQLPOI(271);
                         SendQuickMenu(1336);
                     }
                     break;
 
                 case 23: //Fishing
                     {
-                        Plr->Gossip_SendPOI(272);
+                        Plr->Gossip_SendSQLPOI(272);
                         SendQuickMenu(1337);
                     }
                     break;
 
                 case 24: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(273);
+                        Plr->Gossip_SendSQLPOI(273);
                         SendQuickMenu(1338);
                     }
                     break;
 
                 case 25: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(274);
+                        Plr->Gossip_SendSQLPOI(274);
                         SendQuickMenu(1339);
                     }
                     break;
 
                 case 26: //Mining
                     {
-                        Plr->Gossip_SendPOI(275);
+                        Plr->Gossip_SendSQLPOI(275);
                         SendQuickMenu(1340);
                     }
                     break;
 
                 case 27: //Skinning
                     {
-                        Plr->Gossip_SendPOI(276);
+                        Plr->Gossip_SendSQLPOI(276);
                         SendQuickMenu(1343);
                     }
                     break;
 
                 case 28: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(277);
+                        Plr->Gossip_SendSQLPOI(277);
                         SendQuickMenu(1341);
                     }
                     break;
@@ -2851,14 +2851,14 @@ class BloodhoofGuard : public GossipScript
                 case 3:     // The inn
                     {
                         SendQuickMenu(4053);
-                        Plr->Gossip_SendPOI(278);
+                        Plr->Gossip_SendSQLPOI(278);
                     }
                     break;
 
                 case 4:     // The stable master
                     {
                         SendQuickMenu(5976);
-                        Plr->Gossip_SendPOI(279);
+                        Plr->Gossip_SendSQLPOI(279);
                     }
                     break;
 
@@ -2897,28 +2897,28 @@ class BloodhoofGuard : public GossipScript
 
                 case 7: //Druid
                     {
-                        Plr->Gossip_SendPOI(280);
+                        Plr->Gossip_SendSQLPOI(280);
                         SendQuickMenu(4054);
                     }
                     break;
 
                 case 8: //Hunter
                     {
-                        Plr->Gossip_SendPOI(281);
+                        Plr->Gossip_SendSQLPOI(281);
                         SendQuickMenu(4055);
                     }
                     break;
 
                 case 9: //Shaman
                     {
-                        Plr->Gossip_SendPOI(282);
+                        Plr->Gossip_SendSQLPOI(282);
                         SendQuickMenu(4056);
                     }
                     break;
 
                 case 10: //Warrior
                     {
-                        Plr->Gossip_SendPOI(283);
+                        Plr->Gossip_SendSQLPOI(283);
                         SendQuickMenu(4057);
                     }
                     break;
@@ -2937,7 +2937,7 @@ class BloodhoofGuard : public GossipScript
 
                 case 13: //Cooking
                     {
-                        Plr->Gossip_SendPOI(284);
+                        Plr->Gossip_SendSQLPOI(284);
                         SendQuickMenu(4060);
                     }
                     break;
@@ -2950,14 +2950,14 @@ class BloodhoofGuard : public GossipScript
 
                 case 15: //First Aid
                     {
-                        Plr->Gossip_SendPOI(285);
+                        Plr->Gossip_SendSQLPOI(285);
                         SendQuickMenu(4062);
                     }
                     break;
 
                 case 16: //Fishing
                     {
-                        Plr->Gossip_SendPOI(286);
+                        Plr->Gossip_SendSQLPOI(286);
                         SendQuickMenu(4063);
                     }
                     break;
@@ -2970,7 +2970,7 @@ class BloodhoofGuard : public GossipScript
 
                 case 18: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(287);
+                        Plr->Gossip_SendSQLPOI(287);
                         SendQuickMenu(4065);
                     }
                     break;
@@ -2983,7 +2983,7 @@ class BloodhoofGuard : public GossipScript
 
                 case 20: //Skinning
                     {
-                        Plr->Gossip_SendPOI(288);
+                        Plr->Gossip_SendSQLPOI(288);
                         SendQuickMenu(4067);
                     }
                     break;
@@ -3039,14 +3039,14 @@ class RazorHillGuard : public GossipScript
                 case 3:     // The inn
                     {
                         SendQuickMenu(4034);
-                        Plr->Gossip_SendPOI(289);
+                        Plr->Gossip_SendSQLPOI(289);
                     }
                     break;
 
                 case 4:     // The stable master
                     {
                         SendQuickMenu(5973);
-                        Plr->Gossip_SendPOI(290);
+                        Plr->Gossip_SendSQLPOI(290);
                     }
                     break;
 
@@ -3089,63 +3089,63 @@ class RazorHillGuard : public GossipScript
 
                 case 7: //Hunter
                     {
-                        Plr->Gossip_SendPOI(291);
+                        Plr->Gossip_SendSQLPOI(291);
                         SendQuickMenu(4013);
                     }
                     break;
 
                 case 8: //Mage
                     {
-                        Plr->Gossip_SendPOI(292);
+                        Plr->Gossip_SendSQLPOI(292);
                         SendQuickMenu(4014);
                     }
                     break;
 
                 case 9: //Priest
                     {
-                        Plr->Gossip_SendPOI(293);
+                        Plr->Gossip_SendSQLPOI(293);
                         SendQuickMenu(4015);
                     }
                     break;
 
                 case 10: //Rogue
                     {
-                        Plr->Gossip_SendPOI(294);
+                        Plr->Gossip_SendSQLPOI(294);
                         SendQuickMenu(4016);
                     }
                     break;
 
                 case 11: //Shaman
                     {
-                        Plr->Gossip_SendPOI(295);
+                        Plr->Gossip_SendSQLPOI(295);
                         SendQuickMenu(4017);
                     }
                     break;
 
                 case 12: //Warlock
                     {
-                        Plr->Gossip_SendPOI(296);
+                        Plr->Gossip_SendSQLPOI(296);
                         SendQuickMenu(4018);
                     }
                     break;
 
                 case 13: //Warrior
                     {
-                        Plr->Gossip_SendPOI(297);
+                        Plr->Gossip_SendSQLPOI(297);
                         SendQuickMenu(4019);
                     }
                     break;
 
                 case 14: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(298);
+                        Plr->Gossip_SendSQLPOI(298);
                         SendQuickMenu(4020);
                     }
                     break;
 
                 case 15: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(299);
+                        Plr->Gossip_SendSQLPOI(299);
                         SendQuickMenu(4021);
                     }
                     break;
@@ -3164,28 +3164,28 @@ class RazorHillGuard : public GossipScript
 
                 case 18: //Engineering
                     {
-                        Plr->Gossip_SendPOI(300);
+                        Plr->Gossip_SendSQLPOI(300);
                         SendQuickMenu(4024);
                     }
                     break;
 
                 case 19: //First Aid
                     {
-                        Plr->Gossip_SendPOI(301);
+                        Plr->Gossip_SendSQLPOI(301);
                         SendQuickMenu(4025);
                     }
                     break;
 
                 case 20: //Fishing
                     {
-                        Plr->Gossip_SendPOI(302);
+                        Plr->Gossip_SendSQLPOI(302);
                         SendQuickMenu(4026);
                     }
                     break;
 
                 case 21: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(303);
+                        Plr->Gossip_SendSQLPOI(303);
                         SendQuickMenu(4027);
                     }
                     break;
@@ -3198,14 +3198,14 @@ class RazorHillGuard : public GossipScript
 
                 case 23: //Mining
                     {
-                        Plr->Gossip_SendPOI(304);
+                        Plr->Gossip_SendSQLPOI(304);
                         SendQuickMenu(4029);
                     }
                     break;
 
                 case 24: //Skinning
                     {
-                        Plr->Gossip_SendPOI(305);
+                        Plr->Gossip_SendSQLPOI(305);
                         SendQuickMenu(4030);
                     }
                     break;
@@ -3261,14 +3261,14 @@ class BrillGuard : public GossipScript
                 case 3:     // The inn
                     {
                         SendQuickMenu(4076);
-                        Plr->Gossip_SendPOI(306);
+                        Plr->Gossip_SendSQLPOI(306);
                     }
                     break;
 
                 case 4:     // The stable master
                     {
                         SendQuickMenu(5978);
-                        Plr->Gossip_SendPOI(307);
+                        Plr->Gossip_SendSQLPOI(307);
                     }
                     break;
 
@@ -3310,7 +3310,7 @@ class BrillGuard : public GossipScript
 
                 case 7: //Mage
                     {
-                        Plr->Gossip_SendPOI(308);
+                        Plr->Gossip_SendSQLPOI(308);
                         SendQuickMenu(4077);
                     }
                     break;
@@ -3323,35 +3323,35 @@ class BrillGuard : public GossipScript
 
                 case 9: //Priest
                     {
-                        Plr->Gossip_SendPOI(309);
+                        Plr->Gossip_SendSQLPOI(309);
                         SendQuickMenu(4078);
                     }
                     break;
 
                 case 10: //Rogue
                     {
-                        Plr->Gossip_SendPOI(310);
+                        Plr->Gossip_SendSQLPOI(310);
                         SendQuickMenu(4079);
                     }
                     break;
 
                 case 11: //Warlock
                     {
-                        Plr->Gossip_SendPOI(311);
+                        Plr->Gossip_SendSQLPOI(311);
                         SendQuickMenu(4080);
                     }
                     break;
 
                 case 12: //Warrior
                     {
-                        Plr->Gossip_SendPOI(312);
+                        Plr->Gossip_SendSQLPOI(312);
                         SendQuickMenu(4081);
                     }
                     break;
 
                 case 13: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(313);
+                        Plr->Gossip_SendSQLPOI(313);
                         SendQuickMenu(4082);
                     }
                     break;
@@ -3370,7 +3370,7 @@ class BrillGuard : public GossipScript
 
                 case 16: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(314);
+                        Plr->Gossip_SendSQLPOI(314);
                         SendQuickMenu(4085);
                     }
                     break;
@@ -3383,28 +3383,28 @@ class BrillGuard : public GossipScript
 
                 case 18: //First Aid
                     {
-                        Plr->Gossip_SendPOI(315);
+                        Plr->Gossip_SendSQLPOI(315);
                         SendQuickMenu(4087);
                     }
                     break;
 
                 case 19: //Fishing
                     {
-                        Plr->Gossip_SendPOI(316);
+                        Plr->Gossip_SendSQLPOI(316);
                         SendQuickMenu(4088);
                     }
                     break;
 
                 case 20: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(317);
+                        Plr->Gossip_SendSQLPOI(317);
                         SendQuickMenu(4089);
                     }
                     break;
 
                 case 21: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(318);
+                        Plr->Gossip_SendSQLPOI(318);
                         SendQuickMenu(4090);
                     }
                     break;
@@ -3417,14 +3417,14 @@ class BrillGuard : public GossipScript
 
                 case 23: //Skinning
                     {
-                        Plr->Gossip_SendPOI(319);
+                        Plr->Gossip_SendSQLPOI(319);
                         SendQuickMenu(4092);
                     }
                     break;
 
                 case 24: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(320);
+                        Plr->Gossip_SendSQLPOI(320);
                         SendQuickMenu(4093);
                     }
                     break;
@@ -3470,77 +3470,77 @@ class IronforgeGuard : public GossipScript
                 case 1:     // Auction House
                     {
                         SendQuickMenu(3014);
-                        Plr->Gossip_SendPOI(321);
+                        Plr->Gossip_SendSQLPOI(321);
                     }
                     break;
 
                 case 2:     // Bank of Ironforge
                     {
                         SendQuickMenu(2761);
-                        Plr->Gossip_SendPOI(322);
+                        Plr->Gossip_SendSQLPOI(322);
                     }
                     break;
 
                 case 3:     // Deeprun Tram
                     {
                         SendQuickMenu(3814);
-                        Plr->Gossip_SendPOI(323);
+                        Plr->Gossip_SendSQLPOI(323);
                     }
                     break;
 
                 case 4:     // Gryphon Master
                     {
                         SendQuickMenu(2762);
-                        Plr->Gossip_SendPOI(324);
+                        Plr->Gossip_SendSQLPOI(324);
                     }
                     break;
 
                 case 5:     // Guild Master
                     {
                         SendQuickMenu(2764);
-                        Plr->Gossip_SendPOI(325);
+                        Plr->Gossip_SendSQLPOI(325);
                     }
                     break;
 
                 case 6:     // The Inn
                     {
                         SendQuickMenu(2768);
-                        Plr->Gossip_SendPOI(326);
+                        Plr->Gossip_SendSQLPOI(326);
                     }
                     break;
 
                 case 7:     // Mailbox
                     {
                         SendQuickMenu(2769);
-                        Plr->Gossip_SendPOI(327);
+                        Plr->Gossip_SendSQLPOI(327);
                     }
                     break;
 
                 case 8:     // Stable Master
                     {
                         SendQuickMenu(5986);
-                        Plr->Gossip_SendPOI(328);
+                        Plr->Gossip_SendSQLPOI(328);
                     }
                     break;
 
                 case 9:    // Weapon Trainer
                     {
                         SendQuickMenu(4518);
-                        Plr->Gossip_SendPOI(329);
+                        Plr->Gossip_SendSQLPOI(329);
                     }
                     break;
 
                 case 10:    // Battlemaster
                     {
                         SendQuickMenu(10216);
-                        Plr->Gossip_SendPOI(330);
+                        Plr->Gossip_SendSQLPOI(330);
                     }
                     break;
 
                 case 11:    // Barber
                     {
                         SendQuickMenu(13885);
-                        Plr->Gossip_SendPOI(331);
+                        Plr->Gossip_SendSQLPOI(331);
                     }
                     break;
 
@@ -3584,154 +3584,154 @@ class IronforgeGuard : public GossipScript
 
                 case 14: //Hunter
                     {
-                        Plr->Gossip_SendPOI(332);
+                        Plr->Gossip_SendSQLPOI(332);
                         SendQuickMenu(2770);
                     }
                     break;
 
                 case 15: //Mage
                     {
-                        Plr->Gossip_SendPOI(333);
+                        Plr->Gossip_SendSQLPOI(333);
                         SendQuickMenu(2771);
                     }
                     break;
 
                 case 16: //Paladin
                     {
-                        Plr->Gossip_SendPOI(334);
+                        Plr->Gossip_SendSQLPOI(334);
                         SendQuickMenu(2773);
                     }
                     break;
 
                 case 17: //Priest
                     {
-                        Plr->Gossip_SendPOI(335);
+                        Plr->Gossip_SendSQLPOI(335);
                         SendQuickMenu(2772);
                     }
                     break;
 
                 case 18: //Rogue
                     {
-                        Plr->Gossip_SendPOI(336);
+                        Plr->Gossip_SendSQLPOI(336);
                         SendQuickMenu(2774);
                     }
                     break;
 
                 case 19: //Warlock
                     {
-                        Plr->Gossip_SendPOI(337);
+                        Plr->Gossip_SendSQLPOI(337);
                         SendQuickMenu(2775);
                     }
                     break;
 
                 case 20: //Warrior
                     {
-                        Plr->Gossip_SendPOI(338);
+                        Plr->Gossip_SendSQLPOI(338);
                         SendQuickMenu(2776);
                     }
                     break;
 
                 case 21: //Shaman
                     {
-                        Plr->Gossip_SendPOI(339);
+                        Plr->Gossip_SendSQLPOI(339);
                         SendQuickMenu(10842);
                     }
                     break;
 
                 case 22: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(340);
+                        Plr->Gossip_SendSQLPOI(340);
                         SendQuickMenu(2794);
                     }
                     break;
 
                 case 23: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(341);
+                        Plr->Gossip_SendSQLPOI(341);
                         SendQuickMenu(2795);
                     }
                     break;
 
                 case 24: //Cooking
                     {
-                        Plr->Gossip_SendPOI(342);
+                        Plr->Gossip_SendSQLPOI(342);
                         SendQuickMenu(2796);
                     }
                     break;
 
                 case 25: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(343);
+                        Plr->Gossip_SendSQLPOI(343);
                         SendQuickMenu(2797);
                     }
                     break;
 
                 case 26: //Engineering
                     {
-                        Plr->Gossip_SendPOI(344);
+                        Plr->Gossip_SendSQLPOI(344);
                         SendQuickMenu(2798);
                     }
                     break;
 
                 case 27: //First Aid
                     {
-                        Plr->Gossip_SendPOI(345);
+                        Plr->Gossip_SendSQLPOI(345);
                         SendQuickMenu(2799);
                     }
                     break;
 
                 case 28: //Fishing
                     {
-                        Plr->Gossip_SendPOI(346);
+                        Plr->Gossip_SendSQLPOI(346);
                         SendQuickMenu(2800);
                     }
                     break;
 
                 case 29: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(347);
+                        Plr->Gossip_SendSQLPOI(347);
                         SendQuickMenu(2801);
                     }
                     break;
 
                 case 30: //Inscription
                     {
-                        Plr->Gossip_SendPOI(348);
+                        Plr->Gossip_SendSQLPOI(348);
                         SendQuickMenu(13884);
                     }
                     break;
 
                 case 31: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(349);
+                        Plr->Gossip_SendSQLPOI(349);
                         SendQuickMenu(2802);
                     }
                     break;
 
                 case 32: //Mining
                     {
-                        Plr->Gossip_SendPOI(350);
+                        Plr->Gossip_SendSQLPOI(350);
                         SendQuickMenu(2804);
                     }
                     break;
 
                 case 33: //Skinning
                     {
-                        Plr->Gossip_SendPOI(351);
+                        Plr->Gossip_SendSQLPOI(351);
                         SendQuickMenu(2805);
                     }
                     break;
 
                 case 34: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(352);
+                        Plr->Gossip_SendSQLPOI(352);
                         SendQuickMenu(2807);
                     }
                     break;
 
                 case 35: //Lexicon of Power
                     {
-                        Plr->Gossip_SendPOI(353);
+                        Plr->Gossip_SendSQLPOI(353);
                         SendQuickMenu(14174);
                     }
                     break;
@@ -3788,14 +3788,14 @@ class KharanosGuard : public GossipScript
                 case 4:     //The Inn
                     {
                         SendQuickMenu(4291);
-                        Plr->Gossip_SendPOI(354);
+                        Plr->Gossip_SendSQLPOI(354);
                     }
                     break;
 
                 case 5:     //Stable Master
                     {
                         SendQuickMenu(5985);
-                        Plr->Gossip_SendPOI(355);
+                        Plr->Gossip_SendSQLPOI(355);
                     }
                     break;
 
@@ -3839,49 +3839,49 @@ class KharanosGuard : public GossipScript
 
                 case 8: //Hunter
                     {
-                        Plr->Gossip_SendPOI(356);
+                        Plr->Gossip_SendSQLPOI(356);
                         SendQuickMenu(4293);
                     }
                     break;
 
                 case 9: //Mage
                     {
-                        Plr->Gossip_SendPOI(357);
+                        Plr->Gossip_SendSQLPOI(357);
                         SendQuickMenu(4294);
                     }
                     break;
 
                 case 10: //Paladin
                     {
-                        Plr->Gossip_SendPOI(358);
+                        Plr->Gossip_SendSQLPOI(358);
                         SendQuickMenu(4295);
                     }
                     break;
 
                 case 11: //Priest
                     {
-                        Plr->Gossip_SendPOI(359);
+                        Plr->Gossip_SendSQLPOI(359);
                         SendQuickMenu(4296);
                     }
                     break;
 
                 case 12: //Rogue
                     {
-                        Plr->Gossip_SendPOI(360);
+                        Plr->Gossip_SendSQLPOI(360);
                         SendQuickMenu(4297);
                     }
                     break;
 
                 case 13: //Warlock
                     {
-                        Plr->Gossip_SendPOI(361);
+                        Plr->Gossip_SendSQLPOI(361);
                         SendQuickMenu(4298);
                     }
                     break;
 
                 case 14: //Warrior
                     {
-                        Plr->Gossip_SendPOI(362);
+                        Plr->Gossip_SendSQLPOI(362);
                         SendQuickMenu(4299);
                     }
                     break;
@@ -3894,14 +3894,14 @@ class KharanosGuard : public GossipScript
 
                 case 16: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(363);
+                        Plr->Gossip_SendSQLPOI(363);
                         SendQuickMenu(4302);
                     }
                     break;
 
                 case 17: //Cooking
                     {
-                        Plr->Gossip_SendPOI(364);
+                        Plr->Gossip_SendSQLPOI(364);
                         SendQuickMenu(4303);
                     }
                     break;
@@ -3920,14 +3920,14 @@ class KharanosGuard : public GossipScript
 
                 case 20: //First Aid
                     {
-                        Plr->Gossip_SendPOI(365);
+                        Plr->Gossip_SendSQLPOI(365);
                         SendQuickMenu(4306);
                     }
                     break;
 
                 case 21: //Fishing
                     {
-                        Plr->Gossip_SendPOI(366);
+                        Plr->Gossip_SendSQLPOI(366);
                         SendQuickMenu(4307);
                     }
                     break;
@@ -3940,7 +3940,7 @@ class KharanosGuard : public GossipScript
 
                 case 23: //Inscription
                     {
-                        Plr->Gossip_SendPOI(367);
+                        Plr->Gossip_SendSQLPOI(367);
                         SendQuickMenu(13884);
                     }
                     break;
@@ -3953,7 +3953,7 @@ class KharanosGuard : public GossipScript
 
                 case 25: //Mining
                     {
-                        Plr->Gossip_SendPOI(368);
+                        Plr->Gossip_SendSQLPOI(368);
                         SendQuickMenu(4311);
                     }
                     break;
@@ -4003,7 +4003,7 @@ class FalconwingGuard : public GossipScript
                 case 1:     //Bat Handler
                     {
                         SendQuickMenu(2593);
-                        Plr->Gossip_SendPOI(369);
+                        Plr->Gossip_SendSQLPOI(369);
                     }
                     break;
 
@@ -4016,14 +4016,14 @@ class FalconwingGuard : public GossipScript
                 case 3:     //The Inn
                     {
                         SendQuickMenu(2593);
-                        Plr->Gossip_SendPOI(370);
+                        Plr->Gossip_SendSQLPOI(370);
                     }
                     break;
 
                 case 4:     //Stable Master
                     {
                         SendQuickMenu(2593);
-                        Plr->Gossip_SendPOI(371);
+                        Plr->Gossip_SendSQLPOI(371);
                     }
                     break;
 
@@ -4072,70 +4072,70 @@ class FalconwingGuard : public GossipScript
 
                 case 8: //Hunter
                     {
-                        Plr->Gossip_SendPOI(372);
+                        Plr->Gossip_SendSQLPOI(372);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 9: //Mage
                     {
-                        Plr->Gossip_SendPOI(373);
+                        Plr->Gossip_SendSQLPOI(373);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 10: //Paladin <-- Needs to change flag to other sign (don't know how to describe it)
                     {
-                        Plr->Gossip_SendPOI(374);
+                        Plr->Gossip_SendSQLPOI(374);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 11: //Priest
                     {
-                        Plr->Gossip_SendPOI(375);
+                        Plr->Gossip_SendSQLPOI(375);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 12: //Rogue
                     {
-                        Plr->Gossip_SendPOI(376);
+                        Plr->Gossip_SendSQLPOI(376);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 13: //Warlock
                     {
-                        Plr->Gossip_SendPOI(377);
+                        Plr->Gossip_SendSQLPOI(377);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 14: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(378);
+                        Plr->Gossip_SendSQLPOI(378);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 15: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(379);
+                        Plr->Gossip_SendSQLPOI(379);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 16: //Cooking
                     {
-                        Plr->Gossip_SendPOI(380);
+                        Plr->Gossip_SendSQLPOI(380);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 17: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(381);
+                        Plr->Gossip_SendSQLPOI(381);
                         SendQuickMenu(2593);
                     }
                     break;
@@ -4148,7 +4148,7 @@ class FalconwingGuard : public GossipScript
 
                 case 19: //First Aid
                     {
-                        Plr->Gossip_SendPOI(382);
+                        Plr->Gossip_SendSQLPOI(382);
                         SendQuickMenu(2593);
                     }
                     break;
@@ -4161,21 +4161,21 @@ class FalconwingGuard : public GossipScript
 
                 case 21: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(383);
+                        Plr->Gossip_SendSQLPOI(383);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 22: //Jewelcrafting
                     {
-                        Plr->Gossip_SendPOI(384);
+                        Plr->Gossip_SendSQLPOI(384);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 23: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(385);
+                        Plr->Gossip_SendSQLPOI(385);
                         SendQuickMenu(2593);
                     }
                     break;
@@ -4188,14 +4188,14 @@ class FalconwingGuard : public GossipScript
 
                 case 25: //Skinning
                     {
-                        Plr->Gossip_SendPOI(386);
+                        Plr->Gossip_SendSQLPOI(386);
                         SendQuickMenu(2593);
                     }
                     break;
 
                 case 26: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(387);
+                        Plr->Gossip_SendSQLPOI(387);
                         SendQuickMenu(2593);
                     }
                     break;
@@ -4252,14 +4252,14 @@ class AzureWatchGuard : public GossipScript
                 case 4:     //Inn
                     {
                         SendQuickMenu(10074);
-                        Plr->Gossip_SendPOI(388);
+                        Plr->Gossip_SendSQLPOI(388);
                     }
                     break;
 
                 case 5:     //Stable Master
                     {
                         SendQuickMenu(10075);
-                        Plr->Gossip_SendPOI(389);
+                        Plr->Gossip_SendSQLPOI(389);
                     }
                     break;
 
@@ -4310,63 +4310,63 @@ class AzureWatchGuard : public GossipScript
 
                 case 9: //Hunter
                     {
-                        Plr->Gossip_SendPOI(390);
+                        Plr->Gossip_SendSQLPOI(390);
                         SendQuickMenu(10078);
                     }
                     break;
 
                 case 10: //Mage
                     {
-                        Plr->Gossip_SendPOI(391);
+                        Plr->Gossip_SendSQLPOI(391);
                         SendQuickMenu(10081);
                     }
                     break;
 
                 case 11: //Paladin
                     {
-                        Plr->Gossip_SendPOI(392);
+                        Plr->Gossip_SendSQLPOI(392);
                         SendQuickMenu(10083);
                     }
                     break;
 
                 case 12: //Priest
                     {
-                        Plr->Gossip_SendPOI(393);
+                        Plr->Gossip_SendSQLPOI(393);
                         SendQuickMenu(10084);
                     }
                     break;
 
                 case 13: //Shaman
                     {
-                        Plr->Gossip_SendPOI(394);
+                        Plr->Gossip_SendSQLPOI(394);
                         SendQuickMenu(10085);
                     }
                     break;
 
                 case 14: //Warrior
                     {
-                        Plr->Gossip_SendPOI(395);
+                        Plr->Gossip_SendSQLPOI(395);
                         SendQuickMenu(10086);
                     }
                     break;
 
                 case 15: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(396);
+                        Plr->Gossip_SendSQLPOI(396);
                         SendQuickMenu(10088);
                     }
                     break;
 
                 case 16: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(397);
+                        Plr->Gossip_SendSQLPOI(397);
                         SendQuickMenu(10089);
                     }
                     break;
 
                 case 17: //Cooking
                     {
-                        Plr->Gossip_SendPOI(398);
+                        Plr->Gossip_SendSQLPOI(398);
                         SendQuickMenu(10090);
                     }
                     break;
@@ -4379,35 +4379,35 @@ class AzureWatchGuard : public GossipScript
 
                 case 19: //Engineering
                     {
-                        Plr->Gossip_SendPOI(399);
+                        Plr->Gossip_SendSQLPOI(399);
                         SendQuickMenu(10092);
                     }
                     break;
 
                 case 20: //First Aid
                     {
-                        Plr->Gossip_SendPOI(400);
+                        Plr->Gossip_SendSQLPOI(400);
                         SendQuickMenu(10093);
                     }
                     break;
 
                 case 21: //Fishing
                     {
-                        Plr->Gossip_SendPOI(401);
+                        Plr->Gossip_SendSQLPOI(401);
                         SendQuickMenu(10094);
                     }
                     break;
 
                 case 22: //Herbalism
                     {
-                        Plr->Gossip_SendPOI(402);
+                        Plr->Gossip_SendSQLPOI(402);
                         SendQuickMenu(10095);
                     }
                     break;
 
                 case 23: //Inscription
                     {
-                        Plr->Gossip_SendPOI(403);
+                        Plr->Gossip_SendSQLPOI(403);
                         SendQuickMenu(13887);
                     }
                     break;
@@ -4420,28 +4420,28 @@ class AzureWatchGuard : public GossipScript
 
                 case 25: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(404);
+                        Plr->Gossip_SendSQLPOI(404);
                         SendQuickMenu(10096);
                     }
                     break;
 
                 case 26: //Mining
                     {
-                        Plr->Gossip_SendPOI(405);
+                        Plr->Gossip_SendSQLPOI(405);
                         SendQuickMenu(10097);
                     }
                     break;
 
                 case 27: //Skinning
                     {
-                        Plr->Gossip_SendPOI(406);
+                        Plr->Gossip_SendSQLPOI(406);
                         SendQuickMenu(10098);
                     }
                     break;
 
                 case 28: //Tailoring
                     {
-                        Plr->Gossip_SendPOI(407);
+                        Plr->Gossip_SendSQLPOI(407);
                         SendQuickMenu(10099);
                     }
                     break;
@@ -4488,7 +4488,7 @@ class ShattrathGuard : public GossipScript
                 case 1:     // World's End Tavern
                     {
                         SendQuickMenu(10394);
-                        Plr->Gossip_SendPOI(408);
+                        Plr->Gossip_SendSQLPOI(408);
                     }
                     break;
 
@@ -4518,7 +4518,7 @@ class ShattrathGuard : public GossipScript
                 case 4:     // Gryphon Master
                     {
                         SendQuickMenu(10402);
-                        Plr->Gossip_SendPOI(409);
+                        Plr->Gossip_SendSQLPOI(409);
                     }
                     break;
 
@@ -4577,14 +4577,14 @@ class ShattrathGuard : public GossipScript
                 case 9:     // Mana Loom
                     {
                         SendQuickMenu(10408);
-                        Plr->Gossip_SendPOI(410);
+                        Plr->Gossip_SendSQLPOI(410);
                     }
                     break;
 
                 case 10:    // Alchemy Lab
                     {
                         SendQuickMenu(10409);
-                        Plr->Gossip_SendPOI(411);
+                        Plr->Gossip_SendSQLPOI(411);
                     }
                     break;
 
@@ -4601,154 +4601,154 @@ class ShattrathGuard : public GossipScript
 
                 case 12: //Aldor Bank
                     {
-                        Plr->Gossip_SendPOI(412);
+                        Plr->Gossip_SendSQLPOI(412);
                         SendQuickMenu(10396);
                     }
                     break;
 
                 case 13: //Scryers Bank
                     {
-                        Plr->Gossip_SendPOI(413);
+                        Plr->Gossip_SendSQLPOI(413);
                         SendQuickMenu(10397);
                     }
                     break;
 
                 case 14: //Aldor Inn
                     {
-                        Plr->Gossip_SendPOI(414);
+                        Plr->Gossip_SendSQLPOI(414);
                         SendQuickMenu(10399);
                     }
                     break;
 
                 case 15: //Scryers Inn
                     {
-                        Plr->Gossip_SendPOI(415);
+                        Plr->Gossip_SendSQLPOI(415);
                         SendQuickMenu(10401);
                     }
                     break;
 
                 case 16: //Aldor Inn
                     {
-                        Plr->Gossip_SendPOI(416);
+                        Plr->Gossip_SendSQLPOI(416);
                         SendQuickMenu(10399);
                     }
                     break;
 
                 case 17: //Scryers Bank
                     {
-                        Plr->Gossip_SendPOI(417);
+                        Plr->Gossip_SendSQLPOI(417);
                         SendQuickMenu(10397);
                     }
                     break;
 
                 case 18: //Aldor Bank
                     {
-                        Plr->Gossip_SendPOI(418);
+                        Plr->Gossip_SendSQLPOI(418);
                         SendQuickMenu(10396);
                     }
                     break;
 
                 case 19: //Scryers Inn
                     {
-                        Plr->Gossip_SendPOI(419);
+                        Plr->Gossip_SendSQLPOI(419);
                         SendQuickMenu(10401);
                     }
                     break;
 
                 case 20: //Aldor Stable Master
                     {
-                        Plr->Gossip_SendPOI(420);
+                        Plr->Gossip_SendSQLPOI(420);
                         SendQuickMenu(10399);
                     }
                     break;
 
                 case 21: //Scryers Stable Master
                     {
-                        Plr->Gossip_SendPOI(421);
+                        Plr->Gossip_SendSQLPOI(421);
                         SendQuickMenu(10401);
                     }
                     break;
 
                 case 22: //Alliance Battlemaster
                     {
-                        Plr->Gossip_SendPOI(422);
+                        Plr->Gossip_SendSQLPOI(422);
                         SendQuickMenu(10406);
                     }
                     break;
 
                 case 23: //Horde Battle Master and Arena Battle Master
                     {
-                        Plr->Gossip_SendPOI(423);
+                        Plr->Gossip_SendSQLPOI(423);
                         SendQuickMenu(10407);
                     }
                     break;
 
                 case 24: //Alchemy
                     {
-                        Plr->Gossip_SendPOI(424);
+                        Plr->Gossip_SendSQLPOI(424);
                         SendQuickMenu(10413);
                     }
                     break;
 
                 case 25: //Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(425);
+                        Plr->Gossip_SendSQLPOI(425);
                         SendQuickMenu(10400);
                     }
                     break;
 
                 case 26: //Cooking
                     {
-                        Plr->Gossip_SendPOI(426);
+                        Plr->Gossip_SendSQLPOI(426);
                         SendQuickMenu(10414);
                     }
                     break;
 
                 case 27: //Enchanting
                     {
-                        Plr->Gossip_SendPOI(427);
+                        Plr->Gossip_SendSQLPOI(427);
                         SendQuickMenu(10415);
                     }
                     break;
 
                 case 28: //First Aid
                     {
-                        Plr->Gossip_SendPOI(428);
+                        Plr->Gossip_SendSQLPOI(428);
                         SendQuickMenu(10416);
                     }
                     break;
 
                 case 29: //Jewelcrafting
                     {
-                        Plr->Gossip_SendPOI(429);
+                        Plr->Gossip_SendSQLPOI(429);
                         SendQuickMenu(10417);
                     }
                     break;
 
                 case 30: //Leatherworking
                     {
-                        Plr->Gossip_SendPOI(430);
+                        Plr->Gossip_SendSQLPOI(430);
                         SendQuickMenu(10418);
                     }
                     break;
 
                 case 31: //Skinning
                     {
-                        Plr->Gossip_SendPOI(431);
+                        Plr->Gossip_SendSQLPOI(431);
                         SendQuickMenu(10419);
                     }
                     break;
 
                 case 32: //Aldor gem merchant
                     {
-                        Plr->Gossip_SendPOI(432);
+                        Plr->Gossip_SendSQLPOI(432);
                         SendQuickMenu(10411);
                     }
                     break;
 
                 case 33: //Scryers gem merchant
                     {
-                        Plr->Gossip_SendPOI(433);
+                        Plr->Gossip_SendSQLPOI(433);
                         SendQuickMenu(10412);
                     }
                     break;
@@ -4826,7 +4826,7 @@ class DalaranGuard : public GossipScript
 
                 case 4:        // Barber
                     {
-                        Plr->Gossip_SendPOI(434);
+                        Plr->Gossip_SendSQLPOI(434);
                         SendQuickMenu(14003);
                     }
                     break;
@@ -4853,14 +4853,14 @@ class DalaranGuard : public GossipScript
 
                 case 7:        // Flight Master
                     {
-                        Plr->Gossip_SendPOI(435);
+                        Plr->Gossip_SendSQLPOI(435);
                         SendQuickMenu(10086);
                     }
                     break;
 
                 case 8:        // Guild Master
                     {
-                        Plr->Gossip_SendPOI(436);
+                        Plr->Gossip_SendSQLPOI(436);
                         SendQuickMenu(10095);
                     }
                     break;
@@ -4909,7 +4909,7 @@ class DalaranGuard : public GossipScript
 
                 case 12:    // Stable Master
                     {
-                        Plr->Gossip_SendPOI(437);
+                        Plr->Gossip_SendSQLPOI(437);
                         SendQuickMenu(10083);
                     }
                     break;
@@ -4951,133 +4951,133 @@ class DalaranGuard : public GossipScript
 
                 case 15:    // Eastern Sewer Entrance
                     {
-                        Plr->Gossip_SendPOI(438);
+                        Plr->Gossip_SendSQLPOI(438);
                         SendQuickMenu(13961);
                     }
                     break;
 
                 case 16:    // Western Sewer Entrance
                     {
-                        Plr->Gossip_SendPOI(439);
+                        Plr->Gossip_SendSQLPOI(439);
                         SendQuickMenu(13960);
                     }
                     break;
 
                 case 17:    // Well Entrance
                     {
-                        Plr->Gossip_SendPOI(440);
+                        Plr->Gossip_SendSQLPOI(440);
                         SendQuickMenu(13969);
                     }
                     break;
 
                 case 18:    // The Alliance Quarter
                     {
-                        Plr->Gossip_SendPOI(441);
+                        Plr->Gossip_SendSQLPOI(441);
                         SendQuickMenu(13973);
                     }
                     break;
 
                 case 19:    // The Horde Quarter
                     {
-                        Plr->Gossip_SendPOI(442);
+                        Plr->Gossip_SendSQLPOI(442);
                         SendQuickMenu(13972);
                     }
                     break;
 
                 case 20:    // Northern Bank
                     {
-                        Plr->Gossip_SendPOI(443);
+                        Plr->Gossip_SendSQLPOI(443);
                         SendQuickMenu(14005);
                     }
                     break;
 
                 case 21:    // Southern Bank
                     {
-                        Plr->Gossip_SendPOI(444);
+                        Plr->Gossip_SendSQLPOI(444);
                         SendQuickMenu(14006);
                     }
                     break;
 
                 case 22:    // Sewers 1
                     {
-                        Plr->Gossip_SendPOI(445);
+                        Plr->Gossip_SendSQLPOI(445);
                         SendQuickMenu(13974);
                     }
                     break;
 
                 case 24:    // Alliance Inn
                     {
-                        Plr->Gossip_SendPOI(446);
+                        Plr->Gossip_SendSQLPOI(446);
                         SendQuickMenu(13992);
                     }
                     break;
 
                 case 25:    // Horde Inn
                     {
-                        Plr->Gossip_SendPOI(447);
+                        Plr->Gossip_SendSQLPOI(447);
                         SendQuickMenu(13993);
                     }
                     break;
 
                 case 26:    // Sewers 2
                     {
-                        Plr->Gossip_SendPOI(448);
+                        Plr->Gossip_SendSQLPOI(448);
                         SendQuickMenu(13974);
                     }
                     break;
 
                 case 27:    // The Violet Citadel
                     {
-                        Plr->Gossip_SendPOI(449);
+                        Plr->Gossip_SendSQLPOI(449);
                         SendQuickMenu(13971);
                     }
                     break;
 
                 case 28:    // The Violet Hold
                     {
-                        Plr->Gossip_SendPOI(450);
+                        Plr->Gossip_SendSQLPOI(450);
                         SendQuickMenu(13970);
                     }
                     break;
 
                 case 29:    // Trade District
                     {
-                        Plr->Gossip_SendPOI(451);
+                        Plr->Gossip_SendSQLPOI(451);
                         SendQuickMenu(13980);
                     }
                     break;
 
                 case 30:    // Antonidas Memorial
                     {
-                        Plr->Gossip_SendPOI(452);
+                        Plr->Gossip_SendSQLPOI(452);
                         SendQuickMenu(13968);
                     }
                     break;
 
                 case 31:    // Runeweaver Square
                     {
-                        Plr->Gossip_SendPOI(453);
+                        Plr->Gossip_SendSQLPOI(453);
                         SendQuickMenu(13967);
                     }
                     break;
 
                 case 32:    // The Eventide
                     {
-                        Plr->Gossip_SendPOI(454);
+                        Plr->Gossip_SendSQLPOI(454);
                         SendQuickMenu(13966);
                     }
                     break;
 
                 case 33:    // Cemetary
                     {
-                        Plr->Gossip_SendPOI(455);
+                        Plr->Gossip_SendSQLPOI(455);
                         SendQuickMenu(13965);
                     }
                     break;
 
                 case 34:    // Lexicon of Power
                     {
-                        Plr->Gossip_SendPOI(456);
+                        Plr->Gossip_SendSQLPOI(456);
                         SendQuickMenu(14174);
                     }
                     break;
@@ -5093,7 +5093,7 @@ class DalaranGuard : public GossipScript
 
                 case 36:    // Portal Trainer
                     {
-                        Plr->Gossip_SendPOI(457);
+                        Plr->Gossip_SendSQLPOI(457);
                         SendQuickMenu(13999);
                     }
                     break;
@@ -5134,7 +5134,7 @@ class DalaranGuard : public GossipScript
 
                 case 39:    // Clothing
                     {
-                        Plr->Gossip_SendPOI(458);
+                        Plr->Gossip_SendSQLPOI(458);
                         SendQuickMenu(14112);
                     }
                     break;
@@ -5150,63 +5150,63 @@ class DalaranGuard : public GossipScript
 
                 case 41:    // Flowers
                     {
-                        Plr->Gossip_SendPOI(459);
+                        Plr->Gossip_SendSQLPOI(459);
                         SendQuickMenu(10159);
                     }
                     break;
 
                 case 42:    // Fruit
                     {
-                        Plr->Gossip_SendPOI(460);
+                        Plr->Gossip_SendSQLPOI(460);
                         SendQuickMenu(14106);
                     }
                     break;
 
                 case 43:    // General Goods
                     {
-                        Plr->Gossip_SendPOI(461);
+                        Plr->Gossip_SendSQLPOI(461);
                         SendQuickMenu(14105);
                     }
                     break;
 
                 case 44:    // Jewelry
                     {
-                        Plr->Gossip_SendPOI(462);
+                        Plr->Gossip_SendSQLPOI(462);
                         SendQuickMenu(13984);
                     }
                     break;
 
                 case 45:    // Pet Supplies & Exotic Mounts
                     {
-                        Plr->Gossip_SendPOI(463);
+                        Plr->Gossip_SendSQLPOI(463);
                         SendQuickMenu(14103);
                     }
                     break;
 
                 case 46:    // Pie, Pastry & Cakes
                     {
-                        Plr->Gossip_SendPOI(464);
+                        Plr->Gossip_SendSQLPOI(464);
                         SendQuickMenu(14102);
                     }
                     break;
 
                 case 47:    // Reagents & Magical Goods
                     {
-                        Plr->Gossip_SendPOI(465);
+                        Plr->Gossip_SendSQLPOI(465);
                         SendQuickMenu(14104);
                     }
                     break;
 
                 case 48:    // Toys
                     {
-                        Plr->Gossip_SendPOI(466);
+                        Plr->Gossip_SendSQLPOI(466);
                         SendQuickMenu(14100);
                     }
                     break;
 
                 case 49:    // Trinkets. Relics & Off-hand items
                     {
-                        Plr->Gossip_SendPOI(467);
+                        Plr->Gossip_SendSQLPOI(467);
                         SendQuickMenu(14110);
                     }
                     break;
@@ -5223,21 +5223,21 @@ class DalaranGuard : public GossipScript
 
                 case 51:    // Wine & Cheese
                     {
-                        Plr->Gossip_SendPOI(468);
+                        Plr->Gossip_SendSQLPOI(468);
                         SendQuickMenu(14095);
                     }
                     break;
 
                 case 52:    // Alchemy
                     {
-                        Plr->Gossip_SendPOI(469);
+                        Plr->Gossip_SendSQLPOI(469);
                         SendQuickMenu(13995);
                     }
                     break;
 
                 case 53:    // Blacksmithing
                     {
-                        Plr->Gossip_SendPOI(470);
+                        Plr->Gossip_SendSQLPOI(470);
                         SendQuickMenu(13994);
                     }
                     break;
@@ -5253,161 +5253,161 @@ class DalaranGuard : public GossipScript
 
                 case 55:    // Enchanting
                     {
-                        Plr->Gossip_SendPOI(471);
+                        Plr->Gossip_SendSQLPOI(471);
                         SendQuickMenu(13990);
                     }
                     break;
 
                 case 56:    // Engineering
                     {
-                        Plr->Gossip_SendPOI(472);
+                        Plr->Gossip_SendSQLPOI(472);
                         SendQuickMenu(13989);
                     }
                     break;
 
                 case 57:    // First Aid
                     {
-                        Plr->Gossip_SendPOI(473);
+                        Plr->Gossip_SendSQLPOI(473);
                         SendQuickMenu(13988);
                     }
                     break;
 
                 case 58:    // Fishing
                     {
-                        Plr->Gossip_SendPOI(474);
+                        Plr->Gossip_SendSQLPOI(474);
                         SendQuickMenu(13987);
                     }
                     break;
 
                 case 59:    // Herbalism
                     {
-                        Plr->Gossip_SendPOI(475);
+                        Plr->Gossip_SendSQLPOI(475);
                         SendQuickMenu(13986);
                     }
                     break;
 
                 case 60:    // Inscription
                     {
-                        Plr->Gossip_SendPOI(476);
+                        Plr->Gossip_SendSQLPOI(476);
                         SendQuickMenu(13985);
                     }
                     break;
 
                 case 61:    // Jewelcrafting
                     {
-                        Plr->Gossip_SendPOI(477);
+                        Plr->Gossip_SendSQLPOI(477);
                         SendQuickMenu(13984);
                     }
                     break;
 
                 case 62:    // Leatherworking
                     {
-                        Plr->Gossip_SendPOI(478);
+                        Plr->Gossip_SendSQLPOI(478);
                         SendQuickMenu(13982);
                     }
                     break;
 
                 case 63:    // Mining
                     {
-                        Plr->Gossip_SendPOI(479);
+                        Plr->Gossip_SendSQLPOI(479);
                         SendQuickMenu(13983);
                     }
                     break;
 
                 case 64:    // Skinning
                     {
-                        Plr->Gossip_SendPOI(480);
+                        Plr->Gossip_SendSQLPOI(480);
                         SendQuickMenu(13982);
                     }
                     break;
 
                 case 65:    // Tailoring
                     {
-                        Plr->Gossip_SendPOI(481);
+                        Plr->Gossip_SendSQLPOI(481);
                         SendQuickMenu(13981);
                     }
                     break;
 
                 case 66:    // Cloth Armor
                     {
-                        Plr->Gossip_SendPOI(482);
+                        Plr->Gossip_SendSQLPOI(482);
                         SendQuickMenu(14112);
                     }
                     break;
 
                 case 67:    // Leather Armor
                     {
-                        Plr->Gossip_SendPOI(483);
+                        Plr->Gossip_SendSQLPOI(483);
                         SendQuickMenu(14111);
                     }
                     break;
 
                 case 68:    // Mail Armor
                     {
-                        Plr->Gossip_SendPOI(484);
+                        Plr->Gossip_SendSQLPOI(484);
                         SendQuickMenu(14111);
                     }
                     break;
 
                 case 69:    // Plate Armor
                     {
-                        Plr->Gossip_SendPOI(485);
+                        Plr->Gossip_SendSQLPOI(485);
                         SendQuickMenu(14109);
                     }
                     break;
 
                 case 70:    // Shields
                     {
-                        Plr->Gossip_SendPOI(486);
+                        Plr->Gossip_SendSQLPOI(486);
                         SendQuickMenu(14109);
                     }
                     break;
 
                 case 71:    // Melee Weapons
                     {
-                        Plr->Gossip_SendPOI(487);
+                        Plr->Gossip_SendSQLPOI(487);
                         SendQuickMenu(14098);
                     }
                     break;
 
                 case 72:    // Ranged & Thrown Weapons
                     {
-                        Plr->Gossip_SendPOI(488);
+                        Plr->Gossip_SendSQLPOI(488);
                         SendQuickMenu(14097);
                     }
                     break;
 
                 case 73:    // Staves & Wands
                     {
-                        Plr->Gossip_SendPOI(489);
+                        Plr->Gossip_SendSQLPOI(489);
                         SendQuickMenu(14096);
                     }
                     break;
 
                 case 74:    // Krasu's Landing
                     {
-                        Plr->Gossip_SendPOI(490);
+                        Plr->Gossip_SendSQLPOI(490);
                         SendQuickMenu(14009);
                     }
                     break;
 
                 case 75:    // Trinkets, Relics & Off-hand Items
                     {
-                        Plr->Gossip_SendPOI(491);
+                        Plr->Gossip_SendSQLPOI(491);
                         SendQuickMenu(14110);
                     }
                     break;
 
                 case 76:    // Cold weather flying trainer
                     {
-                        Plr->Gossip_SendPOI(492);
+                        Plr->Gossip_SendSQLPOI(492);
                         SendQuickMenu(60059);
                     }
                     break;
 
                 case 77:    // Locksmith
                     {
-                        Plr->Gossip_SendPOI(493);
+                        Plr->Gossip_SendSQLPOI(493);
                         SendQuickMenu(14004);
                     }
                     break;

@@ -13827,7 +13827,7 @@ void Player::RemoveVehicleComponent()
     vehicle = NULL;
 }
 
-void Player::Gossip_SendPOI(uint32 id)
+void Player::Gossip_SendSQLPOI(uint32 id)
 {
     PointOfInterest *pPOI = PointOfInterestStorage.LookupEntry(id);
     if (pPOI != NULL)

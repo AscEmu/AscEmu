@@ -207,7 +207,7 @@ void lua_engine::loadScripts()
             ++countofvalidscripts;
             continue;
         }
-        if(lua_load(LUA_COMPILER->lu, le::readScript, it->second, it->first.c_str()) || lua_pcall(LUA_COMPILER->lu, 0, 0, 0))
+        if(lua_load(LUA_COMPILER->lu, le::readScript, it->second, it->first.c_str(), 0) || lua_pcall(LUA_COMPILER->lu, 0, 0, 0))
         {
             report(LUA_COMPILER->lu);
             delete it->second;
@@ -271,7 +271,7 @@ bool lua_engine::loadScript(const char* filename)
             cached.data_ = (const void*)malloc(file_length);
             cached.datasize_ = fread((void*)cached.data_, 1, file_length, _file);
             fclose(_file);
-            success = (0 == lua_load(context->lu, readScript, (void*)&cached , fullpath.c_str())) && (0 == lua_pcall(context->lu, 0, 0, 0));
+            success = (0 == lua_load(context->lu, readScript, (void*)&cached , fullpath.c_str(), 0)) && (0 == lua_pcall(context->lu, 0, 0, 0));
 
         }
     }
@@ -335,7 +335,7 @@ void lua_engine::startupEngine()
 
     //Initialize our compiler.
     LUA_COMPILER = new LUA_INSTANCE;
-    LUA_COMPILER->lu = lua_open();
+    LUA_COMPILER->lu = luaL_newstate();
     LUA_COMPILER->map = NULL;
     LUA_COMPILER->scripts_.state = LUA_COMPILER->lu;
     LUA_COMPILER->scripts_.initialize();
@@ -546,7 +546,7 @@ void lua_engine::restartEngine()
 
     assert(LUA_COMPILER->lu != NULL);
     lua_close(LUA_COMPILER->lu);
-    LUA_COMPILER->lu = lua_open();
+    LUA_COMPILER->lu = luaL_newstate();
     LUA_COMPILER->scripts_.state = LUA_COMPILER->lu;
     LUA_COMPILER->scripts_.initialize();
     lua_instance = LUA_COMPILER;
@@ -616,7 +616,7 @@ void lua_engine::restartThread(MapMgr* map)
     if(_li->lu != NULL)
         lua_close(_li->lu);
     //open a brand new state.
-    _li->lu = lua_open();
+    _li->lu = luaL_newstate();
     _li->scripts_.state = _li->lu;
     _li->scripts_.initialize();
     //re-expose our wow objects and functions
@@ -783,7 +783,7 @@ namespace lua_engine
             //check if our map id matches that of our script.
             if(it->second->maps_.size() && it->second->maps_.find((int32)instance->map->GetMapId()) == it->second->maps_.end())
                 continue;
-            if(lua_load(lu, le::readScript, it->second, it->first.c_str()) || lua_pcall(lu, 0, 0, 0))
+            if(lua_load(lu, le::readScript, it->second, it->first.c_str(), 0) || lua_pcall(lu, 0, 0, 0))
             {
                 report(lu);
                 delete it->second;

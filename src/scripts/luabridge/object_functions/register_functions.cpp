@@ -312,7 +312,7 @@ void resumeluathread(lua_thread thread)
     LUA_INSTANCE::Coroutines::iterator itr = li_->coroutines_.find(thread);
     if(itr != li_->coroutines_.end())
     {
-        lua_resume(thread, lua_gettop(thread));
+        lua_resume(thread, thread, lua_gettop(thread));
         //Stop keeping track of it
         li_->coroutines_.erase(itr);
     }

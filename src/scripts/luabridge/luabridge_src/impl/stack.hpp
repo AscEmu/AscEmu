@@ -19,7 +19,7 @@ struct tdstack
     }
     static T get (lua_State *L, int index)
     {
-        return static_cast<T>(luaL_checkint(L, index) );
+        return static_cast<T>(luaL_checkinteger(L, index) );
     }
 };
 template <typename T>
@@ -271,7 +271,7 @@ struct tdstack <signed char>
     }
     static char get (lua_State *L, int index)
     {
-        return (char)luaL_checkint(L, index);
+        return (char)luaL_checkinteger(L, index);
     }
 };
 template <>
@@ -283,7 +283,7 @@ struct tdstack <unsigned char>
     }
     static unsigned char get (lua_State *L, int index)
     {
-        return (unsigned char)luaL_checkint(L, index);
+        return (unsigned char)luaL_checkinteger(L, index);
     }
 };
 template <>
@@ -295,7 +295,7 @@ struct tdstack <unsigned short>
     }
     static unsigned short get (lua_State *L, int index)
     {
-        return (unsigned short)luaL_checkint(L, index);
+        return (unsigned short)luaL_checkinteger(L, index);
     }
 };
 template <>
@@ -307,7 +307,7 @@ struct tdstack <signed short>
     }
     static short get (lua_State *L, int index)
     {
-        return (short)luaL_checkint(L, index);
+        return (short)luaL_checkinteger(L, index);
     }
 };
 
@@ -320,7 +320,7 @@ struct tdstack <int>
     }
     static int get (lua_State *L, int index)
     {
-        return luaL_checkint(L, index);
+        return luaL_checkinteger(L, index);
     }
 };
 
@@ -364,7 +364,7 @@ struct tdstack <bool>
         else if(lua_isnoneornil(L, index) )
             ret = false;
         else
-            luaL_typerror(L, index, "bool");
+            luaL_argerror(L, index, "bool");
         return ret;
     }
 };
