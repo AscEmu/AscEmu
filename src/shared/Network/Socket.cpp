@@ -104,13 +104,13 @@ bool Socket::BurstSend(const uint8* Bytes, uint32 Size)
     return writeBuffer.Write(Bytes, Size);
 }
 
-string Socket::GetRemoteIP()
+std::string Socket::GetRemoteIP()
 {
     char* ip = (char*)inet_ntoa(m_client.sin_addr);
     if(ip != NULL)
-        return string(ip);
+        return std::string(ip);
     else
-        return string("noip");
+        return std::string("noip");
 }
 
 void Socket::Disconnect()

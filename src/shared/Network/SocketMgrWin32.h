@@ -44,7 +44,7 @@ class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
 
     private:
         HANDLE m_completionPort;
-        set<Socket*> _sockets;
+        std::set<Socket*> _sockets;
         Mutex socketLock;
         Arcemu::Threading::AtomicCounter socket_count;
 };

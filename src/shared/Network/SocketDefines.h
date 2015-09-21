@@ -9,8 +9,7 @@
 #ifndef SOCKET_DEFINES_H
 #define SOCKET_DEFINES_H
 
-#include "../Common.h"
-using namespace std;
+#include <cstring>
 
 /* Implementation Selection */
 #ifdef WIN32        // Easy
@@ -63,19 +62,19 @@ class OverlappedStruct
         volatile long m_inUse;
         OverlappedStruct(SocketIOEvent ev) : m_event(ev)
         {
-            memset(&m_overlap, 0, sizeof(OVERLAPPED));
+            std::memset(&m_overlap, 0, sizeof(OVERLAPPED));
             m_inUse = 0;
         };
 
         OverlappedStruct()
         {
-            memset(&m_overlap, 0, sizeof(OVERLAPPED));
+            std::memset(&m_overlap, 0, sizeof(OVERLAPPED));
             m_inUse = 0;
         }
 
         __forceinline void Reset(SocketIOEvent ev)
         {
-            memset(&m_overlap, 0, sizeof(OVERLAPPED));
+            std::memset(&m_overlap, 0, sizeof(OVERLAPPED));
             m_event = ev;
         }
 

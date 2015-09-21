@@ -60,7 +60,7 @@ class SERVER_DECL Socket
         /* Client Operations */
 
         // Get the client's ip in numerical form.
-        string GetRemoteIP();
+        std::string GetRemoteIP();
         ARCEMU_INLINE uint32 GetRemotePort() { return ntohs(m_client.sin_port); }
         ARCEMU_INLINE SOCKET GetFd() { return m_fd; }
 
@@ -223,19 +223,19 @@ T* ConnectTCPSocket(const char* hostname, u_short port)
 
 class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
 {
-        map<Socket*, time_t> deletionQueue;
+        std::map<Socket*, time_t> deletionQueue;
         Mutex lock;
     public:
         ~SocketGarbageCollector()
         {
-            map<Socket*, time_t>::iterator i;
+            std::map<Socket*, time_t>::iterator i;
             for(i = deletionQueue.begin(); i != deletionQueue.end(); ++i)
                 delete i->first;
         }
 
         void Update()
         {
-            map<Socket*, time_t>::iterator i, i2;
+            std::map<Socket*, time_t>::iterator i, i2;
             time_t t = UNIXTIME;
             lock.Acquire();
             for(i = deletionQueue.begin(); i != deletionQueue.end();)
@@ -253,7 +253,7 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
         void QueueSocket(Socket* s)
         {
             lock.Acquire();
-            deletionQueue.insert(map<Socket*, time_t>::value_type(s, UNIXTIME + SOCKET_GC_TIMEOUT));
+            deletionQueue.insert(std::map<Socket*, time_t>::value_type(s, UNIXTIME + SOCKET_GC_TIMEOUT));
             lock.Release();
         }
 };
