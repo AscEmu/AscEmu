@@ -16,6 +16,7 @@
 #ifndef _SHARED_RC4ENGINE_H
 #define _SHARED_RC4ENGINE_H
 #include <cstdlib>
+#include <cstring>
 
 class RC4Engine
 {
