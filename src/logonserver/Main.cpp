@@ -324,7 +324,7 @@ void LogonServer::Run(int argc, char** argv)
     sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
     sLog.outBasic("========================================================");
     sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-	sLog.outErrorSilent("========================================================"); // Echo off.
+    sLog.outErrorSilent("========================================================"); // Echo off.
 
     if(do_version)
     {
