@@ -131,7 +131,10 @@ foreach(src IN ITEMS ${headers})
    set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
-include_directories(${GLOBAL_INCLUDE_DIRS})
+include_directories(
+   ${GLOBAL_INCLUDE_DIRS}
+   ${DEPENDENCY_ROOT}/zlib
+   )
 if(IS_64BIT)
    link_directories(${DEPENDENCY_DLLS64})
 else()
