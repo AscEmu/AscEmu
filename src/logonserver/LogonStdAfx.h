@@ -34,7 +34,7 @@
 #include "../shared/Util.h"
 #include "../shared/ByteBuffer.h"
 #include "../shared/Config/ConfigEnv.h"
-#include <zlib.h>
+//#include <zlib.h>
 
 #include "../shared/Database/DatabaseEnv.h"
 

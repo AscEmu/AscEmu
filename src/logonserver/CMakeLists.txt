@@ -35,7 +35,13 @@ foreach(src IN ITEMS ${headers})
    set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
-include_directories( ${GLOBAL_INCLUDE_DIRS})
+include_directories(
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${ROOT_PATH}/src/shared
+   ${DEPENDENCY_ROOT}/zlib
+   ${DEPENDENCY_ROOT}/openssl
+   ${DEPENDENCY_ROOT}/pcre/include
+   )
 link_directories(${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS})
 
 if(IS_64BIT)

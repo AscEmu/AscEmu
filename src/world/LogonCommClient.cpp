@@ -19,8 +19,7 @@
  *
  */
 
-#include "StdAfx.h"
-
+#include "LogonCommClient.h"
 
 #pragma pack(push, 1)
 typedef struct

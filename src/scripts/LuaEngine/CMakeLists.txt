@@ -35,7 +35,7 @@ set(HEADERS
    ${prefix}/UnitFunctions.h
    )
 
-include_directories(${include_dirs} ${prefix})
+include_directories(${include_dirs} ${prefix} ${DEPENDENCY_ROOT}/zlib)
 IF(IS_LINUX)
 	add_definitions(-Wno-deprecated)
 ENDIF()

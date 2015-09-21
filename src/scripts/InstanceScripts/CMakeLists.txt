@@ -151,7 +151,7 @@ foreach(src IN ITEMS ${headers})
    set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
-include_directories(${include_dirs} ${prefix})
+include_directories(${include_dirs} ${prefix} ${DEPENDENCY_ROOT}/zlib)
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
 add_dependencies(${PROJECT_NAME} ${script_dependencies})
 target_link_libraries(${PROJECT_NAME} ${script_linkages})

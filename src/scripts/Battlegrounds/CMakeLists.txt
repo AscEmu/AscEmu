@@ -43,7 +43,10 @@ foreach(src IN ITEMS ${headers})
    set(HEADERS ${HEADERS} ${prefix}/${src})
 endforeach(src)
 
-include_directories(${GLOBAL_INCLUDE_DIRS})
+include_directories(
+   ${GLOBAL_INCLUDE_DIRS}
+   ${DEPENDENCY_ROOT}/zlib
+   )
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
 add_dependencies(${PROJECT_NAME} ${script_dependencies})
 add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)

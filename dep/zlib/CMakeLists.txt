@@ -10,8 +10,6 @@ set(sources
    compress.c
    crc32.c
    deflate.c
-   example.c
-   gzio.c
    infback.c
    inffast.c
    inflate.c

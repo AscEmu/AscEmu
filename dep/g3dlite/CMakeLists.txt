@@ -53,5 +53,9 @@ foreach(src IN ITEMS ${sources})
    set(SRCS ${SRCS} ${prefix}/${src})
 endforeach(src)
 
-include_directories(${GLOBAL_INCLUDE_DIRS})
+include_directories(
+   ${CMAKE_CURRENT_SOURCE_DIR}/include
+   ${DEPENDENCY_ROOT}/zlib
+   )
+
 add_library(${PROJECT_NAME} STATIC ${SRCS})

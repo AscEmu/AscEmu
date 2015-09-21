@@ -23,6 +23,7 @@
 
 #include "../logonserver/LogonOpcodes.h"
 #include <RC4Engine.h>
+#include "zlib.h"
 
 class LogonCommClientSocket : public Socket
 {

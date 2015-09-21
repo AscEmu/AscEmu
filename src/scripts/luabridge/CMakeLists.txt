@@ -48,7 +48,7 @@ set(HEADERS
   ${prefix}/object_functions/lua_gameobject.h
   )
 
-include_directories(${include_dirs} ${prefix}/interpreter)
+include_directories(${include_dirs} ${prefix}/interpreter ${DEPENDENCY_ROOT}/zlib)
 include(PCHSupport)
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
 add_dependencies(${PROJECT_NAME} ${script_dependencies} lualib)

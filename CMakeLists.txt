@@ -61,7 +61,7 @@ set(GLOBAL_INCLUDE_DIRS
    ${DEPENDENCY_ROOT}/g3dlite/include
    ${DEPENDENCY_ROOT}/vmaplib/include
    ${DEPENDENCY_ROOT}/pcre/include
-   ${DEPENDENCY_ROOT}/zlib
+   #${DEPENDENCY_ROOT}/zlib
    ${RECASTNAVIGATION}/recast/include
    ${RECASTNAVIGATION}/detour/include
    )

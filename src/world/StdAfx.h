@@ -95,7 +95,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #define sGMLog (*GMCommand_Log)
 #define sPlrLog (*Player_Log)
 
-#include <zlib.h>
+//#include <zlib.h>
 
 #include "../shared/Database/DatabaseEnv.h"
 #include "DBC/DBCStores.h"

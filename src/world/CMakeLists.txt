@@ -319,7 +319,16 @@ foreach(src IN ITEMS ${headers})
 endforeach(src)
 
 include(PCHSupport)
-include_directories( ${GLOBAL_INCLUDE_DIRS})
+include_directories(
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${ROOT_PATH}/src/shared
+   ${DEPENDENCY_ROOT}/zlib
+   ${DEPENDENCY_ROOT}/openssl
+   ${DEPENDENCY_ROOT}/pcre/include
+   ${RECASTNAVIGATION}/detour/include
+   ${DEPENDENCY_ROOT}/vmaplib/include
+   ${DEPENDENCY_ROOT}/g3dlite/include
+   )
 link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
 
 set(WIN_RESOURCE_FILE ${ROOT_PATH}/src/world/resources.rc)
