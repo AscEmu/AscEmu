@@ -26,12 +26,8 @@
 
 class Unit;
 
-#ifdef _WIN32
-#include <unordered_map>
-#include <memory>
-#else
-#include <tr1/unordered_map>
-#include <trl/memory>
+#ifndef WIN32
+#include <trl/array>
 #endif
 
 ///////////////////////////////////////////////
