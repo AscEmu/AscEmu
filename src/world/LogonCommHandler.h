@@ -21,6 +21,7 @@
 #ifndef _LOGONCOMMHANDLER_H
 #define _LOGONCOMMHANDLER_H
 #include "CommonTypes.hpp"
+#include "WorldSocket.h"
 #include <string>
 #include <map>
 #include <set>
@@ -61,7 +62,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
 #ifdef WIN32
         typedef HM_NAMESPACE::hash_map<string, string> ForcedPermissionMap;
 #else
-        typedef map<string, string> ForcedPermissionMap;
+        typedef std::map<string, string> ForcedPermissionMap;
 #endif
 
         ForcedPermissionMap forced_permissions;
