@@ -157,7 +157,8 @@ class Unit;
 class Group;
 class Pet;
 class Spell;
-
+class UpdateMask;
+#include "UpdateMask.h"
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Object
 /// Base object for every item, unit, player, corpse, container, etc
