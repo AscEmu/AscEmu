@@ -21,6 +21,8 @@
 #ifndef _UNIT_H
 #define _UNIT_H
 
+#include "Object.h"
+
 class AIInterface;
 class DynamicObject;
 
