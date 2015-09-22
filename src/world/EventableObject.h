@@ -22,6 +22,8 @@
 #define _EVENTABLEOBJECT_H
 
 #include "EventMgr.h"
+#include <list>
+#include <set>
 
 class EventableObjectHolder;
 
