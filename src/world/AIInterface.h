@@ -22,6 +22,7 @@
 #define WOWSERVER_AIINTERFACE_H
 
 #include "RecastIncludes.hpp"
+#include "IUpdatable.h"
 
 namespace G3D{
     class Vector3;
