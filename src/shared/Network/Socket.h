@@ -16,6 +16,7 @@
 #include <string>
 #include <mutex>
 #include <atomic>
+#include <map>
 
 class SERVER_DECL Socket
 {
@@ -219,7 +220,7 @@ T* ConnectTCPSocket(const char* hostname, u_short port)
 class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
 {
         std::map<Socket*, time_t> deletionQueue;
-        Mutex lock;
+        std::mutex socketMutex;
     public:
         ~SocketGarbageCollector()
         {
@@ -230,9 +231,10 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
 
         void Update()
         {
+            std::lock_guard<std::mutex> lock(socketMutex);
+
             std::map<Socket*, time_t>::iterator i, i2;
             time_t t = UNIXTIME;
-            lock.Acquire();
             for(i = deletionQueue.begin(); i != deletionQueue.end();)
             {
                 i2 = i++;
@@ -242,14 +244,13 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
                     deletionQueue.erase(i2);
                 }
             }
-            lock.Release();
         }
 
         void QueueSocket(Socket* s)
         {
-            lock.Acquire();
+            std::lock_guard<std::mutex> lock(socketMutex);
+
             deletionQueue.insert(std::map<Socket*, time_t>::value_type(s, UNIXTIME + SOCKET_GC_TIMEOUT));
-            lock.Release();
         }
 };
 
