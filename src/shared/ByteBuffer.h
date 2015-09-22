@@ -32,6 +32,7 @@
 #include <cassert>
 #include <algorithm>
 #include <list>
+#include <map>
 
 class SERVER_DECL ByteBuffer
 {
