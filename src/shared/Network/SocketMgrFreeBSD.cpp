@@ -140,7 +140,6 @@ bool SocketWorkerThread::run()
                     ptr->PostEvent(EVFILT_WRITE, true);   // Still remaining data.
                 else
                 {
-                    ptr->DecSendLock();
                     ptr->PostEvent(EVFILT_READ, false);
                 }
                 ptr->BurstEnd();            // Unlock
@@ -151,7 +150,6 @@ bool SocketWorkerThread::run()
                 if(ptr->writeBuffer.GetSize() > 0 && ptr->IsConnected() && !ptr->HasSendLock())
                 {
                     ptr->PostEvent(EVFILT_WRITE, true);
-                    ptr->IncSendLock();
                 }
             }
         }

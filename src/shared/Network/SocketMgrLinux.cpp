@@ -170,7 +170,6 @@ bool SocketWorkerThread::run()
                 else
                 {
                     /* change back to a read event */
-                    ptr->DecSendLock();
                     ptr->PostEvent(EPOLLIN);
                 }
                 ptr->BurstEnd();            // Unlock
