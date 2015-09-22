@@ -12,6 +12,7 @@
 #include "SocketDefines.h"
 #include "NetworkIncludes.hpp"
 #include "CircularBuffer.h"
+#include "Singleton.h"
 #include <string>
 #include <mutex>
 #include <atomic>

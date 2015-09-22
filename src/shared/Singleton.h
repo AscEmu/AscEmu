@@ -52,8 +52,8 @@ template < class type > class SERVER_DECL Singleton
             this->mSingleton = 0;
         }
 
-        ARCEMU_INLINE static type & getSingleton() { ASSERT(mSingleton); return *mSingleton; }
-        ARCEMU_INLINE static type* getSingletonPtr() { return mSingleton; }
+        inline static type & getSingleton() { ASSERT(mSingleton); return *mSingleton; }
+        inline static type* getSingletonPtr() { return mSingleton; }
 
     protected:
 
