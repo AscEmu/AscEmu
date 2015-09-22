@@ -32,7 +32,8 @@ enum LOOTTYPE
 
 struct ItemPrototype;
 class MapMgr;
-
+struct RandomProps;
+struct ItemRandomSuffixEntry;
 
 class LootRoll : public EventableObject
 {
