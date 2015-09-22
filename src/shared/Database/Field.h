@@ -20,6 +20,7 @@
 #ifndef _FIELD_H
 #define _FIELD_H
 
+#include "CommonTypes.hpp"
 
 class Field
 {
