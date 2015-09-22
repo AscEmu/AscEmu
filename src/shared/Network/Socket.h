@@ -14,6 +14,7 @@
 #include "CircularBuffer.h"
 #include <string>
 #include <mutex>
+#include <atomic>
 
 class SERVER_DECL Socket
 {
@@ -76,11 +77,11 @@ class SERVER_DECL Socket
 
         inline bool IsDeleted()
         {
-            return m_deleted.GetVal();
+            return m_deleted;
         }
         inline bool IsConnected()
         {
-            return m_connected.GetVal();
+            return m_connected;
         }
         inline sockaddr_in & GetRemoteStruct() { return m_client; }
 
@@ -103,10 +104,10 @@ class SERVER_DECL Socket
         std::recursive_mutex m_readMutex;
 
         // we are connected? stop from posting events.
-        Arcemu::Threading::AtomicBoolean m_connected;
+        std::atomic<bool> m_connected;
 
         // We are deleted? Stop us from posting events.
-        Arcemu::Threading::AtomicBoolean m_deleted;
+        std::atomic<bool> m_deleted;
 
         sockaddr_in m_client;
 
