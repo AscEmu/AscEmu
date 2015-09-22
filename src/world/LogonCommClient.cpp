@@ -21,6 +21,7 @@
 
 #include "CommonTypes.hpp"
 #include "LogonCommClient.h"
+#include "WorldPacket.h"
 
 #pragma pack(push, 1)
 typedef struct
