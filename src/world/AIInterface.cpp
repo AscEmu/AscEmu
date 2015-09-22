@@ -33,6 +33,8 @@ class Unit;
 #include <G3D/Vector3.h>
 #include "AIInterface.h"
 
+#include "Pet.h"
+
 AIInterface::AIInterface()
     :
     m_canMove(true),
