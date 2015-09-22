@@ -20,6 +20,8 @@
 #ifndef _ATOMICCOUNTER_H
 #define _ATOMICCOUNTER_H
 
+#include "AtomicULong.h"
+
 namespace Arcemu
 {
     namespace Threading
