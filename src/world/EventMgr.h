@@ -24,6 +24,8 @@
 #include "Threading/RWLock.h"
 #include "Threading/AtomicCounter.h"
 #include "CallBack.h"
+#include "Singleton.h"
+#include <map>
 
 enum EventTypes
 {
