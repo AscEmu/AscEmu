@@ -100,6 +100,9 @@ class SERVER_DECL Socket
 
         SOCKET m_fd;
 
+        /*! Probably unnecessary, but maintains compatibility with old code */
+        std::recursive_mutex m_sendMutex;
+
         std::recursive_mutex m_writeMutex;
         std::recursive_mutex m_readMutex;
 
@@ -114,22 +117,7 @@ class SERVER_DECL Socket
         unsigned long m_BytesSent;
         unsigned long m_BytesRecieved;
 
-    public:
-        // Atomic wrapper functions for increasing read/write locks
-        inline void IncSendLock() { ++m_writeLock; }
-        inline void DecSendLock() { --m_writeLock; }
-        inline bool AcquireSendLock()
-        {
-            if(m_writeLock.SetVal(1) != 0)
-                return false;
-            else
-                return true;
-        }
-
     private:
-        // Write lock, stops multiple write events from being posted.
-        Arcemu::Threading::AtomicCounter m_writeLock;
-
         /* Win32 - IOCP Specific Calls */
 #ifdef CONFIG_USE_IOCP
 

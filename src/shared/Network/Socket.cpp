@@ -10,7 +10,7 @@
 
 initialiseSingleton(SocketGarbageCollector);
 
-Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_fd(fd), m_connected(false),    m_deleted(false), m_writeLock(0)
+Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_fd(fd), m_connected(false),    m_deleted(false)
 {
     // Allocate Buffers
     readBuffer.Allocate(recvbuffersize);

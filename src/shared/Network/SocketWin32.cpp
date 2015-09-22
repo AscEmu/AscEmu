@@ -52,16 +52,10 @@ void Socket::WriteCallback()
                 sLog.outError("WSAGetLastError() = %d on socket %u", wsaerror, m_fd);
 
                 m_writeEvent.Unmark();
-                DecSendLock();
                 Disconnect();
             }
         }
         m_BytesSent += w_length;
-    }
-    else
-    {
-        // Write operation is completed.
-        DecSendLock();
     }
 }
 
@@ -115,8 +109,9 @@ void Socket::AssignToCompletionPort()
 
 void Socket::BurstPush()
 {
-    if(AcquireSendLock())
-        WriteCallback();
+    std::lock_guard<std::recursive_mutex> lock(m_sendMutex);
+    
+    WriteCallback();
 }
 
 #endif
