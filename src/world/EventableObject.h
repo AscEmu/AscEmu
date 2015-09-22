@@ -23,8 +23,8 @@
 
 class EventableObjectHolder;
 
-typedef list<TimedEvent*> EventList;
-typedef multimap<uint32, TimedEvent*> EventMap;
+typedef std::list<TimedEvent*> EventList;
+typedef std::multimap<uint32, TimedEvent*> EventMap;
 
 #define EVENT_REMOVAL_FLAG_ALL 0xFFFFFFFF
 #define WORLD_INSTANCE -1

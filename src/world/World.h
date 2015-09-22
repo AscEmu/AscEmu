@@ -22,6 +22,8 @@
 #ifndef __WORLD_H
 #define __WORLD_H
 
+#include "EventableObject.h"
+#include "IUpdatable.h"
 #include "Definitions.h"
 #include <set>
 #include <string>
