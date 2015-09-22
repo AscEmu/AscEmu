@@ -26,17 +26,14 @@ void Socket::PostEvent(int events, bool oneshot)
 
 void Socket::ReadCallback(uint32 len)
 {
+    std::lock_guard<std::recursive_mutex> lock(m_readMutex);
     if(IsDeleted() || !IsConnected())
         return;
-
-    // We have to lock here.
-    m_readMutex.Acquire();
 
     size_t space = readBuffer.GetSpace();
     int bytes = recv(m_fd, readBuffer.GetBuffer(), space, 0);
     if(bytes <= 0)
     {
-        m_readMutex.Release();
         Disconnect();
         return;
     }
@@ -48,8 +45,6 @@ void Socket::ReadCallback(uint32 len)
         OnRead();
     }
     m_BytesRecieved += bytes;
-
-    m_readMutex.Release();
 }
 
 void Socket::WriteCallback()
