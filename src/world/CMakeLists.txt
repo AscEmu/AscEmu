@@ -269,6 +269,7 @@ set(headers
 	Priest.h
 	Quest.h
 	QuestMgr.h
+    RecastIncludes.hpp
 	Rogue.h
 	ScriptMgr.h
 	ScriptSetup.h

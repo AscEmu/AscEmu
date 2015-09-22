@@ -70,12 +70,7 @@ template< class T, class U > T TO(U u) { return static_cast< T >(u); }
 #include <tr1/array>
 #endif
 
-#include "DetourNavMeshQuery.h"
-#include "DetourNavMesh.h"
-#include "DetourNode.h"
-#include "DetourCommon.h"
-#include "DetourAlloc.h"
-#include "DetourAssert.h"
+#include "RecastIncludes.hpp"
 
 #include "../shared/Common.h"
 #include "../shared/MersenneTwister.h"

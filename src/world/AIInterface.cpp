@@ -27,6 +27,7 @@ class Unit;
 #include <cmath>
 #endif
 
+#include <G3D/Vector3.h>
 #include "AIInterface.h"
 
 AIInterface::AIInterface()
