@@ -21,6 +21,8 @@
 #ifndef WOWSERVER_QUEST_H
 #define WOWSERVER_QUEST_H
 
+#include "Unit.h"
+
 enum QUEST_STATUS
 {
     QMGR_QUEST_NOT_AVAILABLE					= 0x00,	    /// There aren't any quests available.		| "No Mark"
