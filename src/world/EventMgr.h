@@ -22,6 +22,7 @@
 #define _EVENTMGR_H
 
 #include "Threading/RWLock.h"
+#include "Threading/AtomicCounter.h"
 #include "CallBack.h"
 
 enum EventTypes
