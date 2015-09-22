@@ -35,6 +35,7 @@ class EventableObject;
 #include "DBC/DBCStructures.hpp"
 #include "../shared/StackBuffer.h"
 
+struct SpellEntry;
 class Unit;
 class Group;
 
