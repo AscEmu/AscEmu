@@ -26,6 +26,14 @@
 
 class Unit;
 
+#ifdef _WIN32
+#include <unordered_map>
+#include <memory>
+#else
+#include <tr1/unordered_map>
+#include <trl/memory>
+#endif
+
 ///////////////////////////////////////////////
 //class SummonHandler
 //  Manages the summons for Units.

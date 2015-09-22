@@ -34,6 +34,8 @@ class DynamicObject;
 class SummonHandler;
 #include "SummonHandler.h"
 
+class Vehicle;
+
 //these refer to visibility ranges. We need to store each stack of the aura and not just visible count.
 #define MAX_POSITIVE_VISUAL_AURAS_START 0
 #define MAX_POSITIVE_VISUAL_AURAS_END 40
@@ -1285,9 +1287,11 @@ class SERVER_DECL Unit : public Object
     public:
         void SetCurrentVehicle(Vehicle* v){ currentvehicle = v; }
         void EnterVehicle(uint64 guid, uint32 delay);
-        Vehicle* GetCurrentVehicle(){ return currentvehicle; }
-        Vehicle* GetVehicleComponent(){ return vehicle; }
-        virtual void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid){}
+    Vehicle* GetCurrentVehicle();
+
+    Vehicle* GetVehicleComponent();
+
+    virtual void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid){}
         virtual void RemoveVehicleComponent(){}
 
         void SendHopOnVehicle(Unit* vehicleowner, uint32 seat);

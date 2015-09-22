@@ -20,6 +20,7 @@
 
 #include "SummonHandler.h"
 #include "LootMgr.h"
+#include "Vehicle.h"
 #include "StdAfx.h"
 
 static float AttackToRageConversionTable[PLAYER_LEVEL_CAP + 1] =
@@ -8301,6 +8302,16 @@ void Unit::EnterVehicle(uint64 guid, uint32 delay)
         return;
 
     u->GetVehicleComponent()->AddPassenger(this);
+}
+
+Vehicle* Unit::GetCurrentVehicle()
+{
+    return currentvehicle;
+}
+
+Vehicle* Unit::GetVehicleComponent()
+{
+    return vehicle;
 }
 
 Unit* Unit::GetVehicleBase()
