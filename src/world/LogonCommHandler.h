@@ -60,9 +60,9 @@ enum RealmType
 class LogonCommHandler : public Singleton<LogonCommHandler>
 {
 #ifdef WIN32
-        typedef HM_NAMESPACE::hash_map<string, string> ForcedPermissionMap;
+    typedef HM_NAMESPACE::hash_map<std::string, std::string> ForcedPermissionMap;
 #else
-        typedef std::map<string, string> ForcedPermissionMap;
+    typedef std::map<std::string, std::string> ForcedPermissionMap;
 #endif
 
         ForcedPermissionMap forced_permissions;
@@ -86,7 +86,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         LogonCommHandler();
         ~LogonCommHandler();
 
-        LogonCommClientSocket* ConnectToLogon(string Address, uint32 Port);
+        LogonCommClientSocket* ConnectToLogon(std::string Address, uint32 Port);
         void UpdateAccountCount(uint32 account_id, uint8 add);
         void RequestAddition(LogonCommClientSocket* Socket);
         void CheckAllServers();
@@ -107,7 +107,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         void IPBan_Remove(const char* ip);
 
         void LoadRealmConfiguration();
-        void AddServer(string Name, string Address, uint32 Port);
+        void AddServer(std::string Name, std::string Address, uint32 Port);
 
         inline uint32 GetRealmType() { return _realmType; }
         void SetRealmType(uint32 type) { _realmType = type; }
@@ -117,7 +117,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         // Worldsocket stuff
         ///////
 
-        uint32 ClientConnected(string AccountName, WorldSocket* Socket);
+        uint32 ClientConnected(std::string AccountName, WorldSocket* Socket);
         void UnauthedSocketClose(uint32 id);
         void RemoveUnauthedSocket(uint32 id);
         WorldSocket* GetSocketByRequest(uint32 id)
@@ -132,9 +132,9 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
             return sock;
         }
         inline Mutex & GetPendingLock() { return pendingLock; }
-        const string* GetForcedPermissions(string & username);
+        const std::string* GetForcedPermissions(std::string & username);
 
-        void TestConsoleLogon(string & username, string & password, uint32 requestnum);
+        void TestConsoleLogon(std::string & username, std::string & password, uint32 requestnum);
 };
 
 #define sLogonCommHandler LogonCommHandler::getSingleton()
