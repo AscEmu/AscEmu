@@ -24,6 +24,7 @@
 #define __WORLDSESSION_H
 
 #include "Opcodes.h"
+#include "Quest.h"
 
 class Player;
 class WorldPacket;
