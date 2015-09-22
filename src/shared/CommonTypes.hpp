@@ -28,4 +28,23 @@ typedef uint64_t uint64;
 typedef uint32_t uint32;
 typedef uint16_t uint16;
 typedef uint8_t uint8;
+
+#ifdef WIN32
+#ifndef SCRIPTLIB
+#define SERVER_DECL __declspec(dllexport)
+#define SCRIPT_DECL __declspec(dllimport)
+#else
+#define SERVER_DECL __declspec(dllimport)
+#define SCRIPT_DECL __declspec(dllexport)
+#endif
+#define DECL_LOCAL
+#elif defined __GNUC__ && __GNUC__ >= 4
+#define SERVER_DECL __attribute__((visibility ("default")))
+#define SCRIPT_DECL __attribute__((visibility ("default")))
+#define DECL_LOCAL __attribute__((visibility ("hidden")))
+#else
+#define SERVER_DECL
+#define SCRIPT_DECL
+#define DECL_LOCAL
+#endif
 #endif      //WOWSERVER_COMMON_TYPES_HPP

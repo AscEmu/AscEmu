@@ -344,27 +344,6 @@ using __gnu_cxx::hash_set;*/
 
 #include "CommonTypes.hpp"
 
-
-// Scripting system exports/imports
-#ifdef WIN32
-#ifndef SCRIPTLIB
-#define SERVER_DECL __declspec(dllexport)
-#define SCRIPT_DECL __declspec(dllimport)
-#else
-#define SERVER_DECL __declspec(dllimport)
-#define SCRIPT_DECL __declspec(dllexport)
-#endif
-#define DECL_LOCAL
-#elif defined __GNUC__ && __GNUC__ >= 4
-#define SERVER_DECL __attribute__((visibility ("default")))
-#define SCRIPT_DECL __attribute__((visibility ("default")))
-#define DECL_LOCAL __attribute__((visibility ("hidden")))
-#else
-#define SERVER_DECL
-#define SCRIPT_DECL
-#define DECL_LOCAL
-#endif
-
 // Include all threading files
 #include <cassert>
 #include "Threading/Threading.h"
