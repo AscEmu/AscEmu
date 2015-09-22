@@ -27,6 +27,7 @@
 #include "Definitions.h"
 #include "DBC/DBCStores.h"
 #include "AreaTrigger.h"
+#include "WorldSession.h"
 #include <set>
 #include <string>
 #include <vector>
