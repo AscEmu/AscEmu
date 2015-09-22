@@ -24,8 +24,6 @@
 #include "WorldModel.h"
 #include "ModelInstance.h"
 
-using namespace std;
-
 namespace VMAP
 {
     // Need direct access to encapsulated VMAP data, so we add functions for MMAP generator

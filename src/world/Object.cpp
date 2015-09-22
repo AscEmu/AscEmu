@@ -21,9 +21,6 @@
 #include "StdAfx.h"
 #include "Unit.h"
 
-
-using namespace std;
-
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {
     m_mapId = MAPID_NOT_IN_WORLD;

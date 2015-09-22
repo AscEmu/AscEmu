@@ -28,8 +28,6 @@
 #   pragma warning (disable : 4530)
 #endif
 
-using namespace std;
-
 namespace G3D { namespace _internal {
 
 ConsolePrintHook _consolePrintHook;
@@ -119,7 +117,7 @@ static void createErrorMessage(
         GetModuleFileNameA(NULL, modulePath, MAX_PATH);
 
         const char* moduleName = strrchr(modulePath, '\\');
-        outTitle = outTitle + string(" - ") + string(moduleName ? (moduleName + 1) : modulePath);
+        outTitle = outTitle + std::string(" - ") + std::string(moduleName ? (moduleName + 1) : modulePath);
 
     #endif
 
