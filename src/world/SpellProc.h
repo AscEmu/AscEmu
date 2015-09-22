@@ -21,8 +21,6 @@
 #ifndef _SPELL_PROC_H
 #define _SPELL_PROC_H
 
-#include "StdAfx.h"
-
 class SpellProc;
 class Unit;
 
