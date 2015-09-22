@@ -292,6 +292,7 @@ set(headers
 	Entities/Summons/TotemSummon.h
 	TransporterHandler.h
 	Unit.h
+    UnitDefines.hpp
 	UpdateFields.h
 	UpdateMask.h
 	Vehicle.h

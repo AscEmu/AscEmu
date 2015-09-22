@@ -21,6 +21,7 @@
 #ifndef _WOWSERVER_CREATURE_H
 #define _WOWSERVER_CREATURE_H
 
+#include "UnitDefines.hpp"
 #include "Map.h"
 #include "Unit.h"
 
