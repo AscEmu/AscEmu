@@ -22,6 +22,7 @@
 #define _OBJECT_H
 
 #include "UpdateFields.h"
+#include "CommonTypes.hpp"
 
 class Unit;
 class Group;
