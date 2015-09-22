@@ -25,6 +25,11 @@
 #ifndef __WORLDSOCKET_H
 #define __WORLDSOCKET_H
 
+#include "StackBuffer.h"
+#include "FastQueue.h"
+#include "Auth/WowCrypt.h"
+#include <string>
+
 #define WORLDSOCKET_SENDBUF_SIZE 131078
 #define WORLDSOCKET_RECVBUF_SIZE 16384
 
@@ -94,7 +99,7 @@ class SERVER_DECL WorldSocket : public Socket
         uint32 _latency;
         bool mQueued;
         bool m_nagleEanbled;
-        string* m_fullAccountName;
+        std::string* m_fullAccountName;
 };
 
 

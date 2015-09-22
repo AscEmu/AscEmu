@@ -20,8 +20,9 @@
 #ifndef _AUTH_BIGNUMBER_H
 #define _AUTH_BIGNUMBER_H
 
-#include "Common.h"
+#include "CommonTypes.hpp"
 #include "ByteBuffer.h"
+#include <vector>
 
 //#include "openssl/bn.h"
 struct bignum_st;
