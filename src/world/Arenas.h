@@ -81,8 +81,8 @@ protected:
 
         /// Returns the faction of the team
         uint32 GetTeamFaction(uint32 team);
-        ARCEMU_INLINE uint8 Rated() { return rated_match; }
-        ARCEMU_INLINE uint32 GetArenaTeamType() { return m_arenateamtype; }
-        ARCEMU_INLINE ArenaTeam** GetTeams() { return m_teams; }
+        inline uint8 Rated() { return rated_match; }
+        inline uint32 GetArenaTeamType() { return m_arenateamtype; }
+        inline ArenaTeam** GetTeams() { return m_teams; }
         uint32 CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome);
 };

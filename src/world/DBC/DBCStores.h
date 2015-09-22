@@ -1708,23 +1708,23 @@ struct VehicleSeatEntry
 
 #pragma pack(pop)
 
-ARCEMU_INLINE float GetRadius(SpellRadius* radius)
+inline float GetRadius(SpellRadius* radius)
 {
     return radius->Radius;
 }
-ARCEMU_INLINE uint32 GetCastTime(SpellCastTime* time)
+inline uint32 GetCastTime(SpellCastTime* time)
 {
     return time->CastTime;
 }
-ARCEMU_INLINE float GetMaxRange(SpellRange* range)
+inline float GetMaxRange(SpellRange* range)
 {
     return range->maxRange;
 }
-ARCEMU_INLINE float GetMinRange(SpellRange* range)
+inline float GetMinRange(SpellRange* range)
 {
     return range->minRange;
 }
-ARCEMU_INLINE uint32 GetDuration(SpellDuration* dur)
+inline uint32 GetDuration(SpellDuration* dur)
 {
     return dur->Duration1;
 }
@@ -1965,7 +1965,7 @@ class SERVER_DECL DBCStorage
             }
         }
 
-        ARCEMU_INLINE uint32 GetNumRows()
+        inline uint32 GetNumRows()
         {
             return m_numrows;
         }

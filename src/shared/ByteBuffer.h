@@ -358,7 +358,7 @@ class SERVER_DECL ByteBuffer
 
         const uint8* contents() const { return &_storage[0]; };
 
-        ARCEMU_INLINE size_t size() const { return _storage.size(); };
+        inline size_t size() const { return _storage.size(); };
         // one should never use resize probably
         void resize(size_t newsize)
         {
@@ -503,7 +503,7 @@ class SERVER_DECL ByteBuffer
             printf("\n");
         }
 
-        ARCEMU_INLINE void reverse()
+        inline void reverse()
         {
             std::reverse(_storage.begin(), _storage.end());
         }

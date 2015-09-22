@@ -32,14 +32,14 @@ class LockedQueue
 
         }
 
-        ARCEMU_INLINE void add(const TYPE & element)
+        inline void add(const TYPE & element)
         {
             mutex.Acquire();
             queue.push_back(element);
             mutex.Release();
         }
 
-        ARCEMU_INLINE TYPE next()
+        inline TYPE next()
         {
             mutex.Acquire();
             assert(queue.size() > 0);
@@ -49,7 +49,7 @@ class LockedQueue
             return t;
         }
 
-        ARCEMU_INLINE size_t size()
+        inline size_t size()
         {
             mutex.Acquire();
             size_t c = queue.size();
@@ -57,7 +57,7 @@ class LockedQueue
             return c;
         }
 
-        ARCEMU_INLINE TYPE get_first_element()
+        inline TYPE get_first_element()
         {
             mutex.Acquire();
             TYPE t;
@@ -69,7 +69,7 @@ class LockedQueue
             return t;
         }
 
-        ARCEMU_INLINE void pop()
+        inline void pop()
         {
             mutex.Acquire();
             ASSERT(queue.size() > 0);
@@ -77,7 +77,7 @@ class LockedQueue
             mutex.Release();
         }
 
-        ARCEMU_INLINE void clear()
+        inline void clear()
         {
             mutex.Acquire();
             queue.resize(0);

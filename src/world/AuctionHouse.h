@@ -81,7 +81,7 @@ class AuctionHouse
         AuctionHouse(uint32 ID);
         ~AuctionHouse();
 
-        ARCEMU_INLINE uint32 GetID() { return dbc->id; }
+        inline uint32 GetID() { return dbc->id; }
         void LoadAuctions();
 
         void UpdateAuctions();

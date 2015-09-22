@@ -54,7 +54,7 @@ class SERVER_DECL AsyncQuery
         ~AsyncQuery();
         void AddQuery(const char* format, ...);
         void Perform();
-        ARCEMU_INLINE void SetDB(Database* dbb) { db = dbb; }
+        inline void SetDB(Database* dbb) { db = dbb; }
 };
 
 class SERVER_DECL QueryBuffer
@@ -104,9 +104,9 @@ class SERVER_DECL Database : public CThread
         // Initialized on load: Database::Database() : CThread()
         bool ThreadRunning;
 
-        ARCEMU_INLINE const string & GetHostName() { return mHostname; }
-        ARCEMU_INLINE const string & GetDatabaseName() { return mDatabaseName; }
-        ARCEMU_INLINE const uint32 GetQueueSize() { return queries_queue.get_size(); }
+        inline const string & GetHostName() { return mHostname; }
+        inline const string & GetDatabaseName() { return mDatabaseName; }
+        inline const uint32 GetQueueSize() { return queries_queue.get_size(); }
 
         virtual string EscapeString(string Escape) = 0;
         virtual void EscapeLongString(const char* str, uint32 len, stringstream & out) = 0;
@@ -172,9 +172,9 @@ class SERVER_DECL QueryResult
         virtual bool NextRow() = 0;
         void Delete() { delete this; }
 
-        ARCEMU_INLINE Field* Fetch() { return mCurrentRow; }
-        ARCEMU_INLINE uint32 GetFieldCount() const { return mFieldCount; }
-        ARCEMU_INLINE uint32 GetRowCount() const { return mRowCount; }
+        inline Field* Fetch() { return mCurrentRow; }
+        inline uint32 GetFieldCount() const { return mFieldCount; }
+        inline uint32 GetRowCount() const { return mRowCount; }
 
     protected:
         uint32 mFieldCount;

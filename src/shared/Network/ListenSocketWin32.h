@@ -96,7 +96,7 @@ class SERVER_DECL ListenSocket : public ThreadBase
                 SocketOps::CloseSocket(m_socket);
         }
 
-        ARCEMU_INLINE bool IsOpen() { return m_opened; }
+        inline bool IsOpen() { return m_opened; }
 
     private:
 

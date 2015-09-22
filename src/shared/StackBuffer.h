@@ -126,7 +126,7 @@ class SERVER_DECL StackBuffer : public StackBufferBase
         /** Ensures the buffer is big enough to fit the specified number of bytes.
          * @param bytes number of bytes to fit
          */
-        ARCEMU_INLINE void EnsureBufferSize(uint32 Bytes)
+        inline void EnsureBufferSize(uint32 Bytes)
         {
             if(m_writePos + Bytes > m_space)
                 ReallocateOnHeap();

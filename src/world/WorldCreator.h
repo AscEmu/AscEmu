@@ -114,7 +114,7 @@ class SERVER_DECL InstanceMgr
         InstanceMgr();
         ~InstanceMgr();
 
-        ARCEMU_INLINE Map* GetMap(uint32 mapid)
+        inline Map* GetMap(uint32 mapid)
         {
             if (mapid >= NUM_MAPS)
                 return NULL;
@@ -139,7 +139,7 @@ class SERVER_DECL InstanceMgr
 
         // has an instance expired?
         // can a player join?
-        ARCEMU_INLINE bool PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
+        inline bool PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
         {
             // Expired?
             if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
@@ -161,7 +161,7 @@ class SERVER_DECL InstanceMgr
         }
 
         // has an instance expired?
-        ARCEMU_INLINE bool HasInstanceExpired(Instance* pInstance)
+        inline bool HasInstanceExpired(Instance* pInstance)
         {
             // expired?
             if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)

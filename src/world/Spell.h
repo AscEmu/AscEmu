@@ -1142,7 +1142,7 @@ enum TeleportEffectCustomFlags
     TELEPORT_TO_CASTER                  = 8
 };
 
-ARCEMU_INLINE bool CanAgroHash(uint32 spellhashname)
+inline bool CanAgroHash(uint32 spellhashname)
 {
     if (spellhashname == SPELL_HASH_HUNTER_S_MARK)   //hunter's mark
         return false;
@@ -1164,7 +1164,7 @@ ARCEMU_INLINE bool CanAgroHash(uint32 spellhashname)
 ////////////////////////////////////////////////////////////////////////////////
 bool IsDamagingSpell(SpellEntry* sp);
 
-ARCEMU_INLINE uint32 IsHealingSpell(SpellEntry* sp)
+inline uint32 IsHealingSpell(SpellEntry* sp)
 {
     switch(sp->Effect[0])
     {
@@ -1239,19 +1239,19 @@ ARCEMU_INLINE uint32 IsHealingSpell(SpellEntry* sp)
     return false;
 }
 
-ARCEMU_INLINE bool IsInrange(LocationVector & location, Object* o, float square_r)
+inline bool IsInrange(LocationVector & location, Object* o, float square_r)
 {
     float r = o->GetDistanceSq(location);
     return (r <= square_r);
 }
 
-ARCEMU_INLINE bool IsInrange(float x1, float y1, float z1, Object* o, float square_r)
+inline bool IsInrange(float x1, float y1, float z1, Object* o, float square_r)
 {
     float r = o->GetDistanceSq(x1, y1, z1);
     return (r <= square_r);
 }
 
-ARCEMU_INLINE bool IsInrange(float x1, float y1, float z1, float x2, float y2, float z2, float square_r)
+inline bool IsInrange(float x1, float y1, float z1, float x2, float y2, float z2, float square_r)
 {
     float t;
     float r;
@@ -1264,13 +1264,13 @@ ARCEMU_INLINE bool IsInrange(float x1, float y1, float z1, float x2, float y2, f
     return (r <= square_r);
 }
 
-ARCEMU_INLINE bool IsInrange(Object* o1, Object* o2, float square_r)
+inline bool IsInrange(Object* o1, Object* o2, float square_r)
 {
     return IsInrange(o1->GetPositionX(), o1->GetPositionY(), o1->GetPositionZ(),
                      o2->GetPositionX(), o2->GetPositionY(), o2->GetPositionZ(), square_r);
 }
 
-ARCEMU_INLINE bool TargetTypeCheck(Object* obj, uint32 ReqCreatureTypeMask)
+inline bool TargetTypeCheck(Object* obj, uint32 ReqCreatureTypeMask)
 {
     if (!ReqCreatureTypeMask)
         return true;
@@ -1567,7 +1567,7 @@ inline int GetAiTargetType(SpellEntry* sp)
     return TTYPE_NULL;
 }
 
-ARCEMU_INLINE bool IsTargetingStealthed(SpellEntry* sp)
+inline bool IsTargetingStealthed(SpellEntry* sp)
 {
     if (
         HasTargetType(sp, EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
@@ -1776,31 +1776,31 @@ class SERVER_DECL Spell : public EventableObject
                 return false;
         }
 
-        ARCEMU_INLINE bool hasAttribute(uint32 attribute)
+        inline bool hasAttribute(uint32 attribute)
         {
             return ((GetProto()->Attributes & attribute) > 0);
         }
-        ARCEMU_INLINE bool hasAttributeEx(uint32 attribute)
+        inline bool hasAttributeEx(uint32 attribute)
         {
             return ((GetProto()->AttributesEx & attribute) > 0);
         }
-        ARCEMU_INLINE bool hasAttributeExB(uint32 attribute)
+        inline bool hasAttributeExB(uint32 attribute)
         {
             return ((GetProto()->AttributesExB & attribute) > 0);
         }
-        ARCEMU_INLINE bool hasAttributeExC(uint32 attribute)
+        inline bool hasAttributeExC(uint32 attribute)
         {
             return ((GetProto()->AttributesExC & attribute) > 0);
         }
-        ARCEMU_INLINE bool hasAttributeExD(uint32 attribute)
+        inline bool hasAttributeExD(uint32 attribute)
         {
             return ((GetProto()->AttributesExD & attribute) > 0);
         }
-        ARCEMU_INLINE bool hasAttributeExE(uint32 attribute)
+        inline bool hasAttributeExE(uint32 attribute)
         {
             return ((GetProto()->AttributesExE & attribute) > 0);
         }
-        ARCEMU_INLINE bool hasAttributeExF(uint32 attribute)
+        inline bool hasAttributeExF(uint32 attribute)
         {
             return ((GetProto()->AttributesExF & attribute) > 0);
         }
@@ -1822,8 +1822,8 @@ class SERVER_DECL Spell : public EventableObject
 
         bool Reflect(Unit* refunit);
 
-        ARCEMU_INLINE uint32 getState() { return m_spellState; }
-        ARCEMU_INLINE void SetUnitTarget(Unit* punit) { unitTarget = punit; }
+        inline uint32 getState() { return m_spellState; }
+        inline void SetUnitTarget(Unit* punit) { unitTarget = punit; }
 
         // Send Packet functions
         void SetExtraCastResult(SpellExtraError result);
@@ -2046,16 +2046,16 @@ class SERVER_DECL Spell : public EventableObject
 
         // This returns SPELL_ENTRY_Spell_Dmg_Type where 0 = SPELL_DMG_TYPE_NONE, 1 = SPELL_DMG_TYPE_MAGIC, 2 = SPELL_DMG_TYPE_MELEE, 3 = SPELL_DMG_TYPE_RANGED
         // It should NOT be used for weapon_damage_type which needs: 0 = MELEE, 1 = OFFHAND, 2 = RANGED
-        ARCEMU_INLINE uint32 GetType() { return (GetProto()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetProto()->Spell_Dmg_Type); }
+        inline uint32 GetType() { return (GetProto()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetProto()->Spell_Dmg_Type); }
 
         std::map<uint64, Aura*> m_pendingAuras;
         TargetsList UniqueTargets;
         SpellTargetsList    ModeratedTargets;
 
-        ARCEMU_INLINE Item* GetItemTarget() { return itemTarget; }
-        ARCEMU_INLINE Unit* GetUnitTarget() { return unitTarget; }
-        ARCEMU_INLINE Player* GetPlayerTarget() { return playerTarget; }
-        ARCEMU_INLINE GameObject* GetGameObjectTarget() { return gameObjTarget; }
+        inline Item* GetItemTarget() { return itemTarget; }
+        inline Unit* GetUnitTarget() { return unitTarget; }
+        inline Player* GetPlayerTarget() { return playerTarget; }
+        inline GameObject* GetGameObjectTarget() { return gameObjTarget; }
         Corpse* GetCorpseTarget() { return corpseTarget; }
 
         uint32 chaindamage;
@@ -2064,7 +2064,7 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-        ARCEMU_INLINE SpellEntry* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
+        inline SpellEntry* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
         void InitProtoOverride()
         {
             if (m_spellInfo_override != NULL)
@@ -2142,7 +2142,7 @@ class SERVER_DECL Spell : public EventableObject
             return this->Dur;
         }
 
-        ARCEMU_INLINE float GetRadius(uint32 i)
+        inline float GetRadius(uint32 i)
         {
             if (bRadSet[i])return Rad[i];
             bRadSet[i] = true;
@@ -2164,7 +2164,7 @@ class SERVER_DECL Spell : public EventableObject
             return Rad[i];
         }
 
-        ARCEMU_INLINE static uint32 GetBaseThreat(uint32 dmg)
+        inline static uint32 GetBaseThreat(uint32 dmg)
         {
             //there should be a formula to determine what spell cause threat and which don't
             /*        switch(GetProto()->NameHash)
@@ -2178,7 +2178,7 @@ class SERVER_DECL Spell : public EventableObject
             return dmg;
         }
 
-        ARCEMU_INLINE static uint32 GetMechanic(SpellEntry* sp)
+        inline static uint32 GetMechanic(SpellEntry* sp)
         {
             if (sp->MechanicsType)
                 return sp->MechanicsType;
@@ -2236,22 +2236,22 @@ class SERVER_DECL Spell : public EventableObject
                 return false;
         }
 
-        ARCEMU_INLINE void safe_cancel()
+        inline void safe_cancel()
         {
             m_cancelled = true;
         }
 
         /// Spell state's
         /// Spell failed
-        ARCEMU_INLINE bool GetSpellFailed() { return m_Spell_Failed; }
-        ARCEMU_INLINE void SetSpellFailed(bool failed = true) { m_Spell_Failed = failed; }
+        inline bool GetSpellFailed() { return m_Spell_Failed; }
+        inline void SetSpellFailed(bool failed = true) { m_Spell_Failed = failed; }
 
-        ARCEMU_INLINE bool IsReflected() { return m_IsReflected; }
-        ARCEMU_INLINE void SetReflected(bool reflected = true) { m_IsReflected = reflected; }
+        inline bool IsReflected() { return m_IsReflected; }
+        inline void SetReflected(bool reflected = true) { m_IsReflected = reflected; }
 
         /// Spell possibility's
-        ARCEMU_INLINE bool GetCanReflect() { return m_CanRelect; }
-        ARCEMU_INLINE void SetCanReflect(bool reflect = true) { m_CanRelect = reflect; }
+        inline bool GetCanReflect() { return m_CanRelect; }
+        inline void SetCanReflect(bool reflect = true) { m_CanRelect = reflect; }
 
 
         Spell* m_reflectedParent;
@@ -2295,7 +2295,7 @@ class SERVER_DECL Spell : public EventableObject
         uint8       m_rune_avail_before;
         //void _DamageRangeUpdate();
 
-        ARCEMU_INLINE bool HasTarget(const uint64 & guid, TargetsList* tmpMap)
+        inline bool HasTarget(const uint64 & guid, TargetsList* tmpMap)
         {
             for (TargetsList::iterator itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
             {

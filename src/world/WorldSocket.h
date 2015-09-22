@@ -47,13 +47,13 @@ class SERVER_DECL WorldSocket : public Socket
         ~WorldSocket();
 
         // vs8 fix - send null on empty buffer
-        ARCEMU_INLINE void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
-        ARCEMU_INLINE void SendPacket(StackBufferBase* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
+        inline void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
+        inline void SendPacket(StackBufferBase* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
 
         void  OutPacket(uint16 opcode, size_t len, const void* data);
         OUTPACKET_RESULT  _OutPacket(uint16 opcode, size_t len, const void* data);
 
-        ARCEMU_INLINE uint32 GetLatency() { return _latency; }
+        inline uint32 GetLatency() { return _latency; }
 
         void Authenticate();
         void InformationRetreiveCallback(WorldPacket & recvData, uint32 requestid);
@@ -64,8 +64,8 @@ class SERVER_DECL WorldSocket : public Socket
         void OnConnect();
         void OnDisconnect();
 
-        ARCEMU_INLINE void SetSession(WorldSession* session) { mSession = session; }
-        ARCEMU_INLINE WorldSession* GetSession() { return mSession; }
+        inline void SetSession(WorldSession* session) { mSession = session; }
+        inline WorldSession* GetSession() { return mSession; }
         bool Authed;
 
         void UpdateQueuedPackets();

@@ -57,7 +57,6 @@ enum MsTimeVariables
 #else
 #define ARCEMU_FORCEINLINE inline
 #endif
-#define ARCEMU_INLINE inline
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -435,7 +434,7 @@ static inline int long2int32(const double value)
 #include <sys/timeb.h>
 #endif
 
-ARCEMU_INLINE uint32 now()
+inline uint32 now()
 {
 #ifdef WIN32
     return GetTickCount();
@@ -497,7 +496,7 @@ struct spawn_timed_emotes
 };
 typedef std::list<spawn_timed_emotes*> TimedEmoteList;
 
-ARCEMU_INLINE void reverse_array(uint8* pointer, size_t count)
+inline void reverse_array(uint8* pointer, size_t count)
 {
     size_t x;
     uint8* temp = (uint8*)malloc(count);
@@ -515,13 +514,13 @@ std::string ConvertTimeStampToDataTime(uint32 timestamp);
 
 uint32 DecimalToMask(uint32 dec);
 
-ARCEMU_INLINE void arcemu_TOLOWER(std::string & str)
+inline void arcemu_TOLOWER(std::string & str)
 {
     for(size_t i = 0; i < str.length(); ++i)
         str[i] = (char)tolower(str[i]);
 }
 
-ARCEMU_INLINE void arcemu_TOUPPER(std::string & str)
+inline void arcemu_TOUPPER(std::string & str)
 {
     for(size_t i = 0; i < str.length(); ++i)
         str[i] = (char)toupper(str[i]);

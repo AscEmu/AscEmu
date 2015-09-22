@@ -60,7 +60,7 @@ namespace Arcemu
                 // Parameter:    T - value to store in the tls slot
                 // Return : void
                 //************************************
-                ARCEMU_INLINE void set(T val)
+                inline void set(T val)
                 {
 #if PLATFORM == PLATFORM_APPLE || PLATFORM == PLATFORM_UNIX
                     pthread_setspecific(key_, static_cast<const void*>(val));
@@ -73,7 +73,7 @@ namespace Arcemu
                 // Purpose : Returns a reference to the stored tls value.
                 // Return : T
                 //************************************
-                ARCEMU_INLINE T get() const
+                inline T get() const
                 {
 #if PLATFORM == PLATFORM_APPLE || PLATFORM == PLATFORM_UNIX
                     return static_cast<T>(pthread_getspecific(key_));

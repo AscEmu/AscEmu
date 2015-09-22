@@ -53,8 +53,8 @@ class SERVER_DECL CThread : public ThreadBase
         CThread();
         ~CThread();
 
-        ARCEMU_INLINE void SetThreadState(CThreadState thread_state) { ThreadState.SetVal(thread_state); }
-        ARCEMU_INLINE CThreadState GetThreadState()
+        inline void SetThreadState(CThreadState thread_state) { ThreadState.SetVal(thread_state); }
+        inline CThreadState GetThreadState()
         {
             unsigned long val = ThreadState.GetVal();
             return static_cast<CThreadState>(val);

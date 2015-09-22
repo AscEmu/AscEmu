@@ -133,9 +133,9 @@ class Mailbox
 
         WorldPacket* BuildMailboxListingPacket();
         void CleanupExpiredMessages();
-        ARCEMU_INLINE size_t MessageCount() { return Messages.size(); }
+        inline size_t MessageCount() { return Messages.size(); }
         void FillTimePacket(WorldPacket & data);
-        ARCEMU_INLINE uint64 GetOwner() { return owner; }
+        inline uint64 GetOwner() { return owner; }
         void Load(QueryResult* result);
 };
 
@@ -155,7 +155,7 @@ class SERVER_DECL MailSystem : public Singleton<MailSystem>, public EventableObj
         void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, string subject, string body, uint32 money,
                                   uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
 
-        ARCEMU_INLINE bool MailOption(uint32 flag)
+        inline bool MailOption(uint32 flag)
         {
             return (config_flags & flag) ? true : false;
         }

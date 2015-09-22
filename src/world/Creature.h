@@ -438,11 +438,11 @@ class SERVER_DECL Creature : public Unit
         void Update(unsigned long time_passed);
 
         /// Creature inventory
-        ARCEMU_INLINE uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
-        ARCEMU_INLINE uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
+        inline uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
+        inline uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
 
-        ARCEMU_INLINE bool HasItems() { return ((m_SellItems != NULL) ? true : false); }
-        ARCEMU_INLINE CreatureProto* GetProto() { return proto; }
+        inline bool HasItems() { return ((m_SellItems != NULL) ? true : false); }
+        inline CreatureProto* GetProto() { return proto; }
 
         bool IsPvPFlagged();
         void SetPvPFlag();
@@ -481,7 +481,7 @@ class SERVER_DECL Creature : public Unit
             return 0;
         }
 
-        ARCEMU_INLINE void GetSellItemBySlot(uint32 slot, CreatureItem & ci)
+        inline void GetSellItemBySlot(uint32 slot, CreatureItem & ci)
         {
             ci = m_SellItems->at(slot);
         }
@@ -513,9 +513,9 @@ class SERVER_DECL Creature : public Unit
             return NULL;
         }
 
-        ARCEMU_INLINE std::vector<CreatureItem>::iterator GetSellItemBegin() { return m_SellItems->begin(); }
-        ARCEMU_INLINE std::vector<CreatureItem>::iterator GetSellItemEnd()   { return m_SellItems->end(); }
-        ARCEMU_INLINE size_t GetSellItemCount() { return m_SellItems->size(); }
+        inline std::vector<CreatureItem>::iterator GetSellItemBegin() { return m_SellItems->begin(); }
+        inline std::vector<CreatureItem>::iterator GetSellItemEnd()   { return m_SellItems->end(); }
+        inline size_t GetSellItemCount() { return m_SellItems->size(); }
         void RemoveVendorItem(uint32 itemid)
         {
             for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
@@ -552,25 +552,25 @@ class SERVER_DECL Creature : public Unit
         list<QuestRelation*>::iterator QuestsEnd() { return m_quests->end(); };
         void SetQuestList(std::list<QuestRelation*>* qst_lst) { m_quests = qst_lst; };
 
-        ARCEMU_INLINE uint32 isVendor()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR); }
-        ARCEMU_INLINE uint32 isTrainer()        const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER); }
-        ARCEMU_INLINE uint32 isClass()          const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_CLASS); }
-        ARCEMU_INLINE uint32 isProf()           const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_PROF); }
-        ARCEMU_INLINE uint32 isQuestGiver()     const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER); }
-        ARCEMU_INLINE uint32 isGossip()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP); }
-        ARCEMU_INLINE uint32 isTaxi()           const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TAXIVENDOR); }
-        ARCEMU_INLINE uint32 isCharterGiver()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARENACHARTER); }
-        ARCEMU_INLINE uint32 isGuildBank()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GUILD_BANK); }
-        ARCEMU_INLINE uint32 isBattleMaster()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BATTLEFIELDPERSON); }
-        ARCEMU_INLINE uint32 isBanker()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER); }
-        ARCEMU_INLINE uint32 isInnkeeper()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER); }
-        ARCEMU_INLINE uint32 isSpiritHealer()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER); }
-        ARCEMU_INLINE uint32 isTabardDesigner() const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TABARDCHANGER); }
-        ARCEMU_INLINE uint32 isAuctioner()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_AUCTIONEER); }
-        ARCEMU_INLINE uint32 isStableMaster()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_STABLEMASTER); }
-        ARCEMU_INLINE uint32 isArmorer()        const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARMORER); }
+        inline uint32 isVendor()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR); }
+        inline uint32 isTrainer()        const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER); }
+        inline uint32 isClass()          const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_CLASS); }
+        inline uint32 isProf()           const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_PROF); }
+        inline uint32 isQuestGiver()     const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER); }
+        inline uint32 isGossip()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP); }
+        inline uint32 isTaxi()           const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TAXIVENDOR); }
+        inline uint32 isCharterGiver()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARENACHARTER); }
+        inline uint32 isGuildBank()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GUILD_BANK); }
+        inline uint32 isBattleMaster()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BATTLEFIELDPERSON); }
+        inline uint32 isBanker()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER); }
+        inline uint32 isInnkeeper()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER); }
+        inline uint32 isSpiritHealer()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER); }
+        inline uint32 isTabardDesigner() const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TABARDCHANGER); }
+        inline uint32 isAuctioner()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_AUCTIONEER); }
+        inline uint32 isStableMaster()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_STABLEMASTER); }
+        inline uint32 isArmorer()        const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARMORER); }
 
-        ARCEMU_INLINE uint32 GetHealthFromSpell() { return m_healthfromspell; }
+        inline uint32 GetHealthFromSpell() { return m_healthfromspell; }
         void SetHealthFromSpell(uint32 value) { m_healthfromspell = value;}
 
         int32 m_speedFromHaste;
@@ -642,8 +642,8 @@ class SERVER_DECL Creature : public Unit
         uint32 GetRequiredLootSkill();
 
         // Misc
-        ARCEMU_INLINE void setEmoteState(uint8 emote) { m_emoteState = emote; };
-        ARCEMU_INLINE uint32 GetSQL_id() { return spawnid; };
+        inline void setEmoteState(uint8 emote) { m_emoteState = emote; };
+        inline uint32 GetSQL_id() { return spawnid; };
 
         virtual void setDeathState(DeathState s);
 
@@ -704,24 +704,24 @@ class SERVER_DECL Creature : public Unit
             return ModDamageDonePct[ school ];
         }
 
-        ARCEMU_INLINE bool IsPickPocketed() { return m_PickPocketed; }
-        ARCEMU_INLINE void SetPickPocketed(bool val = true) { m_PickPocketed = val; }
+        inline bool IsPickPocketed() { return m_PickPocketed; }
+        inline void SetPickPocketed(bool val = true) { m_PickPocketed = val; }
 
-        ARCEMU_INLINE CreatureAIScript* GetScript() { return _myScriptClass; }
+        inline CreatureAIScript* GetScript() { return _myScriptClass; }
         void LoadScript();
 
         void CallScriptUpdate();
 
-        ARCEMU_INLINE CreatureInfo* GetCreatureInfo() { return creature_info; }
-        ARCEMU_INLINE void SetCreatureInfo(CreatureInfo* ci) { creature_info = ci; }
+        inline CreatureInfo* GetCreatureInfo() { return creature_info; }
+        inline void SetCreatureInfo(CreatureInfo* ci) { creature_info = ci; }
         void SetCreatureProto(CreatureProto* cp) { proto = cp; }
 
-        ARCEMU_INLINE Trainer* GetTrainer() { return mTrainer; }
+        inline Trainer* GetTrainer() { return mTrainer; }
         void RegenerateFocus();
 
         CreatureFamilyEntry* myFamily;
 
-        ARCEMU_INLINE bool IsExotic()
+        inline bool IsExotic()
         {
             if ((GetCreatureInfo()->Flags1 & CREATURE_FLAG1_EXOTIC) != 0)
                 return true;

@@ -430,8 +430,8 @@ namespace Arcemu
                 uint32 getTextID() const { return textid_; }
                 uint32 getLanguage() const { return language_; }
 
-                ARCEMU_INLINE void setTextID(uint32 textid) { textid_ = textid; }
-                ARCEMU_INLINE void setLanguage(uint32 language) { language_ = language; }
+                inline void setTextID(uint32 textid) { textid_ = textid; }
+                inline void setLanguage(uint32 language) { language_ = language; }
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 /// Creates an worldpacket SMSG_GOSSIP_MESSAGE packet, fills it and sends it to the specified player.

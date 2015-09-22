@@ -21,7 +21,7 @@
 #ifndef _OBJECTMGR_H
 #define _OBJECTMGR_H
 
-ARCEMU_INLINE bool FindXinYString(std::string & x, std::string & y)
+inline bool FindXinYString(std::string & x, std::string & y)
 {
     return y.find(x) != std::string::npos;
 }
@@ -357,7 +357,7 @@ class SERVER_DECL GossipMenu
         void SendTo(Player* Plr);
         void SendGossipMenu(uint32 TitleTextId, uint64 npcGUID);
         GossipMenuItem GetItem(uint32 Id);
-        ARCEMU_INLINE void SetTextID(uint32 TID) { TextId = TID; }
+        inline void SetTextID(uint32 TID) { TextId = TID; }
 
     protected:
         uint32 TextId;
@@ -434,10 +434,10 @@ class Charter
         void AddSignature(uint32 PlayerGuid);
         void RemoveSignature(uint32 PlayerGuid);
 
-        ARCEMU_INLINE uint32 GetLeader() { return LeaderGuid; }
-        ARCEMU_INLINE uint32 GetID() { return CharterId; }
+        inline uint32 GetLeader() { return LeaderGuid; }
+        inline uint32 GetID() { return CharterId; }
 
-        ARCEMU_INLINE bool IsFull() { return (SignatureCount == Slots); }
+        inline bool IsFull() { return (SignatureCount == Slots); }
 };
 
 typedef std::map<uint32, std::list<SpellEntry*>* >                  OverrideIdMap;
@@ -747,7 +747,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();
 
-        ARCEMU_INLINE bool IsSpellDisabled(uint32 spellid)
+        inline bool IsSpellDisabled(uint32 spellid)
         {
             if (m_disabled_spells.find(spellid) != m_disabled_spells.end())
                 return true;
@@ -769,17 +769,17 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         ////////////////////////////////////////////
 
 
-        ARCEMU_INLINE GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
-        ARCEMU_INLINE GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
+        inline GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
+        inline GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
 
         std::set<ProfessionDiscovery*> ProfessionDiscoveryTable;
 
         // cebernic: This is a perfect Broadcast system,multi-lang supported also.
-        ARCEMU_INLINE uint32 GetBCGroupCountByKey(uint32 Key) { return (uint32)m_BCEntryStorage.count(Key); }
-        ARCEMU_INLINE bool IsBCEntryStorageEmpty() { return m_BCEntryStorage.empty(); }
-        ARCEMU_INLINE BCEntryStorage::iterator GetBCTotalItemBegin() { return m_BCEntryStorage.begin(); }
-        ARCEMU_INLINE BCEntryStorage::iterator GetBCTotalItemEnd() { return m_BCEntryStorage.end(); }
-        ARCEMU_INLINE int CalcCurrentBCEntry()
+        inline uint32 GetBCGroupCountByKey(uint32 Key) { return (uint32)m_BCEntryStorage.count(Key); }
+        inline bool IsBCEntryStorageEmpty() { return m_BCEntryStorage.empty(); }
+        inline BCEntryStorage::iterator GetBCTotalItemBegin() { return m_BCEntryStorage.begin(); }
+        inline BCEntryStorage::iterator GetBCTotalItemEnd() { return m_BCEntryStorage.end(); }
+        inline int CalcCurrentBCEntry()
         // func sync at MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey)[world.cpp]
         {
             if (m_BCEntryStorage.empty())

@@ -152,7 +152,7 @@ class AlteracValley : public CBattleground
         list<GameObject*> m_gates;
         uint32 m_reinforcements[2];
         bool m_nearingVictory[2];
-        ARCEMU_INLINE map<Creature*, set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
+        inline map<Creature*, set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
     public:
 
         AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);

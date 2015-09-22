@@ -68,17 +68,17 @@ class SERVER_DECL MapScriptInterface
             return ClosestObject;
         }
 
-        ARCEMU_INLINE GameObject* GetGameObjectNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+        inline GameObject* GetGameObjectNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
         {
             return GetObjectNearestCoords<GameObject, TYPEID_GAMEOBJECT>(Entry, x, y, z);
         }
 
-        ARCEMU_INLINE Creature* GetCreatureNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+        inline Creature* GetCreatureNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
         {
             return GetObjectNearestCoords<Creature, TYPEID_UNIT>(Entry, x, y, z);
         }
 
-        ARCEMU_INLINE Player* GetPlayerNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
+        inline Player* GetPlayerNearestCoords(float x, float y, float z = 0.0f, uint32 Entry = 0)
         {
             return GetObjectNearestCoords<Player, TYPEID_PLAYER>(Entry, x, y, z);
         }

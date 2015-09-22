@@ -1807,7 +1807,7 @@ class SERVER_DECL Unit : public Object
         void SendPeriodicHealAuraLog(const WoWGuid & CasterGUID, const WoWGuid & TargetGUID, uint32 SpellID, uint32 healed, uint32 over_healed, bool is_critical);
 
         void EventModelChange();
-        ARCEMU_INLINE float GetModelHalfSize() { return m_modelhalfsize * GetScale(); }
+        inline float GetModelHalfSize() { return m_modelhalfsize * GetScale(); }
 
         void RemoveFieldSummon();
 

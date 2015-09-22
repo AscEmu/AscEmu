@@ -77,15 +77,15 @@ class SERVER_DECL StorageContainerIterator
 
         /** Returns the currently stored object
          */
-        ARCEMU_INLINE T* Get() { return Pointer; }
+        inline T* Get() { return Pointer; }
 
         /** Sets the current object to P
          */
-        ARCEMU_INLINE void Set(T* P) { Pointer = P; }
+        inline void Set(T* P) { Pointer = P; }
 
         /** Are we at the end of the storage container?
          */
-        ARCEMU_INLINE bool AtEnd() { return (Pointer == 0); }
+        inline bool AtEnd() { return (Pointer == 0); }
 
         /** Virtual function to increment to the next element
          */
@@ -490,8 +490,8 @@ class SERVER_DECL Storage
         char* _formatString;
     public:
 
-        ARCEMU_INLINE char* GetIndexName() { return _indexName; }
-        ARCEMU_INLINE char* GetFormatString() { return _formatString; }
+        inline char* GetIndexName() { return _indexName; }
+        inline char* GetFormatString() { return _formatString; }
 
         /** False constructor to fool compiler
          */
@@ -597,7 +597,7 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
 
         /** Loads the block using the format string.
          */
-        ARCEMU_INLINE void LoadBlock(Field* fields, T* Allocated, bool reload = false)
+        inline void LoadBlock(Field* fields, T* Allocated, bool reload = false)
         {
             char* p = Storage<T, StorageType>::_formatString;
             char* structpointer = (char*)Allocated;

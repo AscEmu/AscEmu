@@ -357,13 +357,13 @@ class SERVER_DECL Guild
         void SetMOTD(const char* szNewMotd, WorldSession* pClient);
 
         // Gets MOTD
-        ARCEMU_INLINE const char* GetMOTD() const { return (m_motd ? m_motd : ""); }
+        inline const char* GetMOTD() const { return (m_motd ? m_motd : ""); }
 
         // Sets guild information, updates in database
         void SetGuildInformation(const char* szGuildInformation, WorldSession* pClient);
 
         // Gets guild information
-        ARCEMU_INLINE const char* GetGuildInformation() const { return m_guildInfo; }
+        inline const char* GetGuildInformation() const { return m_guildInfo; }
 
         // Sends the guild roster to this client.
         void SendGuildRoster(WorldSession* pClient);
@@ -432,12 +432,12 @@ class SERVER_DECL Guild
         uint32 creationYear;
 
         // Getters :P
-        ARCEMU_INLINE const char* GetGuildName() const { return m_guildName; }
-        ARCEMU_INLINE const uint32 GetGuildLeader() const { return m_guildLeader; }
-        ARCEMU_INLINE const uint32 GetGuildId() const { return m_guildId; }
-        ARCEMU_INLINE const uint8  GetBankTabCount() const { return (uint8) m_bankTabs.size(); }
-        ARCEMU_INLINE const uint64 GetBankBalance() const { return m_bankBalance; }
-        ARCEMU_INLINE const size_t GetNumMembers() const { return m_members.size(); }
+        inline const char* GetGuildName() const { return m_guildName; }
+        inline const uint32 GetGuildLeader() const { return m_guildLeader; }
+        inline const uint32 GetGuildId() const { return m_guildId; }
+        inline const uint8  GetBankTabCount() const { return (uint8) m_bankTabs.size(); }
+        inline const uint64 GetBankBalance() const { return m_bankBalance; }
+        inline const size_t GetNumMembers() const { return m_members.size(); }
 
         // Creates a guild rank with the specified permissions.
         GuildRank* CreateGuildRank(const char* szRankName, uint32 iPermissions, bool bFullGuildBankPermissions);
@@ -458,7 +458,7 @@ class SERVER_DECL Guild
         void SpendMoney(uint32 uAmount);
 
         // Retrieves a guild rank for editing
-        ARCEMU_INLINE GuildRank* GetGuildRank(uint32 Id)
+        inline GuildRank* GetGuildRank(uint32 Id)
         {
             if (Id >= MAX_GUILD_RANKS)
                 return NULL;
@@ -467,7 +467,7 @@ class SERVER_DECL Guild
         }
 
         // Gets a guild bank tab for editing/viewing
-        ARCEMU_INLINE GuildBankTab* GetBankTab(uint8 Id)
+        inline GuildBankTab* GetBankTab(uint8 Id)
         {
             if (Id >= GetBankTabCount())
                 return NULL;
@@ -476,7 +476,7 @@ class SERVER_DECL Guild
         }
 
         // Gets a guild member struct
-        ARCEMU_INLINE GuildMember* GetGuildMember(PlayerInfo* pInfo)
+        inline GuildMember* GetGuildMember(PlayerInfo* pInfo)
         {
             GuildMemberMap::iterator itr;
             GuildMember* ret;
@@ -488,13 +488,13 @@ class SERVER_DECL Guild
         }
 
         // Get iterators
-        ARCEMU_INLINE GuildMemberMap::iterator GetGuildMembersBegin() { return m_members.begin(); }
-        ARCEMU_INLINE GuildMemberMap::iterator GetGuildMembersEnd() { return m_members.end(); }
+        inline GuildMemberMap::iterator GetGuildMembersBegin() { return m_members.begin(); }
+        inline GuildMemberMap::iterator GetGuildMembersEnd() { return m_members.end(); }
 
         // Get, Lock, Unlock Mutex
-        ARCEMU_INLINE Mutex & getLock() { return m_lock; }
-        ARCEMU_INLINE void Lock() { m_lock.Acquire(); }
-        ARCEMU_INLINE void Unlock() { return m_lock.Release(); }
+        inline Mutex & getLock() { return m_lock; }
+        inline void Lock() { m_lock.Acquire(); }
+        inline void Unlock() { return m_lock.Release(); }
 
         // Sends the guild bank to this client.
         void SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 updated_slot1 = -1, int8 updated_slot2 = -1);
