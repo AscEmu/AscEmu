@@ -161,7 +161,7 @@ class AccountMgr : public Singleton < AccountMgr >
 #ifdef WIN32
             HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 #else
-            map<string, Account*>::iterator itr = AccountDatabase.find(Name);
+            std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 #endif
 
             if(itr == AccountDatabase.end())    return NULL;
