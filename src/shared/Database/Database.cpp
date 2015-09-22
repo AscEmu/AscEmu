@@ -26,6 +26,8 @@
 //////////////////////////////////////////////
 
 #include "DatabaseEnv.h"
+#include <string>
+#include <vector>
 
 SQLCallbackBase::~SQLCallbackBase()
 {
@@ -170,7 +172,7 @@ void QueryBuffer::AddQueryNA(const char* str)
     queries.push_back(pBuffer);
 }
 
-void QueryBuffer::AddQueryStr(const string & str)
+void QueryBuffer::AddQueryStr(const std::string & str)
 {
     size_t len = str.size();
     char* pBuffer = new char[len + 1];
@@ -190,7 +192,7 @@ void Database::PerformQueryBuffer(QueryBuffer* b, DatabaseConnection* ccon)
 
     _BeginTransaction(con);
 
-    for(vector<char*>::iterator itr = b->queries.begin(); itr != b->queries.end(); ++itr)
+    for(std::vector<char*>::iterator itr = b->queries.begin(); itr != b->queries.end(); ++itr)
     {
         _SendQuery(con, *itr, false);
         delete[](*itr);
@@ -328,7 +330,7 @@ void AsyncQuery::AddQuery(const char* format, ...)
 void AsyncQuery::Perform()
 {
     DatabaseConnection* conn = db->GetFreeConnection();
-    for(vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
+    for(std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
         itr->result = db->FQuery(itr->query, conn);
 
     conn->Busy.Release();
@@ -340,7 +342,7 @@ void AsyncQuery::Perform()
 AsyncQuery::~AsyncQuery()
 {
     delete func;
-    for(vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
+    for(std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
     {
         if(itr->result)
             delete itr->result;

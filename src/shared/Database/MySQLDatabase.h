@@ -20,6 +20,7 @@
 #ifndef _MYSQLDATABASE_H
 #define _MYSQLDATABASE_H
 
+#include <string>
 
 #if PLATFORM == PLATFORM_APPLE
 #include <mysql.h>
@@ -50,9 +51,9 @@ class SERVER_DECL MySQLDatabase : public Database
 
         void Shutdown();
 
-        string EscapeString(string Escape);
-        void EscapeLongString(const char* str, uint32 len, stringstream & out);
-        string EscapeString(const char* esc, DatabaseConnection* con);
+    std::string EscapeString(std::string Escape);
+        void EscapeLongString(const char* str, uint32 len, std::stringstream & out);
+    std::string EscapeString(const char* esc, DatabaseConnection* con);
 
         bool SupportsReplaceInto() { return true; }
         bool SupportsTableLocking() { return true; }

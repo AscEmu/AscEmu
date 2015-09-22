@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <list>
 #include <map>
+#include <ctime>
 
 class SERVER_DECL ByteBuffer
 {

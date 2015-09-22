@@ -56,11 +56,11 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
     MySQLDatabaseConnection** conns;
     my_bool my_true = true;
 
-    mHostname = string(Hostname);
+    mHostname = std::string(Hostname);
     mConnectionCount = ConnectionCount;
-    mUsername = string(Username);
-    mPassword = string(Password);
-    mDatabaseName = string(DatabaseName);
+    mUsername = std::string(Username);
+    mPassword = std::string(Password);
+    mDatabaseName = std::string(DatabaseName);
 
     Log.Notice("MySQLDatabase", "Connecting to `%s`, database `%s`...", Hostname, DatabaseName);
 
@@ -94,12 +94,12 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
     return true;
 }
 
-string MySQLDatabase::EscapeString(string Escape)
+std::string MySQLDatabase::EscapeString(std::string Escape)
 {
     char a2[16384] = { 0 };
 
     DatabaseConnection* con = GetFreeConnection();
-    string ret;
+    std::string ret;
     if(mysql_real_escape_string(static_cast<MySQLDatabaseConnection*>(con)->MySql, a2, Escape.c_str(), (unsigned long)Escape.length()) == 0)
         ret = Escape.c_str();
     else
@@ -107,10 +107,10 @@ string MySQLDatabase::EscapeString(string Escape)
 
     con->Busy.Release();
 
-    return string(ret);
+    return std::string(ret);
 }
 
-void MySQLDatabase::EscapeLongString(const char* str, uint32 len, stringstream & out)
+void MySQLDatabase::EscapeLongString(const char* str, uint32 len, std::stringstream & out)
 {
     char a2[65536 * 3] = { 0 };
 
@@ -125,7 +125,7 @@ void MySQLDatabase::EscapeLongString(const char* str, uint32 len, stringstream &
     con->Busy.Release();
 }
 
-string MySQLDatabase::EscapeString(const char* esc, DatabaseConnection* con)
+std::string MySQLDatabase::EscapeString(const char* esc, DatabaseConnection* con)
 {
     char a2[16384] = { 0 };
     const char* ret;
@@ -134,7 +134,7 @@ string MySQLDatabase::EscapeString(const char* esc, DatabaseConnection* con)
     else
         ret = a2;
 
-    return string(ret);
+    return std::string(ret);
 }
 
 void MySQLDatabase::Shutdown()
