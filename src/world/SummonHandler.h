@@ -27,9 +27,6 @@
 class Unit;
 
 #include <array>
-#ifndef WIN32
-#include <tr1/type_traits>
-#endif
 
 ///////////////////////////////////////////////
 //class SummonHandler
@@ -260,7 +257,7 @@ class SERVER_DECL SummonHandler
         void RemoveSanctuaryFlags();
 
     private:
-        std::tr1::array< Unit*, SUMMON_SLOTS > summonslots;
+        std::array< Unit*, SUMMON_SLOTS > summonslots;
         std::set< Unit* > guardians;
 };
 
