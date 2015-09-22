@@ -21,6 +21,8 @@
 #ifndef _ARCWORLDUTILS_H
 #define _ARCWORLDUTILS_H
 
+#include "Errors.h"
+
 namespace Arcemu
 {
     // Common Arcemu world stuff
