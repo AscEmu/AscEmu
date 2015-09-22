@@ -40,31 +40,16 @@ class SpellProc
 		}
 
 		// Returns true if this spell can proc, false otherwise
-		virtual bool CanProc(Unit* victim, SpellEntry* CastingSpell)
-		{
-			return true;
-		}
+        virtual bool CanProc(Unit* victim, SpellEntry* CastingSpell);
 
 		// Called when procFlags is to be compared.
 		// Return true on success, false otherwise
-		virtual bool CheckProcFlags(uint32 flag)
-		{
-			if (mProcFlags & flag)
-				return true;
-			else
-				return false;
-		}
+    virtual bool CheckProcFlags(uint32 flag);
 
-		// Check if this object is identified by method arguments, so it can be deleted
-		virtual bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)
-		{
-			if (mSpell->Id == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
-				return true;
+    // Check if this object is identified by method arguments, so it can be deleted
+    virtual bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0);
 
-			return false;
-		}
-
-		// Called when is proccing from casting spell. It checks proc class mask with spell group type
+    // Called when is proccing from casting spell. It checks proc class mask with spell group type
 		// Return true allow proc, false otherwise
 		virtual bool CheckClassMask(Unit* victim, SpellEntry* CastingSpell)
 		{

@@ -24,6 +24,27 @@
 
 initialiseSingleton(SpellProcMgr);
 
+bool SpellProc::CanProc(Unit* victim, SpellEntry* CastingSpell)
+{
+    return true;
+}
+
+bool SpellProc::CheckProcFlags(uint32 flag)
+{
+    if (mProcFlags & flag)
+        return true;
+    else
+        return false;
+}
+
+bool SpellProc::CanDelete(uint32 spellId, uint64 casterGuid, uint64 misc)
+{
+    if (mSpell->Id == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
+        return true;
+
+    return false;
+}
+
 uint32 SpellProc::CalcProcChance(Unit* victim, SpellEntry* CastingSpell)
 {
     // Check if proc chance is based on combo points
