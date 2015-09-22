@@ -660,9 +660,9 @@ class SERVER_DECL Object : public EventableObject
 
 		/// object faction
 		void _setFaction();
-		uint32 _getFaction() { return m_faction->Faction; }
+    uint32 _getFaction();
 
-		FactionTemplateDBC* m_faction;
+    FactionTemplateDBC* m_faction;
 		FactionDBC* m_factionDBC;
 
 		void SetInstanceID(int32 instance) { m_instanceId = instance; }

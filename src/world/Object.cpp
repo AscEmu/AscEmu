@@ -1570,6 +1570,11 @@ void Object::_setFaction()
         m_factionDBC = dbcFaction.LookupRow(0);
 }
 
+uint32 Object::_getFaction()
+{
+    return m_faction->Faction;
+}
+
 void Object::UpdateOppFactionSet()
 {
     m_oppFactsInRange.clear();
