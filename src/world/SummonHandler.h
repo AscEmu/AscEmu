@@ -27,6 +27,9 @@
 class Unit;
 
 #include <array>
+#ifndef WIN32
+#include <tr1/type_traits>
+#endif
 
 ///////////////////////////////////////////////
 //class SummonHandler
