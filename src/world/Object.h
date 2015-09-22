@@ -21,6 +21,8 @@
 #ifndef _OBJECT_H
 #define _OBJECT_H
 
+#include "UpdateFields.h"
+
 class Unit;
 class Group;
 
