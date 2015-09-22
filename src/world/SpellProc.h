@@ -51,31 +51,17 @@ class SpellProc
 
     // Called when is proccing from casting spell. It checks proc class mask with spell group type
 		// Return true allow proc, false otherwise
-		virtual bool CheckClassMask(Unit* victim, SpellEntry* CastingSpell)
-		{
-			if ((mProcClassMask[0] == 0 && mProcClassMask[1] == 0 && mProcClassMask[2] == 0) ||
-			        mProcClassMask[0] & CastingSpell->SpellGroupType[0] ||
-			        mProcClassMask[1] & CastingSpell->SpellGroupType[1] ||
-			        mProcClassMask[2] & CastingSpell->SpellGroupType[2])
-				return true;
-			else
-				return false;
-		}
+    virtual bool CheckClassMask(Unit* victim, SpellEntry* CastingSpell);
 
-		// Called after proc chance is rolled
+    // Called after proc chance is rolled
 		// Return false so Unit::HandleProc execute subsequent statements
 		// Return true if this handle everything, so Unit::HandleProc skips to next iteration
-		virtual bool DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
-		{
-			return false;
-		}
+    virtual bool DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type);
 
-		// Called just after this object is created. Usefull for initialize object members
-		virtual void Init(Object* obj)
-		{
-		}
+    // Called just after this object is created. Usefull for initialize object members
+    virtual void Init(Object* obj);
 
-		virtual uint32 CalcProcChance(Unit* victim, SpellEntry* CastingSpell);
+    virtual uint32 CalcProcChance(Unit* victim, SpellEntry* CastingSpell);
 
 		// Called when trying to proc on a triggered spell
 		// Return true allow proc, false otherwise
