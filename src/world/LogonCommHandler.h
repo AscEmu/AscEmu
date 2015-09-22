@@ -20,12 +20,16 @@
 
 #ifndef _LOGONCOMMHANDLER_H
 #define _LOGONCOMMHANDLER_H
+#include "CommonTypes.hpp"
+#include <string>
+#include <map>
+#include <set>
 
 typedef struct
 {
     uint32 ID;
-    string Name;
-    string Address;
+    std::string Name;
+    std::string Address;
     uint32 Port;
     uint32 ServerID;
     uint32 RetryTime;
@@ -34,8 +38,8 @@ typedef struct
 
 typedef struct
 {
-    string Name;
-    string Address;
+    std::string Name;
+    std::string Address;
     uint32 flags;
     uint32 Icon;
     uint32 TimeZone;
@@ -61,10 +65,10 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
 #endif
 
         ForcedPermissionMap forced_permissions;
-        map<LogonServer*, LogonCommClientSocket*> logons;
-        map<uint32, WorldSocket*> pending_logons;
-        set<Realm*> realms;
-        set<LogonServer*> servers;
+        std::map<LogonServer*, LogonCommClientSocket*> logons;
+        std::map<uint32, WorldSocket*> pending_logons;
+        std::set<Realm*> realms;
+        std::set<LogonServer*> servers;
         uint32 idhigh;
         uint32 next_request;
         Mutex mapLock;
@@ -120,7 +124,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
             //pendingLock.Acquire();
 
             WorldSocket* sock;
-            map<uint32, WorldSocket*>::iterator itr = pending_logons.find(id);
+            std::map<uint32, WorldSocket*>::iterator itr = pending_logons.find(id);
             sock = (itr == pending_logons.end()) ? 0 : itr->second;
 
             //pendingLock.Release();
