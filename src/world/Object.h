@@ -30,6 +30,11 @@ class EventableObject;
 #include <set>
 #include <map>
 
+#include "WoWGuid.h"
+#include "../shared/LocationVector.h"
+#include "DBC/DBCStructures.hpp"
+#include "../shared/StackBuffer.h"
+
 class Unit;
 class Group;
 
