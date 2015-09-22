@@ -67,8 +67,9 @@ void Socket::WriteCallback()
 
 void Socket::BurstPush()
 {
-    if(AcquireSendLock())
-        PostEvent(EPOLLOUT);
+    std::lock_guard<std::recursive_mutex> lock(m_sendMutex);
+
+    PostEvent(EPOLLOUT);
 }
 
 #endif
