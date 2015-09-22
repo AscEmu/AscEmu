@@ -87,7 +87,7 @@ class TheMissingDiplomat : public QuestScript
             uint32 chance = RandomUInt(100);
             if(chance < 15)
             {
-                string say = "Now you're gonna get it good, ";
+                std::string say = "Now you're gonna get it good, ";
                 say += (TO_PLAYER(mTarget))->GetName();
                 say += "!";
                 Dashel->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());

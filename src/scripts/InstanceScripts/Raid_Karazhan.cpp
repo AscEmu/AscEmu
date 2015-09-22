@@ -462,7 +462,7 @@ class BigBadWolfAI : public CreatureAIScript
                                 {
                                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Red Riding Hood cast");
                                     std::vector<Player* > TargetTable;
-                                    for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
+                                    for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
                                             itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                                     {
                                         Player* RandomTarget = NULL;
@@ -1260,7 +1260,7 @@ class CuratorAI : public CreatureAIScript
         void AstralSpawn()
         {
             std::vector<Player*> Target_List;
-            for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
+            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
                     itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
                 Player* RandomTarget = NULL;
@@ -1486,7 +1486,7 @@ class ShadeofAranAI : public CreatureAIScript
             bool HasAtiesh = false;
             if (mTarget->IsPlayer())
             {
-                for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     if (*itr)
                     {
@@ -1720,7 +1720,7 @@ class ShadeofAranAI : public CreatureAIScript
             FlameWreathTarget[2] = 0;
 
             std::vector<Player*> Targets;
-            set< Object* >::iterator hostileItr = _unit->GetInRangePlayerSetBegin();
+            std::set< Object* >::iterator hostileItr = _unit->GetInRangePlayerSetBegin();
             for (; hostileItr != _unit->GetInRangePlayerSetEnd(); ++hostileItr)
             {
                 Player* RandomTarget = NULL;
@@ -1889,7 +1889,7 @@ class ShadeofAranAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Player* > TargetTable;
-                for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* RandomTarget = NULL;
                     RandomTarget = TO< Player* >(*itr);
@@ -2225,7 +2225,7 @@ class IllhoofAI : public CreatureAIScript
             }
 
             std::vector<Player* > TargetTable;
-            set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
+            std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
 
             for (; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
@@ -2421,7 +2421,7 @@ class KilrekAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit* > TargetTable;
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr) != _unit && isHostile(_unit, (*itr)) && (*itr)->IsUnit())
                     {
@@ -2595,7 +2595,7 @@ class FiendishImpAI : public CreatureAIScript
             Unit* pUnit;
             float dist;
 
-            for (set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); itr++)
+            for (std::set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); itr++)
             {
                 if (!(*itr)->IsUnit())
                     continue;
@@ -3073,7 +3073,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
         void Enfeebler()
         {
             std::vector<Player*> Targets;
-            set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
+            std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
 
             for (; Itr != _unit->GetInRangePlayerSetEnd(); ++Itr)
             {
@@ -3171,7 +3171,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Player* > TargetTable;
-                for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* RandomTarget = NULL;
                     RandomTarget = TO< Player* >(*itr);
@@ -3294,7 +3294,7 @@ class MAxesAI : public CreatureAIScript
             spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
 
             std::vector<Unit* > TargetTable;
-            for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && (TO< Player* >(*itr))->isAlive())
                 {
@@ -3437,7 +3437,7 @@ class NetherspiteAI : public CreatureAIScript
             {
                 VoidTimer = t + 20;
                 std::vector<Unit* > TargetTable;
-                for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Unit* RandomTarget = NULL;
                     RandomTarget = TO< Unit* >(*itr);
@@ -3773,7 +3773,7 @@ class NightbaneAI : public CreatureAIScript
 
             target = NULL;
             //fireball barrage check
-            for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsPlayer())
                 {
@@ -3817,7 +3817,7 @@ class NightbaneAI : public CreatureAIScript
             if (!mTailSweepTimer)
             {
                 Unit* target = NULL;
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr)->IsPlayer())
                     {
@@ -3936,7 +3936,7 @@ class NightbaneAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr)->IsUnit())
                     {
@@ -4120,7 +4120,7 @@ class DorotheeAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {

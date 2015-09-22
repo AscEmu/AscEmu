@@ -1344,7 +1344,7 @@ class SpellCastTargets
         float m_srcX, m_srcY, m_srcZ;
         uint64 unkuint64_2;
         float m_destX, m_destY, m_destZ;
-        string m_strTarget;
+    std::string m_strTarget;
 
         uint32 GetTargetMask() { return m_targetMask; }
         bool HasSrc()

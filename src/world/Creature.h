@@ -548,8 +548,8 @@ class SERVER_DECL Creature : public Unit
         Quest* FindQuest(uint32 quest_id, uint8 quest_relation);
         uint16 GetQuestRelation(uint32 quest_id);
         uint32 NumOfQuests();
-        list<QuestRelation*>::iterator QuestsBegin() { return m_quests->begin(); };
-        list<QuestRelation*>::iterator QuestsEnd() { return m_quests->end(); };
+        std::list<QuestRelation*>::iterator QuestsBegin() { return m_quests->begin(); };
+        std::list<QuestRelation*>::iterator QuestsEnd() { return m_quests->end(); };
         void SetQuestList(std::list<QuestRelation*>* qst_lst) { m_quests = qst_lst; };
 
         inline uint32 isVendor()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR); }

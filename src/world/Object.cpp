@@ -743,7 +743,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
     if (m_valuesCount > (2 * 0x20))    //if number of blocks > 2->  unit and player+item container
     {
         bc = updateMask->GetUpdateBlockCount();
-        values_count = min<uint32>(bc * 32, m_valuesCount);
+        values_count = std::min<uint32>(bc * 32, m_valuesCount);
 
     }
     else
@@ -2185,12 +2185,12 @@ void Object::PlaySoundToSet(uint32 sound_entry)
     SendMessageToSet(&data, true);
 }
 
-void Object::_SetExtension(const string & name, void* ptr)
+void Object::_SetExtension(const std::string & name, void* ptr)
 {
     if (m_extensions == NULL)
         m_extensions = new ExtensionSet;
 
-    m_extensions->insert(make_pair(name, ptr));
+    m_extensions->insert(std::make_pair(name, ptr));
 }
 
 bool Object::IsInBg()
@@ -2446,7 +2446,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     float waterz;
     uint32 watertype;
     GetMapMgr()->GetLiquidInfo(outx, outy, GetPositionZ() + 2, waterz, watertype);
-    outz = max(waterz, outz);
+    outz = std::max(waterz, outz);
 
     NavMeshData* nav = CollideInterface.GetNavMesh(GetMapId());
 

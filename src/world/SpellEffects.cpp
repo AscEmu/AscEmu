@@ -3993,7 +3993,7 @@ void Spell::SpellEffectPowerBurn(uint32 i) // power burn
             damage = caster->GetMaxPower(POWER_TYPE_MANA) * (mult * 2) / 100;
     }
 
-    int32 mana = (int32)min((int32)unitTarget->GetPower(POWER_TYPE_MANA), damage);
+    int32 mana = (int32)std::min((int32)unitTarget->GetPower(POWER_TYPE_MANA), damage);
 
     unitTarget->ModPower(POWER_TYPE_MANA, -mana);
 
@@ -5336,7 +5336,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
                             charge.ProcFlag = aura->GetSpellProto()->procFlags;
                             charge.lastproc = 0;
                             charge.procdiff = 0;
-                            u_caster->m_chargeSpells.insert(make_pair(aura->GetSpellId(), charge));
+                            u_caster->m_chargeSpells.insert(std::make_pair(aura->GetSpellId(), charge));
                         }
                     }
                     u_caster->AddAura(aura);

@@ -128,7 +128,7 @@ bool ChatHandler::CreateGuildCommand(const char* args, WorldSession* m_session)
     }
 
     Guild* pGuild = NULL;
-    pGuild = objmgr.GetGuildByGuildName(string(args));
+    pGuild = objmgr.GetGuildByGuildName(std::string(args));
 
     if (pGuild)
     {
@@ -138,7 +138,7 @@ bool ChatHandler::CreateGuildCommand(const char* args, WorldSession* m_session)
 
     Charter tempCharter(0, ptarget->GetLowGUID(), CHARTER_TYPE_GUILD);
     tempCharter.SignatureCount = 0;
-    tempCharter.GuildName = string(args);
+    tempCharter.GuildName = std::string(args);
 
     pGuild = Guild::Create();
     pGuild->CreateFromCharter(&tempCharter, ptarget->GetSession());

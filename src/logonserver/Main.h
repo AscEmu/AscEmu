@@ -35,7 +35,7 @@ enum RealmFlags
 
 extern Arcemu::Threading::AtomicBoolean mrunning;
 class AuthSocket;
-extern set<AuthSocket*> _authSockets;
+extern std::set<AuthSocket*> _authSockets;
 extern Mutex _authSocketLock;
 
 struct AllowedIP

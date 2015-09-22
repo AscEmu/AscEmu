@@ -322,8 +322,8 @@ class MoonScriptCreatureAI : public CreatureAIScript
         //Movement
         bool GetCanMove();
         void SetCanMove(bool pCanMove);
-        void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = make_pair(RangeStatus_TooFar, 0.0f));
-        void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = make_pair(RangeStatus_TooFar, 0.0f));
+        void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
+        void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void MoveTo(float pX, float pY, float pZ, bool pRun = true);
         void MoveToSpawnOrigin();
         void StopMovement();
@@ -477,7 +477,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         Unit* GetNearestTargetInArray(UnitArray & pTargetArray);
         Unit* GetSecondMostHatedTargetInArray(UnitArray & pTargetArray);
         bool IsValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f);
-        void PushRunToTargetCache(Unit* pTarget, SpellDesc* pSpell, RangeStatusPair pRangeStatus = make_pair(RangeStatus_TooFar, 0.0f));
+        void PushRunToTargetCache(Unit* pTarget, SpellDesc* pSpell, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void PopRunToTargetCache();
 
         void RandomEmote(EmoteArray & pEmoteArray);

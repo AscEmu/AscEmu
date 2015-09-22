@@ -77,7 +77,7 @@ class LogonConsole : public Singleton < LogonConsole >
         void AccountSetGm(char* str);
         void AccountSetPassword(char* str);
 
-        void checkAccountName(string name, uint8 type);
+        void checkAccountName(std::string name, uint8 type);
 };
 
 #define sLogonConsole LogonConsole::getSingleton()

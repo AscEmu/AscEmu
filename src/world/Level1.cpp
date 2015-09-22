@@ -56,7 +56,7 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
         return true;
     }
     char msg[1024];
-    string input2;
+    std::string input2;
     input2 = sWorld.ann_tagcolor;
     input2 += "[";
     input2 += sWorld.announce_tag;
@@ -101,7 +101,7 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
     char pAnnounce[1024];
-    string input3;
+    std::string input3;
     input3 = sWorld.ann_tagcolor;
     input3 += "[";
     input3 += sWorld.announce_tag;
@@ -1017,40 +1017,40 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 {
     if (!*args)
         return false;
-    string x;
+    std::string x;
     bool lookupname = true, lookupdesc = false, lookupcriteria = false, lookupreward = false;
     if (strnicmp(args, "name ", 5) == 0)
     {
-        x = string(args + 5);
+        x = std::string(args + 5);
     }
     else if (strnicmp(args, "desc ", 5) == 0)
     {
         lookupname = false;
         lookupdesc = true;
-        x = string(args + 5);
+        x = std::string(args + 5);
     }
     else if (strnicmp(args, "criteria ", 9) == 0)
     {
         lookupname = false;
         lookupcriteria = true;
-        x = string(args + 9);
+        x = std::string(args + 9);
     }
     else if (strnicmp(args, "reward ", 7) == 0)
     {
         lookupname = false;
         lookupreward = true;
-        x = string(args + 7);
+        x = std::string(args + 7);
     }
     else if (strnicmp(args, "all ", 4) == 0)
     {
         lookupdesc = true;
         lookupcriteria = true;
         lookupreward = true;
-        x = string(args + 4);
+        x = std::string(args + 4);
     }
     else
     {
-        x = string(args);
+        x = std::string(args);
     }
     if (x.length() < 4)
     {
@@ -1061,7 +1061,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
     GreenSystemMessage(m_session, "Starting search of achievement `%s`...", x.c_str());
     uint32 t = getMSTime();
     uint32 i, j, numFound = 0;
-    string y, recout;
+    std::string y, recout;
     char playerGUID[17];
     snprintf(playerGUID, 17, I64FMT, m_session->GetPlayer()->GetGUID());
     if (lookupname || lookupdesc || lookupreward)
@@ -1082,19 +1082,19 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 foundmatch = false;
                 if (lookupname)
                 {
-                    y = string(achievement->name);
+                    y = std::string(achievement->name);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupdesc)
                 {
-                    y = string(achievement->description);
+                    y = std::string(achievement->description);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupreward)
                 {
-                    y = string(achievement->rewardName);
+                    y = std::string(achievement->rewardName);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
@@ -1162,7 +1162,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                     // already listed this achievement (some achievements have multiple entries in dbc)
                     continue;
                 }
-                y = string(criteria->name);
+                y = std::string(criteria->name);
                 arcemu_TOLOWER(y);
                 if (!FindXinYString(x, y))
                 {

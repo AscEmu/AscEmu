@@ -619,7 +619,7 @@ void GameObject::AddQuest(QuestRelation* Q)
 
 void GameObject::DeleteQuest(QuestRelation* Q)
 {
-    list<QuestRelation*>::iterator it;
+    std::list<QuestRelation*>::iterator it;
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         if (((*it)->type == Q->type) && ((*it)->qst == Q->qst))
@@ -633,7 +633,7 @@ void GameObject::DeleteQuest(QuestRelation* Q)
 
 Quest* GameObject::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
-    list< QuestRelation* >::iterator it;
+    std::list< QuestRelation* >::iterator it;
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         QuestRelation* ptr = (*it);
@@ -648,7 +648,7 @@ Quest* GameObject::FindQuest(uint32 quest_id, uint8 quest_relation)
 uint16 GameObject::GetQuestRelation(uint32 quest_id)
 {
     uint16 quest_relation = 0;
-    list< QuestRelation* >::iterator it;
+    std::list< QuestRelation* >::iterator it;
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         if ((*it) != NULL && (*it)->qst->id == quest_id)
@@ -772,7 +772,7 @@ bool GameObject::HasLoot()
     if (loot.gold > 0)
         return true;
 
-    for (vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
         if (itr->item.itemproto->Bonding == ITEM_BIND_QUEST || itr->item.itemproto->Bonding == ITEM_BIND_QUEST2)
             continue;

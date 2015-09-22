@@ -1270,7 +1270,7 @@ void AlteracValley::AVNode::Spawn()
     if(m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED || m_state == AV_NODE_STATE_HORDE_CONTROLLED)
     {
         Log.Debug("AlteracValley", "AVNode::Spawn(%s) : despawning guards", m_template->m_name);
-        for(vector<Creature*>::iterator itr = m_guards.begin(); itr != m_guards.end(); ++itr)
+        for(std::vector<Creature*>::iterator itr = m_guards.begin(); itr != m_guards.end(); ++itr)
             (*itr)->Despawn(0, 0);
 
         m_guards.clear();
@@ -1301,10 +1301,10 @@ void AlteracValley::AVNode::Spawn()
         {
             Log.Debug("AlteracValley", "AVNode::Spawn(%s) : despawning spirit guide", m_template->m_name);
             // move everyone in the revive queue to a different node
-            map<Creature*, set<uint32> >::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
+            std::map<Creature*, std::set<uint32> >::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
             if(itr != m_bg->m_resurrectMap.end())
             {
-                for(set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+                for(std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     // repop him at a new GY
                     Player* plr_tmp = m_bg->GetMapMgr()->GetPlayer(*it2);
@@ -1409,7 +1409,7 @@ void AlteracValley::AVNode::Capture()
 
             if(m_template->m_defaultState == AV_NODE_STATE_ALLIANCE_CONTROLLED)
             {
-                for(set<Player*>::iterator itx = m_bg->m_players[1].begin(); itx != m_bg->m_players[1].end(); ++itx)
+                for(std::set<Player*>::iterator itx = m_bg->m_players[1].begin(); itx != m_bg->m_players[1].end(); ++itx)
                 {
                     Player* plr = (*itx);
                     if(!plr) continue;
@@ -1419,7 +1419,7 @@ void AlteracValley::AVNode::Capture()
             }
             else if(m_template->m_defaultState == AV_NODE_STATE_HORDE_CONTROLLED)
             {
-                for(set<Player*>::iterator itx = m_bg->m_players[0].begin(); itx != m_bg->m_players[0].end(); ++itx)
+                for(std::set<Player*>::iterator itx = m_bg->m_players[0].begin(); itx != m_bg->m_players[0].end(); ++itx)
                 {
                     Player* plr = (*itx);
                     if(!plr) continue;
@@ -1631,14 +1631,14 @@ void AlteracValley::OnStart()
 {
     for(uint32 i = 0; i < 2; ++i)
     {
-        for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
 
     // open gates
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->SetFlags(64);
         (*itr)->SetState(GAMEOBJECT_STATE_OPEN);
@@ -1733,7 +1733,7 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
         Herald("The Stormpike General is dead!");
         RemoveReinforcements(0, AV_NUM_REINFORCEMENTS);
 
-        for(set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
+        for(std::set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
         {
             plr2 = (*itx);
             if(!plr2) continue;
@@ -1746,7 +1746,7 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
         Herald("The Frostwolf General is dead!");
         RemoveReinforcements(1, AV_NUM_REINFORCEMENTS);
 
-        for(set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
+        for(std::set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
         {
             plr2 = (*itx);
             if(!plr2) continue;
@@ -1757,7 +1757,7 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
     else if(pVictim->GetEntry() == AV_NPC_CAPTAIN_GALVANGAR)
     {
         RemoveReinforcements(1, AV_POINTS_ON_KILL_CAPTAIN);
-        for(set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
+        for(std::set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
         {
             plr2 = (*itx);
             if(!plr2) continue;
@@ -1768,7 +1768,7 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
     else if(pVictim->GetEntry() == AV_NPC_CAPTAIN_BALINDA_STONEHEARTH)
     {
         RemoveReinforcements(0, AV_POINTS_ON_KILL_CAPTAIN);
-        for(set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
+        for(std::set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
         {
             plr2 = (*itx);
             if(!plr2) continue;

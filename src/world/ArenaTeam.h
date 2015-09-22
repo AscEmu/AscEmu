@@ -54,7 +54,7 @@ class SERVER_DECL ArenaTeam
         uint32 m_type;
         uint32 m_leader;
         uint32 m_slots;
-        string m_name;
+    std::string m_name;
         uint32 m_memberCount;
         ArenaTeamMember* m_members;
 

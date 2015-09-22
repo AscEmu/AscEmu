@@ -95,7 +95,7 @@ void Gossip::Menu::RemoveItem(uint32 id)
 
 void Gossip::Menu::AddQuest(Quest* quest, uint8 icon)
 {
-    this->questlist_.insert(make_pair(quest, icon));
+    this->questlist_.insert(std::make_pair(quest, icon));
 }
 
 void Gossip::Menu::RemoveQuest(Quest* quest)
@@ -143,7 +143,7 @@ StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & m
     }
     packet << uint32(menu.questlist_.size());
     {
-        string title;
+        std::string title;
         for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
         {
             packet << itr->first->id << uint32(itr->second) << itr->first->min_level << itr->first->quest_flags << uint8(0);
@@ -192,8 +192,8 @@ void Gossip::Menu::SendSimpleMenu(uint64 guid, size_t txt_id, Player* plr)
 void Gossip::Menu::SendQuickMenu(uint64 guid, size_t textid, Player* Plr, size_t itemid, uint8 itemicon, const char* itemtext, size_t requiredmoney/*=0*/, const char* moneytext/*=NULL*/, uint8 extra/*=0*/)
 {
     StackWorldPacket<64> packet(SMSG_GOSSIP_MESSAGE);
-    string itemtexts = (itemtext != NULL) ? itemtext : "";
-    string moneytexts = (moneytext != NULL) ? moneytext : "";
+    std::string itemtexts = (itemtext != NULL) ? itemtext : "";
+    std::string moneytexts = (moneytext != NULL) ? moneytext : "";
     packet << guid << uint32(0) << uint32(textid) << uint32(1) << uint32(itemid) << itemicon << extra << uint32(requiredmoney) << itemtexts;
     if (moneytext != NULL)
         packet << moneytexts;
@@ -307,10 +307,10 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
 
-    string name = trainer->GetCreatureInfo()->Name;
-    string::size_type pos = name.find(" ");      // only take first name
+    std::string name = trainer->GetCreatureInfo()->Name;
+    std::string::size_type pos = name.find(" ");      // only take first name
 
-    if (pos != string::npos)
+    if (pos != std::string::npos)
         name = name.substr(0, pos);
 
     Gossip::Menu menu(trainer->GetGUID(), Text, Plr->GetSession()->language);
@@ -321,8 +321,8 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
         else
         {
             // I seek
-            string msg = string(Plr->GetSession()->LocalizedGossipOption(ISEEK));
-            msg += string(Plr->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
+            std::string msg = std::string(Plr->GetSession()->LocalizedGossipOption(ISEEK));
+            msg += std::string(Plr->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
             menu.AddItem(Gossip::ICON_TRAINER, msg.c_str(), 1);
 
             if (trainer->isVendor())
@@ -565,51 +565,51 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
         else
         {
             menu.setTextID(traininfo->Can_Train_Gossip_TextId);
-            string itemname = Plr->GetSession()->LocalizedGossipOption(ISEEK);
-            string name = trainer->GetCreatureInfo()->Name;
+            std::string itemname = Plr->GetSession()->LocalizedGossipOption(ISEEK);
+            std::string name = trainer->GetCreatureInfo()->Name;
 
-            string::size_type pos = name.find(" ");      // only take first name
+            std::string::size_type pos = name.find(" ");      // only take first name
 
-            if (pos != string::npos)
+            if (pos != std::string::npos)
                 name = name.substr(0, pos);
 
             switch (playerclass)
             {
                 case ::MAGE:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_MAGE));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_MAGE));
                     break;
                 case ::SHAMAN:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_SHAMAN));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_SHAMAN));
                     break;
                 case ::WARRIOR:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_WARRIOR));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_WARRIOR));
                     break;
                 case ::PALADIN:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_PALADIN));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_PALADIN));
                     break;
                 case ::WARLOCK:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_WARLOCK));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_WARLOCK));
                     break;
                 case ::HUNTER:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_HUNTER));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_HUNTER));
                     break;
                 case ::ROGUE:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_ROGUE));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_ROGUE));
                     break;
                 case ::DRUID:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_DRUID));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_DRUID));
                     break;
                 case ::PRIEST:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_PRIEST));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_PRIEST));
                     break;
                 case ::DEATHKNIGHT:
-                    itemname += string(Plr->GetSession()->LocalizedGossipOption(GI_DEATHKNIGHT));
+                    itemname += std::string(Plr->GetSession()->LocalizedGossipOption(GI_DEATHKNIGHT));
                     break;
                 default:
                     break;
             }
             itemname += " ";
-            itemname += string(Plr->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
+            itemname += std::string(Plr->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
 
             menu.AddItem(Gossip::ICON_TRAINER, itemname.c_str(), 1);
 

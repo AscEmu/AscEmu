@@ -223,7 +223,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
-        for (vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
+        for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
             count += (*itr).iItemsCount;
         if (!count)
             pGO->ExpireAndDelete();
@@ -326,7 +326,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
         if (party)
         {
             /*uint32 share = money/party->MemberCount();*/
-            vector<Player*> targets;
+            std::vector<Player*> targets;
             targets.reserve(party->MemberCount());
 
             GroupMembersSet::iterator itr;
@@ -351,7 +351,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
             pkt << share;
 
-            for (vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
+            for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
             {
                 // Check they don't have more than the max gold
                 if (sWorld.GoldCapEnabled && ((*itr2)->GetGold() + share) > sWorld.GoldLimit)
@@ -638,9 +638,9 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
     uint32 zone_count;
     uint32* zones = 0;
     uint32 name_count;
-    string* names = 0;
-    string chatname;
-    string guildname;
+    std::string* names = 0;
+    std::string chatname;
+    std::string guildname;
     bool cname = false;
     bool gname = false;
     uint32 i;
@@ -664,7 +664,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
     recv_data >> name_count;
     if (name_count > 0 && name_count < 10)
     {
-        names = new string[name_count];
+        names = new std::string[name_count];
 
         for (i = 0; i < name_count; ++i)
             recv_data >> names[i];

@@ -321,12 +321,12 @@ struct SERVER_DECL GuildBankTab
     char* szTabIcon;
     char* szTabInfo;
     Item* pSlots[MAX_GUILD_BANK_SLOTS];
-    list<GuildBankEvent*> lLog;
+    std::list<GuildBankEvent*> lLog;
 };
 
 class Charter;
 
-typedef map<PlayerInfo*, GuildMember*> GuildMemberMap;
+typedef std::map<PlayerInfo*, GuildMember*> GuildMemberMap;
 
 class SERVER_DECL Guild
 {
@@ -523,7 +523,7 @@ class SERVER_DECL Guild
         uint32 m_creationTimeStamp;
         uint64 m_bankBalance; //use a 64 bit int so we can store more gold in the gbank
 
-        typedef vector<GuildBankTab*> GuildBankTabVector;
+        typedef std::vector<GuildBankTab*> GuildBankTabVector;
         GuildBankTabVector m_bankTabs;
 
         char* m_guildName;
@@ -538,9 +538,9 @@ class SERVER_DECL Guild
         GuildRank* m_ranks[MAX_GUILD_RANKS];
 
         // Guild log. Ordered in first event -> last event.
-        typedef list<GuildLogEvent*> GuildLogList;
+        typedef std::list<GuildLogEvent*> GuildLogList;
         GuildLogList m_log;
-        list<GuildBankEvent*> m_moneyLog;
+        std::list<GuildBankEvent*> m_moneyLog;
 
         // Guild lock.
         Mutex m_lock;

@@ -61,15 +61,15 @@ void ApplyNormalFixes()
     uint32 effect;
     uint32 result;
 
-    map<uint32, uint32> talentSpells;
-    map<uint32, uint32>::iterator talentSpellIterator;
+    std::map<uint32, uint32> talentSpells;
+    std::map<uint32, uint32>::iterator talentSpellIterator;
     uint32 i, j;
     for (i = 0; i < dbcTalent.GetNumRows(); ++i)
     {
         TalentEntry* tal = dbcTalent.LookupRow(i);
         for (j = 0; j < 5; ++j)
             if (tal->RankID[j] != 0)
-                talentSpells.insert(make_pair(tal->RankID[j], tal->TalentTree));
+                talentSpells.insert(std::make_pair(tal->RankID[j], tal->TalentTree));
 
     }
 

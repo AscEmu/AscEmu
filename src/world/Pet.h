@@ -119,7 +119,7 @@ enum PetType
     WARLOCKPET  = 2,
 };
 
-typedef map<SpellEntry*, uint16> PetSpellMap;
+typedef std::map<SpellEntry*, uint16> PetSpellMap;
 struct PlayerPet;
 
 
@@ -235,8 +235,8 @@ class SERVER_DECL Pet : public Creature
         inline bool IsSummonedPet() { return Summon; }
 
         void SetAutoCastSpell(AI_Spell* sp);
-        void Rename(string NewName);
-        inline string & GetName() { return m_name; }
+        void Rename(std::string NewName);
+        inline std::string & GetName() { return m_name; }
         uint32 CanLearnSpell(SpellEntry* sp);
         void UpdateSpellList(bool showLearnSpells = true);
 
@@ -285,13 +285,13 @@ class SERVER_DECL Pet : public Creature
         bool bExpires;
         bool Summon;
         bool ScheduledForDeletion;
-        string m_name;
+        std::string m_name;
         HappinessState GetHappinessState();
         void SetNameForEntry(uint32 entry);
         uint32 GetAutoCastTypeForSpell(SpellEntry* ent);
         void SafeDelete();
 
-        list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];
+    std::list<AI_Spell*> m_autoCastSpells[AUTOCAST_EVENT_COUNT];
 };
 
 #define PET_HAPPINESS_UPDATE_VALUE 333000

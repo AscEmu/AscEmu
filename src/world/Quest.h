@@ -21,8 +21,6 @@
 #ifndef WOWSERVER_QUEST_H
 #define WOWSERVER_QUEST_H
 
-using namespace std;
-
 enum QUEST_STATUS
 {
     QMGR_QUEST_NOT_AVAILABLE					= 0x00,	    /// There aren't any quests available.		| "No Mark"
@@ -226,8 +224,8 @@ struct Quest
 	uint32 count_required_item;
 	uint32 required_mobtype[4];
 	uint32 count_reward_item;
-	set<uint32> quest_list;
-	set<uint32> remove_quest_list;
+	std::set<uint32> quest_list;
+	std::set<uint32> remove_quest_list;
 
 	QuestScript* pQuestScript;
 

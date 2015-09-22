@@ -42,7 +42,7 @@ SpellDesc::SpellDesc(SpellEntry* pInfo, SpellFunc pFnc, TargetType pTargetType, 
     mInfo = pInfo;
     mSpellFunc = pFnc;
     mTargetType = pTargetType;
-    mChance = max(min(pChance, 100.0f), 0.0f);
+    mChance = std::max(std::min(pChance, 100.0f), 0.0f);
     mCastTime = pCastTime;
     mCooldown = pCooldown;
     mMinRange = pMinRange;
@@ -428,7 +428,7 @@ MoonInstanceScript* MoonScriptCreatureAI::GetInstanceScript()
 
 void MoonScriptCreatureAI::CastOnAllInrangePlayers(uint32 pSpellId, bool pTriggered)
 {
-    for (set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
+    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         _unit->CastSpell(TO< Player* >(*PlayerIter), pSpellId, pTriggered);
     };
@@ -436,7 +436,7 @@ void MoonScriptCreatureAI::CastOnAllInrangePlayers(uint32 pSpellId, bool pTrigge
 
 void MoonScriptCreatureAI::CastOnInrangePlayers(float pDistanceMin, float pDistanceMax, uint32 pSpellId, bool pTriggered)
 {
-    for (set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
+    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         float PlayerDistance = (*PlayerIter)->GetDistance2dSq(this->GetUnit());
         if (PlayerDistance >= pDistanceMin && PlayerDistance <= pDistanceMax)
@@ -1355,12 +1355,12 @@ RangeStatusPair MoonScriptCreatureAI::GetSpellRangeStatusToUnit(Unit* pTarget, S
     {
         float Range = GetRangeToUnit(pTarget);
         if (pSpell->mMinRange > 0 && (Range < pSpell->mMinRange))
-            return make_pair(RangeStatus_TooClose, pSpell->mMinRange);
+            return std::make_pair(RangeStatus_TooClose, pSpell->mMinRange);
         if (pSpell->mMaxRange > 0 && (Range > pSpell->mMaxRange))
-            return make_pair(RangeStatus_TooFar, pSpell->mMaxRange);
+            return std::make_pair(RangeStatus_TooFar, pSpell->mMaxRange);
     };
 
-    return make_pair(RangeStatus_Ok, 0.0f);
+    return std::make_pair(RangeStatus_Ok, 0.0f);
 };
 
 Unit* MoonScriptCreatureAI::GetTargetForSpell(SpellDesc* pSpell)
@@ -1404,7 +1404,7 @@ Unit* MoonScriptCreatureAI::GetBestPlayerTarget(TargetFilter pTargetFilter, floa
 {
     //Build potential target list
     UnitArray TargetArray;
-    for (set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
+    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         if (IsValidUnitTarget(*PlayerIter, pTargetFilter, pMinRange, pMaxRange))
             TargetArray.push_back(TO_UNIT(*PlayerIter));
@@ -1419,7 +1419,7 @@ Unit* MoonScriptCreatureAI::GetBestUnitTarget(TargetFilter pTargetFilter, float 
     UnitArray TargetArray;
     if (pTargetFilter & TargetFilter_Friendly)
     {
-        for (set< Object* >::iterator ObjectIter = _unit->GetInRangeSetBegin(); ObjectIter != _unit->GetInRangeSetEnd(); ++ObjectIter)
+        for (std::set< Object* >::iterator ObjectIter = _unit->GetInRangeSetBegin(); ObjectIter != _unit->GetInRangeSetEnd(); ++ObjectIter)
         {
             if (IsValidUnitTarget(*ObjectIter, pTargetFilter, pMinRange, pMaxRange))
                 TargetArray.push_back(TO_UNIT(*ObjectIter));
@@ -1430,7 +1430,7 @@ Unit* MoonScriptCreatureAI::GetBestUnitTarget(TargetFilter pTargetFilter, float 
     }
     else
     {
-        for (set< Object* >::iterator ObjectIter = _unit->GetInRangeOppFactsSetBegin(); ObjectIter != _unit->GetInRangeOppFactsSetEnd(); ++ObjectIter)
+        for (std::set< Object* >::iterator ObjectIter = _unit->GetInRangeOppFactsSetBegin(); ObjectIter != _unit->GetInRangeOppFactsSetEnd(); ++ObjectIter)
         {
             if (IsValidUnitTarget(*ObjectIter, pTargetFilter, pMinRange, pMaxRange))
                 TargetArray.push_back(TO_UNIT(*ObjectIter));

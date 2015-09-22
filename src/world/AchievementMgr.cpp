@@ -1253,7 +1253,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE:
             {
                 uint32 qcinzone = 0;
-                set<uint32>::iterator qc = GetPlayer()->m_finishedQuests.begin();
+                std::set<uint32>::iterator qc = GetPlayer()->m_finishedQuests.begin();
                 for (; qc != GetPlayer()->m_finishedQuests.end(); ++qc)
                 {
                     Quest* qst = QuestStorage.LookupEntry(*qc);
@@ -1268,7 +1268,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
             case ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST:
             {
                 uint32 completed = 0;
-                set<uint32>::iterator it = GetPlayer()->m_finishedQuests.find(achievementCriteria->complete_quest.questID);
+                std::set<uint32>::iterator it = GetPlayer()->m_finishedQuests.find(achievementCriteria->complete_quest.questID);
                 if (it != GetPlayer()->m_finishedQuests.end())
                 {
                     ++completed;

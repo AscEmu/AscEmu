@@ -38,16 +38,15 @@
 #endif
 #endif
 
-using namespace std;
 struct SERVER_DECL ConfigSetting
 {
-    string AsString;
+    std::string AsString;
     bool AsBool;
     int AsInt;
     float AsFloat;
 };
 
-typedef map<uint32, ConfigSetting> ConfigBlock;
+typedef std::map<uint32, ConfigSetting> ConfigBlock;
 
 class SERVER_DECL ConfigFile
 {
@@ -76,7 +75,7 @@ class SERVER_DECL ConfigFile
 
     private:
 
-        map<uint32, ConfigBlock> m_settings;
+    std::map<uint32, ConfigBlock> m_settings;
 };
 
 

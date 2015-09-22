@@ -121,7 +121,7 @@ MapMgr::~MapMgr()
         }
     }
 
-    for (set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+    for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
     {
         if ((*itr)->IsInWorld())
             (*itr)->RemoveFromWorld(false);
@@ -133,7 +133,7 @@ MapMgr::~MapMgr()
     CreatureStorage.clear();
 
     Corpse* pCorpse;
-    for (set<Corpse*>::iterator itr = m_corpses.begin(); itr != m_corpses.end();)
+    for (std::set<Corpse*>::iterator itr = m_corpses.begin(); itr != m_corpses.end();)
     {
         pCorpse = *itr;
         ++itr;
@@ -335,7 +335,7 @@ void MapMgr::PushObject(Object* obj)
                 CreatureStorage[obj->GetUIdFromGUID()] = TO< Creature* >(obj);
                 if (TO_CREATURE(obj)->m_spawn != NULL)
                 {
-                    _sqlids_creatures.insert(make_pair(TO_CREATURE(obj)->m_spawn->id, TO_CREATURE(obj)));
+                    _sqlids_creatures.insert(std::make_pair(TO_CREATURE(obj)->m_spawn->id, TO_CREATURE(obj)));
                 }
             }
             break;
@@ -345,7 +345,7 @@ void MapMgr::PushObject(Object* obj)
                 GOStorage[obj->GetUIdFromGUID()] = TO< GameObject* >(obj);
                 if (TO_GAMEOBJECT(obj)->m_spawn != NULL)
                 {
-                    _sqlids_gameobjects.insert(make_pair(TO_GAMEOBJECT(obj)->m_spawn->id, TO_GAMEOBJECT(obj)));
+                    _sqlids_gameobjects.insert(std::make_pair(TO_GAMEOBJECT(obj)->m_spawn->id, TO_GAMEOBJECT(obj)));
                 }
             }
             break;
@@ -375,7 +375,7 @@ void MapMgr::PushObject(Object* obj)
             if (!buf)
                 buf = new ByteBuffer(300);
 
-            for (set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+            for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
             {
                 count = (*itr)->BuildCreateUpdateBlockForPlayer(buf, plObj);
                 globalcount += count;
@@ -545,7 +545,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     // Remove the session from our set if it is a player.
     if (obj->IsPlayer())
     {
-        for (set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+        for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
         {
             plObj->PushOutOfRange((*itr)->GetNewGUID());
         }

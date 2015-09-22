@@ -128,7 +128,7 @@ void Map::LoadSpawns(bool reload)
                 }
 
     QueryResult* result;
-    set<string>::iterator tableiterator;
+    std::set<std::string>::iterator tableiterator;
     for (tableiterator = ExtraMapCreatureTables.begin(); tableiterator != ExtraMapCreatureTables.end(); ++tableiterator)
     {
         result = WorldDatabase.Query("SELECT * FROM %s WHERE Map = %u", (*tableiterator).c_str(), this->_mapId);

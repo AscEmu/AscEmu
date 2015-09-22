@@ -101,7 +101,7 @@ Arena::~Arena()
     }
 
 
-    for (set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         if ((*itr) != NULL)
         {
@@ -138,7 +138,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
             m_teams[i]->m_stat_rating += m_deltaRating[i];
             if (static_cast<int32>(m_teams[i]->m_stat_rating) < 0) m_teams[i]->m_stat_rating = 0;
 
-            for (set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
+            for (std::set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
             {
                 PlayerInfo* info = objmgr.GetPlayerInfo(*itr);
                 if (info)
@@ -176,7 +176,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     for (int i = 0; i < 2; i++)
     {
         bool victorious = (i == winningTeam);
-        set<Player*>::iterator itr = m_players[i].begin();
+        std::set<Player*>::iterator itr = m_players[i].begin();
         for (; itr != m_players[i].end(); itr++)
         {
             Player* plr = (Player*)(*itr);
@@ -302,7 +302,7 @@ void Arena::HookOnPlayerDeath(Player* plr)
 void Arena::OnCreate()
 {
     // push gates into world
-    for (set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
         (*itr)->PushToWorld(m_mapMgr);
 }
 
@@ -316,7 +316,7 @@ void Arena::OnStart()
     /* remove arena readiness buff */
     for (i = 0; i < 2; ++i)
     {
-        for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             Player* plr = *itr;
             plr->RemoveAura(ARENA_PREPARATION);
@@ -346,7 +346,7 @@ void Arena::OnStart()
     }
 
     /* open gates */
-    for (set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->SetFlags(64);
         (*itr)->SetState(GAMEOBJECT_STATE_CLOSED);

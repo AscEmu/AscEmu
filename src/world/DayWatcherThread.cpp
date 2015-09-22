@@ -101,7 +101,7 @@ void DayWatcherThread::update_settings()
 
 void DayWatcherThread::load_settings()
 {
-    string arena_timeout = Config.MainConfig.GetStringDefault("Periods", "ArenaUpdate", "weekly");
+    std::string arena_timeout = Config.MainConfig.GetStringDefault("Periods", "ArenaUpdate", "weekly");
     arena_period = get_timeout_from_string(arena_timeout.c_str(), WEEKLY);
 
     QueryResult* result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
@@ -116,7 +116,7 @@ void DayWatcherThread::load_settings()
         last_arena_time = 0;
     }
 
-    string daily_timeout = Config.MainConfig.GetStringDefault("Periods", "DailyUpdate", "daily");
+    std::string daily_timeout = Config.MainConfig.GetStringDefault("Periods", "DailyUpdate", "daily");
     daily_period = get_timeout_from_string(daily_timeout.c_str(), DAILY);
 
     QueryResult* result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");
@@ -304,8 +304,8 @@ void DayWatcherThread::update_arena()
                 }
             }
 
-            arenapointsPerTeam[0] = (uint32)max(arenapointsPerTeam[0], arenapointsPerTeam[1]);
-            arenapoints += (uint32)max(arenapointsPerTeam[0], arenapointsPerTeam[2]);
+            arenapointsPerTeam[0] = (uint32)std::max(arenapointsPerTeam[0], arenapointsPerTeam[1]);
+            arenapoints += (uint32)std::max(arenapointsPerTeam[0], arenapointsPerTeam[2]);
             if (arenapoints > 5000) arenapoints = 5000;
 
             if (orig_arenapoints != arenapoints)

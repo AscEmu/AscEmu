@@ -330,7 +330,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
             }
 
             std::vector<Player*> TargetTable;
-            set<Object*>::iterator itr = _unit->GetInRangePlayerSetBegin();
+            std::set<Object*>::iterator itr = _unit->GetInRangePlayerSetBegin();
 
             for (; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {

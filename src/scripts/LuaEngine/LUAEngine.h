@@ -192,7 +192,7 @@ enum CustomLuaEvenTypes
 
 struct LUALoadScripts
 {
-    set<string> luaFiles;
+    std::set<std::string> luaFiles;
 };
 
 struct EventInfoHolder
@@ -673,7 +673,7 @@ class LuaEngine
             {
                 char name[32];
                 tostring(name, obj);
-                lua_getfield(L, -1, string(name).c_str());
+                lua_getfield(L, -1, std::string(name).c_str());
                 if (lua_isnil(L, -1))
                 {
                     delete obj;

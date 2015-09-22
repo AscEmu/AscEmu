@@ -34,7 +34,7 @@ class AuctionMgr : public Singleton <AuctionMgr>
 
         ~AuctionMgr()
         {
-            vector<AuctionHouse*>::iterator itr = auctionHouses.begin();
+            std::vector<AuctionHouse*>::iterator itr = auctionHouses.begin();
             for (; itr != auctionHouses.end(); ++itr)
                 delete(*itr);
         }
@@ -53,7 +53,7 @@ class AuctionMgr : public Singleton <AuctionMgr>
 
     private:
         HM_NAMESPACE::hash_map<uint32, AuctionHouse*> auctionHouseEntryMap;
-        vector<AuctionHouse*> auctionHouses;
+        std::vector<AuctionHouse*> auctionHouses;
 
         Arcemu::Threading::AtomicCounter maxId;
 

@@ -422,7 +422,7 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     uint64 guid;
-    string name;
+    std::string name;
     recv_data >> guid >> name;
 
     Pet* pet = NULL;

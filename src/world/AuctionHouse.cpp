@@ -70,7 +70,7 @@ void AuctionHouse::UpdateDeletionQueue()
     removalLock.Acquire();
     Auction* auct;
 
-    list<Auction*>::iterator it = removalList.begin();
+    std::list<Auction*>::iterator it = removalList.begin();
     for (; it != removalList.end(); ++it)
     {
         auct = *it;

@@ -99,12 +99,12 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
             std::lock_guard<std::recursive_mutex> lock(pPlayer->m_bg->GetMutex());
 
             // hackfix for battlegrounds (since the groups there are disabled, we need to do this manually)
-            vector<Player*> toadd;
+            std::vector<Player*> toadd;
             uint32 t = pPlayer->m_bgTeam;
             toadd.reserve(15);        // shouldn't have more than this
-            set<Player*> * s = &pPlayer->m_bg->m_players[t];
+            std::set<Player*> * s = &pPlayer->m_bg->m_players[t];
 
-            for (set<Player*>::iterator itr = s->begin(); itr != s->end(); ++itr)
+            for (std::set<Player*>::iterator itr = s->begin(); itr != s->end(); ++itr)
             {
                 // Also check that the player is in range, and the player is alive.
                 if ((*itr) == pPlayer || ((*itr)->isAlive() && (*itr)->isInRange(pPlayer, 100.0f)))
@@ -114,7 +114,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
             if (toadd.size() > 0)
             {
                 uint32 pts = Points / (uint32)toadd.size();
-                for (vector<Player*>::iterator vtr = toadd.begin(); vtr != toadd.end(); ++vtr)
+                for (std::vector<Player*>::iterator vtr = toadd.begin(); vtr != toadd.end(); ++vtr)
                 {
                     AddHonorPointsToPlayer(*vtr, pts);
 
@@ -134,7 +134,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
         }
         else
         {
-            set<Player*> contributors;
+            std::set<Player*> contributors;
             // First loop: Get all the people in the attackermap.
             pVictim->UpdateOppFactionSet();
             for (std::set<Object*>::iterator itr = pVictim->GetInRangeOppFactsSetBegin(); itr != pVictim->GetInRangeOppFactsSetEnd(); itr++)
@@ -172,7 +172,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 }
             }
 
-            for (set<Player*>::iterator itr = contributors.begin(); itr != contributors.end(); itr++)
+            for (std::set<Player*>::iterator itr = contributors.begin(); itr != contributors.end(); itr++)
             {
                 Player* pAffectedPlayer = (*itr);
                 if (!pAffectedPlayer) continue;

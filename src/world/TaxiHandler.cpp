@@ -249,7 +249,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 
     uint64 guid;
     uint32 nodecount;
-    vector<uint32> pathes;
+    std::vector<uint32> pathes;
     int32 newmoney;
     uint32 curloc;
     uint8 field;

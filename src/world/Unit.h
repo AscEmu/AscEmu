@@ -959,8 +959,8 @@ typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 class Unit;
 class SERVER_DECL CombatStatusHandler
 {
-        typedef set<uint64> AttackerMap;
-        typedef set<uint32> HealedSet;      // Must Be Players!
+        typedef std::set<uint64> AttackerMap;
+        typedef std::set<uint32> HealedSet;      // Must Be Players!
         HealedSet m_healers;
         HealedSet m_healed;
         Unit* m_Unit;
@@ -1349,7 +1349,7 @@ class SERVER_DECL Unit : public Object
 
         std::map<uint32, struct SpellCharge> m_chargeSpells;
 
-        deque<uint32> m_chargeSpellRemoveQueue;
+    std::deque<uint32> m_chargeSpellRemoveQueue;
 
         bool m_chargeSpellsInUse;
         void SetOnMeleeSpell(uint32 spell, uint8 ecn = 0) { m_meleespell = spell; m_meleespell_ecn = ecn; }
@@ -1664,7 +1664,7 @@ class SERVER_DECL Unit : public Object
         int32 m_speedModifier;
         int32 m_slowdown;
         float m_maxSpeed;
-        map< uint32, int32 > speedReductionMap;
+    std::map< uint32, int32 > speedReductionMap;
         bool GetSpeedDecrease();
         int32 m_mountedspeedModifier;
         int32 m_flyspeedModifier;

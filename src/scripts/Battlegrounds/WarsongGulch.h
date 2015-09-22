@@ -42,7 +42,7 @@ class WarsongGulch : public CBattleground
         GameObject* m_homeFlags[2];
         GameObject* m_dropFlags[2];
         uint32 m_flagHolders[2];
-        list<GameObject*> m_gates;
+    std::list<GameObject*> m_gates;
         uint32 m_scores[2];
         uint32 m_lgroup;
     public:

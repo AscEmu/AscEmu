@@ -52,7 +52,7 @@ void Storage_Cleanup();
 bool Storage_ReloadTable(const char* TableName);
 void Storage_LoadAdditionalTables();
 
-extern SERVER_DECL set<string> ExtraMapCreatureTables;
-extern SERVER_DECL set<string> ExtraMapGameObjectTables;
+extern SERVER_DECL std::set<std::string> ExtraMapCreatureTables;
+extern SERVER_DECL std::set<std::string> ExtraMapGameObjectTables;
 
 #endif // _OBJECTSTORAGE_H

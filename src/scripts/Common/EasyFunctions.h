@@ -282,12 +282,12 @@ class SCRIPT_DECL EasyFunctions
             sEventMgr.AddEvent(TO_OBJECT(creat), &Object::PlaySoundToSet, id, EVENT_UNK, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
-        void EventCreatureSay(Creature* creat, string say, uint32 time)
+        void EventCreatureSay(Creature* creat, std::string say, uint32 time)
         {
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str(), time);
         }
 
-        void EventCreatureYell(Creature* creat, string say, uint32 time)
+        void EventCreatureYell(Creature* creat, std::string say, uint32 time)
         {
             creat->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, say.c_str(), time);
         }

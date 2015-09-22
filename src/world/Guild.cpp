@@ -75,7 +75,7 @@ Guild::~Guild()
             if ((*itr)->pSlots[i] != NULL)
                 (*itr)->pSlots[i]->DeleteMe();
 
-        for (list<GuildBankEvent*>::iterator it2 = (*itr)->lLog.begin(); it2 != (*itr)->lLog.end(); ++it2)
+        for (std::list<GuildBankEvent*>::iterator it2 = (*itr)->lLog.begin(); it2 != (*itr)->lLog.end(); ++it2)
             delete(*it2);
         (*itr)->lLog.clear();
 
@@ -87,7 +87,7 @@ Guild::~Guild()
     }
     m_bankTabs.clear();
 
-    for (list<GuildBankEvent*>::iterator it2 = m_moneyLog.begin(); it2 != m_moneyLog.end(); ++it2)
+    for (std::list<GuildBankEvent*>::iterator it2 = m_moneyLog.begin(); it2 != m_moneyLog.end(); ++it2)
         delete(*it2);
 
     m_moneyLog.clear();
@@ -247,7 +247,7 @@ GuildRank* Guild::CreateGuildRank(const char* szRankName, uint32 iPermissions, b
 
             // save the rank into the database
             CharacterDatabase.Execute("INSERT INTO guild_ranks VALUES(%u, %u, \'%s\', %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-                                      m_guildId, i, CharacterDatabase.EscapeString(string(szRankName)).c_str(),
+                                      m_guildId, i, CharacterDatabase.EscapeString(std::string(szRankName)).c_str(),
                                       r->iRights, r->iGoldLimitPerDay,
                                       r->iTabPermissions[0].iFlags, r->iTabPermissions[0].iStacksPerDay,
                                       r->iTabPermissions[1].iFlags, r->iTabPermissions[1].iStacksPerDay,
@@ -460,7 +460,7 @@ bool Guild::LoadFromDB(Field* f)
         {
             Log.Notice("Guild", "Renaming rank %u of guild %s to %u.", r->iId, m_guildName, sid);
             CharacterDatabase.Execute("UPDATE guild_ranks SET rankId = %u WHERE guildId = %u AND rankName = \'%s\'", r->iId,
-                                      m_guildId, CharacterDatabase.EscapeString(string(f2[2].GetString())).c_str());
+                                      m_guildId, CharacterDatabase.EscapeString(std::string(f2[2].GetString())).c_str());
 
             r->iId = sid;
         }
@@ -531,7 +531,7 @@ bool Guild::LoadFromDB(Field* f)
             gm->uItemWithdrawlsSinceLastReset[j] = f3[8 + (j * 2)].GetUInt32();
         }
 
-        m_members.insert(make_pair(gm->pPlayer, gm));
+        m_members.insert(std::make_pair(gm->pPlayer, gm));
 
     }
     while (result->NextRow());
@@ -684,7 +684,7 @@ void Guild::SetMOTD(const char* szNewMotd, WorldSession* pClient)
     if (strlen(szNewMotd))
     {
         m_motd = strdup(szNewMotd);
-        CharacterDatabase.Execute("UPDATE guilds SET motd = \'%s\' WHERE guildId = %u", CharacterDatabase.EscapeString(string(szNewMotd)).c_str(), m_guildId);
+        CharacterDatabase.Execute("UPDATE guilds SET motd = \'%s\' WHERE guildId = %u", CharacterDatabase.EscapeString(std::string(szNewMotd)).c_str(), m_guildId);
     }
     else
     {
@@ -712,7 +712,7 @@ void Guild::SetGuildInformation(const char* szGuildInformation, WorldSession* pC
     if (strlen(szGuildInformation))
     {
         m_guildInfo = strdup(szGuildInformation);
-        CharacterDatabase.Execute("UPDATE guilds SET guildInfo = \'%s\' WHERE guildId = %u", CharacterDatabase.EscapeString(string(szGuildInformation)).c_str(), m_guildId);
+        CharacterDatabase.Execute("UPDATE guilds SET guildInfo = \'%s\' WHERE guildId = %u", CharacterDatabase.EscapeString(std::string(szGuildInformation)).c_str(), m_guildId);
     }
     else
     {
@@ -759,7 +759,7 @@ void Guild::AddGuildMember(PlayerInfo* pMember, WorldSession* pClient, int32 For
     pm->pPlayer = pMember;
     pm->pRank = r;
     pm->szOfficerNote = pm->szPublicNote = NULL;
-    m_members.insert(make_pair(pMember, pm));
+    m_members.insert(std::make_pair(pMember, pm));
 
     pMember->guild = this;
     pMember->guildRank = r;
@@ -880,7 +880,7 @@ void Guild::SetPublicNote(PlayerInfo* pMember, const char* szNewNote, WorldSessi
             CharacterDatabase.Execute("UPDATE guild_data SET publicNote=\'\' WHERE playerid=%u", pMember->guid);
         else
             CharacterDatabase.Execute("UPDATE guild_data SET publicNote=\'%s\' WHERE playerid=%u",
-            CharacterDatabase.EscapeString(string(itr->second->szPublicNote)).c_str(),
+            CharacterDatabase.EscapeString(std::string(itr->second->szPublicNote)).c_str(),
             pMember->guid
            );
     }
@@ -920,7 +920,7 @@ void Guild::SetOfficerNote(PlayerInfo* pMember, const char* szNewNote, WorldSess
             CharacterDatabase.Execute("UPDATE guild_data SET officerNote=\'\' WHERE playerid=%u", pMember->guid);
         else
             CharacterDatabase.Execute("UPDATE guild_data SET officerNote=\'%s\' WHERE playerid=%u",
-            CharacterDatabase.EscapeString(string(itr->second->szOfficerNote)).c_str(),
+            CharacterDatabase.EscapeString(std::string(itr->second->szOfficerNote)).c_str(),
             pMember->guid
            );
     }
@@ -1287,7 +1287,7 @@ void Guild::SendTurnInPetitionResult(WorldSession* pClient, uint32 result)
 void Guild::CreateInDB()
 {
     CharacterDatabase.Execute("INSERT INTO guilds VALUES(%u, \'%s\', %u, %u, %u, %u, %u, %u, '', '', %u, 0)",
-                              m_guildId, CharacterDatabase.EscapeString(string(m_guildName)).c_str(), m_guildLeader, m_emblemStyle, m_emblemColor, m_borderColor, m_borderStyle,
+                              m_guildId, CharacterDatabase.EscapeString(std::string(m_guildName)).c_str(), m_guildLeader, m_emblemStyle, m_emblemColor, m_borderColor, m_borderStyle,
                               m_backgroundColor, m_creationTimeStamp);
 }
 
@@ -1509,7 +1509,7 @@ void Guild::SendGuildBankLog(WorldSession* pClient, uint8 iSlot)
         uint32 lt = (uint32)UNIXTIME;
         data << uint8(iSlot);
         data << uint8((m_moneyLog.size() < 25) ? m_moneyLog.size() : 25);
-        list<GuildBankEvent*>::iterator itr = m_moneyLog.begin();
+        std::list<GuildBankEvent*>::iterator itr = m_moneyLog.begin();
         for (; itr != m_moneyLog.end(); ++itr)
         {
             data << (*itr)->iAction;
@@ -1545,7 +1545,7 @@ void Guild::SendGuildBankLog(WorldSession* pClient, uint8 iSlot)
         data << uint8(iSlot);
         data << uint8((pTab->lLog.size() < 25) ? pTab->lLog.size() : 25);
 
-        list<GuildBankEvent*>::iterator itr = pTab->lLog.begin();
+        std::list<GuildBankEvent*>::iterator itr = pTab->lLog.begin();
         for (; itr != pTab->lLog.end(); ++itr)
         {
             data << (*itr)->iAction;

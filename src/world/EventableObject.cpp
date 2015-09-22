@@ -88,7 +88,7 @@ void EventableObject::event_AddEvent(TimedEvent* ptr)
 
     ptr->IncRef();
     ptr->instanceId = m_event_Instanceid;
-    pair<uint32, TimedEvent*> p(ptr->eventType, ptr);
+    std::pair<uint32, TimedEvent*> p(ptr->eventType, ptr);
     m_events.insert(p);
     m_lock.Release();
 

@@ -193,9 +193,9 @@ void AuthSocket::HandleChallenge()
     m_challenge.I[m_challenge.I_len] = 0;
 
     // Clear the shitty hash (for server)
-    string AccountName = (char*)&m_challenge.I;
-    string::size_type i = AccountName.rfind("#");
-    if(i != string::npos)
+    std::string AccountName = (char*)&m_challenge.I;
+    std::string::size_type i = AccountName.rfind("#");
+    if(i != std::string::npos)
     {
         LOG_ERROR("# ACCOUNTNAME!");
         return;
@@ -635,7 +635,7 @@ void AuthSocket::HandleReconnectChallenge()
         }*/
 
     // Look up the account information
-    string AccountName = (char*)&m_challenge.I;
+    std::string AccountName = (char*)&m_challenge.I;
     LOG_DEBUG("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = AccountMgr::getSingleton().GetAccount(AccountName);

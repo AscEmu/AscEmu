@@ -31,8 +31,8 @@ void AccountMgr::ReloadAccounts(bool silent)
     // Load *all* accounts.
     QueryResult* result = sLogonSQL->Query("SELECT acct, login, encrypted_password, gm, flags, banned, forceLanguage, muted FROM accounts");
     Field* field;
-    string AccountName;
-    set<string> account_list;
+    std::string AccountName;
+    std::set<std::string> account_list;
     Account* acct;
 
     if(result)
@@ -69,8 +69,8 @@ void AccountMgr::ReloadAccounts(bool silent)
 
     // check for any purged/deleted accounts
 #ifdef WIN32
-    HM_NAMESPACE::hash_map<string, Account*>::iterator itr = AccountDatabase.begin();
-    HM_NAMESPACE::hash_map<string, Account*>::iterator it2;
+    HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.begin();
+    HM_NAMESPACE::hash_map<std::string, Account*>::iterator it2;
 #else
     std::map<string, Account*>::iterator itr = AccountDatabase.begin();
     std::map<string, Account*>::iterator it2;
@@ -102,9 +102,9 @@ void AccountMgr::AddAccount(Field* field)
 {
     Account* acct = new Account;
     Sha1Hash hash;
-    string Username     = field[1].GetString();
-    string EncryptedPassword = field[2].GetString();
-    string GMFlags        = field[3].GetString();
+    std::string Username     = field[1].GetString();
+    std::string EncryptedPassword = field[2].GetString();
+    std::string GMFlags        = field[3].GetString();
 
     acct->AccountId                = field[0].GetUInt32();
     acct->AccountFlags            = field[4].GetUInt8();
@@ -182,9 +182,9 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
 {
     uint32 id = field[0].GetUInt32();
     Sha1Hash hash;
-    string Username     = field[1].GetString();
-    string EncryptedPassword = field[2].GetString();
-    string GMFlags        = field[3].GetString();
+    std::string Username     = field[1].GetString();
+    std::string EncryptedPassword = field[2].GetString();
+    std::string GMFlags        = field[3].GetString();
 
     if(id != acct->AccountId)
     {
@@ -265,8 +265,8 @@ void AccountMgr::ReloadAccountsCallback()
 BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
     Guard lguard(listBusy);
-    list<IPBan>::iterator itr;
-    list<IPBan>::iterator itr2 = banList.begin();
+    std::list<IPBan>::iterator itr;
+    std::list<IPBan>::iterator itr2 = banList.begin();
     for(; itr2 != banList.end();)
     {
         itr = itr2;
@@ -295,14 +295,14 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 
 bool IPBanner::Add(const char* ip, uint32 dur)
 {
-    string sip = string(ip);
+    std::string sip = std::string(ip);
 
-    string::size_type i = sip.find("/");
-    if(i == string::npos)
+    std::string::size_type i = sip.find("/");
+    if(i == std::string::npos)
         return false;
 
-    string stmp = sip.substr(0, i);
-    string smask = sip.substr(i + 1);
+    std::string stmp = sip.substr(0, i);
+    std::string smask = sip.substr(i + 1);
 
     unsigned int ipraw = MakeIP(stmp.c_str());
     unsigned int ipmask = atoi(smask.c_str());
@@ -324,14 +324,14 @@ bool IPBanner::Add(const char* ip, uint32 dur)
 
 InformationCore::~InformationCore()
 {
-    for(map<uint32, Realm*>::iterator itr = m_realms.begin(); itr != m_realms.end(); ++itr)
+    for(std::map<uint32, Realm*>::iterator itr = m_realms.begin(); itr != m_realms.end(); ++itr)
         delete itr->second;
 }
 
 bool IPBanner::Remove(const char* ip)
 {
     listBusy.Acquire();
-    for(list<IPBan>::iterator itr = banList.begin(); itr != banList.end(); ++itr)
+    for(std::list<IPBan>::iterator itr = banList.begin(); itr != banList.end(); ++itr)
     {
         if(!strcmp(ip, itr->db_ip.c_str()))
         {
@@ -355,11 +355,11 @@ void IPBanner::Reload()
         do
         {
             IPBan ipb;
-            string smask = "32";
-            string ip = result->Fetch()[0].GetString();
-            string::size_type i = ip.find("/");
-            string stmp = ip.substr(0, i);
-            if(i == string::npos)
+            std::string smask = "32";
+            std::string ip = result->Fetch()[0].GetString();
+            std::string::size_type i = ip.find("/");
+            std::string stmp = ip.substr(0, i);
+            if(i == std::string::npos)
             {
                 LOG_DETAIL("IP ban \"%s\" netmask not specified. assuming /32", ip.c_str());
             }
@@ -390,10 +390,10 @@ void IPBanner::Reload()
 Realm* InformationCore::AddRealm(uint32 realm_id, Realm* rlm)
 {
     realmLock.Acquire();
-    map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
 
     if(itr == m_realms.end())
-        m_realms.insert(make_pair(realm_id, rlm));
+        m_realms.insert(std::make_pair(realm_id, rlm));
     else
     {
         delete itr->second;
@@ -408,7 +408,7 @@ Realm* InformationCore::GetRealm(uint32 realm_id)
     Realm* ret = NULL;
 
     realmLock.Acquire();
-    map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
     if(itr != m_realms.end())
     {
         ret = itr->second;
@@ -417,9 +417,9 @@ Realm* InformationCore::GetRealm(uint32 realm_id)
     return ret;
 }
 
-int32 InformationCore::GetRealmIdByName(string Name)
+int32 InformationCore::GetRealmIdByName(std::string Name)
 {
-    map<uint32, Realm*>::iterator itr = m_realms.begin();
+    std::map<uint32, Realm*>::iterator itr = m_realms.begin();
     for(; itr != m_realms.end(); ++itr)
         if(itr->second->Name == Name)
         {
@@ -431,7 +431,7 @@ int32 InformationCore::GetRealmIdByName(string Name)
 void InformationCore::RemoveRealm(uint32 realm_id)
 {
     realmLock.Acquire();
-    map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
     if(itr != m_realms.end())
     {
         delete itr->second;
@@ -443,7 +443,7 @@ void InformationCore::RemoveRealm(uint32 realm_id)
 void InformationCore::UpdateRealmStatus(uint32 realm_id, uint8 flags)
 {
     realmLock.Acquire();
-    map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
     if(itr != m_realms.end())
     {
         itr->second->flags = flags;
@@ -454,7 +454,7 @@ void InformationCore::UpdateRealmStatus(uint32 realm_id, uint8 flags)
 void InformationCore::UpdateRealmPop(uint32 realm_id, float pop)
 {
     realmLock.Acquire();
-    map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
     if(itr != m_realms.end())
     {
         uint8 flags;
@@ -488,7 +488,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     data << uint16(m_realms.size());
 
     // loop realms :/
-    map<uint32, Realm*>::iterator itr = m_realms.begin();
+    std::map<uint32, Realm*>::iterator itr = m_realms.begin();
     HM_NAMESPACE::hash_map<uint32, uint8>::iterator it;
     for(; itr != m_realms.end(); ++itr)
     {
@@ -538,7 +538,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
         return;
     }
 
-    set<LogonCommServerSocket*>::iterator itr1;
+    std::set<LogonCommServerSocket*>::iterator itr1;
 
     // We copy the sockets to a list and call RefreshRealmsPop() from there because if the socket is dead,
     //then calling the method deletes the socket and removes it from the set corrupting the iterator and causing a crash!
@@ -565,7 +565,7 @@ void InformationCore::TimeoutSockets()
     /* burlex: this is vulnerable to race conditions, adding a mutex to it. */
     serverSocketLock.Acquire();
 
-    for(set< LogonCommServerSocket* >::iterator itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
+    for(std::set< LogonCommServerSocket* >::iterator itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
     {
         LogonCommServerSocket* s = *itr;
         ++itr;
@@ -573,7 +573,7 @@ void InformationCore::TimeoutSockets()
         uint32 last_ping = s->last_ping.GetVal();
         if(last_ping < now && ((now - last_ping) > 300))
         {
-            for(set< uint32 >::iterator RealmITR = s->server_ids.begin(); RealmITR != s->server_ids.end(); ++RealmITR)
+            for(std::set< uint32 >::iterator RealmITR = s->server_ids.begin(); RealmITR != s->server_ids.end(); ++RealmITR)
             {
                 uint32 RealmID = *RealmITR;
 
@@ -593,7 +593,7 @@ void InformationCore::CheckServers()
 {
     serverSocketLock.Acquire();
 
-    set<LogonCommServerSocket*>::iterator itr, it2;
+    std::set<LogonCommServerSocket*>::iterator itr, it2;
     LogonCommServerSocket* s;
     for(itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
     {
@@ -614,7 +614,7 @@ void InformationCore::CheckServers()
 void InformationCore::SetRealmOffline(uint32 realm_id)
 {
     realmLock.Acquire();
-    map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
     if(itr != m_realms.end())
     {
         itr->second->flags = REALM_FLAG_OFFLINE | REALM_FLAG_INVALID;

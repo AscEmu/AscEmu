@@ -60,7 +60,7 @@ class LogonCommServerSocket : public Socket
 
         Arcemu::Threading::AtomicCounter last_ping;
         bool removed;
-        set<uint32> server_ids;
+    std::set<uint32> server_ids;
 };
 
 typedef void (LogonCommServerSocket::*logonpacket_handler)(WorldPacket &);

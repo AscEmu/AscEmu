@@ -33,7 +33,6 @@
 #include "Recast.h"
 #include "DetourNavMesh.h"
 
-using namespace std;
 using namespace VMAP;
 // G3D namespace typedefs conflicts with ACE typedefs
 

@@ -390,7 +390,7 @@ class LuaUnit
             return 0;
         WorldPacket* data = sChatHandler.FillMessageData(type, lang, msg, plr->GetGUID(), 0);
         plr->GetSession()->SendChatPacket(data, 1, lang, plr->GetSession());
-        for (set< Object* >::iterator itr = plr->GetInRangePlayerSetBegin(); itr != plr->GetInRangePlayerSetEnd(); ++itr)
+        for (std::set< Object* >::iterator itr = plr->GetInRangePlayerSetBegin(); itr != plr->GetInRangePlayerSetEnd(); ++itr)
         {
             (TO< Player* >(*itr))->GetSession()->SendChatPacket(data, 1, lang, plr->GetSession());
         }
@@ -409,7 +409,7 @@ class LuaUnit
             return 0;
 
         Unit* pUnit = NULL;
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
         {
             Object* obj = *itr;
             // Object Isn't a Unit, Unit is Dead
@@ -972,7 +972,7 @@ class LuaUnit
         float d2 = 0;
         Player* ret = NULL;
 
-        for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+        for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
         {
             d2 = (*itr)->GetDistanceSq(ptr);
             if (!ret || d2 < dist)
@@ -996,7 +996,7 @@ class LuaUnit
 
         int flag = luaL_checkinteger(L, 1);
         Player* ret = NULL;
-        vector<Player*> players;
+        std::vector<Player*> players;
         switch (flag)
         {
             case RANDOM_ANY:
@@ -1004,7 +1004,7 @@ class LuaUnit
                 uint32 count = (uint32)ptr->GetInRangePlayersCount();
                 uint32 r = RandomUInt(count - 1);
                 count = 0;
-                for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
                     if (count == r)
                     {
@@ -1018,7 +1018,7 @@ class LuaUnit
             case RANDOM_IN_SHORTRANGE:
 
             {
-                for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* obj = TO_PLAYER(*itr);
                     if (obj && obj->CalcDistance(obj, ptr) <= 8)
@@ -1030,7 +1030,7 @@ class LuaUnit
             break;
             case RANDOM_IN_MIDRANGE:
             {
-                for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* obj = TO_PLAYER(*itr);
                     float distance = obj->CalcDistance(obj, ptr);
@@ -1043,7 +1043,7 @@ class LuaUnit
             break;
             case RANDOM_IN_LONGRANGE:
             {
-                for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* obj = TO_PLAYER(*itr);
                     if (obj && obj->CalcDistance(obj, ptr) >= 20)
@@ -1055,7 +1055,7 @@ class LuaUnit
             break;
             case RANDOM_WITH_MANA:
             {
-                for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* obj = TO_PLAYER(*itr);
                     if (obj && obj->GetPowerType() == POWER_TYPE_MANA)
@@ -1067,7 +1067,7 @@ class LuaUnit
             break;
             case RANDOM_WITH_ENERGY:
             {
-                for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* obj = TO_PLAYER(*itr);
                     if (obj && obj->GetPowerType() == POWER_TYPE_ENERGY)
@@ -1079,7 +1079,7 @@ class LuaUnit
             break;
             case RANDOM_WITH_RAGE:
             {
-                for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* obj = TO_PLAYER(*itr);
                     if (obj && obj->GetPowerType() == POWER_TYPE_RAGE)
@@ -1095,7 +1095,7 @@ class LuaUnit
                 if (mt == NULL || !mt->IsPlayer())
                     return 0;
 
-                for (set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* obj = TO_PLAYER(*itr);
                     if (obj != mt)
@@ -1118,9 +1118,9 @@ class LuaUnit
     {
         TEST_UNITPLAYER();
 
-        vector<Object*> allies;
+        std::vector<Object*> allies;
 
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
         {
             Object* obj = *itr;
             if (obj->IsUnit() && isFriendly(obj, ptr))
@@ -1136,9 +1136,9 @@ class LuaUnit
     {
         TEST_UNITPLAYER();
 
-        vector<Object*> enemies;
+        std::vector<Object*> enemies;
 
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
         {
             Object* obj = *itr;
             if (obj->IsUnit() && isHostile(ptr, obj))
@@ -1391,7 +1391,7 @@ class LuaUnit
         Object* pC = NULL;
         uint32 count = 0;
         lua_newtable(L);
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); itr++)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); itr++)
         {
             if ((*itr)->IsUnit() && isFriendly(ptr, (*itr)))
             {
@@ -1411,7 +1411,7 @@ class LuaUnit
             return 0;
         uint32 count = 0;
         lua_newtable(L);
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); itr++)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); itr++)
         {
             if ((*itr)->IsUnit() && !isFriendly(ptr, (*itr)))
             {
@@ -1430,7 +1430,7 @@ class LuaUnit
             return 0;
         uint32 count = 0;
         lua_newtable(L);
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); itr++)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); itr++)
         {
             if ((*itr)->IsUnit())
             {
@@ -5658,7 +5658,7 @@ class LuaUnit
         float current_dist = 0;
         Object* closest_unit = NULL;
         Unit* ret = NULL;
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
         {
             closest_unit = (*itr);
             if (!closest_unit->IsUnit() || !isHostile(ptr, closest_unit))
@@ -5681,7 +5681,7 @@ class LuaUnit
         float current_dist = 0.0f;
         Object* closest_unit = NULL;
         Unit* ret = NULL;
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
         {
             closest_unit = (*itr);
             if (!closest_unit->IsUnit() || isHostile(closest_unit, ptr))
@@ -5704,7 +5704,7 @@ class LuaUnit
         float current_dist = 0;
         Object* closest_unit = NULL;
         Unit* ret = NULL;
-        for (set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
         {
             closest_unit = (*itr);
             if (!closest_unit->IsUnit())

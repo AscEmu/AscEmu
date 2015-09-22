@@ -76,9 +76,9 @@ typedef std::set<Player*> PlayerSet;
 
 typedef HM_NAMESPACE::hash_map<uint32, Object*> StorageMap;
 
-typedef set<uint64> CombatProgressMap;
-typedef set<Creature*> CreatureSet;
-typedef set<GameObject*> GameObjectSet;
+typedef std::set<uint64> CombatProgressMap;
+typedef std::set<Creature*> CreatureSet;
+typedef std::set<GameObject*> GameObjectSet;
 
 typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
 typedef HM_NAMESPACE::hash_map<uint32, GameObject*> GameObjectSqlIdMap;
@@ -305,7 +305,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
 		/// Objects that exist on map
 		uint32 _mapId;
-		set<Object*> _mapWideStaticObjects;
+		std::set<Object*> _mapWideStaticObjects;
 
 		bool _CellActive(uint32 x, uint32 y);
 		void UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf);
@@ -341,7 +341,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		CreatureSet activeCreatures;
 		EventableObjectHolder eventHolder;
 		CBattleground* m_battleground;
-		set<Corpse*> m_corpses;
+		std::set<Corpse*> m_corpses;
 		CreatureSqlIdMap _sqlids_creatures;
 		GameObjectSqlIdMap _sqlids_gameobjects;
 
@@ -352,8 +352,8 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
 		Creature* GetSqlIdCreature(uint32 sqlid);
 		GameObject* GetSqlIdGameObject(uint32 sqlid);
-		deque<uint32> _reusable_guids_gameobject;
-		deque<uint32> _reusable_guids_creature;
+    std::deque<uint32> _reusable_guids_gameobject;
+    std::deque<uint32> _reusable_guids_creature;
 
 		bool forced_expire;
 		bool thread_kill_only;

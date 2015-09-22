@@ -23,6 +23,8 @@
 #ifndef __WORLDSESSION_H
 #define __WORLDSESSION_H
 
+#include "Opcodes.h"
+
 class Player;
 class WorldPacket;
 class WorldSocket;
@@ -185,14 +187,14 @@ typedef struct Cords
 } Cords;
 
 extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
-void CapitalizeString(string & arg);
+void CapitalizeString(std::string & arg);
 
 class SERVER_DECL WorldSession
 {
     friend class WorldSocket;
 
     public:
-        WorldSession(uint32 id, string Name, WorldSocket* sock);
+        WorldSession(uint32 id, std::string Name, WorldSocket* sock);
         ~WorldSession();
 
         Player* m_loggingInPlayer;
@@ -311,7 +313,7 @@ class SERVER_DECL WorldSession
 
         void SetInstance(uint32 Instance) { instanceId = Instance; }
         uint32 GetLatency() const { return _latency; }
-        string GetAccountName() { return _accountName; }
+        std::string GetAccountName() { return _accountName; }
         const char* GetAccountNameS() const { return _accountName.c_str(); }
         const char* LocalizedWorldSrv(uint32 id);
         const char* LocalizedCreatureTexts(uint32 id);
@@ -830,7 +832,7 @@ class SERVER_DECL WorldSession
 
         uint32 _accountId;
         uint32 _accountFlags;
-        string _accountName;
+    std::string _accountName;
 
         bool has_level_55_char; // death knights
         bool has_dk;

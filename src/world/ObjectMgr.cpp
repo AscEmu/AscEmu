@@ -322,7 +322,7 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
             pl->guild->RemoveGuildMember(pl, NULL);
     }
 
-    string pnam = string(pl->name);
+    std::string pnam = std::string(pl->name);
     arcemu_TOLOWER(pnam);
     i2 = m_playersInfoByName.find(pnam);
     if (i2 != m_playersInfoByName.end() && i2->second == pl)
@@ -353,7 +353,7 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
 {
     playernamelock.AcquireWriteLock();
     m_playersinfo[pn->guid] = pn;
-    string pnam = string(pn->name);
+    std::string pnam = std::string(pn->name);
     arcemu_TOLOWER(pnam);
     m_playersInfoByName[pnam] = pn;
     playernamelock.ReleaseWriteLock();
@@ -362,13 +362,13 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
 void ObjectMgr::RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char* newname)
 {
     playernamelock.AcquireWriteLock();
-    string oldn = string(oldname);
+    std::string oldn = std::string(oldname);
     arcemu_TOLOWER(oldn);
 
     PlayerNameStringIndexMap::iterator itr = m_playersInfoByName.find(oldn);
     if (itr != m_playersInfoByName.end() && itr->second == pn)
     {
-        string newn = string(newname);
+        std::string newn = std::string(newname);
         arcemu_TOLOWER(newn);
         m_playersInfoByName.erase(itr);
         m_playersInfoByName[newn] = pn;
@@ -489,14 +489,14 @@ void ObjectMgr::LoadPlayersInfo()
                 snprintf(temp, 300, "%s__%X__", pn->name, pn->guid);
                 Log.Notice("ObjectMgr", "Renaming duplicate player %s to %s. (%u)", pn->name, temp, pn->guid);
                 CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s', login_flags = %u WHERE guid = %u",
-                                              CharacterDatabase.EscapeString(string(temp)).c_str(), (uint32)LOGIN_FORCED_RENAME, pn->guid);
+                                              CharacterDatabase.EscapeString(std::string(temp)).c_str(), (uint32)LOGIN_FORCED_RENAME, pn->guid);
 
 
                 free(pn->name);
                 pn->name = strdup(temp);
             }
 
-            string lpn = string(pn->name);
+            std::string lpn = std::string(pn->name);
             arcemu_TOLOWER(lpn);
             m_playersInfoByName[lpn] = pn;
 
@@ -516,7 +516,7 @@ void ObjectMgr::LoadPlayersInfo()
 
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
 {
-    string lpn = string(name);
+    std::string lpn = std::string(name);
     arcemu_TOLOWER(lpn);
     PlayerNameStringIndexMap::iterator i;
     PlayerInfo* rv = NULL;
@@ -599,12 +599,12 @@ void ObjectMgr::LoadPlayerCreateInfo()
         pPlayerCreateInfo->maxdmg = fields[22].GetFloat();
         pPlayerCreateInfo->introid = fields[23].GetUInt32();
 
-        string taxiMaskStr = fields[24].GetString();
-        vector<string> tokens = StrSplit(taxiMaskStr, " ");
+        std::string taxiMaskStr = fields[24].GetString();
+        std::vector<std::string> tokens = StrSplit(taxiMaskStr, " ");
 
         memset(pPlayerCreateInfo->taximask, 0, sizeof(pPlayerCreateInfo->taximask));
         int index;
-        vector<string>::iterator iter;
+        std::vector<std::string>::iterator iter;
         for (iter = tokens.begin(), index = 0; (index < 12) && (iter != tokens.end()); ++iter, ++index)
         {
             pPlayerCreateInfo->taximask[index] = atol((*iter).c_str());
@@ -701,7 +701,7 @@ void ObjectMgr::LoadGuilds()
                 delete pGuild;
             }
             else
-                mGuild.insert(make_pair(pGuild->GetGuildId(), pGuild));
+                mGuild.insert(std::make_pair(pGuild->GetGuildId(), pGuild));
 
             if (!((++c) % period))
                 Log.Notice("Guilds", "Done %u/%u, %u%% complete.", c, result->GetRowCount(), c * 100 / result->GetRowCount());
@@ -1209,7 +1209,7 @@ void ObjectMgr::ProcessGameobjectQuests()
             gameobject_info = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
             qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
             if (gameobject_info && qst)
-                gameobject_info->itemMap[qst].insert(make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
+                gameobject_info->itemMap[qst].insert(std::make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
 
         }
         while (result->NextRow());
@@ -1224,7 +1224,7 @@ void ObjectMgr::ProcessGameobjectQuests()
             gameobject_info = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
             qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
             if (gameobject_info && qst)
-                gameobject_info->goMap.insert(make_pair(qst, fields[2].GetUInt32()));
+                gameobject_info->goMap.insert(std::make_pair(qst, fields[2].GetUInt32()));
 
         }
         while (result2->NextRow());
@@ -2373,7 +2373,7 @@ void ObjectMgr::GenerateLevelUpInfo()
             }
 
             // Now that our level map is full, let's create the class/race pair
-            pair<uint32, uint32> p;
+            std::pair<uint32, uint32> p;
             p.first = Race;
             p.second = Class;
 
@@ -2465,7 +2465,7 @@ void ObjectMgr::LoadDefaultPetSpells()
                     itr->second.insert(sp);
                 else
                 {
-                    set<SpellEntry*> s;
+                    std::set<SpellEntry*> s;
                     s.insert(sp);
                     mDefaultPetSpells[Entry] = s;
                 }
@@ -2476,7 +2476,7 @@ void ObjectMgr::LoadDefaultPetSpells()
     }
 }
 
-set<SpellEntry*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
+std::set<SpellEntry*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
 {
     PetDefaultSpellMap::iterator itr = mDefaultPetSpells.find(Entry);
     if (itr == mDefaultPetSpells.end())
@@ -2502,7 +2502,7 @@ void ObjectMgr::LoadPetSpellCooldowns()
                 if (itr == mPetSpellCooldowns.end())
                 {
                     if (Cooldown)
-                        mPetSpellCooldowns.insert(make_pair(SpellId, Cooldown));
+                        mPetSpellCooldowns.insert(std::make_pair(SpellId, Cooldown));
                 }
                 else
                 {
@@ -2869,7 +2869,7 @@ void ObjectMgr::LoadGuildCharters()
     do
     {
         Charter* c = new Charter(result->Fetch());
-        m_charters[c->CharterType].insert(make_pair(c->GetID(), c));
+        m_charters[c->CharterType].insert(std::make_pair(c->GetID(), c));
         if (c->GetID() > int64(m_hiCharterId.GetVal()))
             m_hiCharterId.SetVal(c->GetID());
     }
@@ -2895,7 +2895,7 @@ Charter* ObjectMgr::CreateCharter(uint32 LeaderGuid, CharterTypes Type)
     charterid = ++m_hiCharterId;
 
     Charter* c = new Charter(charterid, LeaderGuid, Type);
-    m_charters[c->CharterType].insert(make_pair(c->GetID(), c));
+    m_charters[c->CharterType].insert(std::make_pair(c->GetID(), c));
 
     return c;
 }
@@ -3062,7 +3062,7 @@ Charter* ObjectMgr::GetCharterByGuid(uint64 playerguid, CharterTypes type)
     return NULL;
 }
 
-Charter* ObjectMgr::GetCharterByName(string & charter_name, CharterTypes Type)
+Charter* ObjectMgr::GetCharterByName(std::string & charter_name, CharterTypes Type)
 {
     Charter* rv = 0;
     m_charterLock.AcquireReadLock();
@@ -3210,7 +3210,7 @@ void ObjectMgr::LoadMonsterSay()
         memcpy(ms->Texts, texts, sizeof(char*) * textcount);
         ms->TextCount = textcount;
 
-        mMonsterSays[Event].insert(make_pair(Entry, ms));
+        mMonsterSays[Event].insert(std::make_pair(Entry, ms));
 
     }
     while (result->NextRow());
@@ -3250,7 +3250,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
             InstanceReputationModifier* m = new InstanceReputationModifier;
             m->mapid = mod.mapid;
             m->mods.push_back(mod);
-            m_reputation_instance.insert(make_pair(m->mapid, m));
+            m_reputation_instance.insert(std::make_pair(m->mapid, m));
         }
         else
             itr->second->mods.push_back(mod);
@@ -3280,7 +3280,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
     int32 replimit;
     int32 value;
 
-    for (vector<InstanceReputationMod>::iterator i = itr->second->mods.begin(); i != itr->second->mods.end(); ++i)
+    for (std::vector<InstanceReputationMod>::iterator i = itr->second->mods.begin(); i != itr->second->mods.end(); ++i)
     {
         if (!(*i).faction[team])
             continue;
@@ -3401,7 +3401,7 @@ ArenaTeam* ObjectMgr::GetArenaTeamById(uint32 id)
     return (itr == m_arenaTeams.end()) ? NULL : itr->second;
 }
 
-ArenaTeam* ObjectMgr::GetArenaTeamByName(string & name, uint32 Type)
+ArenaTeam* ObjectMgr::GetArenaTeamByName(std::string & name, uint32 Type)
 {
     m_arenaTeamLock.Acquire();
     for (HM_NAMESPACE::hash_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeams.begin(); itr != m_arenaTeams.end(); ++itr)
@@ -3428,7 +3428,7 @@ void ObjectMgr::AddArenaTeam(ArenaTeam* team)
 {
     m_arenaTeamLock.Acquire();
     m_arenaTeams[team->m_id] = team;
-    m_arenaTeamMap[team->m_type].insert(make_pair(team->m_id, team));
+    m_arenaTeamMap[team->m_type].insert(std::make_pair(team->m_id, team));
     m_arenaTeamLock.Release();
 }
 
@@ -3452,14 +3452,14 @@ void ObjectMgr::UpdateArenaTeamRankings()
     m_arenaTeamLock.Acquire();
     for (uint32 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
     {
-        vector<ArenaTeam*> ranking;
+        std::vector<ArenaTeam*> ranking;
 
         for (HM_NAMESPACE::hash_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[i].begin(); itr != m_arenaTeamMap[i].end(); ++itr)
             ranking.push_back(itr->second);
 
         std::sort(ranking.begin(), ranking.end(), ArenaSorter());
         uint32 rank = 1;
-        for (vector<ArenaTeam*>::iterator itr = ranking.begin(); itr != ranking.end(); ++itr)
+        for (std::vector<ArenaTeam*>::iterator itr = ranking.begin(); itr != ranking.end(); ++itr)
         {
             if ((*itr)->m_stat_ranking != rank)
             {

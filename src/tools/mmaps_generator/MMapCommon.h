@@ -35,8 +35,6 @@
 #include <dirent.h>
 #endif
 
-using namespace std;
-
 namespace MMAP
 {
     inline bool matchWildcardFilter(const char* filter, const char* str)

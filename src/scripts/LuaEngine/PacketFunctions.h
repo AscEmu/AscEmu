@@ -182,7 +182,7 @@ namespace luPacket
     }
     int ReadString(lua_State* L, WorldPacket* packet)
     {
-        string str;
+        std::string str;
         if (packet != NULL)
         {
             (*packet) >> str;
@@ -260,7 +260,7 @@ namespace luPacket
     }
     int WriteString(lua_State* L, WorldPacket* packet)
     {
-        string str = string(luaL_checkstring(L, 1));
+        std::string str = std::string(luaL_checkstring(L, 1));
         (*packet) << str;
         return 0;
     }

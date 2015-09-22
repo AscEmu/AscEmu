@@ -43,7 +43,7 @@ class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
                     char msg[256];
                     snprintf((char*)msg, 256, "Mogor has challenged you. You have to accept! Get in the right of blood if you are ready to fight.");
                     Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                    string msg2 = "For the first time in the Ring of Bloods history. Mogor has chosen to exercise his right of the battle! On this wartorn ground, ";
+                    std::string msg2 = "For the first time in the Ring of Bloods history. Mogor has chosen to exercise his right of the battle! On this wartorn ground, ";
                     msg2 += mTarget->GetName();
                     msg2 += "  will face Mogor, hero of the Warmaul!";
                     Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 32000);
@@ -80,7 +80,7 @@ class Quest_The_Ring_of_Blood_The_Warmaul_Champion : public QuestScript
                 char msg[256];
                 snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
                 pQgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                string msg2 = "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.";
+                std::string msg2 = "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.";
                 //char msg2[256];
                 //snprintf((char*)msg2, 256, "They had to ship the champion in from the Blade's Edge gladiator pits. He was training on mountain giants - three at a time.", mTarget->GetName());
                 pQgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
@@ -119,7 +119,7 @@ class Quest_The_Ring_of_Blood_Skragath : public QuestScript
                 char msg[256];
                 snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
                 Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                string msg2 = "From the parts unknown: Ska'gath! Can ";
+                std::string msg2 = "From the parts unknown: Ska'gath! Can ";
                 msg2 += mTarget->GetName();
                 msg2 += " possibly survive the onslaught of void energies?";
                 //char msg2[256];
@@ -159,7 +159,7 @@ class Quest_The_Ring_of_Blood_Rokdar_the_Sundered_Lord : public QuestScript
                 char msg[256];
                 snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
                 Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                string msg2 = "Hailing from the mountains of Blade's Edge comes Rokdar the Sundered Lord! ";
+                std::string msg2 = "Hailing from the mountains of Blade's Edge comes Rokdar the Sundered Lord! ";
                 msg2 += mTarget->GetName();
                 msg2 += " is in for the fight of his life.";
                 Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
@@ -199,7 +199,7 @@ class Quest_The_Ring_of_Blood_The_Blue_Brothers : public QuestScript
                 char msg[256];
                 snprintf((char*)msg, 256, "Get in the Ring of Blood, %s . The fight is about to start!", mTarget->GetName());
                 Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-                string msg2 = "The battle is about to begin! The unmerciful Murkblood twins versus ";
+                std::string msg2 = "The battle is about to begin! The unmerciful Murkblood twins versus ";
                 msg2 += mTarget->GetName();
                 Qgiver->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg2.c_str(), 4000);
                 mTarget->GetMapMgr()->GetInterface()->SpawnCreature(18399, -704.669f, 7871.08f, 45.0387f, 1.59531f, true, false, 0, 0);

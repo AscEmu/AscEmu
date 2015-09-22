@@ -605,7 +605,7 @@ class SERVER_DECL PlayerInfo
 
 struct PlayerPet
 {
-    string name;
+    std::string name;
     uint32 entry;
     uint32 xp;
     bool active;
@@ -614,7 +614,7 @@ struct PlayerPet
     uint32 number;
     uint32 level;
     uint32 happinessupdate;
-    string actionbar;
+    std::string actionbar;
     time_t reset_time;
     uint32 reset_cost;
     uint32 spellid;
@@ -838,7 +838,7 @@ typedef std::map<uint32, ScriptOverrideList* >      SpellOverrideMap;
 typedef std::map<uint32, uint32>                    SpellOverrideExtraAuraMap;
 typedef std::map<uint32, FactionReputation*>        ReputationMap;
 typedef std::map<uint32, uint64>                    SoloSpells;
-typedef std::map<SpellEntry*, pair<uint32, uint32> >StrikeSpellMap;
+typedef std::map<SpellEntry*, std::pair<uint32, uint32> >StrikeSpellMap;
 typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint32, PlayerSkill>               SkillMap;
 typedef std::set<Player**>                          ReferenceSet;
@@ -1067,7 +1067,7 @@ class SERVER_DECL Player : public Unit
         void UnSetTaxiPos() { m_taxi_pos_x = 0; m_taxi_pos_y = 0; m_taxi_pos_z = 0; }
 
         // Taxi related variables
-        vector<TaxiPath*> m_taxiPaths;
+    std::vector<TaxiPath*> m_taxiPaths;
         TaxiPath* m_CurrentTaxiPath;
         uint32 taxi_model_id;
         uint32 lastNode;
@@ -1234,7 +1234,7 @@ class SERVER_DECL Player : public Unit
         /// PLEASE DO NOT INLINE!
         void AddOnStrikeSpell(SpellEntry* sp, uint32 delay)
         {
-            m_onStrikeSpells.insert(map<SpellEntry*, pair<uint32, uint32>>::value_type(sp, make_pair(delay, 0)));
+            m_onStrikeSpells.insert(std::map<SpellEntry*, std::pair<uint32, uint32>>::value_type(sp, std::make_pair(delay, 0)));
         }
         void RemoveOnStrikeSpell(SpellEntry* sp)
         {
@@ -1344,10 +1344,10 @@ class SERVER_DECL Player : public Unit
             return false;
         }
         void        SetBanned() { m_banned = 4;}
-        void        SetBanned(string Reason) { m_banned = 4; m_banreason = Reason;}
-        void        SetBanned(uint32 timestamp, string & Reason) { m_banned = timestamp; m_banreason = Reason; }
+        void        SetBanned(std::string Reason) { m_banned = 4; m_banreason = Reason;}
+        void        SetBanned(uint32 timestamp, std::string & Reason) { m_banned = timestamp; m_banreason = Reason; }
         void        UnSetBanned() { m_banned = 0; }
-        string      GetBanReason() {return m_banreason;}
+        std::string      GetBanReason() {return m_banreason;}
 
         /************************************************************************/
         /* Guilds                                                               */
@@ -1503,7 +1503,7 @@ class SERVER_DECL Player : public Unit
         /* Serialize character to db                                            */
         /************************************************************************/
         void SaveToDB(bool bNewCharacter);
-        void SaveAuras(stringstream &);
+        void SaveAuras(std::stringstream &);
         bool LoadFromDB(uint32 guid);
         void LoadFromDBProc(QueryResultVector & results);
 
@@ -1791,8 +1791,8 @@ class SERVER_DECL Player : public Unit
         bool ignoreShapeShiftChecks;
         bool ignoreAuraStateCheck;
 
-        map<uint32, WeaponModifier> damagedone;
-        map<uint32, WeaponModifier> tocritchance;
+        std::map<uint32, WeaponModifier> damagedone;
+        std::map<uint32, WeaponModifier> tocritchance;
         bool cannibalize;
         uint8 cannibalizeCount;
         int32 rageFromDamageDealt;
@@ -1959,16 +1959,16 @@ class SERVER_DECL Player : public Unit
         uint32 m_arenaPoints;
         uint32 m_honorless;
         uint32 m_lastSeenWeather;
-        set<Object*> m_visibleFarsightObjects;
+        std::set<Object*> m_visibleFarsightObjects;
         void EventTeleport(uint32 mapid, float x, float y, float z);
         void EventTeleportTaxi(uint32 mapid, float x, float y, float z);
         void ApplyLevelInfo(LevelInfo* Info, uint32 Level);
         void BroadcastMessage(const char* Format, ...);
-        map<uint32, set<uint32> > SummonSpells;
-        map<uint32, PetSpellMap*> PetSpells;
+        std::map<uint32, std::set<uint32> > SummonSpells;
+        std::map<uint32, PetSpellMap*> PetSpells;
         void AddSummonSpell(uint32 Entry, uint32 SpellID);
         void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
-        set<uint32>* GetSummonSpells(uint32 Entry);
+        std::set<uint32>* GetSummonSpells(uint32 Entry);
         LockedQueue<WorldPacket*> delayedPackets;
         uint32 m_UnderwaterMaxTime;
         uint32 m_UnderwaterLastDmg;
@@ -2199,7 +2199,7 @@ class SERVER_DECL Player : public Unit
         bool resend_speed;
         uint32 login_flags;
         uint32 iInstanceType;
-        void SetName(string & name) { m_name = name; }
+        void SetName(std::string & name) { m_name = name; }
         // spell to (delay, last time)
 
         FactionReputation* reputationByListId[128];
@@ -2364,7 +2364,7 @@ class SERVER_DECL Player : public Unit
 
         // Character Ban
         uint32      m_banned;
-        string      m_banreason;
+        std::string      m_banreason;
         uint32      m_AreaID;
         std::list<Pet*>  m_Summons;
         uint32      m_PetNumberMax;
@@ -2459,7 +2459,7 @@ class SERVER_DECL Player : public Unit
 
         void addDeletedSpell(uint32 id) { mDeletedSpells.insert(id); }
 
-        map<uint32, uint32> m_forcedReactions;
+        std::map<uint32, uint32> m_forcedReactions;
 
         uint32 m_flyhackCheckTimer;
         //void _FlyhackCheck(); disabled not working not used. Zyres.

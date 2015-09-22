@@ -643,7 +643,7 @@ void ScriptMgr::register_creature_gossip(uint32 entry, Arcemu::Gossip::Script* s
 {
     GossipMap::iterator itr = creaturegossip_.find(entry);
     if (itr == creaturegossip_.end())
-        creaturegossip_.insert(make_pair(entry, script));
+        creaturegossip_.insert(std::make_pair(entry, script));
     //keeping track of all created gossips to delete them all on shutdown
     _customgossipscripts.insert(script);
 }
@@ -665,7 +665,7 @@ void ScriptMgr::register_item_gossip(uint32 entry, Arcemu::Gossip::Script* scrip
 {
     GossipMap::iterator itr = itemgossip_.find(entry);
     if (itr == itemgossip_.end())
-        itemgossip_.insert(make_pair(entry, script));
+        itemgossip_.insert(std::make_pair(entry, script));
     //keeping track of all created gossips to delete them all on shutdown
     _customgossipscripts.insert(script);
 }
@@ -674,7 +674,7 @@ void ScriptMgr::register_go_gossip(uint32 entry, Arcemu::Gossip::Script* script)
 {
     GossipMap::iterator itr = gogossip_.find(entry);
     if (itr == gogossip_.end())
-        gogossip_.insert(make_pair(entry, script));
+        gogossip_.insert(std::make_pair(entry, script));
     //keeping track of all created gossips to delete them all on shutdown
     _customgossipscripts.insert(script);
 }

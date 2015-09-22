@@ -449,7 +449,7 @@ void IsleOfConquest::OnStart()
     m_started = true;
     
     for(uint32 i = 0; i < 2; ++i){
-        for(set<Player*  >::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr){
+        for(std::set<Player*  >::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr){
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }

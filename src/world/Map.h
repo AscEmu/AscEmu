@@ -112,7 +112,7 @@ class SERVER_DECL Map
         Map(uint32 mapid, MapInfo* inf);
         ~Map();
 
-        inline string GetNameString() { return name; }
+        inline std::string GetNameString() { return name; }
         inline const char* GetName() { return name.c_str(); }
         inline MapEntry* GetDBCEntry() { return me; }
 
@@ -151,7 +151,7 @@ class SERVER_DECL Map
 
         MapInfo* _mapInfo;
         uint32 _mapId;
-        string name;
+        std::string name;
         MapEntry* me;
 
         /// new stuff

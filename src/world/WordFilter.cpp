@@ -101,8 +101,8 @@ void WordFilter::Load(const char* szTableName)
 {
     WordFilterMatch* pMatch;
     size_t i;
-    list<WordFilterMatch*> lItems;
-    list<WordFilterMatch*>::iterator itr;
+    std::list<WordFilterMatch*> lItems;
+    std::list<WordFilterMatch*>::iterator itr;
     QueryResult* pResult = WorldDatabase.Query("SELECT * FROM %s", szTableName);
     if (pResult == NULL)
         return;
@@ -163,7 +163,7 @@ void WordFilter::Load(const char* szTableName)
     m_filterCount = i;
 }
 
-bool WordFilter::Parse(string & sMessage, bool bAllowReplace /* = true */)
+bool WordFilter::Parse(std::string & sMessage, bool bAllowReplace /* = true */)
 {
 #define N 10
 #define NC (N*3)
@@ -262,21 +262,21 @@ bool WordFilter::ParseEscapeCodes(char* sMsg, bool bAllowLinks)
         return true;
 
     uint32 j = 0;
-    for (j = 0; j < (((string)sMsg).length()); j++)
+    for (j = 0; j < (((std::string)sMsg).length()); j++)
     {
-        if (((string)sMsg).at(j) != char('|'))
+        if (((std::string)sMsg).at(j) != char('|'))
             continue;
 
         //Myth fix server crashes, unhandled null pointers ftw
-        if (j + 1 >= (((string)sMsg).length()))
+        if (j + 1 >= (((std::string)sMsg).length()))
             return true;
 
-        string newstr;
+        std::string newstr;
         char* i;
-        switch (((string)sMsg).at(j + 1))
+        switch (((std::string)sMsg).at(j + 1))
         {
             case char('c') :
-                if (((string)sMsg).length() < j + 10)
+                if (((std::string)sMsg).length() < j + 10)
                 {
                     sMsg[j] = '\0';
                     break;
@@ -284,7 +284,7 @@ bool WordFilter::ParseEscapeCodes(char* sMsg, bool bAllowLinks)
                            i = sMsg + j + 10;
                            if (strncmp(i, "|H", 2) == 0 && bAllowLinks)
                                continue;
-                           newstr = ((string)sMsg).replace(j, 10, "");
+                           newstr = ((std::string)sMsg).replace(j, 10, "");
                            strcpy(sMsg, newstr.c_str());
                            j = 0;
                            break;
@@ -294,7 +294,7 @@ bool WordFilter::ParseEscapeCodes(char* sMsg, bool bAllowLinks)
                 {
                     continue;
                 }
-                newstr = ((string)sMsg).replace(j, 2, "");
+                newstr = ((std::string)sMsg).replace(j, 2, "");
                 strcpy(sMsg, newstr.c_str());
                 j = 0;
                 break;
@@ -305,9 +305,9 @@ bool WordFilter::ParseEscapeCodes(char* sMsg, bool bAllowLinks)
                 if (bAllowLinks && i)
                     continue;
                 if (i)
-                    newstr = ((string)sMsg).replace(j, ((size_t)(i - sMsg)) - (j), "");
+                    newstr = ((std::string)sMsg).replace(j, ((size_t)(i - sMsg)) - (j), "");
                 else
-                    newstr = ((string)sMsg).replace(j, strlen(sMsg) - j, "");
+                    newstr = ((std::string)sMsg).replace(j, strlen(sMsg) - j, "");
                 strcpy(sMsg, newstr.c_str());
 
                 j = 0;
@@ -315,10 +315,10 @@ bool WordFilter::ParseEscapeCodes(char* sMsg, bool bAllowLinks)
             case char('h') :
                 if (bAllowLinks)
                     continue;
-                if (((string)sMsg).at(j - 1) == char(']'))
-                    newstr = ((string)sMsg).replace(j - 1, 3, "");
+                if (((std::string)sMsg).at(j - 1) == char(']'))
+                    newstr = ((std::string)sMsg).replace(j - 1, 3, "");
                 else
-                    newstr = ((string)sMsg).replace(j, 2, "");
+                    newstr = ((std::string)sMsg).replace(j, 2, "");
                 strcpy(sMsg, newstr.c_str());
                 j = 0;
                 break;

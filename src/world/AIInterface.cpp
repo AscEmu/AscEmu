@@ -165,7 +165,7 @@ void AIInterface::Init(Unit* un, AIType at, MovementType mt)
 
 AIInterface::~AIInterface()
 {
-    for (list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+    for (std::list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
         delete(*itr);
     m_spells.clear();
 
@@ -936,7 +936,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 resetNextTarget();
 
                 WorldPacket data(SMSG_MESSAGECHAT, 100);
-                string msg = "%s attempts to run away in fear!";
+                std::string msg = "%s attempts to run away in fear!";
                 data << (uint8)CHAT_MSG_CHANNEL;
                 data << (uint32)LANG_UNIVERSAL;
                 data << (uint32)(strlen(TO< Creature* >(m_Unit)->GetCreatureInfo()->Name) + 1);
@@ -2765,7 +2765,7 @@ AI_Spell* AIInterface::getSpell()
     }
     else
     {
-        for (list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end();)
+        for (std::list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end();)
         {
             sp = *itr;
             ++itr;
@@ -2920,7 +2920,7 @@ Unit* AIInterface::GetMostHated()
     if (ResultUnit != NULL)
         return ResultUnit;
 
-    pair<Unit*, int32> currentTarget;
+    std::pair<Unit*, int32> currentTarget;
     currentTarget.first = 0;
     currentTarget.second = -1;
 
@@ -2967,7 +2967,7 @@ Unit* AIInterface::GetSecondHated()
 
     Unit* ResultUnit = GetMostHated();
 
-    pair<Unit*, int32> currentTarget;
+    std::pair<Unit*, int32> currentTarget;
     currentTarget.first = 0;
     currentTarget.second = -1;
 
@@ -3047,7 +3047,7 @@ bool AIInterface::modThreatByPtr(Unit* obj, int32 mod)
     }
     else
     {
-        m_aiTargets.insert(make_pair(obj->GetGUID(), mod));
+        m_aiTargets.insert(std::make_pair(obj->GetGUID(), mod));
 
         tempthreat = mod + obj->GetThreatModifyer();
         if (tempthreat < 1)
@@ -3370,14 +3370,14 @@ void AIInterface::WipeReferences()
     tauntedBy = 0;
 
     //Clear targettable
-    for (set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+    for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
         if ((*itr)->IsUnit() && TO< Unit* >(*itr)->GetAIInterface())
             TO< Unit* >(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
 }
 
 void AIInterface::ResetProcCounts()
 {
-    for (list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+    for (std::list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
         if ((*itr)->procCount)
             (*itr)->procCounter = 0;
 }
@@ -3395,7 +3395,7 @@ void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
     //Clear targettable
     if (ForceAttackersToHateThisInstead == NULL)
     {
-        for (set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
             if ((*itr)->IsUnit() && TO< Unit* >(*itr)->GetAIInterface())
                 TO< Unit* >(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
 
@@ -3403,7 +3403,7 @@ void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
     }
     else
     {
-        for (set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+        for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
             if ((*itr)->IsUnit() && TO< Unit* >(*itr)->GetAIInterface()
                 && TO< Unit* >(*itr)->GetAIInterface()->getThreatByPtr(m_Unit))   //this guy will join me in fight since I'm telling him "sorry i was controlled"
             {

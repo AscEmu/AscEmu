@@ -186,7 +186,7 @@ class ChallengeOverlordMokMorokk : public QuestScript
             if(Overlord == NULL)
                 return;
 
-            string say = "Puny ";
+            std::string say = "Puny ";
             say += mTarget->GetName();
             say += " wanna fight Overlord Mok'Morokk? Me beat you! Me boss here!";
             Overlord->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());

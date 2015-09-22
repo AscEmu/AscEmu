@@ -1172,7 +1172,7 @@ void Instance::SaveToDB()
 
     ss.rdbuf()->str("");
 
-    set<uint32>::iterator itr;
+    std::set<uint32>::iterator itr;
 
     ss << "INSERT INTO instances VALUES("
         << m_instanceId << ","
@@ -1263,7 +1263,7 @@ MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32 mapid)
     if (m_instances[mapid] == NULL)
         m_instances[mapid] = new InstanceMap;
 
-    m_instances[mapid]->insert(make_pair(pInstance->m_instanceId, pInstance));
+    m_instances[mapid]->insert(std::make_pair(pInstance->m_instanceId, pInstance));
     m_mapLock.Release();
     ThreadPool.ExecuteTask(ret);
     return ret;
@@ -1298,7 +1298,7 @@ MapMgr* InstanceMgr::CreateInstance(uint32 instanceType, uint32 mapid)
     if (m_instances[mapid] == NULL)
         m_instances[mapid] = new InstanceMap;
 
-    m_instances[mapid]->insert(make_pair(pInstance->m_instanceId, pInstance));
+    m_instances[mapid]->insert(std::make_pair(pInstance->m_instanceId, pInstance));
     m_mapLock.Release();
     ThreadPool.ExecuteTask(ret);
     return ret;

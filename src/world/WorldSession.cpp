@@ -22,7 +22,7 @@
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
-WorldSession::WorldSession(uint32 id, string Name, WorldSocket* sock) :
+WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
     m_loggingInPlayer(NULL),
     m_currMsTime(getMSTime()),
     bDeleted(false),
@@ -470,7 +470,7 @@ void WorldSession::SetSecurity(std::string securitystring)
     LoadSecurity(securitystring);
 
     // update db
-    CharacterDatabase.Execute("UPDATE accounts SET gm=\'%s\' WHERE acct=%u", CharacterDatabase.EscapeString(string(permissions)).c_str(), _accountId);
+    CharacterDatabase.Execute("UPDATE accounts SET gm=\'%s\' WHERE acct=%u", CharacterDatabase.EscapeString(std::string(permissions)).c_str(), _accountId);
 }
 
 bool WorldSession::CanUseCommand(char cmdstr)

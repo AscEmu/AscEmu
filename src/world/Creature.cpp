@@ -433,7 +433,7 @@ void Creature::generateLoot()
         {
             uint16 lootThreshold = looter->GetGroup()->GetThreshold();
 
-            for (vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+            for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
             {
                 if (itr->item.itemproto->Quality < lootThreshold)
                     continue;
@@ -625,7 +625,7 @@ void Creature::AddQuest(QuestRelation* Q)
 
 void Creature::DeleteQuest(QuestRelation* Q)
 {
-    list<QuestRelation*>::iterator it;
+    std::list<QuestRelation*>::iterator it;
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         if (((*it)->type == Q->type) && ((*it)->qst == Q->qst))
@@ -639,7 +639,7 @@ void Creature::DeleteQuest(QuestRelation* Q)
 
 Quest* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
-    list<QuestRelation*>::iterator it;
+    std::list<QuestRelation*>::iterator it;
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         QuestRelation* ptr = (*it);
@@ -655,7 +655,7 @@ Quest* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
 uint16 Creature::GetQuestRelation(uint32 quest_id)
 {
     uint16 quest_relation = 0;
-    list<QuestRelation*>::iterator it;
+    std::list<QuestRelation*>::iterator it;
 
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
     {
@@ -1057,7 +1057,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry
     ci.extended_cost = ec;
     if (!m_SellItems)
     {
-        m_SellItems = new vector < CreatureItem > ;
+        m_SellItems = new std::vector < CreatureItem > ;
         objmgr.SetVendorList(GetEntry(), m_SellItems);
     }
     m_SellItems->push_back(ci);
@@ -1241,7 +1241,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     setLevel(proto->MinLevel + (RandomUInt(proto->MaxLevel - proto->MinLevel)));
 
     if (mode && info)
-        modLevel(min(73 - getLevel(), info->lvl_mod_a));
+        modLevel(std::min(73 - getLevel(), info->lvl_mod_a));
 
     for (uint32 i = 0; i < 7; ++i)
         SetResistance(i, proto->Resistances[i]);
@@ -1324,7 +1324,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     ////////////AI
 
     // kek
-    for (list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
+    for (std::list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
     {
         // Load all spells that are not bound to a specific difficulty, OR mathces this maps' difficulty
         if ((*itr)->instance_mode == mode || (*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
@@ -1553,7 +1553,7 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
     ////////////AI
 
     // kek
-    for (list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
+    for (std::list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
     {
         // Load all spell that are not set for a specific difficulty
         if ((*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
@@ -1637,7 +1637,7 @@ void Creature::OnPushToWorld()
 #endif
     }
 
-    set<uint32>::iterator itr = proto->start_auras.begin();
+    std::set<uint32>::iterator itr = proto->start_auras.begin();
     SpellEntry* sp;
     for (; itr != proto->start_auras.end(); ++itr)
     {
@@ -1888,7 +1888,7 @@ bool Creature::HasLootForPlayer(Player* plr)
     if (loot.gold > 0)
         return true;
 
-    for (vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
         ItemPrototype* proto = itr->item.itemproto;
         if (proto != NULL)
@@ -2396,7 +2396,7 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
         const char* text = ms->Texts[choice];
         // check for special variables $N=name $C=class $R=race $G=gender
         // $G is followed by male_string:female_string;
-        string newText = text;
+        std::string newText = text;
         static const char* races[12] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
         static const char* classes[12] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
         char* test = strstr((char*)text, "$R");

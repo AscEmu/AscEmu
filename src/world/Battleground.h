@@ -49,24 +49,24 @@ protected:
     uint32 m_zoneid;
     std::recursive_mutex m_mutex;
     /* PvP Log Data Map */
-    map<uint32, BGScore> m_pvpData;
+    std::map<uint32, BGScore> m_pvpData;
     /* Player count per team */
     uint32 m_playerCountPerTeam;
     /* "pending" players */
-    set<uint32> m_pendPlayers[2];
+    std::set<uint32> m_pendPlayers[2];
     /* starting time */
     uint32 m_startTime;
     bool m_started;
     /* countdown stuff */
     uint32 m_countdownStage;
     /* resurrect queue */
-    map<Creature*, set<uint32> > m_resurrectMap;
+    std::map<Creature*, std::set<uint32> > m_resurrectMap;
     uint32 m_lastResurrect;
     bool m_isWeekend;
 
 public:
     /* Team->Player Map */
-    set<Player*> m_players[2];
+    std::set<Player*> m_players[2];
 
     void AddInvisGM();
     void RemoveInvisGM();

@@ -132,7 +132,7 @@ class ZerekethAI : public MoonScriptBossAI
 
             //despawn voids
             Creature* creature = NULL;
-            for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
+            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
             {
                 Object* obj = *itr;
                 ++itr;
@@ -169,7 +169,7 @@ class ZerekethAI : public MoonScriptBossAI
             ResetTimer(VoidTimer, (RandomUInt(10) + 30) * 1000);
 
             std::vector<Player*> TargetTable;
-            set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
+            std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
             for (; Itr != _unit->GetInRangePlayerSetEnd(); Itr++)
             {
                 Player* RandomTarget = NULL;

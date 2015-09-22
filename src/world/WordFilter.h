@@ -45,7 +45,7 @@ class WordFilter
         ~WordFilter();
 
         void Load(const char* szTableName);
-        bool Parse(string & sMessage, bool bAllowReplace = true);
+        bool Parse(std::string & sMessage, bool bAllowReplace = true);
         bool ParseEscapeCodes(char* sMessage, bool bAllowLinks);
 };
 

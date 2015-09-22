@@ -95,7 +95,7 @@ WarsongGulch::~WarsongGulch()
             delete m_homeFlags[i];
     }
 
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         if((*itr) != NULL)
         {
@@ -218,7 +218,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         uint32 honorToAdd = 2 * m_honorPerKill;
         uint32 repToAdd = m_isWeekend ? 45 : 35;
         uint32 fact = plr->IsTeamHorde() ? 889 : 890; /*Warsong Outriders : Sliverwing Sentinels*/
-        for(set<Player*>::iterator itr = m_players[plr->GetTeam()].begin(); itr != m_players[plr->GetTeam()].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[plr->GetTeam()].begin(); itr != m_players[plr->GetTeam()].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
@@ -311,7 +311,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
         return;
     }
 
-    map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
     if(itr != plr->m_forcedReactions.end())
     {
         return;
@@ -380,7 +380,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
         return;
     }
 
-    map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
     if(itr != plr->m_forcedReactions.end())
     {
         return;
@@ -581,14 +581,14 @@ void WarsongGulch::OnStart()
 {
     for(uint32 i = 0; i < 2; ++i)
     {
-        for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
 
     /* open the gates */
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->SetFlags(64);
         (*itr)->SetState(GAMEOBJECT_STATE_OPEN);
@@ -636,7 +636,7 @@ void WarsongGulch::DespawnGates(uint32 delay)
         sEventMgr.AddEvent(this, &WarsongGulch::DespawnGates, (uint32)0, EVENT_GAMEOBJECT_EXPIRE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->Despawn(0, 0);
     }

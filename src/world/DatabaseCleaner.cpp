@@ -42,9 +42,9 @@ void DatabaseCleaner::Optimize()
 
 void DatabaseCleaner::CleanCharacters()
 {
-    set<uint32> chr_guids;
-    set<uint32> chr_guilds;
-    set<uint32> chr_charters;
+    std::set<uint32> chr_guids;
+    std::set<uint32> chr_guilds;
+    std::set<uint32> chr_charters;
     Log.Notice("DatabaseCleaner", "Loading guids...");
     QueryResult* result = CharacterDatabase.Query("SELECT guid, guildid, charterId FROM characters");
     if (result)
@@ -64,7 +64,7 @@ void DatabaseCleaner::CleanCharacters()
     Log.Notice("DatabaseCleaner", "Cleaning playeritems...");
 
     result = CharacterDatabase.Query("SELECT ownerguid, guid FROM playeritems");
-    vector<uint64> tokill_items;
+    std::vector<uint64> tokill_items;
     if (result)
     {
         do
@@ -78,7 +78,7 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<uint64>::iterator itr = tokill_items.begin(); itr != tokill_items.end(); ++itr)
+    for (std::vector<uint64>::iterator itr = tokill_items.begin(); itr != tokill_items.end(); ++itr)
     {
         CharacterDatabase.WaitExecute("DELETE FROM playeritems WHERE guid = " I64FMTD, *itr);
     }
@@ -87,7 +87,7 @@ void DatabaseCleaner::CleanCharacters()
     Log.Notice("DatabaseCleaner", "Cleaning questlog...");
 
     result = CharacterDatabase.Query("SELECT index, player_guid FROM questlog");
-    vector<uint32> tokill_quests;
+    std::vector<uint32> tokill_quests;
     if (result)
     {
         do
@@ -99,13 +99,13 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<uint32>::iterator itr = tokill_quests.begin(); itr != tokill_quests.end(); ++itr)
+    for (std::vector<uint32>::iterator itr = tokill_quests.begin(); itr != tokill_quests.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM questlog WHERE index = %u", *itr);
 
     Log.Notice("DatabaseCleaner", "Deleted %u questlog entries.", tokill_quests.size());
     Log.Notice("DatabaseCleaner", "Cleaning corpses...");
 
-    vector<uint32> tokill_corpses;
+    std::vector<uint32> tokill_corpses;
     result = CharacterDatabase.Query("SELECT * FROM corpses");
     if (result)
     {
@@ -124,14 +124,14 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<uint32>::iterator itr = tokill_corpses.begin(); itr != tokill_corpses.end(); ++itr)
+    for (std::vector<uint32>::iterator itr = tokill_corpses.begin(); itr != tokill_corpses.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM corpses WHERE guid = %u", *itr);
 
     Log.Notice("DatabaseCleaner", "Removed %u corpses.", tokill_corpses.size());
     Log.Notice("DatabaseCleaner", "Cleaning mailbox...");
 
     result = CharacterDatabase.Query("SELECT message_id, player_guid FROM mailbox");
-    vector<uint32> tokill_mail;
+    std::vector<uint32> tokill_mail;
     if (result)
     {
         do
@@ -144,13 +144,13 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<uint32>::iterator itr = tokill_mail.begin(); itr != tokill_mail.end(); ++itr)
+    for (std::vector<uint32>::iterator itr = tokill_mail.begin(); itr != tokill_mail.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM mailbox WHERE message_id = %u", *itr);
     Log.Notice("DatabaseCleaner", "Deleted %u mail messages.", tokill_mail.size());
     Log.Notice("DatabaseCleaner", "Cleaning guilds table...");
 
     result = CharacterDatabase.Query("SELECT guildId FROM guilds");
-    vector<uint32> tokill_guilds;
+    std::vector<uint32> tokill_guilds;
     if (result)
     {
         do
@@ -164,14 +164,14 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<uint32>::iterator itr = tokill_guilds.begin(); itr != tokill_guilds.end(); ++itr)
+    for (std::vector<uint32>::iterator itr = tokill_guilds.begin(); itr != tokill_guilds.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM guilds WHERE guildId = %u", *itr);
 
     Log.Notice("DatabaseCleaner", "Deleted %u guilds.", tokill_guilds.size());
     Log.Notice("DatabaseCleaner", "Cleaning guild_ranks table...");
 
     result = CharacterDatabase.Query("SELECT guildId FROM guild_ranks");
-    set<uint32> tokill_guildranks;
+    std::set<uint32> tokill_guildranks;
     if (result)
     {
         do
@@ -184,14 +184,14 @@ void DatabaseCleaner::CleanCharacters()
         while (result->NextRow());
         delete result;
     }
-    for (set<uint32>::iterator itr = tokill_guildranks.begin(); itr != tokill_guildranks.end(); ++itr)
+    for (std::set<uint32>::iterator itr = tokill_guildranks.begin(); itr != tokill_guildranks.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM guild_ranks WHERE guildId = %u", *itr);
 
     Log.Notice("DatabaseCleaner", "Deleted %u guild rank rows.", tokill_guildranks.size());
     Log.Notice("DatabaseCleaner", "Cleaning social table...");
 
     result = CharacterDatabase.Query("SELECT * FROM social");
-    vector<pair<uint32, uint32> > tokill_social;
+    std::vector<std::pair<uint32, uint32> > tokill_social;
     if (result)
     {
         do
@@ -200,7 +200,7 @@ void DatabaseCleaner::CleanCharacters()
             uint32 g2 = result->Fetch()[1].GetUInt32();
             if (chr_guids.find(g1) == chr_guids.end() || chr_guids.find(g2) == chr_guids.end())
             {
-                pair<uint32, uint32> x;
+                std::pair<uint32, uint32> x;
                 x.first = g1;
                 x.second = g2;
                 tokill_social.push_back(x);
@@ -210,7 +210,7 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<pair<uint32, uint32> >::iterator itr = tokill_social.begin(); itr != tokill_social.end(); ++itr)
+    for (std::vector<std::pair<uint32, uint32> >::iterator itr = tokill_social.begin(); itr != tokill_social.end(); ++itr)
     {
         CharacterDatabase.WaitExecute("DELETE FROM social WHERE guid = %u and socialguid = %u", itr->first, itr->second);
     }
@@ -218,8 +218,8 @@ void DatabaseCleaner::CleanCharacters()
     Log.Notice("DatabaseCleaner", "Deleted %u social entries.", tokill_social.size());
     Log.Notice("DatabaseCleaner", "Cleaning cooldown tables...");
 
-    set<uint32> tokill_cool;
-    vector<pair<uint32, uint32> > tokill_cool2;
+    std::set<uint32> tokill_cool;
+    std::vector<std::pair<uint32, uint32> > tokill_cool2;
     result = CharacterDatabase.Query("SELECT OwnerGuid, CooldownTimeStamp FROM playercooldownitems");
     if (result)
     {
@@ -231,15 +231,15 @@ void DatabaseCleaner::CleanCharacters()
             if (chr_guids.find(guid) == chr_guids.end())
                 tokill_cool.insert(guid);
             else if (t >= cool)
-                tokill_cool2.push_back(make_pair(guid, cool));
+                tokill_cool2.push_back(std::make_pair(guid, cool));
         }
         while (result->NextRow());
         delete result;
     }
 
-    for (vector<pair<uint32, uint32> >::iterator itr = tokill_cool2.begin(); itr != tokill_cool2.end(); ++itr)
+    for (std::vector<std::pair<uint32, uint32> >::iterator itr = tokill_cool2.begin(); itr != tokill_cool2.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u AND CooldownTimeStamp = %u", itr->first, itr->second);
-    for (set<uint32>::iterator itr = tokill_cool.begin(); itr != tokill_cool.end(); ++itr)
+    for (std::set<uint32>::iterator itr = tokill_cool.begin(); itr != tokill_cool.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM playercooldownitems WHERE OwnerGuid = %u", *itr);
 
     Log.Notice("DatabaseCleaner", "Deleted %u playercooldownitems.", tokill_cool.size() + tokill_cool2.size());
@@ -257,20 +257,20 @@ void DatabaseCleaner::CleanCharacters()
             if (chr_guids.find(guid) == chr_guids.end())
                 tokill_cool.insert(guid);
             else if (t >= cool)
-                tokill_cool2.push_back(make_pair(guid, cool));
+                tokill_cool2.push_back(std::make_pair(guid, cool));
         }
         while (result->NextRow());
         delete result;
     }
 
-    for (vector<pair<uint32, uint32> >::iterator itr = tokill_cool2.begin(); itr != tokill_cool2.end(); ++itr)
+    for (std::vector<std::pair<uint32, uint32> >::iterator itr = tokill_cool2.begin(); itr != tokill_cool2.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u AND TimeStamp = %u", itr->first, itr->second);
-    for (set<uint32>::iterator itr = tokill_cool.begin(); itr != tokill_cool.end(); ++itr)
+    for (std::set<uint32>::iterator itr = tokill_cool.begin(); itr != tokill_cool.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM playercooldownsecurity WHERE OwnerGuid = %u", *itr);
 
     Log.Notice("DatabaseCleaner", "Deleted %u playercooldownsecurities.", tokill_cool.size() + tokill_cool2.size());
     Log.Notice("DatabaseCleaner", "Cleaning tutorials...");
-    vector<uint32> tokill_tutorials;
+    std::vector<uint32> tokill_tutorials;
 
     result = CharacterDatabase.Query("SELECT playerId FROM tutorials");
     if (result)
@@ -285,11 +285,11 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<uint32>::iterator itr = tokill_tutorials.begin(); itr != tokill_tutorials.end(); ++itr)
+    for (std::vector<uint32>::iterator itr = tokill_tutorials.begin(); itr != tokill_tutorials.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM tutorials WHERE playerId = %u", *itr);
     Log.Notice("DatabaseCleaner", "Deleted %u tutorials.", tokill_tutorials.size());
     Log.Notice("DatabaseCleaner", "Cleaning playerpets...");
-    set<uint32> tokill_pet;
+    std::set<uint32> tokill_pet;
 
     result = CharacterDatabase.Query("SELECT ownerguid, petnumber FROM playerpets");
     if (result)
@@ -302,11 +302,11 @@ void DatabaseCleaner::CleanCharacters()
         while (result->NextRow());
         delete result;
     }
-    for (set<uint32>::iterator itr = tokill_pet.begin(); itr != tokill_pet.end(); ++itr)
+    for (std::set<uint32>::iterator itr = tokill_pet.begin(); itr != tokill_pet.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM playerpets WHERE ownerguid = %u", *itr);
     Log.Notice("DatabaseCleaner", "Deleted %u pets.", tokill_pet.size());
     Log.Notice("DatabaseCleaner", "Cleaning playersummonspells...");
-    set<uint32> tokill_ss;
+    std::set<uint32> tokill_ss;
 
     result = CharacterDatabase.Query("SELECT ownerguid FROM playersummonspells");
     if (result)
@@ -319,11 +319,11 @@ void DatabaseCleaner::CleanCharacters()
         while (result->NextRow());
         delete result;
     }
-    for (set<uint32>::iterator itr = tokill_ss.begin(); itr != tokill_ss.end(); ++itr)
+    for (std::set<uint32>::iterator itr = tokill_ss.begin(); itr != tokill_ss.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM playersummonspells WHERE ownerguid = %u", *itr);
     Log.Notice("DatabaseCleaner", "Deleted %u summonspells.", tokill_ss.size());
     Log.Notice("DatabaseCleaner", "Cleaning playerpetspells...");
-    set<uint32> tokill_ps;
+    std::set<uint32> tokill_ps;
 
     result = CharacterDatabase.Query("SELECT ownerguid FROM playerpetspells");
     if (result)
@@ -336,11 +336,11 @@ void DatabaseCleaner::CleanCharacters()
         while (result->NextRow());
         delete result;
     }
-    for (set<uint32>::iterator itr = tokill_ps.begin(); itr != tokill_ps.end(); ++itr)
+    for (std::set<uint32>::iterator itr = tokill_ps.begin(); itr != tokill_ps.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM playerpetspells WHERE ownerguid = %u", *itr);
     Log.Notice("DatabaseCleaner", "Deleted %u petspells.", tokill_ps.size());
     Log.Notice("DatabaseCleaner", "Cleaning gm_tickets...");
-    set<uint32> tokill_gm;
+    std::set<uint32> tokill_gm;
 
     result = CharacterDatabase.Query("SELECT guid FROM gm_tickets");
     if (result)
@@ -353,11 +353,11 @@ void DatabaseCleaner::CleanCharacters()
         while (result->NextRow());
         delete result;
     }
-    for (set<uint32>::iterator itr = tokill_gm.begin(); itr != tokill_gm.end(); ++itr)
+    for (std::set<uint32>::iterator itr = tokill_gm.begin(); itr != tokill_gm.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM gm_tickets WHERE guid = %u", *itr);
     Log.Notice("DatabaseCleaner", "Deleted %u gm tickets.", tokill_gm.size());
     Log.Notice("DatabaseCleaner", "Cleaning charters...");
-    vector<uint32> tokill_charters;
+    std::vector<uint32> tokill_charters;
 
     result = CharacterDatabase.Query("SELECT * FROM charters");
     if (result)
@@ -374,13 +374,13 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<uint32>::iterator itr = tokill_charters.begin(); itr != tokill_charters.end(); ++itr)
+    for (std::vector<uint32>::iterator itr = tokill_charters.begin(); itr != tokill_charters.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM charters WHERE charterId = %u", *itr);
     Log.Notice("DatabaseCleaner", "Deleted %u charters.", tokill_charters.size());
     Log.Notice("DatabaseCleaner", "Cleaning charters...");
 
     result = CharacterDatabase.Query("SELECT auctionId, owner FROM auctions");
-    vector<uint32> tokill_auct;
+    std::vector<uint32> tokill_auct;
     if (result)
     {
         do
@@ -393,7 +393,7 @@ void DatabaseCleaner::CleanCharacters()
         delete result;
     }
 
-    for (vector<uint32>::iterator itr = tokill_auct.begin(); itr != tokill_auct.end(); ++itr)
+    for (std::vector<uint32>::iterator itr = tokill_auct.begin(); itr != tokill_auct.end(); ++itr)
         CharacterDatabase.WaitExecute("DELETE FROM auctions WHERE auctionId = %u", *itr);
     Log.Notice("DatabaseCleaner", "Deleted %u auctions.", tokill_auct.size());
     Log.Notice("DatabaseCleaner", "Ending...");

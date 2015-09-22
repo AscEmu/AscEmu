@@ -21,8 +21,9 @@
 #include "Config/ConfigEnv.h"
 #include "Log.h"
 #include <cstdarg>
+#include <string>
 
-string FormatOutputString(const char* Prefix, const char* Description, bool useTimeStamp)
+std::string FormatOutputString(const char* Prefix, const char* Description, bool useTimeStamp)
 {
 
     char p[MAX_PATH];
@@ -40,7 +41,7 @@ string FormatOutputString(const char* Prefix, const char* Description, bool useT
     }
 
     strcat(p, ".log");
-    return string(p);
+    return std::string(p);
 }
 
 createFileSingleton(oLog);
@@ -430,7 +431,7 @@ void oLog::LargeErrorMessage(const char* source, ...)
 
     for(std::vector<char*>::iterator itr = lines.begin(); itr != lines.end(); ++itr)
     {
-        stringstream sstext;
+        std::stringstream sstext;
         i = strlen(*itr);
         j = (i <= 65) ? 65 - i : 0;
         sstext << "* " << *itr;

@@ -491,7 +491,7 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         TimedEmoteList* timed_emotes;
         inline void SetPetOwner(Unit* owner) { m_PetOwner = owner; }
 
-        list<AI_Spell*> m_spells;
+    std::list<AI_Spell*> m_spells;
 
         bool disable_combat;
 

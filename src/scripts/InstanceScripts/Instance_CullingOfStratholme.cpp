@@ -116,8 +116,8 @@ class MeathookAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-            vector< uint32 > possible_targets;
-            for (set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            std::vector< uint32 > possible_targets;
+            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = TO< Player* >(*iter);
                 if (p->isAlive())
@@ -179,7 +179,7 @@ class MeathookAI : public CreatureAIScript
     protected:
 
         bool heroic;
-        vector< ScriptSpell* > spells;
+        std::vector< ScriptSpell* > spells;
 };
 
 //SalramTheFleshcrafterAI
@@ -296,8 +296,8 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-            vector< uint32 > possible_targets;
-            for (set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            std::vector< uint32 > possible_targets;
+            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = TO< Player* >(*iter);
 
@@ -367,7 +367,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
     protected:
 
         bool heroic;
-        vector< ScriptSpell* > spells;
+        std::vector< ScriptSpell* > spells;
 };
 
 //ChronoLordEpochAI
@@ -473,8 +473,8 @@ class ChronoLordEpochAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-            vector< uint32 > possible_targets;
-            for (set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            std::vector< uint32 > possible_targets;
+            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = TO< Player* >(*iter);
                 if (p->isAlive())
@@ -538,7 +538,7 @@ class ChronoLordEpochAI : public CreatureAIScript
     protected:
 
         bool heroic;
-        vector< ScriptSpell* > spells;
+        std::vector< ScriptSpell* > spells;
 };
 
 //InfiniteCorruptorAI
@@ -610,8 +610,8 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-            vector< uint32 > possible_targets;
-            for (set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            std::vector< uint32 > possible_targets;
+            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = TO< Player* >(*iter);
                 if (p->isAlive())
@@ -675,7 +675,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
     protected:
 
         bool heroic;
-        vector< ScriptSpell* > spells;
+        std::vector< ScriptSpell* > spells;
 };
 
 //MalganisAI
@@ -837,8 +837,8 @@ class MalganisAI : public CreatureAIScript
 
         Player* GetRandomPlayerTarget()
         {
-            vector< uint32 > possible_targets;
-            for (set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            std::vector< uint32 > possible_targets;
+            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = TO< Player* >(*iter);
                 if (p->isAlive())
@@ -903,7 +903,7 @@ class MalganisAI : public CreatureAIScript
 
         bool heroic;
         bool scene;
-        vector< ScriptSpell* > spells;
+        std::vector< ScriptSpell* > spells;
 };
 
 

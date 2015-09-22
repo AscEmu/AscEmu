@@ -529,7 +529,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         /************************************************************************/
         /* Distribute to all inrange players.                                   */
         /************************************************************************/
-        for (set<Object*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
+        for (std::set<Object*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
         {
 
             Player* p = TO< Player* >((*itr));

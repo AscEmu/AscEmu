@@ -3452,13 +3452,13 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
             if (m_target->IsPlayer() && caster)
                 TO< Unit* >(m_target)->EventChill(caster, true);
         }
-        m_target->speedReductionMap.insert(make_pair(m_spellProto->Id, mod->m_amount));
+        m_target->speedReductionMap.insert(std::make_pair(m_spellProto->Id, mod->m_amount));
         //m_target->m_slowdown=this;
         //m_target->m_speedModifier += mod->m_amount;
     }
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
-        map< uint32, int32 >::iterator itr = m_target->speedReductionMap.find(m_spellProto->Id);
+        std::map< uint32, int32 >::iterator itr = m_target->speedReductionMap.find(m_spellProto->Id);
         if (itr != m_target->speedReductionMap.end())
             m_target->speedReductionMap.erase(itr);
         //m_target->m_speedModifier -= mod->m_amount;
@@ -4213,7 +4213,7 @@ void Aura::SpellAuraModCritPerc(bool apply)
             md.value = float(mod->m_amount);
             md.wclass = GetSpellProto()->EquippedItemClass;
             md.subclass = GetSpellProto()->EquippedItemSubClass;
-            p_target->tocritchance.insert(make_pair(GetSpellId(), md));
+            p_target->tocritchance.insert(std::make_pair(GetSpellId(), md));
         }
         else
         {
@@ -4299,7 +4299,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
         }
     }
 
-    amount = (uint32)min(amount, m_target->GetUInt32Value(UNIT_FIELD_HEALTH));
+    amount = (uint32)std::min(amount, m_target->GetUInt32Value(UNIT_FIELD_HEALTH));
 
     // Apply bonus from [Warlock] Soul Siphon
     if (m_caster->m_soulSiphon.amt)
@@ -4856,7 +4856,7 @@ void Aura::EventPeriodicManaLeech(uint32 amount)
     if (m_target->isAlive() && m_caster->isAlive())
     {
 
-        int32 amt = (int32)min(amount, m_target->GetPower(POWER_TYPE_MANA));
+        int32 amt = (int32)std::min(amount, m_target->GetPower(POWER_TYPE_MANA));
         uint32 cm = m_caster->GetPower(POWER_TYPE_MANA) + amt;
         uint32 mm = m_caster->GetMaxPower(POWER_TYPE_MANA);
         if (cm <= mm)
@@ -5341,7 +5341,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
                 md.value = val;
                 md.wclass = GetSpellProto()->EquippedItemClass;
                 md.subclass = GetSpellProto()->EquippedItemSubClass;
-                p_target->damagedone.insert(make_pair(GetSpellId(), md));
+                p_target->damagedone.insert(std::make_pair(GetSpellId(), md));
             }
             else
             {
@@ -6183,7 +6183,7 @@ void Aura::SendDummyModifierLog(std::map< SpellEntry*, uint32 >* m, SpellEntry* 
 
     if (apply)
     {
-        m->insert(make_pair(spellInfo, i));
+        m->insert(std::make_pair(spellInfo, i));
     }
     else
     {
@@ -6760,7 +6760,7 @@ void Aura::SpellAuraModHaste(bool apply)
 
 void Aura::SpellAuraForceReaction(bool apply)
 {
-    map<uint32, uint32>::iterator itr;
+    std::map<uint32, uint32>::iterator itr;
     if (p_target == NULL)
         return;
 
@@ -6770,7 +6770,7 @@ void Aura::SpellAuraForceReaction(bool apply)
         if (itr != p_target->m_forcedReactions.end())
             itr->second = mod->m_amount;
         else
-            p_target->m_forcedReactions.insert(make_pair(mod->m_miscValue, mod->m_amount));
+            p_target->m_forcedReactions.insert(std::make_pair(mod->m_miscValue, mod->m_amount));
     }
     else
         p_target->m_forcedReactions.erase(mod->m_miscValue);
@@ -7048,7 +7048,7 @@ void Aura::EventPeriodicBurn(uint32 amount, uint32 misc)
         if (m_target->SchoolImmunityList[GetSpellProto()->School])
             return;
 
-        uint32 Amount = (uint32)min(amount, m_target->GetPower(misc));
+        uint32 Amount = (uint32)std::min(amount, m_target->GetPower(misc));
         uint32 newHealth = m_target->GetPower(misc) - Amount;
 
         m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellProto->Id, m_spellProto->School, newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);

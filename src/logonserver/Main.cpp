@@ -37,7 +37,7 @@ Database* sLogonSQL;
 initialiseSingleton(LogonServer);
 Arcemu::Threading::AtomicBoolean mrunning(true);
 Mutex _authSocketLock;
-set<AuthSocket*> _authSockets;
+std::set<AuthSocket*> _authSockets;
 
 /*** Signal Handler ***/
 void _OnSignal(int s)
@@ -99,7 +99,7 @@ int main(int argc, char** argv)
   **/
 bool startdb()
 {
-    string lhostname, lusername, lpassword, ldatabase;
+    std::string lhostname, lusername, lpassword, ldatabase;
     int lport = 0;
     // Configure Main Database
 
@@ -127,7 +127,7 @@ bool startdb()
         //  resulting in unreadable error messages.
         //If the <LogonDatabase> tag is malformed, all parameters will fail, and a different error message is given
 
-        string errorMessage = "sql: Certain <LogonDatabase> parameters not found in " CONFDIR "\\logon.conf \r\n";
+        std::string errorMessage = "sql: Certain <LogonDatabase> parameters not found in " CONFDIR "\\logon.conf \r\n";
         if(!(existsHostname || existsUsername || existsPassword  ||
                 existsName     || existsPort))
         {
@@ -166,13 +166,13 @@ bool startdb()
 
 
 Mutex m_allowedIpLock;
-vector<AllowedIP> m_allowedIps;
-vector<AllowedIP> m_allowedModIps;
+std::vector<AllowedIP> m_allowedIps;
+std::vector<AllowedIP> m_allowedModIps;
 
 bool IsServerAllowed(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
-    for(vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
+    for(std::vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
     {
         if(ParseCIDRBan(IP, itr->IP, itr->Bytes))
         {
@@ -187,7 +187,7 @@ bool IsServerAllowed(unsigned int IP)
 bool IsServerAllowedMod(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
-    for(vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
+    for(std::vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
     {
         if(ParseCIDRBan(IP, itr->IP, itr->Bytes))
         {
@@ -209,27 +209,27 @@ bool Rehash()
     }
 
     // re-set the allowed server IP's
-    string ips = Config.MainConfig.GetStringDefault("LogonServer", "AllowedIPs", "");
-    string ipsmod = Config.MainConfig.GetStringDefault("LogonServer", "AllowedModIPs", "");
+    std::string ips = Config.MainConfig.GetStringDefault("LogonServer", "AllowedIPs", "");
+    std::string ipsmod = Config.MainConfig.GetStringDefault("LogonServer", "AllowedModIPs", "");
 
-    vector<string> vips = StrSplit(ips, " ");
-    vector<string> vipsmod = StrSplit(ips, " ");
+    std::vector<std::string> vips = StrSplit(ips, " ");
+    std::vector<std::string> vipsmod = StrSplit(ips, " ");
 
     m_allowedIpLock.Acquire();
     m_allowedIps.clear();
     m_allowedModIps.clear();
-    vector<string>::iterator itr;
+    std::vector<std::string>::iterator itr;
     for(itr = vips.begin(); itr != vips.end(); ++itr)
     {
-        string::size_type i = itr->find("/");
-        if(i == string::npos)
+        std::string::size_type i = itr->find("/");
+        if(i == std::string::npos)
         {
             LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
             continue;
         }
 
-        string stmp = itr->substr(0, i);
-        string smask = itr->substr(i + 1);
+        std::string stmp = itr->substr(0, i);
+        std::string smask = itr->substr(i + 1);
 
         unsigned int ipraw = MakeIP(stmp.c_str());
         unsigned char ipmask = (char)atoi(smask.c_str());
@@ -247,15 +247,15 @@ bool Rehash()
 
     for(itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
     {
-        string::size_type i = itr->find("/");
-        if(i == string::npos)
+        std::string::size_type i = itr->find("/");
+        if(i == std::string::npos)
         {
             LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
             continue;
         }
 
-        string stmp = itr->substr(0, i);
-        string smask = itr->substr(i + 1);
+        std::string stmp = itr->substr(0, i);
+        std::string smask = itr->substr(i + 1);
 
         unsigned int ipraw = MakeIP(stmp.c_str());
         unsigned char ipmask = (char)atoi(smask.c_str());
@@ -398,8 +398,8 @@ void LogonServer::Run(int argc, char** argv)
     uint32 sport = Config.MainConfig.GetIntDefault("Listen", "ServerPort", 8093);
     //uint32 threadcount = Config.MainConfig.GetIntDefault("Network", "ThreadCount", 5);
     //uint32 threaddelay = Config.MainConfig.GetIntDefault("Network", "ThreadDelay", 20);
-    string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
-    string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
+    std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
+    std::string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
 
     /* Due to many people's inability to cope with us being out-of-sync with retail sometimes we were forced to hardcode this
     min_build = Config.MainConfig.GetIntDefault("Client", "MinBuild", 6180);
@@ -409,7 +409,7 @@ void LogonServer::Run(int argc, char** argv)
     min_build = LOGON_MINBUILD;
     max_build = LOGON_MAXBUILD;
 
-    string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
+    std::string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
     Sha1Hash hash;
     hash.UpdateData(logon_pass);
     hash.Finalize();
@@ -543,8 +543,8 @@ void LogonServer::CheckForDeadSockets()
     _authSocketLock.Acquire();
     time_t t = time(NULL);
     time_t diff;
-    set<AuthSocket*>::iterator itr = _authSockets.begin();
-    set<AuthSocket*>::iterator it2;
+    std::set<AuthSocket*>::iterator itr = _authSockets.begin();
+    std::set<AuthSocket*>::iterator it2;
     AuthSocket* s;
 
     for(itr = _authSockets.begin(); itr != _authSockets.end();)

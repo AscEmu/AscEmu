@@ -55,7 +55,7 @@ void LogonCommServerSocket::OnDisconnect()
     // if we're registered -> Set offline
     if(!removed)
     {
-        set<uint32>::iterator itr = server_ids.begin();
+        std::set<uint32>::iterator itr = server_ids.begin();
 
         for(; itr != server_ids.end(); ++itr)
             sInfoCore.SetRealmOffline((*itr));
@@ -169,7 +169,7 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 {
-    string Name;
+    std::string Name;
     int32 my_id;
 
     recvData >> Name;
@@ -226,7 +226,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 {
     uint32 request_id;
-    string account_name;
+    std::string account_name;
     recvData >> request_id;
     recvData >> account_name;
 
@@ -383,7 +383,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
         if(itr != realm->CharacterMap.end())
             itr->second = number_of_characters;
         else
-            realm->CharacterMap.insert(make_pair(account_id, number_of_characters));
+            realm->CharacterMap.insert(std::make_pair(account_id, number_of_characters));
     }
 
     sInfoCore.getRealmLock().Release();
@@ -407,7 +407,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     if(itr != realm->CharacterMap.end())
         itr->second += chars_to_add;
     else
-        realm->CharacterMap.insert(make_pair(account_id, chars_to_add));
+        realm->CharacterMap.insert(std::make_pair(account_id, chars_to_add));
 
     sInfoCore.getRealmLock().Release();
 }
@@ -416,7 +416,7 @@ void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
 {
     WorldPacket data(RSMSG_CONSOLE_LOGIN_RESULT, 8);
     uint32 request;
-    string accountname;
+    std::string accountname;
     uint8 key[20];
 
     recvData >> request;
@@ -460,8 +460,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
     {
         case 1:            // set account ban
             {
-                string account;
-                string banreason;
+                std::string account;
+                std::string banreason;
                 uint32 duration;
                 recvData >> account >> duration >> banreason;
 
@@ -482,8 +482,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
         case 2:        // set gm
             {
-                string account;
-                string gm;
+                std::string account;
+                std::string gm;
                 recvData >> account >> gm;
 
                 // remember we expect this in uppercase
@@ -503,7 +503,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
         case 3:        // set mute
             {
-                string account;
+                std::string account;
                 uint32 duration;
                 recvData >> account >> duration;
 
@@ -523,8 +523,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
         case 4:        // ip ban add
             {
-                string ip;
-                string banreason;
+                std::string ip;
+                std::string banreason;
                 uint32 duration;
 
                 recvData >> ip >> duration >> banreason;
@@ -537,7 +537,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
         case 5:        // ip ban remove
             {
-                string ip;
+                std::string ip;
                 recvData >> ip;
 
                 if(sIPBanner.Remove(ip.c_str()))
@@ -563,7 +563,7 @@ void LogonCommServerSocket::RefreshRealmsPop()
         return;
 
     WorldPacket data(RSMSG_REALM_POP_REQ, 4);
-    set<uint32>::iterator itr = server_ids.begin();
+    std::set<uint32>::iterator itr = server_ids.begin();
     for(; itr != server_ids.end() ; itr++)
     {
         data.clear();

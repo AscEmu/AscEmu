@@ -36,7 +36,7 @@ void WorldSession::HandleAddFriendOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
     LOG_DEBUG("WORLD: Received CMSG_ADD_FRIEND");
 
-    string name, note;
+    std::string name, note;
     recv_data >> name;
     recv_data >> note;
 
@@ -80,7 +80,7 @@ void WorldSession::HandleSetFriendNote(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
         uint64 guid;
-    string note;
+    std::string note;
 
     recv_data >> guid >> note;
     _player->Social_SetNote((uint32)guid, note.size() ? note.c_str() : NULL);

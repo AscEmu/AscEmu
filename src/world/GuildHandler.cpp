@@ -365,7 +365,7 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
     }
 
     uint32 rankId;
-    string newName;
+    std::string newName;
     uint32 i;
     GuildRank* pRank;
 
@@ -378,7 +378,7 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
     recv_data >> newName;
 
     if (newName.length() < 2)
-        newName = string(pRank->szRankName);
+        newName = std::string(pRank->szRankName);
 
     if (strcmp(newName.c_str(), pRank->szRankName) != 0)
     {
@@ -424,7 +424,7 @@ void WorldSession::HandleGuildAddRank(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    string rankName;
+    std::string rankName;
     Guild* pGuild = _player->GetGuild();
 
     if (pGuild == NULL)
@@ -479,7 +479,7 @@ void WorldSession::HandleGuildSetPublicNote(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    string target, newnote;
+    std::string target, newnote;
     recv_data >> target >> newnote;
 
     PlayerInfo* pTarget = objmgr.GetPlayerInfoByName(target.c_str());
@@ -496,7 +496,7 @@ void WorldSession::HandleGuildSetOfficerNote(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    string target, newnote;
+    std::string target, newnote;
     recv_data >> target >> newnote;
 
     PlayerInfo* pTarget = objmgr.GetPlayerInfoByName(target.c_str());
@@ -580,13 +580,13 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
     uint64 creature_guid;
     uint32 crap;
     uint64 crap2;
-    string name, UnkString;
+    std::string name, UnkString;
     //uint32 crap3, crap4, crap5, crap6, crap7, crap8, crap9;
     uint32 Data[7];
     uint16 crap10;
     uint32 crap11;
     uint32 crap12, PetitionSignerCount;
-    string crap13;
+    std::string crap13;
     uint32 arena_index;
 
 
@@ -1120,7 +1120,7 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     uint64 guid;
-    string name;
+    std::string name;
     recv_data >> guid >> name;
 
     Charter* pCharter = objmgr.GetCharterByItemGuid(guid);
@@ -1211,8 +1211,8 @@ void WorldSession::HandleGuildBankModifyTab(WorldPacket& recv_data)
     GuildBankTab* pTab;
     uint64 guid;
     uint8 slot;
-    string tabname;
-    string tabicon;
+    std::string tabname;
+    std::string tabicon;
     char* ptmp;
 
     recv_data >> guid;
@@ -1906,7 +1906,7 @@ void WorldSession::HandleSetGuildBankText(WorldPacket& recv_data)
         return;
 
     uint8 tabid;
-    string text;
+    std::string text;
 
     recv_data >> tabid >> text;
 

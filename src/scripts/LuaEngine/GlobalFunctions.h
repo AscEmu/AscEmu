@@ -402,8 +402,8 @@ namespace luaGlobalFunctions
         uint32 type = luaL_checkinteger(L, 1);
         uint64 sender_guid = CHECK_GUID(L, 2);
         uint64 recipient_guid = CHECK_GUID(L, 3);
-        string subject = luaL_checkstring(L, 4);
-        string body = luaL_checkstring(L, 5);
+        std::string subject = luaL_checkstring(L, 4);
+        std::string body = luaL_checkstring(L, 5);
         uint32 money = luaL_checkinteger(L, 6);
         uint32 cod = luaL_checkinteger(L, 7);
         uint64 item_guid = CHECK_GUID(L, 8);

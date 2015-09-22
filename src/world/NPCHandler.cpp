@@ -128,13 +128,13 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         uint32 Spacer = 0;
         uint32 Count = 0;
         uint8 Status;
-        string Text;
+        std::string Text;
 
         data << pCreature->GetGUID();
         data << pTrainer->TrainerType;
 
         data << uint32(0);
-        for (vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
+        for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
         {
             pSpell = &(*itr);
             Status = TrainerGetSpellStatus(pSpell);
@@ -189,7 +189,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
 
     // Check if the trainer offers that spell
     TrainerSpell* pSpell = NULL;
-    for (vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
+    for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
     {
         if ((itr->pCastSpell && itr->pCastSpell->Id == TeachingSpellID) ||
             (itr->pLearnSpell && itr->pLearnSpell->Id == TeachingSpellID))
@@ -446,7 +446,7 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
     }
     if (script != NULL)
     {
-        string str;
+        std::string str;
         if (recv_data.rpos() != recv_data.wpos())
             recv_data >> str;
         if (str.length() > 0)

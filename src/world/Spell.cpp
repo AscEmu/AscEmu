@@ -3065,7 +3065,7 @@ void Spell::HandleAddAura(uint64 guid)
             charge.spellId = aur->GetSpellId();
             charge.ProcFlag = aur->GetSpellProto()->procFlags;
             charge.lastproc = 0;
-            Target->m_chargeSpells.insert(make_pair(aur->GetSpellId(), charge));
+            Target->m_chargeSpells.insert(std::make_pair(aur->GetSpellId(), charge));
         }
     }
 

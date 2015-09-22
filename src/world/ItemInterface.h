@@ -58,7 +58,7 @@ enum AddItemResult
 /// \param uint32 costid     - extendedcostID of the cost
 ///
 //////////////////////////////////////////////////////////////////////////////////////////
-typedef std::map<uint64, pair<time_t, uint32>> RefundableMap;
+typedef std::map<uint64, std::pair<time_t, uint32>> RefundableMap;
 
 class SERVER_DECL ItemInterface
 {

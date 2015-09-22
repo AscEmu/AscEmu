@@ -135,7 +135,7 @@ bool Charge(uint32 i, Spell* s)
     uint32 rage_to_gen = s->GetProto()->EffectBasePoints[i] + 1;
     if (s->p_caster)
     {
-        for (set<uint32>::iterator itr = s->p_caster->mSpells.begin(); itr != s->p_caster->mSpells.end(); ++itr)
+        for (std::set<uint32>::iterator itr = s->p_caster->mSpells.begin(); itr != s->p_caster->mSpells.end(); ++itr)
         {
             if (*itr == 12697)
             {

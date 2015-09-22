@@ -346,7 +346,7 @@ class BazilAI : public CreatureAIScript
                     spell.casttime = spell.cooldown;
                     target = _unit->GetAIInterface()->getNextTarget();
                     std::vector<Unit* > target_list;
-                    for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                    for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                     {
                         target = TO< Unit* >(*itr);
                         if (target)

@@ -161,7 +161,7 @@ class RumorsforKravel : public QuestScript
             if(creat == NULL)
                 return;
 
-            string msg = "Hahah! ";
+            std::string msg = "Hahah! ";
             msg += mTarget->GetName();
             msg += ", you make quite a partner!";
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());

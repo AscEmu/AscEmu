@@ -32,7 +32,7 @@ struct Account
     uint32 Banned;
     uint8 SrpHash[20]; // the encrypted password field, reversed
     uint8* SessionKey;
-    string* UsernamePtr;
+    std::string* UsernamePtr;
     uint32 Muted;
 
     Account()
@@ -87,7 +87,7 @@ typedef struct
     unsigned int Mask;
     unsigned char Bytes;
     uint32 Expire;
-    string db_ip;
+    std::string db_ip;
 } IPBan;
 
 enum BAN_STATUS
@@ -109,7 +109,7 @@ class IPBanner : public Singleton< IPBanner >
 
     protected:
         Mutex listBusy;
-        list<IPBan> banList;
+    std::list<IPBan> banList;
 };
 
 class AccountMgr : public Singleton < AccountMgr >
@@ -119,7 +119,7 @@ class AccountMgr : public Singleton < AccountMgr >
         {
 
 #ifdef WIN32
-            for(HM_NAMESPACE::hash_map<string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
+            for(HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
 #else
             for(map<string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
 #endif
@@ -130,13 +130,13 @@ class AccountMgr : public Singleton < AccountMgr >
 
         void AddAccount(Field* field);
 
-        Account* GetAccount(string Name)
+        Account* GetAccount(std::string Name)
         {
             setBusy.Acquire();
             Account* pAccount = NULL;
             // this should already be uppercase!
 #ifdef WIN32
-            HM_NAMESPACE::hash_map<string, Account*>::iterator itr = AccountDatabase.find(Name);
+            HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 #else
             map<string, Account*>::iterator itr = AccountDatabase.find(Name);
 #endif
@@ -155,11 +155,11 @@ class AccountMgr : public Singleton < AccountMgr >
         inline size_t GetCount() { return AccountDatabase.size(); }
 
     private:
-        Account* __GetAccount(string Name)
+        Account* __GetAccount(std::string Name)
         {
             // this should already be uppercase!
 #ifdef WIN32
-            HM_NAMESPACE::hash_map<string, Account*>::iterator itr = AccountDatabase.find(Name);
+            HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 #else
             map<string, Account*>::iterator itr = AccountDatabase.find(Name);
 #endif
@@ -169,7 +169,7 @@ class AccountMgr : public Singleton < AccountMgr >
         }
 
 #ifdef WIN32
-        HM_NAMESPACE::hash_map<string, Account*> AccountDatabase;
+        HM_NAMESPACE::hash_map<std::string, Account*> AccountDatabase;
 #else
         std::map<string, Account*> AccountDatabase;
 #endif
@@ -180,8 +180,8 @@ class AccountMgr : public Singleton < AccountMgr >
 
 typedef struct
 {
-    string Name;
-    string Address;
+    std::string Name;
+    std::string Address;
     uint32 flags;
     uint32 Icon;
     uint32 TimeZone;
@@ -195,8 +195,8 @@ class LogonCommServerSocket;
 
 class InformationCore : public Singleton<InformationCore>
 {
-        map<uint32, Realm*>          m_realms;
-        set<LogonCommServerSocket*> m_serverSockets;
+    std::map<uint32, Realm*>          m_realms;
+    std::set<LogonCommServerSocket*> m_serverSockets;
         Mutex serverSocketLock;
         Mutex realmLock;
 
@@ -227,7 +227,7 @@ class InformationCore : public Singleton<InformationCore>
 
         Realm*          AddRealm(uint32 realm_id, Realm* rlm);
         Realm*        GetRealm(uint32 realm_id);
-        int32          GetRealmIdByName(string Name);
+        int32          GetRealmIdByName(std::string Name);
         void          RemoveRealm(uint32 realm_id);
         void SetRealmOffline(uint32 realm_id);
         void UpdateRealmStatus(uint32 realm_id, uint8 flags);

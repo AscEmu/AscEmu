@@ -29,7 +29,7 @@ LogonCommHandler::LogonCommHandler()
     idhigh = 1;
     next_request = 1;
     pings = !Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
-    string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3");
+    std::string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3");
 
     // sha1 hash it
     Sha1Hash hash;
@@ -53,14 +53,14 @@ LogonCommHandler::LogonCommHandler()
 
 LogonCommHandler::~LogonCommHandler()
 {
-    for (set<LogonServer*>::iterator i = servers.begin(); i != servers.end(); ++i)
+    for (std::set<LogonServer*>::iterator i = servers.begin(); i != servers.end(); ++i)
         delete(*i);
 
-    for (set<Realm*>::iterator i = realms.begin(); i != realms.end(); ++i)
+    for (std::set<Realm*>::iterator i = realms.begin(); i != realms.end(); ++i)
         delete(*i);
 }
 
-LogonCommClientSocket* LogonCommHandler::ConnectToLogon(string Address, uint32 Port)
+LogonCommClientSocket* LogonCommHandler::ConnectToLogon(std::string Address, uint32 Port)
 {
     LogonCommClientSocket* conn = ConnectTCPSocket<LogonCommClientSocket>(Address.c_str(), static_cast<u_short>(Port));
     return conn;
@@ -68,7 +68,7 @@ LogonCommClientSocket* LogonCommHandler::ConnectToLogon(string Address, uint32 P
 
 void LogonCommHandler::RequestAddition(LogonCommClientSocket* Socket)
 {
-    set<Realm*>::iterator itr = realms.begin();
+    std::set<Realm*>::iterator itr = realms.begin();
 
     for (; itr != realms.end(); ++itr)
     {
@@ -132,8 +132,8 @@ void LogonCommHandler::Startup()
     {
         do
         {
-            string acct = result->Fetch()[0].GetString();
-            string perm = result->Fetch()[1].GetString();
+            std::string acct = result->Fetch()[0].GetString();
+            std::string perm = result->Fetch()[1].GetString();
 
             arcemu_TOUPPER(acct);
             forced_permissions.insert(make_pair(acct, perm));
@@ -148,11 +148,11 @@ void LogonCommHandler::Startup()
 void LogonCommHandler::ConnectAll()
 {
     Log.Success("LogonCommClient", "Attempting to connect to logon server...");
-    for (set<LogonServer*>::iterator itr = servers.begin(); itr != servers.end(); ++itr)
+    for (std::set<LogonServer*>::iterator itr = servers.begin(); itr != servers.end(); ++itr)
         Connect(*itr);
 }
 
-const string* LogonCommHandler::GetForcedPermissions(string & username)
+const std::string* LogonCommHandler::GetForcedPermissions(std::string & username)
 {
     ForcedPermissionMap::iterator itr = forced_permissions.find(username);
     if (itr == forced_permissions.end())
@@ -237,7 +237,7 @@ void LogonCommHandler::Connect(LogonServer* server)
 
 void LogonCommHandler::AdditionAck(uint32 ID, uint32 ServID)
 {
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     for (; itr != logons.end(); ++itr)
     {
         if (itr->first->ID == ID)
@@ -253,7 +253,7 @@ void LogonCommHandler::UpdateSockets()
 {
     mapLock.Acquire();
 
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     LogonCommClientSocket* cs;
     uint32 t = (uint32)UNIXTIME;
     for (; itr != logons.end(); ++itr)
@@ -301,7 +301,7 @@ void LogonCommHandler::UpdateSockets()
 void LogonCommHandler::ConnectionDropped(uint32 ID)
 {
     mapLock.Acquire();
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     for (; itr != logons.end(); ++itr)
     {
         if (itr->first->ID == ID && itr->second != 0)
@@ -314,7 +314,7 @@ void LogonCommHandler::ConnectionDropped(uint32 ID)
     mapLock.Release();
 }
 
-uint32 LogonCommHandler::ClientConnected(string AccountName, WorldSocket* Socket)
+uint32 LogonCommHandler::ClientConnected(std::string AccountName, WorldSocket* Socket)
 {
     uint32 request_id = next_request++;
     size_t i = 0;
@@ -322,7 +322,7 @@ uint32 LogonCommHandler::ClientConnected(string AccountName, WorldSocket* Socket
     LOG_DEBUG(" >> sending request for account information: `%s` (request %u).", AccountName.c_str(), request_id);
 
     // Send request packet to server.
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0)
     {
         // No valid logonserver is connected.
@@ -389,7 +389,7 @@ void LogonCommHandler::LoadRealmConfiguration()
             realm->TimeZone = Config.RealmConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
             realm->Population = Config.RealmConfig.GetFloatVA("Population", 0, "Realm%u", i);
             realm->Lock = static_cast<uint8>(Config.RealmConfig.GetIntVA("Lock", 0, "Realm%u", i));
-            string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
+            std::string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
             uint32 type;
 
             // process realm type
@@ -413,7 +413,7 @@ void LogonCommHandler::LoadRealmConfiguration()
 void LogonCommHandler::UpdateAccountCount(uint32 account_id, uint8 add)
 {
     // Send request packet to server.
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
     {
         return;         // No valid logonserver is connected.
@@ -421,11 +421,11 @@ void LogonCommHandler::UpdateAccountCount(uint32 account_id, uint8 add)
     itr->second->UpdateAccountCount(account_id, add);
 }
 
-void LogonCommHandler::TestConsoleLogon(string & username, string & password, uint32 requestnum)
+void LogonCommHandler::TestConsoleLogon(std::string & username, std::string & password, uint32 requestnum)
 {
-    string newuser = username;
-    string newpass = password;
-    string srpstr;
+    std::string newuser = username;
+    std::string newpass = password;
+    std::string srpstr;
 
     arcemu_TOUPPER(newuser);
     arcemu_TOUPPER(newpass);
@@ -433,7 +433,7 @@ void LogonCommHandler::TestConsoleLogon(string & username, string & password, ui
     srpstr = newuser + ":" + newpass;
 
     // Send request packet to server.
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
     {
         return;         // No valid logonserver is connected.
@@ -454,7 +454,7 @@ void LogonCommHandler::TestConsoleLogon(string & username, string & password, ui
 // db funcs
 void LogonCommHandler::Account_SetBanned(const char* account, uint32 banned, const char* reason)
 {
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
     {
         return;         // No valid logonserver is connected.
@@ -470,7 +470,7 @@ void LogonCommHandler::Account_SetBanned(const char* account, uint32 banned, con
 
 void LogonCommHandler::Account_SetGM(const char* account, const char* flags)
 {
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
     {
         return;         // No valid logonserver is connected.
@@ -485,7 +485,7 @@ void LogonCommHandler::Account_SetGM(const char* account, const char* flags)
 
 void LogonCommHandler::Account_SetMute(const char* account, uint32 muted)
 {
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
     {
         return;         // No valid logonserver is connected.
@@ -500,7 +500,7 @@ void LogonCommHandler::Account_SetMute(const char* account, uint32 muted)
 
 void LogonCommHandler::IPBan_Add(const char* ip, uint32 duration, const char* reason)
 {
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
     {
         return;         // No valid logonserver is connected.
@@ -516,7 +516,7 @@ void LogonCommHandler::IPBan_Add(const char* ip, uint32 duration, const char* re
 
 void LogonCommHandler::IPBan_Remove(const char* ip)
 {
-    map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
     {
         return;         // No valid logonserver is connected.

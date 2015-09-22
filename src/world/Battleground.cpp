@@ -165,7 +165,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
         for (uint32 i = 0; i < 2; ++i)
         {
-            for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
                 if ((*itr)->m_isGmInvisible)continue;
                 *data << (*itr)->GetGUID();
@@ -196,7 +196,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         uint32 FieldCount = GetFieldCount(GetType());
         for (uint32 i = 0; i < 2; ++i)
         {
-            for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
                 ARCEMU_ASSERT(*itr != NULL);
                 if ((*itr)->m_isGmInvisible)
@@ -549,7 +549,7 @@ void CBattleground::DistributePacketToAll(WorldPacket* packet)
 
     for (int i = 0; i < 2; ++i)
     {
-        for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             if ((*itr) && (*itr)->GetSession())
                 (*itr)->GetSession()->SendPacket(packet);
     }
@@ -559,7 +559,7 @@ void CBattleground::DistributePacketToTeam(WorldPacket* packet, uint32 Team)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+    for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
     {
         if ((*itr) && (*itr)->GetSession())
             (*itr)->GetSession()->SendPacket(packet);
@@ -694,7 +694,7 @@ void CBattleground::EventCountdown()
 
         for (int i = 0; i < 2; ++i)
         {
-            for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
                 {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(46), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
@@ -711,7 +711,7 @@ void CBattleground::EventCountdown()
 
         for (int i = 0; i < 2; ++i)
         {
-            for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
                 {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(47), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
@@ -728,7 +728,7 @@ void CBattleground::EventCountdown()
 
         for (int i = 0; i < 2; ++i)
         {
-            for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
                 {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(48), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
@@ -744,7 +744,7 @@ void CBattleground::EventCountdown()
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for (int i = 0; i < 2; ++i)
         {
-            for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
                 {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(49), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
@@ -777,8 +777,8 @@ void CBattleground::Close()
     m_ended = true;
     for (uint32 i = 0; i < 2; ++i)
     {
-        set<Player*>::iterator itr;
-        set<uint32>::iterator it2;
+        std::set<Player*>::iterator itr;
+        std::set<uint32>::iterator it2;
         uint32 guid;
         Player* plr;
         for (itr = m_players[i].begin(); itr != m_players[i].end();)
@@ -890,7 +890,7 @@ void CBattleground::QueuePlayerForResurrect(Player* plr, Creature* spirit_healer
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    map<Creature*, set<uint32> >::iterator itr = m_resurrectMap.find(spirit_healer);
+    std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
         itr->second.insert(plr->GetLowGUID());
     plr->m_areaSpiritHealer_guid = spirit_healer->GetGUID();
@@ -900,7 +900,7 @@ void CBattleground::RemovePlayerFromResurrect(Player* plr, Creature* spirit_heal
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    map<Creature*, set<uint32> >::iterator itr = m_resurrectMap.find(spirit_healer);
+    std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(spirit_healer);
     if (itr != m_resurrectMap.end())
         itr->second.erase(plr->GetLowGUID());
     plr->m_areaSpiritHealer_guid = 0;
@@ -910,10 +910,10 @@ void CBattleground::AddSpiritGuide(Creature* pCreature)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    map<Creature*, set<uint32> >::iterator itr = m_resurrectMap.find(pCreature);
+    std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(pCreature);
     if (itr == m_resurrectMap.end())
     {
-        set<uint32> ti;
+        std::set<uint32> ti;
         m_resurrectMap.insert(make_pair(pCreature, ti));
     }
 }
@@ -930,8 +930,8 @@ void CBattleground::EventResurrectPlayers()
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
     Player* plr;
-    set<uint32>::iterator itr;
-    map<Creature*, set<uint32> >::iterator i;
+    std::set<uint32>::iterator itr;
+    std::map<Creature*, std::set<uint32> >::iterator i;
     WorldPacket data(50);
     for (i = m_resurrectMap.begin(); i != m_resurrectMap.end(); ++i)
     {
@@ -986,9 +986,9 @@ void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
     float dd;
     float dist = 999999.0f;
     Creature* cl = nullptr;
-    set<uint32> *closest = nullptr;
+    std::set<uint32> *closest = nullptr;
     m_lock.Acquire();
-    map<Creature*, set<uint32> >::iterator itr = m_resurrectMap.begin();
+    std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.begin();
     for (; itr != m_resurrectMap.end(); ++itr)
     {
         if (itr->first == old)
