@@ -11,6 +11,7 @@
 
 #include "SocketDefines.h"
 #include "NetworkIncludes.hpp"
+#include "CircularBuffer.h"
 #include <string>
 #include <mutex>
 
