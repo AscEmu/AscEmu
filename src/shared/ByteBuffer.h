@@ -22,6 +22,7 @@
 #define _BYTEBUFFER_H
 
 #include "CommonTypes.hpp"
+#include "CommonHelpers.hpp"
 #include "WoWGuid.h"
 #include "LocationVector.h"
 #include <cstdlib>
