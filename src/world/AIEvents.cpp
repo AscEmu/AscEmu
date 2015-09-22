@@ -20,6 +20,7 @@
 
 #include "Unit.h"
 #include "AIInterface.h"
+#include <G3D/Vector3.h>
 #include "StdAfx.h"
 
 pAIEvent AIEventHandlers[NUM_AI_EVENTS] =
