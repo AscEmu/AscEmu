@@ -27,6 +27,8 @@ class Unit;
 #include <cmath>
 #endif
 
+#include "AIInterface.h"
+
 AIInterface::AIInterface()
     :
     m_canMove(true),
