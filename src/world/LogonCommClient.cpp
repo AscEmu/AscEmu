@@ -25,6 +25,7 @@
 #include "WorldPacket.h"
 #include "Database/Database.h"
 #include "MainServerDefines.h"
+#include "World.h"
 #include <set>
 #include <map>
 
@@ -301,7 +302,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
             if (itr != mapping_to_send.end())
                 itr->second++;
             else
-                mapping_to_send.insert(make_pair(account_id, 1));
+                mapping_to_send.insert(std::make_pair(account_id, 1));
         }
         while (result->NextRow());
         delete result;
