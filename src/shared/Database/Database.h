@@ -20,6 +20,7 @@
 #ifndef _DATABASE_H
 #define _DATABASE_H
 
+#include "CThreads.h"
 #include "Field.h"
 #include "../Threading/Queue.h"
 #include "../CallBack.h"
