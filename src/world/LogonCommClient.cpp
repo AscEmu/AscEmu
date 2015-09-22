@@ -21,6 +21,7 @@
 
 #include "CommonTypes.hpp"
 #include "LogonCommClient.h"
+#include "LogonCommHandler.h"
 #include "WorldPacket.h"
 
 #pragma pack(push, 1)
@@ -135,7 +136,7 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
 {
     uint32 realmlid;
     uint32 error;
-    string realmname;
+    std::string realmname;
     recvData >> error >> realmlid >> realmname;
 
 #ifdef WIN32
