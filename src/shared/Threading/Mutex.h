@@ -20,6 +20,10 @@
 #ifndef _THREADING_MUTEX_H
 #define _THREADING_MUTEX_H
 
+#ifndef WIN32
+#include <pthread.h>
+#endif
+
 class SERVER_DECL Mutex
 {
     public:
