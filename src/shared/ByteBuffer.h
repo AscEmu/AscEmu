@@ -24,6 +24,8 @@
 #include "CommonTypes.hpp"
 #include "WoWGuid.h"
 #include "LocationVector.h"
+#include <cstdlib>
+#include <string>
 
 class SERVER_DECL ByteBuffer
 {
