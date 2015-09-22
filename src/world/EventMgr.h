@@ -21,6 +21,8 @@
 #ifndef _EVENTMGR_H
 #define _EVENTMGR_H
 
+#include "RWLock.h"
+
 enum EventTypes
 {
     EVENT_UNK = 0,
@@ -280,7 +282,7 @@ struct SERVER_DECL TimedEvent
 
 class EventMgr;
 class EventableObjectHolder;
-typedef map<int32, EventableObjectHolder*> HolderMap;
+typedef std::map<int32, EventableObjectHolder*> HolderMap;
 
 class SERVER_DECL EventMgr : public Singleton < EventMgr >
 {
