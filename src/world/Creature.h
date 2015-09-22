@@ -22,6 +22,7 @@
 #define _WOWSERVER_CREATURE_H
 
 #include "Map.h"
+#include "Unit.h"
 
 class CreatureTemplate;
 class GossipScript;

@@ -1011,6 +1011,30 @@ void AIInterface::DismissPet()
     sEventMgr.AddEvent(((Creature*)this->m_Unit), &Creature::DeleteMe, EVENT_DELETE_TIMER, 1, 1);*/
 }
 
+void AIInterface::SetUnitToFollow(Unit* un)
+{
+    if (un == NULL)
+        m_UnitToFollow = 0;
+    else
+        m_UnitToFollow = un->GetGUID();
+}
+
+void AIInterface::SetUnitToFear(Unit* un)
+{
+    if (un == NULL)
+        m_UnitToFear = 0;
+    else
+        m_UnitToFear = un->GetGUID();
+}
+
+void AIInterface::SetUnitToFollowBackup(Unit* un)
+{
+    if (un == NULL)
+        m_UnitToFollow_backup = 0;
+    else
+        m_UnitToFollow_backup = un->GetGUID();
+}
+
 void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId)
 {
     if (m_AIState == STATE_EVADE || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || (m_AIType == AITYPE_PASSIVE) || disable_combat)

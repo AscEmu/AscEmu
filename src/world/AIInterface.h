@@ -274,31 +274,15 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         Unit* GetUnit() { return m_Unit; }
         Unit* GetPetOwner() { return m_PetOwner; }
         void DismissPet();
-        void SetUnitToFollow(Unit* un)
-        {
-            if (un == NULL)
-                m_UnitToFollow = 0;
-            else
-                m_UnitToFollow = un->GetGUID();
-        };
+    void SetUnitToFollow(Unit* un);;
         void SetUnitToFollow(uint64 guid) { m_UnitToFollow = guid; };
         void ResetUnitToFollow() { m_UnitToFollow = 0; };
-        void SetUnitToFear(Unit* un)
-        {
-            if (un == NULL)
-                m_UnitToFear = 0;
-            else
-                m_UnitToFear = un->GetGUID();
-        };
+
+    void SetUnitToFear(Unit* un);;
         void SetUnitToFear(uint64 guid)  { m_UnitToFear = guid; };
         void ResetUnitToFear() { m_UnitToFear = 0; };
-        void SetUnitToFollowBackup(Unit* un)
-        {
-            if (un == NULL)
-                m_UnitToFollow_backup = 0;
-            else
-                m_UnitToFollow_backup = un->GetGUID();
-        };
+
+    void SetUnitToFollowBackup(Unit* un);;
         void SetUnitToFollowBackup(uint64 guid) { m_UnitToFollow_backup = guid; };
         void SetFollowDistance(float dist) { FollowDistance = dist; };
         void SetUnitToFollowAngle(float angle) { m_fallowAngle = angle; }
