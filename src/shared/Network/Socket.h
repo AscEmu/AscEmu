@@ -10,6 +10,7 @@
 #define SOCKET_H
 
 #include "SocketDefines.h"
+#include "NetworkIncludes.hpp"
 
 class SERVER_DECL Socket
 {

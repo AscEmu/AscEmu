@@ -97,20 +97,7 @@ enum MsTimeVariables
 #define FD_SETSIZE 2048
 #endif
 
-#if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <signal.h>
-#include <netdb.h>
-#endif
+#include "Network/NetworkIncludes.hpp"
 
 // current platform and compiler
 #define PLATFORM_WIN32 0

@@ -96,6 +96,7 @@ set(headers
 	Network/ListenSocketLinux.h
 	Network/ListenSocketWin32.h
 	Network/Network.h
+    Network/NetworkIncludes.hpp
 	Network/Socket.h
 	Network/SocketMgrFreeBSD.h
 	Network/SocketMgrLinux.h
