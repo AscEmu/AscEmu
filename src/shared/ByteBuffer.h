@@ -21,7 +21,7 @@
 #ifndef _BYTEBUFFER_H
 #define _BYTEBUFFER_H
 
-#include "Common.h"
+#include "CommonTypes.hpp"
 #include "WoWGuid.h"
 #include "LocationVector.h"
 

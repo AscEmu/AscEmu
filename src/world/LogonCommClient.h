@@ -64,7 +64,7 @@ class LogonCommClientSocket : public Socket
         uint32 _id;
         uint32 authenticated;
         bool use_crypto;
-        set<uint32> realm_ids;
+        std::set<uint32> realm_ids;
 };
 
 typedef void (LogonCommClientSocket::*logonpacket_handler)(WorldPacket&);
