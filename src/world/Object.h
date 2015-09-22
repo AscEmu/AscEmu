@@ -36,6 +36,9 @@ class EventableObject;
 #include "../shared/StackBuffer.h"
 
 struct SpellEntry;
+struct FactionTemplateDBC;
+struct FactionDBC;
+
 class Unit;
 class Group;
 
