@@ -21,6 +21,7 @@
 #ifndef WOWSERVER_QUEST_H
 #define WOWSERVER_QUEST_H
 
+class Unit;
 #include "Unit.h"
 
 enum QUEST_STATUS
