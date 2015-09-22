@@ -24,6 +24,12 @@
 #include "UpdateFields.h"
 #include "CommonTypes.hpp"
 
+class EventableObject;
+#include "EventableObject.h"
+
+#include <set>
+#include <map>
+
 class Unit;
 class Group;
 
