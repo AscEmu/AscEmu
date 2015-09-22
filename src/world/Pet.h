@@ -21,7 +21,7 @@
 #ifndef _PET_H
 #define _PET_H
 
-class Creature;
+#include "Creature.h"
 
 #define PET_SPELL_SPAM_COOLDOWN 2000        /// applied only to spells that have no cooldown
 
