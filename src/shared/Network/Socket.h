@@ -146,9 +146,11 @@ class SERVER_DECL Socket
 
         inline bool HasSendLock()
         {
-            bool res;
-            res = (m_writeLock.GetVal() != 0);
-            return res;
+            bool locked = m_sendMutex.try_lock();
+            if (locked)
+                m_sendMutex.unlock();
+
+            return locked;
         }
 #endif
 
@@ -159,9 +161,11 @@ class SERVER_DECL Socket
         void PostEvent(int events, bool oneshot);
         inline bool HasSendLock()
         {
-            bool res;
-            res = (m_writeLock.GetVal() != 0);
-            return res;
+            bool locked = m_sendMutex.try_lock();
+            if (locked)
+                m_sendMutex.unlock();
+
+            return locked;
         }
 #endif
 
