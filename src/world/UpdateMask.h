@@ -23,6 +23,7 @@
 #define __UPDATEMASK_H
 
 #include "WUtil.h"
+#include <cstring>
 
 class UpdateMask
 {
