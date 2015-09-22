@@ -21,6 +21,8 @@
 #ifndef _PET_H
 #define _PET_H
 
+class Creature;
+
 #define PET_SPELL_SPAM_COOLDOWN 2000        /// applied only to spells that have no cooldown
 
 /* Taken from ItemPetFood.dbc
