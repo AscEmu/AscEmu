@@ -23,6 +23,9 @@
 #include "LogonCommClient.h"
 #include "LogonCommHandler.h"
 #include "WorldPacket.h"
+#include "Database/Database.h"
+#include <set>
+#include <map>
 
 #pragma pack(push, 1)
 typedef struct
@@ -263,7 +266,7 @@ void LogonCommClientSocket::HandleAuthResponse(WorldPacket& recvData)
 void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
 {
     WorldPacket data(RCMSG_UPDATE_CHARACTER_MAPPING_COUNT, 9);
-    set<uint32>::iterator itr = realm_ids.begin();
+    std::set<uint32>::iterator itr = realm_ids.begin();
 
     for (; itr != realm_ids.end(); ++itr)
     {
@@ -279,8 +282,8 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
     uint32 realm_id;
     uint32 account_id;
     QueryResult* result;
-    map<uint32, uint8> mapping_to_send;
-    map<uint32, uint8>::iterator itr;
+    std::map<uint32, uint8> mapping_to_send;
+    std::map<uint32, uint8>::iterator itr;
 
     // grab the realm id
     recvData >> realm_id;

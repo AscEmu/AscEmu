@@ -20,11 +20,10 @@
 #ifndef _DATABASE_H
 #define _DATABASE_H
 
-#include <string>
 #include "../Threading/Queue.h"
 #include "../CallBack.h"
+#include <string>
 
-using namespace std;
 class QueryResult;
 class QueryThread;
 class Database;
@@ -45,7 +44,7 @@ class SERVER_DECL AsyncQuery
     friend class Database;
 
         SQLCallbackBase* func;
-        vector<AsyncQueryResult> queries;
+    std::vector<AsyncQueryResult> queries;
         Database* db;
 
     public:
@@ -59,12 +58,12 @@ class SERVER_DECL AsyncQuery
 
 class SERVER_DECL QueryBuffer
 {
-        vector<char*> queries;
+    std::vector<char*> queries;
     public:
         friend class Database;
         void AddQuery(const char* format, ...);
         void AddQueryNA(const char* str);
-        void AddQueryStr(const string & str);
+        void AddQueryStr(const std::string & str);
 };
 
 class SERVER_DECL Database : public CThread
@@ -104,13 +103,13 @@ class SERVER_DECL Database : public CThread
         // Initialized on load: Database::Database() : CThread()
         bool ThreadRunning;
 
-        inline const string & GetHostName() { return mHostname; }
-        inline const string & GetDatabaseName() { return mDatabaseName; }
+        inline const std::string & GetHostName() { return mHostname; }
+        inline const std::string & GetDatabaseName() { return mDatabaseName; }
         inline const uint32 GetQueueSize() { return queries_queue.get_size(); }
 
-        virtual string EscapeString(string Escape) = 0;
-        virtual void EscapeLongString(const char* str, uint32 len, stringstream & out) = 0;
-        virtual string EscapeString(const char* esc, DatabaseConnection* con) = 0;
+        virtual std::string EscapeString(std::string Escape) = 0;
+        virtual void EscapeLongString(const char* str, uint32 len, std::stringstream & out) = 0;
+        virtual std::string EscapeString(const char* esc, DatabaseConnection* con) = 0;
 
         void QueueAsyncQuery(AsyncQuery* query);
         void EndThreads();
@@ -154,10 +153,10 @@ class SERVER_DECL Database : public CThread
         int32 mConnectionCount;
 
         // For reconnecting a broken connection
-        string mHostname;
-        string mUsername;
-        string mPassword;
-        string mDatabaseName;
+    std::string mHostname;
+    std::string mUsername;
+    std::string mPassword;
+    std::string mDatabaseName;
         uint32 mPort;
 
         QueryThread* qt;
