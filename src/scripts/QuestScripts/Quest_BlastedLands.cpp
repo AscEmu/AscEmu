@@ -57,7 +57,7 @@ class HeroesofOld1 : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* general = TO_CREATURE(pObject);
+            Creature* general = static_cast<Creature*>(pObject);
             if(general == NULL)
                 return;
 
@@ -73,7 +73,7 @@ class HeroesofOld1 : public GossipScript
             if(!plr)
                 return;
 
-            Creature* general = TO_CREATURE(pObject);
+            Creature* general = static_cast<Creature*>(pObject);
             if(general == NULL)
                 return;
 

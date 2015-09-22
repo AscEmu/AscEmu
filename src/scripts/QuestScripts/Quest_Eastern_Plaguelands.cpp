@@ -64,7 +64,7 @@ class Darrowshire_Spirit : public GossipScript
             if(!pObject->IsCreature())
                 return;
 
-            Creature* Spirit = TO_CREATURE(pObject);
+            Creature* Spirit = static_cast<Creature*>(pObject);
 
             Spirit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             Spirit->Despawn(4000, 0);
@@ -83,7 +83,7 @@ class ArajTheSummoner : public CreatureAIScript
             if(!mKiller->IsPlayer())
                 return;
 
-            GameObject* go = sEAS.SpawnGameobject(TO_PLAYER(mKiller), 177241, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), 1, 0, 0, 0, 0);
+            GameObject* go = sEAS.SpawnGameobject(static_cast<Player*>(mKiller), 177241, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), 1, 0, 0, 0, 0);
             sEAS.GameobjectDelete(go, 60000);
         }
 };

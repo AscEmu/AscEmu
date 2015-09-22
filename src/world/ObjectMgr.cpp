@@ -3273,7 +3273,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
         return false;
 
     is_boss = false;//TO< Creature* >(pVictim)->GetCreatureInfo() ? ((Creature*)pVictim)->GetCreatureInfo()->Rank : 0;
-    if (TO< Creature* >(pVictim)->GetProto()->boss)
+    if (static_cast< Creature* >(pVictim)->GetProto()->boss)
         is_boss = true;
 
     // Apply the bonuses as normal.
@@ -4009,7 +4009,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 if (target == NULL)
                     return;
 
-                TO_GAMEOBJECT(target)->Despawn(1000, itr->second.data_2);
+                static_cast<GameObject*>(target)->Despawn(1000, itr->second.data_2);
 
                 break;
             }
@@ -4043,13 +4043,13 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                     if (target == NULL)
                         return;
 
-                    if (TO_GAMEOBJECT(target)->GetState() != GAMEOBJECT_STATE_OPEN)
+                    if (static_cast<GameObject*>(target)->GetState() != GAMEOBJECT_STATE_OPEN)
                     {
-                        TO_GAMEOBJECT(target)->SetState(GAMEOBJECT_STATE_OPEN);
+                        static_cast<GameObject*>(target)->SetState(GAMEOBJECT_STATE_OPEN);
                     }
                     else
                     {
-                        TO_GAMEOBJECT(target)->SetState(GAMEOBJECT_STATE_CLOSED);
+                        static_cast<GameObject*>(target)->SetState(GAMEOBJECT_STATE_CLOSED);
                     }
                 }
                 else
@@ -4058,13 +4058,13 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                     if (target == NULL)
                         return;
 
-                    if (TO_GAMEOBJECT(target)->GetState() != GAMEOBJECT_STATE_OPEN)
+                    if (static_cast<GameObject*>(target)->GetState() != GAMEOBJECT_STATE_OPEN)
                     {
-                        TO_GAMEOBJECT(target)->SetState(GAMEOBJECT_STATE_OPEN);
+                        static_cast<GameObject*>(target)->SetState(GAMEOBJECT_STATE_OPEN);
                     }
                     else
                     {
-                        TO_GAMEOBJECT(target)->SetState(GAMEOBJECT_STATE_CLOSED);
+                        static_cast<GameObject*>(target)->SetState(GAMEOBJECT_STATE_CLOSED);
                     }
                 }
             }

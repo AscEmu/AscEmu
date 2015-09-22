@@ -151,10 +151,10 @@ class TheBattleForTheSunReachArmory : public CreatureAIScript
         {
             if(pKiller->IsPlayer())
             {
-                QuestLogEntry* qle = (TO_PLAYER(pKiller))->GetQuestLogForEntry(11537);
+                QuestLogEntry* qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11537);
                 if(qle == NULL)
                 {
-                    qle = (TO_PLAYER(pKiller))->GetQuestLogForEntry(11538);
+                    qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11538);
                     if(qle == NULL)
                         return;
                 }

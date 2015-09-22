@@ -68,7 +68,7 @@ void ProspectorAnvilwardGossip::GossipSelectOption(Object* pObject, Player* Plr,
     if(!pObject->IsCreature())
         return;
 
-    Creature* pCreature = TO_CREATURE(pObject);
+    Creature* pCreature = static_cast<Creature*>(pObject);
 
     switch (IntId)
     {

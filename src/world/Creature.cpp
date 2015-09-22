@@ -852,7 +852,7 @@ void Creature::CalcResistance(uint32 type)
 
     if (IsPet() && isAlive() && IsInWorld())
     {
-        Player* owner = TO_PET(this)->GetPetOwner();
+        Player* owner = static_cast<Pet*>(this)->GetPetOwner();
         if (type == 0 && owner)
             pos += int32(0.35f * owner->GetResistance(type));
         else if (owner)
@@ -889,7 +889,7 @@ void Creature::CalcStat(uint32 type)
 
     if (IsPet())
     {
-        Player* owner = TO< Pet* >(this)->GetPetOwner();
+        Player* owner = static_cast< Pet* >(this)->GetPetOwner();
         if (type == STAT_STAMINA && owner)
             pos += int32(0.45f * owner->GetStat(STAT_STAMINA));
         else if (type == STAT_INTELLECT && owner && GetCreatedBySpell())
@@ -2070,7 +2070,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->IsPlayer() && TO< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;
@@ -2084,7 +2084,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint
 
     if (pVictim->IsPvPFlagged())
     {
-        Player* p = TO< Player* >(GetPlayerOwner());
+        Player* p = static_cast< Player* >(GetPlayerOwner());
 
         if (p != NULL)
         {
@@ -2097,7 +2097,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint
     // Bg dmg counter
     if (pVictim != this)
     {
-        Player* p = TO< Player* >(GetPlayerOwner());
+        Player* p = static_cast< Player* >(GetPlayerOwner());
         if (p != NULL)
         {
             if (p->m_bg != NULL && GetMapMgr() == pVictim->GetMapMgr())
@@ -2210,7 +2210,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     /* Stop players from casting */
     for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); itr++)
     {
-        Unit* attacker = TO< Unit* >(*itr);
+        Unit* attacker = static_cast< Unit* >(*itr);
 
         if (attacker->GetCurrentSpell() != NULL)
         {
@@ -2251,7 +2251,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         Unit* owner = GetMapMgr()->GetUnit(GetCharmedByGUID());
 
         if (owner != NULL && owner->IsPlayer())
-            TO_PLAYER(owner)->EventDismissPet();
+            static_cast<Player*>(owner)->EventDismissPet();
     }
 
     if (GetCharmedByGUID() != 0)
@@ -2334,7 +2334,7 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
     {
         sEventMgr.AddEvent(this, &Creature::SendChatMessage, uint8(ct->type), uint32(ct->language), msg, uint32(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         if (ct->sound != 0)
-            sEventMgr.AddEvent(TO_OBJECT(this), &Object::PlaySoundToSet, ct->sound, EVENT_UNK, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Object*>(this), &Object::PlaySoundToSet, ct->sound, EVENT_UNK, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
 
@@ -2422,7 +2422,7 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
             if (CurrentTarget && CurrentTarget->IsPlayer())
             {
                 ptrdiff_t testOfs = test - text;
-                newText.replace(testOfs, 2, TO_PLAYER(CurrentTarget)->GetName());
+                newText.replace(testOfs, 2, static_cast<Player*>(CurrentTarget)->GetName());
             }
         }
         test = strstr((char*)text, "$C");

@@ -689,7 +689,7 @@ void EyeOfTheStorm::UpdateCPs()
 
         for(; itr != itrend; ++itr)
         {
-            plr = TO< Player* >(*itr);
+            plr = static_cast< Player* >(*itr);
             if(plr->isAlive() && !(plr->IsStealth()) && !(plr->m_invisible) && !(plr->SchoolImmunityList[0]) && plr->GetDistance2dSq(go) <= EOTS_CAPTURE_DISTANCE)
             {
                 playercounts[plr->GetTeam()]++;
@@ -886,7 +886,7 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
         m_points[team] = 1600;
 
         sEventMgr.RemoveEvents(this);
-        sEventMgr.AddEvent(TO<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         SetWorldState(WORLDSTATE_EOTS_ALLIANCE_VICTORYPOINTS + team, m_points[team]);
 

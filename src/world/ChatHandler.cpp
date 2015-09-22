@@ -615,17 +615,17 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     {
         if (pUnit->IsPlayer())
         {
-            name = TO< Player* >(pUnit)->GetName();
+            name = static_cast< Player* >(pUnit)->GetName();
             namelen = (uint32)strlen(name) + 1;
         }
         else if (pUnit->IsPet())
         {
-            name = TO< Pet* >(pUnit)->GetName().c_str();
+            name = static_cast< Pet* >(pUnit)->GetName().c_str();
             namelen = (uint32)strlen(name) + 1;
         }
         else
         {
-            Creature* p = TO< Creature* >(pUnit);
+            Creature* p = static_cast< Creature* >(pUnit);
             name = p->GetCreatureInfo()->Name;
             namelen = (uint32)strlen(name) + 1;
         }

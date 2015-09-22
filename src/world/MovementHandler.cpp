@@ -319,7 +319,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     if (t_go)
     {
         if (t_go->GetEntry() == GO_FISHING_BOBBER)
-            TO_GAMEOBJECT(t_go)->EndFishing(GetPlayer(), true);
+            static_cast<GameObject*>(t_go)->EndFishing(GetPlayer(), true);
     }
 
     /************************************************************************/
@@ -532,7 +532,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         for (std::set<Object*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
         {
 
-            Player* p = TO< Player* >((*itr));
+            Player* p = static_cast< Player* >((*itr));
 
             *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
 

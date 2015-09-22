@@ -1810,7 +1810,7 @@ void AlteracValley::Finish(uint32 losingTeam)
     if(this->HasEnded()) return;
 
     sEventMgr.RemoveEvents(this);
-    sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     
     this->EndBattleground(losingTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
 }
@@ -1870,7 +1870,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
                     li.roll = NULL;
 
                     // push to vector
-                    TO< Corpse* >(pCorpse)->loot.items.push_back(li);
+                    static_cast< Corpse* >(pCorpse)->loot.items.push_back(li);
                 }
             }
         }
@@ -1883,7 +1883,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
     gold *= sWorld.getRate(RATE_MONEY);
 
     // set it
-    TO< Corpse* >(pCorpse)->loot.gold = float2int32(gold);
+    static_cast< Corpse* >(pCorpse)->loot.gold = float2int32(gold);
 }
 
 void AlteracValley::EventUpdateResources()

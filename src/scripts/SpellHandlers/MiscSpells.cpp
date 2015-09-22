@@ -81,9 +81,9 @@ bool Cannibalize(uint32 i, Spell* s)
     {
         if ((*itr)->IsCreature())
         {
-            if (TO< Creature* >((*itr))->getDeathState() == CORPSE)
+            if (static_cast< Creature* >((*itr))->getDeathState() == CORPSE)
             {
-                CreatureInfo* cn = TO< Creature* >((*itr))->GetCreatureInfo();
+                CreatureInfo* cn = static_cast< Creature* >((*itr))->GetCreatureInfo();
                 if (cn->Type == UNIT_TYPE_HUMANOID || cn->Type == UNIT_TYPE_UNDEAD)
                 {
                     if (s->p_caster->GetDistance2dSq((*itr)) < rad)
@@ -252,7 +252,7 @@ bool WaitingToResurrect(uint32 i, Aura* a, bool apply)
     if (!u_target->IsPlayer())
         return true;
 
-    Player* p_target = TO_PLAYER(u_target);
+    Player* p_target = static_cast<Player*>(u_target);
 
     if (apply)        // already applied in opcode handler
         return true;
@@ -281,7 +281,7 @@ bool DecayFlash(uint32 i, Aura* pAura, bool apply)
 {
     if (apply && pAura->GetTarget()->IsPlayer())
     {
-        Player* p_target = TO_PLAYER(pAura->GetTarget());
+        Player* p_target = static_cast<Player*>(pAura->GetTarget());
         p_target->SetShapeShift(10);  //Tharon'ja Skeleton
         p_target->SetDisplayId(9784);
     }
@@ -292,7 +292,7 @@ bool ReturnFlash(uint32 i, Aura* pAura, bool apply)
 {
     if (apply && pAura->GetTarget()->IsPlayer())
     {
-        Player* p_target = TO_PLAYER(pAura->GetTarget());
+        Player* p_target = static_cast<Player*>(pAura->GetTarget());
         p_target->SetDisplayId(p_target->GetNativeDisplayId());
         p_target->m_ShapeShifted = 0;
         p_target->SetShapeShift(0);
@@ -309,7 +309,7 @@ bool EatenRecently(uint32 i, Aura* pAura, bool apply)
     if (caster == NULL || caster->IsPlayer())
         return true;
 
-    Creature* NetherDrake = TO_CREATURE(caster);
+    Creature* NetherDrake = static_cast<Creature*>(caster);
 
     if (NetherDrake == NULL)
         return true;

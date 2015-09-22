@@ -104,8 +104,8 @@ class Cleansing_of_the_Orb_of_Orahil : public QuestScript
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Fine, if you ready to go!");
 
             Creature* Demon = creat->GetMapMgr()->GetInterface()->SpawnCreature(6549, creat->GetPositionX(), creat->GetPositionY(), creat->GetPositionZ(), creat->GetOrientation(), true, false, 0, 0);
-            sEventMgr.AddEvent(TO_CREATURE(Demon), &Creature::AddToWorld, creat->GetMapMgr(), EVENT_UNK, 12000, 0, 1);
-            sEventMgr.AddEvent(TO_CREATURE(Demon), &Creature::Despawn, (uint32)120000, (uint32)0, EVENT_CREATURE_UPDATE, 12000, 0, 1);
+            sEventMgr.AddEvent(static_cast<Creature*>(Demon), &Creature::AddToWorld, creat->GetMapMgr(), EVENT_UNK, 12000, 0, 1);
+            sEventMgr.AddEvent(static_cast<Creature*>(Demon), &Creature::Despawn, (uint32)120000, (uint32)0, EVENT_CREATURE_UPDATE, 12000, 0, 1);
 
             creat->GetAIInterface()->setMoveType(11);
             creat->GetAIInterface()->StopMovement(3000);
@@ -149,7 +149,7 @@ class OverlordMokMorokk : public CreatureAIScript
                 {
                     _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     RegisterAIUpdateEvent(1000);
-                    QuestLogEntry* qle = (TO_PLAYER(mAttacker))->GetQuestLogForEntry(1173);
+                    QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1173);
                     if(!qle)
                         return;
                     qle->SendQuestComplete();
@@ -216,7 +216,7 @@ class PrivateHendel : public CreatureAIScript
                 {
                     _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     RegisterAIUpdateEvent(1000);
-                    QuestLogEntry* qle = (TO_PLAYER(mAttacker))->GetQuestLogForEntry(1324);
+                    QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1324);
                     if(!qle)
                         return;
                     qle->SendQuestComplete();

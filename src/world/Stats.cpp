@@ -82,7 +82,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
         return 0;
 
     CreatureInfo* victimI;
-    victimI = TO_CREATURE(pVictim)->GetCreatureInfo();
+    victimI = static_cast<Creature*>(pVictim)->GetCreatureInfo();
 
     if (victimI == nullptr)
         return 0;
@@ -92,10 +92,10 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     uint32 VictimLvl = pVictim->getLevel();
     uint32 AttackerLvl = pAttacker->getLevel();
 
-    if (pAttacker->IsPet() && TO< Pet* >(pAttacker)->GetPetOwner())
+    if (pAttacker->IsPet() && static_cast< Pet* >(pAttacker)->GetPetOwner())
     {
         // based on: http://www.wowwiki.com/Talk:Formulas:Mob_XP#Hunter.27s_pet_XP (2008/01/12)
-        uint32 ownerLvl = TO< Pet* >(pAttacker)->GetPetOwner()->getLevel();
+        uint32 ownerLvl = static_cast< Pet* >(pAttacker)->GetPetOwner()->getLevel();
         VictimLvl += ownerLvl - AttackerLvl;
         AttackerLvl = ownerLvl;
     }
@@ -579,7 +579,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     if (pAttacker->disarmed && pAttacker->IsPlayer())
     {
         offset = UNIT_FIELD_MINDAMAGE;
-        it = TO< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
     }
     else if (weapon_damage_type == MELEE)
         offset = UNIT_FIELD_MINDAMAGE;
@@ -608,13 +608,13 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
         if (!pVictim->IsPlayer())
         {
-            uint32 creatType = TO_CREATURE(pVictim)->GetCreatureInfo()->Type;
+            uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureInfo()->Type;
             ap += (float)pAttacker->CreatureRangedAttackPowerMod[creatType];
 
             if (pAttacker->IsPlayer())
             {
-                min_damage = (min_damage + TO< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + TO< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
-                max_damage = (max_damage + TO< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + TO< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
+                min_damage = (min_damage + static_cast< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
+                max_damage = (max_damage + static_cast< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
             }
         }
 
@@ -622,7 +622,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (!pAttacker->disarmed)
             {
-                it = TO< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (it)
                     wspeed = (float)it->GetProto()->Delay;
                 else
@@ -648,9 +648,9 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         //Weapon speed constant in feral forms
         if (pAttacker->IsPlayer())
         {
-            if (TO< Player* >(pAttacker)->IsInFeralForm())
+            if (static_cast< Player* >(pAttacker)->IsInFeralForm())
             {
-                uint8 ss = TO< Player* >(pAttacker)->GetShapeShift();
+                uint8 ss = static_cast< Player* >(pAttacker)->GetShapeShift();
 
                 if (ss == FORM_CAT)
                     wspeed = 1000.0;
@@ -672,13 +672,13 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
         if (!pVictim->IsPlayer())
         {
-            uint32 creatType = TO_CREATURE(pVictim)->GetCreatureInfo()->Type;
+            uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureInfo()->Type;
             ap += (float)pAttacker->CreatureAttackPowerMod[creatType];
 
             if (pAttacker->IsPlayer())
             {
-                min_damage = (min_damage + TO< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + TO< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
-                max_damage = (max_damage + TO< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + TO< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
+                min_damage = (min_damage + static_cast< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
+                max_damage = (max_damage + static_cast< Player* >(pAttacker)->IncreaseDamageByType[creatType]) * (1 + static_cast< Player* >(pAttacker)->IncreaseDamageByTypePCT[creatType]);
             }
         }
 
@@ -686,7 +686,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (!pAttacker->disarmed)
             {
-                it = TO< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
                 if (it)
                     wspeed = (float)it->GetProto()->Delay;
@@ -706,7 +706,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         {
             if (ability->Effect[0] == SPELL_EFFECT_DUMMYMELEE || ability->Effect[1] == SPELL_EFFECT_DUMMYMELEE || ability->Effect[2] == SPELL_EFFECT_DUMMYMELEE)
             {
-                it = TO< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
                 if (it)
                 {
@@ -723,9 +723,9 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
         //Weapon speed constant in feral forms
         if (pAttacker->IsPlayer())
         {
-            if (TO< Player* >(pAttacker)->IsInFeralForm())
+            if (static_cast< Player* >(pAttacker)->IsInFeralForm())
             {
-                uint8 ss = TO< Player* >(pAttacker)->GetShapeShift();
+                uint8 ss = static_cast< Player* >(pAttacker)->GetShapeShift();
 
                 if (ss == FORM_CAT)
                     wspeed = 1000.0;
@@ -749,12 +749,12 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
     if (result >= 0)
     {
-        if (pAttacker->IsPlayer() && TO_PLAYER(pAttacker)->m_outStealthDamageBonusTimer)
+        if (pAttacker->IsPlayer() && static_cast<Player*>(pAttacker)->m_outStealthDamageBonusTimer)
         {
-            if ((uint32)UNIXTIME >= TO_PLAYER(pAttacker)->m_outStealthDamageBonusTimer)
-                TO_PLAYER(pAttacker)->m_outStealthDamageBonusTimer = 0;
+            if ((uint32)UNIXTIME >= static_cast<Player*>(pAttacker)->m_outStealthDamageBonusTimer)
+                static_cast<Player*>(pAttacker)->m_outStealthDamageBonusTimer = 0;
             else
-                result *= ((TO_PLAYER(pAttacker)->m_outStealthDamageBonusPct) / 100.0f) + 1.0f;
+                result *= ((static_cast<Player*>(pAttacker)->m_outStealthDamageBonusPct) / 100.0f) + 1.0f;
         }
 
         return float2int32(result);

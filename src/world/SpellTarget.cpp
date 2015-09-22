@@ -175,7 +175,7 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r,
         if (!o->IsGameObject())
             continue;
 
-        GameObject* go = TO_GAMEOBJECT(o);
+        GameObject* go = static_cast<GameObject*>(o);
 
         if (go->GetInfo()->parameter_0 == m_spellInfo->RequiresSpellFocus)
         {
@@ -197,12 +197,12 @@ void Spell::AddConeTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarge
     ObjectSet::iterator itr;
     for (itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++)
     {
-        if (!((*itr)->IsUnit()) || !TO_UNIT((*itr))->isAlive())
+        if (!((*itr)->IsUnit()) || !static_cast<Unit*>((*itr))->isAlive())
             continue;
         //is Creature in range
-        if (m_caster->isInRange(TO_UNIT(*itr), GetRadius(i)))
+        if (m_caster->isInRange(static_cast<Unit*>(*itr), GetRadius(i)))
         {
-            if (m_spellInfo->cone_width ? m_caster->isInArc(TO_UNIT(*itr), m_spellInfo->cone_width) : m_caster->isInFront(TO_UNIT(*itr)))  // !!! is the target within our cone ?
+            if (m_spellInfo->cone_width ? m_caster->isInArc(static_cast<Unit*>(*itr), m_spellInfo->cone_width) : m_caster->isInFront(static_cast<Unit*>(*itr)))  // !!! is the target within our cone ?
             {
                 AddTarget(i, TargetType, (*itr));
             }
@@ -228,7 +228,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     Unit* firstTarget = NULL;
 
     if (targ->IsUnit())
-        firstTarget = TO_UNIT(targ);
+        firstTarget = static_cast<Unit*>(targ);
     else
         firstTarget = u_caster;
 
@@ -238,8 +238,8 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     range *= range;
 
     //is this party only?
-    Player* casterFrom = TO< Player* >(u_caster->GetPlayerOwner());
-    Player* pfirstTargetFrom = TO< Player* >(firstTarget->GetPlayerOwner());
+    Player* casterFrom = static_cast< Player* >(u_caster->GetPlayerOwner());
+    Player* pfirstTargetFrom = static_cast< Player* >(firstTarget->GetPlayerOwner());
     if (casterFrom != NULL && pfirstTargetFrom != NULL && casterFrom->GetGroup() == pfirstTargetFrom->GetGroup())
         RaidOnly = true;
 
@@ -259,14 +259,14 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     ObjectSet::iterator itr;
     for (itr = firstTarget->GetInRangeSetBegin(); itr != firstTarget->GetInRangeSetEnd(); itr++)
     {
-        if (!(*itr)->IsUnit() || !TO_UNIT((*itr))->isAlive())
+        if (!(*itr)->IsUnit() || !static_cast<Unit*>((*itr))->isAlive())
             continue;
 
-        if (RaidOnly && !pfirstTargetFrom->InRaid(TO_UNIT(*itr)))
+        if (RaidOnly && !pfirstTargetFrom->InRaid(static_cast<Unit*>(*itr)))
             continue;
 
         //healing spell, full health target = NONO
-        if (IsHealingSpell(m_spellInfo) && TO_UNIT(*itr)->GetHealthPct() == 100)
+        if (IsHealingSpell(m_spellInfo) && static_cast<Unit*>(*itr)->GetHealthPct() == 100)
             continue;
 
         size_t oldsize;
@@ -286,7 +286,7 @@ void Spell::AddPartyTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     Object* u = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
     if (u == NULL)
         u = m_caster;
-    Player* p = TO< Player* >(u->GetPlayerOwner());
+    Player* p = static_cast< Player* >(u->GetPlayerOwner());
 
     if (p == NULL || u_caster == NULL)
         return;
@@ -296,14 +296,14 @@ void Spell::AddPartyTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     ObjectSet::iterator itr;
     for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); itr++)
     {
-        if (!(*itr)->IsUnit() || !TO_UNIT(*itr)->isAlive())
+        if (!(*itr)->IsUnit() || !static_cast<Unit*>(*itr)->isAlive())
             continue;
 
         //only affect players and pets
         if (!(*itr)->IsPlayer() && !(*itr)->IsPet())
             continue;
 
-        if (!p->InParty(TO_UNIT(*itr)))
+        if (!p->InParty(static_cast<Unit*>(*itr)))
             continue;
 
         if (u->CalcDistance(*itr) > r)
@@ -318,7 +318,7 @@ void Spell::AddRaidTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarge
     Object* u = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
     if (u == NULL)
         u = m_caster;
-    Player* p = TO< Player* >(u->GetPlayerOwner());
+    Player* p = static_cast< Player* >(u->GetPlayerOwner());
 
     if (p == NULL || u_caster == NULL)
         return;
@@ -328,14 +328,14 @@ void Spell::AddRaidTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarge
     ObjectSet::iterator itr;
     for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); itr++)
     {
-        if (!(*itr)->IsUnit() || !TO_UNIT(*itr)->isAlive())
+        if (!(*itr)->IsUnit() || !static_cast<Unit*>(*itr)->isAlive())
             continue;
 
         //only affect players and pets
         if (!(*itr)->IsPlayer() && !(*itr)->IsPet())
             continue;
 
-        if (!p->InRaid(TO_UNIT(*itr)))
+        if (!p->InRaid(static_cast<Unit*>(*itr)))
             continue;
 
         if (u->CalcDistance(*itr) > r)
@@ -413,15 +413,15 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     {
         Object* originaltarget = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
 
-        if (originaltarget == NULL || (originaltarget->IsPlayer() && obj->IsPlayer() && TO_PLAYER(originaltarget)->getClass() != TO_PLAYER(obj)->getClass()) || (originaltarget->IsPlayer() && !obj->IsPlayer()) || (!originaltarget->IsPlayer() && obj->IsPlayer()))
+        if (originaltarget == NULL || (originaltarget->IsPlayer() && obj->IsPlayer() && static_cast<Player*>(originaltarget)->getClass() != static_cast<Player*>(obj)->getClass()) || (originaltarget->IsPlayer() && !obj->IsPlayer()) || (!originaltarget->IsPlayer() && obj->IsPlayer()))
             return false;
     }
     if (TargetType & SPELL_TARGET_OBJECT_CURPET && !obj->IsPet())
         return false;
-    if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && ((obj->IsUnit() && !TO_UNIT(obj)->isAlive()) || (obj->IsCreature() && obj->IsTotem())))
+    if (TargetType & (SPELL_TARGET_AREA | SPELL_TARGET_AREA_SELF | SPELL_TARGET_AREA_CURTARGET | SPELL_TARGET_AREA_CONE | SPELL_TARGET_AREA_PARTY | SPELL_TARGET_AREA_RAID) && ((obj->IsUnit() && !static_cast<Unit*>(obj)->isAlive()) || (obj->IsCreature() && obj->IsTotem())))
         return false;
 
-    uint8 hitresult = (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && obj->IsUnit()) ? DidHit(i, TO_UNIT(obj)) : SPELL_DID_HIT_SUCCESS;
+    uint8 hitresult = (TargetType & SPELL_TARGET_REQUIRE_ATTACKABLE && obj->IsUnit()) ? DidHit(i, static_cast<Unit*>(obj)) : SPELL_DID_HIT_SUCCESS;
     if (hitresult != SPELL_DID_HIT_SUCCESS)
     {
         uint8 extended = 0;
@@ -429,7 +429,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
         {
             //for checks
             Unit* tmp = u_caster;
-            u_caster = TO_UNIT(obj);
+            u_caster = static_cast<Unit*>(obj);
             extended = DidHit(i, tmp);
             u_caster = tmp;
         }

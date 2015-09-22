@@ -148,7 +148,7 @@ bool CheatDeath(uint32 i, Aura* a, bool apply)
     Player* p_target = NULL;
 
     if(u_target->IsPlayer())
-        p_target = TO< Player* >(u_target);
+        p_target = static_cast< Player* >(u_target);
 
     if(p_target != NULL)
     {
@@ -182,7 +182,7 @@ bool MasterOfSubtlety(uint32 i, Aura* a, bool apply)
     if(!u_target->IsPlayer())
         return true;
 
-    Player* p_target = TO< Player* >(u_target);
+    Player* p_target = static_cast< Player* >(u_target);
 
     int32 amount = a->GetModAmount(i);
 
@@ -211,7 +211,7 @@ bool PreyOnTheWeakPeriodicDummy(uint32 i, Aura* a, bool apply)
         return true;
 
     if(m_target->IsPlayer())
-        p_target = TO< Player* >(m_target);
+        p_target = static_cast< Player* >(m_target);
 
     if(p_target != NULL && p_target->getClass() == ROGUE)
     {
@@ -236,7 +236,7 @@ bool KillingSpreePeriodicDummy(uint32 i, Aura* a, bool apply)
     if(!m_target->IsPlayer())
         return true;
 
-    Player* p_target = TO< Player* >(m_target);
+    Player* p_target = static_cast< Player* >(m_target);
 
     //Find targets around aura's target in range of 10 yards.
     //It can hit same target multiple times.
@@ -255,7 +255,7 @@ bool KillingSpreePeriodicDummy(uint32 i, Aura* a, bool apply)
         if(dist <= r)
         {
             //Avoid targeting anything that is not unit and not alive
-            if(!(*itr)->IsUnit() || !TO< Unit* >((*itr))->isAlive())
+            if(!(*itr)->IsUnit() || !static_cast< Unit* >((*itr))->isAlive())
                 continue;
 
                 uint64 spellTarget = (*itr)->GetGUID();

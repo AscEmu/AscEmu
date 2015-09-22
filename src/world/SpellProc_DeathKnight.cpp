@@ -46,7 +46,7 @@ class BladeBarrierSpellProc : public SpellProc
         mProcClassMask[1] = mOrigSpell->EffectSpellClassMask[0][1];
         mProcClassMask[2] = mOrigSpell->EffectSpellClassMask[0][2];
 
-        dk = TO_DK(mTarget);
+        dk = static_cast<DeathKnight*>(mTarget);
     }
 
     bool CanProc(Unit* victim, SpellEntry* CastingSpell)
@@ -66,7 +66,7 @@ class DeathRuneMasterySpellProc : public SpellProc
 
     bool DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
-        DeathKnight* dk = TO_DK(mTarget);
+        DeathKnight* dk = static_cast<DeathKnight*>(mTarget);
 
         if (dk->GetRuneType(dk->GetLastUsedUnitSlot()) == RUNE_DEATH)
             return true;

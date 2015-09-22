@@ -138,7 +138,7 @@ bool HolidayCheer(uint32 i, Spell* pSpell)
     for (ObjectSet::iterator itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
     {
         if ((*itr)->IsUnit())
-            target = TO_UNIT(*itr);
+            target = static_cast<Unit*>(*itr);
         else
             continue;
 
@@ -193,7 +193,7 @@ bool ForemansBlackjack(uint32 i, Spell* pSpell)
         return true;
 
     // check to see that we have the correct creature
-    Creature* c_target = TO_CREATURE(target);
+    Creature* c_target = static_cast<Creature*>(target);
     if (c_target->GetEntry() != 10556 || !c_target->HasAura(17743))
         return true;
 
@@ -331,7 +331,7 @@ bool MinionsOfGurok(uint32 i, Spell* pSpell)
     if (!pSpell->p_caster || !target || !target->IsCreature() || target->GetEntry() != 17157)
         return true;
 
-    TO_CREATURE(target)->Despawn(500, 360000);
+    static_cast<Creature*>(target)->Despawn(500, 360000);
 
     float SSX = target->GetPositionX();
     float SSY = target->GetPositionY();
@@ -551,7 +551,7 @@ bool ExtractGas(uint32 i, Spell* s)
     {
         if ((*itr)->IsCreature())
         {
-            creature = TO< Creature* >((*itr));
+            creature = static_cast< Creature* >((*itr));
             cloudtype = creature->GetEntry();
 
             if (cloudtype == 24222 || cloudtype == 17408 || cloudtype == 17407 || cloudtype == 17378)
@@ -695,7 +695,7 @@ bool ShrinkRay(uint32 i, Spell* s)
             {
                 for (std::set< Object* >::iterator itr = s->p_caster->GetInRangePlayerSetBegin(); itr != s->p_caster->GetInRangePlayerSetEnd(); ++itr)
                 {
-                    Player* p = TO_PLAYER(*itr);
+                    Player* p = static_cast<Player*>(*itr);
 
                     if ((p->GetPhase() & s->p_caster->GetPhase()) == 0)
                         continue;
@@ -720,7 +720,7 @@ bool ShrinkRay(uint32 i, Spell* s)
                     if (!o->IsCreature())
                         continue;
 
-                    Unit* u = TO_UNIT(o);
+                    Unit* u = static_cast<Unit*>(o);
 
                     if (u->GetTargetGUID() != s->p_caster->GetGUID())
                         continue;
@@ -817,7 +817,7 @@ bool ListeningToMusic(uint32 i, Aura* a, bool apply)
     Player* p_target = NULL;
 
     if (m_target->IsPlayer())
-        p_target = TO_PLAYER(m_target);
+        p_target = static_cast<Player*>(m_target);
     else
         return true;
 
@@ -870,7 +870,7 @@ bool X53Mount(uint32 i, Aura *a, bool apply)
     if (apply)
     {
         uint32 newspell = 0;
-        Player* p = TO< Player* >(a->GetTarget());
+        Player* p = static_cast< Player* >(a->GetTarget());
         auto area = p->GetArea();
         uint32 skill = p->_GetSkillLineCurrent(SKILL_RIDING, true);
 

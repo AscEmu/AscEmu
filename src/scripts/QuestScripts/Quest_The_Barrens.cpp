@@ -481,7 +481,7 @@ class VerogtheDervish : public CreatureAIScript
             kolkarskilled++;
             if(mKiller->IsPlayer())
             {
-                Player* mPlayer = TO_PLAYER(mKiller);
+                Player* mPlayer = static_cast<Player*>(mKiller);
 
                 if(kolkarskilled > 8 && mPlayer->HasQuest(851))
                 {

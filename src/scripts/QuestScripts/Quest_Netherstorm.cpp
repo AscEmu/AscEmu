@@ -36,7 +36,7 @@ class Veronia : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* creat = TO_CREATURE(pObject);
+            Creature* creat = static_cast<Creature*>(pObject);
             switch(IntId)
             {
                 case 1:

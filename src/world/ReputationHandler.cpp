@@ -336,7 +336,7 @@ void Player::UpdateInrangeSetsBasedOnReputation()
         if (!(*itr)->IsUnit())
             continue;
 
-        pUnit = TO< Unit* >(*itr);
+        pUnit = static_cast< Unit* >(*itr);
         if (pUnit->m_factionDBC == NULL || pUnit->m_factionDBC->RepListId < 0)
             continue;
 

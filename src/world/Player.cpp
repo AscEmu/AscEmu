@@ -1231,11 +1231,11 @@ void Player::_EventAttack(bool offhand)
         //pvp timeout reset
         if (pVictim->IsPlayer())
         {
-            if (TO< Player* >(pVictim)->cannibalize)
+            if (static_cast< Player* >(pVictim)->cannibalize)
             {
                 sEventMgr.RemoveEvents(pVictim, EVENT_CANNIBALIZE);
                 pVictim->SetEmoteState(0);
-                TO< Player* >(pVictim)->cannibalize = false;
+                static_cast< Player* >(pVictim)->cannibalize = false;
             }
         }
 
@@ -5742,7 +5742,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
     {
         if (obj->IsPlayer())
         {
-            Player* pObj = TO< Player* >(obj);
+            Player* pObj = static_cast< Player* >(obj);
 
             if (myCorpseInstanceId == GetInstanceID() && obj->GetDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
                 return !pObj->m_isGmInvisible; // we can see all players within range of our corpse except invisible GMs
@@ -5755,7 +5755,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
         if (myCorpseInstanceId == GetInstanceID())
         {
-            if (obj->IsCorpse() && TO< Corpse* >(obj)->GetOwner() == GetGUID())
+            if (obj->IsCorpse() && static_cast< Corpse* >(obj)->GetOwner() == GetGUID())
                 return true;
 
             if (obj->GetDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
@@ -5767,7 +5767,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
         if (obj->IsCreature())
         {
-            Creature* uObj = TO_CREATURE(obj);
+            Creature* uObj = static_cast<Creature*>(obj);
 
             return uObj->IsSpiritHealer(); // we can't see any NPCs except spirit-healers
         }
@@ -5783,7 +5783,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
     {
         case TYPEID_PLAYER:
         {
-            Player* pObj = TO< Player* >(obj);
+            Player* pObj = static_cast< Player* >(obj);
 
             if (pObj->m_invisible) // Invisibility - Detection of Players
             {
@@ -5846,7 +5846,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
         case TYPEID_UNIT:
         {
-            Unit* uObj = TO< Unit* >(obj);
+            Unit* uObj = static_cast< Unit* >(obj);
 
             if (uObj->IsSpiritHealer())  // can't see spirit-healers when alive
                 return false;
@@ -5868,7 +5868,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
         case TYPEID_GAMEOBJECT:
         {
-            GameObject* gObj = TO< GameObject* >(obj);
+            GameObject* gObj = static_cast< GameObject* >(obj);
 
             if (gObj->invisible) // Invisibility - Detection of GameObjects
             {
@@ -5905,7 +5905,7 @@ void Player::AddInRangeObject(Object* pObj)
         uint32 ntime = getMSTime();
 
         if (ntime > m_taxi_ride_time)
-            m_CurrentTaxiPath->SendMoveForTime(this, TO< Player* >(pObj), ntime - m_taxi_ride_time);
+            m_CurrentTaxiPath->SendMoveForTime(this, static_cast< Player* >(pObj), ntime - m_taxi_ride_time);
         /*else
             m_CurrentTaxiPath->SendMoveForTime(this, TO< Player* >(pObj), m_taxi_ride_time - ntime);*/
     }
@@ -5915,7 +5915,7 @@ void Player::AddInRangeObject(Object* pObj)
     //if the object is a unit send a move packet if they have a destination
     if (pObj->IsCreature())
     {
-        TO< Creature* >(pObj)->GetAIInterface()->SendCurrentMove(this);
+        static_cast< Creature* >(pObj)->GetAIInterface()->SendCurrentMove(this);
     }
 }
 void Player::OnRemoveInRangeObject(Object* pObj)
@@ -5957,7 +5957,7 @@ void Player::OnRemoveInRangeObject(Object* pObj)
     }
 
     if (pObj->GetGUID() == GetSummonedUnitGUID())
-        sEventMgr.AddEvent(TO_UNIT(this), &Unit::RemoveFieldSummon, EVENT_SUMMON_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);//otherwise Creature::Update() will access free'd memory
+        sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::RemoveFieldSummon, EVENT_SUMMON_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);//otherwise Creature::Update() will access free'd memory
 }
 
 void Player::ClearInRangeSet()
@@ -6670,7 +6670,7 @@ void Player::UpdateNearbyGameObjects()
         if (obj->IsGameObject())
         {
             bool activate_quest_object = false;
-            GameObject* go = TO_GAMEOBJECT(obj);
+            GameObject* go = static_cast<GameObject*>(obj);
             QuestLogEntry* qle = NULL;
             auto gameobject_info = go->GetInfo();
 
@@ -6745,7 +6745,7 @@ void Player::UpdateNearbyGameObjects()
                 }
             }
             if (!bPassed)
-                EventDeActivateGameObject(TO_GAMEOBJECT(*itr));
+                EventDeActivateGameObject(static_cast<GameObject*>(*itr));
         }
     }
 }
@@ -6995,8 +6995,8 @@ void Player::CalcStat(uint32 type)
     res = pos + (int32)BaseStats[type] - neg;
     if (res <= 0)
         res = 1;
-    pos += (res * (int32)TO< Player* >(this)->TotalStatModPctPos[type]) / 100;
-    neg += (res * (int32)TO< Player* >(this)->TotalStatModPctNeg[type]) / 100;
+    pos += (res * (int32)static_cast< Player* >(this)->TotalStatModPctPos[type]) / 100;
+    neg += (res * (int32)static_cast< Player* >(this)->TotalStatModPctNeg[type]) / 100;
     res = pos + BaseStats[type] - neg;
     if (res <= 0)
         res = 1;
@@ -7260,7 +7260,7 @@ void Player::AddItemsToWorld()
             {
                 for (uint32 e = 0; e < pItem->GetProto()->ContainerSlots; e++)
                 {
-                    Item* item = (TO< Container* >(pItem))->GetItem(static_cast<int16>(e));
+                    Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item)
                     {
                         item->PushToWorld(m_mapMgr);
@@ -7297,7 +7297,7 @@ void Player::RemoveItemsFromWorld()
             {
                 for (uint32 e = 0; e < pItem->GetProto()->ContainerSlots; e++)
                 {
-                    Item* item = (TO< Container* >(pItem))->GetItem(static_cast<int16>(e));
+                    Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item && item->IsInWorld())
                     {
                         item->RemoveFromWorld();
@@ -8635,7 +8635,7 @@ void Player::SetGuildId(uint32 guildId)
     if (IsInWorld())
     {
         const uint32 field = PLAYER_GUILDID;
-        sEventMgr.AddEvent(TO_OBJECT(this), &Object::SetUInt32Value, field, guildId, EVENT_PLAYER_SEND_PACKET, 1,
+        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::SetUInt32Value, field, guildId, EVENT_PLAYER_SEND_PACKET, 1,
                            1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
@@ -8649,7 +8649,7 @@ void Player::SetGuildRank(uint32 guildRank)
     if (IsInWorld())
     {
         const uint32 field = PLAYER_GUILDRANK;
-        sEventMgr.AddEvent(TO_OBJECT(this), &Object::SetUInt32Value, field, guildRank, EVENT_PLAYER_SEND_PACKET, 1,
+        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::SetUInt32Value, field, guildRank, EVENT_PLAYER_SEND_PACKET, 1,
                            1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
@@ -8798,10 +8798,10 @@ void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
         iter++;
         if (curObj->IsPlayer())
         {
-            Group* pGroup = TO< Player* >(curObj)->GetGroup();
+            Group* pGroup = static_cast< Player* >(curObj)->GetGroup();
             if (!pGroup && pGroup != GetGroup())
             {
-                BuildFieldUpdatePacket(TO< Player* >(curObj), index, flag);
+                BuildFieldUpdatePacket(static_cast< Player* >(curObj), index, flag);
             }
         }
     }
@@ -9244,7 +9244,7 @@ void Player::CompleteLoading()
         CastSpell(this, glyph->SpellID, true);
     }
     //sEventMgr.AddEvent(this,&Player::SendAllAchievementData,EVENT_SEND_ACHIEVEMNTS_TO_PLAYER,ACHIEVEMENT_SEND_DELAY,1,0);
-    sEventMgr.AddEvent(TO< Unit* >(this), &Unit::UpdatePowerAmm, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, LOGIN_CIENT_SEND_DELAY, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast< Unit* >(this), &Unit::UpdatePowerAmm, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, LOGIN_CIENT_SEND_DELAY, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Player::OnWorldPortAck()
@@ -9776,7 +9776,7 @@ void Player::CalcDamage()
     uint32 cr = 0;
     if (it)
     {
-        if (TO< Player* >(this)->m_wratings.size())
+        if (static_cast< Player* >(this)->m_wratings.size())
         {
             std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetProto()->SubClass);
             if (itr != m_wratings.end())
@@ -9788,7 +9788,7 @@ void Player::CalcDamage()
 
     /////////////// OFF HAND START
     cr = 0;
-    it = TO< Player* >(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+    it = static_cast< Player* >(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (it)
     {
         if (!disarmed)
@@ -11698,7 +11698,7 @@ void Player::RemoveTempEnchantsOnArena()
         {
             if (it->IsContainer())
             {
-                Container* bag = TO< Container* >(it);
+                Container* bag = static_cast< Container* >(it);
                 for (uint32 ci = 0; ci < bag->GetProto()->ContainerSlots; ++ci)
                 {
                     it = bag->GetItem(static_cast<int16>(ci));
@@ -12506,7 +12506,7 @@ void Player::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool se
 
     for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
     {
-        Player* p = TO< Player* >(*itr);
+        Player* p = static_cast< Player* >(*itr);
 
         if (gm)
         {
@@ -12543,7 +12543,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
         {
             for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
-                Player* p = TO< Player* >(*itr);
+                Player* p = static_cast< Player* >(*itr);
 
                 if (gminvis && ((p->GetSession() == NULL) || (p->GetSession()->GetPermissionCount() <= 0)))
                     continue;
@@ -12558,7 +12558,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
         {
             for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
-                Player* p = TO< Player* >(*itr);
+                Player* p = static_cast< Player* >(*itr);
 
                 if (p->GetSession()
                     && p->GetTeam() == myteam
@@ -12574,7 +12574,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
         {
             for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
-                Player* p = TO< Player* >(*itr);
+                Player* p = static_cast< Player* >(*itr);
 
                 if (gminvis && ((p->GetSession() == NULL) || (p->GetSession()->GetPermissionCount() <= 0)))
                     continue;
@@ -12588,7 +12588,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
         {
             for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
-                Player* p = TO< Player* >(*itr);
+                Player* p = static_cast< Player* >(*itr);
 
                 if (p->GetSession()
                     && !p->Social_IsIgnoring(GetLowGUID())
@@ -12643,7 +12643,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 {
     if (!pVictim || !pVictim->isAlive() || !pVictim->IsInWorld() || !IsInWorld())
         return;
-    if (pVictim->IsPlayer() && TO< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
         return;
     if (pVictim->bInvincible)
         return;
@@ -12738,13 +12738,13 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
             m_bg->HookOnUnitKill(this, pVictim);
 
             if (pVictim->IsPlayer())
-                m_bg->HookOnPlayerKill(this, TO< Player* >(pVictim));
+                m_bg->HookOnPlayerKill(this, static_cast< Player* >(pVictim));
         }
 
         if (pVictim->IsPlayer())
         {
 
-            Player* playerVictim = TO_PLAYER(pVictim);
+            Player* playerVictim = static_cast<Player*>(pVictim);
             sHookInterface.OnKillPlayer(this, playerVictim);
 
             bool setAurastateFlag = false;
@@ -12766,7 +12766,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
                 SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
 
                 if (!sEventMgr.HasEvent(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
-                    sEventMgr.AddEvent(TO_UNIT(this), &Unit::EventAurastateExpire, static_cast<uint32>(AURASTATE_FLAG_LASTKILLWITHHONOR), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, 0);
+                    sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::EventAurastateExpire, static_cast<uint32>(AURASTATE_FLAG_LASTKILLWITHHONOR), EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, 0);
                 else
                     sEventMgr.ModifyEventTimeLeft(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
 
@@ -12836,9 +12836,9 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 
             if (uTagger != NULL && uTagger->IsPlayer())
             {
-                Player* pTagger = TO_PLAYER(uTagger);
+                Player* pTagger = static_cast<Player*>(uTagger);
                 if(pTagger == NULL && (uTagger->IsPet() || uTagger->IsSummon()) && uTagger->GetPlayerOwner())
-                    pTagger = TO_PLAYER(uTagger->GetPlayerOwner());
+                    pTagger = static_cast<Player*>(uTagger->GetPlayerOwner());
                 if (pTagger != NULL)
                 {
 
@@ -12855,7 +12855,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
                             SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
 
                             if (!sEventMgr.HasEvent(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE))
-                                sEventMgr.AddEvent(TO_UNIT(this), &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                                sEventMgr.AddEvent(static_cast<Unit*>(this), &Unit::EventAurastateExpire, (uint32)AURASTATE_FLAG_LASTKILLWITHHONOR, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                             else
                                 sEventMgr.ModifyEventTimeLeft(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
 
@@ -12874,7 +12874,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 
                     if (pVictim->IsCreature())
                     {
-                        sQuestMgr.OnPlayerKill(pTagger, TO_CREATURE(pVictim), true);
+                        sQuestMgr.OnPlayerKill(pTagger, static_cast<Creature*>(pVictim), true);
                         ///////////////////////////////////////////////// Kill creature/creature type Achievements /////////////////////////////////////////////////////////////////////
 #ifdef ENABLE_ACHIEVEMENTS
                         if (pTagger->InGroup())
@@ -13064,7 +13064,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     /* Stop players from casting */
     for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); itr++)
     {
-        Unit* attacker = TO< Unit* >(*itr);
+        Unit* attacker = static_cast< Unit* >(*itr);
 
         if (attacker->GetCurrentSpell() != NULL)
         {
@@ -13326,7 +13326,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     if (HasQuest(qst->id))
         return;
 
-    if (qst_giver->IsCreature() && TO< Creature* >(qst_giver)->m_escorter != NULL)
+    if (qst_giver->IsCreature() && static_cast< Creature* >(qst_giver)->m_escorter != NULL)
     {
         m_session->SystemMessage("You cannot accept this quest at this time.");
         return;

@@ -1844,7 +1844,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
                         Unit* RandomTarget = NULL;
-                        RandomTarget = TO_UNIT(*itr);
+                        RandomTarget = static_cast<Unit*>(*itr);
 
                         if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && ((RandomTarget->GetHealthPct() >= minhp2cast && RandomTarget->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))))
                         {
@@ -1894,7 +1894,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 if (!(*itr)->IsUnit())
                     continue;
 
-                pUnit = TO_UNIT((*itr));
+                pUnit = static_cast<Unit*>((*itr));
 
                 if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                     continue;
@@ -2254,7 +2254,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
 
 void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    WarbringerOmroggAI* Warbringer = (pCreatureAI) ? TO< WarbringerOmroggAI* >(pCreatureAI) : NULL;
+    WarbringerOmroggAI* Warbringer = (pCreatureAI) ? static_cast< WarbringerOmroggAI* >(pCreatureAI) : NULL;
     if (Warbringer != NULL)
     {
         Warbringer->CastSpell(Warbringer->mBlastWave);
@@ -2284,9 +2284,9 @@ class HeadAI : public MoonScriptCreatureAI
     void Destroy()
     {
         Unit* pUnit = ForceCreatureFind(CN_WARBRINGER_OMROGG);
-        if (pUnit != NULL && TO_CREATURE(pUnit)->GetScript() != NULL)
+        if (pUnit != NULL && static_cast<Creature*>(pUnit)->GetScript() != NULL)
         {
-            WarbringerOmroggAI* pAI = TO< WarbringerOmroggAI* >(TO_CREATURE(pUnit)->GetScript());
+            WarbringerOmroggAI* pAI = static_cast< WarbringerOmroggAI* >(static_cast<Creature*>(pUnit)->GetScript());
             if (pAI->mLeftHead == (MoonScriptCreatureAI*)(this))
                 pAI->mLeftHead = NULL;
             if (pAI->mRightHead == (MoonScriptCreatureAI*)(this))

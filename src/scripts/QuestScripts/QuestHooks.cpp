@@ -37,53 +37,53 @@ void Hanazua(Player* pPlayer, Object* pObject)
     say = "Go swiftly, ";
     say += pPlayer->GetName();
     say += ", my fate is in your hands.";
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
 }
 
 void AHumbleTask(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Greatmother Hawkwind gestures to the pitcher of water sitting on the edge of the well.");
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Greatmother Hawkwind gestures to the pitcher of water sitting on the edge of the well.");
 }
 
 void Yorus_Barleybrew(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->Emote(EMOTE_ONESHOT_POINT);
+    (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_POINT);
     pPlayer->CastSpell(pPlayer, dbcSpell.LookupEntry(8554), true);
 }
 
 void Menara_Voidrender(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->EventAddEmote(EMOTE_STATE_USESTANDING, 3000);
+    (static_cast<Creature*>(pObject))->EventAddEmote(EMOTE_STATE_USESTANDING, 3000);
 }
 
 void Hanazua_III(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Killed  Sarkoth !!");
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Killed  Sarkoth !!");
 }
 
 void TheFamilyAndTheFishingPole(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I got some extras with me; if you pay me back what i paid for them, you can have one. I got some bait too.");
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I got some extras with me; if you pay me back what i paid for them, you can have one. I got some bait too.");
 }
 
 void MillysHarvest(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I hope for you!");
-    (TO_CREATURE(pObject))->EventAddEmote(EMOTE_ONESHOT_CRY, 2000);
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I hope for you!");
+    (static_cast<Creature*>(pObject))->EventAddEmote(EMOTE_ONESHOT_CRY, 2000);
 }
 
 void Rest_n_Relaxation(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Think of small pumpkins, my friend!!");
-    (TO_CREATURE(pObject))->Emote(EMOTE_ONESHOT_CHEER);
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Think of small pumpkins, my friend!!");
+    (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_CHEER);
 }
 
 void OntoGoldshireComplete(Player* pPlayer, Object* pObject)
 {
     char msg[256];
     snprintf((char*)msg, 256, "You are dismissed %s . ", pPlayer->GetName());
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
-    (TO_CREATURE(pObject))->Emote(EMOTE_ONESHOT_BOW);
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, msg);
+    (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_BOW);
 }
 
 void ZuluhedtheWhacked(Player* pPlayer, Object* pObject)
@@ -150,14 +150,14 @@ void OnQuestAccept(Player* pPlayer, Quest* pQuest, Object* pObject)
 
 void Hanazua_II(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SetStandState(STANDSTATE_KNEEL);
+    (static_cast<Creature*>(pObject))->SetStandState(STANDSTATE_KNEEL);
 }
 
 void Wishock(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SetStandState(STANDSTATE_DEAD);
+    (static_cast<Creature*>(pObject))->SetStandState(STANDSTATE_DEAD);
     pPlayer->Emote(EMOTE_STATE_LAUGH);
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Arrgh...");
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Arrgh...");
 }
 
 void CapturedMountaineer(Player* pPlayer, Object* pObject)
@@ -165,24 +165,24 @@ void CapturedMountaineer(Player* pPlayer, Object* pObject)
     std::string say = "I raise my brew and hope to be rid of the likes of you!  Cheers, you no good scoundrel, ";
     say += pPlayer->GetName();
     say += "!";
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
 }
 
 void PlaguedLands(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Be cleansed!");
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Be cleansed!");
 }
 
 void DeeprunRatRoundup(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Into the box me pretties! Thas it. One by one ye go.");
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Into the box me pretties! Thas it. One by one ye go.");
 }
 
 void MaybellComplete(Player* pPlayer, Object* pObject)
 {
-    (TO_CREATURE(pObject))->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Here goes nothing...");
-    (TO_CREATURE(pObject))->Emote(EMOTE_ONESHOT_CRY);
-    (TO_CREATURE(pObject))->Despawn(5000, 30000);
+    (static_cast<Creature*>(pObject))->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Here goes nothing...");
+    (static_cast<Creature*>(pObject))->Emote(EMOTE_ONESHOT_CRY);
+    (static_cast<Creature*>(pObject))->Despawn(5000, 30000);
 }
 
 //========================================================================================

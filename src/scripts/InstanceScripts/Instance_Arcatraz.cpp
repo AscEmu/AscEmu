@@ -138,7 +138,7 @@ class ZerekethAI : public MoonScriptBossAI
                 ++itr;
                 if (obj->IsCreature())
                 {
-                    creature = TO_CREATURE(obj);
+                    creature = static_cast<Creature*>(obj);
 
                     if (creature->GetCreatureInfo()->Id == 21101 && creature->isAlive())
                     {
@@ -175,7 +175,7 @@ class ZerekethAI : public MoonScriptBossAI
                 Player* RandomTarget = NULL;
                 if (!(*Itr)->IsPlayer())
                     continue;
-                RandomTarget = TO< Player* >(*Itr);
+                RandomTarget = static_cast< Player* >(*Itr);
                 if (RandomTarget && RandomTarget->isAlive() && isHostile(*Itr, _unit))
                     TargetTable.push_back(RandomTarget);
             }
@@ -567,7 +567,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     }
                     else if (NPC_orb2 && NPC_orb2->IsAlive())
                     {
-                        Creature* millhouse = TO_CREATURE(ForceCreatureFind(CN_MILLHOUSE_MANASTORM));
+                        Creature* millhouse = static_cast<Creature*>(ForceCreatureFind(CN_MILLHOUSE_MANASTORM));
                         if (millhouse)
                         {
                             millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_01, 2000);

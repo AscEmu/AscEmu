@@ -59,7 +59,7 @@ void DynamicObject::Create(Unit* caster, Spell* pSpell, float x, float y, float 
     {
         // try to find player caster here
         if (caster->IsPlayer())
-            p_caster = TO< Player* >(caster);
+            p_caster = static_cast< Player* >(caster);
     }
     else
         p_caster = pSpell->p_caster;
@@ -130,10 +130,10 @@ void DynamicObject::UpdateTargets()
         {
             Object* o = *itr;
 
-            if (!o->IsUnit() || !TO< Unit* >(o)->isAlive())
+            if (!o->IsUnit() || !static_cast< Unit* >(o)->isAlive())
                 continue;
 
-            target = TO< Unit* >(o);
+            target = static_cast< Unit* >(o);
 
             if (!isAttackable(u_caster, target, !(m_spellProto->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                 continue;

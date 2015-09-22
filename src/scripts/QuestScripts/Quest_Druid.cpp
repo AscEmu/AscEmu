@@ -38,7 +38,7 @@ class Lunaclaw : public CreatureAIScript
             if(!mKiller->IsPlayer())
                 return;
 
-            Player* plr = TO_PLAYER(mKiller);
+            Player* plr = static_cast<Player*>(mKiller);
 
             sEAS.SpawnCreature(plr, 12144, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, 1 * 60 * 1000);
         }
@@ -73,7 +73,7 @@ class SCRIPT_DECL MoonkinGhost_Gossip : public GossipScript
         {
             if(!pObject->IsCreature())
                 return;
-            Creature* pCreature = TO_CREATURE(pObject);
+            Creature* pCreature = static_cast<Creature*>(pObject);
 
             GossipMenu* Menu;
             switch(IntId)
@@ -151,7 +151,7 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature*  pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+            Creature*  pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if(!pObject->IsCreature())
                 return;
 

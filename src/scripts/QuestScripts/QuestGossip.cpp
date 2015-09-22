@@ -98,14 +98,14 @@ class TeleportQ_Gossip : public GossipScript
 
         void GossipHello(Object* pObject, Player* plr)
         {
-            uint32 Text = objmgr.GetGossipTextForNpc(TO_CREATURE(pObject)->GetEntry());
+            uint32 Text = objmgr.GetGossipTextForNpc(static_cast<Creature*>(pObject)->GetEntry());
 
             // check if there is a entry in the db
             if (NpcTextStorage.LookupEntry(Text) == NULL)
                 return;
 
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
-            sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), plr, menu);
+            sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
 
             // Requirements:
             // one of these quests: 12791, 12794, 12796

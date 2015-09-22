@@ -1297,7 +1297,7 @@ void Group::SendLootUpdates(Object* o)
 
             if (pLooter->IsVisible(o->GetGUID()))
             {
-                Unit* victim = TO< Unit* >(o);
+                Unit* victim = static_cast< Unit* >(o);
 
                 victim->Tag(pLooter->GetGUID());
                 pLooter->PushUpdateData(&buf, 1);

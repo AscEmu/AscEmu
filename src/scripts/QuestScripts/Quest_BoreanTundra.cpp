@@ -142,13 +142,13 @@ class SeaforiumDepthCharge : public MoonScriptCreatureAI
         if (!_unit->IsSummon())
             return;
 
-        Unit* summoner = TO< Summon* >(_unit)->GetOwner();
+        Unit* summoner = static_cast< Summon* >(_unit)->GetOwner();
 
         if (summoner != NULL)
         {
             if (summoner->IsPlayer())
             {
-                Player* p = TO_PLAYER(summoner);
+                Player* p = static_cast<Player*>(summoner);
                 if (p->HasQuest(11608))
                 {
                     GameObject* pSinkhole = p->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), 300171);
@@ -307,13 +307,13 @@ class SurristraszGossip : public GossipScript
 
         void GossipHello(Object* pObject, Player* pPlayer)
         {
-            uint32 Text = objmgr.GetGossipTextForNpc(TO_CREATURE(pObject)->GetEntry());
+            uint32 Text = objmgr.GetGossipTextForNpc(static_cast<Creature*>(pObject)->GetEntry());
 
             // check if there is a entry in the db
             if (NpcTextStorage.LookupEntry(Text) == NULL) { return; }
 
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, pPlayer->GetSession()->language);
-            sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), pPlayer, menu);
+            sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), pPlayer, menu);
 
             menu.AddItem(ICON_FLIGHTMASTER, pPlayer->GetSession()->LocalizedGossipOption(GI_SURRISTRASZ), 1);
 
@@ -328,7 +328,7 @@ class SurristraszGossip : public GossipScript
             switch (IntId)
             {
                 case 1:
-                    pPlayer->GetSession()->SendTaxiList(TO_CREATURE(pObject));
+                    pPlayer->GetSession()->SendTaxiList(static_cast<Creature*>(pObject));
                     break;
             }
         }

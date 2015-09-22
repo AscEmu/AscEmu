@@ -179,7 +179,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
 
     void OnDied(Unit* pKiller)
     {
-        auto Pumpkin = sEAS.SpawnGameobject(TO_PLAYER(pKiller), 2883, _unit->GetPositionX() + RandomFloat(5.0f), _unit->GetPositionY() + RandomFloat(5.0f), _unit->GetPositionZ(), 0, 1, 0, 0, 0, 0);
+        auto Pumpkin = sEAS.SpawnGameobject(static_cast<Player*>(pKiller), 2883, _unit->GetPositionX() + RandomFloat(5.0f), _unit->GetPositionY() + RandomFloat(5.0f), _unit->GetPositionZ(), 0, 1, 0, 0, 0, 0);
         if (Pumpkin != nullptr)
             _unit->CastSpell(Pumpkin->GetGUID(), 42277, true);
 

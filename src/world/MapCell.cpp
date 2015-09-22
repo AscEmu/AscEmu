@@ -129,14 +129,14 @@ void MapCell::RemoveObjects()
                 if (!(*itr)->IsPet())
                 {
                     _mapmgr->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
-                    TO< Creature* >(*itr)->m_respawnCell = NULL;
-                    delete TO< Creature* >(*itr);
+                    static_cast< Creature* >(*itr)->m_respawnCell = NULL;
+                    delete static_cast< Creature* >(*itr);
                 }
                 break;
             case TYPEID_GAMEOBJECT:
                 _mapmgr->_reusable_guids_gameobject.push_back((*itr)->GetUIdFromGUID());
-                TO< GameObject* >(*itr)->m_respawnCell = NULL;
-                delete TO< GameObject* >(*itr);
+                static_cast< GameObject* >(*itr)->m_respawnCell = NULL;
+                delete static_cast< GameObject* >(*itr);
                 break;
         }
     }
@@ -150,7 +150,7 @@ void MapCell::RemoveObjects()
         objects_iterator++;
 
         //If MapUnloadTime is non-zero, a transport could get deleted here (when it arrives to a cell that's scheduled to be unloaded because players left from it), so don't delete it! - By: VLack aka. VLsoft
-        if (!bServerShutdown && obj->IsGameObject() && TO< GameObject* >(obj)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT)
+        if (!bServerShutdown && obj->IsGameObject() && static_cast< GameObject* >(obj)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT)
             continue;
 
         if (obj->IsActive())

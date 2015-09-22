@@ -123,19 +123,19 @@ class TotemofTikti : public QuestScript
             sEAS.EnableWaypoints(Coo);
 
 
-            Unit* Totem = TO_UNIT(Coo);
-            Unit* Plr = TO_UNIT(mTarget);
+            Unit* Totem = static_cast<Unit*>(Coo);
+            Unit* Plr = static_cast<Unit*>(mTarget);
 
             std::string msg = "Ritk kin'chikx azul azure summit...";
             Coo->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 6000);
 
             if (mTarget->CalcDistance(Coo, mTarget) <= 10)
-                sEventMgr.AddEvent(TO_UNIT(Coo), &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30424), EVENT_CREATURE_UPDATE, 8750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(static_cast<Unit*>(Coo), &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30424), EVENT_CREATURE_UPDATE, 8750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             std::string msg2 = "Coo xip fly... Jump ilos river. Find Tikti.";
             Coo->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 9000);
 
-            sEventMgr.AddEvent(TO_UNIT(Coo), &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30473), EVENT_CREATURE_UPDATE, 12750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Unit*>(Coo), &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30473), EVENT_CREATURE_UPDATE, 12750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             Coo->Despawn(15200, 0);
         }
 
@@ -170,19 +170,19 @@ class TotemofYor : public QuestScript
             sEAS.WaypointCreate(Tikti, -3886.341553f, -13098.914063f, 3.964841f, 1.855801f, 0, 256, 16999);
             sEAS.EnableWaypoints(Tikti);
 
-            Unit* Totem = TO_UNIT(Tikti);
-            Unit* Plr = TO_UNIT(mTarget);
+            Unit* Totem = static_cast<Unit*>(Tikti);
+            Unit* Plr = static_cast<Unit*>(mTarget);
 
             std::string msg = "[Furbolg] Far you mixik tak come. Gaze upon the kitch'kal river. Follow. Ilog to Yor.";
             Tikti->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 15000);
 
             if (mTarget->CalcDistance(Tikti, mTarget) <= 10)
-                sEventMgr.AddEvent(TO_UNIT(Tikti), &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30430), EVENT_CREATURE_UPDATE, 18000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(static_cast<Unit*>(Tikti), &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30430), EVENT_CREATURE_UPDATE, 18000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             std::string msg2 = "[Furbolg] Go... Search yitix'kil bottom river. South!";
             Tikti->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 20000);
 
-            sEventMgr.AddEvent(TO_UNIT(Tikti), &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30431), EVENT_GMSCRIPT_EVENT, 20000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Unit*>(Tikti), &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30431), EVENT_GMSCRIPT_EVENT, 20000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             Tikti->Despawn(24000, 0);
         }
@@ -221,8 +221,8 @@ class TotemofVark : public QuestScript
             sEAS.EnableWaypoints(Yor);
 
             //We have to set up these pointers first to resolve ambiguity in the event manager template
-            Unit* Totem = TO_UNIT(Yor);
-            Unit* Plr = TO_UNIT(mTarget);
+            Unit* Totem = static_cast<Unit*>(Yor);
+            Unit* Plr = static_cast<Unit*>(mTarget);
 
             // Change to Stillpine form
             sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30446), EVENT_CREATURE_UPDATE, 15500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -256,7 +256,7 @@ class ChieftainOomoorooQAI : public CreatureAIScript
         {
             if (mKiller->IsPlayer())
             {
-                QuestLogEntry* pQuest = TO_PLAYER(mKiller)->GetQuestLogForEntry(9573);
+                QuestLogEntry* pQuest = static_cast<Player*>(mKiller)->GetQuestLogForEntry(9573);
                 if (pQuest != nullptr && pQuest->GetMobCount(1) < pQuest->GetQuest()->required_mobcount[1])
                 {
                     pQuest->SetMobCount(1, pQuest->GetMobCount(1) + 1);

@@ -48,7 +48,7 @@ class LairBruteAI : public MoonScriptCreatureAI
 
 void SpellFunc_LairBrute_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    LairBruteAI* pBruteAI = (pCreatureAI != NULL) ? TO< LairBruteAI* >(pCreatureAI) : NULL;
+    LairBruteAI* pBruteAI = (pCreatureAI != NULL) ? static_cast< LairBruteAI* >(pCreatureAI) : NULL;
     if (pBruteAI != NULL)
     {
         Unit* pCurrentTarget = pBruteAI->GetUnit()->GetAIInterface()->getNextTarget();
@@ -216,7 +216,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
 
 void SpellFunc_Maulgar_Enrage(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    HighKingMaulgarAI* pMaulgarAI = (pCreatureAI != NULL) ? TO< HighKingMaulgarAI* >(pCreatureAI) : NULL;
+    HighKingMaulgarAI* pMaulgarAI = (pCreatureAI != NULL) ? static_cast< HighKingMaulgarAI* >(pCreatureAI) : NULL;
     if (pMaulgarAI != NULL)
     {
         pMaulgarAI->ApplyAura(HIGH_KING_MAULGAR_FLURRY);
@@ -255,10 +255,10 @@ class KigglerTheCrazedAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Creature* pMaulgar = TO_CREATURE(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
+            Creature* pMaulgar = static_cast<Creature*>(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
-                HighKingMaulgarAI* pMaulgarAI = TO< HighKingMaulgarAI* >(pMaulgar->GetScript());
+                HighKingMaulgarAI* pMaulgarAI = static_cast< HighKingMaulgarAI* >(pMaulgar->GetScript());
                 pMaulgarAI->OnAddDied();
             }
         }
@@ -297,10 +297,10 @@ class BlindeyeTheSeerAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Creature* pMaulgar = TO_CREATURE(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
+            Creature* pMaulgar = static_cast<Creature*>(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
-                HighKingMaulgarAI* pMaulgarAI = TO< HighKingMaulgarAI* >(pMaulgar->GetScript());
+                HighKingMaulgarAI* pMaulgarAI = static_cast< HighKingMaulgarAI* >(pMaulgar->GetScript());
                 pMaulgarAI->OnAddDied();
             }
         }
@@ -324,10 +324,10 @@ class OlmTheSummonerAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Creature* pMaulgar = TO_CREATURE(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
+            Creature* pMaulgar = static_cast<Creature*>(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
-                HighKingMaulgarAI* pMaulgarAI = TO< HighKingMaulgarAI* >(pMaulgar->GetScript());
+                HighKingMaulgarAI* pMaulgarAI = static_cast< HighKingMaulgarAI* >(pMaulgar->GetScript());
                 pMaulgarAI->OnAddDied();
             }
         }
@@ -411,10 +411,10 @@ class KroshFirehandAI : public MoonScriptCreatureAI
         void OnDied(Unit* mKiller)
         {
             ParentClass::OnDied(mKiller);
-            Creature* pMaulgar = TO_CREATURE(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
+            Creature* pMaulgar = static_cast<Creature*>(ForceCreatureFind(CN_HIGH_KING_MAULGAR, 143.048996f, 192.725998f, -11.114700f));
             if (pMaulgar != NULL && pMaulgar->isAlive() && pMaulgar->GetScript())
             {
-                HighKingMaulgarAI* pMaulgarAI = TO< HighKingMaulgarAI* >(pMaulgar->GetScript());
+                HighKingMaulgarAI* pMaulgarAI = static_cast< HighKingMaulgarAI* >(pMaulgar->GetScript());
                 pMaulgarAI->OnAddDied();
             }
         }
@@ -530,7 +530,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
                         Unit* pTarget = pCurrentTarget;
                         for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                         {
-                            Player* pPlayer = TO< Player* >(*itr);
+                            Player* pPlayer = static_cast< Player* >(*itr);
                             if (!pPlayer->isAlive())
                                 continue;
 //                        if (pPlayer->m_auracount[SPELL_AURA_MOD_INVISIBILITY])
@@ -542,7 +542,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
                             if (_unit->GetAIInterface()->getThreatByPtr(pPlayer) >= _unit->GetAIInterface()->getThreatByPtr(pCurrentTarget))
                                 continue;
 
-                            pTarget = TO_UNIT(pPlayer);
+                            pTarget = static_cast<Unit*>(pPlayer);
                         }
 
                         if (pTarget == pCurrentTarget)
@@ -565,7 +565,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
             {
                 if (IsValidUnitTarget(*itr, TargetFilter_None))
                 {
-                    TargetArray.push_back(TO< Unit* >(*itr));
+                    TargetArray.push_back(static_cast< Unit* >(*itr));
                 }
             }
 
@@ -586,7 +586,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
 
 void SpellFunc_Gruul_GroundSlam(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? TO< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
+    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? static_cast< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
     if (pGruul != NULL)
     {
         pGruul->CastSpellNowNoScheduling(pGruul->mGroundSlam);
@@ -597,7 +597,7 @@ void SpellFunc_Gruul_GroundSlam(SpellDesc* pThis, MoonScriptCreatureAI* pCreatur
 
 void SpellFunc_Gruul_Stoned(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? TO< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
+    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? static_cast< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
     if (pGruul != NULL)
     {
         UnitArray TargetArray = pGruul->GetInRangePlayers();
@@ -616,7 +616,7 @@ void SpellFunc_Gruul_Stoned(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI,
 
 void SpellFunc_Gruul_Shatter(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? TO< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
+    GruulTheDragonkillerAI* pGruul = (pCreatureAI != NULL) ? static_cast< GruulTheDragonkillerAI* >(pCreatureAI) : NULL;
     if (pGruul != NULL)
     {
         pGruul->CastSpell(pGruul->mShatter2);    // Spell to script

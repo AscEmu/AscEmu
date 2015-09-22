@@ -54,7 +54,7 @@ class MasterHammersmith : public Arcemu::Gossip::Script
                     {
                         //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                         textid = 20006;
-                        TO_CREATURE(pObject)->CastSpell(plr, 39099, true);
+                        static_cast<Creature*>(pObject)->CastSpell(plr, 39099, true);
                         plr->ModGold(-600);
                     }
                 }
@@ -126,7 +126,7 @@ class MasterSwordsmith : public Arcemu::Gossip::Script
                     {
                         //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                         textid = 20006;
-                        TO_CREATURE(pObject)->CastSpell(plr, 39097, true);
+                        static_cast<Creature*>(pObject)->CastSpell(plr, 39097, true);
                         plr->ModGold(-600);
                     }
                 }
@@ -196,7 +196,7 @@ class MasterAxesmith : public Arcemu::Gossip::Script
                     {
                         //pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Make good use of this knowledge." );
                         textid = 20006;
-                        TO_CREATURE(pObject)->CastSpell(plr, 39098, true);
+                        static_cast<Creature*>(pObject)->CastSpell(plr, 39098, true);
                         plr->ModGold(-600);
                     }
                 }

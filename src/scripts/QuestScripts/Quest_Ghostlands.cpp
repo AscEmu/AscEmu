@@ -33,7 +33,7 @@ class Prisoner12 : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* Prisoner12 = TO_CREATURE(pObject);
+            Creature* Prisoner12 = static_cast<Creature*>(pObject);
             if (Prisoner12 == nullptr)
                 return;
 
@@ -49,7 +49,7 @@ class Prisoner12 : public GossipScript
             if (!plr)
                 return;
 
-            Creature* Prisoner12 = TO_CREATURE(pObject);
+            Creature* Prisoner12 = static_cast<Creature*>(pObject);
             if (Prisoner12 == nullptr)
                 return;
 
@@ -89,7 +89,7 @@ class Prisoner22 : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* Prisoner22 = TO_CREATURE(pObject);
+            Creature* Prisoner22 = static_cast<Creature*>(pObject);
 
             if (Prisoner22 == NULL)
                 return;
@@ -106,7 +106,7 @@ class Prisoner22 : public GossipScript
             if (!plr)
                 return;
 
-            Creature* Prisoner22 = TO_CREATURE(pObject);
+            Creature* Prisoner22 = static_cast<Creature*>(pObject);
 
             if (Prisoner22 == nullptr)
                 return;
@@ -147,7 +147,7 @@ class Prisoner32 : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* Prisoner32 = TO_CREATURE(pObject);
+            Creature* Prisoner32 = static_cast<Creature*>(pObject);
             if (Prisoner32 == nullptr)
                 return;
 
@@ -163,7 +163,7 @@ class Prisoner32 : public GossipScript
             if (!plr)
                 return;
 
-            Creature* Prisoner32 = TO_CREATURE(pObject);
+            Creature* Prisoner32 = static_cast<Creature*>(pObject);
 
             if (Prisoner32 == nullptr)
                 return;

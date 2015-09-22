@@ -546,7 +546,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
     if (obj->IsPlayer())
     {
         // players can join instances based on their groups/solo status.
-        plr = TO< Player* >(obj);
+        plr = static_cast< Player* >(obj);
 
         // single-instance maps never go into the instance set.
         if (inf->type == INSTANCE_NULL)

@@ -33,7 +33,7 @@ class SpiritScreeches : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* spirit = TO_CREATURE(pObject);
+            Creature* spirit = static_cast<Creature*>(pObject);
             if(spirit == NULL)
                 return;
 
@@ -54,7 +54,7 @@ class SpiritScreeches : public GossipScript
             if(!plr)
                 return;
 
-            Creature* spirit = TO_CREATURE(pObject);
+            Creature* spirit = static_cast<Creature*>(pObject);
             if(spirit == NULL)
                 return;
 
@@ -122,7 +122,7 @@ class StewardOfTime : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* creat = TO_CREATURE(pObject);
+            Creature* creat = static_cast<Creature*>(pObject);
             switch(IntId)
             {
                 case 1:

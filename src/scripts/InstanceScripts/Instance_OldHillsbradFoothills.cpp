@@ -331,7 +331,7 @@ class ThrallGossip : public GossipScript
             switch (IntId)
             {
                 case 1:
-                    ThrallAI* pThrall = TO< ThrallAI* >(TO_CREATURE(pObject)->GetScript());
+                    ThrallAI* pThrall = static_cast< ThrallAI* >(static_cast<Creature*>(pObject)->GetScript());
                     if (pThrall)
                         pThrall->StartEscort(Plr);
                     break;

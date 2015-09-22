@@ -112,7 +112,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
                     SetAllowMelee(false);
                     SetAllowSpell(false);
                     Emote("Come Midnight, let's disperse this petty rabble!", Text_Yell, 9168);
-                    MoonScriptBossAI* midnight = TO< MoonScriptBossAI* >(GetLinkedCreature());
+                    MoonScriptBossAI* midnight = static_cast< MoonScriptBossAI* >(GetLinkedCreature());
                     midnight->SetPhase(2);
                     midnight->MoveTo(this);
                     midnight->SetAllowMelee(false);
@@ -140,7 +140,7 @@ class MidnightAI : public MoonScriptBossAI
         {
             if (GetLinkedCreature() && GetLinkedCreature()->IsAlive())
             {
-                TO< MoonScriptCreatureAI* >(GetLinkedCreature())->Emote("Well done Midnight!", Text_Yell, 9173);
+                static_cast< MoonScriptCreatureAI* >(GetLinkedCreature())->Emote("Well done Midnight!", Text_Yell, 9173);
             }
             ParentClass::OnTargetDied(pTarget);
         }
@@ -162,7 +162,7 @@ class MidnightAI : public MoonScriptBossAI
                 else if (GetLinkedCreature() && GetLinkedCreature()->IsAlive() && GetHealthPercent() <= 25 && !IsCasting())
                 {
                     SetPhase(2);
-                    MoonScriptBossAI* attumen = TO< MoonScriptBossAI* >(GetLinkedCreature());
+                    MoonScriptBossAI* attumen = static_cast< MoonScriptBossAI* >(GetLinkedCreature());
                     MoveTo(attumen);
                     SetAllowMelee(false);
                     attumen->SetPhase(2);
@@ -175,7 +175,7 @@ class MidnightAI : public MoonScriptBossAI
             {
                 if (GetLinkedCreature() && GetLinkedCreature()->IsAlive())
                 {
-                    MoonScriptBossAI* attumen = TO< MoonScriptBossAI* >(GetLinkedCreature());
+                    MoonScriptBossAI* attumen = static_cast< MoonScriptBossAI* >(GetLinkedCreature());
                     if (GetRange(attumen) <= 15)
                     {
                         attumen->Regenerate();
@@ -466,7 +466,7 @@ class BigBadWolfAI : public CreatureAIScript
                                             itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                                     {
                                         Player* RandomTarget = NULL;
-                                        RandomTarget = TO< Player* >(*itr);
+                                        RandomTarget = static_cast< Player* >(*itr);
                                         if (RandomTarget && RandomTarget->isAlive())
                                             TargetTable.push_back(RandomTarget);
                                         RandomTarget = NULL;
@@ -728,7 +728,7 @@ class BarnesGS : public GossipScript
                     break;
                 case 2:
                     {
-                        Creature* pCreature = TO_CREATURE(pObject);
+                        Creature* pCreature = static_cast<Creature*>(pObject);
                         pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Splendid. I'm going to get the audience ready. Break a leg!");
                         pCreature->CastSpell(pCreature, 32616, false);
                         pCreature->GetAIInterface()->StopMovement(0);
@@ -768,7 +768,7 @@ class GrandMother : public GossipScript
 
                 case 1:
                     {
-                        TO_CREATURE(pObject)->Despawn(100, 0);
+                        static_cast<Creature*>(pObject)->Despawn(100, 0);
                         Creature* pop = pObject->GetMapMgr()->GetInterface()->SpawnCreature(17521, pObject->GetPositionX(), pObject->GetPositionY(),
                                         pObject->GetPositionZ(), 0, true, true, 0, 0);
                         pop->GetAIInterface()->AttackReaction(Plr, 1, 0);
@@ -944,7 +944,7 @@ class BarnesAI : public CreatureAIScript
             // Timed text 3
             _unit->SendTimedScriptTextChatMessage(2010, 32000); // Will she survive? Will she prevail? Only time will tell. And now: On with the show!", 32000);
             // Applause
-            sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
         void EventWOZ()
@@ -981,7 +981,7 @@ class BarnesAI : public CreatureAIScript
             // Timed text 3
             _unit->SendTimedScriptTextChatMessage(2018, 32000);     // But don't take it from me. See for yourself what tragedy lies ahead when the paths of star-crossed lovers meet. And now: On with the show!
             // Applause
-            sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
         void EventRJ()
@@ -1014,7 +1014,7 @@ class BarnesAI : public CreatureAIScript
             // Timed text 3
             _unit->SendTimedScriptTextChatMessage(2014, 32000);     // But don't let me pull the wool over your eyes. See for yourself what lies beneath those covers. And now: On with the show!
             // Applause
-            sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
         void EventRed()
@@ -1264,7 +1264,7 @@ class CuratorAI : public CreatureAIScript
                     itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
                 Player* RandomTarget = NULL;
-                RandomTarget = TO< Player* >(*itr);
+                RandomTarget = static_cast< Player* >(*itr);
                 if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, (*itr)))
                     Target_List.push_back(RandomTarget);
                 RandomTarget = NULL;
@@ -1490,7 +1490,7 @@ class ShadeofAranAI : public CreatureAIScript
                 {
                     if (*itr)
                     {
-                        Player* plr = TO< Player* >(*itr);
+                        Player* plr = static_cast< Player* >(*itr);
                         if (plr->GetItemInterface()->GetItemCount(22589) > 0 ||
                                 plr->GetItemInterface()->GetItemCount(22630) > 0 ||
                                 plr->GetItemInterface()->GetItemCount(22631) > 0 ||
@@ -1724,7 +1724,7 @@ class ShadeofAranAI : public CreatureAIScript
             for (; hostileItr != _unit->GetInRangePlayerSetEnd(); ++hostileItr)
             {
                 Player* RandomTarget = NULL;
-                RandomTarget = TO< Player* >(*hostileItr);
+                RandomTarget = static_cast< Player* >(*hostileItr);
 
                 if (RandomTarget && RandomTarget->isAlive() && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
                     Targets.push_back(RandomTarget);
@@ -1892,7 +1892,7 @@ class ShadeofAranAI : public CreatureAIScript
                 for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO< Player* >(*itr);
+                    RandomTarget = static_cast< Player* >(*itr);
 
                     if ((RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget)))
                         TargetTable.push_back(RandomTarget);
@@ -2232,7 +2232,7 @@ class IllhoofAI : public CreatureAIScript
                 if (isHostile(_unit, (*itr)))
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO< Player* >(*itr);
+                    RandomTarget = static_cast< Player* >(*itr);
                     if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
                         TargetTable.push_back(RandomTarget);
                 }
@@ -2426,7 +2426,7 @@ class KilrekAI : public CreatureAIScript
                     if ((*itr) != _unit && isHostile(_unit, (*itr)) && (*itr)->IsUnit())
                     {
                         Unit* RandomTarget = NULL;
-                        RandomTarget = TO_UNIT(*itr);
+                        RandomTarget = static_cast<Unit*>(*itr);
 
                         if (RandomTarget->isAlive() && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
                             TargetTable.push_back(RandomTarget);
@@ -2600,7 +2600,7 @@ class FiendishImpAI : public CreatureAIScript
                 if (!(*itr)->IsUnit())
                     continue;
 
-                pUnit = TO_UNIT((*itr));
+                pUnit = static_cast<Unit*>((*itr));
 
                 if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                     continue;
@@ -3079,7 +3079,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             {
                 if (isHostile(_unit, (*Itr)))
                 {
-                    Player* RandomTarget = TO_PLAYER(*Itr);
+                    Player* RandomTarget = static_cast<Player*>(*Itr);
 
                     if (RandomTarget->isAlive())
                         Targets.push_back(RandomTarget);
@@ -3174,7 +3174,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO< Player* >(*itr);
+                    RandomTarget = static_cast< Player* >(*itr);
 
                     if (RandomTarget && RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast)
                         TargetTable.push_back(RandomTarget);
@@ -3296,10 +3296,10 @@ class MAxesAI : public CreatureAIScript
             std::vector<Unit* > TargetTable;
             for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
-                if (isHostile(_unit, (*itr)) && (TO< Player* >(*itr))->isAlive())
+                if (isHostile(_unit, (*itr)) && (static_cast< Player* >(*itr))->isAlive())
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO_PLAYER(*itr);
+                    RandomTarget = static_cast<Player*>(*itr);
 
                     if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
                         TargetTable.push_back(RandomTarget);
@@ -3440,7 +3440,7 @@ class NetherspiteAI : public CreatureAIScript
                 for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Unit* RandomTarget = NULL;
-                    RandomTarget = TO< Unit* >(*itr);
+                    RandomTarget = static_cast< Unit* >(*itr);
 
                     if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, (*itr)))
                         TargetTable.push_back(RandomTarget);
@@ -3777,7 +3777,7 @@ class NightbaneAI : public CreatureAIScript
             {
                 if ((*itr)->IsPlayer())
                 {
-                    target = TO_UNIT(*itr);
+                    target = static_cast<Unit*>(*itr);
 
                     if (_unit->GetDistance2dSq(target) > 2025) //45 yards
                     {
@@ -3821,7 +3821,7 @@ class NightbaneAI : public CreatureAIScript
                 {
                     if ((*itr)->IsPlayer())
                     {
-                        target = TO_UNIT(*itr);
+                        target = static_cast<Unit*>(*itr);
 
                         //cone behind the boss
                         if (target->isAlive() && target->isInBack(_unit))
@@ -3941,7 +3941,7 @@ class NightbaneAI : public CreatureAIScript
                     if ((*itr)->IsUnit())
                     {
                         Unit* RandomTarget = NULL;
-                        RandomTarget = TO_UNIT(*itr);
+                        RandomTarget = static_cast<Unit*>(*itr);
 
                         if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))
                         {
@@ -4125,7 +4125,7 @@ class DorotheeAI : public CreatureAIScript
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
                         Unit* RandomTarget = NULL;
-                        RandomTarget = TO_UNIT(*itr);
+                        RandomTarget = static_cast<Unit*>(*itr);
 
                         if (RandomTarget == _unit->GetAIInterface()->GetMostHated())
                             continue;

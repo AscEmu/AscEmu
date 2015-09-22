@@ -35,7 +35,7 @@ class ThreatFromAboveQAI : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(11096);
+                QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(11096);
                 if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
@@ -65,7 +65,7 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                Player * plr = TO_PLAYER(mKiller);
+                Player * plr = static_cast<Player*>(mKiller);
                 if(plr->HasQuest(10896))
                 {
                     if(Rand(90))
@@ -124,7 +124,7 @@ class TakenInTheNight : public CreatureAIScript
             if(!mKiller->IsPlayer())
                 return;
 
-            Player* plr = TO_PLAYER(mKiller);
+            Player* plr = static_cast<Player*>(mKiller);
             uint8 chance = (uint8)RandomUInt(5);
             uint32 spawn = 0;
 
@@ -200,7 +200,7 @@ class TheMomentofTruth : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* doctor = TO_CREATURE(pObject);
+            Creature* doctor = static_cast<Creature*>(pObject);
             if(doctor == NULL)
                 return;
 
@@ -216,7 +216,7 @@ class TheMomentofTruth : public GossipScript
             if(!plr)
                 return;
 
-            Creature* doctor = TO_CREATURE(pObject);
+            Creature* doctor = static_cast<Creature*>(pObject);
             if(doctor == NULL)
                 return;
 

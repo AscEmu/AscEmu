@@ -49,7 +49,7 @@ class TheKesselRun1 : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* highchief = TO_CREATURE(pObject);
+            Creature* highchief = static_cast<Creature*>(pObject);
             if (highchief == NULL)
                 return;
 
@@ -65,7 +65,7 @@ class TheKesselRun1 : public GossipScript
             if (!plr)
                 return;
 
-            Creature* highchief = TO_CREATURE(pObject);
+            Creature* highchief = static_cast<Creature*>(pObject);
             if (highchief == NULL)
                 return;
 
@@ -102,7 +102,7 @@ class TheKesselRun2 : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* highchief = TO_CREATURE(pObject);
+            Creature* highchief = static_cast<Creature*>(pObject);
             if (highchief == NULL)
                 return;
 
@@ -118,7 +118,7 @@ class TheKesselRun2 : public GossipScript
             if (!plr)
                 return;
 
-            Creature* highchief = TO_CREATURE(pObject);
+            Creature* highchief = static_cast<Creature*>(pObject);
             if (highchief == NULL)
                 return;
 
@@ -155,7 +155,7 @@ class TheKesselRun3 : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* highchief = TO_CREATURE(pObject);
+            Creature* highchief = static_cast<Creature*>(pObject);
             if (highchief == NULL)
                 return;
 
@@ -171,7 +171,7 @@ class TheKesselRun3 : public GossipScript
             if (!plr)
                 return;
 
-            Creature* highchief = TO_CREATURE(pObject);
+            Creature* highchief = static_cast<Creature*>(pObject);
             if (highchief == NULL)
                 return;
 
@@ -243,7 +243,7 @@ class HighChiefBristlelimb : public CreatureAIScript
             fulborgskilled++;
             if (mKiller->IsPlayer())
             {
-                Player* mPlayer = TO_PLAYER(mKiller);
+                Player* mPlayer = static_cast<Player*>(mKiller);
 
                 if (fulborgskilled > 8 && mPlayer->HasQuest(9667))
                 {
@@ -281,9 +281,9 @@ class WebbedCreature : public CreatureAIScript
         {
             Player* QuestHolder = NULL;
             if (pKiller->IsPlayer())
-                QuestHolder = TO_PLAYER(pKiller);
-            else if (pKiller->IsPet() && TO_PET(pKiller)->GetPetOwner() != NULL)
-                QuestHolder = TO_PET(pKiller)->GetPetOwner();
+                QuestHolder = static_cast<Player*>(pKiller);
+            else if (pKiller->IsPet() && static_cast<Pet*>(pKiller)->GetPetOwner() != NULL)
+                QuestHolder = static_cast<Pet*>(pKiller)->GetPetOwner();
 
             if (QuestHolder == NULL)
                 return;

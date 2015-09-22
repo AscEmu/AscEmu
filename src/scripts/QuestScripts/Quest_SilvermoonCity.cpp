@@ -29,7 +29,7 @@ class PathoftheAdept : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* lord = TO_CREATURE(pObject);
+            Creature* lord = static_cast<Creature*>(pObject);
             if(lord == NULL)
                 return;
 
@@ -45,7 +45,7 @@ class PathoftheAdept : public GossipScript
             if(!plr)
                 return;
 
-            Creature* lord = TO_CREATURE(pObject);
+            Creature* lord = static_cast<Creature*>(pObject);
             if(lord == NULL)
                 return;
 

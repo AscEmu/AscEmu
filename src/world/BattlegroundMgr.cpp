@@ -438,7 +438,7 @@ void CBattlegroundManager::AddGroupToArena(CBattleground* bg, Group* group, int 
 
 int CBattlegroundManager::CreateArenaType(int type, Group* group1, Group* group2)
 {
-    Arena* ar = TO< Arena* >(CreateInstance(type, LEVEL_GROUP_70));
+    Arena* ar = static_cast< Arena* >(CreateInstance(type, LEVEL_GROUP_70));
     if (ar == NULL)
     {
         sLog.Error("BattlegroundMgr", "%s (%u): Couldn't create Arena Instance", __FILE__, __LINE__);
@@ -593,7 +593,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
                     if (IS_ARENA(i))
                     {
-                        arena = TO< Arena* >(iitr->second);
+                        arena = static_cast< Arena* >(iitr->second);
                         if (arena->Rated())
                             continue;
 
@@ -648,7 +648,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
                 if (CanCreateInstance(i, j))
                 {
-                    arena = TO< Arena* >(CreateInstance(i, j));
+                    arena = static_cast< Arena* >(CreateInstance(i, j));
                     if (arena == NULL)
                     {
                         sLog.Error("BattlegroundMgr", "%s (%u): Couldn't create Arena Instance", __FILE__, __LINE__);

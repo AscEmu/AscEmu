@@ -275,7 +275,7 @@ void LuaEngine::PushUnit(Object* unit, lua_State* L)
 {
     Unit* pUnit = NULL;
     if (unit != NULL && unit->IsUnit())
-        pUnit = TO_UNIT(unit);
+        pUnit = static_cast<Unit*>(unit);
     if (L == NULL)
         ArcLuna<Unit>::push(lu, pUnit);
     else
@@ -285,7 +285,7 @@ void LuaEngine::PushGo(Object* go, lua_State* L)
 {
     GameObject* pGo = NULL;
     if (go != NULL && go->IsGameObject())
-        pGo = TO< GameObject* >(go);
+        pGo = static_cast< GameObject* >(go);
     if (L == NULL)
         ArcLuna<GameObject>::push(lu, pGo);
     else
@@ -295,7 +295,7 @@ void LuaEngine::PushItem(Object* item, lua_State* L)
 {
     Item* pItem = NULL;
     if (item != NULL && (item->IsItem() || item->IsContainer()))
-        pItem = TO< Item* >(item);
+        pItem = static_cast< Item* >(item);
     if (L == NULL)
         ArcLuna<Item>::push(lu, pItem);
     else
@@ -3099,7 +3099,7 @@ void LuaEngine::ResumeLuaThread(int ref)
 
 // Simplicity macros.
 #define CHECK_UNIT(L,narg) sLuaMgr.CheckUnit(L,narg)
-#define CHECK_PLAYER(L,narg) TO_PLAYER(CHECK_UNIT(L,narg))
+#define CHECK_PLAYER(L,narg) static_cast<Player*>(CHECK_UNIT(L,narg))
 #define CHECK_GO(L,narg) sLuaMgr.CheckGo(L,narg)
 #define CHECK_ITEM(L,narg) sLuaMgr.CheckItem(L,narg)
 #define CHECK_PACKET(L,narg) sLuaMgr.CheckPacket(L,narg)
@@ -3118,10 +3118,10 @@ void LuaEngine::ResumeLuaThread(int ref)
 #define CHECK_BOOL(L,narg) sLuaMgr.CheckBool(L,narg)
 #define CHECK_UINT8( L, narg ) static_cast< uint8 >( luaL_checkinteger( ( L ), ( narg ) ) )
 
-#define PUSH_UNIT(L, unit) sLuaMgr.PushUnit(TO_UNIT(unit),L)
-#define PUSH_GO(L, go) sLuaMgr.PushGo(TO< GameObject* >(go),L)
+#define PUSH_UNIT(L, unit) sLuaMgr.PushUnit(static_cast<Unit*>(unit),L)
+#define PUSH_GO(L, go) sLuaMgr.PushGo(static_cast< GameObject* >(go),L)
 #define PUSH_PACKET(L,pack) sLuaMgr.PushPacket(pack,L)
-#define PUSH_ITEM(L,item) sLuaMgr.PushItem(TO< Item* >(item),L)
+#define PUSH_ITEM(L,item) sLuaMgr.PushItem(static_cast< Item* >(item),L)
 #define PUSH_GUID(L, obj) sLuaMgr.PushGuid(obj,L)
 #define PUSH_TAXIPATH(L, tp) sLuaMgr.PushTaxiPath(tp,L)
 #define PUSH_SPELL(L, sp) sLuaMgr.PushSpell(sp,L)

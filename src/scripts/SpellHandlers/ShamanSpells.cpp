@@ -30,7 +30,7 @@ bool FlametongueWeaponPassive(uint32 i, Aura* pAura, bool apply)
     if(apply)
     {
         // target is always a player
-        Item* item = TO_PLAYER(target)->GetItemInterface()->GetItemByGUID(pAura->itemCasterGUID);
+        Item* item = static_cast<Player*>(target)->GetItemInterface()->GetItemByGUID(pAura->itemCasterGUID);
         target->AddProcTriggerSpell(10444, pAura->GetSpellProto()->Id, pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL, item);
     }
     else
@@ -95,7 +95,7 @@ bool Reincarnation(uint32 i, Aura* a, bool apply)
     if(!u_target->IsPlayer())
         return true;
 
-    Player* p_target = TO_PLAYER(u_target);
+    Player* p_target = static_cast<Player*>(u_target);
 
     if(apply)
         p_target->bReincarnation = true;

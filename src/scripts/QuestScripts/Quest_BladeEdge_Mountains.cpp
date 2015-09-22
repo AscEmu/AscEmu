@@ -46,7 +46,7 @@ class WyrmcultBlackwhelp : public CreatureAIScript
                 if (Caster->IsPlayer())
                 {
 
-                    QuestLogEntry* qle = TO_PLAYER(Caster)->GetQuestLogForEntry(10747);
+                    QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(10747);
                     if (qle != nullptr)
                     {
                         // casting the spell that will create the item for the player
@@ -70,7 +70,7 @@ class BladespireQAI : public CreatureAIScript
         {
             if (mKiller->IsPlayer())
             {
-                QuestLogEntry* en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(10503);
+                QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10503);
                 if (en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
@@ -227,15 +227,15 @@ class LegionObelisk : public GameObjectAIScript
             }
 
             if (obelisk1 != nullptr)
-                sEventMgr.AddEvent(TO_OBJECT(obelisk1), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk1), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk2 != nullptr)
-                sEventMgr.AddEvent(TO_OBJECT(obelisk2), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk2), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk3 != nullptr)
-                sEventMgr.AddEvent(TO_OBJECT(obelisk3), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk3), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk4 != nullptr)
-                sEventMgr.AddEvent(TO_OBJECT(obelisk4), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk4), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk5 != nullptr)
-                sEventMgr.AddEvent(TO_OBJECT(obelisk5), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+                sEventMgr.AddEvent(static_cast<Object*>(obelisk5), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
         }
 
 };
@@ -252,7 +252,7 @@ class BloodmaulQAI : public CreatureAIScript
             if (!mKiller->IsPlayer())
                 return;
 
-            Player* pPlayer = TO_PLAYER(mKiller);
+            Player* pPlayer = static_cast<Player*>(mKiller);
             QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10502);
             if (pQuest == nullptr)
             {

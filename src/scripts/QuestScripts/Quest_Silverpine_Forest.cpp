@@ -89,7 +89,7 @@ class Nightlash : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                Player* mPlayer = TO_PLAYER(mKiller);
+                Player* mPlayer = static_cast<Player*>(mKiller);
 
                 if (!_unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1069.889404f, 1544.777558f, 28.331335f, 1983) && (RandomUInt(5) > 2) && mPlayer->HasQuest(437)) //random number I picked between 2-8
                 {

@@ -69,7 +69,7 @@ uint32 SpellProc::CalcProcChance(Unit* victim, SpellEntry* CastingSpell)
 {
     // Check if proc chance is based on combo points
     if (mTarget->IsPlayer() && mOrigSpell && mOrigSpell->AttributesEx & ATTRIBUTESEX_REQ_COMBO_POINTS1 && mOrigSpell->AttributesExD & SP_ATTR_EX_D_PROCCHANCE_COMBOBASED)
-        return float2int32(TO_PLAYER(mTarget)->m_comboPoints * mOrigSpell->EffectPointsPerComboPoint[0]);
+        return float2int32(static_cast<Player*>(mTarget)->m_comboPoints * mOrigSpell->EffectPointsPerComboPoint[0]);
     else
         return mProcChance;
 }

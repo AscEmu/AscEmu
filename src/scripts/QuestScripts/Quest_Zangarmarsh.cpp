@@ -58,7 +58,7 @@ class AncientMarks : public GossipScript
             if(IntId == 1)
             {
                 QuestLogEntry* en = plr->GetQuestLogForEntry(9785);
-                Creature* casta = (TO_CREATURE(pObject));
+                Creature* casta = (static_cast<Creature*>(pObject));
                 switch(pObject->GetEntry())
                 {
                     case 17900:

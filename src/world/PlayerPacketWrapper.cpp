@@ -633,7 +633,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
 
         for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
         {
-            Player* p = TO< Player* >(*itr);
+            Player* p = static_cast< Player* >(*itr);
 
             if (p->GetGroup() != NULL && GetGroup() != NULL && p->GetGroup()->GetID() == GetGroup()->GetID())
                 p->PushUpdateData(groupbuf, 1);
@@ -648,7 +648,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
         {
             for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
-                Player* p = TO< Player* >(*itr);
+                Player* p = static_cast< Player* >(*itr);
 
                 if (p->GetGroup() != NULL && GetGroup() != NULL && p->GetGroup()->GetID() == GetGroup()->GetID())
                     p->PushUpdateData(groupbuf, 1);
@@ -661,7 +661,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
             {
                 for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
                 {
-                    Player* p = TO< Player* >(*itr);
+                    Player* p = static_cast< Player* >(*itr);
 
                     if (p->GetGroup() == NULL || p->GetGroup()->GetID() != GetGroup()->GetID())
                         p->PushUpdateData(nongroupbuf, 1);

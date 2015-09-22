@@ -43,7 +43,7 @@ bool ChatHandler::HandleWPAddCommand(const char* args, WorldSession* m_session)
             return true;
         }
 
-        pCreature = TO_CREATURE(ai->GetUnit());
+        pCreature = static_cast<Creature*>(ai->GetUnit());
         if (!pCreature || pCreature->IsPet())
         {
             SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -850,7 +850,7 @@ bool ChatHandler::HandleWaypointAddFlyCommand(const char* args, WorldSession* m_
             return true;
         }
 
-        pCreature = TO_CREATURE(ai->GetUnit());
+        pCreature = static_cast<Creature*>(ai->GetUnit());
         if (!pCreature || pCreature->IsPet())
         {
             SystemMessage(m_session, "Invalid Creature, please select another one.");
@@ -935,7 +935,7 @@ bool ChatHandler::HandleNpcSelectCommand(const char* args, WorldSession* m_sessi
     {
         if ((dist2 = plr->GetDistance2dSq(*itr)) < dist && (*itr)->IsCreature())
         {
-            un = TO_CREATURE(*itr);
+            un = static_cast<Creature*>(*itr);
             dist = dist2;
         }
     }

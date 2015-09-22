@@ -36,7 +36,7 @@ class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 
             if (_unit->IsSummon())
             {
-                Summon* s = TO< Summon* >(_unit);
+                Summon* s = static_cast< Summon* >(_unit);
 
                 float parent_bonus = s->GetOwner()->GetDamageDoneMod(SCHOOL_NORMAL) * 0.04f;
 
@@ -66,7 +66,7 @@ class ShadowFiendAI : public CreatureAIScript
         {
             if (_unit->IsPet())
             {
-                Pet* s = TO< Pet* >(_unit);
+                Pet* s = static_cast< Pet* >(_unit);
                 Player* owner = s->GetPetOwner();
 
                 float owner_bonus = static_cast<float>(owner->GetDamageDoneMod(SCHOOL_SHADOW) * 0.375f); // 37.5%
@@ -100,7 +100,7 @@ class MirrorImageAI : public CreatureAIScript
         {
             if (_unit->IsSummon())
             {
-                Summon* s = TO< Summon* >(_unit);
+                Summon* s = static_cast< Summon* >(_unit);
                 Unit* owner = s->GetOwner();
 
                 owner->CastSpell(_unit, 45204, true);   // clone me
@@ -179,12 +179,12 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
             if (_unit->IsSummon())
             {
-                Summon* s = TO< Summon* >(_unit);
+                Summon* s = static_cast< Summon* >(_unit);
                 Unit* owner = s->GetOwner();
 
                 if (owner->IsPlayer())
                 {
-                    Player* pOwner = TO< Player* >(owner);
+                    Player* pOwner = static_cast< Player* >(owner);
                     Item* item = pOwner->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
                     if (item != NULL)

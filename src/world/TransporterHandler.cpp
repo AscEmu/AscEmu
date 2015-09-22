@@ -471,7 +471,7 @@ Creature* Transporter::GetCreature(uint32 Guid)
     if (itr == m_npcs.end())
         return nullptr;
     if (itr->second->IsCreature())
-        return TO< Creature* >(itr->second);
+        return static_cast< Creature* >(itr->second);
     else
         return nullptr;
 }

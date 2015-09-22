@@ -287,7 +287,7 @@ class SinclariGossip : public GossipScript
             if (!pObject->IsCreature())
                 return;
 
-            Creature* pCreature = TO_CREATURE(pObject);
+            Creature* pCreature = static_cast<Creature*>(pObject);
 
             switch (IntId)
             {
@@ -308,7 +308,7 @@ class SinclariGossip : public GossipScript
 
                 case 2:
                 {
-                    TO_CREATURE(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                    static_cast<Creature*>(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_NONE);
                     //pCreature->MoveToWaypoint(1);
                     pCreature->GetAIInterface()->StopMovement(10);

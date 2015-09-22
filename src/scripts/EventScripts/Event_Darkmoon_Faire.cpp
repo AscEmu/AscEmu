@@ -457,7 +457,7 @@ class ProfessorThaddeusPaleo_Gossip : public GossipScript
             return;
 
         GossipMenu* Menu = nullptr;
-        auto pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+        auto pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
 
         switch (IntId)
         {
@@ -574,7 +574,7 @@ class Sayge_Gossip : public GossipScript
                 return;
 
             GossipMenu* gossipMenu = nullptr;
-            auto pCreature = TO_CREATURE(pObject);
+            auto pCreature = static_cast<Creature*>(pObject);
 
             switch (IntId)
             {
@@ -780,7 +780,7 @@ class SelinaDourman_Gossip : public GossipScript
                 return;
 
             GossipMenu* gossipMenu = nullptr;
-            Creature* pCreature = TO_CREATURE(pObject);
+            Creature* pCreature = static_cast<Creature*>(pObject);
 
             switch (IntId)
             {
@@ -839,7 +839,7 @@ class SilasDarkmoon_Gossip : public GossipScript
                 return;
 
             GossipMenu* gossipMenu = nullptr;
-            auto pCreature = TO_CREATURE(pObject);
+            auto pCreature = static_cast<Creature*>(pObject);
             uint32 textId = 0;
 
             switch (IntId)

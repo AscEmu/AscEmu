@@ -181,7 +181,7 @@ bool BerserkerRage(uint32 i, Aura* a, bool apply)
 
     if (u->IsPlayer())
     {
-        p_target = TO_PLAYER(u);
+        p_target = static_cast<Player*>(u);
     }
 
     if (p_target == NULL)
@@ -239,7 +239,7 @@ bool TacticalAndStanceMastery(uint32 i, Aura* a, bool apply)
         return true;
     }
 
-    Player* p_target = TO_PLAYER(u_target);
+    Player* p_target = static_cast<Player*>(u_target);
 
     if (p_target == NULL)
     {

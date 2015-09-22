@@ -337,7 +337,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
                 if (isHostile(_unit, (*itr)))
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO<Player*>(*itr);
+                    RandomTarget = static_cast<Player*>(*itr);
                     if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
                         TargetTable.push_back(RandomTarget);
                 }

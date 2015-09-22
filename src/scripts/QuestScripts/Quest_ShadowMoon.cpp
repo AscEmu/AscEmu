@@ -33,7 +33,7 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(10836);
+                QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10836);
                 if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
@@ -57,10 +57,10 @@ class KneepadsQAI : public CreatureAIScript
             if(mKiller->IsPlayer())
             {
                 QuestLogEntry* en = NULL;
-                en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(10703);
+                en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10703);
                 if(en == NULL)
                 {
-                    en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(10702);
+                    en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10702);
                     if(en == NULL)
                     {
                         return;
@@ -410,7 +410,7 @@ void FlanisSwiftwing_Gossip::GossipHello(Object* pObject, Player* plr)
 
 void FlanisSwiftwing_Gossip::GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
 {
-    Creature* pCreature = (pObject->IsCreature()) ? TO_CREATURE(pObject) : NULL;
+    Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
     if(pCreature == NULL)
         return;
     if(IntId == 1)

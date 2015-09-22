@@ -268,13 +268,13 @@ Gossip::Script* Gossip::Script::GetInterface(GameObject* go)
 // SPIRIT HEALER
 void Arcemu::Gossip::SpiritHealer::OnHello(Object* pObject, Player* Plr)
 {
-    Plr->GetSession()->SendSpiritHealerRequest(TO_CREATURE(pObject));
+    Plr->GetSession()->SendSpiritHealerRequest(static_cast<Creature*>(pObject));
 }
 
 // VENDORS
 void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* creature = TO_CREATURE(pObject);
+    Creature* creature = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(creature->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -295,13 +295,13 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::Vendor::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
-    Plr->GetSession()->SendInventoryList(TO_CREATURE(pObject));
+    Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
 }
 
 //TRAINER
 void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* trainer = TO_CREATURE(pObject);
+    Creature* trainer = static_cast<Creature*>(pObject);
     ::Trainer* trainerinfo = trainer->GetTrainer();
     uint32 Text = objmgr.GetGossipTextForNpc(trainer->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
@@ -340,16 +340,16 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::Trainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
     if (1 == Id)
-        Plr->GetSession()->SendTrainerList(TO_CREATURE(pObject));
+        Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
     else
-        Plr->GetSession()->SendInventoryList(TO_CREATURE(pObject));
+        Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
 }
 
 // TAXIMASTER
 
 void Arcemu::Gossip::FlightMaster::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* flightmaster = TO_CREATURE(pObject);
+    Creature* flightmaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(flightmaster->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -363,13 +363,13 @@ void Arcemu::Gossip::FlightMaster::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::FlightMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
-    Plr->GetSession()->SendTaxiList(TO_CREATURE(pObject));
+    Plr->GetSession()->SendTaxiList(static_cast<Creature*>(pObject));
 }
 
 // AUCTIONEER
 void Arcemu::Gossip::Auctioneer::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* auctioneer = TO_CREATURE(pObject);
+    Creature* auctioneer = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(auctioneer->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -379,13 +379,13 @@ void Arcemu::Gossip::Auctioneer::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::Auctioneer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
-    Plr->GetSession()->SendAuctionList(TO_CREATURE(pObject));
+    Plr->GetSession()->SendAuctionList(static_cast<Creature*>(pObject));
 }
 
 // INN KEEPERS
 void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* innkeeper = TO_CREATURE(pObject);
+    Creature* innkeeper = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(innkeeper->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -405,15 +405,15 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::InnKeeper::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
     if (1 == Id)
-        Plr->GetSession()->SendInnkeeperBind(TO_CREATURE(pObject));
+        Plr->GetSession()->SendInnkeeperBind(static_cast<Creature*>(pObject));
     else
-        Plr->GetSession()->SendInventoryList(TO_CREATURE(pObject));
+        Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
 }
 
 //BATTLE MASTER
 void Arcemu::Gossip::BattleMaster::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* battlemaster = TO_CREATURE(pObject);
+    Creature* battlemaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(battlemaster->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -425,13 +425,13 @@ void Arcemu::Gossip::BattleMaster::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::BattleMaster::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
-    Plr->GetSession()->SendBattlegroundList(TO_CREATURE(pObject), 0);
+    Plr->GetSession()->SendBattlegroundList(static_cast<Creature*>(pObject), 0);
 }
 
 //BANKER
 void Arcemu::Gossip::Banker::OnHello(Object* pObject, Player* Plr)
 {
-    Plr->GetSession()->SendBankerList(TO_CREATURE(pObject));
+    Plr->GetSession()->SendBankerList(static_cast<Creature*>(pObject));
 }
 
 void Arcemu::Gossip::Banker::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
@@ -442,7 +442,7 @@ void Arcemu::Gossip::Banker::OnSelectOption(Object* pObject, Player* Plr, uint32
 //CHARTER GIVER
 void Arcemu::Gossip::CharterGiver::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* chartergiver = TO_CREATURE(pObject);
+    Creature* chartergiver = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(chartergiver->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -454,13 +454,13 @@ void Arcemu::Gossip::CharterGiver::OnHello(Object* pObject, Player* Plr)
 
 void Arcemu::Gossip::CharterGiver::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
-    Plr->GetSession()->SendCharterRequest(TO_CREATURE(pObject));
+    Plr->GetSession()->SendCharterRequest(static_cast<Creature*>(pObject));
 }
 
 //TABARD DESIGNER
 void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* chartergiver = TO_CREATURE(pObject);
+    Creature* chartergiver = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(chartergiver->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -484,14 +484,14 @@ void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr
     switch (Id)
     {
         case 1:
-            Plr->GetSession()->SendTabardHelp(TO_CREATURE(pObject));
+            Plr->GetSession()->SendTabardHelp(static_cast<Creature*>(pObject));
             break;
         case 2:
-            if (TO_CREATURE(pObject)->isCharterGiver())
-                Plr->GetSession()->SendCharterRequest(TO_CREATURE(pObject));
+            if (static_cast<Creature*>(pObject)->isCharterGiver())
+                Plr->GetSession()->SendCharterRequest(static_cast<Creature*>(pObject));
             break;
         case 3:
-            Plr->GetSession()->SendInventoryList(TO_CREATURE(pObject));
+            Plr->GetSession()->SendInventoryList(static_cast<Creature*>(pObject));
             break;
     }
 }
@@ -499,7 +499,7 @@ void Arcemu::Gossip::TabardDesigner::OnSelectOption(Object* pObject, Player* Plr
 // STABLED MASTER
 void Arcemu::Gossip::StableMaster::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* stablemaster = TO_CREATURE(pObject);
+    Creature* stablemaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(stablemaster->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -518,7 +518,7 @@ void Arcemu::Gossip::StableMaster::OnSelectOption(Object* pObject, Player* Plr, 
 // PET TRAINER
 void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* petrain = TO_CREATURE(pObject);
+    Creature* petrain = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(petrain->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -535,7 +535,7 @@ void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
 void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
 {
     if (1 == Id)
-        Plr->GetSession()->SendTrainerList(TO_CREATURE(pObject));
+        Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
     else if (2 == Id)
         Gossip::Menu::SendQuickMenu(pObject->GetGUID(), TXTID_PETUNTRAIN, Plr, 3, Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
     else
@@ -549,7 +549,7 @@ void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, ui
 // CLASS TRAINER
 void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* trainer = TO_CREATURE(pObject);
+    Creature* trainer = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(trainer->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
@@ -633,7 +633,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
     switch (Id)
     {
         case 1:
-            Plr->GetSession()->SendTrainerList(TO_CREATURE(pObject));
+            Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
             break;
         case 2:
             Gossip::Menu::SendQuickMenu(pObject->GetGUID(), TXTID_TALENTRESET, Plr, 3, Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
@@ -673,7 +673,7 @@ void Arcemu::Gossip::Generic::OnHello(Object* pObject, Player* Plr)
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = Gossip::DEFAULT_TXTINDEX;
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
-    sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), Plr, menu);
+    sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), Plr, menu);
     menu.StackSend<256>(Plr);
 }
 

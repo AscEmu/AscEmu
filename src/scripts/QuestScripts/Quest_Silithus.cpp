@@ -206,7 +206,7 @@ class highlord_demitrianGossip : public GossipScript
         {
             //Send quests and gossip menu.
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 6812, pPlayer->GetSession()->language);
-            sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), pPlayer, menu);
+            sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), pPlayer, menu);
             if (pPlayer->HasItemCount(18563, 1, false) && pPlayer->HasItemCount(18564, 1, false))
             {
                 if (pPlayer->HasItemCount(19016, 0, false))

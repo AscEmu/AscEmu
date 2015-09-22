@@ -35,7 +35,7 @@ class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
-            TO_CREATURE(pObject)->CastSpell(plr, dbcSpell.LookupEntry(42711), true);
+            static_cast<Creature*>(pObject)->CastSpell(plr, dbcSpell.LookupEntry(42711), true);
             Arcemu::Gossip::Menu::Complete(plr);
         }
 

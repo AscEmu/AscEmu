@@ -34,7 +34,7 @@ class WoodlandWalkerGossip : public GossipScript
     public:
         void GossipHello(Object* pObject, Player* plr)
         {
-            Creature*  pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+            Creature*  pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if(pCreature == NULL)
                 return;
 

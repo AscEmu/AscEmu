@@ -1277,7 +1277,7 @@ inline bool TargetTypeCheck(Object* obj, uint32 ReqCreatureTypeMask)
 
     if (obj->IsCreature())
     {
-        CreatureInfo* inf = TO< Creature* >(obj)->GetCreatureInfo();
+        CreatureInfo* inf = static_cast< Creature* >(obj)->GetCreatureInfo();
         if (!(1 << (inf->Type - 1) & ReqCreatureTypeMask))
             return false;
     }
@@ -2230,7 +2230,7 @@ class SERVER_DECL Spell : public EventableObject
         {
             if (duelSpell && (
                 (p_caster != NULL && p_caster->GetDuelState() != DUEL_STATE_STARTED) ||
-                (u_caster != NULL && u_caster->IsPet() && TO< Pet* >(u_caster)->GetPetOwner() && TO< Pet* >(u_caster)->GetPetOwner()->GetDuelState() != DUEL_STATE_STARTED)))
+                (u_caster != NULL && u_caster->IsPet() && static_cast< Pet* >(u_caster)->GetPetOwner() && static_cast< Pet* >(u_caster)->GetPetOwner()->GetDuelState() != DUEL_STATE_STARTED)))
                 return true;
             else
                 return false;

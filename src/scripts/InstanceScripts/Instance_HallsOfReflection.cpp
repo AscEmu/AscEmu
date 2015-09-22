@@ -189,7 +189,7 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
             if (Id == 1)
-                if (JainaAI* pJaina = TO< JainaAI* >(TO_CREATURE(pObject)->GetScript()))
+                if (JainaAI* pJaina = static_cast< JainaAI* >(static_cast<Creature*>(pObject)->GetScript()))
                     pJaina->StartInstance();
             pObject->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             plr->Gossip_Complete();

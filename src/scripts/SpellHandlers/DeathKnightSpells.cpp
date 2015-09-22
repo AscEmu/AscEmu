@@ -40,7 +40,7 @@ bool Pestilence(uint32 i, Spell* pSpell)
         {
             if(!(*itr)->IsUnit())
                 continue;
-            Unit* Target = TO< Unit* >((*itr));
+            Unit* Target = static_cast< Unit* >((*itr));
             if(Main->GetGUID() == Target->GetGUID() && !u_caster->HasAura(63334))
                 continue;
             if(isAttackable(Target, u_caster) && u_caster->CalcDistance((*itr)) <= (pSpell->GetRadius(i) + inc))
@@ -160,7 +160,7 @@ bool DeathGrip(uint32 i, Spell* s)
 
     if(unitTarget->IsPlayer())
     {
-        Player* playerTarget = TO< Player* >(unitTarget);
+        Player* playerTarget = static_cast< Player* >(unitTarget);
 
         if(playerTarget->m_CurrentTransporter) // Blizzard screwed this up, so we won't.
             return false;

@@ -366,7 +366,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
         if (!(*itr)->IsCreature())
             continue;
 
-        pCreature = TO_CREATURE(*itr);
+        pCreature = static_cast<Creature*>(*itr);
 
         if (pCreature->isQuestGiver())
         {

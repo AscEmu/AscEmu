@@ -433,16 +433,16 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
     {
         qst_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
         if (qst_giver != NULL)
-            script = Arcemu::Gossip::Script::GetInterface(TO_ITEM(qst_giver));
+            script = Arcemu::Gossip::Script::GetInterface(static_cast<Item*>(qst_giver));
     }
     else
         qst_giver = GetPlayer()->GetMapMgr()->_GetObject(guid);
     if (qst_giver != NULL)
     {
         if (guidtype == HIGHGUID_TYPE_UNIT)
-            script = Arcemu::Gossip::Script::GetInterface(TO_CREATURE(qst_giver));
+            script = Arcemu::Gossip::Script::GetInterface(static_cast<Creature*>(qst_giver));
         else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
-            script = Arcemu::Gossip::Script::GetInterface(TO_GAMEOBJECT(qst_giver));
+            script = Arcemu::Gossip::Script::GetInterface(static_cast<GameObject*>(qst_giver));
     }
     if (script != NULL)
     {

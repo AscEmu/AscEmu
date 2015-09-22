@@ -3315,7 +3315,7 @@ class SapphironAI : public CreatureAIScript
                 if (isHostile(_unit, (*itr)) && (*itr) != _unit && (*itr)->IsUnit())
                 {
                     Unit* RandomTarget = NULL;
-                    RandomTarget = TO_UNIT(*itr);
+                    RandomTarget = static_cast<Unit*>(*itr);
 
                     if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))
                     {
@@ -4108,7 +4108,7 @@ class KelthuzadAI : public CreatureAIScript
                 if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                 {
                     Unit* RandomTarget = NULL;
-                    RandomTarget = TO_UNIT(*itr);
+                    RandomTarget = static_cast<Unit*>(*itr);
 
                     if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && ((RandomTarget->GetHealthPct() >= minhp2cast && RandomTarget->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))))
                     {
@@ -4248,7 +4248,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         else if (Kelthuzad->GetScript())
         {
             CreatureAIScript* pScript = Kelthuzad->GetScript();
-            if (TO< KelthuzadAI* >(pScript)->GetDespawnTrash())
+            if (static_cast< KelthuzadAI* >(pScript)->GetDespawnTrash())
             {
                 _unit->Despawn(0, 0);
                 return;
@@ -4377,7 +4377,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         else if (Kelthuzad->GetScript())
         {
             CreatureAIScript* pScript = Kelthuzad->GetScript();
-            if (TO< KelthuzadAI* >(pScript)->GetDespawnTrash())
+            if (static_cast< KelthuzadAI* >(pScript)->GetDespawnTrash())
             {
                 _unit->Despawn(0, 0);
                 return;
@@ -4549,7 +4549,7 @@ class SoulWeaverAI : public CreatureAIScript
         else if (Kelthuzad->GetScript())
         {
             CreatureAIScript* pScript = Kelthuzad->GetScript();
-            if (TO< KelthuzadAI* >(pScript)->GetDespawnTrash())
+            if (static_cast< KelthuzadAI* >(pScript)->GetDespawnTrash())
             {
                 _unit->Despawn(0, 0);
                 return;

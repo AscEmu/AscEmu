@@ -138,7 +138,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         else
         {
             /* Grab some arena teams */
-            ArenaTeam** teams = TO< Arena* >(this)->GetTeams();
+            ArenaTeam** teams = static_cast< Arena* >(this)->GetTeams();
 
             if (teams[0])
             {

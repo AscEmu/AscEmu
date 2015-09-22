@@ -312,7 +312,7 @@ class NotOnMyWatch : public CreatureAIScript
             {
                 Unit* pUnit = _unit->GetAIInterface()->GetMostHated();
                 if(pUnit != NULL && pUnit->IsPlayer())
-                    TO_PLAYER(pUnit)->EventAttackStop();
+                    static_cast<Player*>(pUnit)->EventAttackStop();
 
                 _unit->SetFaction(35);
                 _unit->GetAIInterface()->WipeHateList();
@@ -341,7 +341,7 @@ class LumpGossipScript : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* EnteredCode)
         {
-            Creature* Lump = TO_CREATURE(pObject);
+            Creature* Lump = static_cast<Creature*>(pObject);
             if(Lump == NULL)
                 return;
 

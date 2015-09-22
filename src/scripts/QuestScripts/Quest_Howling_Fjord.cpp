@@ -30,7 +30,7 @@ class NorthFleet : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* qle = TO_PLAYER(mKiller)->GetQuestLogForEntry(11230);
+                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11230);
                 if(qle != NULL)
                 {
                     if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[ 0 ])
@@ -55,7 +55,7 @@ class ChillmereScourge : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* qle = TO_PLAYER(mKiller)->GetQuestLogForEntry(11397);
+                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11397);
                 if(qle != NULL)
                 {
                     if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[ 0 ])
@@ -80,7 +80,7 @@ class Baleheim : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* qle = TO_PLAYER(mKiller)->GetQuestLogForEntry(11283);
+                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11283);
                 if(qle != NULL)
                 {
                     if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[ 0 ])
@@ -113,7 +113,7 @@ class Plaguethis_Gossip : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? TO_CREATURE(pObject) : NULL;
+            Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
             if(pCreature == NULL)
                 return;
 

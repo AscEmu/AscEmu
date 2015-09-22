@@ -217,7 +217,7 @@ class ImprovedMindBlastSpellProc : public SpellProc
     bool DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // If spell is not Mind Blast (by SpellGroupType) or player is not on shadowform, don't proc
-        if (!(CastingSpell->SpellGroupType[0] & mProcClassMask[0] && mTarget->IsPlayer() && TO_PLAYER(mTarget)->GetShapeShift() == FORM_SHADOW))
+        if (!(CastingSpell->SpellGroupType[0] & mProcClassMask[0] && mTarget->IsPlayer() && static_cast<Player*>(mTarget)->GetShapeShift() == FORM_SHADOW))
             return true;
 
         return false;
@@ -271,7 +271,7 @@ class PrayerOfMendingProc : public SpellProc
         if (aura == NULL)
             return true;
 
-        Unit* caster = TO_PLAYER(aura->GetCaster());
+        Unit* caster = static_cast<Player*>(aura->GetCaster());
         if (caster == NULL)
         {
             mTarget->RemoveAuraByNameHash(mSpell->NameHash);
@@ -287,7 +287,7 @@ class PrayerOfMendingProc : public SpellProc
         if (count <= 1)
             return true;
 
-        Player* plr = TO_PLAYER(mTarget);
+        Player* plr = static_cast<Player*>(mTarget);
         Group* grp = plr->GetGroup();
 
         if (grp == NULL)

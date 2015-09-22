@@ -34,16 +34,6 @@
 
 #include "../shared/CommonDefines.hpp"
 
-template< class T, class U > T TO(U u) { return static_cast< T >(u); }
-#define TO_CREATURE(ptr) TO<Creature*>(ptr)
-#define TO_PLAYER(ptr) TO<Player*>(ptr)
-#define TO_OBJECT(ptr) TO<Object*>(ptr)
-#define TO_UNIT(ptr) TO<Unit*>(ptr)
-#define TO_PET(ptr) TO<Pet*>(ptr)
-#define TO_ITEM(ptr) TO<Item*>(ptr)
-#define TO_GAMEOBJECT(ptr) TO<GameObject*>(ptr)
-#define TO_DK(ptr) TO<DeathKnight*>(ptr)
-
 #define DEBUG_LOG(...) sLog.Debug("DEBUG_LOG", __VA_ARGS__)
 #include "Definitions.h"
 

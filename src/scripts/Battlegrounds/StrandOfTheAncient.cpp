@@ -664,7 +664,7 @@ void StrandOfTheAncient::FinishRound()
 void StrandOfTheAncient::Finish(uint32 winningteam)
 {
     sEventMgr.RemoveEvents(this);
-    sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120 * 1000, 1, 0);
+    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120 * 1000, 1, 0);
 
     this->EndBattleground(winningteam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
 }

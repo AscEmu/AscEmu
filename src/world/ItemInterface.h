@@ -276,7 +276,7 @@ class ItemIterator
                 {
                     if (m_target->m_pItems[m_slot]->IsContainer())
                     {
-                        m_container = TO<Container*>(m_target->m_pItems[m_slot]);       /// we are a container :O lets look inside the box!
+                        m_container = static_cast<Container*>(m_target->m_pItems[m_slot]);       /// we are a container :O lets look inside the box!
                         m_containerSlot = 0;
                         m_currentItem = nullptr;           /// clear the pointer up. so we can tell if we found an item or not
                         ++m_slot;                       /// increment m_slot so we don't search this container again

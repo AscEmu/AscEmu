@@ -300,7 +300,7 @@ namespace luaGlobalFunctions
             count++,
                 ret = (*itr).second;
             lua_pushinteger(L, count);
-            PUSH_UNIT(L, (TO_UNIT(ret)));
+            PUSH_UNIT(L, (static_cast<Unit*>(ret)));
             lua_rawset(L, -3);
         }
         objmgr._playerslock.ReleaseReadLock();
@@ -368,7 +368,7 @@ namespace luaGlobalFunctions
             count++,
                 ret = (*itr).second;
             lua_pushinteger(L, count);
-            PUSH_UNIT(L, (TO_UNIT(ret)));
+            PUSH_UNIT(L, (static_cast<Unit*>(ret)));
             lua_rawset(L, -3);
         }
         return 1;
@@ -389,7 +389,7 @@ namespace luaGlobalFunctions
                 count++,
                     ret = (*itr).second;
                 lua_pushinteger(L, count);
-                PUSH_UNIT(L, (TO_UNIT(ret)));
+                PUSH_UNIT(L, (static_cast<Unit*>(ret)));
                 lua_rawset(L, -3);
             }
         }
@@ -712,7 +712,7 @@ namespace luaGlobalFunctions
             count++,
                 ret = (*itr).second;
             lua_pushinteger(L, count);
-            PUSH_UNIT(L, (TO_UNIT(ret)));
+            PUSH_UNIT(L, (static_cast<Unit*>(ret)));
             lua_rawset(L, -3);
         }
         return 1;

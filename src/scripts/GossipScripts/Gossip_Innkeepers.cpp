@@ -35,7 +35,7 @@ class InnkeeperGossip : public Arcemu::Gossip::Script
 
 void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
 {
-    Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+    Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
     if (pCreature == NULL)
         return;
 
@@ -74,7 +74,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
 
 void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* Code)
 {
-    Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+    Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
     if (pCreature == NULL)
         return;
 

@@ -553,7 +553,7 @@ bool DemonicKnowledge(uint32 i, Aura* a, bool apply)
 
     if(m_target->IsPet())
     {
-        Player* PetOwner = TO< Pet* >(m_target)->GetPetOwner();
+        Player* PetOwner = static_cast< Pet* >(m_target)->GetPetOwner();
         if(PetOwner != NULL)
         {
             uint32 val1 = m_target->GetStat(STAT_STAMINA); // stamina
@@ -595,7 +595,7 @@ bool ImprovedLifeTap(uint32 i, Aura* a, bool apply)
     if(!u_target->IsPlayer())
         return true;
 
-    Player* p_target = TO_PLAYER(u_target);
+    Player* p_target = static_cast<Player*>(u_target);
     int32 amount = a->GetModAmount(i);
 
 
@@ -629,7 +629,7 @@ bool SoulStoneResurrection(uint32 i, Aura* a, bool apply)
     if(!u_target->IsPlayer())
         return true;
 
-    Player* p_target = TO_PLAYER(u_target);
+    Player* p_target = static_cast<Player*>(u_target);
     uint32 soulstone = a->GetSpellProto()->EffectMiscValue[ 0 ];
 
     if(apply)

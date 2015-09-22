@@ -34,7 +34,7 @@ class FelOrcScavengersQAI : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* pQuest = TO_PLAYER(mKiller)->GetQuestLogForEntry(10482);
+                QuestLogEntry* pQuest = static_cast<Player*>(mKiller)->GetQuestLogForEntry(10482);
                 if(pQuest != NULL && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mobcount[0])
                 {
                     pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
@@ -55,7 +55,7 @@ class Dreadtusk : public CreatureAIScript
             if(!mKiller->IsPlayer())
                 return;
 
-            QuestLogEntry* pQuest = TO_PLAYER(mKiller)->GetQuestLogForEntry(10255);
+            QuestLogEntry* pQuest = static_cast<Player*>(mKiller)->GetQuestLogForEntry(10255);
             if(pQuest != NULL && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mobcount[0])
             {
                 pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
@@ -202,7 +202,7 @@ class PrisonerGossip : public GossipScript
                 return;
 
             int32 i = -1;
-            Creature* pPrisoner = TO_CREATURE(pObject);
+            Creature* pPrisoner = static_cast<Creature*>(pObject);
             switch(pPrisoner->GetEntry())
             {
                 case 20677:
@@ -249,7 +249,7 @@ class PrisonerGossip : public GossipScript
                 case 1:
                     {
                         int32 i = -1;
-                        Creature* pPrisoner = TO_CREATURE(pObject);
+                        Creature* pPrisoner = static_cast<Creature*>(pObject);
                         switch(pPrisoner->GetEntry())
                         {
                             case 20677:

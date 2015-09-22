@@ -348,7 +348,7 @@ class BazilAI : public CreatureAIScript
                     std::vector<Unit* > target_list;
                     for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                     {
-                        target = TO< Unit* >(*itr);
+                        target = static_cast< Unit* >(*itr);
                         if (target)
                             target_list.push_back(target);
 

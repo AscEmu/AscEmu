@@ -720,7 +720,7 @@ class NexusScript : public MoonInstanceScript
                 if (pKeristrasza == NULL)
                     return;
 
-                KeristraszaAI* pKeristraszaAI = TO< KeristraszaAI* >(pKeristrasza->GetScript());
+                KeristraszaAI* pKeristraszaAI = static_cast< KeristraszaAI* >(pKeristrasza->GetScript());
                 if (pKeristraszaAI == NULL)
                     return;
 

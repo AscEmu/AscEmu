@@ -1610,11 +1610,11 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_SPELLCASTER:
         {
-            if (obj->m_summoner != NULL && obj->m_summoner->IsPlayer() && plyr != TO< Player* >(obj->m_summoner))
+            if (obj->m_summoner != NULL && obj->m_summoner->IsPlayer() && plyr != static_cast< Player* >(obj->m_summoner))
             {
-                if (TO< Player* >(obj->m_summoner)->GetGroup() == NULL)
+                if (static_cast< Player* >(obj->m_summoner)->GetGroup() == NULL)
                     break;
-                else if (TO< Player* >(obj->m_summoner)->GetGroup() != plyr->GetGroup())
+                else if (static_cast< Player* >(obj->m_summoner)->GetGroup() != plyr->GetGroup())
                     break;
             }
 

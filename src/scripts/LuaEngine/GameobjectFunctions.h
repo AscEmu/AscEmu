@@ -233,11 +233,11 @@ class LuaGameObject
 
             for (std::set<Object*>::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
             {
-                d2 = (TO< Player* >(*itr))->GetDistanceSq(ptr);
+                d2 = (static_cast< Player* >(*itr))->GetDistanceSq(ptr);
                 if (!ret || d2 < dist)
                 {
                     dist = d2;
-                    ret = TO< Player* >(*itr);
+                    ret = static_cast< Player* >(*itr);
                 }
             }
             if (ret == NULL)
@@ -1209,7 +1209,7 @@ class LuaGameObject
                 if (current_dist < closest_dist)
                 {
                     closest_dist = current_dist;
-                    ret = TO_UNIT(closest_unit);
+                    ret = static_cast<Unit*>(closest_unit);
                 }
             }
             PUSH_UNIT(L, ret);

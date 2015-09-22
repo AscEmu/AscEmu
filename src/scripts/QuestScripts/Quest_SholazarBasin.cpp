@@ -48,9 +48,9 @@ class ChickenEscapee : public CreatureAIScript
                 if(Caster->IsPlayer())
                 {
 
-                    QuestLogEntry* qle = TO_PLAYER(Caster)->GetQuestLogForEntry(12532);
+                    QuestLogEntry* qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12532);
                     if(qle == NULL)
-                        qle = TO_PLAYER(Caster)->GetQuestLogForEntry(12702);
+                        qle = static_cast<Player*>(Caster)->GetQuestLogForEntry(12702);
 
                     if(qle != NULL)
                     {
@@ -84,7 +84,7 @@ class SCRIPT_DECL HemetTasteTest : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if(pCreature == NULL)
                 return;
 
@@ -132,7 +132,7 @@ class SCRIPT_DECL HadriusTasteTest : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if(pCreature == NULL)
                 return;
 
@@ -179,7 +179,7 @@ class SCRIPT_DECL TamaraTasteTest : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if(pCreature == NULL)
                 return;
 

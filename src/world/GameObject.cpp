@@ -530,9 +530,9 @@ void GameObject::UseFishingNode(Player* player)
     GameObject* school = NULL;
     for (InRangeSet::iterator it = GetInRangeSetBegin(); it != GetInRangeSetEnd(); ++it)
     {
-        if ((*it) == NULL || !(*it)->IsGameObject() || TO_GAMEOBJECT(*it)->GetType() != GAMEOBJECT_TYPE_FISHINGHOLE)
+        if ((*it) == NULL || !(*it)->IsGameObject() || static_cast<GameObject*>(*it)->GetType() != GAMEOBJECT_TYPE_FISHINGHOLE)
             continue;
-        school = TO< GameObject* >(*it);
+        school = static_cast< GameObject* >(*it);
         if (!isInRange(school, (float)school->GetInfo()->parameter_1))
         {
             school = NULL;

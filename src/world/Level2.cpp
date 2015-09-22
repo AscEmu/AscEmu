@@ -420,11 +420,11 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
     switch (target->GetTypeId())
     {
         case TYPEID_PLAYER:
-            sGMLog.writefromsession(m_session, "used kill command on PLAYER %s", TO< Player* >(target)->GetName());
+            sGMLog.writefromsession(m_session, "used kill command on PLAYER %s", static_cast< Player* >(target)->GetName());
             break;
 
         case TYPEID_UNIT:
-            sGMLog.writefromsession(m_session, "used kill command on CREATURE %u [%s], sqlid %u%s", TO< Creature* >(target)->GetEntry(), TO< Creature* >(target)->GetCreatureInfo()->Name, TO< Creature* >(target)->GetSQL_id(), m_session->GetPlayer()->InGroup() ? ", in group" : "");
+            sGMLog.writefromsession(m_session, "used kill command on CREATURE %u [%s], sqlid %u%s", static_cast< Creature* >(target)->GetEntry(), static_cast< Creature* >(target)->GetCreatureInfo()->Name, static_cast< Creature* >(target)->GetSQL_id(), m_session->GetPlayer()->InGroup() ? ", in group" : "");
             break;
     }
 
@@ -432,7 +432,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
     // If we're killing a player, send a message indicating a gm killed them.
     if (target->IsPlayer())
     {
-        Player* plr = TO< Player* >(target);
+        Player* plr = static_cast< Player* >(target);
         // cebernic: kill just is kill,don't use dealdamage for it
         // godcheat will not stop the killing,godcheat for DealDamage() only.
         //m_session->GetPlayer()->DealDamage(plr, plr->GetHealth()*2,0,0,0);
@@ -518,10 +518,10 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
     {
         case TYPEID_PLAYER:
             if (caster != target)
-                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellid, TO< Player* >(target)->GetName());
+                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellid, static_cast< Player* >(target)->GetName());
             break;
         case TYPEID_UNIT:
-            sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellid, TO< Creature* >(target)->GetEntry(), TO< Creature* >(target)->GetCreatureInfo()->Name, TO< Creature* >(target)->GetSQL_id());
+            sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellid, static_cast< Creature* >(target)->GetEntry(), static_cast< Creature* >(target)->GetCreatureInfo()->Name, static_cast< Creature* >(target)->GetSQL_id());
             break;
     }
 
@@ -579,10 +579,10 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     {
         case TYPEID_PLAYER:
             if (caster != target)
-                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellId, TO< Player* >(target)->GetName());
+                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellId, static_cast< Player* >(target)->GetName());
             break;
         case TYPEID_UNIT:
-            sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellId, TO< Creature* >(target)->GetEntry(), TO< Creature* >(target)->GetCreatureInfo()->Name, TO< Creature* >(target)->GetSQL_id());
+            sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellId, static_cast< Creature* >(target)->GetEntry(), static_cast< Creature* >(target)->GetCreatureInfo()->Name, static_cast< Creature* >(target)->GetSQL_id());
             break;
     }
 
@@ -619,10 +619,10 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     {
         case TYPEID_PLAYER:
             if (m_session->GetPlayer() != target)
-                sGMLog.writefromsession(m_session, "used castself with spell %d on PLAYER %s", spellid, TO< Player* >(target)->GetName());
+                sGMLog.writefromsession(m_session, "used castself with spell %d on PLAYER %s", spellid, static_cast< Player* >(target)->GetName());
             break;
         case TYPEID_UNIT:
-            sGMLog.writefromsession(m_session, "used castself with spell %d on CREATURE %u [%s], sqlid %u", spellid, TO< Creature* >(target)->GetEntry(), TO< Creature* >(target)->GetCreatureInfo()->Name, TO< Creature* >(target)->GetSQL_id());
+            sGMLog.writefromsession(m_session, "used castself with spell %d on CREATURE %u [%s], sqlid %u", spellid, static_cast< Creature* >(target)->GetEntry(), static_cast< Creature* >(target)->GetCreatureInfo()->Name, static_cast< Creature* >(target)->GetSQL_id());
             break;
     }
 
@@ -803,7 +803,7 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
                     if (bUseNext)
                     {
                         // Select the first.
-                        GObj = TO< GameObject* >(*Itr);
+                        GObj = static_cast< GameObject* >(*Itr);
                         break;
                     }
                     else
@@ -828,7 +828,7 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
                 {
                     cDist = nDist;
                     nDist = 0.0f;
-                    GObj = TO_GAMEOBJECT(*Itr);
+                    GObj = static_cast<GameObject*>(*Itr);
                 }
             }
         }
@@ -1700,7 +1700,7 @@ bool ChatHandler::HandleRepairItemsCommand(const char* args, WorldSession* m_ses
         {
             if (pItem->IsContainer())
             {
-                pContainer = TO< Container* >(pItem);
+                pContainer = static_cast< Container* >(pItem);
                 for (j = 0; j < pContainer->GetProto()->ContainerSlots; ++j)
                 {
                     pItem = pContainer->GetItem(static_cast<uint16>(j));
