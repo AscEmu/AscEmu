@@ -21,7 +21,7 @@
 #ifndef _EVENTMGR_H
 #define _EVENTMGR_H
 
-#include "RWLock.h"
+#include "Threading/RWLock.h"
 
 enum EventTypes
 {
