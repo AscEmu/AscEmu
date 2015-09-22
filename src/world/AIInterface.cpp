@@ -22,6 +22,7 @@ class Unit;
 #include "Unit.h"
 
 #include "CommonTypes.hpp"
+#include "CommonDefines.hpp"
 
 #ifndef UNIX
 #include <cmath>

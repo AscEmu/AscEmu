@@ -51,6 +51,7 @@ set(headers
 	Common.h
   CommonTypes.hpp
   CommonHelpers.hpp
+  CommonDefines.hpp
 	CrashHandler.h
 	crc32.h
 	CRefcounter.h
