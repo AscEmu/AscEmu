@@ -22,6 +22,11 @@
 #ifndef __WORLD_H
 #define __WORLD_H
 
+#include "Definitions.h"
+#include <set>
+#include <string>
+#include <vector>
+
 #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571))
 
 class Object;
@@ -236,7 +241,7 @@ struct CharacterLoaderThread : public ThreadBase
 
 class TaskList
 {
-        set<Task*> tasks;
+        std::set<Task*> tasks;
         Mutex queueLock;
     public:
         TaskList() : thread_count(0), running(false) {};
@@ -296,7 +301,7 @@ class WorldSocket;
 
 // Slow for remove in middle, oh well, wont get done much.
 typedef std::list<WorldSocket*> QueueSet;
-typedef set<WorldSession*> SessionSet;
+typedef std::set<WorldSession*> SessionSet;
 
 class SERVER_DECL World : public Singleton<World>, public EventableObject, public Arcemu::IUpdatable
 {
@@ -500,10 +505,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         struct NameGenData
         {
-            string name;
+            std::string name;
             uint32 type;
         };
-        vector<NameGenData> _namegendata[3];
+        std::vector<NameGenData> _namegendata[3];
         void LoadNameGenData();
 
         void LoadWMOAreaData()
@@ -540,8 +545,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void SaveAllPlayers();
 
-        string MapPath;
-        string vMapPath;
+        std::string MapPath;
+        std::string vMapPath;
         bool UnloadMapFiles;
         bool BreathingEnabled;
         bool SpeedhackProtection;
@@ -615,10 +620,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         int announce_gmtagcolor;
         int announce_namecolor;
         int announce_msgcolor;
-        string ann_namecolor;
-        string ann_gmtagcolor;
-        string ann_tagcolor;
-        string ann_msgcolor;
+        std::string ann_namecolor;
+        std::string ann_gmtagcolor;
+        std::string ann_tagcolor;
+        std::string ann_msgcolor;
         void AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, int msgcolor);
 
         bool antihack_teleport;
