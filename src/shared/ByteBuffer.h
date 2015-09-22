@@ -26,6 +26,7 @@
 #include "LocationVector.h"
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 class SERVER_DECL ByteBuffer
 {
