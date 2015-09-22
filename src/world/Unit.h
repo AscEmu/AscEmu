@@ -23,6 +23,9 @@
 
 #include "Object.h"
 
+class SpellProc;
+#include "SpellProc.h"
+
 class AIInterface;
 class DynamicObject;
 
