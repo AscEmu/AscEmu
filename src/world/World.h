@@ -25,6 +25,8 @@
 #include "EventableObject.h"
 #include "IUpdatable.h"
 #include "Definitions.h"
+#include "DBC/DBCStores.h"
+#include "AreaTrigger.h"
 #include <set>
 #include <string>
 #include <vector>
@@ -433,7 +435,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         // cebernic: textfilter,no fast,but works:D ...
         inline std::string SessionLocalizedTextFilter(WorldSession* _session, const char* text)
         {
-            std::string opstr = string(text);
+            std::string opstr = std::string(text);
             std::string::iterator t = opstr.begin();
             std::string temp;
             int found = 0;
@@ -740,7 +742,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::string GmClientChannel;
         bool m_reqGmForCommands;
         bool m_lfgForNonLfg;
-        list<SpellEntry*> dummyspells;
+        std::list<SpellEntry*> dummyspells;
         uint32 m_levelCap;
         uint32 m_genLevelCap;
         bool m_limitedNames;

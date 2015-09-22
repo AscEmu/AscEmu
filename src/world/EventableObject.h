@@ -81,7 +81,7 @@ class SERVER_DECL EventableObject
 };
 
 
-typedef set<EventableObject*> EventableObjectSet;
+typedef std::set<EventableObject*> EventableObjectSet;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///class EventableObjectHolder
@@ -110,7 +110,7 @@ class EventableObjectHolder
         EventList m_events;
 
         Mutex m_insertPoolLock;
-        typedef list<TimedEvent*> InsertableQueue;
+        typedef std::list<TimedEvent*> InsertableQueue;
         InsertableQueue m_insertPool;
 };
 
