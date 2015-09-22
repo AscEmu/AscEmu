@@ -22,6 +22,7 @@
 #define _LOGON_COMM_CLIENT_H
 
 #include "CommonTypes.hpp"
+#include "Network/Socket.h"
 #include "../logonserver/LogonOpcodes.h"
 #include <RC4Engine.h>
 #include "zlib.h"
