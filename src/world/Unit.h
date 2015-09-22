@@ -24,12 +24,14 @@
 #include "UnitDefines.hpp"
 
 #include "Object.h"
+#include "LootMgr.h"
 
 class SpellProc;
 #include "SpellProc.h"
 
 class AIInterface;
 class DynamicObject;
+class SummonHandler;
 
 //these refer to visibility ranges. We need to store each stack of the aura and not just visible count.
 #define MAX_POSITIVE_VISUAL_AURAS_START 0
