@@ -11,6 +11,8 @@
 
 #include "SocketDefines.h"
 #include "NetworkIncludes.hpp"
+#include <string>
+#include <mutex>
 
 class SERVER_DECL Socket
 {
@@ -47,7 +49,7 @@ class SERVER_DECL Socket
         bool Send(const uint8* Bytes, uint32 Size);
 
         // Burst system - Locks the sending mutex.
-        ARCEMU_INLINE void BurstBegin() { m_writeMutex.Acquire(); }
+        inline void BurstBegin() { m_writeMutex.lock(); }
 
         // Burst system - Adds bytes to output buffer.
         bool BurstSend(const uint8* Bytes, uint32 Size);
@@ -56,14 +58,14 @@ class SERVER_DECL Socket
         void BurstPush();
 
         // Burst system - Unlocks the sending mutex.
-        ARCEMU_INLINE void BurstEnd() { m_writeMutex.Release(); }
+        inline void BurstEnd() { m_writeMutex.unlock(); }
 
         /* Client Operations */
 
         // Get the client's ip in numerical form.
         std::string GetRemoteIP();
-        ARCEMU_INLINE uint32 GetRemotePort() { return ntohs(m_client.sin_port); }
-        ARCEMU_INLINE SOCKET GetFd() { return m_fd; }
+        inline uint32 GetRemotePort() { return ntohs(m_client.sin_port); }
+        inline SOCKET GetFd() { return m_fd; }
 
         /* Platform-specific methods */
 
@@ -71,19 +73,19 @@ class SERVER_DECL Socket
         void ReadCallback(uint32 len);
         void WriteCallback();
 
-        ARCEMU_INLINE bool IsDeleted()
+        inline bool IsDeleted()
         {
             return m_deleted.GetVal();
         }
-        ARCEMU_INLINE bool IsConnected()
+        inline bool IsConnected()
         {
             return m_connected.GetVal();
         }
-        ARCEMU_INLINE sockaddr_in & GetRemoteStruct() { return m_client; }
+        inline sockaddr_in & GetRemoteStruct() { return m_client; }
 
         void Delete();
 
-        ARCEMU_INLINE in_addr GetRemoteAddress() { return m_client.sin_addr; }
+        inline in_addr GetRemoteAddress() { return m_client.sin_addr; }
 
 
         CircularBuffer readBuffer;
@@ -96,8 +98,8 @@ class SERVER_DECL Socket
 
         SOCKET m_fd;
 
-        Mutex m_writeMutex;
-        Mutex m_readMutex;
+        std::recursive_mutex m_writeMutex;
+        std::recursive_mutex m_readMutex;
 
         // we are connected? stop from posting events.
         Arcemu::Threading::AtomicBoolean m_connected;
@@ -112,9 +114,9 @@ class SERVER_DECL Socket
 
     public:
         // Atomic wrapper functions for increasing read/write locks
-        ARCEMU_INLINE void IncSendLock() { ++m_writeLock; }
-        ARCEMU_INLINE void DecSendLock() { --m_writeLock; }
-        ARCEMU_INLINE bool AcquireSendLock()
+        inline void IncSendLock() { ++m_writeLock; }
+        inline void DecSendLock() { --m_writeLock; }
+        inline bool AcquireSendLock()
         {
             if(m_writeLock.SetVal(1) != 0)
                 return false;
@@ -132,7 +134,7 @@ class SERVER_DECL Socket
     public:
 
         // Set completion port that this socket will be assigned to.
-        ARCEMU_INLINE void SetCompletionPort(HANDLE cp) { m_completionPort = cp; }
+        inline void SetCompletionPort(HANDLE cp) { m_completionPort = cp; }
 
         OverlappedStruct m_readEvent;
         OverlappedStruct m_writeEvent;
@@ -152,7 +154,7 @@ class SERVER_DECL Socket
         // Posts a epoll event with the specifed arguments.
         void PostEvent(uint32 events);
 
-        ARCEMU_INLINE bool HasSendLock()
+        inline bool HasSendLock()
         {
             bool res;
             res = (m_writeLock.GetVal() != 0);
@@ -165,7 +167,7 @@ class SERVER_DECL Socket
     public:
         // Posts a epoll event with the specifed arguments.
         void PostEvent(int events, bool oneshot);
-        ARCEMU_INLINE bool HasSendLock()
+        inline bool HasSendLock()
         {
             bool res;
             res = (m_writeLock.GetVal() != 0);
@@ -177,14 +179,11 @@ class SERVER_DECL Socket
         // Polls and resets the traffic data
         void PollTraffic(unsigned long* sent, unsigned long* recieved)
         {
-
-            m_writeMutex.Acquire();
+            std::lock_guard<std::recursive_mutex> lock(m_writeMutex);
             *sent = m_BytesSent;
             *recieved = m_BytesRecieved;
             m_BytesSent = 0;
             m_BytesRecieved = 0;
-
-            m_writeMutex.Release();
         }
 };
 
