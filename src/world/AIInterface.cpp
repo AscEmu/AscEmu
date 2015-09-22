@@ -34,6 +34,7 @@ class Unit;
 #include "AIInterface.h"
 
 #include "Pet.h"
+#include "Creature.h"
 
 AIInterface::AIInterface()
     :
