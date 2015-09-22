@@ -18,6 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Unit.h"
+#include "AIInterface.h"
 #include "StdAfx.h"
 
 pAIEvent AIEventHandlers[NUM_AI_EVENTS] =
