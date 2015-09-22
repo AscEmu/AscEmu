@@ -27,6 +27,7 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <cstring>
 
 class SERVER_DECL ByteBuffer
 {
