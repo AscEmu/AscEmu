@@ -21,7 +21,7 @@
 #ifndef _STACKBUFFER_H
 #define _STACKBUFFER_H
 
-#include "Common.h"
+#include "CommonTypes.hpp"
 #include "WoWGuid.h"
 #include "LocationVector.h"
 
