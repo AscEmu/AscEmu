@@ -22,6 +22,8 @@
 #ifndef __UPDATEMASK_H
 #define __UPDATEMASK_H
 
+#include "WUtil.h"
+
 class UpdateMask
 {
         uint32* mUpdateMask;
