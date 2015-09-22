@@ -121,7 +121,7 @@ class AccountMgr : public Singleton < AccountMgr >
 #ifdef WIN32
             for(HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
 #else
-            for(map<string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
+            for(std::map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
 #endif
             {
                 delete itr->second;
@@ -138,7 +138,7 @@ class AccountMgr : public Singleton < AccountMgr >
 #ifdef WIN32
             HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 #else
-            map<string, Account*>::iterator itr = AccountDatabase.find(Name);
+            std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 #endif
 
             if(itr == AccountDatabase.end())    pAccount = NULL;
@@ -171,7 +171,7 @@ class AccountMgr : public Singleton < AccountMgr >
 #ifdef WIN32
         HM_NAMESPACE::hash_map<std::string, Account*> AccountDatabase;
 #else
-        std::map<string, Account*> AccountDatabase;
+        std::map<std::string, Account*> AccountDatabase;
 #endif
 
     protected:
