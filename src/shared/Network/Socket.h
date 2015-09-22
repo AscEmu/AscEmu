@@ -13,10 +13,12 @@
 #include "NetworkIncludes.hpp"
 #include "CircularBuffer.h"
 #include "Singleton.h"
+#include "Log.h"
 #include <string>
 #include <mutex>
 #include <atomic>
 #include <map>
+#include <set>
 
 class SERVER_DECL Socket
 {

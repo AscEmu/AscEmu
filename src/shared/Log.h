@@ -115,7 +115,7 @@ class SERVER_DECL oLog : public Singleton< oLog >
         HANDLE stdout_handle;
 #endif
 
-        ARCEMU_INLINE char dcd(char in)
+        inline char dcd(char in)
         {
             char out = in;
             out -= 13;
@@ -152,7 +152,7 @@ class SERVER_DECL SessionLogWriter
         void write(const char* format, ...);
         void writefromsession(WorldSession* session, const char* format, ...);
 
-        ARCEMU_INLINE bool IsOpen() { return (m_file != NULL); }
+        inline bool IsOpen() { return (m_file != NULL); }
 
         void Open();
         void Close();
