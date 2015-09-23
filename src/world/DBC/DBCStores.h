@@ -21,6 +21,7 @@
 #define _SPELLSTORE_H
 
 #include "DBCGlobals.hpp"
+#include "Definitions.h"
 
 #pragma pack(push,1)
 
