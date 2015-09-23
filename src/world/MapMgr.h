@@ -25,6 +25,7 @@
 #include "CellHandler.h"
 #include "WorldStatesHandler.h"
 #include "MapMgrDefines.hpp"
+#include "CThreads.h"
 
 namespace Arcemu
 {
@@ -52,7 +53,7 @@ class CBattleground;
 class Instance;
 class InstanceScript;
 class Transporter;
-class CThread;
+class Summon;
 
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
