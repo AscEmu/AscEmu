@@ -26,6 +26,7 @@
 #include "WorldStatesHandler.h"
 #include "MapMgrDefines.hpp"
 #include "CThreads.h"
+#include "Entities/Summons/SummonDefines.hpp"
 
 namespace Arcemu
 {
@@ -261,7 +262,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		PUpdateQueue _processQueue;
 
 		// Sessions
-		SessionSet Sessions;
+		std::set<WorldSession*> Sessions;
 
 		// Map Information
 		MapInfo* pMapInfo;

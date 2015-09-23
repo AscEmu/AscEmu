@@ -21,14 +21,7 @@
 #ifndef SUMMON_HPP_
 #define SUMMON_HPP_
 
-enum SummonType
-{
-    SUMMONTYPE_GUARDIAN       =  0,
-    SUMMONTYPE_WILD           =  1,
-    SUMMONTYPE_TOTEM          =  2,
-    SUMMONTYPE_COMPANION      =  3,
-    SUMMONTYPE_POSSESSED      =  4
-};
+#include "SummonDefines.hpp"
 
 /////////////////////////////////////////////////////////////////////////
 //class Summon

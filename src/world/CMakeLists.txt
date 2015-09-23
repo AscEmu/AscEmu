@@ -200,6 +200,7 @@ set(headers
 	CollideInterface.h
 	CommonScheduleThread.h
 	Entities/Summons/CompanionSummon.h
+    Entities/Summons/SummonDefines.hpp
 	ConsoleCommands.h
 	Container.h
 	Corpse.h

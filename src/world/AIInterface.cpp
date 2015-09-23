@@ -36,6 +36,7 @@
 #include "Creature.h"
 #include "MapMgr.h"
 #include "WorldCreatorDefines.hpp"
+#include "World.h"
 
 AIInterface::AIInterface()
     :
