@@ -23,6 +23,15 @@
 
 #include "MapManagement/MapManagementGlobals.hpp"
 
+namespace Arcemu
+{
+    namespace Utility
+    {
+        template<typename T>
+        class TLSObject;
+    }
+}
+
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
 #define IS_PERSISTENT_INSTANCE(p) (((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty >= MODE_HEROIC) || (p)->m_mapInfo->type == INSTANCE_RAID)

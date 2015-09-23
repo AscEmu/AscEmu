@@ -19,6 +19,7 @@
  *
  */
 
+#include "TLSObject.h"
 #include "StdAfx.h"
 #include "CrashHandler.h"
 
