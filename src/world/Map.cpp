@@ -19,6 +19,7 @@
  *
  */
 
+#include "DBC/DBCStores.h"
 #include "StdAfx.h"
 
 #define CREATURESPAWNSFIELDCOUNT 27
@@ -74,6 +75,45 @@ Map::~Map()
         delete *i;
     for (GOSpawnList::iterator i = staticSpawns.GOSpawns.begin(); i != staticSpawns.GOSpawns.end(); ++i)
         delete *i;
+}
+
+std::string Map::GetNameString()
+{
+    return name;
+}
+
+const char* Map::GetName()
+{
+    return name.c_str();
+}
+
+MapEntry* Map::GetDBCEntry()
+{
+    return me;
+}
+
+CellSpawns* Map::GetSpawnsList(uint32 cellx, uint32 celly)
+{
+    ARCEMU_ASSERT(cellx < _sizeX);
+    ARCEMU_ASSERT(celly < _sizeY);
+    if (spawns[cellx] == NULL)
+        return NULL;
+    return spawns[cellx][celly];
+}
+
+CellSpawns* Map::GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
+{
+    ARCEMU_ASSERT(cellx < _sizeX);
+    ARCEMU_ASSERT(celly < _sizeY);
+    if (spawns[cellx] == NULL)
+    {
+        spawns[cellx] = new CellSpawns*[_sizeY];
+        memset(spawns[cellx], 0, sizeof(CellSpawns*)*_sizeY);
+    }
+
+    if (spawns[cellx][celly] == 0)
+        spawns[cellx][celly] = new CellSpawns;
+    return spawns[cellx][celly];
 }
 
 bool first_table_warning = true;
@@ -336,4 +376,14 @@ void Map::LoadSpawns(bool reload)
     }
 
     Log.Notice("MapSpawns", "%u creatures / %u gameobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
+}
+
+void Map::CellGoneActive(uint32 x, uint32 y)
+{
+    
+}
+
+void Map::CellGoneIdle(uint32 x, uint32 y)
+{
+    
 }

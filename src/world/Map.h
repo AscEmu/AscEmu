@@ -26,6 +26,7 @@
 class MapMgr;
 struct MapInfo;
 class TerrainMgr;
+struct MapEntry;
 
 struct Formation;
 
@@ -112,42 +113,24 @@ class SERVER_DECL Map
         Map(uint32 mapid, MapInfo* inf);
         ~Map();
 
-        inline std::string GetNameString() { return name; }
-        inline const char* GetName() { return name.c_str(); }
-        inline MapEntry* GetDBCEntry() { return me; }
+    inline std::string GetNameString();
 
-        inline CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly)
-        {
-            ARCEMU_ASSERT(cellx < _sizeX);
-            ARCEMU_ASSERT(celly < _sizeY);
-            if (spawns[cellx] == NULL)
-                return NULL;
-            return spawns[cellx][celly];
-        }
+    inline const char* GetName();
 
-        inline CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
-        {
-            ARCEMU_ASSERT(cellx < _sizeX);
-            ARCEMU_ASSERT(celly < _sizeY);
-            if (spawns[cellx] == NULL)
-            {
-                spawns[cellx] = new CellSpawns*[_sizeY];
-                memset(spawns[cellx], 0, sizeof(CellSpawns*)*_sizeY);
-            }
+    inline MapEntry* GetDBCEntry();
 
-            if (spawns[cellx][celly] == 0)
-                spawns[cellx][celly] = new CellSpawns;
-            return spawns[cellx][celly];
-        }
+    inline CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
 
-        void LoadSpawns(bool reload);           /// set to true to make clean up
+    inline CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
+
+    void LoadSpawns(bool reload);           /// set to true to make clean up
         uint32 CreatureSpawnCount;
         uint32 GameObjectSpawnCount;
 
-        inline void CellGoneActive(uint32 x, uint32 y) { }
+    inline void CellGoneActive(uint32 x, uint32 y);
 
-        inline void CellGoneIdle(uint32 x, uint32 y) { }
-    private:
+    inline void CellGoneIdle(uint32 x, uint32 y);
+private:
 
         MapInfo* _mapInfo;
         uint32 _mapId;
