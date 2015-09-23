@@ -27,6 +27,13 @@
 #include <G3D/Vector3.h>
 
 class Unit;
+class MapMgr;
+class Object;
+class Creature;
+class Unit;
+class Player;
+class WorldSession;
+class SpellCastTargets;
 
 /// ms smoother server/client side moving vs less cpu/ less b/w
 #define UNIT_MOVEMENT_INTERPOLATE_INTERVAL 400/*750*/
@@ -73,12 +80,6 @@ inline bool inRangeYZX(const float* v1, const float* v2, const float r, const fl
 }
 
 
-class Object;
-class Creature;
-class Unit;
-class Player;
-class WorldSession;
-class SpellCastTargets;
 
 enum SplineFlags
 {

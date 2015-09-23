@@ -306,6 +306,7 @@ set(headers
 	WordFilter.h
 	World.h
 	WorldCreator.h
+    WorldCreatorDefines.hpp
 	WorldRunnable.h
 	WorldSession.h
 	WorldSocket.h

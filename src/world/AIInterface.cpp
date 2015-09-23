@@ -34,6 +34,8 @@
 
 #include "Pet.h"
 #include "Creature.h"
+#include "MapMgr.h"
+#include "WorldCreatorDefines.hpp"
 
 AIInterface::AIInterface()
     :
