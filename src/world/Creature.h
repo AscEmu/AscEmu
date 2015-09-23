@@ -38,6 +38,7 @@ class GossipScript;
 class AuctionHouse;
 struct Trainer;
 class GameEvent;
+struct QuestRelation;
 
 #define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->IsCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
 
@@ -79,12 +80,12 @@ class SERVER_DECL Creature : public Unit
         void Update(unsigned long time_passed);
 
         /// Creature inventory
-        inline uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
-        inline uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
+        uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
+        uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
 
-    inline bool HasItems();
+    bool HasItems();
 
-    inline CreatureProto* GetProto();
+    CreatureProto* GetProto();
 
     bool IsPvPFlagged();
         void SetPvPFlag();
@@ -104,17 +105,17 @@ class SERVER_DECL Creature : public Unit
 
     uint32 GetItemAmountByItemId(uint32 itemid);
 
-    inline void GetSellItemBySlot(uint32 slot, CreatureItem& ci);
+    void GetSellItemBySlot(uint32 slot, CreatureItem& ci);
 
     void GetSellItemByItemId(uint32 itemid, CreatureItem& ci);
 
     ItemExtendedCostEntry* GetItemExtendedCostByItemId(uint32 itemid);
 
-    inline std::vector<CreatureItem>::iterator GetSellItemBegin();
+    std::vector<CreatureItem>::iterator GetSellItemBegin();
 
-    inline std::vector<CreatureItem>::iterator GetSellItemEnd();
+    std::vector<CreatureItem>::iterator GetSellItemEnd();
 
-    inline size_t GetSellItemCount();
+    size_t GetSellItemCount();
 
     void RemoveVendorItem(uint32 itemid);
     void AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry* ec);
@@ -133,41 +134,41 @@ class SERVER_DECL Creature : public Unit
     std::list<QuestRelation*>::iterator QuestsEnd();
     void SetQuestList(std::list<QuestRelation*>* qst_lst);
 
-    inline uint32 isVendor() const;
+    uint32 isVendor() const;
 
-    inline uint32 isTrainer() const;
+    uint32 isTrainer() const;
 
-    inline uint32 isClass() const;
+    uint32 isClass() const;
 
-    inline uint32 isProf() const;
+    uint32 isProf() const;
 
-    inline uint32 isQuestGiver() const;
+    uint32 isQuestGiver() const;
 
-    inline uint32 isGossip() const;
+    uint32 isGossip() const;
 
-    inline uint32 isTaxi() const;
+    uint32 isTaxi() const;
 
-    inline uint32 isCharterGiver() const;
+    uint32 isCharterGiver() const;
 
-    inline uint32 isGuildBank() const;
+    uint32 isGuildBank() const;
 
-    inline uint32 isBattleMaster() const;
+    uint32 isBattleMaster() const;
 
-    inline uint32 isBanker() const;
+    uint32 isBanker() const;
 
-    inline uint32 isInnkeeper() const;
+    uint32 isInnkeeper() const;
 
-    inline uint32 isSpiritHealer() const;
+    uint32 isSpiritHealer() const;
 
-    inline uint32 isTabardDesigner() const;
+    uint32 isTabardDesigner() const;
 
-    inline uint32 isAuctioner() const;
+    uint32 isAuctioner() const;
 
-    inline uint32 isStableMaster() const;
+    uint32 isStableMaster() const;
 
-    inline uint32 isArmorer() const;
+    uint32 isArmorer() const;
 
-    inline uint32 GetHealthFromSpell();
+    uint32 GetHealthFromSpell();
 
     void SetHealthFromSpell(uint32 value);
 
@@ -201,8 +202,8 @@ class SERVER_DECL Creature : public Unit
         uint32 GetRequiredLootSkill();
 
         // Misc
-    inline void setEmoteState(uint8 emote);
-    inline uint32 GetSQL_id();
+    void setEmoteState(uint8 emote);
+    uint32 GetSQL_id();
 
     virtual void setDeathState(DeathState s);
 
@@ -254,27 +255,27 @@ class SERVER_DECL Creature : public Unit
 
     float GetDamageDonePctMod(uint32 school);
 
-    inline bool IsPickPocketed();
+    bool IsPickPocketed();
 
-    inline void SetPickPocketed(bool val = true);
+    void SetPickPocketed(bool val = true);
 
-    inline CreatureAIScript* GetScript();
+    CreatureAIScript* GetScript();
     void LoadScript();
 
         void CallScriptUpdate();
 
-    inline CreatureInfo* GetCreatureInfo();
+    CreatureInfo* GetCreatureInfo();
 
-    inline void SetCreatureInfo(CreatureInfo* ci);
+    void SetCreatureInfo(CreatureInfo* ci);
 
     void SetCreatureProto(CreatureProto* cp);
 
-    inline Trainer* GetTrainer();
+    Trainer* GetTrainer();
     void RegenerateFocus();
 
         CreatureFamilyEntry* myFamily;
 
-    inline bool IsExotic();
+    bool IsExotic();
 
 
     bool isCritter();
