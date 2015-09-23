@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "QuestLogEntry.hpp"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {

@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include <QuestLogEntry.hpp>
 
 bool FrostWarding(uint32 i, Spell* s)
 {

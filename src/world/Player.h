@@ -24,6 +24,7 @@
 #include "PlayerDefines.hpp"
 #include "PlayerCache.h"
 
+class QuestLogEntry;
 struct BGScore;
 #ifdef ENABLE_ACHIEVEMENTS
 class AchievementMgr;

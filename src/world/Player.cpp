@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "QuestLogEntry.hpp"
 
 
 UpdateMask Player::m_visibleUpdateMask;

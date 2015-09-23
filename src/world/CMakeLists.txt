@@ -102,6 +102,7 @@ set(sources
 	QueryHandler.cpp 
 	Quest.cpp 
 	QuestHandler.cpp 
+    QuestLogEntry.cpp
 	QuestMgr.cpp 
 	QuestCommands.cpp 
 	RaidHandler.cpp 
@@ -272,6 +273,8 @@ set(headers
 	Entities/Summons/PossessedSummon.h
 	Priest.h
 	Quest.h
+    QuestDefines.hpp
+    QuestLogEntry.hpp
 	QuestMgr.h
     RecastIncludes.hpp
 	Rogue.h

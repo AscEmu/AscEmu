@@ -34,6 +34,7 @@
 #if PLATFORM != PLATFORM_WIN32
 #include <dirent.h>
 #endif
+#include <QuestLogEntry.hpp>
 
 ScriptMgr* m_scriptMgr = NULL;
 LuaEngine g_luaMgr;

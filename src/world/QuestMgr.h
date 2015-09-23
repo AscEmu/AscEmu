@@ -21,6 +21,8 @@
 #ifndef _QUESTMGR_H
 #define _QUESTMGR_H
 
+#include "QuestDefines.hpp"
+
 struct QuestRelation
 {
     Quest* qst;
