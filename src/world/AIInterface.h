@@ -24,9 +24,7 @@
 #include "RecastIncludes.hpp"
 #include "IUpdatable.h"
 
-namespace G3D{
-    class Vector3;
-}
+#include <G3D/Vector3.h>
 
 /// ms smoother server/client side moving vs less cpu/ less b/w
 #define UNIT_MOVEMENT_INTERPOLATE_INTERVAL 400/*750*/
