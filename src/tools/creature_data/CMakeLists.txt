@@ -14,7 +14,7 @@ include_directories(
    ${DEPENDENCY_ROOT}/libmpq/libmpq
    ${DEPENDENCY_ROOT}/libmpq/win
    ${DEPENDENCY_ROOT}/dbcfile
-   ${DEPENDENCY_ROOT}/loadlib
+   ${LOADLIB_PATH}
    )
 
 add_executable(creature_data ${creature_SRCS})

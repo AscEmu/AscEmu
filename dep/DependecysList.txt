@@ -22,10 +22,6 @@ Folder: recastnavigation
    Web: https://github.com/memononen/recastnavigation
    Version: ??? (2010/??/??)
    
-Folder: loadlib
-   Web: 
-   Version:
-   
 Folder: openssl
    Web:
    Version:

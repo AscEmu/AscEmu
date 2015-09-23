@@ -20,6 +20,7 @@ set(DEPENDENCY_LIBS ${DEPENDENCY_ROOT}/lib)
 set(DEPENDENCY_INCLUDE_ROOT ${DEPENDENCY_ROOT}/include)
 set(DEPENDENCY_DLLS64 ${DEPENDENCY_ROOT}/dll64)
 set(RECASTNAVIGATION ${DEPENDENCY_ROOT}/recastnavigation)
+set(LOADLIB_PATH ${ROOT_PATH}/src/tools/loadlib)
 
 #check for including our dependencies
 if(IS_64BIT)

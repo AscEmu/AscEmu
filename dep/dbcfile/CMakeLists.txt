@@ -15,7 +15,7 @@ endforeach(src)
 
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}
-   ${DEPENDENCY_ROOT}/loadlib
+   ${LOADLIB_PATH}
    ${DEPENDENCY_ROOT}/libmpq/libmpq
    )
 

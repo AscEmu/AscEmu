@@ -22,8 +22,8 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/win
    ${DEPENDENCY_ROOT}/zlib
    ${DEPENDENCY_ROOT}/bzip2
-   ${DEPENDENCY_ROOT}/loadlib
+   ${LOADLIB_PATH}
    )
 
-add_library(${PROJECT_NAME} STATIC ${sources})
+add_library(${PROJECT_NAME} STATIC ${sources} ${LOADLIB_PATH})
 target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} bzip2)

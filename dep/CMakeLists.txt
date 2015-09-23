@@ -10,7 +10,6 @@ endif()
 # add our dependecies
 add_subdirectory(bzip2)
 add_subdirectory(dbcfile)
-add_subdirectory(loadlib)
 add_subdirectory(vmaplib)
 add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
