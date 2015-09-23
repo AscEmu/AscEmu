@@ -32,20 +32,8 @@ namespace Arcemu
     }
 }
 
-extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
-
-#define IS_PERSISTENT_INSTANCE(p) (((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty >= MODE_HEROIC) || (p)->m_mapInfo->type == INSTANCE_RAID)
-#define IS_RESETABLE_INSTANCE(p) (!(p)->m_persistent && ((p)->m_mapInfo->type == INSTANCE_NONRAID || ((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty == MODE_NORMAL)))
-#define CHECK_INSTANCE_GROUP(p, g) ((p)->m_creatorGroup == 0 || ((g) && (p)->m_creatorGroup == (g)->GetID()))
-
-#define GO_GUID_RECYCLE_INTERVAL 2048       /// client will cache GO positions. Using same guid for same client will make GO appear at wrong possition so we try to avoid assigning same guid
-
-#define ZONE_MASK_ALL -1
-/// MapId -1 doesn't exist (0 is Eastern Kingdoms)
-#define MAPID_NOT_IN_WORLD 0xFFFFFFFF
-/// Instance Id 0 doesn't exist (-1 is World Instance)
-#define INSTANCEID_NOT_IN_WORLD 0
-
+template <typename T>
+class CellHandler;
 class MapCell;
 class Map;
 class Object;
@@ -60,6 +48,21 @@ class Corpse;
 class CBattleground;
 class Instance;
 class InstanceScript;
+class Transporter;
+
+extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
+
+#define IS_PERSISTENT_INSTANCE(p) (((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty >= MODE_HEROIC) || (p)->m_mapInfo->type == INSTANCE_RAID)
+#define IS_RESETABLE_INSTANCE(p) (!(p)->m_persistent && ((p)->m_mapInfo->type == INSTANCE_NONRAID || ((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty == MODE_NORMAL)))
+#define CHECK_INSTANCE_GROUP(p, g) ((p)->m_creatorGroup == 0 || ((g) && (p)->m_creatorGroup == (g)->GetID()))
+
+#define GO_GUID_RECYCLE_INTERVAL 2048       /// client will cache GO positions. Using same guid for same client will make GO appear at wrong possition so we try to avoid assigning same guid
+
+#define ZONE_MASK_ALL -1
+/// MapId -1 doesn't exist (0 is Eastern Kingdoms)
+#define MAPID_NOT_IN_WORLD 0xFFFFFFFF
+/// Instance Id 0 doesn't exist (-1 is World Instance)
+#define INSTANCEID_NOT_IN_WORLD 0
 
 enum MapMgrTimers
 {
@@ -82,21 +85,16 @@ typedef std::set<Object*> ObjectSet;
 typedef std::set<Object*> UpdateQueue;
 typedef std::set<Player*> PUpdateQueue;
 typedef std::set<Player*> PlayerSet;
-
-typedef HM_NAMESPACE::hash_map<uint32, Object*> StorageMap;
-
 typedef std::set<uint64> CombatProgressMap;
 typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
 
+typedef HM_NAMESPACE::hash_map<uint32, Object*> StorageMap;
 typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
 typedef HM_NAMESPACE::hash_map<uint32, GameObject*> GameObjectSqlIdMap;
 
 #define MAX_TRANSPORTERS_PER_MAP 25
-
-class Transporter;
 #define RESERVE_EXPAND_SIZE 1024
-
 #define CALL_INSTANCE_SCRIPT_EVENT(Mgr, Func) if (Mgr != NULL && Mgr->GetScript() != NULL) Mgr->GetScript()->Func
 
 class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject, public CThread, public WorldStatesHandler::WorldStatesObserver

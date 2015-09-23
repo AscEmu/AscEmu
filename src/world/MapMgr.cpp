@@ -20,6 +20,7 @@
  */
 
 #include "TLSObject.h"
+#include "CellHandler.h"
 #include "StdAfx.h"
 #include "CrashHandler.h"
 
