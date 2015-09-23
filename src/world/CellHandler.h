@@ -22,6 +22,7 @@
 #define _CELLHANDLER_H
 
 #include "CellHandlerDefines.hpp"
+#include "WUtil.h"
 
 class Map;
 

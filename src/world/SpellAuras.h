@@ -21,6 +21,8 @@
 #ifndef _SPELLAURAS_H
 #define _SPELLAURAS_H
 
+#include "SpellMgr.h"
+
 /// 4-bit flag
 enum AURA_FLAGS
 {
@@ -868,6 +870,13 @@ class SERVER_DECL Aura : public EventableObject
 
 		inline bool IsInterrupted() { return (m_interrupted >= 0); }
 };
+
+#ifndef AURA_FACTORY_FUNCTION
+#define AURA_FACTORY_FUNCTION(T) \
+  public: \
+  static Aura* Create(SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
+  T(SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
+#endif
 
 class AbsorbAura : public Aura
 {

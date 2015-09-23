@@ -19,6 +19,8 @@
 #ifndef __GAMEEVENTMGR_H
 #define __GAMEEVENTMGR_H
 
+#include "CThreads.h"
+
 class GameEvent;
 
 #define max_ge_check_delay TIME_DAY  // 1 day in seconds

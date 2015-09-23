@@ -617,3 +617,20 @@ uint32 Vehicle::GetPassengerSeatId(uint64 guid)
             return seats[i]->GetSeatInfo()->ID;
     return 0;
 }
+
+VehicleSeat::VehicleSeat(VehicleSeatEntry* info) {
+    passenger = 0;
+    seat_info = info;
+}
+
+bool VehicleSeat::Controller() const {
+    return seat_info->IsController();
+}
+
+bool VehicleSeat::Usable() const {
+    return seat_info->IsUsable();
+}
+
+bool VehicleSeat::HidesPassenger() const {
+    return seat_info->HidesPassenger();
+}

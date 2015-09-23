@@ -23,8 +23,12 @@
 #ifndef __WORLDSESSION_H
 #define __WORLDSESSION_H
 
+#include <Threading/Mutex.h>
 #include "Opcodes.h"
 #include "Quest.h"
+#include "FastQueue.h"
+#include "Unit.h"
+#include <stddef.h>
 
 class Player;
 class WorldPacket;
@@ -33,6 +37,9 @@ class WorldSession;
 class MapMgr;
 class Creature;
 struct TrainerSpell;
+template<class T, class LOCK>
+class FastQueue;
+class Mutex;
 
 struct LfgUpdateData;       // forward declare
 struct LfgJoinResultData;
@@ -199,23 +206,12 @@ class SERVER_DECL WorldSession
         ~WorldSession();
 
         Player* m_loggingInPlayer;
-        void SendPacket(WorldPacket* packet)
-        {
-            if (_socket && _socket->IsConnected())
-                _socket->SendPacket(packet);
-        }
 
-        void SendPacket(StackBufferBase* packet)
-        {
-            if (_socket && _socket->IsConnected())
-                _socket->SendPacket(packet);
-        }
+    void SendPacket(WorldPacket* packet);
 
-        void OutPacket(uint16 opcode)
-        {
-            if (_socket && _socket->IsConnected())
-                _socket->OutPacket(opcode, 0, NULL);
-        }
+    void SendPacket(StackBufferBase* packet);
+
+    void OutPacket(uint16 opcode);
 
         void Delete();
 
@@ -283,25 +279,13 @@ class SERVER_DECL WorldSession
 
         void LogoutPlayer(bool Save);
 
-        void QueuePacket(WorldPacket* packet)
-        {
-            m_lastPing = (uint32)UNIXTIME;
-            _recvQueue.Push(packet);
-        }
+    void QueuePacket(WorldPacket* packet);
 
-        void OutPacket(uint16 opcode, uint16 len, const void* data)
-        {
-            if (_socket && _socket->IsConnected())
-                _socket->OutPacket(opcode, len, data);
-        }
+    void OutPacket(uint16 opcode, uint16 len, const void* data);
 
         WorldSocket* GetSocket() { return _socket; }
 
-        void Disconnect()
-        {
-            if (_socket && _socket->IsConnected())
-                _socket->Disconnect();
-        }
+    void Disconnect();
 
         int  Update(uint32 InstanceID);
 

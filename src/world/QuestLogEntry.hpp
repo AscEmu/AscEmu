@@ -21,6 +21,13 @@
 #ifndef WOWSERVER_QUEST_LOG_ENTRY_HPP
 #define WOWSERVER_QUEST_LOG_ENTRY_HPP
 
+#include <Database/Field.h>
+#include "CommonDefines.hpp"
+#include "EventableObject.h"
+#include "Quest.h"
+#include "Player.h"
+#include "ScriptMgr.h"
+
 class SERVER_DECL QuestLogEntry : public EventableObject
 {
 	friend class QuestMgr;
@@ -107,5 +114,6 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		uint32 expirytime;
 		int32 m_slot;
 };
+#define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func
 
 #endif // WOWSERVER_QUEST_HPP

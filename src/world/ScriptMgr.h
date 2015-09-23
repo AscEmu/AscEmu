@@ -22,6 +22,9 @@
 #ifndef SCRIPTMGR_H
 #define SCRIPTMGR_H
 
+#include "Gossip.h"
+#include "GameEventMgr.h"
+
 #define SCRIPT_MODULE void*
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature* c) { return new cl(c); }
 #define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
@@ -439,6 +442,7 @@ class SERVER_DECL CreatureAIScript
     CreatureAIScript* linkedCreatureAI;
 };
 
+class GameEvent;
 class SERVER_DECL EventScript
 {
     public:

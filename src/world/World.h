@@ -45,6 +45,7 @@ class Player;
 class EventableObjectHolder;
 class MapMgr;
 class Battleground;
+struct DatabaseConnection;
 
 enum Rates
 {

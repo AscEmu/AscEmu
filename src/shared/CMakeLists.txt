@@ -34,6 +34,7 @@ set(sources
     Auth/WowCrypt.cpp
     Config/Config.cpp
     Database/Database.cpp
+		Database/Field.cpp
     Database/MySQLDatabase.cpp
     Database/CreateInterface.cpp
     Network/CircularBuffer.cpp

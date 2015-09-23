@@ -19,7 +19,7 @@
 
 #include "WorldPacket.h"
 #include "StackBuffer.h"
-
+#include <map>
 #pragma once
 
 struct Quest;
@@ -369,7 +369,7 @@ namespace Arcemu
         };
 
         typedef std::vector<Gossip::Item> ItemList;
-        typedef HM_NAMESPACE::hash_map<Quest*, uint8> QuestList;
+        typedef std::map<Quest*, uint8> QuestList;
 
         class SERVER_DECL Menu
         {

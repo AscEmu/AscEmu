@@ -20,6 +20,8 @@
 #ifndef _THREADING_MUTEX_H
 #define _THREADING_MUTEX_H
 
+#include "CommonTypes.hpp"
+
 #ifndef WIN32
 #include <pthread.h>
 #endif

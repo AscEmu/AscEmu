@@ -1063,7 +1063,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
     uint32 i, j, numFound = 0;
     std::string y, recout;
     char playerGUID[17];
-    snprintf(playerGUID, 17, I64FMT, m_session->GetPlayer()->GetGUID());
+    snprintf(playerGUID, 17, "%lu", m_session->GetPlayer()->GetGUID());
     if (lookupname || lookupdesc || lookupreward)
     {
         std::set<uint32> foundList;

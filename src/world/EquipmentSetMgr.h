@@ -20,6 +20,8 @@
 #ifndef _EQUIPMENTSETMGR_H
 #define _EQUIPMENTSETMGR_H
 
+#include <array>
+
 #define EQUIPMENTSET_SLOTS 10
 
 namespace Arcemu
@@ -35,7 +37,7 @@ namespace Arcemu
         uint32 SetID;
         std::string SetName;
         std::string IconName;
-        std::tr1::array<uint32, 19> ItemGUID;
+        std::array<uint32, 19> ItemGUID;
 
         EquipmentSet()
         {

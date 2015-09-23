@@ -23,6 +23,8 @@
 #include "DBCGlobals.hpp"
 #include "Definitions.h"
 
+class Player;
+
 #pragma pack(push,1)
 
 struct WorldMapOverlay

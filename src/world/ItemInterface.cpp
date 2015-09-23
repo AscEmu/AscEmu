@@ -4298,3 +4298,54 @@ void ItemInterface::removeLootableItems()
         }
     }
 }
+
+void ItemIterator::Increment() {
+    if (!m_searchInProgress)
+        BeginSearch();
+
+    /// check: are we currently inside a container?
+    if (m_container != nullptr)
+    {
+        /// loop the container.
+        for (; m_containerSlot < m_container->GetProto()->ContainerSlots; ++m_containerSlot)
+            {
+                m_currentItem = m_container->GetItem(static_cast<int16>(m_containerSlot));
+                if (m_currentItem != nullptr)
+                {
+                    ++m_containerSlot;      /// increment the counter so we don't get the same item again
+
+                    return;
+                }
+            }
+
+        m_container = nullptr;             /// unset this
+    }
+
+    for (; m_slot < MAX_INVENTORY_SLOT; ++m_slot)
+        {
+            if (m_target->m_pItems[m_slot])
+            {
+                if (m_target->m_pItems[m_slot]->IsContainer())
+                {
+                    m_container = static_cast<Container*>(m_target->m_pItems[m_slot]);       /// we are a container :O lets look inside the box!
+                    m_containerSlot = 0;
+                    m_currentItem = nullptr;           /// clear the pointer up. so we can tell if we found an item or not
+                    ++m_slot;                       /// increment m_slot so we don't search this container again
+
+                    Increment();                    /// call increment() recursively. this will search the container.
+
+                    return;                         /// jump out so we're not wasting cycles and skipping items
+                }
+
+
+                m_currentItem = m_target->m_pItems[m_slot];     /// we're not a container, just a regular item. Set the pointer
+                ++m_slot;                                       /// increment the slot counter so we don't do the same item again
+
+                return;             /// jump out
+            }
+        }
+
+    /// if we're here we've searched all items.
+    m_atEnd = true;
+    m_currentItem = nullptr;
+}

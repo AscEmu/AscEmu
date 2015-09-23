@@ -18,6 +18,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "FastQueue.h"
+#include "Threading/Mutex.h"
+#include "WorldPacket.h"
 #include "StdAfx.h"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
@@ -1748,4 +1751,34 @@ void WorldSession::SendClientCacheVersion(uint32 version)
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32(version);
     SendPacket(&data);
+}
+
+void WorldSession::SendPacket(WorldPacket* packet) {
+    if (_socket && _socket->IsConnected())
+        _socket->SendPacket(packet);
+}
+
+void WorldSession::SendPacket(StackBufferBase* packet) {
+    if (_socket && _socket->IsConnected())
+        _socket->SendPacket(packet);
+}
+
+void WorldSession::OutPacket(uint16 opcode) {
+    if (_socket && _socket->IsConnected())
+        _socket->OutPacket(opcode, 0, NULL);
+}
+
+void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data) {
+    if (_socket && _socket->IsConnected())
+        _socket->OutPacket(opcode, len, data);
+}
+
+void WorldSession::QueuePacket(WorldPacket* packet) {
+    m_lastPing = (uint32)UNIXTIME;
+    _recvQueue.Push(packet);
+}
+
+void WorldSession::Disconnect() {
+    if (_socket && _socket->IsConnected())
+        _socket->Disconnect();
 }

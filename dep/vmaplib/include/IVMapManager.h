@@ -21,7 +21,7 @@
 #define _IVMAPMANAGER_H
 
 #include<string>
-
+#include <G3D/g3dmath.h>
 
 //===========================================================
 

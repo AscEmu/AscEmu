@@ -21,6 +21,13 @@
 #ifndef _LOOTMGR_H
 #define _LOOTMGR_H
 
+#include "EventableObject.h"
+#include "Singleton.h"
+
+#include <map>
+#include <vector>
+#include <set>
+
 enum LOOTTYPE
 {
     LOOT_NORMAL10,	    // normal dungeon / old raid (10/25/40 men) / normal 10 raid
@@ -34,6 +41,7 @@ struct ItemPrototype;
 class MapMgr;
 struct RandomProps;
 struct ItemRandomSuffixEntry;
+class Player;
 
 class LootRoll : public EventableObject
 {
@@ -170,7 +178,7 @@ struct tempy
     uint32 maxcount;
 };
 
-typedef HM_NAMESPACE::hash_map<uint32, StoreLootList> LootStore;
+typedef std::map<uint32, StoreLootList> LootStore;
 
 #define PARTY_LOOT_FFA 0
 #define PARTY_LOOT_MASTER 2

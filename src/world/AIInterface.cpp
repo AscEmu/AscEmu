@@ -24,6 +24,7 @@
 
 #include "CommonTypes.hpp"
 #include "CommonDefines.hpp"
+#include "Player.h"
 
 #ifndef UNIX
 #include <cmath>
@@ -37,6 +38,7 @@
 #include "MapMgr.h"
 #include "WorldCreatorDefines.hpp"
 #include "World.h"
+#include "SpellMgr.h"
 
 AIInterface::AIInterface()
     :

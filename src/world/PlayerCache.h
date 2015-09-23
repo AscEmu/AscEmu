@@ -20,6 +20,12 @@
 #ifndef _PLAYERCACHE_H
 #define _PLAYERCACHE_H
 
+#include <CommonTypes.hpp>
+#include <bits/stl_pair.h>
+#include <WorldPacket.h>
+#include "Threading/Queue.h"
+#include "Object.h"
+
 enum FourByteFields
 {
     CACHE_MAPID,
@@ -131,18 +137,9 @@ class PlayerCache : public Arcemu::Shared::CRefCounter
         PlayerCacheMap::iterator Find64(uint32 field, uint64 value) { return m_map64fields[field].find(value); }
 
 
-        /// Queues a packet to send to the player. The packet must be created using the new operator, and SendPacket takes ownership of the packet.
-        void SendPacket(WorldPacket* p)
-        {
-            m_pendingPackets.push(p);
-        }
+    void SendPacket(WorldPacket* p);
 
-        /// Queues a packet to send to the player.
-        void SendPacket(WorldPacket & p)
-        {
-            WorldPacket* data = new WorldPacket(p);
-            m_pendingPackets.push(data);
-        }
+    void SendPacket(WorldPacket & p);
 
         //BEGINNING OF WRAPPERS
         uint64 GetGUID() { return (uint64(HIGHGUID_TYPE_PLAYER) << 32) | GetUInt32Value(CACHE_PLAYER_LOWGUID); }

@@ -22,6 +22,15 @@
 #define _QUESTMGR_H
 
 #include "QuestDefines.hpp"
+#include "CommonTypes.hpp"
+#include "QuestLogEntry.hpp"
+#include "Gossip.h"
+
+#include <vector>
+#include <unordered_map>
+#include <list>
+
+struct Quest;
 
 struct QuestRelation
 {
@@ -72,7 +81,7 @@ struct QuestPOI
 };
 
 typedef std::vector<QuestPOI> QuestPOIVector;
-typedef HM_NAMESPACE::hash_map<uint32, QuestPOIVector> QuestPOIMap;
+typedef std::unordered_map<uint32, QuestPOIVector> QuestPOIMap;
 
 class Item;
 typedef std::list<QuestRelation*> QuestRelationList;

@@ -156,6 +156,5 @@ struct Quest
 #pragma pack(pop)
 
 class QuestScript;
-#define CALL_QUESTSCRIPT_EVENT(obj, func) if (static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript != NULL) static_cast<QuestLogEntry*>(obj)->GetQuest()->pQuestScript->func
 
 #endif // WOWSERVER_QUEST_H

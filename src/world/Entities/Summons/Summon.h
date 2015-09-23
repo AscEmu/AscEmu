@@ -22,6 +22,7 @@
 #define SUMMON_HPP_
 
 #include "SummonDefines.hpp"
+#include "Creature.h"
 
 /////////////////////////////////////////////////////////////////////////
 //class Summon

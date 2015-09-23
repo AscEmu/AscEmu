@@ -97,8 +97,9 @@ set(sources
 	Opcodes.cpp 
 	Pet.cpp 
 	PetHandler.cpp 
-	Player.cpp 
-	PlayerPacketWrapper.cpp 
+	Player.cpp
+		PlayerCache.cpp
+	PlayerPacketWrapper.cpp
 	QueryHandler.cpp 
 	Quest.cpp 
 	QuestHandler.cpp 

@@ -49,8 +49,8 @@ class FastQueue
 
         FastQueue()
         {
-            last = NULL;
-            first = NULL;
+            last = nullptr;
+            first = nullptr;
         }
 
         ~FastQueue()
@@ -61,7 +61,7 @@ class FastQueue
         void Clear()
         {
             // clear any elements
-            while(last != NULL)
+            while(last != nullptr)
                 Pop();
         }
 
@@ -75,7 +75,7 @@ class FastQueue
                 first = n;
 
             last = n;
-            n->next = NULL;
+            n->next = nullptr;
             n->element = elem;
             m_lock.Release();
         }
@@ -83,17 +83,17 @@ class FastQueue
         T Pop()
         {
             m_lock.Acquire();
-            if (first == NULL)
+            if (first == nullptr)
             {
                 m_lock.Release();
-                return reinterpret_cast<T>(NULL);
+                return nullptr;
             }
 
             T ret = first->element;
             node* td = first;
             first = td->next;
             if (!first)
-                last = NULL;
+                last = nullptr;
 
             delete td;
             m_lock.Release();
@@ -103,10 +103,10 @@ class FastQueue
         T front()
         {
             m_lock.Acquire();
-            if (first == NULL)
+            if (first == nullptr)
             {
                 m_lock.Release();
-                return reinterpret_cast<T>(NULL);
+                return nullptr;
             }
 
             T ret = first->element;
@@ -117,7 +117,7 @@ class FastQueue
         void pop_front()
         {
             m_lock.Acquire();
-            if (first == NULL)
+            if (first == nullptr)
             {
                 m_lock.Release();
                 return;
@@ -126,7 +126,7 @@ class FastQueue
             node* td = first;
             first = td->next;
             if (!first)
-                last = NULL;
+                last = nullptr;
 
             delete td;
             m_lock.Release();
@@ -136,7 +136,7 @@ class FastQueue
         {
             bool ret;
             m_lock.Acquire();
-            ret = (first != NULL);
+            ret = (first != nullptr);
             m_lock.Release();
             return ret;
         }

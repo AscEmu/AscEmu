@@ -20,6 +20,10 @@
 #ifndef _ACHIEVEMENTMGR_H
 #define _ACHIEVEMENTMGR_H
 
+class QueryBuffer;
+class AchievementEntry;
+class AchievementCriteriaEntry;
+
 // Achievement Reward Types
 /// Achievement has no reward
 #define ACHIEVEMENT_REWARDTYPE_NONE 0

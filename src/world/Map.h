@@ -116,21 +116,21 @@ class SERVER_DECL Map
 
     inline std::string GetNameString();
 
-    inline const char* GetName();
+    const char* GetName();
 
     inline MapEntry* GetDBCEntry();
 
-    inline CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
+    CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
 
-    inline CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
+    CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
 
     void LoadSpawns(bool reload);           /// set to true to make clean up
         uint32 CreatureSpawnCount;
         uint32 GameObjectSpawnCount;
 
-    inline void CellGoneActive(uint32 x, uint32 y);
+    void CellGoneActive(uint32 x, uint32 y);
 
-    inline void CellGoneIdle(uint32 x, uint32 y);
+    void CellGoneIdle(uint32 x, uint32 y);
 private:
 
         MapInfo* _mapInfo;

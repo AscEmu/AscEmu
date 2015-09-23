@@ -1024,9 +1024,9 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     // get DBC file list
     for (ArchiveSet::iterator i = gOpenArchives.begin(); i != gOpenArchives.end(); ++i)
     {
-        vector<string> files;
+        std::vector<std::string> files;
         (*i)->GetFileListTo(files);
-        for (vector<string>::iterator iter = files.begin(); iter != files.end(); ++iter)
+        for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); ++iter)
             if (iter->rfind(".dbc") == iter->length() - strlen(".dbc"))
                 dbcfiles.insert(*iter);
     }
@@ -1043,17 +1043,17 @@ void ExtractDBCFiles(int locale, bool basicLocale)
 
     // extract Build info file
     {
-        string mpq_name = std::string("component.wow-") + langs[locale] + ".txt";
-        string filename = path + mpq_name;
+        std::string mpq_name = std::string("component.wow-") + langs[locale] + ".txt";
+        std::string filename = path + mpq_name;
 
         ExtractFile(mpq_name.c_str(), filename);
     }
 
     // extract DBCs
     uint32 count = 0;
-    for (set<string>::iterator iter = dbcfiles.begin(); iter != dbcfiles.end(); ++iter)
+    for (std::set<std::string>::iterator iter = dbcfiles.begin(); iter != dbcfiles.end(); ++iter)
     {
-        string filename = path;
+        std::string filename = path;
         filename += (iter->c_str() + strlen("DBFilesClient\\"));
 
         if (FileExists(filename.c_str()))

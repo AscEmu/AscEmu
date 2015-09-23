@@ -114,8 +114,8 @@ public:
     ~ADTFile();
     int nWMO;
     int nMDX;
-    string* WmoInstansName;
-    string* ModelInstansName;
+    std::string* WmoInstansName;
+    std::string* ModelInstansName;
     bool init(uint32 map_num, uint32 tileX, uint32 tileY);
     //void LoadMapChunks();
 
@@ -130,7 +130,7 @@ private:
     //size_t mcnk_offsets[256], mcnk_sizes[256];
     MPQFile ADT;
     //mcell Mcell;
-    string Adtfilename;
+    std::string Adtfilename;
 };
 
 void fixnamen(char *name, size_t len);

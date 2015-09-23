@@ -119,13 +119,13 @@ int ExtractWmo()
 
     for (ArchiveSet::const_iterator ar_itr = gOpenArchives.begin(); ar_itr != gOpenArchives.end() && success; ++ar_itr)
     {
-        vector<string> filelist;
+        std::vector<std::string> filelist;
 
         (*ar_itr)->GetFileListTo(filelist);
-        for (vector<string>::iterator fname=filelist.begin(); fname != filelist.end() && success; ++fname)
+        for (std::vector<std::string>::iterator fname=filelist.begin(); fname != filelist.end() && success; ++fname)
         {
             bool file_ok=true;
-            if (fname->find(".wmo") != string::npos)
+            if (fname->find(".wmo") != std::string::npos)
             {
                 // Copy files from archive
                 //std::cout << "found *.wmo file " << *fname << std::endl;
@@ -177,7 +177,7 @@ int ExtractWmo()
                                 char groupFileName[1024];
                                 sprintf(groupFileName,"%s_%03d.wmo",temp, i);
                                 //printf("Trying to open groupfile %s\n",groupFileName);
-                                string s = groupFileName;
+                                std::string s = groupFileName;
                                 WMOGroup * fgroup = new WMOGroup(s);
                                 if(!fgroup->open())
                                 {
@@ -292,7 +292,7 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
     printf("\nGame path: %s\n", input_path);
 
     char path[512];
-    string in_path(input_path);
+    std::string in_path(input_path);
     std::vector<std::string> locales, searchLocales;
 
     searchLocales.push_back("enGB");
@@ -333,10 +333,10 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
     }
 
     // open expansion and common files
-    pArchiveNames.push_back(input_path + string("common.MPQ"));
-    pArchiveNames.push_back(input_path + string("common-2.MPQ"));
-    pArchiveNames.push_back(input_path + string("expansion.MPQ"));
-    pArchiveNames.push_back(input_path + string("lichking.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("common.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("common-2.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("expansion.MPQ"));
+    pArchiveNames.push_back(input_path + std::string("lichking.MPQ"));
 
     // now, scan for the patch levels in the core dir
     printf("Scanning patch levels from data directory.\n");

@@ -26,7 +26,10 @@
 
 class Unit;
 
+#include "CommonTypes.hpp"
 #include <array>
+#include <vector>
+#include <set>
 
 ///////////////////////////////////////////////
 //class SummonHandler
