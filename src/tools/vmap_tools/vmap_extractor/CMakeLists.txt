@@ -37,12 +37,12 @@ if(NOT WIN32 AND NOT IS_64BIT)
 endif()
 
 include_directories(
-   ${DEPENDENCY_ROOT}/libmpq_new
+   ${DEPENDENCY_ROOT}/libmpq/libmpq
    ${DEPENDENCY_ROOT}/loadlib
    ${DEPENDENCY_INCLUDE_ROOT}/zlib
    ${DEPENDENCY_INCLUDE_ROOT}/bzip2
    )
 
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} libmpq_new loadlib ${ZLIB_LIBRARIES} bzip2)
+target_link_libraries(${PROJECT_NAME} libmpq loadlib ${ZLIB_LIBRARIES} bzip2)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

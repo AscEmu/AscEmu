@@ -1,5 +1,9 @@
 Opensource software in this folder:
 
+Folder: libmpq
+   Web: https://github.com/mbroemme/libmpq/
+   Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
+
 Folder: lualib
    Web: http://www.lua.org
    Version: 5.3.1 (2015/06/03)
@@ -13,10 +17,6 @@ Folder: zlib
    Version: 1.2.8 (2013/03/28)
 
 ================= Everything below is not updated to latest version =================
-   
-Folder: libmpq (Currently unused libmpq_new is in use)
-   Web: https://github.com/mbroemme/libmpq/
-   Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
 
 Folder: recastnavigation
    Web: https://github.com/memononen/recastnavigation

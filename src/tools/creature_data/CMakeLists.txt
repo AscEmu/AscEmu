@@ -1,6 +1,7 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
 file(GLOB creature_data_sources *.cpp *.h)
+
 set(creature_SRCS
   ${creature_data_sources}
 )
@@ -10,7 +11,8 @@ if(NOT WIN32 AND NOT IS_64BIT)
 endif()
 
 include_directories(
-   ${DEPENDENCY_ROOT}/libmpq_new
+   ${DEPENDENCY_ROOT}/libmpq/libmpq
+   ${DEPENDENCY_ROOT}/libmpq/win
    ${DEPENDENCY_ROOT}/dbcfile
    ${DEPENDENCY_ROOT}/loadlib
    )

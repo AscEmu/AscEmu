@@ -19,7 +19,7 @@
  */
 
 /* mpq-tools configuration includes. */
-#include "config.h"
+#include "winvs_config.h"
 
 /* libmpq main includes. */
 #include "mpq.h"

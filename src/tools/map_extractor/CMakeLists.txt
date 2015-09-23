@@ -6,7 +6,8 @@ set(map_extractor_SRCS
 )
 
 include_directories(
-  ${DEPENDENCY_ROOT}/libmpq_new
+  ${DEPENDENCY_ROOT}/libmpq/libmpq
+  ${DEPENDENCY_ROOT}/libmpq/win
   ${DEPENDENCY_ROOT}/dbcfile 
   ${DEPENDENCY_ROOT}/loadlib )
 

@@ -7,7 +7,7 @@ add_subdirectory(loadlib)
 add_subdirectory(vmaplib)
 add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
-add_subdirectory(libmpq_new)
+add_subdirectory(libmpq)
 
 # add zlib and pcre for windows compile
 if(NEED_ZLIB_PCRE)
