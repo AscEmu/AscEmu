@@ -24,7 +24,7 @@ using namespace MMAP;
 
 bool checkDirectories(bool debugOutput)
 {
-    vector<string> dirFiles;
+    std::vector<std::string> dirFiles;
 
     if (getDirContents(dirFiles, "maps") == LISTFILE_DIRECTORY_NOT_FOUND || !dirFiles.size())
     {

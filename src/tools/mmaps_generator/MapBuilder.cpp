@@ -66,7 +66,7 @@ namespace MMAP
     /**************************************************************************/
     void MapBuilder::discoverTiles()
     {
-        vector<string> files;
+        std::vector<std::string> files;
         uint32 mapID, tileX, tileY, tileID, count = 0;
         char filter[12];
 
@@ -77,7 +77,7 @@ namespace MMAP
             mapID = uint32(atoi(files[i].substr(0, 3).c_str()));
             if (m_tiles.find(mapID) == m_tiles.end())
             {
-                m_tiles.insert(pair<uint32, set<uint32>*>(mapID, new set<uint32>));
+                m_tiles.insert(std::pair<uint32, std::set<uint32>*>(mapID, new std::set<uint32>));
                 count++;
             }
         }
@@ -87,7 +87,7 @@ namespace MMAP
         for (uint32 i = 0; i < files.size(); ++i)
         {
             mapID = uint32(atoi(files[i].substr(0, 3).c_str()));
-            m_tiles.insert(pair<uint32, set<uint32>*>(mapID, new set<uint32>));
+            m_tiles.insert(std::pair<uint32, std::set<uint32>*>(mapID, new std::set<uint32>));
             count++;
         }
         printf("found %u.\n", count);
@@ -96,7 +96,7 @@ namespace MMAP
         printf("Discovering tiles... ");
         for (TileList::iterator itr = m_tiles.begin(); itr != m_tiles.end(); ++itr)
         {
-            set<uint32>* tiles = (*itr).second;
+            std::set<uint32>* tiles = (*itr).second;
             mapID = (*itr).first;
 
             sprintf(filter, "%03u*.vmtile", mapID);
@@ -129,14 +129,14 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    set<uint32>* MapBuilder::getTileList(uint32 mapID)
+    std::set<uint32>* MapBuilder::getTileList(uint32 mapID)
     {
         TileList::iterator itr = m_tiles.find(mapID);
         if (itr != m_tiles.end())
             return (*itr).second;
 
-        set<uint32>* tiles = new set<uint32>();
-        m_tiles.insert(pair<uint32, set<uint32>*>(mapID, tiles));
+        std::set<uint32>* tiles = new std::set<uint32>();
+        m_tiles.insert(std::pair<uint32, std::set<uint32>*>(mapID, tiles));
         return tiles;
     }
 
@@ -211,7 +211,7 @@ namespace MMAP
     {
         printf("Building map %03u:\n", mapID);
 
-        set<uint32>* tiles = getTileList(mapID);
+        std::set<uint32>* tiles = getTileList(mapID);
 
         // make sure we process maps which don't have tiles
         if (!tiles->size())
@@ -240,7 +240,7 @@ namespace MMAP
 
         // now start building mmtiles for each tile
         printf("We have %u tiles.                          \n", (unsigned int)tiles->size());
-        for (set<uint32>::iterator it = tiles->begin(); it != tiles->end(); ++it)
+        for (std::set<uint32>::iterator it = tiles->begin(); it != tiles->end(); ++it)
         {
             uint32 tileX, tileY;
 
@@ -300,7 +300,7 @@ namespace MMAP
     /**************************************************************************/
     void MapBuilder::buildNavMesh(uint32 mapID, dtNavMesh*& navMesh)
     {
-        set<uint32>* tiles = getTileList(mapID);
+        std::set<uint32>* tiles = getTileList(mapID);
 
         // old code for non-statically assigned bitmask sizes:
         ///*** calculate number of bits needed to store tiles & polys ***/
@@ -317,7 +317,7 @@ namespace MMAP
         /***          calculate bounds of map         ***/
 
         uint32 tileXMin = 64, tileYMin = 64, tileXMax = 0, tileYMax = 0, tileX, tileY;
-        for (set<uint32>::iterator it = tiles->begin(); it != tiles->end(); ++it)
+        for (std::set<uint32>::iterator it = tiles->begin(); it != tiles->end(); ++it)
         {
             StaticMapTree::unpackTileID((*it), tileX, tileY);
 

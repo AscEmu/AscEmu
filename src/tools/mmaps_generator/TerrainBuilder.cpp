@@ -588,7 +588,7 @@ namespace MMAP
                 // now we have a model to add to the meshdata
                 retval = true;
 
-                vector<GroupModel> groupModels;
+                std::vector<GroupModel> groupModels;
                 worldModel->getGroupModels(groupModels);
 
                 // all M2s need to have triangle indices reversed
@@ -601,11 +601,11 @@ namespace MMAP
                 position.x -= 32 * GRID_SIZE;
                 position.y -= 32 * GRID_SIZE;
 
-                for (vector<GroupModel>::iterator it = groupModels.begin(); it != groupModels.end(); ++it)
+                for (std::vector<GroupModel>::iterator it = groupModels.begin(); it != groupModels.end(); ++it)
                 {
-                    vector<G3D::Vector3> tempVertices;
-                    vector<G3D::Vector3> transformedVertices;
-                    vector<MeshTriangle> tempTriangles;
+                    std::vector<G3D::Vector3> tempVertices;
+                    std::vector<G3D::Vector3> transformedVertices;
+                    std::vector<MeshTriangle> tempTriangles;
                     WmoLiquid* liquid = NULL;
 
                     (*it).getMeshData(tempVertices, tempTriangles, liquid);
@@ -621,8 +621,8 @@ namespace MMAP
                     // now handle liquid data
                     if (liquid)
                     {
-                        vector<G3D::Vector3> liqVerts;
-                        vector<int> liqTris;
+                        std::vector<G3D::Vector3> liqVerts;
+                        std::vector<int> liqTris;
                         uint32 tilesX, tilesY, vertsX, vertsY;
                         G3D::Vector3 corner;
                         liquid->getPosInfo(tilesX, tilesY, corner);
@@ -708,9 +708,9 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    void TerrainBuilder::transform(vector<G3D::Vector3>& source, vector<G3D::Vector3>& transformedVertices, float scale, G3D::Matrix3& rotation, G3D::Vector3& position)
+    void TerrainBuilder::transform(std::vector<G3D::Vector3>& source, std::vector<G3D::Vector3>& transformedVertices, float scale, G3D::Matrix3& rotation, G3D::Vector3& position)
     {
-        for (vector<G3D::Vector3>::iterator it = source.begin(); it != source.end(); ++it)
+        for (std::vector<G3D::Vector3>::iterator it = source.begin(); it != source.end(); ++it)
         {
             // apply tranform, then mirror along the horizontal axes
             G3D::Vector3 v((*it) * rotation * scale + position);
@@ -721,9 +721,9 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    void TerrainBuilder::copyVertices(vector<G3D::Vector3>& source, G3D::Array<float>& dest)
+    void TerrainBuilder::copyVertices(std::vector<G3D::Vector3>& source, G3D::Array<float>& dest)
     {
-        for (vector<G3D::Vector3>::iterator it = source.begin(); it != source.end(); ++it)
+        for (std::vector<G3D::Vector3>::iterator it = source.begin(); it != source.end(); ++it)
         {
             dest.push_back((*it).y);
             dest.push_back((*it).z);
@@ -732,11 +732,11 @@ namespace MMAP
     }
 
     /**************************************************************************/
-    void TerrainBuilder::copyIndices(vector<MeshTriangle>& source, G3D::Array<int>& dest, int offset, bool flip)
+    void TerrainBuilder::copyIndices(std::vector<MeshTriangle>& source, G3D::Array<int>& dest, int offset, bool flip)
     {
         if (flip)
         {
-            for (vector<MeshTriangle>::iterator it = source.begin(); it != source.end(); ++it)
+            for (std::vector<MeshTriangle>::iterator it = source.begin(); it != source.end(); ++it)
             {
                 dest.push_back((*it).idx2 + offset);
                 dest.push_back((*it).idx1 + offset);
@@ -745,7 +745,7 @@ namespace MMAP
         }
         else
         {
-            for (vector<MeshTriangle>::iterator it = source.begin(); it != source.end(); ++it)
+            for (std::vector<MeshTriangle>::iterator it = source.begin(); it != source.end(); ++it)
             {
                 dest.push_back((*it).idx0 + offset);
                 dest.push_back((*it).idx1 + offset);
@@ -765,7 +765,7 @@ namespace MMAP
     /**************************************************************************/
     void TerrainBuilder::cleanVertices(G3D::Array<float>& verts, G3D::Array<int>& tris)
     {
-        map<int, int> vertMap;
+        std::map<int, int> vertMap;
 
         int* t = tris.getCArray();
         float* v = verts.getCArray();
@@ -782,7 +782,7 @@ namespace MMAP
         // collect the vertices
         G3D::Array<float> cleanVerts;
         int index, count = 0;
-        for (map<int, int>::iterator it = vertMap.begin(); it != vertMap.end(); ++it)
+        for (std::map<int, int>::iterator it = vertMap.begin(); it != vertMap.end(); ++it)
         {
             index = (*it).first;
             (*it).second = count;
@@ -796,7 +796,7 @@ namespace MMAP
         // update triangles to use new indices
         for (int i = 0; i < tris.size(); ++i)
         {
-            map<int, int>::iterator it;
+            std::map<int, int>::iterator it;
             if ((it = vertMap.find(t[i])) == vertMap.end())
                 continue;
 
