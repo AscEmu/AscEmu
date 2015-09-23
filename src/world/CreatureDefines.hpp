@@ -20,6 +20,7 @@
 #define _CREATURE_DEFINES_HPP
 
 #include "CommonTypes.hpp"
+#include "DBC/DBCStores.h"
 
 #define MAX_CREATURE_INV_ITEMS 150
 #define MAX_CREATURE_LOOT 8
