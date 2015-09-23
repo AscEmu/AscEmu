@@ -204,6 +204,7 @@ set(headers
 	Container.h
 	Corpse.h
 	Creature.h
+    CreatureDefines.hpp
 	DatabaseCleaner.h
 	DayWatcherThread.h
     DBC/DBCGlobals.hpp
