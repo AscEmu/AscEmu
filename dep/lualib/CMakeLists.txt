@@ -33,12 +33,10 @@ ltable.c
 ltablib.c
 ltm.c
 lua.c
-luac.c
 lundump.c
 lutf8lib.c
 lvm.c
 lzio.c )
-#print.c )
 
 SET( headers
 lapi.h

@@ -1,5 +1,12 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
+#ignore the warnings for dependencies (external code)
+if(MSVC)
+  add_definitions(/W0)
+else()
+  add_definitions(-w)
+endif()
+
 # add our dependecies
 add_subdirectory(bzip2)
 add_subdirectory(dbcfile)
