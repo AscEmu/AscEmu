@@ -24,8 +24,8 @@
 #include "DBC/DBCStores.h"
 #include <array>
 
-class VehicleSeatEntry;
-class VehicleEntry;
+struct VehicleSeatEntry;
+struct VehicleEntry;
 //////////////////////////////////////////////////////////////////////////////////////////
 //class VehicleSeat
 //  Implements the seat functionality for Vehicles

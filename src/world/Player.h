@@ -50,17 +50,17 @@ class Charter;
 class LfgMatch;
 struct LevelInfo;
 class SpeedCheatDetector;
-class GuildMember;
+struct GuildMember;
 struct skilllineentry;
 class QueryBuffer;
-class Quest;
+struct Quest;
 struct SpellShapeshiftForm;
 class CBattleground;
 class Instance;
-class CharRaceEntry;
-class CharClassEntry;
-class VendorRestrictionEntry;
-class Trainer;
+struct CharRaceEntry;
+struct CharClassEntry;
+struct VendorRestrictionEntry;
+struct Trainer;
 class Aura;
 
 #pragma pack(push,1)

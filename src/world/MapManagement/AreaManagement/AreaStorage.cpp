@@ -39,7 +39,7 @@ namespace MapManagement
             m_storage = dbc_storage;
 
             /* Preload this stuff to make lookups easier elsewhere in code */
-            for (auto i = 0; i < m_storage->GetNumRows(); ++i)
+            for (uint32 i = 0; i < m_storage->GetNumRows(); ++i)
             {
                 if (auto area = m_storage->LookupEntry(i))
                 {
@@ -207,7 +207,7 @@ namespace MapManagement
                 }
             }
 
-            uint16 area_flag;
+            //uint16 area_flag;
 
             if (at_entry)
             {

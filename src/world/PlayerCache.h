@@ -21,7 +21,9 @@
 #define _PLAYERCACHE_H
 
 #include <CommonTypes.hpp>
+#ifndef WIN32
 #include <bits/stl_pair.h>
+#endif
 #include <WorldPacket.h>
 #include "Threading/Queue.h"
 #include "Object.h"

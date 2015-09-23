@@ -21,8 +21,8 @@
 #define _ACHIEVEMENTMGR_H
 
 class QueryBuffer;
-class AchievementEntry;
-class AchievementCriteriaEntry;
+struct AchievementEntry;
+struct AchievementCriteriaEntry;
 
 // Achievement Reward Types
 /// Achievement has no reward

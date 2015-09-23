@@ -23,7 +23,7 @@
 #include "DBC/DBCStores.h"
 #include "UnitDefines.hpp"
 
-class AI_Spell;
+struct AI_Spell;
 
 #define MAX_CREATURE_INV_ITEMS 150
 #define MAX_CREATURE_LOOT 8
