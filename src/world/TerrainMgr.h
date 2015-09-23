@@ -22,6 +22,12 @@
 #ifndef _TERRAIN_H
 #define _TERRAIN_H
 
+namespace VMAP
+{
+    class IVMapManager;
+    class VMapFactory;
+};
+
 #define TERRAIN_INVALID_HEIGHT -50000
 #define TERRAIN_TILE_SIZE 533.3333333f
 #define TERRAIN_NUM_TILES 64

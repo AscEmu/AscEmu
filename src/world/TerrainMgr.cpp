@@ -18,6 +18,8 @@
  *
  */
 
+#include "VMapFactory.h"
+#include "IVMapManager.h"
 #include "StdAfx.h"
 #include "TerrainMgr.h"
 
