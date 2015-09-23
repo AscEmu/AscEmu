@@ -22,6 +22,7 @@
 #define _MAP_H
 
 #include "TerrainMgr.h"
+#include "CellHandlerDefines.hpp"
 
 class MapMgr;
 struct MapInfo;

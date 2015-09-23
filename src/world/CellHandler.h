@@ -21,20 +21,7 @@
 #ifndef _CELLHANDLER_H
 #define _CELLHANDLER_H
 
-#define TilesCount 64
-#define TileSize 533.33333f
-#define _minY (-TilesCount * TileSize / 2)
-#define _minX (-TilesCount * TileSize / 2)
-
-#define _maxY (TilesCount * TileSize / 2)
-#define _maxX (TilesCount * TileSize / 2)
-
-#define CellsPerTile 8
-#define _cellSize (TileSize / CellsPerTile)
-#define _sizeX (TilesCount * CellsPerTile)
-#define _sizeY (TilesCount * CellsPerTile)
-
-#define GetRelatCoord(Coord, CellCoord) ((_maxX - Coord) - (CellCoord * _cellSize))
+#include "CellHandlerDefines.hpp"
 
 class Map;
 

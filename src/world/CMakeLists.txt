@@ -193,6 +193,7 @@ set(headers
    CalendarMgr.h
 	CConsole.h
 	CellHandler.h
+    CellHandlerDefines.hpp
 	Channel.h
 	ChannelMgr.h
 	Chat.h
