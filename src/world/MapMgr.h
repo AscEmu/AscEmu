@@ -22,6 +22,7 @@
 #define _MAPMGR_H
 
 #include "MapManagement/MapManagementGlobals.hpp"
+#include "WorldStatesHandler.h"
 
 namespace Arcemu
 {
@@ -50,7 +51,6 @@ class Instance;
 class InstanceScript;
 class Transporter;
 class CThread;
-class WorldStatesHandler;
 
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
