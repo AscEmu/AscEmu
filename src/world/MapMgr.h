@@ -22,7 +22,9 @@
 #define _MAPMGR_H
 
 #include "MapManagement/MapManagementGlobals.hpp"
+#include "CellHandler.h"
 #include "WorldStatesHandler.h"
+#include "MapMgrDefines.hpp"
 
 namespace Arcemu
 {
@@ -54,35 +56,6 @@ class CThread;
 
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
-#define IS_PERSISTENT_INSTANCE(p) (((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty >= MODE_HEROIC) || (p)->m_mapInfo->type == INSTANCE_RAID)
-#define IS_RESETABLE_INSTANCE(p) (!(p)->m_persistent && ((p)->m_mapInfo->type == INSTANCE_NONRAID || ((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty == MODE_NORMAL)))
-#define CHECK_INSTANCE_GROUP(p, g) ((p)->m_creatorGroup == 0 || ((g) && (p)->m_creatorGroup == (g)->GetID()))
-
-#define GO_GUID_RECYCLE_INTERVAL 2048       /// client will cache GO positions. Using same guid for same client will make GO appear at wrong possition so we try to avoid assigning same guid
-
-#define ZONE_MASK_ALL -1
-/// MapId -1 doesn't exist (0 is Eastern Kingdoms)
-#define MAPID_NOT_IN_WORLD 0xFFFFFFFF
-/// Instance Id 0 doesn't exist (-1 is World Instance)
-#define INSTANCEID_NOT_IN_WORLD 0
-
-enum MapMgrTimers
-{
-    MMUPDATE_OBJECTS = 0,
-    MMUPDATE_SESSIONS = 1,
-    MMUPDATE_FIELDS = 2,
-    MMUPDATE_IDLE_OBJECTS = 3,
-    MMUPDATE_ACTIVE_OBJECTS = 4,
-    MMUPDATE_COUNT = 5
-};
-
-enum ObjectActiveState
-{
-    OBJECT_STATE_NONE		= 0,
-    OBJECT_STATE_INACTIVE	= 1,
-    OBJECT_STATE_ACTIVE		= 2,
-};
-
 typedef std::set<Object*> ObjectSet;
 typedef std::set<Object*> UpdateQueue;
 typedef std::set<Player*> PUpdateQueue;
@@ -94,10 +67,6 @@ typedef std::set<GameObject*> GameObjectSet;
 typedef HM_NAMESPACE::hash_map<uint32, Object*> StorageMap;
 typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
 typedef HM_NAMESPACE::hash_map<uint32, GameObject*> GameObjectSqlIdMap;
-
-#define MAX_TRANSPORTERS_PER_MAP 25
-#define RESERVE_EXPAND_SIZE 1024
-#define CALL_INSTANCE_SCRIPT_EVENT(Mgr, Func) if (Mgr != NULL && Mgr->GetScript() != NULL) Mgr->GetScript()->Func
 
 class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject, public CThread, public WorldStatesHandler::WorldStatesObserver
 {
@@ -123,14 +92,10 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		GameObject* CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale);
 
 		uint32 GenerateGameobjectGuid() { return ++m_GOHighGuid; }
-		GameObject* GetGameObject(uint32 guid)
-		{
-			if (guid > m_GOHighGuid)
-				return 0;
-			return GOStorage[guid];
-		}
 
-        // Local (mapmgr) storage/generation of Creatures
+    GameObject* GetGameObject(uint32 guid);
+
+    // Local (mapmgr) storage/generation of Creatures
 		uint32 m_CreatureHighGuid;
 		std::vector<Creature*> CreatureStorage;
 		CreatureSet::iterator creature_iterator;            /// required by owners despawning creatures and deleting *(++itr)
@@ -138,15 +103,10 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		Creature* CreateCreature(uint32 entry);
         Creature* CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
 
-		Creature* GetCreature(uint32 guid)
-		{
-			if (guid > m_CreatureHighGuid)
-				return NULL;
-			return CreatureStorage[guid];
-		}
+    Creature* GetCreature(uint32 guid);
 
 
-        //////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
 		/// Summon* CreateSummon(uint32 entry, SummonType type)
 		/// Summon factory function, creates and returns the appropriate summon subclass.
 		///
@@ -165,45 +125,28 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		DynamicObjectStorageMap m_DynamicObjectStorage;
 		DynamicObject* CreateDynamicObject();
 
-		DynamicObject* GetDynamicObject(uint32 guid)
-		{
-			DynamicObjectStorageMap::iterator itr = m_DynamicObjectStorage.find(guid);
-			return (itr != m_DynamicObjectStorage.end()) ? itr->second : NULL;
-		}
+    DynamicObject* GetDynamicObject(uint32 guid);
 
-        // Local (mapmgr) storage of pets
+    // Local (mapmgr) storage of pets
 		typedef HM_NAMESPACE::hash_map<uint32, Pet*> PetStorageMap;
 		PetStorageMap m_PetStorage;
 		PetStorageMap::iterator pet_iterator;
-		Pet* GetPet(uint32 guid)
-		{
-			PetStorageMap::iterator itr = m_PetStorage.find(guid);
-			return (itr != m_PetStorage.end()) ? itr->second : NULL;
-		}
+    Pet* GetPet(uint32 guid);
 
 
-        // Local (mapmgr) storage of players for faster lookup
+    // Local (mapmgr) storage of players for faster lookup
 		// double typedef lolz// a compile breaker..
 		typedef HM_NAMESPACE::hash_map<uint32, Player*> PlayerStorageMap;
 		PlayerStorageMap m_PlayerStorage;
-		Player* GetPlayer(uint32 guid)
-		{
-			PlayerStorageMap::iterator itr = m_PlayerStorage.find(guid);
-			return (itr != m_PlayerStorage.end()) ? itr->second : NULL;
-		}
+    Player* GetPlayer(uint32 guid);
 
-        // Local (mapmgr) storage of combats in progress
+    // Local (mapmgr) storage of combats in progress
 		CombatProgressMap _combatProgress;
-		void AddCombatInProgress(uint64 guid)
-		{
-			_combatProgress.insert(guid);
-		}
-		void RemoveCombatInProgress(uint64 guid)
-		{
-			_combatProgress.erase(guid);
-		}
+    void AddCombatInProgress(uint64 guid);
 
-        // Lookup Wrappers
+    void RemoveCombatInProgress(uint64 guid);
+
+    // Lookup Wrappers
 		Unit* GetUnit(const uint64 & guid);
 		Object* _GetObject(const uint64 & guid);
 
@@ -224,45 +167,44 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		void UpdateCellActivity(uint32 x, uint32 y, uint32 radius);
 
 		// Terrain Functions
-		float GetLandHeight(float x, float y, float z) { return _terrain->GetLandHeight(x, y, z); }
-		float GetADTLandHeight(float x, float y) { return _terrain->GetADTLandHeight(x, y); }
-		bool IsUnderground(float x, float y, float z) { return GetADTLandHeight(x, y) > (z + 0.5f); }
-		bool GetLiquidInfo(float x, float y, float z, float & liquidlevel, uint32 & liquidtype) { return _terrain->GetLiquidInfo(x, y, z, liquidlevel, liquidtype); }
-		float GetLiquidHeight(float x, float y) { return _terrain->GetLiquidHeight(x, y); }
-		uint8 GetLiquidType(float x, float y) { return _terrain->GetLiquidType(x, y); }
-        const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z)
-        {
-            uint32 mogp_flags;
-            int32 adt_id, root_id, group_id;
-            bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
-            auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
-            auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, _mapId, x, y, z, nullptr);
-            if (area_flag)
-                return MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
-            else
-                return MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(_mapId);
-        }
-		bool InLineOfSight(float x, float y, float z, float x2, float y2, float z2) { return _terrain->InLineOfSight(x, y, z, x2, y2, z2); }
+    float GetLandHeight(float x, float y, float z);
 
-		uint32 GetMapId() { return _mapId; }
+    float GetADTLandHeight(float x, float y);
 
-		void PushToProcessed(Player* plr);
+    bool IsUnderground(float x, float y, float z);
 
-		bool HasPlayers() { return (m_PlayerStorage.size() > 0); }
-		bool IsCombatInProgress() { return (_combatProgress.size() > 0); }
-		void TeleportPlayers();
+    bool GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype);
 
-		uint32 GetInstanceID() { return m_instanceID; }
-		MapInfo* GetMapInfo() { return pMapInfo; }
+    float GetLiquidHeight(float x, float y);
 
-		bool _shutdown;
+    uint8 GetLiquidType(float x, float y);
 
-		MapScriptInterface* GetInterface() { return ScriptInterface; }
-		virtual int32 event_GetInstanceID() { return m_instanceID; }
+    const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z);
 
-		void LoadAllCells();
-		uint32 GetPlayerCount() { return m_PlayerStorage.size(); }
-		uint32 GetTeamPlayersCount(uint32 teamId);
+    bool InLineOfSight(float x, float y, float z, float x2, float y2, float z2);
+
+    uint32 GetMapId();
+
+    void PushToProcessed(Player* plr);
+
+    bool HasPlayers();
+
+    bool IsCombatInProgress();
+    void TeleportPlayers();
+
+    uint32 GetInstanceID();
+
+    MapInfo* GetMapInfo();
+
+    bool _shutdown;
+
+    MapScriptInterface* GetInterface();
+
+    virtual int32 event_GetInstanceID() override;
+
+    void LoadAllCells();
+    uint32 GetPlayerCount();
+    uint32 GetTeamPlayersCount(uint32 teamId);
 
 		void _PerformObjectDuties();
 		uint32 mLoopCounter;
@@ -285,25 +227,12 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		void BeginInstanceExpireCountdown();
 
 		/// better hope to clear any references to us when calling this :P
-		void InstanceShutdown()
-		{
-			pInstance = NULL;
-			SetThreadState(THREADSTATE_TERMINATE);
-		}
+    void InstanceShutdown();
 
-		/// kill the worker thread only
-		void KillThread()
-		{
-			pInstance = NULL;
-			thread_kill_only = true;
-			SetThreadState(THREADSTATE_TERMINATE);
-			while(thread_running)
-			{
-				Arcemu::Sleep(100);
-			}
-		}
+    /// kill the worker thread only
+    void KillThread();
 
-		float GetFirstZWithCPZ(float x, float y, float z);
+    float GetFirstZWithCPZ(float x, float y, float z);
 
 	protected:
 
@@ -355,7 +284,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		GameObjectSqlIdMap _sqlids_gameobjects;
 
 		// Script related
-		InstanceScript* GetScript() { return mInstanceScript; };
+    InstanceScript* GetScript();
 		void LoadInstanceScript();
 		void CallScriptUpdate();
 
@@ -368,9 +297,9 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		bool thread_kill_only;
 		bool thread_running;
 
-		WorldStatesHandler& GetWorldStatesHandler() { return worldstateshandler; }
+    WorldStatesHandler& GetWorldStatesHandler();
 
-		void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value);
+    void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) override;
 	protected:
 
 		InstanceScript* mInstanceScript;

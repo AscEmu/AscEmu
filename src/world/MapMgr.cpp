@@ -1015,6 +1015,11 @@ void MapMgr::LoadAllCells()
     }
 }
 
+uint32 MapMgr::GetPlayerCount()
+{
+    return m_PlayerStorage.size();
+}
+
 void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
 {
     CellSpawns* sp;
@@ -1086,6 +1091,59 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
     }
 }
 
+float MapMgr::GetLandHeight(float x, float y, float z)
+{
+    return _terrain->GetLandHeight(x, y, z);
+}
+
+float MapMgr::GetADTLandHeight(float x, float y)
+{
+    return _terrain->GetADTLandHeight(x, y);
+}
+
+bool MapMgr::IsUnderground(float x, float y, float z)
+{
+    return GetADTLandHeight(x, y) > (z + 0.5f);
+}
+
+bool MapMgr::GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype)
+{
+    return _terrain->GetLiquidInfo(x, y, z, liquidlevel, liquidtype);
+}
+
+float MapMgr::GetLiquidHeight(float x, float y)
+{
+    return _terrain->GetLiquidHeight(x, y);
+}
+
+uint8 MapMgr::GetLiquidType(float x, float y)
+{
+    return _terrain->GetLiquidType(x, y);
+}
+
+const ::DBC::Structures::AreaTableEntry* MapMgr::GetArea(float x, float y, float z)
+{
+    uint32 mogp_flags;
+    int32 adt_id, root_id, group_id;
+    bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
+    auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
+    auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, _mapId, x, y, z, nullptr);
+    if (area_flag)
+        return MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
+    else
+        return MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(_mapId);
+}
+
+bool MapMgr::InLineOfSight(float x, float y, float z, float x2, float y2, float z2)
+{
+    return _terrain->InLineOfSight(x, y, z, x2, y2, z2);
+}
+
+uint32 MapMgr::GetMapId()
+{
+    return _mapId;
+}
+
 bool MapMgr::_CellActive(uint32 x, uint32 y)
 {
     uint32 endX = ((x + 1) <= _sizeX) ? x + 1 : (_sizeX - 1);
@@ -1128,6 +1186,15 @@ void MapMgr::PushToProcessed(Player* plr)
     _processQueue.insert(plr);
 }
 
+bool MapMgr::HasPlayers()
+{
+    return (m_PlayerStorage.size() > 0);
+}
+
+bool MapMgr::IsCombatInProgress()
+{
+    return (_combatProgress.size() > 0);
+}
 
 void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
 {
@@ -1333,6 +1400,23 @@ void MapMgr::BeginInstanceExpireCountdown()
 
     // set our expire time to 60 seconds.
     InactiveMoveTime = UNIXTIME + 60;
+}
+
+void MapMgr::InstanceShutdown()
+{
+    pInstance = NULL;
+    SetThreadState(THREADSTATE_TERMINATE);
+}
+
+void MapMgr::KillThread()
+{
+    pInstance = NULL;
+    thread_kill_only = true;
+    SetThreadState(THREADSTATE_TERMINATE);
+    while(thread_running)
+    {
+        Arcemu::Sleep(100);
+    }
 }
 
 void MapMgr::AddObject(Object* obj)
@@ -1553,6 +1637,26 @@ void MapMgr::TeleportPlayers()
     }
 }
 
+uint32 MapMgr::GetInstanceID()
+{
+    return m_instanceID;
+}
+
+MapInfo* MapMgr::GetMapInfo()
+{
+    return pMapInfo;
+}
+
+MapScriptInterface* MapMgr::GetInterface()
+{
+    return ScriptInterface;
+}
+
+int32 MapMgr::event_GetInstanceID()
+{
+    return m_instanceID;
+}
+
 void MapMgr::UnloadCell(uint32 x, uint32 y)
 {
     MapCell* c = GetCell(x, y);
@@ -1706,6 +1810,13 @@ Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, floa
     return creature;
 }
 
+Creature* MapMgr::GetCreature(uint32 guid)
+{
+    if (guid > m_CreatureHighGuid)
+        return NULL;
+    return CreatureStorage[guid];
+}
+
 Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
 {
     uint64 guid = GenerateCreatureGUID(entry);
@@ -1792,6 +1903,13 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     return go;
 }
 
+GameObject* MapMgr::GetGameObject(uint32 guid)
+{
+    if (guid > m_GOHighGuid)
+        return 0;
+    return GOStorage[guid];
+}
+
 GameObject* MapMgr::CreateGameObject(uint32 entry)
 {
     if (_reusable_guids_gameobject.size() > GO_GUID_RECYCLE_INTERVAL)
@@ -1813,6 +1931,34 @@ GameObject* MapMgr::CreateGameObject(uint32 entry)
 DynamicObject* MapMgr::CreateDynamicObject()
 {
     return new DynamicObject(HIGHGUID_TYPE_DYNAMICOBJECT, (++m_DynamicObjectHighGuid));
+}
+
+DynamicObject* MapMgr::GetDynamicObject(uint32 guid)
+{
+    DynamicObjectStorageMap::iterator itr = m_DynamicObjectStorage.find(guid);
+    return (itr != m_DynamicObjectStorage.end()) ? itr->second : NULL;
+}
+
+Pet* MapMgr::GetPet(uint32 guid)
+{
+    PetStorageMap::iterator itr = m_PetStorage.find(guid);
+    return (itr != m_PetStorage.end()) ? itr->second : NULL;
+}
+
+Player* MapMgr::GetPlayer(uint32 guid)
+{
+    PlayerStorageMap::iterator itr = m_PlayerStorage.find(guid);
+    return (itr != m_PlayerStorage.end()) ? itr->second : NULL;
+}
+
+void MapMgr::AddCombatInProgress(uint64 guid)
+{
+    _combatProgress.insert(guid);
+}
+
+void MapMgr::RemoveCombatInProgress(uint64 guid)
+{
+    _combatProgress.erase(guid);
 }
 
 void MapMgr::AddForcedCell(MapCell* c)
@@ -1892,6 +2038,11 @@ void MapMgr::SendPacketToPlayersInZone(uint32 zone, WorldPacket *packet) const
     }
 }
 
+InstanceScript* MapMgr::GetScript()
+{
+    return mInstanceScript;
+}
+
 void MapMgr::LoadInstanceScript()
 {
     mInstanceScript = sScriptMgr.CreateScriptClassForInstance(_mapId, this);
@@ -1912,6 +2063,11 @@ const uint16 MapMgr::GetAreaFlag(float x, float y, float z, bool *is_outdoors /*
     return MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, _mapId, x, y, z, nullptr);
 }
 
+
+WorldStatesHandler& MapMgr::GetWorldStatesHandler()
+{
+    return worldstateshandler;
+}
 
 void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
 {
