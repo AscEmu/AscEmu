@@ -20,7 +20,6 @@
 
 #include "AIEvents.h"
 
-class Unit;
 #include "Unit.h"
 
 #include "CommonTypes.hpp"

@@ -39,6 +39,7 @@ class AuctionHouse;
 struct Trainer;
 class GameEvent;
 struct QuestRelation;
+struct Quest;
 
 #define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->IsCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
 

@@ -26,6 +26,8 @@
 
 #include <G3D/Vector3.h>
 
+class Unit;
+
 /// ms smoother server/client side moving vs less cpu/ less b/w
 #define UNIT_MOVEMENT_INTERPOLATE_INTERVAL 400/*750*/
 
