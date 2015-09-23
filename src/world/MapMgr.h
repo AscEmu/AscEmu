@@ -50,7 +50,6 @@ class Instance;
 class InstanceScript;
 class Transporter;
 class CThread;
-class WorldStatesHandler::WorldStatesObserver;
 
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 
