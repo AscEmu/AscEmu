@@ -21,6 +21,8 @@
 
 #include "TLSObject.h"
 #include "CellHandler.h"
+#include "CThreads.h"
+#include "WorldStatesHandler.h"
 #include "StdAfx.h"
 #include "CrashHandler.h"
 
