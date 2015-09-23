@@ -37,8 +37,9 @@ class CreatureAIScript;
 class GossipScript;
 class AuctionHouse;
 struct Trainer;
-#define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->IsCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
+class GameEvent;
 
+#define CALL_SCRIPT_EVENT(obj, func) if (obj->IsInWorld() && obj->IsCreature() && static_cast<Creature*>(obj)->GetScript() != NULL) static_cast<Creature*>(obj)->GetScript()->func
 
 uint8 get_byte(uint32 buffer, uint32 index);
 
@@ -55,15 +56,9 @@ class SERVER_DECL Creature : public Unit
         GameEvent* mEvent = nullptr;
         
         /// For derived subclasses of Creature
-        bool IsVehicle()
-        {
-            if (proto->vehicleid != 0)
-                return true;
-            else
-                return false;
-        }
-        
-        void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
+    bool IsVehicle();
+
+    void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();
 
         bool Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info);
@@ -87,10 +82,11 @@ class SERVER_DECL Creature : public Unit
         inline uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
         inline uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
 
-        inline bool HasItems() { return ((m_SellItems != NULL) ? true : false); }
-        inline CreatureProto* GetProto() { return proto; }
+    inline bool HasItems();
 
-        bool IsPvPFlagged();
+    inline CreatureProto* GetProto();
+
+    bool IsPvPFlagged();
         void SetPvPFlag();
         void RemovePvPFlag();
 
@@ -104,122 +100,78 @@ class SERVER_DECL Creature : public Unit
 
         void SetSpeeds(uint8 type, float speed);
 
-        int32 GetSlotByItemId(uint32 itemid)
-        {
-            uint32 slot = 0;
-            for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
-            {
-                if (itr->itemid == itemid)
-                    return slot;
-                else
-                    ++slot;
-            }
-            return -1;
-        }
+    int32 GetSlotByItemId(uint32 itemid);
 
-        uint32 GetItemAmountByItemId(uint32 itemid)
-        {
-            for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
-            {
-                if (itr->itemid == itemid)
-                    return ((itr->amount < 1) ? 1 : itr->amount);
-            }
-            return 0;
-        }
+    uint32 GetItemAmountByItemId(uint32 itemid);
 
-        inline void GetSellItemBySlot(uint32 slot, CreatureItem & ci)
-        {
-            ci = m_SellItems->at(slot);
-        }
+    inline void GetSellItemBySlot(uint32 slot, CreatureItem& ci);
 
-        void GetSellItemByItemId(uint32 itemid, CreatureItem & ci)
-        {
-            for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
-            {
-                if (itr->itemid == itemid)
-                {
-                    ci = (*itr);
-                    return;
-                }
-            }
-            ci.amount = 0;
-            ci.max_amount = 0;
-            ci.available_amount = 0;
-            ci.incrtime = 0;
-            ci.itemid = 0;
-        }
+    void GetSellItemByItemId(uint32 itemid, CreatureItem& ci);
 
-        ItemExtendedCostEntry* GetItemExtendedCostByItemId(uint32 itemid)
-        {
-            for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
-            {
-                if (itr->itemid == itemid)
-                    return itr->extended_cost;
-            }
-            return NULL;
-        }
+    ItemExtendedCostEntry* GetItemExtendedCostByItemId(uint32 itemid);
 
-        inline std::vector<CreatureItem>::iterator GetSellItemBegin() { return m_SellItems->begin(); }
-        inline std::vector<CreatureItem>::iterator GetSellItemEnd()   { return m_SellItems->end(); }
-        inline size_t GetSellItemCount() { return m_SellItems->size(); }
-        void RemoveVendorItem(uint32 itemid)
-        {
-            for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
-            {
-                if (itr->itemid == itemid)
-                {
-                    m_SellItems->erase(itr);
-                    return;
-                }
-            }
-        }
-        void AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry* ec);
+    inline std::vector<CreatureItem>::iterator GetSellItemBegin();
+
+    inline std::vector<CreatureItem>::iterator GetSellItemEnd();
+
+    inline size_t GetSellItemCount();
+
+    void RemoveVendorItem(uint32 itemid);
+    void AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry* ec);
         void ModAvItemAmount(uint32 itemid, uint32 value);
         void UpdateItemAmount(uint32 itemid);
         /// Quests
         void _LoadQuests();
-        bool HasQuests() { return m_quests != NULL; };
-        bool HasQuest(uint32 id, uint32 type)
-        {
-            if (!m_quests) return false;
-            for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
-            {
-                if ((*itr)->qst->id == id && (*itr)->type & type)
-                    return true;
-            }
-            return false;
-        }
-        void AddQuest(QuestRelation* Q);
+    bool HasQuests();
+    bool HasQuest(uint32 id, uint32 type);
+    void AddQuest(QuestRelation* Q);
         void DeleteQuest(QuestRelation* Q);
         Quest* FindQuest(uint32 quest_id, uint8 quest_relation);
         uint16 GetQuestRelation(uint32 quest_id);
         uint32 NumOfQuests();
-        std::list<QuestRelation*>::iterator QuestsBegin() { return m_quests->begin(); };
-        std::list<QuestRelation*>::iterator QuestsEnd() { return m_quests->end(); };
-        void SetQuestList(std::list<QuestRelation*>* qst_lst) { m_quests = qst_lst; };
+    std::list<QuestRelation*>::iterator QuestsBegin();
+    std::list<QuestRelation*>::iterator QuestsEnd();
+    void SetQuestList(std::list<QuestRelation*>* qst_lst);
 
-        inline uint32 isVendor()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR); }
-        inline uint32 isTrainer()        const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER); }
-        inline uint32 isClass()          const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_CLASS); }
-        inline uint32 isProf()           const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_PROF); }
-        inline uint32 isQuestGiver()     const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER); }
-        inline uint32 isGossip()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP); }
-        inline uint32 isTaxi()           const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TAXIVENDOR); }
-        inline uint32 isCharterGiver()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARENACHARTER); }
-        inline uint32 isGuildBank()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GUILD_BANK); }
-        inline uint32 isBattleMaster()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BATTLEFIELDPERSON); }
-        inline uint32 isBanker()         const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER); }
-        inline uint32 isInnkeeper()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER); }
-        inline uint32 isSpiritHealer()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER); }
-        inline uint32 isTabardDesigner() const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TABARDCHANGER); }
-        inline uint32 isAuctioner()      const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_AUCTIONEER); }
-        inline uint32 isStableMaster()   const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_STABLEMASTER); }
-        inline uint32 isArmorer()        const { return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARMORER); }
+    inline uint32 isVendor() const;
 
-        inline uint32 GetHealthFromSpell() { return m_healthfromspell; }
-        void SetHealthFromSpell(uint32 value) { m_healthfromspell = value;}
+    inline uint32 isTrainer() const;
 
-        int32 m_speedFromHaste;
+    inline uint32 isClass() const;
+
+    inline uint32 isProf() const;
+
+    inline uint32 isQuestGiver() const;
+
+    inline uint32 isGossip() const;
+
+    inline uint32 isTaxi() const;
+
+    inline uint32 isCharterGiver() const;
+
+    inline uint32 isGuildBank() const;
+
+    inline uint32 isBattleMaster() const;
+
+    inline uint32 isBanker() const;
+
+    inline uint32 isInnkeeper() const;
+
+    inline uint32 isSpiritHealer() const;
+
+    inline uint32 isTabardDesigner() const;
+
+    inline uint32 isAuctioner() const;
+
+    inline uint32 isStableMaster() const;
+
+    inline uint32 isArmorer() const;
+
+    inline uint32 GetHealthFromSpell();
+
+    void SetHealthFromSpell(uint32 value);
+
+    int32 m_speedFromHaste;
         int32 FlatResistanceMod[SCHOOL_COUNT];
         int32 BaseResistanceModPct[SCHOOL_COUNT];
         int32 ResistanceModPct[SCHOOL_COUNT];
@@ -237,48 +189,9 @@ class SERVER_DECL Creature : public Unit
         void RegenerateHealth();
         void RegenerateMana();
         int BaseAttackType;
-
-        bool CanSee(Unit* obj)      /// Invisibility & Stealth Detection - Partha
-        {
-            if (!obj)
-                return false;
-
-            if (obj->m_invisible)    /// Invisibility - Detection of Players and Units
-            {
-                if (obj->getDeathState() == CORPSE)  /// can't see dead players' spirits
-                    return false;
-
-                if (m_invisDetect[obj->m_invisFlag] < 1)    /// can't see invisible without proper detection
-                    return false;
-            }
-
-            if (obj->IsStealth())       /// Stealth Detection ( I Hate Rogues :P )
-            {
-                if (isInFront(obj))     /// stealthed player is in front of creature
-                {
-                    // Detection Range = 5yds + (Detection Skill - Stealth Skill)/5
-                        detectRange = 5.0f + getLevel() + (0.2f * (float)(GetStealthDetectBonus()) - obj->GetStealthLevel());
-
-                    if (detectRange < 1.0f) detectRange = 1.0f;     /// Minimum Detection Range = 1yd
-                }
-                else /// stealthed player is behind creature
-                {
-                    if (GetStealthDetectBonus() > 1000) return true;    /// immune to stealth
-                    else detectRange = 0.0f;
-                }
-
-                detectRange += GetBoundingRadius();         /// adjust range for size of creature
-                detectRange += obj->GetBoundingRadius();    /// adjust range for size of stealthed player
-
-                if (GetDistance2dSq(obj) > detectRange * detectRange)
-                    return false;
-            }
-
-            return true;
-        }
-
-        /// Make this unit face another unit
-        bool setInFront(Unit* target);
+        
+    /// Invisibility & Stealth Detection - Partha
+    bool CanSee(Unit* obj);
 
         /// Looting
         void generateLoot();
@@ -288,14 +201,14 @@ class SERVER_DECL Creature : public Unit
         uint32 GetRequiredLootSkill();
 
         // Misc
-        inline void setEmoteState(uint8 emote) { m_emoteState = emote; };
-        inline uint32 GetSQL_id() { return spawnid; };
+    inline void setEmoteState(uint8 emote);
+    inline uint32 GetSQL_id();
 
-        virtual void setDeathState(DeathState s);
+    virtual void setDeathState(DeathState s);
 
-        uint32 GetOldEmote() { return m_oldEmote; }
+    uint32 GetOldEmote();
 
-        void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
+    void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
         void SendScriptTextChatMessage(uint32 textid);
         void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0);
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
@@ -324,69 +237,50 @@ class SERVER_DECL Creature : public Unit
 
         // Pet
         void UpdatePet();
-        uint32 GetEnslaveCount() { return m_enslaveCount; }
-        void SetEnslaveCount(uint32 count) { m_enslaveCount = count; }
-        uint32 GetEnslaveSpell() { return m_enslaveSpell; }
-        void SetEnslaveSpell(uint32 spellId) { m_enslaveSpell = spellId; }
-        bool RemoveEnslave();
+    uint32 GetEnslaveCount();
+
+    void SetEnslaveCount(uint32 count);
+
+    uint32 GetEnslaveSpell();
+
+    void SetEnslaveSpell(uint32 spellId);
+    bool RemoveEnslave();
 
         Object* GetPlayerOwner();
 
         Group* GetGroup();
 
-        int32 GetDamageDoneMod(uint32 school)
-        {
-            if (school >= SCHOOL_COUNT)
-                return 0;
+    int32 GetDamageDoneMod(uint32 school);
 
-            return ModDamageDone[ school ];
-        }
+    float GetDamageDonePctMod(uint32 school);
 
-        float GetDamageDonePctMod(uint32 school)
-        {
-            if (school >= SCHOOL_COUNT)
-                return 0;
+    inline bool IsPickPocketed();
 
-            return ModDamageDonePct[ school ];
-        }
+    inline void SetPickPocketed(bool val = true);
 
-        inline bool IsPickPocketed() { return m_PickPocketed; }
-        inline void SetPickPocketed(bool val = true) { m_PickPocketed = val; }
-
-        inline CreatureAIScript* GetScript() { return _myScriptClass; }
-        void LoadScript();
+    inline CreatureAIScript* GetScript();
+    void LoadScript();
 
         void CallScriptUpdate();
 
-        inline CreatureInfo* GetCreatureInfo() { return creature_info; }
-        inline void SetCreatureInfo(CreatureInfo* ci) { creature_info = ci; }
-        void SetCreatureProto(CreatureProto* cp) { proto = cp; }
+    inline CreatureInfo* GetCreatureInfo();
 
-        inline Trainer* GetTrainer() { return mTrainer; }
-        void RegenerateFocus();
+    inline void SetCreatureInfo(CreatureInfo* ci);
+
+    void SetCreatureProto(CreatureProto* cp);
+
+    inline Trainer* GetTrainer();
+    void RegenerateFocus();
 
         CreatureFamilyEntry* myFamily;
 
-        inline bool IsExotic()
-        {
-            if ((GetCreatureInfo()->Flags1 & CREATURE_FLAG1_EXOTIC) != 0)
-                return true;
-
-            return false;
-        }
+    inline bool IsExotic();
 
 
-        bool isCritter();
-        bool isTrainingDummy()
-        {
+    bool isCritter();
+    bool isTrainingDummy();
 
-            if (GetProto()->isTrainingDummy)
-                return true;
-            else
-                return false;
-        }
-
-        void FormationLinkUp(uint32 SqlId);
+    void FormationLinkUp(uint32 SqlId);
         void ChannelLinkUpGO(uint32 SqlId);
         void ChannelLinkUpCreature(uint32 SqlId);
         bool haslinkupevent;
@@ -414,9 +308,10 @@ class SERVER_DECL Creature : public Unit
         void SwitchToCustomWaypoints();
         Player* m_escorter;
         void DestroyCustomWaypointMap();
-        bool IsInLimboState() { return m_limbostate; }
-        void SetLimboState(bool set) { m_limbostate = set; };
-        uint32 GetLineByFamily(CreatureFamilyEntry* family) {return family->skilline ? family->skilline : 0;};
+    bool IsInLimboState();
+
+    void SetLimboState(bool set);
+    uint32 GetLineByFamily(CreatureFamilyEntry* family);
         void RemoveLimboState(Unit* healer);
         void SetGuardWaypoints();
         bool m_corpseEvent;
@@ -433,10 +328,11 @@ class SERVER_DECL Creature : public Unit
 
         void HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event);
 
-        uint32 GetType() { return m_Creature_type; }
-        void SetType(uint32 t) { m_Creature_type = t; }
+    uint32 GetType();
 
-    protected:
+    void SetType(uint32 t);
+
+protected:
         CreatureAIScript* _myScriptClass;
         bool m_limbostate;
         Trainer* mTrainer;

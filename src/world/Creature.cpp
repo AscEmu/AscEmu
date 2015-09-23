@@ -672,9 +672,135 @@ uint32 Creature::NumOfQuests()
     return (uint32)m_quests->size();
 }
 
+std::list<QuestRelation*>::iterator Creature::QuestsBegin()
+{
+    return m_quests->begin();
+}
+
+std::list<QuestRelation*>::iterator Creature::QuestsEnd()
+{
+    return m_quests->end();
+}
+
+void Creature::SetQuestList(std::list<QuestRelation*>* qst_lst)
+{
+    m_quests = qst_lst;
+}
+
+uint32 Creature::isVendor() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_VENDOR);
+}
+
+uint32 Creature::isTrainer() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER);
+}
+
+uint32 Creature::isClass() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_CLASS);
+}
+
+uint32 Creature::isProf() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TRAINER_PROF);
+}
+
+uint32 Creature::isQuestGiver() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+}
+
+uint32 Creature::isGossip() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+}
+
+uint32 Creature::isTaxi() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TAXIVENDOR);
+}
+
+uint32 Creature::isCharterGiver() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARENACHARTER);
+}
+
+uint32 Creature::isGuildBank() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GUILD_BANK);
+}
+
+uint32 Creature::isBattleMaster() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BATTLEFIELDPERSON);
+}
+
+uint32 Creature::isBanker() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_BANKER);
+}
+
+uint32 Creature::isInnkeeper() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_INNKEEPER);
+}
+
+uint32 Creature::isSpiritHealer() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPIRITHEALER);
+}
+
+uint32 Creature::isTabardDesigner() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_TABARDCHANGER);
+}
+
+uint32 Creature::isAuctioner() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_AUCTIONEER);
+}
+
+uint32 Creature::isStableMaster() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_STABLEMASTER);
+}
+
+uint32 Creature::isArmorer() const
+{
+    return HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_ARMORER);
+}
+
+uint32 Creature::GetHealthFromSpell()
+{
+    return m_healthfromspell;
+}
+
+void Creature::SetHealthFromSpell(uint32 value)
+{
+    m_healthfromspell = value;
+}
+
 void Creature::_LoadQuests()
 {
     sQuestMgr.LoadNPCQuests(this);
+}
+
+bool Creature::HasQuests()
+{
+    return m_quests != NULL;
+}
+
+bool Creature::HasQuest(uint32 id, uint32 type)
+{
+    if (!m_quests) return false;
+    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+        {
+            if ((*itr)->qst->id == id && (*itr)->type & type)
+                return true;
+        }
+    return false;
 }
 
 void Creature::setDeathState(DeathState s)
@@ -704,6 +830,11 @@ void Creature::setDeathState(DeathState s)
     }
 
     else m_deathState = s;
+}
+
+uint32 Creature::GetOldEmote()
+{
+    return m_oldEmote;
 }
 
 void Creature::AddToWorld()
@@ -807,6 +938,26 @@ void Creature::EnslaveExpire()
 
     UpdateOppFactionSet();
     UpdateSameFactionSet();
+}
+
+uint32 Creature::GetEnslaveCount()
+{
+    return m_enslaveCount;
+}
+
+void Creature::SetEnslaveCount(uint32 count)
+{
+    m_enslaveCount = count;
+}
+
+uint32 Creature::GetEnslaveSpell()
+{
+    return m_enslaveSpell;
+}
+
+void Creature::SetEnslaveSpell(uint32 spellId)
+{
+    m_enslaveSpell = spellId;
 }
 
 bool Creature::RemoveEnslave()
@@ -1023,6 +1174,45 @@ void Creature::RegenerateMana()
         SetPower(POWER_TYPE_MANA, cur);
 }
 
+bool Creature::CanSee(Unit* obj)
+{
+    if (!obj)
+        return false;
+
+    if (obj->m_invisible)    /// Invisibility - Detection of Players and Units
+    {
+        if (obj->getDeathState() == CORPSE)  /// can't see dead players' spirits
+            return false;
+
+        if (m_invisDetect[obj->m_invisFlag] < 1)    /// can't see invisible without proper detection
+            return false;
+    }
+
+    if (obj->IsStealth())       /// Stealth Detection ( I Hate Rogues :P )
+    {
+        if (isInFront(obj))     /// stealthed player is in front of creature
+        {
+            // Detection Range = 5yds + (Detection Skill - Stealth Skill)/5
+            detectRange = 5.0f + getLevel() + (0.2f * (float)(GetStealthDetectBonus()) - obj->GetStealthLevel());
+
+            if (detectRange < 1.0f) detectRange = 1.0f;     /// Minimum Detection Range = 1yd
+        }
+        else /// stealthed player is behind creature
+        {
+            if (GetStealthDetectBonus() > 1000) return true;    /// immune to stealth
+            else detectRange = 0.0f;
+        }
+
+        detectRange += GetBoundingRadius();         /// adjust range for size of creature
+        detectRange += obj->GetBoundingRadius();    /// adjust range for size of stealthed player
+
+        if (GetDistance2dSq(obj) > detectRange * detectRange)
+            return false;
+    }
+
+    return true;
+}
+
 void Creature::RegenerateFocus()
 {
     if (m_interruptRegen)
@@ -1044,6 +1234,26 @@ void Creature::CallScriptUpdate()
         return;
 
     _myScriptClass->AIUpdate();
+}
+
+CreatureInfo* Creature::GetCreatureInfo()
+{
+    return creature_info;
+}
+
+void Creature::SetCreatureInfo(CreatureInfo* ci)
+{
+    creature_info = ci;
+}
+
+void Creature::SetCreatureProto(CreatureProto* cp)
+{
+    proto = cp;
+}
+
+Trainer* Creature::GetTrainer()
+{
+    return mTrainer;
 }
 
 void Creature::AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry* ec)
@@ -1820,6 +2030,21 @@ void Creature::DestroyCustomWaypointMap()
     }
 }
 
+bool Creature::IsInLimboState()
+{
+    return m_limbostate;
+}
+
+void Creature::SetLimboState(bool set)
+{
+    m_limbostate = set;
+}
+
+uint32 Creature::GetLineByFamily(CreatureFamilyEntry* family)
+{
+    return family->skilline ? family->skilline : 0;
+}
+
 void Creature::RemoveLimboState(Unit* healer)
 {
     if (!m_limbostate != true)
@@ -1883,6 +2108,37 @@ Group* Creature::GetGroup()
     return NULL;
 }
 
+int32 Creature::GetDamageDoneMod(uint32 school)
+{
+    if (school >= SCHOOL_COUNT)
+        return 0;
+
+    return ModDamageDone[ school ];
+}
+
+float Creature::GetDamageDonePctMod(uint32 school)
+{
+    if (school >= SCHOOL_COUNT)
+        return 0;
+
+    return ModDamageDonePct[ school ];
+}
+
+bool Creature::IsPickPocketed()
+{
+    return m_PickPocketed;
+}
+
+void Creature::SetPickPocketed(bool val)
+{
+    m_PickPocketed = val;
+}
+
+CreatureAIScript* Creature::GetScript()
+{
+    return _myScriptClass;
+}
+
 bool Creature::HasLootForPlayer(Player* plr)
 {
     if (loot.gold > 0)
@@ -1915,7 +2171,27 @@ uint32 Creature::GetRequiredLootSkill()
         return SKILL_ENGINEERING;
     else
         return SKILL_SKINNING;      // skinning
+}
+
+void Creature::setEmoteState(uint8 emote)
+{
+    m_emoteState = emote;
+}
+
+uint32 Creature::GetSQL_id()
+{
+    return spawnid;
 };
+
+bool Creature::HasItems()
+{
+    return ((m_SellItems != NULL) ? true : false);
+}
+
+CreatureProto* Creature::GetProto()
+{
+    return proto;
+}
 
 //! Is PVP flagged?
 bool Creature::IsPvPFlagged()
@@ -2026,6 +2302,88 @@ void Creature::SetSpeeds(uint8 type, float speed)
     SendMessageToSet(&data, true);
 }
 
+int32 Creature::GetSlotByItemId(uint32 itemid)
+{
+    uint32 slot = 0;
+    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+        {
+            if (itr->itemid == itemid)
+                return slot;
+            else
+                ++slot;
+        }
+    return -1;
+}
+
+uint32 Creature::GetItemAmountByItemId(uint32 itemid)
+{
+    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+        {
+            if (itr->itemid == itemid)
+                return ((itr->amount < 1) ? 1 : itr->amount);
+        }
+    return 0;
+}
+
+void Creature::GetSellItemBySlot(uint32 slot, CreatureItem& ci)
+{
+    ci = m_SellItems->at(slot);
+}
+
+void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
+{
+    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+        {
+            if (itr->itemid == itemid)
+            {
+                ci = (*itr);
+                return;
+            }
+        }
+    ci.amount = 0;
+    ci.max_amount = 0;
+    ci.available_amount = 0;
+    ci.incrtime = 0;
+    ci.itemid = 0;
+}
+
+ItemExtendedCostEntry* Creature::GetItemExtendedCostByItemId(uint32 itemid)
+{
+    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+        {
+            if (itr->itemid == itemid)
+                return itr->extended_cost;
+        }
+    return NULL;
+}
+
+std::vector<CreatureItem>::iterator Creature::GetSellItemBegin()
+{
+    return m_SellItems->begin();
+}
+
+std::vector<CreatureItem>::iterator Creature::GetSellItemEnd()
+{
+    return m_SellItems->end();
+}
+
+size_t Creature::GetSellItemCount()
+{
+    return m_SellItems->size();
+}
+
+void Creature::RemoveVendorItem(uint32 itemid)
+{
+    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+        {
+            if (itr->itemid == itemid)
+            {
+                m_SellItems->erase(itr);
+                return;
+            }
+        }
+}
+
 void Creature::PrepareForRemove()
 {
     RemoveAllAuras();
@@ -2058,9 +2416,25 @@ void Creature::PrepareForRemove()
     }
 }
 
+bool Creature::IsExotic()
+{
+    if ((GetCreatureInfo()->Flags1 & CREATURE_FLAG1_EXOTIC) != 0)
+        return true;
+
+    return false;
+}
+
 bool Creature::isCritter()
 {
     if (creature_info->Type == UNIT_TYPE_CRITTER)
+        return true;
+    else
+        return false;
+}
+
+bool Creature::isTrainingDummy()
+{
+    if (GetProto()->isTrainingDummy)
         return true;
     else
         return false;
@@ -2471,6 +2845,16 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
     }
 }
 
+uint32 Creature::GetType()
+{
+    return m_Creature_type;
+}
+
+void Creature::SetType(uint32 t)
+{
+    m_Creature_type = t;
+}
+
 void Creature::BuildPetSpellList(WorldPacket& data)
 {
     data << uint64(GetGUID());
@@ -2509,6 +2893,14 @@ void Creature::BuildPetSpellList(WorldPacket& data)
 Object* Creature::GetPlayerOwner()
 {
     return NULL;
+}
+
+bool Creature::IsVehicle()
+{
+    if (proto->vehicleid != 0)
+        return true;
+    else
+        return false;
 }
 
 void Creature::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
