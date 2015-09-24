@@ -63,8 +63,8 @@ set(GLOBAL_INCLUDE_DIRS
    ${DEPENDENCY_ROOT}/vmaplib/include
    ${DEPENDENCY_ROOT}/pcre/include
    #${DEPENDENCY_ROOT}/zlib
-   ${RECASTNAVIGATION}/recast/include
-   ${RECASTNAVIGATION}/detour/include
+   ${RECASTNAVIGATION}/Recast/Include
+   ${RECASTNAVIGATION}/Detour/Include
    )
 
 #find our needed packages

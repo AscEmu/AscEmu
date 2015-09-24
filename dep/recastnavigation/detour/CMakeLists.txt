@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
-project(detour)
+project(Detour)
 
 set(prefix ${RECASTNAVIGATION}/${PROJECT_NAME}/source)
 set(hprefix ${RECASTNAVIGATION}/${PROJECT_NAME}/include)
@@ -13,7 +13,6 @@ set(sources
    DetourNavMeshBuilder.cpp
    DetourNavMeshQuery.cpp
    DetourNode.cpp
-   DetourObstacleAvoidance.cpp
    )
 
 set(headers
@@ -24,7 +23,7 @@ set(headers
    DetourNavMeshBuilder.h
    DetourNavMeshQuery.h
    DetourNode.h
-   DetourObstacleAvoidance.h
+   DetourStatus.h
    )
 
 foreach(src IN ITEMS ${sources})

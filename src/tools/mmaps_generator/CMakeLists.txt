@@ -35,12 +35,12 @@ include_directories(
    ${DEPENDENCY_ROOT}/g3dlite/include
    ${DEPENDENCY_ROOT}/vmaplib/include
    ${LOADLIB_PATH}
-   ${RECASTNAVIGATION}/detour/include
-   ${RECASTNAVIGATION}/recast/include
+   ${RECASTNAVIGATION}/Detour/Include
+   ${RECASTNAVIGATION}/Recast/Include
    )
 
 link_directories(${DEPENDENCY_LIBS})
   
 add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} shared g3dlite vmaplib detour recast ${PCRE_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} shared g3dlite vmaplib Detour Recast ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})

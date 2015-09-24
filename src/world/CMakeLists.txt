@@ -336,7 +336,7 @@ include_directories(
    ${DEPENDENCY_ROOT}/zlib
    ${DEPENDENCY_ROOT}/openssl
    ${DEPENDENCY_ROOT}/pcre/include
-   ${RECASTNAVIGATION}/detour/include
+   ${RECASTNAVIGATION}/Detour/Include
    ${DEPENDENCY_ROOT}/vmaplib/include
    ${DEPENDENCY_ROOT}/g3dlite/include
    )
@@ -351,6 +351,6 @@ if(CMAKE_GENERATOR MATCHES Visual*)
 endif()
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 
-add_dependencies( ${PROJECT_NAME} shared g3dlite vmaplib detour recast)
-target_link_libraries( ${PROJECT_NAME} shared  g3dlite vmaplib detour recast ${PCRE_LIBRARIES})
+add_dependencies( ${PROJECT_NAME} shared g3dlite vmaplib Detour Recast)
+target_link_libraries( ${PROJECT_NAME} shared  g3dlite vmaplib Detour Recast ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

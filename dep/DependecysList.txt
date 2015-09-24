@@ -16,12 +16,12 @@ Folder: zlib
    Web: http://www.zlib.net/
    Version: 1.2.8 (2013/03/28)
 
-================= Everything below is not updated to latest version =================
-
 Folder: recastnavigation
    Web: https://github.com/memononen/recastnavigation
-   Version: ??? (2010/??/??)
-   
+   Version: 1dd5cf1883d61e723fef3d4957cf758c50e7a52b (2015/06/22)   
+
+================= Everything below this is not updated to a newer version =================
+
 Folder: openssl
    Web:
    Version:

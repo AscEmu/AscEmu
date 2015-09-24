@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
-project(recast)
+project(Recast)
 
 set(prefix ${RECASTNAVIGATION}/${PROJECT_NAME}/source)
 
