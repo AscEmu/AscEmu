@@ -1,7 +1,6 @@
 #!/bin/sh
 version=`git log -1 --pretty=format:"%h"`
 timestamp=`git log -1 --pretty=format:"%ct"`
-tag=`cat ascemu-tag`
 hostname=`hostname`
 username=`whoami | cut -d\\\ -f2`
 
