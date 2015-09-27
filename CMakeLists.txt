@@ -12,12 +12,9 @@ include(cmake/CompilerDefs.cmake)
 #set our PATH variables
 set(ROOT_PATH ${CMAKE_SOURCE_DIR})
 #We have our own custom modules that we use. This tells cmakes where to find them.
-set(CMAKE_SOURCE_DIR ${ROOT_PATH}/cmake)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ROOT_PATH}/cmake)
+set(CMAKE_MODULE_PATH ${ROOT_PATH}/cmake)
 set(DEPENDENCY_ROOT ${ROOT_PATH}/dep)
-set(DEPENDENCY_SOURCES ${DEPENDENCY_ROOT}/src)
 set(DEPENDENCY_LIBS ${DEPENDENCY_ROOT}/lib)
-set(DEPENDENCY_INCLUDE_ROOT ${DEPENDENCY_ROOT}/include)
 set(DEPENDENCY_DLLS64 ${DEPENDENCY_ROOT}/dll64)
 set(RECASTNAVIGATION ${DEPENDENCY_ROOT}/recastnavigation)
 set(LOADLIB_PATH ${ROOT_PATH}/src/tools/loadlib)
