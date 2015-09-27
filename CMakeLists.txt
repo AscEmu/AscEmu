@@ -55,11 +55,9 @@ set(GLOBAL_INCLUDE_DIRS
    ${ROOT_PATH}/src/shared
    ${ROOT_PATH}/src/world
    ${ROOT_PATH}/src/logonserver
-   ${DEPENDENCY_INCLUDE_ROOT}
    ${DEPENDENCY_ROOT}/g3dlite/include
    ${DEPENDENCY_ROOT}/vmaplib/include
    ${DEPENDENCY_ROOT}/pcre/include
-   #${DEPENDENCY_ROOT}/zlib
    ${RECASTNAVIGATION}/Recast/Include
    ${RECASTNAVIGATION}/Detour/Include
    )
