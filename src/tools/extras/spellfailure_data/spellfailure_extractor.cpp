@@ -1,24 +1,3 @@
-/*
- * ArcEmu MMORPG Server
- * Copyright (C) 2005-2007 Ascent Team <http://www.ascentemu.com/>
- * Copyright (C) 2008-2009 <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * spellfailure_extractor.cpp : Defines the entry point for the console application.
- */
-
 #include <cstring>
 #include <cstdio>
 #include <cstdlib>
@@ -31,10 +10,10 @@
 const char *Executable = "wow.exe";
 const char *OutputFile = "SpellFailure.h";
 
-const char *HDR = "/*\n * ArcEmu MMORPG Server\n * Copyright (C) 2005-2007 Ascent Team <http://www.ascentemu.com/>\n * Copyright (C) 2008-2009 <http://www.ArcEmu.org/>" \
-" *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as published by\n * the Free Software Foundation, either version 3 of the License, or" \
+const char *HDR = "/*\n * AscEmu Framework\n * Copyright (C) 2014-2015 Ascent Team <http://www.ascemu.org/>\n" \
+" *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU General Public License as published by\n * the Free Software Foundation, either version 3 of the License, or" \
 " * any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the" \
-" * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program.  If not, see <http://www.gnu.org/licenses/>.\n *\n */";
+" * GNU General Public License for more details.\n *\n * You should have received a copy of the GNU General Public License\n * along with this program.  If not, see <http://www.gnu.org/licenses/>.\n *\n */";
 
 bool reverse_pointer_back_to_string(char ** ptr, char * str)
 {
