@@ -3774,7 +3774,7 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     dtPolyRef path[256];
     int pathcount;
 
-    if (nav->query->findPath(startref, endref, start, end, &filter, path, &pathcount, 256) != DT_SUCCESS)
+    if (dtStatusFailed(nav->query->findPath(startref, endref, start, end, &filter, path, &pathcount, 256)))
         return false;
 
     if (pathcount == 0 || path[pathcount - 1] != endref)
@@ -3784,7 +3784,7 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     int32 pointcount;
     bool usedoffmesh;
 
-    if (findSmoothPath(start, end, path, pathcount, points, &pointcount, usedoffmesh, MAX_PATH_LENGTH, nav->mesh, nav->query, filter) != DT_SUCCESS)
+    if (dtStatusFailed(findSmoothPath(start, end, path, pathcount, points, &pointcount, usedoffmesh, MAX_PATH_LENGTH, nav->mesh, nav->query, filter)))
         return false;
 
     //add to spline
@@ -3807,11 +3807,11 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
     uint32 npolys = polyPathSize;
 
     float iterPos[VERTEX_SIZE], targetPos[VERTEX_SIZE];
-    if (DT_SUCCESS != query->closestPointOnPolyBoundary(polys[0], startPos, iterPos))
-        return DT_FAILURE;
+    if (dtStatusFailed(query->closestPointOnPolyBoundary(polys[0], startPos, iterPos)))
+        return DT_FAILURE | DT_OUT_OF_MEMORY;
 
-    if (DT_SUCCESS != query->closestPointOnPolyBoundary(polys[npolys - 1], endPos, targetPos))
-        return DT_FAILURE;
+    if (dtStatusFailed(query->closestPointOnPolyBoundary(polys[npolys - 1], endPos, targetPos)))
+        return DT_FAILURE | DT_OUT_OF_MEMORY;
 
     dtVcopy(&smoothPath[nsmoothPath * VERTEX_SIZE], iterPos);
     nsmoothPath++;
@@ -3891,7 +3891,7 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
 
             // Handle the connection.
             float startPos[VERTEX_SIZE], endPos[VERTEX_SIZE];
-            if (DT_SUCCESS == mesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos))
+            if (dtStatusFailed(mesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos)))
             {
                 if (nsmoothPath < maxSmoothPathSize)
                 {
@@ -3928,7 +3928,7 @@ bool AIInterface::getSteerTarget(const float* startPos, const float* endPos, con
     uint32 nsteerPath = 0;
     dtStatus dtResult = query->findStraightPath(startPos, endPos, path, pathSize,
                                                 steerPath, steerPathFlags, steerPathPolys, (int*)&nsteerPath, MAX_STEER_POINTS);
-    if (!nsteerPath || DT_SUCCESS != dtResult)
+    if (!nsteerPath || dtStatusFailed(dtResult))
         return false;
 
     // Find vertex far enough to steer to.
