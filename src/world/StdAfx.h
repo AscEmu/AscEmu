@@ -227,8 +227,4 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 
 #include "MapManagement/MapManagementGlobals.hpp"
 
-#endif
-
-#define RECRUITING "Info: |cff00FF7FArcEmu is recruiting developers: Join us on irc.freenode.net #arcemu"
-#define BUGTRACKER "https://github.com/arcemu/arcemu/issues"
-
+#endif  // __STDAFX_H
