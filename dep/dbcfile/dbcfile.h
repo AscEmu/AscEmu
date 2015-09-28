@@ -11,6 +11,8 @@ public:
 
     // Open database. It must be openened before it can be used.
     bool open();
+    // Open specific database
+    bool open(const char*);
 
     // Database exceptions
     class Exception

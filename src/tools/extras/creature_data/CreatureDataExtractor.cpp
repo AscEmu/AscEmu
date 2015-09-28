@@ -7,7 +7,7 @@
 #include "dbcfile.h"
 #include "mpq_libmpq04.h"
 
-#include "structs.h"
+#include "CreatureDataStructures.h"
 
 void InitMPQs()
 {
@@ -27,7 +27,7 @@ void InitMPQs()
     fclose(tf);
     new MPQArchive("Data/common-2.MPQ");
 
-    for( size_t i = 0; localeNames[i] != 0; i++ )
+    for (size_t i = 0; localeNames[i] != 0; i++)
     {
         sprintf(tmp, "Data/%s/locale-%s.MPQ", localeNames[i], localeNames[i]);
         tf = fopen(tmp, "r");
@@ -43,7 +43,7 @@ void InitMPQs()
     {
         fclose(tf);
         new MPQArchive("Data/expansion.MPQ");
-        if ( -1 != locale )
+        if (-1 != locale)
         {
             sprintf(tmp, "Data/%s/expansion-locale-%s.MPQ", localeNames[locale], localeNames[locale]);
             new MPQArchive(tmp);
@@ -55,7 +55,7 @@ void InitMPQs()
     {
         fclose(tf);
         new MPQArchive("Data/lichking.MPQ");
-        if ( -1 != locale )
+        if (-1 != locale)
         {
             sprintf(tmp, "Data/%s/lichking-locale-%s.MPQ", localeNames[locale], localeNames[locale]);
             new MPQArchive(tmp);
@@ -67,7 +67,7 @@ void InitMPQs()
     {
         fclose(tf);
         new MPQArchive("Data/patch.MPQ");
-        for(int i = 2; i <= maxPatches; i++)
+        for (int i = 2; i <= maxPatches; i++)
         {
             sprintf(tmp, "Data/patch-%d.MPQ", i);
             tf = fopen(tmp, "r");
@@ -76,7 +76,7 @@ void InitMPQs()
             fclose(tf);
             new MPQArchive(tmp);
         }
-        if ( -1 != locale )
+        if (-1 != locale)
         {
             sprintf(tmp, "Data/%s/patch-%s.MPQ", localeNames[locale], localeNames[locale]);
             tf = fopen(tmp, "r");
@@ -84,7 +84,7 @@ void InitMPQs()
             {
                 fclose(tf);
                 new MPQArchive(tmp);
-                for(int i = 2; i <= maxPatches; i++)
+                for (int i = 2; i <= maxPatches; i++)
                 {
                     sprintf(tmp, "Data/%s/patch-%s-%d.MPQ", localeNames[locale], localeNames[locale], i);
                     tf = fopen(tmp, "r");
@@ -100,9 +100,9 @@ void InitMPQs()
 
 void replace(std::string &str, const char* find, const char* rep, uint32 limit)
 {
-    uint32 i=0;
-    std::string::size_type pos=0;
-    while((pos = str.find(find, pos)) != std::string::npos)
+    uint32 i = 0;
+    std::string::size_type pos = 0;
+    while ((pos = str.find(find, pos)) != std::string::npos)
     {
         str.erase(pos, strlen(find));
         str.insert(pos, rep);
@@ -127,7 +127,7 @@ int main()
     InitMPQs();
     FILE* fo = fopen("display_bounding_boxes.sql", "w");
     DBCFile displayInfo("DBFilesClient\\CreatureDisplayInfo.dbc");
-    DBCFile modelInfo("DBFilesClient\\CreatureModelData.dbc");    
+    DBCFile modelInfo("DBFilesClient\\CreatureModelData.dbc");
     displayInfo.open();
     modelInfo.open();
 
@@ -139,7 +139,7 @@ int main()
         unsigned int entry = itr->getInt(0);
         modelInfoEntries.insert(std::make_pair(entry, *itr));
     }
-    
+
     for (DBCFile::Iterator itr = displayInfo.begin(); itr != displayInfo.end(); ++itr)
     {
         unsigned int displayid = itr->getInt(0);
@@ -238,9 +238,9 @@ int main()
             realpos[2] = (/*bone.pivotpoint[2] +*/ attachments[i].pos[2]) * modelscale;
 
             //fix coord system
-//             float tmp = realpos[2];
-//             realpos[2] = realpos[1];
-//             realpos[1] = -tmp;
+            //             float tmp = realpos[2];
+            //             realpos[2] = realpos[1];
+            //             realpos[1] = -tmp;
             //fprintf(fo, "insert into `display_attachment_points` VALUES (%u, %u, %f, %f, %f);\n", displayid, attachments[i].id, attachments[i].pos[0], attachments[i].pos[1], attachments[i].pos[2]);
             //printf("Attachmnent %u point %f %f %f pivot %f %f %f\n", attachments[i].id, realpos[0], realpos[1], realpos[2], bone.pivotpoint[0], bone.pivotpoint[1], bone.pivotpoint[2]);
         }

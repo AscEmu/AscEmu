@@ -46,6 +46,36 @@ bool DBCFile::open()
     f.close();
     return true;
 }
+
+bool DBCFile::open(const char * fn)
+{
+    FILE * pf = fopen(fn, "rb");
+    if (!pf)
+        return false;
+
+    char header[4];
+
+    fread(header, 4, 1, pf);
+    assert(header[0] == 'W' && header[1] == 'D' && header[2] == 'B' && header[3] == 'C');
+    fread(&recordCount, 4, 1, pf); // Number of records
+    fread(&fieldCount, 4, 1, pf); // Number of fields
+    fread(&recordSize, 4, 1, pf); // Size of a record
+    fread(&stringSize, 4, 1, pf); // String size
+
+    data = (unsigned char *)malloc(recordSize*recordCount);
+    stringTable = (unsigned char *)malloc(stringSize);
+
+    if (!data || !stringTable)
+        return false;
+
+    fread(data, recordSize*recordCount, 1, pf);
+    fread(stringTable, stringSize, 1, pf);
+
+    /* swap all the rows */
+    fclose(pf);
+    return true;
+}
+
 DBCFile::~DBCFile()
 {
     delete [] data;
