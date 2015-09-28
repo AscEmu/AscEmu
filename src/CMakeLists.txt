@@ -13,4 +13,9 @@ add_subdirectory(world)
 # if build tools is set, add the subdirectory
 if(BUILD_TOOLS)
    add_subdirectory(tools)
-endif(BUILD_TOOLS)
+endif()
+
+# if build extras is set, add the subdirectory
+if(BUILD_EXTRAS)
+   add_subdirectory(tools/extras)
+endif()
