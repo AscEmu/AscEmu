@@ -10,7 +10,7 @@
 
 initialiseSingleton(SocketGarbageCollector);
 
-Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_fd(fd), m_connected(false),    m_deleted(false)
+Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_fd(fd), m_connected(false),    m_deleted(false), m_writeLock(0)
 {
     // Allocate Buffers
     readBuffer.Allocate(recvbuffersize);
@@ -72,7 +72,7 @@ void Socket::_OnConnect()
     SocketOps::DisableBuffering(m_fd);
     /*    SocketOps::SetRecvBufferSize(m_fd, m_writeBufferSize);
         SocketOps::SetSendBufferSize(m_fd, m_writeBufferSize);*/
-    m_connected = true;
+    m_connected.SetVal(true);
 
     // IOCP stuff
 #ifdef CONFIG_USE_IOCP
@@ -116,10 +116,8 @@ std::string Socket::GetRemoteIP()
 void Socket::Disconnect()
 {
     //if returns false it means it's already disconnected
-    if (!m_connected)
+    if(!m_connected.SetVal(false))
         return;
-
-    m_connected = false;
 
     sLog.outDetail("Socket::Disconnect on socket %u", m_fd);
 
@@ -136,10 +134,8 @@ void Socket::Disconnect()
 void Socket::Delete()
 {
     //if returns true it means it's already delete
-    if (m_deleted)
+    if(m_deleted.SetVal(true))
         return;
-
-    m_deleted = true;
 
     sLog.outDebug("Socket::Delete() on socket %u", m_fd);
 

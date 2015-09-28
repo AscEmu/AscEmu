@@ -55,7 +55,7 @@ class SERVER_DECL Socket
         bool Send(const uint8* Bytes, uint32 Size);
 
         // Burst system - Locks the sending mutex.
-        inline void BurstBegin() { m_writeMutex.lock(); }
+        inline void BurstBegin() { m_writeMutex.Acquire(); }
 
         // Burst system - Adds bytes to output buffer.
         bool BurstSend(const uint8* Bytes, uint32 Size);
@@ -64,7 +64,7 @@ class SERVER_DECL Socket
         void BurstPush();
 
         // Burst system - Unlocks the sending mutex.
-        inline void BurstEnd() { m_writeMutex.unlock(); }
+        inline void BurstEnd() { m_writeMutex.Release(); }
 
         /* Client Operations */
 
@@ -81,11 +81,11 @@ class SERVER_DECL Socket
 
         inline bool IsDeleted()
         {
-            return m_deleted;
+            return m_deleted.GetVal();
         }
         inline bool IsConnected()
         {
-            return m_connected;
+            return m_connected.GetVal();
         }
         inline sockaddr_in & GetRemoteStruct() { return m_client; }
 
@@ -104,24 +104,36 @@ class SERVER_DECL Socket
 
         SOCKET m_fd;
 
-        /*! Probably unnecessary, but maintains compatibility with old code */
-        std::recursive_mutex m_sendMutex;
-
-        std::recursive_mutex m_writeMutex;
-        std::recursive_mutex m_readMutex;
+        Mutex m_writeMutex;
+        Mutex m_readMutex;
 
         // we are connected? stop from posting events.
-        std::atomic<bool> m_connected;
+        Arcemu::Threading::AtomicBoolean m_connected;
 
         // We are deleted? Stop us from posting events.
-        std::atomic<bool> m_deleted;
+        Arcemu::Threading::AtomicBoolean m_deleted;
 
         sockaddr_in m_client;
 
         unsigned long m_BytesSent;
         unsigned long m_BytesRecieved;
 
+    public:
+        // Atomic wrapper functions for increasing read/write locks
+        inline void IncSendLock() { ++m_writeLock; }
+        inline void DecSendLock() { --m_writeLock; }
+        inline bool AcquireSendLock()
+        {
+            if(m_writeLock.SetVal(1) != 0)
+                return false;
+            else
+                return true;
+        }
+
     private:
+        // Write lock, stops multiple write events from being posted.
+        Arcemu::Threading::AtomicCounter m_writeLock;
+
         /* Win32 - IOCP Specific Calls */
 #ifdef CONFIG_USE_IOCP
 
@@ -150,11 +162,9 @@ class SERVER_DECL Socket
 
         inline bool HasSendLock()
         {
-            bool locked = m_sendMutex.try_lock();
-            if (locked)
-                m_sendMutex.unlock();
-
-            return locked;
+            bool res;
+            res = (m_writeLock.GetVal() != 0);
+            return res;
         }
 #endif
 
@@ -165,11 +175,9 @@ class SERVER_DECL Socket
         void PostEvent(int events, bool oneshot);
         inline bool HasSendLock()
         {
-            bool locked = m_sendMutex.try_lock();
-            if (locked)
-                m_sendMutex.unlock();
-
-            return locked;
+            bool res;
+            res = (m_writeLock.GetVal() != 0);
+            return res;
         }
 #endif
 
@@ -177,11 +185,14 @@ class SERVER_DECL Socket
         // Polls and resets the traffic data
         void PollTraffic(unsigned long* sent, unsigned long* recieved)
         {
-            std::lock_guard<std::recursive_mutex> lock(m_writeMutex);
+
+            m_writeMutex.Acquire();
             *sent = m_BytesSent;
             *recieved = m_BytesRecieved;
             m_BytesSent = 0;
             m_BytesRecieved = 0;
+
+            m_writeMutex.Release();
         }
 };
 
@@ -222,7 +233,7 @@ T* ConnectTCPSocket(const char* hostname, u_short port)
 class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
 {
         std::map<Socket*, time_t> deletionQueue;
-        std::mutex socketMutex;
+        Mutex lock;
     public:
         ~SocketGarbageCollector()
         {
@@ -233,10 +244,9 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
 
         void Update()
         {
-            std::lock_guard<std::mutex> lock(socketMutex);
-
             std::map<Socket*, time_t>::iterator i, i2;
             time_t t = UNIXTIME;
+            lock.Acquire();
             for(i = deletionQueue.begin(); i != deletionQueue.end();)
             {
                 i2 = i++;
@@ -246,13 +256,14 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
                     deletionQueue.erase(i2);
                 }
             }
+            lock.Release();
         }
 
         void QueueSocket(Socket* s)
         {
-            std::lock_guard<std::mutex> lock(socketMutex);
-
+            lock.Acquire();
             deletionQueue.insert(std::map<Socket*, time_t>::value_type(s, UNIXTIME + SOCKET_GC_TIMEOUT));
+            lock.Release();
         }
 };
 
