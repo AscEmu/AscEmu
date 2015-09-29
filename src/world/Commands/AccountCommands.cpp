@@ -193,8 +193,9 @@ bool ChatHandler::HandleAccountChangePassword(const char* args, WorldSession* m_
         RedSystemMessage(m_session, "Your new password inputs doesn't match!");
         return false;
     }
-    auto account_name = m_session->GetAccountName();
+    auto account_name = m_session->GetAccountNameS();
 
+    sLogonCommHandler.AccountChangePassword(old_password, new_password_1, account_name);
     GreenSystemMessage(m_session, "This command is currently unavailable.");
 
     return true;

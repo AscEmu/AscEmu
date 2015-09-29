@@ -547,6 +547,48 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         }
         break;
 
+        case 6:        // account change password
+        {
+            std::string old_password;
+            std::string new_password;
+            std::string account_name;
+
+            recvData >> old_password;
+            recvData >> new_password;
+            recvData >> account_name;
+
+            std::string pass;
+            pass.assign(account_name);
+            pass.push_back(':');
+            pass.append(old_password);
+            auto check_oldpass_query = sLogonSQL->Query("SELECT login, encrypted_password FROM accounts WHERE encrypted_password=SHA(UPPER('%s')) AND login='%s'", pass.c_str(), account_name);
+
+            if (!check_oldpass_query)
+            {
+                // Send packet back... Your current password matches not your input!
+            }
+            else
+            {
+                std::string new_pass;
+                new_pass.assign(account_name);
+                new_pass.push_back(':');
+                new_pass.append(new_password);
+
+                auto new_pass_query = sLogonSQL->Query("UPDATE accounts SET encrypted_password=SHA(UPPER('%s')) WHERE login='%s'", new_pass.c_str(), account_name);
+
+                if (!new_pass_query)
+                {
+                    // Send packet back... Somehting went wrong!
+                }
+                else
+                {
+                    // Send packet back... Everything is fine!
+                }
+            }
+
+        }
+        break;
+
     }
 }
 

@@ -547,6 +547,22 @@ void LogonCommHandler::IPBan_Remove(const char* ip)
     itr->second->SendPacket(&data, false);
 }
 
+void LogonCommHandler::AccountChangePassword(const char* old_password, const char* new_password, const char* account_name)
+{
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    if (logons.size() == 0 || itr->second == 0)
+    {
+        return;         // No valid logonserver is connected.
+    }
+
+    WorldPacket data(RCMSG_MODIFY_DATABASE, 400);
+    data << uint32(6);        // 6 = acc change pw
+    data << old_password;
+    data << new_password;
+    data << account_name;
+    itr->second->SendPacket(&data, false);
+}
+
 void LogonCommHandler::RefreshRealmPop()
 {
     // Get realm player limit, it's better that we get the player limit once and save it! <-done
