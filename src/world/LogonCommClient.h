@@ -54,6 +54,7 @@ class LogonCommClientSocket : public Socket
         void HandleDisconnectAccount(WorldPacket& recvData);
         void HandleConsoleAuthResult(WorldPacket& recvData);
         void HandlePopulationRequest(WorldPacket& recvData);
+        void HandleModifyDatabaseResult(WorldPacket& recvData);
 
         void OnDisconnect();
         void CompressAndSend(ByteBuffer& uncompressed);

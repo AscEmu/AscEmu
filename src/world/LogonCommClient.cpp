@@ -124,7 +124,7 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
         NULL,                                                   // RCMSG_TEST_CONSOLE_LOGIN
         &LogonCommClientSocket::HandleConsoleAuthResult,        // RSMSG_CONSOLE_LOGIN_RESULT
         NULL,                                                   // RCMSG_MODIFY_DATABASE_REQUEST
-        NULL,                                                   // RSMSG_MODIFY_DATABASE_RESULT     ----TODO
+        &LogonCommClientSocket::HandleModifyDatabaseResult,     // RSMSG_MODIFY_DATABASE_RESULT
         &LogonCommClientSocket::HandlePopulationRequest,        // RSMSG_REALM_POP_REQ
         NULL,                                                   // RCMSG_REALM_POP_RES
         NULL,                                                   // RCMSG_CHECK_ACCOUNT_REQUEST
@@ -430,4 +430,44 @@ void LogonCommClientSocket::HandlePopulationRequest(WorldPacket& recvData)
     WorldPacket data(RCMSG_REALM_POP_RES, 16);
     data << realmId << LogonCommHandler::getSingleton().GetServerPopulation();
     SendPacket(&data, false);
+}
+
+void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
+{
+    uint32 method_id;
+    uint8 result_id;
+    //Get the result/method id for further processing
+    recvData >> method_id;
+    recvData >> result_id;
+
+    switch (method_id)
+    {
+        case 6:     //account change password
+        {
+            std::string account_name;
+            recvData >> account_name;
+            const char* account_string = account_name.c_str();
+
+            WorldSession* pSession = sWorld.FindSessionByName(account_string);
+            if (pSession == nullptr)
+            {
+                LOG_ERROR("No session found!");
+                return;
+            }
+
+            if (result_id == 1)         //check_oldpass_query
+            {
+                pSession->SystemMessage("Your entered old password did not match database password!");
+            }
+            else if (result_id == 2)     //unable to update account
+            {
+                pSession->SystemMessage("Something went wrong by updating mysql data!");
+            }
+            else                        //everything is fine
+            {
+                pSession->SystemMessage("Your password is now updated");
+            }
+
+        }
+    }
 }

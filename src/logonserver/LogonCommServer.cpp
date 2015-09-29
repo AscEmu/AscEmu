@@ -551,6 +551,9 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
         case 6:        // account change password
         {
+            // Prepare our "send-back" packet
+            WorldPacket data(RSMSG_MODIFY_DATABASE_RESULT, 200);
+
             std::string old_password;
             std::string new_password;
             std::string account_name;
@@ -563,11 +566,15 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             pass.assign(account_name);
             pass.push_back(':');
             pass.append(old_password);
-            auto check_oldpass_query = sLogonSQL->Query("SELECT login, encrypted_password FROM accounts WHERE encrypted_password=SHA(UPPER('%s')) AND login='%s'", pass.c_str(), account_name);
+            auto check_oldpass_query = sLogonSQL->Query("SELECT login, encrypted_password FROM accounts WHERE encrypted_password=SHA(UPPER('%s')) AND login='%s'", pass.c_str(), account_name.c_str());
 
             if (!check_oldpass_query)
             {
                 // Send packet back... Your current password matches not your input!
+                data << uint32(method);     // method_id
+                data << uint8(1);           // result_id
+                data << account_name;       // account_name
+                SendPacket(&data);
             }
             else
             {
@@ -576,16 +583,27 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 new_pass.push_back(':');
                 new_pass.append(new_password);
 
-                auto new_pass_query = sLogonSQL->Query("UPDATE accounts SET encrypted_password=SHA(UPPER('%s')) WHERE login='%s'", new_pass.c_str(), account_name);
+                auto new_pass_query = sLogonSQL->Query("UPDATE accounts SET encrypted_password=SHA(UPPER('%s')) WHERE login='%s'", new_pass.c_str(), account_name.c_str());
 
+                /*The query is already done, don't know why we are here. \todo check sLogonSQL query handling.
                 if (!new_pass_query)
                 {
                     // Send packet back... Somehting went wrong!
+                    data << uint32(method);     // method_id
+                    data << uint8(2);           // result_id
+                    data << account_name;       // account_name
+                    SendPacket(&data);
                 }
                 else
-                {
+                {*/
                     // Send packet back... Everything is fine!
-                }
+                    data << uint32(method);     // method_id
+                    data << uint8(3);           // result_id
+                    data << account_name;       // account_name
+                    SendPacket(&data);
+                //}
+
+                sAccountMgr.ReloadAccounts(false);
             }
 
         }
