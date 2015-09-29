@@ -172,3 +172,30 @@ bool ChatHandler::HandleAccountUnbanCommand(const char* args, WorldSession* m_se
     sGMLog.writefromsession(m_session, "unbanned account %s", pAccount);
     return true;
 }
+
+bool ChatHandler::HandleAccountChangePassword(const char* args, WorldSession* m_session)
+{
+    if (!*args)
+        return false;
+
+    char old_password[100];
+    char new_password_1[100];
+    char new_password_2[100];
+    int argc = sscanf(args, "%s %s %s", old_password, new_password_1, new_password_2);
+    if (argc != 3)
+    {
+        RedSystemMessage(m_session, "Please type in <old_password> <new_password> <new_password>");
+        return false;
+    }
+
+    if (std::string(new_password_1) != std::string(new_password_2))
+    {
+        RedSystemMessage(m_session, "Your new password inputs doesn't match!");
+        return false;
+    }
+    auto account_name = m_session->GetAccountName();
+
+    GreenSystemMessage(m_session, "This command is currently unavailable.");
+
+    return true;
+}

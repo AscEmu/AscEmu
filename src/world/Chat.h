@@ -227,6 +227,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         ChatCommand* getCommandTable();
 
+        // AccountCommands
+        bool HandleAccountChangePassword(const char* args, WorldSession* m_session);
+
         // Level 0 commands
         bool HandleHelpCommand(const char* args, WorldSession* m_session);
         bool HandleCommandsCommand(const char* args, WorldSession* m_session);
