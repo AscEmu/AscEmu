@@ -493,10 +493,12 @@ void CommandTableStorage::Init()
 
     static ChatCommand accountCommandTable[] =
     {
-        { "level",  'z', &ChatHandler::HandleAccountLevelCommand,  "Sets gm level on account. Pass it username and 0,1,2,3,az, etc.", NULL, 0, 0, 0 },
-        { "mute",   'a', &ChatHandler::HandleAccountMuteCommand,   "Mutes account for <timeperiod>.",                                 NULL, 0, 0, 0 },
-        { "unmute", 'a', &ChatHandler::HandleAccountUnmuteCommand, "Unmutes account <x>",                                             NULL, 0, 0, 0 },
-        { NULL,     '0', NULL,                                     "",                                                                NULL, 0, 0, 0 }
+        { "setgm",  'z', &ChatHandler::HandleAccountSetGMCommand,   "Sets gm level on account. Pass it username and 0,1,2,3,az, etc.",  NULL, 0, 0, 0 },
+        { "mute",   'a', &ChatHandler::HandleAccountMuteCommand,    "Mutes account for <timeperiod>.",                                  NULL, 0, 0, 0 },
+        { "unmute", 'a', &ChatHandler::HandleAccountUnmuteCommand,  "Unmutes account <x>",                                              NULL, 0, 0, 0 },
+        { "ban",    'a', &ChatHandler::HandleAccountBannedCommand,  "Bans account: .ban account <name> [duration] [reason]",            NULL, 0, 0, 0 },
+        { "unban",  'z', &ChatHandler::HandleAccountUnbanCommand,   "Unbans account x.",                                                NULL, 0, 0, 0 },
+        { NULL,     '0', NULL,                                      "",                                                                 NULL, 0, 0, 0 }
     };
     dupe_command_table(accountCommandTable, _accountCommandTable);
 
@@ -666,7 +668,6 @@ void CommandTableStorage::Init()
     {
         { "ip",        'm', &ChatHandler::HandleIPBanCommand,         "Adds an address to the IP ban table: .ban ip <address> [duration] [reason]\nDuration must be a number optionally followed by a character representing the calendar subdivision to use (h>hours, d>days, w>weeks, m>months, y>years, default minutes)\nLack of duration results in a permanent ban.", NULL, 0, 0, 0 },
         { "character", 'b', &ChatHandler::HandleBanCharacterCommand,  "Bans character: .ban character <char> [duration] [reason]",                                                                                                                                                                                                                                          NULL, 0, 0, 0 },
-        { "account",   'a', &ChatHandler::HandleAccountBannedCommand, "Bans account: .ban account <name> [duration] [reason]",                                                                                                                                                                                                                                              NULL, 0, 0, 0 },
         { "all",       'a', &ChatHandler::HandleBanAllCommand,        "Bans account, ip, and character: .ban all <char> [duration] [reason]",                                                                                                                                                                                                                               NULL, 0, 0, 0 },
         { NULL,        '0', NULL,                                     "",                                                                                                                                                                                                                                                                                                   NULL, 0, 0, 0 }
     };
@@ -676,7 +677,6 @@ void CommandTableStorage::Init()
     {
         { "ip",        'm', &ChatHandler::HandleIPUnBanCommand,        "Deletes an address from the IP ban table: <address>", NULL, 0, 0, 0 },
         { "character", 'b', &ChatHandler::HandleUnBanCharacterCommand, "Unbans character x",                                  NULL, 0, 0, 0 },
-        { "account",   'z', &ChatHandler::HandleAccountUnbanCommand,   "Unbans account x.",                                   NULL, 0, 0, 0 },
         { NULL,        '0', NULL,                                      "",                                                    NULL, 0, 0, 0 }
     };
     dupe_command_table(unbanCommandTable, _unbanCommandTable);

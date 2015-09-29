@@ -61,8 +61,11 @@ enum RealmListOpcodes
     RSMSG_REALM_POP_REQ                         = 18,
     RCMSG_REALM_POP_RES                         = 19,
 
+    // DB request
+    RCMSG_CHECK_DB                              = 20,
+
     // count
-    RMSG_COUNT                                  = 20,
+    RMSG_COUNT                                  = 21,
 };
 
 #endif // _LOGONOPCODES_H

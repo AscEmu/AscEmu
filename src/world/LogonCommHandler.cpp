@@ -145,6 +145,25 @@ void LogonCommHandler::Startup()
     ThreadPool.ExecuteTask(new LogonCommWatcherThread());
 }
 
+void LogonCommHandler::AddForcedPermission(std::string acct, std::string perm)
+{
+    auto account_name = acct.c_str();
+    auto permission_string = perm.c_str();
+    arcemu_TOUPPER(acct);
+
+    ForcedPermissionMap::iterator itr = forced_permissions.find(acct);
+    if (itr != forced_permissions.end())
+    {
+        Log.Notice("LogonCommClient", "Permission for %s already available!", account_name);
+        forced_permissions.erase(acct);
+    }
+
+    Log.Notice("LogonCommClient", "Permission set to %s for account %s", permission_string, account_name);
+    forced_permissions.insert(make_pair(acct, perm));
+
+}
+
+
 void LogonCommHandler::ConnectAll()
 {
     Log.Success("LogonCommClient", "Attempting to connect to logon server...");
@@ -533,4 +552,18 @@ void LogonCommHandler::RefreshRealmPop()
     // Get realm player limit, it's better that we get the player limit once and save it! <-done
     // Calc pop: 0 >= low, 1 >= med, 2 >= hig, 3 >= full
     server_population = sWorld.getPlayerCount() * 3.0f / pLimit;
+}
+
+void LogonCommHandler::Account_CheckExist(const char* account)
+{
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    if (logons.size() == 0 || itr->second == 0)
+    {
+        return;         // No valid logonserver is connected.
+    }
+
+    WorldPacket data(RCMSG_CHECK_DB, 50);
+    data << uint32(1);        // 1 = Account available
+    data << account;
+    itr->second->SendPacket(&data, false);
 }

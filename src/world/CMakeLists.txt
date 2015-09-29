@@ -5,6 +5,7 @@ project(world)
 
 set(prefix ${ROOT_PATH}/src/world)
 set(sources
+   Commands/AccountCommands.cpp
    DBC/DBCStores.cpp
    DBC/DBCLoader.cpp
    DBC/DBCRecord.cpp

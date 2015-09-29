@@ -55,6 +55,7 @@ class LogonCommServerSocket : public Socket
         void HandleTestConsoleLogin(WorldPacket & recvData);
         void HandleDatabaseModify(WorldPacket & recvData);
         void HandlePopulationRespond(WorldPacket & recvData);
+        void HandleRequestDB(WorldPacket & recvData);
 
         void RefreshRealmsPop();
 

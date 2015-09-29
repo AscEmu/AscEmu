@@ -91,6 +91,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         void RequestAddition(LogonCommClientSocket* Socket);
         void CheckAllServers();
         void Startup();
+        void AddForcedPermission(std::string acct, std::string perm);
         void ConnectionDropped(uint32 ID);
         void AdditionAck(uint32 ID, uint32 ServID);
         void UpdateSockets();
@@ -103,6 +104,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         void Account_SetBanned(const char* account, uint32 banned, const char* reason);
         void Account_SetGM(const char* account, const char* flags);
         void Account_SetMute(const char* account, uint32 muted);
+        void Account_CheckExist(const char* account);
         void IPBan_Add(const char* ip, uint32 duration, const char* reason);
         void IPBan_Remove(const char* ip);
 

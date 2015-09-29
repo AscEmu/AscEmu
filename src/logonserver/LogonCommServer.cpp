@@ -156,6 +156,7 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         &LogonCommServerSocket::HandleDatabaseModify,        // RCMSG_MODIFY_DATABASE
         NULL,                                                // RSMSG_REALM_POP_REQ
         &LogonCommServerSocket::HandlePopulationRespond,    // RCMSG_REALM_POP_RES
+        &LogonCommServerSocket::HandleRequestDB,            // RCMSG_CHECK_DB
     };
 
     if(recvData.GetOpcode() >= RMSG_COUNT || Handlers[recvData.GetOpcode()] == 0)
@@ -546,6 +547,30 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             }
             break;
 
+    }
+}
+
+void LogonCommServerSocket::HandleRequestDB(WorldPacket & recvData)
+{
+    uint32 method;
+    recvData >> method;
+
+    switch (method)
+    {
+        case 1:            // account exist?
+        {
+            std::string account;
+            recvData >> account;
+
+            // remember we expect this in uppercase
+            arcemu_TOUPPER(account);
+
+            Account* pAccount = sAccountMgr.GetAccount(account);
+            if (pAccount == NULL)
+                return;
+
+        }
+        break;
     }
 }
 

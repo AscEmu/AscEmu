@@ -411,7 +411,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleSetBattlefieldStatusCommand(const char* args, WorldSession* m_session);
         bool HandleNpcReturnCommand(const char* args, WorldSession* m_session);
         bool HandleAccountBannedCommand(const char* args, WorldSession* m_session);
-        bool HandleAccountLevelCommand(const char* args, WorldSession* m_session);
+        bool HandleAccountSetGMCommand(const char* args, WorldSession* m_session);
         bool HandleResetTalentsCommand(const char* args, WorldSession* m_session);
         bool HandleResetSpellsCommand(const char* args, WorldSession* m_session);
         bool HandleNpcFollowCommand(const char* args, WorldSession* m_session);
