@@ -153,10 +153,12 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         NULL,                                               // RSMSG_DISCONNECT_ACCOUNT
         &LogonCommServerSocket::HandleTestConsoleLogin,     // RCMSG_TEST_CONSOLE_LOGIN
         NULL,                                               // RSMSG_CONSOLE_LOGIN_RESULT
-        &LogonCommServerSocket::HandleDatabaseModify,       // RCMSG_MODIFY_DATABASE
+        &LogonCommServerSocket::HandleDatabaseModify,       // RCMSG_MODIFY_DATABASE_REQUEST
+        NULL,                                               // RSMSG_MODIFY_DATABASE_RESULT
         NULL,                                               // RSMSG_REALM_POP_REQ
         &LogonCommServerSocket::HandlePopulationRespond,    // RCMSG_REALM_POP_RES
-        &LogonCommServerSocket::HandleRequestDB,            // RCMSG_CHECK_DB
+        &LogonCommServerSocket::HandleRequestDB,            // RCMSG_CHECK_ACCOUNT_REQUEST
+        NULL,                                               // RSMSG_CHECK_ACCOUNT_RESULT
     };
 
     if (recvData.GetOpcode() >= RMSG_COUNT || Handlers[recvData.GetOpcode()] == 0)

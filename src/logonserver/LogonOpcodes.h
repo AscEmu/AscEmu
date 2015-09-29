@@ -55,17 +55,19 @@ enum RealmListOpcodes
     RSMSG_CONSOLE_LOGIN_RESULT                  = 16,
 
     // DB modifying
-    RCMSG_MODIFY_DATABASE                       = 17,
+    RCMSG_MODIFY_DATABASE_REQUEST               = 17,
+    RSMSG_MODIFY_DATABASE_RESULT                = 18,
 
     // Realm population
-    RSMSG_REALM_POP_REQ                         = 18,
-    RCMSG_REALM_POP_RES                         = 19,
+    RSMSG_REALM_POP_REQ                         = 19,
+    RCMSG_REALM_POP_RES                         = 20,
 
-    // DB request
-    RCMSG_CHECK_DB                              = 20,
+    // Check Account data
+    RCMSG_CHECK_ACCOUNT_REQUEST                 = 21,
+    RSMSG_CHECK_ACCOUNT_RESULT                  = 22,
 
     // count
-    RMSG_COUNT                                  = 21,
+    RMSG_COUNT                                  = 23,
 };
 
 #endif // _LOGONOPCODES_H
