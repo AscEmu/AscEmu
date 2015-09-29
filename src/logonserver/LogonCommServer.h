@@ -26,12 +26,14 @@
 
 class LogonCommServerSocket : public Socket
 {
-        uint32 remaining;
-        uint16 opcode;
-        uint32 seed;
-        RC4Engine sendCrypto;
-        RC4Engine recvCrypto;
+    uint32 remaining;
+    uint16 opcode;
+    uint32 seed;
+    RC4Engine sendCrypto;
+    RC4Engine recvCrypto;
+
     public:
+
         uint32 authenticated;
         bool use_crypto;
 
@@ -44,26 +46,26 @@ class LogonCommServerSocket : public Socket
         void SendPacket(WorldPacket* data);
         void HandlePacket(WorldPacket & recvData);
 
-        void HandleRegister(WorldPacket & recvData);
-        void HandlePing(WorldPacket & recvData);
-        void HandleSessionRequest(WorldPacket & recvData);
-        void HandleSQLExecute(WorldPacket & recvData);
-        void HandleReloadAccounts(WorldPacket & recvData);
-        void HandleAuthChallenge(WorldPacket & recvData);
-        void HandleMappingReply(WorldPacket & recvData);
-        void HandleUpdateMapping(WorldPacket & recvData);
-        void HandleTestConsoleLogin(WorldPacket & recvData);
-        void HandleDatabaseModify(WorldPacket & recvData);
-        void HandlePopulationRespond(WorldPacket & recvData);
-        void HandleRequestDB(WorldPacket & recvData);
+        void HandleRegister(WorldPacket& recvData);
+        void HandlePing(WorldPacket& recvData);
+        void HandleSessionRequest(WorldPacket& recvData);
+        void HandleSQLExecute(WorldPacket& recvData);
+        void HandleReloadAccounts(WorldPacket& recvData);
+        void HandleAuthChallenge(WorldPacket& recvData);
+        void HandleMappingReply(WorldPacket& recvData);
+        void HandleUpdateMapping(WorldPacket& recvData);
+        void HandleTestConsoleLogin(WorldPacket& recvData);
+        void HandleDatabaseModify(WorldPacket& recvData);
+        void HandlePopulationRespond(WorldPacket& recvData);
+        void HandleRequestDB(WorldPacket& recvData);
 
         void RefreshRealmsPop();
 
         Arcemu::Threading::AtomicCounter last_ping;
         bool removed;
-    std::set<uint32> server_ids;
+        std::set<uint32> server_ids;
 };
 
-typedef void (LogonCommServerSocket::*logonpacket_handler)(WorldPacket &);
+typedef void (LogonCommServerSocket::*logonpacket_handler)(WorldPacket&);
 
-#endif
+#endif  // __LOGON_COMM_SERVER_H
