@@ -128,7 +128,7 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
         &LogonCommClientSocket::HandlePopulationRequest,        // RSMSG_REALM_POP_REQ
         NULL,                                                   // RCMSG_REALM_POP_RES
         NULL,                                                   // RCMSG_CHECK_ACCOUNT_REQUEST
-        NULL,                                                   // RSMSG_CHECK_ACCOUNT_RESULT       ----TODO
+        &LogonCommClientSocket::HandleResultCheckAccount,       // RSMSG_CHECK_ACCOUNT_RESULT
     };
 
     if (recvData.GetOpcode() >= RMSG_COUNT || Handlers[recvData.GetOpcode()] == 0)
@@ -469,5 +469,66 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             }
 
         }
+    }
+}
+
+void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
+{
+    uint8 result_id;
+    std::string account_name;
+    std::string request_name;
+
+    recvData >> result_id;      //Get the result id for further processing
+    recvData >> account_name;
+    recvData >> request_name;
+
+    //transform std::string to const char
+    const char* request_string = request_name.c_str();
+    const char* account_string = account_name.c_str();
+
+    auto session_name = sWorld.FindSessionByName(request_string);
+    if (session_name == nullptr)
+    {
+        LOG_ERROR("Receiver %s not found!", request_string);
+        return;
+    }
+
+    switch (result_id)
+    {
+        case 1:     // Account not available
+        {
+            session_name->SystemMessage("Account: %s not found in database!", account_string);
+        }
+        break;
+        case 2:     // No additional data set
+        {
+            session_name->SystemMessage("No gmlevel set for account: %s !", account_string);
+        }
+        break;
+        case 3:     // Everything is okay
+        {
+            std::string gmlevel;
+            recvData >> gmlevel;
+
+            const char* gmlevel_string = gmlevel.c_str();
+
+            //Update account_forced_permissions
+            CharacterDatabase.Execute("REPLACE INTO account_forced_permissions (`login`, `permissions`) VALUES ('%s', '%s')", account_string, gmlevel_string);
+            session_name->SystemMessage("Forced permissions Account has been updated to '%s' for account '%s'. The change will be effective immediately.", gmlevel_string, account_string);
+
+            //Update forcedpermission map
+            sLogonCommHandler.AddForcedPermission(account_string, gmlevel_string);
+
+            //Write info to gmlog
+            sGMLog.writefromsession(session_name, "set account %s forced_permissions to %s", account_string, gmlevel_string);
+
+            //Send information to updated account
+            auto updated_account_session = sWorld.FindSessionByName(account_string);
+            if (updated_account_session != nullptr)
+            {
+                updated_account_session->SystemMessage("Your permissions has been updated! Please reconnect your account.");
+            }
+        }
+        break;
     }
 }

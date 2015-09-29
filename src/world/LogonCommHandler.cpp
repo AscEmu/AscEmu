@@ -570,7 +570,7 @@ void LogonCommHandler::RefreshRealmPop()
     server_population = sWorld.getPlayerCount() * 3.0f / pLimit;
 }
 
-void LogonCommHandler::Account_CheckExist(const char* account)
+void LogonCommHandler::Account_CheckExist(const char* account, const char* request_name, const char* additional)
 {
     std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
     if (logons.size() == 0 || itr->second == 0)
@@ -581,5 +581,10 @@ void LogonCommHandler::Account_CheckExist(const char* account)
     WorldPacket data(RCMSG_CHECK_ACCOUNT_REQUEST, 50);
     data << uint32(1);        // 1 = Account available
     data << account;
+    data << request_name;
+
+    if (additional)           // additional data (gmlevel)
+        data << additional;
+
     itr->second->SendPacket(&data, false);
 }

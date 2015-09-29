@@ -29,21 +29,10 @@ bool ChatHandler::HandleAccountSetGMCommand(const char* args, WorldSession* m_se
     if (argc != 2)
         return false;
 
-    sLogonCommHandler.Account_CheckExist(account);
+    // get current account name to send back result later
+    auto account_name = m_session->GetAccountNameS();
 
-    CharacterDatabase.Execute("REPLACE INTO account_forced_permissions (`login`, `permissions`) VALUES ('%s', '%s')", account, gmlevel);
-    GreenSystemMessage(m_session, "Account '%s' level has been updated to '%s'. The change will be effective immediately.", account, gmlevel);
-
-    sLogonCommHandler.AddForcedPermission(account, gmlevel);
-
-    sGMLog.writefromsession(m_session, "set account %s flags to %s", account, gmlevel);
-
-    WorldSession* pSession = sWorld.FindSessionByName(account);
-    if (pSession != NULL)
-    {
-        pSession->GetPermissions();
-        pSession->SystemMessage("Your permissions has been updated! Please reconnect your account.");
-    }
+    sLogonCommHandler.Account_CheckExist(account, account_name, gmlevel);
 
     return true;
 }
@@ -196,7 +185,6 @@ bool ChatHandler::HandleAccountChangePassword(const char* args, WorldSession* m_
     auto account_name = m_session->GetAccountNameS();
 
     sLogonCommHandler.AccountChangePassword(old_password, new_password_1, account_name);
-    GreenSystemMessage(m_session, "This command is currently unavailable.");
 
     return true;
 }

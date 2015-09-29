@@ -157,7 +157,7 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         NULL,                                               // RSMSG_MODIFY_DATABASE_RESULT
         NULL,                                               // RSMSG_REALM_POP_REQ
         &LogonCommServerSocket::HandlePopulationRespond,    // RCMSG_REALM_POP_RES
-        &LogonCommServerSocket::HandleRequestDB,            // RCMSG_CHECK_ACCOUNT_REQUEST
+        &LogonCommServerSocket::HandleRequestCheckAccount,  // RCMSG_CHECK_ACCOUNT_REQUEST
         NULL,                                               // RSMSG_CHECK_ACCOUNT_RESULT
     };
 
@@ -612,7 +612,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
     }
 }
 
-void LogonCommServerSocket::HandleRequestDB(WorldPacket & recvData)
+void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
 {
     uint32 method;
     recvData >> method;
@@ -621,16 +621,50 @@ void LogonCommServerSocket::HandleRequestDB(WorldPacket & recvData)
     {
         case 1:            // account exist?
         {
-            std::string account;
-            recvData >> account;
+            // Prepare our "send-back" packet
+            WorldPacket data(RSMSG_CHECK_ACCOUNT_RESULT, 300);
+
+            std::string account_name;           // account to check
+            std::string request_name;           // account request the check
+            std::string additional;             // additional data
+
+            recvData >> account_name;
+            recvData >> request_name;
+            recvData >> additional;
+
+            const char* additional_data = additional.c_str();
+            
+            std::string account_name_save = account_name;  // save original account_name to check
 
             // remember we expect this in uppercase
-            arcemu_TOUPPER(account);
+            arcemu_TOUPPER(account_name);
 
-            Account* pAccount = sAccountMgr.GetAccount(account);
-            if (pAccount == NULL)
-                return;
-
+            auto account_check = sAccountMgr.GetAccount(account_name);
+            if (account_check == nullptr)
+            {
+                // Send packet "account not available"
+                data << uint8(1);
+                data << account_name_save;  // requested account
+                data << request_name;       // account_name for receive the session
+                SendPacket(&data);
+            }
+            else if (!additional_data)
+            {
+                // Send packet "No additional data set"
+                data << uint8(2);
+                data << account_name_save;  // requested account
+                data << request_name;       // account_name for receive the session
+                SendPacket(&data);
+            }
+            else
+            {
+                // Send packet "everything okay"
+                data << uint8(3);
+                data << account_name_save;  // requested account
+                data << request_name;       // account_name for receive the session
+                data << additional;         // additional data
+                SendPacket(&data);
+            }
         }
         break;
     }

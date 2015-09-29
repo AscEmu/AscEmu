@@ -104,7 +104,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         void Account_SetBanned(const char* account, uint32 banned, const char* reason);
         void Account_SetGM(const char* account, const char* flags);
         void Account_SetMute(const char* account, uint32 muted);
-        void Account_CheckExist(const char* account);
+        void Account_CheckExist(const char* account, const char* request_name, const char* additional);
         void IPBan_Add(const char* ip, uint32 duration, const char* reason);
         void IPBan_Remove(const char* ip);
         void AccountChangePassword(const char* old_pw, const char* new_password, const char* account_name);
