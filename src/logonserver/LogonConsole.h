@@ -76,6 +76,7 @@ class LogonConsole : public Singleton < LogonConsole >
         void AccountDelete(char* str);
         void AccountSetGm(char* str);
         void AccountSetPassword(char* str);
+        void AccountChangePassword(char* str);
 
         void checkAccountName(std::string name, uint8 type);
 };

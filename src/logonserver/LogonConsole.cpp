@@ -133,6 +133,7 @@ void LogonConsole::ProcessCmd(char* cmd)
         { "account delete", &LogonConsole::AccountDelete },
         { "account set gm", &LogonConsole::AccountSetGm },
         { "account set password", &LogonConsole::AccountSetPassword },
+        { "account change password", &LogonConsole::AccountChangePassword },
         { "reload", &LogonConsole::ReloadAccts },
         { "rehash", &LogonConsole::TranslateRehash },
         { "netstatus", &LogonConsole::NetworkStatus },
@@ -198,6 +199,7 @@ void LogonConsole::ProcessHelp(char* command)
         printf("    account delete: Deletes an account\n");
         printf("    account set gm: Sets gm access to account\n");
         printf("    account set password: Sets a new password for an account\n");
+        printf("    account change password: Change the current password for an account\n");
         printf("    Reload: Reloads accounts.\n");
         printf("    Netstatus: Shows network status.\n");
         printf("    info:  shows some information about the server.\n");
@@ -350,6 +352,64 @@ void LogonConsole::AccountSetPassword(char* str)
     AccountMgr::getSingleton().ReloadAccounts(true);
 
     std::cout << "Account password updated." << std::endl;
+}
+
+void LogonConsole::AccountChangePassword(char* str)
+{
+    char account_name[512];
+    char old_password[512];
+    char new_password_1[512];
+    char new_password_2[512];
+
+    int count = sscanf(str, "%s %s %s %s", account_name, old_password, new_password_1, new_password_2);
+    if (count != 4)
+    {
+        std::cout << "usage: account change password <account> <old_password> <new_password> <new_password>" << std::endl;
+        std::cout << "example: account change password ghostcrawler OldPasSworD FreshNewPassword FreshNewPassword" << std::endl;
+        return;
+    }
+
+    checkAccountName(account_name, ACC_NAME_DO_EXIST);
+
+    if (std::string(new_password_1) != std::string(new_password_2))
+    {
+        std::cout << "The new passwords doesn't match!" << std::endl;
+        return;
+    }
+
+    std::string pass;
+    pass.assign(account_name);
+    pass.push_back(':');
+    pass.append(old_password);
+
+    auto check_oldpass_query = sLogonSQL->Query("SELECT login, encrypted_password FROM accounts WHERE encrypted_password=SHA(UPPER('%s')) AND login='%s'", pass.c_str(), std::string(account_name).c_str());
+
+    if (!check_oldpass_query)
+    {
+        std::cout << "Your current password doesn't match with your input" << std::endl;
+        return;
+    }
+    else
+    {
+        std::string new_pass;
+        new_pass.assign(account_name);
+        new_pass.push_back(':');
+        new_pass.append(new_password_1);
+
+        auto new_pass_query = sLogonSQL->Query("UPDATE accounts SET encrypted_password=SHA(UPPER('%s')) WHERE login='%s'", new_pass.c_str(), std::string(account_name).c_str());
+
+        if (!new_pass_query)
+        {
+            //The query is already done, don't know why we are here. \todo check sLogonSQL query handling.
+            //std::cout << "Can't update the password. Abort." << std::endl;
+            return;
+        }
+
+    }
+
+    AccountMgr::getSingleton().ReloadAccounts(true);
+
+    std::cout << "Account password changed." << std::endl;
 }
 
 void LogonConsole::checkAccountName(std::string name, uint8 type)
