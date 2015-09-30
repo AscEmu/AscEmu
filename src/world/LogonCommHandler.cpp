@@ -480,7 +480,9 @@ void LogonCommHandler::Account_SetBanned(const char* account, uint32 banned, con
     }
 
     WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 300);
-    data << uint32(1);        // 1 = ban
+    uint32 method = Method_Account_Ban;
+
+    data << uint32(method);
     data << account;
     data << banned;
     data << reason;
@@ -496,7 +498,9 @@ void LogonCommHandler::Account_SetGM(const char* account, const char* flags)
     }
 
     WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 50);
-    data << uint32(2);        // 2 = set gm
+    uint32 method = Method_Account_Set_GM;
+
+    data << uint32(method);
     data << account;
     data << flags;
     itr->second->SendPacket(&data, false);
@@ -511,7 +515,9 @@ void LogonCommHandler::Account_SetMute(const char* account, uint32 muted)
     }
 
     WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 50);
-    data << uint32(3);        // 3 = mute
+    uint32 method = Method_Account_Set_Mute;
+
+    data << uint32(method);
     data << account;
     data << muted;
     itr->second->SendPacket(&data, false);
@@ -526,7 +532,9 @@ void LogonCommHandler::IPBan_Add(const char* ip, uint32 duration, const char* re
     }
 
     WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 300);
-    data << uint32(4);        // 4 = ipban add
+    uint32 method = Method_IP_Ban;
+
+    data << uint32(method);
     data << ip;
     data << duration;
     data << reason;
@@ -542,7 +550,9 @@ void LogonCommHandler::IPBan_Remove(const char* ip)
     }
 
     WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 50);
-    data << uint32(5);        // 5 = ipban remove
+    uint32 method = Method_IP_Unban;
+
+    data << uint32(method);
     data << ip;
     itr->second->SendPacket(&data, false);
 }
@@ -556,7 +566,9 @@ void LogonCommHandler::AccountChangePassword(const char* old_password, const cha
     }
 
     WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 400);
-    data << uint32(6);        // 6 = acc change pw
+    uint32 method = Method_Account_Change_PW;
+
+    data << uint32(method);
     data << old_password;
     data << new_password;
     data << account_name;

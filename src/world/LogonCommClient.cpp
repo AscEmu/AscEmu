@@ -106,29 +106,29 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
 {
     static logonpacket_handler Handlers[LRMSG_MAX_OPCODES] =
     {
-        NULL,                                                   // RMSG_NULL
-        NULL,                                                   // RCMSG_REGISTER_REALM
-        &LogonCommClientSocket::HandleRegister,                 // RSMSG_REALM_REGISTERED
-        NULL,                                                   // RCMSG_REQUEST_SESSION
-        &LogonCommClientSocket::HandleSessionInfo,              // RSMSG_SESSION_RESULT
-        NULL,                                                   // RCMSG_PING
-        &LogonCommClientSocket::HandlePong,                     // RSMSG_PONG
-        NULL,                                                   // RCMSG_SQL_EXECUTE
-        NULL,                                                   // RCMSG_RELOAD_ACCOUNTS
-        NULL,                                                   // RCMSG_AUTH_CHALLENGE
-        &LogonCommClientSocket::HandleAuthResponse,             // RSMSG_AUTH_RESPONSE
-        &LogonCommClientSocket::HandleRequestAccountMapping,    // RSMSG_REQUEST_ACCOUNT_CHARACTER_MAPPING
-        NULL,                                                   // RCMSG_ACCOUNT_CHARACTER_MAPPING_REPLY
-        NULL,                                                   // RCMSG_UPDATE_CHARACTER_MAPPING_COUNT
-        &LogonCommClientSocket::HandleDisconnectAccount,        // RSMSG_DISCONNECT_ACCOUNT
-        NULL,                                                   // RCMSG_TEST_CONSOLE_LOGIN
-        &LogonCommClientSocket::HandleConsoleAuthResult,        // RSMSG_CONSOLE_LOGIN_RESULT
-        NULL,                                                   // RCMSG_MODIFY_DATABASE_REQUEST
-        &LogonCommClientSocket::HandleModifyDatabaseResult,     // RSMSG_MODIFY_DATABASE_RESULT
-        &LogonCommClientSocket::HandlePopulationRequest,        // RSMSG_REALM_POP_REQ
-        NULL,                                                   // RCMSG_REALM_POP_RES
-        NULL,                                                   // RCMSG_CHECK_ACCOUNT_REQUEST
-        &LogonCommClientSocket::HandleResultCheckAccount,       // RSMSG_CHECK_ACCOUNT_RESULT
+        NULL,
+        NULL,                                                   // LRCMSG_REALM_REGISTER_REQUEST
+        &LogonCommClientSocket::HandleRegister,                 // LRSMSG_REALM_REGISTER_RESULT
+        NULL,                                                   // LRCMSG_ACC_SESSION_REQUEST
+        &LogonCommClientSocket::HandleSessionInfo,              // LRSMSG_ACC_SESSION_RESULT
+        NULL,                                                   // LRCMSG_LOGON_PING_STATUS
+        &LogonCommClientSocket::HandlePong,                     // LRSMSG_LOGON_PING_RESULT
+        NULL,                                                   // LRCMSG_FREE_01
+        NULL,                                                   // LRSMSG_FREE_02
+        NULL,                                                   // LRCMSG_AUTH_REQUEST
+        &LogonCommClientSocket::HandleAuthResponse,             // LRSMSG_AUTH_RESPONSE
+        &LogonCommClientSocket::HandleRequestAccountMapping,    // LRSMSG_ACC_CHAR_MAPPING_REQUEST
+        NULL,                                                   // LRCMSG_ACC_CHAR_MAPPING_RESULT
+        NULL,                                                   // LRCMSG_ACC_CHAR_MAPPING_UPDATE
+        &LogonCommClientSocket::HandleDisconnectAccount,        // LRSMSG_SEND_ACCOUNT_DISCONNECT
+        NULL,                                                   // LRCMSG_LOGIN_CONSOLE_REQUEST
+        &LogonCommClientSocket::HandleConsoleAuthResult,        // LRSMSG_LOGIN_CONSOLE_RESULT
+        NULL,                                                   // LRCMSG_ACCOUNT_DB_MODIFY_REQUEST
+        &LogonCommClientSocket::HandleModifyDatabaseResult,     // LRSMSG_ACCOUNT_DB_MODIFY_RESULT
+        &LogonCommClientSocket::HandlePopulationRequest,        // LRSMSG_REALM_POPULATION_REQUEST
+        NULL,                                                   // LRCMSG_REALM_POPULATION_RESULT
+        NULL,                                                   // LRCMSG_ACCOUNT_REQUEST
+        &LogonCommClientSocket::HandleResultCheckAccount,       // LRSMSG_ACCOUNT_RESULT
     };
 
     if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
@@ -442,7 +442,7 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
 
     switch (method_id)
     {
-        case 6:     //account change password
+        case Method_Account_Change_PW:
         {
             std::string account_name;
             recvData >> account_name;
@@ -455,15 +455,15 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
                 return;
             }
 
-            if (result_id == 1)         //check_oldpass_query
+            if (result_id == Result_Account_PW_wrong)
             {
                 pSession->SystemMessage("Your entered old password did not match database password!");
             }
-            else if (result_id == 2)     //unable to update account
+            else if (result_id == Result_Account_SQL_error)
             {
                 pSession->SystemMessage("Something went wrong by updating mysql data!");
             }
-            else                        //everything is fine
+            else if (result_id == Result_Account_Finished)
             {
                 pSession->SystemMessage("Your password is now updated");
             }

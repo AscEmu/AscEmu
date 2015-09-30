@@ -56,4 +56,21 @@ enum LogonRealmOpcodes
     LRMSG_MAX_OPCODES                           // max opcodes
 };
 
+enum AccountDatabaseMethod
+{
+    Method_Account_Ban = 1,
+    Method_Account_Set_GM,
+    Method_Account_Set_Mute,
+    Method_IP_Ban,
+    Method_IP_Unban,
+    Method_Account_Change_PW
+};
+
+enum AccountDatabaseResult
+{
+    Result_Account_PW_wrong = 1,
+    Result_Account_SQL_error,
+    Result_Account_Finished
+};
+
 #endif      //_LOGON_REALM_OPCODES_H

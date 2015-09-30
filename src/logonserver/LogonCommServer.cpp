@@ -137,29 +137,29 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 
     static logonpacket_handler Handlers[LRMSG_MAX_OPCODES] =
     {
-        NULL,                                               // RMSG_NULL
-        &LogonCommServerSocket::HandleRegister,             // RCMSG_REGISTER_REALM
-        NULL,                                               // RSMSG_REALM_REGISTERED
-        &LogonCommServerSocket::HandleSessionRequest,       // RCMSG_REQUEST_SESSION
-        NULL,                                               // RSMSG_SESSION_RESULT
-        &LogonCommServerSocket::HandlePing,                 // RCMSG_PING
-        NULL,                                               // RSMSG_PONG
-        NULL,           // RCMSG_SQL_EXECUTE
-        NULL,      // RCMSG_RELOAD_ACCOUNTS
-        &LogonCommServerSocket::HandleAuthChallenge,        // RCMSG_AUTH_CHALLENGE
-        NULL,                                               // RSMSG_AUTH_RESPONSE
-        NULL,                                               // RSMSG_REQUEST_ACCOUNT_CHARACTER_MAPPING
-        &LogonCommServerSocket::HandleMappingReply,         // RCMSG_ACCOUNT_CHARACTER_MAPPING_REPLY
-        &LogonCommServerSocket::HandleUpdateMapping,        // RCMSG_UPDATE_CHARACTER_MAPPING_COUNT
-        NULL,                                               // RSMSG_DISCONNECT_ACCOUNT
-        &LogonCommServerSocket::HandleTestConsoleLogin,     // RCMSG_TEST_CONSOLE_LOGIN
-        NULL,                                               // RSMSG_CONSOLE_LOGIN_RESULT
-        &LogonCommServerSocket::HandleDatabaseModify,       // RCMSG_MODIFY_DATABASE_REQUEST
-        NULL,                                               // RSMSG_MODIFY_DATABASE_RESULT
-        NULL,                                               // RSMSG_REALM_POP_REQ
-        &LogonCommServerSocket::HandlePopulationRespond,    // RCMSG_REALM_POP_RES
-        &LogonCommServerSocket::HandleRequestCheckAccount,  // RCMSG_CHECK_ACCOUNT_REQUEST
-        NULL,                                               // RSMSG_CHECK_ACCOUNT_RESULT
+        NULL,
+        &LogonCommServerSocket::HandleRegister,             // LRCMSG_REALM_REGISTER_REQUEST
+        NULL,                                               // LRSMSG_REALM_REGISTER_RESULT
+        &LogonCommServerSocket::HandleSessionRequest,       // LRCMSG_ACC_SESSION_REQUEST
+        NULL,                                               // LRSMSG_ACC_SESSION_RESULT
+        &LogonCommServerSocket::HandlePing,                 // LRCMSG_LOGON_PING_STATUS
+        NULL,                                               // LRSMSG_LOGON_PING_RESULT
+        NULL,                                               // LRCMSG_FREE_01
+        NULL,                                               // LRCMSG_FREE_02
+        &LogonCommServerSocket::HandleAuthChallenge,        // LRCMSG_AUTH_REQUEST
+        NULL,                                               // LRSMSG_AUTH_RESPONSE
+        NULL,                                               // LRSMSG_ACC_CHAR_MAPPING_REQUEST
+        &LogonCommServerSocket::HandleMappingReply,         // LRCMSG_ACC_CHAR_MAPPING_RESULT
+        &LogonCommServerSocket::HandleUpdateMapping,        // LRCMSG_ACC_CHAR_MAPPING_UPDATE
+        NULL,                                               // LRSMSG_SEND_ACCOUNT_DISCONNECT
+        &LogonCommServerSocket::HandleTestConsoleLogin,     // LRCMSG_LOGIN_CONSOLE_REQUEST
+        NULL,                                               // LRSMSG_LOGIN_CONSOLE_RESULT
+        &LogonCommServerSocket::HandleDatabaseModify,       // LRCMSG_ACCOUNT_DB_MODIFY_REQUEST
+        NULL,                                               // LRSMSG_ACCOUNT_DB_MODIFY_RESULT
+        NULL,                                               // LRSMSG_REALM_POPULATION_REQUEST
+        &LogonCommServerSocket::HandlePopulationRespond,    // LRCMSG_REALM_POPULATION_RESULT
+        &LogonCommServerSocket::HandleRequestCheckAccount,  // LRCMSG_ACCOUNT_REQUEST
+        NULL,                                               // LRSMSG_ACCOUNT_RESULT
     };
 
     if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
@@ -448,7 +448,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
     switch (method)
     {
-        case 1:            // set account ban
+        case Method_Account_Ban:
         {
             std::string account;
             std::string banreason;
@@ -470,7 +470,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         }
         break;
 
-        case 2:        // set gm
+        case Method_Account_Set_GM:
         {
             std::string account;
             std::string gm;
@@ -491,7 +491,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         }
         break;
 
-        case 3:        // set mute
+        case Method_Account_Set_Mute:
         {
             std::string account;
             uint32 duration;
@@ -511,7 +511,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         }
         break;
 
-        case 4:        // ip ban add
+        case Method_IP_Ban:
         {
             std::string ip;
             std::string banreason;
@@ -525,7 +525,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         }
         break;
 
-        case 5:        // ip ban remove
+        case Method_IP_Unban:
         {
             std::string ip;
             recvData >> ip;
@@ -535,8 +535,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
         }
         break;
-
-        case 6:        // account change password
+        case Method_Account_Change_PW:
         {
             // Prepare our "send-back" packet
             WorldPacket data(LRSMSG_ACCOUNT_DB_MODIFY_RESULT, 200);
@@ -544,6 +543,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             std::string old_password;
             std::string new_password;
             std::string account_name;
+            uint8 result = 0;
 
             recvData >> old_password;
             recvData >> new_password;
@@ -558,8 +558,10 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             if (!check_oldpass_query)
             {
                 // Send packet back... Your current password matches not your input!
+                result = Result_Account_PW_wrong;
+
                 data << uint32(method);     // method_id
-                data << uint8(1);           // result_id
+                data << uint8(result);
                 data << account_name;       // account_name
                 SendPacket(&data);
             }
@@ -576,16 +578,20 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 if (!new_pass_query)
                 {
                     // Send packet back... Somehting went wrong!
+                    result = Result_Account_SQL_error;
+
                     data << uint32(method);     // method_id
-                    data << uint8(2);           // result_id
+                    data << uint8(result);
                     data << account_name;       // account_name
                     SendPacket(&data);
                 }
                 else
                 {*/
                     // Send packet back... Everything is fine!
+                    result = Result_Account_Finished;
+
                     data << uint32(method);     // method_id
-                    data << uint8(3);           // result_id
+                    data << uint8(result);
                     data << account_name;       // account_name
                     SendPacket(&data);
                 //}
