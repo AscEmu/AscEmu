@@ -26,6 +26,7 @@ set(headers
 	LogonStdAfx.h
 	Main.h
 	PeriodicFunctionCall_Thread.h
+   Opcodes/LogonRealmOpcodes.hpp
    )
 
 foreach(src IN ITEMS ${sources})
