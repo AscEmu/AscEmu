@@ -63,14 +63,16 @@ enum AccountDatabaseMethod
     Method_Account_Set_Mute,
     Method_IP_Ban,
     Method_IP_Unban,
-    Method_Account_Change_PW
+    Method_Account_Change_PW,
+    Method_Account_Create
 };
 
 enum AccountDatabaseResult
 {
     Result_Account_PW_wrong = 1,
     Result_Account_SQL_error,
-    Result_Account_Finished
+    Result_Account_Finished,
+    Result_Account_Exists
 };
 
 #endif      //_LOGON_REALM_OPCODES_H

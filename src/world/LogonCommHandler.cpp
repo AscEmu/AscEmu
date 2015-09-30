@@ -575,6 +575,24 @@ void LogonCommHandler::AccountChangePassword(const char* old_password, const cha
     itr->second->SendPacket(&data, false);
 }
 
+void LogonCommHandler::AccountCreate(const char* name, const char* password, const char* account_name)
+{
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    if (logons.size() == 0 || itr->second == 0)
+    {
+        return;         // No valid logonserver is connected.
+    }
+
+    WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 300);
+    uint32 method = Method_Account_Create;
+
+    data << uint32(method);
+    data << name;
+    data << password;
+    data << account_name;
+    itr->second->SendPacket(&data, false);
+}
+
 void LogonCommHandler::RefreshRealmPop()
 {
     // Get realm player limit, it's better that we get the player limit once and save it! <-done

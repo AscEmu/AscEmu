@@ -493,6 +493,7 @@ void CommandTableStorage::Init()
 
     static ChatCommand accountCommandTable[] =
     {
+        { "create", 'a', &ChatHandler::HandleAccountCreate,         "Creates an account with name and password",                        NULL, 0, 0, 0 },
         { "setgm",  'z', &ChatHandler::HandleAccountSetGMCommand,   "Sets gm level on account. Pass it username and 0,1,2,3,az, etc.",  NULL, 0, 0, 0 },
         { "mute",   'a', &ChatHandler::HandleAccountMuteCommand,    "Mutes account for <timeperiod>.",                                  NULL, 0, 0, 0 },
         { "unmute", 'a', &ChatHandler::HandleAccountUnmuteCommand,  "Unmutes account <x>",                                              NULL, 0, 0, 0 },

@@ -228,6 +228,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         ChatCommand* getCommandTable();
 
         // AccountCommands
+        bool HandleAccountCreate(const char* args, WorldSession* m_session);
         bool HandleAccountChangePassword(const char* args, WorldSession* m_session);
         bool HandleAccountBannedCommand(const char* args, WorldSession* m_session);
         bool HandleAccountSetGMCommand(const char* args, WorldSession* m_session);

@@ -18,6 +18,26 @@
 
 #include "StdAfx.h"
 
+
+bool ChatHandler::HandleAccountCreate(const char* args, WorldSession* m_session)
+{
+    if (!*args)
+        return false;
+
+    char account[100];
+    char password[100];
+    int argc = sscanf(args, "%s %s", account, password);
+    if (argc != 2)
+        return false;
+
+    // get current account name to send back result later
+    auto account_name = m_session->GetAccountNameS();
+
+    sLogonCommHandler.AccountCreate(account, password, account_name);
+
+    return true;
+}
+
 bool ChatHandler::HandleAccountSetGMCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)

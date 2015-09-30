@@ -467,8 +467,44 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             {
                 pSession->SystemMessage("Your password is now updated");
             }
+            else
+            {
+                LOG_ERROR("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Change_PW");
+            }
 
-        }
+        }break;
+        case Method_Account_Create:
+        {
+            std::string account_name;
+            std::string created_name;
+
+            recvData >> account_name;
+            recvData >> created_name;
+
+            const char* account_string = account_name.c_str();
+            const char* created_string = created_name.c_str();
+
+            WorldSession* pSession = sWorld.FindSessionByName(account_string);
+            if (pSession == nullptr)
+            {
+                LOG_ERROR("No session found!");
+                return;
+            }
+
+            if (result_id == Result_Account_Exists)
+            {
+                pSession->SystemMessage("Account name: '%s' already in use!", created_string);
+            }
+            else if (result_id == Result_Account_Finished)
+            {
+                pSession->SystemMessage("Account: '%s' created", created_string);
+            }
+            else
+            {
+                LOG_ERROR("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Create");
+            }
+
+        }break;
     }
 }
 

@@ -577,23 +577,23 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 /*The query is already done, don't know why we are here. \todo check sLogonSQL query handling.
                 if (!new_pass_query)
                 {
-                    // Send packet back... Somehting went wrong!
-                    result = Result_Account_SQL_error;
+                // Send packet back... Somehting went wrong!
+                result = Result_Account_SQL_error;
 
-                    data << uint32(method);     // method_id
-                    data << uint8(result);
-                    data << account_name;       // account_name
-                    SendPacket(&data);
+                data << uint32(method);     // method_id
+                data << uint8(result);
+                data << account_name;       // account_name
+                SendPacket(&data);
                 }
                 else
                 {*/
-                    // Send packet back... Everything is fine!
-                    result = Result_Account_Finished;
+                // Send packet back... Everything is fine!
+                result = Result_Account_Finished;
 
-                    data << uint32(method);     // method_id
-                    data << uint8(result);
-                    data << account_name;       // account_name
-                    SendPacket(&data);
+                data << uint32(method);     // method_id
+                data << uint8(result);
+                data << account_name;       // account_name
+                SendPacket(&data);
                 //}
 
                 sAccountMgr.ReloadAccounts(false);
@@ -601,7 +601,58 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
 
         }
         break;
+        case Method_Account_Create:
+        {
+            // Prepare our "send-back" packet
+            WorldPacket data(LRSMSG_ACCOUNT_DB_MODIFY_RESULT, 300);
 
+            std::string name;
+            std::string password;
+            std::string account_name;
+            uint8 result = 0;
+
+            recvData >> name;
+            recvData >> password;
+            recvData >> account_name;
+
+            std::string name_save = name;  // save original name to check
+
+            // remember we expect this in uppercase
+            arcemu_TOUPPER(name);
+
+            auto account_check = sAccountMgr.GetAccount(name);
+
+            if (account_check != nullptr)
+            {
+                result = Result_Account_Exists;
+
+                data << uint32(method);     // method_id
+                data << uint8(result);
+                data << account_name;       // account_name
+                data << name_save;          // created account name
+                SendPacket(&data);
+            }
+            else
+            {
+                std::string pass;
+                pass.assign(name);
+                pass.push_back(':');
+                pass.append(password);
+
+                auto create_account = sLogonSQL->Query("INSERT INTO `accounts`(`login`,`encrypted_password`,`gm`,`banned`,`email`,`flags`,`banreason`) VALUES ('%s', SHA(UPPER('%s')),'0','0','','24','');", name_save.c_str(), pass);
+
+                result = Result_Account_Finished;
+
+                data << uint32(method);     // method_id
+                data << uint8(result);
+                data << account_name;       // account_name
+                data << name_save;          // created account name
+                SendPacket(&data);
+            }
+
+            sAccountMgr.ReloadAccounts(false);
+        }
+        break;
     }
 }
 

@@ -108,6 +108,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         void IPBan_Add(const char* ip, uint32 duration, const char* reason);
         void IPBan_Remove(const char* ip);
         void AccountChangePassword(const char* old_pw, const char* new_password, const char* account_name);
+        void AccountCreate(const char* name, const char* password, const char* account_name);
 
         void LoadRealmConfiguration();
         void AddServer(std::string Name, std::string Address, uint32 Port);
