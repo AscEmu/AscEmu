@@ -24,7 +24,7 @@
 #include "CommonTypes.hpp"
 #include "ByteBuffer.h"
 #include "Network/Socket.h"
-#include "../logonserver/Opcodes\LogonRealmOpcodes.hpp"
+#include "../logonserver/Opcodes/LogonRealmOpcodes.hpp"
 #include "../shared/Log.h"
 #include <RC4Engine.h>
 #include "zlib.h"
