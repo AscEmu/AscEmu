@@ -18,6 +18,7 @@
  *
  */
 
+#include "Opcodes\LogonRealmOpcodes.hpp"
 #include "LogonStdAfx.h"
 #pragma pack(push, 1)
 typedef struct
@@ -127,14 +128,14 @@ void LogonCommServerSocket::OnRead()
 
 void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
 {
-    if (authenticated == 0 && recvData.GetOpcode() != RCMSG_AUTH_CHALLENGE)
+    if (authenticated == 0 && recvData.GetOpcode() != LRCMSG_AUTH_REQUEST)
     {
         // invalid
         Disconnect();
         return;
     }
 
-    static logonpacket_handler Handlers[RMSG_COUNT] =
+    static logonpacket_handler Handlers[LRMSG_MAX_OPCODES] =
     {
         NULL,                                               // RMSG_NULL
         &LogonCommServerSocket::HandleRegister,             // RCMSG_REGISTER_REALM
@@ -143,8 +144,8 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         NULL,                                               // RSMSG_SESSION_RESULT
         &LogonCommServerSocket::HandlePing,                 // RCMSG_PING
         NULL,                                               // RSMSG_PONG
-        &LogonCommServerSocket::HandleSQLExecute,           // RCMSG_SQL_EXECUTE
-        &LogonCommServerSocket::HandleReloadAccounts,       // RCMSG_RELOAD_ACCOUNTS
+        NULL,           // RCMSG_SQL_EXECUTE
+        NULL,      // RCMSG_RELOAD_ACCOUNTS
         &LogonCommServerSocket::HandleAuthChallenge,        // RCMSG_AUTH_CHALLENGE
         NULL,                                               // RSMSG_AUTH_RESPONSE
         NULL,                                               // RSMSG_REQUEST_ACCOUNT_CHARACTER_MAPPING
@@ -161,7 +162,7 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         NULL,                                               // RSMSG_CHECK_ACCOUNT_RESULT
     };
 
-    if (recvData.GetOpcode() >= RMSG_COUNT || Handlers[recvData.GetOpcode()] == 0)
+    if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
     {
         LOG_ERROR("Got unknwon packet from logoncomm: %u", recvData.GetOpcode());
         return;
@@ -213,7 +214,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     sInfoCore.AddRealm(my_id, realm);
 
     // Send back response packet.
-    WorldPacket data(RSMSG_REALM_REGISTERED, 4);
+    WorldPacket data(LRSMSG_REALM_REGISTER_RESULT, 4);
     data << uint32(0);      // Error
     data << my_id;          // Realm ID
     data << realm->Name;
@@ -221,7 +222,7 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     server_ids.insert(my_id);
 
     /* request character mapping for this realm */
-    data.Initialize(RSMSG_REQUEST_ACCOUNT_CHARACTER_MAPPING);
+    data.Initialize(LRSMSG_ACC_CHAR_MAPPING_REQUEST);
     data << my_id;
     SendPacket(&data);
 }
@@ -240,7 +241,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
         error = 1;          // Unauthorized user.
 
     // build response packet
-    WorldPacket data(RSMSG_SESSION_RESULT, 150);
+    WorldPacket data(LRSMSG_ACC_SESSION_RESULT, 150);
     data << request_id;
     data << error;
     if (!error)
@@ -264,7 +265,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandlePing(WorldPacket & recvData)
 {
-    WorldPacket data(RSMSG_PONG, 4);
+    WorldPacket data(LRSMSG_LOGON_PING_RESULT, 4);
     SendPacket(&data);
     last_ping.SetVal((uint32)time(NULL));
 }
@@ -297,20 +298,6 @@ void LogonCommServerSocket::SendPacket(WorldPacket* data)
     BurstEnd();
 }
 
-void LogonCommServerSocket::HandleSQLExecute(WorldPacket & recvData)
-{
-    /*string Query;
-    recvData >> Query;
-    sLogonSQL->Execute(Query.c_str());*/
-    LOG_ERROR("!! WORLD SERVER IS REQUESTING US TO EXECUTE SQL. THIS IS DEPRECATED AND IS BEING IGNORED. THE SERVER WAS: %s, PLEASE UPDATE IT.", GetRemoteIP().c_str());
-}
-
-void LogonCommServerSocket::HandleReloadAccounts(WorldPacket & recvData)
-{
-    LOG_ERROR("!! WORLD SERVER IS REQUESTING US TO RELOAD ACCOUNTS. THIS IS DEPRECATED AND IS BEING IGNORED. THE SERVER WAS: %s, PLEASE UPDATE IT.", GetRemoteIP().c_str());
-    //sAccountMgr.ReloadAccounts(true);
-}
-
 void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
 {
     unsigned char key[20];
@@ -340,7 +327,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     use_crypto = true;
 
     /* send the response packet */
-    WorldPacket data(RSMSG_AUTH_RESPONSE, 1);
+    WorldPacket data(LRSMSG_AUTH_RESPONSE, 1);
     data << result;
     SendPacket(&data);
 
@@ -417,7 +404,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
 
 void LogonCommServerSocket::HandleTestConsoleLogin(WorldPacket & recvData)
 {
-    WorldPacket data(RSMSG_CONSOLE_LOGIN_RESULT, 8);
+    WorldPacket data(LRSMSG_LOGIN_CONSOLE_RESULT, 8);
     uint32 request;
     std::string accountname;
     uint8 key[20];
@@ -552,7 +539,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         case 6:        // account change password
         {
             // Prepare our "send-back" packet
-            WorldPacket data(RSMSG_MODIFY_DATABASE_RESULT, 200);
+            WorldPacket data(LRSMSG_ACCOUNT_DB_MODIFY_RESULT, 200);
 
             std::string old_password;
             std::string new_password;
@@ -622,7 +609,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
         case 1:            // account exist?
         {
             // Prepare our "send-back" packet
-            WorldPacket data(RSMSG_CHECK_ACCOUNT_RESULT, 300);
+            WorldPacket data(LRSMSG_ACCOUNT_RESULT, 300);
 
             std::string account_name;           // account to check
             std::string request_name;           // account request the check
@@ -683,7 +670,7 @@ void LogonCommServerSocket::RefreshRealmsPop()
     if (server_ids.empty())
         return;
 
-    WorldPacket data(RSMSG_REALM_POP_REQ, 4);
+    WorldPacket data(LRSMSG_REALM_POPULATION_REQUEST, 4);
     std::set<uint32>::iterator itr = server_ids.begin();
     for (; itr != server_ids.end(); itr++)
     {

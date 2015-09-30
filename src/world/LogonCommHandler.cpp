@@ -72,7 +72,7 @@ void LogonCommHandler::RequestAddition(LogonCommClientSocket* Socket)
 
     for (; itr != realms.end(); ++itr)
     {
-        WorldPacket data(RCMSG_REGISTER_REALM, 100);
+        WorldPacket data(LRCMSG_REALM_REGISTER_REQUEST, 100);
 
         // Add realm to the packet
         Realm* realm = *itr;
@@ -354,7 +354,7 @@ uint32 LogonCommHandler::ClientConnected(std::string AccountName, WorldSocket* S
 
     pendingLock.Acquire();
 
-    WorldPacket data(RCMSG_REQUEST_SESSION, 100);
+    WorldPacket data(LRCMSG_ACC_SESSION_REQUEST, 100);
     data << request_id;
 
     // strip the shitty hash from it
@@ -462,7 +462,7 @@ void LogonCommHandler::TestConsoleLogon(std::string & username, std::string & pa
     hash.UpdateData(srpstr);
     hash.Finalize();
 
-    WorldPacket data(RCMSG_TEST_CONSOLE_LOGIN, 100);
+    WorldPacket data(LRCMSG_LOGIN_CONSOLE_REQUEST, 100);
     data << requestnum;
     data << newuser;
     data.append(hash.GetDigest(), 20);
@@ -479,7 +479,7 @@ void LogonCommHandler::Account_SetBanned(const char* account, uint32 banned, con
         return;         // No valid logonserver is connected.
     }
 
-    WorldPacket data(RCMSG_MODIFY_DATABASE_REQUEST, 300);
+    WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 300);
     data << uint32(1);        // 1 = ban
     data << account;
     data << banned;
@@ -495,7 +495,7 @@ void LogonCommHandler::Account_SetGM(const char* account, const char* flags)
         return;         // No valid logonserver is connected.
     }
 
-    WorldPacket data(RCMSG_MODIFY_DATABASE_REQUEST, 50);
+    WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 50);
     data << uint32(2);        // 2 = set gm
     data << account;
     data << flags;
@@ -510,7 +510,7 @@ void LogonCommHandler::Account_SetMute(const char* account, uint32 muted)
         return;         // No valid logonserver is connected.
     }
 
-    WorldPacket data(RCMSG_MODIFY_DATABASE_REQUEST, 50);
+    WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 50);
     data << uint32(3);        // 3 = mute
     data << account;
     data << muted;
@@ -525,7 +525,7 @@ void LogonCommHandler::IPBan_Add(const char* ip, uint32 duration, const char* re
         return;         // No valid logonserver is connected.
     }
 
-    WorldPacket data(RCMSG_MODIFY_DATABASE_REQUEST, 300);
+    WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 300);
     data << uint32(4);        // 4 = ipban add
     data << ip;
     data << duration;
@@ -541,7 +541,7 @@ void LogonCommHandler::IPBan_Remove(const char* ip)
         return;         // No valid logonserver is connected.
     }
 
-    WorldPacket data(RCMSG_MODIFY_DATABASE_REQUEST, 50);
+    WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 50);
     data << uint32(5);        // 5 = ipban remove
     data << ip;
     itr->second->SendPacket(&data, false);
@@ -555,7 +555,7 @@ void LogonCommHandler::AccountChangePassword(const char* old_password, const cha
         return;         // No valid logonserver is connected.
     }
 
-    WorldPacket data(RCMSG_MODIFY_DATABASE_REQUEST, 400);
+    WorldPacket data(LRCMSG_ACCOUNT_DB_MODIFY_REQUEST, 400);
     data << uint32(6);        // 6 = acc change pw
     data << old_password;
     data << new_password;
@@ -578,7 +578,7 @@ void LogonCommHandler::Account_CheckExist(const char* account, const char* reque
         return;         // No valid logonserver is connected.
     }
 
-    WorldPacket data(RCMSG_CHECK_ACCOUNT_REQUEST, 50);
+    WorldPacket data(LRCMSG_ACCOUNT_REQUEST, 50);
     data << uint32(1);        // 1 = Account available
     data << account;
     data << request_name;

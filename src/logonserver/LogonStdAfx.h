@@ -42,7 +42,6 @@
 #include "../shared/Auth/Sha1.h"
 #include "../shared/Auth/WowCrypt.h"
 
-#include "LogonOpcodes.h"
 #include "../logonserver/Main.h"
 #include "../world/Opcodes.h"
 #include "AccountCache.h"

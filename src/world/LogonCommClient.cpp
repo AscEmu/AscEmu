@@ -104,7 +104,7 @@ void LogonCommClientSocket::OnRead()
 
 void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
 {
-    static logonpacket_handler Handlers[RMSG_COUNT] =
+    static logonpacket_handler Handlers[LRMSG_MAX_OPCODES] =
     {
         NULL,                                                   // RMSG_NULL
         NULL,                                                   // RCMSG_REGISTER_REALM
@@ -131,7 +131,7 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
         &LogonCommClientSocket::HandleResultCheckAccount,       // RSMSG_CHECK_ACCOUNT_RESULT
     };
 
-    if (recvData.GetOpcode() >= RMSG_COUNT || Handlers[recvData.GetOpcode()] == 0)
+    if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
     {
         LOG_ERROR("Got unknown packet from logoncomm: %u", recvData.GetOpcode());
         return;
@@ -189,7 +189,7 @@ void LogonCommClientSocket::HandlePong(WorldPacket& recvData)
 void LogonCommClientSocket::SendPing()
 {
     pingtime = getMSTime();
-    WorldPacket data(RCMSG_PING, 4);
+    WorldPacket data(LRCMSG_LOGON_PING_STATUS, 4);
     SendPacket(&data, false);
 
     last_ping = (uint32)UNIXTIME;
@@ -249,7 +249,7 @@ void LogonCommClientSocket::SendChallenge()
     // packets are encrypted from now on
     use_crypto = true;
 
-    WorldPacket data(RCMSG_AUTH_CHALLENGE, 20);
+    WorldPacket data(LRCMSG_AUTH_REQUEST, 20);
     data.append(key, 20);
     SendPacket(&data, true);
 }
@@ -270,7 +270,7 @@ void LogonCommClientSocket::HandleAuthResponse(WorldPacket& recvData)
 
 void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
 {
-    WorldPacket data(RCMSG_UPDATE_CHARACTER_MAPPING_COUNT, 9);
+    WorldPacket data(LRCMSG_ACC_CHAR_MAPPING_UPDATE, 9);
     std::set<uint32>::iterator itr = realm_ids.begin();
 
     for (; itr != realm_ids.end(); ++itr)
@@ -353,7 +353,7 @@ void LogonCommClientSocket::CompressAndSend(ByteBuffer& uncompressed)
     size_t destsize = uncompressed.size() + uncompressed.size() / 10 + 16;
 
     // w000t w000t kat000t for gzipped packets
-    WorldPacket data(RCMSG_ACCOUNT_CHARACTER_MAPPING_REPLY, destsize + 4);
+    WorldPacket data(LRCMSG_ACC_CHAR_MAPPING_RESULT, destsize + 4);
     data.resize(destsize + 4);
 
     z_stream stream;
@@ -427,7 +427,7 @@ void LogonCommClientSocket::HandlePopulationRequest(WorldPacket& recvData)
     recvData >> realmId;
 
     // Send the result
-    WorldPacket data(RCMSG_REALM_POP_RES, 16);
+    WorldPacket data(LRCMSG_REALM_POPULATION_RESULT, 16);
     data << realmId << LogonCommHandler::getSingleton().GetServerPopulation();
     SendPacket(&data, false);
 }

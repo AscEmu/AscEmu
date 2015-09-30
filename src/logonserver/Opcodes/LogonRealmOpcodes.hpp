@@ -30,7 +30,30 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 enum LogonRealmOpcodes
 {
+    LRCMSG_REALM_REGISTER_REQUEST     = 0x001,  // try register our realm
+    LRSMSG_REALM_REGISTER_RESULT      = 0x002,  // register result from logonserver
+    LRCMSG_ACC_SESSION_REQUEST        = 0x003,
+    LRSMSG_ACC_SESSION_RESULT         = 0x004,
+    LRCMSG_LOGON_PING_STATUS          = 0x005,  // request logon online
+    LRSMSG_LOGON_PING_RESULT          = 0x006,  // send result if logon is online
+    LRCMSG_FREE_01                    = 0x007,  // unused
+    LRSMSG_FREE_02                    = 0x008,  // unused
+    LRCMSG_AUTH_REQUEST               = 0x009,  // try authenticate our realm
+    LRSMSG_AUTH_RESPONSE              = 0x00A,  // authentication result from logonserver
+    LRSMSG_ACC_CHAR_MAPPING_REQUEST   = 0x00B,
+    LRCMSG_ACC_CHAR_MAPPING_RESULT    = 0x00C,
+    LRCMSG_ACC_CHAR_MAPPING_UPDATE    = 0x00D,
+    LRSMSG_SEND_ACCOUNT_DISCONNECT    = 0x00E,  // send when account is disconnected
+    LRCMSG_LOGIN_CONSOLE_REQUEST      = 0x00F,
+    LRSMSG_LOGIN_CONSOLE_RESULT       = 0x010,
+    LRCMSG_ACCOUNT_DB_MODIFY_REQUEST  = 0x011,  // request logon db change
+    LRSMSG_ACCOUNT_DB_MODIFY_RESULT   = 0x012,
+    LRSMSG_REALM_POPULATION_REQUEST   = 0x013,
+    LRCMSG_REALM_POPULATION_RESULT    = 0x014,
+    LRCMSG_ACCOUNT_REQUEST            = 0x015,  // request account data
+    LRSMSG_ACCOUNT_RESULT             = 0x016,  // send account information to realm
 
+    LRMSG_MAX_OPCODES                           // max opcodes
 };
 
 #endif      //_LOGON_REALM_OPCODES_H

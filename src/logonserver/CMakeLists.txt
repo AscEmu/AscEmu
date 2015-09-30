@@ -10,7 +10,6 @@ set(sources
    AutoPatcher.cpp
    LogonCommServer.cpp
    LogonConsole.cpp
-   LogonOpcodes.cpp
    LogonStdAfx.cpp
    Main.cpp
    )
@@ -22,7 +21,6 @@ set(headers
 	AutoPatcher.h
 	LogonCommServer.h
 	LogonConsole.h
-	LogonOpcodes.h
 	LogonStdAfx.h
 	Main.h
 	PeriodicFunctionCall_Thread.h
