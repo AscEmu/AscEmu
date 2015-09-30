@@ -639,7 +639,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
                 pass.push_back(':');
                 pass.append(password);
 
-                auto create_account = sLogonSQL->Query("INSERT INTO `accounts`(`login`,`encrypted_password`,`gm`,`banned`,`email`,`flags`,`banreason`) VALUES ('%s', SHA(UPPER('%s')),'0','0','','24','');", name_save.c_str(), pass);
+                auto create_account = sLogonSQL->Query("INSERT INTO `accounts`(`login`,`encrypted_password`,`gm`,`banned`,`email`,`flags`,`banreason`) VALUES ('%s', SHA(UPPER('%s')),'0','0','','24','')", name_save.c_str(), pass);
 
                 result = Result_Account_Finished;
 
