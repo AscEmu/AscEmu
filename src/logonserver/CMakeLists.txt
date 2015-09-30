@@ -36,6 +36,7 @@ endforeach(src)
 
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_CURRENT_SOURCE_DIR}/Opcodes
    ${ROOT_PATH}/src/shared
    ${DEPENDENCY_ROOT}/zlib
    ${DEPENDENCY_ROOT}/openssl

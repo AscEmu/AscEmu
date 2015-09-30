@@ -18,7 +18,7 @@
  *
  */
 
-#include "Opcodes\LogonRealmOpcodes.hpp"
+#include "Opcodes/LogonRealmOpcodes.hpp"
 #include "LogonStdAfx.h"
 #pragma pack(push, 1)
 typedef struct
