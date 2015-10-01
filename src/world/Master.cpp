@@ -304,7 +304,7 @@ bool Master::Run(int argc, char** argv)
     {
         Log.Error("Server", "SetInitialWorldSettings() failed. Something went wrong? Exiting.");
         sLog.Close();
-        delete realm_config_file;
+        delete[] realm_config_file;
         return false;
     }
 
