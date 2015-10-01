@@ -2016,7 +2016,7 @@ bool AIInterface::setInFront(Unit* target) // not the best way to do it, though
     //Change angle slowly 2000ms to turn 180 deg around
     if (angle > 180) angle += 90;
     else angle -= 90; //angle < 180
-    m_Unit->getEasyAngle(angle);
+    //m_Unit->getEasyAngle(angle); These things happen with shitty style. CID53249 (Useless call)
     //Convert from degrees to radians (180 deg = PI rad)
     float orientation = angle / (180 / M_PI_FLOAT);
     //Update Orientation Server Side
