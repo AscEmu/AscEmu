@@ -48,7 +48,7 @@ void WorldSession::HandleCalendarAddEvent(WorldPacket& recv_data)
     Log.Debug("HandleCalendarAddEvent", "Not handled");
 
     uint32 guid = _player->GetGUID();
-    _player->GetName();
+
     std::string title;
     std::string description;
     uint8 type;
