@@ -148,6 +148,12 @@ World::World()
     bgsettings.SOTA_MAX = 15;
     bgsettings.IOC_MIN = 10;
     bgsettings.IOC_MAX = 40;
+    bgsettings.RBG_FIRST_WIN_HONOR = 30;
+    bgsettings.RBG_FIRST_WIN_ARENA = 25;
+    bgsettings.RBG_WIN_HONOR = 15;
+    bgsettings.RBG_WIN_ARENA = 0;
+    bgsettings.RBG_LOSE_HONOR = 5;
+    bgsettings.RBG_LOSE_ARENA = 0;
 
     Arena_Season = 8;
     Arena_Progress = 1;
