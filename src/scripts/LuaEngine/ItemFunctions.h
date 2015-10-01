@@ -29,16 +29,19 @@ namespace luaItem
     int GossipCreateMenu(lua_State* L, Item* ptr)
     {
         int text_id = luaL_checkinteger(L, 1);
-        Player* plr = CHECK_PLAYER(L, 2);
+        auto player = CHECK_PLAYER(L, 2);
         int autosend = luaL_checkinteger(L, 3);
 
-        if (Menu != NULL)
+        if (player == nullptr)
+            return 0;
+
+        if (Menu != nullptr)
             delete Menu;
 
         Menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
 
         if (autosend != 0)
-            Menu->Send(plr);
+            Menu->Send(player);
 
         return 1;
     }
