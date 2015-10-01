@@ -303,14 +303,14 @@ bool ReturnFlash(uint32 i, Aura* pAura, bool apply)
 
 bool EatenRecently(uint32 i, Aura* pAura, bool apply)
 {
-    if (pAura == NULL)
+    if (pAura == nullptr)
         return true;
 
-    Unit* caster = pAura->GetUnitCaster();
-    if (caster == NULL || caster->IsPlayer())
+    auto unit_caster = pAura->GetUnitCaster();
+    if (unit_caster == nullptr || unit_caster->IsPlayer())
         return true;
 
-    Creature* NetherDrake = static_cast<Creature*>(caster);
+    Creature* NetherDrake = static_cast<Creature*>(unit_caster);
 
     if (apply)
     {
