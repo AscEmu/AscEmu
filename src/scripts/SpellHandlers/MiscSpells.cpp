@@ -430,16 +430,11 @@ bool CrystalSpikes(uint32 i, Spell* pSpell)
 
 
 ////////////////////////////////////////////////////////////////
-//Listening To Music scripted spell effect
-//( SpellId 50499 )
-//
-//Precondition(s)
-//  Casted by Player
-//
-//Effect(s)
-//  Makes the player cast "Listening to Music"
-//
-//
+/// bool Listening To Music scripted spell effect (SpellId 50499)
+///
+/// \brief
+///  Casted by Player. Makes the player cast "Listening to Music"
+///
 ////////////////////////////////////////////////////////////////
 bool ListeningToMusicParent(uint32 i, Spell* s)
 {
