@@ -312,9 +312,6 @@ bool EatenRecently(uint32 i, Aura* pAura, bool apply)
 
     Creature* NetherDrake = static_cast<Creature*>(caster);
 
-    if (NetherDrake == NULL)
-        return true;
-
     if (apply)
     {
         NetherDrake->GetAIInterface()->SetAllowedToEnterCombat(false);
