@@ -2648,8 +2648,6 @@ void Spell::SpellEffectSummonCompanion(uint32 i, SummonPropertiesEntry* spe, Cre
             return;
 
         auto creature = static_cast< Creature* >(critter);
-        if (creature == nullptr)
-            return;
 
         uint32 currententry = creature->GetCreatureInfo()->Id;
 
