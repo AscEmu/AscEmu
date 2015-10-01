@@ -2545,7 +2545,8 @@ bool Spell::HasPower()
 
     int32 currentPower = m_caster->GetUInt32Value(powerField);
 
-    int32 cost;
+    int32 cost = 0;
+
     if (GetProto()->ManaCostPercentage) //Percentage spells cost % of !!!BASE!!! mana
     {
         if (u_caster != nullptr)
