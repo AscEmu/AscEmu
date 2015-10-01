@@ -6059,7 +6059,11 @@ void Spell::SpellEffectJumpTarget(uint32 i)
     if (u_caster->GetCurrentVehicle() || u_caster->isTrainingDummy())
         return;
 
-    float x, y, z;
+    float x = 0;
+    float y = 0;
+    float z = 0;
+    float o = 0;
+
     if (m_targets.m_targetMask & TARGET_FLAG_UNIT)
     {
         Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
