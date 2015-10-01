@@ -3173,9 +3173,13 @@ class LuaUnit
 
     static int GetInstanceOwner(lua_State* L, Unit* ptr)
     {
-        if (!ptr) return 0;
+        if (!ptr)
+            return 0;
+
         if (!ptr->IsInInstance())
+        {
             lua_pushnil(L);
+        }
         else
         {
             Instance* pInstance = sInstanceMgr.GetInstanceByIds(ptr->GetMapId(), ptr->GetInstanceID());
@@ -3187,7 +3191,12 @@ class LuaUnit
             else
             {
                 uint32 gId = pInstance->m_creatorGroup;
-                PUSH_UNIT(L, objmgr.GetGroupById(gId)->GetLeader()->m_loggedInPlayer);
+                auto group_id = objmgr.GetGroupById(gId);
+
+                if (group_id == nullptr)
+                    return 0;
+
+                PUSH_UNIT(L, group_id->GetLeader()->m_loggedInPlayer);
             }
         }
         return 1;
