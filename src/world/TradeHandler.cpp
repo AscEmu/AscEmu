@@ -433,7 +433,8 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
                         {
                             sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->GetProto()->Name1, pTarget->GetName());
                         }
-                        pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);
+                        // See CID53355 Unused value (overwritten before it can be used
+                        //pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);
                     }
                 }
 
