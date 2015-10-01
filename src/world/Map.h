@@ -80,31 +80,34 @@ typedef struct
 {
     uint32 id;          /// spawn ID
     uint32 entry;
-    float x;
-    float y;
-    float z;
-    float o;
-    float o1;
-    float o2;
-    float o3;
-    float facing;
-    uint32 flags;
+    uint32 map;
+    float position_x;
+    float position_y;
+    float position_z;
+    float orientation;  // column facing
+    float rotation_0;   // column orientation1
+    float rotation_1;   // column orientation2
+    float rotation_2;   // column orientation3
+    float rotation_3;   // column orientation4
+    //float facing;
+    //uint32 flags;
     uint32 state;
+    uint32 flags;
     uint32 faction;
     //uint32 level;
     float scale;
     //uint32 stateNpcLink;
     uint32 phase;
     uint32 overrides;
-} GOSpawn;
+} GameobjectSpawn;
 
 typedef std::vector<CreatureSpawn*> CreatureSpawnList;
-typedef std::vector<GOSpawn*> GOSpawnList;
+typedef std::vector<GameobjectSpawn*> GameobjectSpawnList;
 
 typedef struct
 {
     CreatureSpawnList CreatureSpawns;
-    GOSpawnList GOSpawns;
+    GameobjectSpawnList GameobjectSpawns;
 } CellSpawns;
 
 

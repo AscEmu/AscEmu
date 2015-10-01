@@ -866,18 +866,18 @@ bool ChatHandler::HandleGODelete(const char* args, WorldSession* m_session)
 
     if (GObj->m_spawn != NULL && GObj->m_spawn->entry == GObj->GetEntry())
     {
-        uint32 cellx = uint32(((_maxX - GObj->m_spawn->x) / _cellSize));
-        uint32 celly = uint32(((_maxY - GObj->m_spawn->y) / _cellSize));
+        uint32 cellx = uint32(((_maxX - GObj->m_spawn->position_x) / _cellSize));
+        uint32 celly = uint32(((_maxY - GObj->m_spawn->position_y) / _cellSize));
 
         if (cellx < _sizeX && celly < _sizeY)
         {
             CellSpawns* sp = GObj->GetMapMgr()->GetBaseMap()->GetSpawnsList(cellx, celly);
             if (sp != NULL)
             {
-                for (GOSpawnList::iterator itr = sp->GOSpawns.begin(); itr != sp->GOSpawns.end(); ++itr)
+                for (GameobjectSpawnList::iterator itr = sp->GameobjectSpawns.begin(); itr != sp->GameobjectSpawns.end(); ++itr)
                     if ((*itr) == GObj->m_spawn)
                     {
-                        sp->GOSpawns.erase(itr);
+                        sp->GameobjectSpawns.erase(itr);
                         break;
                     }
             }
@@ -934,29 +934,32 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
     go->CreateFromProto(EntryID, mapid, x, y, z, o);
     go->PushToWorld(chr->GetMapMgr());
     go->Phase(PHASE_SET, chr->GetPhase());
+
     // Create spawn instance
-    GOSpawn* gs = new GOSpawn;
+    GameobjectSpawn* gs = new GameobjectSpawn;
     gs->entry = go->GetEntry();
-    gs->facing = go->GetOrientation();
-    gs->faction = go->GetFaction();
-    gs->flags = go->GetFlags();
     gs->id = objmgr.GenerateGameObjectSpawnID();
-    gs->o = 0.0f;
-    gs->o1 = go->GetParentRotation(0);
-    gs->o2 = go->GetParentRotation(2);
-    gs->o3 = go->GetParentRotation(3);
-    gs->scale = go->GetScale();
-    gs->x = go->GetPositionX();
-    gs->y = go->GetPositionY();
-    gs->z = go->GetPositionZ();
+    gs->map = go->GetMapId();
+    gs->position_x = go->GetPositionX();
+    gs->position_y = go->GetPositionY();
+    gs->position_z = go->GetPositionZ();
+    gs->orientation = go->GetOrientation();
+    gs->rotation_0 = go->GetParentRotation(0);
+    gs->rotation_1 = go->GetParentRotation(1);
+    gs->rotation_2 = go->GetParentRotation(2);
+    gs->rotation_3 = go->GetParentRotation(3);
     gs->state = go->GetState();
+    gs->flags = go->GetFlags();
+    gs->faction = go->GetFaction();
+    gs->scale = go->GetScale();
+    //gs->npclink = 0;
     gs->phase = go->GetPhase();
     gs->overrides = go->GetOverrides();
 
     uint32 cx = chr->GetMapMgr()->GetPosX(chr->GetPositionX());
     uint32 cy = chr->GetMapMgr()->GetPosY(chr->GetPositionY());
 
-    chr->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GOSpawns.push_back(gs);
+    chr->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(gs);
     go->m_spawn = gs;
 
     MapCell* mCell = chr->GetMapMgr()->GetCell(cx, cy);
@@ -970,7 +973,7 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
         go->SaveToDB();
         go->m_loadedFromDB = true;
     }
-    sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(gs->entry)->name, gs->entry, chr->GetMapId(), gs->x, gs->y, gs->z, Save ? ", saved in DB" : "");
+    sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(gs->entry)->name, gs->entry, chr->GetMapId(), gs->position_x, gs->position_y, gs->position_z, Save ? ", saved in DB" : "");
     return true;
 }
 
@@ -996,8 +999,8 @@ bool ChatHandler::HandleGOPhaseCommand(const char* args, WorldSession* m_session
 
     go->Phase(PHASE_SET, newphase);
 
-    GOSpawn* gs = go->m_spawn;
-    if (gs == NULL)
+    auto go_spawn = go->m_spawn;
+    if (go_spawn == nullptr)
     {
         RedSystemMessage(m_session, "The GameObject got no spawn, not saving and not logging...");
         return true;
@@ -1005,7 +1008,7 @@ bool ChatHandler::HandleGOPhaseCommand(const char* args, WorldSession* m_session
     //VLack: We have to have a spawn, or SaveToDB would write a 0 into the first column (ID), and would erroneously overwrite something in the DB.
     //The code which saves creatures is a bit more forgiving, as it creates a new spawn on-demand, but the gameobject code does not.
 
-    gs->phase = go->GetPhase();
+    go_spawn->phase = go->GetPhase();
 
     uint32 cx = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
     uint32 cy = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
@@ -1021,33 +1024,33 @@ bool ChatHandler::HandleGOPhaseCommand(const char* args, WorldSession* m_session
         go->SaveToDB();
         go->m_loadedFromDB = true;
     }
-    sGMLog.writefromsession(m_session, "phased gameobject %s to %u, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(gs->entry)->name, newphase, gs->entry, m_session->GetPlayer()->GetMapId(), gs->x, gs->y, gs->z, Save ? ", saved in DB" : "");
+    sGMLog.writefromsession(m_session, "phased gameobject %s to %u, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(go_spawn->entry)->name, newphase, go_spawn->entry, m_session->GetPlayer()->GetMapId(), go_spawn->position_x, go_spawn->position_y, go_spawn->position_z, Save ? ", saved in DB" : "");
     return true;
 }
 
 bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 {
     GameObjectInfo* gameobject_info = nullptr;
-    GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
-    if (!GObj)
+    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    if (!gameobject)
     {
         RedSystemMessage(m_session, "No selected GameObject...");
         return true;
     }
 
     SystemMessage(m_session, "%s Information:", MSG_COLOR_SUBWHITE);
-    SystemMessage(m_session, "%s SpawnID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->m_spawn != NULL ? GObj->m_spawn->id : 0);
-    SystemMessage(m_session, "%s Entry:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetEntry());
-    SystemMessage(m_session, "%s GUID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetLowGUID());
-    SystemMessage(m_session, "%s Model:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetDisplayId());
-    SystemMessage(m_session, "%s State:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetState());
-    SystemMessage(m_session, "%s flags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetFlags());
-    SystemMessage(m_session, "%s dynflags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetUInt32Value(GAMEOBJECT_DYNAMIC));
-    SystemMessage(m_session, "%s faction:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetFaction());
-    SystemMessage(m_session, "%s phase:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetPhase());
+    SystemMessage(m_session, "%s SpawnID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->m_spawn != NULL ? gameobject->m_spawn->id : 0);
+    SystemMessage(m_session, "%s Entry:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetEntry());
+    SystemMessage(m_session, "%s GUID:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetLowGUID());
+    SystemMessage(m_session, "%s Model:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetDisplayId());
+    SystemMessage(m_session, "%s State:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetState());
+    SystemMessage(m_session, "%s flags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetFlags());
+    SystemMessage(m_session, "%s dynflags:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetUInt32Value(GAMEOBJECT_DYNAMIC));
+    SystemMessage(m_session, "%s faction:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetFaction());
+    SystemMessage(m_session, "%s phase:%s%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetPhase());
 
     char gotypetxt[50];
-    switch (GObj->GetType())
+    switch (gameobject->GetType())
     {
         case GAMEOBJECT_TYPE_DOOR:
             strcpy(gotypetxt, "Door");
@@ -1137,11 +1140,11 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
             strcpy(gotypetxt, "Unknown.");
             break;
     }
-    SystemMessage(m_session, "%s Type:%s%u -- %s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetType(), gotypetxt);
+    SystemMessage(m_session, "%s Type:%s%u -- %s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetType(), gotypetxt);
 
-    SystemMessage(m_session, "%s Distance:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->CalcDistance(m_session->GetPlayer()));
+    SystemMessage(m_session, "%s Distance:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->CalcDistance(m_session->GetPlayer()));
 
-    gameobject_info = GameObjectNameStorage.LookupEntry(GObj->GetEntry());
+    gameobject_info = GameObjectNameStorage.LookupEntry(gameobject->GetEntry());
     if (!gameobject_info)
     {
         RedSystemMessage(m_session, "This GameObject doesn't have template, you won't be able to get some information nor to spawn a GO with this entry.");
@@ -1150,14 +1153,17 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 
     if (gameobject_info->name)
         SystemMessage(m_session, "%s Name:%s%s", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject_info->name);
-    SystemMessage(m_session, "%s Size:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetScale());
-    SystemMessage(m_session, "%s Parent Rotation O1:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(1));
-    SystemMessage(m_session, "%s Parent Rotation O2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(2));
-    SystemMessage(m_session, "%s Parent Rotation O3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetParentRotation(3));
+
+    SystemMessage(m_session, "%s Size:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetScale());
+    SystemMessage(m_session, "%s Orientation:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetOrientation());
+    SystemMessage(m_session, "%s Rotation 0:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(0));
+    SystemMessage(m_session, "%s Rotation 1:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(1));
+    SystemMessage(m_session, "%s Rotation 2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(2));
+    SystemMessage(m_session, "%s Rotation 3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(3));
 
     if (gameobject_info->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
-        SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, GObj->GetHP(), GObj->GetMaxHP());
+        SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetHP(), gameobject->GetMaxHP());
     }
 
     return true;

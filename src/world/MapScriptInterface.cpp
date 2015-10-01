@@ -93,7 +93,7 @@ GameObject* MapScriptInterface::SpawnGameObject(uint32 Entry, float cX, float cY
     return pGameObject;
 }
 
-GameObject* MapScriptInterface::SpawnGameObject(GOSpawn* gs, bool AddToWorld)
+GameObject* MapScriptInterface::SpawnGameObject(GameobjectSpawn* gs, bool AddToWorld)
 {
     if (!gs)
         return NULL;

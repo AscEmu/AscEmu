@@ -264,28 +264,30 @@ void GameObject::SaveToDB()
     if (m_spawn == NULL)
     {
         // Create spawn instance
-        m_spawn = new GOSpawn;
+        m_spawn = new GameobjectSpawn;
         m_spawn->entry = GetEntry();
-        m_spawn->facing = GetOrientation();
-        m_spawn->faction = GetFaction();
-        m_spawn->flags = GetUInt32Value(GAMEOBJECT_FLAGS);
         m_spawn->id = objmgr.GenerateGameObjectSpawnID();
-        m_spawn->o1 = GetParentRotation(0);
-        m_spawn->o2 = GetParentRotation(2);
-        m_spawn->o3 = GetParentRotation(3);
-        m_spawn->scale = GetScale();
-        m_spawn->x = GetPositionX();
-        m_spawn->y = GetPositionY();
-        m_spawn->z = GetPositionZ();
-        m_spawn->o = 0.0f;
+        m_spawn->map = GetMapId();
+        m_spawn->position_x = GetPositionX();
+        m_spawn->position_y = GetPositionY();
+        m_spawn->position_z = GetPositionZ();
+        m_spawn->orientation = GetOrientation();
+        m_spawn->rotation_0 = GetParentRotation(0);
+        m_spawn->rotation_1 = GetParentRotation(1);
+        m_spawn->rotation_2 = GetParentRotation(2);
+        m_spawn->rotation_3 = GetParentRotation(3);
         m_spawn->state = GetByte(GAMEOBJECT_BYTES_1, 0);
+        m_spawn->flags = GetUInt32Value(GAMEOBJECT_FLAGS);
+        m_spawn->faction = GetFaction();
+        m_spawn->scale = GetScale();
+        //m_spawn->stateNpcLink = 0;
         m_spawn->phase = GetPhase();
-        m_spawn->overrides = m_overrides;
+        m_spawn->overrides = GetOverrides();
 
         uint32 cx = GetMapMgr()->GetPosX(GetPositionX());
         uint32 cy = GetMapMgr()->GetPosY(GetPositionY());
 
-        GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GOSpawns.push_back(m_spawn);
+        GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(m_spawn);
     }
     std::stringstream ss;
 
@@ -305,9 +307,8 @@ void GameObject::SaveToDB()
         << GetPositionY() << ","
         << GetPositionZ() << ","
         << GetOrientation() << ","
-        //		<< GetUInt64Value(GAMEOBJECT_ROTATION) << ","
-        << uint64(0) << ","
         << GetParentRotation(0) << ","
+        << GetParentRotation(1) << ","
         << GetParentRotation(2) << ","
         << GetParentRotation(3) << ","
         << GetUInt32Value(GAMEOBJECT_BYTES_1) << ","
@@ -465,22 +466,22 @@ void GameObject::InitAI()
 
 }
 
-bool GameObject::Load(GOSpawn* spawn)
+bool GameObject::Load(GameobjectSpawn* go_spawn)
 {
-    if (!CreateFromProto(spawn->entry, 0, spawn->x, spawn->y, spawn->z, spawn->facing, spawn->o, spawn->o1, spawn->o2, spawn->o3, spawn->overrides))
+    if (!CreateFromProto(go_spawn->entry, 0, go_spawn->position_x, go_spawn->position_y, go_spawn->position_z, go_spawn->orientation, go_spawn->rotation_0, go_spawn->rotation_1, go_spawn->rotation_2, go_spawn->rotation_3, go_spawn->overrides))
         return false;
 
-    m_spawn = spawn;
-    m_phase = spawn->phase;
+    m_spawn = go_spawn;
+    m_phase = go_spawn->phase;
     //SetRotation(spawn->o);
-    SetUInt32Value(GAMEOBJECT_FLAGS, spawn->flags);
+    SetUInt32Value(GAMEOBJECT_FLAGS, go_spawn->flags);
     //	SetLevel(spawn->level);
-    SetByte(GAMEOBJECT_BYTES_1, 0, static_cast<uint8>(spawn->state));
-    if (spawn->faction)
+    SetByte(GAMEOBJECT_BYTES_1, 0, static_cast<uint8>(go_spawn->state));
+    if (go_spawn->faction)
     {
-        SetFaction(spawn->faction);
+        SetFaction(go_spawn->faction);
     }
-    SetScale(spawn->scale);
+    SetScale(go_spawn->scale);
 
     return true;
 }

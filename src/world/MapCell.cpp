@@ -242,9 +242,9 @@ void MapCell::LoadObjects(CellSpawns* sp)
         }
     }
 
-    if (sp->GOSpawns.size())//got GOs
+    if (sp->GameobjectSpawns.size())//got GOs
     {
-        for (GOSpawnList::iterator i = sp->GOSpawns.begin(); i != sp->GOSpawns.end(); ++i)
+        for (GameobjectSpawnList::iterator i = sp->GameobjectSpawns.begin(); i != sp->GameobjectSpawns.end(); ++i)
         {
             GameObject* go = _mapmgr->CreateGameObject((*i)->entry);
             //go->SetInstanceID(_mapmgr->GetInstanceID()); missing in current revision idk need a specialist
@@ -255,7 +255,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             }
             else
             {
-                GOSpawn* spawn = (*i);
+                GameobjectSpawn* spawn = (*i);
                 Log.Error("MapCell", "Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
                 delete go;//missing proto or something of that kind
             }

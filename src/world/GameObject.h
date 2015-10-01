@@ -182,7 +182,7 @@ class SERVER_DECL GameObject : public Object
 
         bool CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0 = 0.0f, float r1 = 0.0f, float r2 = 0.0f, float r3 = 0.0f, uint32 overrides = 0);
 
-        bool Load(GOSpawn* spawn);
+        bool Load(GameobjectSpawn* spawn);
 
         virtual void Update(uint32 p_time);
 
@@ -269,7 +269,7 @@ class SERVER_DECL GameObject : public Object
 
         bool HasAI() { return spell != 0; }
 
-        GOSpawn* m_spawn;
+        GameobjectSpawn* m_spawn;
         void OnPushToWorld();
         void OnRemoveInRangeObject(Object* pObj);
         void RemoveFromWorld(bool free_guid);

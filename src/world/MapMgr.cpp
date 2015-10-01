@@ -1280,7 +1280,7 @@ bool MapMgr::Do()
     LoadInstanceScript();
 
     /* create static objects */
-    for (GOSpawnList::iterator itr = _map->staticSpawns.GOSpawns.begin(); itr != _map->staticSpawns.GOSpawns.end(); ++itr)
+    for (GameobjectSpawnList::iterator itr = _map->staticSpawns.GameobjectSpawns.begin(); itr != _map->staticSpawns.GameobjectSpawns.end(); ++itr)
     {
         GameObject* obj = CreateGameObject((*itr)->entry);
         obj->Load((*itr));
@@ -1873,29 +1873,31 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     go->PushToWorld(this);
 
     // Create spawn instance
-    GOSpawn* gs = new GOSpawn;
-    gs->entry = go->GetEntry();
-    gs->facing = go->GetOrientation();
-    gs->faction = go->GetFaction();
-    gs->flags = go->GetUInt32Value(GAMEOBJECT_FLAGS);
-    gs->id = objmgr.GenerateGameObjectSpawnID();
-    gs->o = 0.0f;
-    gs->o1 = go->GetParentRotation(0);
-    gs->o2 = go->GetParentRotation(2);
-    gs->o3 = go->GetParentRotation(3);
-    gs->scale = go->GetScale();
-    gs->x = go->GetPositionX();
-    gs->y = go->GetPositionY();
-    gs->z = go->GetPositionZ();
-    gs->state = go->GetByte(GAMEOBJECT_BYTES_1, 0);
-    //gs->stateNpcLink = 0;
-    gs->overrides = go->GetOverrides();
+    auto go_spawn = new GameobjectSpawn;
+    go_spawn->entry = go->GetEntry();
+    go_spawn->id = objmgr.GenerateGameObjectSpawnID();
+    go_spawn->map = go->GetMapId();
+    go_spawn->position_x = go->GetPositionX();
+    go_spawn->position_y = go->GetPositionY();
+    go_spawn->position_z = go->GetPositionZ();
+    go_spawn->orientation = go->GetOrientation();
+    go_spawn->rotation_0 = go->GetParentRotation(0);
+    go_spawn->rotation_1 = go->GetParentRotation(1);
+    go_spawn->rotation_2 = go->GetParentRotation(2);
+    go_spawn->rotation_3 = go->GetParentRotation(3);
+    go_spawn->state = go->GetByte(GAMEOBJECT_BYTES_1, 0);
+    go_spawn->flags = go->GetUInt32Value(GAMEOBJECT_FLAGS);
+    go_spawn->faction = go->GetFaction();
+    go_spawn->scale = go->GetScale();
+    //go_spawn->stateNpcLink = 0;
+    go_spawn->phase = go->GetPhase();
+    go_spawn->overrides = go->GetOverrides();
 
     uint32 cx = GetPosX(x);
     uint32 cy = GetPosY(y);
 
-    GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GOSpawns.push_back(gs);
-    go->m_spawn = gs;
+    GetBaseMap()->GetSpawnsListAndCreate(cx, cy)->GameobjectSpawns.push_back(go_spawn);
+    go->m_spawn = go_spawn;
 
     MapCell* mCell = GetCell(cx, cy);
 
