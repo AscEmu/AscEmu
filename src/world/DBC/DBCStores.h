@@ -1858,7 +1858,10 @@ class SERVER_DECL DBCStorage
                 m_stringlength = string_length;
                 if (m_stringData)
                     if (fread(m_stringData, string_length, 1, f) != 1)
+                    {
+                        fclose(f);
                         return false;
+                    }
             }
 
             if (fseek(f, pos, SEEK_SET) != 0)
