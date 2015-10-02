@@ -922,8 +922,13 @@ class LuaGameObject
             }
             else
             {
-                uint32 gId = pInstance->m_creatorGroup;
-                PUSH_UNIT(L, objmgr.GetGroupById(gId)->GetLeader()->m_loggedInPlayer);
+                uint32 group_id = pInstance->m_creatorGroup;
+
+                auto group_leader = objmgr.GetGroupById(group_id)->GetLeader();
+                if (group_leader == nullptr)
+                    return 0;
+
+                PUSH_UNIT(L, group_leader->m_loggedInPlayer);
             }
             return 1;
         }
