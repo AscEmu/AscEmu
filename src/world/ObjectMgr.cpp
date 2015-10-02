@@ -1934,6 +1934,12 @@ GossipMenuItem GossipMenu::GetItem(uint32 Id)
         k.IntId = 1;
         k.Extra = 0;
 
+        k.Id = 0;
+        k.Icon = 0;
+        k.m_gSender = 0;
+        k.m_gAction = 0;
+        k.m_gBoxMoney = 0;
+
         return k;
     }
     else
