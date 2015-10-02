@@ -726,8 +726,8 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     }
 
     // Update in-range set for new objects
-    uint32 endX = cellX <= _sizeX ? cellX + 1 : (_sizeX - 1);
-    uint32 endY = cellY <= _sizeY ? cellY + 1 : (_sizeY - 1);
+    uint32 endX = cellX + 1;
+    uint32 endY = cellY + 1;
     uint32 startX = cellX > 0 ? cellX - 1 : 0;
     uint32 startY = cellY > 0 ? cellY - 1 : 0;
     uint32 posX, posY;
