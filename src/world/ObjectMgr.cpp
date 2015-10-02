@@ -3979,25 +3979,29 @@ SpellEffectMapBounds ObjectMgr::GetSpellEffectBounds(uint32 data_1) const
 bool ObjectMgr::CheckforScripts(Player* plr, uint32 event_id)
 {
     EventScriptBounds EventScript = objmgr.GetEventScripts(event_id);
+    if (EventScript.first == EventScript.second)
+        return false;
+
     for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
     {
         sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second.eventId, EVENT_EVENT_SCRIPTS, itr->second.delay, 1, 0);
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 bool ObjectMgr::CheckforDummySpellScripts(Player* plr, uint32 data_1)
 {
     SpellEffectMapBounds EventScript = objmgr.GetSpellEffectBounds(data_1);
+    if (EventScript.first == EventScript.second)
+        return false;
+
     for (SpellEffectMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
     {
         sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second->eventId, EVENT_EVENT_SCRIPTS, itr->second->delay, 1, 0);
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
