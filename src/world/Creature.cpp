@@ -1986,6 +1986,8 @@ void Creature::LoadWaypointGroup(uint32 pWaypointGroup)
         wp->backwardskinid = fields[12].GetUInt32();
 
         this->LoadCustomWaypoint(wp->x, wp->y, wp->z, wp->o, wp->waittime, wp->flags, wp->forwardemoteoneshot, wp->forwardemoteid, wp->backwardemoteoneshot, wp->backwardemoteid, wp->forwardskinid, wp->backwardskinid);
+
+        delete wp;
     } while (result->NextRow());
 
     delete result;
