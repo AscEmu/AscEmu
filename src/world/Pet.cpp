@@ -1013,14 +1013,7 @@ uint32 Pet::GetNextLevelXP(uint32 level)
 {
     // Pets need only 5% of xp to level up compared to players
     uint32 nextLvlXP = 0;
-    if (level > 0 && level <= MAX_PREDEFINED_NEXTLEVELXP)
-    {
-        nextLvlXP = NextLevelXp[level - 1];
-    }
-    else
-    {
-        nextLvlXP = ((int)((((double)(((8 * level) + ((level - 30) * 5)) * ((level * 5) + 45))) / 100) + 0.5)) * 100;
-    }
+    nextLvlXP = objmgr.GetXPToLevel(level);
     return nextLvlXP / 20;
 }
 

@@ -2358,7 +2358,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                                 }*/
 
                 //this is a fixed table taken from 2.3.0 wow. This can;t get more blizzlike with the "if" cases ;)
-                if ((Level - 1) < MAX_PREDEFINED_NEXTLEVELXP)
+                /*if ((Level - 1) < MAX_PREDEFINED_NEXTLEVELXP)
                 {
                     nextLvlXP = NextLevelXp[(Level - 1)];
                 }
@@ -2371,7 +2371,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                     double DIFF = Level < 29 ? 0.0 : Level < 30 ? 1.0 : Level < 31 ? 3.0 : Level < 32 ? 6.0 : 5.0 * (double(Level) - 30.0);
                     double XP = ((8.0 * double(Level)) + DIFF) * MXP;
                     nextLvlXP = (int)((XP / 100.0) + 0.5) * 100;
-                }
+                }*/
 
                 lastlvl = *lvl;
 
@@ -2416,11 +2416,11 @@ void ObjectMgr::LoadXpToLevelTable()
         while (result->NextRow());
     }
 
-    for (uint8 level = 1; level < sWorld.m_levelCap; ++level)
+    /*for (uint8 level = 1; level < sWorld.m_levelCap; ++level)
     {
         if (_playerXPperLevel[level] == 0)
             _playerXPperLevel[level] = NextLevelXp[level];
-    }
+    }*/
 }
 
 uint32 ObjectMgr::GetXPToLevel(uint32 level)
