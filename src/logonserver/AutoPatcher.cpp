@@ -144,12 +144,14 @@ PatchMgr::PatchMgr()
         if(read_fd < 0)
         {
             LOG_ERROR("Cannot open %s", Buffer3);
+            close(read_fd);
             continue;
         }
 
         if(fstat(read_fd, &sb) < 0)
         {
             LOG_ERROR("Cannot stat %s", Buffer3);
+            close(read_fd);
             continue;
         }
 
