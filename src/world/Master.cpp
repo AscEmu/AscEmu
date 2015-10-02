@@ -137,12 +137,12 @@ bool Master::Run(int argc, char** argv)
         switch (c)
         {
             case 'c':
-                config_file = new char[strlen(arcemu_optarg)];
+                config_file = new char[strlen(arcemu_optarg) + 1];
                 strcpy(config_file, arcemu_optarg);
                 break;
 
             case 'r':
-                realm_config_file = new char[strlen(arcemu_optarg)];
+                realm_config_file = new char[strlen(arcemu_optarg) + 1];
                 strcpy(realm_config_file, arcemu_optarg);
                 break;
 
