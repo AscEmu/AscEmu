@@ -143,9 +143,7 @@ void SpellCastTargets::read(WorldPacket & data, uint64 caster)
 
     if (m_targetMask & TARGET_FLAG_STRING)
     {
-        std::string ss;
-        data >> ss;
-        m_strTarget = strdup(ss.c_str());
+        data >> m_strTarget;
     }
 }
 
