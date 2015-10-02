@@ -330,22 +330,6 @@ typedef std::multimap<uint32, SimpleEventScript const*> SpellEffectMaps;
 typedef std::pair<EventScriptMaps::const_iterator, EventScriptMaps::const_iterator> EventScriptBounds;
 typedef std::pair<SpellEffectMaps::const_iterator, SpellEffectMaps::const_iterator> SpellEffectMapBounds;
 
-/*#define MAX_PREDEFINED_NEXTLEVELXP PLAYER_LEVEL_CAP
-static const uint32 NextLevelXp[MAX_PREDEFINED_NEXTLEVELXP] =
-{
-    400, 900, 1400, 2100, 2800, 3600, 4500, 5400, 6500, 7600,
-    8700, 9800, 11000, 12300, 13600, 15000, 16400, 17800, 19300, 20800,
-    22400, 24000, 25500, 27200, 28900, 30500, 32200, 33900, 36300, 38800,
-    41600, 44600, 48000, 51400, 55000, 58700, 62400, 66200, 70200, 74300,
-    78500, 82800, 87100, 91600, 95300, 101000, 105800, 110700, 115700, 120900,
-    126100, 131500, 137000, 142500, 148200, 154000, 159900, 165800, 172000, 290000,
-    317000, 349000, 386000, 428000, 475000, 527000, 585000, 648000, 717000, 1523800,
-#if PLAYER_LEVEL_CAP==80
-    1539600, 1555700, 1571800, 1587900, 1604200, 1620700, 1637400, 1653900, 1670800, 1700000,
-#endif
-};*/
-
-
 class SERVER_DECL GossipMenu
 {
     public:

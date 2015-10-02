@@ -2338,41 +2338,6 @@ void ObjectMgr::GenerateLevelUpInfo()
                 lvl->HP = lastlvl.HP + TotalHealthGain;
                 lvl->Mana = lastlvl.Mana + TotalManaGain;
 
-                // Calculate next level XP
-                uint32 nextLvlXP = 0;
-                /*                if (Level > 0 && Level <= 30)
-                                {
-                                nextLvlXP = ((int)((((double)(8 * Level * ((Level * 5) + 45)))/100)+0.5))*100;
-                                }
-                                else if (Level == 31)
-                                {
-                                nextLvlXP = ((int)((((double)(((8 * Level) + 3) * ((Level * 5) + 45)))/100)+0.5))*100;
-                                }
-                                else if (Level == 32)
-                                {
-                                nextLvlXP = ((int)((((double)(((8 * Level) + 6) * ((Level * 5) + 45)))/100)+0.5))*100;
-                                }
-                                else
-                                {
-                                nextLvlXP = ((int)((((double)(((8 * Level) + ((Level - 30) * 5)) * ((Level * 5) + 45)))/100)+0.5))*100;
-                                }*/
-
-                //this is a fixed table taken from 2.3.0 wow. This can;t get more blizzlike with the "if" cases ;)
-                /*if ((Level - 1) < MAX_PREDEFINED_NEXTLEVELXP)
-                {
-                    nextLvlXP = NextLevelXp[(Level - 1)];
-                }
-                else
-                {
-                    // 2.2
-                    //double MXP = 45 + (5 * level);
-                    // 2.3
-                    double MXP = 235 + (5 * Level);
-                    double DIFF = Level < 29 ? 0.0 : Level < 30 ? 1.0 : Level < 31 ? 3.0 : Level < 32 ? 6.0 : 5.0 * (double(Level) - 30.0);
-                    double XP = ((8.0 * double(Level)) + DIFF) * MXP;
-                    nextLvlXP = (int)((XP / 100.0) + 0.5) * 100;
-                }*/
-
                 lastlvl = *lvl;
 
                 // Apply to map.
@@ -2415,12 +2380,6 @@ void ObjectMgr::LoadXpToLevelTable()
         }
         while (result->NextRow());
     }
-
-    /*for (uint8 level = 1; level < sWorld.m_levelCap; ++level)
-    {
-        if (_playerXPperLevel[level] == 0)
-            _playerXPperLevel[level] = NextLevelXp[level];
-    }*/
 }
 
 uint32 ObjectMgr::GetXPToLevel(uint32 level)
