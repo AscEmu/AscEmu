@@ -936,6 +936,32 @@ struct SpellEntry
 
     SpellEntry()
     {
+        Id = 0;
+        Category = 0;
+        DispelType = 0;
+        MechanicsType = 0;
+        Attributes = 0;
+        AttributesEx = 0;
+        AttributesExB = 0;
+        AttributesExC = 0;
+        AttributesExD = 0;
+        AttributesExE = 0;
+        AttributesExF = 0;
+        AttributesExG = 0;
+        RequiredShapeShift = 0;
+        ShapeshiftExclude = 0;
+        Targets = 0;
+        TargetCreatureType = 0;
+        RequiresSpellFocus = 0;
+        FacingCasterFlags = 0;
+        CasterAuraState = 0;
+        TargetAuraState = 0;
+        CasterAuraStateNot = 0;
+        TargetAuraStateNot = 0;
+        casterAuraSpell = 0;
+        targetAuraSpell = 0;
+        casterAuraSpellNot = 0;
+
         CustomFlags = 0;
 
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; i++)
