@@ -923,12 +923,25 @@ class LuaGameObject
             else
             {
                 uint32 group_id = pInstance->m_creatorGroup;
+                if (group_id == 0)
+                {
+                    Log.Error("LuA:GetInstanceOwner", "Instance is not not owned by a group or a guid!");
+                    return 0;
+                }
 
-                auto group_leader = objmgr.GetGroupById(group_id)->GetLeader();
+                auto get_group_id = objmgr.GetGroupById(group_id);
+                if (get_group_id == nullptr)
+                    return 0;
+
+                auto group_leader = get_group_id->GetLeader();
                 if (group_leader == nullptr)
                     return 0;
 
-                PUSH_UNIT(L, group_leader->m_loggedInPlayer);
+                auto group_leader_online = group_leader->m_loggedInPlayer;
+                if (group_leader_online == nullptr)
+                    return 0;
+
+                PUSH_UNIT(L, group_leader_online);
             }
             return 1;
         }
