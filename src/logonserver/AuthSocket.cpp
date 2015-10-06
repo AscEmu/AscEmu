@@ -115,23 +115,26 @@ void AuthSocket::HandleChallenge()
 
     LOG_DEBUG("[AuthChallenge] got a complete packet.");
 
-    //memcpy(&m_challenge, ReceiveBuffer, full_size + 4);
-    //RemoveReadBufferBytes(full_size + 4, true);
     readBuffer.Read(&m_challenge, full_size + 4);
 
     // Check client build.
+    uint16 client_build = m_challenge.build;
 
-    uint16 build = m_challenge.build;
-
-    // Check client build.
-    /*if(build > LogonServer::getSingleton().max_build)
+    switch (client_build)
     {
-        // wtf?
-        LOG_DETAIL("[AuthChallenge] Client %s has wrong version. More up to date than server. Server: %u, Client: %u", GetRemoteIP().c_str(), LogonServer::getSingleton().max_build, m_challenge.build);
-        SendChallengeError(CE_WRONG_BUILD_NUMBER);
-        return;
+        case 8606:
+        case 12340:
+        {
+            Log.Debug("HandleChallenge", "Client with valid build %u connected", client_build);
+        }break;
+        default:
+        {
+            Log.Debug("HandleChallenge", "Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), client_build);
+            SendChallengeError(CE_WRONG_BUILD_NUMBER);
+        }break;
     }
 
+    /*Patchmgr... Do not delete this
     if(build < LogonServer::getSingleton().min_build)
     {
         // can we patch?
