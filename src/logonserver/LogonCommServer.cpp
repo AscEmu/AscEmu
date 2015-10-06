@@ -199,10 +199,11 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     realm->TimeZone = 0;
     realm->Population = 0;
     realm->Lock = 0;
+    realm->GameBuild = 0;
 
     realm->Name = Name;
     realm->flags = 0;
-    recvData >> realm->Address >> realm->flags >> realm->Icon >> realm->TimeZone >> realm->Population >> realm->Lock;
+    recvData >> realm->Address >> realm->flags >> realm->Icon >> realm->TimeZone >> realm->Population >> realm->Lock >> realm->GameBuild;
 
     sLog.outString("TEST FLAGS %u", realm->flags);
 

@@ -492,26 +492,36 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     HM_NAMESPACE::hash_map<uint32, uint8>::iterator it;
     for(; itr != m_realms.end(); ++itr)
     {
-//        data << uint8(itr->second->Icon);
-//        data << uint8(0);                   // Locked Flag
-//        data << uint8(itr->second->Colour);
-        data << uint8(itr->second->Icon);
-        data << uint8(itr->second->Lock);        // delete when using data << itr->second->Lock;
-        data << uint8(itr->second->flags);
+        if (itr->second->GameBuild == Socket->GetChallenge()->build)
+        {
+            data << uint8(itr->second->Icon);
+            data << uint8(itr->second->Lock);        // delete when using data << itr->second->Lock;
+            data << uint8(itr->second->flags);
 
-        // This part is the same for all.
-        data << itr->second->Name;
-        data << itr->second->Address;
-//        data << uint32(0x3fa1cac1);
-        data << float(itr->second->Population);
+            data << itr->second->Name;
+            data << itr->second->Address;
+            data << float(itr->second->Population);
 
-        /* Get our character count */
-        it = itr->second->CharacterMap.find(Socket->GetAccountID());
-        data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
-//        data << uint8(1);   // time zone
-//        data << uint8(6);
-        data << uint8(itr->second->TimeZone);
-        data << uint8(GetRealmIdByName(itr->second->Name));        //Realm ID
+            // Get our character count
+            it = itr->second->CharacterMap.find(Socket->GetAccountID());
+            data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
+            data << uint8(itr->second->TimeZone);
+            data << uint8(GetRealmIdByName(itr->second->Name));        //Realm ID
+        }
+        else // send empty packet for other gameserver which not supports client_build
+        {
+            data << uint8(0);
+            data << uint8(0);        // delete when using data << itr->second->Lock;
+            data << uint8(0);
+
+            data << "";
+            data << "";
+            data << float(0);
+
+            data << uint8(0);
+            data << uint8(0);
+            data << uint8(GetRealmIdByName(itr->second->Name));        //Realm ID
+        }
     }
     data << uint8(0x17);
     data << uint8(0);

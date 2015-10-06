@@ -187,6 +187,7 @@ typedef struct
     uint32 TimeZone;
     float Population;
     uint8 Lock;
+    uint32 GameBuild;
     HM_NAMESPACE::hash_map<uint32, uint8> CharacterMap;
 } Realm;
 

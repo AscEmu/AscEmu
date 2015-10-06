@@ -46,6 +46,7 @@ typedef struct
     uint32 TimeZone;
     float Population;
     uint8 Lock;
+    uint32 GameBuild;
 } Realm;
 
 enum RealmType

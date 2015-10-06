@@ -83,6 +83,7 @@ void LogonCommHandler::RequestAddition(LogonCommClientSocket* Socket)
         data << realm->TimeZone;
         data << float(realm->Population);
         data << uint8(realm->Lock);
+        data << uint32(realm->GameBuild);
         Socket->SendPacket(&data, false);
     }
 }
@@ -408,6 +409,12 @@ void LogonCommHandler::LoadRealmConfiguration()
             realm->TimeZone = Config.RealmConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
             realm->Population = Config.RealmConfig.GetFloatVA("Population", 0, "Realm%u", i);
             realm->Lock = static_cast<uint8>(Config.RealmConfig.GetIntVA("Lock", 0, "Realm%u", i));
+            realm->GameBuild = Config.RealmConfig.GetIntVA("GameBuild", 0, "Realm%u", i);
+            if (realm->GameBuild == 0)
+            {
+                LOG_ERROR("   >> supported client build not found in realms.config. Update your configs!");
+                return;
+            }
             std::string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
             uint32 type;
 

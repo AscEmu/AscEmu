@@ -124,7 +124,7 @@ void AuthSocket::HandleChallenge()
     uint16 build = m_challenge.build;
 
     // Check client build.
-    if(build > LogonServer::getSingleton().max_build)
+    /*if(build > LogonServer::getSingleton().max_build)
     {
         // wtf?
         LOG_DETAIL("[AuthChallenge] Client %s has wrong version. More up to date than server. Server: %u, Client: %u", GetRemoteIP().c_str(), LogonServer::getSingleton().max_build, m_challenge.build);
@@ -166,7 +166,7 @@ void AuthSocket::HandleChallenge()
         };
         Send(response, 119);
         return;
-    }
+    }*/
 
     // Check for a possible IP ban on this client.
     BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
