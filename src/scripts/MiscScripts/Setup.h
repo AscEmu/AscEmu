@@ -19,6 +19,8 @@
 
 #include "StdAfx.h"
 #include "../Common/EasyFunctions.h"
+#include "../Common/Instance_Base.h"
+#include "../Common/Base.h"
 
 #ifndef MISC_SCRIPTS_SETUP_H
 #define MISC_SCRIPTS_SETUP_H
@@ -28,5 +30,8 @@ void SetupQDGoHandlers(ScriptMgr* mgr);
 void SetupRandomScripts(ScriptMgr* mgr);
 void SetupMiscCreatures(ScriptMgr* mgr);
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr);
+
+//AscEmuScripts:
+void SetupCityDalaran(ScriptMgr* mgr);
 
 #endif

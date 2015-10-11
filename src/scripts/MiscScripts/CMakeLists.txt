@@ -12,16 +12,20 @@ set(prefix ${SCRIPTS_PATH}/${PROJECT_NAME})
 
 #sources -contains source files for our library.
 set(sources
+   City_Dalaran.cpp
    Creatures.cpp
    GameObjects.cpp
    GameObjectTeleportTable.cpp
    RandomScripts.cpp
    Setup.cpp
+   ../Common/Base.cpp 
    )
 
 set(headers
    Setup.h
    ../Common/EasyFunctions.h
+   ../Common/Instance_Base.h
+   ../Common/Base.h
    )
 
 foreach(src IN ITEMS ${sources})
