@@ -28,4 +28,7 @@ void SetupRandomScripts(ScriptMgr* mgr);
 void SetupMiscCreatures(ScriptMgr* mgr);
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr);
 
+//AscEmu
+void SetupCityDalaran(ScriptMgr* mgr);
+
 #endif
