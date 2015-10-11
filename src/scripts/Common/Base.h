@@ -21,6 +21,8 @@
 #define _BASE_H
 
 #include "StdAfx.h"
+#include "../Common/EasyFunctions.h"
+#include "../Common/Instance_Base.h"
 
 #define INVALIDATE_TIMER -1
 #define DEFAULT_UPDATE_FREQUENCY 1000    //milliseconds

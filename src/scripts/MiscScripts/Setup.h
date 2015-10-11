@@ -17,9 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
-#include "../Common/EasyFunctions.h"
-#include "../Common/Instance_Base.h"
 #include "../Common/Base.h"
 
 #ifndef MISC_SCRIPTS_SETUP_H
