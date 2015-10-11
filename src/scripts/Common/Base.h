@@ -20,11 +20,7 @@
 #ifndef _BASE_H
 #define _BASE_H
 
-#include "CommonTypes.hpp"
-#include <cstring>
-#include <cstdlib>
-#include <list>
-#include <vector>
+#include "StdAfx.h"
 
 #define INVALIDATE_TIMER -1
 #define DEFAULT_UPDATE_FREQUENCY 1000    //milliseconds
