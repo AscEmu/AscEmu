@@ -1959,25 +1959,32 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
         //Experience
         if (pVictim->GetCreatedByGUID() == 0 && !pVictim->IsPet() && pVictim->IsTagged())
         {
-            Unit* uTagger = pVictim->GetMapMgr()->GetUnit(pVictim->GetTaggerGUID());
+            auto unit_tagger = pVictim->GetMapMgr()->GetUnit(pVictim->GetTaggerGUID());
 
-            if (uTagger != NULL && uTagger->IsPlayer())
+            if (unit_tagger != nullptr)
             {
-                Player* pTagger = static_cast<Player*>(uTagger);
-                if (pTagger == NULL && (uTagger->IsPet() || uTagger->IsSummon()) && uTagger->GetPlayerOwner())
-                    pTagger = static_cast<Player*>(uTagger->GetPlayerOwner());
-                if (pTagger != NULL)
+                Player* player_tagger = nullptr;
+
+                if (unit_tagger->IsPlayer())
+                    player_tagger = static_cast<Player*>(unit_tagger);
+
+                if ((unit_tagger->IsPet() || unit_tagger->IsSummon()) && unit_tagger->GetPlayerOwner())
+                    player_tagger = static_cast<Player*>(unit_tagger->GetPlayerOwner());
+
+                if (player_tagger != nullptr)
                 {
 
-                    if (pTagger->InGroup())
-                        pTagger->GiveGroupXP(pVictim, pTagger);
+                    if (player_tagger->InGroup())
+                    {
+                        player_tagger->GiveGroupXP(pVictim, player_tagger);
+                    }
                     else if (IsUnit())
                     {
-                        uint32 xp = CalculateXpToGive(pVictim, uTagger);
+                        uint32 xp = CalculateXpToGive(pVictim, unit_tagger);
 
                         if (xp > 0)
                         {
-                            pTagger->GiveXP(xp, pVictim->GetGUID(), true);
+                            player_tagger->GiveXP(xp, pVictim->GetGUID(), true);
 
                             SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_LASTKILLWITHHONOR);
 
@@ -1987,35 +1994,35 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
                                 sEventMgr.ModifyEventTimeLeft(this, EVENT_LASTKILLWITHHONOR_FLAG_EXPIRE, 20000);
 
                             // let's give the pet some experience too
-                            if (pTagger->GetSummon() && pTagger->GetSummon()->CanGainXP())
+                            if (player_tagger->GetSummon() && player_tagger->GetSummon()->CanGainXP())
                             {
-                                xp = CalculateXpToGive(pVictim, pTagger->GetSummon());
+                                xp = CalculateXpToGive(pVictim, player_tagger->GetSummon());
 
                                 if (xp > 0)
-                                    pTagger->GetSummon()->GiveXP(xp);
+                                    player_tagger->GetSummon()->GiveXP(xp);
                             }
                         }
                         //////////////////////////////////////////////////////////////////////////////////////////
 
                         if (pVictim->IsCreature())
                         {
-                            sQuestMgr.OnPlayerKill(pTagger, static_cast<Creature*>(pVictim), true);
+                            sQuestMgr.OnPlayerKill(player_tagger, static_cast<Creature*>(pVictim), true);
 
                             //////////////////////////////////////////////////////////////////////////////////////////
                             //Kill creature/creature type Achievements
 #ifdef ENABLE_ACHIEVEMENTS
-                            if (pTagger->InGroup())
+                            if (player_tagger->InGroup())
                             {
-                                Group* pGroup = pTagger->GetGroup();
+                                auto player_group = player_tagger->GetGroup();
 
-                                pGroup->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
-                                pGroup->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
+                                player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
+                                player_group->UpdateAchievementCriteriaForInrange(pVictim, ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
 
                             }
                             else
                             {
-                                pTagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
-                                pTagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
+                                player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
+                                player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
                             }
 #endif
                         }
