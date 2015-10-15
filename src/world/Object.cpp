@@ -206,7 +206,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             break;
         }
         //The above 3 checks FAIL to identify transports, thus their flags remain 0x58, and this is BAAAAAAD! Later they don't get position x,y,z,o updates, so they appear randomly by a client-calculated path, they always face north, etc... By: VLack
-        if (flags != 0x0352 && IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT && !(static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
+        if (flags != 0x0352 && IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_MO_TRANSPORT && !(static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
             flags = 0x0352;
     }
 
