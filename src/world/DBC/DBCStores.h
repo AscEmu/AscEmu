@@ -1292,8 +1292,8 @@ struct DBCTaxiPathNode
     float z;
     uint32 flags;
     uint32 waittime;
-    //uint32 arivalEventID;
-    //uint32 departureEventID;
+    uint32 arivalEventID;
+    uint32 departureEventID;
 };
 
 struct CreatureSpellDataEntry

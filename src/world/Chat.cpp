@@ -86,6 +86,8 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
         return _achievementCommandTable;
     else if (!stricmp(name, "vehicle"))
         return _vehicleCommandTable;
+    else if (!stricmp(name, "transport"))
+        return _transportCommandTable;
     return 0;
 }
 
@@ -226,6 +228,7 @@ void CommandTableStorage::Dealloc()
     free(_arenaCommandTable);
     free(_achievementCommandTable);
     free(_vehicleCommandTable);
+    free(_transportCommandTable);
     free(_commandTable);
 }
 
@@ -284,6 +287,18 @@ void CommandTableStorage::Init()
         { NULL, '0', NULL, "", NULL, 0, 0, 0 },
     };
     dupe_command_table(eventCommandTable, _eventCommandTable);
+
+    static ChatCommand transportCommandTable[] =
+    {
+        { "Spawn", 'm', &ChatHandler::HandleSpawnInstanceTransport, "Spawns a Transporter in Instance ( entry , period)", NULL, 0, 0, 0 },
+        { "Despawn", 'm', &ChatHandler::HandleDespawnInstanceTransport, "Despawns current Transport in Instance.", NULL, 0, 0, 0 },
+        { "start", 'm', &ChatHandler::HandleStartTransport, "Starts Movement of Current Transporter", NULL, 0, 0, 0 },
+        { "stop", 'm', &ChatHandler::HandleStopTransport, "Stops Movement of Current Transporter.", NULL, 0, 0, 0 },
+        { "modperiod", 'm', &ChatHandler::HandleModPeriodCommand, "Changes period of Current transporter.", NULL, 0, 0, 0 },
+        { "gettptime", 'm', &ChatHandler::HandleGetTransporterTime, "grabs transporter travel time", NULL, 0, 0, 0 },
+        { NULL, '0', NULL, "", NULL, 0, 0, 0 },
+    };
+    dupe_command_table(transportCommandTable, _transportCommandTable);
 
     static ChatCommand debugCommandTable[] =
     {
@@ -790,6 +805,7 @@ void CommandTableStorage::Init()
         { "addtrainerspell", 'm', &ChatHandler::HandleAddTrainerSpellCommand,               "",                                                                                                                                        NULL,                     0, 0, 0 },
         { "achieve",         '0', NULL,                                                     "",                                                                                                                                        achievementCommandTable,  0, 0, 0 },
         { "vehicle",         'm', NULL,                                                     "",                                                                                                                                        vehicleCommandTable,      0, 0, 0 },
+        { "transport",       'm', NULL,                                                     "",                                                                                                                                        transportCommandTable,    0, 0, 0 },
         { NULL,              '0', NULL,                                                     "",                                                                                                                                        NULL,                     0, 0, 0 }
     };
     dupe_command_table(commandTable, _commandTable);

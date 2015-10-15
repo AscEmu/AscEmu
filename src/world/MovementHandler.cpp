@@ -638,7 +638,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
         Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(mover->transporter_info.guid));
         if (transporter != NULL)
-            transporter->RemovePassenger(mover);
+            transporter->RemovePassenger(static_cast<Player*>(mover));
 
         mover->transporter_info.guid = 0;
         _player->SpeedCheatReset();
@@ -653,7 +653,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
             {
                 Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(movement_info.transGuid));
                 if (transporter != NULL)
-                    transporter->AddPassenger(mover);
+                    transporter->AddPassenger(static_cast<Player*>(mover));
 
                 /* set variables */
                 mover->transporter_info.guid = movement_info.transGuid;

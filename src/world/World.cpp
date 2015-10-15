@@ -622,7 +622,8 @@ bool World::SetInitialWorldSettings()
     Log.Notice("World", "GameObject size: %u bytes", sizeof(GameObject));
 
     Log.Success("World", "Starting Transport System...");
-    objmgr.LoadTransporters();
+    objmgr.LoadTransports();
+    objmgr.LoadTransportNPCs();
 
     //Start the Achievement system :D
 #ifdef ENABLE_ACHIEVEMENTS

@@ -21,47 +21,7 @@
 
 #include "StdAfx.h"
 
-
-Mutex m_transportGuidGen;
-uint32 m_transportGuidMax = 50;
-
-bool Transporter::CreateAsTransporter(uint32 EntryID, const char* Name, int32 Time)
-{
-    // Lookup GameobjectInfo
-    if (!CreateFromProto(EntryID, 0, 0, 0, 0, 0))
-        return false;
-
-    // Override these flags to avoid mistakes in proto
-    SetFlags(40);
-    SetAnimProgress(100);
-
-    //Maybe this would be the perfect way, so there would be no extra checks in Object.cpp:
-    //but these fields seems to change often and between server flavours (ArcEmu, Aspire, name another one) - by: VLack aka. VLsoft
-    if (pInfo)
-        pInfo->type = GAMEOBJECT_TYPE_TRANSPORT;
-    else
-        LOG_ERROR("Transporter id[%i] name[%s] - can't set GAMEOBJECT_TYPE - it will behave badly!", EntryID, Name);
-
-    m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map
-
-    // Set period
-    m_period = Time;
-
-    // Generate waypoints
-    if (!GenerateWaypoints())
-        return false;
-
-    // Set position
-    SetMapId(m_WayPoints[0].mapid);
-    SetPosition(m_WayPoints[0].x, m_WayPoints[0].y, m_WayPoints[0].z, 0);
-    SetLevel(m_period);
-    // Add to world
-    AddToWorld();
-
-    return true;
-}
-
-bool FillPathVector(uint32 PathID, TransportPath & Path)
+bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
 {
     // Store dbc values into current Path array
     Path.Resize(dbcTaxiPathNode.GetNumRows());
@@ -86,12 +46,247 @@ bool FillPathVector(uint32 PathID, TransportPath & Path)
     return (i > 0 ? true : false);
 }
 
-bool Transporter::GenerateWaypoints()
+Transporter* ObjectMgr::LoadTransporterInInstance(MapMgr* instance, uint32 goEntry, uint32 period)
+{
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(goEntry);
+
+    if (!gameobject_info)
+    {
+        Log.Error("Transport Handler", "Transport ID:%u, will not be loaded, gameobject_names missing", goEntry);
+        return NULL;
+    }
+
+    if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
+    {
+        Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names type wrong", goEntry, gameobject_info->name);
+        return NULL;
+    }
+
+    std::set<uint32> mapsUsed;
+
+    Transporter* t = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | goEntry);
+    if (!t->Create(goEntry, period))
+    {
+        delete t;
+        return NULL;
+    }
+
+    m_Transporters.insert(t);
+    m_TransportersByInstanceIdMap[instance->GetInstanceID()].insert(t);
+    AddTransport(t);
+
+    // AddObject To World
+    t->AddToWorld(instance);
+
+    // correct incorrect instance id's
+    t->SetInstanceID(instance->GetInstanceID());
+    t->SetMapId(t->GetMapId());
+
+    t->BuildStartMovePacket(instance);
+    t->BuildStopMovePacket(instance);
+    t->m_WayPoints.clear(); // Make transport stopped at server-side, movement will be handled by scripts
+
+    Log.Success("Transport Handler", "Spawned Transport Entry %u, map %u, instance id %u", goEntry, t->GetMapId(), t->GetInstanceID());
+    return t;
+}
+
+void ObjectMgr::UnLoadTransporterFromInstance(Transporter* t)
+{
+    for (Transporter::CreatureSet::iterator itr = t->m_NPCPassengerSet.begin(); itr != t->m_NPCPassengerSet.end();)
+    {
+        if (Creature* npc = *itr)
+        {
+            npc->SetTransport(NULL);
+            npc->RemoveFromWorld(true);
+        }
+        ++itr;
+    }
+
+    t->m_NPCPassengerSet.clear();
+    m_TransportersByInstanceIdMap[t->GetInstanceID()].erase(t);
+    m_Transporters.erase(t);
+    t->m_WayPoints.clear();
+    t->RemoveFromWorld(true);
+}
+
+void ObjectMgr::LoadTransports()
+{
+    uint32 oldMSTime = getMSTime();
+
+    QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
+
+    if (!result)
+    {
+        Log.Error("Transporter Handler", ">> Loaded 0 transports. DB table `transport_data` is empty!");
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32 entry = fields[0].GetUInt32();
+        std::string name = fields[1].GetString();
+        uint32 period = fields[2].GetUInt32();
+
+        auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
+
+        if (!gameobject_info)
+        {
+            Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names missing", entry, name.c_str());
+            continue;
+        }
+
+        if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
+        {
+            Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names type wrong", entry, name.c_str());
+            continue;
+        }
+
+        std::set<uint32> mapsUsed;
+
+        Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
+        if (!pTransporter->Create(entry, period))
+        {
+            delete pTransporter;
+            continue;
+        }
+
+        // AddObject To World
+        pTransporter->AddToWorld();
+
+        m_Transporters.insert(pTransporter);
+        AddTransport(pTransporter);
+        
+        for (std::set<uint32>::const_iterator i = mapsUsed.begin(); i != mapsUsed.end(); ++i)
+            m_TransportersByMap[*i].insert(pTransporter);
+
+        ++count;
+    } 
+    while (result->NextRow());
+
+    delete result;
+
+    Log.Success("Transporter Handler", ">> Loaded %u transports in %u ms", count, getMSTime() - oldMSTime);
+}
+
+void ObjectMgr::LoadTransportNPCs()
+{
+    uint32 oldMSTime = getMSTime();
+
+    QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM creature_transport");
+
+    if (!result)
+    {
+        Log.Error("Transport Handler", ">> Loaded 0 transport NPCs. DB table `creature_transport` is empty!");
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32 guid = fields[0].GetInt32();
+        uint32 entry = fields[1].GetInt32();
+        uint32 transportEntry = fields[2].GetInt32();
+        float tX = fields[3].GetFloat();
+        float tY = fields[4].GetFloat();
+        float tZ = fields[5].GetFloat();
+        float tO = fields[6].GetFloat();
+        uint32 anim = fields[7].GetInt32();
+
+        for (ObjectMgr::TransporterSet::iterator itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
+        {
+            if ((*itr)->GetEntry() == transportEntry)
+            {
+                (*itr)->AddNPCPassenger(guid, entry, tX, tY, tZ, tO, anim);
+                break;
+            }
+        }
+
+        ++count;
+    } while (result->NextRow());
+
+    Log.Success("Transport Handler", ">> Loaded %u Transport Npcs in %u ms", count, getMSTime() - oldMSTime);
+}
+
+Transporter::Transporter(uint64 guid) : GameObject(guid)
+{
+    m_pathTime = 0;
+    m_timer = 0;
+    m_period = 0;
+}
+
+Transporter::~Transporter()
+{
+    sEventMgr.RemoveEvents(this);
+
+    for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
+    {
+        Creature* passenger = *itr;
+        MapMgr* map = passenger->GetMapMgr();
+        passenger->SetTransport(NULL);
+    }
+
+    m_NPCPassengerSet.clear();
+    m_WayPoints.clear();
+    m_passengers.clear();
+}
+
+void Transporter::OnPushToWorld()
+{
+    // Create waypoint event
+    sEventMgr.AddEvent(this, &Transporter::Update, EVENT_TRANSPORTER_NEXT_WAYPOINT, 100, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+bool Transporter::Create(uint32 entry, int32 Time)
+{
+    // Lookup GameobjectInfo
+    if (!CreateFromProto(entry, 0, 0, 0, 0, 0))
+        return false;
+
+    // Override these flags to avoid mistakes in proto
+    SetFlags(40);
+    SetAnimProgress(100);
+
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
+
+    pInfo = gameobject_info;
+
+    if (pInfo)
+        pInfo->type = GAMEOBJECT_TYPE_MO_TRANSPORT;
+    else
+        LOG_ERROR("Transporter id[%i] - can't set GAMEOBJECT_TYPE - it will behave badly!", entry);
+
+    m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map
+
+    // Set period
+    m_period = Time;
+
+    // Generate waypoints
+    if (!GenerateWaypoints(pInfo->parameter_0))
+        return false;
+
+    // Set position
+    SetMapId(m_WayPoints[0].mapid);
+    SetPosition(m_WayPoints[0].x, m_WayPoints[0].y, m_WayPoints[0].z, 0);
+    SetLevel(m_period);
+
+    return true;
+}
+
+bool Transporter::GenerateWaypoints(uint32 pathid)
 {
     TransportPath path;
-    FillPathVector(GetInfo()->parameter_0, path);
+    FillTransporterPathVector(pathid, path);
 
-    if (path.Size() == 0) return false;
+    if (path.Size() == 0)
+    {
+        Log.Error("Transport Handler", "path Size == 0 for path %u", pathid);
+        return false;
+    }
 
     std::vector<keyFrame> keyFrames;
     int mapChange = 0;
@@ -298,7 +493,6 @@ bool Transporter::GenerateWaypoints()
     uint32 timer = t;
 
     mCurrentWaypoint = m_WayPoints.begin();
-    //mCurrentWaypoint = GetNextWaypoint();
     mNextWaypoint = GetNextWaypoint();
     m_pathTime = timer;
     m_timer = 0;
@@ -314,8 +508,101 @@ WaypointIterator Transporter::GetNextWaypoint()
     return iter;
 }
 
+void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z)
+{
+    sEventMgr.RemoveEvents(this, EVENT_TRANSPORTER_NEXT_WAYPOINT);
+
+    if(m_passengers.size() > 0)
+    {
+        WorldPacket Pending(SMSG_TRANSFER_PENDING, 12);
+        Pending << newMapid << GetEntry() << oldmap;
+
+        WorldPacket NewWorld;
+        LocationVector v;
+
+        for (PlayerSet::const_iterator itr = m_passengers.begin(); itr != m_passengers.end();)
+        {
+            Player* player = *itr;
+            ++itr;
+
+            v.x = x + player->transporter_info.x;
+            v.y = y + player->transporter_info.y;
+            v.z = z + player->transporter_info.z;
+            v.o = player->GetOrientation();
+
+            if (newMapid == 530 && !player->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
+            {
+                // player does not have BC content, repop at graveyard
+                player->RepopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
+                continue;
+            }
+
+            if (newMapid == 571 && !player->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+            {
+                player->RepopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
+                continue;
+            }
+
+            player->GetSession()->SendPacket(&Pending);
+            player->_Relocate(newMapid, v, false, true, 0);
+
+            // Lucky bitch. Do it like on official.
+            if (player->IsDead())
+            {
+                player->ResurrectPlayer();
+                player->SetHealth(player->GetMaxHealth());
+                player->SetPower(POWER_TYPE_MANA, player->GetMaxPower(POWER_TYPE_MANA));
+            }
+        }
+    }
+
+    for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
+        (*itr)->FarTeleportTo(newMapid, x, y, z, (*itr)->GetOrientation());
+
+    // Set our position
+    RemoveFromWorld(false);
+    SetMapId(newMapid);
+    SetPosition(x, y, z, m_position.o, false);
+    AddToWorld();
+}
+
+bool Transporter::AddPassenger(Player* passenger)
+{
+    if (m_passengers.insert(passenger).second)
+        Log.Debug("Transporter", "Player %s boarded transport %u.", passenger->GetName(), this->GetInfo()->entry);
+
+    AddPlayer(static_cast<Player*>(passenger));
+
+    return true;
+}
+
+bool Transporter::RemovePassenger(Player* passenger)
+{
+    if (m_passengers.erase(passenger))
+        Log.Debug("Transporter", "Player %s removed from transport %u.", passenger->GetName(), this->GetInfo()->entry);
+
+    RemovePlayer(static_cast<Player*>(passenger));
+
+    return true;
+}
+
+uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+{
+    uint32 cnt = Object::BuildCreateUpdateBlockForPlayer(data, target);
+
+    // add all the npcs to the packet
+    for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
+    {
+        Creature* npc = *itr;
+        cnt += npc->BuildCreateUpdateBlockForPlayer(data, target);
+    }
+
+    return cnt;
+    return NULL;
+}
+
 uint32 TimeStamp();
-void Transporter::UpdatePosition()
+void Transporter::Update()
 {
     if (m_WayPoints.size() <= 1)
         return;
@@ -324,44 +611,42 @@ void Transporter::UpdatePosition()
 
     while (((m_timer - mCurrentWaypoint->first) % m_pathTime) >= ((mNextWaypoint->first - mCurrentWaypoint->first) % m_pathTime))
     {
-        /*printf("%s from %u %f %f %f to %u %f %f %f\n", this->GetInfo()->Name,
-            mCurrentWaypoint->second.mapid, mCurrentWaypoint->second.x,mCurrentWaypoint->second.y,mCurrentWaypoint->second.z,
-            mNextWaypoint->second.mapid, mNextWaypoint->second.x,mNextWaypoint->second.y,mNextWaypoint->second.z);*/
-
         mCurrentWaypoint = mNextWaypoint;
         mNextWaypoint = GetNextWaypoint();
+        
+        // first check help in case client-server transport coordinates de-synchronization
         if (mCurrentWaypoint->second.mapid != GetMapId() || mCurrentWaypoint->second.teleport)
         {
-            passengers.clear();
-            TransportPassengers(mCurrentWaypoint->second.mapid, GetMapId(), mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z);
+            TeleportTransport(mCurrentWaypoint->second.mapid, GetMapId(), mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z);
             break;
         }
-        else{
-            SetPosition(mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z, m_position.o, false);
-            MovePassengers(mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z, m_position.o);
+        else
+        {
+            SetPosition(mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z, std::atan2(mNextWaypoint->second.x, mNextWaypoint->second.y) + float(M_PI), false);
+            UpdatePlayerPositions(mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z, std::atan2(mNextWaypoint->second.x, mNextWaypoint->second.y) + float(M_PI));
+            // Not neded to Keep creatures on Trasport maybe delete ?
+            //UpdateNPCPositions(mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z, std::atan2(mNextWaypoint->second.x, mNextWaypoint->second.y) + float(M_PI));
         }
-
         if (mCurrentWaypoint->second.delayed)
         {
-            //Transprter Script = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
             switch (GetInfo()->display_id)
             {
-                case 3015:
-                case 7087:
-                {
-                    PlaySoundToSet(5154);        // ShipDocked LightHouseFogHorn.wav
-                }
-                break;
-                case 3031:
-                {
-                    PlaySoundToSet(11804);        // ZeppelinDocked    ZeppelinHorn.wav
-                }
-                break;
-                default:
-                {
-                    PlaySoundToSet(5495);        // BoatDockingWarning    BoatDockedWarning.wav
-                }
-                break;
+            case 3015:
+            case 7087:
+            {
+                PlaySoundToSet(5154);        // ShipDocked LightHouseFogHorn.wav
+            }
+            break;
+            case 3031:
+            {
+                PlaySoundToSet(11804);        // ZeppelinDocked    ZeppelinHorn.wav
+            }
+            break;
+            default:
+            {
+                PlaySoundToSet(5495);        // BoatDockingWarning    BoatDockedWarning.wav
+            }
+            break;
             }
             TransportGossip(GetInfo()->display_id);
         }
@@ -376,6 +661,7 @@ void Transporter::TransportGossip(uint32 route)
         {
             Log.Debug("Transporter", "Arrived in Ratchet at %u", m_timer);
         }
+
         else
         {
             Log.Debug("Transporter", "Arrived in Booty at %u", m_timer);
@@ -383,278 +669,104 @@ void Transporter::TransportGossip(uint32 route)
     }
 }
 
-void Transporter::TransportPassengers(uint32 mapid, uint32 oldmap, float x, float y, float z)
+
+void Transporter::BuildStartMovePacket(MapMgr* targetMap)
 {
-    sEventMgr.RemoveEvents(this, EVENT_TRANSPORTER_NEXT_WAYPOINT);
-
-    if (mPassengers.size() > 0)
-    {
-        PassengerIterator itr = mPassengers.begin();
-        PassengerIterator it2;
-
-        WorldPacket Pending(SMSG_TRANSFER_PENDING, 12);
-        Pending << mapid << GetEntry() << oldmap;
-
-        WorldPacket NewWorld;
-        LocationVector v;
-
-        for (; itr != mPassengers.end();)
-        {
-            it2 = itr;
-            ++itr;
-
-            Player* plr = objmgr.GetPlayer(it2->first);
-            if (!plr)
-            {
-                // remove all non players from map
-                mPassengers.erase(it2);
-                continue;
-            }
-            if (!plr->GetSession() || !plr->IsInWorld())
-                continue;
-
-            v.x = x + plr->transporter_info.x;
-            v.y = y + plr->transporter_info.y;
-            v.z = z + plr->transporter_info.z;
-            v.o = plr->GetOrientation();
-
-            if (mapid == 530 && !plr->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
-            {
-                // player does not have BC content, repop at graveyard
-                plr->RepopAtGraveyard(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetMapId());
-                continue;
-            }
-
-            if (mapid == 571 && !plr->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
-            {
-                plr->RepopAtGraveyard(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetMapId());
-                continue;
-            }
-
-            plr->GetSession()->SendPacket(&Pending);
-            plr->_Relocate(mapid, v, false, true, 0);
-
-            // Lucky bitch. Do it like on official.
-            if (plr->IsDead())
-            {
-                plr->ResurrectPlayer();
-                plr->SetHealth(plr->GetMaxHealth());
-                plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
-            }
-        }
-    }
-
-    // Set our position
-    RemoveFromWorld(false);
-    SetMapId(mapid);
-    SetPosition(x, y, z, m_position.o, false);
-    AddToWorld();
+    SetFlag(GAMEOBJECT_FLAGS, 1);
+    SetState(GAMEOBJECT_STATE_OPEN);
 }
 
-Transporter::Transporter(uint64 guid) : GameObject(guid)
+void Transporter::BuildStopMovePacket(MapMgr* targetMap)
 {
-    m_pathTime = 0;
-    m_timer = 0;
-    m_period = 0;
+    RemoveFlag(GAMEOBJECT_FLAGS, 1);
+    SetState(GAMEOBJECT_STATE_CLOSED);
 }
 
-Transporter::~Transporter()
+uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim)
 {
-    sEventMgr.RemoveEvents(this);
-    for (TransportNPCMap::iterator itr = m_npcs.begin(); itr != m_npcs.end(); ++itr)
-        delete itr->second;
-}
+    MapMgr* map = GetMapMgr();
 
-Creature* Transporter::GetCreature(uint32 Guid)
-{
-    TransportNPCMap::iterator itr = m_npcs.find(Guid);
-    if (itr == m_npcs.end())
-        return nullptr;
-    if (itr->second->IsCreature())
-        return static_cast< Creature* >(itr->second);
-    else
-        return nullptr;
-}
-
-void ObjectMgr::LoadTransporters()
-{
-    Log.Notice("TransporterHandler", "Start loading transport_data");
-    {
-        const char* loadAllTransportData = "SELECT entry, name, period FROM transport_data";
-
-        QueryResult* result = WorldDatabase.Query(loadAllTransportData);
-        if (!result)
-        {
-            Log.Error("TransporterHandler", "Query failed: %s", loadAllTransportData);
-            return;
-        }
-
-        uint32 count = 0;
-        do
-        {
-            Field* field = result->Fetch();
-
-            TransporterDataQueryResult dbResult;
-            dbResult.entry = field[0].GetUInt32();
-            dbResult.name = field[1].GetString();
-            dbResult.period = field[2].GetUInt32();
-
-            auto gameobject_info = GameObjectNameStorage.LookupEntry(dbResult.entry);
-            if (gameobject_info == nullptr)
-            {
-                Log.Error("TransporterHandler", "Transporter gameobject %u not available in GameObjectNameStorage!", dbResult.entry);
-                continue;
-            }
-
-            Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | dbResult.entry);
-            pTransporter->SetInfo(gameobject_info);
-            if (!pTransporter->CreateAsTransporter(dbResult.entry, "", dbResult.period))
-            {
-                Log.Error("TransporterHandler", "Transporter %s failed creation for some reason.", dbResult.name.c_str());
-                delete pTransporter;
-            }
-            else
-            {
-                Log.Debug("TransporterHandler", "%s, Entry: %u, Period: %u loaded", dbResult.name.c_str(), dbResult.entry, dbResult.period);
-                AddTransport(pTransporter);
-                ++count;
-            }
-
-        }
-        while (result->NextRow());
-
-        delete result;
-        Log.Success("TransporterHandler", "%u transporters loaded from table transporter_data", count);
-    }
-
-    Log.Notice("TransporterHandler", "Start loading transport_creatures");
-    {
-        const char* loadTransportPassengers = "SELECT transport_entry, creature_entry, position_x, position_y, position_z, orientation FROM transport_creatures";
-        bool success = false;
-        QueryResult* result = WorldDatabase.Query(&success, loadTransportPassengers);
-        if (!success)
-        {
-            Log.Error("TransporterHandler", "Query failed: %s", loadTransportPassengers);
-            return;
-        }
-
-        uint32 count = 0;
-        if (result)
-        {
-            do
-            {
-                Field* field = result->Fetch();
-
-                uint32 transport_entry = field[0].GetUInt32();
-                uint32 creature_entry = field[1].GetUInt32();
-
-                auto transporter = GetTransporterByEntry(transport_entry);
-                if (transporter == nullptr)
-                {
-                    Log.Error("TransporterHandler", "Could not find transporter %u for transport_creatures entry %u", transport_entry, creature_entry);
-                    continue;
-                }
-
-                TransporterCreaturesQueryResult dbResult;
-                dbResult.transport_entry = field[0].GetUInt32();
-                dbResult.creature_entry = field[1].GetUInt32();
-                dbResult.position_x = field[2].GetFloat();
-                dbResult.position_y = field[3].GetFloat();
-                dbResult.position_z = field[4].GetFloat();
-                dbResult.orientation = field[5].GetFloat();
-
-                transporter->creature_transport_data.push_back(dbResult);
-
-                transporter->AddNPC(dbResult.creature_entry, dbResult.position_x, dbResult.position_y, dbResult.position_z, dbResult.orientation);
-
-                ++count;
-
-            }
-            while (result->NextRow());
-            delete result;
-            Log.Success("TransporterHandler", "%u transport passengers from table transport_creatures loaded.", count);
-        }
-    }
-}
-
-void Transporter::OnPushToWorld()
-{
-    // Create waypoint event
-    sEventMgr.AddEvent(this, &Transporter::UpdatePosition, EVENT_TRANSPORTER_NEXT_WAYPOINT, 100, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-}
-
-void Transporter::AddNPC(uint32 Entry, float offsetX, float offsetY, float offsetZ, float offsetO)
-{
-    uint32 guid;
-    m_transportGuidGen.Acquire();
-    guid = ++m_transportGuidMax;
-    m_transportGuidGen.Release();
-
-    CreatureInfo* inf = CreatureNameStorage.LookupEntry(Entry);
-    CreatureProto* proto = CreatureProtoStorage.LookupEntry(Entry);
+    CreatureInfo* inf = CreatureNameStorage.LookupEntry(entry);
+    CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
     if (inf == NULL || proto == NULL)
-        return;
+        return NULL;
 
-    Creature* pCreature = new Creature((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | guid);
-    pCreature->Load(proto, m_position.x, m_position.y, m_position.z);
-    pCreature->transporter_info.x = offsetX;
-    pCreature->transporter_info.y = offsetY;
-    pCreature->transporter_info.z = offsetZ;
-    pCreature->transporter_info.o = offsetO;
+    float transporter_x = transporter_info.x + x;
+    float transporter_y = transporter_info.y + y;
+    float transporter_z = transporter_info.z + z;
+
+    Creature* pCreature = GetMapMgr()->CreateCreature(entry);
+    pCreature->Create(inf->Name, GetMapMgr()->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    pCreature->AddToWorld(map);
+    pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
+    pCreature->transporter_info.x = x;
+    pCreature->transporter_info.y = y;
+    pCreature->transporter_info.z = z;
+    pCreature->transporter_info.o = o;
     pCreature->transporter_info.guid = GetGUID();
-    m_npcs.insert(std::make_pair(guid, pCreature));
+    if (anim)
+        pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);
+
+    pCreature->SetTransport(this);
+    m_NPCPassengerSet.insert(pCreature);
+
+    if (tguid == 0)
+    {
+        ++currenttguid;
+        tguid = currenttguid;
+    }
+    else
+        currenttguid = std::max(tguid, currenttguid);
+
+    return tguid;
 }
 
-uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
+Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y, float z, float o, uint32 anim)
 {
-    uint32 cnt = Object::BuildCreateUpdateBlockForPlayer(data, target);
+    MapMgr* map = GetMapMgr();
 
-    // add all the npcs to the packet
-    for (TransportNPCMap::iterator itr = m_npcs.begin(); itr != m_npcs.end(); ++itr)
-        cnt += itr->second->BuildCreateUpdateBlockForPlayer(data, target);
+    CreatureInfo* inf = CreatureNameStorage.LookupEntry(entry);
+    CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
+    if (inf == NULL || proto == NULL)
+        return NULL;
 
-    return cnt;
+    float transporter_x = transporter_info.x + x;
+    float transporter_y = transporter_info.y + y;
+    float transporter_z = transporter_info.z + z;
+
+    Creature* pCreature = GetMapMgr()->CreateCreature(entry);
+    pCreature->Create(inf->Name, GetMapMgr()->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    pCreature->AddToWorld(map);
+    pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
+    pCreature->transporter_info.x = x;
+    pCreature->transporter_info.y = y;
+    pCreature->transporter_info.z = z;
+    pCreature->transporter_info.o = o;
+    pCreature->transporter_info.guid = GetGUID();
+
+    pCreature->SetTransport(this);
+    m_NPCPassengerSet.insert(pCreature);
+
+    return pCreature;
 }
 
-void Transporter::MovePassengers(float x, float y, float z, float o)
+void Transporter::UpdateNPCPositions(float x, float y, float z, float o)
 {
-    for (TransportNPCMap::iterator itr = m_npcs.begin(); itr != m_npcs.end(); ++itr)
+    for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
-        Object *obj = itr->second;
-        obj->SetPosition(x + obj->transporter_info.x, y + obj->transporter_info.y, z + obj->transporter_info.z, o + obj->transporter_info.o, false);
-    }
-
-    for (PassengerMap::iterator itr = mPassengers.begin(); itr != mPassengers.end(); ++itr)
-    {
-        Player* p = itr->second;
-        p->SetPosition(x + p->transporter_info.x, y + p->transporter_info.y, z + p->transporter_info.z, o + p->transporter_info.o, false);
-    }
-
-    for (std::map< uint64, Object* >::iterator itr = passengers.begin(); itr != passengers.end(); ++itr)
-    {
-        Object *obj = itr->second;
-        obj->SetPosition(x + obj->transporter_info.x, y + obj->transporter_info.y, z + obj->transporter_info.z, o + obj->transporter_info.o, false);
+        Creature* npc = *itr;
+        npc->SetPosition(x + npc->transporter_info.x, y + npc->transporter_info.y, z + npc->transporter_info.z, o + npc->transporter_info.o, false);
     }
 }
 
-void Transporter::AddPassenger(Object *o)
+void Transporter::UpdatePlayerPositions(float x, float y, float z, float o)
 {
-    if (o->IsPlayer())
+    for (PlayerSet::iterator itr = m_passengers.begin(); itr != m_passengers.end(); ++itr)
     {
-        AddPlayer(static_cast<Player*>(o));
-        return;
+        Player* plr = *itr;
+        plr->SetPosition(x + plr->transporter_info.x, y + plr->transporter_info.y, z + plr->transporter_info.z, o + plr->transporter_info.o, false);
+
     }
-
-    passengers[o->GetGUID()] = o;
-}
-
-void Transporter::RemovePassenger(Object *o)
-{
-    if (o->IsPlayer())
-    {
-        RemovePlayer(static_cast<Player*>(o));
-        return;
-    }
-
-    passengers.erase(o->GetGUID());
 }

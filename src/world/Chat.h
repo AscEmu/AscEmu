@@ -185,6 +185,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
         ChatCommand* _arenaCommandTable;
         ChatCommand* _achievementCommandTable;
         ChatCommand* _vehicleCommandTable;
+        ChatCommand* _transportCommandTable;
         ChatCommand* _commandTable;
 
         ChatCommand* GetSubCommandTable(const char* name);
@@ -471,7 +472,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleReviveStringcommand(const char* args, WorldSession* m_session);
         bool HandleMountCommand(const char* args, WorldSession* m_session);
         bool HandleGetPosCommand(const char* args, WorldSession* m_session);
-        bool HandleGetTransporterTime(const char* args, WorldSession* m_session);
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
         bool HandleGOAnimProgress(const char* args, WorldSession* m_session);
         bool HandleGOFactionCommand(const char* args, WorldSession* session);
@@ -544,7 +544,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleRecallGoCommand(const char* args, WorldSession* m_session);
         bool HandleRecallAddCommand(const char* args, WorldSession* m_session);
         bool HandleRecallDelCommand(const char* args, WorldSession* m_session);
-        bool HandleModPeriodCommand(const char* args, WorldSession* m_session);
         bool HandleGlobalPlaySoundCommand(const char* args, WorldSession* m_session);
         bool HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session);
         bool HandleRecallPortUsCommand(const char* args, WorldSession* m_session);
@@ -644,6 +643,14 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleVehicleInstallAccessoriesCommand(const char* args, WorldSession* session);
         bool HandleVehicleRemoveAccessoriesCommand(const char* args, WorldSession* session);
         bool HandleVehicleAddPassengerCommand(const char* args, WorldSession* session);
+
+        // Transport
+        bool HandleModPeriodCommand(const char* args, WorldSession* m_session);
+        bool HandleGetTransporterTime(const char* args, WorldSession* m_session);
+        bool HandleSpawnInstanceTransport(const char* args, WorldSession* m_session);
+        bool HandleDespawnInstanceTransport(const char* args, WorldSession* m_session);
+        bool HandleStartTransport(const char* args, WorldSession* m_session);
+        bool HandleStopTransport(const char* args, WorldSession* m_session);
 };
 
 #define sChatHandler ChatHandler::getSingleton()

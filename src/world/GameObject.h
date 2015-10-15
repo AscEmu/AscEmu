@@ -202,6 +202,7 @@ class SERVER_DECL GameObject : public Object
         void SetRotation(float rad);
         uint64 m_rotation;
         void UpdateRotation();
+        void UpdateRotationFields(float rotation2 = 0.0f, float rotation3 = 0.0f);
 
         //Fishing stuff
         void UseFishingNode(Player* player);

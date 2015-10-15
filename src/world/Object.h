@@ -41,6 +41,7 @@ struct FactionDBC;
 
 class Unit;
 class Group;
+class Transporter;
 
 enum HIGHGUID_TYPE
 {
@@ -140,6 +141,7 @@ typedef struct
 
 struct TransporterInfo
 {
+    Transporter* m_transporter;
 	uint64 guid;
 	float x;
 	float y;
@@ -150,6 +152,7 @@ struct TransporterInfo
 
 	TransporterInfo()
     {
+        m_transporter = NULL;
 		guid = 0;
 		x = 0.0f;
 		y = 0.0f;
@@ -638,7 +641,10 @@ class SERVER_DECL Object : public EventableObject
 		float m_base_runSpeed;
 		float m_base_walkSpeed;
 
-		TransporterInfo transporter_info;
+        // Transporters
+        TransporterInfo transporter_info;
+        Transporter* GetTransport() const { return transporter_info.m_transporter; }
+        void SetTransport(Transporter* t) { transporter_info.m_transporter = t; }
 
 		uint32 m_phase;         /// This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 

@@ -481,7 +481,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::tr1::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
 
         // Set typedef's
-        typedef HM_NAMESPACE::hash_map<uint32, Group*>                        GroupMap;
+        typedef HM_NAMESPACE::hash_map<uint32, Group*>                      GroupMap;
+        typedef std::set<Transporter*>                                      TransporterSet;
 
         // HashMap typedef's
         typedef HM_NAMESPACE::hash_map<uint64, Item*>                       ItemMap;
@@ -500,13 +501,14 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                LevelMap;
-        typedef std::map<std::pair<uint32, uint32>, LevelMap*>                  LevelInfoMap;
+        typedef std::map<std::pair<uint32, uint32>, LevelMap*>              LevelInfoMap;
         typedef std::map<uint32, std::list<ItemPrototype*>* >               ItemSetContentMap;
         typedef std::map<uint32, uint32>                                    NpcToGossipTextMap;
-        typedef std::map<uint32, std::set<SpellEntry*> >                         PetDefaultSpellMap;
+        typedef std::map<uint32, std::set<SpellEntry*> >                    PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                              BCEntryStorage;
-        typedef std::map<uint32, SpellTargetConstraint*>                  SpellTargetConstraintMap;
+        typedef std::map<uint32, SpellTargetConstraint*>                    SpellTargetConstraintMap;
+        typedef std::map<uint32, TransporterSet>                            TransporterMap;
 
         // object holders
         GmTicketList GM_TicketList;
@@ -664,9 +666,32 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         uint32 GenerateTicketID();
         uint32 GenerateEquipmentSetID();
 
-        void LoadTransporters();
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        /// Transport Handler                                                                     ///
+        /////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Loads Transporters on Continents
+        void LoadTransports();
+
+        // Loads Transport Creatures in Continents
+        void LoadTransportNPCs();
+
+        // Load Transport in Instance	
+        Transporter* LoadTransporterInInstance(MapMgr* instance, uint32 goEntry, uint32 period);
+
+        // Unloads Transporter from MapMgr
+        void UnLoadTransporterFromInstance(Transporter* t);
+
+        // Add Transporter
+         void AddTransport(Transporter* pTransporter);
+ 
+        TransportMap mTransports;
+
+        TransporterSet m_Transporters;
+        TransporterMap m_TransportersByMap;
+        TransporterMap m_TransportersByInstanceIdMap;
+
         void ProcessGameobjectQuests();
-        void AddTransport(Transporter* pTransporter);
 
         void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
@@ -907,8 +932,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         /// Corpse Collector
         CorpseCollectorMap mCorpseCollector;
-
-        TransportMap mTransports;
 
         ItemSetContentMap mItemSets;
 
