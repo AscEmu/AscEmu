@@ -598,7 +598,7 @@ uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
     }
 
     return cnt;
-    return NULL;
+    return 0;
 }
 
 uint32 TimeStamp();
@@ -688,8 +688,8 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
 
     CreatureInfo* inf = CreatureNameStorage.LookupEntry(entry);
     CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
-    if (inf == NULL || proto == NULL)
-        return NULL;
+    if (inf == nullptr || proto == nullptr)
+        return 0;
 
     float transporter_x = transporter_info.x + x;
     float transporter_y = transporter_info.y + y;
