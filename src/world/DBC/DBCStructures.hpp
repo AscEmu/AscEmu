@@ -29,6 +29,7 @@ namespace DBC
         namespace
         {
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
+			const char LFGDungeonEntryformat[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
         }
 
         #pragma pack(push, 1)
@@ -46,6 +47,29 @@ namespace DBC
             uint32  team;                                           // 28
             uint32  liquid_type_override[4];                          // 29-32 liquid override by type
         };
+
+		struct LFGDungeonEntry
+		{
+			uint32  ID;                                             // 0
+			char*   name[16];                                       // 1-17 Name lang
+			uint32  minlevel;                                       // 18
+			uint32  maxlevel;                                       // 19
+			uint32  reclevel;                                       // 20
+			uint32  recminlevel;                                    // 21
+			uint32  recmaxlevel;                                    // 22
+			int32   map;                                            // 23
+			uint32  difficulty;                                     // 24
+			uint32  flags;                                          // 25
+			uint32  type;                                           // 26
+			//uint32  unk;                                          // 27
+			//char*   iconname;                                     // 28
+			uint32  expansion;                                      // 29
+			//uint32  unk4;                                         // 30
+			uint32  grouptype;                                      // 31
+			//char*   desc[16];                                     // 32-47 Description
+			// Helpers
+			uint32 Entry() const { return ID + (type << 24); }
+		};
         #pragma pack(pop)
     }
 }
