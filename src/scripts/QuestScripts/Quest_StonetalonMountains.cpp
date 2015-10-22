@@ -38,7 +38,7 @@ class ProtectKaya : public QuestScript
             creat->GetAIInterface()->setMoveType(MOVEMENTTYPE_QUEST);
             creat->GetAIInterface()->StopMovement(10);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             // Prevention "not starting from spawn after attacking"
             creat->GetAIInterface()->SetAllowedToEnterCombat(true);
             creat->SetFaction(1801);
@@ -66,7 +66,11 @@ class KayaFlathoof : public CreatureAIScript
                         return;
                     Player* plr = _unit->m_escorter;
                     _unit->m_escorter = NULL;
-                    plr->GetQuestLogForEntry(6523)->SendQuestComplete();
+
+                    auto quest_entry = plr->GetQuestLogForEntry(6523);
+                    if (quest_entry == nullptr)
+                        return;
+                    quest_entry->SendQuestComplete();
                 }break;
                 case 17:
                 {
@@ -81,7 +85,10 @@ class KayaFlathoof : public CreatureAIScript
                 return;
             Player* plr = _unit->m_escorter;
             _unit->m_escorter = NULL;
-            plr->GetQuestLogForEntry(6523)->Fail(false);
+
+            auto quest_entry = plr->GetQuestLogForEntry(6523);
+            if (quest_entry != nullptr)
+                quest_entry->Fail(false);
         }
 
 };

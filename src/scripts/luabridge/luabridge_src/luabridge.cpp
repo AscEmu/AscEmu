@@ -39,7 +39,7 @@ void* luabridge::checkclass(lua_State* L, int idx, const char* tname,
 
     // Check that the thing on the stack is indeed a userdata
     if(!lua_isuserdata(L, idx))
-        luaL_typerror(L, idx, tname);
+        luaL_argerror(L, idx, tname);
 
     // Lookup the given name in the registry
     luaL_getmetatable(L, tname);

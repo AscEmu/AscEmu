@@ -53,6 +53,8 @@ Group::Group(bool Assign)
     m_raiddifficulty = 0;
     m_assistantLeader = m_mainAssist = m_mainTank = NULL;
     updatecounter = 0;
+    m_Id = 0;
+    m_guid = 0;
 }
 
 Group::~Group()
@@ -434,6 +436,9 @@ Player* Group::FindFirstPlayer()
 
 void Group::RemovePlayer(PlayerInfo* info)
 {
+    if (info == nullptr)
+        return;
+
     WorldPacket data(50);
     Player* pPlayer = info->m_loggedInPlayer;
 
@@ -445,7 +450,7 @@ void Group::RemovePlayer(PlayerInfo* info)
     }
 
     SubGroup* sg = NULL;
-    if (info->subGroup >= 0 && info->subGroup <= 8)
+    if (info->subGroup >= 0 && info->subGroup < 8)
         sg = m_SubGroups[info->subGroup];
 
     if (sg == NULL || sg->m_GroupMembers.find(info) == sg->m_GroupMembers.end())
@@ -670,7 +675,7 @@ void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
     m_groupLock.Acquire();
     SubGroup* sg = NULL;
 
-    if (info->subGroup > 0 && info->subGroup <= 8)
+    if (info->subGroup > 0 && info->subGroup < 8)
         sg = m_SubGroups[info->subGroup];
 
     if (sg == NULL || sg->m_GroupMembers.find(info) == sg->m_GroupMembers.end())
@@ -723,8 +728,11 @@ void Group::LoadFromDB(Field* fields)
 {
 #define LOAD_ASSISTANT(__i, __d) g = fields[__i].GetUInt32(); if (g != 0) { __d = objmgr.GetPlayerInfo(g); }
 
+    m_groupLock.Acquire();
+
     uint32 g;
     m_updateblock = true;
+
     m_Id = fields[0].GetUInt32();
 
     ObjectMgr::getSingleton().AddGroup(this);
@@ -790,6 +798,8 @@ void Group::LoadFromDB(Field* fields)
     free(ids);
 
     m_updateblock = false;
+
+    m_groupLock.Release();
 }
 
 void Group::SaveToDB()
@@ -894,6 +904,9 @@ void Group::SaveToDB()
 
 void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket* Packet)
 {
+    if (pPlayer == nullptr)
+        return;
+
     uint32 mask = pPlayer->GetGroupUpdateFlags();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)                // if update power type, update current/max power also
         mask |= (GROUP_UPDATE_FLAG_CUR_POWER | GROUP_UPDATE_FLAG_MAX_POWER);
@@ -1284,7 +1297,7 @@ void Group::SendLootUpdates(Object* o)
 
             if (pLooter->IsVisible(o->GetGUID()))
             {
-                Unit* victim = TO< Unit* >(o);
+                Unit* victim = static_cast< Unit* >(o);
 
                 victim->Tag(pLooter->GetGUID());
                 pLooter->PushUpdateData(&buf, 1);
@@ -1405,12 +1418,17 @@ void Group::ExpandToLFG()
     Update();
 }
 
+/* unused
 uint64 Group::GetLeaderGUID()
 {
-    if (m_Leader && m_Leader->m_loggedInPlayer)
-        return m_Leader->m_loggedInPlayer->GetGUID();
-    return (uint64)m_Leader->guid;
+    if (m_Leader != nullptr)
+    {
+        if (m_Leader->m_loggedInPlayer)
+            return m_Leader->m_loggedInPlayer->GetGUID();
+        return (uint64)m_Leader->guid;
+    }
 }
+*/
 
 void Group::GoOffline(Player* p)
 {

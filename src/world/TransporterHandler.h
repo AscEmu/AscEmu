@@ -33,15 +33,15 @@ class TransportPath
             uint32 delay;
         };
 
-        ARCEMU_INLINE void SetLength(const unsigned int sz)
+        inline void SetLength(const unsigned int sz)
         {
             i_nodes.resize(sz);
         }
 
-        ARCEMU_INLINE size_t Size(void) const { return i_nodes.size(); }
-        ARCEMU_INLINE void Resize(unsigned int sz) { i_nodes.resize(sz); }
-        ARCEMU_INLINE void Clear(void) { i_nodes.clear(); }
-        ARCEMU_INLINE PathNode* GetNodes(void) { return TO< PathNode* >(&i_nodes[0]); }
+        inline size_t Size(void) const { return i_nodes.size(); }
+        inline void Resize(unsigned int sz) { i_nodes.resize(sz); }
+        inline void Clear(void) { i_nodes.clear(); }
+        inline PathNode* GetNodes(void) { return static_cast< PathNode* >(&i_nodes[0]); }
         float GetTotalLength(void)
         {
             float len = 0, xd, yd, zd;
@@ -113,6 +113,23 @@ typedef std::map<uint32, Object*> TransportNPCMap;
 
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path);
 
+struct TransporterDataQueryResult
+{
+    uint32 entry;
+    std::string name;
+    uint32 period;
+};
+
+struct TransporterCreaturesQueryResult
+{
+    uint32 transport_entry;
+    uint32 creature_entry;
+    float position_x;
+    float position_y;
+    float position_z;
+    float orientation;
+};
+
 extern Mutex m_transportGuidGen;
 extern uint32 m_transportGuidMax;
 
@@ -122,16 +139,18 @@ class Transporter : public GameObject
         Transporter(uint64 guid);
         ~Transporter();
 
+        std::vector<TransporterCreaturesQueryResult> creature_transport_data;
+
         bool CreateAsTransporter(uint32 EntryID, const char* Name, int32 Time);
         void UpdatePosition();
         void TransportPassengers(uint32 mapid, uint32 oldmap, float x, float y, float z);
         void TransportGossip(uint32 route);
         bool GenerateWaypoints();
 
-        ARCEMU_INLINE void AddPlayer(Player* pPlayer) { mPassengers[pPlayer->GetLowGUID()] = pPlayer; }
-        ARCEMU_INLINE void RemovePlayer(Player* pPlayer) {mPassengers.erase(pPlayer->GetLowGUID()); }
-        ARCEMU_INLINE bool HasPlayer(Player* pPlayer) { return mPassengers.find(pPlayer->GetLowGUID()) != mPassengers.end(); }
-        ARCEMU_INLINE void SetPeriod(uint32 val) { m_period = val; }
+        inline void AddPlayer(Player* pPlayer) { mPassengers[pPlayer->GetLowGUID()] = pPlayer; }
+        inline void RemovePlayer(Player* pPlayer) {mPassengers.erase(pPlayer->GetLowGUID()); }
+        inline bool HasPlayer(Player* pPlayer) { return mPassengers.find(pPlayer->GetLowGUID()) != mPassengers.end(); }
+        inline void SetPeriod(uint32 val) { m_period = val; }
 
         uint32 m_pathTime;
         uint32 m_timer;

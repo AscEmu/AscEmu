@@ -63,7 +63,7 @@ bool ElementalPowerExtractor(uint32 i, Spell* pSpell)
     if (pUnit == NULL || !pUnit->IsCreature())
         return true;
 
-    Creature* pTarget = TO_CREATURE(pUnit);
+    Creature* pTarget = static_cast<Creature*>(pUnit);
     if ((pTarget->GetEntry() == 18881 || pTarget->GetEntry() == 18865) && pTarget->isAlive())
     {
         sEAS.AddItem(28548, pPlayer);
@@ -214,7 +214,7 @@ bool BalanceMustBePreserved(uint32 i, Aura* pAura, bool apply)
     if (!pAura->GetCaster()->IsPlayer())
         return true;
 
-    Player* pPlayer = TO_PLAYER(pAura->GetCaster());
+    Player* pPlayer = static_cast<Player*>(pAura->GetCaster());
     if (!pPlayer)
         return true;
 
@@ -337,13 +337,13 @@ bool TagMurloc(uint32 i, Aura* pAura, bool apply)
     if (!apply)
         return true;
 
-    Player* pPlayer = TO_PLAYER(Caster);
+    Player* pPlayer = static_cast<Player*>(Caster);
 
     QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(9629);
     if (qle == NULL)
         return true;
 
-    Creature* murloc = TO_CREATURE(pAura->GetTarget());
+    Creature* murloc = static_cast<Creature*>(pAura->GetTarget());
     if (!murloc)
         return true;
 
@@ -470,7 +470,7 @@ bool YennikuRelease(uint32 i, Spell* pSpell)
     if (qle == NULL)
         return true;
 
-    Creature* yenniku = TO_CREATURE(pSpell->GetUnitTarget());
+    Creature* yenniku = static_cast<Creature*>(pSpell->GetUnitTarget());
     if (!yenniku)
         return true;
 
@@ -663,7 +663,7 @@ bool FloraoftheEcoDomes(uint32 i, Spell* pSpell)
 
     Player* pPlayer = pSpell->p_caster;
 
-    Creature* normal = TO_CREATURE(pSpell->GetUnitTarget());
+    Creature* normal = static_cast<Creature*>(pSpell->GetUnitTarget());
     Creature* mutant = sEAS.SpawnCreature(pPlayer, 20983, normal->GetPositionX(), normal->GetPositionY(), normal->GetPositionZ(), 0);
 
     normal->Despawn(1, 6 * 60 * 1000);
@@ -717,14 +717,14 @@ bool AdministreringtheSalve(uint32 i, Aura* pAura, bool apply)
 
     if (apply)
     {
-        Player* pPlayer = TO_PLAYER(m_caster);
+        Player* pPlayer = static_cast<Player*>(m_caster);
 
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(9447);
 
         if (qle == NULL)
             return true;
 
-        Creature* sick = TO_CREATURE(pAura->GetTarget());
+        Creature* sick = static_cast<Creature*>(pAura->GetTarget());
 
         if (!sick)
             return true;
@@ -756,7 +756,7 @@ bool ZappedGiants(uint32 i, Spell* pSpell)
     if (!pPlayer->HasQuest(7003) && !pPlayer->HasQuest(7725))
         return true;
 
-    Creature* creat = TO_CREATURE(pSpell->GetUnitTarget());
+    Creature* creat = static_cast<Creature*>(pSpell->GetUnitTarget());
     if (creat == NULL)
         return true;
 
@@ -895,12 +895,12 @@ bool MagnetoCollector(uint32 i, Aura* pAura, bool apply)
     if (!pAura->GetCaster()->IsPlayer())
         return true;
 
-    Player* pPlayer = TO_PLAYER(pAura->GetCaster());
+    Player* pPlayer = static_cast<Player*>(pAura->GetCaster());
 
     if (!pPlayer->HasQuest(10584))
         return true;
 
-    Creature* magneto = TO_CREATURE(pAura->GetTarget());
+    Creature* magneto = static_cast<Creature*>(pAura->GetTarget());
     if (!magneto)
         return true;
 
@@ -920,14 +920,10 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     if (!pPlayer->HasQuest(10609))
         return true;
 
-    srand((int)time(NULL));
-    int random = static_cast<int>(rand() * 4.33);
-    srand(random * 23);
-
     Creature* whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 20021);
     if (whelp)
     {
-        if (rand() % 2 == 0)
+        if (RandomUInt(1) == 0)
         {
             Creature* adolescent = sEAS.SpawnCreature(pPlayer, 21817, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
             adolescent->Despawn(5 * 60 * 1000, 0);
@@ -944,7 +940,7 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21817);
     if (whelp)
     {
-        if (rand() % 10 < 8)
+        if (RandomUInt(10) < 8)
         {
             Creature* mature = sEAS.SpawnCreature(pPlayer, 21820, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
             mature->Despawn(5 * 60 * 1000, 0);
@@ -961,7 +957,7 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21821);
     if (whelp)
     {
-        if (rand() % 10 < 8)
+        if (RandomUInt(10) < 8)
         {
             Creature* mature = sEAS.SpawnCreature(pPlayer, 21820, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
             mature->Despawn(5 * 60 * 1000, 0);
@@ -979,7 +975,7 @@ bool TemporalPhaseModulator(uint32 i, Spell* pSpell)
     whelp = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21823);
     if (whelp)
     {
-        if (rand() % 2 == 0)
+        if (RandomUInt(1) == 0)
         {
             Creature* adolescent = sEAS.SpawnCreature(pPlayer, 21817, whelp->GetPositionX(), whelp->GetPositionY(), whelp->GetPositionZ(), whelp->GetOrientation(), 0);
             adolescent->Despawn(5 * 60 * 1000, 0);
@@ -1070,7 +1066,7 @@ bool GoreBladder(uint32 i, Spell* pSpell)
     if (!target || target->GetEntry() != 29392 || !target->IsDead())
         return true;
 
-    TO_CREATURE(target)->Despawn(500, 360000);
+    static_cast<Creature*>(target)->Despawn(500, 360000);
 
     Player* pPlayer = pSpell->p_caster;
     QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12810);
@@ -1154,7 +1150,7 @@ bool DISMEMBER(uint32 i, Spell* pSpell)
     if (!target || (target->GetEntry() != 23657 && target->GetEntry() != 23661 && target->GetEntry() != 23662 && target->GetEntry() != 23663 && target->GetEntry() != 23664 && target->GetEntry() != 23665 && target->GetEntry() != 23666 && target->GetEntry() != 23667 && target->GetEntry() != 23668 && target->GetEntry() != 23669 && target->GetEntry() != 23670) || !target->IsDead())
         return true;
 
-    TO_CREATURE(target)->Despawn(500, 300000);
+    static_cast<Creature*>(target)->Despawn(500, 300000);
 
     Player* pPlayer = pSpell->p_caster;
     int entry;
@@ -1209,7 +1205,7 @@ bool RagefistTorch(uint32 i, Spell* pSpell)
     if (!target || (target->GetEntry() != 25342 && target->GetEntry() != 25343))
         return true;
 
-    TO_CREATURE(target)->Despawn(500, 360000);
+    static_cast<Creature*>(target)->Despawn(500, 360000);
 
     Player* pPlayer = pSpell->p_caster;
     QuestLogEntry* en = pPlayer->GetQuestLogForEntry(11593);
@@ -1258,7 +1254,7 @@ bool HodirsHorn(uint32 i, Spell* pSpell)
     if (!target || (target->GetEntry() != 29974 && target->GetEntry() != 30144 && target->GetEntry() != 30135) || !target->IsDead())
         return true;
 
-    TO_CREATURE(target)->Despawn(500, 360000);
+    static_cast<Creature*>(target)->Despawn(500, 360000);
 
     Player* pPlayer = pSpell->p_caster;
     QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12977);
@@ -1280,7 +1276,7 @@ bool TelluricPoultice(uint32 i, Spell* pSpell)
     if (!target || target->GetEntry() != 30035)
         return true;
 
-    TO_CREATURE(target)->Despawn(500, 360000);
+    static_cast<Creature*>(target)->Despawn(500, 360000);
 
     Player* pPlayer = pSpell->p_caster;
     QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12937);
@@ -1302,7 +1298,7 @@ bool Screwdriver(uint32 i, Spell* pSpell)
     if (!target || target->GetEntry() != 25753 || !target->IsDead())
         return true;
 
-    TO_CREATURE(target)->Despawn(500, 360000);
+    static_cast<Creature*>(target)->Despawn(500, 360000);
 
     Player* pPlayer = pSpell->p_caster;
     QuestLogEntry* en = pPlayer->GetQuestLogForEntry(11730);
@@ -1325,7 +1321,7 @@ bool IncineratingOil(uint32 i, Spell* pSpell)
     if (!target || target->GetEntry() != 28156)
         return true;
 
-    TO_CREATURE(target)->Despawn(500, 360000);
+    static_cast<Creature*>(target)->Despawn(500, 360000);
 
     Player* pPlayer = pSpell->p_caster;
     QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12568);
@@ -1427,7 +1423,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
 
                 if (m_target->IsCreature())
                 {
-                    Creature* tamed = TO_CREATURE(m_target);
+                    Creature* tamed = static_cast<Creature*>(m_target);
                     tamed->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
 
                     Pet* pPet = objmgr.CreatePet(tamed->GetEntry());
@@ -1664,7 +1660,7 @@ bool CurativeAnimalSalve(uint32 i, Spell* pSpell) // Curing the Sick
     if (!pSpell->GetUnitTarget()->IsCreature())
         return true;
 
-    Creature* target = TO_CREATURE(pSpell->GetUnitTarget());
+    Creature* target = static_cast<Creature*>(pSpell->GetUnitTarget());
     uint32 entry = target->GetEntry();
 
     if (entry == 12296 || entry == 12298)
@@ -1754,14 +1750,15 @@ bool SymbolOfLife(uint32 i, Spell* pSpell) // Alliance ress. quests
     if (!targetOk)
         return true;
 
-    QuestLogEntry* qle;
+    QuestLogEntry* quest_entry;
 
     for (uint8 j = 0; j < 3; j++)
     {
         if (plr->HasQuest(quests[j]))
         {
-            qle = plr->GetQuestLogForEntry(quests[j]);
-            questOk = true;
+            quest_entry = plr->GetQuestLogForEntry(quests[j]);
+            if (quest_entry != nullptr)
+                questOk = true;
 
             break;
         }
@@ -1775,9 +1772,9 @@ bool SymbolOfLife(uint32 i, Spell* pSpell) // Alliance ress. quests
 
     target->Despawn(10 * 1000, 1 * 60 * 1000);
 
-    qle->SetMobCount(0, 1);
-    qle->SendUpdateAddKill(0);
-    qle->UpdatePlayerFields();
+    quest_entry->SetMobCount(0, 1);
+    quest_entry->SendUpdateAddKill(0);
+    quest_entry->UpdatePlayerFields();
 
     return true;
 }
@@ -1901,7 +1898,7 @@ bool HighmessasCleansingSeeds(uint32 i, Spell* pSpell)
     if (pSpell->p_caster == NULL || !pSpell->p_caster->IsInWorld())
         return true;
 
-    Player*  pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->p_caster;
     QuestLogEntry* pQuest = sEAS.GetQuest(pPlayer, 11677);
     if (!pQuest)
         return true;
@@ -1992,7 +1989,7 @@ bool TestingTheAntidote(uint32 i, Spell* pSpell)
         return true;
 
     Creature* target = NULL;
-    target = TO_CREATURE(pSpell->GetUnitTarget());
+    target = static_cast<Creature*>(pSpell->GetUnitTarget());
     if (!target || target->GetEntry() != 16880) // Hulking Helboar
         return true;
 
@@ -2449,7 +2446,7 @@ bool FuryOfTheDreghoodElders(uint32 i, Spell* pSpell)
     //pPlayer->BroadcastMessage("blaah");    // Really blizzlike?
 
     sEAS.SpawnCreature(pPlayer, 20680, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ(), pUnit->GetOrientation(), 5 * 60 * 1000);
-    TO_CREATURE(pUnit)->Despawn(0, 3 * 60 * 1000);
+    static_cast<Creature*>(pUnit)->Despawn(0, 3 * 60 * 1000);
     return true;
 }
 
@@ -2495,7 +2492,7 @@ bool PlantForsakenBanner(uint32 i, Spell* pSpell)
     if (pQuest == NULL)
         return true;
 
-    Creature* target = TO< Creature* >(pSpell->GetUnitTarget());
+    Creature* target = static_cast< Creature* >(pSpell->GetUnitTarget());
     if (target == NULL || target->isAlive())
         return true;
 
@@ -2527,7 +2524,7 @@ bool ConvertingSentry(uint32 i, Spell* pSpell)
     if (pCaster == NULL)
         return true;
 
-    Creature* pTarget = TO_CREATURE(pSpell->GetUnitTarget());
+    Creature* pTarget = static_cast<Creature*>(pSpell->GetUnitTarget());
     if (pTarget == NULL || pTarget->GetEntry() != 24972 || pTarget->isAlive())   // Erratic Sentry: 24972
         return true;
 
@@ -2567,8 +2564,8 @@ bool OrbOfMurlocControl(uint32 i, Spell* pSpell)
 
     for (ObjectSet::iterator itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
     {
-        if ((*itr)->IsUnit() && TO_UNIT(*itr)->IsCreature())
-            pTarget = TO_CREATURE(*itr);
+        if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->IsCreature())
+            pTarget = static_cast<Creature*>(*itr);
         else
             continue;
 
@@ -2741,13 +2738,15 @@ bool LeyLine(uint32 i, Spell* pSpell)
 
 bool ManaRemnants(uint32 i, Spell* pSpell)
 {
-    if (pSpell->p_caster == NULL)
-        return true;
-
     Player* pPlayer = pSpell->p_caster;
-    QuestLogEntry* qle;
+    if (!pPlayer)
+        return false;
 
     Creature* Ward = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 40404);
+    if (!Ward)
+        return false;
+
+    QuestLogEntry* qle;
 
     uint32 quests[] = { 11496, 11523 };
     for (uint32 i = 0; i < 2; i++)
@@ -2977,9 +2976,9 @@ bool Carcass(uint32 i, Spell* pSpell) // Becoming a Shadoweave Tailor
     if (pSpell->p_caster == NULL)
         return true;
 
-    Player*    pPlayer = pSpell->p_caster;
-    QuestLogEntry*    pQuest = pPlayer->GetQuestLogForEntry(10804);
-    Creature*    NetherDrake = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21648);
+    Player* pPlayer = pSpell->p_caster;
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10804);
+    Creature* NetherDrake = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21648);
     GameObject* FlayerCarcass = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 185155);
 
     if (FlayerCarcass == NULL)
@@ -3010,13 +3009,13 @@ bool ForceofNeltharakuSpell(uint32 i, Spell* pSpell) // Becoming a Shadoweave Ta
     if (pSpell->p_caster == NULL)
         return true;
 
-    Player*    pPlayer = pSpell->p_caster;
+    Player* pPlayer = pSpell->p_caster;
     Creature* pTarget = pPlayer->GetMapMgr()->GetCreature(GET_LOWGUID_PART(pPlayer->GetSelection()));
 
     if (pTarget == NULL)
         return true;
 
-    QuestLogEntry*     pQuest = pPlayer->GetQuestLogForEntry(10854);
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10854);
     if (pQuest == NULL)
         return true;
 
@@ -3043,8 +3042,8 @@ bool UnlockKarynakuChains(uint32 i, Spell* pSpell) // Becoming a Shadoweave Tail
     if (pSpell->p_caster == NULL)
         return true;
 
-    Player*    pPlayer = pSpell->p_caster;
-    QuestLogEntry*     pQuest = pPlayer->GetQuestLogForEntry(10872);
+    Player* pPlayer = pSpell->p_caster;
+    QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10872);
     if (pQuest == NULL)
         return true;
 
@@ -3205,7 +3204,7 @@ bool ReleaseUmisYeti(uint32 i, Spell* pSpell)
     if (qLogEntry == NULL)
         return true;
 
-    Creature* target = TO< Creature* >(pSpell->GetUnitTarget());
+    Creature* target = static_cast< Creature* >(pSpell->GetUnitTarget());
     static const uint32 friends[] = { 10978, 7583, 10977 };
     for (uint32 j = 0; j < sizeof(friends) / sizeof(uint32); j++)
     {
@@ -3315,10 +3314,10 @@ bool CastFishingNet(uint32 i, Spell* pSpell)
 bool InducingVision(uint32 i, Spell* pSpell)
 {
     if (!pSpell->p_caster) return true;
-    Player *mTarget = pSpell->p_caster;
+    Player* mTarget = pSpell->p_caster;
     if (mTarget == NULL || mTarget->GetMapMgr() == NULL || mTarget->GetMapMgr()->GetInterface() == NULL)
         return true;
-    Creature *creat = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(2983, -2238.994873f, -408.009552f, -9.424423f, 5.753043f, true, false, 0, 0);
+    Creature* creat = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(2983, -2238.994873f, -408.009552f, -9.424423f, 5.753043f, true, false, 0, 0);
     creat->GetAIInterface()->setMoveType(11);
 
     sEAS.CreateCustomWaypointMap(creat);

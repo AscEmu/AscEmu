@@ -28,6 +28,8 @@ SpeedCheatDetector::SpeedCheatDetector()
     cheat_threat = 0;
     last_used_speed = 0;
     last_stamp = 0;
+    last_x = 0;
+    last_y = 0;
 }
 
 void SpeedCheatDetector::EventSpeedChange()

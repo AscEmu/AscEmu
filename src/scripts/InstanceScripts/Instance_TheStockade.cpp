@@ -177,7 +177,7 @@ class HamhockAI : public CreatureAIScript
         HamhockAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -223,7 +223,7 @@ class HamhockAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
         void SpellCast(float val)
@@ -232,7 +232,7 @@ class HamhockAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -279,7 +279,7 @@ class HamhockAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // BazilAI
@@ -346,21 +346,27 @@ class BazilAI : public CreatureAIScript
                     spell.casttime = spell.cooldown;
                     target = _unit->GetAIInterface()->getNextTarget();
                     std::vector<Unit* > target_list;
-                    for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                    for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                     {
-                        target = TO< Unit* >(*itr);
+                        target = static_cast< Unit* >(*itr);
                         if (target)
                             target_list.push_back(target);
 
                         target = NULL;
                     }
 
-                    if (target_list.size())
-                        target = *(target_list.begin() + rand() % target_list.size());
-                    if (target)
-                        _unit->CastSpell(target, spell.info, spell.instant);
+                    if (!target_list.size())
+                        return;
 
-                    target = NULL;
+                    auto random_index = RandomUInt(0, target_list.size() - 1);
+                    auto random_target = target_list[random_index];
+
+                    if (random_target == nullptr)
+                        return;
+
+                    _unit->CastSpell(random_target, spell.info, spell.instant);
+
+                    random_target = nullptr;
 
                     if (spell.speech != "")
                     {
@@ -649,7 +655,7 @@ class PrisonerAI : public CreatureAIScript
         PrisonerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -695,7 +701,7 @@ class PrisonerAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -705,7 +711,7 @@ class PrisonerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
                     if (m_spellcheck[i])
@@ -751,7 +757,7 @@ class PrisonerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ConvictAI

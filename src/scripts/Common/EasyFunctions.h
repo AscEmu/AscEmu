@@ -32,6 +32,7 @@
 
 #define CREATE_GAMEOBJECT_SCRIPT(cl) &cl::Create
 #define CREATE_CREATURESCRIPT(cl) &cl::Create
+#include <QuestLogEntry.hpp>
 
 class SCRIPT_DECL EasyFunctions
 {
@@ -174,9 +175,9 @@ class SCRIPT_DECL EasyFunctions
             if (plr == NULL)
                 return NULL;
 
-            GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(entry_id);
-            if (goi == NULL)
-                return NULL;
+            auto gameobject_info = GameObjectNameStorage.LookupEntry(entry_id);
+            if (gameobject_info == nullptr)
+                return nullptr;
 
             GameObject* pC = plr->GetMapMgr()->CreateGameObject(entry_id);
             //pC->spawnid=0;
@@ -274,20 +275,20 @@ class SCRIPT_DECL EasyFunctions
 
         void EventCastSpell(Unit* caster, Unit* target, uint32 spellid, uint32 time)
         {
-            sEventMgr.AddEvent(TO_UNIT(caster), &Unit::EventCastSpell, TO_UNIT(target), dbcSpell.LookupEntry(spellid), EVENT_UNK, time, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Unit*>(caster), &Unit::EventCastSpell, static_cast<Unit*>(target), dbcSpell.LookupEntry(spellid), EVENT_UNK, time, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
         void EventPlaySound(Creature* creat, uint32 id, uint32 time)
         {
-            sEventMgr.AddEvent(TO_OBJECT(creat), &Object::PlaySoundToSet, id, EVENT_UNK, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Object*>(creat), &Object::PlaySoundToSet, id, EVENT_UNK, time, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
-        void EventCreatureSay(Creature* creat, string say, uint32 time)
+        void EventCreatureSay(Creature* creat, std::string say, uint32 time)
         {
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str(), time);
         }
 
-        void EventCreatureYell(Creature* creat, string say, uint32 time)
+        void EventCreatureYell(Creature* creat, std::string say, uint32 time)
         {
             creat->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, say.c_str(), time);
         }

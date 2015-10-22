@@ -33,13 +33,12 @@
 #include "Recast.h"
 #include "DetourNavMesh.h"
 
-using namespace std;
 using namespace VMAP;
 // G3D namespace typedefs conflicts with ACE typedefs
 
 namespace MMAP
 {
-    typedef map<uint32, set<uint32>*> TileList;
+    typedef std::map<uint32, std::set<uint32>*> TileList;
     struct Tile
     {
         Tile() : chf(NULL), solid(NULL), cset(NULL), pmesh(NULL), dmesh(NULL) {}
@@ -84,7 +83,7 @@ namespace MMAP
         private:
             // detect maps and tiles
             void discoverTiles();
-            set<uint32>* getTileList(uint32 mapID);
+        std::set<uint32>* getTileList(uint32 mapID);
 
             void buildNavMesh(uint32 mapID, dtNavMesh*& navMesh);
 

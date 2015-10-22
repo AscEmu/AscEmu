@@ -61,12 +61,13 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
         return;
 
     uint32 c = count;
-    Item* i1 = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
+
+    auto i1 = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
     if (!i1)
         return;
-    Item* i2 = _player->GetItemInterface()->GetInventoryItem(DstInvSlot, DstSlot);
+    auto i2 = _player->GetItemInterface()->GetInventoryItem(DstInvSlot, DstSlot);
 
-    uint32 itemMaxStack1 = (i1) ? ((i1->GetOwner()->ItemStackCheat) ? 0x7fffffff : i1->GetProto()->MaxCount) : 0;
+    uint32 itemMaxStack1 = (i1->GetOwner()->ItemStackCheat) ? 0x7fffffff : i1->GetProto()->MaxCount;
     uint32 itemMaxStack2 = (i2) ? ((i2->GetOwner()->ItemStackCheat) ? 0x7fffffff : i2->GetProto()->MaxCount) : 0;
     if ((i1 && i1->wrapped_item_id) || (i2 && i2->wrapped_item_id) || (c > itemMaxStack1))
     {
@@ -247,7 +248,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
             {
                 data.Initialize(SMSG_INVENTORY_CHANGE_FAILURE);
                 data << error;
-                data << (srcitem ? srcitem->GetGUID() : uint64(0));
+                data << srcitem->GetGUID();
                 data << dstitem->GetGUID();
                 data << uint8(0);
 
@@ -265,7 +266,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
     if (srcitem->IsContainer())
     {
         //source has items and dst is a backpack or bank
-        if (TO< Container* >(srcitem)->HasItems())
+        if (static_cast< Container* >(srcitem)->HasItems())
             if (!_player->GetItemInterface()->IsBagSlot(dstslot))
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(srcitem, dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
@@ -277,7 +278,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
             //source is a bag and dst slot is a bag inventory and has items
             if (dstitem->IsContainer())
             {
-                if (TO< Container* >(dstitem)->HasItems() && !_player->GetItemInterface()->IsBagSlot(srcslot))
+                if (static_cast< Container* >(dstitem)->HasItems() && !_player->GetItemInterface()->IsBagSlot(srcslot))
                 {
                     _player->GetItemInterface()->BuildInventoryChangeError(srcitem, dstitem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                     return;
@@ -356,7 +357,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
     {
         if (it->IsContainer())
         {
-            if (TO< Container* >(it)->HasItems())
+            if (static_cast< Container* >(it)->HasItems())
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(
                     it, NULL, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
@@ -959,7 +960,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
 
     ItemPrototype* it = item->GetProto();
 
-    if (item->IsContainer() && TO< Container* >(item)->HasItems())
+    if (item->IsContainer() && static_cast< Container* >(item)->HasItems())
     {
         SendSellItem(vendorguid, itemguid, 6);
         return;
@@ -1097,7 +1098,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
         }
         else
         {
-            c = TO< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
+            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
             if (!c)
                 return;
             bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
@@ -1113,7 +1114,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
     {
         if ((bagguid >> 32))
         {
-            c = TO< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
+            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
             if (!c)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_NOT_FOUND);
@@ -1174,8 +1175,8 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
     else
     {
         // create new item
-        if (slot == INVENTORY_SLOT_NOT_SET)
-            slot = c->FindFreeSlot();
+        /*if (slot == INVENTORY_SLOT_NOT_SET) This cannot be true CID 52838
+            slot = c->FindFreeSlot();*/
 
         if (slot == ITEM_NO_SLOT_AVAILABLE)
         {
@@ -1339,7 +1340,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
         {
             if (Item* bag = _player->GetItemInterface()->GetInventoryItem(slotresult.ContainerSlot))
             {
-                if (!TO< Container* >(bag)->AddItem(slotresult.Slot, itm))
+                if (!static_cast< Container* >(bag)->AddItem(slotresult.Slot, itm))
                     itm->DeleteMe();
                 else
                 {
@@ -1509,7 +1510,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
     if (srcitem)
     {
         //src containers cant be moved if they have items inside
-        if (srcitem->IsContainer() && TO< Container* >(srcitem)->HasItems())
+        if (srcitem->IsContainer() && static_cast< Container* >(srcitem)->HasItems())
         {
             _player->GetItemInterface()->BuildInventoryChangeError(srcitem, 0, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
             return;
@@ -1559,7 +1560,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
                 //dstitem exists, detect if its a container
                 if (dstitem->IsContainer())
                 {
-                    NewSlot = TO< Container* >(dstitem)->FindFreeSlot();
+                    NewSlot = static_cast< Container* >(dstitem)->FindFreeSlot();
                     if (NewSlot == ITEM_NO_SLOT_AVAILABLE)
                     {
                         _player->GetItemInterface()->BuildInventoryChangeError(srcitem, 0, INV_ERR_BAG_FULL);
@@ -1682,7 +1683,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
             {
                 if (pItem->IsContainer())
                 {
-                    pContainer = TO< Container* >(pItem);
+                    pContainer = static_cast< Container* >(pItem);
                     for (j = 0; j < pContainer->GetProto()->ContainerSlots; ++j)
                     {
                         pItem = pContainer->GetItem(static_cast<int16>(j));
@@ -2449,15 +2450,15 @@ void WorldSession::SendItemQueryAndNameInfo(uint32 itemid)
 	SendPacket(&data);
 
 	WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
-	ItemPrototype* proto=ItemPrototypeStorage.LookupEntry(itemid);
+	ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(itemid);
 	ItemName* metaName = ItemNameStorage.LookupEntry(itemid);
-	if (!metaName)
+	if (!metaName || !proto)
 		reply << "Unknown Item";
 	else
 	{
 		if (li)
 			reply << li->Name;
-		else
+        else
 			reply << proto->Name1;
 		reply << proto->InventoryType;
 	}

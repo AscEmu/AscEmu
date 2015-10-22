@@ -441,20 +441,18 @@ void IsleOfConquest::OnCreate(){
 
 void IsleOfConquest::OnStart()
 {
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
     if( m_started )
         return;
 
-    m_mainLock.Acquire();
-    
     m_started = true;
     
     for(uint32 i = 0; i < 2; ++i){
-        for(set<Player*  >::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr){
+        for(std::set<Player*  >::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr){
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
-    
-    m_mainLock.Release();
 
     OpenGates();
     PlaySoundToAll( SOUND_BATTLEGROUND_BEGIN );
@@ -505,18 +503,18 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         if( controlpoint[ Id ].worldstate != 0 )
             SetWorldState( controlpoint[ Id ].worldstate, 0 );
 
-        gi_aura = gi->sound3 ? GameObjectNameStorage.LookupEntry(gi->sound3) : NULL;
+        gi_aura = gi->parameter_3 ? GameObjectNameStorage.LookupEntry(gi->parameter_3) : NULL;
 
         if( controlpoint[ Id ].banner == NULL)
         {
-                controlpoint[ Id ].banner = SpawnGameObject(gi->ID, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+                controlpoint[ Id ].banner = SpawnGameObject(gi->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
                 ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
                 controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_STATE, 1);
-                controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPE_ID, gi->Type);
+                controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPE_ID, gi->type);
                 controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_ANIMPROGRESS, 100);
                 controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DYNAMIC, 1);
-                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi->DisplayID);
+                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi->display_id);
 
                 switch(Type)
                 {
@@ -545,9 +543,9 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
 
                 // assign it a new guid (client needs this to see the entry change?)
                 controlpoint[ Id ].banner->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-                controlpoint[ Id ].banner->SetUInt32Value(OBJECT_FIELD_ENTRY, gi->ID);
-                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi->DisplayID);
-                controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPE_ID, gi->Type);
+                controlpoint[ Id ].banner->SetUInt32Value(OBJECT_FIELD_ENTRY, gi->entry);
+                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi->display_id);
+                controlpoint[ Id ].banner->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPE_ID, gi->type);
 
                 switch(Type)
                 {
@@ -608,7 +606,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
 
         if(controlpoint[ Id ].aura == NULL)
         {
-                controlpoint[ Id ].aura = SpawnGameObject(gi_aura->ID, 628, ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+                controlpoint[ Id ].aura = SpawnGameObject(gi_aura->entry, 628, ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
                 ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 5.0f);
 
                 controlpoint[ Id ].aura->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_STATE, 1);
@@ -624,8 +622,8 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
 
                 // re-spawn the aura
                 controlpoint[ Id ].aura->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-                controlpoint[ Id ].aura->SetUInt32Value(OBJECT_FIELD_ENTRY, gi_aura->ID);
-                controlpoint[ Id ].aura->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi_aura->DisplayID);
+                controlpoint[ Id ].aura->SetUInt32Value(OBJECT_FIELD_ENTRY, gi_aura->entry);
+                controlpoint[ Id ].aura->SetUInt32Value(GAMEOBJECT_DISPLAYID, gi_aura->display_id);
                 controlpoint[ Id ].aura->SetInfo(gi_aura);
                 controlpoint[ Id ].aura->PushToWorld(m_mapMgr);
         }       
@@ -652,23 +650,22 @@ void IsleOfConquest::SpawnGraveyard( uint32 id, uint32 team ){
 
 
 void IsleOfConquest::Finish( uint32 losingTeam ){
-        if( m_ended )
+        if( this->HasEnded() )
             return;
 
-        m_ended = true;
         sEventMgr.RemoveEvents(this);
-        sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120 * 1000, 1,0);
+        sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120 * 1000, 1,0);
 
-        if( losingTeam == TEAM_ALLIANCE )
-            m_winningteam = TEAM_HORDE;
-        else
-            m_winningteam = TEAM_ALLIANCE;
+        this->EndBattleground(losingTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
+}
 
-        AddHonorToTeam( m_winningteam, 3 * 185 );
-        AddHonorToTeam( losingTeam, 1 * 185 );
-        CastSpellOnTeam( m_winningteam, 67033 );
-
-        UpdatePvPData();
+/*! Handles end of battleground rewards (marks etc)
+*  \param winningTeam Team that won the battleground
+*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool IsleOfConquest::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 67033);
+    return true;
 }
 
 void IsleOfConquest::HookOnAreaTrigger(Player* plr, uint32 id)
@@ -751,7 +748,7 @@ void IsleOfConquest::HookOnUnitKill( Player* plr, Unit* pVictim ){
 
 void IsleOfConquest::HookOnUnitDied( Unit *victim ){
     if( victim->IsCreature() ){
-        Creature *c = TO< Creature* >( victim );
+        Creature *c = static_cast< Creature* >( victim );
 
         if( ( generals[ TEAM_ALLIANCE ] != NULL ) && ( c->GetEntry() == generals[ TEAM_ALLIANCE ]->GetEntry() ) ){
             Finish( TEAM_ALLIANCE );

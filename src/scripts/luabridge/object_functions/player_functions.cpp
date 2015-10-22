@@ -205,8 +205,8 @@ namespace lua_engine
 
         .method(&Player::GetSession, "GetSession", "getSession", "getsession", NULL)  //wiki listed
         .method(&Player::SaveToDB, "SaveToDB", "saveToDB", "savetodb", NULL)
-        .method(&Player::RecalculateHonor, "RecalculateHonor", "recalculateHonor", "recalculatehonor", NULL)
-        .property_rw("m_arenaPoints", &Player::m_arenaPoints)
+        //.method(&Player::RecalculateHonor, "RecalculateHonor", "recalculateHonor", "recalculatehonor", NULL)
+        //.property_rw("m_arenaPoints", &Player::m_arenaPoints)
         .method(&Player::getPlayerInfo, "GetPlayerInfo", "getPlayerInfo", "getplayerinfo", NULL)
         .method(&Player::GetGroup, "GetGroup", "getGroup", "getgroup", NULL)
         .property_rw("m_killsLifetime", &Player::m_killsLifetime)

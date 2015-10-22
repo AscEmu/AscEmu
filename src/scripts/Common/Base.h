@@ -20,6 +20,9 @@
 #ifndef _BASE_H
 #define _BASE_H
 
+#include "StdAfx.h"
+#include "../Common/EasyFunctions.h"
+#include "../Common/Instance_Base.h"
 
 #define INVALIDATE_TIMER -1
 #define DEFAULT_UPDATE_FREQUENCY 1000    //milliseconds
@@ -191,6 +194,8 @@ class SpellDesc;
 class MoonScriptCreatureAI;
 class MoonScriptBossAI;
 struct EventStruct;
+class Unit;
+struct SpellEntry;
 
 typedef void(*EventFunc)(MoonScriptCreatureAI* pCreatureAI, int32 pMiscVal);
 typedef void(*SpellFunc)(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
@@ -322,8 +327,8 @@ class MoonScriptCreatureAI : public CreatureAIScript
         //Movement
         bool GetCanMove();
         void SetCanMove(bool pCanMove);
-        void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = make_pair(RangeStatus_TooFar, 0.0f));
-        void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = make_pair(RangeStatus_TooFar, 0.0f));
+        void MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
+        void MoveTo(Unit* pUnit, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void MoveTo(float pX, float pY, float pZ, bool pRun = true);
         void MoveToSpawnOrigin();
         void StopMovement();
@@ -477,7 +482,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         Unit* GetNearestTargetInArray(UnitArray & pTargetArray);
         Unit* GetSecondMostHatedTargetInArray(UnitArray & pTargetArray);
         bool IsValidUnitTarget(Object* pObject, TargetFilter pFilter, float pMinRange = 0.0f, float pMaxRange = 0.0f);
-        void PushRunToTargetCache(Unit* pTarget, SpellDesc* pSpell, RangeStatusPair pRangeStatus = make_pair(RangeStatus_TooFar, 0.0f));
+        void PushRunToTargetCache(Unit* pTarget, SpellDesc* pSpell, RangeStatusPair pRangeStatus = std::make_pair(RangeStatus_TooFar, 0.0f));
         void PopRunToTargetCache();
 
         void RandomEmote(EmoteArray & pEmoteArray);

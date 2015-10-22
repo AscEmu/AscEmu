@@ -21,7 +21,7 @@
 #ifndef _OBJECTMGR_H
 #define _OBJECTMGR_H
 
-ARCEMU_INLINE bool FindXinYString(std::string & x, std::string & y)
+inline bool FindXinYString(std::string & x, std::string & y)
 {
     return y.find(x) != std::string::npos;
 }
@@ -166,10 +166,10 @@ struct GossipMenuItem
     uint32 IntId;
     uint8 Icon;
     uint8 Extra;
-    string Text;
+    std::string Text;
     uint32 m_gSender;
     uint32 m_gAction;
-    string m_gBoxMessage;
+    std::string m_gBoxMessage;
     uint32 m_gBoxMoney;
 };
 
@@ -202,7 +202,7 @@ struct TrainerSpell
 struct Trainer
 {
     uint32 SpellCount;
-    vector<TrainerSpell> Spells;
+    std::vector<TrainerSpell> Spells;
     char* UIMessage;
     uint32 RequiredSkill;
     uint32 RequiredSkillLine;
@@ -242,13 +242,13 @@ struct InstanceReputationMod
 struct ReputationModifier
 {
     uint32 entry;
-    vector<ReputationMod> mods;
+    std::vector<ReputationMod> mods;
 };
 
 struct InstanceReputationModifier
 {
     uint32 mapid;
-    vector<InstanceReputationMod> mods;
+    std::vector<InstanceReputationMod> mods;
 };
 
 enum AREATABLE_FLAGS
@@ -270,21 +270,65 @@ enum AREATABLE_CATEGORY
     AREAC_SANCTUARY          = 6,
 };
 
-#define MAX_PREDEFINED_NEXTLEVELXP PLAYER_LEVEL_CAP
-static const uint32 NextLevelXp[MAX_PREDEFINED_NEXTLEVELXP] =
+struct SimpleEventScript
 {
-    400, 900, 1400, 2100, 2800, 3600, 4500, 5400, 6500, 7600,
-    8700, 9800, 11000, 12300, 13600, 15000, 16400, 17800, 19300, 20800,
-    22400, 24000, 25500, 27200, 28900, 30500, 32200, 33900, 36300, 38800,
-    41600, 44600, 48000, 51400, 55000, 58700, 62400, 66200, 70200, 74300,
-    78500, 82800, 87100, 91600, 95300, 101000, 105800, 110700, 115700, 120900,
-    126100, 131500, 137000, 142500, 148200, 154000, 159900, 165800, 172000, 290000,
-    317000, 349000, 386000, 428000, 475000, 527000, 585000, 648000, 717000, 1523800,
-#if PLAYER_LEVEL_CAP==80
-    1539600, 1555700, 1571800, 1587900, 1604200, 1620700, 1637400, 1653900, 1670800, 1700000,
-#endif
+    uint32 eventId;
+    uint8 function;
+    uint8 scripttype;
+    uint32 data_1;
+    uint32 data_2;
+    uint32 data_3;
+    uint32 data_4;
+    uint32 data_5;
+    uint32 x;
+    uint32 y;
+    uint32 z;
+    uint32 o;
+    uint32 delay;
+    uint32 nextevent;
 };
 
+enum class ScriptCommands : uint8
+{
+    SCRIPT_COMMAND_TALK                 = 0,
+    SCRIPT_COMMAND_EMOTE                = 1,
+    SCRIPT_COMMAND_FIELD_SET            = 2,
+    SCRIPT_COMMAND_MOVE_TO              = 3,
+    SCRIPT_COMMAND_FLAG_SET             = 4,
+    SCRIPT_COMMAND_FLAG_REMOVE          = 5,
+    SCRIPT_COMMAND_TELEPORT_TO          = 6,
+    SCRIPT_COMMAND_QUEST_EXPLORED       = 7,
+    SCRIPT_COMMAND_KILL_CREDIT          = 8,       //Implemented (   data_1 (spellid), data_2 (quest id), data_3 (targettype 0 Creature/ 1 Gameobject), data_4 (target id), data_5 (killcredit), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )        
+    SCRIPT_COMMAND_RESPAWN_GAMEOBJECT   = 9,       //Implemented (   data_1 (GoId), data_2 (respawntime), delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )                
+    SCRIPT_COMMAND_TEMP_SUMMON_CREATURE = 10,
+    SCRIPT_COMMAND_OPEN_DOOR            = 11,
+    SCRIPT_COMMAND_CLOSE_DOOR           = 12,
+    SCRIPT_COMMAND_ACTIVATE_OBJECT      = 13,      // Implemented ( data_1 (Go id),  when dont wanna use get pos then type in x y z the coords, delay (when script needs to start ( in ms), next_event (next event_id when you want to add more )                
+    SCRIPT_COMMAND_REMOVE_AURA          = 14,
+    SCRIPT_COMMAND_CAST_SPELL           = 15,
+    SCRIPT_COMMAND_PLAY_SOUND           = 16,
+    SCRIPT_COMMAND_CREATE_ITEM          = 17,
+    SCRIPT_COMMAND_DESPAWN_SELF         = 18,
+    SCRIPT_COMMAND_KILL                 = 19,
+    SCRIPT_COMMAND_ORIENTATION          = 20,
+    SCRIPT_COMMAND_EQUIP                = 21,
+    SCRIPT_COMMAND_MODEL                = 22,
+    SCRIPT_COMMAND_PLAYMOVIE            = 23
+};
+
+enum class EasyScriptTypes : uint8
+{
+    SCRIPT_TYPE_SPELL_EFFECT            = 1,
+    SCRIPT_TYPE_GAMEOBJECT              = 2,
+    SCRIPT_TYPE_CREATURE                = 3,
+    SCRIPT_TYPE_PLAYER                  = 4,
+    SCRIPT_TYPE_DUMMY                   = 5
+};
+
+typedef std::multimap<uint32, SimpleEventScript> EventScriptMaps;
+typedef std::multimap<uint32, SimpleEventScript const*> SpellEffectMaps;
+typedef std::pair<EventScriptMaps::const_iterator, EventScriptMaps::const_iterator> EventScriptBounds;
+typedef std::pair<SpellEffectMaps::const_iterator, SpellEffectMaps::const_iterator> SpellEffectMapBounds;
 
 class SERVER_DECL GossipMenu
 {
@@ -297,7 +341,7 @@ class SERVER_DECL GossipMenu
         void SendTo(Player* Plr);
         void SendGossipMenu(uint32 TitleTextId, uint64 npcGUID);
         GossipMenuItem GetItem(uint32 Id);
-        ARCEMU_INLINE void SetTextID(uint32 TID) { TextId = TID; }
+        inline void SetTextID(uint32 TID) { TextId = TID; }
 
     protected:
         uint32 TextId;
@@ -337,12 +381,12 @@ class Charter
         uint32 LeaderGuid;
         uint64 ItemGuid;
         uint32 CharterId;
-        string GuildName;
+        std::string GuildName;
 
         /************************************************************************/
         /* Developer Fields                                                     */
         /************************************************************************/
-        string UnkString;
+        std::string UnkString;
         uint32 Data[7];
         uint16 Unk1;
         uint32 Unk2;
@@ -357,6 +401,10 @@ class Charter
             Slots = GetNumberOfSlotsByType();
             Signatures = new uint32[Slots];
             memset(Signatures, 0, sizeof(uint32)*Slots);
+            Unk1 = 0;
+            Unk2 = 0;
+            Unk3 = 0;
+            PetitionSignerCount = 0;
         }
 
         ~Charter()
@@ -370,10 +418,10 @@ class Charter
         void AddSignature(uint32 PlayerGuid);
         void RemoveSignature(uint32 PlayerGuid);
 
-        ARCEMU_INLINE uint32 GetLeader() { return LeaderGuid; }
-        ARCEMU_INLINE uint32 GetID() { return CharterId; }
+        inline uint32 GetLeader() { return LeaderGuid; }
+        inline uint32 GetID() { return CharterId; }
 
-        ARCEMU_INLINE bool IsFull() { return (SignatureCount == Slots); }
+        inline bool IsFull() { return (SignatureCount == Slots); }
 };
 
 typedef std::map<uint32, std::list<SpellEntry*>* >                  OverrideIdMap;
@@ -389,7 +437,7 @@ typedef std::list<const AchievementCriteriaEntry*>                    Achievemen
 #ifdef arcemu_USE_MAP_PLAYER_INDEX
 
 /// you can use the string map (slower)
-typedef map<string, PlayerInfo*> PlayerNameStringIndexMap;
+typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 
 
 #else            /// or
@@ -397,22 +445,22 @@ typedef map<string, PlayerInfo*> PlayerNameStringIndexMap;
 /// gcc has no default hash for string type,
 /// so we have to make an explicit hash template here
 template<>
-struct __gnu_cxx::hash<string>
+struct __gnu_cxx::hash<std::string>
 {
-    size_t operator()(string & tbh) const
+    size_t operator()(std::string & tbh) const
     {
         /// simple crc32 hash for now, we may need to change this later however
         return size_t(crc32((const unsigned char*)tbh.c_str(), tbh.length()));
     }
 }
 
-typedef HM_NAMESPACE::hash_map<string, PlayerInfo*> PlayerNameStringIndexMap;
+typedef HM_NAMESPACE::hash_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 
 #endif
 #else
 
 /// vc++ has the type for a string hash already, so we don't need to do anything special
-typedef HM_NAMESPACE::hash_map<string, PlayerInfo*> PlayerNameStringIndexMap;
+typedef HM_NAMESPACE::hash_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 
 #endif
 
@@ -452,10 +500,10 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                LevelMap;
-        typedef std::map<pair<uint32, uint32>, LevelMap*>                  LevelInfoMap;
+        typedef std::map<std::pair<uint32, uint32>, LevelMap*>                  LevelInfoMap;
         typedef std::map<uint32, std::list<ItemPrototype*>* >               ItemSetContentMap;
         typedef std::map<uint32, uint32>                                    NpcToGossipTextMap;
-        typedef std::map<uint32, set<SpellEntry*> >                         PetDefaultSpellMap;
+        typedef std::map<uint32, std::set<SpellEntry*> >                         PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                              BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                  SpellTargetConstraintMap;
@@ -492,7 +540,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void AddGroup(Group* group)
         {
             m_groupLock.AcquireWriteLock();
-            m_groups.insert(make_pair(group->GetID(), group));
+            m_groups.insert(std::make_pair(group->GetID(), group));
             m_groupLock.ReleaseWriteLock();
         }
 
@@ -637,7 +685,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadXpToLevelTable();
         uint32 GetXPToLevel(uint32 level);
         void LoadDefaultPetSpells();
-        set<SpellEntry*>* GetDefaultPetSpells(uint32 Entry);
+        std::set<SpellEntry*>* GetDefaultPetSpells(uint32 Entry);
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
         WayPointMap* GetWayPointMap(uint32 spawnid);
@@ -655,11 +703,11 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         Charter* GetCharter(uint32 CharterId, CharterTypes Type);
         void RemoveCharter(Charter*);
         void LoadGuildCharters();
-        Charter* GetCharterByName(string & charter_name, CharterTypes Type);
+        Charter* GetCharterByName(std::string & charter_name, CharterTypes Type);
         Charter* GetCharterByItemGuid(uint64 guid);
         Charter* GetCharterByGuid(uint64 playerguid, CharterTypes type);
 
-        ArenaTeam* GetArenaTeamByName(string & name, uint32 Type);
+        ArenaTeam* GetArenaTeamByName(std::string & name, uint32 Type);
         ArenaTeam* GetArenaTeamById(uint32 id);
         ArenaTeam* GetArenaTeamByGuid(uint32 guid, uint32 Type);
         void UpdateArenaTeamRankings();
@@ -683,7 +731,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();
 
-        ARCEMU_INLINE bool IsSpellDisabled(uint32 spellid)
+        inline bool IsSpellDisabled(uint32 spellid)
         {
             if (m_disabled_spells.find(spellid) != m_disabled_spells.end())
                 return true;
@@ -695,25 +743,34 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadSpellTargetConstraints();
         SpellTargetConstraint* GetSpellTargetConstraintForSpell(uint32 spellid);
 
+        ///////// Event Scripts ////////////////////
+        void LoadEventScripts();
+        EventScriptBounds GetEventScripts(uint32 event_id) const;
+        SpellEffectMapBounds GetSpellEffectBounds(uint32 data_1) const;
+        bool CheckforScripts(Player* plr, uint32 event_id);
+        bool CheckforDummySpellScripts(Player* plr, uint32 data_1);
+        void EventScriptsUpdate(Player* plr, uint32 next_event);
+        ////////////////////////////////////////////
 
-        ARCEMU_INLINE GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
-        ARCEMU_INLINE GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
+
+        inline GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
+        inline GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
 
         std::set<ProfessionDiscovery*> ProfessionDiscoveryTable;
 
         // cebernic: This is a perfect Broadcast system,multi-lang supported also.
-        ARCEMU_INLINE uint32 GetBCGroupCountByKey(uint32 Key) { return (uint32)m_BCEntryStorage.count(Key); }
-        ARCEMU_INLINE bool IsBCEntryStorageEmpty() { return m_BCEntryStorage.empty(); }
-        ARCEMU_INLINE BCEntryStorage::iterator GetBCTotalItemBegin() { return m_BCEntryStorage.begin(); }
-        ARCEMU_INLINE BCEntryStorage::iterator GetBCTotalItemEnd() { return m_BCEntryStorage.end(); }
-        ARCEMU_INLINE int CalcCurrentBCEntry()
+        inline uint32 GetBCGroupCountByKey(uint32 Key) { return (uint32)m_BCEntryStorage.count(Key); }
+        inline bool IsBCEntryStorageEmpty() { return m_BCEntryStorage.empty(); }
+        inline BCEntryStorage::iterator GetBCTotalItemBegin() { return m_BCEntryStorage.begin(); }
+        inline BCEntryStorage::iterator GetBCTotalItemEnd() { return m_BCEntryStorage.end(); }
+        inline int CalcCurrentBCEntry()
         // func sync at MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey)[world.cpp]
         {
             if (m_BCEntryStorage.empty())
                 return -1;
             uint32 RandomCap = (uint32)sWorld.BCTriggerPercentCap;
 
-            vector<uint32> Entries;
+            std::vector<uint32> Entries;
             BCEntryStorage::iterator it = m_BCEntryStorage.upper_bound(RandomUInt(RandomCap) + 1);
             while (it != m_BCEntryStorage.end())
             {
@@ -743,6 +800,9 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
 // it's for private persons (pps)
     private:
+
+        EventScriptMaps      mEventScriptMaps;
+        SpellEffectMaps      mSpellEffectMaps;
 
 // we don't want too serious people to see this, they'd freak out!
 #ifndef ENABLE_ALWAYS_SERIOUS_MODE_GCC_STL_HACK
@@ -813,7 +873,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         HM_NAMESPACE::hash_map<uint32, Charter*> m_charters[NUM_CHARTER_TYPES];
 
-        set<uint32> m_disabled_spells;
+        std::set<uint32> m_disabled_spells;
 
         uint64 TransportersCount;
         HM_NAMESPACE::hash_map<uint32, PlayerInfo*> m_playersinfo;

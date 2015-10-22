@@ -39,7 +39,7 @@ class TheDefiasBrotherhood : public QuestScript
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do this, you gotta protect me and stuff, I can't fight on my own!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
             sEAS.WaypointCreate(creat, -10521.876953f, 1064.410278f, 54.820744f, 3.220135f, 0, 256, 0);
@@ -82,7 +82,11 @@ class The_Defias_Traitor : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(155)->SendQuestComplete();
+
+                auto quest_entry = plr->GetQuestLogForEntry(155);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };

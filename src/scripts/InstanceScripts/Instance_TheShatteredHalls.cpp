@@ -93,7 +93,7 @@ class FelOrcConvertAI : public CreatureAIScript
         FelOrcConvertAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -114,7 +114,7 @@ class FelOrcConvertAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -144,7 +144,7 @@ class FelOrcConvertAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -188,7 +188,7 @@ class FelOrcConvertAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -204,7 +204,7 @@ class ShatteredHandHeathenAI : public CreatureAIScript
         ShatteredHandHeathenAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -233,7 +233,7 @@ class ShatteredHandHeathenAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -263,7 +263,7 @@ class ShatteredHandHeathenAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -307,7 +307,7 @@ class ShatteredHandHeathenAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandLegionnaireAI
@@ -322,7 +322,7 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
         ShatteredHandLegionnaireAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -357,7 +357,7 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -387,7 +387,7 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -431,7 +431,7 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandSavageAI
@@ -446,7 +446,7 @@ class ShatteredHandSavageAI : public CreatureAIScript
         ShatteredHandSavageAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -482,7 +482,7 @@ class ShatteredHandSavageAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -512,7 +512,7 @@ class ShatteredHandSavageAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -556,7 +556,7 @@ class ShatteredHandSavageAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -572,7 +572,7 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
         ShadowmoonAcolyteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -626,7 +626,7 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -656,7 +656,7 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -700,7 +700,7 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandAssassinAI
@@ -715,7 +715,7 @@ class ShatteredHandAssassinAI : public CreatureAIScript
         ShatteredHandAssassinAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -755,7 +755,7 @@ class ShatteredHandAssassinAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -786,7 +786,7 @@ class ShatteredHandAssassinAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -830,7 +830,7 @@ class ShatteredHandAssassinAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandGladiatorAI
@@ -845,7 +845,7 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
         ShatteredHandGladiatorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -866,7 +866,7 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -896,7 +896,7 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -940,7 +940,7 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandHoundmasterAI
@@ -956,7 +956,7 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
         ShatteredHandHoundmasterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -977,7 +977,7 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1007,7 +1007,7 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1051,7 +1051,7 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandReaverAI
@@ -1066,7 +1066,7 @@ class ShatteredHandReaverAI : public CreatureAIScript
         ShatteredHandReaverAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1104,7 +1104,7 @@ class ShatteredHandReaverAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1134,7 +1134,7 @@ class ShatteredHandReaverAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1178,7 +1178,7 @@ class ShatteredHandReaverAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandSentryAI
@@ -1193,7 +1193,7 @@ class ShatteredHandSentryAI : public CreatureAIScript
         ShatteredHandSentryAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1221,7 +1221,7 @@ class ShatteredHandSentryAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1262,7 +1262,7 @@ class ShatteredHandSentryAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1306,7 +1306,7 @@ class ShatteredHandSentryAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandSharpshooterAI
@@ -1321,7 +1321,7 @@ class ShatteredHandSharpshooterAI : public CreatureAIScript
         ShatteredHandSharpshooterAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1406,7 +1406,7 @@ class ShatteredHandSharpshooterAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // ShatteredHandBrawlerAI
@@ -1422,7 +1422,7 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
         ShatteredHandBrawlerAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1456,7 +1456,7 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1486,7 +1486,7 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1530,7 +1530,7 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1567,8 +1567,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
             GrandWarlock = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(178.811996f, 292.377991f, -8.190210f, CN_GRAND_WARLOCK_NETHEKURSE);
             if (GrandWarlock)
             {
-                int RandomSpeach = rand() % 4;
-                switch (RandomSpeach)        // must be verified + emotes?
+                switch (RandomUInt(3))        // must be verified + emotes?
                 {
                     case 0:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_02);
@@ -1599,7 +1598,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
             if (GrandWarlock)    // any emotes needed?
             {
                 uint32 Counter = 0;
-                for (int i = 0; i < 3; i++)
+                for (uint8 i = 0; i < 3; i++)
                 {
                     Creature* Servant = NULL;
                     Servant = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(Darkcasters[i].x, Darkcasters[i].y, Darkcasters[i].z, CN_SHADOWMOON_DARKCASTER);
@@ -1615,8 +1614,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
                     GrandWarlock->GetAIInterface()->HandleEvent(EVENT_ENTERCOMBAT, GrandWarlock, 0);
                 }
 
-                int RandomSpeach = rand() % 3;
-                switch (RandomSpeach)    // those need to be verified too
+                switch (RandomUInt(2))    // those need to be verified too
                 {
                     case 0:
                         GrandWarlock->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_06);
@@ -1647,7 +1645,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
         GrandWarlockNethekurseAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1682,13 +1680,12 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
                 spells[i].casttime = 0;
 
             if (Started)
             {
-                int RandomSpeach = rand() % 3;
-                switch (RandomSpeach)
+                switch (RandomUInt(2))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_13);
@@ -1712,8 +1709,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_GRAND_WARLOCK_16);
@@ -1793,7 +1789,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -1843,12 +1839,12 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
                         Unit* RandomTarget = NULL;
-                        RandomTarget = TO_UNIT(*itr);
+                        RandomTarget = static_cast<Unit*>(*itr);
 
                         if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && ((RandomTarget->GetHealthPct() >= minhp2cast && RandomTarget->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))))
                         {
@@ -1863,21 +1859,20 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit*  RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_FRIEND:
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -1894,12 +1889,12 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
             Unit* pUnit;
             float dist;
 
-            for (set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); itr++)
+            for (std::set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); itr++)
             {
                 if (!(*itr)->IsUnit())
                     continue;
 
-                pUnit = TO_UNIT((*itr));
+                pUnit = static_cast<Unit*>((*itr));
 
                 if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                     continue;
@@ -1922,7 +1917,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
     protected:
 
         bool Started;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1939,7 +1934,7 @@ class BloodGuardPorungAI : public CreatureAIScript
         BloodGuardPorungAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1960,7 +1955,7 @@ class BloodGuardPorungAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
         }
 
@@ -1990,7 +1985,7 @@ class BloodGuardPorungAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -2029,7 +2024,7 @@ class BloodGuardPorungAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 // WarbringerOmroggAI
@@ -2259,7 +2254,7 @@ class WarbringerOmroggAI : public MoonScriptCreatureAI
 
 void SpellFunc_Warbringer_BurningMaul(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
 {
-    WarbringerOmroggAI* Warbringer = (pCreatureAI) ? TO< WarbringerOmroggAI* >(pCreatureAI) : NULL;
+    WarbringerOmroggAI* Warbringer = (pCreatureAI) ? static_cast< WarbringerOmroggAI* >(pCreatureAI) : NULL;
     if (Warbringer != NULL)
     {
         Warbringer->CastSpell(Warbringer->mBlastWave);
@@ -2289,9 +2284,9 @@ class HeadAI : public MoonScriptCreatureAI
     void Destroy()
     {
         Unit* pUnit = ForceCreatureFind(CN_WARBRINGER_OMROGG);
-        if (pUnit != NULL && TO_CREATURE(pUnit)->GetScript() != NULL)
+        if (pUnit != NULL && static_cast<Creature*>(pUnit)->GetScript() != NULL)
         {
-            WarbringerOmroggAI* pAI = TO< WarbringerOmroggAI* >(TO_CREATURE(pUnit)->GetScript());
+            WarbringerOmroggAI* pAI = static_cast< WarbringerOmroggAI* >(static_cast<Creature*>(pUnit)->GetScript());
             if (pAI->mLeftHead == (MoonScriptCreatureAI*)(this))
                 pAI->mLeftHead = NULL;
             if (pAI->mRightHead == (MoonScriptCreatureAI*)(this))
@@ -2315,7 +2310,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
         WarchiefKargathBladefistAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2330,8 +2325,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
 
         void OnCombatStart(Unit* mTarget)
         {
-            int RandomSpeach = rand() % 3;
-            switch (RandomSpeach)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_01);
@@ -2353,10 +2347,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARCHIEF_KARGATH_04);
@@ -2396,7 +2387,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 

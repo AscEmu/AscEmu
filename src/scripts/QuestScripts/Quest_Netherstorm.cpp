@@ -29,14 +29,14 @@ class Veronia : public GossipScript
             if(plr->HasQuest(10652))
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
-                Menu->AddItem(0, "I'm ready", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(470), 1);     // I'm ready
                 Menu->SendTo(plr);
             }
         }
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* creat = TO_CREATURE(pObject);
+            Creature* creat = static_cast<Creature*>(pObject);
             switch(IntId)
             {
                 case 1:

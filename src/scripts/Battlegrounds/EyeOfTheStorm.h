@@ -33,6 +33,7 @@ class EyeOfTheStorm : public CBattleground
         EyeOfTheStorm(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~EyeOfTheStorm();
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         void HookOnPlayerDeath(Player* plr);
         void HookFlagDrop(Player* plr, GameObject* obj);
         void HookFlagStand(Player* plr, GameObject* obj);
@@ -86,7 +87,7 @@ class EyeOfTheStorm : public CBattleground
         GameObject* m_bubbles[2];
         GameObject* EOTSm_buffs[4];
 
-        typedef set<Player*> EOTSCaptureDisplayList;
+        typedef std::set<Player*> EOTSCaptureDisplayList;
         EOTSCaptureDisplayList m_CPDisplay[EOTS_TOWER_COUNT];
 
         uint32 m_lastHonorGainPoints[2];

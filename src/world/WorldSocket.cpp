@@ -56,6 +56,8 @@ WorldSocket::WorldSocket(SOCKET fd)
     _latency(0),
     mQueued(false),
     m_nagleEanbled(false),
+    mClientSeed(0),
+    mClientBuild(0),
     m_fullAccountName(NULL)
 {
 
@@ -273,7 +275,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
     }
 
     // shitty hash !
-    m_fullAccountName = new string(account);
+    m_fullAccountName = new std::string(account);
 
     // Set the authentication packet
     pAuthenticationPacket = recvPacket;
@@ -295,12 +297,12 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     }
 
     // Extract account information from the packet.
-    string AccountName;
-    const string* ForcedPermissions;
+    std::string AccountName;
+    const std::string* ForcedPermissions;
     uint32 AccountID;
-    string GMFlags;
+    std::string GMFlags;
     uint8 AccountFlags;
-    string lang = "enUS";
+    std::string lang = "enUS";
     uint32 i;
 
     recvData >> AccountID >> AccountName >> GMFlags >> AccountFlags;

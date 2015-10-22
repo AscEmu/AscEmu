@@ -348,6 +348,29 @@ class DISCO : public CreatureAIScript
         }
 };
 
+//Silithid Creeper Egg
+class SilithidCreeperEgg : public CreatureAIScript
+{
+    public:
+        ADD_CREATURE_FACTORY_FUNCTION(SilithidCreeperEgg);
+        SilithidCreeperEgg(Creature* pCreature) : CreatureAIScript(pCreature)
+        {
+            pCreature->GetAIInterface()->SetAllowedToEnterCombat(false);
+        }
+
+        void OnDied(Unit* mKiller)
+        {
+            float SSX = _unit->GetPositionX();
+            float SSY = _unit->GetPositionY();
+            float SSZ = _unit->GetPositionZ();
+            float SSO = _unit->GetOrientation();
+
+            Creature* SilithidGrub = _unit->GetMapMgr()->GetInterface()->SpawnCreature(3251, SSX, SSY + 1, SSZ, SSO, true, false, 0, 0);
+            if(SilithidGrub != NULL)
+                SilithidGrub->Despawn(600000, 0);
+        }
+};
+
 void SetupMiscCreatures(ScriptMgr* mgr)
 {
     mgr->register_creature_script(11120, &CrimsonHammersmith::Create);
@@ -400,4 +423,6 @@ void SetupMiscCreatures(ScriptMgr* mgr)
     mgr->register_creature_script(23090, &TrollRoofStalker::Create);
 
     mgr->register_creature_script(27989, &DISCO::Create);
+
+    mgr->register_creature_script(5781, &SilithidCreeperEgg::Create);
 }

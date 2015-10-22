@@ -27,6 +27,7 @@ CommonScheduleThread::CommonScheduleThread()
 {
     m_running = true;
     BCTimerCount = 0;
+    m_busy = false;
 }
 
 CommonScheduleThread::~CommonScheduleThread()

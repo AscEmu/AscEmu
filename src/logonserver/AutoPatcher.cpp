@@ -141,15 +141,17 @@ PatchMgr::PatchMgr()
             continue;
 
         read_fd = open(Buffer3, O_RDONLY);
-        if(read_fd <= 0)
+        if(read_fd < 0)
         {
             LOG_ERROR("Cannot open %s", Buffer3);
+            close(read_fd);
             continue;
         }
 
         if(fstat(read_fd, &sb) < 0)
         {
             LOG_ERROR("Cannot stat %s", Buffer3);
+            close(read_fd);
             continue;
         }
 
@@ -202,7 +204,7 @@ Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
     char tmplocality[5];
     uint32 ulocality;
     uint32 i;
-    vector<Patch*>::iterator itr;
+    std::vector<Patch*>::iterator itr;
     Patch* fallbackPatch = NULL;
     for(i = 0; i < 4; ++i)
         tmplocality[i] = static_cast<char>(tolower(Locality[i]));
@@ -239,7 +241,7 @@ void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
 
 void PatchMgr::UpdateJobs()
 {
-    list<PatchJob*>::iterator itr, itr2;
+    std::list<PatchJob*>::iterator itr, itr2;
     m_patchJobLock.Acquire();
     for(itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
     {
@@ -258,7 +260,7 @@ void PatchMgr::UpdateJobs()
 
 void PatchMgr::AbortPatchJob(PatchJob* pJob)
 {
-    list<PatchJob*>::iterator itr;
+    std::list<PatchJob*>::iterator itr;
     m_patchJobLock.Acquire();
     for(itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {

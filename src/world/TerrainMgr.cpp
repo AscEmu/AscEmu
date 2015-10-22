@@ -18,9 +18,36 @@
  *
  */
 
+#include "VMapFactory.h"
+#include "IVMapManager.h"
 #include "StdAfx.h"
 #include "TerrainMgr.h"
 
+TerrainHolder::TerrainHolder(uint32 mapid)
+{
+    for (int32 i = 0; i < TERRAIN_NUM_TILES; ++i)
+        for (int32 j = 0; j < TERRAIN_NUM_TILES; ++j)
+            m_tiles[i][j] = NULL;
+    m_mapid = mapid;
+}
+
+TerrainHolder::~TerrainHolder()
+{
+    for (int32 i = 0; i < TERRAIN_NUM_TILES; ++i)
+        for (int32 j = 0; j < TERRAIN_NUM_TILES; ++j)
+            UnloadTile(i, j);
+}
+
+uint16 TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
+{
+    auto tile = this->GetTile(x, y);
+    if (tile)
+    {
+        return tile->m_map.GetArea(x, y);
+    }
+
+    return 0;
+}
 
 TerrainTile* TerrainHolder::GetTile(float x, float y)
 {
@@ -30,41 +57,144 @@ TerrainTile* TerrainHolder::GetTile(float x, float y)
     return GetTile(tx, ty);
 }
 
-AreaTable* TerrainHolder::GetArea(float x, float y, float z)
+TerrainTile* TerrainHolder::GetTile(int32 tx, int32 ty)
 {
-    AreaTable* ret = NULL;
-    float vmap_z = z;
-    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+    TerrainTile* rv = NULL;
+    m_lock[tx][ty].Acquire();
+    rv = m_tiles[tx][ty];
+    if (rv != NULL)
+        rv->AddRef();
+    m_lock[tx][ty].Release();
 
-    uint32 flags;
-    int32 adtid, rootid, groupid;
-
-    if (vmgr->getAreaInfo(m_mapid, x, y, vmap_z, flags, adtid, rootid, groupid))
-    {
-        float adtz = GetADTLandHeight(x, y);
-
-        if (adtz > vmap_z && z + 1 > adtz)
-            return GetArea2D(x, y);
-
-        WMOAreaTableEntry* wmoArea = sWorld.GetWMOAreaData(rootid, adtid, groupid);
-        if (wmoArea != NULL)
-            ret = dbcArea.LookupEntryForced(wmoArea->areaId);
-    }
-
-    if (ret == NULL)  //fall back to 2d if no vmaps or vmap has no areaid set
-        ret = GetArea2D(x, y);
-    return ret;
+    return rv;
 }
 
-AreaTable* TerrainHolder::GetArea2D(float x, float y)
+void TerrainHolder::LoadTile(float x, float y)
 {
-    uint32 exploreFlag = GetAreaFlag(x, y);
+    int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
+    int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
+    LoadTile(tx, ty);
+}
 
-    std::map<uint32, AreaTable*>::iterator itr = sWorld.mAreaIDToTable.find(exploreFlag);
+void TerrainHolder::LoadTile(int32 tx, int32 ty)
+{
+    m_lock[tx][ty].Acquire();
+    ++m_tilerefs[tx][ty];
+    if (m_tiles[tx][ty] == NULL)
+    {
+        m_tiles[tx][ty] = new TerrainTile(this, m_mapid, tx, ty);
+        m_tiles[tx][ty]->Load();
+    }
+    m_lock[tx][ty].Release();
+}
 
-    if (itr == sWorld.mAreaIDToTable.end())
-        return NULL;
-    return dbcArea.LookupEntryForced(itr->second->AreaId);
+void TerrainHolder::UnloadTile(float x, float y)
+{
+    int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
+    int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
+    UnloadTile(tx, ty);
+}
+
+void TerrainHolder::UnloadTile(int32 tx, int32 ty)
+{
+    m_lock[tx][ty].Acquire();
+    if (m_tiles[tx][ty] == NULL)
+    {
+        m_lock[tx][ty].Release();
+        return;
+    }
+    m_lock[tx][ty].Release();
+
+    if (--m_tilerefs[tx][ty] == 0)
+    {
+        m_lock[tx][ty].Acquire();
+        if (m_tiles[tx][ty] != NULL)
+            m_tiles[tx][ty]->DecRef();
+        m_tiles[tx][ty] = NULL;
+        m_lock[tx][ty].Release();
+    }
+}
+
+float TerrainHolder::GetADTLandHeight(float x, float y)
+{
+    TerrainTile* tile = GetTile(x, y);
+
+    if (tile == NULL)
+        return TERRAIN_INVALID_HEIGHT;
+    float rv = tile->m_map.GetHeight(x, y);
+    tile->DecRef();
+    return rv;
+}
+
+float TerrainHolder::GetLandHeight(float x, float y, float z)
+{
+    float adtheight = GetADTLandHeight(x, y);
+
+    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+    float vmapheight = vmgr->getHeight(m_mapid, x, y, z + 0.5f, 10000.0f);
+
+    if (adtheight > z && vmapheight > -1000)
+        return vmapheight; //underground
+    return std::max(vmapheight, adtheight);
+}
+
+float TerrainHolder::GetLiquidHeight(float x, float y)
+{
+    TerrainTile* tile = GetTile(x, y);
+
+    if (tile == NULL)
+        return TERRAIN_INVALID_HEIGHT;
+    float rv = tile->m_map.GetLiquidHeight(x, y);
+    tile->DecRef();
+    return rv;
+}
+
+uint8 TerrainHolder::GetLiquidType(float x, float y)
+{
+    TerrainTile* tile = GetTile(x, y);
+
+    if (tile == NULL)
+        return 0;
+    uint8 rv = tile->m_map.GetLiquidType(x, y);
+    tile->DecRef();
+    return rv;
+}
+
+uint32 TerrainHolder::GetAreaFlag(float x, float y)
+{
+    TerrainTile* tile = GetTile(x, y);
+
+    if (tile == NULL)
+    {
+        // No generated map for this area (usually instances)
+        return 0;
+    }
+    uint32 rv = tile->m_map.GetArea(x, y);
+    tile->DecRef();
+    return rv;
+}
+
+bool TerrainHolder::GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype)
+{
+    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+
+    float flr;
+    if (vmgr->GetLiquidLevel(m_mapid, x, y, z, 0xFF, liquidlevel, flr, liquidtype))
+        return true;
+
+    liquidlevel = GetLiquidHeight(x, y);
+    liquidtype = GetLiquidType(x, y);
+
+    if (liquidtype == 0)
+        return false;
+    return true;
+}
+
+bool TerrainHolder::InLineOfSight(float x, float y, float z, float x2, float y2, float z2)
+{
+    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+
+    return vmgr->isInLineOfSight(m_mapid, x, y, z, x2, y2, z2);
 }
 
 TerrainTile::~TerrainTile()
@@ -267,24 +397,77 @@ float TileMap::GetHeight(float x, float y)
     return GetHeightF(x, y, x_int, y_int);
 }
 
+const bool TerrainHolder::GetAreaInfo(float x, float y, float z, uint32 &mogp_flags, int32 &adt_id, int32 &root_id, int32 &group_id)
+{
+    float vmap_z = z;
+    auto vmap_manager = VMAP::VMapFactory::createOrGetVMapManager();
+    if (vmap_manager->getAreaInfo(m_mapid, x, y, vmap_z, mogp_flags, adt_id, root_id, group_id))
+    {
+        if (auto tile = this->GetTile(x, y))
+        {
+            float map_height = tile->m_map.GetHeight(x, y);
+            if (z + 2.0f > map_height && map_height > vmap_z)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+TileMap::TileMap()
+{
+    m_areaMap = NULL;
+    m_area = 0;
+    m_tileHeight = 0;
+    m_heightMapFlags = 0;
+    m_heightMap8F = NULL;
+    m_heightMap9F = NULL;
+    m_heightMapMult = 1;
+
+    m_liquidType = NULL;
+    m_liquidMap = NULL;
+    m_liquidLevel = 0;
+    m_liquidOffX = 0;
+    m_liquidOffY = 0;
+    m_liquidHeight = 0;
+    m_liquidWidth = 0;
+    m_defaultLiquidType = 0;
+}
+
+TileMap::~TileMap()
+{
+    delete[] m_areaMap;
+    delete[] m_heightMap8F;
+    delete[] m_heightMap9F;
+
+    delete[] m_liquidType;
+    delete[] m_liquidMap;
+}
+
 void TileMap::Load(char* filename)
 {
-    sLog.Debug("Terrain", "Loading %s", filename);
+    sLog.Debug("TerrainMgr", "Loading %s", filename);
     FILE* f = fopen(filename, "rb");
 
     if (f == NULL)
     {
-        sLog.Error("Terrain", "%s does not exist", filename);
+        sLog.Error("TerrainMgr", "%s does not exist", filename);
         return;
     }
 
     TileMapHeader header;
 
-    fread(&header, 1, sizeof(header), f);
+    if (fread(&header, sizeof(header), 1, f) != 1)
+    {
+        fclose(f);
+        return;
+    }
 
     if (header.buildMagic != 12340)  //wow version
     {
-        sLog.Error("Terrain", "%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, 12340);
+        sLog.Error("TerrainMgr", "%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, 12340);
         fclose(f);
         return;
     }
@@ -305,8 +488,12 @@ void TileMap::Load(char* filename)
 void TileMap::LoadLiquidData(FILE* f, TileMapHeader & header)
 {
     TileMapLiquidHeader liquidHeader;
-    fseek(f, header.liquidMapOffset, SEEK_SET);
-    fread(&liquidHeader, 1, sizeof(liquidHeader), f);
+
+    if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
+        return;
+
+    if (fread(&liquidHeader, sizeof(liquidHeader), 1, f) != 1)
+        return;
 
     m_defaultLiquidType = liquidHeader.liquidType;
     m_liquidLevel = liquidHeader.liquidLevel;
@@ -318,21 +505,27 @@ void TileMap::LoadLiquidData(FILE* f, TileMapHeader & header)
     if (!(liquidHeader.flags & MAP_LIQUID_NO_TYPE))
     {
         m_liquidType = new uint8[16 * 16];
-        fread(m_liquidType, sizeof(uint8), 16 * 16, f);
+        if (fread(m_liquidType, sizeof(uint8), 16 * 16, f) != 16 * 16)
+            return;
     }
 
     if (!(liquidHeader.flags & MAP_LIQUID_NO_HEIGHT))
     {
         m_liquidMap = new float[m_liquidWidth * m_liquidHeight];
-        fread(m_liquidMap, sizeof(float), m_liquidWidth * m_liquidHeight, f);
+        if (fread(m_liquidMap, sizeof(float), m_liquidWidth * m_liquidHeight, f) != 16 * 16)
+            return;
     }
 }
 
 void TileMap::LoadHeightData(FILE* f, TileMapHeader & header)
 {
     TileMapHeightHeader mapHeader;
-    fseek(f, header.heightMapOffset, SEEK_SET);
-    fread(&mapHeader, 1, sizeof(mapHeader), f);
+
+    if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
+        return;
+
+    if (fread(&mapHeader, sizeof(mapHeader), 1, f) != 1)
+        return;
 
     m_tileHeight = mapHeader.gridHeight;
     m_heightMapFlags = mapHeader.flags;
@@ -343,8 +536,9 @@ void TileMap::LoadHeightData(FILE* f, TileMapHeader & header)
 
         m_heightMap9S = new uint16[129 * 129];
         m_heightMap8S = new uint16[128 * 128];
-        fread(m_heightMap9S, sizeof(uint16), 129 * 129, f);
-        fread(m_heightMap8S, sizeof(uint16), 128 * 128, f);
+        if (fread(m_heightMap9S, sizeof(uint16), 129 * 129, f) != 129 * 129 ||
+            fread(m_heightMap8S, sizeof(uint16), 128 * 128, f) != 128 * 128)
+            return;
     }
     else if (m_heightMapFlags & MAP_HEIGHT_AS_INT8)
     {
@@ -352,15 +546,17 @@ void TileMap::LoadHeightData(FILE* f, TileMapHeader & header)
 
         m_heightMap9B = new uint8[129 * 129];
         m_heightMap8B = new uint8[128 * 128];
-        fread(m_heightMap9B, sizeof(uint8), 129 * 129, f);
-        fread(m_heightMap8B, sizeof(uint8), 128 * 128, f);
+        if (fread(m_heightMap9B, sizeof(uint8), 129 * 129, f) != 129 * 129 ||
+            fread(m_heightMap8B, sizeof(uint8), 128 * 128, f) != 128 * 128)
+            return;
     }
     else
     {
         m_heightMap9F = new float[129 * 129];
         m_heightMap8F = new float[128 * 128];
-        fread(m_heightMap9F, sizeof(float), 129 * 129, f);
-        fread(m_heightMap8F, sizeof(float), 128 * 128, f);
+        if (fread(m_heightMap9F, sizeof(float), 129 * 129, f) != 129 * 129 ||
+            fread(m_heightMap8F, sizeof(float), 128 * 128, f) != 128 * 128)
+            return;
     }
 }
 
@@ -368,14 +564,18 @@ void TileMap::LoadAreaData(FILE* f, TileMapHeader & header)
 {
     TileMapAreaHeader areaHeader;
 
-    fseek(f, header.areaMapOffset, SEEK_SET);
-    fread(&areaHeader, 1, sizeof(areaHeader), f);
+    if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
+        return;
+
+    if (fread(&areaHeader, sizeof(areaHeader), 1, f) != 1)
+        return;
 
     m_area = areaHeader.gridArea;
     if (!(areaHeader.flags & MAP_AREA_NO_AREA))
     {
         m_areaMap = new uint16[16 * 16];
-        fread(m_areaMap, sizeof(uint16), 16 * 16, f);
+        if (fread(m_areaMap, sizeof(uint16), 16 * 16, f) != 16 * 16)
+            return;
     }
 }
 

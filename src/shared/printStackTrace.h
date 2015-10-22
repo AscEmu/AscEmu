@@ -14,6 +14,8 @@
 #ifndef _PRINTSTACKTRACE_H
 #define _PRINTSTACKTRACE_H
 
+#include "CommonTypes.hpp"
+
 /**
  * Prints formatted call stack to the user defined buffer,
  * always terminating the buffer with 0.

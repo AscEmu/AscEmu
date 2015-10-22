@@ -22,14 +22,14 @@
 #include "StdAfx.h"
 
 Mutex m_confSettingLock;
-vector<string> m_bannedChannels;
-vector<string> m_minimumChannel;
+std::vector<std::string> m_bannedChannels;
+std::vector<std::string> m_minimumChannel;
 uint64 voicechannelhigh = 0;
 
 void Channel::LoadConfSettings()
 {
-    string BannedChannels = Config.MainConfig.GetStringDefault("Channels", "BannedChannels", "");
-    string MinimumLevel = Config.MainConfig.GetStringDefault("Channels", "MinimumLevel", "");
+    std::string BannedChannels = Config.MainConfig.GetStringDefault("Channels", "BannedChannels", "");
+    std::string MinimumLevel = Config.MainConfig.GetStringDefault("Channels", "MinimumLevel", "");
     m_confSettingLock.Acquire();
     m_bannedChannels = StrSplit(BannedChannels, ";");
     m_minimumChannel = StrSplit(MinimumLevel, ";");
@@ -58,7 +58,7 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
     m_announce = true;
     m_muted = false;
     m_general = false;
-    m_name = string(name);
+    m_name = std::string(name);
     m_team = team;
     m_id = type_id;
     m_minimumLevel = 1;
@@ -84,7 +84,7 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
     else
         m_flags = 0x01;
 
-    for (vector<string>::iterator itr = m_minimumChannel.begin(); itr != m_minimumChannel.end(); ++itr)
+    for (std::vector<std::string>::iterator itr = m_minimumChannel.begin(); itr != m_minimumChannel.end(); ++itr)
     {
         if (stricmp(name, itr->c_str()))
         {
@@ -130,7 +130,7 @@ void Channel::AttemptJoin(Player* plr, const char* password)
         flags |= CHANNEL_FLAG_OWNER;
 
     plr->JoinedChannel(this);
-    m_members.insert(make_pair(plr, flags));
+    m_members.insert(std::make_pair(plr, flags));
 
     if (m_announce)
     {
@@ -472,7 +472,7 @@ void Channel::Unban(Player* plr, PlayerInfo* bplr)
         return;
     }
 
-    set<uint32>::iterator it2 = m_bannedMembers.find(bplr->guid);
+    std::set<uint32>::iterator it2 = m_bannedMembers.find(bplr->guid);
     if (it2 == m_bannedMembers.end())
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOT_ON_2) << m_name << uint64(bplr->guid);
@@ -726,7 +726,7 @@ void Channel::Password(Player* plr, const char* pass)
         return;
     }
 
-    m_password = string(pass);
+    m_password = std::string(pass);
     data << uint8(CHANNEL_NOTIFY_FLAG_SETPASS) << m_name << plr->GetGUID();
     SendToAll(&data);
 }
@@ -850,7 +850,7 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
 
     // make sure the name isn't banned
     m_confSettingLock.Acquire();
-    for (vector<string>::iterator itr2 = m_bannedChannels.begin(); itr2 != m_bannedChannels.end(); ++itr2)
+    for (std::vector<std::string>::iterator itr2 = m_bannedChannels.begin(); itr2 != m_bannedChannels.end(); ++itr2)
     {
         if (!strnicmp(name, itr2->c_str(), itr2->size()))
         {
@@ -933,5 +933,5 @@ void ChannelMgr::RemoveChannel(Channel* chn)
 
 ChannelMgr::ChannelMgr()
 {
-
+    seperatechannels = false;
 }

@@ -23,8 +23,6 @@
 #include <sys/types.h>
 
 // Need to be cleaned up
-#include "CompilerDefs.h"
-#include "Common.h"
 #include <windows.h>
 #include <minwinbase.h>
 #include <fileapi.h>

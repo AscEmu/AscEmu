@@ -171,6 +171,8 @@ EyeOfTheStorm::EyeOfTheStorm(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : 
     m_dropFlag = NULL;
 
     m_zoneid = 3820;
+    for(i = 0; i < 2; ++i)
+        m_bubbles[i] = NULL;
 }
 
 EyeOfTheStorm::~EyeOfTheStorm()
@@ -235,12 +237,22 @@ EyeOfTheStorm::~EyeOfTheStorm()
 
 }
 
+/*! Handles end of battleground rewards (marks etc)
+*  \param winningTeam Team that won the battleground
+*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool EyeOfTheStorm::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 43477);
+    CastSpellOnTeam(winningTeam, 69156);
+    return true;
+}
+
 void EyeOfTheStorm::RepopPlayersOfTeam(int32 team, Creature* sh)
 {
-    map<Creature*, set<uint32> >::iterator itr = m_resurrectMap.find(sh);
+    std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(sh);
     if(itr != m_resurrectMap.end())
     {
-        for(set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+        for(std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
         {
             Player* r_plr = m_mapMgr->GetPlayer(*it2);
             if(r_plr != NULL && (team < 0 || (int32)r_plr->GetTeam() == team) && r_plr->IsDead())
@@ -331,7 +343,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
         uint32 x = (uint32)bonusid;
         if(EOTSm_buffs[x] && EOTSm_buffs[x]->IsInWorld())
         {
-            spellid = EOTSm_buffs[x]->GetInfo()->sound3;
+            spellid = EOTSm_buffs[x]->GetInfo()->parameter_3;
             SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
             if(sp)
             {
@@ -418,7 +430,7 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* obj)
     if(!m_dropFlag->IsInWorld())
         return;
 
-    map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
     if(itr != plr->m_forcedReactions.end())
     {
         return;
@@ -556,42 +568,42 @@ void EyeOfTheStorm::EventResetFlag()
 
 void EyeOfTheStorm::OnCreate()
 {
-    GameObjectInfo* goi;
+    GameObjectInfo* gameobject_info;
     uint32 i;
 
     /* create gameobjects */
     for(i = 0; i < EOTS_TOWER_COUNT; ++i)
     {
-        goi = GameObjectNameStorage.LookupEntry(EOTSTowerIds[i]);
-        if(goi == NULL)
+        gameobject_info = GameObjectNameStorage.LookupEntry(EOTSTowerIds[i]);
+        if (gameobject_info == nullptr)
         {
             Log.LargeErrorMessage("EOTS is being created and you are missing gameobjects. Terminating.", NULL);
             abort();
             return;
         }
 
-        m_CPStatusGO[i] = m_mapMgr->CreateGameObject(goi->ID);
-        m_CPStatusGO[i]->CreateFromProto(goi->ID, m_mapMgr->GetMapId(), EOTSTCLocations[i][0], EOTSTCLocations[i][1], EOTSTCLocations[i][2], 0);
+        m_CPStatusGO[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
+        m_CPStatusGO[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSTCLocations[i][0], EOTSTCLocations[i][1], EOTSTCLocations[i][2], 0);
         m_CPStatusGO[i]->PushToWorld(m_mapMgr);
 
-        goi = GameObjectNameStorage.LookupEntry(EOTS_BANNER_NEUTRAL);
-        if(goi == NULL)
+        gameobject_info = GameObjectNameStorage.LookupEntry(EOTS_BANNER_NEUTRAL);
+        if (gameobject_info == nullptr)
         {
             Log.LargeErrorMessage("EOTS is being created and you are missing gameobjects. Terminating.", NULL);
             abort();
             return;
         }
 
-        m_CPBanner[i] = m_mapMgr->CreateGameObject(goi->ID);
-        m_CPBanner[i]->CreateFromProto(goi->ID, m_mapMgr->GetMapId(), EOTSCPLocations[i][0], EOTSCPLocations[i][1], EOTSCPLocations[i][2], 0);
+        m_CPBanner[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
+        m_CPBanner[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations[i][0], EOTSCPLocations[i][1], EOTSCPLocations[i][2], 0);
         m_CPBanner[i]->PushToWorld(m_mapMgr);
 
-        m_CPBanner2[i] = m_mapMgr->CreateGameObject(goi->ID);
-        m_CPBanner2[i]->CreateFromProto(goi->ID, m_mapMgr->GetMapId(), EOTSCPLocations2[i][0], EOTSCPLocations2[i][1], EOTSCPLocations2[i][2], 0);
+        m_CPBanner2[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
+        m_CPBanner2[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations2[i][0], EOTSCPLocations2[i][1], EOTSCPLocations2[i][2], 0);
         m_CPBanner2[i]->PushToWorld(m_mapMgr);
 
-        m_CPBanner3[i] = m_mapMgr->CreateGameObject(goi->ID);
-        m_CPBanner3[i]->CreateFromProto(goi->ID, m_mapMgr->GetMapId(), EOTSCPLocations3[i][0], EOTSCPLocations3[i][1], EOTSCPLocations3[i][2], 0);
+        m_CPBanner3[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
+        m_CPBanner3[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations3[i][0], EOTSCPLocations3[i][1], EOTSCPLocations3[i][2], 0);
         m_CPBanner3[i]->PushToWorld(m_mapMgr);
     }
 
@@ -656,7 +668,7 @@ void EyeOfTheStorm::RespawnCPFlag(uint32 i, uint32 id)
 void EyeOfTheStorm::UpdateCPs()
 {
     uint32 i;
-    set< Object* >::iterator itr, itrend;
+    std::set< Object* >::iterator itr, itrend;
     Player* plr;
     GameObject* go;
     int32 delta = 0;
@@ -677,7 +689,7 @@ void EyeOfTheStorm::UpdateCPs()
 
         for(; itr != itrend; ++itr)
         {
-            plr = TO< Player* >(*itr);
+            plr = static_cast< Player* >(*itr);
             if(plr->isAlive() && !(plr->IsStealth()) && !(plr->m_invisible) && !(plr->SchoolImmunityList[0]) && plr->GetDistance2dSq(go) <= EOTS_CAPTURE_DISTANCE)
             {
                 playercounts[plr->GetTeam()]++;
@@ -856,16 +868,16 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
     m_points[team] += points;
     if((m_points[team] - m_lastHonorGainPoints[team]) >= resourcesToGainBH)
     {
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
         uint32 honorToAdd = m_honorPerKill;
-        m_mainLock.Acquire();
-        for(set<Player*>::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
         }
 
         UpdatePvPData();
-        m_mainLock.Release();
         m_lastHonorGainPoints[team] += resourcesToGainBH;
     }
 
@@ -873,34 +885,12 @@ bool EyeOfTheStorm::GivePoints(uint32 team, uint32 points)
     {
         m_points[team] = 1600;
 
-        m_ended = true;
-        m_winningteam = static_cast<uint8>(team);
-        m_nextPvPUpdateTime = 0;
-
         sEventMgr.RemoveEvents(this);
-        sEventMgr.AddEvent(TO<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        m_mainLock.Acquire();
-
-        AddHonorToTeam(m_winningteam, 3 * 185);
-
-        CastSpellOnTeam(m_winningteam, 43477);
-        CastSpellOnTeam(m_winningteam, 69156);
-
-        if(m_winningteam == TEAM_ALLIANCE)
-        { 
-            AddHonorToTeam(TEAM_HORDE, 1 * 185);
-            PlaySoundToAll(SOUND_ALLIANCEWINS);
-        }
-        else
-        { 
-            AddHonorToTeam(TEAM_ALLIANCE, 1 * 185);
-            PlaySoundToAll(SOUND_HORDEWINS);
-        }
-
-        m_mainLock.Release();
         SetWorldState(WORLDSTATE_EOTS_ALLIANCE_VICTORYPOINTS + team, m_points[team]);
-        UpdatePvPData();
+
+        this->EndBattleground(team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
         return true;
     }
 
@@ -966,7 +956,7 @@ void EyeOfTheStorm::OnStart()
 {
     for(uint32 i = 0; i < 2; ++i)
     {
-        for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }

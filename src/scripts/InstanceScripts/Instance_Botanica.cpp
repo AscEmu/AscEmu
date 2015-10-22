@@ -97,7 +97,7 @@ class BloodProtectorAI : public CreatureAIScript
             nrspells = 1;
 
             // --- Initialization ---
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -141,7 +141,7 @@ class BloodProtectorAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -177,7 +177,7 @@ class BloodProtectorAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -205,7 +205,7 @@ class BloodGreenkeeperAI : public CreatureAIScript
             nrspells = 1;
 
             // --- Initialization ---
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -249,7 +249,7 @@ class BloodGreenkeeperAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -285,7 +285,7 @@ class BloodGreenkeeperAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -304,7 +304,7 @@ class SunchemistAI : public CreatureAIScript
             nrspells = 2;
 
             // --- Initialization ---
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -353,7 +353,7 @@ class SunchemistAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -389,7 +389,7 @@ class SunchemistAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -408,7 +408,7 @@ class SunResearcherAI : public CreatureAIScript
             nrspells = 4;
 
             // --- Initialization ---
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -470,7 +470,7 @@ class SunResearcherAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -506,7 +506,7 @@ class SunResearcherAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -523,7 +523,7 @@ class CommanderSarannisAI : public CreatureAIScript
         {
             GuardAdds = false;
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -561,7 +561,7 @@ class CommanderSarannisAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -578,10 +578,7 @@ class CommanderSarannisAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_02);
@@ -614,9 +611,7 @@ class CommanderSarannisAI : public CreatureAIScript
 
         void ArcaneSound()
         {
-            int RandomArcane;
-            RandomArcane = rand() % 30;
-            switch (RandomArcane)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_COMMANDER_SARANNIS_04);
@@ -633,7 +628,7 @@ class CommanderSarannisAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -680,7 +675,7 @@ class CommanderSarannisAI : public CreatureAIScript
     protected:
 
         bool GuardAdds;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -697,7 +692,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
         {
             PlantTimer = 10;
             nrspells = 7;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -764,7 +759,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -781,10 +776,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_HIGH_BOTANIS_FREYWIN_03);
@@ -818,10 +810,9 @@ class HighBotanistFreywinnAI : public CreatureAIScript
 
         void PlantColorSeedling()
         {
-            PlantTimer = rand() % 6 + 5;    //5-10 sec (as in my DB attack time is 1000)
-            uint32 RandomPlant;
-            RandomPlant = rand() % 4;
-            switch (RandomPlant)
+            PlantTimer = RandomUInt(5, 10);    //5-10 sec (as in my DB attack time is 1000)
+
+            switch (RandomUInt(3))
             {
                 case 0:
                 {
@@ -838,7 +829,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                     _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
                 }
                 break;
-                case 4:
+                case 3:
                 {
                     _unit->CastSpell(_unit, spells[3].info, spells[3].instant);
                 }
@@ -848,9 +839,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
 
         void TreeSound()
         {
-            uint32 RandomTree;
-            RandomTree = rand() % 2;
-            switch (RandomTree)
+            switch (RandomUInt(1))
             {
                 case 0:
                 {
@@ -871,7 +860,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -922,7 +911,7 @@ class HighBotanistFreywinnAI : public CreatureAIScript
     protected:
 
         uint32 PlantTimer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -939,7 +928,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
         {
             Enraged = false;
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -977,7 +966,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -994,10 +983,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_THORNIN_02);
@@ -1031,9 +1017,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
 
         void HellfireSound()
         {
-            int RandomHellfire;
-            RandomHellfire = rand() % 2;
-            switch (RandomHellfire)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_THORNIN_06);
@@ -1046,9 +1030,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
 
         void SacrificeSound()
         {
-            int RandomSacrifice;
-            RandomSacrifice = rand() % 2;
-            switch (RandomSacrifice)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_THORNIN_04);
@@ -1065,7 +1047,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1120,7 +1102,7 @@ class ThorngrinTheTenderAI : public CreatureAIScript
     protected:
 
         bool Enraged;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1137,7 +1119,7 @@ class LajAI : public CreatureAIScript
         {
             TeleportTimer = 20;    // It's sth about that
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1181,7 +1163,7 @@ class LajAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1226,7 +1208,7 @@ class LajAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1271,7 +1253,7 @@ class LajAI : public CreatureAIScript
     protected:
 
         uint32 TeleportTimer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -1289,7 +1271,7 @@ class WarpSplinterAI : public CreatureAIScript
 
             SummonTimer = 20;    // It's sth about that
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1327,7 +1309,7 @@ class WarpSplinterAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1344,10 +1326,7 @@ class WarpSplinterAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)    // Hack to prevent double yelling (OnDied and OnTargetDied when creature is dying)
             {
-                int RandomSpeach;
-                RandomUInt(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_02);
@@ -1373,7 +1352,7 @@ class WarpSplinterAI : public CreatureAIScript
 
             if (!SummonTimer)    // it will need more work on this spell in future (when this kind of spell will work)
             {
-                /*for (int i=0;i<5;i++)
+                /*for (uint8 i=0;i<5;i++)
                 {
                 _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
                 }*/
@@ -1388,9 +1367,7 @@ class WarpSplinterAI : public CreatureAIScript
 
         void SummonSound()
         {
-            int RandomSummon;
-            RandomSummon = rand() % 2;
-            switch (RandomSummon)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(SAY_WARP_SPLINTER_04);
@@ -1407,7 +1384,7 @@ class WarpSplinterAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1452,7 +1429,7 @@ class WarpSplinterAI : public CreatureAIScript
     protected:
 
         uint32 SummonTimer;
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupBotanica(ScriptMgr* mgr)

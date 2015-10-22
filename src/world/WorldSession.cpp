@@ -18,11 +18,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "FastQueue.h"
+#include "Threading/Mutex.h"
+#include "WorldPacket.h"
 #include "StdAfx.h"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
-WorldSession::WorldSession(uint32 id, string Name, WorldSocket* sock) :
+WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
     m_loggingInPlayer(NULL),
     m_currMsTime(getMSTime()),
     bDeleted(false),
@@ -45,6 +48,12 @@ WorldSession::WorldSession(uint32 id, string Name, WorldSocket* sock) :
     floodLines(0),
     floodTime(UNIXTIME),
     language(0),
+    m_lastPing(0),
+    m_wLevel(0),
+    _accountFlags(0),
+    has_dk(false),
+    _latency(0),
+    client_build(0),
     m_muted(0)
 {
     memset(movement_packet, 0, sizeof(movement_packet));
@@ -255,10 +264,10 @@ void WorldSession::LogoutPlayer(bool Save)
                 switch (obj->GetTypeId())
                 {
                     case TYPEID_UNIT:
-                        TO <Creature*>(obj)->loot.looters.erase(_player->GetLowGUID());
+                        static_cast <Creature*>(obj)->loot.looters.erase(_player->GetLowGUID());
                         break;
                     case TYPEID_GAMEOBJECT:
-                        TO <GameObject*>(obj)->loot.looters.erase(_player->GetLowGUID());
+                        static_cast <GameObject*>(obj)->loot.looters.erase(_player->GetLowGUID());
                         break;
                 }
             }
@@ -464,7 +473,7 @@ void WorldSession::SetSecurity(std::string securitystring)
     LoadSecurity(securitystring);
 
     // update db
-    CharacterDatabase.Execute("UPDATE accounts SET gm=\'%s\' WHERE acct=%u", CharacterDatabase.EscapeString(string(permissions)).c_str(), _accountId);
+    CharacterDatabase.Execute("UPDATE accounts SET gm=\'%s\' WHERE acct=%u", CharacterDatabase.EscapeString(std::string(permissions)).c_str(), _accountId);
 }
 
 bool WorldSession::CanUseCommand(char cmdstr)
@@ -492,6 +501,8 @@ void WorldSession::SendNotification(const char* message, ...)
     va_start(ap, message);
     char msg1[1024];
     vsnprintf(msg1, 1024, message, ap);
+    va_end(ap);
+
     WorldPacket data(SMSG_NOTIFICATION, strlen(msg1) + 1);
     data << msg1;
     SendPacket(&data);
@@ -1402,12 +1413,31 @@ void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 
 void WorldSession::SendMOTD()
 {
-    WorldPacket data(SMSG_MOTD, 100);
+    WorldPacket data(SMSG_MOTD, 50);
+    data << (uint32)0;
+    uint32 linecount = 0;
+    std::string str_motd = sWorld.GetMotd();
+    std::string::size_type pos, nextpos;
 
-    data << uint32(4);
-    data << sWorld.GetMotd();
+    pos = 0;
+    while ((nextpos = str_motd.find('@', pos)) != std::string::npos)
+    {
+        if (nextpos != pos)
+        {
+            data << str_motd.substr(pos, nextpos - pos);
+            ++linecount;
+        }
+        pos = nextpos + 1;
+    }
+        if (pos < str_motd.length())
+        {
+            data << str_motd.substr(pos);
+            ++linecount;
+        }
 
-    SendPacket(&data);
+        data.put(0, linecount);
+
+        SendPacket(&data);
 }
 
 void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
@@ -1432,8 +1462,8 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
         ItemGUID = GUID.GetOldGuid();
 
         // Let's see if we even have this item
-        Item* item = _player->GetItemInterface()->GetItemByGUID(ItemGUID);
-        if (item == NULL)
+        auto item = _player->GetItemInterface()->GetItemByGUID(ItemGUID);
+        if (item == nullptr)
         {
             // Nope we don't probably WPE hack :/
             result = 1;
@@ -1448,9 +1478,9 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
             continue;
 
         // Let's see if we have an item in the destination slot
-        Item* dstslotitem = _player->GetItemInterface()->GetInventoryItem(dstslot);
+        auto dstslotitem = _player->GetItemInterface()->GetInventoryItem(dstslot);
 
-        if (dstslotitem == NULL)
+        if (dstslotitem == nullptr)
         {
             // we have no item equipped in the slot, so let's equip
             AddItemResult additemresult;
@@ -1464,8 +1494,14 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
                 if (additemresult != ADD_ITEM_RESULT_OK)
                 {
                     // We failed for w/e reason, so let's revert
-                    _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
-                    result = 1;
+                    auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
+                    if (!check)
+                    {
+                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->GetEntry(), _player->GetNameString());
+                        result = 0;
+                    }
+                    else
+                        result = 1;
                 }
             }
             else
@@ -1715,4 +1751,34 @@ void WorldSession::SendClientCacheVersion(uint32 version)
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32(version);
     SendPacket(&data);
+}
+
+void WorldSession::SendPacket(WorldPacket* packet) {
+    if (_socket && _socket->IsConnected())
+        _socket->SendPacket(packet);
+}
+
+void WorldSession::SendPacket(StackBufferBase* packet) {
+    if (_socket && _socket->IsConnected())
+        _socket->SendPacket(packet);
+}
+
+void WorldSession::OutPacket(uint16 opcode) {
+    if (_socket && _socket->IsConnected())
+        _socket->OutPacket(opcode, 0, NULL);
+}
+
+void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data) {
+    if (_socket && _socket->IsConnected())
+        _socket->OutPacket(opcode, len, data);
+}
+
+void WorldSession::QueuePacket(WorldPacket* packet) {
+    m_lastPing = (uint32)UNIXTIME;
+    _recvQueue.Push(packet);
+}
+
+void WorldSession::Disconnect() {
+    if (_socket && _socket->IsConnected())
+        _socket->Disconnect();
 }

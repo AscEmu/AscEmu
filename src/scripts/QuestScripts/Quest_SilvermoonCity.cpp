@@ -29,13 +29,13 @@ class PathoftheAdept : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* lord = TO_CREATURE(pObject);
+            Creature* lord = static_cast<Creature*>(pObject);
             if(lord == NULL)
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
             if(plr->HasQuest(9692))
-                Menu->AddItem(0, "Take Insignia", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(493), 1);     // Take Insignia
 
             Menu->SendTo(plr);
         }
@@ -45,7 +45,7 @@ class PathoftheAdept : public GossipScript
             if(!plr)
                 return;
 
-            Creature* lord = TO_CREATURE(pObject);
+            Creature* lord = static_cast<Creature*>(pObject);
             if(lord == NULL)
                 return;
 
@@ -75,7 +75,7 @@ class LordDawnstar : public CreatureAIScript
 
         void OnLoad()
         {
-            _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+            _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
             _unit->SetStandState(STANDSTATE_DEAD);
             _unit->setDeathState(CORPSE);
             _unit->GetAIInterface()->m_canMove = false;

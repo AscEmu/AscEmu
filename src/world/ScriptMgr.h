@@ -22,6 +22,9 @@
 #ifndef SCRIPTMGR_H
 #define SCRIPTMGR_H
 
+#include "Gossip.h"
+#include "GameEventMgr.h"
+
 #define SCRIPT_MODULE void*
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature* c) { return new cl(c); }
 #define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
@@ -143,11 +146,11 @@ typedef HM_NAMESPACE::hash_map<uint32, exp_handle_dummy_aura> HandleDummyAuraMap
 typedef HM_NAMESPACE::hash_map<uint32, exp_handle_dummy_spell> HandleDummySpellMap;
 typedef HM_NAMESPACE::hash_map< uint32, exp_handle_script_effect > HandleScriptEffectMap;
 typedef HM_NAMESPACE::hash_map<uint32, exp_create_instance_ai> InstanceCreateMap;
-typedef set<Arcemu::Gossip::Script*> CustomGossipScripts;
+typedef std::set<Arcemu::Gossip::Script*> CustomGossipScripts;
 typedef HM_NAMESPACE::hash_map<uint32, Arcemu::Gossip::Script*> GossipMap;
-typedef set<EventScript*> EventScripts;
-typedef set<QuestScript*> QuestScripts;
-typedef set<void*> ServerHookList;
+typedef std::set<EventScript*> EventScripts;
+typedef std::set<QuestScript*> QuestScripts;
+typedef std::set<void*> ServerHookList;
 typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 
 #define VISIBLE_RANGE (26.46f)
@@ -439,6 +442,7 @@ class SERVER_DECL CreatureAIScript
     CreatureAIScript* linkedCreatureAI;
 };
 
+class GameEvent;
 class SERVER_DECL EventScript
 {
     public:

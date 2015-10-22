@@ -21,7 +21,9 @@
 #ifndef _AIEVENTS_H
 #define _AIEVENTS_H
 
+#include "CommonTypes.hpp"
 
+class Unit;
 class AIInterface;
 typedef void(AIInterface::*pAIEvent)(Unit* punit, uint32 misc1);
 

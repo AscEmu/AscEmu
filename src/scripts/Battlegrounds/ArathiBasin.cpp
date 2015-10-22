@@ -18,12 +18,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+#if COMPILER == COMPILER_GNU
+    // Required on gcc
+    #include "StdAfx.h"
+#endif
+
 #include "ArathiBasin.h"
 
 #define BASE_RESOURCES_GAIN 10
 #define RESOURCES_WARNING_THRESHOLD 1400
 #define RESOURCES_WINVAL 1600
+#include <QuestLogEntry.hpp>
 
 uint32 buffentries[3] = {180380, 180362, 180146};
 
@@ -154,11 +159,11 @@ static uint32 resourcesToGainBR = 160;
 void ArathiBasin::SpawnBuff(uint32 x)
 {
     uint32 chosen_buffid = buffentries[RandomUInt(2)];
-    GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(chosen_buffid);
-    if(goi == NULL)
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(chosen_buffid);
+    if (gameobject_info == nullptr)
         return;
 
-    if(m_buffs[x] == NULL)
+    if(m_buffs[x] == nullptr)
     {
         m_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->GetMapId(), BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
                                      BuffCoordinates[x][3], 0, 114, 1);
@@ -180,7 +185,7 @@ void ArathiBasin::SpawnBuff(uint32 x)
         {
             m_buffs[x]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
             m_buffs[x]->SetEntry(chosen_buffid);
-            m_buffs[x]->SetInfo(goi);
+            m_buffs[x]->SetInfo(gameobject_info);
         }
 
         m_buffs[x]->PushToWorld(m_mapMgr);
@@ -189,25 +194,24 @@ void ArathiBasin::SpawnBuff(uint32 x)
 
 void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 {
-    GameObjectInfo* gi, * gi_aura;
-    gi = GameObjectNameStorage.LookupEntry(ControlPointGoIds[Id][Type]);
-    if(gi == NULL)
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(ControlPointGoIds[Id][Type]);
+    if (gameobject_info == nullptr)
         return;
 
-    gi_aura = gi->sound3 ? GameObjectNameStorage.LookupEntry(gi->sound3) : NULL;
+    auto gi_aura = gameobject_info->parameter_3 ? GameObjectNameStorage.LookupEntry(gameobject_info->parameter_3) : nullptr;
 
-    if(m_controlPoints[Id] == NULL)
+    if(m_controlPoints[Id] == nullptr)
     {
-        m_controlPoints[Id] = SpawnGameObject(gi->ID, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        m_controlPoints[Id] = SpawnGameObject(gameobject_info->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
                                               ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         m_controlPoints[Id]->SetParentRotation(2, ControlPointRotations[Id][0]);
         m_controlPoints[Id]->SetParentRotation(3, ControlPointRotations[Id][1]);
         m_controlPoints[Id]->SetState(GAMEOBJECT_STATE_CLOSED);
-        m_controlPoints[Id]->SetType(static_cast<uint8>(gi->Type));
+        m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
         m_controlPoints[Id]->SetAnimProgress(100);
         m_controlPoints[Id]->Activate();
-        m_controlPoints[Id]->SetDisplayId(gi->DisplayID);
+        m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
 
         switch(Type)
         {
@@ -236,9 +240,9 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         // assign it a new guid (client needs this to see the entry change?)
         m_controlPoints[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-        m_controlPoints[Id]->SetEntry(gi->ID);
-        m_controlPoints[Id]->SetDisplayId(gi->DisplayID);
-        m_controlPoints[Id]->SetType(static_cast<uint8>(gi->Type));
+        m_controlPoints[Id]->SetEntry(gameobject_info->entry);
+        m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
+        m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
 
         switch(Type)
         {
@@ -257,22 +261,22 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
                 break;
         }
 
-        m_controlPoints[Id]->SetInfo(gi);
+        m_controlPoints[Id]->SetInfo(gameobject_info);
         m_controlPoints[Id]->PushToWorld(m_mapMgr);
     }
 
-    if(gi_aura == NULL)
+    if(gi_aura == nullptr)
     {
         // remove it if it exists
-        if(m_controlPointAuras[Id] != NULL && m_controlPointAuras[Id]->IsInWorld())
+        if(m_controlPointAuras[Id] != nullptr && m_controlPointAuras[Id]->IsInWorld())
             m_controlPointAuras[Id]->RemoveFromWorld(false);
 
         return;
     }
 
-    if(m_controlPointAuras[Id] == NULL)
+    if(m_controlPointAuras[Id] == nullptr)
     {
-        m_controlPointAuras[Id] = SpawnGameObject(gi_aura->ID, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
+        m_controlPointAuras[Id] = SpawnGameObject(gi_aura->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
                                   ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         m_controlPointAuras[Id]->SetParentRotation(2, ControlPointRotations[Id][0]);
@@ -290,8 +294,8 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 
         // re-spawn the aura
         m_controlPointAuras[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
-        m_controlPointAuras[Id]->SetEntry(gi_aura->ID);
-        m_controlPointAuras[Id]->SetDisplayId(gi_aura->DisplayID);
+        m_controlPointAuras[Id]->SetEntry(gi_aura->entry);
+        m_controlPointAuras[Id]->SetDisplayId(gi_aura->display_id);
         m_controlPointAuras[Id]->SetInfo(gi_aura);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }
@@ -337,14 +341,14 @@ void ArathiBasin::OnStart()
 {
     for(uint32 i = 0; i < 2; ++i)
     {
-        for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
 
     // open gates
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->SetFlags(64);
         (*itr)->SetState(GAMEOBJECT_STATE_OPEN);
@@ -371,10 +375,10 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
 
     for(i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
-        m_buffs[i] = NULL;
-        m_controlPointAuras[i] = NULL;
-        m_controlPoints[i] = NULL;
-        m_spiritGuides[i] = NULL;
+        m_buffs[i] = nullptr;
+        m_controlPointAuras[i] = nullptr;
+        m_controlPoints[i] = nullptr;
+        m_spiritGuides[i] = nullptr;
         m_basesAssaultedBy[i] = -1;
         m_basesOwnedBy[i] = -1;
         m_basesLastOwnedBy[i] = -1;
@@ -406,27 +410,27 @@ ArathiBasin::~ArathiBasin()
     for(uint32 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         // buffs may not be spawned, so delete them if they're not
-        if(m_buffs[i] != NULL)
+        if(m_buffs[i] != nullptr)
         {
             if(!m_buffs[i]->IsInWorld())
                 delete m_buffs[i];
         }
 
-        if(m_controlPoints[i] != NULL)
+        if(m_controlPoints[i] != nullptr)
         {
             if(!m_controlPoints[i]->IsInWorld())
             {
                 delete m_controlPoints[i];
-                m_controlPoints[i] = NULL;
+                m_controlPoints[i] = nullptr;
             }
         }
 
-        if(m_controlPointAuras[i] != NULL)
+        if(m_controlPointAuras[i] != nullptr)
         {
             if(!m_controlPointAuras[i]->IsInWorld())
             {
                 delete m_controlPointAuras[i];
-                m_controlPointAuras[i] = NULL;
+                m_controlPointAuras[i] = nullptr;
             }
         }
 
@@ -437,9 +441,9 @@ ArathiBasin::~ArathiBasin()
         }
     }
 
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
-        if((*itr) != NULL)
+        if((*itr) != nullptr)
         {
             if(!(*itr)->IsInWorld())
                 delete(*itr);
@@ -448,6 +452,18 @@ ArathiBasin::~ArathiBasin()
 
     m_resurrectMap.clear();
 
+}
+
+/*! Handles end of battleground rewards (marks etc)
+ *  \param winningTeam Team that won the battleground
+ *  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool ArathiBasin::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 43484);
+    CastSpellOnTeam(winningTeam, 69153);
+    CastSpellOnTeam(winningTeam, 69499);
+    CastSpellOnTeam(winningTeam, 69500);
+    return true;
 }
 
 void ArathiBasin::EventUpdateResources(uint32 Team)
@@ -474,28 +490,26 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     m_resources[Team] = current_resources;
     if((current_resources - m_lastRepGainResources[Team]) >= resourcesToGainBR)
     {
-        m_mainLock.Acquire();
-        for(set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        for(std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             uint32 fact = (*itr)->IsTeamHorde() ? 510 : 509; //The Defilers : The League of Arathor
             (*itr)->ModStanding(fact, 10);
         }
-        m_mainLock.Release();
         m_lastRepGainResources[Team] += resourcesToGainBR;
     }
 
     if((current_resources - m_lastHonorGainResources[Team]) >= resourcesToGainBH)
     {
         uint32 honorToAdd = m_honorPerKill;
-        m_mainLock.Acquire();
-        for(set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+        for(std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
         }
 
         UpdatePvPData();
-        m_mainLock.Release();
         m_lastHonorGainResources[Team] += resourcesToGainBH;
     }
 
@@ -505,7 +519,7 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     if(current_resources >= RESOURCES_WARNING_THRESHOLD && !m_nearingVictory[Team])
     {
         m_nearingVictory[Team] = true;
-        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, (uint64)0, "The %s has gathered %u resources and is nearing victory!", Team ? "Horde" : "Alliance", current_resources);
+        SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, static_cast<uint64>(0), "The %s has gathered %u resources and is nearing victory!", Team ? "Horde" : "Alliance", current_resources);
         uint32 sound = SOUND_ALLIANCE_BGALMOSTEND - Team;
         PlaySoundToAll(sound);
     }
@@ -513,35 +527,10 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     // check for winning condition
     if(current_resources == RESOURCES_WINVAL)
     {
-        m_ended = true;
-        m_winningteam = static_cast<uint8>(Team);
-        m_nextPvPUpdateTime = 0;
-
         sEventMgr.RemoveEvents(this);
-        sEventMgr.AddEvent(TO<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-        m_winningteam = Team;        
-
-        AddHonorToTeam(m_winningteam, 3 * 185);
-
-        // Winning spells for AB
-        CastSpellOnTeam(m_winningteam, 43484);
-        CastSpellOnTeam(m_winningteam, 69153);
-        CastSpellOnTeam(m_winningteam, 69499);
-        CastSpellOnTeam(m_winningteam, 69500);
-
-        if (m_winningteam == TEAM_ALLIANCE)
-        {
-            AddHonorToTeam(TEAM_HORDE, 1 * 185);
-            PlaySoundToAll(SOUND_ALLIANCEWINS);
-        }
-        else
-        {
-            AddHonorToTeam(TEAM_ALLIANCE, 1 * 185);
-            PlaySoundToAll(SOUND_HORDEWINS);
-        }
-
-        UpdatePvPData();
+        this->EndBattleground(Team == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
     }
 }
 
@@ -605,7 +594,6 @@ LocationVector ArathiBasin::GetStartingCoords(uint32 Team)
 
 void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
 {
-    uint32 spellid = 0;
     int32 buffslot = -1;
     switch(trigger)
     {
@@ -646,33 +634,33 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
         case 4020:            // Trollbane Hall
         case 4021:            // Defiler's Den
             return;
-            break;
-        default:
+    default:
             sLog.Error("ArathiBasin", "Encountered unhandled areatrigger id %u", trigger);
             return;
-            break;
     }
 
     if(plr->IsDead())        // don't apply to dead players... :P
         return;
 
-    uint32 x = (uint32)buffslot;
-    if(m_buffs[x] && m_buffs[x]->IsInWorld())
+    if (buffslot >= 0 && buffslot <= 4)
     {
-        // apply the spell
-        spellid = m_buffs[x]->GetInfo()->sound3;
-        m_buffs[x]->RemoveFromWorld(false);
-
-        // respawn it in buffrespawntime
-        sEventMgr.AddEvent(this, &ArathiBasin::SpawnBuff, x, EVENT_AB_RESPAWN_BUFF, AB_BUFF_RESPAWN_TIME, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-        // cast the spell on the player
-        SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
-        if(sp)
+        if (m_buffs[buffslot] && m_buffs[buffslot]->IsInWorld())
         {
-            Spell* pSpell = sSpellFactoryMgr.NewSpell(plr, sp, true, NULL);
-            SpellCastTargets targets(plr->GetGUID());
-            pSpell->prepare(&targets);
+            // apply the spell
+            auto spellid = m_buffs[buffslot]->GetInfo()->parameter_3;
+            m_buffs[buffslot]->RemoveFromWorld(false);
+
+            // respawn it in buffrespawntime
+            sEventMgr.AddEvent(this, &ArathiBasin::SpawnBuff, static_cast<uint32>(buffslot), EVENT_AB_RESPAWN_BUFF, AB_BUFF_RESPAWN_TIME, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+            // cast the spell on the player
+            SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+            if (sp)
+            {
+                Spell* pSpell = sSpellFactoryMgr.NewSpell(plr, sp, true, nullptr);
+                SpellCastTargets targets(plr->GetGUID());
+                pSpell->prepare(&targets);
+            }
         }
     }
 }
@@ -686,11 +674,11 @@ bool ArathiBasin::HookHandleRepop(Player* plr)
 
     for(uint32 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
-        if(m_basesOwnedBy[2] == (int32)plr->m_bgTeam)
+        if(m_basesOwnedBy[2] == static_cast<int32>(plr->m_bgTeam))
         {
             dest.ChangeCoords(GraveyardLocations[2][0], GraveyardLocations[2][1], GraveyardLocations[2][2]);
         }
-        else if(m_basesOwnedBy[i] == (int32)plr->m_bgTeam)
+        else if(m_basesOwnedBy[i] == static_cast<int32>(plr->m_bgTeam))
         {
             dist = plr->GetPositionV()->Distance2DSq(GraveyardLocations[i][0], GraveyardLocations[i][1]);
             if(dist < current_distance)
@@ -716,7 +704,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     }
 
     // anti cheat, not really necessary because this is a server method but anyway
-    if(m_basesAssaultedBy[Id] != (int32)Team)
+    if(m_basesAssaultedBy[Id] != static_cast<int32>(Team))
         return;
 
     m_basesOwnedBy[Id] = Team;
@@ -724,7 +712,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     m_basesLastOwnedBy[Id] = -1;
 
     // remove the other spirit guide (if it exists) // burlex: shouldn't' happen
-    if(m_spiritGuides[Id] != NULL)
+    if(m_spiritGuides[Id] != nullptr)
     {
         RemoveSpiritGuide(m_spiritGuides[Id]);
         m_spiritGuides[Id]->Despawn(0, 0);
@@ -746,8 +734,9 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
 
     if(m_capturedBases[Team] >= 4)
     {
-        m_mainLock.Acquire();
-        for(set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
+        for(std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             if(Team)
             {
@@ -764,7 +753,6 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
                     (*itr)->GetQuestLogForEntry(8115)->SendQuestComplete();
             }
         }
-        m_mainLock.Release();
     }
 
     // respawn the control point with the correct aura
@@ -778,7 +766,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     if(m_capturedBases[Team] == 1)
     {
         // first
-        sEventMgr.AddEvent(this, &ArathiBasin::EventUpdateResources, (uint32)Team, EVENT_AB_RESOURCES_UPDATE_TEAM_0 + Team, ResourceUpdateIntervals[1], 0,
+        sEventMgr.AddEvent(this, &ArathiBasin::EventUpdateResources, static_cast<uint32>(Team), EVENT_AB_RESOURCES_UPDATE_TEAM_0 + Team, ResourceUpdateIntervals[1], 0,
                            EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
@@ -823,21 +811,21 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
         m_basesLastOwnedBy[Id] = Owner;
 
         // this control point just got taken over by someone! oh noes!
-        if(m_spiritGuides[Id] != NULL)
+        if(m_spiritGuides[Id] != nullptr)
         {
-            map<Creature*, set<uint32> >::iterator itr = m_resurrectMap.find(m_spiritGuides[Id]);
+            std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(m_spiritGuides[Id]);
             if(itr != m_resurrectMap.end())
             {
-                for(set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+                for(std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     Player* r_plr = m_mapMgr->GetPlayer(*it2);
-                    if(r_plr != NULL && r_plr->IsDead())
+                    if(r_plr != nullptr && r_plr->IsDead())
                         HookHandleRepop(r_plr);
                 }
             }
             m_resurrectMap.erase(itr);
             m_spiritGuides[Id]->Despawn(0, 0);
-            m_spiritGuides[Id] = NULL;
+            m_spiritGuides[Id] = nullptr;
         }
 
         // detract one from the teams controlled points
@@ -865,9 +853,9 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
 
         // make sure the event does not trigger
         sEventMgr.RemoveEvents(this, EVENT_AB_CAPTURE_CP_1 + Id);
-        if(m_basesLastOwnedBy[Id] == (int32)Team)
+        if(m_basesLastOwnedBy[Id] == static_cast<int32>(Team))
         {
-            m_basesAssaultedBy[Id] = (int32)Team;
+            m_basesAssaultedBy[Id] = static_cast<int32>(Team);
             CaptureControlPoint(Id, Team);
             return;
         }

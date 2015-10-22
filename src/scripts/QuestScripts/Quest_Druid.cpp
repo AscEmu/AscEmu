@@ -38,7 +38,7 @@ class Lunaclaw : public CreatureAIScript
             if(!mKiller->IsPlayer())
                 return;
 
-            Player* plr = TO_PLAYER(mKiller);
+            Player* plr = static_cast<Player*>(mKiller);
 
             sEAS.SpawnCreature(plr, 12144, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), 0, 1 * 60 * 1000);
         }
@@ -57,11 +57,13 @@ class SCRIPT_DECL MoonkinGhost_Gossip : public GossipScript
 
             if(plr->HasQuest(6002))
             {
-                Menu->AddItem(0, GOSSIP_GHOST_MOONKIN, 1);  //Horde
+                //Horde
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
             }
             else if(plr->HasQuest(6001))
             {
-                Menu->AddItem(0, GOSSIP_GHOST_MOONKIN, 2);  //Ally
+                //Ally
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 2);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
             }
 
             Menu->SendTo(plr);
@@ -71,7 +73,7 @@ class SCRIPT_DECL MoonkinGhost_Gossip : public GossipScript
         {
             if(!pObject->IsCreature())
                 return;
-            Creature* pCreature = TO_CREATURE(pObject);
+            Creature* pCreature = static_cast<Creature*>(pObject);
 
             GossipMenu* Menu;
             switch(IntId)
@@ -126,11 +128,6 @@ class SCRIPT_DECL MoonkinGhost_Gossip : public GossipScript
         }
 };
 
-// bear ghost gossip
-#define GOSSIP_GHOST_BEAR_A    "What do you represent, spirit?"
-#define GOSSIP_GHOST_BEAR_B    "I seek to understand the importance of strength of the body."
-#define GOSSIP_GHOST_BEAR_C    "I seek to understand the importance of strength of the heart."
-#define GOSSIP_GHOST_BEAR_D    "I have heard your words, Great Bear Spirit, and I understand. I now seek your blessings to fully learn the way of the Claw."
 
 class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 {
@@ -142,11 +139,11 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 
             if(plr->HasQuest(5930)) // horde
             {
-                Menu->AddItem(0, GOSSIP_GHOST_BEAR_A, 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 1);     // What do you represent, spirit?
             }
             else if(plr->HasQuest(5929)) // ally
             {
-                Menu->AddItem(0, GOSSIP_GHOST_BEAR_A, 5);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 5);     // What do you represent, spirit?
             }
 
             Menu->SendTo(plr);
@@ -154,7 +151,7 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature*  pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+            Creature*  pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if(!pObject->IsCreature())
                 return;
 
@@ -167,21 +164,21 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
                 case 1:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
-                        Menu->AddItem(0, GOSSIP_GHOST_BEAR_B, 2);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 2);     // I seek to understand the importance of strength of the body.
                         Menu->SendTo(plr);
                         break;
                     }
                 case 2:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
-                        Menu->AddItem(0, GOSSIP_GHOST_BEAR_C, 3);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 3);     // I seek to understand the importance of strength of the heart.
                         Menu->SendTo(plr);
                         break;
                     }
                 case 3:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
-                        Menu->AddItem(0, GOSSIP_GHOST_BEAR_D, 4);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
                         Menu->SendTo(plr);
                         break;
                     }
@@ -205,21 +202,21 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
                 case 5:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
-                        Menu->AddItem(0, GOSSIP_GHOST_BEAR_B, 6);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 6);     // I seek to understand the importance of strength of the body.
                         Menu->SendTo(plr);
                         break;
                     }
                 case 6:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
-                        Menu->AddItem(0, GOSSIP_GHOST_BEAR_C, 7);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 7);     // I seek to understand the importance of strength of the heart.
                         Menu->SendTo(plr);
                         break;
                     }
                 case 7:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
-                        Menu->AddItem(0, GOSSIP_GHOST_BEAR_D, 8);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
                         Menu->SendTo(plr);
                         break;
                     }

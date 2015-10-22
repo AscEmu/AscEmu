@@ -32,25 +32,7 @@
 #undef max
 #endif
 
-/* platforms that already define M_PI in math.h */
-#ifdef M_PI
-#undef M_PI
-#endif
-
-#define M_PI       3.14159265358979323846
-#define M_H_PI     1.57079632679489661923
-#define M_Q_PI     0.785398163397448309615
-#define M_PI_FLOAT 3.14159f
-
-template< class T, class U > T TO(U u) { return static_cast< T >(u); }
-#define TO_CREATURE(ptr) TO<Creature*>(ptr)
-#define TO_PLAYER(ptr) TO<Player*>(ptr)
-#define TO_OBJECT(ptr) TO<Object*>(ptr)
-#define TO_UNIT(ptr) TO<Unit*>(ptr)
-#define TO_PET(ptr) TO<Pet*>(ptr)
-#define TO_ITEM(ptr) TO<Item*>(ptr)
-#define TO_GAMEOBJECT(ptr) TO<GameObject*>(ptr)
-#define TO_DK(ptr) TO<DeathKnight*>(ptr)
+#include "../shared/CommonDefines.hpp"
 
 #define DEBUG_LOG(...) sLog.Debug("DEBUG_LOG", __VA_ARGS__)
 #include "Definitions.h"
@@ -70,12 +52,7 @@ template< class T, class U > T TO(U u) { return static_cast< T >(u); }
 #include <tr1/array>
 #endif
 
-#include "DetourNavMeshQuery.h"
-#include "DetourNavMesh.h"
-#include "DetourNode.h"
-#include "DetourCommon.h"
-#include "DetourAlloc.h"
-#include "DetourAssert.h"
+#include "RecastIncludes.hpp"
 
 #include "../shared/Common.h"
 #include "../shared/MersenneTwister.h"
@@ -95,7 +72,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #define sGMLog (*GMCommand_Log)
 #define sPlrLog (*Player_Log)
 
-#include <zlib.h>
+//#include <zlib.h>
 
 #include "../shared/Database/DatabaseEnv.h"
 #include "DBC/DBCStores.h"
@@ -248,8 +225,6 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Hunter.h"
 #include "Shaman.h"
 
-#endif
+#include "MapManagement/MapManagementGlobals.hpp"
 
-#define RECRUITING "Info: |cff00FF7FArcEmu is recruiting developers: Join us on irc.freenode.net #arcemu"
-#define BUGTRACKER "https://github.com/arcemu/arcemu/issues"
-
+#endif  // __STDAFX_H

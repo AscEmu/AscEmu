@@ -21,6 +21,17 @@
 #ifndef _QUESTMGR_H
 #define _QUESTMGR_H
 
+#include "QuestDefines.hpp"
+#include "CommonTypes.hpp"
+#include "QuestLogEntry.hpp"
+#include "Gossip.h"
+
+#include <vector>
+#include <unordered_map>
+#include <list>
+
+struct Quest;
+
 struct QuestRelation
 {
     Quest* qst;
@@ -70,7 +81,7 @@ struct QuestPOI
 };
 
 typedef std::vector<QuestPOI> QuestPOIVector;
-typedef HM_NAMESPACE::hash_map<uint32, QuestPOIVector> QuestPOIMap;
+typedef std::unordered_map<uint32, QuestPOIVector> QuestPOIMap;
 
 class Item;
 typedef std::list<QuestRelation*> QuestRelationList;
@@ -138,12 +149,12 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         QuestAssociationList* GetQuestAssociationListForItemId(uint32 itemId);
         uint32 GetGameObjectLootQuest(uint32 GO_Entry);
         void SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry);
-        ARCEMU_INLINE bool IsQuestRepeatable(Quest* qst) { return (qst->is_repeatable == 1 ? true : false); }
-        ARCEMU_INLINE bool IsQuestDaily(Quest* qst) { return (qst->is_repeatable == 2 ? true : false); }
+        inline bool IsQuestRepeatable(Quest* qst) { return (qst->is_repeatable == 1 ? true : false); }
+        inline bool IsQuestDaily(Quest* qst) { return (qst->is_repeatable == 2 ? true : false); }
 
         bool CanStoreReward(Player* plyr, Quest* qst, uint32 reward_slot);
 
-        ARCEMU_INLINE int32 QuestHasMob(Quest* qst, uint32 mob)
+        inline int32 QuestHasMob(Quest* qst, uint32 mob)
         {
             for (uint32 i = 0; i < 4; ++i)
                 if (qst->required_mob[i] == (int32)mob)
@@ -151,7 +162,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
             return -1;
         }
 
-        ARCEMU_INLINE int32 GetOffsetForMob(Quest* qst, uint32 mob)
+        inline int32 GetOffsetForMob(Quest* qst, uint32 mob)
         {
             for (uint32 i = 0; i < 4; ++i)
                 if (qst->required_mob[i] == (int32)mob)
@@ -160,7 +171,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
             return -1;
         }
 
-        ARCEMU_INLINE int32 GetOffsetForItem(Quest* qst, uint32 itm)
+        inline int32 GetOffsetForItem(Quest* qst, uint32 itm)
         {
             for (uint32 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
                 if (qst->required_item[i] == itm)
@@ -184,20 +195,20 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
 
     private:
 
-        HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* > m_npc_quests;
-        HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* > m_obj_quests;
-        HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* > m_itm_quests;
+        HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* > m_npc_quests;
+        HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* > m_obj_quests;
+        HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* > m_itm_quests;
         QuestPOIMap m_QuestPOIMap;
 
-        HM_NAMESPACE::hash_map<uint32, list<QuestAssociation*>* > m_quest_associations;
-        ARCEMU_INLINE HM_NAMESPACE::hash_map<uint32, list<QuestAssociation*>* >& GetQuestAssociationList()
+        HM_NAMESPACE::hash_map<uint32, std::list<QuestAssociation*>* > m_quest_associations;
+        inline HM_NAMESPACE::hash_map<uint32, std::list<QuestAssociation*>* >& GetQuestAssociationList()
         {return m_quest_associations;}
 
         HM_NAMESPACE::hash_map<uint32, uint32> m_ObjectLootQuestList;
 
         template <class T> void _AddQuest(uint32 entryid, Quest* qst, uint8 type);
 
-        template <class T> HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* >& _GetList();
+        template <class T> HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >& _GetList();
 
         void AddItemQuestAssociation(uint32 itemId, Quest* qst, uint8 item_count);
 
@@ -206,11 +217,11 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         void _CleanLine(std::string* str);
 };
 
-template<> ARCEMU_INLINE HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* >& QuestMgr::_GetList<Creature>()
+template<> inline HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Creature>()
 { return m_npc_quests; }
-template<> ARCEMU_INLINE HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* >& QuestMgr::_GetList<GameObject>()
+template<> inline HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<GameObject>()
 { return m_obj_quests; }
-template<> ARCEMU_INLINE HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* >& QuestMgr::_GetList<Item>()
+template<> inline HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Item>()
 { return m_itm_quests; }
 
 

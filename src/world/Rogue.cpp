@@ -69,8 +69,12 @@ void World::InitRogueSpells()
     sp = dbcSpell.LookupEntryForced(31665);
     if (sp)
     {
-        sp->DurationIndex = dbcSpell.LookupEntryForced(31666)->DurationIndex;
-        sp->RankNumber = 4;
+        auto source_spell = dbcSpell.LookupEntryForced(31666);
+        if (source_spell != nullptr)
+        {
+            sp->DurationIndex = source_spell->DurationIndex;
+            sp->RankNumber = 4;
+        }
     }
     sp = dbcSpell.LookupEntryForced(31666);
     if (sp)
@@ -88,11 +92,16 @@ void World::InitRogueSpells()
 
         if (sp = dbcSpell.LookupEntryForced(58426))
         {
-            sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-            sp->EffectTriggerSpell[0] = 58427;
-            sp->procFlags = PROC_ON_CAST_SPELL;
-            sp->procChance = 100;
-            dbcSpell.LookupEntryForced(58427)->DurationIndex = dbcSpell.LookupEntryForced(58428)->DurationIndex;
+            auto source_spell = dbcSpell.LookupEntryForced(58428);
+            auto target_spell = dbcSpell.LookupEntryForced(58427);
+            if (source_spell != nullptr && target_spell != nullptr)
+            {
+                sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[0] = 58427;
+                sp->procFlags = PROC_ON_CAST_SPELL;
+                sp->procChance = 100;
+                target_spell->DurationIndex = source_spell->DurationIndex;
+            }
         }
 
     if (sp = dbcSpell.LookupEntryForced(14177))

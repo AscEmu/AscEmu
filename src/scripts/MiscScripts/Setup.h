@@ -17,8 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
-#include "../Common/EasyFunctions.h"
+#include "../Common/Base.h"
 
 #ifndef MISC_SCRIPTS_SETUP_H
 #define MISC_SCRIPTS_SETUP_H
@@ -28,5 +27,8 @@ void SetupQDGoHandlers(ScriptMgr* mgr);
 void SetupRandomScripts(ScriptMgr* mgr);
 void SetupMiscCreatures(ScriptMgr* mgr);
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr);
+
+//AscEmu
+void SetupCityDalaran(ScriptMgr* mgr);
 
 #endif

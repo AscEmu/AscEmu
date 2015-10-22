@@ -23,6 +23,7 @@
 Summon::Summon(uint64 GUID) : Creature(GUID)
 {
     summonslot = -1;
+    owner = NULL;
 }
 
 Summon::~Summon()

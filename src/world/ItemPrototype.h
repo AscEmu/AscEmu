@@ -600,6 +600,11 @@ struct ItemStat
     int32 Value;
 };
 
+#define MAX_ITEM_PROTO_DAMAGES 2
+#define MAX_ITEM_PROTO_SOCKETS 3
+#define MAX_ITEM_PROTO_SPELLS  5
+#define MAX_ITEM_PROTO_STATS  10
+
 struct ItemPrototype
 {
     uint32 ItemId;
@@ -629,10 +634,10 @@ struct ItemPrototype
     uint32 MaxCount;
     uint32 ContainerSlots;
     uint32 itemstatscount;
-    ItemStat Stats[10];
+    ItemStat Stats[MAX_ITEM_PROTO_STATS];
     uint32 ScalingStatsEntry;
     uint32 ScalingStatsFlag;
-    ItemDamage Damage[2];
+    ItemDamage Damage[MAX_ITEM_PROTO_DAMAGES];
     uint32 Armor;
     uint32 HolyRes;
     uint32 FireRes;
@@ -643,7 +648,7 @@ struct ItemPrototype
     uint32 Delay;
     uint32 AmmoType;
     float Range;
-    ItemSpell Spells[5];
+    ItemSpell Spells[MAX_ITEM_PROTO_SPELLS];
     uint32 Bonding;
     char* Description;
     uint32 PageId;
@@ -662,7 +667,7 @@ struct ItemPrototype
     uint32 MapID;
     uint32 BagFamily;
     uint32 TotemCategory;
-    SocketInfo Sockets[3];
+    SocketInfo Sockets[MAX_ITEM_PROTO_SOCKETS];
     uint32 SocketBonus;
     uint32 GemProperties;
     int32 DisenchantReqSkill;
@@ -671,7 +676,7 @@ struct ItemPrototype
     uint32 ItemLimitCategory;
     uint32 HolidayId;
 
-    string lowercase_name;      /// used in auctions
+    std::string lowercase_name;      /// used in auctions
     uint32 FoodType;            /// pet food type
     int32 ForcedPetId;
 

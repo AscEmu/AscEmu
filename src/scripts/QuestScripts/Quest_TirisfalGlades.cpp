@@ -51,7 +51,7 @@ class CalvinMontague : public CreatureAIScript
                 {
                     _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     RegisterAIUpdateEvent(1000);
-                    QuestLogEntry* qle = (TO_PLAYER(mAttacker))->GetQuestLogForEntry(590);
+                    QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(590);
                     if(!qle)
                         return;
                     qle->SendQuestComplete();
@@ -66,7 +66,7 @@ class CalvinMontague : public CreatureAIScript
             _unit->SetFaction(68);
             _unit->SetStandState(STANDSTATE_SIT);
             _unit->CastSpell(_unit, dbcSpell.LookupEntry(433), true);
-            sEventMgr.AddEvent(TO_UNIT(_unit), &Unit::SetStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
+            sEventMgr.AddEvent(static_cast<Unit*>(_unit), &Unit::SetStandState, (uint8)STANDSTATE_STAND, EVENT_CREATURE_UPDATE, 18000, 0, 1);
             _unit->GetAIInterface()->WipeTargetList();
             _unit->GetAIInterface()->WipeHateList();
             _unit->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, _unit, 0);

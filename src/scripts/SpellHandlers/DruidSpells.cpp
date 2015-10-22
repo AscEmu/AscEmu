@@ -29,7 +29,7 @@ bool Starfall(uint32 i, Spell* pSpell)
     {
         if(!(*itr)->IsUnit())
             continue;
-        Unit* Target = TO< Unit* >((*itr));
+        Unit* Target = static_cast< Unit* >((*itr));
         if(isAttackable(Target, m_caster) && m_caster->CalcDistance((*itr)) <= pSpell->GetRadius(i))
         {
             m_caster->CastSpell(Target, pSpell->CalculateEffect(i, Target), true);
@@ -78,7 +78,7 @@ bool Furor(uint32 i, Aura* a, bool apply)
 
     if(!u_target->IsPlayer())
         return true;
-    Player* p_target = TO_PLAYER(u_target);
+    Player* p_target = static_cast<Player*>(u_target);
 
     if(p_target == NULL)
         return true;
@@ -150,7 +150,7 @@ bool LeaderOfThePack(uint32 i, Aura* a, bool apply)
     if(!u_target->IsPlayer())
         return true;
 
-    Player* p_target = TO_PLAYER(u_target);
+    Player* p_target = static_cast<Player*>(u_target);
 
     if(apply)
         p_target->AddShapeShiftSpell(24932);

@@ -33,7 +33,7 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(10836);
+                QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10836);
                 if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
@@ -57,10 +57,10 @@ class KneepadsQAI : public CreatureAIScript
             if(mKiller->IsPlayer())
             {
                 QuestLogEntry* en = NULL;
-                en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(10703);
+                en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10703);
                 if(en == NULL)
                 {
-                    en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(10702);
+                    en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10702);
                     if(en == NULL)
                     {
                         return;
@@ -288,7 +288,8 @@ class NeltharakusTale_Gossip : public GossipScript
             {
                 GossipMenu* Menu;
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10613, plr);
-                Menu->AddItem(0, "I am listening, dragon", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(471), 1);     // I am listening, Dragon
+
                 Menu->SendTo(plr);
             }
         }
@@ -304,7 +305,7 @@ class NeltharakusTale_Gossip : public GossipScript
                     {
                         GossipMenu* Menu;
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10614, plr);
-                        Menu->AddItem(0, "But you are dragons! How could orcs do this to you?", 2);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(472), 2);     // But you are Dragons! How could orcs do this to you?
                         Menu->SendTo(plr);
                     }
                     break;
@@ -312,7 +313,7 @@ class NeltharakusTale_Gossip : public GossipScript
                     {
                         GossipMenu* Menu;
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10615, plr);
-                        Menu->AddItem(0, "Your mate?", 3);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(473), 3);     // Your mate?
                         Menu->SendTo(plr);
                     }
                     break;
@@ -320,7 +321,7 @@ class NeltharakusTale_Gossip : public GossipScript
                     {
                         GossipMenu* Menu;
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10616, plr);
-                        Menu->AddItem(0, "I have battled many beasts, dragon. I will help you.", 4);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(474), 4);     // I have battled many beasts, Dragon. I will help you.
                         Menu->SendTo(plr);
                     }
                     break;
@@ -402,20 +403,21 @@ void FlanisSwiftwing_Gossip::GossipHello(Object* pObject, Player* plr)
     GossipMenu* Menu;
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
     if(plr->HasQuest(10583))
-        Menu->AddItem(0, "Examine the corpse", 1);
+        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(475), 1);     // Examine the corpse
 
     Menu->SendTo(plr);
 };
 
 void FlanisSwiftwing_Gossip::GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
 {
-    Creature* pCreature = (pObject->IsCreature()) ? TO_CREATURE(pObject) : NULL;
+    Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
     if(pCreature == NULL)
         return;
     if(IntId == 1)
     {
-        Item* item;
-        item = objmgr.CreateItem(30658 , plr);
+        auto item = objmgr.CreateItem(30658 , plr);
+        if (item == nullptr)
+            return;
         item->SetStackCount(1);
         if(!plr->GetItemInterface()->AddItemToFreeSlot(item))
         {

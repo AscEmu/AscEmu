@@ -351,21 +351,21 @@ class DofNaralexGossip : public GossipScript
             {
                 GossipMenu* Menu;
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 699, plr);
-                Menu->AddItem(0, "Let's go!", 2);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
                 Menu->SendTo(plr);
             }
             else
             {
                 GossipMenu* Menu;
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 698, plr);
-                Menu->AddItem(0, "I will slay those Fanglords", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
                 Menu->SendTo(plr);
             }
 
         }
         void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? TO_CREATURE(pObject) : NULL;
+            Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
             if (pCreature == NULL)
                 return;
 
@@ -387,7 +387,7 @@ class DofNaralexGossip : public GossipScript
 
                 case 2: // Start Event
                     {
-                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                         pCreature->GetAIInterface()->StopMovement(0);
                         pCreature->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
                         pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
@@ -407,7 +407,9 @@ class DofNaralexAI : public MoonScriptBossAI
         DofNaralexAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
             // --- Initialization ---
-            for (int i = 1; i < 39; i++)
+            Mutanus = nullptr;
+
+            for (uint8 i = 1; i < 39; i++)
                 AddWaypoint(CreateWaypoint(i, 0, Flag_Run, ToNaralex[i]));
             SetMoveType(Move_DontMoveWP);
 

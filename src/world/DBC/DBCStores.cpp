@@ -18,6 +18,9 @@
  */
 
 #include "StdAfx.h"
+#include "DBCGlobals.hpp"
+
+typedef std::map<WMOAreaTableTripple, WMOAreaTableEntry const*> WMOAreaInfoByTripple;
 
 #ifdef ENABLE_ACHIEVEMENTS
 SERVER_DECL DBCStorage<AchievementEntry> dbcAchievementStore;
@@ -25,7 +28,8 @@ SERVER_DECL DBCStorage<AchievementCriteriaEntry> dbcAchievementCriteriaStore;
 SERVER_DECL DBCStorage<AchievementCategoryEntry> dbcAchievementCategoryStore;
 #endif
 SERVER_DECL DBCStorage<AreaGroup> dbcAreaGroup;
-SERVER_DECL DBCStorage<AreaTable> dbcArea;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore(DBC::Structures::area_table_entry_format);
+static WMOAreaInfoByTripple sWMOAreaInfoByTripple;
 SERVER_DECL DBCStorage<AreaTriggerEntry> dbcAreaTrigger;
 SERVER_DECL DBCStorage<AuctionHouseDBC> dbcAuctionHouse;
 SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
@@ -361,6 +365,10 @@ bool loader_stub(const char* filename, const char* format, bool ind, T & l, bool
 
 bool LoadDBCs()
 {
+    uint32 available_dbc_locales = 0xFFFFFFFF;
+    DBC::StoreProblemList bad_dbc_files;
+    std::string dbc_path = "./DBC/";
+
     LOAD_DBC("DBC/WorldMapOverlay.dbc", WorldMapOverlayStoreFormat, true, dbcWorldMapOverlayStore, true);
 #ifdef ENABLE_ACHIEVEMENTS
     LOAD_DBC("DBC/Achievement_Category.dbc", AchievementCategoryStoreFormat, true, dbcAchievementCategoryStore, true);
@@ -394,7 +402,9 @@ bool LoadDBCs()
     LOAD_DBC("DBC/SpellShapeshiftForm.dbc", spellshapeshiftformformat, true, dbcSpellShapeshiftForm, false);
     LOAD_DBC("DBC/ItemRandomProperties.dbc", randompropsFormat, true, dbcRandomProps, false);
     LOAD_DBC("DBC/AreaGroup.dbc", areagroupFormat, true, dbcAreaGroup, true);
-    LOAD_DBC("DBC/AreaTable.dbc", areatableFormat, true, dbcArea, true);
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaStore, dbc_path, "AreaTable.dbc");
+
     LOAD_DBC("DBC/FactionTemplate.dbc", factiontemplatedbcFormat, true, dbcFactionTemplate, false);
     LOAD_DBC("DBC/Faction.dbc", factiondbcFormat, true, dbcFaction, true);
     LOAD_DBC("DBC/TaxiNodes.dbc", dbctaxinodeFormat, false, dbcTaxiNode, false);
@@ -436,5 +446,28 @@ bool LoadDBCs()
     LOAD_DBC("DBC/Vehicle.dbc", VehicleEntryfmt, true, dbcVehicle, true);
     LOAD_DBC("DBC/VehicleSeat.dbc", VehicleSeatEntryfmt, true, dbcVehicleSeat, false);
 
+    MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
+    auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
+    for (auto map_object : dbcMap)
+    {
+        area_map_collection->insert(std::pair<uint32, uint32>(map_object->id, map_object->linked_zone));
+    }
+    //auto wmo_row_count = dbcWMOAreaTable.GetNumRows();
+    for (auto i = 0; i < 51119; ++i) // This is a hack, dbc loading needs rework
+    {
+        if (auto entry = dbcWMOAreaTable.LookupEntry(i))
+        {
+            sWMOAreaInfoByTripple.insert(WMOAreaInfoByTripple::value_type(WMOAreaTableTripple(entry->rootId, entry->adtId, entry->groupId), entry));
+            MapManagement::AreaManagement::AreaStorage::AddWMOTripleEntry(entry->groupId, entry->rootId, entry->adtId, entry->areaId);
+        }
+    }
     return true;
+}
+
+const WMOAreaTableEntry* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id)
+{
+    auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
+    if (iter == sWMOAreaInfoByTripple.end())
+        return 0;
+    return iter->second;
 }

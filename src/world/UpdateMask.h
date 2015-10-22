@@ -22,6 +22,9 @@
 #ifndef __UPDATEMASK_H
 #define __UPDATEMASK_H
 
+#include "WUtil.h"
+#include <cstring>
+
 class UpdateMask
 {
         uint32* mUpdateMask;
@@ -66,11 +69,11 @@ class UpdateMask
                 if (mUpdateMask[x])break;
             return (x + 1);
         }
-        ARCEMU_INLINE uint32 GetBlockCount() const {return mBlocks;}
+        inline uint32 GetBlockCount() const {return mBlocks;}
 
-        ARCEMU_INLINE uint32 GetLength() const { return (mBlocks * sizeof(uint32)); }
-        ARCEMU_INLINE uint32 GetCount() const { return mCount; }
-        ARCEMU_INLINE const uint8* GetMask() const { return (uint8*)mUpdateMask; }
+        inline uint32 GetLength() const { return (mBlocks * sizeof(uint32)); }
+        inline uint32 GetCount() const { return mCount; }
+        inline const uint8* GetMask() const { return (uint8*)mUpdateMask; }
 
         void SetCount(uint32 valuesCount)
         {

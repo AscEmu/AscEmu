@@ -21,6 +21,12 @@
 #ifndef _EVENTMGR_H
 #define _EVENTMGR_H
 
+#include "Threading/RWLock.h"
+#include "Threading/AtomicCounter.h"
+#include "CallBack.h"
+#include "Singleton.h"
+#include <map>
+
 enum EventTypes
 {
     EVENT_UNK = 0,
@@ -237,6 +243,7 @@ enum EventTypes
     EVENT_IOC_BUILD_WORKSHOP_VEHICLE,
     EVENT_SOTA_START_ROUND,
     EVENT_GO_CHEST_RESTOCK,
+    EVENT_EVENT_SCRIPTS,
     NUM_EVENT_TYPES
 };
 
@@ -249,7 +256,7 @@ enum EventFlags
 struct SERVER_DECL TimedEvent
 {
     TimedEvent(void* object, CallbackBase* callback, uint32 type, time_t time, uint32 repeat, uint32 flags) :
-        obj(object), cb(callback), eventType(type), eventFlag(static_cast<uint16>(flags)), msTime(time), currTime(time), repeats(static_cast<uint16>(repeat)), deleted(false), ref(0) {}
+        obj(object), cb(callback), eventType(type), eventFlag(static_cast<uint16>(flags)), msTime(time), currTime(time), repeats(static_cast<uint16>(repeat)), deleted(false), ref(0), instanceId(0) {}
 
     void* obj;
     CallbackBase* cb;
@@ -279,7 +286,7 @@ struct SERVER_DECL TimedEvent
 
 class EventMgr;
 class EventableObjectHolder;
-typedef map<int32, EventableObjectHolder*> HolderMap;
+typedef std::map<int32, EventableObjectHolder*> HolderMap;
 
 class SERVER_DECL EventMgr : public Singleton < EventMgr >
 {

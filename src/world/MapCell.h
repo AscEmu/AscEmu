@@ -32,7 +32,7 @@ class SERVER_DECL MapCell
     friend class MapMgr;
     public:
 
-        MapCell() {};
+    MapCell() : _x(0), _y(0), _active(false), _loaded(false), _unloadpending(false), _playerCount(0), _mapmgr(nullptr) {};
         ~MapCell();
 
         typedef std::set<Object*> ObjectSet;
@@ -45,29 +45,29 @@ class SERVER_DECL MapCell
         void RemoveObject(Object* obj);
         bool HasObject(Object* obj) { return (_objects.find(obj) != _objects.end()); }
         bool HasPlayers() { return ((_playerCount > 0) ? true : false); }
-        ARCEMU_INLINE size_t GetObjectCount() { return _objects.size(); }
+        inline size_t GetObjectCount() { return _objects.size(); }
         void RemoveObjects();
-        ARCEMU_INLINE ObjectSet::iterator Begin() { return _objects.begin(); }
-        ARCEMU_INLINE ObjectSet::iterator End() { return _objects.end(); }
+        inline ObjectSet::iterator Begin() { return _objects.begin(); }
+        inline ObjectSet::iterator End() { return _objects.end(); }
 
         //State Related
         void SetActivity(bool state);
 
-        ARCEMU_INLINE bool IsActive() { return _active; }
-        ARCEMU_INLINE bool IsLoaded() { return _loaded; }
-        ARCEMU_INLINE void SetLoaded(bool Loaded = true) { _loaded = Loaded; }
+        inline bool IsActive() { return _active; }
+        inline bool IsLoaded() { return _loaded; }
+        inline void SetLoaded(bool Loaded = true) { _loaded = Loaded; }
 
         //Object Loading Managing
         void LoadObjects(CellSpawns* sp);
-        ARCEMU_INLINE uint32 GetPlayerCount() { return _playerCount; }
+        inline uint32 GetPlayerCount() { return _playerCount; }
 
-        ARCEMU_INLINE bool IsUnloadPending() { return _unloadpending; }
-        ARCEMU_INLINE void SetUnloadPending(bool up) { _unloadpending = up; }
+        inline bool IsUnloadPending() { return _unloadpending; }
+        inline void SetUnloadPending(bool up) { _unloadpending = up; }
         void QueueUnloadPending();
         void CancelPendingUnload();
         void Unload();
-        ARCEMU_INLINE uint16 GetPositionX() { return _x; }
-        ARCEMU_INLINE uint16 GetPositionY() { return _y; }
+        inline uint16 GetPositionX() { return _x; }
+        inline uint16 GetPositionY() { return _y; }
 
         ObjectSet _respawnObjects;
         ObjectSet::iterator objects_iterator;           /// required by MapCell::RemoveObjects() removing Creatures which will remove their guardians and corrupt itr.
@@ -77,9 +77,11 @@ class SERVER_DECL MapCell
         void CorpseGoneIdle(Object* corpse);
     private:
 
-        uint16 _x, _y;
+        uint16 _x;
+        uint16 _y;
         ObjectSet _objects;
-        bool _active, _loaded;
+        bool _active;
+        bool _loaded;
         bool _unloadpending;
 
         uint16 _playerCount;

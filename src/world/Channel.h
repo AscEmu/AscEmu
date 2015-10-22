@@ -25,8 +25,6 @@
 #define CHANNEL_GUILDREC 25
 #define CHANNEL_LFG 26
 
-using namespace std;
-
 enum CHANNEL_FLAGS
 {
     CHANNEL_FLAG_NONE               = 0x00,
@@ -117,21 +115,21 @@ enum CHANNEL_PACKET_FLAGS
 class SERVER_DECL Channel
 {
         Mutex m_lock;
-        typedef map<Player*, uint32> MemberMap;
+        typedef std::map<Player*, uint32> MemberMap;
         MemberMap m_members;
-        set<uint32> m_bannedMembers;
+    std::set<uint32> m_bannedMembers;
     public:
         friend class ChannelIterator;
         static void LoadConfSettings();
-        string m_name;
-        string m_password;
+        std::string m_name;
+        std::string m_password;
         uint8 m_flags;
         uint32 m_id;
         bool m_general;
         bool m_muted;
         bool m_announce;
         uint32 m_team;
-        ARCEMU_INLINE size_t GetNumMembers() { return m_members.size(); }
+        inline size_t GetNumMembers() { return m_members.size(); }
         uint32 m_minimumLevel;
     public:
         Channel(const char* name, uint32 team, uint32 type_id);
@@ -220,8 +218,8 @@ class ChannelIterator
             ++m_itr;
         }
 
-        ARCEMU_INLINE Player* Grab() { return m_itr->first; }
-        ARCEMU_INLINE bool End() { return (m_itr == m_endItr) ? true : false; }
+        inline Player* Grab() { return m_itr->first; }
+        inline bool End() { return (m_itr == m_endItr) ? true : false; }
 };
 
 #endif // _CHANNEL_H

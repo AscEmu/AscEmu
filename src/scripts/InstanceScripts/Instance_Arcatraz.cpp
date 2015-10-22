@@ -93,6 +93,9 @@ class ZerekethAI : public MoonScriptBossAI
         {
             AddSpell(SEED_OF_C, Target_RandomPlayer, 6.0f, 2, 20, 0, 100.0f);
 
+            SpeechTimer = 0;
+            VoidTimer = 0;
+
             if (!IsHeroic())
                 AddSpell(SHADOW_NOVA, Target_Self, 15, 2, 15);
             else
@@ -112,7 +115,7 @@ class ZerekethAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(5497);     // This vessel is empty.
@@ -129,13 +132,13 @@ class ZerekethAI : public MoonScriptBossAI
 
             //despawn voids
             Creature* creature = NULL;
-            for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
+            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
             {
                 Object* obj = *itr;
                 ++itr;
                 if (obj->IsCreature())
                 {
-                    creature = TO_CREATURE(obj);
+                    creature = static_cast<Creature*>(obj);
 
                     if (creature->GetCreatureInfo()->Id == 21101 && creature->isAlive())
                     {
@@ -166,13 +169,13 @@ class ZerekethAI : public MoonScriptBossAI
             ResetTimer(VoidTimer, (RandomUInt(10) + 30) * 1000);
 
             std::vector<Player*> TargetTable;
-            set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
+            std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
             for (; Itr != _unit->GetInRangePlayerSetEnd(); Itr++)
             {
                 Player* RandomTarget = NULL;
                 if (!(*Itr)->IsPlayer())
                     continue;
-                RandomTarget = TO< Player* >(*Itr);
+                RandomTarget = static_cast< Player* >(*Itr);
                 if (RandomTarget && RandomTarget->isAlive() && isHostile(*Itr, _unit))
                     TargetTable.push_back(RandomTarget);
             }
@@ -180,16 +183,15 @@ class ZerekethAI : public MoonScriptBossAI
             if (!TargetTable.size())
                 return;
 
-            size_t RandTarget = rand() % TargetTable.size();
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            Player*  RTarget = TargetTable[RandTarget];
-
-            if (!RTarget)
+            if (random_target == nullptr)
                 return;
 
-            float vzX = RandomUInt(5) * cos(RandomFloat(6.28f)) + RTarget->GetPositionX();
-            float vzY = RandomUInt(5) * cos(RandomFloat(6.28f)) + RTarget->GetPositionY();
-            float vzZ = RTarget->GetPositionZ();
+            float vzX = RandomUInt(5) * cos(RandomFloat(6.28f)) + random_target->GetPositionX();
+            float vzY = RandomUInt(5) * cos(RandomFloat(6.28f)) + random_target->GetPositionY();
+            float vzZ = random_target->GetPositionZ();
             MoonScriptCreatureAI* VoidZone = SpawnCreature(CN_VOIDZONEARC, vzX, vzY, vzZ);
             VoidZone->GetUnit()->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             VoidZone->GetUnit()->m_noRespawn = true;
@@ -198,7 +200,7 @@ class ZerekethAI : public MoonScriptBossAI
                 VoidZone->Despawn();
                 return;
             }
-            RTarget = NULL;
+            random_target = NULL;
             VoidZone->Despawn(60000, 0);
         }
 
@@ -276,7 +278,7 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(7369);     // Completely ineffective.  Just like someone else I know.
@@ -327,7 +329,7 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(7364);     // Yes, that was quite satisfying.
@@ -393,7 +395,7 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
 
         void OnTargetDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(5035);     // Your fate is written.
@@ -426,7 +428,7 @@ class HarbringerSkyrissAI : public MoonScriptBossAI
 
     protected:
 
-        uint32 IllusionCount;
+        uint8 IllusionCount;
         SpellDesc* Illusion66;
         SpellDesc* Illusion33;
 };
@@ -453,6 +455,8 @@ class WardenMellicharAI : public MoonScriptBossAI
             orb2 = NULL;
             orb3 = NULL;
             orb4 = NULL;
+            Phasepart = 0;
+            NPC_ID_Spawn = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -563,7 +567,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     }
                     else if (NPC_orb2 && NPC_orb2->IsAlive())
                     {
-                        Creature* millhouse = TO_CREATURE(ForceCreatureFind(CN_MILLHOUSE_MANASTORM));
+                        Creature* millhouse = static_cast<Creature*>(ForceCreatureFind(CN_MILLHOUSE_MANASTORM));
                         if (millhouse)
                         {
                             millhouse->SendTimedScriptTextChatMessage(SAY_MILLHOUS_01, 2000);
@@ -764,7 +768,7 @@ class WardenMellicharAI : public MoonScriptBossAI
 
     protected:
 
-        uint32 Phasepart;
+        uint8 Phasepart;
         uint32 NPC_ID_Spawn;
         uint32 Spawncounter;
         int32 Phase_Timer;

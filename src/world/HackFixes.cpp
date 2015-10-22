@@ -61,15 +61,15 @@ void ApplyNormalFixes()
     uint32 effect;
     uint32 result;
 
-    map<uint32, uint32> talentSpells;
-    map<uint32, uint32>::iterator talentSpellIterator;
+    std::map<uint32, uint32> talentSpells;
+    std::map<uint32, uint32>::iterator talentSpellIterator;
     uint32 i, j;
     for (i = 0; i < dbcTalent.GetNumRows(); ++i)
     {
         TalentEntry* tal = dbcTalent.LookupRow(i);
         for (j = 0; j < 5; ++j)
             if (tal->RankID[j] != 0)
-                talentSpells.insert(make_pair(tal->RankID[j], tal->TalentTree));
+                talentSpells.insert(std::make_pair(tal->RankID[j], tal->TalentTree));
 
     }
 
@@ -1237,6 +1237,73 @@ void ApplyNormalFixes()
         //////////////////////////////////////////
 
         // Insert shaman spell fixes here
+        // Fire Nova Ranks (Linked spells)
+        if (sp->NameHash == SPELL_HASH_FIRE_NOVA)
+        {
+            switch (sp->Id)
+            {
+                case 1535:
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 8349;
+                } break;
+                case 8498:      //Rank 2
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 8502;
+                } break;
+                case 8499:      //Rank 3
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 8503;
+                } break;
+                case 11314:     //Rank 4
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 11306;
+                } break;
+                case 11315:     //Rank 5
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 11307;
+                } break;
+                case 25546:     //Rank 6
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 25535;
+                } break;
+                case 25547:     //Rank 7
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 25537;
+                } break;
+                case 61649:     //Rank 8
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 61650;
+                } break;
+                case 61657:     //Rank 9
+                {
+                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                    sp->EffectTriggerSpell[1] = 61654;
+                } break;
+                default:
+                    break;
+
+            }
+        }
+
+        if (sp->NameHash == SPELL_HASH_FLAMETONGUE_ATTACK)
+        {
+            //sp->Effect[1] = SPELL_EFFECT_DUMMY;
+            sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+        }
+
+        if (sp->NameHash == SPELL_HASH_FROSTBRAND_ATTACK)
+        {
+            //sp->Effect[1] = SPELL_EFFECT_DUMMY;
+            sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+        }
 
         // Flametongue Totem passive target fix
         if (sp->NameHash == SPELL_HASH_FLAMETONGUE_TOTEM && sp->Attributes & ATTRIBUTES_PASSIVE)
@@ -3205,6 +3272,7 @@ void ApplyNormalFixes()
     /**********************************************************
      *    Holy Nova
      **********************************************************/
+    /* Works fine without these Hacks....
     sp = CheckAndReturnSpellEntry(15237);
     if (sp != NULL)
     {
@@ -3258,7 +3326,7 @@ void ApplyNormalFixes()
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 48076;
-    }
+    }*/
 
     //Priest: Blessed Recovery
     sp = CheckAndReturnSpellEntry(27811);
@@ -5562,7 +5630,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(61177); // Northrend Inscription Research
     if (sp != NULL)
     {
-        sp->Effect[1] = 0;
+        sp->Effect[1] = SPELL_EFFECT_NULL;
         //sp->EffectBaseDice[1] = 0;
         sp->EffectBasePoints[1] = 0;
         sp->EffectImplicitTargetA[1] = 0;
@@ -5571,7 +5639,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(61288); // Minor Inscription Research
     if (sp != NULL)
     {
-        sp->Effect[1] = 0;
+        sp->Effect[1] = SPELL_EFFECT_NULL;
         //sp->EffectBaseDice[1] = 0;
         sp->EffectBasePoints[1] = 0;
         sp->EffectImplicitTargetA[1] = 0;
@@ -5580,7 +5648,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60893); // Northrend Alchemy Research
     if (sp != NULL)
     {
-        sp->Effect[1] = 0;
+        sp->Effect[1] = SPELL_EFFECT_NULL;
         //sp->EffectBaseDice[1] = 0;
         sp->EffectBasePoints[1] = 0;
         sp->EffectImplicitTargetA[1] = 0;
@@ -5977,7 +6045,7 @@ void ApplyNormalFixes()
     // Eye of Acherus, our phase shift mode messes up the control :/
     sp = CheckAndReturnSpellEntry(51852);
     if (sp != NULL)
-        sp->Effect[0] = 0;
+        sp->Effect[0] = SPELL_EFFECT_NULL;
 
 
     //Spell Focus Trigger (Mystical Skyfire Diamond)
@@ -7089,8 +7157,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->Effect[0] = SPELL_EFFECT_DUMMY;
-        sp->Effect[1] = 0;
-        sp->Effect[2] = 0;
+        sp->Effect[1] = SPELL_EFFECT_NULL;
+        sp->Effect[2] = SPELL_EFFECT_NULL;
     }
 
     //PvP Librams of Justice
@@ -7301,8 +7369,8 @@ void ApplyNormalFixes()
 	if (sp)
 	{
 		sp->EffectBasePoints[0] = 0;
-		sp->Effect[1] = NULL;
-		sp->Effect[2] = NULL;
+		sp->Effect[1] = SPELL_EFFECT_NULL;
+		sp->Effect[2] = SPELL_EFFECT_NULL;
 		sp->TargetAuraState = 0;
 		sp->casterAuraSpell = 0;
 		sp->CasterAuraState = 0;
@@ -7319,6 +7387,17 @@ void ApplyNormalFixes()
     if (sp)
     {
         sp->EffectMechanic[0] = MECHANIC_STUNNED;
+        sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
+        sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
+    }
+
+    // Fan of knives
+    sp = CheckAndReturnSpellEntry(51723);
+    if (sp != NULL)
+    {
+        //sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+        //sp->EffectTriggerSpell[1] = 52874;
+        sp->EffectMechanic[0] = MECHANIC_SHACKLED;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
         sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
     }

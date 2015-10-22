@@ -81,7 +81,9 @@ ArenaTeam::ArenaTeam(Field* f)
     m_stat_gamesplayedseason = 0;
     m_stat_gameswonseason = 0;
     m_stat_gameswonweek = 0;
-    sscanf(f[z++].GetString(), "%u %u %u %u", &m_stat_gamesplayedweek, &m_stat_gameswonweek, &m_stat_gamesplayedseason, &m_stat_gameswonseason);
+    m_stat_ranking = 0;
+    if (sscanf(f[z++].GetString(), "%u %u %u %u", &m_stat_gamesplayedweek, &m_stat_gameswonweek, &m_stat_gamesplayedseason, &m_stat_gameswonseason) != 3)
+        return;
 
     m_stat_ranking = f[z++].GetUInt32();
     for (i = 0; i < m_slots; ++i)
@@ -120,7 +122,7 @@ void ArenaTeam::Destroy()
 {
     char buffer[1024];
     WorldPacket* data;
-    vector<PlayerInfo*> tokill;
+    std::vector<PlayerInfo*> tokill;
     uint32 i;
     tokill.reserve(m_memberCount);
     snprintf(buffer, 1024, "The arena team, '%s', disbanded.", m_name.c_str());
@@ -134,7 +136,7 @@ void ArenaTeam::Destroy()
             tokill.push_back(m_members[i].Info);
     }
 
-    for (vector<PlayerInfo*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
+    for (std::vector<PlayerInfo*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
     {
         RemoveMember(*itr);
     }
@@ -393,7 +395,7 @@ void WorldSession::HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     WorldPacket data(SMSG_ARENA_TEAM_INVITE, 40);
-    string player_name;
+    std::string player_name;
     uint32 teamId;
     recv_data >> teamId >> player_name;
 
@@ -457,7 +459,7 @@ void WorldSession::HandleArenaTeamRemoveMemberOpcode(WorldPacket& recv_data)
     ArenaTeam* team;
     uint8 slot;
     uint32 teamId;
-    string name;
+    std::string name;
     PlayerInfo* inf;
     recv_data >> teamId >> name;
 
@@ -656,7 +658,7 @@ void WorldSession::HandleArenaTeamPromoteOpcode(WorldPacket& recv_data)
 
     uint32 teamId;
     uint8 slot;
-    string name;
+    std::string name;
     ArenaTeam* team;
     PlayerInfo* inf;
     recv_data >> teamId >> name;

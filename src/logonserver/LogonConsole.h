@@ -24,23 +24,32 @@
 #include "Common.h"
 #include "CThreads.h"
 
+enum checkType
+{
+    CHECK_LOG_NONE = 0,
+    ACC_NAME_DO_EXIST = 1,
+    ACC_NAME_NOT_EXIST = 2
+};
+
 class LogonConsoleThread : public ThreadBase
 {
     public:
-        Arcemu::Threading::AtomicBoolean kill;
-        LogonConsoleThread();
-        ~LogonConsoleThread();
-        bool run();
+    Arcemu::Threading::AtomicBoolean kill;
+    LogonConsoleThread();
+    ~LogonConsoleThread();
+    bool run();
 };
 
-class LogonConsole :  public Singleton < LogonConsole >
+class LogonConsole : public Singleton < LogonConsole >
 {
-        friend class LogonConsoleThread;
+    friend class LogonConsoleThread;
 
     public:                        // Public methods:
+
         void Kill();
 
     protected:                    // Protected methods:
+
         LogonConsoleThread* _thread;
 
         // Process one command
@@ -62,9 +71,17 @@ class LogonConsole :  public Singleton < LogonConsole >
 
         void Info(char* str);
 
-        void CreateAccount(char* str);
+        //AccountHandling
+        void AccountCreate(char* str);
+        void AccountDelete(char* str);
+        void AccountSetGm(char* str);
+        void AccountSetPassword(char* str);
+        void AccountChangePassword(char* str);
+
+        void checkAccountName(std::string name, uint8 type);
 };
 
 #define sLogonConsole LogonConsole::getSingleton()
 
-#endif
+
+#endif      // __LOGONCONSOLE_H

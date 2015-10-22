@@ -21,8 +21,6 @@
 #ifndef _SPELL_PROC_H
 #define _SPELL_PROC_H
 
-#include "StdAfx.h"
-
 class SpellProc;
 class Unit;
 
@@ -42,57 +40,28 @@ class SpellProc
 		}
 
 		// Returns true if this spell can proc, false otherwise
-		virtual bool CanProc(Unit* victim, SpellEntry* CastingSpell)
-		{
-			return true;
-		}
+        virtual bool CanProc(Unit* victim, SpellEntry* CastingSpell);
 
 		// Called when procFlags is to be compared.
 		// Return true on success, false otherwise
-		virtual bool CheckProcFlags(uint32 flag)
-		{
-			if (mProcFlags & flag)
-				return true;
-			else
-				return false;
-		}
+    virtual bool CheckProcFlags(uint32 flag);
 
-		// Check if this object is identified by method arguments, so it can be deleted
-		virtual bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)
-		{
-			if (mSpell->Id == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
-				return true;
+    // Check if this object is identified by method arguments, so it can be deleted
+    virtual bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0);
 
-			return false;
-		}
-
-		// Called when is proccing from casting spell. It checks proc class mask with spell group type
+    // Called when is proccing from casting spell. It checks proc class mask with spell group type
 		// Return true allow proc, false otherwise
-		virtual bool CheckClassMask(Unit* victim, SpellEntry* CastingSpell)
-		{
-			if ((mProcClassMask[0] == 0 && mProcClassMask[1] == 0 && mProcClassMask[2] == 0) ||
-			        mProcClassMask[0] & CastingSpell->SpellGroupType[0] ||
-			        mProcClassMask[1] & CastingSpell->SpellGroupType[1] ||
-			        mProcClassMask[2] & CastingSpell->SpellGroupType[2])
-				return true;
-			else
-				return false;
-		}
+    virtual bool CheckClassMask(Unit* victim, SpellEntry* CastingSpell);
 
-		// Called after proc chance is rolled
+    // Called after proc chance is rolled
 		// Return false so Unit::HandleProc execute subsequent statements
 		// Return true if this handle everything, so Unit::HandleProc skips to next iteration
-		virtual bool DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
-		{
-			return false;
-		}
+    virtual bool DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type);
 
-		// Called just after this object is created. Usefull for initialize object members
-		virtual void Init(Object* obj)
-		{
-		}
+    // Called just after this object is created. Usefull for initialize object members
+    virtual void Init(Object* obj);
 
-		virtual uint32 CalcProcChance(Unit* victim, SpellEntry* CastingSpell);
+    virtual uint32 CalcProcChance(Unit* victim, SpellEntry* CastingSpell);
 
 		// Called when trying to proc on a triggered spell
 		// Return true allow proc, false otherwise
@@ -153,12 +122,12 @@ class SpellProcMgr: public Singleton < SpellProcMgr >
 
 		void AddById(uint32 spellId, spell_proc_factory_function spell_proc)
 		{
-			mSpellProc.insert(make_pair(spellId, spell_proc));
+			mSpellProc.insert(std::make_pair(spellId, spell_proc));
 		}
 
 		void AddByNameHash(uint32 name_hash, spell_proc_factory_function spell_proc)
 		{
-			mSpellProcNameHash.insert(make_pair(name_hash, spell_proc));
+			mSpellProcNameHash.insert(std::make_pair(name_hash, spell_proc));
 		}
 
 		void Setup();

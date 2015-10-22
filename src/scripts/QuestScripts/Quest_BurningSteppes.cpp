@@ -21,18 +21,18 @@
 class TabletOfTheSeven : public QuestScript
 {
     public:
+
         void OnGameObjectActivate(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
         {
-            if(mTarget == NULL || qLogEntry == NULL || entry != 169294)
+            if (mTarget == nullptr || qLogEntry == nullptr || entry != 169294)
                 return;
 
-            if(mTarget->GetItemInterface()->GetItemCount(11470) < qLogEntry->GetQuest()->required_itemcount[0])
+            if (mTarget->GetItemInterface()->GetItemCount(11470) < qLogEntry->GetQuest()->required_itemcount[0])
                 mTarget->CastSpell(mTarget, 15065, false);
         }
 };
 
 void SetupBurningSteppes(ScriptMgr* mgr)
 {
-    QuestScript* tablet = new TabletOfTheSeven;
-    mgr->register_quest_script(4296, tablet);
+    mgr->register_quest_script(4296, new TabletOfTheSeven);
 }

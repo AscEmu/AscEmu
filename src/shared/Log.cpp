@@ -21,8 +21,9 @@
 #include "Config/ConfigEnv.h"
 #include "Log.h"
 #include <cstdarg>
+#include <string>
 
-string FormatOutputString(const char* Prefix, const char* Description, bool useTimeStamp)
+std::string FormatOutputString(const char* Prefix, const char* Description, bool useTimeStamp)
 {
 
     char p[MAX_PATH];
@@ -40,7 +41,7 @@ string FormatOutputString(const char* Prefix, const char* Description, bool useT
     }
 
     strcat(p, ".log");
-    return string(p);
+    return std::string(p);
 }
 
 createFileSingleton(oLog);
@@ -422,13 +423,15 @@ void oLog::LargeErrorMessage(const char* source, ...)
         pointer = va_arg(ap, char*);
     }
 
+    va_end(ap);
+
     outError("*********************************************************************");
     outError("*                        MAJOR ERROR/WARNING                        *");
     outError("*                        ===================                        *");
 
     for(std::vector<char*>::iterator itr = lines.begin(); itr != lines.end(); ++itr)
     {
-        stringstream sstext;
+        std::stringstream sstext;
         i = strlen(*itr);
         j = (i <= 65) ? 65 - i : 0;
         sstext << "* " << *itr;
@@ -475,7 +478,7 @@ void oLog::Init(int32 fileLogLevel, LogType logType)
     else
     {
         tm* aTm = localtime(&UNIXTIME);
-        outBasic("==================[%-4d-%02d-%02d]========[%02d:%02d:%02d]==================", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+        outBasic("=============[%-4d-%02d-%02d]========[%02d:%02d:%02d]=============", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
     }
 
     m_errorFile = fopen(logErrorFilename, "a");
@@ -485,7 +488,7 @@ void oLog::Init(int32 fileLogLevel, LogType logType)
     {
         tm* aTm = localtime(&UNIXTIME);
         // We don't echo time and date again because outBasic above just echoed them.
-        outErrorSilent("==================[%-4d-%02d-%02d]========[%02d:%02d:%02d]==================", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+        outErrorSilent("=============[%-4d-%02d-%02d]========[%02d:%02d:%02d]=============", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
     }
 }
 

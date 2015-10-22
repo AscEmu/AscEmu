@@ -21,6 +21,8 @@
 #ifndef WORLDSTATEHANDLER_H
 #define WORLDSTATEHANDLER_H
 
+#include "WorldPacket.h"
+
 struct WorldState;
 
 class SERVER_DECL WorldStatesHandler

@@ -121,7 +121,7 @@ class KrikthirAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* mKiller)
     {
-        switch (rand() % 2)
+        switch (RandomUInt(1))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(3910);     // As Anub'arak commands!

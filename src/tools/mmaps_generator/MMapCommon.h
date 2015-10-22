@@ -35,8 +35,6 @@
 #include <dirent.h>
 #endif
 
-using namespace std;
-
 namespace MMAP
 {
     inline bool matchWildcardFilter(const char* filter, const char* str)
@@ -77,12 +75,12 @@ namespace MMAP
         LISTFILE_OK = 1
     };
 
-    inline ListFilesResult getDirContents(vector<string>& fileList, string dirpath = ".", string filter = "*", bool includeSubDirs = false)
+    inline ListFilesResult getDirContents(std::vector<std::string>& fileList, std::string dirpath = ".", std::string filter = "*", bool includeSubDirs = false)
     {
 #ifdef WIN32
         HANDLE hFind;
         WIN32_FIND_DATA findFileInfo;
-        string directory;
+        std::string directory;
 
         directory = dirpath + "/" + filter;
 
@@ -94,7 +92,7 @@ namespace MMAP
         do
         {
             if (includeSubDirs || (findFileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
-                fileList.push_back(string(findFileInfo.cFileName));
+                fileList.push_back(std::string(findFileInfo.cFileName));
         }
         while (FindNextFile(hFind, &findFileInfo));
 

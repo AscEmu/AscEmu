@@ -100,85 +100,86 @@ class TheVioletHoldScript : public MoonInstanceScript
 {
     friend class SinclariGossip; // Friendship forever ;-)
 
-private:
-    int32 m_numBarrel;
-    uint32 m_phaseData[TVH_END];
+    private:
 
-public:
-    MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(TheVioletHoldScript, MoonInstanceScript);
-    TheVioletHoldScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
-    {
-        m_numBarrel = 0;
+        int32 m_numBarrel;
+        uint32 m_phaseData[TVH_END];
 
-        for (int i = 0; i < TVH_END; ++i)
-            m_phaseData[i] = State_NotStarted;
-    };
+    public:
 
-    void SetData(uint32 pIndex, uint32 pData)
-    {
-        if (pIndex >= TVH_END)
-            return;
-
-        // If Data = MainEvent, set state "PreProgress". Gossip Sinclar 1 + 2
-        if (pIndex == TVH_PHASE_1)
-            mInstance->GetWorldStatesHandler().SetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH, State_PreProgress);
-
-        // If Data = second event, set state "InProgress". Gossip Sinclari Case 3
-        if (pIndex == TVH_PHASE_2)
-            mInstance->GetWorldStatesHandler().SetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH, State_InProgress);
-
-        m_phaseData[pIndex] = pData;
-    };
-
-    uint32 GetData(uint32 pIndex)
-    {
-        // If Phase = End/finishes, reset the Phases to 0
-        if (pIndex >= TVH_END)
-            return 0;
-
-        return m_phaseData[pIndex];
-    };
-
-    void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-    {
-        if (pType != Data_EncounterState || pIndex == 0)
-            return;
-
-        EncounterMap::iterator Iter = mEncounters.find(pIndex);
-        if (Iter == mEncounters.end())
-            return;
-
-        (*Iter).second.mState = (EncounterState)pData;
-    };
-
-    uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-    {
-        if (pType != Data_EncounterState || pIndex == 0)
-            return 0;
-
-        EncounterMap::iterator Iter = mEncounters.find(pIndex);
-        if (Iter == mEncounters.end())
-            return 0;
-
-        return (*Iter).second.mState;
-    };
-
-    void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
-    {
-    };
-
-    void OnPlayerEnter(Player* pPlayer)
-    {
-        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
-        if (!pInstance)
-            return;
-
-        if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted || pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == NULL)
+        MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(TheVioletHoldScript, MoonInstanceScript);
+        TheVioletHoldScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            mEncounters.insert(EncounterMap::value_type(MAP_VIOLET_HOLD, State_NotStarted));
-        }
+            m_numBarrel = 0;
 
-    }
+            for (uint8 i = 0; i < TVH_END; ++i)
+                m_phaseData[i] = State_NotStarted;
+        };
+
+        void SetData(uint32 pIndex, uint32 pData)
+        {
+            if (pIndex >= TVH_END)
+                return;
+
+            // If Data = MainEvent, set state "PreProgress". Gossip Sinclar 1 + 2
+            if (pIndex == TVH_PHASE_1)
+                mInstance->GetWorldStatesHandler().SetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH, State_PreProgress);
+
+            // If Data = second event, set state "InProgress". Gossip Sinclari Case 3
+            if (pIndex == TVH_PHASE_2)
+                mInstance->GetWorldStatesHandler().SetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH, State_InProgress);
+
+            m_phaseData[pIndex] = pData;
+        };
+
+        uint32 GetData(uint32 pIndex)
+        {
+            // If Phase = End/finishes, reset the Phases to 0
+            if (pIndex >= TVH_END)
+                return 0;
+
+            return m_phaseData[pIndex];
+        };
+
+        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = (EncounterState)pData;
+        };
+
+        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return 0;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return 0;
+
+            return (*Iter).second.mState;
+        };
+
+        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+        {};
+
+        void OnPlayerEnter(Player* pPlayer)
+        {
+            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+            if (!pInstance)
+                return;
+
+            if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted)
+            {
+                mEncounters.insert(EncounterMap::value_type(MAP_VIOLET_HOLD, State_NotStarted));
+            }
+
+        }
 };
 
 #define SINCLARI_SAY_1 "Prison guards, we are oleaving! These adventurers are taking over! Go go go!"
@@ -192,38 +193,39 @@ public:
 //Lieutnant Sinclari StartEvent
 class SinclariAI : public MoonScriptCreatureAI
 {
-public:
-    MOONSCRIPT_FACTORY_FUNCTION(SinclariAI, MoonScriptCreatureAI);
-    SinclariAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-    {
-        _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
-    }
+    public:
 
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
-    {
-        switch (iWaypointId)
+        MOONSCRIPT_FACTORY_FUNCTION(SinclariAI, MoonScriptCreatureAI);
+        SinclariAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            case 2:
-            {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
-                _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
-            }
-            break;
-
-            case 4:
-            {
-                _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
-                _unit->SetUInt32Value(UNIT_NPC_FLAGS, 1);
-                TheVioletHoldScript* pInstance = (TheVioletHoldScript*)_unit->GetMapMgr()->GetScript();
-                pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_InProgress);
-
-                GameObject* pVioletHoldDoor = pInstance->FindClosestGameObjectOnMap(GO_TVH_PRISON_SEAL, 1822.59f, 803.93f, 44.36f);
-                if (pVioletHoldDoor != NULL)
-                    pVioletHoldDoor->SetState(GAMEOBJECT_STATE_CLOSED);
-            }
-            break;
+            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
         }
-    }
+
+        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        {
+            switch (iWaypointId)
+            {
+                case 2:
+                {
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
+                    _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
+                }
+                break;
+
+                case 4:
+                {
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
+                    _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                    TheVioletHoldScript* pInstance = (TheVioletHoldScript*)_unit->GetMapMgr()->GetScript();
+                    pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_InProgress);
+
+                    GameObject* pVioletHoldDoor = pInstance->FindClosestGameObjectOnMap(GO_TVH_PRISON_SEAL, 1822.59f, 803.93f, 44.36f);
+                    if (pVioletHoldDoor != NULL)
+                        pVioletHoldDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                }
+                break;
+            }
+        }
 };
 
 enum eGossipTexts
@@ -246,93 +248,95 @@ enum GossipItem
 //Sinclari Gossip
 class SinclariGossip : public GossipScript
 {
-public:
-    void GossipHello(Object* pObject, Player* pPlayer)
-    {
-        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
-        if (!pInstance)
-            return;
+    public:
 
-        GossipMenu* menu;
-
-        //Page 1: Textid and first menu item
-        if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted)
+        void GossipHello(Object* pObject, Player* pPlayer)
         {
-            objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_ON_HELLO, pPlayer);
-            menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_ACTIVATE), 1);
+            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
+            if (!pInstance)
+                return;
 
-            menu->SendTo(pPlayer);
-        }
+            GossipMenu* menu;
 
-        //If VioletHold is started, Sinclari has this item for people who aould join.
-        if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_InProgress)
+            //Page 1: Textid and first menu item
+            if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_NotStarted)
+            {
+                objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_ON_HELLO, pPlayer);
+                menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_ACTIVATE), 1);
+
+                menu->SendTo(pPlayer);
+            }
+
+            //If VioletHold is started, Sinclari has this item for people who aould join.
+            if (pInstance->GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD) == State_InProgress)
+            {
+                objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_OUTSIDE, pPlayer);
+                menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_SEND_ME_IN), 3);
+
+                menu->SendTo(pPlayer);
+            }
+        };
+
+        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
         {
-            objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_OUTSIDE, pPlayer);
-            menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_SEND_ME_IN), 3);
+            TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
 
-            menu->SendTo(pPlayer);
+            if (!pInstance)
+                return;
+
+            if (!pObject->IsCreature())
+                return;
+
+            Creature* pCreature = static_cast<Creature*>(pObject);
+
+            switch (IntId)
+            {
+                case 0:
+                    GossipHello(pObject, pPlayer);
+                    break;
+
+                case 1:
+                {
+                    GossipMenu* menu;
+                    objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_ON_FINISH, pPlayer);
+                    menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_GET_SAFETY), 2);
+                    menu->SendTo(pPlayer);
+
+                    // New Encounter State included
+                    pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_PreProgress);
+                }break;
+
+                case 2:
+                {
+                    static_cast<Creature*>(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                    pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_NONE);
+                    //pCreature->MoveToWaypoint(1);
+                    pCreature->GetAIInterface()->StopMovement(10);
+
+                }break;
+
+                case 3:
+                {
+                    Arcemu::Gossip::Menu::Complete(pPlayer);
+                    pPlayer->SafeTeleport(pPlayer->GetInstanceID(), MAP_VIOLET_HOLD, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
+                }break;
+            }
         }
-    };
-
-    void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
-    {
-        TheVioletHoldScript* pInstance = (TheVioletHoldScript*)pPlayer->GetMapMgr()->GetScript();
-
-        if (!pInstance)
-            return;
-
-        if(!pObject->IsCreature())
-            return;
-
-        Creature* pCreature = TO_CREATURE(pObject);
-
-        switch (IntId)
-        {
-            case 0:
-                GossipHello(pObject, pPlayer);
-                break;
-
-            case 1:
-            {
-                  GossipMenu* menu;
-                  objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), SINCLARI_ON_FINISH, pPlayer);
-                  menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_GET_SAFETY), 2);
-                  menu->SendTo(pPlayer);
-
-                  // New Encounter State included
-                  pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_PreProgress);
-            }break;
-
-            case 2:
-            {
-                      TO_CREATURE(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, 0);
-                      pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_NONE);
-                      //pCreature->MoveToWaypoint(1);
-                      pCreature->GetAIInterface()->StopMovement(10);
-
-            }break;
-
-            case 3:
-            {
-                  Arcemu::Gossip::Menu::Complete(pPlayer);
-                  pPlayer->SafeTeleport(pPlayer->GetInstanceID(), MAP_VIOLET_HOLD, 1830.531006f, 803.939758f, 44.340508f, 6.281611f);
-            }break;
-        }
-    }
 };
 
 ///////////////////////////////////////////////////////
 //VH Guards
 class VHGuardsAI : public MoonScriptCreatureAI
 {
-public:
-    MOONSCRIPT_FACTORY_FUNCTION(VHGuardsAI, MoonScriptCreatureAI);
-    VHGuardsAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
-    {
-        _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
-    }
+    public:
 
-    //WPs inserted in db.
+        MOONSCRIPT_FACTORY_FUNCTION(VHGuardsAI, MoonScriptCreatureAI);
+        VHGuardsAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        {
+            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
+        }
+
+        //WPs inserted in db.
 
 };
 

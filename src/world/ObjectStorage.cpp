@@ -81,8 +81,8 @@ SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest>
 
 
 
-SERVER_DECL set<string> ExtraMapCreatureTables;
-SERVER_DECL set<string> ExtraMapGameObjectTables;
+SERVER_DECL std::set<std::string> ExtraMapCreatureTables;
+SERVER_DECL std::set<std::string> ExtraMapGameObjectTables;
 
 void ObjectMgr::LoadProfessionDiscoveries()
 {
@@ -152,9 +152,9 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
             if (cn->aura_string)
             {
-                string auras = string(cn->aura_string);
-                vector<string> aurs = StrSplit(auras, " ");
-                for (vector<string>::iterator it = aurs.begin(); it != aurs.end(); ++it)
+                std::string auras = std::string(cn->aura_string);
+                std::vector<std::string> aurs = StrSplit(auras, " ");
+                for (std::vector<std::string>::iterator it = aurs.begin(); it != aurs.end(); ++it)
                 {
                     uint32 id = atol((*it).c_str());
                     if (id)
@@ -189,7 +189,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
         {
             ci = itr->Get();
 
-            ci->lowercase_name = string(ci->Name);
+            ci->lowercase_name = std::string(ci->Name);
             for (uint32 j = 0; j < ci->lowercase_name.length(); ++j)
                 ci->lowercase_name[j] = static_cast<char>(tolower(ci->lowercase_name[j]));   // Darvaleo 2008/08/15 - Copied lowercase conversion logic from ItemPrototype task
 
@@ -353,14 +353,14 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void ObjectMgr::LoadExtraItemStuff()
 {
-    map<uint32, uint32> foodItems;
+    std::map<uint32, uint32> foodItems;
     QueryResult* result = WorldDatabase.Query("SELECT * FROM itempetfood ORDER BY entry");
     if (result)
     {
         Field* f = result->Fetch();
         do
         {
-            foodItems.insert(make_pair(f[0].GetUInt32(), f[1].GetUInt32()));
+            foodItems.insert(std::make_pair(f[0].GetUInt32(), f[1].GetUInt32()));
         }
         while(result->NextRow());
         delete result;
@@ -395,7 +395,7 @@ void ObjectMgr::LoadExtraItemStuff()
 
         //load item_pet_food_type from extra table
         uint32 ft = 0;
-        map<uint32, uint32>::iterator iter = foodItems.find(pItemPrototype->ItemId);
+        std::map<uint32, uint32>::iterator iter = foodItems.find(pItemPrototype->ItemId);
         if (iter != foodItems.end())
             ft = iter->second;
         pItemPrototype->FoodType = ft ;
@@ -532,10 +532,10 @@ void ObjectMgr::LoadExtraItemStuff()
 void ObjectMgr::LoadExtraGameObjectStuff()
 {
     StorageContainerIterator<GameObjectInfo> * itr = GameObjectNameStorage.MakeIterator();
-    GameObjectInfo* goi;
+    GameObjectInfo* gameobject_info;
     while(!itr->AtEnd())
     {
-        goi = itr->Get();
+        gameobject_info = itr->Get();
 
         if (!itr->Inc())
             break;
@@ -591,7 +591,7 @@ void Storage_Cleanup()
                 free(p->aura_string);
                 p->aura_string = NULL;
             }
-            for (list<AI_Spell*>::iterator it = p->spells.begin(); it != p->spells.end(); ++it)
+            for (std::list<AI_Spell*>::iterator it = p->spells.begin(); it != p->spells.end(); ++it)
                 delete(*it);
             p->spells.clear();
             p->start_auras.clear();
@@ -626,18 +626,18 @@ void Storage_Cleanup()
     PointOfInterestStorage.Cleanup();
 }
 
-vector<pair<string, string> > additionalTables;
+std::vector<std::pair<std::string, std::string> > additionalTables;
 
 bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool firstLoad = false)
 {
     if (!stricmp(TableName, "creature_spawns"))
     {
-        ExtraMapCreatureTables.insert(string(SecondName));
+        ExtraMapCreatureTables.insert(std::string(SecondName));
         return false;
     }
     else if (!stricmp(TableName, "gameobject_spawns"))
     {
-        ExtraMapGameObjectTables.insert(string(SecondName));
+        ExtraMapGameObjectTables.insert(std::string(SecondName));
         return false;
     }
     else if (firstLoad && !stricmp(TableName, "items"))                // Items
@@ -739,10 +739,10 @@ bool Storage_ReloadTable(const char* TableName)
 
     uint32 len = (uint32)strlen(TableName);
     uint32 len2;
-    for (vector<pair<string, string> >::iterator itr = additionalTables.begin(); itr != additionalTables.end(); ++itr)
+    for (std::vector<std::pair<std::string, std::string> >::iterator itr = additionalTables.begin(); itr != additionalTables.end(); ++itr)
     {
         len2 = (uint32)itr->second.length();
-        if (!strnicmp(TableName, itr->second.c_str(), min(len, len2)))
+        if (!strnicmp(TableName, itr->second.c_str(), std::min(len, len2)))
             LoadAdditionalTable(TableName, itr->first.c_str());
     }
     return true;
@@ -750,18 +750,18 @@ bool Storage_ReloadTable(const char* TableName)
 
 void Storage_LoadAdditionalTables()
 {
-    ExtraMapCreatureTables.insert(string("creature_spawns"));
-    ExtraMapGameObjectTables.insert(string("gameobject_spawns"));
+    ExtraMapCreatureTables.insert(std::string("creature_spawns"));
+    ExtraMapGameObjectTables.insert(std::string("gameobject_spawns"));
 
-    string strData = Config.MainConfig.GetStringDefault("Startup", "LoadAdditionalTables", "");
+    std::string strData = Config.MainConfig.GetStringDefault("Startup", "LoadAdditionalTables", "");
     if (strData.empty())
         return;
 
-    vector<string> strs = StrSplit(strData, ",");
+    std::vector<std::string> strs = StrSplit(strData, ",");
     if (strs.empty())
         return;
 
-    for (vector<string>::iterator itr = strs.begin(); itr != strs.end(); ++itr)
+    for (std::vector<std::string>::iterator itr = strs.begin(); itr != strs.end(); ++itr)
     {
         char s1[200];
         char s2[200];
@@ -770,9 +770,9 @@ void Storage_LoadAdditionalTables()
 
         if (LoadAdditionalTable(s2, s1, true))
         {
-            pair<string, string> tmppair;
-            tmppair.first = string(s1);
-            tmppair.second = string(s2);
+            std::pair<std::string, std::string> tmppair;
+            tmppair.first = std::string(s1);
+            tmppair.second = std::string(s2);
             additionalTables.push_back(tmppair);
         }
     }
@@ -789,7 +789,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
     }
     // ----------------
 
-    vector<string> keyGroup;
+    std::vector<std::string> keyGroup;
     QueryResult* result = WorldDatabase.Query("SELECT DISTINCT percent FROM `worldbroadcast` ORDER BY percent DESC");
     // result->GetRowCount();
     if (result != NULL)
@@ -797,7 +797,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
         do
         {
             Field* f = result->Fetch();
-            keyGroup.push_back(string(f[0].GetString()));
+            keyGroup.push_back(std::string(f[0].GetString()));
         }
         while(result->NextRow());
         delete result;
@@ -813,9 +813,9 @@ void ObjectMgr::StoreBroadCastGroupKey()
     else
         Log.Notice("ObjectMgr", "BCSystem Enabled with %u KeyGroups.", keyGroup.size());
 
-    for (vector<string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
+    for (std::vector<std::string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
     {
-        string curKey = (*itr);
+        std::string curKey = (*itr);
         char szSQL[512];
         memset(szSQL, 0, sizeof(szSQL));
         sprintf(szSQL, "SELECT entry,percent FROM `worldbroadcast` WHERE percent='%s' ", curKey.c_str());
@@ -825,7 +825,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
             do
             {
                 Field* f = result->Fetch();
-                m_BCEntryStorage.insert(pair<uint32, uint32>(uint32(atoi(curKey.c_str())), f[0].GetUInt32()));
+                m_BCEntryStorage.insert(std::pair<uint32, uint32>(uint32(atoi(curKey.c_str())), f[0].GetUInt32()));
             }
             while(result->NextRow());
             delete result;

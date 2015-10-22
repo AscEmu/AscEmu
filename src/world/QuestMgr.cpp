@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "QuestLogEntry.hpp"
 
 
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
@@ -92,7 +93,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst, bool skiplevelcheck)
     bool questscompleted = false;
     if (!qst->quest_list.empty())
     {
-        set<uint32>::iterator iter = qst->quest_list.begin();
+        std::set<uint32>::iterator iter = qst->quest_list.begin();
         for (; iter != qst->quest_list.end(); ++iter)
         {
             Quest* questcheck = QuestStorage.LookupEntry((*iter));
@@ -193,25 +194,25 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
     if (quest_giver->IsGameObject())
     {
-        bValid = TO< GameObject* >(quest_giver)->HasQuests();
+        bValid = static_cast< GameObject* >(quest_giver)->HasQuests();
         if (bValid)
         {
-            q_begin = TO< GameObject* >(quest_giver)->QuestsBegin();
-            q_end = TO< GameObject* >(quest_giver)->QuestsEnd();
+            q_begin = static_cast< GameObject* >(quest_giver)->QuestsBegin();
+            q_end = static_cast< GameObject* >(quest_giver)->QuestsEnd();
         }
     }
     else if (quest_giver->IsCreature())
     {
-        bValid = TO< Creature* >(quest_giver)->HasQuests();
+        bValid = static_cast< Creature* >(quest_giver)->HasQuests();
         if (bValid)
         {
-            q_begin = TO< Creature* >(quest_giver)->QuestsBegin();
-            q_end = TO< Creature* >(quest_giver)->QuestsEnd();
+            q_begin = static_cast< Creature* >(quest_giver)->QuestsBegin();
+            q_end = static_cast< Creature* >(quest_giver)->QuestsEnd();
         }
     }
     else if (quest_giver->IsItem())
     {
-        if (TO< Item* >(quest_giver)->GetProto()->QuestId)
+        if (static_cast< Item* >(quest_giver)->GetProto()->QuestId)
             bValid = true;
     }
     //This will be handled at quest share so nothing important as status
@@ -229,14 +230,17 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
     if (quest_giver->IsItem())
     {
-        Quest* pQuest = QuestStorage.LookupEntry(TO< Item* >(quest_giver)->GetProto()->QuestId);
-        QuestRelation qr;
-        qr.qst = pQuest;
-        qr.type = 1;
+        Quest* pQuest = QuestStorage.LookupEntry(static_cast< Item* >(quest_giver)->GetProto()->QuestId);
+        if (pQuest)
+        {
+            QuestRelation qr;
+            qr.qst = pQuest;
+            qr.type = 1;
 
-        uint32 tmp_status = CalcQuestStatus(quest_giver, plr, &qr);
-        if (tmp_status > status)
-            status = tmp_status;
+            uint32 tmp_status = CalcQuestStatus(quest_giver, plr, &qr);
+            if (tmp_status > status)
+                status = tmp_status;
+        }
     }
 
     for (itr = q_begin; itr != q_end; ++itr)
@@ -252,7 +256,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 {
     std::list<QuestRelation*>::const_iterator itr;
-    map<uint32, uint8> tmp_map;
+    std::map<uint32, uint8> tmp_map;
     uint32 questCount = 0;
 
     std::list<QuestRelation*>::const_iterator q_begin;
@@ -261,21 +265,21 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     if (quest_giver->IsGameObject())
     {
-        bValid = TO< GameObject* >(quest_giver)->HasQuests();
+        bValid = static_cast< GameObject* >(quest_giver)->HasQuests();
         if (bValid)
         {
-            q_begin = TO< GameObject* >(quest_giver)->QuestsBegin();
-            q_end = TO< GameObject* >(quest_giver)->QuestsEnd();
+            q_begin = static_cast< GameObject* >(quest_giver)->QuestsBegin();
+            q_end = static_cast< GameObject* >(quest_giver)->QuestsEnd();
 
         }
     }
     else if (quest_giver->IsCreature())
     {
-        bValid = TO< Creature* >(quest_giver)->HasQuests();
+        bValid = static_cast< Creature* >(quest_giver)->HasQuests();
         if (bValid)
         {
-            q_begin = TO< Creature* >(quest_giver)->QuestsBegin();
-            q_end = TO< Creature* >(quest_giver)->QuestsEnd();
+            q_begin = static_cast< Creature* >(quest_giver)->QuestsBegin();
+            q_end = static_cast< Creature* >(quest_giver)->QuestsEnd();
         }
     }
 
@@ -600,10 +604,10 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 {
     if (!plr || !plr->GetSession()) return;
     uint32 status;
-    list<QuestRelation*>::iterator it;
-    list<QuestRelation*>::iterator st;
-    list<QuestRelation*>::iterator ed;
-    map<uint32, uint8> tmp_map;
+    std::list<QuestRelation*>::iterator it;
+    std::list<QuestRelation*>::iterator st;
+    std::list<QuestRelation*>::iterator ed;
+    std::map<uint32, uint8> tmp_map;
 
     data->Initialize(SMSG_QUESTGIVER_QUEST_LIST);
 
@@ -615,20 +619,20 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     bool bValid = false;
     if (qst_giver->IsGameObject())
     {
-        bValid = TO< GameObject* >(qst_giver)->HasQuests();
+        bValid = static_cast< GameObject* >(qst_giver)->HasQuests();
         if (bValid)
         {
-            st = TO< GameObject* >(qst_giver)->QuestsBegin();
-            ed = TO< GameObject* >(qst_giver)->QuestsEnd();
+            st = static_cast< GameObject* >(qst_giver)->QuestsBegin();
+            ed = static_cast< GameObject* >(qst_giver)->QuestsEnd();
         }
     }
     else if (qst_giver->IsCreature())
     {
-        bValid = TO< Creature* >(qst_giver)->HasQuests();
+        bValid = static_cast< Creature* >(qst_giver)->HasQuests();
         if (bValid)
         {
-            st = TO< Creature* >(qst_giver)->QuestsBegin();
-            ed = TO< Creature* >(qst_giver)->QuestsEnd();
+            st = static_cast< Creature* >(qst_giver)->QuestsBegin();
+            ed = static_cast< Creature* >(qst_giver)->QuestsEnd();
         }
     }
 
@@ -846,7 +850,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                                             // (auto-dirty's it)
                                             qle->IncrementMobCount(j);
                                             qle->SendUpdateAddKill(j);
-                                            CALL_QUESTSCRIPT_EVENT(qle, OnCreatureKill)(entry, plr, qle);
+                                            CALL_QUESTSCRIPT_EVENT(qle, OnCreatureKill)(entry, gplr, qle);
                                             qle->UpdatePlayerFields();
 
                                             if (qle->CanBeFinished())
@@ -1021,10 +1025,10 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, Quest* qst, Object* qst_gi
 
             // Let's do this properly. Determine the faction of the creature, and give reputation to his faction.
             if (qst_giver->IsCreature())
-                if (TO< Creature* >(qst_giver)->m_factionDBC != NULL)
-                    fact = TO< Creature* >(qst_giver)->m_factionDBC->ID;
+                if (static_cast< Creature* >(qst_giver)->m_factionDBC != NULL)
+                    fact = static_cast< Creature* >(qst_giver)->m_factionDBC->ID;
             if (qst_giver->IsGameObject())
-                fact = TO< GameObject* >(qst_giver)->GetFaction();
+                fact = static_cast< GameObject* >(qst_giver)->GetFaction();
         }
         else
         {
@@ -1084,7 +1088,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint3
 
     if (qst_giver->IsCreature())
     {
-        if (!TO< Creature* >(qst_giver)->HasQuest(qst->id, 2))
+        if (!static_cast< Creature* >(qst_giver)->HasQuest(qst->id, 2))
         {
             //sCheatLog.writefromsession(plr->GetSession(), "tried to finish quest from invalid npc.");
             plr->GetSession()->Disconnect();
@@ -1354,8 +1358,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint3
         plr->AddToFinishedQuests(qst->id);
         if (qst->bonusarenapoints != 0)
         {
-            plr->m_arenaPoints += qst->bonusarenapoints;
-            plr->RecalculateHonor();
+            plr->AddArenaPoints(qst->bonusarenapoints, true);
         }
 
 #ifdef ENABLE_ACHIEVEMENTS
@@ -1366,7 +1369,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint3
         plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qst->id, 0, 0);
 #endif
         // Remove quests that are listed to be removed on quest complete.
-        set<uint32>::iterator iter = qst->remove_quest_list.begin();
+        std::set<uint32>::iterator iter = qst->remove_quest_list.begin();
         for (; iter != qst->remove_quest_list.end(); ++iter)
         {
             if (!plr->HasFinishedQuest((*iter)))
@@ -1426,14 +1429,14 @@ QuestRelationList* QuestMgr::GetGOQuestList(uint32 entryid)
 
 QuestRelationList* QuestMgr::GetCreatureQuestList(uint32 entryid)
 {
-    HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* > &olist = _GetList<Creature>();
+    HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* > &olist = _GetList<Creature>();
     HM_NAMESPACE::hash_map<uint32, QuestRelationList* >::iterator itr = olist.find(entryid);
     return (itr == olist.end()) ? 0 : itr->second;
 }
 
 template <class T> void QuestMgr::_AddQuest(uint32 entryid, Quest* qst, uint8 type)
 {
-    HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* > &olist = _GetList<T>();
+    HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* > &olist = _GetList<T>();
     std::list<QuestRelation*>* nlist;
     QuestRelation* ptr = NULL;
 
@@ -1441,14 +1444,14 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, Quest* qst, uint8 ty
     {
         nlist = new std::list < QuestRelation* > ;
 
-        olist.insert(HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* >::value_type(entryid, nlist));
+        olist.insert(HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >::value_type(entryid, nlist));
     }
     else
     {
         nlist = olist.find(entryid)->second;
     }
 
-    list<QuestRelation*>::iterator it;
+    std::list<QuestRelation*>::iterator it;
     for (it = nlist->begin(); it != nlist->end(); ++it)
     {
         if ((*it)->qst == qst)
@@ -1485,9 +1488,9 @@ void QuestMgr::_CleanLine(std::string* str)
 
 void QuestMgr::_RemoveChar(char* c, std::string* str)
 {
-    string::size_type pos = str->find(c, 0);
+    std::string::size_type pos = str->find(c, 0);
 
-    while (pos != string::npos)
+    while (pos != std::string::npos)
     {
         str->erase(pos, 1);
         pos = str->find(c, 0);
@@ -1605,13 +1608,13 @@ uint32 QuestMgr::GenerateQuestXP(Player* plr, Quest* qst)
 uint32 QuestMgr::GenerateRewardMoney(Player* plr, Quest* qst)
 {
     //	if (plr == NULL || !plr->IsInWorld() || plr->getLevel() >= plr->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL) || (!plr->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) && plr->getLevel() != 60) || plr->getLevel() != 70 || qst->is_repeatable != 0)
-    {
+    //{
         return qst->reward_money;
-    }
+    //}
     //	else
-    {
+    //{
         //		return qst->reward_money + float2int32(GenerateQuestXP(plr, qst) * sWorld.getRate(RATE_QUESTXP)) * 6;
-    }
+    //}
 }
 /*
 #define XP_INC 50
@@ -1744,7 +1747,7 @@ void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)
 
 bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 {
-    if (qst_giver->IsGameObject() && !TO< GameObject* >(qst_giver)->HasQuests())
+    if (qst_giver->IsGameObject() && !static_cast< GameObject* >(qst_giver)->HasQuests())
         return false;
 
     uint32 questCount = sQuestMgr.ActiveQuestsCount(qst_giver, plr);
@@ -1765,20 +1768,20 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if (qst_giver->IsGameObject())
         {
-            bValid = TO< GameObject* >(qst_giver)->HasQuests();
+            bValid = static_cast< GameObject* >(qst_giver)->HasQuests();
             if (bValid)
             {
-                q_begin = TO< GameObject* >(qst_giver)->QuestsBegin();
-                q_end = TO< GameObject* >(qst_giver)->QuestsEnd();
+                q_begin = static_cast< GameObject* >(qst_giver)->QuestsBegin();
+                q_end = static_cast< GameObject* >(qst_giver)->QuestsEnd();
             }
         }
         else if (qst_giver->IsCreature())
         {
-            bValid = TO< Creature* >(qst_giver)->HasQuests();
+            bValid = static_cast< Creature* >(qst_giver)->HasQuests();
             if (bValid)
             {
-                q_begin = TO< Creature* >(qst_giver)->QuestsBegin();
-                q_end = TO< Creature* >(qst_giver)->QuestsEnd();
+                q_begin = static_cast< Creature* >(qst_giver)->QuestsBegin();
+                q_end = static_cast< Creature* >(qst_giver)->QuestsEnd();
             }
         }
 
@@ -1834,10 +1837,10 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 QuestMgr::~QuestMgr()
 {
     HM_NAMESPACE::hash_map<uint32, Quest*>::iterator itr1;
-    HM_NAMESPACE::hash_map<uint32, list<QuestRelation*>* >::iterator itr2;
-    list<QuestRelation*>::iterator itr3;
-    HM_NAMESPACE::hash_map<uint32, list<QuestAssociation*>* >::iterator itr4;
-    list<QuestAssociation*>::iterator itr5;
+    HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >::iterator itr2;
+    std::list<QuestRelation*>::iterator itr3;
+    HM_NAMESPACE::hash_map<uint32, std::list<QuestAssociation*>* >::iterator itr4;
+    std::list<QuestAssociation*>::iterator itr5;
 
     // clear relations
     for (itr2 = m_obj_quests.begin(); itr2 != m_obj_quests.end(); ++itr2)
@@ -1967,9 +1970,9 @@ void QuestMgr::LoadExtraQuestStuff()
         if (it->Get()->x_or_y_quest_string)
         {
             it->Get()->quest_list.clear();
-            string quests = string(it->Get()->x_or_y_quest_string);
-            vector<string> qsts = StrSplit(quests, " ");
-            for (vector<string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
+            std::string quests = std::string(it->Get()->x_or_y_quest_string);
+            std::vector<std::string> qsts = StrSplit(quests, " ");
+            for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
                 uint32 id = atol((*iter).c_str());
                 if (id)
@@ -1979,9 +1982,9 @@ void QuestMgr::LoadExtraQuestStuff()
 
         if (it->Get()->remove_quests)
         {
-            string quests = string(it->Get()->remove_quests);
-            vector<string> qsts = StrSplit(quests, " ");
-            for (vector<string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
+            std::string quests = std::string(it->Get()->remove_quests);
+            std::vector<std::string> qsts = StrSplit(quests, " ");
+            for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
                 uint32 id = atol((*iter).c_str());
                 if (id)
@@ -1995,8 +1998,8 @@ void QuestMgr::LoadExtraQuestStuff()
             {
                 if (qst->required_mob[i] < 0)
                 {
-                    GameObjectInfo* go_info = GameObjectNameStorage.LookupEntry(qst->required_mob[i] * -1);
-                    if (go_info)
+                    auto gameobject_info = GameObjectNameStorage.LookupEntry(qst->required_mob[i] * -1);
+                    if (gameobject_info)
                     {
                         qst->required_mobtype[i] = QUEST_MOB_TYPE_GAMEOBJECT;
                         qst->required_mob[i] *= -1;
@@ -2009,7 +2012,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 }
                 else
                 {
-                    CreatureInfo*   c_info = CreatureNameStorage.LookupEntry(qst->required_mob[i]);
+                    CreatureInfo* c_info = CreatureNameStorage.LookupEntry(qst->required_mob[i]);
                     if (c_info)
                         qst->required_mobtype[i] = QUEST_MOB_TYPE_CREATURE;
                     else
@@ -2268,7 +2271,7 @@ void QuestMgr::LoadExtraQuestStuff()
 
 void QuestMgr::AddItemQuestAssociation(uint32 itemId, Quest* qst, uint8 item_count)
 {
-    HM_NAMESPACE::hash_map<uint32, list<QuestAssociation*>* > &associationList = GetQuestAssociationList();
+    HM_NAMESPACE::hash_map<uint32, std::list<QuestAssociation*>* > &associationList = GetQuestAssociationList();
     std::list<QuestAssociation*>* tempList;
     QuestAssociation* ptr = NULL;
 
@@ -2278,7 +2281,7 @@ void QuestMgr::AddItemQuestAssociation(uint32 itemId, Quest* qst, uint8 item_cou
         // not found. Create a new entry and QuestAssociationList
         tempList = new std::list < QuestAssociation* > ;
 
-        associationList.insert(HM_NAMESPACE::hash_map<uint32, list<QuestAssociation*>* >::value_type(itemId, tempList));
+        associationList.insert(HM_NAMESPACE::hash_map<uint32, std::list<QuestAssociation*>* >::value_type(itemId, tempList));
     }
     else
     {
@@ -2287,7 +2290,7 @@ void QuestMgr::AddItemQuestAssociation(uint32 itemId, Quest* qst, uint8 item_cou
     }
 
     // look through this item's QuestAssociationList for a matching quest entry
-    list<QuestAssociation*>::iterator it;
+    std::list<QuestAssociation*>::iterator it;
     for (it = tempList->begin(); it != tempList->end(); ++it)
     {
         if ((*it)->qst == qst)

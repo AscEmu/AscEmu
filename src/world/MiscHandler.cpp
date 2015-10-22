@@ -223,7 +223,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
-        for (vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
+        for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
             count += (*itr).iItemsCount;
         if (!count)
             pGO->ExpireAndDelete();
@@ -326,7 +326,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
         if (party)
         {
             /*uint32 share = money/party->MemberCount();*/
-            vector<Player*> targets;
+            std::vector<Player*> targets;
             targets.reserve(party->MemberCount());
 
             GroupMembersSet::iterator itr;
@@ -351,7 +351,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
             pkt << share;
 
-            for (vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
+            for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
             {
                 // Check they don't have more than the max gold
                 if (sWorld.GoldCapEnabled && ((*itr2)->GetGold() + share) > sWorld.GoldLimit)
@@ -497,10 +497,10 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 //check for locktypes
 
                 bool despawn = false;
-                if (pGO->GetInfo()->sound3 == 1)
+                if (pGO->GetInfo()->parameter_3 == 1)
                     despawn = true;
 
-                Lock* pLock = dbcLock.LookupEntryForced(pGO->GetInfo()->SpellFocus);
+                Lock* pLock = dbcLock.LookupEntryForced(pGO->GetInfo()->parameter_0);
                 if (pLock)
                 {
                     for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
@@ -638,9 +638,9 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
     uint32 zone_count;
     uint32* zones = 0;
     uint32 name_count;
-    string* names = 0;
-    string chatname;
-    string guildname;
+    std::string* names = 0;
+    std::string chatname;
+    std::string guildname;
     bool cname = false;
     bool gname = false;
     uint32 i;
@@ -664,7 +664,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
     recv_data >> name_count;
     if (name_count > 0 && name_count < 10)
     {
-        names = new string[name_count];
+        names = new std::string[name_count];
 
         for (i = 0; i < name_count; ++i)
             recv_data >> names[i];
@@ -1510,11 +1510,14 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
     GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
     if (!obj)
         return;
-    GameObjectInfo* goinfo = obj->GetInfo();
-    if (!goinfo)
+    auto gameobject_info = obj->GetInfo();
+    if (!gameobject_info)
         return;
 
     Player* plyr = GetPlayer();
+
+    //Event Scripts
+    objmgr.CheckforScripts(plyr, obj->GetInfo()->parameter_9);
 
     CALL_GO_SCRIPT_EVENT(obj, OnActivate)(_player);
     CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(obj, _player);
@@ -1607,15 +1610,15 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_SPELLCASTER:
         {
-            if (obj->m_summoner != NULL && obj->m_summoner->IsPlayer() && plyr != TO< Player* >(obj->m_summoner))
+            if (obj->m_summoner != NULL && obj->m_summoner->IsPlayer() && plyr != static_cast< Player* >(obj->m_summoner))
             {
-                if (TO< Player* >(obj->m_summoner)->GetGroup() == NULL)
+                if (static_cast< Player* >(obj->m_summoner)->GetGroup() == NULL)
                     break;
-                else if (TO< Player* >(obj->m_summoner)->GetGroup() != plyr->GetGroup())
+                else if (static_cast< Player* >(obj->m_summoner)->GetGroup() != plyr->GetGroup())
                     break;
             }
 
-            SpellEntry* info = dbcSpell.LookupEntryForced(goinfo->SpellFocus);
+            SpellEntry* info = dbcSpell.LookupEntryForced(gameobject_info->parameter_0);
             if (!info)
                 break;
             spell = sSpellFactoryMgr.NewSpell(plyr, info, false, NULL);
@@ -1634,7 +1637,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             if (!obj->m_ritualmembers || !obj->m_ritualspell || !obj->m_ritualcaster /*|| !obj->m_ritualtarget*/)
                 return;
 
-            for (i = 0; i < goinfo->SpellFocus; i++)
+            for (i = 0; i < gameobject_info->parameter_0; i++)
             {
                 if (!obj->m_ritualmembers[i])
                 {
@@ -1653,11 +1656,11 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 }
             }
 
-            if (i == goinfo->SpellFocus - 1)
+            if (i == gameobject_info->parameter_0 - 1)
             {
                 obj->m_ritualspell = 0;
                 Player* plr;
-                for (i = 0; i < goinfo->SpellFocus; i++)
+                for (i = 0; i < gameobject_info->parameter_0; i++)
                 {
                     plr = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[i]);
                     if (plr)
@@ -1668,11 +1671,11 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 }
 
                 SpellEntry* info = NULL;
-                if (goinfo->ID == 36727 || goinfo->ID == 194108)   // summon portal
+                if (gameobject_info->entry == 36727 || gameobject_info->entry == 194108)   // summon portal
                 {
                     if (!obj->m_ritualtarget)
                         return;
-                    info = dbcSpell.LookupEntryForced(goinfo->sound1);
+                    info = dbcSpell.LookupEntryForced(gameobject_info->parameter_1);
                     if (!info)
                         break;
                     Player* target = objmgr.GetPlayer(obj->m_ritualtarget);
@@ -1682,16 +1685,16 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     targets.m_unitTarget = target->GetGUID();
                     spell->prepare(&targets);
                 }
-                else if (goinfo->ID == 177193)    // doom portal
+                else if (gameobject_info->entry == 177193)    // doom portal
                 {
                     Player* psacrifice = NULL;
                     // kill the sacrifice player
-                    psacrifice = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[(int)(rand() % (goinfo->SpellFocus - 1))]);
+                    psacrifice = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[RandomUInt(gameobject_info->parameter_0 - 1)]);
                     Player* pCaster = obj->GetMapMgr()->GetPlayer(obj->m_ritualcaster);
                     if (!psacrifice || !pCaster)
                         return;
 
-                    info = dbcSpell.LookupEntryForced(goinfo->sound4);
+                    info = dbcSpell.LookupEntryForced(gameobject_info->parameter_4);
                     if (!info)
                         break;
                     spell = sSpellFactoryMgr.NewSpell(psacrifice, info, true, NULL);
@@ -1699,13 +1702,13 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     spell->prepare(&targets);
 
                     // summons demon
-                    info = dbcSpell.LookupEntry(goinfo->sound1);
+                    info = dbcSpell.LookupEntry(gameobject_info->parameter_1);
                     spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, NULL);
                     SpellCastTargets targets2;
                     targets2.m_unitTarget = pCaster->GetGUID();
                     spell->prepare(&targets2);
                 }
-                else if (goinfo->ID == 179944)    // Summoning portal for meeting stones
+                else if (gameobject_info->entry == 179944)    // Summoning portal for meeting stones
                 {
                     plr = _player->GetMapMgr()->GetPlayer(obj->m_ritualtarget);
                     if (!plr)
@@ -1715,7 +1718,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     if (!pleader)
                         return;
 
-                    info = dbcSpell.LookupEntry(goinfo->sound1);
+                    info = dbcSpell.LookupEntry(gameobject_info->parameter_1);
                     spell = sSpellFactoryMgr.NewSpell(pleader, info, true, NULL);
                     SpellCastTargets targets2(plr->GetGUID());
                     spell->prepare(&targets2);
@@ -1723,9 +1726,9 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     /* expire the gameobject */
                     obj->ExpireAndDelete();
                 }
-                else if (goinfo->ID == 186811 || goinfo->ID == 181622)
+                else if (gameobject_info->entry == 186811 || gameobject_info->entry == 181622)
                 {
-                    info = dbcSpell.LookupEntryForced(goinfo->sound1);
+                    info = dbcSpell.LookupEntryForced(gameobject_info->parameter_1);
                     if (info == NULL)
                         return;
                     spell = sSpellFactoryMgr.NewSpell(_player->GetMapMgr()->GetPlayer(obj->m_ritualcaster), info, true, NULL);
@@ -1738,10 +1741,10 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_GOOBER:
         {
-            plyr->CastSpell(guid, goinfo->Unknown1, false);
+            plyr->CastSpell(guid, gameobject_info->parameter_10, false);
 
             // show page
-            if (goinfo->sound7)
+            if (gameobject_info->parameter_7)
             {
                 WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
                 data << obj->GetGUID();
@@ -1755,9 +1758,9 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             pkt << (uint32)1;//i ve found only on such item,id =1
             SendPacket(&pkt);*/
 
-            if (goinfo->Unknown1)
+            if (gameobject_info->parameter_10)
             {
-                uint32 cinematicid = goinfo->sound1;
+                uint32 cinematicid = gameobject_info->parameter_1;
                 plyr->GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &cinematicid);
             }
         }
@@ -1769,8 +1772,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             if (!pPlayer || _player->GetGroup() != pPlayer->GetGroup() || !_player->GetGroup())
                 return;
 
-            GameObjectInfo* info = GameObjectNameStorage.LookupEntry(179944);
-            if (!info)
+            auto gameobject_info = GameObjectNameStorage.LookupEntry(179944);
+            if (!gameobject_info)
                 return;
 
             /* Create the summoning portal */
@@ -2171,13 +2174,15 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_UNIT)
     {
         pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
-        if (!pCreature)return;
+        if (!pCreature)
+            return;
         pLoot = &pCreature->loot;
     }
     else if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_GAMEOBJECT) // cebernic added it support gomastergive
     {
         pGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(creatureguid));
-        if (!pGameObject)return;
+        if (!pGameObject)
+            return;
         pGameObject->SetByte(GAMEOBJECT_BYTES_1, 0, 0);
         pLoot = &pGameObject->loot;
     }
@@ -2189,9 +2194,6 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
         pObj = pCreature;
     else
         pObj = pGameObject;
-
-    if (!pObj)
-        return;
 
     if (slotid >= pLoot->items.size())
     {
@@ -2312,7 +2314,7 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
             return;
         if (slotid >= pGO->loot.items.size() || pGO->loot.items.size() == 0)
             return;
-        if (pGO->GetInfo() && pGO->GetInfo()->Type == GAMEOBJECT_TYPE_CHEST)
+        if (pGO->GetInfo() && pGO->GetInfo()->type == GAMEOBJECT_TYPE_CHEST)
             li = pGO->loot.items[slotid].roll;
     }
     else if (guidtype == HIGHGUID_TYPE_UNIT)

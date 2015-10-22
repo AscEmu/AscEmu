@@ -101,7 +101,7 @@ class OldHilsbradInstance : public MoonInstanceScript
         {
             m_numBarrel = 0;
 
-            for (int i = 0; i < OHF_END; ++i)
+            for (uint8 i = 0; i < OHF_END; ++i)
                 m_phaseData[i] = OHF_DATA_NOT_STARTED;
         };
 
@@ -199,7 +199,8 @@ class ErozionGossip : public GossipScript
                 case 1:
                     Item* pBombs = objmgr.CreateItem(25853, Plr);
                     if (pBombs)
-                        Plr->GetItemInterface()->AddItemToFreeSlot(pBombs);
+                        if (!Plr->GetItemInterface()->AddItemToFreeSlot(pBombs))
+                            pBombs->DeleteMe();
                     break;
             }
         }
@@ -279,9 +280,11 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
     ThrallAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
         SetMoveType(Move_DontMoveWP);
-        for (int i = 1; i < MAX_THRALLWP1; ++i)
+        for (uint8 i = 1; i < MAX_THRALLWP1; ++i)
             AddWaypoint(CreateWaypoint(i, 0, Flag_Walk, ThrallWP1[i]));
-    };
+
+        m_currentWp = 0;
+    }
 
     void StartEscort(Player* pPlayer)
     {
@@ -291,18 +294,18 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
 
         _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
         SetMoveType(Move_ForwardThenStop);
-    };
+    }
 
     void OnCombatStop(Unit* pTarget)
     {
         ParentClass::OnCombatStop(pTarget);
         SetWaypointToMove(m_currentWp);
-    };
+    }
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)
     {
         m_currentWp = iWaypointId;
-    };
+    }
 
     uint32 m_currentWp;
 };
@@ -328,7 +331,7 @@ class ThrallGossip : public GossipScript
             switch (IntId)
             {
                 case 1:
-                    ThrallAI* pThrall = TO< ThrallAI* >(TO_CREATURE(pObject)->GetScript());
+                    ThrallAI* pThrall = static_cast< ThrallAI* >(static_cast<Creature*>(pObject)->GetScript());
                     if (pThrall)
                         pThrall->StartEscort(Plr);
                     break;

@@ -34,8 +34,12 @@ void World::InitPaladinSpells()
 
     if (sp = dbcSpell.LookupEntryForced(20271))
     {
-        sp->Rank = dbcSpell.LookupEntryForced(20185)->Rank;
-        sp->RankNumber = dbcSpell.LookupEntryForced(20185)->RankNumber;
+        auto source_spell = dbcSpell.LookupEntryForced(20185);
+        if (source_spell != nullptr)
+        {
+            sp->Rank = source_spell->Rank;
+            sp->RankNumber = source_spell->RankNumber;
+        }
     }
 
     if (sp = dbcSpell.LookupEntryForced(59295))

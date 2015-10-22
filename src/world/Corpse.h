@@ -55,12 +55,12 @@ class SERVER_DECL Corpse : public Object
 
         void SaveToDB();
         void DeleteFromDB();
-        ARCEMU_INLINE void SetCorpseState(uint32 state) { m_state = state; }
-        ARCEMU_INLINE uint32 GetCorpseState() { return m_state; }
+        inline void SetCorpseState(uint32 state) { m_state = state; }
+        inline uint32 GetCorpseState() { return m_state; }
         void Despawn();
 
-        ARCEMU_INLINE void SetLoadedFromDB(bool value) { _loadedfromdb = value; }
-        ARCEMU_INLINE bool GetLoadedFromDB(void) { return _loadedfromdb; }
+        inline void SetLoadedFromDB(bool value) { _loadedfromdb = value; }
+        inline bool GetLoadedFromDB(void) { return _loadedfromdb; }
         Loot loot;
         void generateLoot();
 

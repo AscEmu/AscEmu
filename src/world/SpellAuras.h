@@ -21,6 +21,8 @@
 #ifndef _SPELLAURAS_H
 #define _SPELLAURAS_H
 
+#include "SpellMgr.h"
+
 /// 4-bit flag
 enum AURA_FLAGS
 {
@@ -47,6 +49,7 @@ enum AURA_INTERNAL_USAGE_FLAGS
 
 enum AURA_STATE_FLAGS
 {
+    AURASTATE_NONE                      = 0x000000, //0
     AURASTATE_FLAG_DODGE_BLOCK			= 0x000001,	//1
     AURASTATE_FLAG_HEALTH20				= 0x000002,	//2
     AURASTATE_FLAG_BERSERK				= 0x000004,	//3
@@ -261,7 +264,7 @@ enum MOD_TYPES
     SPELL_AURA_REDUCE_ATTACKER_CRICTICAL_HIT_CHANCE_PCT = 197,
     SPELL_AURA_198 = 198,
     SPELL_AURA_INCREASE_SPELL_HIT_PCT = 199,
-    SPELL_AURA_CANNOT_BE_DODGED = 201,
+    SPELL_AURA_FLY = 201,
     SPELL_AURA_FINISHING_MOVES_CANNOT_BE_DODGED = 202,
     SPELL_AURA_REDUCE_ATTACKER_CRICTICAL_HIT_DAMAGE_MELEE_PCT = 203,
     SPELL_AURA_REDUCE_ATTACKER_CRICTICAL_HIT_DAMAGE_RANGED_PCT = 204,
@@ -426,7 +429,7 @@ struct SpellCharge
 	uint32 procdiff;
 };
 
-typedef set< uint64 > AreaAuraList;
+typedef std::set< uint64 > AreaAuraList;
 
 class SERVER_DECL Aura : public EventableObject
 {
@@ -439,9 +442,9 @@ class SERVER_DECL Aura : public EventableObject
 		void Expire();
 		void AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i);
 
-		ARCEMU_INLINE SpellEntry* GetSpellProto() const { return m_spellProto; }
-		ARCEMU_INLINE uint32 GetSpellId() const { return m_spellProto->Id; }
-		ARCEMU_INLINE bool IsPassive() { if (!m_spellProto) return false; return (m_spellProto->Attributes & ATTRIBUTES_PASSIVE && !m_areaAura); }
+		inline SpellEntry* GetSpellProto() const { return m_spellProto; }
+		inline uint32 GetSpellId() const { return m_spellProto->Id; }
+		inline bool IsPassive() { if (!m_spellProto) return false; return (m_spellProto->Attributes & ATTRIBUTES_PASSIVE && !m_areaAura); }
 
 		void ResetDuration();
 
@@ -459,25 +462,25 @@ class SERVER_DECL Aura : public EventableObject
 		//////////////////////////////////////////////////////////////
 		void Refresh();
 
-		ARCEMU_INLINE int32 GetDuration() const { return m_duration; }
+		inline int32 GetDuration() const { return m_duration; }
 		void SetDuration(int32 duration)
 		{
 			m_duration = duration;
 			ResetDuration();
 		}
 
-		ARCEMU_INLINE uint16 GetAuraSlot() const { return m_auraSlot; }
+		inline uint16 GetAuraSlot() const { return m_auraSlot; }
 		void SetAuraSlot(uint16 slot) { m_auraSlot = slot; }
 
-		ARCEMU_INLINE bool IsPositive() { return m_positive > 0; }
+		inline bool IsPositive() { return m_positive > 0; }
 		void SetNegative(signed char value = 1) { m_positive -= value; }
 		void SetPositive(signed char value = 1) { m_positive += value; }
 
 		Object* GetCaster();
-		ARCEMU_INLINE uint64 GetCasterGUID() {return m_casterGuid;}
+		inline uint64 GetCasterGUID() {return m_casterGuid;}
 		Unit* GetUnitCaster();
 		Player* GetPlayerCaster();
-		ARCEMU_INLINE Unit* GetTarget() { return m_target; }
+		inline Unit* GetTarget() { return m_target; }
 
 		Aura* StrongerThat(Aura* aur);
 		void ApplyModifiers(bool apply);
@@ -828,7 +831,7 @@ class SERVER_DECL Aura : public EventableObject
 		uint32 GetCasterFaction() { return m_casterfaction; }
 		void SetCasterFaction(uint32 faction) { m_casterfaction = faction; }
 
-		ARCEMU_INLINE bool IsInrange(float x1, float y1, float z1, Object* o, float square_r)
+		inline bool IsInrange(float x1, float y1, float z1, Object* o, float square_r)
 		{
 			float t;
 			float r;
@@ -865,8 +868,15 @@ class SERVER_DECL Aura : public EventableObject
 		int16 m_interrupted;
 		bool m_ignoreunapply; // \\\"special\\\" case, for unapply
 
-		ARCEMU_INLINE bool IsInterrupted() { return (m_interrupted >= 0); }
+		inline bool IsInterrupted() { return (m_interrupted >= 0); }
 };
+
+#ifndef AURA_FACTORY_FUNCTION
+#define AURA_FACTORY_FUNCTION(T) \
+  public: \
+  static Aura* Create(SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
+  T(SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
+#endif
 
 class AbsorbAura : public Aura
 {

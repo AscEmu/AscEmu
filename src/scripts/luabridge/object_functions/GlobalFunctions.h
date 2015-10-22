@@ -29,15 +29,15 @@
 
 /*static int PerformIngameSpawn(lua_State * L)
 {
-    uint32 spawntype = luaL_checkint(L, 1);
-    uint32 entry = luaL_checkint(L, 2);
-    uint32 map = luaL_checkint(L, 3);
+    uint32 spawntype = luaL_checkinteger(L, 1);
+    uint32 entry = luaL_checkinteger(L, 2);
+    uint32 map = luaL_checkinteger(L, 3);
     float x = CHECK_FLOAT(L, 4);
     float y = CHECK_FLOAT(L, 5);
     float z = CHECK_FLOAT(L, 6);
     float o = CHECK_FLOAT(L, 7);
-    uint32 faction = luaL_checkint(L, 8); //also scale as percentage
-    uint32 duration = luaL_checkint(L, 9);
+    uint32 faction = luaL_checkinteger(L, 8); //also scale as percentage
+    uint32 duration = luaL_checkinteger(L, 9);
     uint32 equip1 = luaL_optint(L, 10, 1);
     uint32 equip2 = luaL_optint(L, 11, 1);
     uint32 equip3 = luaL_optint(L, 12, 1);
@@ -282,7 +282,7 @@ static const char* GetArcemuRevision()
 
 /*static int GetInstanceIdsByMap(lua_State * L)
 {
-    uint32 mapid = luaL_checkint(L,1);
+    uint32 mapid = luaL_checkinteger(L,1);
     uint32 ret = NULL;
     uint32 count = 0;
     lua_newtable(L);
@@ -304,7 +304,7 @@ static const char* GetArcemuRevision()
 /*
 static int SendPvPCaptureMessage(lua_State * L)
 {
-    uint32 zoneid = luaL_checkint(L, 1);
+    uint32 zoneid = luaL_checkinteger(L, 1);
     const char* msg = luaL_checkstring(L, 2);
     AreaTable * at = dbcArea.LookupEntry(zoneid);
     if(!zoneid || !msg || !at)
@@ -353,15 +353,15 @@ static void GetPlayersInZone(uint32 zone_id, lua_stack stack)
 
 /*static int SendMail(lua_State * L)
 {
-    uint32 type = luaL_checkint(L,1);
+    uint32 type = luaL_checkinteger(L,1);
     uint64 sender_guid = CHECK_GUID(L,2);
     uint64 recipient_guid = CHECK_GUID(L,3);
     string subject = luaL_checkstring(L,4);
     string body = luaL_checkstring(L,5);
-    uint32 money = luaL_checkint(L,6);
-    uint32 cod = luaL_checkint(L,7);
+    uint32 money = luaL_checkinteger(L,6);
+    uint32 cod = luaL_checkinteger(L,7);
     uint64 item_guid = CHECK_GUID(L,8);
-    uint32 stationery = luaL_checkint(L,9);
+    uint32 stationery = luaL_checkinteger(L,9);
     sMailSystem.SendAutomatedMessage(type, sender_guid, recipient_guid, subject, body, money, cod, item_guid, stationery);
     return 0;
 }*/
@@ -374,7 +374,7 @@ uint32 luabit_and(uint32 left, lua_stack stack)
         for(uint32 i = 2; i <= top; ++i)
         {
             if(lua_isnumber((lua_thread)stack, i))
-                left &= (uint32)luaL_checkint((lua_thread)stack, i);
+                left &= (uint32)luaL_checkinteger((lua_thread)stack, i);
         }
     }
     return left;
@@ -387,7 +387,7 @@ uint32 luabit_or(uint32 left, lua_stack stack)
         for(uint32 i = 2; i <= top; ++i)
         {
             if(lua_isnumber((lua_thread)stack, i))
-                left |= (uint32)luaL_checkint((lua_thread)stack, i);
+                left |= (uint32)luaL_checkinteger((lua_thread)stack, i);
         }
     }
     return left;
@@ -400,7 +400,7 @@ uint32 luabit_xor(uint32 left, lua_stack stack)
         for(uint32 i = 2; i <= top; ++i)
         {
             if(lua_isnumber((lua_thread)stack, i))
-                left ^= (uint32)luaL_checkint((lua_thread)stack, i);
+                left ^= (uint32)luaL_checkinteger((lua_thread)stack, i);
         }
     }
     return left;
@@ -460,7 +460,7 @@ Creature* GetInstanceCreature(uint32 map, uint32 instance, lua_stack stack)
     uint64 guid = 0;
     uint32 spawnId = 0;
     if(lua_type((lua_thread)stack, 3) == LUA_TNUMBER)
-        spawnId = (uint32)luaL_checkint((lua_thread)stack, 3);
+        spawnId = (uint32)luaL_checkinteger((lua_thread)stack, 3);
     else
         guid = luabridge::tdstack<uint64 &>::get((lua_thread)stack, 3);
 

@@ -123,20 +123,20 @@ class SERVER_DECL SubGroup    // Most stuff will be done through here, not throu
 
         ~SubGroup();
 
-        ARCEMU_INLINE GroupMembersSet::iterator GetGroupMembersBegin(void) { return m_GroupMembers.begin(); }
-        ARCEMU_INLINE GroupMembersSet::iterator GetGroupMembersEnd(void)   { return m_GroupMembers.end(); }
+        inline GroupMembersSet::iterator GetGroupMembersBegin(void) { return m_GroupMembers.begin(); }
+        inline GroupMembersSet::iterator GetGroupMembersEnd(void)   { return m_GroupMembers.end(); }
 
         bool AddPlayer(PlayerInfo* info);
         void RemovePlayer(PlayerInfo* info);
 
-        ARCEMU_INLINE bool IsFull(void)                 { return m_GroupMembers.size() >= MAX_GROUP_SIZE_PARTY; }
-        ARCEMU_INLINE size_t GetMemberCount(void)       { return m_GroupMembers.size(); }
+        inline bool IsFull(void)                 { return m_GroupMembers.size() >= MAX_GROUP_SIZE_PARTY; }
+        inline size_t GetMemberCount(void)       { return m_GroupMembers.size(); }
 
-        ARCEMU_INLINE uint32 GetID(void)                { return m_Id; }
-        ARCEMU_INLINE void SetID(uint32 newid)          { m_Id = newid; }
+        inline uint32 GetID(void)                { return m_Id; }
+        inline void SetID(uint32 newid)          { m_Id = newid; }
 
-        ARCEMU_INLINE void   SetParent(Group* parent)   { m_Parent = parent; }
-        ARCEMU_INLINE Group* GetParent(void)            { return m_Parent; }
+        inline void   SetParent(Group* parent)   { m_Parent = parent; }
+        inline Group* GetParent(void)            { return m_Parent; }
 
         void Disband();
         bool HasMember(uint32 guid);
@@ -171,10 +171,10 @@ class SERVER_DECL Group
         // Transferring data to clients
         void Update();
 
-        ARCEMU_INLINE void SendPacketToAll(WorldPacket* packet) { SendPacketToAllButOne(packet, NULL); }
+        inline void SendPacketToAll(WorldPacket* packet) { SendPacketToAllButOne(packet, NULL); }
         void SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget);
 
-        ARCEMU_INLINE void OutPacketToAll(uint16 op, uint16 len, const void* data) { OutPacketToAllButOne(op, len, data, NULL); }
+        inline void OutPacketToAll(uint16 op, uint16 len, const void* data) { OutPacketToAllButOne(op, len, data, NULL); }
         void OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player* pSkipTarget);
 
         void SendNullUpdate(Player* pPlayer);
@@ -184,7 +184,7 @@ class SERVER_DECL Group
         Player* FindFirstPlayer();
 
         // Accessing functions
-        ARCEMU_INLINE SubGroup* GetSubGroup(uint32 Id)
+        inline SubGroup* GetSubGroup(uint32 Id)
         {
             if (Id >= 8)
                 return 0;
@@ -192,19 +192,19 @@ class SERVER_DECL Group
             return m_SubGroups[Id];
         }
 
-        ARCEMU_INLINE uint32 GetSubGroupCount(void) { return m_SubGroupCount; }
+        inline uint32 GetSubGroupCount(void) { return m_SubGroupCount; }
 
-        ARCEMU_INLINE uint8 GetMethod(void) { return m_LootMethod; }
-        ARCEMU_INLINE uint16 GetThreshold(void) { return m_LootThreshold; }
-        ARCEMU_INLINE PlayerInfo* GetLeader(void) { return m_Leader; }
-        ARCEMU_INLINE PlayerInfo* GetLooter(void) { return m_Looter; }
+        inline uint8 GetMethod(void) { return m_LootMethod; }
+        inline uint16 GetThreshold(void) { return m_LootThreshold; }
+        inline PlayerInfo* GetLeader(void) { return m_Leader; }
+        inline PlayerInfo* GetLooter(void) { return m_Looter; }
 
         void MovePlayer(PlayerInfo* info, uint8 subgroup);
 
         bool HasMember(Player* pPlayer);
         bool HasMember(PlayerInfo* info);
-        ARCEMU_INLINE uint32 MemberCount(void) { return m_MemberCount; }
-        ARCEMU_INLINE bool IsFull() { return ((m_GroupType == GROUP_TYPE_PARTY && m_MemberCount >= MAX_GROUP_SIZE_PARTY) || (m_GroupType == GROUP_TYPE_RAID && m_MemberCount >= MAX_GROUP_SIZE_RAID)); }
+        inline uint32 MemberCount(void) { return m_MemberCount; }
+        inline bool IsFull() { return ((m_GroupType == GROUP_TYPE_PARTY && m_MemberCount >= MAX_GROUP_SIZE_PARTY) || (m_GroupType == GROUP_TYPE_RAID && m_MemberCount >= MAX_GROUP_SIZE_RAID)); }
 
         SubGroup* FindFreeSubGroup();
 
@@ -213,8 +213,8 @@ class SERVER_DECL Group
         void SaveToDB();
         void LoadFromDB(Field* fields);
 
-        ARCEMU_INLINE uint8 GetGroupType() { return m_GroupType; }
-        ARCEMU_INLINE uint32 GetID() { return m_Id; }
+        inline uint8 GetGroupType() { return m_GroupType; }
+        inline uint32 GetID() { return m_Id; }
         uint64 GetGUID() const;
 
         void UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket* Packet);
@@ -222,18 +222,18 @@ class SERVER_DECL Group
 
         uint64 m_targetIcons[8];
         bool m_disbandOnNoMembers;
-        ARCEMU_INLINE Mutex & getLock() { return m_groupLock; }
-        ARCEMU_INLINE void Lock() { m_groupLock.Acquire(); }
-        ARCEMU_INLINE void Unlock() { return m_groupLock.Release(); }
+        inline Mutex & getLock() { return m_groupLock; }
+        inline void Lock() { m_groupLock.Acquire(); }
+        inline void Unlock() { return m_groupLock.Release(); }
         bool m_isqueued;
 
         void SetAssistantLeader(PlayerInfo* pMember);
         void SetMainTank(PlayerInfo* pMember);
         void SetMainAssist(PlayerInfo* pMember);
 
-        ARCEMU_INLINE PlayerInfo* GetAssistantLeader() { return m_assistantLeader; }
-        ARCEMU_INLINE PlayerInfo* GetMainTank() { return m_mainTank; }
-        ARCEMU_INLINE PlayerInfo* GetMainAssist() { return m_mainAssist; }
+        inline PlayerInfo* GetAssistantLeader() { return m_assistantLeader; }
+        inline PlayerInfo* GetMainTank() { return m_mainTank; }
+        inline PlayerInfo* GetMainAssist() { return m_mainAssist; }
 
         uint32 m_instanceIds[NUM_MAPS][NUM_INSTANCE_MODES];
 
@@ -265,7 +265,7 @@ class SERVER_DECL Group
 			return false;
 		}
 		void ExpandToLFG();
-		uint64 GetLeaderGUID();
+		//uint64 GetLeaderGUID(); unused
 		uint32 GetMembersCount() { return m_MemberCount; }
 
 		uint64 GetGUID() { return uint64(GetID()); }

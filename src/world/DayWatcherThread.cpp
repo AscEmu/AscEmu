@@ -31,6 +31,51 @@ DayWatcherThread::DayWatcherThread()
 {
     m_running = true;
     m_dirty = false;
+    last_arena_time = 0;
+    local_last_arena_time.tm_sec = 0;
+    local_last_arena_time.tm_min = 0;
+    local_last_arena_time.tm_hour = 0;
+    local_last_arena_time.tm_mday = 0;
+    local_last_arena_time.tm_mon = 0;
+    local_last_arena_time.tm_year = 0;
+    local_last_arena_time.tm_wday = 0;
+    local_last_arena_time.tm_yday = 0;
+    local_last_arena_time.tm_isdst = 0;
+#ifndef WIN32
+    local_last_arena_time.tm_gmtoff = 0;
+    local_last_arena_time.tm_zone = 0;
+#endif
+    last_daily_time = 0;
+    local_last_daily_time.tm_sec = 0;
+    local_last_daily_time.tm_min = 0;
+    local_last_daily_time.tm_hour = 0;
+    local_last_daily_time.tm_mday = 0;
+    local_last_daily_time.tm_mon = 0;
+    local_last_daily_time.tm_year = 0;
+    local_last_daily_time.tm_wday = 0;
+    local_last_daily_time.tm_yday = 0;
+    local_last_daily_time.tm_isdst = 0;
+#ifndef WIN32
+    local_last_daily_time.tm_gmtoff = 0;
+    local_last_daily_time.tm_zone = 0;
+#endif
+    arena_period = WEEKLY;
+    daily_period = WEEKLY;
+    m_busy = false;
+    currenttime = 0;
+    local_currenttime.tm_sec = 0;
+    local_currenttime.tm_min = 0;
+    local_currenttime.tm_hour = 0;
+    local_currenttime.tm_mday = 0;
+    local_currenttime.tm_mon = 0;
+    local_currenttime.tm_year = 0;
+    local_currenttime.tm_wday = 0;
+    local_currenttime.tm_yday = 0;
+    local_currenttime.tm_isdst = 0;
+#ifndef WIN32
+    local_currenttime.tm_gmtoff = 0;
+    local_currenttime.tm_zone = 0;
+#endif
 }
 
 DayWatcherThread::~DayWatcherThread()
@@ -56,7 +101,7 @@ void DayWatcherThread::update_settings()
 
 void DayWatcherThread::load_settings()
 {
-    string arena_timeout = Config.MainConfig.GetStringDefault("Periods", "ArenaUpdate", "weekly");
+    std::string arena_timeout = Config.MainConfig.GetStringDefault("Periods", "ArenaUpdate", "weekly");
     arena_period = get_timeout_from_string(arena_timeout.c_str(), WEEKLY);
 
     QueryResult* result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
@@ -71,7 +116,7 @@ void DayWatcherThread::load_settings()
         last_arena_time = 0;
     }
 
-    string daily_timeout = Config.MainConfig.GetStringDefault("Periods", "DailyUpdate", "daily");
+    std::string daily_timeout = Config.MainConfig.GetStringDefault("Periods", "DailyUpdate", "daily");
     daily_period = get_timeout_from_string(daily_timeout.c_str(), DAILY);
 
     QueryResult* result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");
@@ -169,6 +214,7 @@ void DayWatcherThread::update_daily()
 {
     Log.Notice("DayWatcherThread", "Running Daily Quest Reset...");
     CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
+    CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'"); /// Reset RBG
     objmgr.ResetDailies();
     last_daily_time = UNIXTIME;
     dupe_tm_pointer(localtime(&last_daily_time), &local_last_daily_time);
@@ -258,8 +304,8 @@ void DayWatcherThread::update_arena()
                 }
             }
 
-            arenapointsPerTeam[0] = (uint32)max(arenapointsPerTeam[0], arenapointsPerTeam[1]);
-            arenapoints += (uint32)max(arenapointsPerTeam[0], arenapointsPerTeam[2]);
+            arenapointsPerTeam[0] = (uint32)std::max(arenapointsPerTeam[0], arenapointsPerTeam[1]);
+            arenapoints += (uint32)std::max(arenapointsPerTeam[0], arenapointsPerTeam[2]);
             if (arenapoints > 5000) arenapoints = 5000;
 
             if (orig_arenapoints != arenapoints)
@@ -267,10 +313,10 @@ void DayWatcherThread::update_arena()
                 plr = objmgr.GetPlayer(guid);
                 if (plr)
                 {
-                    plr->m_arenaPoints = arenapoints;
+                    plr->AddArenaPoints(arenapoints, false);
 
                     /* update visible fields (must be done through an event because of no uint lock */
-                    sEventMgr.AddEvent(plr, &Player::RecalculateHonor, EVENT_PLAYER_UPDATE, 100, 1, 0);
+                    sEventMgr.AddEvent(plr, &Player::UpdateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
 
                     /* send a little message :> */
                     sChatHandler.SystemMessage(plr->GetSession(), "Your arena points have been updated! Check your PvP tab!");

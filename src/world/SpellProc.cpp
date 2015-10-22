@@ -24,11 +24,52 @@
 
 initialiseSingleton(SpellProcMgr);
 
+bool SpellProc::CanProc(Unit* victim, SpellEntry* CastingSpell)
+{
+    return true;
+}
+
+bool SpellProc::CheckProcFlags(uint32 flag)
+{
+    if (mProcFlags & flag)
+        return true;
+    else
+        return false;
+}
+
+bool SpellProc::CanDelete(uint32 spellId, uint64 casterGuid, uint64 misc)
+{
+    if (mSpell->Id == spellId && (casterGuid == 0 || mCaster == casterGuid) && !mDeleted)
+        return true;
+
+    return false;
+}
+
+bool SpellProc::CheckClassMask(Unit* victim, SpellEntry* CastingSpell)
+{
+    if ((mProcClassMask[0] == 0 && mProcClassMask[1] == 0 && mProcClassMask[2] == 0) ||
+        mProcClassMask[0] & CastingSpell->SpellGroupType[0] ||
+        mProcClassMask[1] & CastingSpell->SpellGroupType[1] ||
+        mProcClassMask[2] & CastingSpell->SpellGroupType[2])
+        return true;
+    else
+        return false;
+}
+
+bool SpellProc::DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+{
+    return false;
+}
+
+void SpellProc::Init(Object* obj)
+{
+}
+
 uint32 SpellProc::CalcProcChance(Unit* victim, SpellEntry* CastingSpell)
 {
     // Check if proc chance is based on combo points
     if (mTarget->IsPlayer() && mOrigSpell && mOrigSpell->AttributesEx & ATTRIBUTESEX_REQ_COMBO_POINTS1 && mOrigSpell->AttributesExD & SP_ATTR_EX_D_PROCCHANCE_COMBOBASED)
-        return float2int32(TO_PLAYER(mTarget)->m_comboPoints * mOrigSpell->EffectPointsPerComboPoint[0]);
+        return float2int32(static_cast<Player*>(mTarget)->m_comboPoints * mOrigSpell->EffectPointsPerComboPoint[0]);
     else
         return mProcChance;
 }

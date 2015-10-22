@@ -93,7 +93,7 @@ class ChronoLordAI : public CreatureAIScript
         ChronoLordAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -128,7 +128,7 @@ class ChronoLordAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -136,8 +136,6 @@ class ChronoLordAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                uint32 sound = 0;
-                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
@@ -177,7 +175,7 @@ class ChronoLordAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -221,7 +219,7 @@ class ChronoLordAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -237,7 +235,7 @@ class TemporusAI : public CreatureAIScript
         TemporusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -272,7 +270,7 @@ class TemporusAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -280,8 +278,6 @@ class TemporusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                uint32 sound = 0;
-                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
@@ -321,7 +317,7 @@ class TemporusAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -365,7 +361,7 @@ class TemporusAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -381,7 +377,7 @@ class AenusAI : public CreatureAIScript
         AenusAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -416,7 +412,7 @@ class AenusAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -424,8 +420,6 @@ class AenusAI : public CreatureAIScript
         {
             if (_unit->GetHealthPct() > 0)
             {
-                uint32 sound = 0;
-                uint32 textId = NULL;
                 switch (RandomUInt(1))
                 {
                     case 0:
@@ -465,7 +459,7 @@ class AenusAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -509,7 +503,7 @@ class AenusAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupTheBlackMorass(ScriptMgr* mgr)

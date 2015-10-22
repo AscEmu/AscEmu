@@ -26,38 +26,7 @@
 #ifndef __WORLDCREATOR_H
 #define __WORLDCREATOR_H
 
-enum INSTANCE_TYPE
-{
-    INSTANCE_NULL,
-    INSTANCE_RAID,
-    INSTANCE_NONRAID,
-    INSTANCE_BATTLEGROUND,
-    INSTANCE_MULTIMODE,
-};
-
-enum INSTANCE_ABORT_ERROR
-{
-    INSTANCE_OK                                    = 0x00,
-    INSTANCE_ABORT_ERROR_ERROR                    = 0x01,
-    INSTANCE_ABORT_FULL                            = 0x02,
-    INSTANCE_ABORT_NOT_FOUND                    = 0x03,
-    INSTANCE_ABORT_TOO_MANY                        = 0x04,
-    INSTANCE_ABORT_ENCOUNTER                    = 0x06,
-    INSTANCE_ABORT_NON_CLIENT_TYPE                = 0x07,
-    INSTANCE_ABORT_HEROIC_MODE_NOT_AVAILABLE    = 0x08,
-    INSTANCE_ABORT_UNIQUE_MESSAGE                = 0x09,
-    INSTANCE_ABORT_TOO_MANY_REALM_INSTANCES        = 0x0A,
-    INSTANCE_ABORT_NOT_IN_RAID_GROUP             = 0x0B,
-    INSTANCE_ABORT_REALM_ONLY                    = 0x0F,
-    INSTANCE_ABORT_MAP_NOT_ALLOWED                = 0x10
-};
-
-enum INSTANCE_RESET_ERROR
-{
-    INSTANCE_RESET_ERROR_PLAYERS_INSIDE = 0x00,
-    INSTANCE_RESET_ERROR_MEMBERS_OFFLINE = 0x01,
-    INSTANCE_RESET_ERROR_PLAYERS_ENTERING = 0x02
-};
+#include "WorldCreatorDefines.hpp"
 
 extern const char* InstanceAbortMessages[];
 
@@ -71,7 +40,7 @@ class Battleground;
 
 class SERVER_DECL FormationMgr : public Singleton < FormationMgr >
 {
-        map<uint32, Formation*> m_formations;
+    std::map<uint32, Formation*> m_formations;
     public:
         typedef std::map<uint32, Formation*> FormationMap;
         FormationMgr();
@@ -94,7 +63,7 @@ class SERVER_DECL Instance
         uint32 m_creatorGroup;
         bool m_persistent;
         uint32 m_difficulty;
-        set<uint32> m_killedNpcs;
+    std::set<uint32> m_killedNpcs;
         time_t m_creation;
         time_t m_expiration;
         MapInfo* m_mapInfo;
@@ -114,7 +83,7 @@ class SERVER_DECL InstanceMgr
         InstanceMgr();
         ~InstanceMgr();
 
-        ARCEMU_INLINE Map* GetMap(uint32 mapid)
+        inline Map* GetMap(uint32 mapid)
         {
             if (mapid >= NUM_MAPS)
                 return NULL;
@@ -139,7 +108,7 @@ class SERVER_DECL InstanceMgr
 
         // has an instance expired?
         // can a player join?
-        ARCEMU_INLINE bool PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
+        inline bool PlayerOwnsInstance(Instance* pInstance, Player* pPlayer)
         {
             // Expired?
             if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)
@@ -161,7 +130,7 @@ class SERVER_DECL InstanceMgr
         }
 
         // has an instance expired?
-        ARCEMU_INLINE bool HasInstanceExpired(Instance* pInstance)
+        inline bool HasInstanceExpired(Instance* pInstance)
         {
             // expired?
             if (pInstance->m_expiration && (UNIXTIME + 20) >= pInstance->m_expiration)

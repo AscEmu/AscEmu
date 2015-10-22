@@ -105,11 +105,7 @@ void Player::SendLogXPGain(uint64 guid, uint32 NormalXP, uint32 RestedXP, bool t
     {
         data << uint64(guid);
         data << uint32(NormalXP);
-
-        if (type)
-            data << uint8(1);
-        else
-            data << uint8(0);
+        data << uint8(0);
 
         data << uint32(RestedXP);
         data << float(1.0f);
@@ -119,11 +115,7 @@ void Player::SendLogXPGain(uint64 guid, uint32 NormalXP, uint32 RestedXP, bool t
     {
         data << uint64(0);            // does not need to be set for questxp
         data << uint32(NormalXP);
-
-        if (type)
-            data << uint8(1);
-        else
-            data << uint8(0);
+        data << uint8(1);
 
         data << uint8(0);
     }
@@ -495,7 +487,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
                 if (iter->item.itemproto)
                 {
-                    iter->roll = new LootRoll(60000, (m_Group != NULL ? m_Group->MemberCount() : 1), guid, x, itemProto->ItemId, factor, uint32(ipid), GetMapMgr());
+                    iter->roll = new LootRoll(60000, m_Group->MemberCount(), guid, x, itemProto->ItemId, factor, uint32(ipid), GetMapMgr());
 
                     data2.Initialize(SMSG_LOOT_START_ROLL);
                     data2 << guid;
@@ -641,7 +633,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
 
         for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
         {
-            Player* p = TO< Player* >(*itr);
+            Player* p = static_cast< Player* >(*itr);
 
             if (p->GetGroup() != NULL && GetGroup() != NULL && p->GetGroup()->GetID() == GetGroup()->GetID())
                 p->PushUpdateData(groupbuf, 1);
@@ -656,7 +648,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
         {
             for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
-                Player* p = TO< Player* >(*itr);
+                Player* p = static_cast< Player* >(*itr);
 
                 if (p->GetGroup() != NULL && GetGroup() != NULL && p->GetGroup()->GetID() == GetGroup()->GetID())
                     p->PushUpdateData(groupbuf, 1);
@@ -669,14 +661,14 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
             {
                 for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
                 {
-                    Player* p = TO< Player* >(*itr);
+                    Player* p = static_cast< Player* >(*itr);
 
                     if (p->GetGroup() == NULL || p->GetGroup()->GetID() != GetGroup()->GetID())
                         p->PushUpdateData(nongroupbuf, 1);
                 }
             }
 
-    if (sendtoself)
+    if (sendtoself && groupbuf != nullptr)
         PushUpdateData(groupbuf, 1);
 }
 

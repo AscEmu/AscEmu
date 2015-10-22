@@ -39,7 +39,7 @@ class ProtectingtheShipment : public QuestScript
             creat->GetAIInterface()->StopMovement(3000);
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
         }
 };
@@ -84,9 +84,13 @@ class Miran : public MoonScriptCreatureAI
                 sEAS.DeleteWaypoints(_unit);
                 if(_unit->m_escorter == NULL)
                     return;
-                Player* plr = _unit->m_escorter;
+                auto player = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(309)->SendQuestComplete();
+
+                auto quest_entry = player->GetQuestLogForEntry(309);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 

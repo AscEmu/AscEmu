@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "QuestLogEntry.hpp"
 
 initialiseSingleton(ObjectMgr);
 
@@ -36,6 +37,7 @@ m_hiCorpseGuid(0),
 m_hiGuildId(0),
 m_hiPetGuid(0),
 m_hiArenaTeamId(0),
+TransportersCount(0),
 m_hiPlayerGuid(1)
 {
     memset(m_InstanceBossInfoMap, 0, sizeof(InstanceBossInfoMap*) * NUM_MAPS);
@@ -321,7 +323,7 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
             pl->guild->RemoveGuildMember(pl, NULL);
     }
 
-    string pnam = string(pl->name);
+    std::string pnam = std::string(pl->name);
     arcemu_TOLOWER(pnam);
     i2 = m_playersInfoByName.find(pnam);
     if (i2 != m_playersInfoByName.end() && i2->second == pl)
@@ -352,7 +354,7 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
 {
     playernamelock.AcquireWriteLock();
     m_playersinfo[pn->guid] = pn;
-    string pnam = string(pn->name);
+    std::string pnam = std::string(pn->name);
     arcemu_TOLOWER(pnam);
     m_playersInfoByName[pnam] = pn;
     playernamelock.ReleaseWriteLock();
@@ -361,13 +363,13 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
 void ObjectMgr::RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char* newname)
 {
     playernamelock.AcquireWriteLock();
-    string oldn = string(oldname);
+    std::string oldn = std::string(oldname);
     arcemu_TOLOWER(oldn);
 
     PlayerNameStringIndexMap::iterator itr = m_playersInfoByName.find(oldn);
     if (itr != m_playersInfoByName.end() && itr->second == pn)
     {
-        string newn = string(newname);
+        std::string newn = std::string(newname);
         arcemu_TOLOWER(newn);
         m_playersInfoByName.erase(itr);
         m_playersInfoByName[newn] = pn;
@@ -488,14 +490,14 @@ void ObjectMgr::LoadPlayersInfo()
                 snprintf(temp, 300, "%s__%X__", pn->name, pn->guid);
                 Log.Notice("ObjectMgr", "Renaming duplicate player %s to %s. (%u)", pn->name, temp, pn->guid);
                 CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s', login_flags = %u WHERE guid = %u",
-                                              CharacterDatabase.EscapeString(string(temp)).c_str(), (uint32)LOGIN_FORCED_RENAME, pn->guid);
+                                              CharacterDatabase.EscapeString(std::string(temp)).c_str(), (uint32)LOGIN_FORCED_RENAME, pn->guid);
 
 
                 free(pn->name);
                 pn->name = strdup(temp);
             }
 
-            string lpn = string(pn->name);
+            std::string lpn = std::string(pn->name);
             arcemu_TOLOWER(lpn);
             m_playersInfoByName[lpn] = pn;
 
@@ -515,7 +517,7 @@ void ObjectMgr::LoadPlayersInfo()
 
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
 {
-    string lpn = string(name);
+    std::string lpn = std::string(name);
     arcemu_TOLOWER(lpn);
     PlayerNameStringIndexMap::iterator i;
     PlayerInfo* rv = NULL;
@@ -598,12 +600,12 @@ void ObjectMgr::LoadPlayerCreateInfo()
         pPlayerCreateInfo->maxdmg = fields[22].GetFloat();
         pPlayerCreateInfo->introid = fields[23].GetUInt32();
 
-        string taxiMaskStr = fields[24].GetString();
-        vector<string> tokens = StrSplit(taxiMaskStr, " ");
+        std::string taxiMaskStr = fields[24].GetString();
+        std::vector<std::string> tokens = StrSplit(taxiMaskStr, " ");
 
         memset(pPlayerCreateInfo->taximask, 0, sizeof(pPlayerCreateInfo->taximask));
         int index;
-        vector<string>::iterator iter;
+        std::vector<std::string>::iterator iter;
         for (iter = tokens.begin(), index = 0; (index < 12) && (iter != tokens.end()); ++iter, ++index)
         {
             pPlayerCreateInfo->taximask[index] = atol((*iter).c_str());
@@ -700,7 +702,7 @@ void ObjectMgr::LoadGuilds()
                 delete pGuild;
             }
             else
-                mGuild.insert(make_pair(pGuild->GetGuildId(), pGuild));
+                mGuild.insert(std::make_pair(pGuild->GetGuildId(), pGuild));
 
             if (!((++c) % period))
                 Log.Notice("Guilds", "Done %u/%u, %u%% complete.", c, result->GetRowCount(), c * 100 / result->GetRowCount());
@@ -1197,7 +1199,7 @@ void ObjectMgr::ProcessGameobjectQuests()
     QueryResult* result = WorldDatabase.Query("SELECT * FROM gameobject_quest_item_binding");
     QueryResult* result2 = WorldDatabase.Query("SELECT * FROM gameobject_quest_pickup_binding");
 
-    GameObjectInfo* gon;
+    GameObjectInfo* gameobject_info;
     Quest* qst;
 
     if (result)
@@ -1205,10 +1207,10 @@ void ObjectMgr::ProcessGameobjectQuests()
         do
         {
             Field* fields = result->Fetch();
-            gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
+            gameobject_info = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
             qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
-            if (gon && qst)
-                gon->itemMap[qst].insert(make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
+            if (gameobject_info && qst)
+                gameobject_info->itemMap[qst].insert(std::make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
 
         }
         while (result->NextRow());
@@ -1220,10 +1222,10 @@ void ObjectMgr::ProcessGameobjectQuests()
         do
         {
             Field* fields = result2->Fetch();
-            gon = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
+            gameobject_info = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
             qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
-            if (gon && qst)
-                gon->goMap.insert(make_pair(qst, fields[2].GetUInt32()));
+            if (gameobject_info && qst)
+                gameobject_info->goMap.insert(std::make_pair(qst, fields[2].GetUInt32()));
 
         }
         while (result2->NextRow());
@@ -1932,6 +1934,12 @@ GossipMenuItem GossipMenu::GetItem(uint32 Id)
         k.IntId = 1;
         k.Extra = 0;
 
+        k.Id = 0;
+        k.Icon = 0;
+        k.m_gSender = 0;
+        k.m_gAction = 0;
+        k.m_gBoxMoney = 0;
+
         return k;
     }
     else
@@ -2330,41 +2338,6 @@ void ObjectMgr::GenerateLevelUpInfo()
                 lvl->HP = lastlvl.HP + TotalHealthGain;
                 lvl->Mana = lastlvl.Mana + TotalManaGain;
 
-                // Calculate next level XP
-                uint32 nextLvlXP = 0;
-                /*                if (Level > 0 && Level <= 30)
-                                {
-                                nextLvlXP = ((int)((((double)(8 * Level * ((Level * 5) + 45)))/100)+0.5))*100;
-                                }
-                                else if (Level == 31)
-                                {
-                                nextLvlXP = ((int)((((double)(((8 * Level) + 3) * ((Level * 5) + 45)))/100)+0.5))*100;
-                                }
-                                else if (Level == 32)
-                                {
-                                nextLvlXP = ((int)((((double)(((8 * Level) + 6) * ((Level * 5) + 45)))/100)+0.5))*100;
-                                }
-                                else
-                                {
-                                nextLvlXP = ((int)((((double)(((8 * Level) + ((Level - 30) * 5)) * ((Level * 5) + 45)))/100)+0.5))*100;
-                                }*/
-
-                //this is a fixed table taken from 2.3.0 wow. This can;t get more blizzlike with the "if" cases ;)
-                if ((Level - 1) < MAX_PREDEFINED_NEXTLEVELXP)
-                {
-                    nextLvlXP = NextLevelXp[(Level - 1)];
-                }
-                else
-                {
-                    // 2.2
-                    //double MXP = 45 + (5 * level);
-                    // 2.3
-                    double MXP = 235 + (5 * Level);
-                    double DIFF = Level < 29 ? 0.0 : Level < 30 ? 1.0 : Level < 31 ? 3.0 : Level < 32 ? 6.0 : 5.0 * (double(Level) - 30.0);
-                    double XP = ((8.0 * double(Level)) + DIFF) * MXP;
-                    nextLvlXP = (int)((XP / 100.0) + 0.5) * 100;
-                }
-
                 lastlvl = *lvl;
 
                 // Apply to map.
@@ -2372,7 +2345,7 @@ void ObjectMgr::GenerateLevelUpInfo()
             }
 
             // Now that our level map is full, let's create the class/race pair
-            pair<uint32, uint32> p;
+            std::pair<uint32, uint32> p;
             p.first = Race;
             p.second = Class;
 
@@ -2406,12 +2379,6 @@ void ObjectMgr::LoadXpToLevelTable()
             _playerXPperLevel[current_level] = current_xp;
         }
         while (result->NextRow());
-    }
-
-    for (uint8 level = 1; level < sWorld.m_levelCap; ++level)
-    {
-        if (_playerXPperLevel[level] == 0)
-            _playerXPperLevel[level] = NextLevelXp[level];
     }
 }
 
@@ -2464,7 +2431,7 @@ void ObjectMgr::LoadDefaultPetSpells()
                     itr->second.insert(sp);
                 else
                 {
-                    set<SpellEntry*> s;
+                    std::set<SpellEntry*> s;
                     s.insert(sp);
                     mDefaultPetSpells[Entry] = s;
                 }
@@ -2475,7 +2442,7 @@ void ObjectMgr::LoadDefaultPetSpells()
     }
 }
 
-set<SpellEntry*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
+std::set<SpellEntry*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
 {
     PetDefaultSpellMap::iterator itr = mDefaultPetSpells.find(Entry);
     if (itr == mDefaultPetSpells.end())
@@ -2501,7 +2468,7 @@ void ObjectMgr::LoadPetSpellCooldowns()
                 if (itr == mPetSpellCooldowns.end())
                 {
                     if (Cooldown)
-                        mPetSpellCooldowns.insert(make_pair(SpellId, Cooldown));
+                        mPetSpellCooldowns.insert(std::make_pair(SpellId, Cooldown));
                 }
                 else
                 {
@@ -2850,19 +2817,13 @@ void ObjectMgr::AddTransport(Transporter* pTransporter)
 
 Transporter* ObjectMgr::GetTransporterByEntry(uint32 entry)
 {
-    Transporter* rv = 0;
+    Transporter* ret = nullptr;
     _TransportLock.Acquire();
-    HM_NAMESPACE::hash_map<uint32, Transporter*>::iterator itr = mTransports.begin();
-    for (; itr != mTransports.end(); ++itr)
-    {
-        if (itr->second->GetEntry() == entry)
-        {
-            rv = itr->second;
-            break;
-        }
-    }
+    auto transporter = mTransports.find(entry);
+    if (transporter != mTransports.end())
+        ret = transporter->second;
     _TransportLock.Release();
-    return rv;
+    return ret;
 }
 
 void ObjectMgr::LoadGuildCharters()
@@ -2874,7 +2835,7 @@ void ObjectMgr::LoadGuildCharters()
     do
     {
         Charter* c = new Charter(result->Fetch());
-        m_charters[c->CharterType].insert(make_pair(c->GetID(), c));
+        m_charters[c->CharterType].insert(std::make_pair(c->GetID(), c));
         if (c->GetID() > int64(m_hiCharterId.GetVal()))
             m_hiCharterId.SetVal(c->GetID());
     }
@@ -2900,7 +2861,7 @@ Charter* ObjectMgr::CreateCharter(uint32 LeaderGuid, CharterTypes Type)
     charterid = ++m_hiCharterId;
 
     Charter* c = new Charter(charterid, LeaderGuid, Type);
-    m_charters[c->CharterType].insert(make_pair(c->GetID(), c));
+    m_charters[c->CharterType].insert(std::make_pair(c->GetID(), c));
 
     return c;
 }
@@ -2923,6 +2884,12 @@ Charter::Charter(Field* fields)
         if (Signatures[i])
             ++SignatureCount;
     }
+
+    // Unknown... really?
+    Unk1 = 0;
+    Unk2 = 0;
+    Unk3 = 0;
+    PetitionSignerCount = 0;
 }
 
 void Charter::AddSignature(uint32 PlayerGuid)
@@ -3061,7 +3028,7 @@ Charter* ObjectMgr::GetCharterByGuid(uint64 playerguid, CharterTypes type)
     return NULL;
 }
 
-Charter* ObjectMgr::GetCharterByName(string & charter_name, CharterTypes Type)
+Charter* ObjectMgr::GetCharterByName(std::string & charter_name, CharterTypes Type)
 {
     Charter* rv = 0;
     m_charterLock.AcquireReadLock();
@@ -3209,7 +3176,7 @@ void ObjectMgr::LoadMonsterSay()
         memcpy(ms->Texts, texts, sizeof(char*) * textcount);
         ms->TextCount = textcount;
 
-        mMonsterSays[Event].insert(make_pair(Entry, ms));
+        mMonsterSays[Event].insert(std::make_pair(Entry, ms));
 
     }
     while (result->NextRow());
@@ -3249,7 +3216,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
             InstanceReputationModifier* m = new InstanceReputationModifier;
             m->mapid = mod.mapid;
             m->mods.push_back(mod);
-            m_reputation_instance.insert(make_pair(m->mapid, m));
+            m_reputation_instance.insert(std::make_pair(m->mapid, m));
         }
         else
             itr->second->mods.push_back(mod);
@@ -3272,14 +3239,14 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
         return false;
 
     is_boss = false;//TO< Creature* >(pVictim)->GetCreatureInfo() ? ((Creature*)pVictim)->GetCreatureInfo()->Rank : 0;
-    if (TO< Creature* >(pVictim)->GetProto()->boss)
+    if (static_cast< Creature* >(pVictim)->GetProto()->boss)
         is_boss = true;
 
     // Apply the bonuses as normal.
     int32 replimit;
     int32 value;
 
-    for (vector<InstanceReputationMod>::iterator i = itr->second->mods.begin(); i != itr->second->mods.end(); ++i)
+    for (std::vector<InstanceReputationMod>::iterator i = itr->second->mods.begin(); i != itr->second->mods.end(); ++i)
     {
         if (!(*i).faction[team])
             continue;
@@ -3400,7 +3367,7 @@ ArenaTeam* ObjectMgr::GetArenaTeamById(uint32 id)
     return (itr == m_arenaTeams.end()) ? NULL : itr->second;
 }
 
-ArenaTeam* ObjectMgr::GetArenaTeamByName(string & name, uint32 Type)
+ArenaTeam* ObjectMgr::GetArenaTeamByName(std::string & name, uint32 Type)
 {
     m_arenaTeamLock.Acquire();
     for (HM_NAMESPACE::hash_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeams.begin(); itr != m_arenaTeams.end(); ++itr)
@@ -3427,7 +3394,7 @@ void ObjectMgr::AddArenaTeam(ArenaTeam* team)
 {
     m_arenaTeamLock.Acquire();
     m_arenaTeams[team->m_id] = team;
-    m_arenaTeamMap[team->m_type].insert(make_pair(team->m_id, team));
+    m_arenaTeamMap[team->m_type].insert(std::make_pair(team->m_id, team));
     m_arenaTeamLock.Release();
 }
 
@@ -3451,14 +3418,14 @@ void ObjectMgr::UpdateArenaTeamRankings()
     m_arenaTeamLock.Acquire();
     for (uint32 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
     {
-        vector<ArenaTeam*> ranking;
+        std::vector<ArenaTeam*> ranking;
 
         for (HM_NAMESPACE::hash_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[i].begin(); itr != m_arenaTeamMap[i].end(); ++itr)
             ranking.push_back(itr->second);
 
         std::sort(ranking.begin(), ranking.end(), ArenaSorter());
         uint32 rank = 1;
-        for (vector<ArenaTeam*>::iterator itr = ranking.begin(); itr != ranking.end(); ++itr)
+        for (std::vector<ArenaTeam*>::iterator itr = ranking.begin(); itr != ranking.end(); ++itr)
         {
             if ((*itr)->m_stat_ranking != rank)
             {
@@ -3898,4 +3865,186 @@ void ObjectMgr::LoadAreaTrigger()
     while (result->NextRow());
 
     Log.Success("AreaTrigger", "Loaded %u area trigger teleport definitions", count);
+}
+
+void ObjectMgr::LoadEventScripts()
+{
+    Log.Notice("ObjectMgr", "Loading Event Scripts...");
+
+    bool success = false;
+    const char* eventScriptsQuery = "SELECT event_id, function, script_type, data_1, data_2, data_3, data_4, data_5, x, y, z, o, delay, next_event FROM event_scripts WHERE event_id > 0 ORDER BY event_id";
+    auto result = WorldDatabase.Query(&success, eventScriptsQuery);
+
+    if (!success)
+    {
+        Log.Error("ObjectMgr", "Failed on Loading Queries from event_scripts.");
+        return;
+    }
+    else
+    {
+        if (!result)
+        {
+            Log.Notice("ObjectMgr", "Loaded 0 event_scripts. DB table `event_scripts` is empty.");
+            return;
+        }
+    }
+
+    uint32 count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 event_id = fields[0].GetUInt32();
+        SimpleEventScript eventscript;
+
+        eventscript.eventId     = event_id;
+        eventscript.function    = static_cast<uint8>(ScriptCommands(fields[1].GetUInt8()));
+        eventscript.scripttype  = static_cast<uint8>(EasyScriptTypes(fields[2].GetUInt8()));
+        eventscript.data_1      = fields[3].GetUInt32();
+        eventscript.data_2      = fields[4].GetUInt32();
+        eventscript.data_3      = fields[5].GetUInt32();
+        eventscript.data_4      = fields[6].GetUInt32();
+        eventscript.data_5      = fields[7].GetUInt32();
+        eventscript.x           = fields[8].GetUInt32();
+        eventscript.y           = fields[9].GetUInt32();
+        eventscript.z           = fields[10].GetUInt32();
+        eventscript.o           = fields[11].GetUInt32();
+        eventscript.delay       = fields[12].GetUInt32();
+        eventscript.nextevent   = fields[13].GetUInt32();
+
+        SimpleEventScript* SimpleEventScript = &mEventScriptMaps.insert(EventScriptMaps::value_type(event_id, eventscript))->second;
+
+        // for search by spellid ( data_1 is spell id )
+        if (eventscript.data_1 && eventscript.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT))
+            mSpellEffectMaps.insert(SpellEffectMaps::value_type(eventscript.data_1, SimpleEventScript));
+
+
+        ++count;
+    } while (result->NextRow());
+
+    Log.Success("ObjectMgr", "Loaded event_scripts for %u events...", count);
+}
+
+EventScriptBounds ObjectMgr::GetEventScripts(uint32 event_id) const
+{
+    return EventScriptBounds(mEventScriptMaps.lower_bound(event_id), mEventScriptMaps.upper_bound(event_id));
+}
+
+SpellEffectMapBounds ObjectMgr::GetSpellEffectBounds(uint32 data_1) const
+{
+    return SpellEffectMapBounds(mSpellEffectMaps.lower_bound(data_1), mSpellEffectMaps.upper_bound(data_1));
+}
+
+bool ObjectMgr::CheckforScripts(Player* plr, uint32 event_id)
+{
+    EventScriptBounds EventScript = objmgr.GetEventScripts(event_id);
+    if (EventScript.first == EventScript.second)
+        return false;
+
+    for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
+    {
+        sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second.eventId, EVENT_EVENT_SCRIPTS, itr->second.delay, 1, 0);
+    }
+
+    return true;
+}
+
+bool ObjectMgr::CheckforDummySpellScripts(Player* plr, uint32 data_1)
+{
+    SpellEffectMapBounds EventScript = objmgr.GetSpellEffectBounds(data_1);
+    if (EventScript.first == EventScript.second)
+        return false;
+
+    for (SpellEffectMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
+    {
+        sEventMgr.AddEvent(this, &ObjectMgr::EventScriptsUpdate, plr, itr->second->eventId, EVENT_EVENT_SCRIPTS, itr->second->delay, 1, 0);
+    }
+
+    return true;
+}
+
+void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
+{
+    EventScriptBounds EventScript = objmgr.GetEventScripts(next_event);
+
+    for (EventScriptMaps::const_iterator itr = EventScript.first; itr != EventScript.second; ++itr)
+    {
+        if (itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_SPELL_EFFECT) || itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_DUMMY))
+        {
+            switch (itr->second.function)
+            {
+            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT):
+            {
+                Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
+                if (target == NULL)
+                    return;
+
+                static_cast<GameObject*>(target)->Despawn(1000, itr->second.data_2);
+
+                break;
+            }
+
+            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_KILL_CREDIT):
+            {
+                QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
+                if (pQuest != NULL)
+                {
+                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->required_mobcount[itr->second.data_5])
+                    {
+                        pQuest->SetMobCount(itr->second.data_5, pQuest->GetMobCount(itr->second.data_5) + 1);
+                        pQuest->SendUpdateAddKill(itr->second.data_5);
+                        pQuest->UpdatePlayerFields();
+                    }
+                }
+                break;
+            }
+            }
+        }
+
+        if (itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_GAMEOBJECT) || itr->second.scripttype == static_cast<uint8>(EasyScriptTypes::SCRIPT_TYPE_DUMMY))
+        {
+            switch (itr->second.function)
+            {
+            case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_ACTIVATE_OBJECT):
+            {
+                if ((itr->second.x || itr->second.y || itr->second.z) == 0)
+                {
+                    Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
+                    if (target == NULL)
+                        return;
+
+                    if (static_cast<GameObject*>(target)->GetState() != GAMEOBJECT_STATE_OPEN)
+                    {
+                        static_cast<GameObject*>(target)->SetState(GAMEOBJECT_STATE_OPEN);
+                    }
+                    else
+                    {
+                        static_cast<GameObject*>(target)->SetState(GAMEOBJECT_STATE_CLOSED);
+                    }
+                }
+                else
+                {
+                    Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(itr->second.x, itr->second.y, itr->second.z, itr->second.data_1);
+                    if (target == NULL)
+                        return;
+
+                    if (static_cast<GameObject*>(target)->GetState() != GAMEOBJECT_STATE_OPEN)
+                    {
+                        static_cast<GameObject*>(target)->SetState(GAMEOBJECT_STATE_OPEN);
+                    }
+                    else
+                    {
+                        static_cast<GameObject*>(target)->SetState(GAMEOBJECT_STATE_CLOSED);
+                    }
+                }
+            }
+            break;
+            }
+        }
+
+        if (itr->second.nextevent != 0)
+        {
+            objmgr.CheckforScripts(plr, itr->second.nextevent);
+        }
+    }
 }

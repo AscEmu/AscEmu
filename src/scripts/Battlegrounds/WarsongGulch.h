@@ -20,19 +20,36 @@
 
 #define BUFF_RESPAWN_TIME 90000
 
+enum WarsongGulchAreaTriggers
+{
+    AREATRIGGER_A_SPEED = 3686,
+    AREATRIGGER_H_SPEED = 3687,
+    AREATRIGGER_A_RESTORATION = 3706,
+    AREATRIGGER_H_RESTORATION = 3708,
+    AREATRIGGER_A_BERSERKING = 3707,
+    AREATRIGGER_H_BERSERKING = 3709,
+    AREATRIGGER_WSG_ENCOUNTER_01 = 3649,
+    AREATRIGGER_WSG_ENCOUNTER_02 = 3688,
+    AREATRIGGER_WSG_ENCOUNTER_03 = 4628,
+    AREATRIGGER_WSG_ENCOUNTER_04 = 4629,
+    AREATRIGGER_WSG_A_SPAWN = 3646,
+    AREATRIGGER_WSG_H_SPAWN = 3647
+};
+
 class WarsongGulch : public CBattleground
 {
         GameObject* m_buffs[6];
         GameObject* m_homeFlags[2];
         GameObject* m_dropFlags[2];
         uint32 m_flagHolders[2];
-        list<GameObject*> m_gates;
+    std::list<GameObject*> m_gates;
         uint32 m_scores[2];
         uint32 m_lgroup;
     public:
         WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~WarsongGulch();
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         void HookOnPlayerDeath(Player* plr);
         void HookFlagDrop(Player* plr, GameObject* obj);
         void HookFlagStand(Player* plr, GameObject* obj);
@@ -50,7 +67,7 @@ class WarsongGulch : public CBattleground
         void SpawnBuff(uint32 x);
         LocationVector GetStartingCoords(uint32 Team);
         void HookOnFlagDrop(Player* plr);
-        void ReturnFlag(uint32 team);
+        void ReturnFlag(PlayerTeam team);
 
         void EventReturnFlags();
 

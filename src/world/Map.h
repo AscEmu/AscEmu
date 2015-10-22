@@ -22,10 +22,12 @@
 #define _MAP_H
 
 #include "TerrainMgr.h"
+#include "CellHandlerDefines.hpp"
 
 class MapMgr;
 struct MapInfo;
 class TerrainMgr;
+struct MapEntry;
 
 struct Formation;
 
@@ -78,31 +80,34 @@ typedef struct
 {
     uint32 id;          /// spawn ID
     uint32 entry;
-    float x;
-    float y;
-    float z;
-    float o;
-    float o1;
-    float o2;
-    float o3;
-    float facing;
-    uint32 flags;
+    uint32 map;
+    float position_x;
+    float position_y;
+    float position_z;
+    float orientation;  // column facing
+    float rotation_0;   // column orientation1
+    float rotation_1;   // column orientation2
+    float rotation_2;   // column orientation3
+    float rotation_3;   // column orientation4
+    //float facing;
+    //uint32 flags;
     uint32 state;
+    uint32 flags;
     uint32 faction;
     //uint32 level;
     float scale;
     //uint32 stateNpcLink;
     uint32 phase;
     uint32 overrides;
-} GOSpawn;
+} GameobjectSpawn;
 
 typedef std::vector<CreatureSpawn*> CreatureSpawnList;
-typedef std::vector<GOSpawn*> GOSpawnList;
+typedef std::vector<GameobjectSpawn*> GameobjectSpawnList;
 
 typedef struct
 {
     CreatureSpawnList CreatureSpawns;
-    GOSpawnList GOSpawns;
+    GameobjectSpawnList GameobjectSpawns;
 } CellSpawns;
 
 
@@ -112,46 +117,28 @@ class SERVER_DECL Map
         Map(uint32 mapid, MapInfo* inf);
         ~Map();
 
-        ARCEMU_INLINE string GetNameString() { return name; }
-        ARCEMU_INLINE const char* GetName() { return name.c_str(); }
-        ARCEMU_INLINE MapEntry* GetDBCEntry() { return me; }
+    inline std::string GetNameString();
 
-        ARCEMU_INLINE CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly)
-        {
-            ARCEMU_ASSERT(cellx < _sizeX);
-            ARCEMU_ASSERT(celly < _sizeY);
-            if (spawns[cellx] == NULL)
-                return NULL;
-            return spawns[cellx][celly];
-        }
+    const char* GetName();
 
-        ARCEMU_INLINE CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
-        {
-            ARCEMU_ASSERT(cellx < _sizeX);
-            ARCEMU_ASSERT(celly < _sizeY);
-            if (spawns[cellx] == NULL)
-            {
-                spawns[cellx] = new CellSpawns*[_sizeY];
-                memset(spawns[cellx], 0, sizeof(CellSpawns*)*_sizeY);
-            }
+    inline MapEntry* GetDBCEntry();
 
-            if (spawns[cellx][celly] == 0)
-                spawns[cellx][celly] = new CellSpawns;
-            return spawns[cellx][celly];
-        }
+    CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
 
-        void LoadSpawns(bool reload);           /// set to true to make clean up
+    CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
+
+    void LoadSpawns(bool reload);           /// set to true to make clean up
         uint32 CreatureSpawnCount;
         uint32 GameObjectSpawnCount;
 
-        ARCEMU_INLINE void CellGoneActive(uint32 x, uint32 y) { }
+    void CellGoneActive(uint32 x, uint32 y);
 
-        ARCEMU_INLINE void CellGoneIdle(uint32 x, uint32 y) { }
-    private:
+    void CellGoneIdle(uint32 x, uint32 y);
+private:
 
         MapInfo* _mapInfo;
         uint32 _mapId;
-        string name;
+        std::string name;
         MapEntry* me;
 
         /// new stuff

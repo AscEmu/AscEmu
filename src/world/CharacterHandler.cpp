@@ -165,7 +165,7 @@ bool ChatHandler::HandleRenameAllCharacter(const char* args, WorldSession* m_ses
     return true;
 }
 
-void CapitalizeString(string& arg)
+void CapitalizeString(std::string& arg)
 {
     if (arg.length() == 0) return;
     arg[0] = static_cast<char>(toupper(arg[0]));
@@ -591,7 +591,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
         if (!result)
             return E_CHAR_DELETE_FAILED;
 
-        string name = result->Fetch()[0].GetString();
+        std::string name = result->Fetch()[0].GetString();
         delete result;
 
         if (inf->guild)
@@ -659,7 +659,7 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_CHAR_RENAME, recv_data.size() + 1);
 
     uint64 guid;
-    string name;
+    std::string name;
     recv_data >> guid >> name;
 
     PlayerInfo* pi = objmgr.GetPlayerInfo((uint32)guid);
@@ -1039,23 +1039,8 @@ void WorldSession::FullLogin(Player* plr)
     //Issue a message telling all guild members that this player has signed on
     if (plr->IsInGuild())
     {
-        Guild* pGuild = plr->m_playerInfo->guild;
-        if (pGuild)
-        {
-            WorldPacket data(SMSG_GUILD_EVENT, 50);
-
-            data << uint8(GUILD_EVENT_MOTD);
-            data << uint8(1);
-
-            if (pGuild->GetMOTD())
-                data << pGuild->GetMOTD();
-            else
-                data << uint8(0);
-
-            SendPacket(&data);
-
-            pGuild->LogGuildEvent(GUILD_EVENT_HASCOMEONLINE, 1, plr->GetName());
-        }
+        plr->SendGuildMOTD();
+        plr->m_playerInfo->guild->LogGuildEvent(GUILD_EVENT_HASCOMEONLINE, 1, plr->GetName());
     }
 
     // Send online status to people having this char in friendlist
@@ -1087,17 +1072,13 @@ void WorldSession::FullLogin(Player* plr)
 
 
 #ifdef WIN32
-    _player->BroadcastMessage("Server: %sAscEmu %s - %s-Windows-%s", MSG_COLOR_WHITE, BUILD_TAG, CONFIG, ARCH);
+    _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
 #else
-    _player->BroadcastMessage("Server: %sAscEmu %s - %s-%s", MSG_COLOR_WHITE, BUILD_TAG, PLATFORM_TEXT, ARCH);
+    _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
 #endif
 
     // Revision
     _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
-    // Bugs
-    //_player->BroadcastMessage("Bugs: %s%s", MSG_COLOR_SEXHOTPINK, BUGTRACKER);
-    // Recruiting message
-    //_player->BroadcastMessage(RECRUITING);
     // Shows Online players, and connection peak
     _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
                               MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
@@ -1154,7 +1135,7 @@ bool ChatHandler::HandleRenameCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    string new_name = name2;
+    std::string new_name = name2;
     PlayerInfo* pi = objmgr.GetPlayerInfoByName(name1);
     if (pi == 0)
     {

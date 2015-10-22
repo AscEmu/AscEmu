@@ -21,10 +21,15 @@
 #ifndef _EVENTABLEOBJECT_H
 #define _EVENTABLEOBJECT_H
 
+#include "EventMgr.h"
+#include "../shared/Util.h"
+#include <list>
+#include <set>
+
 class EventableObjectHolder;
 
-typedef list<TimedEvent*> EventList;
-typedef multimap<uint32, TimedEvent*> EventMap;
+typedef std::list<TimedEvent*> EventList;
+typedef std::multimap<uint32, TimedEvent*> EventMap;
 
 #define EVENT_REMOVAL_FLAG_ALL 0xFFFFFFFF
 #define WORLD_INSTANCE -1
@@ -79,7 +84,7 @@ class SERVER_DECL EventableObject
 };
 
 
-typedef set<EventableObject*> EventableObjectSet;
+typedef std::set<EventableObject*> EventableObjectSet;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///class EventableObjectHolder
@@ -108,7 +113,7 @@ class EventableObjectHolder
         EventList m_events;
 
         Mutex m_insertPoolLock;
-        typedef list<TimedEvent*> InsertableQueue;
+        typedef std::list<TimedEvent*> InsertableQueue;
         InsertableQueue m_insertPool;
 };
 

@@ -360,13 +360,6 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (lang == 0 && sWorld.interfaction_chat)
                 data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
 
-            else if (lang == 0 && !CanUseCommand('c'))
-            {
-                if (data != NULL)
-                    delete data;
-                return;
-            }
-
             else if (GetPlayer()->m_modlanguage >= 0)
                 data = sChatHandler.FillMessageData(CHAT_MSG_YELL, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
             else
@@ -411,7 +404,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (!HasPermissions() && playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && playercache->CountValue64(CACHE_GM_TARGETS, _player->GetGUID()) == 0)
             {
                 // Build automated reply
-                string Reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
+                std::string Reply = "SYSTEM: This Game Master does not currently have an open ticket from you and did not receive your whisper. Please submit a new GM Ticket request if you need to speak to a GM. This is an automatic message.";
                 data = sChatHandler.FillMessageData(CHAT_MSG_WHISPER_INFORM, LANG_UNIVERSAL, Reply.c_str(), playercache->GetGUID(), 4);
                 SendPacket(data);
                 delete data;
@@ -622,17 +615,17 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     {
         if (pUnit->IsPlayer())
         {
-            name = TO< Player* >(pUnit)->GetName();
+            name = static_cast< Player* >(pUnit)->GetName();
             namelen = (uint32)strlen(name) + 1;
         }
         else if (pUnit->IsPet())
         {
-            name = TO< Pet* >(pUnit)->GetName().c_str();
+            name = static_cast< Pet* >(pUnit)->GetName().c_str();
             namelen = (uint32)strlen(name) + 1;
         }
         else
         {
-            Creature* p = TO< Creature* >(pUnit);
+            Creature* p = static_cast< Creature* >(pUnit);
             name = p->GetCreatureInfo()->Name;
             namelen = (uint32)strlen(name) + 1;
         }

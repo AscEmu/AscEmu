@@ -188,6 +188,7 @@ class IsleOfConquest : public CBattleground
         void SpawnControlPoint(uint32 Id, uint32 Type);
         void SpawnGraveyard(uint32 id, uint32 team);
         void Finish(uint32 losingTeam);
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         void HookOnAreaTrigger(Player* plr, uint32 id);
         void HookOnPlayerDeath(Player* plr);
         void HookOnPlayerResurrect(Player* player);

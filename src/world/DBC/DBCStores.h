@@ -20,6 +20,11 @@
 #ifndef _SPELLSTORE_H
 #define _SPELLSTORE_H
 
+#include "DBCGlobals.hpp"
+#include "Definitions.h"
+
+class Player;
+
 #pragma pack(push,1)
 
 struct WorldMapOverlay
@@ -931,6 +936,32 @@ struct SpellEntry
 
     SpellEntry()
     {
+        Id = 0;
+        Category = 0;
+        DispelType = 0;
+        MechanicsType = 0;
+        Attributes = 0;
+        AttributesEx = 0;
+        AttributesExB = 0;
+        AttributesExC = 0;
+        AttributesExD = 0;
+        AttributesExE = 0;
+        AttributesExF = 0;
+        AttributesExG = 0;
+        RequiredShapeShift = 0;
+        ShapeshiftExclude = 0;
+        Targets = 0;
+        TargetCreatureType = 0;
+        RequiresSpellFocus = 0;
+        FacingCasterFlags = 0;
+        CasterAuraState = 0;
+        TargetAuraState = 0;
+        CasterAuraStateNot = 0;
+        TargetAuraStateNot = 0;
+        casterAuraSpell = 0;
+        targetAuraSpell = 0;
+        casterAuraSpellNot = 0;
+
         CustomFlags = 0;
 
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; i++)
@@ -938,6 +969,84 @@ struct SpellEntry
 
         SpellFactoryFunc = NULL;
         AuraFactoryFunc = NULL;
+        proc_interval = 0;
+        BGR_one_buff_on_target = 0;
+        BGR_one_buff_from_caster_on_self = 0;
+        c_is_flags = 0;
+        RankNumber = 0;
+        NameHash = 0;
+        talent_tree = 0;
+        in_front_status = 0;
+        ThreatForSpell = 0;
+        ThreatForSpellCoef = 0;
+        spell_coef_flags = 0;
+        base_range_or_radius_sqr = 0;
+        cone_width = 0;
+        casttime_coef = 0;
+        fixed_dddhcoef = 0;
+        fixed_hotdotcoef = 0;
+        Dspell_coef_override = 0;
+        OTspell_coef_override = 0;
+        ai_target_type = 0;
+        self_cast_only = 0;
+        apply_on_shapeshift_change = 0;
+        always_apply = 0;
+        is_melee_spell = 0;
+        is_ranged_spell = 0;
+        noproc = 0;
+        SchoolMask = 0;
+        SpellVisual = 0;
+        field114 = 0;
+        spellIconID = 0;
+        activeIconID = 0;
+        spellPriority = 0;
+        Name = nullptr;
+        Rank = nullptr;
+        Description = 0;
+        BuffDescription = 0;
+        ManaCostPercentage = 0;
+        StartRecoveryCategory = 0;
+        StartRecoveryTime = 0;
+        MaxTargetLevel = 0;
+        SpellFamilyName = 0;
+        MaxTargets = 0;
+        Spell_Dmg_Type = 0;
+        PreventionType = 0;
+        StanceBarOrder = 0;
+        MinFactionID = 0;
+        MinReputation = 0;
+        RequiredAuraVision = 0;
+        RequiresAreaId = 0;
+        School = 0;
+        RuneCostID = 0;
+        SpellDifficultyID = 0;
+        DiminishStatus = 0;
+        targetAuraSpellNot = 0;
+        CastingTimeIndex = 0;
+        RecoveryTime = 0;
+        CategoryRecoveryTime = 0;
+        InterruptFlags = 0;
+        AuraInterruptFlags = 0;
+        ChannelInterruptFlags = 0;
+        procFlags = 0;
+        procChance = 0;
+        procCharges = 0;
+        maxLevel = 0;
+        baseLevel = 0;
+        spellLevel = 0;
+        DurationIndex = 0;
+        powerType = 0;
+        manaCost = 0;
+        manaCostPerlevel = 0;
+        manaPerSecond = 0;
+        manaPerSecondPerLevel = 0;
+        rangeIndex = 0;
+        speed = 0;
+        modalNextSpell = 0;
+        maxstack = 0;
+        EquippedItemClass = 0;
+        EquippedItemSubClass = 0;
+        RequiredItemFlags = 0;
     }
 };
 
@@ -1082,45 +1191,6 @@ struct AreaGroup
 {
     uint32 AreaGroupId;
     uint32 AreaId[7];
-};
-
-struct AreaTable
-{
-    uint32 AreaId;
-    uint32 mapId;
-    uint32 ZoneId;
-    uint32 explorationFlag;
-    uint32 AreaFlags;
-    //uint32 unk2;
-    //uint32 unk3;
-    //uint32 unk4;
-    uint32 EXP;//not XP
-    //uint32 unk5;
-    uint32 level;
-    const char* name;
-    //uint32 nameAlt1;
-    //uint32 nameAlt2;
-    //uint32 nameAlt3;
-    //uint32 nameAlt4;
-    //uint32 nameAlt5;
-    //uint32 nameAlt6;
-    //uint32 nameAlt7;
-    //uint32 nameAlt8;
-    //uint32 nameAlt9;
-    //uint32 nameAlt10;
-    //uint32 nameAlt11;
-    //uint32 nameAlt12;
-    //uint32 nameAlt13;
-    //uint32 nameAlt14;
-    //uint32 nameAlt15;
-    //uint32 nameFlags;
-    uint32 category;
-    //uint32 unk7;
-    //uint32 unk8;
-    //uint32 unk9;
-    //uint32 unk10;
-    //uint32 unk11;
-    //uint32 unk12;
 };
 
 struct FactionTemplateDBC
@@ -1667,23 +1737,23 @@ struct VehicleSeatEntry
 
 #pragma pack(pop)
 
-ARCEMU_INLINE float GetRadius(SpellRadius* radius)
+inline float GetRadius(SpellRadius* radius)
 {
     return radius->Radius;
 }
-ARCEMU_INLINE uint32 GetCastTime(SpellCastTime* time)
+inline uint32 GetCastTime(SpellCastTime* time)
 {
     return time->CastTime;
 }
-ARCEMU_INLINE float GetMaxRange(SpellRange* range)
+inline float GetMaxRange(SpellRange* range)
 {
     return range->maxRange;
 }
-ARCEMU_INLINE float GetMinRange(SpellRange* range)
+inline float GetMinRange(SpellRange* range)
 {
     return range->minRange;
 }
-ARCEMU_INLINE uint32 GetDuration(SpellDuration* dur)
+inline uint32 GetDuration(SpellDuration* dur)
 {
     return dur->Duration1;
 }
@@ -1739,6 +1809,10 @@ class SERVER_DECL DBCStorage
             m_numrows = 0;
             m_stringlength = 0;
             m_stringData = NULL;
+            rows = 0;
+            cols = 0;
+            useless_shit = 0;
+            header = 0;
         }
 
         ~DBCStorage()
@@ -1776,11 +1850,31 @@ class SERVER_DECL DBCStorage
                 return false;
 
             /* read the number of rows, and allocate our block on the heap */
-            fread(&header, 4, 1, f);
-            fread(&rows, 4, 1, f);
-            fread(&cols, 4, 1, f);
-            fread(&useless_shit, 4, 1, f);
-            fread(&string_length, 4, 1, f);
+            if (fread(&header, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
+            if (fread(&rows, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
+            if (fread(&cols, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
+            if (fread(&useless_shit, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
+            if (fread(&string_length, 4, 1, f) != 1)
+            {
+                fclose(f);
+                return false;
+            }
             pos = ftell(f);
 
             if (load_strings)
@@ -1789,10 +1883,18 @@ class SERVER_DECL DBCStorage
                 m_stringData = (char*)malloc(string_length);
                 m_stringlength = string_length;
                 if (m_stringData)
-                    fread(m_stringData, string_length, 1, f);
+                    if (fread(m_stringData, string_length, 1, f) != 1)
+                    {
+                        fclose(f);
+                        return false;
+                    }
             }
 
-            fseek(f, pos, SEEK_SET);
+            if (fseek(f, pos, SEEK_SET) != 0)
+            {
+                fclose(f);
+                return false;
+            }
 
             m_heapBlock = (T*)malloc(rows * sizeof(T));
             ASSERT(m_heapBlock);
@@ -1851,7 +1953,12 @@ class SERVER_DECL DBCStorage
                     continue;
                 }
 
-                fread(&val, 4, 1, f);
+                if (fread(&val, 4, 1, f) != 1)
+                {
+                    ++t;
+                    continue;
+                }
+
                 if (*t == 'x')
                 {
                     ++t;
@@ -1890,7 +1997,7 @@ class SERVER_DECL DBCStorage
             }
         }
 
-        ARCEMU_INLINE uint32 GetNumRows()
+        inline uint32 GetNumRows()
         {
             return m_numrows;
         }
@@ -2006,7 +2113,7 @@ extern SERVER_DECL DBCStorage<emoteentry> dbcEmoteEntry;
 extern SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
 extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
 extern SERVER_DECL DBCStorage<AreaGroup> dbcAreaGroup;
-extern SERVER_DECL DBCStorage<AreaTable> dbcArea;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL DBCStorage<FactionTemplateDBC> dbcFactionTemplate;
 extern SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
 extern SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
@@ -2057,5 +2164,7 @@ extern SERVER_DECL DBCStorage<VehicleEntry> dbcVehicle;
 extern SERVER_DECL DBCStorage<VehicleSeatEntry> dbcVehicleSeat;
 
 bool LoadDBCs();
+
+const WMOAreaTableEntry* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
 #endif // _SPELLSTORE_H

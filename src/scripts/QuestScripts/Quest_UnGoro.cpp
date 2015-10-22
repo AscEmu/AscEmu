@@ -153,7 +153,7 @@ class ChasingAMe01 : public QuestScript
             creat->GetAIInterface()->setMoveType(11);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "He-l-p Me... ts.. ts...");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
 
             sEAS.CreateCustomWaypointMap(creat);
@@ -207,7 +207,11 @@ class A_Me01  : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(4245)->SendQuestComplete();
+
+                auto quest_entry = plr->GetQuestLogForEntry(4245);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };

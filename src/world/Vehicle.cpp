@@ -27,6 +27,7 @@ Vehicle::Vehicle()
     vehicle_info = NULL;
     passengercount = 0;
     freeseats = 0;
+    creature_entry = 0;
     std::fill(seats.begin(), seats.end(), reinterpret_cast<VehicleSeat*>(NULL));
     installed_accessories.clear();
 }
@@ -54,26 +55,31 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
         LOG_ERROR("Can't load a vehicle without vehicle id or data belonging to it.");
         ARCEMU_ASSERT(false);
     }
-
-    for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
+    else
     {
-        uint32 seatid = vehicle_info->seatID[i];
-
-        if (seatid != 0)
+        for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
         {
-            VehicleSeatEntry *seatinfo = dbcVehicleSeat.LookupEntry(seatid);
-            if (seatinfo == NULL)
-            {
-                LOG_ERROR("Invalid seat id %u for seat %u for vehicle id %u", seatid, i, vehicleid);
-                continue;
-            }
+            uint32 seatid = vehicle_info->seatID[i];
 
-            seats[i] = new VehicleSeat(seatinfo);
+            if (seatid != 0)
+            {
+                VehicleSeatEntry *seatinfo = dbcVehicleSeat.LookupEntry(seatid);
+                if (seatinfo == NULL)
+                {
+                    LOG_ERROR("Invalid seat id %u for seat %u for vehicle id %u", seatid, i, vehicleid);
+                    continue;
+                }
+
+                seats[i] = new VehicleSeat(seatinfo);
+            }
         }
     }
 
     this->creature_entry = creature_entry;
     this->owner = owner;
+
+    if (owner == nullptr || vehicle_info == nullptr)
+        return;
 
     switch (vehicle_info->powerType)
     {
@@ -384,8 +390,8 @@ void Vehicle::MovePassengerToSeat(Unit* passenger, uint32 seat)
         }
 
     // Passenger is not in this vehicle
-    if (oldseatid == MAX_VEHICLE_SEATS)
-        return;
+    /*if (oldseatid == MAX_VEHICLE_SEATS) oldseatid must be between 0 and 7 CID 53115
+        return;*/
 
     if (seats[seat] == NULL)
         return;
@@ -411,8 +417,8 @@ void Vehicle::MovePassengerToNextSeat(Unit* passenger)
         }
 
     // Passenger is not in this vehicle
-    if (oldseatid == MAX_VEHICLE_SEATS)
-        return;
+    /*if (oldseatid == MAX_VEHICLE_SEATS) oldseatid must be between 0 and 7 CID 53174
+        return;*/
 
     // Now find a next seat if possible
     uint32 newseatid = oldseatid;
@@ -469,6 +475,15 @@ uint32 Vehicle::GetSeatEntryForPassenger(Unit* passenger)
             return seats[i]->GetSeatInfo()->ID;
 
     return 0;
+}
+
+bool Vehicle::IsControler(Unit* aura)
+{
+    for (uint32 i = 0; i < MAX_VEHICLE_SEATS; i++)
+        if ((seats[i] != NULL) && (seats[i]->GetPassengerGUID() == aura->GetGUID()))
+            return seats[i]->GetSeatInfo()->IsController();
+
+	return 0;
 }
 
 void Vehicle::MovePassengers(float x, float y, float z, float o)
@@ -601,4 +616,21 @@ uint32 Vehicle::GetPassengerSeatId(uint64 guid)
         if ((seats[i] != NULL && seats[i]->GetPassengerGUID() == guid))
             return seats[i]->GetSeatInfo()->ID;
     return 0;
+}
+
+VehicleSeat::VehicleSeat(VehicleSeatEntry* info) {
+    passenger = 0;
+    seat_info = info;
+}
+
+bool VehicleSeat::Controller() const {
+    return seat_info->IsController();
+}
+
+bool VehicleSeat::Usable() const {
+    return seat_info->IsUsable();
+}
+
+bool VehicleSeat::HidesPassenger() const {
+    return seat_info->HidesPassenger();
 }

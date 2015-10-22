@@ -20,9 +20,8 @@
 
 #include "StdAfx.h"
 #include "Unit.h"
-
-
-using namespace std;
+#include "DBC/DBCStores.h"
+#include "QuestLogEntry.hpp"
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {
@@ -66,6 +65,8 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_faction = dbcFactionTemplate.LookupRow(0);
     m_factionDBC = dbcFaction.LookupRow(0);
 
+    m_objectTypeId = TYPEID_OBJECT;
+
     m_objectsInRange.clear();
     m_inRangePlayers.clear();
     m_oppFactsInRange.clear();
@@ -97,6 +98,21 @@ Object::~Object()
     sEventMgr.RemoveEvents(this);
 }
 
+::DBC::Structures::AreaTableEntry const* Object::GetArea()
+{
+    if (!this->IsInWorld()) return nullptr;
+
+    auto map_mgr = this->GetMapMgr();
+    if (!map_mgr) return nullptr;
+
+    auto area_flag = map_mgr->GetAreaFlag(this->GetPositionX(), this->GetPositionY(), this->GetPositionZ());
+    auto at = MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
+    if (!at)
+        at = MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(this->GetMapId());
+
+    return at;
+}
+
 void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
 {
     m_mapId = mapid;
@@ -113,7 +129,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     uint8 updatetype = UPDATETYPE_CREATE_OBJECT;
     if (IsCorpse())
     {
-        if (TO< Corpse* >(this)->GetDisplayId() == 0)
+        if (static_cast< Corpse* >(this)->GetDisplayId() == 0)
             return 0;
         updatetype = UPDATETYPE_CREATE_YOURSELF;
     }
@@ -139,7 +155,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             // gameobject/dynamicobject
         case TYPEID_GAMEOBJECT:
             flags = 0x0350;
-            if (TO< GameObject* >(this)->GetDisplayId() == 3831) flags = 0x0252; //Deeprun Tram proper flags as of 3.2.0.
+            if (static_cast< GameObject* >(this)->GetDisplayId() == 3831) flags = 0x0252; //Deeprun Tram proper flags as of 3.2.0.
             break;
 
         case TYPEID_DYNAMICOBJECT:
@@ -190,7 +206,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             break;
         }
         //The above 3 checks FAIL to identify transports, thus their flags remain 0x58, and this is BAAAAAAD! Later they don't get position x,y,z,o updates, so they appear randomly by a client-calculated path, they always face north, etc... By: VLack
-        if (flags != 0x0352 && IsGameObject() && TO< GameObject* >(this)->GetInfo()->Type == GAMEOBJECT_TYPE_TRANSPORT && !(TO< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
+        if (flags != 0x0352 && IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT && !(static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
             flags = 0x0352;
     }
 
@@ -213,7 +229,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     updateMask.SetCount(m_valuesCount);
     _SetCreateBits(&updateMask, target);
 
-    if (IsGameObject() && (TO< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
+    if (IsGameObject() && (static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
     {
         updateMask.SetBit(GAMEOBJECT_PARENTROTATION_02);
         updateMask.SetBit(GAMEOBJECT_PARENTROTATION_03);
@@ -339,7 +355,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
         flags2 |= MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_MOVE_FORWARD;	   //1=move forward
         if (IsCreature())
         {
-            if (TO_UNIT(this)->GetAIInterface()->HasWalkMode(WALKMODE_WALK))
+            if (static_cast<Unit*>(this)->GetAIInterface()->HasWalkMode(WALKMODE_WALK))
                 flags2 |= MOVEFLAG_WALK;
         }
     }
@@ -365,7 +381,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     MovementInfo* moveinfo = NULL;
     if (IsPlayer())
     {
-        pThis = TO< Player* >(this);
+        pThis = static_cast< Player* >(this);
         if (pThis->GetSession())
             moveinfo = pThis->GetSession()->GetMovementInfo();
         if (target == this)
@@ -376,7 +392,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     }
     Creature* uThis = NULL;
     if (IsCreature())
-        uThis = TO< Creature* >(this);
+        uThis = static_cast< Creature* >(this);
 
     if (flags & UPDATEFLAG_LIVING)  //0x20
     {
@@ -548,7 +564,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     if (flags & UPDATEFLAG_HAS_TARGET)  //0x04
     {
         if (IsUnit())
-            FastGUIDPack(*data, TO_UNIT(this)->GetTargetGUID());	//some compressed GUID
+            FastGUIDPack(*data, static_cast<Unit*>(this)->GetTargetGUID());	//some compressed GUID
         else
             *data << uint64(0);
     }
@@ -562,10 +578,10 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
         uint32 vehicleid = 0;
 
         if (IsCreature())
-            vehicleid = TO< Creature* >(this)->GetProto()->vehicleid;
+            vehicleid = static_cast< Creature* >(this)->GetProto()->vehicleid;
         else
             if (IsPlayer())
-                vehicleid = TO< Player* >(this)->mountvehicleid;
+                vehicleid = static_cast< Player* >(this)->mountvehicleid;
 
         *data << uint32(vehicleid);
         *data << float(GetOrientation());
@@ -574,7 +590,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     if (flags & UPDATEFLAG_ROTATION)   //0x0200
     {
         if (IsGameObject())
-            *data << TO< GameObject* >(this)->m_rotation;
+            *data << static_cast< GameObject* >(this)->m_rotation;
         else
             *data << uint64(0);   //?
     }
@@ -594,7 +610,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
     {
         if (IsCreature())
         {
-            Creature* pThis = TO< Creature* >(this);
+            Creature* pThis = static_cast< Creature* >(this);
             if (pThis->IsTagged() && (pThis->loot.gold || pThis->loot.items.size()))
             {
                 // Let's see if we're the tagger or not.
@@ -635,9 +651,9 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
 
         if (target && IsGameObject())
         {
-            GameObject* go = TO_GAMEOBJECT(this);
+            GameObject* go = static_cast<GameObject*>(this);
             QuestLogEntry* qle;
-            GameObjectInfo* info;
+            GameObjectInfo* gameobject_info;
             if (go->HasQuests())
             {
                 std::list<QuestRelation*>::iterator itr;
@@ -662,8 +678,8 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
             }
             else
             {
-                info = go->GetInfo();
-                if (info && (info->goMap.size() || info->itemMap.size()))
+                gameobject_info = go->GetInfo();
+                if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
                 {
                     for (GameObjectGOMap::iterator itr = go->GetInfo()->goMap.begin(); itr != go->GetInfo()->goMap.end(); ++itr)
                     {
@@ -729,7 +745,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
     if (m_valuesCount > (2 * 0x20))    //if number of blocks > 2->  unit and player+item container
     {
         bc = updateMask->GetUpdateBlockCount();
-        values_count = min<uint32>(bc * 32, m_valuesCount);
+        values_count = std::min<uint32>(bc * 32, m_valuesCount);
 
     }
     else
@@ -808,7 +824,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
     ARCEMU_ASSERT(!isnan(newX) && !isnan(newY) && !isnan(newOrientation));
 
     //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
-    if (IsGameObject() && TO< GameObject* >(this)->GetInfo()->Type == GAMEOBJECT_TYPE_TRANSPORT)
+    if (IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT)
         updateMap = true;
 
     //if (m_position.x != newX || m_position.y != newY)
@@ -831,9 +847,9 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
         m_lastMapUpdatePosition.ChangeCoords(newX, newY, newZ, newOrientation);
         m_mapMgr->ChangeObjectLocation(this);
 
-        if (IsPlayer() && TO< Player* >(this)->GetGroup() && TO< Player* >(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
+        if (IsPlayer() && static_cast< Player* >(this)->GetGroup() && static_cast< Player* >(this)->m_last_group_position.Distance2DSq(m_position) > 25.0f)       // distance of 5.0
         {
-            TO< Player* >(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
+            static_cast< Player* >(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_POSITION);
         }
     }
 
@@ -899,7 +915,7 @@ void Object::AddToWorld()
 
     if (IsPlayer())
     {
-        Player* plr = TO< Player* >(this);
+        Player* plr = static_cast< Player* >(this);
         if (mapMgr->pInstance != NULL && !plr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
         {
             // Player limit?
@@ -975,8 +991,8 @@ void Object::PushToWorld(MapMgr* mgr)
 
     if (IsPlayer())
     {
-        TO_PLAYER(this)->m_cache->SetInt32Value(CACHE_MAPID, m_mapId);
-        TO_PLAYER(this)->m_cache->SetInt32Value(CACHE_INSTANCEID, m_instanceId);
+        static_cast<Player*>(this)->m_cache->SetInt32Value(CACHE_MAPID, m_mapId);
+        static_cast<Player*>(this)->m_cache->SetInt32Value(CACHE_INSTANCEID, m_instanceId);
     }
 
     m_mapMgr = mgr;
@@ -1060,13 +1076,13 @@ void Object::SetUInt32Value(const uint32 index, const uint32 value)
 
     if(IsUnit())
 	{
-		TO_UNIT(this)->HandleUpdateFieldChange(index);
+		static_cast<Unit*>(this)->HandleUpdateFieldChange(index);
 	}
 
     /// Group update handling
     if (IsPlayer())
     {
-        TO_PLAYER(this)->HandleUpdateFieldChanged(index);
+        static_cast<Player*>(this)->HandleUpdateFieldChanged(index);
 
         switch (index)
         {
@@ -1074,7 +1090,7 @@ void Object::SetUInt32Value(const uint32 index, const uint32 value)
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER4:
             case UNIT_FIELD_POWER7:
-                TO< Unit* >(this)->SendPowerUpdate(true);
+                static_cast< Unit* >(this)->SendPowerUpdate(true);
                 break;
             default:
                 break;
@@ -1089,7 +1105,7 @@ void Object::SetUInt32Value(const uint32 index, const uint32 value)
             case UNIT_FIELD_POWER3:
             case UNIT_FIELD_POWER4:
             case UNIT_FIELD_POWER7:
-                TO_CREATURE(this)->SendPowerUpdate(false);
+                static_cast<Creature*>(this)->SendPowerUpdate(false);
                 break;
             default:
                 break;
@@ -1133,7 +1149,7 @@ void Object::ModUnsigned32Value(uint32 index, int32 mod)
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER4:
             case UNIT_FIELD_POWER7:
-                TO< Unit* >(this)->SendPowerUpdate(true);
+                static_cast< Unit* >(this)->SendPowerUpdate(true);
                 break;
             default:
                 break;
@@ -1148,7 +1164,7 @@ void Object::ModUnsigned32Value(uint32 index, int32 mod)
             case UNIT_FIELD_POWER3:
             case UNIT_FIELD_POWER4:
             case UNIT_FIELD_POWER7:
-                TO_CREATURE(this)->SendPowerUpdate(false);
+                static_cast<Creature*>(this)->SendPowerUpdate(false);
                 break;
             default:
                 break;
@@ -1483,9 +1499,9 @@ bool Object::isInBack(Object* target)
     angle = (angle >= 0.0) ? angle : 2.0 * M_PI + angle;
 
     // if we are a creature and have a UNIT_FIELD_TARGET then we are always facing them
-    if (IsCreature() && TO_CREATURE(this)->GetTargetGUID() != 0)
+    if (IsCreature() && static_cast<Creature*>(this)->GetTargetGUID() != 0)
     {
-        Unit* pTarget = TO_CREATURE(this)->GetAIInterface()->getNextTarget();
+        Unit* pTarget = static_cast<Creature*>(this)->GetAIInterface()->getNextTarget();
         if (pTarget != NULL)
             angle -= double(Object::calcRadAngle(target->m_position.x, target->m_position.y, pTarget->m_position.x, pTarget->m_position.y));
         else
@@ -1531,15 +1547,16 @@ void Object::_setFaction()
 
     if (IsUnit())
     {
-        factT = dbcFactionTemplate.LookupEntryForced(TO_UNIT(this)->GetFaction());
+        factT = dbcFactionTemplate.LookupEntryForced(static_cast<Unit*>(this)->GetFaction());
         if (!factT)
-            LOG_ERROR("Unit does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", TO_UNIT(this)->GetFaction(), GetEntry());
+            LOG_ERROR("Unit does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
     }
     else if (IsGameObject())
     {
-        factT = dbcFactionTemplate.LookupEntryForced(TO< GameObject* >(this)->GetFaction());
-        if (!factT)
-            LOG_ERROR("Game Object does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", TO< GameObject* >(this)->GetFaction(), GetEntry());
+        factT = dbcFactionTemplate.LookupEntryForced(static_cast< GameObject* >(this)->GetFaction());
+        // A "dead" object is not able to choose/have a faction
+        //if (!factT)
+        //    LOG_ERROR("Game Object does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", TO< GameObject* >(this)->GetFaction(), GetEntry());
     }
 
     if (!factT)
@@ -1552,6 +1569,11 @@ void Object::_setFaction()
     m_factionDBC = dbcFaction.LookupEntryForced(factT->Faction);
     if (!m_factionDBC)
         m_factionDBC = dbcFaction.LookupRow(0);
+}
+
+uint32 Object::_getFaction()
+{
+    return m_faction->Faction;
 }
 
 void Object::UpdateOppFactionSet()
@@ -1634,7 +1656,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (spellInfo == NULL)
         return;
 
-    if (this->IsPlayer() && !TO< Player* >(this)->canCast(spellInfo))
+    if (this->IsPlayer() && !static_cast< Player* >(this)->canCast(spellInfo))
         return;
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1675,7 +1697,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     //by stats
     if (IsUnit() && !static_damage)
     {
-        Unit* caster = TO< Unit* >(this);
+        Unit* caster = static_cast< Unit* >(this);
 
         caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);
 
@@ -1727,7 +1749,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
 
     //damage reduction
     if (this->IsUnit())
-        res += TO< Unit* >(this)->CalcSpellDamageReduction(pVictim, spellInfo, res);
+        res += static_cast< Unit* >(this)->CalcSpellDamageReduction(pVictim, spellInfo, res);
     
     //absorption
     uint32 ress = static_cast< uint32 >(res);
@@ -1750,7 +1772,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (pVictim->IsPlayer() && pVictim->HasAurasWithNameHash(SPELL_HASH_INCANTER_S_ABSORPTION))
     {
         float pctmod = 0.0f;
-        Player* pl = TO< Player* >(pVictim);
+        Player* pl = static_cast< Player* >(pVictim);
         if (pl->HasAura(44394))
             pctmod = 0.05f;
         else if (pl->HasAura(44395))
@@ -1775,8 +1797,6 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         sp->prepare(&targets);
     }
 
-    if (ress < 0) ress = 0;
-
     res = static_cast< float >(ress);
     dealdamage dmg;
     dmg.school_type = spellInfo->School;
@@ -1789,7 +1809,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     //resistance reducing
     if (res > 0 && this->IsUnit())
     {
-        TO< Unit* >(this)->CalculateResistanceReduction(pVictim, &dmg, spellInfo, 0);
+        static_cast< Unit* >(this)->CalculateResistanceReduction(pVictim, &dmg, spellInfo, 0);
         if ((int32)dmg.resisted_damage > dmg.full_damage)
             res = 0;
         else
@@ -1797,7 +1817,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     }
     
     //special states
-    if (pVictim->IsPlayer() && TO< Player* >(pVictim)->GodModeCheat == true)
+    if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
     {
         res = static_cast< float >(dmg.full_damage);
         dmg.resisted_damage = dmg.full_damage;
@@ -1818,14 +1838,14 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     {
         int32 dmg2 = static_cast< int32 >(res);
 
-        pVictim->HandleProc(vproc, TO< Unit* >(this), spellInfo, !allowProc, dmg2, abs_dmg);
+        pVictim->HandleProc(vproc, static_cast< Unit* >(this), spellInfo, !allowProc, dmg2, abs_dmg);
         pVictim->m_procCounter = 0;
-        TO< Unit* >(this)->HandleProc(aproc, pVictim, spellInfo, !allowProc, dmg2, abs_dmg);
-        TO< Unit* >(this)->m_procCounter = 0;
+        static_cast< Unit* >(this)->HandleProc(aproc, pVictim, spellInfo, !allowProc, dmg2, abs_dmg);
+        static_cast< Unit* >(this)->m_procCounter = 0;
     }
     if (this->IsPlayer())
     {
-        TO< Player* >(this)->m_casted_amount[spellInfo->School] = (uint32)res;
+        static_cast< Player* >(this)->m_casted_amount[spellInfo->School] = (uint32)res;
     }
 
     if (!(dmg.full_damage == 0 && abs_dmg))
@@ -1842,9 +1862,9 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         //Magic Absorption
         if (pVictim->IsPlayer())
         {
-            if (TO< Player* >(pVictim)->m_RegenManaOnSpellResist)
+            if (static_cast< Player* >(pVictim)->m_RegenManaOnSpellResist)
             {
-                Player* pl = TO< Player* >(pVictim);
+                Player* pl = static_cast< Player* >(pVictim);
 
                 uint32 maxmana = pl->GetMaxPower(POWER_TYPE_MANA);
                 uint32 amount = static_cast< uint32 >(maxmana * pl->m_RegenManaOnSpellResist);
@@ -1852,10 +1872,10 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
                 pVictim->Energize(pVictim, 29442, amount, POWER_TYPE_MANA);
             }
             // we still stay in combat dude
-            TO< Player* >(pVictim)->CombatStatusHandler_ResetPvPTimeout();
+            static_cast< Player* >(pVictim)->CombatStatusHandler_ResetPvPTimeout();
         }
         if (IsPlayer())
-            TO< Player* >(this)->CombatStatusHandler_ResetPvPTimeout();
+            static_cast< Player* >(this)->CombatStatusHandler_ResetPvPTimeout();
     }
     if (spellInfo->School == SCHOOL_SHADOW)
     {
@@ -1865,8 +1885,8 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
             if (spellID == 32379 || spellID == 32996 || spellID == 48157 || spellID == 48158)
             {
                 uint32 damage2 = static_cast< uint32 >(res + abs_dmg);
-                uint32 absorbed = TO< Unit* >(this)->AbsorbDamage(spellInfo->School, &damage2);
-                DealDamage(TO< Unit* >(this), damage2, 2, 0, spellID);
+                uint32 absorbed = static_cast< Unit* >(this)->AbsorbDamage(spellInfo->School, &damage2);
+                DealDamage(static_cast< Unit* >(this), damage2, 2, 0, spellID);
                 SendSpellNonMeleeDamageLog(this, this, spellID, damage2, static_cast< uint8 >(spellInfo->School), absorbed, 0, false, 0, false, IsPlayer());
             }
         }
@@ -2033,7 +2053,7 @@ bool Object::CanActivate()
 
         case TYPEID_GAMEOBJECT:
         {
-            if (TO_GAMEOBJECT(this)->HasAI() && TO_GAMEOBJECT(this)->GetType() != GAMEOBJECT_TYPE_TRAP)
+            if (static_cast<GameObject*>(this)->HasAI() && static_cast<GameObject*>(this)->GetType() != GAMEOBJECT_TYPE_TRAP)
                 return true;
         }
         break;
@@ -2047,11 +2067,11 @@ void Object::Activate(MapMgr* mgr)
     switch (m_objectTypeId)
     {
         case TYPEID_UNIT:
-            mgr->activeCreatures.insert(TO_CREATURE(this));
+            mgr->activeCreatures.insert(static_cast<Creature*>(this));
             break;
 
         case TYPEID_GAMEOBJECT:
-            mgr->activeGameObjects.insert(TO_GAMEOBJECT(this));
+            mgr->activeGameObjects.insert(static_cast<GameObject*>(this));
             break;
     }
     // Objects are active so set to true.
@@ -2069,11 +2089,11 @@ void Object::Deactivate(MapMgr* mgr)
             // check iterator
             if (mgr->creature_iterator != mgr->activeCreatures.end() && (*mgr->creature_iterator)->GetGUID() == GetGUID())
                 ++mgr->creature_iterator;
-            mgr->activeCreatures.erase(TO_CREATURE(this));
+            mgr->activeCreatures.erase(static_cast<Creature*>(this));
             break;
 
         case TYPEID_GAMEOBJECT:
-            mgr->activeGameObjects.erase(TO_GAMEOBJECT(this));
+            mgr->activeGameObjects.erase(static_cast<GameObject*>(this));
             break;
     }
     Active = false;
@@ -2158,9 +2178,9 @@ void Object::SetZoneId(uint32 newZone)
 
     if (IsPlayer())
     {
-        TO_PLAYER(this)->m_cache->SetUInt32Value(CACHE_PLAYER_ZONEID, newZone);
-        if (TO_PLAYER(this)->GetGroup() != NULL)
-            TO_PLAYER(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_ZONE);
+        static_cast<Player*>(this)->m_cache->SetUInt32Value(CACHE_PLAYER_ZONEID, newZone);
+        if (static_cast<Player*>(this)->GetGroup() != NULL)
+            static_cast<Player*>(this)->AddGroupUpdateFlag(GROUP_UPDATE_FLAG_ZONE);
     }
 }
 
@@ -2172,12 +2192,12 @@ void Object::PlaySoundToSet(uint32 sound_entry)
     SendMessageToSet(&data, true);
 }
 
-void Object::_SetExtension(const string & name, void* ptr)
+void Object::_SetExtension(const std::string & name, void* ptr)
 {
     if (m_extensions == NULL)
         m_extensions = new ExtensionSet;
 
-    m_extensions->insert(make_pair(name, ptr));
+    m_extensions->insert(std::make_pair(name, ptr));
 }
 
 bool Object::IsInBg()
@@ -2433,14 +2453,14 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     float waterz;
     uint32 watertype;
     GetMapMgr()->GetLiquidInfo(outx, outy, GetPositionZ() + 2, waterz, watertype);
-    outz = max(waterz, outz);
+    outz = std::max(waterz, outz);
 
     NavMeshData* nav = CollideInterface.GetNavMesh(GetMapId());
 
     if (nav != NULL)
     {
         //if we can path there, go for it
-        if (!IsUnit() || !sloppypath || !TO_UNIT(this)->GetAIInterface()->CanCreatePath(outx, outy, outz))
+        if (!IsUnit() || !sloppypath || !static_cast<Unit*>(this)->GetAIInterface()->CanCreatePath(outx, outy, outz))
         {
             //raycast nav mesh to see if this place is valid
             float start[3] = { GetPositionY(), GetPositionZ() + 0.5f, GetPositionX() };
@@ -2452,12 +2472,13 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
             dtPolyRef startref;
             nav->query->findNearestPoly(start, extents, &filter, &startref, NULL);
 
-            float point, pointNormal;
+            float point;
+            float hitNormal[3];
             float result[3];
             int numvisited;
             dtPolyRef visited[MAX_PATH_LENGTH];
 
-            dtStatus rayresult = nav->query->raycast(startref, start, end, &filter, &point, &pointNormal, visited, &numvisited, MAX_PATH_LENGTH);
+            dtStatus rayresult = nav->query->raycast(startref, start, end, &filter, &point, hitNormal, visited, &numvisited, MAX_PATH_LENGTH);
 
             if (point <= 1.0f)
             {

@@ -86,6 +86,102 @@ World::World()
     LastTotalTrafficInKB = 0.0;
     LastTotalTrafficOutKB = 0.0;
     LastTrafficQuery = 0;
+
+    arenaSettings.A2V2_MIN = 2;
+    arenaSettings.A2V2_MAX = 2;
+    arenaSettings.A3V3_MAX = 3;
+    arenaSettings.A3V3_MIN = 3;
+    arenaSettings.A5V5_MAX = 5;
+    arenaSettings.A5V5_MIN = 5;
+
+    m_limits.enable = true;
+    m_limits.autoattackDamageCap = 10000;
+    m_limits.spellDamageCap = 30000;
+    m_limits.healthCap = 100000;
+    m_limits.manaCap = 80000;
+    m_limits.honorpoints = 75000;
+    m_limits.arenapoints = 5000;
+    m_limits.disconnect = false;
+    m_limits.broadcast = true;
+
+    GMTTimeZone = 0;
+    realmtype = 1;
+    TimeOut = 180;
+    m_queueUpdateTimer = 5000;
+    m_KickAFKPlayers = false;
+    m_reqGmForCommands = false;
+    m_lfgForNonLfg = false;
+    m_useAccountData = false;
+    m_AdditionalFun = false;
+
+    GoldCapEnabled = true;
+    GoldLimit = 214748;
+    GoldStartAmount = 0;
+
+    CacheVersion = 0;
+
+    announce_tagcolor = 2;
+    announce_gmtagcolor = 1;
+    announce_namecolor = 4;
+    announce_msgcolor = 6;
+
+    antihack_teleport = false;
+    antihack_speed = false;
+    antihack_flight = false;
+    flyhack_threshold = 0;
+    no_antihack_on_gm = true;
+
+    instance_TakeGroupLeaderID = false;
+    instance_SlidingExpiration = false;
+    instance_DailyHeroicInstanceResetHour = 5;
+    instance_CheckTriggerPrerequisites = true;
+
+    bgsettings.AV_MIN = 10;
+    bgsettings.AV_MAX = 40;
+    bgsettings.AB_MIN = 5;
+    bgsettings.AB_MAX = 15;
+    bgsettings.WSG_MIN = 5;
+    bgsettings.WSG_MAX = 10;
+    bgsettings.EOTS_MIN = 5;
+    bgsettings.EOTS_MAX = 15;
+    bgsettings.SOTA_MIN = 5;
+    bgsettings.SOTA_MAX = 15;
+    bgsettings.IOC_MIN = 10;
+    bgsettings.IOC_MAX = 40;
+    bgsettings.RBG_FIRST_WIN_HONOR = 30;
+    bgsettings.RBG_FIRST_WIN_ARENA = 25;
+    bgsettings.RBG_WIN_HONOR = 15;
+    bgsettings.RBG_WIN_ARENA = 0;
+    bgsettings.RBG_LOSE_HONOR = 5;
+    bgsettings.RBG_LOSE_ARENA = 0;
+
+    Arena_Season = 8;
+    Arena_Progress = 1;
+    ArenaQueueDiff = 150;
+
+    m_useIrc = false;
+    UnloadMapFiles = false;
+    BreathingEnabled = false;
+    SpeedhackProtection = false;
+    ExtraTalents = false;
+    MaxProfs = 0;
+
+    SendStatsOnJoin = false;
+
+    Collision = false;
+    DisableFearMovement = false;
+    compression_threshold = false;
+
+    flood_lines = 0;
+    flood_seconds = 0;
+    flood_message = false;
+
+    BCSystemEnable = false;
+    BCInterval = 10;
+    BCTriggerPercentCap = 2;
+    BCOrderMode = 0;
+
+    realmAllowTBCcharacters = true;
 }
 
 void CleanupRandomNumberGenerators();
@@ -169,7 +265,7 @@ World::~World()
     delete eventholder;
 
     Storage_Cleanup();
-    for (list<SpellEntry*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
+    for (std::list<SpellEntry*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
         delete *itr;
 }
 
@@ -341,7 +437,32 @@ bool World::SetInitialWorldSettings()
     }
 
     /* Convert area table ids/flags */
-    for (DBCStorage<AreaTable>::iterator itr = dbcArea.begin(); itr != dbcArea.end(); ++itr)
+    /* TODO: Why are we doing this? Is it still necessary after DBC rework? */
+    /*for (uint32 i = 0; i < sAreaStore.GetNumRows(); ++i)
+    {
+        auto at = sAreaStore.LookupEntry(i);
+        if (!at) continue;
+
+        uint32 area_ = at->id;
+        uint32 flag_ = at->explore_flag;
+        uint32 zone_ = at->zone;
+
+        mAreaIDToTable[flag_] = at;
+        if (mZoneIDToTable.find(zone_) != mZoneIDToTable.end())
+        {
+            if (mZoneIDToTable[zone_]->flags != 312 &&
+                mAreaIDToTable[flag_]->flags == 312)
+            {
+                // over ride.
+                mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
+            }
+        }
+        else
+        {
+            mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
+        }
+    }*/
+    /*for (DBCStorage<AreaTable>::iterator itr = dbcArea.begin(); itr != dbcArea.end(); ++itr)
     {
         AreaTable* at = *itr;
 
@@ -363,7 +484,7 @@ bool World::SetInitialWorldSettings()
         {
             mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
         }
-    }
+    }*/
 
     new ObjectMgr;
     new QuestMgr;
@@ -437,6 +558,7 @@ bool World::SetInitialWorldSettings()
 
     MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
     MAKE_TASK(SpellFactoryMgr, LoadSpellAreas);
+    MAKE_TASK(ObjectMgr, LoadEventScripts);
     MAKE_TASK(WeatherMgr, LoadFromDB);
     MAKE_TASK(AddonMgr, LoadFromDB);
     MAKE_TASK(GameEventMgr, LoadFromDB);
@@ -788,7 +910,7 @@ void World::SendGMWorldText(const char* text, WorldSession* self)
 
 void World::SendDamageLimitTextToGM(const char* playername, const char* dmglog)
 {
-    string gm_ann(MSG_COLOR_GREEN);
+    std::string gm_ann(MSG_COLOR_GREEN);
 
     gm_ann += "|Hplayer:";
     gm_ann += playername;
@@ -1114,7 +1236,7 @@ Task* TaskList::GetTask()
 
     Task* t = 0;
 
-    for (set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
+    for (std::set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
     {
         if (!(*itr)->in_progress)
         {
@@ -1176,7 +1298,7 @@ void TaskList::wait()
     {
         queueLock.Acquire();
         has_tasks = false;
-        for (set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
+        for (std::set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
         {
             if (!(*itr)->completed)
             {
@@ -1241,8 +1363,17 @@ void World::Rehash(bool load)
 {
     if (load)
     {
-        Config.MainConfig.SetSource(CONFDIR "/world.conf", true);
-        Config.OptionalConfig.SetSource(CONFDIR "/optional.conf", true);
+        // This will only happen if someone deleted/renamed the con-files after the server started...
+        if (!Config.MainConfig.SetSource(CONFDIR "/world.conf", true))
+        {
+            LOG_ERROR("Rehash: file world.conf not available o.O !");
+            return;
+        }
+        if (!Config.OptionalConfig.SetSource(CONFDIR "/optional.conf", true))
+        {
+            LOG_ERROR("Rehash: file optional.conf not available o.O !");
+            return;
+        }
     }
     if (!ChannelMgr::getSingletonPtr())
         new ChannelMgr;
@@ -1490,6 +1621,15 @@ void World::Rehash(bool load)
     bgsettings.IOC_MIN = Config.MainConfig.GetIntDefault("Battleground", "IOC_MIN", 10);
     bgsettings.IOC_MAX = Config.MainConfig.GetIntDefault("Battleground", "IOC_MAX", 15);
 
+    bgsettings.RBG_FIRST_WIN_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_HONOR", 30);
+    bgsettings.RBG_FIRST_WIN_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_ARENA", 25);
+    
+    bgsettings.RBG_WIN_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_HONOR", 15);
+    bgsettings.RBG_WIN_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_ARENA", 0);
+    
+    bgsettings.RBG_LOSE_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_HONOR", 5);
+    bgsettings.RBG_LOSE_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_ARENA", 0);
+
     arenaSettings.A2V2_MIN = Config.MainConfig.GetIntDefault("Arena", "2V2_MIN", 2);
     arenaSettings.A2V2_MAX = Config.MainConfig.GetIntDefault("Arena", "2V2_MAX", 2);
 
@@ -1530,7 +1670,7 @@ void World::Rehash(bool load)
         free(m_banTable);
 
     m_banTable = NULL;
-    string s = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
+    std::string s = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
     if (!s.empty())
         m_banTable = strdup(s.c_str());
 
@@ -1775,7 +1915,7 @@ struct insert_playeritem
     uint32 durability;
     int32 containerslot;
     int32 slot;
-    string enchantments;
+    std::string enchantments;
 };
 
 #define LOAD_THREAD_SLEEP 180
@@ -1788,7 +1928,7 @@ void CharacterLoaderThread::OnShutdown()
 
 CharacterLoaderThread::CharacterLoaderThread()
 {
-
+    running = false;
 }
 
 CharacterLoaderThread::~CharacterLoaderThread()
@@ -1836,7 +1976,7 @@ void World::PollMailboxInsertQueue(DatabaseConnection* con)
         do
         {
             f = result->Fetch();
-            vector<uint64> itemGuids;
+            std::vector<uint64> itemGuids;
 
             int fieldCounter = 6;
             for (int itemSlot = 0; itemSlot < MAIL_MAX_ITEM_SLOT; itemSlot++)
@@ -1873,8 +2013,8 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
 {
     // Our local stuff..
     bool has_results = false;
-    map<uint32, vector<insert_playeritem> > itemMap;
-    map<uint32, vector<insert_playeritem> >::iterator itr;
+    std::map<uint32, std::vector<insert_playeritem> > itemMap;
+    std::map<uint32, std::vector<insert_playeritem> >::iterator itr;
     Field* f;
     insert_playeritem ipi;
     static const char* characterTableFormat = "uSuuuuuussuuuuuuuuuuuuuuffffuususuufffuuuuusuuuUssuuuuuuffffuuuuufffssssssuuuuuuuu";
@@ -1904,12 +2044,12 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
             ipi.durability = f[11].GetUInt32();
             ipi.containerslot = f[12].GetInt32();
             ipi.slot = f[13].GetInt32();
-            ipi.enchantments = string(f[14].GetString());
+            ipi.enchantments = std::string(f[14].GetString());
 
             itr = itemMap.find(ipi.ownerguid);
             if (itr == itemMap.end())
             {
-                vector<insert_playeritem> to_insert;
+                std::vector<insert_playeritem> to_insert;
                 to_insert.push_back(ipi);
                 itemMap.insert(make_pair(ipi.ownerguid, to_insert));
             }
@@ -2029,7 +2169,7 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
             itr = itemMap.find(guid);
             if (itr != itemMap.end())
             {
-                for (vector<insert_playeritem>::iterator vtr = itr->second.begin(); vtr != itr->second.end(); ++vtr)
+                for (std::vector<insert_playeritem>::iterator vtr = itr->second.begin(); vtr != itr->second.end(); ++vtr)
                 {
                     ss.rdbuf()->str("");
                     ss << "INSERT INTO playeritems VALUES(";
@@ -2107,7 +2247,7 @@ void World::DisconnectUsersWithIP(const char* ip, WorldSession* m_session)
         if (!session->GetSocket())
             continue;
 
-        string ip2 = session->GetSocket()->GetRemoteIP().c_str();
+        std::string ip2 = session->GetSocket()->GetRemoteIP().c_str();
         if (!stricmp(ip, ip2.c_str()))
         {
             FoundUser = true;
@@ -2150,14 +2290,14 @@ void World::DisconnectUsersWithPlayerName(const char* plr, WorldSession* m_sessi
     m_sessionlock.ReleaseReadLock();
 }
 
-string World::GetUptimeString()
+std::string World::GetUptimeString()
 {
     char str[300];
     time_t pTime = (time_t)UNIXTIME - m_StartTime;
     tm* tmv = gmtime(&pTime);
 
     snprintf(str, 300, "%u days, %u hours, %u minutes, %u seconds.", tmv->tm_yday, tmv->tm_hour, tmv->tm_min, tmv->tm_sec);
-    return string(str);
+    return std::string(str);
 }
 
 void World::SendBCMessageByID(uint32 id)
@@ -2200,7 +2340,7 @@ void World::SendLocalizedWorldText(bool wide, const char* format, ...)  // May n
         if (itr->second->GetPlayer() &&
             itr->second->GetPlayer()->IsInWorld())
         {
-            string temp = SessionLocalizedTextFilter(itr->second, format);
+            std::string temp = SessionLocalizedTextFilter(itr->second, format);
             // parsing
             format = (char*)temp.c_str();
             char buffer[1024];

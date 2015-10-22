@@ -46,8 +46,8 @@ class ConsoleSocket : public Socket
     uint32 m_pBufferLen;
     uint32 m_pBufferPos;
     uint32 m_state;
-    string m_username;
-    string m_password;
+    std::string m_username;
+    std::string m_password;
     uint32 m_requestNo;
     uint8 m_failedLogins;
 
@@ -66,7 +66,7 @@ class ConsoleAuthMgr : public Singleton < ConsoleAuthMgr >
 {
     Mutex authmgrlock;
     uint32 highrequestid;
-    map<uint32, ConsoleSocket*> requestmap;
+    std::map<uint32, ConsoleSocket*> requestmap;
     public:
 
     ConsoleAuthMgr()
@@ -89,7 +89,7 @@ class ConsoleAuthMgr : public Singleton < ConsoleAuthMgr >
         if (sock == NULL)
             requestmap.erase(id);
         else
-            requestmap.insert(make_pair(id, sock));
+            requestmap.insert(std::make_pair(id, sock));
         authmgrlock.Release();
     }
 
@@ -97,7 +97,7 @@ class ConsoleAuthMgr : public Singleton < ConsoleAuthMgr >
     {
         ConsoleSocket* rtn;
         authmgrlock.Acquire();
-        map<uint32, ConsoleSocket*>::iterator itr = requestmap.find(id);
+        std::map<uint32, ConsoleSocket*>::iterator itr = requestmap.find(id);
         if (itr == requestmap.end())
             rtn = NULL;
         else
@@ -133,7 +133,7 @@ bool StartConsoleListener()
 #ifndef ENABLE_REMOTE_CONSOLE
     return false;
 #else
-    string lhost = Config.MainConfig.GetStringDefault("RemoteConsole", "Host", "0.0.0.0");
+    std::string lhost = Config.MainConfig.GetStringDefault("RemoteConsole", "Host", "0.0.0.0");
     uint32 lport = Config.MainConfig.GetIntDefault("RemoteConsole", "Port", 8092);
     bool enabled = Config.MainConfig.GetBoolDefault("RemoteConsole", "Enabled", false);
 
@@ -170,6 +170,7 @@ ConsoleSocket::ConsoleSocket(SOCKET iFd) : Socket(iFd, 10000, 1000)
     m_pConsole = new RemoteConsole(this);
     m_state = STATE_USER;
     m_failedLogins = 0;
+    m_requestNo = 0;
 }
 
 ConsoleSocket::~ConsoleSocket()
@@ -187,7 +188,7 @@ ConsoleSocket::~ConsoleSocket()
     }
 }
 
-void TestConsoleLogin(string & username, string & password, uint32 requestid);
+void TestConsoleLogin(std::string & username, std::string & password, uint32 requestid);
 
 void ConsoleSocket::OnRead()
 {
@@ -220,13 +221,13 @@ void ConsoleSocket::OnRead()
             switch (m_state)
             {
                 case STATE_USER:
-                    m_username = string(m_pBuffer);
+                    m_username = std::string(m_pBuffer);
                     m_pConsole->Write("password: ");
                     m_state = STATE_PASSWORD;
                     break;
 
                 case STATE_PASSWORD:
-                    m_password = string(m_pBuffer);
+                    m_password = std::string(m_pBuffer);
                     m_pConsole->Write("\r\nAttempting to authenticate. Please wait.\r\n");
                     m_state = STATE_WAITING;
 
@@ -480,14 +481,15 @@ void HandleConsoleInput(BaseConsole* pConsole, const char* szInput)
     };
 
     uint32 i;
-    char* p, *q;
+    char* p, *q = nullptr;
 
     // let's tokenize into arguments.
-    vector<const char*> tokens;
+    std::vector<const char*> tokens;
 
     q = (char*)szInput;
     p = strchr(q, ' ');
-    while (p != NULL)
+
+    while (p != nullptr)
     {
         *p = 0;
         tokens.push_back(q);
@@ -557,4 +559,5 @@ void LocalConsole::Write(const char* Format, ...)
     va_list ap;
     va_start(ap, Format);
     vprintf(Format, ap);
+    va_end(ap);
 }

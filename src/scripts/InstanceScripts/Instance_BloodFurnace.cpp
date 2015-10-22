@@ -138,7 +138,7 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 2)
+        switch (RandomUInt(1))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(4845);     // Just as you deserve!
@@ -202,7 +202,7 @@ class TheMakerAI : public MoonScriptCreatureAI
 
         void OnCombatStart(Unit* pTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(4849);     // My work must not be interrupted!
@@ -218,7 +218,7 @@ class TheMakerAI : public MoonScriptCreatureAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(4852);     // Let's see what I can make of you!

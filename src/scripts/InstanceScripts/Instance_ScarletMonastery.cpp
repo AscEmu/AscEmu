@@ -314,7 +314,7 @@ class MograineAI : public CreatureAIScript
             nrspells = 3;
             mPhase = 0;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -348,18 +348,15 @@ class MograineAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomFloat(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_MORGRAINE_02);
                         break;
-
+                    default:
+                        break;
                 }
             }
         }
@@ -409,7 +406,7 @@ class MograineAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -457,7 +454,7 @@ class MograineAI : public CreatureAIScript
     protected:
 
         uint32 mPhase;
-        int nrspells;
+        uint8 nrspells;
         int Timer;
 };
 
@@ -475,7 +472,7 @@ class WhitemaneAI : public CreatureAIScript
             nrspells = 3;
             mPhase = 0;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -513,15 +510,13 @@ class WhitemaneAI : public CreatureAIScript
 
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomFloat(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(SAY_WHITEMANE_02);
                         break;
-
+                    default:
+                        break;
                 }
             }
         }
@@ -601,7 +596,7 @@ class WhitemaneAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -645,7 +640,7 @@ class WhitemaneAI : public CreatureAIScript
     protected:
 
         uint32 mPhase;  // NPC has 2 phases
-        int nrspells;
+        uint8 nrspells;
         int Timer;
 };
 
@@ -663,7 +658,7 @@ class FairbanksAI : public CreatureAIScript
             nrspells = 2;
             mPhase = 0;
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -692,16 +687,14 @@ class FairbanksAI : public CreatureAIScript
 
             if (_unit->GetHealthPct() > 0)
             {
-                int RandomSpeach;
-                RandomFloat(1000);
-                RandomSpeach = rand() % 2;
-                switch (RandomSpeach)
+                switch (RandomUInt(1))
                 {
                     case 0:
                         _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Ha! Had enough?");       /// \todo can anybody verify this?
                         _unit->PlaySoundToSet(0000);
                         break;
-
+                    default:
+                        break;
                 }
             }
         }
@@ -742,7 +735,7 @@ class FairbanksAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -787,7 +780,7 @@ class FairbanksAI : public CreatureAIScript
     protected:
 
         uint32 mPhase;  // NPC has 2 phases
-        int nrspells;
+        uint8 nrspells;
         int Timer;
 };
 

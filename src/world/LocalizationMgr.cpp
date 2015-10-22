@@ -30,10 +30,10 @@ void LocalizationMgr::Shutdown()
 
 #define SAFE_FREE_PTR(x) if (deletedPointers.find((x)) == deletedPointers.end()) { deletedPointers.insert((x)); free((x)); }
 
-    set<void*> deletedPointers;
+    std::set<void*> deletedPointers;
     uint32 maxid = 0;
     uint32 i, j;
-    vector<pair<uint32, uint32> >::iterator xtr = m_languages.begin();
+    std::vector<std::pair<uint32, uint32> >::iterator xtr = m_languages.begin();
     for (; xtr != m_languages.end(); ++xtr)
         if (xtr->second > maxid)
             maxid = xtr->second;
@@ -147,19 +147,19 @@ void LocalizationMgr::Shutdown()
 #undef SAFE_FREE_PTR
 }
 
-void LocalizationMgr::Lower(string & conv)
+void LocalizationMgr::Lower(std::string & conv)
 {
     for (size_t i = 0; i < conv.length(); ++i)
         conv[i] = static_cast<char>(tolower(conv[i]));
 }
 
-void LocalizationMgr::GetDistinctLanguages(set<string>& dest, const char* table)
+void LocalizationMgr::GetDistinctLanguages(std::set<std::string>& dest, const char* table)
 {
     QueryResult* result = WorldDatabase.Query("SELECT DISTINCT language_code FROM %s", table);
     if (result == NULL)
         return;
 
-    string lc;
+    std::string lc;
     do
     {
         lc = result->Fetch()[0].GetString();
@@ -177,7 +177,7 @@ uint32 LocalizationMgr::GetLanguageId(uint32 full)
     if (m_disabled)
         return 0;
 
-    for (vector<pair<uint32, uint32> >::iterator itr = m_languages.begin(); itr != m_languages.end(); ++itr)
+    for (std::vector<std::pair<uint32, uint32> >::iterator itr = m_languages.begin(); itr != m_languages.end(); ++itr)
         if (itr->first == full)
             return itr->second;
 
@@ -190,8 +190,8 @@ void LocalizationMgr::Reload(bool first)
         return;
 
     QueryResult* result;
-    set<string> languages;
-    map<string, string> bound_languages;
+    std::set<std::string> languages;
+    std::map<std::string, std::string> bound_languages;
     GetDistinctLanguages(languages, "creature_names_localized");
     GetDistinctLanguages(languages, "gameobject_names_localized");
     GetDistinctLanguages(languages, "items_localized");
@@ -205,12 +205,12 @@ void LocalizationMgr::Reload(bool first)
     GetDistinctLanguages(languages, "npc_monstersay_localized");
 
     /// Read Language Bindings From Config
-    string ls = Config.MainConfig.GetStringDefault("Localization", "LocaleBindings", "");
-    vector<string> tbindings = StrSplit(ls, " ");
-    for (vector<string>::iterator ztr = tbindings.begin(); ztr != tbindings.end(); ++ztr)
+    std::string ls = Config.MainConfig.GetStringDefault("Localization", "LocaleBindings", "");
+    std::vector<std::string> tbindings = StrSplit(ls, " ");
+    for (std::vector<std::string>::iterator ztr = tbindings.begin(); ztr != tbindings.end(); ++ztr)
     {
         char lb[200];
-        string ll1, ll2;
+        std::string ll1, ll2;
         strcpy(lb, (*ztr).c_str());
 
         char* lbp = strchr(lb, '=');
@@ -219,8 +219,8 @@ void LocalizationMgr::Reload(bool first)
         *lbp = 0;
         lbp++;
 
-        ll1 = string(lb);
-        ll2 = string(lbp);
+        ll1 = std::string(lb);
+        ll2 = std::string(lbp);
         Lower(ll1);
         Lower(ll2);
 
@@ -233,8 +233,8 @@ void LocalizationMgr::Reload(bool first)
 
     /// Generate Language IDs
     uint32 langid = 1;
-    pair<uint32, uint32> dpr;
-    for (set<string>::iterator sitr = languages.begin(); sitr != languages.end(); ++sitr)
+    std::pair<uint32, uint32> dpr;
+    for (std::set<std::string>::iterator sitr = languages.begin(); sitr != languages.end(); ++sitr)
     {
         if ((*sitr) == "enus")        // Default
         {
@@ -275,7 +275,7 @@ void LocalizationMgr::Reload(bool first)
     // Creature Names
     {
         LocalizedCreatureName cn;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -286,7 +286,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -295,7 +295,7 @@ void LocalizationMgr::Reload(bool first)
 
                 cn.Name = strdup(f[2].GetString());
                 cn.SubName = strdup(f[3].GetString());
-                m_CreatureNames[lid].insert(make_pair(entry, cn));
+                m_CreatureNames[lid].insert(std::make_pair(entry, cn));
             }
             while (result->NextRow());
             delete result;
@@ -306,7 +306,7 @@ void LocalizationMgr::Reload(bool first)
     // GameObject Names
     {
         LocalizedGameObjectName gn;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -317,7 +317,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -325,7 +325,7 @@ void LocalizationMgr::Reload(bool first)
                     continue;        // no loading enUS stuff.. lawl
 
                 gn.Name = strdup(f[2].GetString());
-                m_GameObjectNames[lid].insert(make_pair(entry, gn));
+                m_GameObjectNames[lid].insert(std::make_pair(entry, gn));
             }
             while (result->NextRow());
             delete result;
@@ -336,7 +336,7 @@ void LocalizationMgr::Reload(bool first)
     // Items
     {
         LocalizedItem it;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -347,7 +347,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -361,7 +361,7 @@ void LocalizationMgr::Reload(bool first)
 
                 it.Name = strdup(f[2].GetString());
                 it.Description = strdup(f[3].GetString());
-                m_Items[lid].insert(make_pair(entry, it));
+                m_Items[lid].insert(std::make_pair(entry, it));
             }
             while (result->NextRow());
             delete result;
@@ -372,7 +372,7 @@ void LocalizationMgr::Reload(bool first)
     // Quests
     {
         LocalizedQuest q;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -383,7 +383,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -401,7 +401,7 @@ void LocalizationMgr::Reload(bool first)
                 q.ObjectiveText[2] = strdup(f[10].GetString());
                 q.ObjectiveText[3] = strdup(f[11].GetString());
 
-                m_Quests[lid].insert(make_pair(entry, q));
+                m_Quests[lid].insert(std::make_pair(entry, q));
             }
             while (result->NextRow());
             delete result;
@@ -412,7 +412,7 @@ void LocalizationMgr::Reload(bool first)
     // NPC Texts
     {
         LocalizedNpcText nt;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -424,7 +424,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -438,7 +438,7 @@ void LocalizationMgr::Reload(bool first)
                     nt.Texts[i][1] = strdup(f[counter++].GetString());
                 }
 
-                m_NpcTexts[lid].insert(make_pair(entry, nt));
+                m_NpcTexts[lid].insert(std::make_pair(entry, nt));
             }
             while (result->NextRow());
             delete result;
@@ -448,7 +448,7 @@ void LocalizationMgr::Reload(bool first)
     // Item Pages
     {
         LocalizedItemPage nt;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -459,7 +459,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -467,7 +467,7 @@ void LocalizationMgr::Reload(bool first)
                     continue;        // no loading enUS stuff.. lawl
 
                 nt.Text = strdup(f[2].GetString());
-                m_ItemPages[lid].insert(make_pair(entry, nt));
+                m_ItemPages[lid].insert(std::make_pair(entry, nt));
             }
             while (result->NextRow());
             delete result;
@@ -478,7 +478,7 @@ void LocalizationMgr::Reload(bool first)
     // Creature Text
     {
         LocalizedCreatureText nt;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -489,7 +489,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -497,7 +497,7 @@ void LocalizationMgr::Reload(bool first)
                     continue;
 
                 nt.Text = strdup(f[2].GetString());
-                m_CreatureText[lid].insert(make_pair(entry, nt));
+                m_CreatureText[lid].insert(std::make_pair(entry, nt));
             }
             while (result->NextRow());
             delete result;
@@ -508,7 +508,7 @@ void LocalizationMgr::Reload(bool first)
     // Gossip Menu Option
     {
         LocalizedGossipMenuOption nt;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -519,7 +519,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -527,7 +527,7 @@ void LocalizationMgr::Reload(bool first)
                     continue;
 
                 nt.Text = strdup(f[2].GetString());
-                m_GossipMenuOption[lid].insert(make_pair(entry, nt));
+                m_GossipMenuOption[lid].insert(std::make_pair(entry, nt));
             }
             while (result->NextRow());
             delete result;
@@ -538,7 +538,7 @@ void LocalizationMgr::Reload(bool first)
     // World Common Message
     {
         LocalizedWorldStringTable nt;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -549,7 +549,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -557,7 +557,7 @@ void LocalizationMgr::Reload(bool first)
                     continue;
 
                 nt.Text = strdup(f[2].GetString());
-                m_WorldStrings[lid].insert(make_pair(entry, nt));
+                m_WorldStrings[lid].insert(std::make_pair(entry, nt));
             }
             while (result->NextRow());
             delete result;
@@ -568,7 +568,7 @@ void LocalizationMgr::Reload(bool first)
     // World BroadCast Messages
     {
         LocalizedWorldBroadCast nt;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -579,7 +579,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -587,7 +587,7 @@ void LocalizationMgr::Reload(bool first)
                     continue;
 
                 nt.Text = strdup(f[2].GetString());
-                m_WorldBroadCast[lid].insert(make_pair(entry, nt));
+                m_WorldBroadCast[lid].insert(std::make_pair(entry, nt));
             }
             while (result->NextRow());
             delete result;
@@ -598,7 +598,7 @@ void LocalizationMgr::Reload(bool first)
     // World MapInfo Entry Name
     {
         LocalizedWorldMapInfo nt;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -609,7 +609,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -617,7 +617,7 @@ void LocalizationMgr::Reload(bool first)
                     continue;
 
                 nt.Text = strdup(f[2].GetString());
-                m_WorldMapInfo[lid].insert(make_pair(entry, nt));
+                m_WorldMapInfo[lid].insert(std::make_pair(entry, nt));
             }
             while (result->NextRow());
             delete result;
@@ -628,7 +628,7 @@ void LocalizationMgr::Reload(bool first)
     // NPC Monstersay
     {
         LocalizedMonstersay ms;
-        string str;
+        std::string str;
         uint32 entry;
         Field* f;
         uint32 lid;
@@ -640,7 +640,7 @@ void LocalizationMgr::Reload(bool first)
             do
             {
                 f = result->Fetch();
-                str = string(f[1].GetString());
+                str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
                 lid = GetLanguageId(str);
@@ -654,7 +654,7 @@ void LocalizationMgr::Reload(bool first)
                 ms.text3 = strdup(f[6].GetString());
                 ms.text4 = strdup(f[7].GetString());
 
-                m_MonsterSay[lid].insert(make_pair(entry, ms));
+                m_MonsterSay[lid].insert(std::make_pair(entry, ms));
             }
             while (result->NextRow());
             delete result;
@@ -664,7 +664,7 @@ void LocalizationMgr::Reload(bool first)
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Apply all the language bindings.
-    for (map<string, string>::iterator itr = bound_languages.begin(); itr != bound_languages.end(); ++itr)
+    for (std::map<std::string, std::string>::iterator itr = bound_languages.begin(); itr != bound_languages.end(); ++itr)
     {
         uint32 source_language_id = GetLanguageId(itr->second);
         uint32 dest_language_id = GetLanguageId(itr->first);

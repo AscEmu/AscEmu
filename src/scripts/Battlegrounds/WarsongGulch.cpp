@@ -95,7 +95,7 @@ WarsongGulch::~WarsongGulch()
             delete m_homeFlags[i];
     }
 
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         if((*itr) != NULL)
         {
@@ -108,33 +108,47 @@ WarsongGulch::~WarsongGulch()
 
 }
 
+/*! Handles end of battleground rewards (marks etc)
+*  \param winningTeam Team that won the battleground
+*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool WarsongGulch::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 69158);
+    CastSpellOnTeam(winningTeam, 69496);
+    CastSpellOnTeam(winningTeam, 69497);
+    CastSpellOnTeam(winningTeam, 69498);
+    return true;
+}
+
 void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
 {
     int32 buffslot = -1;
     switch(id)
     {
-        case 3686:      // Speed
+        case AREATRIGGER_A_SPEED:           // Speed
             buffslot = 0;
             break;
-        case 3687:      // Speed (Horde)
+        case AREATRIGGER_H_SPEED:           // Speed (Horde)
             buffslot = 1;
             break;
-        case 3706:      // Restoration
+        case AREATRIGGER_A_RESTORATION:      // Restoration
             buffslot = 2;
             break;
-        case 3708:      // Restoration (Horde)
+        case AREATRIGGER_H_RESTORATION:      // Restoration (Horde)
             buffslot = 3;
             break;
-        case 3707:      // Berserking
+        case AREATRIGGER_A_BERSERKING:      // Berserking
             buffslot = 4;
             break;
-        case 3709:      // Berserking (Horde)
+        case AREATRIGGER_H_BERSERKING:      // Berserking (Horde)
             buffslot = 5;
             break;
-        case 3649:
-        case 3688:
-        case 4628:
-        case 4629:
+        case AREATRIGGER_WSG_ENCOUNTER_01:
+        case AREATRIGGER_WSG_ENCOUNTER_02:
+        case AREATRIGGER_WSG_ENCOUNTER_03:
+        case AREATRIGGER_WSG_ENCOUNTER_04:
+        case AREATRIGGER_WSG_A_SPAWN:
+        case AREATRIGGER_WSG_H_SPAWN:
             break;
         default:
             sLog.Error("WarsongGulch", "Encountered unhandled areatrigger id %u", id);
@@ -147,7 +161,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         if(m_buffs[buffslot] != 0 && m_buffs[buffslot]->IsInWorld())
         {
             /* apply the buff */
-            SpellEntry* sp = dbcSpell.LookupEntry(m_buffs[buffslot]->GetInfo()->sound3);
+            SpellEntry* sp = dbcSpell.LookupEntry(m_buffs[buffslot]->GetInfo()->parameter_3);
             Spell* s = sSpellFactoryMgr.NewSpell(plr, sp, true, 0);
             SpellCastTargets targets(plr->GetGUID());
             s->prepare(&targets);
@@ -158,7 +172,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         return;
     }
 
-    if(((id == 3646 && plr->IsTeamAlliance()) || (id == 3647 && plr->IsTeamHorde())) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->GetLowGUID()))
+    if(((id == AREATRIGGER_WSG_A_SPAWN && plr->IsTeamAlliance()) || (id == AREATRIGGER_WSG_H_SPAWN && plr->IsTeamHorde())) && (plr->m_bgHasFlag && m_flagHolders[plr->GetTeam()] == plr->GetLowGUID()))
     {
         if(m_flagHolders[plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE] != 0 || m_dropFlags[plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE]->IsInWorld())
         {
@@ -204,7 +218,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         uint32 honorToAdd = 2 * m_honorPerKill;
         uint32 repToAdd = m_isWeekend ? 45 : 35;
         uint32 fact = plr->IsTeamHorde() ? 889 : 890; /*Warsong Outriders : Sliverwing Sentinels*/
-        for(set<Player*>::iterator itr = m_players[plr->GetTeam()].begin(); itr != m_players[plr->GetTeam()].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[plr->GetTeam()].begin(); itr != m_players[plr->GetTeam()].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
@@ -214,33 +228,10 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         m_scores[plr->GetTeam()]++;
         if(m_scores[plr->GetTeam()] == 3)
         {
-            /* victory! */
-            m_ended = true;
-            m_winningteam = (uint8)plr->GetTeam();
-            m_nextPvPUpdateTime = 0;
-
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
-            sEventMgr.AddEvent(TO<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            AddHonorToTeam(m_winningteam, 3 * 185);
-
-            CastSpellOnTeam(m_winningteam, 69158);
-            CastSpellOnTeam(m_winningteam, 69496);
-            CastSpellOnTeam(m_winningteam, 69497);
-            CastSpellOnTeam(m_winningteam, 69498);
-
-            if (m_winningteam == TEAM_ALLIANCE)
-            {
-                AddHonorToTeam(TEAM_HORDE, 1 * 185);
-                PlaySoundToAll(SOUND_ALLIANCEWINS);
-            }
-            else
-            {
-                AddHonorToTeam(TEAM_ALLIANCE, 1 * 185);
-                PlaySoundToAll(SOUND_HORDEWINS);
-            }
-
-            m_mainLock.Release();
+            this->EndBattleground(plr->GetTeamReal());
         }
 
         /* increment the score world state */
@@ -280,7 +271,7 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
 
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
 
-    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeam(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeamReal(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     if(plr->IsTeamHorde())
         SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Alliance flag was dropped by %s!", plr->GetName());
@@ -320,7 +311,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
         return;
     }
 
-    map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
     if(itr != plr->m_forcedReactions.end())
     {
         return;
@@ -355,7 +346,7 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
         SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Horde's flag has been taken by %s !", plr->GetName());
 }
 
-void WarsongGulch::ReturnFlag(uint32 team)
+void WarsongGulch::ReturnFlag(PlayerTeam team)
 {
     if(m_dropFlags[team]->IsInWorld())
         m_dropFlags[team]->RemoveFromWorld(false);
@@ -389,7 +380,7 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
         return;
     }
 
-    map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
+    std::map<uint32, uint32>::iterator itr = plr->m_forcedReactions.find(1059);
     if(itr != plr->m_forcedReactions.end())
     {
         return;
@@ -590,14 +581,14 @@ void WarsongGulch::OnStart()
 {
     for(uint32 i = 0; i < 2; ++i)
     {
-        for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
 
     /* open the gates */
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->SetFlags(64);
         (*itr)->SetState(GAMEOBJECT_STATE_OPEN);
@@ -645,7 +636,7 @@ void WarsongGulch::DespawnGates(uint32 delay)
         sEventMgr.AddEvent(this, &WarsongGulch::DespawnGates, (uint32)0, EVENT_GAMEOBJECT_EXPIRE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->Despawn(0, 0);
     }

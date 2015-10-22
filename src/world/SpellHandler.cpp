@@ -279,24 +279,26 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     if (!_player->HasAurasWithNameHash(SPELL_HASH_LIGHTWELL_RENEW) && target_unit->RemoveAura(59907))
     {
         SpellClickSpell* sp = SpellClickSpellStorage.LookupEntry(creature_id);
-        if (sp == NULL)
+        if (sp == nullptr)
         {
             if (target_unit->IsCreature())
             {
-                Creature* c = TO< Creature* >(target_unit);
+                Creature* c = static_cast< Creature* >(target_unit);
 
                 sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name);
                 LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
                 return;
             }
         }
+        else
+        {
+            cast_spell_id = sp->SpellID;
+            target_unit->CastSpell(_player, cast_spell_id, true);
+        }
 
-        cast_spell_id = sp->SpellID;
-
-        target_unit->CastSpell(_player, cast_spell_id, true);
 
         if (!target_unit->HasAura(59907))
-            TO_CREATURE(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
+            static_cast<Creature*>(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
 
         return;
     }
@@ -306,25 +308,25 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     {
         if (target_unit->IsCreature())
         {
-            Creature* c = TO< Creature* >(target_unit);
+            Creature* c = static_cast< Creature* >(target_unit);
 
             sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name);
             LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
             return;
         }
     }
+    else
+    {
+        cast_spell_id = sp->SpellID;
 
-    cast_spell_id = sp->SpellID;
+        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
+        if (spellInfo == nullptr)
+            return;
 
-    if (cast_spell_id == 0)
-        return;
-
-    SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
-    if (spellInfo == NULL)
-        return;
-    Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
-    SpellCastTargets targets(target_guid);
-    spell->prepare(&targets);
+        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
+        SpellCastTargets targets(target_guid);
+        spell->prepare(&targets);
+    }
 }
 
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
@@ -482,6 +484,9 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     else
     {
         SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
+        if (info == nullptr)
+            return;
+
         Aura* aura = _player->FindAura(spellId);
         if (aura)
 		{
@@ -490,7 +495,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 			if (info->Attributes & ATTRIBUTES_NEGATIVE)
 				return;
 		}
-        if (info != NULL && !(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
+        if (!(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
         {
             _player->RemoveAllAuraById(spellId);
             LOG_DEBUG("Removing all auras with ID: %u", spellId);
@@ -588,7 +593,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         if (nc)
         {
             bool check = false;
-            for (list<AI_Spell*>::iterator itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
+            for (std::list<AI_Spell*>::iterator itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
             {
                 if ((*itr)->spell->Id == spellid)
                 {
@@ -599,7 +604,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
 
             if (nc->IsCreature())
             {
-                Creature* c = TO< Creature* >(nc);
+                Creature* c = static_cast< Creature* >(nc);
 
                 if (c->GetProto()->spelldataid != 0)
                 {

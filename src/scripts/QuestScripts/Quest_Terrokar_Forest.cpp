@@ -35,7 +35,7 @@ class ThreatFromAboveQAI : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* en = (TO_PLAYER(mKiller))->GetQuestLogForEntry(11096);
+                QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(11096);
                 if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
@@ -54,18 +54,22 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
     public:
 
         ADD_CREATURE_FACTORY_FUNCTION(TheInfestedProtectorsQAI);
-        TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)  {}
+        TheInfestedProtectorsQAI(Creature* pCreature) : CreatureAIScript(pCreature)
+        {
+            min = 0;
+            max = 0;
+            finall = 0;
+        }
 
         void OnDied(Unit* mKiller)
         {
             if(mKiller->IsPlayer())
             {
-                Player * plr = TO_PLAYER(mKiller);
+                Player * plr = static_cast<Player*>(mKiller);
                 if(plr->HasQuest(10896))
                 {
                     if(Rand(90))
                     {
-                        uint32 min,max,finall;
                         switch(_unit->GetEntry())
                         {
                             case 22307:
@@ -93,6 +97,12 @@ class TheInfestedProtectorsQAI : public CreatureAIScript
                 }
             }
         }
+
+    private:
+
+        uint32 min;
+        uint32 max;
+        uint32 finall;
 };
 
 // Taken in the Night
@@ -114,7 +124,7 @@ class TakenInTheNight : public CreatureAIScript
             if(!mKiller->IsPlayer())
                 return;
 
-            Player* plr = TO_PLAYER(mKiller);
+            Player* plr = static_cast<Player*>(mKiller);
             uint8 chance = (uint8)RandomUInt(5);
             uint32 spawn = 0;
 
@@ -190,13 +200,13 @@ class TheMomentofTruth : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* doctor = TO_CREATURE(pObject);
+            Creature* doctor = static_cast<Creature*>(pObject);
             if(doctor == NULL)
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
             if(plr->HasQuest(10201) && plr->GetItemInterface()->GetItemCount(28500, 0))
-                Menu->AddItem(0, "Try this", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(497), 1);     // Try this
 
             Menu->SendTo(plr);
         }
@@ -206,7 +216,7 @@ class TheMomentofTruth : public GossipScript
             if(!plr)
                 return;
 
-            Creature* doctor = TO_CREATURE(pObject);
+            Creature* doctor = static_cast<Creature*>(pObject);
             if(doctor == NULL)
                 return;
 

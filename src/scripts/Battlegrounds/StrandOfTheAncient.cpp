@@ -226,6 +226,31 @@ CBattleground(mgr, id, lgroup, t)
     m_zoneid = 4384;
     std::fill(&canon[0], &canon[SOTA_NUM_CANONS], reinterpret_cast<Creature*>(NULL));
     std::fill(&demolisher[0], &demolisher[SOTA_NUM_DEMOLISHERS], reinterpret_cast<Creature*>(NULL));
+
+    Attackers = 0;
+    Defenders = 0;
+    BattleRound = 0;
+    RoundTime = 0;
+    roundprogress = SOTA_ROUND_PREPARATION;
+
+    int i;
+
+    for (i = 0; i < BUFF_COUNT; ++i)
+        m_buffs[i] = NULL;
+
+    for (i = 0; i < 4; ++i)
+        m_boats[i] = NULL;
+
+    for (i = 0; i < GATE_COUNT; ++i)
+    {
+        m_gates[i] = NULL;
+        m_gateSigils[i] = NULL;
+        m_gateTransporters[i] = NULL;
+    }
+
+    m_relic = NULL;
+    m_endgate = NULL;
+
 }
 
 StrandOfTheAncient::~StrandOfTheAncient()
@@ -271,6 +296,15 @@ LocationVector StrandOfTheAncient::GetStartingCoords(uint32 team)
         return sotaAttackerStartingPosition[roundprogress];
     else
         return sotaDefenderStartingPosition;
+}
+
+/*! Handles end of battleground rewards (marks etc)
+*  \param winningTeam Team that won the battleground
+*  \returns True if CBattleground class should finish applying rewards, false if we handled it fully */
+bool StrandOfTheAncient::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 61213);
+    return true;
 }
 
 void StrandOfTheAncient::HookOnPlayerDeath(Player* plr)
@@ -565,8 +599,9 @@ void StrandOfTheAncient::PrepareRound()
     SpawnGraveyard(SOTA_GY_DEFENDER, Defenders);
 
     if (BattleRound == 2){
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
+
         // Teleport players to their place and cast preparation on them
-        m_mainLock.Acquire();
 
         for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
         {
@@ -582,17 +617,15 @@ void StrandOfTheAncient::PrepareRound()
             p->CastSpell(p, BG_PREPARATION, true);
         }
 
-        m_mainLock.Release();
-
         sEventMgr.AddEvent(this, &StrandOfTheAncient::StartRound, EVENT_SOTA_START_ROUND, 1 * 10 * 1000, 1, 0);
     }
 };
 
 void StrandOfTheAncient::StartRound()
 {
-    roundprogress = SOTA_ROUND_STARTED;
+    std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    m_mainLock.Acquire();
+    roundprogress = SOTA_ROUND_STARTED;
 
     for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); itr++){
         Player *p = *itr;
@@ -600,8 +633,6 @@ void StrandOfTheAncient::StartRound()
         p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[SOTA_ROUND_STARTED]);
         p->RemoveAura(BG_PREPARATION);
     }
-
-    m_mainLock.Release();
 
     RemoveAuraFromTeam(Defenders, BG_PREPARATION);
 
@@ -633,22 +664,9 @@ void StrandOfTheAncient::FinishRound()
 void StrandOfTheAncient::Finish(uint32 winningteam)
 {
     sEventMgr.RemoveEvents(this);
-    m_ended = true;
-    m_winningteam = winningteam;
+    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120 * 1000, 1, 0);
 
-    uint32 losingteam;
-    if (winningteam == TEAM_ALLIANCE)
-        losingteam = TEAM_HORDE;
-    else
-        losingteam = TEAM_ALLIANCE;
-
-    AddHonorToTeam(winningteam, 3 * 185);
-    AddHonorToTeam(losingteam, 1 * 185);
-    CastSpellOnTeam(m_winningteam, 61213);
-
-    UpdatePvPData();
-
-    sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120 * 1000, 1, 0);
+    this->EndBattleground(winningteam == TEAM_ALLIANCE ? TEAM_ALLIANCE : TEAM_HORDE);
 }
 
 void StrandOfTheAncient::TimeTick()
@@ -707,8 +725,8 @@ void StrandOfTheAncient::SpawnControlPoint(SOTAControlPoints point, SOTACPStates
         cp.pole->PushToWorld(m_mapMgr);
     }
     else{
-        Arcemu::Util::ArcemuAssert(cp.banner != NULL);
-        cp.banner->Despawn(0, 0);
+        if (cp.banner->IsInWorld())
+            cp.banner->RemoveFromWorld(false);
     }
 
     cp.banner = SpawnGameObject(FlagIDs[point][team], FlagPositions[point], 0, faction, 1.0f);

@@ -96,10 +96,12 @@ class ThekaAI : public CreatureAIScript
 
         ThekaAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-
             morph = dbcSpell.LookupEntry(SP_THEKA_TRANSFORM);
-
             plague = dbcSpell.LookupEntry(SP_THEKA_FEVERED_PLAGUE);
+
+            plaguecount = 0;
+            randomplague = 0;
+            morphcheck = false;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -210,9 +212,11 @@ class AntusulAI : public CreatureAIScript
         AntusulAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
+            spawns = spawns2 = attack = firstspawn = secondspawn = false;
             servant = dbcSpell.LookupEntry(SP_ANTUSUL_SERVANTS);
             //healing_ward = dbcSpell.LookupEntry(SP_ANTUSUL_HEALINGWARD);
             //earthgrab_ward = dbcSpell.LookupEntry(SP_ANTUSUL_EARTHGRABWARD);
+            secondspawncount = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -406,8 +410,8 @@ class AntusulAI : public CreatureAIScript
         Creature* trigger;
 
         SpellEntry* servant;
-        SpellEntry* healing_ward;
-        SpellEntry* earthgrab_ward;
+        //SpellEntry* healing_ward;
+        //SpellEntry* earthgrab_ward;
 };
 
 

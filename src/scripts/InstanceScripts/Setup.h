@@ -61,6 +61,7 @@ void SetupTheSteamvault(ScriptMgr* mgr);
 void SetupTheUnderbog(ScriptMgr* mgr);
 void SetupUldaman(ScriptMgr* mgr);
 void SetupUtgardeKeep(ScriptMgr* mgr);
+void SetupUtgardePinnacle(ScriptMgr* mgr);
 void SetupTheStockade(ScriptMgr* mgr);
 void SetupTheVioletHold(ScriptMgr* mgr);
 void SetupWailingCaverns(ScriptMgr* mgr);
@@ -178,6 +179,7 @@ enum InstanceMaps
     MAP_CF_STEAMVAULT       = 545,  //Coilfang: The Steamvault
     MAP_CF_THE_UNDERBOG     = 546,  //Coilfang: The Underbog
     MAP_CF_SLAVE_PENS       = 547,  //Coilfang: The Slave Pens
+    MAP_CF_SERPENTSHRINE_CA = 548,  //Coilfang: Serpentshrine Cavern
 
     MAP_TK_THE_ARCATRAZ     = 552,  //Tempest Keep: The Arcatraz
     MAP_TK_THE_BOTANICA     = 553,  //Tempest Keep: The Botanica
@@ -189,6 +191,10 @@ enum InstanceMaps
     MAP_AUCHENAI_CRYPT      = 558,  //Auchindoun: Auchenai Crypts
 
     MAP_BLACK_TEMPLE        = 564,  //Black Temple
+
+    MAP_UTGARDE_KEEP        = 574,  //Utgarde Keep
+    MAP_UTGARDE_PINNACLE    = 575,  //Utgarde Pinnacle
+
     MAP_NEXUS               = 576,  //Nexus
     MAP_MAGISTERS_TERRACE   = 585,  //Magister's Terrace
     MAP_HALLS_OF_STONE      = 599,  //Halls of Stone
@@ -196,8 +202,11 @@ enum InstanceMaps
     MAP_AZJOL_NERUB         = 601,  //Azjol-Nerub
     MAP_HALLS_OF_LIGHTNING  = 602,  //Halls of Lightning
     MAP_GUNDRAK             = 604,  //Gundrak
+
+    MAP_ULDUAR              = 603,  //Ulduar
+
     MAP_VIOLET_HOLD         = 608,  //The Violet Hold
-    MAP_OS                  = 615,  //ObsidianSanctum
+    MAP_OBSIDIAN_SANCTUM    = 615,  //ObsidianSanctum
     MAP_ICECROWNCITADEL     = 631,  //Icecrown Citadel
     MAP_HALLSOFREFLECTION   = 668,  //Halls of Reflection
 
@@ -234,14 +243,12 @@ enum InstanceMaps
     566	Eye of the Storm
     568	Zul'Aman
     572	Ruins of Lordaeron
-    574	Utgarde Keep
-    575	Utgarde Pinnacle
+
     578	The Oculus
     580	The Sunwell
     595	The Culling of Stratholme
     598	Sunwell Fix (Unused)
 
-    603	Ulduar
     607	Strand of the Ancients
     615	The Obsidian Sanctum
     616	The Eye of Eternity

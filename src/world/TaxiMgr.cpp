@@ -27,7 +27,7 @@ initialiseSingleton(TaxiMgr);
 
 void TaxiPath::ComputeLen()
 {
-    m_length1 = m_length1 = 0;
+    m_length1 = m_length2 = 0;
     m_map1 = m_map2 = 0;
     float* curptr = &m_length1;
 

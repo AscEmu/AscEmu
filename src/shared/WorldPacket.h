@@ -21,7 +21,7 @@
 #ifndef WOWSERVER_WORLDPACKET_H
 #define WOWSERVER_WORLDPACKET_H
 
-#include "Common.h"
+#include "CommonTypes.hpp"
 #include "ByteBuffer.h"
 #include "StackBuffer.h"
 

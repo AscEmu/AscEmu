@@ -386,7 +386,7 @@ class SladranAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(4217);     // You not breathin'? Good.
@@ -394,7 +394,7 @@ class SladranAI : public MoonScriptCreatureAI
             case 1:
                 _unit->SendScriptTextChatMessage(4218);     // Ssscared now?
             break;
-            case 3:
+            case 2:
                 _unit->SendScriptTextChatMessage(4219);     // I eat you next, mon.
             break;
         }
@@ -426,7 +426,7 @@ class GalDarahAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(GalDarahAI, MoonScriptCreatureAI);
     GalDarahAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        mInstance = mInstance = GetInstanceScript();;
+        mInstance = GetInstanceScript();
 
         AddSpell(WHIRLING_SLASH, Target_Self, 20, 0, 12);
     }
@@ -443,7 +443,7 @@ class GalDarahAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(4200);     // What a rush!
@@ -451,7 +451,7 @@ class GalDarahAI : public MoonScriptCreatureAI
             case 1:
                 _unit->SendScriptTextChatMessage(4201);     // Who needs gods when we ARE gods?
             break;
-            case 3:
+            case 2:
                 _unit->SendScriptTextChatMessage(4202);     // I told ya so!
             break;
         }

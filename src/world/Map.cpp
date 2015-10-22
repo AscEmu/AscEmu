@@ -19,6 +19,7 @@
  *
  */
 
+#include "DBC/DBCStores.h"
 #include "StdAfx.h"
 
 #define CREATURESPAWNSFIELDCOUNT 27
@@ -59,7 +60,7 @@ Map::~Map()
                     CellSpawns* sp = spawns[x][y];
                     for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
                         delete(*i);
-                    for (GOSpawnList::iterator it = sp->GOSpawns.begin(); it != sp->GOSpawns.end(); ++it)
+                    for (GameobjectSpawnList::iterator it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
                         delete(*it);
 
                     delete sp;
@@ -72,8 +73,47 @@ Map::~Map()
 
     for (CreatureSpawnList::iterator i = staticSpawns.CreatureSpawns.begin(); i != staticSpawns.CreatureSpawns.end(); ++i)
         delete *i;
-    for (GOSpawnList::iterator i = staticSpawns.GOSpawns.begin(); i != staticSpawns.GOSpawns.end(); ++i)
+    for (GameobjectSpawnList::iterator i = staticSpawns.GameobjectSpawns.begin(); i != staticSpawns.GameobjectSpawns.end(); ++i)
         delete *i;
+}
+
+std::string Map::GetNameString()
+{
+    return name;
+}
+
+const char* Map::GetName()
+{
+    return name.c_str();
+}
+
+MapEntry* Map::GetDBCEntry()
+{
+    return me;
+}
+
+CellSpawns* Map::GetSpawnsList(uint32 cellx, uint32 celly)
+{
+    ARCEMU_ASSERT(cellx < _sizeX);
+    ARCEMU_ASSERT(celly < _sizeY);
+    if (spawns[cellx] == NULL)
+        return NULL;
+    return spawns[cellx][celly];
+}
+
+CellSpawns* Map::GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
+{
+    ARCEMU_ASSERT(cellx < _sizeX);
+    ARCEMU_ASSERT(celly < _sizeY);
+    if (spawns[cellx] == NULL)
+    {
+        spawns[cellx] = new CellSpawns*[_sizeY];
+        memset(spawns[cellx], 0, sizeof(CellSpawns*)*_sizeY);
+    }
+
+    if (spawns[cellx][celly] == 0)
+        spawns[cellx][celly] = new CellSpawns;
+    return spawns[cellx][celly];
 }
 
 bool first_table_warning = true;
@@ -120,7 +160,7 @@ void Map::LoadSpawns(bool reload)
                     CellSpawns* sp = spawns[x][y];
                     for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
                         delete(*i);
-                    for (GOSpawnList::iterator it = sp->GOSpawns.begin(); it != sp->GOSpawns.end(); ++it)
+                    for (GameobjectSpawnList::iterator it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
                         delete(*it);
 
                     delete sp;
@@ -128,7 +168,7 @@ void Map::LoadSpawns(bool reload)
                 }
 
     QueryResult* result;
-    set<string>::iterator tableiterator;
+    std::set<std::string>::iterator tableiterator;
     for (tableiterator = ExtraMapCreatureTables.begin(); tableiterator != ExtraMapCreatureTables.end(); ++tableiterator)
     {
         result = WorldDatabase.Query("SELECT * FROM %s WHERE Map = %u", (*tableiterator).c_str(), this->_mapId);
@@ -191,7 +231,7 @@ void Map::LoadSpawns(bool reload)
         }
     }
 
-    result = WorldDatabase.Query("SELECT * FROM creature_staticspawns WHERE Map = %u", this->_mapId);
+    result = WorldDatabase.Query("SELECT * FROM creature_staticspawns WHERE map = %u", this->_mapId);
     if (result)
     {
         if (CheckResultLengthCreatures(result))
@@ -238,7 +278,7 @@ void Map::LoadSpawns(bool reload)
     }
 
     GameObjectSpawnCount = 0;
-    result = WorldDatabase.Query("SELECT * FROM gameobject_staticspawns WHERE Map = %u", this->_mapId);
+    result = WorldDatabase.Query("SELECT * FROM gameobject_staticspawns WHERE map = %u", this->_mapId);
     if (result)
     {
         if (CheckResultLengthGameObject(result))
@@ -246,26 +286,31 @@ void Map::LoadSpawns(bool reload)
             do
             {
                 Field* fields = result->Fetch();
-                GOSpawn* gspawn = new GOSpawn;
-                gspawn->entry = fields[1].GetUInt32();
-                gspawn->id = fields[0].GetUInt32();
-                gspawn->x = fields[3].GetFloat();
-                gspawn->y = fields[4].GetFloat();
-                gspawn->z = fields[5].GetFloat();
-                gspawn->facing = fields[6].GetFloat();
-                gspawn->o = fields[7].GetFloat();
-                gspawn->o1 = fields[8].GetFloat();
-                gspawn->o2 = fields[9].GetFloat();
-                gspawn->o3 = fields[10].GetFloat();
-                gspawn->state = fields[11].GetUInt32();
-                gspawn->flags = fields[12].GetUInt32();
-                gspawn->faction = fields[13].GetUInt32();
-                gspawn->scale = fields[14].GetFloat();
+                auto go_spawn = new GameobjectSpawn;
+                go_spawn->entry = fields[1].GetUInt32();
+                go_spawn->id = fields[0].GetUInt32();
+                go_spawn->map = fields[2].GetUInt32();
+                go_spawn->position_x = fields[3].GetFloat();
+                go_spawn->position_y = fields[4].GetFloat();
+                go_spawn->position_z = fields[5].GetFloat();
+                go_spawn->orientation = fields[6].GetFloat();
+                go_spawn->rotation_0 = fields[7].GetFloat();
+                go_spawn->rotation_1 = fields[8].GetFloat();
+                go_spawn->rotation_2 = fields[9].GetFloat();
+                go_spawn->rotation_3 = fields[10].GetFloat();
+                go_spawn->state = fields[11].GetUInt32();
+                go_spawn->flags = fields[12].GetUInt32();
+                go_spawn->faction = fields[13].GetUInt32();
+                go_spawn->scale = fields[14].GetFloat();
                 //gspawn->stateNpcLink = fields[15].GetUInt32();
-                gspawn->phase = fields[16].GetUInt32();
-                if (gspawn->phase == 0) gspawn->phase = 0xFFFFFFFF;
-                gspawn->overrides = fields[17].GetUInt32();
-                staticSpawns.GOSpawns.push_back(gspawn);
+                go_spawn->phase = fields[16].GetUInt32();
+
+                if (go_spawn->phase == 0)
+                    go_spawn->phase = 0xFFFFFFFF;
+
+                go_spawn->overrides = fields[17].GetUInt32();
+
+                staticSpawns.GameobjectSpawns.push_back(go_spawn);
                 ++GameObjectSpawnCount;
             }
             while (result->NextRow());
@@ -284,37 +329,41 @@ void Map::LoadSpawns(bool reload)
                 do
                 {
                     Field* fields = result->Fetch();
-                    GOSpawn* gspawn = new GOSpawn;
-                    gspawn->entry = fields[1].GetUInt32();
-                    gspawn->id = fields[0].GetUInt32();
-                    gspawn->x = fields[3].GetFloat();
-                    gspawn->y = fields[4].GetFloat();
-                    gspawn->z = fields[5].GetFloat();
-                    gspawn->facing = fields[6].GetFloat();
-                    gspawn->o = fields[7].GetFloat();
-                    gspawn->o1 = fields[8].GetFloat();
-                    gspawn->o2 = fields[9].GetFloat();
-                    gspawn->o3 = fields[10].GetFloat();
-                    gspawn->state = fields[11].GetUInt32();
-                    gspawn->flags = fields[12].GetUInt32();
-                    gspawn->faction = fields[13].GetUInt32();
-                    gspawn->scale = fields[14].GetFloat();
+                    GameobjectSpawn* go_spawn = new GameobjectSpawn;
+                    go_spawn->entry = fields[1].GetUInt32();
+                    go_spawn->id = fields[0].GetUInt32();
+                    go_spawn->map = fields[2].GetUInt32();
+                    go_spawn->position_x = fields[3].GetFloat();
+                    go_spawn->position_y = fields[4].GetFloat();
+                    go_spawn->position_z = fields[5].GetFloat();
+                    go_spawn->orientation = fields[6].GetFloat();
+                    go_spawn->rotation_0 = fields[7].GetFloat();
+                    go_spawn->rotation_1 = fields[8].GetFloat();
+                    go_spawn->rotation_2 = fields[9].GetFloat();
+                    go_spawn->rotation_3 = fields[10].GetFloat();
+                    go_spawn->state = fields[11].GetUInt32();
+                    go_spawn->flags = fields[12].GetUInt32();
+                    go_spawn->faction = fields[13].GetUInt32();
+                    go_spawn->scale = fields[14].GetFloat();
                     //gspawn->stateNpcLink = fields[15].GetUInt32();
-                    gspawn->phase = fields[16].GetUInt32();
-                    if (gspawn->phase == 0) gspawn->phase = 0xFFFFFFFF;
-                    gspawn->overrides = fields[17].GetUInt32();
+                    go_spawn->phase = fields[16].GetUInt32();
 
-                    if (gspawn->overrides & GAMEOBJECT_MAPWIDE)
+                    if (go_spawn->phase == 0)
+                        go_spawn->phase = 0xFFFFFFFF;
+
+                    go_spawn->overrides = fields[17].GetUInt32();
+
+                    if (go_spawn->overrides & GAMEOBJECT_MAPWIDE)
                     {
-                        staticSpawns.GOSpawns.push_back(gspawn); //We already have a staticSpawns in the Map class, and it does just the right thing
+                        staticSpawns.GameobjectSpawns.push_back(go_spawn); //We already have a staticSpawns in the Map class, and it does just the right thing
                         ++GameObjectSpawnCount;
                     }
                     else
                     {
                         //uint32 cellx=float2int32(((_maxX-gspawn->x)/_cellSize));
                         //uint32 celly=float2int32(((_maxY-gspawn->y)/_cellSize));
-                        uint32 cellx = CellHandler<MapMgr>::GetPosX(gspawn->x);
-                        uint32 celly = CellHandler<MapMgr>::GetPosY(gspawn->y);
+                        uint32 cellx = CellHandler<MapMgr>::GetPosX(go_spawn->position_x);
+                        uint32 celly = CellHandler<MapMgr>::GetPosY(go_spawn->position_y);
                         if (spawns[cellx] == NULL)
                         {
                             spawns[cellx] = new CellSpawns*[_sizeY];
@@ -324,7 +373,7 @@ void Map::LoadSpawns(bool reload)
                         if (!spawns[cellx][celly])
                             spawns[cellx][celly] = new CellSpawns;
 
-                        spawns[cellx][celly]->GOSpawns.push_back(gspawn);
+                        spawns[cellx][celly]->GameobjectSpawns.push_back(go_spawn);
                         ++GameObjectSpawnCount;
                     }
                 }
@@ -336,4 +385,14 @@ void Map::LoadSpawns(bool reload)
     }
 
     Log.Notice("MapSpawns", "%u creatures / %u gameobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
+}
+
+void Map::CellGoneActive(uint32 x, uint32 y)
+{
+    
+}
+
+void Map::CellGoneIdle(uint32 x, uint32 y)
+{
+    
 }

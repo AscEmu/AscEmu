@@ -51,7 +51,7 @@ bool PreparationForBattleQuestCast(Player* pPlayer, SpellEntry* pSpell, Spell* s
         if (!qle || qle->CanBeFinished())
             return true;
 
-        sEventMgr.AddEvent(TO_UNIT(pPlayer), &Unit::EventCastSpell, TO_UNIT(pPlayer), dbcSpell.LookupEntry(54586), EVENT_CREATURE_UPDATE, 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(static_cast<Unit*>(pPlayer), &Unit::EventCastSpell, static_cast<Unit*>(pPlayer), dbcSpell.LookupEntry(54586), EVENT_CREATURE_UPDATE, 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         return true;
     }

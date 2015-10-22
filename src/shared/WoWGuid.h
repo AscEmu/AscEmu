@@ -21,7 +21,8 @@
 #ifndef _WOWGUID_H
 #define _WOWGUID_H
 
-#include "Common.h"
+#include "CommonTypes.hpp"
+#include "Errors.h"
 
 #define BitCount1(x) ((x) & 1)
 #define BitCount2(x) ( BitCount1(x) + BitCount1((x)>>1) )

@@ -205,7 +205,7 @@ typedef CBattleground* (*ArenaFactoryMethod)(MapMgr* mgr, uint32 iid, uint32 gro
 class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>, public EventableObject
 {
         /// Battleground Instance Map
-        map<uint32, CBattleground*> m_instances[BATTLEGROUND_NUM_TYPES];
+    std::map<uint32, CBattleground*> m_instances[BATTLEGROUND_NUM_TYPES];
         Mutex m_instanceLock;
 
         /// Max Id
@@ -213,10 +213,10 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
 
         /* Queue System */
         // Instance Id -> list<Player guid> [ BattlegroundType ] (instance 0 - first available)
-        list<uint32> m_queuedPlayers[BATTLEGROUND_NUM_TYPES][MAX_LEVEL_GROUP];
+    std::list<uint32> m_queuedPlayers[BATTLEGROUND_NUM_TYPES][MAX_LEVEL_GROUP];
 
         // Instance Id -> list<Group id> [BattlegroundType][LevelGroup]
-        list<uint32> m_queuedGroups[BATTLEGROUND_NUM_TYPES];
+    std::list<uint32> m_queuedGroups[BATTLEGROUND_NUM_TYPES];
 
         Mutex m_queueLock;
 
@@ -229,6 +229,8 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
         /// Arena map IDs
         std::vector<uint32> arenaMaps;
 
+        /// All battlegrounds that are available in random BG queue
+        std::vector<uint32> avalibleInRandom;
     public:
         CBattlegroundManager();
         ~CBattlegroundManager();
@@ -316,10 +318,10 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
         int CreateArenaType(int type, Group* group1, Group* group2);
 
         /* Add player to bg team */
-        void AddPlayerToBgTeam(CBattleground* bg, deque<uint32> *playerVec, uint32 i, uint32 j, int Team);
+        void AddPlayerToBgTeam(CBattleground* bg, std::deque<uint32> *playerVec, uint32 i, uint32 j, int Team);
 
         /* Add player to bg */
-        void AddPlayerToBg(CBattleground* bg, deque<uint32> *playerVec, uint32 i, uint32 j);
+        void AddPlayerToBg(CBattleground* bg, std::deque<uint32> *playerVec, uint32 i, uint32 j);
 
         /* Add a group to an arena */
         void AddGroupToArena(CBattleground* bg, Group* group, int nteam);

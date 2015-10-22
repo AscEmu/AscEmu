@@ -75,7 +75,7 @@ void Mailbox::CleanupExpiredMessages()
 
 void MailSystem::SaveMessageToSQL(MailMessage* message)
 {
-    stringstream ss;
+    std::stringstream ss;
 
     ss << "DELETE FROM mailbox WHERE message_id = ";
     ss << message->message_id;
@@ -85,7 +85,7 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
 
     ss.rdbuf()->str("");
 
-    vector< uint32 >::iterator itr;
+    std::vector< uint32 >::iterator itr;
     ss << "INSERT INTO mailbox VALUES("
         << message->message_id << ","
         << message->message_type << ","
@@ -118,8 +118,8 @@ void MailSystem::RemoveMessageIfDeleted(uint32 message_id, Player* plr)
         plr->m_mailBox.DeleteMessage(message_id, true);   // wipe the message
 }
 
-void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, string subject, string body,
-                                      uint32 money, uint32 cod, vector<uint64> &item_guids, uint32 stationery, MailCheckMask checked, uint32 deliverdelay)
+void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body,
+                                      uint32 money, uint32 cod, std::vector<uint64> &item_guids, uint32 stationery, MailCheckMask checked, uint32 deliverdelay)
 {
     // This is for sending automated messages, for example from an auction house.
     MailMessage msg;
@@ -130,7 +130,7 @@ void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receive
     msg.body = body;
     msg.money = money;
     msg.cod = cod;
-    for (vector<uint64>::iterator itr = item_guids.begin(); itr != item_guids.end(); ++itr)
+    for (std::vector<uint64>::iterator itr = item_guids.begin(); itr != item_guids.end(); ++itr)
         msg.items.push_back(Arcemu::Util::GUID_LOPART(*itr));
 
     msg.stationery = stationery;
@@ -150,10 +150,10 @@ void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receive
 }
 
 //overload to keep backward compatibility (passing just 1 item guid instead of a vector)
-void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, string subject, string body, uint32 money,
+void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
                                       uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked, uint32 deliverdelay)
 {
-    vector<uint64> item_guids;
+    std::vector<uint64> item_guids;
     if (item_guid != 0)
         item_guids.push_back(item_guid);
     SendAutomatedMessage(type, sender, receiver, subject, body, money, cod, item_guids, stationery, checked, deliverdelay);

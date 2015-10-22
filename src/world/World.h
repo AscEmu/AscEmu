@@ -22,6 +22,16 @@
 #ifndef __WORLD_H
 #define __WORLD_H
 
+#include "EventableObject.h"
+#include "IUpdatable.h"
+#include "Definitions.h"
+#include "DBC/DBCStores.h"
+#include "AreaTrigger.h"
+#include "WorldSession.h"
+#include <set>
+#include <string>
+#include <vector>
+
 #define IS_INSTANCE(a) ((a > 1) && (a != 530) && (a != 571))
 
 class Object;
@@ -35,6 +45,7 @@ class Player;
 class EventableObjectHolder;
 class MapMgr;
 class Battleground;
+struct DatabaseConnection;
 
 enum Rates
 {
@@ -200,7 +211,6 @@ enum REALM_TYPE
     REALM_PVE = 0,
     REALM_PVP = 1,
 };
-struct AreaTable;
 
 class BasicTaskExecutor : public ThreadBase
 {
@@ -237,10 +247,10 @@ struct CharacterLoaderThread : public ThreadBase
 
 class TaskList
 {
-        set<Task*> tasks;
+        std::set<Task*> tasks;
         Mutex queueLock;
     public:
-        TaskList() : thread_count(0) {};
+        TaskList() : thread_count(0), running(false) {};
         Task* GetTask();
         void AddTask(Task* task);
         void RemoveTask(Task* task)
@@ -297,7 +307,7 @@ class WorldSocket;
 
 // Slow for remove in middle, oh well, wont get done much.
 typedef std::list<WorldSocket*> QueueSet;
-typedef set<WorldSession*> SessionSet;
+typedef std::set<WorldSession*> SessionSet;
 
 class SERVER_DECL World : public Singleton<World>, public EventableObject, public Arcemu::IUpdatable
 {
@@ -306,18 +316,18 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 AlliancePlayers;
 
     public:
-        ARCEMU_INLINE uint32 getHordePlayerCount() { return HordePlayers; }
-        ARCEMU_INLINE uint32 getAlliancePlayerCount() { return AlliancePlayers; }
-        ARCEMU_INLINE uint32 getPlayerCount() { return (HordePlayers + AlliancePlayers); }
-        ARCEMU_INLINE void resetPlayerCount() { HordePlayers = AlliancePlayers = 0; }
-        ARCEMU_INLINE void incrementPlayerCount(uint32 faction)
+        inline uint32 getHordePlayerCount() { return HordePlayers; }
+        inline uint32 getAlliancePlayerCount() { return AlliancePlayers; }
+        inline uint32 getPlayerCount() { return (HordePlayers + AlliancePlayers); }
+        inline void resetPlayerCount() { HordePlayers = AlliancePlayers = 0; }
+        inline void incrementPlayerCount(uint32 faction)
         {
             if (faction == 1)
                 HordePlayers++;
             else
                 AlliancePlayers++;
         }
-        ARCEMU_INLINE void decrementPlayerCount(uint32 faction)
+        inline void decrementPlayerCount(uint32 faction)
         {
             if (faction == 1)
                 HordePlayers--;
@@ -367,25 +377,25 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             return ssize;
         }
         uint32 GetNonGmSessionCount();
-        ARCEMU_INLINE size_t GetQueueCount() { return mQueuedSessions.size(); }
+        inline size_t GetQueueCount() { return mQueuedSessions.size(); }
         void GetStats(uint32* GMCount, float* AverageLatency);
 
-        ARCEMU_INLINE uint32 GetPlayerLimit() const { return m_playerLimit; }
+        inline uint32 GetPlayerLimit() const { return m_playerLimit; }
         void SetPlayerLimit(uint32 limit) { m_playerLimit = limit; }
 
-        ARCEMU_INLINE bool getAllowMovement() const { return m_allowMovement; }
+        inline bool getAllowMovement() const { return m_allowMovement; }
         void SetAllowMovement(bool allow) { m_allowMovement = allow; }
-        ARCEMU_INLINE bool getGMTicketStatus() { return m_gmTicketSystem; };
+        inline bool getGMTicketStatus() { return m_gmTicketSystem; };
         bool toggleGMTicketStatus()
         {
             m_gmTicketSystem = !m_gmTicketSystem;
             return m_gmTicketSystem;
         };
 
-        ARCEMU_INLINE std::string getGmClientChannel() { return GmClientChannel; }
+        inline std::string getGmClientChannel() { return GmClientChannel; }
 
         void SetMotd(const char* motd) { m_motd = motd; }
-        ARCEMU_INLINE const char* GetMotd() const { return m_motd.c_str(); }
+        inline const char* GetMotd() const { return m_motd.c_str(); }
 
         bool SetInitialWorldSettings();
 
@@ -420,14 +430,14 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void SendZoneUnderAttackMsg(uint32 areaid, uint8 team);
 
-        ARCEMU_INLINE void SetStartTime(uint32 val) { m_StartTime = val; }
-        ARCEMU_INLINE uint32 GetUptime(void) { return (uint32)UNIXTIME - m_StartTime; }
-        ARCEMU_INLINE uint32 GetStartTime(void) { return m_StartTime; }
+        inline void SetStartTime(uint32 val) { m_StartTime = val; }
+        inline uint32 GetUptime(void) { return (uint32)UNIXTIME - m_StartTime; }
+        inline uint32 GetStartTime(void) { return m_StartTime; }
         std::string GetUptimeString();
         // cebernic: textfilter,no fast,but works:D ...
-        ARCEMU_INLINE std::string SessionLocalizedTextFilter(WorldSession* _session, const char* text)
+        inline std::string SessionLocalizedTextFilter(WorldSession* _session, const char* text)
         {
-            std::string opstr = string(text);
+            std::string opstr = std::string(text);
             std::string::iterator t = opstr.begin();
             std::string temp;
             int found = 0;
@@ -467,22 +477,22 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void UpdateSessions(uint32 diff);
 
-        ARCEMU_INLINE void setRate(int index, float value)
+        inline void setRate(int index, float value)
         {
             regen_values[index] = value;
         }
 
-        ARCEMU_INLINE float getRate(int index)
+        inline float getRate(int index)
         {
             return regen_values[index];
         }
 
-        ARCEMU_INLINE uint32 getIntRate(int index)
+        inline uint32 getIntRate(int index)
         {
             return int_rates[index];
         }
 
-        ARCEMU_INLINE void setIntRate(int index, uint32 value)
+        inline void setIntRate(int index, uint32 value)
         {
             int_rates[index] = value;
         }
@@ -497,14 +507,14 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         typedef std::map< uint32, uint32> SpellPricesMap;
         SpellPricesMap mPrices;
 
-        ARCEMU_INLINE uint32 GetTimeOut() {return TimeOut;}
+        inline uint32 GetTimeOut() {return TimeOut;}
 
         struct NameGenData
         {
-            string name;
+            std::string name;
             uint32 type;
         };
-        vector<NameGenData> _namegendata[3];
+        std::vector<NameGenData> _namegendata[3];
         void LoadNameGenData();
 
         void LoadWMOAreaData()
@@ -529,9 +539,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         std::string GenerateName(uint32 type = 0);
 
-        std::map<uint32, AreaTable*> mAreaIDToTable;
-        std::map<uint32, AreaTable*> mZoneIDToTable;
-
         uint32 AddQueuedSocket(WorldSocket* Socket);
         void RemoveQueuedSocket(WorldSocket* Socket);
         uint32 GetQueuePos(WorldSocket* Socket);
@@ -544,8 +551,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void SaveAllPlayers();
 
-        string MapPath;
-        string vMapPath;
+        std::string MapPath;
+        std::string vMapPath;
         bool UnloadMapFiles;
         bool BreathingEnabled;
         bool SpeedhackProtection;
@@ -619,10 +626,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         int announce_gmtagcolor;
         int announce_namecolor;
         int announce_msgcolor;
-        string ann_namecolor;
-        string ann_gmtagcolor;
-        string ann_tagcolor;
-        string ann_msgcolor;
+        std::string ann_namecolor;
+        std::string ann_gmtagcolor;
+        std::string ann_tagcolor;
+        std::string ann_msgcolor;
         void AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, int msgcolor);
 
         bool antihack_teleport;
@@ -650,6 +657,12 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             uint32 SOTA_MAX;
             uint32 IOC_MIN;
             uint32 IOC_MAX;
+            uint32 RBG_FIRST_WIN_HONOR;
+            uint32 RBG_FIRST_WIN_ARENA;
+            uint32 RBG_WIN_HONOR;
+            uint32 RBG_WIN_ARENA;
+            uint32 RBG_LOSE_HONOR;
+            uint32 RBG_LOSE_ARENA;
         }bgsettings;
 
         struct ArenaSettings{
@@ -731,7 +744,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::string GmClientChannel;
         bool m_reqGmForCommands;
         bool m_lfgForNonLfg;
-        list<SpellEntry*> dummyspells;
+        std::list<SpellEntry*> dummyspells;
         uint32 m_levelCap;
         uint32 m_genLevelCap;
         bool m_limitedNames;

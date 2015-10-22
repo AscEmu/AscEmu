@@ -38,7 +38,7 @@ class HomewardBound : public QuestScript
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Please help me, you gotta protect me and stuff, I can't fight on my own!");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
             sEAS.WaypointCreate(creat, -5005.66f, -882.705f, -6.05186f, 3.098398f, 0, 256, 9900);
@@ -123,6 +123,7 @@ class Paoka_Swiftmountain : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(Paoka_Swiftmountain);
         Paoka_Swiftmountain(Creature* pCreature) : CreatureAIScript(pCreature) {}
 
+        // makes no sense... why do we check on wp 72 if player has this quest.... too late?
         void OnReachWP(uint32 iWaypointId, bool bForwards)
         {
             if(iWaypointId == 72)
@@ -134,8 +135,14 @@ class Paoka_Swiftmountain : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                if(plr->HasQuest(4770))
-                    plr->GetQuestLogForEntry(4770)->SendQuestComplete();
+
+                if (plr->HasQuest(4770))
+                {
+                    auto quest_entry = plr->GetQuestLogForEntry(4770);
+                    if (quest_entry == nullptr)
+                        return;
+                    quest_entry->SendQuestComplete();
+                }
             }
         }
 };
@@ -154,7 +161,7 @@ class RumorsforKravel : public QuestScript
             if(creat == NULL)
                 return;
 
-            string msg = "Hahah! ";
+            std::string msg = "Hahah! ";
             msg += mTarget->GetName();
             msg += ", you make quite a partner!";
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str());

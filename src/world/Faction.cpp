@@ -47,9 +47,9 @@ bool isHostile(Object* objA, Object* objB)
     if ((objA->m_phase & objB->m_phase) == 0)     //What you can't see, can't be hostile!
         return false;
 
-    if (objA->IsPlayer() && objA->HasFlag(PLAYER_FLAGS, 0x100) && objB->IsCreature() && TO< Unit* >(objB)->GetAIInterface()->m_isNeutralGuard)
+    if (objA->IsPlayer() && objA->HasFlag(PLAYER_FLAGS, 0x100) && objB->IsCreature() && static_cast< Unit* >(objB)->GetAIInterface()->m_isNeutralGuard)
         return true;
-    if (objB->IsPlayer() && objB->HasFlag(PLAYER_FLAGS, 0x100) && objA->IsCreature() && TO< Unit* >(objA)->GetAIInterface()->m_isNeutralGuard)
+    if (objB->IsPlayer() && objB->HasFlag(PLAYER_FLAGS, 0x100) && objA->IsCreature() && static_cast< Unit* >(objA)->GetAIInterface()->m_isNeutralGuard)
         return true;
 
     if (objB->IsUnit() && objB->HasFlag(UNIT_FIELD_FLAGS, 2 | 128 | 256 | 65536))
@@ -86,24 +86,24 @@ bool isHostile(Object* objA, Object* objB)
     // Reputation System Checks
     if (objA->IsPlayer() && !objB->IsPlayer())
         if (objB->m_factionDBC->RepListId >= 0)
-            hostile = TO< Player* >(objA)->IsHostileBasedOnReputation(objB->m_factionDBC);
+            hostile = static_cast< Player* >(objA)->IsHostileBasedOnReputation(objB->m_factionDBC);
 
     if (objB->IsPlayer() && !objA->IsPlayer())
         if (objA->m_factionDBC->RepListId >= 0)
-            hostile = TO< Player* >(objB)->IsHostileBasedOnReputation(objA->m_factionDBC);
+            hostile = static_cast< Player* >(objB)->IsHostileBasedOnReputation(objA->m_factionDBC);
 
     // PvP Flag System Checks
     // We check this after the normal isHostile test, that way if we're
     // on the opposite team we'll already know :p
     if ((objA->GetPlayerOwner() != NULL) && (objB->GetPlayerOwner() != NULL))
     {
-        Player* a = TO< Player* >(objA->GetPlayerOwner());
-        Player* b = TO< Player* >(objB->GetPlayerOwner());
+        Player* a = static_cast< Player* >(objA->GetPlayerOwner());
+        Player* b = static_cast< Player* >(objB->GetPlayerOwner());
 
-        AreaTable* atA = dbcArea.LookupEntry(a->GetAreaID());
-        AreaTable* atB = dbcArea.LookupEntry(b->GetAreaID());
+        auto atA = a->GetArea();
+        auto atB = b->GetArea();
 
-        if (((atA && atA->AreaFlags & 0x800) != 0) || ((atB && atB->AreaFlags & 0x800) != 0))
+        if (((atA && atA->flags & 0x800) != 0) || ((atB && atB->flags & 0x800) != 0))
             return false;
 
         if (hostile)
@@ -151,14 +151,14 @@ bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
         /// we cannot attack shealthed units. Maybe checked in other places too ?
         /// !! warning, this presumes that objA is attacking ObjB
         /// Capt: Added the possibility to disregard this (regarding the spell class)
-        if (TO< Unit* >(objB)->IsStealth() && CheckStealth)
+        if (static_cast< Unit* >(objB)->IsStealth() && CheckStealth)
             return false;
     }
 
     if ((objA->GetPlayerOwner() != NULL) && (objB->GetPlayerOwner() != NULL))
     {
-        Player* a = TO< Player* >(objA->GetPlayerOwner());
-        Player* b = TO< Player* >(objB->GetPlayerOwner());
+        Player* a = static_cast< Player* >(objA->GetPlayerOwner());
+        Player* b = static_cast< Player* >(objB->GetPlayerOwner());
 
         if ((a->DuelingWith == b) && (a->GetDuelState() == DUEL_STATE_STARTED))
             return true;

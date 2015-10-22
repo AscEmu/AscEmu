@@ -64,6 +64,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupTheUnderbog(mgr);
     SetupUldaman(mgr);
     SetupUtgardeKeep(mgr);
+    SetupUtgardePinnacle(mgr);
     SetupTheStockade(mgr);
     SetupTheVioletHold(mgr);
     SetupWailingCaverns(mgr);

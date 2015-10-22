@@ -24,7 +24,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 {
     uint8 i = 0;
     uint32 j;
-    vector<uint32>::iterator itr;
+    std::vector<uint32>::iterator itr;
     Item* pItem;
 
     // add stuff
@@ -117,9 +117,9 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     uint8 itemslot;
     uint8 i;
     uint64 itemguid;
-    vector< Item* > items;
-    vector< Item* >::iterator itr;
-    string recepient;
+    std::vector< Item* > items;
+    std::vector< Item* >::iterator itr;
+    std::string recepient;
     Item* pItem;
     //uint32 err = MAIL_OK;
 
@@ -127,7 +127,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     recv_data >> msg.subject >> msg.body >> msg.stationery;
     recv_data >> unk2 >> itemcount;
 
-    if (itemcount > MAIL_MAX_ITEM_SLOT || msg.body.find("%") != string::npos || msg.subject.find("%") != string::npos)
+    if (itemcount > MAIL_MAX_ITEM_SLOT || msg.body.find("%") != std::string::npos || msg.subject.find("%") != std::string::npos)
     {
         SendMailError(MAIL_ERR_INTERNAL_ERROR);
         return;
@@ -209,20 +209,10 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     if (msg.money > 0)
         cost += msg.money;
 
-    if (cost < 0)
-    {
-        SendMailError(MAIL_ERR_INTERNAL_ERROR);
-        return;
-    }
 
     if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_POSTAGE_COSTS) && !(GetPermissionCount() && sMailSystem.MailOption(MAIL_FLAG_NO_COST_FOR_GM)))
     {
         cost += 30;
-        if (cost < 30)  //Overflow prevention for those silly WPE hoez.
-        {
-            SendMailError(MAIL_ERR_INTERNAL_ERROR);
-            return;
-        }
     }
 
     // check that we have enough in our backpack
@@ -343,7 +333,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     uint64 mailbox;
     uint32 message_id;
     uint32 lowguid;
-    vector< uint32 >::iterator itr;
+    std::vector< uint32 >::iterator itr;
 
     recv_data >> mailbox >> message_id >> lowguid;
 
@@ -436,7 +426,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     if (message->cod > 0)
     {
         _player->ModGold(-(int32)message->cod);
-        string subject = "COD Payment: ";
+        std::string subject = "COD Payment: ";
         subject += message->subject;
         sMailSystem.SendAutomatedMessage(NORMAL, message->player_guid, message->sender_guid, subject, "", message->cod, 0, 0, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_COD_PAYMENT);
 

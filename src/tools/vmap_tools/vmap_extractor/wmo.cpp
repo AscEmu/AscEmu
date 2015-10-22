@@ -28,7 +28,6 @@
 #undef max
 #include "mpq_libmpq04.h"
 
-using namespace std;
 extern uint16 *LiqType;
 
 WMORoot::WMORoot(std::string &filename) : filename(filename)

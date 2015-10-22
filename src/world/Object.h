@@ -21,6 +21,24 @@
 #ifndef _OBJECT_H
 #define _OBJECT_H
 
+#include "UpdateFields.h"
+#include "CommonTypes.hpp"
+
+class EventableObject;
+#include "EventableObject.h"
+
+#include <set>
+#include <map>
+
+#include "WoWGuid.h"
+#include "../shared/LocationVector.h"
+#include "DBC/DBCStructures.hpp"
+#include "../shared/StackBuffer.h"
+
+struct SpellEntry;
+struct FactionTemplateDBC;
+struct FactionDBC;
+
 class Unit;
 class Group;
 
@@ -157,7 +175,8 @@ class Unit;
 class Group;
 class Pet;
 class Spell;
-
+class UpdateMask;
+#include "UpdateMask.h"
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Object
 /// Base object for every item, unit, player, corpse, container, etc
@@ -166,7 +185,7 @@ class SERVER_DECL Object : public EventableObject
 {
 	public:
 		typedef std::set<Object*> InRangeSet;
-		typedef std::map<string, void*> ExtensionSet;
+		typedef std::map<std::string, void*> ExtensionSet;
 
 		virtual ~Object();
 
@@ -287,6 +306,8 @@ class SERVER_DECL Object : public EventableObject
 		const float & GetSpawnY() const { return m_spawnLocation.y; }
 		const float & GetSpawnZ() const { return m_spawnLocation.z; }
 		const float & GetSpawnO() const { return m_spawnLocation.o; }
+
+        ::DBC::Structures::AreaTableEntry const* GetArea();
 
 		const LocationVector & GetPosition() { return m_position; }
 		LocationVector & GetPositionNC() { return m_position; }
@@ -639,9 +660,9 @@ class SERVER_DECL Object : public EventableObject
 
 		/// object faction
 		void _setFaction();
-		uint32 _getFaction() { return m_faction->Faction; }
+    uint32 _getFaction();
 
-		FactionTemplateDBC* m_faction;
+    FactionTemplateDBC* m_faction;
 		FactionDBC* m_factionDBC;
 
 		void SetInstanceID(int32 instance) { m_instanceId = instance; }
@@ -741,17 +762,17 @@ class SERVER_DECL Object : public EventableObject
 		ExtensionSet* m_extensions;
 
 		// so we can set from scripts. :)
-		void _SetExtension(const string & name, void* ptr);
+		void _SetExtension(const std::string & name, void* ptr);
 	public:
 
 		template<typename T>
-		void SetExtension(const string & name, T ptr)
+		void SetExtension(const std::string & name, T ptr)
 		{
 			_SetExtension(name, ((void*)ptr));
 		}
 
 		template<typename T>
-		T GetExtension(const string & name)
+		T GetExtension(const std::string & name)
 		{
 			if (m_extensions == NULL)
 				return ((T)NULL);

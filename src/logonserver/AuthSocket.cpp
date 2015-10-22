@@ -49,6 +49,16 @@ AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
     _authSocketLock.Acquire();
     _authSockets.insert(this);
     _authSocketLock.Release();
+    m_challenge.cmd = 0;
+    m_challenge.error = 0;
+    m_challenge.size = 0;
+    m_challenge.version1 = 0;
+    m_challenge.version2 = 0;
+    m_challenge.version3 = 0;
+    m_challenge.build = 0;
+    m_challenge.timezone_bias = 0;
+    m_challenge.ip = 0;
+    m_challenge.I_len = 0;
 }
 
 AuthSocket::~AuthSocket()
@@ -105,23 +115,26 @@ void AuthSocket::HandleChallenge()
 
     LOG_DEBUG("[AuthChallenge] got a complete packet.");
 
-    //memcpy(&m_challenge, ReceiveBuffer, full_size + 4);
-    //RemoveReadBufferBytes(full_size + 4, true);
     readBuffer.Read(&m_challenge, full_size + 4);
 
     // Check client build.
+    uint16 client_build = m_challenge.build;
 
-    uint16 build = m_challenge.build;
-
-    // Check client build.
-    if(build > LogonServer::getSingleton().max_build)
+    switch (client_build)
     {
-        // wtf?
-        LOG_DETAIL("[AuthChallenge] Client %s has wrong version. More up to date than server. Server: %u, Client: %u", GetRemoteIP().c_str(), LogonServer::getSingleton().max_build, m_challenge.build);
-        SendChallengeError(CE_WRONG_BUILD_NUMBER);
-        return;
+        case 8606:
+        case 12340:
+        {
+            Log.Debug("HandleChallenge", "Client with valid build %u connected", client_build);
+        }break;
+        default:
+        {
+            Log.Debug("HandleChallenge", "Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), client_build);
+            SendChallengeError(CE_WRONG_BUILD_NUMBER);
+        }break;
     }
 
+    /*Patchmgr... Do not delete this
     if(build < LogonServer::getSingleton().min_build)
     {
         // can we patch?
@@ -156,7 +169,7 @@ void AuthSocket::HandleChallenge()
         };
         Send(response, 119);
         return;
-    }
+    }*/
 
     // Check for a possible IP ban on this client.
     BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
@@ -183,9 +196,9 @@ void AuthSocket::HandleChallenge()
     m_challenge.I[m_challenge.I_len] = 0;
 
     // Clear the shitty hash (for server)
-    string AccountName = (char*)&m_challenge.I;
-    string::size_type i = AccountName.rfind("#");
-    if(i != string::npos)
+    std::string AccountName = (char*)&m_challenge.I;
+    std::string::size_type i = AccountName.rfind("#");
+    if(i != std::string::npos)
     {
         LOG_ERROR("# ACCOUNTNAME!");
         return;
@@ -625,7 +638,7 @@ void AuthSocket::HandleReconnectChallenge()
         }*/
 
     // Look up the account information
-    string AccountName = (char*)&m_challenge.I;
+    std::string AccountName = (char*)&m_challenge.I;
     LOG_DEBUG("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = AccountMgr::getSingleton().GetAccount(AccountName);

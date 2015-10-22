@@ -20,23 +20,27 @@
 #ifndef _FIELD_H
 #define _FIELD_H
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <Common.h>
+#include "CommonTypes.hpp"
 
 class Field
 {
     public:
 
-        ARCEMU_INLINE void SetValue(char* value) { mValue = value; }
+        inline void SetValue(char* value) { mValue = value; }
 
-        ARCEMU_INLINE const char* GetString() { return mValue; }
-        ARCEMU_INLINE float GetFloat() { return mValue ? static_cast<float>(atof(mValue)) : 0; }
-        ARCEMU_INLINE bool GetBool() { return mValue ? atoi(mValue) > 0 : false; }
+        inline const char* GetString() { return mValue; }
+        inline float GetFloat() { return mValue ? static_cast<float>(atof(mValue)) : 0; }
+        inline bool GetBool() { return mValue ? atoi(mValue) > 0 : false; }
 
-        ARCEMU_INLINE uint8 GetUInt8() { return mValue ? static_cast<uint8>(atol(mValue)) : 0; }
-        ARCEMU_INLINE int8 GetInt8() { return mValue ? static_cast<int8>(atol(mValue)) : 0; }
-        ARCEMU_INLINE uint16 GetUInt16() { return mValue ? static_cast<uint16>(atol(mValue)) : 0; }
-        ARCEMU_INLINE int16 GetInt16() { return mValue ? static_cast<int16>(atol(mValue)) : 0; }
-        ARCEMU_INLINE uint32 GetUInt32() { return mValue ? static_cast<uint32>(atol(mValue)) : 0; }
-        ARCEMU_INLINE int32 GetInt32() { return mValue ? static_cast<int32>(atol(mValue)) : 0; }
+        inline uint8 GetUInt8() { return mValue ? static_cast<uint8>(atol(mValue)) : 0; }
+        inline int8 GetInt8() { return mValue ? static_cast<int8>(atol(mValue)) : 0; }
+        inline uint16 GetUInt16() { return mValue ? static_cast<uint16>(atol(mValue)) : 0; }
+        inline int16 GetInt16() { return mValue ? static_cast<int16>(atol(mValue)) : 0; }
+        inline uint32 GetUInt32() { return mValue ? static_cast<uint32>(atol(mValue)) : 0; }
+        inline int32 GetInt32() { return mValue ? static_cast<int32>(atol(mValue)) : 0; }
 
         uint64 GetUInt64()
         {

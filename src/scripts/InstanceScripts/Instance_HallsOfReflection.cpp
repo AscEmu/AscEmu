@@ -166,6 +166,9 @@ class JainaAI : public MoonScriptCreatureAI
         void AIUpdate()
         {
             Creature* Lich = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(5355.244f, 2052.96f, 707.695f, CN_LICH);
+            if (!Lich)
+                return;
+
             Lich->SetDisplayId(30721);
             Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f, 3.93f);
             RemoveAIUpdateEvent();
@@ -186,9 +189,9 @@ class Jaina_Gossip : public Arcemu::Gossip::Script
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
             if (Id == 1)
-                if (JainaAI* pJaina = TO< JainaAI* >(TO_CREATURE(pObject)->GetScript()))
+                if (JainaAI* pJaina = static_cast< JainaAI* >(static_cast<Creature*>(pObject)->GetScript()))
                     pJaina->StartInstance();
-            pObject->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            pObject->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
             plr->Gossip_Complete();
         }
 };
@@ -202,6 +205,8 @@ class Marwyn : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(Marwyn, MoonScriptBossAI);
         Marwyn(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
+            mInstance = GetInstanceScript();
+
             if (IsHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_OBLITERATE, Target_Current, 45, 0, 30); // Timer may be off on this.
@@ -239,7 +244,7 @@ class Marwyn : public MoonScriptBossAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(5254);     // I saw the same look in his eyes when he died. Terenas could hardly believe it.
@@ -277,6 +282,8 @@ class Falric : public MoonScriptBossAI
         MOONSCRIPT_FACTORY_FUNCTION(Falric, MoonScriptBossAI);
         Falric(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
+            mInstance = GetInstanceScript();
+
             if (IsHeroic() == false) // NORMAL MODE
             {
                 AddSpell(N_SPELL_QSTRIKE, Target_Current, 45, 0, 23);
@@ -312,7 +319,7 @@ class Falric : public MoonScriptBossAI
 
         void OnTargetDied(Unit* pTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(4086);     // The children of Stratholme fought with more ferocity!

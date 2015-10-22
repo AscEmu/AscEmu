@@ -58,7 +58,7 @@ class AncientMarks : public GossipScript
             if(IntId == 1)
             {
                 QuestLogEntry* en = plr->GetQuestLogForEntry(9785);
-                Creature* casta = (TO_CREATURE(pObject));
+                Creature* casta = (static_cast<Creature*>(pObject));
                 switch(pObject->GetEntry())
                 {
                     case 17900:
@@ -116,7 +116,7 @@ class ElderKuruti : public GossipScript
             if(!plr->GetItemInterface()->GetItemCount(24573, true))
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9226, plr);
-                Menu->AddItem(0, "Offer treat", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(502), 1);     // Offer treat
                 Menu->SendTo(plr);
             }
         }
@@ -128,22 +128,19 @@ class ElderKuruti : public GossipScript
             {
                 case 1:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9227, plr);
-                    Menu->AddItem(0, "Im a messenger for Draenei", 2);
+                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(503), 2);     // I'm a messenger for Draenei
                     Menu->SendTo(plr);
                     break;
                 case 2:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9229, plr);
-                    Menu->AddItem(0, "Get message", 3);
+                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(504), 3);     // Get message
                     Menu->SendTo(plr);
                     break;
                 case 3:
                     if(!plr->GetItemInterface()->GetItemCount(24573, true))
                     {
                         sEAS.AddItem(24573, plr);
-                        if(plr->GetItemInterface()->GetItemCount(24573, true))
-                            SendQuickMenu(9231);
                     }
-                    else
                         SendQuickMenu(9231);
                     break;
             }

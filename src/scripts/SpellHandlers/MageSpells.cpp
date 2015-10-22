@@ -38,7 +38,9 @@ bool HotStreak(uint32 i, Aura* pAura, bool apply)
 {
     if(i == 0)
     {
-        Unit* caster = pAura->GetUnitCaster();
+        auto caster = pAura->GetUnitCaster();
+        if (caster == nullptr)
+            return true;
 
         if(apply)
         {
@@ -72,7 +74,7 @@ bool TormentOfTheWeak(uint32 i, Aura* a, bool apply)
 
     if(m_target->IsPlayer())
     {
-        TO< Player* >(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32)(((float) a->GetModAmount(i)) / 100);
+        static_cast< Player* >(m_target)->m_IncreaseDmgSnaredSlowed += ((apply) ? 1 : -1) * (uint32)(((float) a->GetModAmount(i)) / 100);
     }
 
     return true;
@@ -114,7 +116,7 @@ bool MagicAbsorbtion(uint32 i, Aura* a, bool apply)
 
     if(m_target->IsPlayer())
     {
-        Player* p_target = TO_PLAYER(m_target);
+        Player* p_target = static_cast<Player*>(m_target);
 
         if(apply)
             p_target->m_RegenManaOnSpellResist += (a->GetModAmount(i) / 100);

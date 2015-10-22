@@ -57,7 +57,6 @@ enum MsTimeVariables
 #else
 #define ARCEMU_FORCEINLINE inline
 #endif
-#define ARCEMU_INLINE inline
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
@@ -97,20 +96,7 @@ enum MsTimeVariables
 #define FD_SETSIZE 2048
 #endif
 
-#if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <signal.h>
-#include <netdb.h>
-#endif
+#include "Network/NetworkIncludes.hpp"
 
 // current platform and compiler
 #define PLATFORM_WIN32 0
@@ -220,17 +206,7 @@ enum MsTimeVariables
 #include <cstdlib>
 //#include <iostream>
 
-#if defined ( __GNUC__ )
-#    define LIKELY( _x ) \
-        __builtin_expect( ( _x ), 1 )
-#    define UNLIKELY( _x ) \
-         __builtin_expect( ( _x ), 0 )
-#else
-#    define LIKELY( _x ) \
-        _x
-#    define UNLIKELY( _x ) \
-        _x
-#endif
+#include "CommonHelpers.hpp"
 
 #if defined (__GNUC__)
 #  define GCC_VERSION (__GNUC__ * 10000 \
@@ -342,51 +318,7 @@ using std::unordered_set;/
 using __gnu_cxx::hash_map;
 using __gnu_cxx::hash_set;*/
 
-// Use correct types for x64 platforms, too
-#if COMPILER != COMPILER_GNU
-typedef signed __int64 int64;
-typedef signed __int32 int32;
-typedef signed __int16 int16;
-typedef signed __int8 int8;
-
-typedef unsigned __int64 uint64;
-typedef unsigned __int32 uint32;
-typedef unsigned __int16 uint16;
-typedef unsigned __int8 uint8;
-#else
-
-typedef int64_t int64;
-typedef int32_t int32;
-typedef int16_t int16;
-typedef int8_t int8;
-typedef uint64_t uint64;
-typedef uint32_t uint32;
-typedef uint16_t uint16;
-typedef uint8_t uint8;
-//typedef uint32_t DWORD;
-
-#endif
-
-
-// Scripting system exports/imports
-#ifdef WIN32
-#ifndef SCRIPTLIB
-#define SERVER_DECL __declspec(dllexport)
-#define SCRIPT_DECL __declspec(dllimport)
-#else
-#define SERVER_DECL __declspec(dllimport)
-#define SCRIPT_DECL __declspec(dllexport)
-#endif
-#define DECL_LOCAL
-#elif defined __GNUC__ && __GNUC__ >= 4
-#define SERVER_DECL __attribute__((visibility ("default")))
-#define SCRIPT_DECL __attribute__((visibility ("default")))
-#define DECL_LOCAL __attribute__((visibility ("hidden")))
-#else
-#define SERVER_DECL
-#define SCRIPT_DECL
-#define DECL_LOCAL
-#endif
+#include "CommonTypes.hpp"
 
 // Include all threading files
 #include <cassert>
@@ -492,7 +424,7 @@ static inline int long2int32(const double value)
 #include <sys/timeb.h>
 #endif
 
-ARCEMU_INLINE uint32 now()
+inline uint32 now()
 {
 #ifdef WIN32
     return GetTickCount();
@@ -513,7 +445,19 @@ struct WayPoint
 {
     WayPoint()
     {
-        o = 0.0f;
+        id = 0;
+        x = 0;
+        y = 0;
+        z = 0;
+        o = 0;
+        waittime = 0;
+        flags = 0;
+        forwardemoteoneshot = false;
+        forwardemoteid = 0;
+        backwardemoteoneshot = false;
+        backwardemoteid = 0;
+        forwardskinid = 0;
+        backwardskinid = 0;
     }
     uint32 id;
     float x;
@@ -542,7 +486,7 @@ struct spawn_timed_emotes
 };
 typedef std::list<spawn_timed_emotes*> TimedEmoteList;
 
-ARCEMU_INLINE void reverse_array(uint8* pointer, size_t count)
+inline void reverse_array(uint8* pointer, size_t count)
 {
     size_t x;
     uint8* temp = (uint8*)malloc(count);
@@ -560,13 +504,13 @@ std::string ConvertTimeStampToDataTime(uint32 timestamp);
 
 uint32 DecimalToMask(uint32 dec);
 
-ARCEMU_INLINE void arcemu_TOLOWER(std::string & str)
+inline void arcemu_TOLOWER(std::string & str)
 {
     for(size_t i = 0; i < str.length(); ++i)
         str[i] = (char)tolower(str[i]);
 }
 
-ARCEMU_INLINE void arcemu_TOUPPER(std::string & str)
+inline void arcemu_TOUPPER(std::string & str)
 {
     for(size_t i = 0; i < str.length(); ++i)
         str[i] = (char)toupper(str[i]);

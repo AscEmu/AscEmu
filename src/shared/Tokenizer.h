@@ -22,32 +22,31 @@
 #pragma once
 
 #include "Common.h"
-using namespace std;
 namespace Arcemu
 {
     namespace Utility
     {
-        class IsDelimiter : public unary_function<char, bool>
+        class IsDelimiter : public std::unary_function<char, bool>
         {
             public:
                 //Constructor specifying the separators
-                IsDelimiter(string const & rostr) : m_ostr(rostr) {}
+                IsDelimiter(std::string const & rostr) : m_ostr(rostr) {}
                 bool operator()(char c) const
                 {
-                    return m_ostr.find(c) != string::npos;
+                    return m_ostr.find(c) != std::string::npos;
                 }
 
             private:
-                string m_ostr;
+            std::string m_ostr;
         };
 
         class CTokenizer
         {
                 IsDelimiter roPred;
-                vector< string> tokens_;
-                void Tokenize(string const & rostr)
+            std::vector<std::string> tokens_;
+                void Tokenize(std::string const & rostr)
                 {
-                    string::const_iterator it, itTokenEnd;
+                    std::string::const_iterator it, itTokenEnd;
                     it = itTokenEnd = rostr.begin();
                     while(it != rostr.end())
                     {
@@ -59,13 +58,13 @@ namespace Arcemu
                         //Append token to result
 
                         if(it < itTokenEnd)
-                            tokens_.push_back(string(it, itTokenEnd));
+                            tokens_.push_back(std::string(it, itTokenEnd));
                         it = itTokenEnd;
                     }
                 }
             public:
-                typedef vector<string>::iterator iterator;
-                CTokenizer(string const & input, string const & delimiter) : roPred(delimiter) { Tokenize(input); }
+                typedef std::vector<std::string>::iterator iterator;
+                CTokenizer(std::string const & input, std::string const & delimiter) : roPred(delimiter) { Tokenize(input); }
                 iterator start() { return tokens_.begin(); }
                 iterator end() { return tokens_.end(); }
         };

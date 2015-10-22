@@ -109,10 +109,10 @@ typedef std::vector<TimerPair> TimerArray;
 
 typedef HM_NAMESPACE::hash_map<uint32, GameObject*> GameObjectMap;
 
-typedef set<Unit*> UnitSet;
-typedef set<Player*> PlayerSet;
-typedef set<Creature*> CreatureSet;
-typedef set<GameObject*> GameObjectSet;
+typedef std::set<Unit*> UnitSet;
+typedef std::set<Player*> PlayerSet;
+typedef std::set<Creature*> CreatureSet;
+typedef std::set<GameObject*> GameObjectSet;
 
 typedef std::map<uint32, uint32> WorldStateMap;
 
@@ -130,6 +130,7 @@ class MoonInstanceScript : public InstanceScript
         Creature* FindClosestCreatureOnMap(uint32 pEntry, float pX, float pY, float pZ);
         Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
         Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId);
+        Creature* PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction = 0);
         CreatureSet FindCreaturesOnMap(uint32 pEntry);
 
         // GameObject

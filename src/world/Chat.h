@@ -193,7 +193,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
         void Dealloc();
         void Load();
         void Override(const char* command, const char* level);
-        ARCEMU_INLINE ChatCommand* Get() { return _commandTable; }
+        inline ChatCommand* Get() { return _commandTable; }
 };
 
 class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
@@ -222,10 +222,19 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         bool ExecuteCommandInTable(ChatCommand* table, const char* text, WorldSession* m_session);
         bool ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd);
-        void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, string & lowercase_name, string & highlight, uint32 id);
+        void SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32 id);
         void SendItemLinkToPlayer(ItemPrototype* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language = LANG_UNIVERSAL);
 
         ChatCommand* getCommandTable();
+
+        // AccountCommands
+        bool HandleAccountCreate(const char* args, WorldSession* m_session);
+        bool HandleAccountChangePassword(const char* args, WorldSession* m_session);
+        bool HandleAccountBannedCommand(const char* args, WorldSession* m_session);
+        bool HandleAccountSetGMCommand(const char* args, WorldSession* m_session);
+        bool HandleAccountUnbanCommand(const char* args, WorldSession* m_session);
+        bool HandleAccountMuteCommand(const char* args, WorldSession* m_session);
+        bool HandleAccountUnmuteCommand(const char* args, WorldSession* m_session);
 
         // Level 0 commands
         bool HandleHelpCommand(const char* args, WorldSession* m_session);
@@ -410,8 +419,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandlePlaySoundCommand(const char* args, WorldSession* m_session);
         bool HandleSetBattlefieldStatusCommand(const char* args, WorldSession* m_session);
         bool HandleNpcReturnCommand(const char* args, WorldSession* m_session);
-        bool HandleAccountBannedCommand(const char* args, WorldSession* m_session);
-        bool HandleAccountLevelCommand(const char* args, WorldSession* m_session);
+        
         bool HandleResetTalentsCommand(const char* args, WorldSession* m_session);
         bool HandleResetSpellsCommand(const char* args, WorldSession* m_session);
         bool HandleNpcFollowCommand(const char* args, WorldSession* m_session);
@@ -544,7 +552,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Bans
         bool HandleIPBanCommand(const char* args, WorldSession* m_session);
         bool HandleIPUnBanCommand(const char* args, WorldSession* m_session);
-        bool HandleAccountUnbanCommand(const char* args, WorldSession* m_session);
 
         // Item removal
         bool HandleRemoveItemCommand(const char* args, WorldSession* m_session);
@@ -619,8 +626,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCollisionTestLOS(const char* args, WorldSession* m_session);
         bool HandleRenameAllCharacter(const char* args, WorldSession* m_session);
         bool HandleCollisionGetHeight(const char* args, WorldSession* m_session);
-        bool HandleAccountMuteCommand(const char* args, WorldSession* m_session);
-        bool HandleAccountUnmuteCommand(const char* args, WorldSession* m_session);
+        
         // For skill related GM commands
         SkillNameMgr* SkillNameManager;
 

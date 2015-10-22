@@ -94,7 +94,7 @@ void GameEventMgr::LoadFromDB()
             //if (gameEvent.isValid())
             //{
                 mGameEvents.insert(std::make_pair(dbResult.entry, new GameEvent(dbResult)));
-                Log.Success("GameEventMgr", "%s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
+                Log.Debug("GameEventMgr", "%s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
                 ++count;
             //}
             //else
@@ -181,6 +181,12 @@ void GameEventMgr::LoadFromDB()
                 dbResult.eventEntry = field[0].GetUInt32();
                 dbResult.id = field[1].GetUInt32();
                 dbResult.entry = field[2].GetUInt32();
+                auto creature_info = CreatureNameStorage.LookupEntry(dbResult.entry);
+                if (creature_info == nullptr)
+                {
+                    Log.Error("GameEventMgr", "Could not create CreatureSpawn for invalid entry %u (missing in table creature_names)", dbResult.entry);
+                    continue;
+                }
                 dbResult.map_id = field[3].GetUInt16();
                 dbResult.position_x = field[4].GetFloat();
                 dbResult.position_y = field[5].GetFloat();
@@ -252,6 +258,12 @@ void GameEventMgr::LoadFromDB()
                 dbResult.eventEntry = field[0].GetUInt32();
                 dbResult.id = field[1].GetUInt32();
                 dbResult.entry = field[2].GetUInt32();
+                auto gameobject_info = GameObjectNameStorage.LookupEntry(dbResult.entry);
+                if (gameobject_info == nullptr)
+                {
+                    Log.Error("GameEventMgr", "Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_names)", dbResult.entry);
+                    continue;
+                }
                 dbResult.map_id = field[3].GetUInt32();
                 dbResult.position_x = field[4].GetFloat();
                 dbResult.position_y = field[5].GetFloat();

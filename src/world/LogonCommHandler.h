@@ -20,12 +20,17 @@
 
 #ifndef _LOGONCOMMHANDLER_H
 #define _LOGONCOMMHANDLER_H
+#include "CommonTypes.hpp"
+#include "WorldSocket.h"
+#include <string>
+#include <map>
+#include <set>
 
 typedef struct
 {
     uint32 ID;
-    string Name;
-    string Address;
+    std::string Name;
+    std::string Address;
     uint32 Port;
     uint32 ServerID;
     uint32 RetryTime;
@@ -34,13 +39,14 @@ typedef struct
 
 typedef struct
 {
-    string Name;
-    string Address;
+    std::string Name;
+    std::string Address;
     uint32 flags;
     uint32 Icon;
     uint32 TimeZone;
     float Population;
     uint8 Lock;
+    uint32 GameBuild;
 } Realm;
 
 enum RealmType
@@ -55,16 +61,16 @@ enum RealmType
 class LogonCommHandler : public Singleton<LogonCommHandler>
 {
 #ifdef WIN32
-        typedef HM_NAMESPACE::hash_map<string, string> ForcedPermissionMap;
+    typedef HM_NAMESPACE::hash_map<std::string, std::string> ForcedPermissionMap;
 #else
-        typedef map<string, string> ForcedPermissionMap;
+    typedef std::map<std::string, std::string> ForcedPermissionMap;
 #endif
 
         ForcedPermissionMap forced_permissions;
-        map<LogonServer*, LogonCommClientSocket*> logons;
-        map<uint32, WorldSocket*> pending_logons;
-        set<Realm*> realms;
-        set<LogonServer*> servers;
+        std::map<LogonServer*, LogonCommClientSocket*> logons;
+        std::map<uint32, WorldSocket*> pending_logons;
+        std::set<Realm*> realms;
+        std::set<LogonServer*> servers;
         uint32 idhigh;
         uint32 next_request;
         Mutex mapLock;
@@ -81,11 +87,12 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         LogonCommHandler();
         ~LogonCommHandler();
 
-        LogonCommClientSocket* ConnectToLogon(string Address, uint32 Port);
+        LogonCommClientSocket* ConnectToLogon(std::string Address, uint32 Port);
         void UpdateAccountCount(uint32 account_id, uint8 add);
         void RequestAddition(LogonCommClientSocket* Socket);
         void CheckAllServers();
         void Startup();
+        void AddForcedPermission(std::string acct, std::string perm);
         void ConnectionDropped(uint32 ID);
         void AdditionAck(uint32 ID, uint32 ServID);
         void UpdateSockets();
@@ -98,13 +105,16 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         void Account_SetBanned(const char* account, uint32 banned, const char* reason);
         void Account_SetGM(const char* account, const char* flags);
         void Account_SetMute(const char* account, uint32 muted);
+        void Account_CheckExist(const char* account, const char* request_name, const char* additional);
         void IPBan_Add(const char* ip, uint32 duration, const char* reason);
         void IPBan_Remove(const char* ip);
+        void AccountChangePassword(const char* old_pw, const char* new_password, const char* account_name);
+        void AccountCreate(const char* name, const char* password, const char* account_name);
 
         void LoadRealmConfiguration();
-        void AddServer(string Name, string Address, uint32 Port);
+        void AddServer(std::string Name, std::string Address, uint32 Port);
 
-        ARCEMU_INLINE uint32 GetRealmType() { return _realmType; }
+        inline uint32 GetRealmType() { return _realmType; }
         void SetRealmType(uint32 type) { _realmType = type; }
         float GetServerPopulation() { return server_population; }
 
@@ -112,7 +122,7 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
         // Worldsocket stuff
         ///////
 
-        uint32 ClientConnected(string AccountName, WorldSocket* Socket);
+        uint32 ClientConnected(std::string AccountName, WorldSocket* Socket);
         void UnauthedSocketClose(uint32 id);
         void RemoveUnauthedSocket(uint32 id);
         WorldSocket* GetSocketByRequest(uint32 id)
@@ -120,16 +130,16 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
             //pendingLock.Acquire();
 
             WorldSocket* sock;
-            map<uint32, WorldSocket*>::iterator itr = pending_logons.find(id);
+            std::map<uint32, WorldSocket*>::iterator itr = pending_logons.find(id);
             sock = (itr == pending_logons.end()) ? 0 : itr->second;
 
             //pendingLock.Release();
             return sock;
         }
-        ARCEMU_INLINE Mutex & GetPendingLock() { return pendingLock; }
-        const string* GetForcedPermissions(string & username);
+        inline Mutex & GetPendingLock() { return pendingLock; }
+        const std::string* GetForcedPermissions(std::string & username);
 
-        void TestConsoleLogon(string & username, string & password, uint32 requestnum);
+        void TestConsoleLogon(std::string & username, std::string & password, uint32 requestnum);
 };
 
 #define sLogonCommHandler LogonCommHandler::getSingleton()

@@ -51,14 +51,14 @@ Standing Player::GetReputationRankFromStanding(int32 Standing_)
     return STANDING_HATED;
 }
 
-ARCEMU_INLINE bool CanToggleAtWar(uint8 flag) { return (flag & FACTION_FLAG_DISABLE_ATWAR) == 0; }
-ARCEMU_INLINE bool AtWar(uint8 flag) { return (flag & FACTION_FLAG_AT_WAR) != 0; }
-ARCEMU_INLINE bool ForcedInvisible(uint8 flag) { return (flag & FACTION_FLAG_FORCED_INVISIBLE) != 0; }
-ARCEMU_INLINE bool Visible(uint8 flag) { return (flag & FACTION_FLAG_VISIBLE) != 0; }
-ARCEMU_INLINE bool Hidden(uint8 flag) { return (flag & FACTION_FLAG_HIDDEN) != 0; }
-ARCEMU_INLINE bool Inactive(uint8 flag) { return (flag & FACTION_FLAG_INACTIVE) != 0; }
+inline bool CanToggleAtWar(uint8 flag) { return (flag & FACTION_FLAG_DISABLE_ATWAR) == 0; }
+inline bool AtWar(uint8 flag) { return (flag & FACTION_FLAG_AT_WAR) != 0; }
+inline bool ForcedInvisible(uint8 flag) { return (flag & FACTION_FLAG_FORCED_INVISIBLE) != 0; }
+inline bool Visible(uint8 flag) { return (flag & FACTION_FLAG_VISIBLE) != 0; }
+inline bool Hidden(uint8 flag) { return (flag & FACTION_FLAG_HIDDEN) != 0; }
+inline bool Inactive(uint8 flag) { return (flag & FACTION_FLAG_INACTIVE) != 0; }
 
-ARCEMU_INLINE bool SetFlagAtWar(uint8 & flag, bool set)
+inline bool SetFlagAtWar(uint8 & flag, bool set)
 {
     if (set && !AtWar(flag))
         flag |= FACTION_FLAG_AT_WAR;
@@ -70,7 +70,7 @@ ARCEMU_INLINE bool SetFlagAtWar(uint8 & flag, bool set)
     return true;
 }
 
-ARCEMU_INLINE bool SetFlagVisible(uint8 & flag, bool set)
+inline bool SetFlagVisible(uint8 & flag, bool set)
 {
     if (ForcedInvisible(flag) || Hidden(flag))
         return false;
@@ -84,7 +84,7 @@ ARCEMU_INLINE bool SetFlagVisible(uint8 & flag, bool set)
     return true;
 }
 
-ARCEMU_INLINE bool SetFlagInactive(uint8 & flag, bool set)
+inline bool SetFlagInactive(uint8 & flag, bool set)
 {
     if (set && !Inactive(flag))
         flag |= FACTION_FLAG_INACTIVE;
@@ -96,12 +96,12 @@ ARCEMU_INLINE bool SetFlagInactive(uint8 & flag, bool set)
     return true;
 }
 
-ARCEMU_INLINE bool RankChanged(int32 Standing, int32 Change)
+inline bool RankChanged(int32 Standing, int32 Change)
 {
     return (Player::GetReputationRankFromStanding(Standing) != Player::GetReputationRankFromStanding(Standing + Change));
 }
 
-ARCEMU_INLINE bool RankChangedFlat(int32 Standing, int32 NewStanding)
+inline bool RankChangedFlat(int32 Standing, int32 NewStanding)
 {
     return (Player::GetReputationRankFromStanding(Standing) != Player::GetReputationRankFromStanding(NewStanding));
 }
@@ -218,7 +218,7 @@ bool Player::IsHostileBasedOnReputation(FactionDBC* dbc)
         return false;
 
     // forced reactions take precedence
-    map<uint32, uint32>::iterator itr = m_forcedReactions.find(dbc->ID);
+    std::map<uint32, uint32>::iterator itr = m_forcedReactions.find(dbc->ID);
     if (itr != m_forcedReactions.end())
         return (itr->second <= STANDING_HOSTILE);
 
@@ -336,7 +336,7 @@ void Player::UpdateInrangeSetsBasedOnReputation()
         if (!(*itr)->IsUnit())
             continue;
 
-        pUnit = TO< Unit* >(*itr);
+        pUnit = static_cast< Unit* >(*itr);
         if (pUnit->m_factionDBC == NULL || pUnit->m_factionDBC->RepListId < 0)
             continue;
 
@@ -382,7 +382,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     if (modifier != 0)
     {
         // Apply this data.
-        for (vector<ReputationMod>::iterator itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)
+        for (std::vector<ReputationMod>::iterator itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)
         {
             if (!(*itr).faction[team])
                 continue;

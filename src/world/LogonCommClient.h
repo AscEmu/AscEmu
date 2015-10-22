@@ -21,8 +21,17 @@
 #ifndef _LOGON_COMM_CLIENT_H
 #define _LOGON_COMM_CLIENT_H
 
-#include "../logonserver/LogonOpcodes.h"
+#include "CommonTypes.hpp"
+#include "ByteBuffer.h"
+#include "Network/Socket.h"
+#include "../logonserver/Opcodes/LogonRealmOpcodes.hpp"
+#include "../shared/Log.h"
 #include <RC4Engine.h>
+#include "zlib.h"
+
+extern SERVER_DECL SessionLogWriter* GMCommand_Log;
+#define sGMLog (*GMCommand_Log)
+
 
 class LogonCommClientSocket : public Socket
 {
@@ -50,6 +59,8 @@ class LogonCommClientSocket : public Socket
         void HandleDisconnectAccount(WorldPacket& recvData);
         void HandleConsoleAuthResult(WorldPacket& recvData);
         void HandlePopulationRequest(WorldPacket& recvData);
+        void HandleModifyDatabaseResult(WorldPacket& recvData);
+        void HandleResultCheckAccount(WorldPacket& recvData);
 
         void OnDisconnect();
         void CompressAndSend(ByteBuffer& uncompressed);
@@ -61,7 +72,7 @@ class LogonCommClientSocket : public Socket
         uint32 _id;
         uint32 authenticated;
         bool use_crypto;
-        set<uint32> realm_ids;
+        std::set<uint32> realm_ids;
 };
 
 typedef void (LogonCommClientSocket::*logonpacket_handler)(WorldPacket&);

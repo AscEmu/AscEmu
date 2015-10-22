@@ -193,7 +193,6 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
 
     // shut down instance
     sInstanceMgr.DeleteBattlegroundInstance(instance->m_mapId, instance->m_instanceId);
-    instance->m_mapMgr->InstanceShutdown();
     //    RedSystemMessage(m_session, "Resetting single non-persistent instances is not available yet.");
     sGMLog.writefromsession(m_session, "used reset instance command on %s, instance %u,", plr->GetName(), instanceId);
     return true;

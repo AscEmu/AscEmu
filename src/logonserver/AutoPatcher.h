@@ -41,7 +41,7 @@ class PatchJob
 
     public:
         PatchJob(Patch* patch, AuthSocket* client, uint32 skip) : m_patchToSend(patch), m_client(client), m_bytesSent(skip), m_bytesLeft(patch->FileSize - skip), m_dataPointer(patch->Data + skip) {}
-        ARCEMU_INLINE AuthSocket* GetClient() { return m_client; }
+        inline AuthSocket* GetClient() { return m_client; }
         bool Update();
 };
 
@@ -58,10 +58,10 @@ class PatchMgr : public Singleton<PatchMgr>
         bool InitiatePatch(Patch* pPatch, AuthSocket* pClient);
 
     protected:
-        vector<Patch*> m_patches;
+    std::vector<Patch*> m_patches;
 
         Mutex m_patchJobLock;
-        list<PatchJob*> m_patchJobs;
+    std::list<PatchJob*> m_patchJobs;
 };
 
 #endif

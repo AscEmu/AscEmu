@@ -40,7 +40,7 @@ class TiareGossipScript : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            TO_CREATURE(pObject)->CastSpell(Plr, dbcSpell.LookupEntry(50135), true);
+            static_cast<Creature*>(pObject)->CastSpell(Plr, dbcSpell.LookupEntry(50135), true);
         }
 };
 

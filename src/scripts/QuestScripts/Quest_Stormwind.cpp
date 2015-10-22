@@ -41,7 +41,7 @@ class DashelStonefist : public CreatureAIScript
                 {
                     _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     RegisterAIUpdateEvent(1000);
-                    QuestLogEntry* qle = (TO_PLAYER(mAttacker))->GetQuestLogForEntry(1447);
+                    QuestLogEntry* qle = (static_cast<Player*>(mAttacker))->GetQuestLogForEntry(1447);
                     if(!qle)
                         return;
                     qle->SendQuestComplete();
@@ -87,8 +87,8 @@ class TheMissingDiplomat : public QuestScript
             uint32 chance = RandomUInt(100);
             if(chance < 15)
             {
-                string say = "Now you're gonna get it good, ";
-                say += (TO_PLAYER(mTarget))->GetName();
+                std::string say = "Now you're gonna get it good, ";
+                say += (static_cast<Player*>(mTarget))->GetName();
                 say += "!";
                 Dashel->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
             }

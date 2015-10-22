@@ -230,7 +230,12 @@ bool AddonMgr::AppendPublicKey(WorldPacket & data, std::string & AddonName, uint
                 uint32 length = 264/*ftell(f)*/;
                 fseek(f, 0, SEEK_SET);
                 buf.resize(length);
-                fread((void*)buf.contents(), length, 1, f);
+                if (fread((void*)buf.contents(), length, 1, f) != 1)
+                {
+                    fclose(f);
+                    return false;
+                }
+
                 fclose(f);
 
                 mAddonData[AddonName] = buf;
@@ -251,10 +256,17 @@ bool AddonMgr::AppendPublicKey(WorldPacket & data, std::string & AddonName, uint
 
 void AddonMgr::LoadFromDB()
 {
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM clientaddons");
+    const char* loadClientAddons = "SELECT id, name, crc, banned, showinlist FROM clientaddons";
+    bool success = false;
+    QueryResult* result = CharacterDatabase.Query(&success, loadClientAddons);
+    if (!success)
+    {
+        Log.Error("AddonMgr", "Query failed: %s", loadClientAddons);
+        return;
+    }
     if (!result)
     {
-        LOG_ERROR("Query failed: SELECT * FROM clientaddons");
+        Log.Notice("AddonMgr", "No defined ClientAddons");
         return;
     }
 
@@ -296,12 +308,12 @@ void AddonMgr::SaveToDB()
             LOG_DETAIL("Saving new addon %s", itr->second->name.c_str());
             std::stringstream ss;
             ss << "INSERT INTO clientaddons (name, crc, banned, showinlist) VALUES(\""
-               << WorldDatabase.EscapeString(itr->second->name) << "\",\""
+               << CharacterDatabase.EscapeString(itr->second->name) << "\",\""
                << itr->second->crc << "\",\""
                << itr->second->banned << "\",\""
                << itr->second->showinlist << "\");";
 
-            WorldDatabase.Execute(ss.str().c_str());
+            CharacterDatabase.Execute(ss.str().c_str());
         }
     }
 }

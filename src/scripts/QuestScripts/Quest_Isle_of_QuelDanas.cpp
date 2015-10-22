@@ -77,10 +77,10 @@ class SCRIPT_DECL AyrenCloudbreaker_Gossip : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12252, pPlayer);
 
             if(pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
-                Menu->AddItem(0, "Speaking of action, I've been ordered to undertake an air strike.", 1);
+                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
 
             if(pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-                Menu->AddItem(0, "I need to intercept the Dawnblade reinforcements.", 2);
+                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(467), 2);     // I need to intercept the Dawnblade reinforcements.
 
             Menu->SendTo(pPlayer);
         }
@@ -119,7 +119,7 @@ class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12371, pPlayer);
             if(pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-                Menu->AddItem(0, "<Ride the dragonhawk to Sun's Reach>", 1);
+                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
 
             Menu->SendTo(pPlayer);
         }
@@ -151,10 +151,10 @@ class TheBattleForTheSunReachArmory : public CreatureAIScript
         {
             if(pKiller->IsPlayer())
             {
-                QuestLogEntry* qle = (TO_PLAYER(pKiller))->GetQuestLogForEntry(11537);
+                QuestLogEntry* qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11537);
                 if(qle == NULL)
                 {
-                    qle = (TO_PLAYER(pKiller))->GetQuestLogForEntry(11538);
+                    qle = (static_cast<Player*>(pKiller))->GetQuestLogForEntry(11538);
                     if(qle == NULL)
                         return;
                 }

@@ -22,8 +22,8 @@
 #include "../Common/Instance_Base.h"
 #include "../Common/Base.h"
 
-#ifndef MISC_SCRIPTS_SETUP_H
-#define MISC_SCRIPTS_SETUP_H
+#ifndef EVENT_SCRIPTS_SETUP_H
+#define EVENT_SCRIPTS_SETUP_H
 
 void SetupBrewfest(ScriptMgr* mgr);
 void SetupDarkmoonFaire(ScriptMgr* mgr);
@@ -33,4 +33,4 @@ void SetupWinterVeil(ScriptMgr* mgr);
 void SetupHallowsEnd(ScriptMgr* mgr);
 void SetupVayrieTest(ScriptMgr* mgr);
 
-#endif
+#endif      //EVENT_SCRIPTS_SETUP_H

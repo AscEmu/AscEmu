@@ -33,6 +33,7 @@ InstanceMgr::InstanceMgr()
     memset(m_instances, 0, sizeof(InstanceMap*) * NUM_MAPS);
     memset(m_singleMaps, 0, sizeof(MapMgr*) * NUM_MAPS);
     memset(&m_nextInstanceReset, 0, sizeof(time_t) * NUM_MAPS);
+    m_InstanceHigh = 0;
 }
 
 void InstanceMgr::Load(TaskList* l)
@@ -545,7 +546,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
     if (obj->IsPlayer())
     {
         // players can join instances based on their groups/solo status.
-        plr = TO< Player* >(obj);
+        plr = static_cast< Player* >(obj);
 
         // single-instance maps never go into the instance set.
         if (inf->type == INSTANCE_NULL)
@@ -1171,7 +1172,7 @@ void Instance::SaveToDB()
 
     ss.rdbuf()->str("");
 
-    set<uint32>::iterator itr;
+    std::set<uint32>::iterator itr;
 
     ss << "INSERT INTO instances VALUES("
         << m_instanceId << ","
@@ -1262,7 +1263,7 @@ MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32 mapid)
     if (m_instances[mapid] == NULL)
         m_instances[mapid] = new InstanceMap;
 
-    m_instances[mapid]->insert(make_pair(pInstance->m_instanceId, pInstance));
+    m_instances[mapid]->insert(std::make_pair(pInstance->m_instanceId, pInstance));
     m_mapLock.Release();
     ThreadPool.ExecuteTask(ret);
     return ret;
@@ -1297,7 +1298,7 @@ MapMgr* InstanceMgr::CreateInstance(uint32 instanceType, uint32 mapid)
     if (m_instances[mapid] == NULL)
         m_instances[mapid] = new InstanceMap;
 
-    m_instances[mapid]->insert(make_pair(pInstance->m_instanceId, pInstance));
+    m_instances[mapid]->insert(std::make_pair(pInstance->m_instanceId, pInstance));
     m_mapLock.Release();
     ThreadPool.ExecuteTask(ret);
     return ret;

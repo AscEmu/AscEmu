@@ -149,10 +149,10 @@ class AlteracValley : public CBattleground
 {
     protected:
 
-        list<GameObject*> m_gates;
+    std::list<GameObject*> m_gates;
         uint32 m_reinforcements[2];
         bool m_nearingVictory[2];
-        ARCEMU_INLINE map<Creature*, set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
+        inline std::map<Creature*, std::set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
     public:
 
         AlteracValley(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
@@ -160,6 +160,7 @@ class AlteracValley : public CBattleground
 
         void EventAssaultControlPoint(uint32 x);
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         void HookOnPlayerDeath(Player* plr);
         void HookFlagDrop(Player* plr, GameObject* obj);
         void HookFlagStand(Player* plr, GameObject* obj);
@@ -207,10 +208,10 @@ class AlteracValley : public CBattleground
                 Creature* m_boss;
 
                 // guards, need to be respawned when changes ownership
-                vector<Creature*> m_guards;
+                std::vector<Creature*> m_guards;
 
                 ///\todo  peon locations, used in mines
-                vector<Creature*> m_peonLocations;
+                std::vector<Creature*> m_peonLocations;
 
                 // control point (capturable)
                 GameObject* m_flag;

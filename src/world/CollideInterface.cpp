@@ -265,7 +265,13 @@ void CCollideInterface::ActivateMap(uint32 mapid)
         }
 
         dtNavMeshParams params;
-        fread(&params, sizeof(params), 1, f);
+        if (fread(&params, sizeof(params), 1, f) != 1)
+        {
+            m_navmaplock.Release();
+            fclose(f);
+            return;
+        }
+
         fclose(f);
 
         NavMeshData* d = new NavMeshData;
@@ -298,7 +304,7 @@ NavMeshData* CCollideInterface::GetNavMesh(uint32 mapId)
 {
 #ifndef TEST_PATHFINDING
     return NULL;
-#endif
+#else
     NavMeshData* retval = NULL;
     m_navmaplock.Acquire();
     std::map<uint32, NavMeshData*>::iterator itr = m_navdata.find(mapId);
@@ -308,6 +314,7 @@ NavMeshData* CCollideInterface::GetNavMesh(uint32 mapId)
 
     m_navmaplock.Release();
     return retval;
+#endif
 }
 
 void CCollideInterface::LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY)

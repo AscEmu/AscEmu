@@ -100,19 +100,19 @@ class LocalizationMgr
 
         void Shutdown();
         void Reload(bool first);
-        void Lower(string & conv);
+        void Lower(std::string & conv);
         uint32 GetLanguageId(uint32 full);
 
-        uint32 GetLanguageId(string langstr)
+        uint32 GetLanguageId(std::string langstr)
         {
-            string ns = langstr;
+            std::string ns = langstr;
             Lower(ns);
 
             uint32 lid = *(uint32*)ns.c_str();
             return GetLanguageId(lid);
         }
 
-        void GetDistinctLanguages(set<string>& dest, const char* table);
+        void GetDistinctLanguages(std::set<std::string>& dest, const char* table);
 
         LocalizedQuest* GetLocalizedQuest(uint32 id, uint32 language);
         LocalizedItem* GetLocalizedItem(uint32 id, uint32 language);
@@ -131,7 +131,7 @@ class LocalizationMgr
         void CopyHashMap(HM_NAMESPACE::hash_map<uint32, T> * src, HM_NAMESPACE::hash_map<uint32, T> * dest)
         {
             for (typename HM_NAMESPACE::hash_map<uint32, T>::iterator itr = src->begin(); itr != src->end(); ++itr)
-                dest->insert(make_pair(itr->first, itr->second));
+                dest->insert(std::make_pair(itr->first, itr->second));
         }
 
     private:
@@ -149,7 +149,7 @@ class LocalizationMgr
         HM_NAMESPACE::hash_map<uint32, LocalizedWorldMapInfo> * m_WorldMapInfo;
         HM_NAMESPACE::hash_map<uint32, LocalizedMonstersay> * m_MonsterSay;
 
-        vector<pair<uint32, uint32>> m_languages;
+    std::vector<std::pair<uint32, uint32>> m_languages;
         bool m_disabled;
 };
 

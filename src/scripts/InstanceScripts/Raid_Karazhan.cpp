@@ -112,7 +112,7 @@ class AttumenTheHuntsmanAI : public MoonScriptBossAI
                     SetAllowMelee(false);
                     SetAllowSpell(false);
                     Emote("Come Midnight, let's disperse this petty rabble!", Text_Yell, 9168);
-                    MoonScriptBossAI* midnight = TO< MoonScriptBossAI* >(GetLinkedCreature());
+                    MoonScriptBossAI* midnight = static_cast< MoonScriptBossAI* >(GetLinkedCreature());
                     midnight->SetPhase(2);
                     midnight->MoveTo(this);
                     midnight->SetAllowMelee(false);
@@ -140,7 +140,7 @@ class MidnightAI : public MoonScriptBossAI
         {
             if (GetLinkedCreature() && GetLinkedCreature()->IsAlive())
             {
-                TO< MoonScriptCreatureAI* >(GetLinkedCreature())->Emote("Well done Midnight!", Text_Yell, 9173);
+                static_cast< MoonScriptCreatureAI* >(GetLinkedCreature())->Emote("Well done Midnight!", Text_Yell, 9173);
             }
             ParentClass::OnTargetDied(pTarget);
         }
@@ -162,7 +162,7 @@ class MidnightAI : public MoonScriptBossAI
                 else if (GetLinkedCreature() && GetLinkedCreature()->IsAlive() && GetHealthPercent() <= 25 && !IsCasting())
                 {
                     SetPhase(2);
-                    MoonScriptBossAI* attumen = TO< MoonScriptBossAI* >(GetLinkedCreature());
+                    MoonScriptBossAI* attumen = static_cast< MoonScriptBossAI* >(GetLinkedCreature());
                     MoveTo(attumen);
                     SetAllowMelee(false);
                     attumen->SetPhase(2);
@@ -175,7 +175,7 @@ class MidnightAI : public MoonScriptBossAI
             {
                 if (GetLinkedCreature() && GetLinkedCreature()->IsAlive())
                 {
-                    MoonScriptBossAI* attumen = TO< MoonScriptBossAI* >(GetLinkedCreature());
+                    MoonScriptBossAI* attumen = static_cast< MoonScriptBossAI* >(GetLinkedCreature());
                     if (GetRange(attumen) <= 15)
                     {
                         attumen->Regenerate();
@@ -334,7 +334,7 @@ class BigBadWolfAI : public CreatureAIScript
         BigBadWolfAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 m_spellcheck[i] = false;
 
             spells[0].info = dbcSpell.LookupEntry(TERRIFYING_HOWL);
@@ -368,13 +368,17 @@ class BigBadWolfAI : public CreatureAIScript
             spells[3].instant = true;
             spells[3].cooldown = 0;
             spells[3].attackstoptimer = 1000;
+
+            m_threattimer = 0;
+            ThreatAdd = false;
+            RTarget = NULL;
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             _unit->SendScriptTextChatMessage(1993);     // The better to own you with!
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             ThreatAdd = false;
@@ -435,7 +439,7 @@ class BigBadWolfAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -458,11 +462,11 @@ class BigBadWolfAI : public CreatureAIScript
                                 {
                                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Red Riding Hood cast");
                                     std::vector<Player* > TargetTable;
-                                    for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
+                                    for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
                                             itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                                     {
                                         Player* RandomTarget = NULL;
-                                        RandomTarget = TO< Player* >(*itr);
+                                        RandomTarget = static_cast< Player* >(*itr);
                                         if (RandomTarget && RandomTarget->isAlive())
                                             TargetTable.push_back(RandomTarget);
                                         RandomTarget = NULL;
@@ -471,9 +475,8 @@ class BigBadWolfAI : public CreatureAIScript
                                     if (!TargetTable.size())
                                         return;
 
-                                    size_t RandTarget = rand() % TargetTable.size();
-
-                                    RTarget = TargetTable[RandTarget];
+                                    auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                                    auto random_target = TargetTable[random_index];
 
                                     if (!RTarget)
                                         return;
@@ -510,7 +513,7 @@ class BigBadWolfAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
         int m_threattimer;
         bool ThreatAdd;
         Unit* RTarget;
@@ -532,7 +535,7 @@ class THEBIGBADWOLFAI : public CreatureAIScript
         {
             //SpellEntry *infoImmunity;
             nrspells = 3;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -625,7 +628,7 @@ class THEBIGBADWOLFAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -635,7 +638,7 @@ class THEBIGBADWOLFAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -678,7 +681,7 @@ class THEBIGBADWOLFAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 
@@ -725,14 +728,14 @@ class BarnesGS : public GossipScript
                     break;
                 case 2:
                     {
-                        Creature* pCreature = TO_CREATURE(pObject);
+                        Creature* pCreature = static_cast<Creature*>(pObject);
                         pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Splendid. I'm going to get the audience ready. Break a leg!");
                         pCreature->CastSpell(pCreature, 32616, false);
                         pCreature->GetAIInterface()->StopMovement(0);
                         pCreature->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
                         pCreature->GetAIInterface()->setMoveType(11);
                         pCreature->GetAIInterface()->setWaypointToMove(0);
-                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                         pCreature->PlaySoundToSet(9357);
                         WayStartBBW[pCreature->GetInstanceID()] = 2;
                     }
@@ -765,7 +768,7 @@ class GrandMother : public GossipScript
 
                 case 1:
                     {
-                        TO_CREATURE(pObject)->Despawn(100, 0);
+                        static_cast<Creature*>(pObject)->Despawn(100, 0);
                         Creature* pop = pObject->GetMapMgr()->GetInterface()->SpawnCreature(17521, pObject->GetPositionX(), pObject->GetPositionY(),
                                         pObject->GetPositionZ(), 0, true, true, 0, 0);
                         pop->GetAIInterface()->AttackReaction(Plr, 1, 0);
@@ -941,7 +944,7 @@ class BarnesAI : public CreatureAIScript
             // Timed text 3
             _unit->SendTimedScriptTextChatMessage(2010, 32000); // Will she survive? Will she prevail? Only time will tell. And now: On with the show!", 32000);
             // Applause
-            sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
         void EventWOZ()
@@ -978,7 +981,7 @@ class BarnesAI : public CreatureAIScript
             // Timed text 3
             _unit->SendTimedScriptTextChatMessage(2018, 32000);     // But don't take it from me. See for yourself what tragedy lies ahead when the paths of star-crossed lovers meet. And now: On with the show!
             // Applause
-            sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
         void EventRJ()
@@ -1011,7 +1014,7 @@ class BarnesAI : public CreatureAIScript
             // Timed text 3
             _unit->SendTimedScriptTextChatMessage(2014, 32000);     // But don't let me pull the wool over your eyes. See for yourself what lies beneath those covers. And now: On with the show!
             // Applause
-            sEventMgr.AddEvent(TO_OBJECT(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)9332, EVENT_UNK, 41000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
         void EventRed()
@@ -1134,7 +1137,7 @@ class CuratorAI : public CreatureAIScript
         CuratorAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1157,13 +1160,18 @@ class CuratorAI : public CreatureAIScript
             spells[3].instant = true;
             spells[3].cooldown = 0;
             spells[3].attackstoptimer = 1000;
+
+            evocation = false;
+            enrage = false;
+            berserk = false;
+            Timer = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             _unit->SendScriptTextChatMessage(2062);     // The Menagerie is for guests only.
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
 
             evocation = false;
@@ -1252,11 +1260,11 @@ class CuratorAI : public CreatureAIScript
         void AstralSpawn()
         {
             std::vector<Player*> Target_List;
-            for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
+            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
                     itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
                 Player* RandomTarget = NULL;
-                RandomTarget = TO< Player* >(*itr);
+                RandomTarget = static_cast< Player* >(*itr);
                 if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, (*itr)))
                     Target_List.push_back(RandomTarget);
                 RandomTarget = NULL;
@@ -1264,9 +1272,10 @@ class CuratorAI : public CreatureAIScript
             if (!Target_List.size())
                 return;
 
-            size_t Target = rand() % Target_List.size();
-            Unit* RTarget = Target_List[Target];
-            if (!RTarget)
+            auto random_index = RandomUInt(0, Target_List.size() - 1);
+            Unit* random_target = Target_List[random_index];
+
+            if (random_target == nullptr)
                 return;
 
             switch (RandomUInt(1))
@@ -1289,7 +1298,7 @@ class CuratorAI : public CreatureAIScript
                     {
                         AstralFlare = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASTRALFLARE, dX + 3,
                                       dY + 3, _unit->GetPositionZ(), 0, true, false, 0, 0);
-                        AstralFlare->GetAIInterface()->AttackReaction(RTarget, 1, 0);
+                        AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                         AstralFlare = NULL;
                     }
                     break;
@@ -1297,7 +1306,7 @@ class CuratorAI : public CreatureAIScript
                     {
                         AstralFlare = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASTRALFLARE, dX + 3,
                                       dY - 3, _unit->GetPositionZ(), 0, true, false, 0, 0);
-                        AstralFlare->GetAIInterface()->AttackReaction(RTarget, 1, 0);
+                        AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                         AstralFlare = NULL;
                     }
                     break;
@@ -1305,7 +1314,7 @@ class CuratorAI : public CreatureAIScript
                     {
                         AstralFlare = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASTRALFLARE, dX - 3,
                                       dY - 3, _unit->GetPositionZ(), 0, true, false, 0, 0);
-                        AstralFlare->GetAIInterface()->AttackReaction(RTarget, 1, 0);
+                        AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                         AstralFlare = NULL;
                     }
                     break;
@@ -1313,7 +1322,7 @@ class CuratorAI : public CreatureAIScript
                     {
                         AstralFlare = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_ASTRALFLARE, dX - 3,
                                       dY + 3, _unit->GetPositionZ(), 0, true, false, 0, 0);
-                        AstralFlare->GetAIInterface()->AttackReaction(RTarget, 1, 0);
+                        AstralFlare->GetAIInterface()->AttackReaction(random_target, 1, 0);
                         AstralFlare = NULL;
                     }
                     break;
@@ -1325,7 +1334,7 @@ class CuratorAI : public CreatureAIScript
         bool evocation;
         bool enrage;
         bool berserk;
-        int nrspells;
+        uint8 nrspells;
         uint32 Timer;
 };
 
@@ -1396,7 +1405,7 @@ class ShadeofAranAI : public CreatureAIScript
         ShadeofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 6;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -1457,6 +1466,18 @@ class ShadeofAranAI : public CreatureAIScript
             info_conjure = dbcSpell.LookupEntry(CONJURE);
             info_drink = dbcSpell.LookupEntry(DRINK);
             info_pyroblast = dbcSpell.LookupEntry(AOE_PYROBLAST);
+
+            drinking = false;
+            enraged = false;
+            summoned = false;
+            explode = false;
+            slow = false;
+            LastSuperSpell = 0;
+            m_time_enrage = 0;
+            m_time_special = 0;
+            m_time_pyroblast = 0;
+            m_time_conjure = 0;
+            FlameWreathTimer = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -1465,11 +1486,11 @@ class ShadeofAranAI : public CreatureAIScript
             bool HasAtiesh = false;
             if (mTarget->IsPlayer())
             {
-                for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     if (*itr)
                     {
-                        Player* plr = TO< Player* >(*itr);
+                        Player* plr = static_cast< Player* >(*itr);
                         if (plr->GetItemInterface()->GetItemCount(22589) > 0 ||
                                 plr->GetItemInterface()->GetItemCount(22630) > 0 ||
                                 plr->GetItemInterface()->GetItemCount(22631) > 0 ||
@@ -1488,16 +1509,14 @@ class ShadeofAranAI : public CreatureAIScript
             }
             else
             {
-                switch (rand() % 3)
+                switch (RandomUInt(2))
                 {
                     case 0:
                         _unit->SendScriptTextChatMessage(2031);     // Please, no more. My son... he's gone mad!
                         break;
-
                     case 1:
                         _unit->SendScriptTextChatMessage(2032);     // I'll not be tortured again!
                         break;
-
                     case 2:
                         _unit->SendScriptTextChatMessage(2033);     // Who are you? What do you want? Stay away from me!
                         break;
@@ -1555,7 +1574,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2042);     // I want this nightmare to be over!
@@ -1685,7 +1704,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void FlameWreath()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2034);     // I'll show you this beaten dog still has some teeth!
@@ -1701,18 +1720,18 @@ class ShadeofAranAI : public CreatureAIScript
             FlameWreathTarget[2] = 0;
 
             std::vector<Player*> Targets;
-            set< Object* >::iterator hostileItr = _unit->GetInRangePlayerSetBegin();
+            std::set< Object* >::iterator hostileItr = _unit->GetInRangePlayerSetBegin();
             for (; hostileItr != _unit->GetInRangePlayerSetEnd(); ++hostileItr)
             {
                 Player* RandomTarget = NULL;
-                RandomTarget = TO< Player* >(*hostileItr);
+                RandomTarget = static_cast< Player* >(*hostileItr);
 
                 if (RandomTarget && RandomTarget->isAlive() && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
                     Targets.push_back(RandomTarget);
             }
 
             while(Targets.size() > 3)
-                Targets.erase(Targets.begin() + rand() % Targets.size());
+                Targets.erase(Targets.begin() + RandomUInt(Targets.size()));
 
             uint32 i = 0;
             for (std::vector<Player*>::iterator itr = Targets.begin(); itr != Targets.end(); ++itr)
@@ -1730,7 +1749,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void Blizzard()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2036);     // I'll freeze you all!
@@ -1745,7 +1764,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void AoEExplosion()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2038);     // Yes, yes, my son is quite powerful... but I have powers of my own!
@@ -1781,9 +1800,12 @@ class ShadeofAranAI : public CreatureAIScript
                     Available[0] = SUPER_BLIZZARD;
                     Available[1] = SUPER_FLAME;
                     break;
+
+                default:
+                    return;
             }
 
-            LastSuperSpell = Available[RandomUInt(100) % 2];
+            LastSuperSpell = Available[RandomUInt(1)];
 
             switch (LastSuperSpell)
             {
@@ -1803,7 +1825,7 @@ class ShadeofAranAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -1813,7 +1835,7 @@ class ShadeofAranAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -1867,10 +1889,10 @@ class ShadeofAranAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Player* > TargetTable;
-                for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO< Player* >(*itr);
+                    RandomTarget = static_cast< Player* >(*itr);
 
                     if ((RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget)))
                         TargetTable.push_back(RandomTarget);
@@ -1879,20 +1901,19 @@ class ShadeofAranAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -1908,7 +1929,7 @@ class ShadeofAranAI : public CreatureAIScript
         bool slow;
         float FWTargPosX[3];
         float FWTargPosY[3];
-        int nrspells;
+        uint8 nrspells;
         int LastSuperSpell;
         uint32 m_time_enrage;
         uint32 m_time_special;
@@ -1938,6 +1959,7 @@ class WaterEleAI : public CreatureAIScript
 
         WaterEleAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            WaterBolt = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -1982,6 +2004,7 @@ class ShadowofAranAI : public CreatureAIScript
 
         ShadowofAranAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
+            ShadowPyro = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2055,7 +2078,7 @@ class IllhoofAI : public CreatureAIScript
         IllhoofAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 m_spellcheck[i] = false;
 
             spells[0].info = dbcSpell.LookupEntry(SHADOW_BOLT);
@@ -2079,6 +2102,12 @@ class IllhoofAI : public CreatureAIScript
                     spells[2].perctrigger = 0.0f;
                     spells[2].attackstoptimer = 1000;
             */
+
+            ReSummon = false;
+            ImpTimer = 0;
+            ReKilrek = 0;
+            DemonChain = 0;
+
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2086,7 +2115,7 @@ class IllhoofAI : public CreatureAIScript
             _unit->SendScriptTextChatMessage(2050);     // Ah, you're just in time. The rituals are about to begin.
 
             uint32 t = (uint32)time(NULL);
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
 
             DemonChain = t + 45;
@@ -2169,7 +2198,7 @@ class IllhoofAI : public CreatureAIScript
 
         void spawnSummoningPortals()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2053);     // Come, you dwellers in the dark. Rally to my call!
@@ -2185,7 +2214,7 @@ class IllhoofAI : public CreatureAIScript
 
         void PlrSacrifice()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2051);     // Please, accept this humble offering, oh great one.
@@ -2196,14 +2225,14 @@ class IllhoofAI : public CreatureAIScript
             }
 
             std::vector<Player* > TargetTable;
-            set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
+            std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin();
 
             for (; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)))
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO< Player* >(*itr);
+                    RandomTarget = static_cast< Player* >(*itr);
                     if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
                         TargetTable.push_back(RandomTarget);
                 }
@@ -2211,12 +2240,13 @@ class IllhoofAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            size_t RandTarget = rand() % TargetTable.size();
-            Unit* RTarget = TargetTable[RandTarget];
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            if (!RTarget) return;
+            if (random_target == nullptr)
+                return;
 
-            _unit->CastSpell(RTarget, dbcSpell.LookupEntry(SACRIFICE), false);
+            _unit->CastSpell(random_target, dbcSpell.LookupEntry(SACRIFICE), false);
 
             TargetTable.clear();
 
@@ -2232,7 +2262,7 @@ class IllhoofAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -2271,7 +2301,7 @@ class IllhoofAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
         bool ReSummon;
         uint32 ImpTimer;
         uint32 ReKilrek;
@@ -2289,7 +2319,7 @@ class KilrekAI : public CreatureAIScript
         KilrekAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2341,7 +2371,7 @@ class KilrekAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -2391,12 +2421,12 @@ class KilrekAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit* > TargetTable;
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr) != _unit && isHostile(_unit, (*itr)) && (*itr)->IsUnit())
                     {
                         Unit* RandomTarget = NULL;
-                        RandomTarget = TO_UNIT(*itr);
+                        RandomTarget = static_cast<Unit*>(*itr);
 
                         if (RandomTarget->isAlive() && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0)
                             TargetTable.push_back(RandomTarget);
@@ -2406,20 +2436,19 @@ class KilrekAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -2428,7 +2457,7 @@ class KilrekAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 // Fiendish Imp
@@ -2442,7 +2471,7 @@ class FiendishImpAI : public CreatureAIScript
         FiendishImpAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2519,7 +2548,7 @@ class FiendishImpAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -2566,12 +2595,12 @@ class FiendishImpAI : public CreatureAIScript
             Unit* pUnit;
             float dist;
 
-            for (set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); itr++)
+            for (std::set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); itr++)
             {
                 if (!(*itr)->IsUnit())
                     continue;
 
-                pUnit = TO_UNIT((*itr));
+                pUnit = static_cast<Unit*>((*itr));
 
                 if (pUnit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
                     continue;
@@ -2596,7 +2625,7 @@ class FiendishImpAI : public CreatureAIScript
 
     protected:
 
-        int nrspells;
+        uint8 nrspells;
 };
 
 class DemonChains : public CreatureAIScript
@@ -2698,7 +2727,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             memset(Enfeeble_Targets, 0, sizeof(Enfeeble_Targets));
             memset(Enfeeble_Health, 0, sizeof(Enfeeble_Health));
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -2773,13 +2802,19 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 SetLinkedCreature(infernalDummy);
                 infernalDummy->SetLinkedCreature(this);
             }
+
+            ranX = 0;
+            ranY = 0;
+            m_infernal = false;
+            m_enfeebleoff = -1;
+            m_spawn_infernal = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
         {
             _unit->SendScriptTextChatMessage(2019);     // Madness has brought you here to me. I shall be your undoing.
 
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = 0;
 
             uint32 t = (uint32)time(NULL);
@@ -2819,7 +2854,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             _unit->SetMinDamage(cp->MinDamage);
             _unit->SetMaxDamage(cp->MaxDamage);
 
-            for (int i = 0; i < 5; ++i)
+            for (uint8 i = 0; i < 5; ++i)
                 Enfeeble_Targets[i] = 0;
 
             if (GetLinkedCreature() != NULL)
@@ -2859,7 +2894,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
 
         void OnTargetDied(Unit* mTarget)
         {
-            switch (rand() % 3)
+            switch (RandomUInt(2))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2027);     // You are, but a plaything, unfit even to amuse.
@@ -3013,7 +3048,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
 
         void SummonInfernal()
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2029);     // You face not Malchezaar alone, but the legions I command!
@@ -3038,13 +3073,13 @@ class MalchezaarAI : public MoonScriptCreatureAI
         void Enfeebler()
         {
             std::vector<Player*> Targets;
-            set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
+            std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
 
             for (; Itr != _unit->GetInRangePlayerSetEnd(); ++Itr)
             {
                 if (isHostile(_unit, (*Itr)))
                 {
-                    Player* RandomTarget = TO_PLAYER(*Itr);
+                    Player* RandomTarget = static_cast<Player*>(*Itr);
 
                     if (RandomTarget->isAlive())
                         Targets.push_back(RandomTarget);
@@ -3052,7 +3087,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             }
 
             while(Targets.size() > 5)
-                Targets.erase(Targets.begin() + rand() % Targets.size());
+                Targets.erase(Targets.begin() + RandomUInt(Targets.size()));
 
             int i = 0;
             for (std::vector<Player*>::iterator E_Itr = Targets.begin(); E_Itr != Targets.end(); ++E_Itr)
@@ -3071,7 +3106,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
 
         void EnfeebleOff()
         {
-            for (int i = 0; i < 5; ++i)
+            for (uint8 i = 0; i < 5; ++i)
             {
                 Unit* ETarget = _unit->GetMapMgr()->GetUnit(Enfeeble_Targets[i]);
                 if (ETarget && ETarget->isAlive())
@@ -3087,7 +3122,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -3102,6 +3137,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                                 break;
                             case TARGET_ATTACKING:
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                                break;
                             case TARGET_DESTINATION:
                                 _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
                                 break;
@@ -3135,10 +3171,10 @@ class MalchezaarAI : public MoonScriptCreatureAI
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Player* > TargetTable;
-                for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO< Player* >(*itr);
+                    RandomTarget = static_cast< Player* >(*itr);
 
                     if (RandomTarget && RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast)
                         TargetTable.push_back(RandomTarget);
@@ -3147,20 +3183,19 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -3171,7 +3206,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
     protected:
         float ranX;
         float ranY;
-        int nrspells;
+        uint8 nrspells;
         int m_phase;
         bool m_infernal;
         uint32 m_enfeebleoff;
@@ -3259,12 +3294,12 @@ class MAxesAI : public CreatureAIScript
             spells[0].casttime = (uint32)time(NULL) + spells[0].cooldown;
 
             std::vector<Unit* > TargetTable;
-            for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
-                if (isHostile(_unit, (*itr)) && (TO< Player* >(*itr))->isAlive())
+                if (isHostile(_unit, (*itr)) && (static_cast< Player* >(*itr))->isAlive())
                 {
                     Player* RandomTarget = NULL;
-                    RandomTarget = TO_PLAYER(*itr);
+                    RandomTarget = static_cast<Player*>(*itr);
 
                     if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
                         TargetTable.push_back(RandomTarget);
@@ -3274,14 +3309,13 @@ class MAxesAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            size_t RandTarget = rand() % TargetTable.size();
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
 
-            Unit* RTarget = TargetTable[RandTarget];
-
-            if (!RTarget)
+            if (random_target == nullptr)
                 return;
 
-            _unit->GetAIInterface()->taunt(RTarget, true);
+            _unit->GetAIInterface()->taunt(random_target, true);
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -3329,7 +3363,7 @@ class NetherspiteAI : public CreatureAIScript
         NetherspiteAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -3351,11 +3385,13 @@ class NetherspiteAI : public CreatureAIScript
             spells[2].info = dbcSpell.LookupEntry(NETHERBURN);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
+
+            VoidTimer = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
 
             uint32 t = (uint32)time(NULL);
@@ -3401,10 +3437,10 @@ class NetherspiteAI : public CreatureAIScript
             {
                 VoidTimer = t + 20;
                 std::vector<Unit* > TargetTable;
-                for (set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Unit* RandomTarget = NULL;
-                    RandomTarget = TO< Unit* >(*itr);
+                    RandomTarget = static_cast< Unit* >(*itr);
 
                     if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, (*itr)))
                         TargetTable.push_back(RandomTarget);
@@ -3413,15 +3449,15 @@ class NetherspiteAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
-                float vzX = 5 * cos(RandomFloat(6.28f)) + RTarget->GetPositionX();
-                float vzY = 5 * cos(RandomFloat(6.28f)) + RTarget->GetPositionY();
-                float vzZ = RTarget->GetPositionZ();
+
+                float vzX = 5 * cos(RandomFloat(6.28f)) + random_target->GetPositionX();
+                float vzY = 5 * cos(RandomFloat(6.28f)) + random_target->GetPositionY();
+                float vzZ = random_target->GetPositionZ();
                 _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_VOIDZONE, vzX, vzY, vzZ, 0, true, false, 0, 0);
                 TargetTable.clear();
             }
@@ -3436,7 +3472,7 @@ class NetherspiteAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     if (!spells[i].perctrigger) continue;
 
@@ -3473,7 +3509,7 @@ class NetherspiteAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 VoidTimer;
 };
 
@@ -3527,9 +3563,6 @@ class VoidZoneAI : public CreatureAIScript
 #define CN_NIGHTBANE 17225
 #define CN_RESTLESS_SKELETON 17261 // not needed if spell works
 
-#define WALK 0
-#define RUN 256
-#define FLY 768
 
 // ground spells
 #define BELLOWING_ROAR 36922
@@ -3566,7 +3599,7 @@ class NightbaneAI : public CreatureAIScript
         NightbaneAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 5;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -3609,10 +3642,15 @@ class NightbaneAI : public CreatureAIScript
 
             _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
 
-            for (int i = 1; i < 5; i++)
+            for (uint8 i = 1; i < 5; i++)
             {
-                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, FLY));
+                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Flag_Fly));
             }
+
+            m_phase = 0;
+            m_currentWP = 0;
+            mTailSweepTimer = 0;
+            m_FlyPhaseTimer = 0;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -3735,11 +3773,11 @@ class NightbaneAI : public CreatureAIScript
 
             target = NULL;
             //fireball barrage check
-            for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsPlayer())
                 {
-                    target = TO_UNIT(*itr);
+                    target = static_cast<Unit*>(*itr);
 
                     if (_unit->GetDistance2dSq(target) > 2025) //45 yards
                     {
@@ -3779,11 +3817,11 @@ class NightbaneAI : public CreatureAIScript
             if (!mTailSweepTimer)
             {
                 Unit* target = NULL;
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr)->IsPlayer())
                     {
-                        target = TO_UNIT(*itr);
+                        target = static_cast<Unit*>(*itr);
 
                         //cone behind the boss
                         if (target->isAlive() && target->isInBack(_unit))
@@ -3842,7 +3880,7 @@ class NightbaneAI : public CreatureAIScript
 
         void ResetCastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -3852,7 +3890,7 @@ class NightbaneAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -3898,12 +3936,12 @@ class NightbaneAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr)->IsUnit())
                     {
                         Unit* RandomTarget = NULL;
-                        RandomTarget = TO_UNIT(*itr);
+                        RandomTarget = static_cast<Unit*>(*itr);
 
                         if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && _unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))
                         {
@@ -3915,18 +3953,19 @@ class NightbaneAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                Unit* RTarget = *(TargetTable.begin() + rand() % TargetTable.size());
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 switch (spells[i].targettype)
                 {
                     case TARGET_RANDOM_SINGLE:
-                        _unit->CastSpell(RTarget, spells[i].info, spells[i].instant);
+                        _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(RTarget->GetPositionX(), RTarget->GetPositionY(), RTarget->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
                         break;
                 }
 
@@ -3935,7 +3974,7 @@ class NightbaneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         uint32 m_phase;
         uint32 m_FlyPhaseTimer;
         uint32 m_currentWP;
@@ -3962,7 +4001,7 @@ class DorotheeAI : public CreatureAIScript
         DorotheeAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -3979,6 +4018,11 @@ class DorotheeAI : public CreatureAIScript
             spells[1].instant = false;
             spells[1].perctrigger = 100.0f;
             spells[1].attackstoptimer = 1000;
+
+            summontito = 0;
+            tito = NULL;
+            titoSpawned = false;
+            titoDeadSpeech = false;
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -4028,9 +4072,9 @@ class DorotheeAI : public CreatureAIScript
 
             float ychange = sqrt(distance * distance - xchange * xchange);
 
-            if (rand() % 2 == 1)
+            if (RandomUInt(1) == 1)
                 xchange *= -1;
-            if (rand() % 2 == 1)
+            if (RandomUInt(1) == 1)
                 ychange *= -1;
 
             float newposx = _unit->GetPositionX() + xchange;
@@ -4064,7 +4108,7 @@ class DorotheeAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -4076,14 +4120,14 @@ class DorotheeAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
                         Unit* RandomTarget = NULL;
-                        RandomTarget = TO_UNIT(*itr);
+                        RandomTarget = static_cast<Unit*>(*itr);
 
-                        if (RandomTarget == _unit->GetAIInterface()->GetMostHated() && i == 3)
+                        if (RandomTarget == _unit->GetAIInterface()->GetMostHated())
                             continue;
 
                         if (RandomTarget->isAlive() && _unit->GetDistance2dSq(RandomTarget) >= mindist2cast * mindist2cast && _unit->GetDistance2dSq(RandomTarget) <= maxdist2cast * maxdist2cast && ((RandomTarget->GetHealthPct() >= minhp2cast && RandomTarget->GetHealthPct() <= maxhp2cast && spells[i].targettype == TARGET_RANDOM_FRIEND) || (_unit->GetAIInterface()->getThreatByPtr(RandomTarget) > 0 && isHostile(_unit, RandomTarget))))
@@ -4099,11 +4143,10 @@ class DorotheeAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                size_t RandTarget = rand() % TargetTable.size();
+                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_target = TargetTable[random_index];
 
-                Unit* RTarget = TargetTable[RandTarget];
-
-                if (!RTarget)
+                if (random_target == nullptr)
                     return;
 
                 TargetTable.clear();
@@ -4116,7 +4159,7 @@ class DorotheeAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -4164,7 +4207,7 @@ class DorotheeAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
         Unit* tito;
         bool titoSpawned;
         bool titoDeadSpeech;
@@ -4187,7 +4230,7 @@ class TitoAI : public CreatureAIScript
         TitoAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -4231,7 +4274,7 @@ class TitoAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -4241,7 +4284,7 @@ class TitoAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -4284,7 +4327,7 @@ class TitoAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_STRAWMAN    17543
@@ -4302,7 +4345,7 @@ class StrawmanAI : public CreatureAIScript
         StrawmanAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -4372,7 +4415,7 @@ class StrawmanAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -4382,7 +4425,7 @@ class StrawmanAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -4425,7 +4468,7 @@ class StrawmanAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_TINHEAD    17547
@@ -4444,7 +4487,7 @@ class TinheadAI : public CreatureAIScript
         TinheadAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 2;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -4513,7 +4556,7 @@ class TinheadAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -4523,7 +4566,7 @@ class TinheadAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -4566,7 +4609,7 @@ class TinheadAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_ROAR    17546
@@ -4623,7 +4666,7 @@ class CroneAI : public CreatureAIScript
         CroneAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 1;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -4710,7 +4753,7 @@ class CroneAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -4720,7 +4763,7 @@ class CroneAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -4763,7 +4806,7 @@ class CroneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_CYCLONEOZ            22104
@@ -4802,9 +4845,6 @@ class CycloneOZ : public CreatureAIScript
         {
             _unit->CastSpell(_unit, dbcSpell.LookupEntry(CYCLONE_KNOCK), true);
         }
-
-    protected:
-        int nrspells;
 };
 
 //Romulo & Julianne
@@ -4828,7 +4868,7 @@ class RomuloAI : public CreatureAIScript
         RomuloAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -4897,7 +4937,7 @@ class RomuloAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(2003);     // Thou smilest... upon the stroke that... murders me.
@@ -4938,7 +4978,7 @@ class RomuloAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -4948,7 +4988,7 @@ class RomuloAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -4991,7 +5031,7 @@ class RomuloAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 #define CN_JULIANNE 17534
@@ -5014,7 +5054,7 @@ class JulianneAI : public CreatureAIScript
         JulianneAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             nrspells = 4;
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
             {
                 m_spellcheck[i] = false;
             }
@@ -5083,7 +5123,7 @@ class JulianneAI : public CreatureAIScript
 
         void OnDied(Unit* mKiller)
         {
-            switch (rand() % 2)
+            switch (RandomUInt(1))
             {
                 case 0:
                     _unit->SendScriptTextChatMessage(1998);     // Romulo, I come! Oh... this do I drink to thee!
@@ -5116,7 +5156,7 @@ class JulianneAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (int i = 0; i < nrspells; i++)
+            for (uint8 i = 0; i < nrspells; i++)
                 spells[i].casttime = spells[i].cooldown;
         }
 
@@ -5126,7 +5166,7 @@ class JulianneAI : public CreatureAIScript
             {
                 float comulativeperc = 0;
                 Unit* target = NULL;
-                for (int i = 0; i < nrspells; i++)
+                for (uint8 i = 0; i < nrspells; i++)
                 {
                     spells[i].casttime--;
 
@@ -5169,7 +5209,7 @@ class JulianneAI : public CreatureAIScript
         }
 
     protected:
-        int nrspells;
+        uint8 nrspells;
 };
 
 void SetupKarazhan(ScriptMgr* mgr)

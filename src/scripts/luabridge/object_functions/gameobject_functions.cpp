@@ -123,7 +123,7 @@ namespace lua_engine
         PLUA_INSTANCE ref = lua_instance.get();
         if(src != NULL)
         {
-            uint32 id = src->GetInfo()->ID;
+            uint32 id = src->GetInfo()->entry;
             uint32 low_guid = src->GetLowGUID();
             li::ObjectBindingMap::iterator itr = ref->m_goBinding.find(id);
             PObjectBinding pBinding = (itr != ref->m_goBinding.end()) ? itr->second : NULL;
@@ -163,11 +163,11 @@ namespace lua_engine
         .method(&GameObjectAIScript::ModifyAIUpdateEvent, "ModifyAIUpdateEvent", "ModifyAIUpdate", "modifyAIUpdate", "modifyaiupdate", NULL)
         .method(&GameObjectAIScript::RemoveAIUpdateEvent, "RemoveAIUpdateEvent", "RemoveAIUpdate", "removeAIUpdate", "removeaiupdate", NULL);
 
-        m    .class_<GameObjectInfo>("GameObjectInfo")
-        .property_ro("ID", &GameObjectInfo::ID)
-        .property_ro("Type", &GameObjectInfo::Type)
-        .property_ro("DisplayID", &GameObjectInfo::DisplayID)
-        .property_ro("Name", &GameObjectInfo::Name)
-        .property_ro("SpellFocus", &GameObjectInfo::SpellFocus);
+        m.class_<GameObjectInfo>("GameObjectInfo")
+            .property_ro("Entry", &GameObjectInfo::entry)
+            .property_ro("Type", &GameObjectInfo::type)
+            .property_ro("DisplayID", &GameObjectInfo::display_id)
+            .property_ro("Name", &GameObjectInfo::name);
+        //.property_ro("SpellFocus", &GameObjectInfo::SpellFocus);
     }
 }

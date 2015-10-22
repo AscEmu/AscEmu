@@ -45,6 +45,8 @@ Item::Item()//this is called when constructing as container
 
     for (uint32 i = 0; i < 3; ++i)
         OnUseSpellIDs[i] = 0;
+
+    m_isDirty = false;
 }
 
 void Item::Init(uint32 high, uint32 low)
@@ -92,7 +94,7 @@ Item::~Item()
     EnchantmentMap::iterator itr;
     for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        if (itr->second.Enchantment->type == 0 && itr->second.Slot == 0 && itr->second.ApplyTime == 0 && itr->second.Duration == 0)
+        if (itr->second.Slot == 0 && itr->second.ApplyTime == 0 && itr->second.Duration == 0)
         {
             delete itr->second.Enchantment;
             itr->second.Enchantment = NULL;
@@ -190,14 +192,14 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     if (light)
         return;
 
-    string enchant_field = fields[15].GetString();
-    vector< string > enchants = StrSplit(enchant_field, ";");
+    std::string enchant_field = fields[15].GetString();
+    std::vector< std::string > enchants = StrSplit(enchant_field, ";");
     uint32 enchant_id;
     EnchantEntry* entry;
     uint32 time_left;
     uint32 enchslot;
 
-    for (vector<string>::iterator itr = enchants.begin(); itr != enchants.end(); ++itr)
+    for (std::vector<std::string>::iterator itr = enchants.begin(); itr != enchants.end(); ++itr)
     {
         if (sscanf((*itr).c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
         {
@@ -448,7 +450,7 @@ void Item::DeleteFromDB()
         /* deleting a container */
         for (uint32 i = 0; i < m_itemProto->ContainerSlots; ++i)
         {
-            if (TO< Container* >(this)->GetItem(static_cast<int16>(i)) != NULL)
+            if (static_cast< Container* >(this)->GetItem(static_cast<int16>(i)) != NULL)
             {
                 /* abort the delete */
                 return;
@@ -626,7 +628,7 @@ int32 Item::AddEnchantment(EnchantEntry* Enchantment, uint32 Duration, bool Perm
     SetEnchantmentCharges(Slot, 0);
 
     // Add it to our map.
-    Enchantments.insert(make_pair((uint32)Slot, Instance));
+    Enchantments.insert(std::make_pair((uint32)Slot, Instance));
 
     if (m_owner == NULL)
         return Slot;
@@ -1092,12 +1094,12 @@ uint32 Item::GenerateRandomSuffixFactor(ItemPrototype* m_itemProto)
     return long2int32(value);
 }
 
-string Item::GetItemLink(uint32 language = NULL)
+std::string Item::GetItemLink(uint32 language = 0)
 {
     return GetItemLinkByProto(GetProto(), language);
 }
 
-string GetItemLinkByProto(ItemPrototype* iProto, uint32 language = NULL)
+std::string GetItemLinkByProto(ItemPrototype* iProto, uint32 language = 0)
 {
     const char* ItemLink;
     char buffer[256];
@@ -1134,7 +1136,7 @@ string GetItemLinkByProto(ItemPrototype* iProto, uint32 language = NULL)
     }
 
     // try to get localized version
-    LocalizedItem* lit = (language > 0) ? sLocalizationMgr.GetLocalizedItem(iProto->ItemId, language) : NULL;
+    LocalizedItem* lit = (language > 0) ? sLocalizationMgr.GetLocalizedItem(iProto->ItemId, language) : 0;
 
     if (lit)
         snprintf(buffer, 256, "|%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", colour.c_str(), iProto->ItemId, lit->Name);

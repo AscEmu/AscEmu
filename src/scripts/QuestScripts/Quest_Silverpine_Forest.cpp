@@ -38,7 +38,7 @@ class EscortingErland : public QuestScript
             creat->GetAIInterface()->setMoveType(11);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I to the horror I fear wolfs, do not allow to approach them to me closely. Follow me");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
             sEAS.WaypointCreate(creat, 1408.243286f, 1086.476929f, 53.684814f, 4.145067f, 0, 256, 2684);
@@ -71,7 +71,11 @@ class Deathstalker_Erland : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(435)->SendQuestComplete();
+
+                auto quest_entry = plr->GetQuestLogForEntry(435);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };
@@ -85,9 +89,9 @@ class Nightlash : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                Player* mPlayer = TO_PLAYER(mKiller);
+                Player* mPlayer = static_cast<Player*>(mKiller);
 
-                if(!_unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1069.889404f, 1544.777558f, 28.331335f, 1983) && (rand() % 5 > 2) && mPlayer->HasQuest(437)) //random number I picked between 2-8
+                if (!_unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1069.889404f, 1544.777558f, 28.331335f, 1983) && (RandomUInt(5) > 2) && mPlayer->HasQuest(437)) //random number I picked between 2-8
                 {
                     _unit->GetMapMgr()->GetInterface()->SpawnCreature(1983, 1069.889404f, 1544.777558f, 28.331335f, 3.99f, true, false, 0, 0)->Despawn(600000, 0);
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Nightlash avenge us!!");//not sure this is 100% blizzlike, but looks nice

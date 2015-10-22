@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Setup.h"
+#include "Base.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ SpellDesc::SpellDesc(SpellEntry* pInfo, SpellFunc pFnc, TargetType pTargetType, 
     mInfo = pInfo;
     mSpellFunc = pFnc;
     mTargetType = pTargetType;
-    mChance = max(min(pChance, 100.0f), 0.0f);
+    mChance = std::max(std::min(pChance, 100.0f), 0.0f);
     mCastTime = pCastTime;
     mCooldown = pCooldown;
     mMinRange = pMinRange;
@@ -92,6 +92,8 @@ MoonScriptCreatureAI::MoonScriptCreatureAI(Creature* pCreature) : CreatureAIScri
     mAIUpdateFrequency = DEFAULT_UPDATE_FREQUENCY;
     mBaseAttackTime = _unit->GetBaseAttackTime(MELEE);
     mDespawnWhenInactive = false;
+    mTimerCount = 0;
+    mEventCount = 0;
 }
 
 MoonScriptCreatureAI::~MoonScriptCreatureAI()
@@ -421,25 +423,25 @@ bool MoonScriptCreatureAI::IsHeroic()
 MoonInstanceScript* MoonScriptCreatureAI::GetInstanceScript()
 {
     MapMgr* pInstance = _unit->GetMapMgr();
-    return (pInstance) ? TO< MoonInstanceScript* >(pInstance->GetScript()) : NULL;
+    return (pInstance) ? static_cast< MoonInstanceScript* >(pInstance->GetScript()) : NULL;
 };
 
 void MoonScriptCreatureAI::CastOnAllInrangePlayers(uint32 pSpellId, bool pTriggered)
 {
-    for (set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
+    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
-        _unit->CastSpell(TO< Player* >(*PlayerIter), pSpellId, pTriggered);
+        _unit->CastSpell(static_cast< Player* >(*PlayerIter), pSpellId, pTriggered);
     };
 };
 
 void MoonScriptCreatureAI::CastOnInrangePlayers(float pDistanceMin, float pDistanceMax, uint32 pSpellId, bool pTriggered)
 {
-    for (set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
+    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         float PlayerDistance = (*PlayerIter)->GetDistance2dSq(this->GetUnit());
         if (PlayerDistance >= pDistanceMin && PlayerDistance <= pDistanceMax)
         {
-            _unit->CastSpell(TO< Player* >(*PlayerIter), pSpellId, pTriggered);
+            _unit->CastSpell(static_cast< Player* >(*PlayerIter), pSpellId, pTriggered);
         };
     };
 };
@@ -457,7 +459,7 @@ GameObject* MoonScriptCreatureAI::GetNearestGameObject(uint32 pGameObjectId)
 MoonScriptCreatureAI* MoonScriptCreatureAI::GetNearestCreature(uint32 pCreatureId)
 {
     Creature* NearestCreature = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), pCreatureId);
-    return (NearestCreature) ? TO< MoonScriptCreatureAI* >(NearestCreature->GetScript()) : NULL;
+    return (NearestCreature) ? static_cast< MoonScriptCreatureAI* >(NearestCreature->GetScript()) : NULL;
 }
 
 MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, bool pForceSameFaction)
@@ -468,7 +470,7 @@ MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, bo
 MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, float pX, float pY, float pZ, float pO, bool pForceSameFaction, uint32 pPhase)
 {
     Creature* NewCreature = _unit->GetMapMgr()->GetInterface()->SpawnCreature(pCreatureId, pX, pY, pZ, pO, true, false, 0, 0, pPhase);
-    MoonScriptCreatureAI* CreatureScriptAI = (NewCreature) ? TO< MoonScriptCreatureAI* >(NewCreature->GetScript()) : NULL;
+    MoonScriptCreatureAI* CreatureScriptAI = (NewCreature) ? static_cast< MoonScriptCreatureAI* >(NewCreature->GetScript()) : NULL;
     if (pForceSameFaction && NewCreature)
     {
         uint32 FactionTemplate = _unit->GetFaction();
@@ -495,7 +497,7 @@ Unit* MoonScriptCreatureAI::ForceCreatureFind(uint32 pCreatureId, float pX, floa
         UnitArray Array;
         for (std::vector< Creature* >::iterator UnitIter = Mgr->CreatureStorage.begin(); UnitIter != Mgr->CreatureStorage.end(); ++UnitIter)
         {
-            UnitPtr = TO< Unit* >(*UnitIter);
+            UnitPtr = static_cast< Unit* >(*UnitIter);
             if (UnitPtr != NULL)
             {
                 if (UnitPtr->GetEntry() == pCreatureId && UnitPtr != _unit)
@@ -622,7 +624,7 @@ void MoonScriptCreatureAI::RemoveAuraOnPlayers(uint32 pSpellId)
     for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         // need testing
-        (TO< Player* >(*PlayerIter))->RemoveAura(pSpellId);
+        (static_cast< Player* >(*PlayerIter))->RemoveAura(pSpellId);
     }
 }
 
@@ -1353,12 +1355,12 @@ RangeStatusPair MoonScriptCreatureAI::GetSpellRangeStatusToUnit(Unit* pTarget, S
     {
         float Range = GetRangeToUnit(pTarget);
         if (pSpell->mMinRange > 0 && (Range < pSpell->mMinRange))
-            return make_pair(RangeStatus_TooClose, pSpell->mMinRange);
+            return std::make_pair(RangeStatus_TooClose, pSpell->mMinRange);
         if (pSpell->mMaxRange > 0 && (Range > pSpell->mMaxRange))
-            return make_pair(RangeStatus_TooFar, pSpell->mMaxRange);
+            return std::make_pair(RangeStatus_TooFar, pSpell->mMaxRange);
     };
 
-    return make_pair(RangeStatus_Ok, 0.0f);
+    return std::make_pair(RangeStatus_Ok, 0.0f);
 };
 
 Unit* MoonScriptCreatureAI::GetTargetForSpell(SpellDesc* pSpell)
@@ -1402,10 +1404,10 @@ Unit* MoonScriptCreatureAI::GetBestPlayerTarget(TargetFilter pTargetFilter, floa
 {
     //Build potential target list
     UnitArray TargetArray;
-    for (set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
+    for (std::set< Object* >::iterator PlayerIter = _unit->GetInRangePlayerSetBegin(); PlayerIter != _unit->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         if (IsValidUnitTarget(*PlayerIter, pTargetFilter, pMinRange, pMaxRange))
-            TargetArray.push_back(TO_UNIT(*PlayerIter));
+            TargetArray.push_back(static_cast<Unit*>(*PlayerIter));
     };
 
     return ChooseBestTargetInArray(TargetArray, pTargetFilter);
@@ -1417,10 +1419,10 @@ Unit* MoonScriptCreatureAI::GetBestUnitTarget(TargetFilter pTargetFilter, float 
     UnitArray TargetArray;
     if (pTargetFilter & TargetFilter_Friendly)
     {
-        for (set< Object* >::iterator ObjectIter = _unit->GetInRangeSetBegin(); ObjectIter != _unit->GetInRangeSetEnd(); ++ObjectIter)
+        for (std::set< Object* >::iterator ObjectIter = _unit->GetInRangeSetBegin(); ObjectIter != _unit->GetInRangeSetEnd(); ++ObjectIter)
         {
             if (IsValidUnitTarget(*ObjectIter, pTargetFilter, pMinRange, pMaxRange))
-                TargetArray.push_back(TO_UNIT(*ObjectIter));
+                TargetArray.push_back(static_cast<Unit*>(*ObjectIter));
         };
 
         if (IsValidUnitTarget(_unit, pTargetFilter))
@@ -1428,10 +1430,10 @@ Unit* MoonScriptCreatureAI::GetBestUnitTarget(TargetFilter pTargetFilter, float 
     }
     else
     {
-        for (set< Object* >::iterator ObjectIter = _unit->GetInRangeOppFactsSetBegin(); ObjectIter != _unit->GetInRangeOppFactsSetEnd(); ++ObjectIter)
+        for (std::set< Object* >::iterator ObjectIter = _unit->GetInRangeOppFactsSetBegin(); ObjectIter != _unit->GetInRangeOppFactsSetEnd(); ++ObjectIter)
         {
             if (IsValidUnitTarget(*ObjectIter, pTargetFilter, pMinRange, pMaxRange))
-                TargetArray.push_back(TO_UNIT(*ObjectIter));
+                TargetArray.push_back(static_cast<Unit*>(*ObjectIter));
         };
     };
 
@@ -1462,7 +1464,7 @@ Unit* MoonScriptCreatureAI::GetNearestTargetInArray(UnitArray & pTargetArray)
     float Distance, NearestDistance = 99999;
     for (UnitArray::iterator UnitIter = pTargetArray.begin(); UnitIter != pTargetArray.end(); ++UnitIter)
     {
-        Distance = GetRangeToUnit(TO_UNIT(*UnitIter));
+        Distance = GetRangeToUnit(static_cast<Unit*>(*UnitIter));
         if (Distance < NearestDistance)
         {
             NearestDistance = Distance;
@@ -1477,11 +1479,11 @@ Unit* MoonScriptCreatureAI::GetSecondMostHatedTargetInArray(UnitArray & pTargetA
 {
     Unit*    TargetUnit = NULL;
     Unit*    MostHatedUnit = NULL;
-    Unit*    CurrentTarget = TO_UNIT(_unit->GetAIInterface()->getNextTarget());
+    Unit*    CurrentTarget = static_cast<Unit*>(_unit->GetAIInterface()->getNextTarget());
     uint32    Threat = 0, HighestThreat = 0;
     for (UnitArray::iterator UnitIter = pTargetArray.begin(); UnitIter != pTargetArray.end(); ++UnitIter)
     {
-        TargetUnit = TO_UNIT(*UnitIter);
+        TargetUnit = static_cast<Unit*>(*UnitIter);
         if (TargetUnit != CurrentTarget)
         {
             Threat = _unit->GetAIInterface()->getThreatByPtr(TargetUnit);
@@ -1504,17 +1506,17 @@ bool MoonScriptCreatureAI::IsValidUnitTarget(Object* pObject, TargetFilter pFilt
     if (pObject->GetInstanceID() != _unit->GetInstanceID())
         return false;
 
-    Unit* UnitTarget = TO_UNIT(pObject);
+    Unit* UnitTarget = static_cast<Unit*>(pObject);
     //Skip dead (if required), feign death or invisible targets
     if (pFilter & TargetFilter_Corpse)
     {
-        if (UnitTarget->isAlive() || !UnitTarget->IsCreature() || TO_CREATURE(UnitTarget)->GetCreatureInfo()->Rank == ELITE_WORLDBOSS)
+        if (UnitTarget->isAlive() || !UnitTarget->IsCreature() || static_cast<Creature*>(UnitTarget)->GetCreatureInfo()->Rank == ELITE_WORLDBOSS)
             return false;
     }
     else if (!UnitTarget->isAlive())
         return false;
 
-    if (UnitTarget->IsPlayer() && TO_PLAYER(UnitTarget)->m_isGmInvisible)
+    if (UnitTarget->IsPlayer() && static_cast<Player*>(UnitTarget)->m_isGmInvisible)
         return false;
     if (UnitTarget->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH))
         return false;

@@ -22,7 +22,7 @@
 #include "StdAfx.h"
 
 
-#define BANNER "<< AscEmu %s %s/%s-%s (%s) :: World Server >>"
+#define BANNER "<< AscEmu %s/%s-%s (%s) :: World Server >>"
 
 #ifndef WIN32
 #include <sched.h>
@@ -137,12 +137,12 @@ bool Master::Run(int argc, char** argv)
         switch (c)
         {
             case 'c':
-                config_file = new char[strlen(arcemu_optarg)];
+                config_file = new char[strlen(arcemu_optarg) + 1];
                 strcpy(config_file, arcemu_optarg);
                 break;
 
             case 'r':
-                realm_config_file = new char[strlen(arcemu_optarg)];
+                realm_config_file = new char[strlen(arcemu_optarg) + 1];
                 strcpy(realm_config_file, arcemu_optarg);
                 break;
 
@@ -162,9 +162,10 @@ bool Master::Run(int argc, char** argv)
 
     sLog.Init(0, WORLD_LOG);
 
-    sLog.outBasic(BANNER, BUILD_TAG, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    sLog.outBasic("==================================================================");
-    sLog.outErrorSilent(BANNER, BUILD_TAG, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic("========================================================");
+    sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent("========================================================"); // Echo off.
 
     if (do_version)
     {
@@ -294,7 +295,7 @@ bool Master::Run(int argc, char** argv)
     // Initialize Opcode Table
     WorldSession::InitPacketHandlerTable();
 
-    string host = Config.MainConfig.GetStringDefault("Listen", "Host", DEFAULT_HOST);
+    std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", DEFAULT_HOST);
     int wsport = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", DEFAULT_WORLDSERVER_PORT);
 
     new ScriptMgr;
@@ -303,6 +304,7 @@ bool Master::Run(int argc, char** argv)
     {
         Log.Error("Server", "SetInitialWorldSettings() failed. Something went wrong? Exiting.");
         sLog.Close();
+        delete[] realm_config_file;
         return false;
     }
 
@@ -572,8 +574,8 @@ bool Master::Run(int argc, char** argv)
     return true;
 }
 
-static const char *REQUIRED_CHAR_DB_VERSION = "2015-03-21_01_mailbox";
-static const char *REQUIRED_WORLD_DB_VERSION = "2015-03-31_01_misc_gossip_texts";
+static const char *REQUIRED_CHAR_DB_VERSION = "2015-09-17_01_characters";
+static const char *REQUIRED_WORLD_DB_VERSION = "2015-10-22_06_misc_updates";
 
 bool Master::CheckDBVersion()
 {
@@ -647,20 +649,20 @@ bool Master::_StartDB()
 {
     Database_World = NULL;
     Database_Character = NULL;
-    string hostname, username, password, database;
+    std::string hostname, username, password, database;
     int port = 0;
 
-    bool result = Config.MainConfig.GetString("WorldDatabase", "Username", &username);
-    Config.MainConfig.GetString("WorldDatabase", "Password", &password);
-    result = !result ? result : Config.MainConfig.GetString("WorldDatabase", "Hostname", &hostname);
-    result = !result ? result : Config.MainConfig.GetString("WorldDatabase", "Name", &database);
-    result = !result ? result : Config.MainConfig.GetInt("WorldDatabase", "Port", &port);
+    bool wdb_result = Config.MainConfig.GetString("WorldDatabase", "Username", &username);
+    wdb_result = !wdb_result ? wdb_result : Config.MainConfig.GetString("WorldDatabase", "Password", &password);
+    wdb_result = !wdb_result ? wdb_result : Config.MainConfig.GetString("WorldDatabase", "Hostname", &hostname);
+    wdb_result = !wdb_result ? wdb_result : Config.MainConfig.GetString("WorldDatabase", "Name", &database);
+    wdb_result = !wdb_result ? wdb_result : Config.MainConfig.GetInt("WorldDatabase", "Port", &port);
 
     Database_World = Database::CreateDatabaseInterface();
 
-    if (result == false)
+    if (wdb_result == false)
     {
-        Log.Error("sql", "One or more parameters were missing from WorldDatabase directive.");
+        Log.Error("Configs", "One or more parameters were missing for WorldDatabase connection.");
         return false;
     }
 
@@ -668,21 +670,21 @@ bool Master::_StartDB()
     if (!WorldDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
         password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("WorldDatabase", "ConnectionCount", 3), 16384))
     {
-        Log.Error("sql", "Main database initialization failed. Exiting.");
+        Log.Error("Configs", "Connection to WorldDatabase failed. Check your database configurations!");
         return false;
     }
 
-    result = Config.MainConfig.GetString("CharacterDatabase", "Username", &username);
-    Config.MainConfig.GetString("CharacterDatabase", "Password", &password);
-    result = !result ? result : Config.MainConfig.GetString("CharacterDatabase", "Hostname", &hostname);
-    result = !result ? result : Config.MainConfig.GetString("CharacterDatabase", "Name", &database);
-    result = !result ? result : Config.MainConfig.GetInt("CharacterDatabase", "Port", &port);
+    bool cdb_result = Config.MainConfig.GetString("CharacterDatabase", "Username", &username);
+    cdb_result = !cdb_result ? cdb_result : Config.MainConfig.GetString("CharacterDatabase", "Password", &password);
+    cdb_result = !cdb_result ? cdb_result : Config.MainConfig.GetString("CharacterDatabase", "Hostname", &hostname);
+    cdb_result = !cdb_result ? cdb_result : Config.MainConfig.GetString("CharacterDatabase", "Name", &database);
+    cdb_result = !cdb_result ? cdb_result : Config.MainConfig.GetInt("CharacterDatabase", "Port", &port);
 
     Database_Character = Database::CreateDatabaseInterface();
 
-    if (result == false)
+    if (cdb_result == false)
     {
-        Log.Error("sql", "One or more parameters were missing from Database directive.");
+        Log.Error("Configs", "Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -690,7 +692,7 @@ bool Master::_StartDB()
     if (!CharacterDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
         password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("CharacterDatabase", "ConnectionCount", 5), 16384))
     {
-        Log.Error("sql", "Main database initialization failed. Exiting.");
+        Log.Error("Configs", "Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
     }
 

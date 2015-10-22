@@ -33,32 +33,32 @@ ConfigFile::~ConfigFile()
 
 }
 
-void remove_spaces(string & str)
+void remove_spaces(std::string & str)
 {
     while(str.size() && (*str.begin() == ' ' || *str.begin() == '\t'))
         str.erase(str.begin());
 }
 
-void remove_all_spaces(string & str)
+void remove_all_spaces(std::string & str)
 {
-    string::size_type off = str.find(" ");
-    while(off != string::npos)
+    std::string::size_type off = str.find(" ");
+    while(off != std::string::npos)
     {
         str.erase(off, 1);
         off = str.find(" ");
     }
 
     off = str.find("\t");
-    while(off != string::npos)
+    while(off != std::string::npos)
     {
         str.erase(off, 1);
         off = str.find("\t");
     }
 }
 
-bool is_comment(string & str, bool* in_multiline_quote)
+bool is_comment(std::string & str, bool* in_multiline_quote)
 {
-    string stemp = str;
+    std::string stemp = str;
     remove_spaces(stemp);
     if(stemp.length() == 0)
         return false;
@@ -85,7 +85,7 @@ bool is_comment(string & str, bool* in_multiline_quote)
     return false;
 }
 
-void apply_setting(string & str, ConfigSetting & setting)
+void apply_setting(std::string & str, ConfigSetting & setting)
 {
     setting.AsString = str;
     setting.AsInt = atoi(str.c_str());
@@ -121,7 +121,7 @@ uint32 ahash(const char* str)
     return ret;
 }
 
-uint32 ahash(string & str)
+uint32 ahash(std::string & str)
 {
     return ahash(str.c_str());
 }
@@ -155,24 +155,31 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         buf = new char[length + 1];
         fseek(f, 0, SEEK_SET);
 
-        fread(buf, length, 1, f);
+        if (fread(buf, length, 1, f) != 1)
+        {
+            sLog.outError("Could not read %s.", file);
+            // delete buf and close the file before returning
+            delete[] buf;
+            fclose(f);
+            return false;
+        }
         buf[length] = '\0';
-        string buffer = string(buf);
+        std::string buffer = std::string(buf);
         delete [] buf;
 
         /* close the file, it is no longer needed */
         fclose(f);
 
         /* let's parse it. */
-        string line;
-        string::size_type end;
-        string::size_type offset;
+        std::string line;
+        std::string::size_type end;
+        std::string::size_type offset;
         bool in_multiline_comment = false;
         bool in_multiline_quote = false;
         bool in_block = false;
-        string current_setting = "";
-        string current_variable = "";
-        string current_block = "";
+        std::string current_setting = "";
+        std::string current_variable = "";
+        std::string current_block = "";
         ConfigBlock current_block_map;
         ConfigSetting current_setting_struct;
 
@@ -184,7 +191,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
             {
                 /* grab a line. */
                 end = buffer.find(EOL);
-                if(end == string::npos)
+                if(end == std::string::npos)
                 {
                     if(buffer.size() == 0)
                         break;
@@ -219,7 +226,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                     offset = line.find("*/", 0);
 
                     /* skip this entire line, eh? */
-                    if(offset == string::npos)
+                    if(offset == std::string::npos)
                         continue;
 
                     /* remove up to the end of the comment block. */
@@ -235,7 +242,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                         /* attempt to find the end of the quote block. */
                         offset = line.find("\"");
 
-                        if(offset == string::npos)
+                        if(offset == std::string::npos)
                         {
                             /* append the whole line to the quote. */
                             current_setting += line;
@@ -276,7 +283,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
 
                     /* our target is a *setting*. look for an '=' sign, this is our seperator. */
                     offset = line.find("=");
-                    if(offset != string::npos)
+                    if(offset != std::string::npos)
                     {
                         ASSERT(current_variable == "");
                         current_variable = line.substr(0, offset);
@@ -290,14 +297,14 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
 
                     /* look for the opening quote. this signifies the start of a setting. */
                     offset = line.find("\"");
-                    if(offset != string::npos)
+                    if(offset != std::string::npos)
                     {
                         ASSERT(current_setting == "");
                         ASSERT(current_variable != "");
 
                         /* try and find the ending quote */
                         end = line.find("\"", offset + 1);
-                        if(end != string::npos)
+                        if(end != std::string::npos)
                         {
                             /* the closing quote is on the same line, oh goody. */
                             current_setting = line.substr(offset + 1, end - offset - 1);
@@ -336,7 +343,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
 
                     /* are we at the end of the block yet? */
                     offset = line.find(">");
-                    if(offset != string::npos)
+                    if(offset != std::string::npos)
                     {
                         line.erase(0, offset + 1);
 
@@ -358,7 +365,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                     /* we're not in a block. look for the start of one. */
                     offset = line.find("<");
 
-                    if(offset != string::npos)
+                    if(offset != std::string::npos)
                     {
                         in_block = true;
 
@@ -367,7 +374,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
 
                         /* find the name of the block first, though. */
                         offset = line.find(" ");
-                        if(offset != string::npos)
+                        if(offset != std::string::npos)
                         {
                             current_block = line.substr(0, offset);
                             line.erase(0, offset + 1);
@@ -423,7 +430,7 @@ ConfigSetting* ConfigFile::GetSetting(const char* Block, const char* Setting)
     uint32 setting_hash = ahash(Setting);
 
     /* find it in the big map */
-    map<uint32, ConfigBlock>::iterator itr = m_settings.find(block_hash);
+    std::map<uint32, ConfigBlock>::iterator itr = m_settings.find(block_hash);
     if(itr != m_settings.end())
     {
         ConfigBlock::iterator it2 = itr->second.find(setting_hash);
@@ -449,7 +456,7 @@ bool ConfigFile::GetString(const char* block, const char* name, std::string* val
 
 std::string ConfigFile::GetStringDefault(const char* block, const char* name, const char* def)
 {
-    string ret;
+    std::string ret;
     return GetString(block, name, &ret) ? ret : def;
 }
 
@@ -538,7 +545,7 @@ std::string ConfigFile::GetStringVA(const char* block, const char* def, const ch
 
 bool ConfigFile::GetString(const char* block, char* buffer, const char* name, const char* def, uint32 len)
 {
-    string val = GetStringDefault(block, name, def);
+    std::string val = GetStringDefault(block, name, def);
     size_t blen = val.length();
     if(blen > len)
         blen = len;

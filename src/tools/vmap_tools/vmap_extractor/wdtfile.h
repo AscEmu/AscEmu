@@ -33,7 +33,7 @@ public:
     ~WDTFile(void);
     bool init(char *map_id, unsigned int mapID);
 
-    string* gWmoInstansName;
+    std::string* gWmoInstansName;
     int gnWMO, nMaps;
 
     ADTFile* GetMap(int x, int z);
@@ -41,7 +41,7 @@ public:
 private:
     MPQFile WDT;
     bool maps[64][64];
-    string filename;
+    std::string filename;
 };
 
 #endif

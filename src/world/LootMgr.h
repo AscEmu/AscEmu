@@ -21,6 +21,13 @@
 #ifndef _LOOTMGR_H
 #define _LOOTMGR_H
 
+#include "EventableObject.h"
+#include "Singleton.h"
+
+#include <map>
+#include <vector>
+#include <set>
+
 enum LOOTTYPE
 {
     LOOT_NORMAL10,	    // normal dungeon / old raid (10/25/40 men) / normal 10 raid
@@ -32,7 +39,9 @@ enum LOOTTYPE
 
 struct ItemPrototype;
 class MapMgr;
-
+struct RandomProps;
+struct ItemRandomSuffixEntry;
+class Player;
 
 class LootRoll : public EventableObject
 {
@@ -48,7 +57,7 @@ class LootRoll : public EventableObject
 
         std::map<uint32, uint32> m_NeedRolls;
         std::map<uint32, uint32> m_GreedRolls;
-        set<uint32> m_passRolls;
+    std::set<uint32> m_passRolls;
         uint32 _groupcount;
         uint32 _slotid;
         uint32 _itemid;
@@ -59,8 +68,8 @@ class LootRoll : public EventableObject
         MapMgr* _mgr;
 };
 
-typedef vector<pair<RandomProps*, float>> RandomPropertyVector;
-typedef vector<pair<ItemRandomSuffixEntry*, float>> RandomSuffixVector;
+typedef std::vector<std::pair<RandomProps*, float>> RandomPropertyVector;
+typedef std::vector<std::pair<ItemRandomSuffixEntry*, float>> RandomSuffixVector;
 
 typedef struct
 {
@@ -81,7 +90,19 @@ struct __LootItem
     LooterSet has_looted;
     uint32 ffa_loot;
     bool looted;
-    __LootItem(){ looted = false; }
+
+    __LootItem()
+    {
+        looted = false;
+        item.itemproto = nullptr;
+        item.displayid = 0;
+        iItemsCount = 0;
+        iRandomProperty = nullptr;
+        iRandomSuffix = nullptr;
+        roll = nullptr;
+        passed = false;
+        ffa_loot = 0;
+    }
 };
 
 
@@ -157,7 +178,7 @@ struct tempy
     uint32 maxcount;
 };
 
-typedef HM_NAMESPACE::hash_map<uint32, StoreLootList> LootStore;
+typedef std::map<uint32, StoreLootList> LootStore;
 
 #define PARTY_LOOT_FFA 0
 #define PARTY_LOOT_MASTER 2
@@ -217,8 +238,8 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
 
         void LoadLootTables(const char* szTableName, LootStore* LootTable);
         void PushLoot(StoreLootList* list, Loot* loot, uint32 type);
-        map<uint32, RandomPropertyVector> _randomprops;
-        map<uint32, RandomSuffixVector> _randomsuffix;
+    std::map<uint32, RandomPropertyVector> _randomprops;
+    std::map<uint32, RandomSuffixVector> _randomsuffix;
 };
 
 #define lootmgr LootMgr::getSingleton()

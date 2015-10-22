@@ -785,7 +785,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         for (LfgRolesMap::const_iterator itRoles = it->second->roles.begin(); itRoles != it->second->roles.end(); ++itRoles)
         {
             // Assign new leader
-            if (itRoles->second & ROLE_LEADER && (!leader || rand() % 1))
+            if (itRoles->second & ROLE_LEADER && (!leader || RandomUInt(1)))
                 leader = itRoles->first;
 
             rolesMap[itRoles->first] = itRoles->second;
@@ -1324,11 +1324,13 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
         LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(pProposal->dungeonId);
         ASSERT(dungeon);
         //Set Dungeon difficult incomplete :D
-        uint64 gguid = grp->GetGUID();
-        SetDungeon(gguid, dungeon->Entry());
-        SetState(gguid, LFG_STATE_DUNGEON);
-        //Maybe Save these :D
-
+        if (grp)
+        {
+            uint64 gguid = grp->GetGUID();
+            SetDungeon(gguid, dungeon->Entry());
+            SetState(gguid, LFG_STATE_DUNGEON);
+            //Maybe Save these :D
+        }
 
         // Remove players/groups from Queue
         for (LfgGuidList::const_iterator it = pProposal->queues.begin(); it != pProposal->queues.end(); ++it)
@@ -1339,7 +1341,8 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             TeleportPlayer(*it, false);
 
         // Update group info
-        grp->Update();
+        if (grp)
+            grp->Update();
 
         delete pProposal;
         m_Proposals.erase(itProposal);

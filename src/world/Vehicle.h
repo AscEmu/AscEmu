@@ -21,7 +21,11 @@
 #ifndef _VEHICLE_H
 #define _VEHICLE_H
 
+#include "DBC/DBCStores.h"
+#include <array>
 
+struct VehicleSeatEntry;
+struct VehicleEntry;
 //////////////////////////////////////////////////////////////////////////////////////////
 //class VehicleSeat
 //  Implements the seat functionality for Vehicles
@@ -30,11 +34,7 @@ class VehicleSeat
 {
     public:
 
-        VehicleSeat(VehicleSeatEntry* info)
-        {
-            passenger = 0;
-            seat_info = info;
-        }
+    VehicleSeat(VehicleSeatEntry* info);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -119,10 +119,7 @@ class VehicleSeat
         /// \ return true if the seat is usable, false otherwise.
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool Usable() const
-        {
-            return seat_info->IsUsable();
-        }
+    bool Usable() const;
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +129,7 @@ class VehicleSeat
         /// \return true if the seat can control, false otherwise.
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool Controller() const { return seat_info->IsController(); }
+    bool Controller() const;
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -142,7 +139,7 @@ class VehicleSeat
         /// \return true if the passenger is hidden in this seat, false otherwise
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool HidesPassenger() const{ return seat_info->HidesPassenger(); }
+    bool HidesPassenger() const;
 
     private:
 
@@ -275,6 +272,16 @@ class SERVER_DECL Vehicle
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
+        /// boolean controller aura
+        ///
+        /// \param bool
+        /// \return true if unit has aura.
+        ///
+        //////////////////////////////////////////////////////////////////////////////////////////
+        bool IsControler(Unit* aura);
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////
         /// Moves the passengers on/in the vehicle to the specified coordinates
         ///
         /// \param float x  -  destination X coordinate
@@ -351,7 +358,7 @@ class SERVER_DECL Vehicle
         uint32 GetPassengerSeatId(uint64 guid);
 
     private:
-        std::tr1::array<VehicleSeat*, MAX_VEHICLE_SEATS> seats;
+        std::array<VehicleSeat*, MAX_VEHICLE_SEATS> seats;
         std::vector<uint64> installed_accessories;
         uint32 creature_entry;
         Unit* owner;

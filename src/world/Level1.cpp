@@ -56,7 +56,7 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
         return true;
     }
     char msg[1024];
-    string input2;
+    std::string input2;
     input2 = sWorld.ann_tagcolor;
     input2 += "[";
     input2 += sWorld.announce_tag;
@@ -101,7 +101,7 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
     char pAnnounce[1024];
-    string input3;
+    std::string input3;
     input3 = sWorld.ann_tagcolor;
     input3 += "[";
     input3 += sWorld.announce_tag;
@@ -183,25 +183,35 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     else
         obj = m_session->GetPlayer();
 
-    char buf[328];
-    AreaTable* at = dbcArea.LookupEntryForced(obj->GetMapMgr()->GetAreaID(obj->GetPositionX(), obj->GetPositionY()));
+    char buf[400];
+    auto at = obj->GetArea();
     if (!at)
     {
-        snprintf((char*)buf, 328, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
+        snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
                  (unsigned int)obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
         SystemMessage(m_session, buf);
         return true;
     }
-    snprintf((char*)buf, 328, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
-             (unsigned int)obj->GetMapId(), at->ZoneId, at->AreaId, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(), at->name);
+    auto out_map_id = obj->GetMapId();
+    auto out_zone_id = at->zone; // uint32 at_old->ZoneId
+    auto out_area_id = at->id; // uint32 at_old->AreaId
+    auto out_phase = obj->GetPhase();
+    auto out_x = obj->GetPositionX();
+    auto out_y = obj->GetPositionY();
+    auto out_z = obj->GetPositionZ();
+    auto out_o = obj->GetOrientation();
+    auto out_area_name = at->area_name[0]; // enUS, hardcoded until locale is implemented properly
+    snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffPhase: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
+             out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
+    SystemMessage(m_session, "Use for report: .worldport %d %f %f %f", out_map_id, out_x, out_y, out_z);
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != NULL && *args == '1')
     {
         FILE* gpslog = fopen(FormatOutputString("logs", "gps", false).c_str(), "at");
         if (gpslog)
         {
-            fprintf(gpslog, "%d, %u, %u, %f, %f, %f, %f, \'%s\'", (unsigned int)obj->GetMapId(), at->ZoneId, at->AreaId, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation(), at->name);
+            fprintf(gpslog, "%d, %u, %u, %f, %f, %f, %f, \'%s\'", out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name);
             // ".gps 1 comment" will save comment after the gps data
             if (*(args + 1) == ' ')
                 fprintf(gpslog, ",%s\n", args + 2);
@@ -275,7 +285,8 @@ bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_sess
         uint16 ofs = GetItemIDFromLink(args, &itemid);
         if (itemid == 0)
             return false;
-        sscanf(args + ofs, "%u %d", &count, &randomprop); // these may be empty
+        if (sscanf(args + ofs, "%u %d", &count, &randomprop) != 2)
+            return false; // these may be empty
     }
 
     Player* chr = getSelectedChar(m_session, false);
@@ -1007,40 +1018,40 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
 {
     if (!*args)
         return false;
-    string x;
+    std::string x;
     bool lookupname = true, lookupdesc = false, lookupcriteria = false, lookupreward = false;
     if (strnicmp(args, "name ", 5) == 0)
     {
-        x = string(args + 5);
+        x = std::string(args + 5);
     }
     else if (strnicmp(args, "desc ", 5) == 0)
     {
         lookupname = false;
         lookupdesc = true;
-        x = string(args + 5);
+        x = std::string(args + 5);
     }
     else if (strnicmp(args, "criteria ", 9) == 0)
     {
         lookupname = false;
         lookupcriteria = true;
-        x = string(args + 9);
+        x = std::string(args + 9);
     }
     else if (strnicmp(args, "reward ", 7) == 0)
     {
         lookupname = false;
         lookupreward = true;
-        x = string(args + 7);
+        x = std::string(args + 7);
     }
     else if (strnicmp(args, "all ", 4) == 0)
     {
         lookupdesc = true;
         lookupcriteria = true;
         lookupreward = true;
-        x = string(args + 4);
+        x = std::string(args + 4);
     }
     else
     {
-        x = string(args);
+        x = std::string(args);
     }
     if (x.length() < 4)
     {
@@ -1051,9 +1062,9 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
     GreenSystemMessage(m_session, "Starting search of achievement `%s`...", x.c_str());
     uint32 t = getMSTime();
     uint32 i, j, numFound = 0;
-    string y, recout;
+    std::string y, recout;
     char playerGUID[17];
-    snprintf(playerGUID, 17, I64FMT, m_session->GetPlayer()->GetGUID());
+    snprintf(playerGUID, 17, "%lu", m_session->GetPlayer()->GetGUID());
     if (lookupname || lookupdesc || lookupreward)
     {
         std::set<uint32> foundList;
@@ -1072,19 +1083,19 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 foundmatch = false;
                 if (lookupname)
                 {
-                    y = string(achievement->name);
+                    y = std::string(achievement->name);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupdesc)
                 {
-                    y = string(achievement->description);
+                    y = std::string(achievement->description);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupreward)
                 {
-                    y = string(achievement->rewardName);
+                    y = std::string(achievement->rewardName);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
@@ -1152,7 +1163,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                     // already listed this achievement (some achievements have multiple entries in dbc)
                     continue;
                 }
-                y = string(criteria->name);
+                y = std::string(criteria->name);
                 arcemu_TOLOWER(y);
                 if (!FindXinYString(x, y))
                 {

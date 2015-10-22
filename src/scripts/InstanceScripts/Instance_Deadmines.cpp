@@ -295,9 +295,9 @@ class VanCleefAI : public MoonScriptBossAI
     {
         char msg[200];
         if (pTarget->IsPlayer())
-            sprintf(msg, "And stay down, %s.", TO_PLAYER(pTarget)->GetName());
+            sprintf(msg, "And stay down, %s.", static_cast<Player*>(pTarget)->GetName());
         else if (pTarget->GetTypeFromGUID() == HIGHGUID_TYPE_PET)
-            sprintf(msg, "And stay down, %s.", TO_PET(pTarget)->GetName().c_str());
+            sprintf(msg, "And stay down, %s.", static_cast<Pet*>(pTarget)->GetName().c_str());
 
         Emote(msg, Text_Yell, 5781);
         ParentClass::OnTargetDied(pTarget);

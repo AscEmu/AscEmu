@@ -158,65 +158,64 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
 
     uint32 entryID;
     uint64 guid;
-    GameObjectInfo* goinfo;
 
     recv_data >> entryID;
     recv_data >> guid;
 
     LOG_DETAIL("WORLD: CMSG_GAMEOBJECT_QUERY '%u'", entryID);
 
-    goinfo = GameObjectNameStorage.LookupEntry(entryID);
-    if (goinfo == NULL)
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(entryID);
+    if (gameobject_info == nullptr)
         return;
 
     LocalizedGameObjectName* lgn = (language > 0) ? sLocalizationMgr.GetLocalizedGameObjectName(entryID, language) : NULL;
 
     data << entryID;                // unique identifier of the GO template
-    data << goinfo->Type;           // type of the gameobject
-    data << goinfo->DisplayID;      // displayid/modelid of the gameobject
+    data << gameobject_info->type;           // type of the gameobject
+    data << gameobject_info->display_id;      // displayid/modelid of the gameobject
 
     // Name of the gameobject
     if (lgn)
         data << lgn->Name;
     else
-        data << goinfo->Name;
+        data << gameobject_info->name;
 
     data << uint8(0);               // name2, always seems to be empty
     data << uint8(0);               // name3, always seems to be empty
     data << uint8(0);               // name4, always seems to be empty
-    data << goinfo->Category;       // Category string of the GO, like "attack", "pvp", "point", etc
-    data << goinfo->Castbartext;    // text displayed when using the go, like "collecting", "summoning" etc
-    data << goinfo->Unkstr;
-    data << goinfo->SpellFocus;     // spellfocus id, ex.: spell casted when interacting with the GO
-    data << goinfo->sound1;
-    data << goinfo->sound2;
-    data << goinfo->sound3;
-    data << goinfo->sound4;
-    data << goinfo->sound5;
-    data << goinfo->sound6;
-    data << goinfo->sound7;
-    data << goinfo->sound8;
-    data << goinfo->sound9;
-    data << goinfo->Unknown1;
-    data << goinfo->Unknown2;
-    data << goinfo->Unknown3;
-    data << goinfo->Unknown4;
-    data << goinfo->Unknown5;
-    data << goinfo->Unknown6;
-    data << goinfo->Unknown7;
-    data << goinfo->Unknown8;
-    data << goinfo->Unknown9;
-    data << goinfo->Unknown10;
-    data << goinfo->Unknown11;
-    data << goinfo->Unknown12;
-    data << goinfo->Unknown13;
-    data << goinfo->Unknown14;
-    data << float(goinfo->Size);       // scaling of the GO
+    data << gameobject_info->category_name;  // Category string of the GO, like "attack", "pvp", "point", etc
+    data << gameobject_info->cast_bar_text;  // text displayed when using the go, like "collecting", "summoning" etc
+    data << gameobject_info->Unkstr;
+    data << gameobject_info->parameter_0;     // spellfocus id, ex.: spell casted when interacting with the GO
+    data << gameobject_info->parameter_1;
+    data << gameobject_info->parameter_2;
+    data << gameobject_info->parameter_3;
+    data << gameobject_info->parameter_4;
+    data << gameobject_info->parameter_5;
+    data << gameobject_info->parameter_6;
+    data << gameobject_info->parameter_7;
+    data << gameobject_info->parameter_8;
+    data << gameobject_info->parameter_9;
+    data << gameobject_info->parameter_10;
+    data << gameobject_info->parameter_11;
+    data << gameobject_info->parameter_12;
+    data << gameobject_info->parameter_13;
+    data << gameobject_info->parameter_14;
+    data << gameobject_info->parameter_15;
+    data << gameobject_info->parameter_16;
+    data << gameobject_info->parameter_17;
+    data << gameobject_info->parameter_18;
+    data << gameobject_info->parameter_19;
+    data << gameobject_info->parameter_20;
+    data << gameobject_info->parameter_21;
+    data << gameobject_info->parameter_22;
+    data << gameobject_info->parameter_23;
+    data << float(gameobject_info->size);       // scaling of the GO
 
     // questitems that the go can contain
     for (uint32 i = 0; i < 6; ++i)
     {
-        data << uint32(goinfo->QuestItems[i]);
+        data << uint32(gameobject_info->QuestItems[i]);
     }
 
     SendPacket(&data);
@@ -367,7 +366,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
         if (!(*itr)->IsCreature())
             continue;
 
-        pCreature = TO_CREATURE(*itr);
+        pCreature = static_cast<Creature*>(*itr);
 
         if (pCreature->isQuestGiver())
         {

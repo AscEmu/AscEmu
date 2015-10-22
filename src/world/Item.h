@@ -366,7 +366,7 @@ class SERVER_DECL Item : public Object
         void RemoveSocketBonusEnchant();
 
         /// gets the itemlink for a message to the player
-        string GetItemLink(uint32 language);
+        std::string GetItemLink(uint32 language);
 
         bool IsAmmoBag() { return (m_itemProto->Class == ITEM_CLASS_QUIVER); }
 
@@ -431,7 +431,7 @@ uint32 GetBuyPriceForItem(ItemPrototype* proto, uint32 count, Player* plr, Creat
 uint32 GetSellPriceForItem(uint32 itemid, uint32 count);
 uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, Player* plr, Creature* vendor);
 
-string GetItemLinkByProto(ItemPrototype* iProto, uint32 language);
+std::string GetItemLinkByProto(ItemPrototype* iProto, uint32 language);
 
 int32 GetStatScalingStatValueColumn(ItemPrototype* proto, uint32 type);
 

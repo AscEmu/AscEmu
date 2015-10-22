@@ -226,7 +226,7 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 2)
+        switch (RandomUInt(1))
         {
            case 0:
               _unit->SendScriptTextChatMessage(762);        // So ends your curse.
@@ -355,12 +355,12 @@ class Volkhan : public MoonScriptCreatureAI
         AddWaypoint(CreateWaypoint(1, 0, Flag_Run, m_cVolkhanWP));
         mStompTimer = INVALIDATE_TIMER;
         mPhase = 0;
+        m_bStomp = false;
     }
 
     void OnCombatStart(Unit* pTarget)
     {
         _unit->SendScriptTextChatMessage(769);      // It is you who have destroyed my children? You... shall... pay!
-        m_bStomp = false;
         mStompTimer = AddTimer(TIMER_STOMP + (RandomUInt(6) * 1000));
         mPhase = 0;
 
@@ -372,7 +372,7 @@ class Volkhan : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 3)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(774);      // The armies of iron will conquer all!
@@ -449,11 +449,11 @@ class Volkhan : public MoonScriptCreatureAI
 
     void DoStomp()
     {
-        for (set< Object* >::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+        for (std::set< Object* >::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
         {
             if ((*itr) && (*itr)->IsCreature() && (*itr)->GetEntry() == CN_BRITTLE_GOLEM)
             {
-                Creature* pCreature = TO< Creature* >((*itr));
+                Creature* pCreature = static_cast< Creature* >((*itr));
                 pCreature->CastSpell(pCreature, SPELL_SHATTER, true);
 
                 pCreature->Despawn(1000, 0);
@@ -468,7 +468,6 @@ class Volkhan : public MoonScriptCreatureAI
         _unit->SendScriptTextChatMessage(777);      // The master was right... to be concerned.
     }
 
-    SpellDesc* mTemper;
     SpellDesc* mStomp;
     Location m_cVolkhanWP;
     bool m_bStomp;
@@ -551,7 +550,7 @@ class IonarAI : public MoonScriptBossAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 2)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(741);      // Shocking, I know.
@@ -634,7 +633,7 @@ class LokenAI : public MoonScriptCreatureAI
 
     void OnTargetDied(Unit* pTarget)
     {
-        switch (rand() % 2)
+        switch (RandomUInt(2))
         {
             case 0:
                 _unit->SendScriptTextChatMessage(805);      // Only mortal...
@@ -683,7 +682,7 @@ class LokenAI : public MoonScriptCreatureAI
 
         if (GetHealthPercent() <= (100 - (25 * mSpeech)))
         {
-            switch (mSpeech)
+            switch (mSpeech) //rand() % 2
             {
                 case 1:
                     _unit->SendScriptTextChatMessage(808);      // You stare blindly into the abyss!
@@ -694,8 +693,9 @@ class LokenAI : public MoonScriptCreatureAI
                 case 3:
                     _unit->SendScriptTextChatMessage(810);      // You cross the precipice of oblivion!
                     break;
-                    ++mSpeech;
             };
+
+            ++mSpeech;
         };
 
         if (IsTimerFinished(mRespondTimer))

@@ -38,7 +38,7 @@ bool Transporter::CreateAsTransporter(uint32 EntryID, const char* Name, int32 Ti
     //Maybe this would be the perfect way, so there would be no extra checks in Object.cpp:
     //but these fields seems to change often and between server flavours (ArcEmu, Aspire, name another one) - by: VLack aka. VLsoft
     if (pInfo)
-        pInfo->Type = GAMEOBJECT_TYPE_TRANSPORT;
+        pInfo->type = GAMEOBJECT_TYPE_TRANSPORT;
     else
         LOG_ERROR("Transporter id[%i] name[%s] - can't set GAMEOBJECT_TYPE - it will behave badly!", EntryID, Name);
 
@@ -89,11 +89,11 @@ bool FillPathVector(uint32 PathID, TransportPath & Path)
 bool Transporter::GenerateWaypoints()
 {
     TransportPath path;
-    FillPathVector(GetInfo()->SpellFocus, path);
+    FillPathVector(GetInfo()->parameter_0, path);
 
     if (path.Size() == 0) return false;
 
-    vector<keyFrame> keyFrames;
+    std::vector<keyFrame> keyFrames;
     int mapChange = 0;
     for (int i = 1; i < (int)path.Size() - 1; i++)
     {
@@ -344,7 +344,7 @@ void Transporter::UpdatePosition()
         if (mCurrentWaypoint->second.delayed)
         {
             //Transprter Script = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
-            switch (GetInfo()->DisplayID)
+            switch (GetInfo()->display_id)
             {
                 case 3015:
                 case 7087:
@@ -363,7 +363,7 @@ void Transporter::UpdatePosition()
                 }
                 break;
             }
-            TransportGossip(GetInfo()->DisplayID);
+            TransportGossip(GetInfo()->display_id);
         }
     }
 }
@@ -452,7 +452,11 @@ void Transporter::TransportPassengers(uint32 mapid, uint32 oldmap, float x, floa
 }
 
 Transporter::Transporter(uint64 guid) : GameObject(guid)
-{}
+{
+    m_pathTime = 0;
+    m_timer = 0;
+    m_period = 0;
+}
 
 Transporter::~Transporter()
 {
@@ -461,53 +465,116 @@ Transporter::~Transporter()
         delete itr->second;
 }
 
+Creature* Transporter::GetCreature(uint32 Guid)
+{
+    TransportNPCMap::iterator itr = m_npcs.find(Guid);
+    if (itr == m_npcs.end())
+        return nullptr;
+    if (itr->second->IsCreature())
+        return static_cast< Creature* >(itr->second);
+    else
+        return nullptr;
+}
+
 void ObjectMgr::LoadTransporters()
 {
-    Log.Success("ObjectMgr", "Loading Transports...");
-    QueryResult* QR = WorldDatabase.Query("SELECT * FROM transport_data");
-    if (!QR) return;
-
-    int64 total = QR->GetRowCount();
-    TransportersCount = total;
-    do
+    Log.Notice("TransporterHandler", "Start loading transport_data");
     {
-        uint32 entry = QR->Fetch()[0].GetUInt32();
-        int32 period = QR->Fetch()[2].GetInt32();
+        const char* loadAllTransportData = "SELECT entry, name, period FROM transport_data";
 
-        GameObjectInfo *i = GameObjectNameStorage.LookupEntry(entry);
-        if (i == NULL)
-            continue;
-
-        Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
-        pTransporter->SetInfo(i);
-
-        if (!pTransporter->CreateAsTransporter(entry, "", period))
+        QueryResult* result = WorldDatabase.Query(loadAllTransportData);
+        if (!result)
         {
-            LOG_ERROR("Transporter %s failed creation for some reason.", QR->Fetch()[1].GetString());
-            delete pTransporter;
+            Log.Error("TransporterHandler", "Query failed: %s", loadAllTransportData);
+            return;
         }
-        else
-        {
-            AddTransport(pTransporter);
 
-            QueryResult* result2 = WorldDatabase.Query("SELECT * FROM transport_creatures WHERE transport_entry = %u", entry);
-            if (result2)
+        uint32 count = 0;
+        do
+        {
+            Field* field = result->Fetch();
+
+            TransporterDataQueryResult dbResult;
+            dbResult.entry = field[0].GetUInt32();
+            dbResult.name = field[1].GetString();
+            dbResult.period = field[2].GetUInt32();
+
+            auto gameobject_info = GameObjectNameStorage.LookupEntry(dbResult.entry);
+            if (gameobject_info == nullptr)
             {
-                do
-                {
-                    pTransporter->AddNPC(result2->Fetch()[1].GetUInt32(), result2->Fetch()[2].GetFloat(),
-                                         result2->Fetch()[3].GetFloat(), result2->Fetch()[4].GetFloat(),
-                                         result2->Fetch()[5].GetFloat());
-
-                }
-                while (result2->NextRow());
-                delete result2;
+                Log.Error("TransporterHandler", "Transporter gameobject %u not available in GameObjectNameStorage!", dbResult.entry);
+                continue;
             }
+
+            Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | dbResult.entry);
+            pTransporter->SetInfo(gameobject_info);
+            if (!pTransporter->CreateAsTransporter(dbResult.entry, "", dbResult.period))
+            {
+                Log.Error("TransporterHandler", "Transporter %s failed creation for some reason.", dbResult.name.c_str());
+                delete pTransporter;
+            }
+            else
+            {
+                Log.Debug("TransporterHandler", "%s, Entry: %u, Period: %u loaded", dbResult.name.c_str(), dbResult.entry, dbResult.period);
+                AddTransport(pTransporter);
+                ++count;
+            }
+
+        }
+        while (result->NextRow());
+
+        delete result;
+        Log.Success("TransporterHandler", "%u transporters loaded from table transporter_data", count);
+    }
+
+    Log.Notice("TransporterHandler", "Start loading transport_creatures");
+    {
+        const char* loadTransportPassengers = "SELECT transport_entry, creature_entry, position_x, position_y, position_z, orientation FROM transport_creatures";
+        bool success = false;
+        QueryResult* result = WorldDatabase.Query(&success, loadTransportPassengers);
+        if (!success)
+        {
+            Log.Error("TransporterHandler", "Query failed: %s", loadTransportPassengers);
+            return;
         }
 
+        uint32 count = 0;
+        if (result)
+        {
+            do
+            {
+                Field* field = result->Fetch();
+
+                uint32 transport_entry = field[0].GetUInt32();
+                uint32 creature_entry = field[1].GetUInt32();
+
+                auto transporter = GetTransporterByEntry(transport_entry);
+                if (transporter == nullptr)
+                {
+                    Log.Error("TransporterHandler", "Could not find transporter %u for transport_creatures entry %u", transport_entry, creature_entry);
+                    continue;
+                }
+
+                TransporterCreaturesQueryResult dbResult;
+                dbResult.transport_entry = field[0].GetUInt32();
+                dbResult.creature_entry = field[1].GetUInt32();
+                dbResult.position_x = field[2].GetFloat();
+                dbResult.position_y = field[3].GetFloat();
+                dbResult.position_z = field[4].GetFloat();
+                dbResult.orientation = field[5].GetFloat();
+
+                transporter->creature_transport_data.push_back(dbResult);
+
+                transporter->AddNPC(dbResult.creature_entry, dbResult.position_x, dbResult.position_y, dbResult.position_z, dbResult.orientation);
+
+                ++count;
+
+            }
+            while (result->NextRow());
+            delete result;
+            Log.Success("TransporterHandler", "%u transport passengers from table transport_creatures loaded.", count);
+        }
     }
-    while (QR->NextRow());
-    delete QR;
 }
 
 void Transporter::OnPushToWorld()
@@ -535,18 +602,7 @@ void Transporter::AddNPC(uint32 Entry, float offsetX, float offsetY, float offse
     pCreature->transporter_info.z = offsetZ;
     pCreature->transporter_info.o = offsetO;
     pCreature->transporter_info.guid = GetGUID();
-    m_npcs.insert(make_pair(guid, pCreature));
-}
-
-Creature* Transporter::GetCreature(uint32 Guid)
-{
-    TransportNPCMap::iterator itr = m_npcs.find(Guid);
-    if (itr == m_npcs.end())
-        return NULL;
-    if (itr->second->IsCreature())
-        return TO< Creature* >(itr->second);
-    else
-        return NULL;
+    m_npcs.insert(std::make_pair(guid, pCreature));
 }
 
 uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)

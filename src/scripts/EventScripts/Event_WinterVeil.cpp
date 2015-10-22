@@ -27,6 +27,7 @@
 class PX238WinterWondervolt : public GameObjectAIScript
 {
     public:
+
         PX238WinterWondervolt(GameObject*  goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new PX238WinterWondervolt(GO); }
 
@@ -38,62 +39,60 @@ class PX238WinterWondervolt : public GameObjectAIScript
         void AIUpdate()
         {
             Player* plr = _gameobject->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ());
-            if(!plr)
+            if (!plr)
                 return;
 
-            if(_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26274))       /// aura given by the PX-238 Winter Wondervolt
+            if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26274))       /// aura given by the PX-238 Winter Wondervolt
             {
-                plr->CastSpell(plr, 26275 , true);   /// Spell that change into random gnome dispalyid (respect male & female)
+                plr->CastSpell(plr, 26275, true);   /// Spell that change into random gnome dispalyid (respect male & female)
             }
         }
 };
 
 void WinterReveler(Player* pPlayer, Unit* pUnit)
 {
-    if(pUnit->GetEntry() == 15760)
+    if (pUnit->GetEntry() == 15760)
     {
         uint32 Winteritem = 0;
         SlotResult slotresult;
 
         uint32 chance = RandomUInt(2);
-        switch(chance)
+        switch (chance)
         {
             case 0:
-                {
-                    ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(21212);
-                    if(!proto)
-                        return;
+            {
+                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(21212);
+                if (!proto)
+                    return;
 
-                    slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
-                    Winteritem = 21212;
-                }
-                break;
-
+                slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
+                Winteritem = 21212;
+            }
+            break;
             case 1:
-                {
-                    ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(21519);
-                    if(!proto)
-                        return;
+            {
+                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(21519);
+                if (!proto)
+                    return;
 
-                    slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
-                    Winteritem = 21519;
-                }
-                break;
-
+                slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
+                Winteritem = 21519;
+            }
+            break;
             case 2:
-                {
-                    ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(34191);
-                    if(!proto)
-                        return;
+            {
+                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(34191);
+                if (!proto)
+                    return;
 
-                    slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
-                    Winteritem = 34191;
-                }
-                break;
+                slotresult = pPlayer->GetItemInterface()->FindFreeInventorySlot(proto);
+                Winteritem = 34191;
+            }
+            break;
 
         }
 
-        if(!slotresult.Result)
+        if (!slotresult.Result)
         {
             pPlayer->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
             return;
@@ -101,9 +100,18 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         else
         {
             Item* itm = objmgr.CreateItem(Winteritem, pPlayer);
+            if (itm == nullptr)
+                return;
+
             itm->SetStackCount(5);
-            pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
-            pUnit->CastSpell(pPlayer, 26218, true);
+            auto item_add_result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+            if (!item_add_result)
+            {
+                Log.Error("Event_WinterVeil", "Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
+                itm->DeleteMe();
+            }
+            else
+                pUnit->CastSpell(pPlayer, 26218, true);
         }
     }
 }
@@ -111,12 +119,12 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
 void WinterVeilEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
 {
     pUnit = pPlayer->GetMapMgr()->GetUnit(pPlayer->GetSelection());
-    if(!pUnit || !pUnit->isAlive() || pUnit->GetAIInterface()->getNextTarget())
+    if (!pUnit || !pUnit->isAlive() || pUnit->GetAIInterface()->getNextTarget())
         return;
 
-    if(Emote == EMOTE_ONESHOT_KISS)
+    if (Emote == EMOTE_ONESHOT_KISS)
     {
-        if(!pPlayer->HasAura(26218))
+        if (!pPlayer->HasAura(26218))
             WinterReveler(pPlayer, pUnit);
     }
 }

@@ -16,11 +16,11 @@
   * along with this program. If not, see <http://www.gnu.org/licenses/>.
   */
 
-// \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
+
 #include "Setup.h"
 #include "Raid_IceCrownCitadel.h"
 
-////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //ICC zone: 4812
 //Prepared creature entry:
 //
@@ -34,7 +34,7 @@
 //#define CN_THE_LICHKING             36597
 //
 ///\todo  start boss scripts
-////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 //Event: GunshipBattle
 //
 //Affects:
@@ -42,7 +42,7 @@
 //
 //Devnotes:
 //Far away from implementing this :(
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 enum IceCrown_Encounters
 {
     DATA_LORD_MARROWGAR,
@@ -54,7 +54,8 @@ enum IceCrown_Encounters
     ICC_DATA_END
 };
 
-///////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////
 //IceCrownCitadel Instance
 class IceCrownCitadelScript : public MoonInstanceScript
 {
@@ -151,17 +152,19 @@ class IceCrownCitadelScript : public MoonInstanceScript
             switch (player->GetTeam())
             {
                 case TEAM_ALLIANCE:
-                    sChatHandler.SystemMessage(player->GetSession(), "Team = Alliance");
+                    for (uint8 i = 0; i < 13; i++)
+                        PushCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
                     break;
                 case TEAM_HORDE:
-                    sChatHandler.SystemMessage(player->GetSession(), "Team = Horde");
+                    for (uint8 i = 0; i < 13; i++)
+                        PushCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
                     break;
             }
         }
 
 };
 
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // IceCrown Teleporter
 class ICCTeleporterAI : public GameObjectAIScript
 {
@@ -180,23 +183,23 @@ public:
             return;
 
         GossipMenu* menu = NULL;
-        objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 1/*Its not one... need to be checked*/, player);
-        menu->AddItem(ICON_CHAT, "Teleport to Light's Hammer.", 0);
+        objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 15221, player);
+        menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(515), 0);     // Teleport to Light's Hammer.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_LORD_MARROWGAR) == State_Finished)
-            menu->AddItem(ICON_CHAT, "Teleport to Oratory of The Damned.", 1);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(516), 1);      // Teleport to Oratory of The Damned.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_LADY_DEATHWHISPER) == State_Finished)
-            menu->AddItem(ICON_CHAT, "Teleport to Rampart of Skulls.", 2);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(517), 2);      // Teleport to Rampart of Skulls.
 
         // GunshipBattle has to be finished...
-        //menu->AddItem(ICON_CHAT, "Teleport to Deathbringer's Rise.", 3);
+        //menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(518), 3);        // Teleport to Deathbringer's Rise.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_VALITHRIA_DREAMWALKER) == State_Finished)
-            menu->AddItem(ICON_CHAT, "Teleport to the Upper Spire.", 4);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(519), 4);      // Teleport to the Upper Spire.
 
         if (pInstance->GetInstanceData(Data_EncounterState, CN_COLDFLAME) == State_Finished)
-            menu->AddItem(ICON_CHAT, "Teleport to Sindragosa's Lair.", 5);
+            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(520), 5);      // Teleport to Sindragosa's Lair.
 
         menu->SendTo(player);
     }
@@ -212,23 +215,240 @@ public:
     {
         Arcemu::Gossip::Menu::Complete(player);
 
-        if (Id >= 7)
+        if (Id >= 6)
             return;
-        else
-            player->SafeTeleport(ICCTeleCoords[Id][0], player->GetInstanceID(), ICCTeleCoords[Id][1], ICCTeleCoords[Id][2], ICCTeleCoords[Id][3], ICCTeleCoords[Id][4]);
+
+        switch (Id)
+        {
+            case 0:
+                player->CastSpell(player, 70781, true);     // Light's Hammer
+                break;
+            case 1:
+                player->CastSpell(player, 70856, true);     // Oratory of The Damned
+                break;
+            case 2:
+                player->CastSpell(player, 70857, true);     // Rampart of Skulls
+                break;
+            case 3:
+                player->CastSpell(player, 70858, true);     // Deathbringer's Rise
+                break;
+            case 4:
+                player->CastSpell(player, 70859, true);     // Upper Spire
+                break;
+            case 5:
+                player->CastSpell(player, 70861, true);     // Sindragosa's Lair
+                break;
+        }
     }
 };
 
-///////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lord Marrowgar
-// LM_BERSERK    = 47008
-// BONE_SLICE    = 69055
-// BONE_SPIKE    = 69057
-// BONE_STORM    = 69076
-// SOUL_FEAST    = 71203
-// ...
+#define LM_BERSERK 47008
+#define BONE_SLICE 69055
+#define BONE_SPIKE 69057        // Not shure about this
+#define BONE_STORM 69076
+#define SOUL_FEAST 71203        // Needs a script
 
-///////////////////////////////////////////////////////
+class LordMarrowgarAI : public MoonScriptBossAI
+{
+    public:
+
+        bool m_spellcheck[4];
+        SP_AI_Spell spells[4];
+
+        MOONSCRIPT_FACTORY_FUNCTION(LordMarrowgarAI, MoonScriptBossAI);
+        LordMarrowgarAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        {
+            _unit->SendScriptTextChatMessage(922);      // This is the beginning AND the end, mortals. None may enter the master's sanctum!
+
+            nrspells = 4;
+
+            spells[0].info = dbcSpell.LookupEntry(BONE_SLICE);
+            spells[0].targettype = TARGET_ATTACKING;
+            spells[0].instant = true;
+            spells[0].cooldown = 15;
+            spells[0].perctrigger = 50.0f;
+            spells[0].attackstoptimer = 10000;
+
+            spells[1].info = dbcSpell.LookupEntry(BONE_STORM);
+            spells[1].targettype = TARGET_VARIOUS;
+            spells[1].instant = true;
+            spells[1].cooldown = 60000;
+            spells[1].perctrigger = 75.0f;
+            spells[1].attackstoptimer = 60000;
+
+            spells[2].info = dbcSpell.LookupEntry(LM_BERSERK);
+            spells[2].targettype = TARGET_ATTACKING;
+            spells[2].instant = true;
+            spells[2].cooldown = 15;
+            spells[2].perctrigger = 50.0f;
+            spells[2].attackstoptimer = 10000;
+
+            spells[3].info = dbcSpell.LookupEntry(SOUL_FEAST);
+            spells[3].targettype = TARGET_RANDOM_SINGLE;
+            spells[3].instant = true;
+            spells[3].cooldown = 20;
+            spells[3].perctrigger = 50.0f;
+            spells[3].attackstoptimer = 12000;
+        }
+
+        void AIUpdate()
+        {
+            switch (RandomUInt(1))
+            {
+                case 0:
+                {
+                    float val = RandomFloat(100.0f);
+                    SpellCast(val);
+                }break;
+                case 1:
+                    BoneSpike();
+                    break;
+            }
+        }
+
+        void OnCombatStart(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
+            RegisterAIUpdateEvent(60000);
+        }
+
+        void BoneSpike()
+        {
+            switch (RandomUInt(2))
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(925);      // Bound by bone!
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(926);      // Stick around!
+                    break;
+                case 2:
+                    _unit->SendScriptTextChatMessage(927);      // The only escape is death!
+                    break;
+            }
+
+            std::vector<Player*> TargetTable;
+            std::set<Object*>::iterator itr = _unit->GetInRangePlayerSetBegin();
+
+            for (; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            {
+                if (isHostile(_unit, (*itr)))
+                {
+                    Player* RandomTarget = NULL;
+                    RandomTarget = static_cast<Player*>(*itr);
+                    if (RandomTarget && RandomTarget->isAlive() && isHostile(_unit, RandomTarget))
+                        TargetTable.push_back(RandomTarget);
+                }
+            }
+
+            if (!TargetTable.size())
+                return;
+
+            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_target = TargetTable[random_index];
+
+            if (random_target == nullptr)
+                return;
+
+            _unit->CastSpell(random_target, dbcSpell.LookupEntry(BONE_SPIKE), false);
+
+            TargetTable.clear();
+
+            float dcX = random_target->GetPositionX();
+            float dcY = random_target->GetPositionY();
+            float dcZ = random_target->GetPositionZ();
+
+            _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_BONE_SPIKE, dcX, dcY, dcZ, 0, true, false, 0, 0);
+
+            TargetTable.clear();
+        }
+
+        void OnTargetDied(Unit* pTarget)
+        {
+            switch (RandomUInt(1))
+            {
+                case 0:
+                    _unit->SendScriptTextChatMessage(928);      // More bones for the offering!
+                    break;
+                case 1:
+                    _unit->SendScriptTextChatMessage(929);      // Languish in damnation!
+                    break;
+            }
+        }
+
+        void OnDied(Unit* pTarget)
+        {
+            _unit->SendScriptTextChatMessage(930);      // I see... Only darkness.
+        }
+
+        void SpellCast(float val)
+        {
+            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+            {
+                float comulativeperc = 0;
+                Unit* target = NULL;
+                for (uint8 i = 0; i < nrspells; i++)
+                {
+                    if (!spells[i].perctrigger)
+                        continue;
+
+                    if (m_spellcheck[i])
+                    {
+                        target = _unit->GetAIInterface()->getNextTarget();
+                        switch (spells[i].targettype)
+                        {
+                            case TARGET_SELF:
+                            case TARGET_VARIOUS:
+                                _unit->CastSpell(_unit, spells[i].info, spells[i].instant);
+                                break;
+                            case TARGET_RANDOM_SINGLE:
+                            case TARGET_ATTACKING:
+                                _unit->CastSpell(target, spells[i].info, spells[i].instant);
+                                break;
+                            case TARGET_DESTINATION:
+                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                break;
+                        }
+                        m_spellcheck[i] = false;
+                        return;
+                    }
+
+                    if (val > comulativeperc && val <= (comulativeperc + spells[i].perctrigger))
+                    {
+                        _unit->setAttackTimer(spells[i].attackstoptimer, false);
+                        m_spellcheck[i] = true;
+                    }
+                    comulativeperc += spells[i].perctrigger;
+                }
+
+                RemoveAIUpdateEvent();
+                RegisterAIUpdateEvent(50000);
+            }
+        }
+
+    protected:
+
+        uint8 nrspells;
+};
+
+#define IMPALED 69065
+
+class BoneSpikeAI : public MoonScriptBossAI
+{
+    public:
+
+        MOONSCRIPT_FACTORY_FUNCTION(BoneSpikeAI, MoonScriptBossAI);
+        BoneSpikeAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+        {
+            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);  // On wowhead they said "kill them not just looking at them".
+            _unit->Despawn(8000, 0);
+        }
+
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Boss: Lady Deathwhisper
 // MANA_BARRIER = 70842
 // DEATH_AND_DECAY = 71001
@@ -278,8 +498,11 @@ void SetupICC(ScriptMgr* mgr)
     mgr->register_go_gossip_script(GO_TELE_5, new ICCTeleporterGossip());
 
     //Bosses
-    //mgr->register_creature_script(CN_LORD_MARROWGAR, &LordMarrowgarAI::Create);
+    mgr->register_creature_script(CN_LORD_MARROWGAR, &LordMarrowgarAI::Create);
     //mgr->register_creature_script(CN_LADY_DEATHWHISPER, &LadyDeathwhisperAI::Create);
     //mgr->register_creature_script(CN_VALITHRIA_DREAMWALKER, &ValithriaDreamwalkerAI::Create);
     //mgr->register_creature_script(CN_COLDFLAME, &ColdFlameAI::Create);
+
+    //Misc
+    mgr->register_creature_script(CN_BONE_SPIKE, &BoneSpikeAI::Create);
 }

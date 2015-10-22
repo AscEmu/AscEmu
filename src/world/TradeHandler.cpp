@@ -242,7 +242,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
 
     if (pItem->IsContainer())
     {
-        if (TO< Container* >(pItem)->HasItems())
+        if (static_cast< Container* >(pItem)->HasItems())
         {
             _player->GetItemInterface()->BuildInventoryChangeError(pItem, 0, INV_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS);
 
@@ -379,7 +379,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
             pItem = _player->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && TO< Container* >(pItem)->HasItems()) || (pItem->GetProto()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->GetProto()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -391,7 +391,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
             pItem = pTarget->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && TO< Container* >(pItem)->HasItems()) || (pItem->GetProto()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->GetProto()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -433,7 +433,8 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
                         {
                             sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->GetProto()->Name1, pTarget->GetName());
                         }
-                        pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);
+                        // See CID53355 Unused value (overwritten before it can be used
+                        //pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);
                     }
                 }
 

@@ -23,18 +23,19 @@ class ArenaTeam;
 class SERVER_DECL Arena : public CBattleground
 {
 protected:
-        set<GameObject*> m_gates;
+        std::set<GameObject*> m_gates;
         GameObject* m_buffs[2];
         ArenaTeam* m_teams[2];
         uint32 m_arenateamtype;
         uint32 m_playersCount[2];
-        set<uint32> m_players2[2];
-        set<uint32> m_playersAlive;
+        std::set<uint32> m_players2[2];
+        std::set<uint32> m_playersAlive;
     public:
         bool rated_match;
         Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
         virtual ~Arena();
 
+        bool HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam) override;
         bool HookHandleRepop(Player* plr);
         void OnAddPlayer(Player* plr);
         void OnRemovePlayer(Player* plr);
@@ -80,10 +81,8 @@ protected:
 
         /// Returns the faction of the team
         uint32 GetTeamFaction(uint32 team);
-
-        void Finish();
-        ARCEMU_INLINE uint8 Rated() { return rated_match; }
-        ARCEMU_INLINE uint32 GetArenaTeamType() { return m_arenateamtype; }
-        ARCEMU_INLINE ArenaTeam** GetTeams() { return m_teams; }
+        inline uint8 Rated() { return rated_match; }
+        inline uint32 GetArenaTeamType() { return m_arenateamtype; }
+        inline ArenaTeam** GetTeams() { return m_teams; }
         uint32 CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome);
 };

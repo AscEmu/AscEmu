@@ -21,6 +21,20 @@
 #ifndef WOWSERVER_AIINTERFACE_H
 #define WOWSERVER_AIINTERFACE_H
 
+#include "RecastIncludes.hpp"
+#include "IUpdatable.h"
+
+#include <G3D/Vector3.h>
+
+class Unit;
+class MapMgr;
+class Object;
+class Creature;
+class Unit;
+class Player;
+class WorldSession;
+class SpellCastTargets;
+
 /// ms smoother server/client side moving vs less cpu/ less b/w
 #define UNIT_MOVEMENT_INTERPOLATE_INTERVAL 400/*750*/
 
@@ -66,12 +80,6 @@ inline bool inRangeYZX(const float* v1, const float* v2, const float r, const fl
 }
 
 
-class Object;
-class Creature;
-class Unit;
-class Player;
-class WorldSession;
-class SpellCastTargets;
 
 enum SplineFlags
 {
@@ -274,31 +282,15 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         Unit* GetUnit() { return m_Unit; }
         Unit* GetPetOwner() { return m_PetOwner; }
         void DismissPet();
-        void SetUnitToFollow(Unit* un)
-        {
-            if (un == NULL)
-                m_UnitToFollow = 0;
-            else
-                m_UnitToFollow = un->GetGUID();
-        };
+    void SetUnitToFollow(Unit* un);;
         void SetUnitToFollow(uint64 guid) { m_UnitToFollow = guid; };
         void ResetUnitToFollow() { m_UnitToFollow = 0; };
-        void SetUnitToFear(Unit* un)
-        {
-            if (un == NULL)
-                m_UnitToFear = 0;
-            else
-                m_UnitToFear = un->GetGUID();
-        };
+
+    void SetUnitToFear(Unit* un);;
         void SetUnitToFear(uint64 guid)  { m_UnitToFear = guid; };
         void ResetUnitToFear() { m_UnitToFear = 0; };
-        void SetUnitToFollowBackup(Unit* un)
-        {
-            if (un == NULL)
-                m_UnitToFollow_backup = 0;
-            else
-                m_UnitToFollow_backup = un->GetGUID();
-        };
+
+    void SetUnitToFollowBackup(Unit* un);;
         void SetUnitToFollowBackup(uint64 guid) { m_UnitToFollow_backup = guid; };
         void SetFollowDistance(float dist) { FollowDistance = dist; };
         void SetUnitToFollowAngle(float angle) { m_fallowAngle = angle; }
@@ -311,10 +303,10 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         uint64 getUnitToFearGUID() { return m_UnitToFear; }
         Creature* getFormationLinkTarget();
         void setCreatureState(CreatureState state) { m_creatureState = state; }
-        ARCEMU_INLINE uint8 getAIState() { return static_cast<uint8>(m_AIState); }
-        ARCEMU_INLINE uint8 getAIType() { return static_cast<uint8>(m_AIType); }
+        inline uint8 getAIState() { return static_cast<uint8>(m_AIState); }
+        inline uint8 getAIType() { return static_cast<uint8>(m_AIType); }
         void SetAIType(AIType at) { m_AIType = at; }
-        ARCEMU_INLINE uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
+        inline uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
         void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }
         uint32 getThreatByGUID(uint64 guid);
         uint32 getThreatByPtr(Unit* obj);
@@ -324,12 +316,12 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         bool modThreatByPtr(Unit* obj, int32 mod);
         void RemoveThreatByGUID(uint64 guid);
         void RemoveThreatByPtr(Unit* obj);
-        ARCEMU_INLINE AssistTargetSet GetAssistTargets() { return m_assistTargets; }
-        ARCEMU_INLINE void LockAITargets(bool lock)
+        inline AssistTargetSet GetAssistTargets() { return m_assistTargets; }
+        inline void LockAITargets(bool lock)
         {
             lock ? m_aiTargetsLock.Acquire() : m_aiTargetsLock.Release();
         };
-        ARCEMU_INLINE TargetMap* GetAITargets() { return &m_aiTargets; }
+        inline TargetMap* GetAITargets() { return &m_aiTargets; }
         void addAssistTargets(Unit* Friends);
         void ClearHateList();
         void WipeHateList();
@@ -340,8 +332,8 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         Unit* getSoullinkedWith();
         void SetSoulLinkedWith(Unit* target);
         bool GetIsSoulLinked();
-        ARCEMU_INLINE size_t getAITargetsCount() { return m_aiTargets.size(); }
-        ARCEMU_INLINE uint32 getOutOfCombatRange() { return m_outOfCombatRange; }
+        inline size_t getAITargetsCount() { return m_aiTargets.size(); }
+        inline uint32 getOutOfCombatRange() { return m_outOfCombatRange; }
         void setOutOfCombatRange(uint32 val) { m_outOfCombatRange = val; }
 
         // Spell
@@ -419,9 +411,9 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         WayPoint* getWayPoint(uint32 wpid);
         void deleteWayPoint(uint32 wpid);
         void deleteWaypoints();
-        ARCEMU_INLINE bool hasWaypoints() { return m_waypoints != NULL; }
-        ARCEMU_INLINE void setMoveType(uint32 movetype) { m_moveType = movetype; }
-        ARCEMU_INLINE uint32 getMoveType() { return m_moveType; }
+        inline bool hasWaypoints() { return m_waypoints != NULL; }
+        inline void setMoveType(uint32 movetype) { m_moveType = movetype; }
+        inline uint32 getMoveType() { return m_moveType; }
         void setWaypointToMove(uint32 id) { m_currentWaypoint = id; }
         bool IsFlying();
 
@@ -433,10 +425,10 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         uint32 _CalcThreat(uint32 damage, SpellEntry* sp, Unit* Attacker);
 
         void SetAllowedToEnterCombat(bool val) { m_AllowedToEnterCombat = val; }
-        ARCEMU_INLINE bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
+        inline bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
 
         void CheckTarget(Unit* target);
-        ARCEMU_INLINE void SetAIState(AI_State newstate) { m_AIState = newstate; }
+        inline void SetAIState(AI_State newstate) { m_AIState = newstate; }
 
         // Movement
         bool m_canMove;
@@ -465,14 +457,14 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         SpellEntry* totemspell;
 
         uint32 m_totalMoveTime;
-        ARCEMU_INLINE void AddStopTime(uint32 Time) { m_moveTimer += Time; }
-        ARCEMU_INLINE void SetNextSpell(AI_Spell* sp) { m_nextSpell = sp; }
+        inline void AddStopTime(uint32 Time) { m_moveTimer += Time; }
+        inline void SetNextSpell(AI_Spell* sp) { m_nextSpell = sp; }
         Unit* getNextTarget();
         void setNextTarget(Unit* nextTarget);
         void setNextTarget(uint64 nextTarget);
         void resetNextTarget();
 
-        /*ARCEMU_INLINE void ResetProcCounts()
+        /*inline void ResetProcCounts()
         {
             AI_Spell* sp;
             for (list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
@@ -489,9 +481,9 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
 
         void WipeReferences();
         TimedEmoteList* timed_emotes;
-        ARCEMU_INLINE void SetPetOwner(Unit* owner) { m_PetOwner = owner; }
+        inline void SetPetOwner(Unit* owner) { m_PetOwner = owner; }
 
-        list<AI_Spell*> m_spells;
+    std::list<AI_Spell*> m_spells;
 
         bool disable_combat;
 
@@ -514,7 +506,7 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
 
         /// deletes the old waypoint map as default. In case m_custom_waypoint_map is used, just call SetWaypointMap(NULL): this will delete m_custom_waypoint_map too.
         void SetWaypointMap(WayPointMap* m, bool delete_old_map = true);
-        ARCEMU_INLINE WayPointMap* GetWaypointMap() { return m_waypoints; }
+        inline WayPointMap* GetWaypointMap() { return m_waypoints; }
         void LoadWaypointMapFromDB(uint32 spawnid);
         bool m_isGuard;
         bool m_isNeutralGuard;

@@ -36,6 +36,9 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     // gameobject_teleports table. If the table doesn't exist the
     // initialization will quietly fail.
     InitializeGameObjectTeleportTable(mgr);
+
+    //AscEmu
+    SetupCityDalaran(mgr);
 }
 
 #ifdef WIN32

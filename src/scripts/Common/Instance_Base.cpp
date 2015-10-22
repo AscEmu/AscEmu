@@ -23,6 +23,7 @@
 MoonInstanceScript::MoonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 {
     mUpdateFrequency = DEFAULT_UPDATE_FREQUENCY;
+    mTimerIdCounter = 0;
 };
 
 MoonInstanceScript::~MoonInstanceScript()
@@ -45,7 +46,7 @@ Creature* MoonInstanceScript::GetCreatureByGuid(uint32 pGuid)
     return mInstance->GetCreature(pGuid);
 };
 
-Creature*    MoonInstanceScript::FindClosestCreatureOnMap(uint32 pEntry, float pX, float pY, float pZ)
+Creature* MoonInstanceScript::FindClosestCreatureOnMap(uint32 pEntry, float pX, float pY, float pZ)
 {
     CreatureSet Creatures = FindCreaturesOnMap(pEntry);
 
@@ -83,6 +84,22 @@ Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, float pX, float pY, f
 
     return NewCreature;
 };
+
+Creature* MoonInstanceScript::PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction)
+{
+    CreatureProto* cp = CreatureProtoStorage.LookupEntry(pEntry);
+    Creature* c = mInstance->CreateCreature(pEntry);
+
+    Arcemu::Util::ArcemuAssert(c != NULL);
+
+    c->Load(cp, pX, pY, pZ, pO);
+
+    if (pFaction != 0)
+        c->SetFaction(pFaction);
+
+    c->PushToWorld(mInstance);
+    return c;
+}
 
 CreatureSet MoonInstanceScript::FindCreaturesOnMap(uint32 pEntry)
 {
@@ -579,7 +596,7 @@ void MoonInstanceScript::BuildEncounterMapWithIds(IdVector pIds)
     uint32 CurrentId = 0;
     EncounterState State = State_NotStarted;
     Creature* Boss = NULL;
-    set< uint32 >::iterator Iter;
+    std::set< uint32 >::iterator Iter;
     EncounterMap::iterator EncounterIter;
     for (size_t i = 0; i < pIds.size(); ++i)
     {

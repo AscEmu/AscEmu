@@ -33,13 +33,13 @@ class StrFever : public GossipScript
                 return;
 
             GossipMenu* Menu;
-            Creature* doctor = TO_CREATURE(pObject);
+            Creature* doctor = static_cast<Creature*>(pObject);
             if(doctor == NULL)
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
             if(plr->HasQuest(348) && plr->GetItemInterface()->GetItemCount(2799, 0) && !plr->GetItemInterface()->GetItemCount(2797, 0))
-                Menu->AddItem(0, "I'm ready, Summon Him!", 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(494), 1);     // I'm ready, Summon Him!
 
             Menu->SendTo(plr);
         }
@@ -49,7 +49,7 @@ class StrFever : public GossipScript
             if(!plr)
                 return;
 
-            Creature* doctor = TO_CREATURE(pObject);
+            Creature* doctor = static_cast<Creature*>(pObject);
             if(doctor == NULL)
                 return;
 
@@ -85,7 +85,7 @@ class Beka : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                Player* mPlayer = TO_PLAYER(mKiller);
+                Player* mPlayer = static_cast<Player*>(mKiller);
                 Creature*  beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
                 beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
@@ -113,7 +113,7 @@ class Beka1 : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                Player* mPlayer = TO_PLAYER(mKiller);
+                Player* mPlayer = static_cast<Player*>(mKiller);
                 Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1514, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
                 beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
@@ -167,7 +167,7 @@ class BloodscalpClanHeads : public QuestScript
             if(Kin_weelay == NULL)
                 return;
 
-            string msg1 = "Ah. Good ";
+            std::string msg1 = "Ah. Good ";
             msg1 += mTarget->GetName();
             msg1 += ". Now let us see what tale these heads tell...";
             Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
@@ -177,9 +177,7 @@ class BloodscalpClanHeads : public QuestScript
             if(skull2)
                 skull2->Despawn(5000, 0);
 
-            if(Kin_weelay == NULL)
-                return;
-            string msg = "There, ";
+            std::string msg = "There, ";
             msg += mTarget->GetName();
             msg += ". You may now speak to the Bloodscalp chief and his witchdoctor.";
             Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 500);
@@ -200,7 +198,7 @@ class BacktoBootyBay : public QuestScript
             Creature* Crank = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2498);
             if(Crank)
             {
-                string say = "Hm... if you're looking to adle wits. ";
+                std::string say = "Hm... if you're looking to adle wits. ";
                 say += mTarget->GetName();
                 say += ", then the secret behind Zanzil's zombies might just fo the trick!";
                 Crank->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());
@@ -221,7 +219,7 @@ class VoodooDues : public QuestScript
             Creature* MacKinley = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(X, Y, Z, 2501);
             if(MacKinley)
             {
-                string say = "Bah! ";
+                std::string say = "Bah! ";
                 say += mTarget->GetName();
                 say += ", this foot won't budge!";
                 MacKinley->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, say.c_str());

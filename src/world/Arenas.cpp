@@ -101,7 +101,7 @@ Arena::~Arena()
     }
 
 
-    for (set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         if ((*itr) != NULL)
         {
@@ -110,6 +110,86 @@ Arena::~Arena()
         }
     }
 
+}
+
+/*! \todo Rewrite this function entirely */
+bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    /* update arena team stats */
+    if (rated_match)
+    {
+        m_deltaRating[0] = m_deltaRating[1] = 0;
+        for (uint32 i = 0; i < 2; ++i)
+        {
+            uint32 j = i ? 0 : 1; // opposing side
+            bool outcome;
+
+            if (m_teams[i] == NULL || m_teams[j] == NULL)
+                continue;
+
+            outcome = (i == winningTeam);
+            if (outcome)
+            {
+                m_teams[i]->m_stat_gameswonseason++;
+                m_teams[i]->m_stat_gameswonweek++;
+            }
+
+            m_deltaRating[i] = CalcDeltaRating(m_teams[i]->m_stat_rating, m_teams[j]->m_stat_rating, outcome);
+            m_teams[i]->m_stat_rating += m_deltaRating[i];
+            if (static_cast<int32>(m_teams[i]->m_stat_rating) < 0) m_teams[i]->m_stat_rating = 0;
+
+            for (std::set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
+            {
+                PlayerInfo* info = objmgr.GetPlayerInfo(*itr);
+                if (info)
+                {
+                    ArenaTeamMember* tp = m_teams[i]->GetMember(info);
+
+                    if (tp != NULL)
+                    {
+                        tp->PersonalRating += CalcDeltaRating(tp->PersonalRating, m_teams[j]->m_stat_rating, outcome);
+                        if (static_cast<int32>(tp->PersonalRating) < 0)
+                            tp->PersonalRating = 0;
+
+                        if (outcome)
+                        {
+                            ++(tp->Won_ThisWeek);
+                            ++(tp->Won_ThisSeason);
+                        }
+                    }
+                }
+            }
+
+            m_teams[i]->SaveToDB();
+        }
+    }
+
+    objmgr.UpdateArenaTeamRankings();
+
+    m_nextPvPUpdateTime = 0;
+    UpdatePvPData();
+    PlaySoundToAll(winningTeam ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
+
+    sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
+    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+    for (int i = 0; i < 2; i++)
+    {
+        bool victorious = (i == winningTeam);
+        std::set<Player*>::iterator itr = m_players[i].begin();
+        for (; itr != m_players[i].end(); itr++)
+        {
+            Player* plr = (Player*)(*itr);
+            if (plr != NULL)
+            {
+                sHookInterface.OnArenaFinish(plr, plr->m_arenaTeams[m_arenateamtype], victorious, rated_match);
+                plr->ResetAllCooldowns();
+            }
+        }
+    }
+
+    /* Prevent honor being given to people in arena */
+    return false;
 }
 
 void Arena::OnAddPlayer(Player* plr)
@@ -222,7 +302,7 @@ void Arena::HookOnPlayerDeath(Player* plr)
 void Arena::OnCreate()
 {
     // push gates into world
-    for (set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
         (*itr)->PushToWorld(m_mapMgr);
 }
 
@@ -236,7 +316,7 @@ void Arena::OnStart()
     /* remove arena readiness buff */
     for (i = 0; i < 2; ++i)
     {
-        for (set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             Player* plr = *itr;
             plr->RemoveAura(ARENA_PREPARATION);
@@ -266,7 +346,7 @@ void Arena::OnStart()
     }
 
     /* open gates */
-    for (set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->SetFlags(64);
         (*itr)->SetState(GAMEOBJECT_STATE_CLOSED);
@@ -281,12 +361,12 @@ void Arena::OnStart()
     PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
 
     sEventMgr.RemoveEvents(this, EVENT_ARENA_SHADOW_SIGHT);
-    sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::HookOnShadowSight, EVENT_ARENA_SHADOW_SIGHT, 90000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::HookOnShadowSight, EVENT_ARENA_SHADOW_SIGHT, 90000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Arena::UpdatePlayerCounts()
 {
-    if (m_ended)
+    if (this->HasEnded())
         return;
 
     SetWorldState(WORLDSTATE_ARENA__GREEN_PLAYER_COUNT, m_playersCount[0]);
@@ -297,14 +377,10 @@ void Arena::UpdatePlayerCounts()
 
     //    return;
 
-    if (m_playersCount[1] == 0)
-        m_winningteam = 0;
-    else if (m_playersCount[0] == 0)
-        m_winningteam = 1;
-    else
-        return;
-
-    Finish();
+    if (m_playersCount[TEAM_HORDE] == 0)
+        this->EndBattleground(TEAM_ALLIANCE);
+    else if (m_playersCount[TEAM_ALLIANCE] == 0)
+        this->EndBattleground(TEAM_HORDE);
 }
 
 uint32 Arena::CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome)
@@ -336,84 +412,6 @@ uint32 Arena::GetTeamFaction(uint32 team)
     std::set< Player* >::iterator itr = m_players[team].begin();
     Player* p = *itr;
     return p->GetTeam();
-}
-
-void Arena::Finish()
-{
-    m_ended = true;
-
-    /* update arena team stats */
-    if (rated_match)
-    {
-        m_deltaRating[0] = m_deltaRating[1] = 0;
-        for (uint32 i = 0; i < 2; ++i)
-        {
-            uint32 j = i ? 0 : 1; // opposing side
-            bool outcome;
-
-            if (m_teams[i] == NULL || m_teams[j] == NULL)
-                continue;
-
-            outcome = (i == m_winningteam);
-            if (outcome)
-            {
-                m_teams[i]->m_stat_gameswonseason++;
-                m_teams[i]->m_stat_gameswonweek++;
-            }
-
-            m_deltaRating[i] = CalcDeltaRating(m_teams[i]->m_stat_rating, m_teams[j]->m_stat_rating, outcome);
-            m_teams[i]->m_stat_rating += m_deltaRating[i];
-            if (static_cast<int32>(m_teams[i]->m_stat_rating) < 0) m_teams[i]->m_stat_rating = 0;
-
-            for (set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
-            {
-                PlayerInfo* info = objmgr.GetPlayerInfo(*itr);
-                if (info)
-                {
-                    ArenaTeamMember* tp = m_teams[i]->GetMember(info);
-
-                    if (tp != NULL)
-                    {
-                        tp->PersonalRating += CalcDeltaRating(tp->PersonalRating, m_teams[j]->m_stat_rating, outcome);
-                        if (static_cast<int32>(tp->PersonalRating) < 0)
-                            tp->PersonalRating = 0;
-
-                        if (outcome)
-                        {
-                            ++(tp->Won_ThisWeek);
-                            ++(tp->Won_ThisSeason);
-                        }
-                    }
-                }
-            }
-
-            m_teams[i]->SaveToDB();
-        }
-    }
-
-    objmgr.UpdateArenaTeamRankings();
-
-    m_nextPvPUpdateTime = 0;
-    UpdatePvPData();
-    PlaySoundToAll(m_winningteam ? SOUND_ALLIANCEWINS : SOUND_HORDEWINS);
-
-    sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
-    sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-    for (int i = 0; i < 2; i++)
-    {
-        bool victorious = (i == m_winningteam);
-        set<Player*>::iterator itr = m_players[i].begin();
-        for (; itr != m_players[i].end(); itr++)
-        {
-            Player* plr = (Player*)(*itr);
-            if (plr != NULL)
-            {
-                sHookInterface.OnArenaFinish(plr, plr->m_arenaTeams[m_arenateamtype], victorious, rated_match);
-                plr->ResetAllCooldowns();
-            }
-        }
-    }
 }
 
 LocationVector Arena::GetStartingCoords(uint32 Team)
@@ -451,7 +449,7 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
         if (m_buffs[buffslot] != NULL && m_buffs[buffslot]->IsInWorld())
         {
             /* apply the buff */
-            SpellEntry* sp = dbcSpell.LookupEntryForced(m_buffs[buffslot]->GetInfo()->sound3);
+            SpellEntry* sp = dbcSpell.LookupEntryForced(m_buffs[buffslot]->GetInfo()->parameter_3);
             ARCEMU_ASSERT(sp != NULL);
 
             Spell* s = sSpellFactoryMgr.NewSpell(plr, sp, true, 0);

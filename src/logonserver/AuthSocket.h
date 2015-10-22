@@ -60,12 +60,12 @@ class AuthSocket : public Socket
 
         void SendChallengeError(uint8 Error);
         void SendProofError(uint8 Error, uint8* M2);
-        ARCEMU_INLINE sAuthLogonChallenge_C* GetChallenge() { return &m_challenge; }
-        ARCEMU_INLINE void SendPacket(const uint8* data, const uint16 len) { Send(data, len); }
+        inline sAuthLogonChallenge_C* GetChallenge() { return &m_challenge; }
+        inline void SendPacket(const uint8* data, const uint16 len) { Send(data, len); }
         void OnDisconnect();
-        ARCEMU_INLINE time_t GetLastRecv() { return last_recv; }
+        inline time_t GetLastRecv() { return last_recv; }
         bool removedFromSet;
-        ARCEMU_INLINE uint32 GetAccountID() { return m_account ? m_account->AccountId : 0; }
+        inline uint32 GetAccountID() { return m_account ? m_account->AccountId : 0; }
 
     protected:
 

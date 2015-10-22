@@ -26,22 +26,22 @@
 class RWLock
 {
     public:
-        ARCEMU_INLINE void AcquireReadLock()
+        inline void AcquireReadLock()
         {
             _lock.Acquire();
         }
 
-        ARCEMU_INLINE void ReleaseReadLock()
+        inline void ReleaseReadLock()
         {
             _lock.Release();
         }
 
-        ARCEMU_INLINE void AcquireWriteLock()
+        inline void AcquireWriteLock()
         {
             _lock.Acquire();
         }
 
-        ARCEMU_INLINE void ReleaseWriteLock()
+        inline void ReleaseWriteLock()
         {
             _lock.Release();
         }

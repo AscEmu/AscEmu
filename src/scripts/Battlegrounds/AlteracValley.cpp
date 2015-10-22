@@ -1141,13 +1141,13 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if(m_flag->GetEntry() != g->id[m_state] || !m_flag->IsInWorld())
             {
-                GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(g->id[m_state]);
+                auto gameobject_info = GameObjectNameStorage.LookupEntry(g->id[m_state]);
                 m_flag->RemoveFromWorld(false);
                 m_flag->SetEntry(g->id[m_state]);
                 m_flag->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
-                m_flag->SetInfo(goi);
-                m_flag->SetDisplayId(goi->DisplayID);
-                m_flag->SetType(static_cast<uint8>(goi->Type));
+                m_flag->SetInfo(gameobject_info);
+                m_flag->SetDisplayId(gameobject_info->display_id);
+                m_flag->SetType(static_cast<uint8>(gameobject_info->type));
                 m_flag->SetFaction(g_gameObjectFactions[m_state]);
                 m_flag->SetAnimProgress(100);
                 m_flag->Activate();
@@ -1187,13 +1187,13 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if(m_aura->GetEntry() != g->id[m_state] || !m_aura->IsInWorld())
             {
-                GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(g->id[m_state]);
+                auto gameobject_info = GameObjectNameStorage.LookupEntry(g->id[m_state]);
                 m_aura->RemoveFromWorld(false);
                 m_aura->SetEntry(g->id[m_state]);
                 m_aura->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
-                m_aura->SetInfo(goi);
-                m_aura->SetDisplayId(goi->DisplayID);
-                m_aura->SetType(static_cast<uint8>(goi->Type));
+                m_aura->SetInfo(gameobject_info);
+                m_aura->SetDisplayId(gameobject_info->display_id);
+                m_aura->SetType(static_cast<uint8>(gameobject_info->type));
                 m_aura->SetFaction(g_gameObjectFactions[m_state]);
                 m_aura->SetAnimProgress(100);
                 m_aura->SetFlags(1);
@@ -1238,13 +1238,13 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if(m_glow->GetEntry() != g->id[m_state] || !m_glow->IsInWorld())
             {
-                GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(g->id[m_state]);
+                auto gameobject_info = GameObjectNameStorage.LookupEntry(g->id[m_state]);
                 m_glow->RemoveFromWorld(false);
                 m_glow->SetEntry(g->id[m_state]);
                 m_glow->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
-                m_glow->SetInfo(goi);
-                m_glow->SetDisplayId(goi->DisplayID);
-                m_glow->SetType(static_cast<uint8>(goi->Type));
+                m_glow->SetInfo(gameobject_info);
+                m_glow->SetDisplayId(gameobject_info->display_id);
+                m_glow->SetType(static_cast<uint8>(gameobject_info->type));
                 m_glow->SetFaction(g_gameObjectFactions[m_state]);
                 m_glow->SetAnimProgress(100);
                 m_glow->SetFlags(1);
@@ -1270,7 +1270,7 @@ void AlteracValley::AVNode::Spawn()
     if(m_state == AV_NODE_STATE_ALLIANCE_CONTROLLED || m_state == AV_NODE_STATE_HORDE_CONTROLLED)
     {
         Log.Debug("AlteracValley", "AVNode::Spawn(%s) : despawning guards", m_template->m_name);
-        for(vector<Creature*>::iterator itr = m_guards.begin(); itr != m_guards.end(); ++itr)
+        for(std::vector<Creature*>::iterator itr = m_guards.begin(); itr != m_guards.end(); ++itr)
             (*itr)->Despawn(0, 0);
 
         m_guards.clear();
@@ -1301,10 +1301,10 @@ void AlteracValley::AVNode::Spawn()
         {
             Log.Debug("AlteracValley", "AVNode::Spawn(%s) : despawning spirit guide", m_template->m_name);
             // move everyone in the revive queue to a different node
-            map<Creature*, set<uint32> >::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
+            std::map<Creature*, std::set<uint32> >::iterator itr = m_bg->m_resurrectMap.find(m_spiritGuide);
             if(itr != m_bg->m_resurrectMap.end())
             {
-                for(set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+                for(std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     // repop him at a new GY
                     Player* plr_tmp = m_bg->GetMapMgr()->GetPlayer(*it2);
@@ -1409,7 +1409,7 @@ void AlteracValley::AVNode::Capture()
 
             if(m_template->m_defaultState == AV_NODE_STATE_ALLIANCE_CONTROLLED)
             {
-                for(set<Player*>::iterator itx = m_bg->m_players[1].begin(); itx != m_bg->m_players[1].end(); ++itx)
+                for(std::set<Player*>::iterator itx = m_bg->m_players[1].begin(); itx != m_bg->m_players[1].end(); ++itx)
                 {
                     Player* plr = (*itx);
                     if(!plr) continue;
@@ -1419,7 +1419,7 @@ void AlteracValley::AVNode::Capture()
             }
             else if(m_template->m_defaultState == AV_NODE_STATE_HORDE_CONTROLLED)
             {
-                for(set<Player*>::iterator itx = m_bg->m_players[0].begin(); itx != m_bg->m_players[0].end(); ++itx)
+                for(std::set<Player*>::iterator itx = m_bg->m_players[0].begin(); itx != m_bg->m_players[0].end(); ++itx)
                 {
                     Player* plr = (*itx);
                     if(!plr) continue;
@@ -1631,14 +1631,14 @@ void AlteracValley::OnStart()
 {
     for(uint32 i = 0; i < 2; ++i)
     {
-        for(set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for(std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
 
     // open gates
-    for(list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->SetFlags(64);
         (*itr)->SetState(GAMEOBJECT_STATE_OPEN);
@@ -1733,7 +1733,7 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
         Herald("The Stormpike General is dead!");
         RemoveReinforcements(0, AV_NUM_REINFORCEMENTS);
 
-        for(set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
+        for(std::set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
         {
             plr2 = (*itx);
             if(!plr2) continue;
@@ -1746,7 +1746,7 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
         Herald("The Frostwolf General is dead!");
         RemoveReinforcements(1, AV_NUM_REINFORCEMENTS);
 
-        for(set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
+        for(std::set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
         {
             plr2 = (*itx);
             if(!plr2) continue;
@@ -1757,7 +1757,7 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
     else if(pVictim->GetEntry() == AV_NPC_CAPTAIN_GALVANGAR)
     {
         RemoveReinforcements(1, AV_POINTS_ON_KILL_CAPTAIN);
-        for(set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
+        for(std::set<Player*>::iterator itx = m_players[0].begin(); itx != m_players[0].end(); ++itx)
         {
             plr2 = (*itx);
             if(!plr2) continue;
@@ -1768,7 +1768,7 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
     else if(pVictim->GetEntry() == AV_NPC_CAPTAIN_BALINDA_STONEHEARTH)
     {
         RemoveReinforcements(0, AV_POINTS_ON_KILL_CAPTAIN);
-        for(set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
+        for(std::set<Player*>::iterator itx = m_players[1].begin(); itx != m_players[1].end(); ++itx)
         {
             plr2 = (*itx);
             if(!plr2) continue;
@@ -1807,24 +1807,12 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
 
 void AlteracValley::Finish(uint32 losingTeam)
 {
-    if(m_ended) return;
+    if(this->HasEnded()) return;
 
-    m_ended = true;
     sEventMgr.RemoveEvents(this);
-    sEventMgr.AddEvent(TO< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     
-    if( losingTeam == TEAM_ALLIANCE )
-        m_winningteam = TEAM_HORDE;
-    else
-        m_winningteam = TEAM_ALLIANCE;
-    
-    AddHonorToTeam( m_winningteam, 3 * 185 );
-    AddHonorToTeam( losingTeam, 1 * 185 );
-    CastSpellOnTeam( m_winningteam, 43475 );
-    CastSpellOnTeam( m_winningteam, 69160 );
-    CastSpellOnTeam( m_winningteam, 69501 );
-
-    UpdatePvPData();
+    this->EndBattleground(losingTeam == TEAM_ALLIANCE ? TEAM_HORDE : TEAM_ALLIANCE);
 }
 
 
@@ -1882,7 +1870,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
                     li.roll = NULL;
 
                     // push to vector
-                    TO< Corpse* >(pCorpse)->loot.items.push_back(li);
+                    static_cast< Corpse* >(pCorpse)->loot.items.push_back(li);
                 }
             }
         }
@@ -1895,7 +1883,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
     gold *= sWorld.getRate(RATE_MONEY);
 
     // set it
-    TO< Corpse* >(pCorpse)->loot.gold = float2int32(gold);
+    static_cast< Corpse* >(pCorpse)->loot.gold = float2int32(gold);
 }
 
 void AlteracValley::EventUpdateResources()
@@ -1910,6 +1898,14 @@ void AlteracValley::EventUpdateResources()
 void AlteracValley::EventAssaultControlPoint(uint32 x)
 {
     m_nodes[x]->Capture();
+}
+
+bool AlteracValley::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
+{
+    CastSpellOnTeam(winningTeam, 43475);
+    CastSpellOnTeam(winningTeam, 69160);
+    CastSpellOnTeam(winningTeam, 69501);
+    return true;
 }
 
 void AlteracValley::Herald(const char* format, ...)

@@ -61,9 +61,6 @@ class LokensFavor : public GameObjectAIScript
 
 };
 
-#define GOSSIP_SCOUTMENU1 "Are you okay? I've come to take you back to Frosthold if you can stand."
-#define GOSSIP_SCOUTMENU2 "I'm sorry that I didn't get here sooner. What happened?"
-#define GOSSIP_SCOUTMENU3 "I'll go get some help. Hang in there."
 
 class SCRIPT_DECL MissingScout_Gossip : public GossipScript
 {
@@ -73,13 +70,13 @@ class SCRIPT_DECL MissingScout_Gossip : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13611, plr);
             if(plr->HasQuest(12864))
-                Menu->AddItem(0, GOSSIP_SCOUTMENU1, 1);
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(499), 1);     // Are you okay? I've come to take you back to Frosthold if you can stand.
 
             Menu->SendTo(plr);
         }
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? (TO_CREATURE(pObject)) : NULL;
+            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if(pCreature == NULL)
                 return;
 
@@ -89,14 +86,14 @@ class SCRIPT_DECL MissingScout_Gossip : public GossipScript
                 case 1:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13612, plr);
-                        Menu->AddItem(0, GOSSIP_SCOUTMENU2, 2);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(500), 2);     // I'm sorry that I didn't get here sooner. What happened?
                         Menu->SendTo(plr);
                     }
                     break;
                 case 2:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13613, plr);
-                        Menu->AddItem(0, GOSSIP_SCOUTMENU3, 3);
+                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(501), 3);     // I'll go get some help. Hang in there.
                         Menu->SendTo(plr);
                     }
                     break;

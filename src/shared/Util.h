@@ -93,7 +93,7 @@ namespace Arcemu
 //
 //
 /////////////////////////////////////////////////////////
-ARCEMU_INLINE uint32 getMSTime()
+inline uint32 getMSTime()
 {
     uint32 MSTime = 0;
 #ifdef WIN32

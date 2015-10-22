@@ -129,14 +129,14 @@ void MapCell::RemoveObjects()
                 if (!(*itr)->IsPet())
                 {
                     _mapmgr->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
-                    TO< Creature* >(*itr)->m_respawnCell = NULL;
-                    delete TO< Creature* >(*itr);
+                    static_cast< Creature* >(*itr)->m_respawnCell = NULL;
+                    delete static_cast< Creature* >(*itr);
                 }
                 break;
             case TYPEID_GAMEOBJECT:
                 _mapmgr->_reusable_guids_gameobject.push_back((*itr)->GetUIdFromGUID());
-                TO< GameObject* >(*itr)->m_respawnCell = NULL;
-                delete TO< GameObject* >(*itr);
+                static_cast< GameObject* >(*itr)->m_respawnCell = NULL;
+                delete static_cast< GameObject* >(*itr);
                 break;
         }
     }
@@ -150,7 +150,7 @@ void MapCell::RemoveObjects()
         objects_iterator++;
 
         //If MapUnloadTime is non-zero, a transport could get deleted here (when it arrives to a cell that's scheduled to be unloaded because players left from it), so don't delete it! - By: VLack aka. VLsoft
-        if (!bServerShutdown && obj->IsGameObject() && TO< GameObject* >(obj)->GetInfo()->Type == GAMEOBJECT_TYPE_TRANSPORT)
+        if (!bServerShutdown && obj->IsGameObject() && static_cast< GameObject* >(obj)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT)
             continue;
 
         if (obj->IsActive())
@@ -242,9 +242,9 @@ void MapCell::LoadObjects(CellSpawns* sp)
         }
     }
 
-    if (sp->GOSpawns.size())//got GOs
+    if (sp->GameobjectSpawns.size())//got GOs
     {
-        for (GOSpawnList::iterator i = sp->GOSpawns.begin(); i != sp->GOSpawns.end(); ++i)
+        for (GameobjectSpawnList::iterator i = sp->GameobjectSpawns.begin(); i != sp->GameobjectSpawns.end(); ++i)
         {
             GameObject* go = _mapmgr->CreateGameObject((*i)->entry);
             //go->SetInstanceID(_mapmgr->GetInstanceID()); missing in current revision idk need a specialist
@@ -255,7 +255,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             }
             else
             {
-                GOSpawn* spawn = (*i);
+                GameobjectSpawn* spawn = (*i);
                 Log.Error("MapCell", "Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
                 delete go;//missing proto or something of that kind
             }

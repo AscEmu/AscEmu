@@ -30,7 +30,7 @@ class NorthFleet : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* qle = TO_PLAYER(mKiller)->GetQuestLogForEntry(11230);
+                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11230);
                 if(qle != NULL)
                 {
                     if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[ 0 ])
@@ -55,7 +55,7 @@ class ChillmereScourge : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* qle = TO_PLAYER(mKiller)->GetQuestLogForEntry(11397);
+                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11397);
                 if(qle != NULL)
                 {
                     if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[ 0 ])
@@ -80,7 +80,7 @@ class Baleheim : public CreatureAIScript
         {
             if(mKiller->IsPlayer())
             {
-                QuestLogEntry* qle = TO_PLAYER(mKiller)->GetQuestLogForEntry(11283);
+                QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11283);
                 if(qle != NULL)
                 {
                     if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[ 0 ])
@@ -103,17 +103,17 @@ class Plaguethis_Gossip : public GossipScript
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 40002, plr);
-            Menu->AddItem(0, "Where would you like to fly too ?", 2);
-            if(plr->HasQuest(11332))
-                Menu->AddItem(0, "Greer, i need a gryphon to ride and some bombs to drop on New Agamand!", 1);
+            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(464), 2);     // Where would you like to fly too ?
 
+            if(plr->HasQuest(11332))
+                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(465), 1);     // Greer, i need a Gryphon to ride and some bombs to drop on New Agamand!
 
             Menu->SendTo(plr);
         }
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? TO_CREATURE(pObject) : NULL;
+            Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
             if(pCreature == NULL)
                 return;
 
@@ -121,8 +121,10 @@ class Plaguethis_Gossip : public GossipScript
             {
                 case 1:
                     {
-                        Item* item;
-                        item = objmgr.CreateItem(33634 , plr);
+                        auto item = objmgr.CreateItem(33634 , plr);
+                        if (item == nullptr)
+                            return;
+
                         item->SetStackCount(10);
 
                         if(!plr->GetItemInterface()->AddItemToFreeSlot(item))

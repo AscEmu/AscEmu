@@ -18,17 +18,19 @@
  */
 
 #include "Setup.h"
+#include <QuestLogEntry.hpp>
 
 class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 {
     public:
+
         void OnHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 11224, plr);
 
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11224);
-            if(plr->HasQuest(11142))
+            if (plr->HasQuest(11142))
                 menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_CROMSONWING), 1);
 
             menu.Send(plr);
@@ -36,7 +38,11 @@ class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)
         {
-            plr->GetQuestLogForEntry(11142)->SendQuestComplete();
+            auto quest_entry = plr->GetQuestLogForEntry(11142);
+            if (quest_entry == nullptr)
+                return;
+            quest_entry->SendQuestComplete();
+
             plr->TaxiStart(sTaxiMgr.GetTaxiPath(724), 1147, 0);     // Gryph
         }
 
@@ -47,15 +53,16 @@ class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
 {
     public:
+
         void OnHello(Object* pObject, Player* plr)
         {
             //Send quests and gossip menu.
             uint32 Text = objmgr.GetGossipTextForNpc(pObject->GetEntry());
-            if(NpcTextStorage.LookupEntry(Text) == NULL)
+            if (NpcTextStorage.LookupEntry(Text) == NULL)
                 Text = Arcemu::Gossip::DEFAULT_TXTINDEX;
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
-            sQuestMgr.FillQuestMenu(TO_CREATURE(pObject), plr, menu);
-            if(plr->HasQuest(11123) || (plr->GetQuestRewardStatus(11123) == 0)) 
+            sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
+            if (plr->HasQuest(11123) || (plr->GetQuestRewardStatus(11123) == 0))
                 menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_SHADY_REST), 0);
             menu.Send(plr);
         }

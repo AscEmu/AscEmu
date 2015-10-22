@@ -19,6 +19,7 @@
 *
 */
 
+#include "DBC/DBCStores.h"
 #include "StdAfx.h"
 
 
@@ -68,11 +69,11 @@ const T & RandomChoice(const T* variant, int count)
 }
 
 template <class T> // works for anything that has the field 'chance' and is stored in plain array
-T* RandomChoiceVector(vector<pair<T*, float> > & variant)
+T* RandomChoiceVector(std::vector<std::pair<T*, float> > & variant)
 {
     float totalChance = 0;
     float val;
-    typename vector<pair<T*, float> >::iterator itr;
+    typename std::vector<std::pair<T*, float> >::iterator itr;
     if (variant.size() == 0)
         return NULL;
     for (itr = variant.begin(); itr != variant.end(); ++itr)
@@ -108,7 +109,7 @@ void LootMgr::LoadLoot()
 
 RandomProps* LootMgr::GetRandomProperties(ItemPrototype* proto)
 {
-    map<uint32, RandomPropertyVector>::iterator itr;
+    std::map<uint32, RandomPropertyVector>::iterator itr;
     if (proto->RandomPropId == 0)
         return NULL;
     itr = _randomprops.find(proto->RandomPropId);
@@ -119,7 +120,7 @@ RandomProps* LootMgr::GetRandomProperties(ItemPrototype* proto)
 
 ItemRandomSuffixEntry* LootMgr::GetRandomSuffix(ItemPrototype* proto)
 {
-    map<uint32, RandomSuffixVector>::iterator itr;
+    std::map<uint32, RandomSuffixVector>::iterator itr;
     if (proto->RandomSuffixId == 0)
         return NULL;
     itr = _randomsuffix.find(proto->RandomSuffixId);
@@ -137,7 +138,7 @@ void LootMgr::LoadLootProp()
     float ch;
     if (result)
     {
-        map<uint32, RandomPropertyVector>::iterator itr;
+        std::map<uint32, RandomPropertyVector>::iterator itr;
         do
         {
             id = result->Fetch()[0].GetUInt32();
@@ -153,12 +154,12 @@ void LootMgr::LoadLootProp()
             if (itr == _randomprops.end())
             {
                 RandomPropertyVector v;
-                v.push_back(make_pair(rp, ch));
+                v.push_back(std::make_pair(rp, ch));
                 _randomprops.insert(make_pair(id, v));
             }
             else
             {
-                itr->second.push_back(make_pair(rp, ch));
+                itr->second.push_back(std::make_pair(rp, ch));
             }
         }
         while (result->NextRow());
@@ -167,7 +168,7 @@ void LootMgr::LoadLootProp()
     result = WorldDatabase.Query("SELECT * FROM item_randomsuffix_groups");
     if (result)
     {
-        map<uint32, RandomSuffixVector>::iterator itr;
+        std::map<uint32, RandomSuffixVector>::iterator itr;
         do
         {
             id = result->Fetch()[0].GetUInt32();
@@ -183,12 +184,12 @@ void LootMgr::LoadLootProp()
             if (itr == _randomsuffix.end())
             {
                 RandomSuffixVector v;
-                v.push_back(make_pair(rs, ch));
+                v.push_back(std::make_pair(rs, ch));
                 _randomsuffix.insert(make_pair(id, v));
             }
             else
             {
-                itr->second.push_back(make_pair(rs, ch));
+                itr->second.push_back(std::make_pair(rs, ch));
             }
         }
         while (result->NextRow());
@@ -215,8 +216,8 @@ LootMgr::~LootMgr()
 
 void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
 {
-    vector< pair< uint32, vector< tempy > > > db_cache;
-    vector< pair< uint32, vector< tempy > > >::iterator itr;
+    std::vector< std::pair< uint32, std::vector< tempy > > > db_cache;
+    std::vector< std::pair< uint32, std::vector< tempy > > >::iterator itr;
     db_cache.reserve(10000);
     LootStore::iterator tab;
     QueryResult* result = WorldDatabase.Query("SELECT * FROM %s ORDER BY entryid ASC", szTableName);
@@ -229,7 +230,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
     uint32 last_entry = 0;
     uint32 total = (uint32)result->GetRowCount();
     int pos = 0;
-    vector< tempy > ttab;
+    std::vector< tempy > ttab;
     tempy t;
     do
     {
@@ -273,7 +274,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
             list.count = static_cast<uint32>(itr->second.size());
             list.items = new StoreLootItem[list.count];
             uint32 ind = 0;
-            for (vector< tempy >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
+            for (std::vector< tempy >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
             {
                 //Omit items that are not in db to prevent future bugs
                 itemid = itr2->itemid;
@@ -718,7 +719,7 @@ void LootRoll::Finalize()
         /* all passed */
         data.Initialize(SMSG_LOOT_ALL_PASSED);
         data << _guid << _groupcount << _itemid << _randomsuffixid << _randompropertyid;
-        set<uint32>::iterator pitr = m_passRolls.begin();
+        std::set<uint32>::iterator pitr = m_passRolls.begin();
         while (_player == NULL && pitr != m_passRolls.end())
             _player = _mgr->GetPlayer((*(pitr++)));
         if (_player != NULL)

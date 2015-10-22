@@ -40,9 +40,9 @@ class PoisonSpellProc : public SpellProc
             return;
         }
 
-        mItemGUID = TO_ITEM(obj)->GetGUID();
+        mItemGUID = static_cast<Item*>(obj)->GetGUID();
         if (mProcPerMinute)
-            mProcChance = TO_ITEM(obj)->GetProto()->Delay * mProcPerMinute / 600;
+            mProcChance = static_cast<Item*>(obj)->GetProto()->Delay * mProcPerMinute / 600;
     }
 
     bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)//in this case misc is the item guid.
@@ -68,9 +68,9 @@ class PoisonSpellProc : public SpellProc
         Item* item;
 
         if (weapon_damage_type == OFFHAND)
-            item = TO_PLAYER(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+            item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
         else
-            item = TO_PLAYER(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+            item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
         if (item != NULL && item->GetGUID() == mItemGUID)
             return false;

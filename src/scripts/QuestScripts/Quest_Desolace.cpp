@@ -38,7 +38,7 @@ class ProtectingtheShipment : public QuestScript
             creat->GetAIInterface()->setMoveType(11);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ts...... I must be removed from this lair");
-            creat->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
             sEAS.WaypointCreate(creat, -336.599213f, 1764.957275f, 139.517746f, 4.461932f, 1, 256, 3791);
@@ -75,7 +75,11 @@ class Dalinda_Malem  : public CreatureAIScript
                     return;
                 Player* plr = _unit->m_escorter;
                 _unit->m_escorter = NULL;
-                plr->GetQuestLogForEntry(1440)->SendQuestComplete();
+
+                auto quest_entry = plr->GetQuestLogForEntry(1440);
+                if (quest_entry == nullptr)
+                    return;
+                quest_entry->SendQuestComplete();
             }
         }
 };
