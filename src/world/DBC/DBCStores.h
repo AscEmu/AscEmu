@@ -2159,7 +2159,7 @@ extern SERVER_DECL DBCStorage<MailTemplateEntry> dbcMailTemplateEntry;
 extern SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;
 extern SERVER_DECL DBCStorage<SummonPropertiesEntry> dbcSummonProperties;
 extern SERVER_DECL DBCStorage<NameGenEntry> dbcNameGen;
-extern SERVER_DECL DBCStorage<LFGDungeonEntry> dbcLFGDungeon;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
 extern SERVER_DECL DBCStorage<VehicleEntry> dbcVehicle;
 extern SERVER_DECL DBCStorage<VehicleSeatEntry> dbcVehicleSeat;
 

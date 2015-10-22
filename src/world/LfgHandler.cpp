@@ -178,11 +178,13 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     LfgDungeonSet randomDungeons;
     uint8 level = GetPlayer()->getLevel();
     uint8 expansion = GetPlayer()->GetSession()->GetFlags();
-    for (uint32 i = 0; i < dbcLFGDungeon.GetNumRows(); ++i)
+
+	for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
     {
-        LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(i);
-        if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
-            randomDungeons.insert(dungeon->Entry());
+		DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
+		if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
+			randomDungeons.insert(dungeon->Entry());
+ 
     }
 
     // Get player locked Dungeons
@@ -198,14 +200,14 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     {
         data << uint32(*it);                               // Dungeon Entry (id + type)
         LfgReward const* reward = sLfgMgr.GetRandomDungeonReward(*it, level);
-        Quest const* qRew = NULL;
+        Quest* qRew = NULL;
         uint8 done = 0;
         if (reward)
         {
             qRew = QuestStorage.LookupEntry(reward->reward[0].questId);
             if (qRew)
             {
-                done = !GetPlayer()->HasFinishedQuest(qRew->id);
+                done = GetPlayer()->HasFinishedQuest(qRew->id);
                 if (done)
                     qRew = QuestStorage.LookupEntry(reward->reward[1].questId);
             }
@@ -217,24 +219,17 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             data << uint32(qRew->reward_xp);
             data << uint32(reward->reward[done].variableMoney);
             data << uint32(reward->reward[done].variableXP);
-            data << uint8(0);
-            ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision
-            /*data << uint8(qRew->reward_itemcount);
-            if (qRew->reward_itemcount)
-            {
-                ItemPrototype const* iProto = NULL;
-                for (uint8 i = 0; i < 4; ++i)
-                {
-                    if (!qRew->reward_item[i])
-                        continue;
-
-                    iProto = ItemPrototypeStorage.LookupEntry(qRew->reward_item[i]);
-
-                    data << uint32(qRew->reward_item[i]);
-                    data << uint32(iProto ? iProto->DisplayInfoID : 0);
-                    data << uint32(qRew->reward_itemcount[i]);
-                }
-            }*/
+            ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision 
+			/// can someone check this now ?
+			data << uint8(qRew->GetRewItemsCount());
+			for (uint8 i = 0; i < 4; ++i)
+				if (qRew->reward_item[i] != 0)
+				{
+					ItemPrototype* item = ItemPrototypeStorage.LookupEntry(qRew->reward_item[i]);
+					data << uint32(qRew->reward_item[i]);
+					data << uint32(item ? item->DisplayInfoID : 0);
+					data << uint32(qRew->reward_itemcount[i]);
+				}
         }
         else
         {
@@ -444,7 +439,7 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
     {
         for (LfgDungeonSet::iterator it = dungeons.begin(); it != dungeons.end(); ++it)
         {
-            LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(*it);
+			DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
             data << uint32(dungeon ? dungeon->Entry() : 0); // Dungeon
         }
     }
@@ -611,7 +606,7 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
             dungeonId = (*playerDungeons.begin());
     }
 
-    if (LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(dungeonId))
+	if (DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
     {
         dungeonId = dungeon->Entry();
 
