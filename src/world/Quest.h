@@ -101,6 +101,7 @@ struct Quest
 	uint32 receive_items[4];
 	uint32 receive_itemcount[4];
 	int is_repeatable;
+	uint32 GetRewItemsCount();
 	//
 	uint32 bonushonor;
 	uint32 bonusarenapoints;
