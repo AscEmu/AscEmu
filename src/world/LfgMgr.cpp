@@ -32,24 +32,13 @@ LfgMgr::LfgMgr() : m_update(true), m_QueueTimer(0), m_lfgProposalId(1),
 m_WaitTimeAvg(-1), m_WaitTimeTank(-1), m_WaitTimeHealer(-1), m_WaitTimeDps(-1),
 m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTimeDps(0)
 {
-    for (DBCStorage< LFGDungeonEntry >::iterator itr = dbcLFGDungeon.begin(); itr != dbcLFGDungeon.end(); ++itr)
-    {
-        LFGDungeonEntry* lfgdungeon = *itr;
-        uint32 id = lfgdungeon->ID;
-        uint32 typ = lfgdungeon->type;
-
-        if (id >= MAX_DUNGEONS)
-            LOG_ERROR("LFGDungeons contains an out of range dungeon id %u.", id);
-        else
-            LfgDungeonTypes[id] = typ;
-
         m_update = true;
         if (m_update)
         {
             // Initialize dungeon cache
-            for (uint32 i = 0; i < dbcLFGDungeon.GetNumRows(); ++i)
+			for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
             {
-                LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(i);
+				DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
                 if (dungeon && dungeon->type != LFG_TYPE_ZONE)
                 {
                     if (dungeon->type != LFG_TYPE_RANDOM)
@@ -58,7 +47,6 @@ m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTime
                 }
             }
         }
-    }
 }
 
 LfgMgr::~LfgMgr()
@@ -112,7 +100,7 @@ void LfgMgr::LoadRewards()
         uint32 otherMoneyVar = fields[6].GetUInt32();
         uint32 otherXPVar = fields[7].GetUInt32();
 
-        if (!dbcLFGDungeon.LookupEntry(dungeonId))
+		if (!sLFGDungeonStore.LookupEntry(dungeonId))
         {
             Log.Debug("LFGMgr", "Dungeon %u specified in table `lfg_dungeon_rewards` does not exist!", dungeonId);
             continue;
@@ -135,6 +123,8 @@ void LfgMgr::LoadRewards()
             Log.Debug("LFGMgr", "Other quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", otherQuestId, dungeonId);
             otherQuestId = 0;
         }
+
+		DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
 
         m_RewardMap.insert(LfgRewardMap::value_type(dungeonId, new LfgReward(maxLevel, firstQuestId, firstMoneyVar, firstXPVar, otherQuestId, otherMoneyVar, otherXPVar)));
         ++count;
@@ -357,7 +347,7 @@ void LfgMgr::InitializeLockedDungeons(Player* player)
 
     for (LfgDungeonSet::const_iterator it = dungeons.begin(); it != dungeons.end(); ++it)
     {
-        LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(*it);
+		DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
         if (!dungeon) // should never happen - We provide a list from dbcLFGDungeon
             continue;
 
@@ -1321,7 +1311,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
         }
 
         // Set the dungeon difficulty
-        LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(pProposal->dungeonId);
+		DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
         ASSERT(dungeon);
         //Set Dungeon difficult incomplete :D
         if (grp)
@@ -1584,7 +1574,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
     else
     {
         uint64 gguid = grp->GetGUID();
-        LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(GetDungeon(gguid));
+		DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(GetDungeon(gguid));
 
         if (!dungeon)
             error = LFG_TELEPORTERROR_INVALID_LOCATION;
@@ -1653,13 +1643,14 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 
 const LfgDungeonSet& LfgMgr::GetDungeonsByRandom(uint32 randomdungeon)
 {
-    LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(randomdungeon);
+	DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(randomdungeon);
     uint32 groupType = dungeon ? dungeon->grouptype : 0;
     return m_CachedDungeonMap[groupType];
 }
 
 LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
 {
+	Log.Debug("LFG Handler", "Get Random Dungeon Reward dungeon id = %u level = %u", dungeon, level);
     LfgReward const* rew = NULL;
     LfgRewardMapBounds bounds = m_RewardMap.equal_range(dungeon & 0x00FFFFFF);
     for (LfgRewardMap::const_iterator itr = bounds.first; itr != bounds.second; ++itr)
@@ -1675,7 +1666,7 @@ LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
 
 LfgType LfgMgr::GetDungeonType(uint32 dungeonId)
 {
-    LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(dungeonId);
+	DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
     if (!dungeon)
         return LFG_TYPE_NONE;
 
