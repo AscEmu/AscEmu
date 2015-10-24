@@ -290,12 +290,12 @@ void CommandTableStorage::Init()
 
     static ChatCommand transportCommandTable[] =
     {
-        { "Spawn", 'm', &ChatHandler::HandleSpawnInstanceTransport, "Spawns a Transporter in Instance ( entry , period)", NULL, 0, 0, 0 },
-        { "Despawn", 'm', &ChatHandler::HandleDespawnInstanceTransport, "Despawns current Transport in Instance.", NULL, 0, 0, 0 },
-        { "start", 'm', &ChatHandler::HandleStartTransport, "Starts Movement of Current Transporter", NULL, 0, 0, 0 },
-        { "stop", 'm', &ChatHandler::HandleStopTransport, "Stops Movement of Current Transporter.", NULL, 0, 0, 0 },
-        { "modperiod", 'm', &ChatHandler::HandleModPeriodCommand, "Changes period of Current transporter.", NULL, 0, 0, 0 },
-        { "gettptime", 'm', &ChatHandler::HandleGetTransporterTime, "grabs transporter travel time", NULL, 0, 0, 0 },
+        { "spawn", 'm', &ChatHandler::HandleSpawnInstanceTransport, "!spawn <entry:u32> <period:u32 time in ms> - Spawns a transport in the current instance", NULL, 0, 0, 0 },
+        { "despawn", 'm', &ChatHandler::HandleDespawnInstanceTransport, "!despawn - Despawns the transport you are currently on", NULL, 0, 0, 0 },
+        { "start", 'm', &ChatHandler::HandleStartTransport, "!start - Force starts the current transport", NULL, 0, 0, 0 },
+        { "stop", 'm', &ChatHandler::HandleStopTransport, "!stop - Force stops the current transport", NULL, 0, 0, 0 },
+        { "modperiod", 'm', &ChatHandler::HandleModPeriodCommand, "!modperiod <period:u32 time in ms> - Changes the period of the current transport", NULL, 0, 0, 0 },
+        { "getperiod", 'm', &ChatHandler::HandleGetTransporterTime, "!getperiod - Displays the current transport period in ms", NULL, 0, 0, 0 },
         { NULL, '0', NULL, "", NULL, 0, 0, 0 },
     };
     dupe_command_table(transportCommandTable, _transportCommandTable);
