@@ -151,15 +151,15 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(Quest* qst)
 
 uint32 Quest::GetRewItemsCount()
 {
-	uint32 count = 0;
-	for (uint8 i = 0; i < 4; ++i)
-	{
-		if (reward_item[i] != 0)
-		{
-			count++;
-		}
-	}
+    uint32 count = 0;
+    for (uint8 i = 0; i < 4; ++i)
+    {
+        if (reward_item[i] != 0)
+        {
+            count++;
+        }
+    }
 
-	return count;
+    return count;
 }
 
