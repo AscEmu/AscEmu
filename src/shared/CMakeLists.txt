@@ -94,6 +94,8 @@ set(headers
 	Database/DataStore.h
 	Database/Field.h
 	Database/MySQLDatabase.h
+    Exceptions/Exceptions.hpp
+    Exceptions/PlayerExceptions.hpp
 	Network/CircularBuffer.h
 	Network/ListenSocketFreeBSD.h
 	Network/ListenSocketLinux.h
