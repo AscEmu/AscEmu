@@ -722,6 +722,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         uint32 GenerateGameObjectSpawnID();
 
         Transporter* GetTransporter(uint32 guid);
+        Transporter* GetTransportOrThrow(uint32 guid);
         Transporter* GetTransporterByEntry(uint32 entry);
 
         Charter* CreateCharter(uint32 LeaderGuid, CharterTypes Type);

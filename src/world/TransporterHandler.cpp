@@ -670,6 +670,15 @@ void Transporter::TransportGossip(uint32 route)
     }
 }
 
+void Transporter::SetPeriod(int32 val)
+{
+    this->m_period = val;
+}
+
+int32 Transporter::GetPeriod()
+{
+    return this->m_period;
+}
 
 void Transporter::BuildStartMovePacket(MapMgr* targetMap)
 {

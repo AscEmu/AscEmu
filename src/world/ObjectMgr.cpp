@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "QuestLogEntry.hpp"
+#include <Exceptions/Exceptions.hpp>
 
 initialiseSingleton(ObjectMgr);
 
@@ -2806,6 +2807,14 @@ Transporter* ObjectMgr::GetTransporter(uint32 guid)
     rv = (itr != mTransports.end()) ? itr->second : 0;
     _TransportLock.Release();
     return rv;
+}
+
+Transporter* ObjectMgr::GetTransportOrThrow(uint32 guid)
+{
+    Transporter* transport = this->GetTransporter(guid);
+    if (transport == nullptr)
+        throw AscEmu::Exception::AscemuException("Transport not found");
+    return transport;
 }
 
 void ObjectMgr::AddTransport(Transporter* pTransporter)

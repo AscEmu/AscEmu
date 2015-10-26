@@ -1,120 +1,84 @@
 /*
-* AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+Copyright (c) 2015 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "StdAfx.h"
+#include <Exceptions/Exceptions.hpp>
 
-bool ChatHandler::HandleGetTransporterTime(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m_session)
 {
-    /*
-    //Player* plyr = m_session->GetPlayer();
-    Creature* crt = getSelectedCreature(m_session, false);
-    if (crt == NULL)
-    return false;
+    auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->transporter_info.guid));
+    if (transporter == nullptr)
+    {
+        RedSystemMessage(m_session, "You must be on a transport to use this command.");
+        return true;
+    }
 
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 1000);
-    data << uint32(0x00000102);
-    data << crt->GetNewGUID();
-    data << m_session->GetPlayer()->GetNewGUID();
-
-    data << uint32(6);
-    data << uint8(1);
-    data << uint32(1);
-    data << uint32(0x40c00000);
-    data << uint32(6);
-    data << uint32(0);
-    data << uint32(0);
-    data << uint32(1);
-    data << uint32(0x000003e8);
-    data << uint32(0);
-    data << uint32(0);
-    m_session->SendPacket(&data);
-    */
-
-    Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->transporter_info.guid));
-
-    if (t == NULL)
-        return false;
-
-    //t->Relocate(-377.184021f, 2073.548584f, 445.753387f);
-
+    SystemMessage(m_session, "Current period: %dms", transporter->GetPeriod());
     return true;
 }
 
 bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_session)
 {
-    Transporter* trans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->transporter_info.guid));
-    if (trans == 0)
+    try
     {
-        RedSystemMessage(m_session, "You must be on a transporter.");
-        return true;
+        int32 time = args ? atol(args) : 0;
+        if (time == 0)
+            return false;
+
+        Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->transporter_info.guid));
+        transport->SetPeriod(time);
+        BlueSystemMessage(m_session, "Period of %s set to %u.", transport->GetInfo()->name, time);
     }
-
-    uint32 np = args ? atol(args) : 0;
-    if (np == 0)
+    catch (AscEmu::Exception::AscemuException e)
     {
-        RedSystemMessage(m_session, "A time in ms must be specified.");
-        return true;
-    }
-
-    trans->SetPeriod(np);
-    BlueSystemMessage(m_session, "Period of %s set to %u.", trans->GetInfo()->name, np);
-
-    return true;
-}
-
-bool ChatHandler::HandleStopTransport(const char* args, WorldSession* m_session)
-{
-    Transporter* trans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->transporter_info.guid));
-    if (trans == NULL)
-    {
-        BlueSystemMessage(m_session, "You are not on a Transporter");
-        return false;
-    }
-
-    if (trans->GetState() == GAMEOBJECT_STATE_OPEN)
-    {
-        trans->m_WayPoints.clear();
-        trans->RemoveFlag(GAMEOBJECT_FLAGS, 1);
-        trans->SetState(GAMEOBJECT_STATE_CLOSED);
+        RedSystemMessage(m_session, e.what());
     }
 
     return true;
 }
 
-bool ChatHandler::HandleStartTransport(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleStopTransport(const char* /*args*/, WorldSession* m_session)
 {
-    Transporter* trans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->transporter_info.guid));
-    if (trans == NULL)
+    try
     {
-        BlueSystemMessage(m_session, "You are not on a Transporter");
-        return false;
+        Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->transporter_info.guid));
+        if (transport->GetState() == GAMEOBJECT_STATE_OPEN)
+        {
+            transport->m_WayPoints.clear();
+            transport->RemoveFlag(GAMEOBJECT_FLAGS, 1);
+            transport->SetState(GAMEOBJECT_STATE_CLOSED);
+        }
+    }
+    catch (AscEmu::Exception::AscemuException e)
+    {
+        RedSystemMessage(m_session, e.what());
     }
 
-    if (trans->GetState() == GAMEOBJECT_STATE_CLOSED)
-    {
-        trans->SetFlag(GAMEOBJECT_FLAGS, 1);
-        trans->SetState(GAMEOBJECT_STATE_OPEN);
-        trans->SetUInt32Value(GAMEOBJECT_DYNAMIC, 0x10830010); // Seen in sniffs
-        trans->SetFloatValue(GAMEOBJECT_PARENTROTATION + 3, 1.0f);
-        std::set<uint32> mapsUsed;
-        GameObjectInfo const* goinfo = trans->GetInfo();
+    return true;
+}
 
-        trans->GenerateWaypoints(goinfo->parameter_0);
+bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_session)
+{
+    try
+    {
+        Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->transporter_info.guid));
+        if (transport->GetState() == GAMEOBJECT_STATE_CLOSED)
+        {
+            transport->SetFlag(GAMEOBJECT_FLAGS, 1);
+            transport->SetState(GAMEOBJECT_STATE_OPEN);
+            transport->SetUInt32Value(GAMEOBJECT_DYNAMIC, 0x10830010); // Seen in sniffs
+            transport->SetFloatValue(GAMEOBJECT_PARENTROTATION + 3, 1.0f);
+            std::set<uint32> mapsUsed;
+            GameObjectInfo const* goinfo = transport->GetInfo();
+
+            transport->GenerateWaypoints(goinfo->parameter_0);
+        }
+    }
+    catch (AscEmu::Exception::AscemuException e)
+    {
+        RedSystemMessage(m_session, e.what());
     }
 
     return true;
@@ -122,32 +86,32 @@ bool ChatHandler::HandleStartTransport(const char* args, WorldSession* m_session
 
 bool ChatHandler::HandleSpawnInstanceTransport(const char* args, WorldSession* m_session)
 {
-    Player* plr = m_session->GetPlayer();
-
-    char* pEntry = strtok((char*)args, " ");
+    char* pEntry = strtok(const_cast<char*>(args), " ");
     if (!pEntry)
         return false;
 
-    uint32 entry = atoi(pEntry);
-
-    char* pPeriod = strtok(NULL, " ");
+    char* pPeriod = strtok(nullptr, " ");
     if (!pPeriod)
         return false;
 
+    uint32 entry = atoi(pEntry);
     uint32 period = atoi(pPeriod);
 
-    Transporter* trans = objmgr.LoadTransporterInInstance(plr->GetMapMgr(), entry, period);
+    objmgr.LoadTransporterInInstance(m_session->GetPlayerOrThrow()->GetMapMgr(), entry, period);
 
     return true;
 }
 
-bool ChatHandler::HandleDespawnInstanceTransport(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleDespawnInstanceTransport(const char* /*args*/, WorldSession* m_session)
 {
-    Transporter* trans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->transporter_info.guid));
-    if (trans == NULL)
-        return false;
-
-    objmgr.UnLoadTransporterFromInstance(trans);
-
+    try
+    {
+        Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->transporter_info.guid));
+        objmgr.UnLoadTransporterFromInstance(transport);
+    }
+    catch (AscEmu::Exception::AscemuException e)
+    {
+        RedSystemMessage(m_session, e.what());
+    }
     return true;
 }

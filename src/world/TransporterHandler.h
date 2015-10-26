@@ -169,7 +169,9 @@ class Transporter : public GameObject
 
         inline void AddPlayer(Player* pPlayer) { /*m_passengers.insert(passenger).second; */ }
         inline void RemovePlayer(Player* pPlayer) {/*m_passengers.erase(passenger);*/ }
-        inline void SetPeriod(uint32 val) { m_period = val; }
+
+    void SetPeriod(int32 val);
+    int32 GetPeriod();
 
         uint32 m_pathTime;
         uint32 m_timer;

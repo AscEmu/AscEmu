@@ -22,6 +22,7 @@
 #include "Threading/Mutex.h"
 #include "WorldPacket.h"
 #include "StdAfx.h"
+#include <Exceptions/PlayerExceptions.hpp>
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
@@ -426,6 +427,15 @@ void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
     data.SetOpcode(SMSG_SELL_ITEM);
     data << vendorguid << itemid << error;
     SendPacket(&data);
+}
+
+Player* WorldSession::GetPlayerOrThrow()
+{
+    Player* player = this->GetPlayer();
+    if (player == nullptr)
+        throw AscEmu::Exception::PlayerNotFoundException();
+    
+    return player;
 }
 
 void WorldSession::LoadSecurity(std::string securitystring)
