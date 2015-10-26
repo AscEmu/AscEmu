@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include <git_version.h>
+#include <mutex>
 
 
 initialiseSingleton(ScriptMgr);
