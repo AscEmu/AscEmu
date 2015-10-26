@@ -259,6 +259,7 @@ void ScriptMgr::DumpUnimplementedSpells()
 
 void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai callback)
 {
+    std::lock_guard<std::mutex> lock(this->m_creatureMutex);
     if (_creatures.find(entry) != _creatures.end())
         LOG_ERROR("ScriptMgr is trying to register a script for Creature ID: %u even if there's already one for that Creature. Remove one of those scripts.", entry);
 
@@ -428,6 +429,7 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
 
 CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 {
+    std::lock_guard<std::mutex> lock(this->m_creatureMutex);
     CreatureCreateMap::iterator itr = _creatures.find(pCreature->GetEntry());
     if (itr == _creatures.end())
         return NULL;

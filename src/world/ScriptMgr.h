@@ -297,6 +297,9 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
     Arcemu::Gossip::Generic genericScript_;
 
     protected:
+
+        std::mutex m_creatureMutex;
+
     InstanceCreateMap mInstances;
     CreatureCreateMap _creatures;
     GameObjectCreateMap _gameobjects;
