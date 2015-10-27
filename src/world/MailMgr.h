@@ -155,6 +155,9 @@ class SERVER_DECL MailSystem : public Singleton<MailSystem>, public EventableObj
         void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
                                   uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
 
+        void SendCreatureGameobjectMail(uint32 type, uint32 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
+                                  uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
+
         inline bool MailOption(uint32 flag)
         {
             return (config_flags & flag) ? true : false;

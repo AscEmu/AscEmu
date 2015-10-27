@@ -37,7 +37,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
     else
         guidsize = 4;
 
-    size_t msize = 2 + 4 + 1 + guidsize + 7 * 4 + (subject.size() + 1) + (body.size() + 1) + 1 + (items.size() * (1 + 2 * 4 + 7 * (3 * 4) + 6 * 4 + 1));
+    size_t msize = 2 + 4 + 1 + guidsize + 4 * 8 + (subject.size() + 1) + (body.size() + 1) + 1 + (items.size() * (1 + 2 * 4 + 7 * (3 * 4) + 6 * 4 + 1));
 
     data << uint16(msize);     // message size
     data << uint32(message_id);
@@ -50,12 +50,12 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
             break;
         case COD:
         case AUCTION:
-        case GAMEOBJECT:
         case ITEM:
             data << uint32(Arcemu::Util::GUID_LOPART(sender_guid));
             break;
+        case GAMEOBJECT:
         case CREATURE:
-            data << uint32(Arcemu::Util::GET_CREATURE_ENTRY_FROM_GUID(sender_guid));
+            data << uint32(static_cast<uint32>(sender_guid));
             break;
     }
 

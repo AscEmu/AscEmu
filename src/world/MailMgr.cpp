@@ -159,6 +159,15 @@ void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receive
     SendAutomatedMessage(type, sender, receiver, subject, body, money, cod, item_guids, stationery, checked, deliverdelay);
 }
 
+void MailSystem::SendCreatureGameobjectMail(uint32 type, uint32 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
+                                      uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked, uint32 deliverdelay)
+{
+    std::vector<uint64> item_guids;
+    if (item_guid != 0)
+        item_guids.push_back(item_guid);
+    SendAutomatedMessage(type, sender, receiver, subject, body, money, cod, item_guids, stationery, checked, deliverdelay);
+}
+
 void Mailbox::Load(QueryResult* result)
 {
     if (!result)

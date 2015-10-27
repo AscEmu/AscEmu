@@ -1785,19 +1785,24 @@ void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
             return;
         }
         
-        uint64 Sender = pCreature->GetGUID();
+        uint32 Sender = Reward->sender;
         uint64 receiver = GetPlayer()->GetGUID();
         std::string messageheader = Reward->subject;
         std::string messagebody = Reward->text;
         
         //Create Item
-        Item* pItem = Reward->itemId ? objmgr.CreateItem(Reward->itemId, GetPlayer()) : nullptr;
+        Item* pItem = objmgr.CreateItem(Reward->itemId, GetPlayer());
 
-        if (pItem != nullptr)
+        if (Reward->itemId == 0)
+        {
+            //Sending mail
+            sMailSystem.SendCreatureGameobjectMail(CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, 0, 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
+        }
+        else if (pItem != nullptr)
         {
             pItem->SaveToDB(-1, -1, true, NULL);
             //Sending mail
-            sMailSystem.SendAutomatedMessage(CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, pItem->GetGUID(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
+            sMailSystem.SendCreatureGameobjectMail(CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, pItem->GetGUID(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
 
             //removing pItem
             pItem->DeleteMe();
