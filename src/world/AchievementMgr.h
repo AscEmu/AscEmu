@@ -294,6 +294,7 @@ class SERVER_DECL AchievementMgr
         void SendAllAchievementData(Player* player);
         void UpdateAchievementCriteria(AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time);
         void UpdateAchievementCriteria(AchievementCriteriaTypes type);
+        bool AchievementCriteriaUpdate(Player* player, int32 criteriaID, uint32 count);
         bool GMCompleteAchievement(WorldSession* gmSession, int32 achievementID);
         bool GMCompleteCriteria(WorldSession* gmSession, int32 criteriaID);
         void GMResetAchievement(int achievementID);

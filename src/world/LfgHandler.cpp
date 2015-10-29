@@ -494,13 +494,12 @@ void WorldSession::SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgW
     SendPacket(&data);
 }
 
-void WorldSession::SendLfgPlayerReward(uint32 rdungeonEntry, uint32 sdungeonEntry, uint8 done, const LfgReward* reward, const Quest* qRew)
+void WorldSession::SendLfgPlayerReward(uint32 rdungeonEntry, uint32 sdungeonEntry, uint8 done, const LfgReward* reward, Quest* qRew)
 {
-    ///\todo FIXME 
-    /*if (!rdungeonEntry || !sdungeonEntry || !qRew)
+    if (!rdungeonEntry || !sdungeonEntry || !qRew)
         return;
 
-    uint8 itemNum = uint8(qRew ? qRew->reward_itemcount : 0);
+    uint8 itemNum = uint8(qRew ? qRew->GetRewItemsCount() : 0);
 
     Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_REWARD %u rdungeonEntry: %u - sdungeonEntry: %u - done: %u", GetPlayer()->GetGUID(), rdungeonEntry, sdungeonEntry, done);
 
@@ -518,21 +517,20 @@ void WorldSession::SendLfgPlayerReward(uint32 rdungeonEntry, uint32 sdungeonEntr
 
     if (itemNum)
     {
-    ItemTemplate const* iProto = NULL;
-    for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
-    {
-    if (!qRew->RewardItemId[i])
-    continue;
+        ItemPrototype * iProto = NULL;
+        for (uint8 i = 0; i < 4; ++i)
+        {
+            if (!qRew->reward_item[i])
+                continue;
 
-    iProto = sObjectMgr->GetItemTemplate(qRew->RewardItemId[i]);
+            iProto = ItemPrototypeStorage.LookupEntry(qRew->reward_item[i]);
 
-    data << uint32(qRew->RewardItemId[i]);
-    data << uint32(iProto ? iProto->DisplayInfoID : 0);
-    data << uint32(qRew->RewardItemIdCount[i]);
+            data << uint32(qRew->reward_item[i]);
+            data << uint32(iProto ? iProto->DisplayInfoID : 0);
+            data << uint32(qRew->reward_itemcount[i]);
+        }
     }
-    }
-    */
-    //   SendPacket(&data);
+    SendPacket(&data);
 }
 
 void WorldSession::SendLfgBootPlayer(const LfgPlayerBoot* pBoot)
