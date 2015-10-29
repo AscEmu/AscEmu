@@ -481,23 +481,23 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::tr1::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
 
         // Set typedef's
-        typedef HM_NAMESPACE::hash_map<uint32, Group*>                      GroupMap;
+        typedef std::unordered_map<uint32, Group*>                      GroupMap;
         typedef std::set<Transporter*>                                      TransporterSet;
 
         // HashMap typedef's
-        typedef HM_NAMESPACE::hash_map<uint64, Item*>                       ItemMap;
-        typedef HM_NAMESPACE::hash_map<uint32, CorpseData*>                 CorpseCollectorMap;
-        typedef HM_NAMESPACE::hash_map<uint32, PlayerInfo*>                 PlayerNameMap;
-        typedef HM_NAMESPACE::hash_map<uint32, PlayerCreateInfo*>           PlayerCreateInfoMap;
-        typedef HM_NAMESPACE::hash_map<uint32, Guild*>                      GuildMap;
-        typedef HM_NAMESPACE::hash_map<uint32, skilllinespell*>             SLMap;
-        typedef HM_NAMESPACE::hash_map<uint32, std::vector<CreatureItem>*>  VendorMap;
-        typedef HM_NAMESPACE::hash_map<uint32, Transporter*>                TransportMap;
-        typedef HM_NAMESPACE::hash_map<uint32, Trainer*>                    TrainerMap;
-        typedef HM_NAMESPACE::hash_map<uint32, std::vector<TrainerSpell*> > TrainerSpellMap;
-        typedef HM_NAMESPACE::hash_map<uint32, ReputationModifier*>         ReputationModMap;
-        typedef HM_NAMESPACE::hash_map<uint32, Corpse*>                     CorpseMap;
-        typedef HM_NAMESPACE::hash_map<uint32, PlayerCache*>                PlayerCacheMap;
+        typedef std::unordered_map<uint64, Item*>                       ItemMap;
+        typedef std::unordered_map<uint32, CorpseData*>                 CorpseCollectorMap;
+        typedef std::unordered_map<uint32, PlayerInfo*>                 PlayerNameMap;
+        typedef std::unordered_map<uint32, PlayerCreateInfo*>           PlayerCreateInfoMap;
+        typedef std::unordered_map<uint32, Guild*>                      GuildMap;
+        typedef std::unordered_map<uint32, skilllinespell*>             SLMap;
+        typedef std::unordered_map<uint32, std::vector<CreatureItem>*>  VendorMap;
+        typedef std::unordered_map<uint32, Transporter*>                TransportMap;
+        typedef std::unordered_map<uint32, Trainer*>                    TrainerMap;
+        typedef std::unordered_map<uint32, std::vector<TrainerSpell*> > TrainerSpellMap;
+        typedef std::unordered_map<uint32, ReputationModifier*>         ReputationModMap;
+        typedef std::unordered_map<uint32, Corpse*>                     CorpseMap;
+        typedef std::unordered_map<uint32, PlayerCache*>                PlayerCacheMap;
 
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                LevelMap;
@@ -685,7 +685,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Add Transporter
         void AddTransport(Transporter* transport);
  
-        TransportMap mTransports;
+        TransportMap m_Transports;
 
         TransporterSet m_Transporters;
         TransporterMap m_TransportersByMap;
