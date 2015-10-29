@@ -677,13 +677,13 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadTransportNPCs();
 
         // Load Transport in Instance	
-        Transporter* LoadTransporterInInstance(MapMgr* instance, uint32 goEntry, uint32 period);
+        Transporter*LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period);
 
         // Unloads Transporter from MapMgr
-        void UnLoadTransporterFromInstance(Transporter* t);
+        void UnloadTransportFromInstance(Transporter *t);
 
         // Add Transporter
-         void AddTransport(Transporter* pTransporter);
+        void AddTransport(Transporter* transport);
  
         TransportMap mTransports;
 

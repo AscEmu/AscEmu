@@ -2803,7 +2803,7 @@ Transporter* ObjectMgr::GetTransporter(uint32 guid)
 {
     Transporter* rv;
     _TransportLock.Acquire();
-    HM_NAMESPACE::hash_map<uint32, Transporter*>::const_iterator itr = mTransports.find(guid);
+    std::unordered_map<uint32, Transporter*>::const_iterator itr = mTransports.find(guid);
     rv = (itr != mTransports.end()) ? itr->second : 0;
     _TransportLock.Release();
     return rv;
@@ -2817,10 +2817,10 @@ Transporter* ObjectMgr::GetTransportOrThrow(uint32 guid)
     return transport;
 }
 
-void ObjectMgr::AddTransport(Transporter* pTransporter)
+void ObjectMgr::AddTransport(Transporter*transport)
 {
     _TransportLock.Acquire();
-    mTransports[pTransporter->GetUIdFromGUID()] = pTransporter;
+    mTransports[transport->GetUIdFromGUID()] = transport;
     _TransportLock.Release();
 }
 

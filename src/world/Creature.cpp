@@ -2925,10 +2925,10 @@ void Creature::RemoveVehicleComponent()
     vehicle = NULL;
 }
 
-void Creature::FarTeleportTo(uint32 mapid, float X, float Y, float Z, float O)
+void Creature::TeleportFar(uint32 mapId, float x, float y, float z, float o)
 {
     RemoveFromWorld(false);
-    SetMapId(mapid);
-    SetPosition(X, Y, Z, O, false);
+    SetMapId(mapId);
+    SetPosition(x, y, z, o, false);
     AddToWorld();
 }
