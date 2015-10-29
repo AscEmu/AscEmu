@@ -1113,8 +1113,28 @@ bool ChatHandler::HandleResetSpellsCommand(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleGetTransporterTime(const char* args, WorldSession* m_session)
 {
-    Player* plyr = m_session->GetPlayer();
-    sLfgMgr.RewardDungeonDoneFor(plyr->GetInstanceID(), plyr);
+    //Player* plyr = m_session->GetPlayer();
+    Creature* crt = getSelectedCreature(m_session, false);
+    if (crt == NULL)
+        return false;
+    
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 1000);
+    data << uint32(0x00000102);
+    data << crt->GetNewGUID();
+    data << m_session->GetPlayer()->GetNewGUID();
+    
+    data << uint32(6);
+    data << uint8(1);
+    data << uint32(1);
+    data << uint32(0x40c00000);
+    data << uint32(6);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(1);
+    data << uint32(0x000003e8);
+    data << uint32(0);
+    data << uint32(0);
+    m_session->SendPacket(&data);
     return true;
 }
 
