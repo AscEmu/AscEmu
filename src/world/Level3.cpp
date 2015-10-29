@@ -1117,12 +1117,12 @@ bool ChatHandler::HandleGetTransporterTime(const char* args, WorldSession* m_ses
     Creature* crt = getSelectedCreature(m_session, false);
     if (crt == NULL)
         return false;
-
+    
     WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 1000);
     data << uint32(0x00000102);
     data << crt->GetNewGUID();
     data << m_session->GetPlayer()->GetNewGUID();
-
+    
     data << uint32(6);
     data << uint8(1);
     data << uint32(1);
