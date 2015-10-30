@@ -291,13 +291,13 @@ void CommandTableStorage::Init()
 
     static ChatCommand transportCommandTable[] =
     {
-        { "spawn", 'm', &ChatHandler::HandleSpawnInstanceTransport, "spawn <entry:u32> <period:u32 time in ms> - Spawns a transport in the current instance", NULL, 0, 0, 0 },
-        { "despawn", 'm', &ChatHandler::HandleDespawnInstanceTransport, "despawn - Despawns the transport you are currently on", NULL, 0, 0, 0 },
-        { "start", 'm', &ChatHandler::HandleStartTransport, "start - Force starts the current transport", NULL, 0, 0, 0 },
-        { "stop", 'm', &ChatHandler::HandleStopTransport, "stop - Force stops the current transport", NULL, 0, 0, 0 },
-        { "modperiod", 'm', &ChatHandler::HandleModPeriodCommand, "modperiod <period:i32 time in ms> - Changes the period of the current transport", NULL, 0, 0, 0 },
-        { "getperiod", 'm', &ChatHandler::HandleGetTransporterTime, "getperiod - Displays the current transport period in ms", NULL, 0, 0, 0 },
-        { NULL, '0', NULL, "", NULL, 0, 0, 0 },
+        { "spawn", 'm', &ChatHandler::HandleSpawnInstanceTransport, "spawn <entry:u32> <period:u32 time in ms> - Spawns a transport in the current instance", nullptr, 0, 0, 0 },
+        { "despawn", 'm', &ChatHandler::HandleDespawnInstanceTransport, "despawn - Despawns the transport you are currently on", nullptr, 0, 0, 0 },
+        { "start", 'm', &ChatHandler::HandleStartTransport, "start - Force starts the current transport", nullptr, 0, 0, 0 },
+        { "stop", 'm', &ChatHandler::HandleStopTransport, "stop - Force stops the current transport", nullptr, 0, 0, 0 },
+        { "modperiod", 'm', &ChatHandler::HandleModPeriodCommand, "modperiod <period:i32 time in ms> - Changes the period of the current transport", nullptr, 0, 0, 0 },
+        { "getperiod", 'm', &ChatHandler::HandleGetTransporterTime, "getperiod - Displays the current transport period in ms", nullptr, 0, 0, 0 },
+        { nullptr, '0', nullptr, "", nullptr, 0, 0, 0 },
     };
     dupe_command_table(transportCommandTable, _transportCommandTable);
 
