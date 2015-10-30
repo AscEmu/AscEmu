@@ -97,7 +97,7 @@ bool ChatHandler::HandleSpawnInstanceTransport(const char* args, WorldSession* m
     uint32 entry = atoi(pEntry);
     uint32 period = atoi(pPeriod);
 
-    objmgr.LoadTransporterInInstance(m_session->GetPlayerOrThrow()->GetMapMgr(), entry, period);
+    objmgr.LoadTransportInInstance(m_session->GetPlayerOrThrow()->GetMapMgr(), entry, period);
 
     return true;
 }
@@ -107,7 +107,7 @@ bool ChatHandler::HandleDespawnInstanceTransport(const char* /*args*/, WorldSess
     try
     {
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->transporter_info.guid));
-        objmgr.UnLoadTransporterFromInstance(transport);
+        objmgr.UnloadTransportFromInstance(transport);
     }
     catch (AscEmu::Exception::AscemuException e)
     {

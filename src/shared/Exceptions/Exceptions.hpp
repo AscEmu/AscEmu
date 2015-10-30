@@ -12,9 +12,13 @@ namespace AscEmu
     {
         class AscemuException : public std::exception
         {
+        protected:
+            const std::string m_exceptionString;
+
         public:
-            explicit AscemuException() : exception("An unspecified exception occurred in AscEmu") { }
-            explicit AscemuException(const char* exceptionString) : exception(exceptionString) { }
+            const char* what() const noexcept { return m_exceptionString.c_str(); }
+            explicit AscemuException() : exception(), m_exceptionString("An unspecified exception has occurred in AscEmu") { }
+            explicit AscemuException(const char* exceptionString) : exception(), m_exceptionString(exceptionString) { }
         };
     }
 }

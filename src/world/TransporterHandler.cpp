@@ -46,7 +46,7 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
     return (i > 0 ? true : false);
 }
 
-Transporter* ObjectMgr::LoadTransporterInInstance(MapMgr* instance, uint32 goEntry, uint32 period)
+Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period)
 {
     auto gameobject_info = GameObjectNameStorage.LookupEntry(goEntry);
 
@@ -90,7 +90,7 @@ Transporter* ObjectMgr::LoadTransporterInInstance(MapMgr* instance, uint32 goEnt
     return t;
 }
 
-void ObjectMgr::UnLoadTransporterFromInstance(Transporter* t)
+void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
 {
     for (Transporter::CreatureSet::iterator itr = t->m_NPCPassengerSet.begin(); itr != t->m_NPCPassengerSet.end();)
     {
@@ -557,7 +557,7 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
     }
 
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
-        (*itr)->FarTeleportTo(newMapid, x, y, z, (*itr)->GetOrientation());
+            (*itr)->TeleportFar(newMapid, x, y, z, (*itr)->GetOrientation());
 
     // Set our position
     RemoveFromWorld(false);

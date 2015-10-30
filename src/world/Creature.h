@@ -226,7 +226,7 @@ class SERVER_DECL Creature : public Unit
 
         void BuildPetSpellList(WorldPacket & data);
 
-        void FarTeleportTo(uint32 mapid, float X, float Y, float Z, float O);
+        void TeleportFar(uint32 mapId, float x, float y, float z, float o);
 
     protected:
         virtual void SafeDelete();      /// use DeleteMe() instead of SafeDelete() to avoid crashes like InWorld Creatures deleted.
