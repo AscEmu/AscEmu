@@ -1645,7 +1645,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     if (!group || !group->isLFGGroup())
     {
         Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u is not in a group or not a LFGGroup. Ignoring", player->GetGUID());
-       // return;
+        return;
     }
 
     uint64 guid = player->GetGUID();
@@ -1654,7 +1654,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     if (gDungeonId != dungeonId)
     {
         Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u Finished dungeon %u but group queued for %u. Ignoring", guid, dungeonId, gDungeonId);
-       // return;
+        return;
     }
 
     if (GetState(guid) == LFG_STATE_FINISHED_DUNGEON)
