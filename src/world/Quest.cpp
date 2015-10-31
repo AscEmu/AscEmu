@@ -149,7 +149,7 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(Quest* qst)
 }
 
 
-uint32 Quest::GetRewItemsCount()
+uint32 Quest::GetRewardItemCount()
 {
     uint32 count = 0;
     for (uint8 i = 0; i < 4; ++i)

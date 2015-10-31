@@ -221,7 +221,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             data << uint32(reward->reward[done].variableXP);
             ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision 
             /// can someone check this now ?
-            data << uint8(qRew->GetRewItemsCount());
+            data << uint8(qRew->GetRewardItemCount());
             for (uint8 i = 0; i < 4; ++i)
                 if (qRew->reward_item[i] != 0)
                 {
@@ -494,40 +494,39 @@ void WorldSession::SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgW
     SendPacket(&data);
 }
 
-void WorldSession::SendLfgPlayerReward(uint32 rdungeonEntry, uint32 sdungeonEntry, uint8 done, const LfgReward* reward, Quest* qRew)
+void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 DungeonEntry, uint8 done, const LfgReward* reward, Quest* qReward)
 {
-    if (!rdungeonEntry || !sdungeonEntry || !qRew)
+    if (!RandomDungeonEntry || !DungeonEntry || !qReward)
         return;
 
-    uint8 itemNum = uint8(qRew ? qRew->GetRewItemsCount() : 0);
+    uint8 itemNum = uint8(qReward ? qReward->GetRewardItemCount() : 0);
 
-    Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_REWARD %u rdungeonEntry: %u - sdungeonEntry: %u - done: %u", GetPlayer()->GetGUID(), rdungeonEntry, sdungeonEntry, done);
+    Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_REWARD %u rdungeonEntry: %u - sdungeonEntry: %u - done: %u", GetPlayer()->GetGUID(), RandomDungeonEntry, DungeonEntry, done);
 
     WorldPacket data(SMSG_LFG_PLAYER_REWARD, 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 1 + itemNum * (4 + 4 + 4));
 
-    data << uint32(rdungeonEntry);                         // Random Dungeon Finished
-    data << uint32(sdungeonEntry);                         // Dungeon Finished
+    data << uint32(RandomDungeonEntry);                         // Random Dungeon Finished
+    data << uint32(DungeonEntry);                         // Dungeon Finished
     data << uint8(done);
     data << uint32(1);
-    data << uint32(qRew->reward_money);
-    data << uint32(qRew->reward_xp);
+    data << uint32(qReward->reward_money);
+    data << uint32(qReward->reward_xp);
     data << uint32(reward->reward[done].variableMoney);
     data << uint32(reward->reward[done].variableXP);
     data << uint8(itemNum);
 
     if (itemNum)
     {
-        ItemPrototype * iProto = NULL;
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (!qRew->reward_item[i])
+            if (!qReward->reward_item[i])
                 continue;
 
-            iProto = ItemPrototypeStorage.LookupEntry(qRew->reward_item[i]);
+            ItemPrototype * iProto = ItemPrototypeStorage.LookupEntry(qReward->reward_item[i]);
 
-            data << uint32(qRew->reward_item[i]);
+            data << uint32(qReward->reward_item[i]);
             data << uint32(iProto ? iProto->DisplayInfoID : 0);
-            data << uint32(qRew->reward_itemcount[i]);
+            data << uint32(qReward->reward_itemcount[i]);
         }
     }
     SendPacket(&data);

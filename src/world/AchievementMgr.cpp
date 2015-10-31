@@ -1955,7 +1955,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
 }
 
 
-bool AchievementMgr::AchievementCriteriaUpdate(Player* player, int32 criteriaID, uint32 count)
+bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32 criteriaID, uint32 count)
 {
     AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupEntryForced(criteriaID);
     if (!criteria)
