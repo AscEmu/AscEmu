@@ -229,7 +229,7 @@ void GameEventMgr::LoadFromDB()
     {
         const char* loadEventGameobjectSpawnsQuery = "SELECT event_entry, id, entry, map, position_x, position_y, \
                                                       position_z, facing, orientation1, orientation2, orientation3, \
-                                                      orientation4, state, flags, faction, scale, stateNpcLink, phase, \
+                                                      orientation4, state, flags, faction, scale, respawnNpcLink, phase, \
                                                       overrides FROM event_gameobject_spawns";
         bool success = false;
         QueryResult* result = WorldDatabase.Query(&success, loadEventGameobjectSpawnsQuery);
