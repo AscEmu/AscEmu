@@ -92,7 +92,7 @@ struct EventNamesQueryResult
 
 struct EventCreatureSpawnsQueryResult
 {
-    uint32 eventEntry;
+    uint32 event_entry;
     uint32 id;
     uint32 entry;
     uint16 map_id;
@@ -125,7 +125,7 @@ struct EventCreatureSpawnsQueryResult
 
 struct EventGameObjectSpawnsQueryResult
 {
-    uint32 eventEntry;
+    uint32 event_entry;
     uint32 id;
     uint32 entry;
     uint32 map_id;

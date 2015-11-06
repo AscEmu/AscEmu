@@ -109,7 +109,7 @@ void GameEventMgr::LoadFromDB()
     // Loading event_saves from CharacterDB
     Log.Notice("GameEventMgr", "Start loading event_save");
     {
-        const char* loadEventSaveQuery = "SELECT eventEntry, state, next_start FROM event_save";
+        const char* loadEventSaveQuery = "SELECT event_entry, state, next_start FROM event_save";
         bool success = false;
         QueryResult* result = CharacterDatabase.Query(&success, loadEventSaveQuery);
 
@@ -147,7 +147,7 @@ void GameEventMgr::LoadFromDB()
     // Loading event_creature from WorldDB
     Log.Notice("GameEventMgr", "Start loading game event creature spawns");
     {
-        const char* loadEventCreatureSpawnsQuery = "SELECT eventEntry, id, entry, map, position_x, position_y, position_z, \
+        const char* loadEventCreatureSpawnsQuery = "SELECT event_entry, id, entry, map, position_x, position_y, position_z, \
                                                     orientation, movetype, displayid, faction, flags, bytes0, bytes1, bytes2, \
                                                     emote_state, npc_respawn_link, channel_spell, channel_target_sqlid, \
                                                     channel_target_sqlid_creature, standstate, death_state, mountdisplayid, \
@@ -178,7 +178,7 @@ void GameEventMgr::LoadFromDB()
                 }
 
                 EventCreatureSpawnsQueryResult dbResult;
-                dbResult.eventEntry = field[0].GetUInt32();
+                dbResult.event_entry = field[0].GetUInt32();
                 dbResult.id = field[1].GetUInt32();
                 dbResult.entry = field[2].GetUInt32();
                 auto creature_info = CreatureNameStorage.LookupEntry(dbResult.entry);
@@ -227,7 +227,7 @@ void GameEventMgr::LoadFromDB()
     // Loading event_gameobject from WorldDB
     Log.Notice("GameEventMgr", "Start loading game event gameobject spawns");
     {
-        const char* loadEventGameobjectSpawnsQuery = "SELECT eventEntry, id, entry, map, position_x, position_y, \
+        const char* loadEventGameobjectSpawnsQuery = "SELECT event_entry, id, entry, map, position_x, position_y, \
                                                       position_z, facing, orientation1, orientation2, orientation3, \
                                                       orientation4, state, flags, faction, scale, stateNpcLink, phase, \
                                                       overrides FROM event_gameobject_spawns";
@@ -255,7 +255,7 @@ void GameEventMgr::LoadFromDB()
                 }
 
                 EventGameObjectSpawnsQueryResult dbResult;
-                dbResult.eventEntry = field[0].GetUInt32();
+                dbResult.event_entry = field[0].GetUInt32();
                 dbResult.id = field[1].GetUInt32();
                 dbResult.entry = field[2].GetUInt32();
                 auto gameobject_info = GameObjectNameStorage.LookupEntry(dbResult.entry);
