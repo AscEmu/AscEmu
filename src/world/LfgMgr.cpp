@@ -354,6 +354,10 @@ void LfgMgr::InitializeLockedDungeons(Player* player)
         LfgLockStatusType locktype = LFG_LOCKSTATUS_OK;
         if (dungeon->expansion > expansion)
             locktype = LFG_LOCKSTATUS_INSUFFICIENT_EXPANSION;
+        else if (dungeon->minlevel > level)
+            locktype = LFG_LOCKSTATUS_TOO_LOW_LEVEL;
+        else if (dungeon->maxlevel < level)
+            locktype = LFG_LOCKSTATUS_TOO_HIGH_LEVEL;
 
         // \todo check for needed items/quests ...
 
@@ -1261,6 +1265,9 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
                 grp->m_disbandOnNoMembers = false;
                 grp->ExpandToLFG();
 
+                DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
+                SetDungeon(grp->GetGUID(), dungeon->Entry());
+
                 uint32 low_gguid = grp->GetID();
                 uint64 gguid = grp->GetGUID();
                 SetState(gguid, LFG_STATE_PROPOSAL);
@@ -1310,17 +1317,13 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             SetState(pguid, LFG_STATE_DUNGEON);
         }
 
-        // Set the dungeon difficulty
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
-        ASSERT(dungeon);
         //Set Dungeon difficult incomplete :D
-        if (grp)
-        {
-            uint64 gguid = grp->GetGUID();
-            SetDungeon(gguid, dungeon->Entry());
-            SetState(gguid, LFG_STATE_DUNGEON);
-            //Maybe Save these :D
-        }
+
+        uint64 gguid = grp->GetGUID();
+        SetDungeon(gguid, dungeon->ID);
+        SetState(gguid, LFG_STATE_DUNGEON);
+        //Maybe Save these :D
 
         // Remove players/groups from Queue
         for (LfgGuidList::const_iterator it = pProposal->queues.begin(); it != pProposal->queues.end(); ++it)
@@ -1638,7 +1641,245 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
 void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 {
+    Group* group = player->GetGroup();
+    if (!group || !group->isLFGGroup())
+    {
+        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u is not in a group or not a LFGGroup. Ignoring", player->GetGUID());
+        return;
+    }
 
+    uint64 guid = player->GetGUID();
+    uint64 gguid = player->GetGroup()->GetGUID();
+    uint32 gDungeonId = GetDungeon(gguid, true);
+    if (gDungeonId != dungeonId)
+    {
+        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u Finished dungeon %u but group queued for %u. Ignoring", guid, dungeonId, gDungeonId);
+        return;
+    }
+
+    if (GetState(guid) == LFG_STATE_FINISHED_DUNGEON)
+    {
+        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u Already rewarded player. Ignoring", guid);
+        return;
+    }
+
+    // Mark dungeon as finished
+    SetState(gguid, LFG_STATE_FINISHED_DUNGEON);
+
+    // Clear player related lfg stuff
+    uint32 rDungeonId = (*GetSelectedDungeons(guid).begin());
+    ClearState(guid);
+    SetState(guid, LFG_STATE_FINISHED_DUNGEON);
+
+    
+    // Give rewards only if its a random or seasonal dungeon
+    DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(rDungeonId);
+    if (!dungeon || (dungeon->type != LFG_TYPE_RANDOM /*add seasonal checks*/))
+    {
+        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u dungeon %u is not random nor seasonal", guid, rDungeonId);
+        return;
+    }
+
+    // Update achievements
+    if (dungeon->difficulty == 1) // Heroic
+        player->GetAchievementMgr().UpdateAchievementCriteria(player, 13029, 1); // Done LFG Dungeon with random Players
+
+    LfgReward const* reward = GetRandomDungeonReward(rDungeonId, player->getLevel());
+    if (!reward)
+        return;
+
+    uint8 index = 0;
+    Quest* qReward = QuestStorage.LookupEntry(reward->reward[index].questId);
+    if (!qReward)
+        return;
+
+    // if we can take the quest, means that we haven't done this kind of "run", IE: First Heroic Random of Day.
+    if (!player->HasFinishedDaily(qReward->id) || !player->HasFinishedQuest(qReward->id))
+    {
+        sQuestMgr.BuildQuestComplete(player, qReward);
+        player->AddToFinishedQuests(qReward->id);
+
+        // Reputation reward
+        for (int z = 0; z < 6; z++)
+        {
+            if (qReward->reward_repfaction[z])
+            {
+                int32 amt = 0;
+                uint32 fact = qReward->reward_repfaction[z];
+                if (qReward->reward_repvalue[z])
+                {
+                    amt = qReward->reward_repvalue[z];
+                }
+                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
+                {
+                    continue;
+                }
+                amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
+                player->ModStanding(fact, amt);
+            }
+        }
+        // Static Item reward
+        for (uint32 i = 0; i < 4; ++i)
+        {
+            if (qReward->reward_item[i])
+            {
+                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(qReward->reward_item[i]);
+                if (!proto)
+                {
+                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
+                }
+                else
+                {
+                    Item* add;
+                    SlotResult slotresult;
+                    add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
+                    if (!add)
+                    {
+                        slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
+                        if (!slotresult.Result)
+                        {
+                            player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                        }
+                        else
+                        {
+                            Item* itm = objmgr.CreateItem(qReward->reward_item[i], player);
+                            if (itm)
+                            {
+                                itm->SetStackCount(uint32(qReward->reward_itemcount[i]));
+                                if (!player->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot))
+                                {
+                                    itm->DeleteMe();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        add->SetStackCount(add->GetStackCount() + qReward->reward_itemcount[i]);
+                        add->m_isDirty = true;
+                    }
+                }
+            }
+        }
+
+        // if daily then append to finished dailies
+        if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
+            player->PushToFinishedDailies(qReward->id);
+
+#ifdef ENABLE_ACHIEVEMENTS
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
+        if (qReward->reward_money > 0)
+        {
+            // Money reward
+            // Check they don't have more than the max gold
+            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
+            {
+                player->ModGold(qReward->reward_money);
+            }
+            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
+        }
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
+#endif
+    }
+    else
+    {
+        index = 1;
+        qReward = QuestStorage.LookupEntry(reward->reward[index].questId);
+        if (!qReward)
+            return;
+
+        sQuestMgr.BuildQuestComplete(player, qReward);
+        player->AddToFinishedQuests(qReward->id);
+
+        // Reputation reward
+        for (int z = 0; z < 6; z++)
+        {
+            if (qReward->reward_repfaction[z])
+            {
+                int32 amt = 0;
+                uint32 fact = qReward->reward_repfaction[z];
+                if (qReward->reward_repvalue[z])
+                {
+                    amt = qReward->reward_repvalue[z];
+                }
+                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
+                {
+                    continue;
+                }
+                amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
+                player->ModStanding(fact, amt);
+            }
+        }
+        // Static Item reward
+        for (uint32 i = 0; i < 4; ++i)
+        {
+            if (qReward->reward_item[i])
+            {
+                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(qReward->reward_item[i]);
+                if (!proto)
+                {
+                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
+                }
+                else
+                {
+                    Item* add;
+                    SlotResult slotresult;
+                    add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
+                    if (!add)
+                    {
+                        slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
+                        if (!slotresult.Result)
+                        {
+                            player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+                        }
+                        else
+                        {
+                            Item* itm = objmgr.CreateItem(qReward->reward_item[i], player);
+                            if (itm)
+                            {
+                                itm->SetStackCount(uint32(qReward->reward_itemcount[i]));
+                                if (!player->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot))
+                                {
+                                    itm->DeleteMe();
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        add->SetStackCount(add->GetStackCount() + qReward->reward_itemcount[i]);
+                        add->m_isDirty = true;
+                    }
+                }
+            }
+        }
+
+        // if daily then append to finished dailies
+        if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
+            player->PushToFinishedDailies(qReward->id);
+
+#ifdef ENABLE_ACHIEVEMENTS
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
+        if (qReward->reward_money > 0)
+        {
+            // Money reward
+            // Check they don't have more than the max gold
+            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
+            {
+                player->ModGold(qReward->reward_money);
+            }
+            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
+        }
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
+#endif
+    }
+
+    // Give rewards
+    //Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, %s previously done.", player->GetGUID(), GetDungeon(gguid), index > 0 ? " " : " not");
+    Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, previously done.", player->GetGUID(), GetDungeon(gguid));
+    player->GetSession()->SendLfgPlayerReward(dungeon->Entry(), GetDungeon(gguid, false), index, reward, qReward);
 }
 
 const LfgDungeonSet& LfgMgr::GetDungeonsByRandom(uint32 randomdungeon)

@@ -1954,6 +1954,54 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
     return true;
 }
 
+
+bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32 criteriaID, uint32 count)
+{
+    AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupEntryForced(criteriaID);
+    if (!criteria)
+    {
+        Log.Debug("AchievementMgr", "Achievement ID %u is Invalid", criteriaID);
+        return false;
+    }
+    if (IsCompletedCriteria(criteria))
+    {
+        Log.Debug("AchievementMgr", "Achievement criteria %lu already completed.", criteriaID);
+        return false;
+    }
+    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(criteria->referredAchievement);
+    if (!achievement)
+    {
+        // achievement not found
+        Log.Debug("AchievementMgr", "Referred achievement (%lu) entry not found.", criteria->referredAchievement);
+        return false;
+    }
+    if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
+    {
+        // can't complete this type of achivement (counter)
+        Log.Debug("AchievementMgr", "Referred achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
+            achievement->ID, achievement->ID, player->GetGUID(), achievement->name);
+        return false;
+    }
+
+    CriteriaProgressMap::iterator itr = m_criteriaProgress.find(criteriaID);
+    CriteriaProgress* progress;
+    if (itr == m_criteriaProgress.end())
+    {
+        // not in progress map
+        progress = new CriteriaProgress(criteriaID, 0);
+        m_criteriaProgress[criteriaID] = progress;
+    }
+    else
+    {
+        progress = itr->second;
+    }
+
+    progress->counter = progress->counter + count;
+    SendCriteriaUpdate(progress);
+    CompletedCriteria(criteria);
+    return true;
+}
+
 /** GM has used a command to reset achievement(s) for this player.
     If achievementID is -1, all achievements get reset, otherwise only the one specified gets reset. */
 void AchievementMgr::GMResetAchievement(int32 achievementID)
