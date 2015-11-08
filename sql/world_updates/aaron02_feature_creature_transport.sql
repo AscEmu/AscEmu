@@ -1,7 +1,12 @@
 --
--- Added new table 'creature_transport'
+-- Delete old table 'transport_creatures'
+-- Drop the table on merging into develop!
+-- DROP TABLE IF EXISTS `transport_creatures`;
 --
 
+--
+-- Added new table 'creature_transport'
+--
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
@@ -272,4 +277,7 @@ INSERT INTO `creature_transport` VALUES ('23', '187038', '24911', '19.1465', '-9
 INSERT INTO `creature_transport` VALUES ('24', '187038', '24911', '5.53691', '-10.9158', '14.0808', '4.59956', '0');
 INSERT INTO `creature_transport` VALUES ('1', '192241', '31261', '-24.084', '-22.2178', '24.3778', '1.43738', '0');
 
-UPDATE `world_db_version` SET `LastUpdate` = '2015-10-15_02_transport_creature' WHERE `LastUpdate` = '2015-10-15_01_transport_creature';
+--
+-- Set world-DB version on merging into develop!
+-- UPDATE `world_db_version` SET `LastUpdate` = '2015-10-15_02_transport_creature' WHERE `LastUpdate` = '2015-10-15_01_transport_creature';
+--
