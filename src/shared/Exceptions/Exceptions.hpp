@@ -16,7 +16,7 @@ namespace AscEmu
             const std::string m_exceptionString;
 
         public:
-            const char* what() const noexcept { return m_exceptionString.c_str(); }
+            const char* what() { return m_exceptionString.c_str(); }
             explicit AscemuException() : exception(), m_exceptionString("An unspecified exception has occurred in AscEmu") { }
             explicit AscemuException(const char* exceptionString) : exception(), m_exceptionString(exceptionString) { }
         };
