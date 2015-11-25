@@ -29,10 +29,9 @@ GameObject::GameObject(uint64 guid)
     m_updateMask.SetCount(GAMEOBJECT_END);
     SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_GAMEOBJECT | TYPE_OBJECT);
     SetGUID(guid);
-    SetByte(GAMEOBJECT_BYTES_1, 3, 100);
+    SetAnimProgress(100);
     m_wowGuid.Init(GetGUID());
     SetScale(1);  //info->Size );
-    SetByte(GAMEOBJECT_BYTES_1, 3, 100);
     counter = 0; //not needed at all but to prevent errors that var was not initialized, can be removed in release
     bannerslot = bannerauraslot = -1;
     m_summonedGo = false;
@@ -119,8 +118,8 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     SetParentRotation(2, r2);
     SetParentRotation(3, r3);
     UpdateRotation();
-    SetByte(GAMEOBJECT_BYTES_1, 3, 0);
-    SetByte(GAMEOBJECT_BYTES_1, 0, 1);
+    SetAnimProgress(0);
+    SetState(1);
     SetDisplayId(pInfo->display_id);
     SetType(static_cast<uint8>(pInfo->type));
     InitAI();
@@ -155,7 +154,7 @@ void GameObject::Update(uint32 p_time)
     if (m_deleted)
         return;
 
-    if (spell && (GetByte(GAMEOBJECT_BYTES_1, 0) == 1))
+    if (spell && (GetState() == 1))
     {
         if (checkrate > 1)
         {
@@ -235,7 +234,7 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
     //This is for go get deleted while looting
     if (m_spawn)
     {
-        SetByte(GAMEOBJECT_BYTES_1, 0, static_cast<uint8>(m_spawn->state));
+        SetState(static_cast<uint8>(m_spawn->state));
         SetUInt32Value(GAMEOBJECT_FLAGS, m_spawn->flags);
     }
 
@@ -476,7 +475,7 @@ bool GameObject::Load(GameobjectSpawn* go_spawn)
     //SetRotation(spawn->o);
     SetUInt32Value(GAMEOBJECT_FLAGS, go_spawn->flags);
     //	SetLevel(spawn->level);
-    SetByte(GAMEOBJECT_BYTES_1, 0, static_cast<uint8>(go_spawn->state));
+    SetState(static_cast<uint8>(go_spawn->state));
     if (go_spawn->faction)
     {
         SetFaction(go_spawn->faction);
@@ -494,9 +493,7 @@ void GameObject::DeleteFromDB()
 
 void GameObject::EventCloseDoor()
 {
-    // gameobject_flags +1 closedoor animate restore the pointer flag.
-    // by cebernic
-    SetByte(GAMEOBJECT_BYTES_1, 0, 1);
+    SetState(1);
     RemoveFlag(GAMEOBJECT_FLAGS, 1);
 }
 
@@ -528,22 +525,29 @@ void GameObject::UseFishingNode(Player* player)
     if (player->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
         player->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
 
-    GameObject* school = NULL;
+    GameObject* school = nullptr;
     for (InRangeSet::iterator it = GetInRangeSetBegin(); it != GetInRangeSetEnd(); ++it)
     {
-        if ((*it) == NULL || !(*it)->IsGameObject() || static_cast<GameObject*>(*it)->GetType() != GAMEOBJECT_TYPE_FISHINGHOLE)
+        if ((*it)->IsGameObject())
             continue;
+
+        school = static_cast<GameObject*>(*it);
+
+        if (school->GetType() != GAMEOBJECT_TYPE_FISHINGHOLE)
+            continue;
+
         school = static_cast< GameObject* >(*it);
+
         if (!isInRange(school, (float)school->GetInfo()->parameter_1))
         {
-            school = NULL;
+            school = nullptr;
             continue;
         }
         else
             break;
     }
 
-    if (school != NULL)    // open school loot if school exists
+    if (school !=nullptr)    // open school loot if school exists
     {
 
         if (school->GetMapMgr() != NULL)
@@ -841,16 +845,6 @@ void GameObject::UpdateRotation()
         SetParentRotation(2, r2);
         SetParentRotation(3, r3);
     }
-}
-
-void GameObject::SetState(uint8 state)
-{
-    SetByte(GAMEOBJECT_BYTES_1, 0, state);
-}
-
-uint8 GameObject::GetState()
-{
-    return GetByte(GAMEOBJECT_BYTES_1, 0);
 }
 
 void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
