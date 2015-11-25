@@ -2925,7 +2925,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
             else if (gameObjTarget)
             {
                 auto gameobject_info = gameObjTarget->GetInfo();
-                if (gameObjTarget->GetByte(GAMEOBJECT_BYTES_1, 0) == 0)
+                if (gameObjTarget->GetState() == 0)
                     return;
 
                 Lock* lock = dbcLock.LookupEntry(gameobject_info->parameter_0);
@@ -2937,8 +2937,8 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
                         v = lock->minlockskill[j];
-                        gameObjTarget->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
-                        gameObjTarget->SetByte(GAMEOBJECT_BYTES_1, 0, 1);
+                        gameObjTarget->SetFlags(0);
+                        gameObjTarget->SetState(1);
                         //Add Fill GO loot here
                         if (gameObjTarget->loot.items.size() == 0)
                         {
@@ -3585,8 +3585,8 @@ void Spell::SpellEffectSummonObject(uint32 i)
         GameObject* go = u_caster->GetMapMgr()->CreateGameObject(GO_FISHING_BOBBER);
 
         go->CreateFromProto(GO_FISHING_BOBBER, mapid, posx, posy, posz, orient);
-        go->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
-        go->SetByte(GAMEOBJECT_BYTES_1, 0, 0);
+        go->SetFlags(0);
+        go->SetState(0);
         go->SetUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->GetGUID());
         u_caster->SetChannelSpellTargetGUID(go->GetGUID());
         go->Phase(PHASE_SET, u_caster->GetPhase());
@@ -3624,7 +3624,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
         GameObject* go = m_caster->GetMapMgr()->CreateGameObject(entry);
 
         go->CreateFromProto(entry, mapid, posx, posy, pz, orient);
-        go->SetByte(GAMEOBJECT_BYTES_1, 0, 1);
+        go->SetState(1);
         go->SetUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->GetGUID());
         go->Phase(PHASE_SET, u_caster->GetPhase());
         go->PushToWorld(m_caster->GetMapMgr());
@@ -3632,7 +3632,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
         if (entry == 17032 && p_caster)   // this is a portal
         {
             // enable it for party only
-            go->SetByte(GAMEOBJECT_BYTES_1, 0, 0);
+            go->SetState(0);
             //disable by default
             WorldPacket* pkt = go->BuildFieldUpdatePacket(GAMEOBJECT_BYTES_1, 1 << 24);
             SubGroup* pGroup = p_caster->GetGroup() ? p_caster->GetGroup()->GetSubGroup(p_caster->GetSubGroup()) : NULL;

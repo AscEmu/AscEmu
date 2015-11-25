@@ -178,7 +178,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
     Instance* pInstance = _mapmgr->pInstance;
     InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[_mapmgr->GetMapId()];
 
-    if (sp->CreatureSpawns.size())//got creatures
+    if (sp->CreatureSpawns.size())      //got creatures
     {
         for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
         {
@@ -237,17 +237,17 @@ void MapCell::LoadObjects(CellSpawns* sp)
             {
                 CreatureSpawn* spawn = (*i);
                 Log.Error("MapCell", "Failed spawning Creature %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
-                delete c;//missing proto or something of that kind
+                delete c;       //missing proto or something of that kind
             }
         }
     }
 
-    if (sp->GameobjectSpawns.size())//got GOs
+    if (sp->GameobjectSpawns.size())    //got GOs
     {
         for (GameobjectSpawnList::iterator i = sp->GameobjectSpawns.begin(); i != sp->GameobjectSpawns.end(); ++i)
         {
             GameObject* go = _mapmgr->CreateGameObject((*i)->entry);
-            //go->SetInstanceID(_mapmgr->GetInstanceID()); missing in current revision idk need a specialist
+
             if (go->Load(*i))
             {
                 go->m_loadedFromDB = true;
@@ -257,7 +257,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             {
                 GameobjectSpawn* spawn = (*i);
                 Log.Error("MapCell", "Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
-                delete go;//missing proto or something of that kind
+                delete go;          //missing proto or something of that kind
             }
         }
     }
