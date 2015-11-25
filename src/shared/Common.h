@@ -205,6 +205,8 @@ enum MsTimeVariables
 #include <climits>
 #include <cstdlib>
 //#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "CommonHelpers.hpp"
 

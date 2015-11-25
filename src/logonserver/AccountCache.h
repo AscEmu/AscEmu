@@ -117,12 +117,7 @@ class AccountMgr : public Singleton < AccountMgr >
     public:
         ~AccountMgr()
         {
-
-#ifdef WIN32
-            for(HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
-#else
             for(std::map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
-#endif
             {
                 delete itr->second;
             }
@@ -135,11 +130,8 @@ class AccountMgr : public Singleton < AccountMgr >
             setBusy.Acquire();
             Account* pAccount = NULL;
             // this should already be uppercase!
-#ifdef WIN32
-            HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
-#else
+
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
-#endif
 
             if(itr == AccountDatabase.end())    pAccount = NULL;
             else                                pAccount = itr->second;
@@ -158,21 +150,13 @@ class AccountMgr : public Singleton < AccountMgr >
         Account* __GetAccount(std::string Name)
         {
             // this should already be uppercase!
-#ifdef WIN32
-            HM_NAMESPACE::hash_map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
-#else
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
-#endif
 
             if(itr == AccountDatabase.end())    return NULL;
             else                                return itr->second;
         }
 
-#ifdef WIN32
-        HM_NAMESPACE::hash_map<std::string, Account*> AccountDatabase;
-#else
         std::map<std::string, Account*> AccountDatabase;
-#endif
 
     protected:
         Mutex setBusy;
@@ -188,7 +172,7 @@ typedef struct
     float Population;
     uint8 Lock;
     uint32 GameBuild;
-    HM_NAMESPACE::hash_map<uint32, uint8> CharacterMap;
+    std::unordered_map<uint32, uint8> CharacterMap;
 } Realm;
 
 class AuthSocket;

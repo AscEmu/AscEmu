@@ -417,7 +417,7 @@ void LuaEngine::HyperCallFunction(const char* FuncName, int ref)  //hyper as in 
         {
             free((void*)FuncName);
             luaL_unref(lu, LUA_REGISTRYINDEX, ref);
-            HM_NAMESPACE::hash_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.find(ref);
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.find(ref);
             sLuaMgr.m_registeredTimedEvents.erase(itr);
         }
         else
