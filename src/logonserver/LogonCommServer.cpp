@@ -364,7 +364,7 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
     sInfoCore.getRealmLock().Acquire();
 
-    HM_NAMESPACE::hash_map<uint32, uint8>::iterator itr;
+    std::unordered_map<uint32, uint8>::iterator itr;
     buf >> count;
     LOG_BASIC("Got mapping packet for realm %u, total of %u entries.", (unsigned int)realm_id, (unsigned int)count);
     for (uint32 i = 0; i < count; ++i)
@@ -394,7 +394,7 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
     sInfoCore.getRealmLock().Acquire();
     recvData >> account_id >> chars_to_add;
 
-    HM_NAMESPACE::hash_map<uint32, uint8>::iterator itr = realm->CharacterMap.find(account_id);
+    std::unordered_map<uint32, uint8>::iterator itr = realm->CharacterMap.find(account_id);
     if (itr != realm->CharacterMap.end())
         itr->second += chars_to_add;
     else

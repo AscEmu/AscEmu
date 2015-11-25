@@ -107,7 +107,7 @@ typedef std::map<uint32, IdVector> EntryIdMap;
 typedef std::pair<int32, int32> TimerPair;
 typedef std::vector<TimerPair> TimerArray;
 
-typedef HM_NAMESPACE::hash_map<uint32, GameObject*> GameObjectMap;
+typedef std::unordered_map<uint32, GameObject*> GameObjectMap;
 
 typedef std::set<Unit*> UnitSet;
 typedef std::set<Player*> PlayerSet;
