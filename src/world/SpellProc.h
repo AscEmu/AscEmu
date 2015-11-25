@@ -30,7 +30,7 @@ class Unit;
 
 typedef SpellProc* (*spell_proc_factory_function)();
 
-typedef HM_NAMESPACE::hash_map<uint32, spell_proc_factory_function>  SpellProcMap;
+typedef std::unordered_map<uint32, spell_proc_factory_function>  SpellProcMap;
 
 class SpellProc
 {

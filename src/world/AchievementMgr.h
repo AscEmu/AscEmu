@@ -91,8 +91,8 @@ struct AchievementReward
     std::string text;
 };
 
-typedef HM_NAMESPACE::hash_map<uint32, CriteriaProgress*> CriteriaProgressMap;
-typedef HM_NAMESPACE::hash_map<uint32, time_t> CompletedAchievementMap;
+typedef std::unordered_map<uint32, CriteriaProgress*> CriteriaProgressMap;
+typedef std::unordered_map<uint32, time_t> CompletedAchievementMap;
 typedef std::multimap<uint32, AchievementReward> AchievementRewardsMap;
 typedef std::pair<AchievementRewardsMap::const_iterator, AchievementRewardsMap::const_iterator> AchievementRewardsMapBounds;
 typedef std::set<uint32> AchievementSet;

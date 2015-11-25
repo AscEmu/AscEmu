@@ -2395,7 +2395,7 @@ void World::UpdateTotalTraffic()
     WorldSocket* s = NULL;
 
     objmgr._playerslock.AcquireReadLock();
-    HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+    std::unordered_map<uint32, Player*>::const_iterator itr;
 
     for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {

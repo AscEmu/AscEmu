@@ -159,7 +159,7 @@ struct FactionReputation
     bool Positive() { return standing >= 0; }
 };
 
-typedef HM_NAMESPACE::hash_map<uint32, uint32> PlayerInstanceMap;
+typedef std::unordered_map<uint32, uint32> PlayerInstanceMap;
 class SERVER_DECL PlayerInfo
 {
     public:

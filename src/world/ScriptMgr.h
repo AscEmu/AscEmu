@@ -140,14 +140,14 @@ typedef uint32(*exp_get_script_type)();
 typedef const char*(*exp_get_version)();
 
 /* Hashmap typedefs */
-typedef HM_NAMESPACE::hash_map<uint32, exp_create_creature_ai> CreatureCreateMap;
-typedef HM_NAMESPACE::hash_map<uint32, exp_create_gameobject_ai> GameObjectCreateMap;
-typedef HM_NAMESPACE::hash_map<uint32, exp_handle_dummy_aura> HandleDummyAuraMap;
-typedef HM_NAMESPACE::hash_map<uint32, exp_handle_dummy_spell> HandleDummySpellMap;
-typedef HM_NAMESPACE::hash_map< uint32, exp_handle_script_effect > HandleScriptEffectMap;
-typedef HM_NAMESPACE::hash_map<uint32, exp_create_instance_ai> InstanceCreateMap;
+typedef std::unordered_map<uint32, exp_create_creature_ai> CreatureCreateMap;
+typedef std::unordered_map<uint32, exp_create_gameobject_ai> GameObjectCreateMap;
+typedef std::unordered_map<uint32, exp_handle_dummy_aura> HandleDummyAuraMap;
+typedef std::unordered_map<uint32, exp_handle_dummy_spell> HandleDummySpellMap;
+typedef std::unordered_map< uint32, exp_handle_script_effect > HandleScriptEffectMap;
+typedef std::unordered_map<uint32, exp_create_instance_ai> InstanceCreateMap;
 typedef std::set<Arcemu::Gossip::Script*> CustomGossipScripts;
-typedef HM_NAMESPACE::hash_map<uint32, Arcemu::Gossip::Script*> GossipMap;
+typedef std::unordered_map<uint32, Arcemu::Gossip::Script*> GossipMap;
 typedef std::set<EventScript*> EventScripts;
 typedef std::set<QuestScript*> QuestScripts;
 typedef std::set<void*> ServerHookList;

@@ -264,7 +264,7 @@ struct SplinePoint
 };
 
 
-typedef HM_NAMESPACE::hash_map<uint64, int32> TargetMap;
+typedef std::unordered_map<uint64, int32> TargetMap;
 
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;

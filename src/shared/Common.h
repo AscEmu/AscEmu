@@ -271,10 +271,6 @@ namespace __gnu_cxx
         }
     };
 };
-#else
-#define HM_NAMESPACE ::stdext
-#include <hash_map>
-#include <hash_set>
 #endif
 
 

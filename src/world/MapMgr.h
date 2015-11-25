@@ -66,9 +66,9 @@ typedef std::set<uint64> CombatProgressMap;
 typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
 
-typedef HM_NAMESPACE::hash_map<uint32, Object*> StorageMap;
-typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
-typedef HM_NAMESPACE::hash_map<uint32, GameObject*> GameObjectSqlIdMap;
+typedef std::unordered_map<uint32, Object*> StorageMap;
+typedef std::unordered_map<uint32, Creature*> CreatureSqlIdMap;
+typedef std::unordered_map<uint32, GameObject*> GameObjectSqlIdMap;
 
 class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject, public CThread, public WorldStatesHandler::WorldStatesObserver
 {
@@ -123,14 +123,14 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
         // Local (mapmgr) storage/generation of DynamicObjects
 		uint32 m_DynamicObjectHighGuid;
-		typedef HM_NAMESPACE::hash_map<uint32, DynamicObject*> DynamicObjectStorageMap;
+		typedef std::unordered_map<uint32, DynamicObject*> DynamicObjectStorageMap;
 		DynamicObjectStorageMap m_DynamicObjectStorage;
 		DynamicObject* CreateDynamicObject();
 
     DynamicObject* GetDynamicObject(uint32 guid);
 
     // Local (mapmgr) storage of pets
-		typedef HM_NAMESPACE::hash_map<uint32, Pet*> PetStorageMap;
+		typedef std::unordered_map<uint32, Pet*> PetStorageMap;
 		PetStorageMap m_PetStorage;
 		PetStorageMap::iterator pet_iterator;
     Pet* GetPet(uint32 guid);
@@ -138,7 +138,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
     // Local (mapmgr) storage of players for faster lookup
 		// double typedef lolz// a compile breaker..
-		typedef HM_NAMESPACE::hash_map<uint32, Player*> PlayerStorageMap;
+		typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 		PlayerStorageMap m_PlayerStorage;
     Player* GetPlayer(uint32 guid);
 

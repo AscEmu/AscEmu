@@ -128,8 +128,8 @@ class SERVER_DECL TaxiMgr :  public Singleton < TaxiMgr >
         void _LoadTaxiNodes();
         void _LoadTaxiPaths();
 
-        HM_NAMESPACE::hash_map<uint32, TaxiNode*> m_taxiNodes;
-        HM_NAMESPACE::hash_map<uint32, TaxiPath*> m_taxiPaths;
+        std::unordered_map<uint32, TaxiNode*> m_taxiNodes;
+        std::unordered_map<uint32, TaxiPath*> m_taxiPaths;
 };
 
 #define sTaxiMgr TaxiMgr::getSingleton()

@@ -52,7 +52,7 @@ class AuctionMgr : public Singleton <AuctionMgr>
         }
 
     private:
-        HM_NAMESPACE::hash_map<uint32, AuctionHouse*> auctionHouseEntryMap;
+        std::unordered_map<uint32, AuctionHouse*> auctionHouseEntryMap;
         std::vector<AuctionHouse*> auctionHouses;
 
         Arcemu::Threading::AtomicCounter maxId;
