@@ -227,7 +227,7 @@ class LuaEngine
     Mutex call_lock;
     Mutex co_lock;
 
-    typedef HM_NAMESPACE::hash_map<uint32, LuaObjectBinding> LuaObjectBindingMap;
+    typedef std::unordered_map<uint32, LuaObjectBinding> LuaObjectBindingMap;
 
     std::set<int> m_pendingThreads;
     std::set<int> m_functionRefs;
@@ -236,12 +236,12 @@ class LuaEngine
     //maps to creature, & go script interfaces
     std::multimap<uint32, LuaCreature*> m_cAIScripts;
     std::multimap<uint32, LuaGameObjectScript*> m_gAIScripts;
-    HM_NAMESPACE::hash_map<uint32, LuaQuest*> m_qAIScripts;
-    HM_NAMESPACE::hash_map<uint32, LuaInstance*> m_iAIScripts;
+    std::unordered_map<uint32, LuaQuest*> m_qAIScripts;
+    std::unordered_map<uint32, LuaInstance*> m_iAIScripts;
 
-    HM_NAMESPACE::hash_map<uint32, LuaGossip*> m_unitgAIScripts;
-    HM_NAMESPACE::hash_map<uint32, LuaGossip*> m_itemgAIScripts;
-    HM_NAMESPACE::hash_map<uint32, LuaGossip*> m_gogAIScripts;
+    std::unordered_map<uint32, LuaGossip*> m_unitgAIScripts;
+    std::unordered_map<uint32, LuaGossip*> m_itemgAIScripts;
+    std::unordered_map<uint32, LuaGossip*> m_gogAIScripts;
 
     LuaObjectBindingMap m_unitBinding;
     LuaObjectBindingMap m_questBinding;
@@ -415,7 +415,7 @@ class LuaEngine
     }
     LuaQuest* getLuaQuest(uint32 id)
     {
-        HM_NAMESPACE::hash_map<uint32, LuaQuest*>::iterator itr = m_qAIScripts.find(id);
+        std::unordered_map<uint32, LuaQuest*>::iterator itr = m_qAIScripts.find(id);
         return (itr == m_qAIScripts.end()) ? NULL : itr->second;
     }
     /*int getPendingThread(lua_State * threadtosearch) {
@@ -424,31 +424,31 @@ class LuaEngine
         }*/
     LuaGossip* getUnitGossipInterface(uint32 id)
     {
-        HM_NAMESPACE::hash_map<uint32, LuaGossip*>::iterator itr = m_unitgAIScripts.find(id);
+        std::unordered_map<uint32, LuaGossip*>::iterator itr = m_unitgAIScripts.find(id);
         return (itr == m_unitgAIScripts.end()) ? NULL : itr->second;
     }
     LuaGossip* getItemGossipInterface(uint32 id)
     {
-        HM_NAMESPACE::hash_map<uint32, LuaGossip*>::iterator itr = m_itemgAIScripts.find(id);
+        std::unordered_map<uint32, LuaGossip*>::iterator itr = m_itemgAIScripts.find(id);
         return (itr == m_itemgAIScripts.end()) ? NULL : itr->second;
     }
     LuaGossip* getGameObjectGossipInterface(uint32 id)
     {
-        HM_NAMESPACE::hash_map<uint32, LuaGossip*>::iterator itr = m_gogAIScripts.find(id);
+        std::unordered_map<uint32, LuaGossip*>::iterator itr = m_gogAIScripts.find(id);
         return (itr == m_gogAIScripts.end()) ? NULL : itr->second;
     }
     inline std::multimap<uint32, LuaCreature*> & getLuCreatureMap() { return m_cAIScripts; }
     inline std::multimap<uint32, LuaGameObjectScript*> & getLuGameObjectMap() { return m_gAIScripts; }
-    inline HM_NAMESPACE::hash_map<uint32, LuaQuest*> & getLuQuestMap() { return m_qAIScripts; }
-    inline HM_NAMESPACE::hash_map<uint32, LuaInstance*> & getLuInstanceMap() { return m_iAIScripts; }
-    inline HM_NAMESPACE::hash_map<uint32, LuaGossip*> & getUnitGossipInterfaceMap() { return m_unitgAIScripts; }
-    inline HM_NAMESPACE::hash_map<uint32, LuaGossip*> & getItemGossipInterfaceMap() { return m_itemgAIScripts; }
-    inline HM_NAMESPACE::hash_map<uint32, LuaGossip*> & getGameObjectGossipInterfaceMap() { return m_gogAIScripts; }
+    inline std::unordered_map<uint32, LuaQuest*> & getLuQuestMap() { return m_qAIScripts; }
+    inline std::unordered_map<uint32, LuaInstance*> & getLuInstanceMap() { return m_iAIScripts; }
+    inline std::unordered_map<uint32, LuaGossip*> & getUnitGossipInterfaceMap() { return m_unitgAIScripts; }
+    inline std::unordered_map<uint32, LuaGossip*> & getItemGossipInterfaceMap() { return m_itemgAIScripts; }
+    inline std::unordered_map<uint32, LuaGossip*> & getGameObjectGossipInterfaceMap() { return m_gogAIScripts; }
     inline std::set<int> & getThreadRefs() { return m_pendingThreads; }
     inline std::set<int> & getFunctionRefs() { return m_functionRefs; }
     inline std::map< uint64, std::set<int> > & getObjectFunctionRefs() { return m_objectFunctionRefs; }
 
-    HM_NAMESPACE::hash_map<int, EventInfoHolder*> m_registeredTimedEvents;
+    std::unordered_map<int, EventInfoHolder*> m_registeredTimedEvents;
 
     struct _ENGINEHOOKINFO
     {
@@ -466,12 +466,12 @@ class LuaEngine
         public:
         bool HasEvent(int ref)
         {
-            HM_NAMESPACE::hash_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.find(ref);
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.find(ref);
             return (itr != sLuaMgr.m_registeredTimedEvents.end());
         }
         bool HasEventInTable(const char* table)
         {
-            HM_NAMESPACE::hash_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin();
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin();
             for (; itr != sLuaMgr.m_registeredTimedEvents.end(); ++itr)
             {
                 if (strncmp(itr->second->funcName, table, strlen(table)) == 0)
@@ -483,7 +483,7 @@ class LuaEngine
         }
         bool HasEventWithName(const char* name)
         {
-            HM_NAMESPACE::hash_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin();
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin();
             for (; itr != sLuaMgr.m_registeredTimedEvents.end(); ++itr)
             {
                 if (strcmp(itr->second->funcName, name) == 0)
@@ -495,7 +495,7 @@ class LuaEngine
         }
         void RemoveEventsInTable(const char* table)
         {
-            HM_NAMESPACE::hash_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin(), itr2;
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin(), itr2;
             for (; itr != sLuaMgr.m_registeredTimedEvents.end();)
             {
                 itr2 = itr++;
@@ -510,7 +510,7 @@ class LuaEngine
         }
         void RemoveEventsByName(const char* name)
         {
-            HM_NAMESPACE::hash_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin(), itr2;
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin(), itr2;
             for (; itr != sLuaMgr.m_registeredTimedEvents.end();)
             {
                 itr2 = itr++;
@@ -525,7 +525,7 @@ class LuaEngine
         }
         void RemoveEventByRef(int ref)
         {
-            HM_NAMESPACE::hash_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.find(ref);
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.find(ref);
             if (itr != sLuaMgr.m_registeredTimedEvents.end())
             {
                 event_RemoveByPointer(itr->second->te);
@@ -537,7 +537,7 @@ class LuaEngine
         void RemoveEvents()
         {
             event_RemoveEvents(EVENT_LUA_TIMED);
-            HM_NAMESPACE::hash_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin();
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.begin();
             for (; itr != sLuaMgr.m_registeredTimedEvents.end(); ++itr)
             {
                 free((void*)itr->second->funcName);

@@ -1922,7 +1922,7 @@ class LuaGossip : public Arcemu::Gossip::Script
     LuaGossip() : Arcemu::Gossip::Script(), m_unit_gossip_binding(NULL), m_item_gossip_binding(NULL), m_go_gossip_binding(NULL) {}
     ~LuaGossip()
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaGossip*> MapType;
+        typedef std::unordered_map<uint32, LuaGossip*> MapType;
         MapType gMap;
         if (this->m_go_gossip_binding != NULL)
         {
@@ -2085,7 +2085,7 @@ class LuaQuest : public QuestScript
     LuaQuest() : QuestScript(), m_binding(nullptr) {}
     ~LuaQuest()
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaQuest*> QuestType;
+        typedef std::unordered_map<uint32, LuaQuest*> QuestType;
         QuestType qMap = g_luaMgr.getLuQuestMap();
         for (QuestType::iterator itr = qMap.begin(); itr != qMap.end(); ++itr)
         {
@@ -2281,7 +2281,7 @@ class LuaInstance : public InstanceScript
         sLuaMgr.ExecuteCall(1);
         RELEASE_LOCK
 
-            typedef HM_NAMESPACE::hash_map<uint32, LuaInstance*> IMAP;
+            typedef std::unordered_map<uint32, LuaInstance*> IMAP;
         IMAP & iMap = sLuaMgr.getLuInstanceMap();
         for (IMAP::iterator itr = iMap.begin(); itr != iMap.end(); ++itr)
         {
@@ -2343,7 +2343,7 @@ QuestScript* CreateLuaQuestScript(uint32 id)
     LuaObjectBinding* pBinding = sLuaMgr.getQuestBinding(id);
     if (pBinding != NULL)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaQuest*> QMAP;
+        typedef std::unordered_map<uint32, LuaQuest*> QMAP;
         QMAP & qMap = sLuaMgr.getLuQuestMap();
         QMAP::iterator itr = qMap.find(id);
         if (itr != qMap.end())
@@ -2370,7 +2370,7 @@ InstanceScript* CreateLuaInstance(MapMgr* pMapMgr)
     LuaObjectBinding* pBinding = sLuaMgr.getInstanceBinding(id);
     if (pBinding != NULL)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaInstance*> IMAP;
+        typedef std::unordered_map<uint32, LuaInstance*> IMAP;
         IMAP & iMap = sLuaMgr.getLuInstanceMap();
         IMAP::iterator itr = iMap.find(id);
         if (itr != iMap.end())
@@ -2396,7 +2396,7 @@ Arcemu::Gossip::Script* CreateLuaUnitGossipScript(uint32 id)
     LuaObjectBinding* pBinding = sLuaMgr.getLuaUnitGossipBinding(id);
     if (pBinding != NULL)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaGossip*> GMAP;
+        typedef std::unordered_map<uint32, LuaGossip*> GMAP;
         GMAP & gMap = sLuaMgr.getUnitGossipInterfaceMap();
         GMAP::iterator itr = gMap.find(id);
         if (itr != gMap.end())
@@ -2421,7 +2421,7 @@ Arcemu::Gossip::Script* CreateLuaItemGossipScript(uint32 id)
     LuaObjectBinding* pBinding = sLuaMgr.getLuaItemGossipBinding(id);
     if (pBinding != NULL)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaGossip*> GMAP;
+        typedef std::unordered_map<uint32, LuaGossip*> GMAP;
         GMAP & gMap = sLuaMgr.getItemGossipInterfaceMap();
         GMAP::iterator itr = gMap.find(id);
         if (itr != gMap.end())
@@ -2447,7 +2447,7 @@ Arcemu::Gossip::Script* CreateLuaGOGossipScript(uint32 id)
     LuaObjectBinding* pBinding = g_luaMgr.getLuaGOGossipBinding(id);
     if (pBinding != NULL)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaGossip*> GMAP;
+        typedef std::unordered_map<uint32, LuaGossip*> GMAP;
         GMAP & gMap = sLuaMgr.getGameObjectGossipInterfaceMap();
         GMAP::iterator itr = gMap.find(id);
         if (itr != gMap.end())
@@ -2880,7 +2880,7 @@ void LuaEngine::Restart()
     }
     for (LuaObjectBindingMap::iterator itr = m_questBinding.begin(); itr != m_questBinding.end(); ++itr)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaQuest*> QMAP;
+        typedef std::unordered_map<uint32, LuaQuest*> QMAP;
         QMAP & qMap = sLuaMgr.getLuQuestMap();
         QMAP::iterator it = qMap.find(itr->first);
         if (it == qMap.end())
@@ -2897,7 +2897,7 @@ void LuaEngine::Restart()
     }
     for (LuaObjectBindingMap::iterator itr = m_instanceBinding.begin(); itr != m_instanceBinding.end(); ++itr)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaInstance*> IMAP;
+        typedef std::unordered_map<uint32, LuaInstance*> IMAP;
         IMAP & iMap = sLuaMgr.getLuInstanceMap();
         IMAP::iterator it = iMap.find(itr->first);
         if (it == iMap.end())
@@ -2913,7 +2913,7 @@ void LuaEngine::Restart()
     }
     for (LuaObjectBindingMap::iterator itr = this->m_unit_gossipBinding.begin(); itr != m_unit_gossipBinding.end(); ++itr)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaGossip*> GMAP;
+        typedef std::unordered_map<uint32, LuaGossip*> GMAP;
         GMAP & gMap = sLuaMgr.getUnitGossipInterfaceMap();
         GMAP::iterator it = gMap.find(itr->first);
         if (it == gMap.end())
@@ -2934,7 +2934,7 @@ void LuaEngine::Restart()
     }
     for (LuaObjectBindingMap::iterator itr = this->m_item_gossipBinding.begin(); itr != m_item_gossipBinding.end(); ++itr)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaGossip*> GMAP;
+        typedef std::unordered_map<uint32, LuaGossip*> GMAP;
         GMAP & gMap = sLuaMgr.getItemGossipInterfaceMap();
         GMAP::iterator it = gMap.find(itr->first);
         if (it == gMap.end())
@@ -2955,7 +2955,7 @@ void LuaEngine::Restart()
     }
     for (LuaObjectBindingMap::iterator itr = this->m_go_gossipBinding.begin(); itr != m_go_gossipBinding.end(); ++itr)
     {
-        typedef HM_NAMESPACE::hash_map<uint32, LuaGossip*> GMAP;
+        typedef std::unordered_map<uint32, LuaGossip*> GMAP;
         GMAP & gMap = sLuaMgr.getGameObjectGossipInterfaceMap();
         GMAP::iterator it = gMap.find(itr->first);
         if (it == gMap.end())
