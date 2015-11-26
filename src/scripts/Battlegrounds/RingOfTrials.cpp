@@ -20,35 +20,35 @@
 
 #include "RingOfTrials.h"
 
-RingOfTrials::RingOfTrials(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : 
-Arena(mgr, id, lgroup, t, players_per_side)
-{ }
+RingOfTrials::RingOfTrials(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) :
+    Arena(mgr, id, lgroup, t, players_per_side)
+{}
 
 RingOfTrials::~RingOfTrials()
-{ }
+{}
 
 void RingOfTrials::OnCreate()
 {
     GameObject* obj = NULL;
-    
+
     obj = SpawnGameObject(183979, 559, 4090.064453f, 2858.437744f, 10.236313f, 0.492805f, 32, 1375, 1.0f);
     obj->SetState(GAMEOBJECT_STATE_CLOSED);
     obj->SetParentRotation(2, 0.243916f);
     obj->SetParentRotation(3, 0.969796f);
     obj->PushToWorld(m_mapMgr);
-    
+
     obj = SpawnGameObject(183980, 559, 4081.178955f, 2874.970459f, 12.391714f, 0.492805f, 32, 1375, 1.0f);
     obj->SetState(GAMEOBJECT_STATE_CLOSED);
     obj->SetParentRotation(2, 0.243916f);
     obj->SetParentRotation(3, 0.969796f);
     m_gates.insert(obj);
-    
+
     obj = SpawnGameObject(183977, 559, 4023.709473f, 2981.776611f, 10.701169f, -2.648788f, 32, 1375, 1.0f);
     obj->SetState(GAMEOBJECT_STATE_CLOSED);
     obj->SetParentRotation(2, 0.969796f);
     obj->SetParentRotation(3, -0.243916f);
     obj->PushToWorld(m_mapMgr);
-    
+
     obj = SpawnGameObject(183978, 559, 4031.854248f, 2966.833496f, 12.646200f, -2.648788f, 32, 1375, 1.0f);
     obj->SetState(GAMEOBJECT_STATE_CLOSED);
     obj->SetParentRotation(2, 0.969796f);
@@ -78,7 +78,7 @@ void RingOfTrials::HookOnShadowSight()
 
 LocationVector RingOfTrials::GetStartingCoords(uint32 Team)
 {
-    if(Team)
+    if (Team)
         return LocationVector(4027.004883f, 2976.964844f, 11.600499f);
     else
         return LocationVector(4085.861328f, 2866.750488f, 12.417445f);

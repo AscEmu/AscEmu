@@ -20,41 +20,41 @@
 
 #include "RingOfValor.h"
 
-RingOfValor::RingOfValor(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : 
-Arena(mgr, id, lgroup, t, players_per_side)
-{ }
+RingOfValor::RingOfValor(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) :
+    Arena(mgr, id, lgroup, t, players_per_side)
+{}
 
 RingOfValor::~RingOfValor()
-{ }
+{}
 
 void RingOfValor::OnCreate()
 {
     GameObject* obj = NULL;
-    
+
     obj = SpawnGameObject(194030, 618, 763.93f, -295.0f, 26.0f, 0.0f, 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
-    
+
     obj = SpawnGameObject(194031, 618, 763.93f, -274.0f, 26.0f, 0.0f, 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
-    
+
     obj = SpawnGameObject(193458, 618, 763.630f, -261.783f, 26.0f, 0.0f, 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
-    
+
     // These GOs freeze the client, probably db issue tho, however I will leave it commented for now
     // -dfighter
     //obj = SpawnGameObject(193459, 618, 763.761f, -306.230f, 26.0f, 0.0f, 40, 1375, 1.0f);
     //obj->PushToWorld(m_mapMgr);
     //obj = SpawnGameObject(193460, 618, 802.313f, -284.349f, 24.6f, 0.0f, 40, 1375, 1.0f);
     //obj->PushToWorld(m_mapMgr);
-    
+
     obj = SpawnGameObject(193461, 618, 723.522f, -284.428f, 24.6f, 0.0f, 40, 1375, 1.0f);
     obj->PushToWorld(m_mapMgr);
-    
+
     obj = SpawnGameObject(192392, 618, 763.93f, -295.0f, 27.0f, 0.0f, 32, 1375, 1.0f);
     obj->SetState(1);
     obj->SetAnimProgress(100);
     m_gates.insert(obj);
-    
+
     obj = SpawnGameObject(192391, 618, 763.93f, -274.0f, 27.0f, 0.0f, 32, 1375, 1.0f);
     obj->SetState(1);
     obj->SetAnimProgress(100);
@@ -65,7 +65,7 @@ void RingOfValor::OnCreate()
 
 LocationVector RingOfValor::GetStartingCoords(uint32 Team)
 {
-    if(Team)
+    if (Team)
         return LocationVector(763.6011f, -294.3227f, 28.4f);
     else
         return LocationVector(763.9755f, -274.0825f, 28.4f);
@@ -73,7 +73,7 @@ LocationVector RingOfValor::GetStartingCoords(uint32 Team)
 
 void RingOfValor::HookOnAreaTrigger(Player* plr, uint32 trigger)
 {
-    switch(trigger)
+    switch (trigger)
     {
         case 5224:
         case 5226:
@@ -94,4 +94,3 @@ bool RingOfValor::HookHandleRepop(Player* plr)
     plr->SafeTeleport(m_mapMgr->GetMapId(), m_mapMgr->GetInstanceID(), dest);
     return true;
 }
-

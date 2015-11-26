@@ -23,7 +23,7 @@
 
 #include "StdAfx.h"
 
-// GENERAL AV DEFINES
+ // GENERAL AV DEFINES
 #define AV_NUM_REINFORCEMENTS               600     // Amount of reinforcements we start off with
 #define AV_SCORE_WARNING                    530     // Dunno what this should be ;p
 #define AV_ADD_POINTS_ON_CONTROLLED_MINE    1       // Points to give the team who controls (a) mine(s)
@@ -45,44 +45,44 @@
 
 enum AVControlPoints
 {
-    AV_CONTROL_POINT_STORMPIKE_AID_STATION      = 0,
-    AV_CONTROL_POINT_STORMPIKE_GRAVEYARD        = 1,
-    AV_CONTROL_POINT_STONEHEARTH_GRAVEYARD      = 2,
-    AV_CONTROL_POINT_SNOWFALL_GRAVEYARD         = 3,
-    AV_CONTROL_POINT_COLDTOOTH_MINE             = 4,
-    AV_CONTROL_POINT_IRONDEEP_MINE              = 5,
-    AV_CONTROL_POINT_ICEBLOOD_GRAVEYARD         = 6,
-    AV_CONTROL_POINT_FROSTWOLF_GRAVEYARD        = 7,
-    AV_CONTROL_POINT_FROSTWOLF_RELIEF_HUT       = 8,
-    AV_CONTROL_POINT_DUN_BALDAR_NORTH_BUNKER    = 9,
-    AV_CONTROL_POINT_DUN_BALDAR_SOUTH_BUNKER    = 10,
-    AV_CONTROL_POINT_ICEWING_BUNKER             = 11,
-    AV_CONTROL_POINT_STONEHEARTH_BUNKER         = 12,
-    AV_CONTROL_POINT_ICEBLOOD_TOWER             = 13,
-    AV_CONTROL_POINT_TOWER_POINT                = 14,
-    AV_CONTROL_POINT_EAST_FROSTWOLF_TOWER       = 15,
-    AV_CONTROL_POINT_WEST_FROSTWOLF_TOWER       = 16,
-    AV_NUM_CONTROL_POINTS                       = 17,
+    AV_CONTROL_POINT_STORMPIKE_AID_STATION = 0,
+    AV_CONTROL_POINT_STORMPIKE_GRAVEYARD = 1,
+    AV_CONTROL_POINT_STONEHEARTH_GRAVEYARD = 2,
+    AV_CONTROL_POINT_SNOWFALL_GRAVEYARD = 3,
+    AV_CONTROL_POINT_COLDTOOTH_MINE = 4,
+    AV_CONTROL_POINT_IRONDEEP_MINE = 5,
+    AV_CONTROL_POINT_ICEBLOOD_GRAVEYARD = 6,
+    AV_CONTROL_POINT_FROSTWOLF_GRAVEYARD = 7,
+    AV_CONTROL_POINT_FROSTWOLF_RELIEF_HUT = 8,
+    AV_CONTROL_POINT_DUN_BALDAR_NORTH_BUNKER = 9,
+    AV_CONTROL_POINT_DUN_BALDAR_SOUTH_BUNKER = 10,
+    AV_CONTROL_POINT_ICEWING_BUNKER = 11,
+    AV_CONTROL_POINT_STONEHEARTH_BUNKER = 12,
+    AV_CONTROL_POINT_ICEBLOOD_TOWER = 13,
+    AV_CONTROL_POINT_TOWER_POINT = 14,
+    AV_CONTROL_POINT_EAST_FROSTWOLF_TOWER = 15,
+    AV_CONTROL_POINT_WEST_FROSTWOLF_TOWER = 16,
+    AV_NUM_CONTROL_POINTS = 17,
 };
 
 enum AVSpawnTypes
 {
-    AV_SPAWN_TYPE_NEUTRAL                           = 0,
-    AV_SPAWN_TYPE_ALLIANCE_ASSAULT                  = 1,
-    AV_SPAWN_TYPE_HORDE_ASSAULT                     = 2,
-    AV_SPAWN_TYPE_ALLIANCE_CONTROLLED_OR_DESTROYED  = 3,
-    AV_SPAWN_TYPE_HORDE_CONTROLLED_OR_DESTROYED     = 4,
-    AV_NUM_SPAWN_TYPES                              = 5
+    AV_SPAWN_TYPE_NEUTRAL = 0,
+    AV_SPAWN_TYPE_ALLIANCE_ASSAULT = 1,
+    AV_SPAWN_TYPE_HORDE_ASSAULT = 2,
+    AV_SPAWN_TYPE_ALLIANCE_CONTROLLED_OR_DESTROYED = 3,
+    AV_SPAWN_TYPE_HORDE_CONTROLLED_OR_DESTROYED = 4,
+    AV_NUM_SPAWN_TYPES = 5
 };
 
 enum AVNodeStates
 {
-    AV_NODE_STATE_NEUTRAL_CONTROLLED        = 0,
-    AV_NODE_STATE_ALLIANCE_ASSAULTING       = 1,
-    AV_NODE_STATE_ALLIANCE_CONTROLLED       = 2,
-    AV_NODE_STATE_HORDE_ASSAULTING          = 3,
-    AV_NODE_STATE_HORDE_CONTROLLED          = 4,
-    AV_NODE_STATE_COUNT                     = 5
+    AV_NODE_STATE_NEUTRAL_CONTROLLED = 0,
+    AV_NODE_STATE_ALLIANCE_ASSAULTING = 1,
+    AV_NODE_STATE_ALLIANCE_CONTROLLED = 2,
+    AV_NODE_STATE_HORDE_ASSAULTING = 3,
+    AV_NODE_STATE_HORDE_CONTROLLED = 4,
+    AV_NODE_STATE_COUNT = 5
 };
 
 struct AVLocation { float x; float y; float z; };
@@ -109,39 +109,39 @@ struct AVNodeTemplate
 
 enum GameObjectEntry
 {
-    AV_GAMEOBJECT_FIRE      = 179065,
-    AV_GAMEOBJECT_GATE      = 180424
+    AV_GAMEOBJECT_FIRE = 179065,
+    AV_GAMEOBJECT_GATE = 180424
 };
 
 enum CreatureEntry
 {
-    AV_NPC_GENERAL_VANNDAR_STORMPIKE        = 11948,
-    AV_NPC_CAPTAIN_BALINDA_STONEHEARTH      = 11949,
-    AV_NPC_ARCH_DRUID_RENFERAL              = 13442,
-    AV_NPC_WING_COMMANDER_SLIDORE           = 13438,
-    AV_NPC_WING_COMMANDER_VIPORE            = 13439,
-    AV_NPC_WING_COMMANDER_ICHMAN            = 13437,
+    AV_NPC_GENERAL_VANNDAR_STORMPIKE = 11948,
+    AV_NPC_CAPTAIN_BALINDA_STONEHEARTH = 11949,
+    AV_NPC_ARCH_DRUID_RENFERAL = 13442,
+    AV_NPC_WING_COMMANDER_SLIDORE = 13438,
+    AV_NPC_WING_COMMANDER_VIPORE = 13439,
+    AV_NPC_WING_COMMANDER_ICHMAN = 13437,
 
-    AV_NPC_GENERAL_DREK_THAR                = 11946,
-    AV_NPC_CAPTAIN_GALVANGAR                = 11947,
-    AV_NPC_PRIMALIST_THURLOGA               = 13236,
-    AV_NPC_WING_COMMANDER_GUSE              = 13179,
-    AV_NPC_WING_COMMANDER_JEZTOR            = 13180,
-    AV_NPC_WING_COMMANDER_MULVERICK         = 13181,
+    AV_NPC_GENERAL_DREK_THAR = 11946,
+    AV_NPC_CAPTAIN_GALVANGAR = 11947,
+    AV_NPC_PRIMALIST_THURLOGA = 13236,
+    AV_NPC_WING_COMMANDER_GUSE = 13179,
+    AV_NPC_WING_COMMANDER_JEZTOR = 13180,
+    AV_NPC_WING_COMMANDER_MULVERICK = 13181,
 
-    AV_NPC_IVUS_FOREST_LORD                 = 13419,
-    AV_NPC_LOKHOLAR_ICE_LORD                = 13256,
+    AV_NPC_IVUS_FOREST_LORD = 13419,
+    AV_NPC_LOKHOLAR_ICE_LORD = 13256,
 
-    AV_NPC_TASKMASTER_SNIVVLE               = 11677,
-    AV_NPC_WHITEWISKER_DIGGER               = 11603,
-    AV_NPC_WHITEWISKER_GEOMANCER            = 11604,
-    AV_NPC_WHITEWISKER_OVERSEER             = 11605,
-    AV_NPC_WHITEWISKER_VERMIN               = 10982,
+    AV_NPC_TASKMASTER_SNIVVLE = 11677,
+    AV_NPC_WHITEWISKER_DIGGER = 11603,
+    AV_NPC_WHITEWISKER_GEOMANCER = 11604,
+    AV_NPC_WHITEWISKER_OVERSEER = 11605,
+    AV_NPC_WHITEWISKER_VERMIN = 10982,
 
-    AV_NPC_MORLOCH                          = 11657,
-    AV_NPC_IRONDEEP_TROGG                   = 10987,
-    AV_NPC_IRONDEEP_SHAMAN                  = 11600,
-    AV_NPC_IRONDEEP_SKULLTHUMPER            = 11602
+    AV_NPC_MORLOCH = 11657,
+    AV_NPC_IRONDEEP_TROGG = 10987,
+    AV_NPC_IRONDEEP_SHAMAN = 11600,
+    AV_NPC_IRONDEEP_SKULLTHUMPER = 11602
 };
 
 
@@ -149,7 +149,7 @@ class AlteracValley : public CBattleground
 {
     protected:
 
-    std::list<GameObject*> m_gates;
+        std::list<GameObject*> m_gates;
         uint32 m_reinforcements[2];
         bool m_nearingVictory[2];
         inline std::map<Creature*, std::set<uint32> > Get_m_resurrectMap() { return CBattleground::m_resurrectMap; }
@@ -201,38 +201,38 @@ class AlteracValley : public CBattleground
 
         class AVNode
         {
-                AlteracValley* m_bg;
-                AVNodeTemplate* m_template;
+            AlteracValley* m_bg;
+            AVNodeTemplate* m_template;
 
-                // boss, changes ownership upon death?
-                Creature* m_boss;
+            // boss, changes ownership upon death?
+            Creature* m_boss;
 
-                // guards, need to be respawned when changes ownership
-                std::vector<Creature*> m_guards;
+            // guards, need to be respawned when changes ownership
+            std::vector<Creature*> m_guards;
 
-                ///\todo  peon locations, used in mines
-                std::vector<Creature*> m_peonLocations;
+            ///\todo  peon locations, used in mines
+            std::vector<Creature*> m_peonLocations;
 
-                // control point (capturable)
-                GameObject* m_flag;
+            // control point (capturable)
+            GameObject* m_flag;
 
-                // aura (light-shiny stuff)
-                GameObject* m_aura;
-                GameObject* m_glow;
+            // aura (light-shiny stuff)
+            GameObject* m_aura;
+            GameObject* m_glow;
 
-                // home NPc
-                Creature* m_homeNPC;
+            // home NPc
+            Creature* m_homeNPC;
 
-                // destroyed flag (prevent all actions)
-                bool m_destroyed;
+            // destroyed flag (prevent all actions)
+            bool m_destroyed;
 
-                // state
-                uint32 m_state;
-                uint32 m_lastState;
-                uint32 m_nodeId;
+            // state
+            uint32 m_state;
+            uint32 m_lastState;
+            uint32 m_nodeId;
 
-                // spirit guides
-                Creature* m_spiritGuide;
+            // spirit guides
+            Creature* m_spiritGuide;
 
             public:
 
@@ -259,10 +259,10 @@ class AlteracValley : public CBattleground
 
                 // spawn home buff guard
                 void SpawnHomeGuard();
-        };
-    protected:
+            };
+        protected:
 
-        AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
+            AVNode* m_nodes[AV_NUM_CONTROL_POINTS];
 };
 
 #endif  // _ALTERAC_VALLERY_H

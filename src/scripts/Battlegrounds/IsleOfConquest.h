@@ -30,11 +30,11 @@
 
 enum ControlPointTypes
 {
-    IOC_SPAWN_TYPE_NEUTRAL              = 0,
-    IOC_SPAWN_TYPE_ALLIANCE_ASSAULT     = 1,
-    IOC_SPAWN_TYPE_HORDE_ASSAULT        = 2,
-    IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED  = 3,
-    IOC_SPAWN_TYPE_HORDE_CONTROLLED     = 4
+    IOC_SPAWN_TYPE_NEUTRAL = 0,
+    IOC_SPAWN_TYPE_ALLIANCE_ASSAULT = 1,
+    IOC_SPAWN_TYPE_HORDE_ASSAULT = 2,
+    IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED = 3,
+    IOC_SPAWN_TYPE_HORDE_CONTROLLED = 4
 };
 
 struct IOCGraveyard
@@ -178,7 +178,7 @@ class IsleOfConquest : public CBattleground
         IsleOfConquest(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~IsleOfConquest();
 
-        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t){ return new IsleOfConquest(m, i, l, t); }
+        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new IsleOfConquest(m, i, l, t); }
 
         void Init();
         void OnCreate();
@@ -192,13 +192,13 @@ class IsleOfConquest : public CBattleground
         void HookOnAreaTrigger(Player* plr, uint32 id);
         void HookOnPlayerDeath(Player* plr);
         void HookOnPlayerResurrect(Player* player);
-        void HookOnPlayerKill(Player* plr, Player* pVictim){}
-        void HookFlagDrop(Player* plr, GameObject* obj){}
-        void HookOnFlagDrop(Player* plr){}
-        void HookFlagStand(Player* plr, GameObject* obj){}
+        void HookOnPlayerKill(Player* plr, Player* pVictim) {}
+        void HookFlagDrop(Player* plr, GameObject* obj) {}
+        void HookOnFlagDrop(Player* plr) {}
+        void HookFlagStand(Player* plr, GameObject* obj) {}
         bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell *pSpell);
-        void HookOnMount(Player* plr){}
-        void HookGenerateLoot(Player* plr, Object* pCorpse){}
+        void HookOnMount(Player* plr) {}
+        void HookGenerateLoot(Player* plr, Object* pCorpse) {}
         void OnAddPlayer(Player* plr);
         void OnRemovePlayer(Player* plr);
         void HookOnShadowSight();

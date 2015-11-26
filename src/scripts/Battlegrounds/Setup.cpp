@@ -47,26 +47,26 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
     CBattlegroundManager &bgMgr = CBattlegroundManager::getSingleton();
 
     // Mapping Battleground type to map Id
-    bgMgr.RegisterMapForBgType( BATTLEGROUND_ALTERAC_VALLEY,        30 );
-    bgMgr.RegisterMapForBgType( BATTLEGROUND_WARSONG_GULCH,         489 );
-    bgMgr.RegisterMapForBgType( BATTLEGROUND_ARATHI_BASIN,          529 );
-    bgMgr.RegisterMapForBgType( BATTLEGROUND_EYE_OF_THE_STORM,      566 );
-    bgMgr.RegisterMapForBgType( BATTLEGROUND_STRAND_OF_THE_ANCIENT, 607 );
-    bgMgr.RegisterMapForBgType( BATTLEGROUND_ISLE_OF_CONQUEST,      628 );
+    bgMgr.RegisterMapForBgType(BATTLEGROUND_ALTERAC_VALLEY, 30);
+    bgMgr.RegisterMapForBgType(BATTLEGROUND_WARSONG_GULCH, 489);
+    bgMgr.RegisterMapForBgType(BATTLEGROUND_ARATHI_BASIN, 529);
+    bgMgr.RegisterMapForBgType(BATTLEGROUND_EYE_OF_THE_STORM, 566);
+    bgMgr.RegisterMapForBgType(BATTLEGROUND_STRAND_OF_THE_ANCIENT, 607);
+    bgMgr.RegisterMapForBgType(BATTLEGROUND_ISLE_OF_CONQUEST, 628);
 
     // Registering factory methods
-    bgMgr.RegisterBgFactory( 30,  &AlteracValley::Create );
-    bgMgr.RegisterBgFactory( 489, &WarsongGulch::Create );
-    bgMgr.RegisterBgFactory( 529, &ArathiBasin::Create );
-    bgMgr.RegisterBgFactory( 566, &EyeOfTheStorm::Create );
-    bgMgr.RegisterBgFactory( 607, &StrandOfTheAncient::Create );
-    bgMgr.RegisterBgFactory( 628, &IsleOfConquest::Create );
+    bgMgr.RegisterBgFactory(30, &AlteracValley::Create);
+    bgMgr.RegisterBgFactory(489, &WarsongGulch::Create);
+    bgMgr.RegisterBgFactory(529, &ArathiBasin::Create);
+    bgMgr.RegisterBgFactory(566, &EyeOfTheStorm::Create);
+    bgMgr.RegisterBgFactory(607, &StrandOfTheAncient::Create);
+    bgMgr.RegisterBgFactory(628, &IsleOfConquest::Create);
 
-    bgMgr.RegisterArenaFactory( 559, &RingOfTrials::Create );
-    bgMgr.RegisterArenaFactory( 562, &CircleOfBlood::Create );
-    bgMgr.RegisterArenaFactory( 572, &RuinsOfLordaeron::Create );
-    bgMgr.RegisterArenaFactory( 617, &DalaranSewers::Create );
-    bgMgr.RegisterArenaFactory( 618, &RingOfValor::Create );
+    bgMgr.RegisterArenaFactory(559, &RingOfTrials::Create);
+    bgMgr.RegisterArenaFactory(562, &CircleOfBlood::Create);
+    bgMgr.RegisterArenaFactory(572, &RuinsOfLordaeron::Create);
+    bgMgr.RegisterArenaFactory(617, &DalaranSewers::Create);
+    bgMgr.RegisterArenaFactory(618, &RingOfValor::Create);
 }
 
 #ifdef WIN32
@@ -77,4 +77,3 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 }
 
 #endif
-
