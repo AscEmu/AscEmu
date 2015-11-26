@@ -1541,7 +1541,7 @@ class ShadeofAranAI : public CreatureAIScript
             if (SDoor)
             {
                 SDoor->SetState(GAMEOBJECT_STATE_CLOSED);
-                SDoor->SetUInt32Value(GAMEOBJECT_FLAGS, 33);
+                SDoor->SetFlags(33);
             }
         }
 
@@ -1556,7 +1556,7 @@ class ShadeofAranAI : public CreatureAIScript
             GameObject* SDoor = NULL;
             SDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11190.012f, -1881.016f, 231.95f, 184517);
             if (SDoor)
-                SDoor->SetUInt32Value(GAMEOBJECT_FLAGS, 34);
+                SDoor->SetFlags(34);
         }
 
         void OnDied(Unit* mKiller)
@@ -1569,7 +1569,7 @@ class ShadeofAranAI : public CreatureAIScript
             GameObject* SDoor = NULL;
             SDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11190.012f, -1881.016f, 231.95f, 184517);
             if (SDoor)
-                SDoor->SetUInt32Value(GAMEOBJECT_FLAGS, 34);
+                SDoor->SetFlags(34);
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -2831,7 +2831,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             if (MDoor != NULL)
             {
                 MDoor->SetState(GAMEOBJECT_STATE_CLOSED);
-                MDoor->SetUInt32Value(GAMEOBJECT_FLAGS, 33);
+                MDoor->SetFlags(33);
             }
         }
 
@@ -3404,7 +3404,7 @@ class NetherspiteAI : public CreatureAIScript
             if (NDoor)
             {
                 NDoor->SetState(GAMEOBJECT_STATE_CLOSED);
-                NDoor->SetUInt32Value(GAMEOBJECT_FLAGS, 33);
+                NDoor->SetFlags(33);
             }
         }
 

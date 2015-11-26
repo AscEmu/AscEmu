@@ -381,7 +381,7 @@ void IsleOfConquest::OnCreate(){
         gates[ TEAM_ALLIANCE ][ i ].gate = SpawnGameObject( allygateids[ i ], 628, allygatelocations[ i ][ 0 ],  allygatelocations[ i ][ 1 ], allygatelocations[ i ][ 2 ], allygatelocations[ i ][ 3 ], 0, 1, 1.0f );
         gates[ TEAM_ALLIANCE ][ i ].gate->PushToWorld( m_mapMgr );
         gates[ TEAM_ALLIANCE ][ i ].dyngate = SpawnGameObject( IOC_DYNAMIC_GATE_ALLY, 628, allygatelocations[ i ][ 0 ],  allygatelocations[ i ][ 1 ], allygatelocations[ i ][ 2 ], allygatelocations[ i ][ 3 ], 0, 1, 1.0f );
-        gates[ TEAM_ALLIANCE ][ i ].dyngate->SetFlags( GAMEOBJECT_FLAG_UNTARGETABLE );
+        gates[ TEAM_ALLIANCE ][ i ].dyngate->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE );
         gates[ TEAM_ALLIANCE ][ i ].dyngate->PushToWorld( m_mapMgr );
     }
     
@@ -390,21 +390,21 @@ void IsleOfConquest::OnCreate(){
         gates[ TEAM_HORDE ][ i ].gate = SpawnGameObject( hordegateids[ i ], 628, hordegatelocations[ i ][ 0 ],  hordegatelocations[ i ][ 1 ], hordegatelocations[ i ][ 2 ], hordegatelocations[ i ][ 3 ], 0, 2, 1.0f );
         gates[ TEAM_HORDE ][ i ].gate->PushToWorld( m_mapMgr );
         gates[ TEAM_HORDE ][ i ].dyngate = SpawnGameObject( IOC_DYNAMIC_GATE_HORDE, 628, hordegatelocations[ i ][ 0 ],  hordegatelocations[ i ][ 1 ], hordegatelocations[ i ][ 2 ], hordegatelocations[ i ][ 3 ], 0, 2, 1.0f );
-        gates[ TEAM_HORDE ][ i ].dyngate->SetFlags( GAMEOBJECT_FLAG_UNTARGETABLE );
+        gates[ TEAM_HORDE ][ i ].dyngate->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE );
         gates[ TEAM_HORDE ][ i ].dyngate->PushToWorld( m_mapMgr );
     }
 
     //Spawn ally towergates
     for( uint32 i = 0; i < 2; i++ ){
         towergates[ TEAM_ALLIANCE ][ i ] = SpawnGameObject( 195436, AllyTowerGates[ i ], 0, 35, 1.0f );
-        towergates[ TEAM_ALLIANCE ][ i ]->SetFlags( GAMEOBJECT_FLAG_UNTARGETABLE );
+        towergates[ TEAM_ALLIANCE ][ i ]->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE );
         towergates[ TEAM_ALLIANCE ][ i ]->PushToWorld( m_mapMgr );
     }
 
     //Spawn horde towergates
     for( uint32 i = 0; i < 2; i++ ){
         towergates[ TEAM_HORDE ][ i ] = SpawnGameObject( 195437, HordeTowerGates[ i ], 0, 35, 0.5f );
-        towergates[ TEAM_HORDE ][ i ]->SetFlags( GAMEOBJECT_FLAG_UNTARGETABLE );
+        towergates[ TEAM_HORDE ][ i ]->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE );
         towergates[ TEAM_HORDE ][ i ]->PushToWorld( m_mapMgr );
     }
 
@@ -513,7 +513,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
                 controlpoint[ Id ].banner->SetState(1);
                 controlpoint[ Id ].banner->SetType(gi->type);
                 controlpoint[ Id ].banner->SetAnimProgress(100);
-                controlpoint[ Id ].banner->SetUInt32Value(GAMEOBJECT_DYNAMIC, 1);
+                controlpoint[ Id ].banner->Activate();
                 controlpoint[ Id ].banner->SetDisplayId(gi->display_id);
 
                 switch(Type)

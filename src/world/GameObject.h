@@ -121,7 +121,7 @@ enum GAMEOBJECT_BYTES
 {
     GAMEOBJECT_BYTES_STATE          = 0,
     GAMEOBJECT_BYTES_TYPE_ID        = 1,
-    GAMEOBJECT_BYTES_UNK            = 2,    ///\todo unknown atm
+    GAMEOBJECT_BYTES_UNK            = 2,        ///\todo unknown atm
     GAMEOBJECT_BYTES_ANIMPROGRESS   = 3,
 };
 
@@ -229,22 +229,13 @@ class SERVER_DECL GameObject : public Object
 
         void ExpireAndDelete();
 
-        void Deactivate();
-        void Activate();
-
-        bool isQuestGiver()
-        {
-            if (GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
-                return true;
-            else
-                return false;
-        };
 
         /// Quest data
         std::list<QuestRelation*>* m_quests;
 
         uint32* m_ritualmembers;
-        uint32 m_ritualcaster, m_ritualtarget;
+        uint32 m_ritualcaster;
+        uint32 m_ritualtarget;
         uint16 m_ritualspell;
 
         void InitAI();
@@ -307,7 +298,16 @@ class SERVER_DECL GameObject : public Object
 
         uint32 GetOverrides() { return m_overrides; }
 
-        //Easy Functions
+        void Deactivate() { SetUInt32Value(GAMEOBJECT_DYNAMIC, 0); }
+        void Activate() { SetUInt32Value(GAMEOBJECT_DYNAMIC, 1); }
+        bool IsActive()
+        {
+            if (m_uint32Values[GAMEOBJECT_DYNAMIC] == 1)
+                return true;
+            else
+                return false;
+        }
+
         void SetDisplayId(uint32 id) { SetUInt32Value(GAMEOBJECT_DISPLAYID, id); }
         uint32 GetDisplayId() { return GetUInt32Value(GAMEOBJECT_DISPLAYID); }
 

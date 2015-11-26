@@ -1672,7 +1672,7 @@ class DarkweaverSythAI : public CreatureAIScript
             if (LakkasCage != NULL)
             {
                 LakkasCage->SetState(GAMEOBJECT_STATE_OPEN);
-                LakkasCage->SetUInt32Value(GAMEOBJECT_FLAGS, LakkasCage->GetUInt32Value(GAMEOBJECT_FLAGS) - 1);
+                LakkasCage->SetFlags(LakkasCage->GetFlags() - 1);
             }
 
             if (mLakka != NULL && mLakka->GetScript())

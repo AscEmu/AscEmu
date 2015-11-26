@@ -1397,7 +1397,7 @@ void AlteracValley::AVNode::Capture()
             if(m_flag != NULL)
             {
                 m_flag->SetFlags(1);
-                m_flag->SetUInt32Value(GAMEOBJECT_DYNAMIC, 0);
+                m_flag->Deactivate();
                 m_flag->SetState(GAMEOBJECT_STATE_CLOSED);
             }
 

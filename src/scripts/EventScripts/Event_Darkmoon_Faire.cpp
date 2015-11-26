@@ -93,7 +93,7 @@ class Blastenheimer5000 : public GameObjectAIScript
 
             CurrentPlayer->SetMovement(MOVE_UNROOT, 1);
             CurrentPlayer->CastSpell(CurrentPlayer, 42867, true);   // 24742
-            _gameobject->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
+            _gameobject->SetFlags(0);
             mPlayerGuid = 0;
             RemoveAIUpdateEvent();
         }
@@ -128,7 +128,7 @@ GameObject* tonkConsole = NULL;
 tonkConsole = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 180524);
 
 // Open and disable the Tonk Console
-tonkConsole->SetUInt32Value(GAMEOBJECT_FLAGS, 1);
+tonkConsole->SetFlags(1);
 tonkConsole->SetState(0);
 
 // Spawn Steam Tonk
@@ -160,7 +160,7 @@ Plr->RemoveAura(33849);
 Tonk->Despawn(10000,0);
 
 // Close the console so others can access it
-Console->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
+Console->SetFlags(0);
 Console->SetState(GAMEOBJECT_STATE_CLOSED);
 RemoveAIUpdateEvent();
 }

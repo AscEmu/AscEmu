@@ -6958,7 +6958,7 @@ class CageTrapGO : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            _gameobject->SetUInt32Value(GAMEOBJECT_FLAGS, 1);
+            _gameobject->SetFlags(1);
             Creature* pTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
             if (pTrigger != NULL && pTrigger->GetScript() != NULL)
             {

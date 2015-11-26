@@ -3126,7 +3126,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetUInt32Value(GAMEOBJECT_FLAGS, 1);
+                                IceBlock->SetFlags(1);
                             }
                         }
 
@@ -3150,7 +3150,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetUInt32Value(GAMEOBJECT_FLAGS, 1);
+                                IceBlock->SetFlags(1);
                             }
                         }
                     }
@@ -3169,7 +3169,7 @@ class SapphironAI : public CreatureAIScript
                             IceBlock = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(ICE_BLOCK_GO, IceBlocks[Block].x, IceBlocks[Block].y, IceBlocks[Block].z, IceBlocks[Block].o, true, 0, 0);
                             if (IceBlock != NULL)
                             {
-                                IceBlock->SetUInt32Value(GAMEOBJECT_FLAGS, 1);
+                                IceBlock->SetFlags(1);
                             }
                         }
                     }

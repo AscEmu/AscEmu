@@ -863,7 +863,7 @@ class LuaGameObject
                 ptr->SetState(0);
             else
                 ptr->SetState(1);
-            ptr->SetUInt32Value(GAMEOBJECT_FLAGS, (ptr->GetUInt32Value(GAMEOBJECT_FLAGS) & ~1));
+            ptr->SetFlags((ptr->GetFlags() & ~1));
             RET_BOOL(true)
         }
 
