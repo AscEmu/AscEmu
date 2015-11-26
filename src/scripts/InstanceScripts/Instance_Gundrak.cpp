@@ -130,67 +130,67 @@ class GundrakScript : public MoonInstanceScript
                 case GO_ALTAR1_SLADRAN:
                 {
                     mSladranAltarGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_STATUE1_SLADRAN:
                 {
                     mSladranStatueGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_ALTAR2_COLOSSUS:
                 {
                     mColossusAltarGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_STATUE2_COLOSSUS:
                 {
                     mColossusStatueGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_ALTAR3_MOORABI:
                 {
                     mMoorabiAltarGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_STATUE3_MOORABI:
                 {
                     mMoorabiStatueGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_ECKDOOR:
                 {
                     mEckDoorsGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_TRAPDOOR:
                 {
                     mTrapDoorGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_COILISION:
                 {
                     mCoilisionGUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_GAL_DARAH_DOOR1:
                 {
                     mDoor1GUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case GO_GAL_DARAH_DOOR2:
                 {
                     mDoor2GUID = pGameObject->GetLowGUID();
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                 }
                 break;
                 case 192568:
@@ -209,7 +209,7 @@ class GundrakScript : public MoonInstanceScript
                     if (pStatue)
                         pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
 
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     mStatueCount++;
                 }
                 break;
@@ -219,7 +219,7 @@ class GundrakScript : public MoonInstanceScript
                     if (pStatue)
                         pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
 
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     mStatueCount++;
                 }
                 break;
@@ -229,7 +229,7 @@ class GundrakScript : public MoonInstanceScript
                     if (pStatue)
                         pStatue->SetState(pStatue->GetState() == 1 ? 0 : 1);
 
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     mStatueCount++;
                 }
                 break;

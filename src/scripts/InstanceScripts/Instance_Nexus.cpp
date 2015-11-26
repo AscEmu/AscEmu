@@ -683,13 +683,13 @@ class NexusScript : public MoonInstanceScript
             switch (pGameObject->GetEntry())
             {
                 case ANOMALUS_CS:
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     break;
                 case TELESTRA_CS:
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     break;
                 case ORMOROK_CS:
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     break;
             };
         };
@@ -699,15 +699,15 @@ class NexusScript : public MoonInstanceScript
             switch (pGameObject->GetEntry())
             {
                 case ANOMALUS_CS:
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     ++mCSCount;
                     break;
                 case TELESTRA_CS:
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     ++mCSCount;
                     break;
                 case ORMOROK_CS:
-                    pGameObject->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_UNCLICKABLE);
+                    pGameObject->SetFlags(GO_FLAG_UNCLICKABLE);
                     ++mCSCount;
                     break;
                 default:

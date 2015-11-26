@@ -32,13 +32,13 @@ void DalaranSewers::OnCreate()
     GameObject* obj = NULL;
     
     obj = SpawnGameObject(192643, 617, 1232.11f, 764.699f, 20.3f, 0.0f, 32, 1375, 2.0f);
-    obj->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_STATE, 1);
-    obj->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_ANIMPROGRESS, 100);
+    obj->SetState(1);
+    obj->SetAnimProgress(100);
     m_gates.insert(obj);
     
     obj = SpawnGameObject(192642, 617, 1350.02f, 817.502f, 19.1398f, 0.0f, 32, 1375, 2.0f);
-    obj->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_STATE, 1);
-    obj->SetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_ANIMPROGRESS, 100);
+    obj->SetState(1);
+    obj->SetAnimProgress(100);
     m_gates.insert(obj);
     
     obj = SpawnGameObject(191877, 617, 1291.974487f, 791.844666f, 9.339742f, 3.116816f, 32, 1375, 1.0f);

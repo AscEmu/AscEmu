@@ -1579,7 +1579,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 obj->EventCloseDoor();
             else
             {
-                obj->SetFlag(GAMEOBJECT_FLAGS, 1);   // lock door
+                obj->SetFlags(1);   // lock door
                 obj->SetState(0);
                 sEventMgr.AddEvent(obj, &GameObject::EventCloseDoor, EVENT_GAMEOBJECT_DOOR_CLOSE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }

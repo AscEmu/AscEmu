@@ -275,8 +275,8 @@ void GameObject::SaveToDB()
         m_spawn->rotation_1 = GetParentRotation(1);
         m_spawn->rotation_2 = GetParentRotation(2);
         m_spawn->rotation_3 = GetParentRotation(3);
-        m_spawn->state = GetByte(GAMEOBJECT_BYTES_1, 0);
-        m_spawn->flags = GetUInt32Value(GAMEOBJECT_FLAGS);
+        m_spawn->state = GetState();
+        m_spawn->flags = GetFlags();
         m_spawn->faction = GetFaction();
         m_spawn->scale = GetScale();
         //m_spawn->stateNpcLink = 0;
@@ -310,8 +310,8 @@ void GameObject::SaveToDB()
         << GetParentRotation(1) << ","
         << GetParentRotation(2) << ","
         << GetParentRotation(3) << ","
-        << GetUInt32Value(GAMEOBJECT_BYTES_1) << ","
-        << GetUInt32Value(GAMEOBJECT_FLAGS) << ","
+        << GetState() << ","
+        << GetFlags() << ","
         << GetFaction() << ","
         << GetScale() << ","
         << "0,"
@@ -338,8 +338,8 @@ void GameObject::SaveToFile(std::stringstream & name)
         << GetParentRotation(0) << ","
         << GetParentRotation(2) << ","
         << GetParentRotation(3) << ","
-        << GetByte(GAMEOBJECT_BYTES_1, 0) << ","
-        << GetUInt32Value(GAMEOBJECT_FLAGS) << ","
+        << GetState() << ","
+        << GetFlags() << ","
         << GetFaction() << ","
         << GetScale() << ","
         << "0,"
@@ -609,7 +609,7 @@ void GameObject::FishHooked(Player* player)
     data << GetGUID();
     data << (uint32)(0); // value < 4
     player->GetSession()->SendPacket(&data);
-    //SetByte(GAMEOBJECT_BYTES_1, 0, 0);
+    //SetState(0);
     //BuildFieldUpdatePacket(player, GAMEOBJECT_FLAGS, 32);
     SetUInt32Value(GAMEOBJECT_FLAGS, 32);
 }
