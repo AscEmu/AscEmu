@@ -30,7 +30,8 @@ namespace DBC
     namespace
     {
         const uint8 C_TOTAL_LOCALES = 9;
-        char const* C_LOCALE_NAMES[C_TOTAL_LOCALES] = {
+        char const* C_LOCALE_NAMES[C_TOTAL_LOCALES] =
+        {
             "enUS",
             "koKR",
             "frFR",

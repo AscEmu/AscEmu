@@ -31,191 +31,177 @@ namespace Arcemu
     class CRitual
     {
 
-    public:
-        CRitual(){}
+        public:
 
+            CRitual(){}
 
-        CRitual(unsigned long MaxMembers) : Members(MaxMembers)
-        {
-            this->MaxMembers = MaxMembers;
-            CurrentMembers = 0;
-        }
+            CRitual(unsigned long MaxMembers) : Members(MaxMembers)
+            {
+                this->MaxMembers = MaxMembers;
+                CurrentMembers = 0;
+            }
 
-        ~CRitual(){}
+            ~CRitual(){}
 
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note void Setup(...)   - Initializes the Ritual
+            ///
+            /// \param unsigned long CasterGUID - GUID of the caster Player
+            /// \param unsigned long TargetGUID - GUID of the target Player
+            /// \param unsigned long SpellID - ID of the channeled spell (visual)
+            ///
+            /// \returns none
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            void Setup(unsigned long CasterGUID, unsigned long TargetGUID, unsigned long SpellID);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note void Setup(...)   - Initializes the Ritual
-        ///
-        /// \param unsigned long CasterGUID - GUID of the caster Player
-        /// \param unsigned long TargetGUID - GUID of the target Player
-        /// \param unsigned long SpellID - ID of the channeled spell (visual)
-        ///
-        /// \returns none
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        void Setup(unsigned long CasterGUID, unsigned long TargetGUID, unsigned long SpellID);
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note unsigned long GetCasterGUID() - Returns the GUID of the caster Player
+            ///
+            /// \param none
+            ///
+            /// \returns the GUID of the caster Player
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            unsigned long GetCasterGUID()
+            {
+                return CasterGUID;
+            }
 
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note unsigned long GetTargetGUID() - Returns the GUID of the target Player
+            ///
+            /// \param none
+            ///
+            /// \returns the GUID of the target Player
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            unsigned long GetTargetGUID()
+            {
+                return TargetGUID;
+            }
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetCasterGUID() - Returns the GUID of the caster Player
-        ///
-        /// \param none
-        ///
-        /// \returns the GUID of the caster Player
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        unsigned long GetCasterGUID()
-        {
-            return CasterGUID;
-        }
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note unsigned long GetSpellID()    - Returns the ID of the channeled spell
+            ///
+            /// \param none
+            ///
+            /// \returns the ID of the channeled spell
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            unsigned long GetSpellID()
+            {
+                return SpellID;
+            }
 
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note bool AddMember(unsigned long GUID)  - Adds a member to the Ritual
+            ///
+            /// \param unsigned long GUID - GUID of the ritual member to add
+            ///
+            /// \returns true on success, false on failure.
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            bool AddMember(unsigned long GUID);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetTargetGUID() - Returns the GUID of the target Player
-        ///
-        /// \param none
-        ///
-        /// \returns the GUID of the target Player
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        unsigned long GetTargetGUID()
-        {
-            return TargetGUID;
-        }
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note bool RemoveMember(unsigned long GUID)   - Removes a member to the Ritual
+            ///
+            /// \param unsigned long GUID - GUID of the ritual member to remove
+            ///
+            /// \returns true on success, false on failure.
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            bool RemoveMember(unsigned long GUID);
 
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note bool HasMember(unsigned long GUID)  - Checks if the Ritual has a member with this GUID
+            ///
+            /// \param unsigned long GUID - GUID to search for
+            ///
+            /// \returns true if a member with this GUID can be found and false otherwise
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            bool HasMember(unsigned long GUID);
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetSpellID()    - Returns the ID of the channeled spell
-        ///
-        /// \param none
-        ///
-        /// \returns the ID of the channeled spell
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        unsigned long GetSpellID()
-        {
-            return SpellID;
-        }
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note unsigned long GetMemberGUIDBySlot(unsigned long Slot) - Returns the GUID of the Ritual member in this slot
+            ///
+            /// \param unsigned long Slot - Slot ID
+            ///
+            /// \returns the GUID of the Ritual member in this slot
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            unsigned long GetMemberGUIDBySlot(unsigned long Slot)
+            {
+                return Members[Slot];
+            }
 
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note bool HasFreeSlots()   - Tells is the Ritual has free slots
+            ///
+            /// \param none
+            ///
+            /// \returns true if there are still free slots and false otherwise
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            bool HasFreeSlots()
+            {
+                if (CurrentMembers < MaxMembers)
+                    return true;
+                else
+                    return false;
+            }
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool AddMember(unsigned long GUID)  - Adds a member to the Ritual
-        ///
-        /// \param unsigned long GUID - GUID of the ritual member to add
-        ///
-        /// \returns true on success, false on failure.
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        bool AddMember(unsigned long GUID);
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note unsigned long GetMaxMembers() - Returns the number of members this Ritual requires
+            ///
+            /// \param none
+            ///
+            /// \returns the number of members this Ritual requires
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            unsigned long GetMaxMembers()
+            {
+                return MaxMembers;
+            }
 
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note void Finish() - Finishes the ritual
+            ///
+            /// \param none           \returns none
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            void Finish()
+            {
+                SpellID = 0;
+            }
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool RemoveMember(unsigned long GUID)   - Removes a member to the Ritual
-        ///
-        /// \param unsigned long GUID - GUID of the ritual member to remove
-        ///
-        /// \returns true on success, false on failure.
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        bool RemoveMember(unsigned long GUID);
+            //////////////////////////////////////////////////////////////////////////////////////////
+            /// \note bool IsFinished() - Tells if the ritual is finished
+            ///
+            /// \param none
+            ///
+            /// \returns true if the ritual is finished and false otherwise
+            ///
+            //////////////////////////////////////////////////////////////////////////////////////////
+            bool IsFinished()
+            {
+                if (SpellID == 0)
+                    return true;
+                else
+                    return false;
+            }
 
+        private:
 
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool HasMember(unsigned long GUID)  - Checks if the Ritual has a member with this GUID
-        ///
-        /// \param unsigned long GUID - GUID to search for
-        ///
-        /// \returns true if a member with this GUID can be found and false otherwise
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        bool HasMember(unsigned long GUID);
+            unsigned long CasterGUID;
+            unsigned long TargetGUID;
+            unsigned long SpellID;
+            unsigned long CurrentMembers;
+            unsigned long MaxMembers;
 
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetMemberGUIDBySlot(unsigned long Slot) - Returns the GUID of the Ritual member in this slot
-        ///
-        /// \param unsigned long Slot - Slot ID
-        ///
-        /// \returns the GUID of the Ritual member in this slot
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        unsigned long GetMemberGUIDBySlot(unsigned long Slot)
-        {
-            return Members[Slot];
-        }
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool HasFreeSlots()   - Tells is the Ritual has free slots
-        ///
-        /// \param none
-        ///
-        /// \returns true if there are still free slots and false otherwise
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        bool HasFreeSlots()
-        {
-            if (CurrentMembers < MaxMembers)
-                return true;
-            else
-                return false;
-        }
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetMaxMembers() - Returns the number of members this Ritual requires
-        ///
-        /// \param none
-        ///
-        /// \returns the number of members this Ritual requires
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        unsigned long GetMaxMembers()
-        {
-            return MaxMembers;
-        }
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note void Finish() - Finishes the ritual
-        ///
-        /// \param none
-        ///
-        /// \returns none
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        void Finish()
-        {
-            SpellID = 0;
-        }
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool IsFinished() - Tells if the ritual is finished
-        ///
-        /// \param none
-        ///
-        /// \returns true if the ritual is finished and false otherwise
-        ///
-        //////////////////////////////////////////////////////////////////////////////////////////
-        bool IsFinished()
-        {
-            if (SpellID == 0)
-                return true;
-            else
-                return false;
-        }
-
-
-    private:
-        unsigned long CasterGUID;
-        unsigned long TargetGUID;
-        unsigned long SpellID;
-        unsigned long CurrentMembers;
-        unsigned long MaxMembers;
-
-        std::vector< unsigned long > Members;
+            std::vector< unsigned long > Members;
     };
 }
 

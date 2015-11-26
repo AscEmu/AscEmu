@@ -103,10 +103,6 @@ enum Languages
     NUM_LANGUAGES       = 0x24
 };
 
-/*#define MSG_COLOR_YELLOW            "|r"
-#define MSG_COLOR_RED               "|cffff2020"
-#define MSG_COLOR_GREEN             "|c1f40af20"
-#define MSG_COLOR_LIGHTRED          "|cffff6060"*/
 
 #define MSG_COLOR_LIGHTRED          "|cffff6060"
 #define MSG_COLOR_LIGHTBLUE         "|cff00ccff"
@@ -144,6 +140,7 @@ uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid);
 class ChatCommand
 {
     public:
+
         const char* Name;
         char CommandGroup;
         bool (ChatHandler::*Handler)(const char* args, WorldSession* m_session) ;
@@ -157,38 +154,40 @@ class ChatCommand
 
 class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
 {
-        // List command containers ex. .character is a container of .character additem
-        ChatCommand* _modifyCommandTable;
-        ChatCommand* _debugCommandTable;
-        ChatCommand* _eventCommandTable;
-        ChatCommand* _waypointCommandTable;
-        ChatCommand* _GMTicketCommandTable;
-        ChatCommand* _GuildCommandTable;
-        ChatCommand* _GameObjectCommandTable;
-        ChatCommand* _BattlegroundCommandTable;
-        ChatCommand* _NPCCommandTable;
-        ChatCommand* _CheatCommandTable;
-        ChatCommand* _accountCommandTable;
-        ChatCommand* _honorCommandTable;
-        ChatCommand* _petCommandTable;
-        ChatCommand* _recallCommandTable;
-        ChatCommand* _questCommandTable;
-        ChatCommand* _serverCommandTable;
-        ChatCommand* _gmCommandTable;
-        ChatCommand* _characterCommandTable;
-        ChatCommand* _lookupCommandTable;
-        ChatCommand* _adminCommandTable;
-        ChatCommand* _kickCommandTable;
-        ChatCommand* _banCommandTable;
-        ChatCommand* _unbanCommandTable;
-        ChatCommand* _instanceCommandTable;
-        ChatCommand* _arenaCommandTable;
-        ChatCommand* _achievementCommandTable;
-        ChatCommand* _vehicleCommandTable;
-        ChatCommand* _commandTable;
+    // List command containers ex. .character is a container of .character additem
+    ChatCommand* _modifyCommandTable;
+    ChatCommand* _debugCommandTable;
+    ChatCommand* _eventCommandTable;
+    ChatCommand* _waypointCommandTable;
+    ChatCommand* _GMTicketCommandTable;
+    ChatCommand* _GuildCommandTable;
+    ChatCommand* _GameObjectCommandTable;
+    ChatCommand* _BattlegroundCommandTable;
+    ChatCommand* _NPCCommandTable;
+    ChatCommand* _CheatCommandTable;
+    ChatCommand* _accountCommandTable;
+    ChatCommand* _honorCommandTable;
+    ChatCommand* _petCommandTable;
+    ChatCommand* _recallCommandTable;
+    ChatCommand* _questCommandTable;
+    ChatCommand* _serverCommandTable;
+    ChatCommand* _gmCommandTable;
+    ChatCommand* _characterCommandTable;
+    ChatCommand* _lookupCommandTable;
+    ChatCommand* _adminCommandTable;
+    ChatCommand* _kickCommandTable;
+    ChatCommand* _banCommandTable;
+    ChatCommand* _unbanCommandTable;
+    ChatCommand* _instanceCommandTable;
+    ChatCommand* _arenaCommandTable;
+    ChatCommand* _achievementCommandTable;
+    ChatCommand* _vehicleCommandTable;
+    ChatCommand* _commandTable;
 
-        ChatCommand* GetSubCommandTable(const char* name);
+    ChatCommand* GetSubCommandTable(const char* name);
+
     public:
+
         void Init();
         void Dealloc();
         void Load();
@@ -198,8 +197,10 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
 
 class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 {
-        friend class CommandTableStorage;
+    friend class CommandTableStorage;
+
     public:
+
         ChatHandler();
         ~ChatHandler();
 

@@ -26,6 +26,7 @@ class AuctionHouse;
 class AuctionMgr : public Singleton <AuctionMgr>
 {
     public:
+
         AuctionMgr()
         {
             loopcount = 0;
@@ -52,6 +53,7 @@ class AuctionMgr : public Singleton <AuctionMgr>
         }
 
     private:
+
         std::unordered_map<uint32, AuctionHouse*> auctionHouseEntryMap;
         std::vector<AuctionHouse*> auctionHouses;
 

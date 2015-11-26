@@ -18,11 +18,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef _ARENAS_H
+#define _ARENAS_H
+
 class ArenaTeam;
 
 class SERVER_DECL Arena : public CBattleground
 {
-protected:
+    protected:
+
         std::set<GameObject*> m_gates;
         GameObject* m_buffs[2];
         ArenaTeam* m_teams[2];
@@ -30,7 +34,9 @@ protected:
         uint32 m_playersCount[2];
         std::set<uint32> m_players2[2];
         std::set<uint32> m_playersAlive;
+
     public:
+
         bool rated_match;
         Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
         virtual ~Arena();
@@ -86,3 +92,6 @@ protected:
         inline ArenaTeam** GetTeams() { return m_teams; }
         uint32 CalcDeltaRating(uint32 oldRating, uint32 opponentRating, bool outcome);
 };
+
+
+#endif //_ARENAS_H

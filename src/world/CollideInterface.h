@@ -72,6 +72,7 @@ class NavMeshTile
 class NavMeshData
 {
     public:
+
         dtNavMesh* mesh;
         dtNavMeshQuery* query;
 
@@ -93,6 +94,7 @@ class NavMeshData
 class CCollideInterface
 {
     public:
+
         void Init();
         void DeInit();
 
@@ -105,13 +107,10 @@ class CCollideInterface
         void ActivateTile(uint32 mapId, uint32 tileX, uint32 tileY);
         void DeactivateTile(uint32 mapId, uint32 tileX, uint32 tileY);
 
-
         NavMeshData* GetNavMesh(uint32 mapId);
         void LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY);
 
-
 #ifdef COLLISION_DEBUG
-
         bool CheckLOS(uint32 mapId, float x1, float y1, float z1, float x2, float y2, float z2);
         bool GetFirstPoint(uint32 mapId, float x1, float y1, float z1, float x2, float y2, float z2, float & outx, float & outy, float & outz, float distmod);
         bool IsIndoor(uint32 mapId, float x, float y, float z);

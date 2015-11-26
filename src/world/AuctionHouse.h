@@ -25,14 +25,14 @@ enum AuctionRemoveType
 {
     AUCTION_REMOVE_EXPIRED,
     AUCTION_REMOVE_WON,
-    AUCTION_REMOVE_CANCELLED,
+    AUCTION_REMOVE_CANCELLED
 };
 enum AUCTIONRESULT
 {
     AUCTION_CREATE,
     AUCTION_CANCEL,
     AUCTION_BID,
-    AUCTION_BUYOUT,
+    AUCTION_BUYOUT
 };
 enum AUCTIONRESULTERROR
 {
@@ -49,7 +49,7 @@ enum AuctionMailResult
     AUCTION_SOLD,
     AUCTION_EXPIRED,
     AUCTION_EXPIRED2,
-    AUCTION_CANCELLED,
+    AUCTION_CANCELLED
 };
 
 struct Auction
@@ -106,7 +106,7 @@ class AuctionHouse
         std::unordered_map<uint32, Auction*> auctions;
 
         Mutex removalLock;
-    std::list<Auction*> removalList;
+        std::list<Auction*> removalList;
 
         AuctionHouseDBC* dbc;
 

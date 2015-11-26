@@ -116,6 +116,7 @@ typedef std::map<uint64 /* eventId */, CalendarInviteStore > CalendarEventInvite
 class CalendarMgr : public Singleton < CalendarMgr >
 {
     public:
+
         CalendarMgr();
         ~CalendarMgr();
 
