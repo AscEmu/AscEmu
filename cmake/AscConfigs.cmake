@@ -13,4 +13,4 @@ set(BUILD_TOOLS TRUE CACHE BOOL "Build AscEmu tools.")
 set(BUILD_EXTRAS FALSE CACHE BOOL "Build AscEmu extra.")
 
 #Compiler heap limit.
-set(VISUALSTUDIO_COMPILERHEAPLIMIT 400 CACHE STRING "Visual Studio compiler heap limit. Ignore on darwin and unix platforms.")
+set(VISUALSTUDIO_COMPILERHEAPLIMIT 460 CACHE STRING "Visual Studio compiler heap limit. Ignore on darwin and unix platforms.")
