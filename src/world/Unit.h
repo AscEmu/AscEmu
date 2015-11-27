@@ -212,59 +212,6 @@ class SERVER_DECL CombatStatusHandler
         void ClearMyHealers();
 };
 
-struct MovementInfo
-{
-    uint64 guid;
-    uint32 time;
-    float pitch;            // -1.55=looking down, 0=looking forward, +1.55=looking up
-    float redirectSin;      //on slip 8 is zero, on jump some other number
-    float redirectCos, redirect2DSpeed;     //9,10 changes if you are not on foot
-    uint32 unk11, unk12;    //uint32 fallTime;
-    uint8 unk13;            // delete me! use me -> float splineElevation;
-    uint32 unklast;         // delete me! something related to collision
-    uint16 unk_230;         //uint16 flags2;
-
-    float x, y, z, orientation;
-    uint32 flags;
-    float redirectVelocity;
-    WoWGuid transGuid;
-    float transX, transY, transZ, transO, transUnk; // uint32 transTime;
-    uint8 transUnk_2;                               // uint32 transTime2;
-    uint8 transSeat;
-
-    MovementInfo()
-    {
-        guid = 0;
-        time = 0;
-        pitch = 0.0f;               // -1.55=looking down, 0=looking forward, +1.55=looking up
-        redirectSin = 0.0f;         //on slip 8 is zero, on jump some other number
-        redirectCos = 0.0f;
-        redirect2DSpeed = 0.0f;     //9,10 changes if you are not on foot
-        unk11 = 0;                  //fallTime = 0;
-        unk12 = 0;                  //splineElevation = 0;
-        unk13 = 0;                  //splineElevation = 0;
-        unklast = 0;
-        unk_230 = 0;
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-        orientation = 0.0f;
-        flags = 0;
-        redirectVelocity = 0.0f;
-        transGuid = 0;
-        transX = 0.0f;
-        transY = 0.0f;
-        transZ = 0.0f;
-        transO = 0.0f;
-        transUnk = 0.0f;            // transTime = 0;
-        transUnk_2 = 0;             // transTime2 = 0;
-        transSeat = 0;
-    }
-
-    void init(WorldPacket& data);
-    void write(WorldPacket& data);
-};
-
 //====================================================================
 //  Unit
 //  Base class for Players and Creatures
