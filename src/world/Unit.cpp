@@ -8351,16 +8351,16 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
     {
         if (IsPlayer() && static_cast<Player*>(this)->m_CurrentTransporter)
-            transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
+            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
         if (Unit* u = GetVehicleBase())
-            transporter_info.guid = u->GetGUID();
-        *data << transporter_info.guid;
-        *data << transporter_info.x;
-        *data << transporter_info.y;
-        *data << transporter_info.z;
-        *data << transporter_info.o;
-        *data << transporter_info.time;
-        *data << transporter_info.seat;
+            obj_movement_info.transporter_info.guid = u->GetGUID();
+        *data << obj_movement_info.transporter_info.guid;
+        *data << obj_movement_info.transporter_info.x;
+        *data << obj_movement_info.transporter_info.y;
+        *data << obj_movement_info.transporter_info.z;
+        *data << obj_movement_info.transporter_info.o;
+        *data << obj_movement_info.transporter_info.time;
+        *data << obj_movement_info.transporter_info.seat;
 
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
             *data << uint32(GetMovementInfo()->trans_time2);
@@ -8402,16 +8402,16 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
     {
         if (IsPlayer() && static_cast<Player*>(this)->m_CurrentTransporter)
-            transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
+            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
         if (Unit* u = GetVehicleBase())
-            transporter_info.guid = u->GetGUID();
-        *data << transporter_info.guid;
-        *data << transporter_info.x;
-        *data << transporter_info.y;
-        *data << transporter_info.z;
-        *data << transporter_info.o;
-        *data << transporter_info.time;
-        *data << transporter_info.seat;
+            obj_movement_info.transporter_info.guid = u->GetGUID();
+        *data << obj_movement_info.transporter_info.guid;
+        *data << obj_movement_info.transporter_info.x;
+        *data << obj_movement_info.transporter_info.y;
+        *data << obj_movement_info.transporter_info.z;
+        *data << obj_movement_info.transporter_info.o;
+        *data << obj_movement_info.transporter_info.time;
+        *data << obj_movement_info.transporter_info.seat;
 
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
             *data << uint32(GetMovementInfo()->trans_time2);

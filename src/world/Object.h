@@ -138,28 +138,92 @@ typedef struct
 	uint32 resisted_damage;
 } dealdamage;
 
-struct TransporterInfo
+struct MovementInfo
 {
-    uint64 guid;
-    float x;
-    float y;
-    float z;
-    float o;
+    WoWGuid object_guid;
+    uint32 flags;
+    uint16 flags2;
+    LocationVector position;
     uint32 time;
-    uint32 time2;
-    uint8 seat;
 
-    TransporterInfo()
+    //pitch
+    //-1.55=looking down, 0=looking forward, +1.55=looking up
+    float pitch;
+
+    //jumping related
+    float redirectVelocity;
+    float redirectSin;      //on slip 8 is zero, on jump some other number
+    float redirectCos;
+    float redirect2DSpeed;  //9,10 changes if you are not on foot
+
+                            //fall_time in ms
+    uint32 fall_time;
+
+    float spline_elevation;
+
+    struct TransporterInfo
     {
-        guid = 0;
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-        o = 0.0f;
+        uint64 guid;
+        float x;
+        float y;
+        float z;
+        float o;
+        uint32 time;
+        uint32 time2;
+        uint8 seat;
+
+        TransporterInfo()
+        {
+            guid = 0;
+            x = 0.0f;
+            y = 0.0f;
+            z = 0.0f;
+            o = 0.0f;
+            time = 0;
+            time2 = 0;
+            seat = 0;
+        }
+    }transporter_info;
+
+    //transport related
+    WoWGuid transGuid;
+    //LocationVector trans_position;
+    float transX, transY, transZ, transO; //Use LocationVector instead?
+    uint8 transSeat;
+    uint32 trans_time;
+    uint32 trans_time2;
+
+    MovementInfo()
+    {
+        object_guid = 0;
+        flags = 0;
+        flags2 = 0;
+        position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
+
         time = 0;
-        time2 = 0;
-        seat = 0;
+
+        pitch = 0.0f;
+
+        redirectVelocity = 0.0f;
+        redirectSin = 0.0f;
+        redirectCos = 0.0f;
+        redirect2DSpeed = 0.0f;
+
+        fall_time = 0;
+        spline_elevation = 0;
+
+        transGuid = 0;
+        transX = 0.0f;
+        transY = 0.0f;
+        transZ = 0.0f;
+        transO = 0.0f;
+        trans_time = 0;
+        trans_time2 = 0;
+        transSeat = 0;
     }
+
+    void init(WorldPacket& data);
+    void write(WorldPacket& data);
 };
 
 
@@ -638,7 +702,7 @@ class SERVER_DECL Object : public EventableObject
         float m_base_runSpeed;
         float m_base_walkSpeed;
 
-        TransporterInfo transporter_info;
+        MovementInfo obj_movement_info;
 
         uint32 m_phase;         /// This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
@@ -803,68 +867,5 @@ class SERVER_DECL Object : public EventableObject
         bool GetRandomPoint(float rad, LocationVector & out) { return GetRandomPoint(rad, out.x, out.y, out.z); }
 };
 
-struct MovementInfo
-{
-    WoWGuid object_guid;
-    uint32 flags;
-    uint16 flags2;
-    LocationVector position;
-    uint32 time;
-
-    //pitch
-    //-1.55=looking down, 0=looking forward, +1.55=looking up
-    float pitch;
-
-    //jumping related
-    float redirectVelocity;
-    float redirectSin;      //on slip 8 is zero, on jump some other number
-    float redirectCos;
-    float redirect2DSpeed;  //9,10 changes if you are not on foot
-
-    //fall_time in ms
-    uint32 fall_time;
-
-    float spline_elevation;
-
-    //transport related
-    WoWGuid transGuid;
-    //LocationVector trans_position;
-    float transX, transY, transZ, transO; //Use LocationVector instead?
-    uint8 transSeat;
-    uint32 trans_time;
-    uint32 trans_time2;
-
-    MovementInfo()
-    {
-        object_guid = 0;
-        flags = 0;
-        flags2 = 0;
-        position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-
-        time = 0;
-
-        pitch = 0.0f;
-
-        redirectVelocity = 0.0f;
-        redirectSin = 0.0f;
-        redirectCos = 0.0f;
-        redirect2DSpeed = 0.0f;
-
-        fall_time = 0;
-        spline_elevation = 0;
-
-        transGuid = 0;
-        transX = 0.0f;
-        transY = 0.0f;
-        transZ = 0.0f;
-        transO = 0.0f;
-        trans_time = 0;
-        trans_time2 = 0;
-        transSeat = 0;
-    }
-
-    void init(WorldPacket& data);
-    void write(WorldPacket& data);
-};
 
 #endif // _OBJECT_H

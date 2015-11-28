@@ -396,9 +396,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
 
     if (flags & UPDATEFLAG_LIVING)  //0x20
     {
-        if (pThis && pThis->transporter_info.guid != 0)
+        if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
             flags2 |= MOVEFLAG_TRANSPORT; //0x200
-        else if (uThis != NULL && transporter_info.guid != 0 && uThis->transporter_info.guid != 0)
+        else if (uThis != NULL && obj_movement_info.transporter_info.guid != 0 && uThis->obj_movement_info.transporter_info.guid != 0)
             flags2 |= MOVEFLAG_TRANSPORT; //0x200
 
         if ((pThis != NULL) && pThis->isRooted())
@@ -453,13 +453,13 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
 
         if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
         {
-            *data << WoWGuid(transporter_info.guid);
-            *data << float(transporter_info.x);
-            *data << float(transporter_info.y);
-            *data << float(transporter_info.z);
-            *data << float(transporter_info.o);
-            *data << uint32(transporter_info.time);
-            *data << uint8(transporter_info.seat);
+            *data << WoWGuid(obj_movement_info.transporter_info.guid);
+            *data << float(obj_movement_info.transporter_info.x);
+            *data << float(obj_movement_info.transporter_info.y);
+            *data << float(obj_movement_info.transporter_info.z);
+            *data << float(obj_movement_info.transporter_info.o);
+            *data << uint32(obj_movement_info.transporter_info.time);
+            *data << uint8(obj_movement_info.transporter_info.seat);
         }
 
         if ((flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH

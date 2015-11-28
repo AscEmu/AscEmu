@@ -606,7 +606,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
             curObj = *iter;
             ++iter;
 
-            if (curObj->IsPlayer() && plObj != NULL && plObj->transporter_info.guid && plObj->transporter_info.guid == static_cast< Player* >(curObj)->transporter_info.guid)
+            if (curObj->IsPlayer() && plObj != NULL && plObj->obj_movement_info.transporter_info.guid && plObj->obj_movement_info.transporter_info.guid == static_cast< Player* >(curObj)->obj_movement_info.transporter_info.guid)
                 fRange = 0.0f;                      // unlimited distance for people on same boat
             else if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
                 fRange = 0.0f;                      // unlimited distance for transporters (only up to 2 cells +/- anyway.)
@@ -778,7 +778,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
         if (curObj == NULL)
             continue;
 
-        if (curObj->IsPlayer() && obj->IsPlayer() && plObj != NULL && plObj->transporter_info.guid && plObj->transporter_info.guid == static_cast< Player* >(curObj)->transporter_info.guid)
+        if (curObj->IsPlayer() && obj->IsPlayer() && plObj != NULL && plObj->obj_movement_info.transporter_info.guid && plObj->obj_movement_info.transporter_info.guid == static_cast< Player* >(curObj)->obj_movement_info.transporter_info.guid)
             fRange = 0.0f;                              // unlimited distance for people on same boat
         else if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
             fRange = 0.0f;                              // unlimited distance for transporters (only up to 2 cells +/- anyway.)

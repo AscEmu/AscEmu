@@ -169,8 +169,8 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     // Player's client sets these
     if (passenger->IsCreature())
     {
-        passenger->transporter_info.guid = owner->GetGUID();
-        passenger->transporter_info.seat = seatid;
+        passenger->obj_movement_info.transporter_info.guid = owner->GetGUID();
+        passenger->obj_movement_info.transporter_info.seat = seatid;
     }
 
     if (passenger->IsPlayer())
@@ -570,8 +570,8 @@ void Vehicle::InstallAccessories()
 
         Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
-        c->transporter_info.guid = owner->GetGUID();
-        c->transporter_info.seat = accessory->seat;
+        c->obj_movement_info.transporter_info.guid = owner->GetGUID();
+        c->obj_movement_info.transporter_info.seat = accessory->seat;
         c->Phase(PHASE_SET, owner->GetPhase());
         c->SetFaction(owner->GetFaction());
         c->PushToWorld(owner->GetMapMgr());

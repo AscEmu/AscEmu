@@ -85,9 +85,9 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
         /* wow, our pc must really suck. */
         Transporter* pTrans = _player->m_CurrentTransporter;
 
-        float c_tposx = pTrans->GetPositionX() + _player->transporter_info.x;
-        float c_tposy = pTrans->GetPositionY() + _player->transporter_info.y;
-        float c_tposz = pTrans->GetPositionZ() + _player->transporter_info.z;
+        float c_tposx = pTrans->GetPositionX() + _player->obj_movement_info.transporter_info.x;
+        float c_tposy = pTrans->GetPositionY() + _player->obj_movement_info.transporter_info.y;
+        float c_tposz = pTrans->GetPositionZ() + _player->obj_movement_info.transporter_info.z;
 
 
         _player->SetMapId(pTrans->GetMapId());
@@ -432,7 +432,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         /* Anti-Teleport                                                        */
         /************************************************************************/
         if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y) > 3025.0f
-            && _player->m_runSpeed < 50.0f && !_player->transporter_info.guid)
+            && _player->m_runSpeed < 50.0f && !_player->obj_movement_info.transporter_info.guid)
         {
             sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->m_runSpeed, sqrt(_player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y)));
             Disconnect();
@@ -441,7 +441,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     }
 
     //update the detector
-    if (sWorld.antihack_speed && !_player->GetTaxiState() && _player->transporter_info.guid == 0 && !_player->GetSession()->GetPermissionCount())
+    if (sWorld.antihack_speed && !_player->GetTaxiState() && _player->obj_movement_info.transporter_info.guid == 0 && !_player->GetSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         float speed = (_player->flying_aura) ? _player->m_flySpeed : (_player->m_swimSpeed > _player->m_runSpeed) ? _player->m_swimSpeed : _player->m_runSpeed;
@@ -617,15 +617,15 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Transporter Setup                                                    */
     /************************************************************************/
-    if ((mover->transporter_info.guid != 0) && (movement_info.transGuid.GetOldGuid() == 0))
+    if ((mover->obj_movement_info.transporter_info.guid != 0) && (movement_info.transGuid.GetOldGuid() == 0))
     {
         /* we left the transporter we were on */
 
-        Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(mover->transporter_info.guid));
+        Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(mover->obj_movement_info.transporter_info.guid));
         if (transporter != NULL)
             transporter->RemovePassenger(mover);
 
-        mover->transporter_info.guid = 0;
+        mover->obj_movement_info.transporter_info.guid = 0;
         _player->SpeedCheatReset();
 
     }
@@ -634,27 +634,27 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         if (movement_info.transGuid.GetOldGuid() != 0)
         {
 
-            if (mover->transporter_info.guid == 0)
+            if (mover->obj_movement_info.transporter_info.guid == 0)
             {
                 Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(movement_info.transGuid));
                 if (transporter != NULL)
                     transporter->AddPassenger(mover);
 
                 /* set variables */
-                mover->transporter_info.guid = movement_info.transGuid;
-                mover->transporter_info.time = movement_info.trans_time;
-                mover->transporter_info.x = movement_info.transX;
-                mover->transporter_info.y = movement_info.transY;
-                mover->transporter_info.z = movement_info.transZ;
+                mover->obj_movement_info.transporter_info.guid = movement_info.transGuid;
+                mover->obj_movement_info.transporter_info.time = movement_info.trans_time;
+                mover->obj_movement_info.transporter_info.x = movement_info.transX;
+                mover->obj_movement_info.transporter_info.y = movement_info.transY;
+                mover->obj_movement_info.transporter_info.z = movement_info.transZ;
 
             }
             else
             {
                 /* no changes */
-                mover->transporter_info.time = movement_info.trans_time;
-                mover->transporter_info.x = movement_info.transX;
-                mover->transporter_info.y = movement_info.transY;
-                mover->transporter_info.z = movement_info.transZ;
+                mover->obj_movement_info.transporter_info.time = movement_info.trans_time;
+                mover->obj_movement_info.transporter_info.x = movement_info.transX;
+                mover->obj_movement_info.transporter_info.y = movement_info.transY;
+                mover->obj_movement_info.transporter_info.z = movement_info.transZ;
             }
         }
     }
