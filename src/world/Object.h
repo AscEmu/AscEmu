@@ -809,7 +809,7 @@ struct MovementInfo
     WoWGuid object_guid;
     uint32 flags;
     uint16 flags2;
-    float x, y, z, orientation; //Use LocationVector instead?
+    LocationVector position;
     uint32 time;
 
     //pitch
@@ -817,10 +817,10 @@ struct MovementInfo
     float pitch;
 
     //jumping related
+    float redirectVelocity;
     float redirectSin;      //on slip 8 is zero, on jump some other number
     float redirectCos;
     float redirect2DSpeed;  //9,10 changes if you are not on foot
-    float redirectVelocity;
 
     //fall_time in ms
     uint32 fall_time;
@@ -829,6 +829,7 @@ struct MovementInfo
 
     //transport related
     WoWGuid transGuid;
+    //LocationVector trans_position;
     float transX, transY, transZ, transO; //Use LocationVector instead?
     uint8 transSeat;
     uint32 trans_time;
@@ -839,21 +840,20 @@ struct MovementInfo
         object_guid = 0;
         flags = 0;
         flags2 = 0;
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-        orientation = 0.0f;
+        position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
+
         time = 0;
 
-        pitch = 0.0f;               // -1.55=looking down, 0=looking forward, +1.55=looking up
-        redirectSin = 0.0f;         //on slip 8 is zero, on jump some other number
+        pitch = 0.0f;
+
+        redirectVelocity = 0.0f;
+        redirectSin = 0.0f;
         redirectCos = 0.0f;
-        redirect2DSpeed = 0.0f;     //9,10 changes if you are not on foot
+        redirect2DSpeed = 0.0f;
 
         fall_time = 0;
         spline_elevation = 0;
 
-        redirectVelocity = 0.0f;
         transGuid = 0;
         transX = 0.0f;
         transY = 0.0f;

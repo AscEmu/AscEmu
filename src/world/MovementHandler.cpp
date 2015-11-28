@@ -178,7 +178,7 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
         // player is above water level
         if (pSession->m_bIsWLevelSet)
         {
-            if ((movement_info.z + _player->m_noseLevel) > pSession->m_wLevel)
+            if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
             {
                 _player->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
 
@@ -199,7 +199,7 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
         if (!pSession->m_bIsWLevelSet)
         {
             // water level is somewhere below the nose of the character when entering water
-            pSession->m_wLevel = movement_info.z + _player->m_noseLevel * 0.95f;
+            pSession->m_wLevel = movement_info.position.z + _player->m_noseLevel * 0.95f;
             pSession->m_bIsWLevelSet = true;
         }
 
@@ -210,7 +210,7 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
     if (!(movement_info.flags & MOVEFLAG_SWIMMING) && (movement_info.flags != MOVEFLAG_MOVE_STOP) && (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
     {
         // player is above water level
-        if ((movement_info.z + _player->m_noseLevel) > pSession->m_wLevel)
+        if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
         {
             _player->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
 
@@ -225,7 +225,7 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
     if (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING && !(_player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
     {
         //the player is in the water and has gone under water, requires breath bar.
-        if ((movement_info.z + _player->m_noseLevel) < pSession->m_wLevel)
+        if ((movement_info.position.z + _player->m_noseLevel) < pSession->m_wLevel)
         {
             _player->m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
@@ -239,7 +239,7 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
     if (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING && _player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
     {
         //the player is in the water but their face is above water, no breath bar needed.
-        if ((movement_info.z + _player->m_noseLevel) > pSession->m_wLevel)
+        if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
         {
             _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
@@ -252,7 +252,7 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
     if (!(_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING) && _player->m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
     {
         //the player is out of the water, no breath bar needed.
-        if ((movement_info.z + _player->m_noseLevel) > pSession->m_wLevel)
+        if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
         {
             _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
@@ -420,7 +420,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     }
 
     // Rotating your character with a hold down right click mouse button
-    if (_player->GetOrientation() != movement_info.orientation)
+    if (_player->GetOrientation() != movement_info.position.o)
         _player->isTurning = true;
     else
         _player->isTurning = false;
@@ -431,10 +431,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         /************************************************************************/
         /* Anti-Teleport                                                        */
         /************************************************************************/
-        if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.x, movement_info.y) > 3025.0f
+        if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y) > 3025.0f
             && _player->m_runSpeed < 50.0f && !_player->transporter_info.guid)
         {
-            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->m_runSpeed, sqrt(_player->m_position.Distance2DSq(movement_info.x, movement_info.y)));
+            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->m_runSpeed, sqrt(_player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y)));
             Disconnect();
             return;
         }
@@ -446,7 +446,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         // simplified: just take the fastest speed. less chance of fuckups too
         float speed = (_player->flying_aura) ? _player->m_flySpeed : (_player->m_swimSpeed > _player->m_runSpeed) ? _player->m_swimSpeed : _player->m_runSpeed;
 
-        _player->SDetector->AddSample(movement_info.x, movement_info.y, getMSTime(), speed);
+        _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y, getMSTime(), speed);
 
         if (_player->SDetector->IsCheatDetected())
             _player->SDetector->ReportCheater(_player);
@@ -461,7 +461,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Make sure the co-ordinates are valid.                                */
     /************************************************************************/
-    if (!((movement_info.y >= _minY) && (movement_info.y <= _maxY)) || !((movement_info.x >= _minX) && (movement_info.x <= _maxX)))
+    if (!((movement_info.position.y >= _minY) && (movement_info.position.y <= _maxY)) || !((movement_info.position.x >= _minX) && (movement_info.position.x <= _maxX)))
     {
         Disconnect();
         return;
@@ -535,7 +535,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Hack Detection by Classic	                                        */
     /************************************************************************/
-    if (!movement_info.transGuid && recv_data.GetOpcode() != MSG_MOVE_JUMP && !_player->FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.z > _player->GetPositionZ() && movement_info.x == _player->GetPositionX() && movement_info.y == _player->GetPositionY())
+    if (!movement_info.transGuid && recv_data.GetOpcode() != MSG_MOVE_JUMP && !_player->FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -568,11 +568,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
             // player has finished falling
             //if z_axisposition contains no data then set to current position
             if (!mover->z_axisposition)
-                mover->z_axisposition = movement_info.z;
+                mover->z_axisposition = movement_info.position.z;
 
             // calculate distance fallen
-            uint32 falldistance = float2int32(mover->z_axisposition - movement_info.z);
-            if (mover->z_axisposition <= movement_info.z)
+            uint32 falldistance = float2int32(mover->z_axisposition - movement_info.position.z);
+            if (mover->z_axisposition <= movement_info.position.z)
                 falldistance = 1;
             /*Safe Fall*/
             if ((int)falldistance > mover->m_safeFall)
@@ -611,7 +611,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
             //whilst player is not falling, continuously update Z axis position.
             //once player lands this will be used to determine how far he fell.
             if (!(movement_info.flags & MOVEFLAG_FALLING))
-                mover->z_axisposition = movement_info.z;
+                mover->z_axisposition = movement_info.position.z;
     }
 
     /************************************************************************/
@@ -692,7 +692,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
         if (_player->m_CurrentTransporter == NULL)
         {
-            if (!_player->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation))
+            if (!_player->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o))
             {
                 //extra check to set HP to 0 only if the player is dead (KillPlayer() has already this check)
                 if (_player->isAlive())
@@ -724,7 +724,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     else
     {
         if (!mover->isRooted())
-            mover->SetPosition(movement_info.x, movement_info.y, movement_info.z, movement_info.orientation);
+            mover->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o);
     }
 }
 
@@ -860,7 +860,7 @@ void MovementInfo::init(WorldPacket& data)
 {
     transGuid = 0;
     data >> flags >> flags2 >> time;
-    data >> x >> y >> z >> orientation;
+    data >> position.x >> position.y >> position.z >> position.o;
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
@@ -884,7 +884,7 @@ void MovementInfo::write(WorldPacket& data)
 {
     data << flags << flags2 << getMSTime();
 
-    data << x << y << z << orientation;
+    data << position.x << position.y << position.z << position.o;
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
