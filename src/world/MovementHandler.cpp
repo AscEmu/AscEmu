@@ -539,7 +539,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
-        data << uint32(5);
+        data << uint32(5);      // unknown 0
         SendPacket(&data);
     }
 
@@ -547,7 +547,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
-        data << uint32(5);
+        data << uint32(5);      // unknown 0
         SendPacket(&data);
     }
 
@@ -765,8 +765,7 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
     if (guid != m_MoverWoWGuid.GetOldGuid())
     {
         // make sure the guid is valid and we aren't cheating
-        if (!(_player->m_CurrentCharm == guid) &&
-            !(_player->GetGUID() == guid))
+        if (!(_player->m_CurrentCharm == guid) && !(_player->GetGUID() == guid))
         {
             if (_player->GetCurrentVehicle()->GetOwner()->GetGUID() != guid)
                 return;
@@ -800,12 +799,19 @@ void WorldSession::HandleWorldportOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 unk;
+    uint32 time;
     uint32 mapid;
-    float x, y, z, o;
-    recv_data >> unk >> mapid >> x >> y >> z >> o;
+    float target_position_x;
+    float target_position_y;
+    float target_position_z;
+    float target_position_o;
 
-    //printf("\nTEST: %u %f %f %f %f", mapid, x, y, z, o);
+    recv_data >> time;
+    recv_data >> mapid;
+    recv_data >> target_position_x;
+    recv_data >> target_position_y;
+    recv_data >> target_position_z;
+    recv_data >> target_position_o;
 
     if (!HasGMPermissions())
     {
@@ -813,7 +819,7 @@ void WorldSession::HandleWorldportOpcode(WorldPacket& recv_data)
         return;
     }
 
-    LocationVector vec(x, y, z, o);
+    LocationVector vec(target_position_x, target_position_y, target_position_z, target_position_o);
     _player->SafeTeleport(mapid, 0, vec);
 }
 
@@ -841,7 +847,11 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    float x, y, z, o;
+    float target_position_x;
+    float target_position_y;
+    float target_position_z;
+    float target_position_o;
+
     LocationVector vec;
 
     if (!HasGMPermissions())
@@ -850,8 +860,12 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
         return;
     }
 
-    recv_data >> x >> y >> z >> o;
-    vec.ChangeCoords(x, y, z, o);
+    recv_data >> target_position_x;
+    recv_data >> target_position_y;
+    recv_data >> target_position_z;
+    recv_data >> target_position_o;
+
+    vec.ChangeCoords(target_position_x, target_position_y, target_position_z, target_position_o);
     _player->SafeTeleport(_player->GetMapId(), _player->GetInstanceID(), vec);
 }
 
@@ -859,20 +873,35 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
 void MovementInfo::init(WorldPacket& data)
 {
     transGuid = 0;
-    data >> flags >> flags2 >> time;
-    data >> position.x >> position.y >> position.z >> position.o;
+    data >> flags;
+    data >> flags2;
+    data >> time;
+
+    data >> position.x;
+    data >> position.y;
+    data >> position.z;
+    data >> position.o;
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
-        data >> transGuid >> transX >> transY >> transZ >> transO >> trans_time >> trans_time2;
+        data >> transGuid;
+        data >> transX;
+        data >> transY;
+        data >> transZ;
+        data >> transO;
+        data >> trans_time;
+        data >> trans_time2;
     }
-    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING) || flags2 & 0x20)
+    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING) || flags2 & MOVEFLAG2_NO_JUMPING)
     {
         data >> pitch;
     }
     if (flags & MOVEFLAG_REDIRECTED)
     {
-        data >> redirectVelocity >> redirectSin >> redirectCos >> redirect2DSpeed;
+        data >> redirectVelocity;
+        data >> redirectSin;
+        data >> redirectCos;
+        data >> redirect2DSpeed;
     }
     if (flags & MOVEFLAG_SPLINE_MOVER)
     {
@@ -882,13 +911,24 @@ void MovementInfo::init(WorldPacket& data)
 
 void MovementInfo::write(WorldPacket& data)
 {
-    data << flags << flags2 << getMSTime();
+    data << flags;
+    data << flags2;
+    data << getMSTime();
 
-    data << position.x << position.y << position.z << position.o;
+    data << position.x;
+    data << position.y;
+    data << position.z;
+    data << position.o;
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
-        data << transGuid << transX << transY << transZ << transO << trans_time << trans_time2;
+        data << transGuid;
+        data << transX;
+        data << transY;
+        data << transZ;
+        data << transO;
+        data << trans_time;
+        data << trans_time2;
     }
     if (flags & MOVEFLAG_SWIMMING)
     {
@@ -896,7 +936,10 @@ void MovementInfo::write(WorldPacket& data)
     }
     if (flags & MOVEFLAG_FALLING)
     {
-        data << redirectVelocity << redirectSin << redirectCos << redirect2DSpeed;
+        data << redirectVelocity;
+        data << redirectSin;
+        data << redirectCos;
+        data << redirect2DSpeed;
     }
     if (flags & MOVEFLAG_SPLINE_MOVER)
     {
