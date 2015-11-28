@@ -861,14 +861,14 @@ void MovementInfo::init(WorldPacket& data)
 {
     transGuid = 0;
     unk13 = 0;
-    data >> flags >> unk_230 >> time;
+    data >> flags >> flags2 >> time;
     data >> x >> y >> z >> orientation;
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
         data >> transGuid >> transX >> transY >> transZ >> transO >> transUnk >> transUnk_2;
     }
-    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING) || unk_230 & 0x20)
+    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING) || flags2 & 0x20)
     {
         data >> pitch;
     }
@@ -893,7 +893,7 @@ void MovementInfo::init(WorldPacket& data)
 
 void MovementInfo::write(WorldPacket& data)
 {
-    data << flags << unk_230 << getMSTime();
+    data << flags << flags2 << getMSTime();
 
     data << x << y << z << orientation;
 

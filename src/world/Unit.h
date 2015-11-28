@@ -1263,7 +1263,7 @@ class SERVER_DECL Unit : public Object
         uint32 GetUnitMovementFlags() { return movement_info.flags; }   //checked
         void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
 
-        uint16 GetExtraUnitMovementFlags() { return movement_info.unk_230; }
+        uint16 GetExtraUnitMovementFlags() { return movement_info.flags2; }
 
         MovementInfo movement_info;
 };
