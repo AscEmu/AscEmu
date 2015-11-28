@@ -804,7 +804,7 @@ class SERVER_DECL Object : public EventableObject
 
 struct MovementInfo
 {
-    uint64 guid;
+    WoWGuid object_guid;
     uint32 time;
     float pitch;            // -1.55=looking down, 0=looking forward, +1.55=looking up
     float redirectSin;      //on slip 8 is zero, on jump some other number
@@ -824,7 +824,7 @@ struct MovementInfo
 
     MovementInfo()
     {
-        guid = 0;
+        object_guid = 0;
         time = 0;
         pitch = 0.0f;               // -1.55=looking down, 0=looking forward, +1.55=looking up
         redirectSin = 0.0f;         //on slip 8 is zero, on jump some other number
