@@ -839,7 +839,6 @@ void WorldSession::HandleTeleportToUnitOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
 {
-
     CHECK_INWORLD_RETURN
 
     float x, y, z, o;
@@ -860,7 +859,6 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
 void MovementInfo::init(WorldPacket& data)
 {
     transGuid = 0;
-    unk13 = 0;
     data >> flags >> flags2 >> time;
     data >> x >> y >> z >> orientation;
 
@@ -878,16 +876,7 @@ void MovementInfo::init(WorldPacket& data)
     }
     if (flags & MOVEFLAG_SPLINE_MOVER)
     {
-        data >> unk12;
-    }
-
-    data >> unklast;
-    if (data.rpos() != data.wpos())
-    {
-        if (data.rpos() + 4 == data.wpos())
-            data >> unk13;
-        else
-            LOG_DEBUG("Extra bits of movement packet left");
+        data >> spline_elevation;
     }
 }
 
@@ -911,9 +900,6 @@ void MovementInfo::write(WorldPacket& data)
     }
     if (flags & MOVEFLAG_SPLINE_MOVER)
     {
-        data << unk12;
+        data << spline_elevation;
     }
-    data << unklast;
-    if (unk13)
-        data << unk13;
 }

@@ -471,7 +471,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
         }
 
         if (pThis && moveinfo)
-            *data << moveinfo->unklast;
+            *data << moveinfo->fall_time;
         else
             *data << (uint32)0; //last fall time
 

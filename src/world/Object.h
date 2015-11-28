@@ -807,18 +807,17 @@ struct MovementInfo
     WoWGuid object_guid;
     uint32 flags;
     uint16 flags2;
-
+    float x, y, z, orientation; //LocationVector?
     uint32 time;
+
     float pitch;            // -1.55=looking down, 0=looking forward, +1.55=looking up
     float redirectSin;      //on slip 8 is zero, on jump some other number
     float redirectCos;
     float redirect2DSpeed;  //9,10 changes if you are not on foot
-    uint32 unk11;
-    uint32 unk12;           //uint32 fallTime;
-    uint8 unk13;            // delete me! use me -> float splineElevation;
-    uint32 unklast;         // delete me! something related to collision
 
-    float x, y, z, orientation;
+    uint32 fall_time;
+    float spline_elevation;
+
     float redirectVelocity;
     WoWGuid transGuid;
     float transX, transY, transZ, transO;
@@ -831,20 +830,20 @@ struct MovementInfo
         object_guid = 0;
         flags = 0;
         flags2 = 0;
-
-        time = 0;
-        pitch = 0.0f;               // -1.55=looking down, 0=looking forward, +1.55=looking up
-        redirectSin = 0.0f;         //on slip 8 is zero, on jump some other number
-        redirectCos = 0.0f;
-        redirect2DSpeed = 0.0f;     //9,10 changes if you are not on foot
-        unk11 = 0;                  //fallTime = 0;
-        unk12 = 0;                  //splineElevation = 0;
-        unk13 = 0;                  //splineElevation = 0;
-        unklast = 0;
         x = 0.0f;
         y = 0.0f;
         z = 0.0f;
         orientation = 0.0f;
+        time = 0;
+
+        pitch = 0.0f;               // -1.55=looking down, 0=looking forward, +1.55=looking up
+        redirectSin = 0.0f;         //on slip 8 is zero, on jump some other number
+        redirectCos = 0.0f;
+        redirect2DSpeed = 0.0f;     //9,10 changes if you are not on foot
+
+        fall_time = 0;
+        spline_elevation = 0;
+
         redirectVelocity = 0.0f;
         transGuid = 0;
         transX = 0.0f;

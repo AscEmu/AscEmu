@@ -8371,7 +8371,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
         *data << (float)GetMovementInfo()->pitch;
 
-    *data << (uint32)GetMovementInfo()->unk12;
+    *data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
@@ -8384,7 +8384,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 
     // 0x04000000
     if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)GetMovementInfo()->unk13;
+        *data << (float)GetMovementInfo()->spline_elevation;
 }
 
 
@@ -8422,7 +8422,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
         *data << (float)GetMovementInfo()->pitch;
 
-    *data << (uint32)GetMovementInfo()->unk11;
+    *data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
@@ -8435,7 +8435,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 
     // 0x04000000
     if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)GetMovementInfo()->unk13;
+        *data << (float)GetMovementInfo()->spline_elevation;
 }
 
 void Unit::setLevel(uint32 level)
