@@ -642,7 +642,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
                 /* set variables */
                 mover->transporter_info.guid = movement_info.transGuid;
-                mover->transporter_info.flags = movement_info.transUnk;
+                mover->transporter_info.time = movement_info.trans_time;
                 mover->transporter_info.x = movement_info.transX;
                 mover->transporter_info.y = movement_info.transY;
                 mover->transporter_info.z = movement_info.transZ;
@@ -651,7 +651,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
             else
             {
                 /* no changes */
-                mover->transporter_info.flags = movement_info.transUnk;
+                mover->transporter_info.time = movement_info.trans_time;
                 mover->transporter_info.x = movement_info.transX;
                 mover->transporter_info.y = movement_info.transY;
                 mover->transporter_info.z = movement_info.transZ;
@@ -864,7 +864,7 @@ void MovementInfo::init(WorldPacket& data)
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
-        data >> transGuid >> transX >> transY >> transZ >> transO >> transUnk >> transUnk_2;
+        data >> transGuid >> transX >> transY >> transZ >> transO >> trans_time >> trans_time2;
     }
     if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING) || flags2 & 0x20)
     {
@@ -888,7 +888,7 @@ void MovementInfo::write(WorldPacket& data)
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
-        data << transGuid << transX << transY << transZ << transO << transUnk << transUnk_2;
+        data << transGuid << transX << transY << transZ << transO << trans_time << trans_time2;
     }
     if (flags & MOVEFLAG_SWIMMING)
     {

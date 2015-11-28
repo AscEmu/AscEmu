@@ -8359,11 +8359,11 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         *data << transporter_info.y;
         *data << transporter_info.z;
         *data << transporter_info.o;
-        *data << transporter_info.flags;
+        *data << transporter_info.time;
         *data << transporter_info.seat;
 
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
-            *data << uint32(GetMovementInfo()->transUnk_2);
+            *data << uint32(GetMovementInfo()->trans_time2);
     }
 
     // 0x02200000
@@ -8410,11 +8410,11 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         *data << transporter_info.y;
         *data << transporter_info.z;
         *data << transporter_info.o;
-        *data << transporter_info.flags;
+        *data << transporter_info.time;
         *data << transporter_info.seat;
 
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
-            *data << uint32(GetMovementInfo()->transUnk_2);
+            *data << uint32(GetMovementInfo()->trans_time2);
     }
 
     // 0x02200000

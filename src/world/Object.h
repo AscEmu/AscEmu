@@ -145,7 +145,8 @@ struct TransporterInfo
 	float y;
 	float z;
 	float o;
-	uint32 flags;
+	uint32 time;
+    uint32 time2;
 	uint8 seat;
 
 	TransporterInfo()
@@ -155,7 +156,8 @@ struct TransporterInfo
 		y = 0.0f;
 		z = 0.0f;
 		o = 0.0f;
-		flags = 0;
+        time = 0;
+        time2 = 0;
 		seat = 0;
 	}
 };
@@ -807,23 +809,30 @@ struct MovementInfo
     WoWGuid object_guid;
     uint32 flags;
     uint16 flags2;
-    float x, y, z, orientation; //LocationVector?
+    float x, y, z, orientation; //Use LocationVector instead?
     uint32 time;
 
-    float pitch;            // -1.55=looking down, 0=looking forward, +1.55=looking up
+    //pitch
+    //-1.55=looking down, 0=looking forward, +1.55=looking up
+    float pitch;
+
+    //jumping related
     float redirectSin;      //on slip 8 is zero, on jump some other number
     float redirectCos;
     float redirect2DSpeed;  //9,10 changes if you are not on foot
+    float redirectVelocity;
 
+    //fall_time in ms
     uint32 fall_time;
+
     float spline_elevation;
 
-    float redirectVelocity;
+    //transport related
     WoWGuid transGuid;
-    float transX, transY, transZ, transO;
-    float transUnk;         // uint32 transTime;
-    uint8 transUnk_2;       // uint32 transTime2;
+    float transX, transY, transZ, transO; //Use LocationVector instead?
     uint8 transSeat;
+    uint32 trans_time;
+    uint32 trans_time2;
 
     MovementInfo()
     {
@@ -850,8 +859,8 @@ struct MovementInfo
         transY = 0.0f;
         transZ = 0.0f;
         transO = 0.0f;
-        transUnk = 0.0f;            // transTime = 0;
-        transUnk_2 = 0;             // transTime2 = 0;
+        trans_time = 0;
+        trans_time2 = 0;
         transSeat = 0;
     }
 

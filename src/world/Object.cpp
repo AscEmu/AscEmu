@@ -458,7 +458,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
             *data << float(transporter_info.y);
             *data << float(transporter_info.z);
             *data << float(transporter_info.o);
-            *data << uint32(transporter_info.flags);
+            *data << uint32(transporter_info.time);
             *data << uint8(transporter_info.seat);
         }
 
