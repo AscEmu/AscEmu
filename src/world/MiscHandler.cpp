@@ -1271,7 +1271,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
     // if red does not exists if ID == 7 and if there is no data send 0
     if (!res || !res->data)  // if error, send a NOTHING packet
     {
-        data << (uint32)0;
+        data << uint32(0);
     }
     else
     {
@@ -1848,7 +1848,7 @@ void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        uint32 playedt = (uint32)UNIXTIME - _player->m_playedtime[2];
+    uint32 playedt = (uint32)UNIXTIME - _player->m_playedtime[2];
     uint8 displayinui = 0;
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -1891,8 +1891,8 @@ void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
     //////////////////////////////////////////////////////////////////////////////////////////////////
 
     WorldPacket data(SMSG_PLAYED_TIME, 9); //VLack: again, an Aspire trick, with an uint8(0) -- I hate packet structure changes...
-    data << (uint32)_player->m_playedtime[1];
-    data << (uint32)_player->m_playedtime[0];
+    data << uint32(_player->m_playedtime[1]);
+    data << uint32(_player->m_playedtime[0]);
     data << uint8(displayinui);
     SendPacket(&data);
 

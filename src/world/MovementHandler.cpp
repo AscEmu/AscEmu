@@ -114,8 +114,12 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
 {
     WoWGuid guid;
     recv_data >> guid;
-    uint32 flags, time;
-    recv_data >> flags >> time;
+
+    uint32 flags;
+    uint32 time;
+    recv_data >> flags;
+    recv_data >> time;
+
     if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
     {
         if (sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->GetPlayerStatus() != TRANSFER_PENDING)
@@ -150,12 +154,10 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
             _player->m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
         }
     }
-
 }
 
 void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSession* pSession)
 {
-
     // no water breathing is required
     if (!sWorld.BreathingEnabled || _player->FlyCheat || _player->m_bUnlimitedBreath || !_player->isAlive() || _player->GodModeCheat)
     {
@@ -258,7 +260,6 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
             pSession->SendPacket(&data);
         }
     }
-
 }
 
 struct MovementFlagName
@@ -301,7 +302,7 @@ static MovementFlagName MoveFlagsToNames[] =
     { MOVEFLAG_WATER_WALK, "MOVEFLAG_WATER_WALK" },
     { MOVEFLAG_FEATHER_FALL, "MOVEFLAG_FEATHER_FALL" },
     { MOVEFLAG_LEVITATE, "MOVEFLAG_LEVITATE" },
-    { MOVEFLAG_LOCAL, "MOVEFLAG_LOCAL" },
+    { MOVEFLAG_LOCAL, "MOVEFLAG_LOCAL" }
 };
 
 static const uint32 nmovementflags = sizeof(MoveFlagsToNames) / sizeof(MovementFlagName);
@@ -424,22 +425,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     else
         _player->isTurning = false;
 
-
-    /************************************************************************/
-    /* Anti-Fly Hack Checks       - Alice : Disabled for now                                           */
-    /************************************************************************/
-    /*if (sWorld.antihack_flight && (recv_data.GetOpcode() == CMSG_MOVE_FLY_START_AND_END || recv_data.GetOpcode() == CMSG_FLY_PITCH_DOWN_AFTER_UP) && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING || movement_info.flags & MOVEFLAG_FALLING_FAR || movement_info.flags & MOVEFLAG_FREE_FALLING) && _player->flying_aura == 0)
-    {
-    if (sWorld.no_antihack_on_gm && _player->GetSession()->HasGMPermissions())
-    {
-    // Do nothing.
-    }
-    else
-    {
-    _player->BroadcastMessage("Flyhack detected. In case the server is wrong then make a report how to reproduce this case. You will be logged out in 5 seconds.");
-    sEventMgr.AddEvent(_player, &Player::_Kick, EVENT_PLAYER_KICK, 5000, 1, 0);
-    }
-    } */
 
     if (!(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->GetCharmedUnitGUID())
     {
@@ -674,18 +659,6 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         }
     }
 
-    /*float x = movement_info.x - movement_info.transX;
-    float y = movement_info.y - movement_info.transY;
-    float z = movement_info.z - movement_info.transZ;
-    Transporter* trans = _player->m_CurrentTransporter;
-    if (trans) sChatHandler.SystemMessageToPlr(_player, "Client t pos: %f %f\nServer t pos: %f %f   Diff: %f %f", x,y, trans->GetPositionX(), trans->GetPositionY(), trans->CalcDistance(x,y,z), trans->CalcDistance(movement_info.x, movement_info.y, movement_info.z));*/
-
-    /************************************************************************/
-    /* Anti-Speed Hack Checks                                               */
-    /************************************************************************/
-
-
-
     /************************************************************************/
     /* Breathing System                                                     */
     /************************************************************************/
@@ -818,7 +791,7 @@ void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& recvdata)
 {
     CHECK_INWORLD_RETURN
 
-        WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
+    WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
     data << _player->GetGUID();
     _player->SendMessageToSet(&data, true);
 }
@@ -869,7 +842,7 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
 
     CHECK_INWORLD_RETURN
 
-        float x, y, z, o;
+    float x, y, z, o;
     LocationVector vec;
 
     if (!HasGMPermissions())
