@@ -1257,6 +1257,8 @@ class SERVER_DECL Unit : public Object
         
         void SendEnvironmentalDamageLog(uint64 guid, uint8 type, uint32 damage);
 
+        void BuildHeartBeatMsg(WorldPacket* data);
+
         void BuildMovementPacket(ByteBuffer* data);
         void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
         MovementInfo* GetMovementInfo() { return &movement_info; }

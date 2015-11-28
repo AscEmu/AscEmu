@@ -375,7 +375,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
 
     }
 
-    *data << (uint16)flags;
+    *data << uint16(flags);
 
     Player* pThis = NULL;
     MovementInfo* moveinfo = NULL;
@@ -433,9 +433,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
             }
         }
 
-        *data << (uint32)flags2;
+        *data << uint32(flags2);
 
-        *data << (uint16)moveflags2;
+        *data << uint16(moveflags2);
 
         *data << getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
 
@@ -446,10 +446,10 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
         //   0x40 -> disables movement compensation and causes players to jump around all the place
 
         //Send position data, every living thing has these
-        *data << (float)m_position.x;
-        *data << (float)m_position.y;
-        *data << (float)m_position.z;
-        *data << (float)m_position.o;
+        *data << float(m_position.x);
+        *data << float(m_position.y);
+        *data << float(m_position.z);
+        *data << float(m_position.o);
 
         if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
         {
@@ -467,13 +467,13 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
             if (pThis && moveinfo)
                 *data << moveinfo->pitch;
             else
-                *data << (float)0; //pitch
+                *data << float(0); //pitch
         }
 
         if (pThis && moveinfo)
             *data << moveinfo->fall_time;
         else
-            *data << (uint32)0; //last fall time
+            *data << uint32(0); //last fall time
 
         if (flags2 & MOVEFLAG_REDIRECTED)   // 0x00001000
         {
@@ -486,30 +486,30 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
             }
             else
             {
-                *data << (float)0;
-                *data << (float)1.0;
-                *data << (float)0;
-                *data << (float)0;
+                *data << float(0);
+                *data << float(1.0);
+                *data << float(0);
+                *data << float(0);
             }
         }
 
         if (m_walkSpeed == 0)
-            *data << 8.0f;
+            *data << float(8.0f);
         else
-            *data << m_walkSpeed;   // walk speed
+            *data << float(m_walkSpeed);   // walk speed
         if (m_runSpeed == 0)
-            *data << 8.0f;
+            *data << float(8.0f);
         else
-            *data << m_runSpeed;    // run speed
-        *data << m_backWalkSpeed;   // backwards walk speed
-        *data << m_swimSpeed;       // swim speed
-        *data << m_backSwimSpeed;   // backwards swim speed
+            *data << float(m_runSpeed);    // run speed
+        *data << float(m_backWalkSpeed);   // backwards walk speed
+        *data << float(m_swimSpeed);       // swim speed
+        *data << float(m_backSwimSpeed);   // backwards swim speed
         if (m_flySpeed == 0)
-            *data << 8.0f;
+            *data << float(8.0f);
         else
-            *data << m_flySpeed;    // fly speed
-        *data << m_backFlySpeed;    // back fly speed
-        *data << m_turnRate;        // turn rate
+            *data << float(m_flySpeed);    // fly speed
+        *data << float(m_backFlySpeed);    // back fly speed
+        *data << float(m_turnRate);        // turn rate
         *data << float(7);          // pitch rate, now a constant...
 
         if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
@@ -523,34 +523,34 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
         if (flags & UPDATEFLAG_POSITION)        //0x0100
         {
             *data << uint8(0);                  //some say it is like parent guid ?
-            *data << (float)m_position.x;
-            *data << (float)m_position.y;
-            *data << (float)m_position.z;
-            *data << (float)m_position.x;
-            *data << (float)m_position.y;
-            *data << (float)m_position.z;
-            *data << (float)m_position.o;
+            *data << float(m_position.x);
+            *data << float(m_position.y);
+            *data << float(m_position.z);
+            *data << float(m_position.x);
+            *data << float(m_position.y);
+            *data << float(m_position.z);
+            *data << float(m_position.o);
 
             if (IsCorpse())
-                *data << (float)m_position.o;   //VLack: repeat the orientation!
+                *data << float(m_position.o);   //VLack: repeat the orientation!
             else
-                *data << (float)0;
+                *data << float(0);
         }
         else if (flags & UPDATEFLAG_HAS_POSITION)  //0x40
         {
             if (flags & UPDATEFLAG_TRANSPORT && m_uint32Values[GAMEOBJECT_BYTES_1] == GAMEOBJECT_TYPE_MO_TRANSPORT)
             {
-                *data << (float)0;
-                *data << (float)0;
-                *data << (float)0;
+                *data << float(0);
+                *data << float(0);
+                *data << float(0);
             }
             else
             {
-                *data << (float)m_position.x;
-                *data << (float)m_position.y;
-                *data << (float)m_position.z;
+                *data << float(m_position.x);
+                *data << float(m_position.y);
+                *data << float(m_position.z);
             }
-            *data << (float)m_position.o;
+            *data << float(m_position.o);
         }
     }
 
@@ -777,17 +777,12 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
     }
 }
 
-void Object::BuildHeartBeatMsg(WorldPacket* data) const
+// This is not called!
+void Unit::BuildHeartBeatMsg(WorldPacket* data)
 {
-    data->Initialize(MSG_MOVE_HEARTBEAT);
-
+    data->Initialize(MSG_MOVE_HEARTBEAT, 32);
     *data << GetGUID();
-
-    *data << uint32(0);     // flags
-    //	*data << uint32(0); // mysterious value #1
-    *data << getMSTime();
-    *data << m_position;
-    *data << m_position.o;
+    BuildMovementPacket(data);
 }
 
 bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false */)

@@ -8341,7 +8341,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
     *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
-    *data << uint32(GetMovementInfo()->time);                       // time / counter
+    *data << uint32(getMSTime());                       // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
     *data << GetPositionZ();
@@ -8362,7 +8362,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         *data << transporter_info.time;
         *data << transporter_info.seat;
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
+        if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
             *data << uint32(GetMovementInfo()->trans_time2);
     }
 
@@ -8392,7 +8392,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
     *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
-    *data << uint32(GetMovementInfo()->time);                       // time / counter
+    *data << uint32(getMSTime());                       // time / counter
     *data << x;
     *data << y;
     *data << z;
@@ -8413,7 +8413,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         *data << transporter_info.time;
         *data << transporter_info.seat;
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
+        if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
             *data << uint32(GetMovementInfo()->trans_time2);
     }
 
