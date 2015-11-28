@@ -60,6 +60,12 @@ void GameEventMgr::StartArenaEvents()
 
 void GameEventMgr::LoadFromDB()
 {
+    // Clean event_saves from CharacterDB
+    Log.Notice("GameEventMgr", "Start cleaning event_save");
+    {
+        const char* cleanEventSaveQuery = "DELETE FROM event_save WHERE state<>4";
+        CharacterDatabase.Execute(cleanEventSaveQuery);
+    }
     // Loading event_names
     {
         const char* loadAllEventsQuery = "SELECT entry, UNIX_TIMESTAMP(start_time), UNIX_TIMESTAMP(end_time), occurence,\
