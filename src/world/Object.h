@@ -180,12 +180,12 @@ class Spell;
 class UpdateMask;
 #include "UpdateMask.h"
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Object
-/// Base object for every item, unit, player, corpse, container, etc
+/// class Object:Base object for every item, unit, player, corpse, container, etc
 //////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL Object : public EventableObject
 {
 	public:
+
 		typedef std::set<Object*> InRangeSet;
 		typedef std::map<std::string, void*> ExtensionSet;
 
@@ -662,9 +662,9 @@ class SERVER_DECL Object : public EventableObject
 
 		/// object faction
 		void _setFaction();
-    uint32 _getFaction();
+        uint32 _getFaction();
 
-    FactionTemplateDBC* m_faction;
+        FactionTemplateDBC* m_faction;
 		FactionDBC* m_factionDBC;
 
 		void SetInstanceID(int32 instance) { m_instanceId = instance; }
@@ -712,6 +712,7 @@ class SERVER_DECL Object : public EventableObject
 		virtual void _SetUpdateBits(UpdateMask* updateMask, Player* target) const;
 		/// Mark values that player should get when he/she/it sees object for first time.
 		virtual void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
+
 		/// Create updates that player will see
 		void _BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2, Player* target);
 		void _BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);

@@ -590,9 +590,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     if (flags & UPDATEFLAG_ROTATION)   //0x0200
     {
         if (IsGameObject())
-            *data << static_cast< GameObject* >(this)->m_rotation;
-        else
-            *data << uint64(0);   //?
+            *data << static_cast< GameObject* >(this)->GetRotation();
     }
 }
 

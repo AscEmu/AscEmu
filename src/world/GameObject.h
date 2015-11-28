@@ -199,8 +199,10 @@ class SERVER_DECL GameObject : public Object
         void DeleteFromDB();
         void EventCloseDoor();
         void EventCastSpell(uint32 guid, uint32 sp, bool triggered);
+
         void SetRotation(float rad);
-        uint64 m_rotation;
+        uint64 GetRotation() const { return m_rotation; }
+
         void UpdateRotation();
 
         //Fishing stuff
@@ -407,6 +409,8 @@ class SERVER_DECL GameObject : public Object
         uint32 _fields[GAMEOBJECT_END];
         uint32 usage_remaining;         ///used for mining to mark times it can be mined
         uint32 m_overrides;             ///See enum GAMEOBJECT_OVERRIDES!
+
+        uint64 m_rotation;
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
