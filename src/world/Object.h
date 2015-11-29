@@ -22,6 +22,7 @@
 #define _OBJECT_H
 
 #include "UpdateFields.h"
+#include "UpdateMask.h"
 #include "CommonTypes.hpp"
 
 class EventableObject;
@@ -41,6 +42,22 @@ struct FactionDBC;
 
 class Unit;
 class Group;
+class WorldPacket;
+class ByteBuffer;
+class WorldSession;
+class Player;
+class MapCell;
+class MapMgr;
+class ObjectContainer;
+class DynamicObject;
+class Creature;
+class GameObject;
+class Unit;
+class Group;
+class Pet;
+class Spell;
+class UpdateMask;
+
 
 enum HIGHGUID_TYPE
 {
@@ -227,22 +244,6 @@ struct MovementInfo
 };
 
 
-class WorldPacket;
-class ByteBuffer;
-class WorldSession;
-class Player;
-class MapCell;
-class MapMgr;
-class ObjectContainer;
-class DynamicObject;
-class Creature;
-class GameObject;
-class Unit;
-class Group;
-class Pet;
-class Spell;
-class UpdateMask;
-#include "UpdateMask.h"
 //////////////////////////////////////////////////////////////////////////////////////////
 /// class Object:Base object for every item, unit, player, corpse, container, etc
 //////////////////////////////////////////////////////////////////////////////////////////
