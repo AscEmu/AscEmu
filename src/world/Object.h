@@ -24,8 +24,6 @@
 #include "UpdateFields.h"
 #include "UpdateMask.h"
 #include "CommonTypes.hpp"
-
-class EventableObject;
 #include "EventableObject.h"
 
 #include <set>
@@ -57,6 +55,7 @@ class Group;
 class Pet;
 class Spell;
 class UpdateMask;
+class EventableObject;
 
 
 enum HIGHGUID_TYPE
@@ -243,7 +242,6 @@ struct MovementInfo
     void write(WorldPacket& data);
 };
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 /// class Object:Base object for every item, unit, player, corpse, container, etc
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +250,6 @@ class SERVER_DECL Object : public EventableObject
     public:
 
         typedef std::set<Object*> InRangeSet;
-        typedef std::map<std::string, void*> ExtensionSet;
 
         virtual ~Object();
 
@@ -825,32 +822,7 @@ class SERVER_DECL Object : public EventableObject
 
         int32 m_instanceId;
 
-        ExtensionSet* m_extensions;
-
-        // so we can set from scripts. :)
-        void _SetExtension(const std::string & name, void* ptr);
     public:
-
-        template<typename T>
-        void SetExtension(const std::string & name, T ptr)
-        {
-            _SetExtension(name, ((void*)ptr));
-        }
-
-        template<typename T>
-        T GetExtension(const std::string & name)
-        {
-            if (m_extensions == NULL)
-                return ((T)NULL);
-            else
-            {
-                ExtensionSet::iterator itr = m_extensions->find(name);
-                if (itr == m_extensions->end())
-                    return ((T)NULL);
-                else
-                    return ((T)itr->second);
-            }
-        }
 
         bool m_loadedFromDB;
 

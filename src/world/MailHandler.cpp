@@ -283,10 +283,12 @@ void WorldSession::HandleMarkAsRead(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
-    recv_data >> mailbox >> message_id;
+    recv_data >> mailbox;
+    recv_data >> message_id;
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0) return;
+    if (message == 0)
+        return;
 
     // mark the message as read
     message->checked_flag |= MAIL_CHECK_MASK_READ;
@@ -306,17 +308,18 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
-    recv_data >> mailbox >> message_id;
+    recv_data >> mailbox;
+    recv_data >> message_id;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id << uint32(MAIL_RES_DELETED);
+    data << message_id;
+    data << uint32(MAIL_RES_DELETED);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == 0)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
-
         return;
     }
 
@@ -335,17 +338,19 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     uint32 lowguid;
     std::vector< uint32 >::iterator itr;
 
-    recv_data >> mailbox >> message_id >> lowguid;
+    recv_data >> mailbox;
+    recv_data >> message_id;
+    recv_data >> lowguid;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id << uint32(MAIL_RES_ITEM_TAKEN);
+    data << message_id;
+    data << uint32(MAIL_RES_ITEM_TAKEN);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == 0 || message->items.empty())
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
-
         return;
     }
 
@@ -359,12 +364,10 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
-
         return;
     }
 
-    // check for cod credit
-    if (message->cod > 0)
+    if (message->cod > 0)   // check for cod credit
     {
         if (!_player->HasGold(message->cod))
         {
@@ -376,9 +379,8 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     // grab the item
     Item* item = objmgr.LoadItem(*itr);
-    if (item == 0)
+    if (item == 0)  // doesn't exist
     {
-        // doesn't exist
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
 
@@ -387,9 +389,8 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     //Find free slot
     SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->GetProto());
-    if (result.Result == 0)
+    if (result.Result == 0) //End of slots
     {
-        //End of slots
         data << uint32(MAIL_ERR_BAG_FULL);
         SendPacket(&data);
 
@@ -400,9 +401,8 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     if (!_player->GetItemInterface()->SafeAddItem(item, result.ContainerSlot, result.Slot))
     {
-        if (!_player->GetItemInterface()->AddItemToFreeSlot(item))
+        if (!_player->GetItemInterface()->AddItemToFreeSlot(item))   //End of slots
         {
-            //End of slots
             data << uint32(MAIL_ERR_BAG_FULL);
             SendPacket(&data);
             item->DeleteMe();
@@ -443,17 +443,18 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
-    recv_data >> mailbox >> message_id;
+    recv_data >> mailbox;
+    recv_data >> message_id;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id << uint32(MAIL_RES_MONEY_TAKEN);
+    data << message_id;
+    data << uint32(MAIL_RES_MONEY_TAKEN);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == 0 || !message->money)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
-
         return;
     }
 
@@ -487,17 +488,18 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
-    recv_data >> mailbox >> message_id;
+    recv_data >> mailbox;
+    recv_data >> message_id;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id << uint32(MAIL_RES_RETURNED_TO_SENDER);
+    data << message_id;
+    data << uint32(MAIL_RES_RETURNED_TO_SENDER);
 
     MailMessage* msg = _player->m_mailBox.GetMessage(message_id);
     if (msg == 0)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
-
         return;
     }
 
@@ -535,11 +537,12 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
-    recv_data >> mailbox >> message_id;
+    recv_data >> mailbox;
+    recv_data >> message_id;
 
     WorldPacket data(SMSG_SEND_MAIL_RESULT, 12);
-    data << message_id << uint32(MAIL_RES_MADE_PERMANENT);
-
+    data << message_id;
+    data << uint32(MAIL_RES_MADE_PERMANENT);
 
     ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(8383);
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
@@ -547,7 +550,6 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
-
         return;
     }
 
@@ -556,7 +558,6 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
-
         return;
     }
 
@@ -603,7 +604,8 @@ void Mailbox::FillTimePacket(WorldPacket& data)
 {
     uint32 c = 0;
     MessageMap::iterator iter = Messages.begin();
-    data << uint32(0) << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
 
     for (; iter != Messages.end(); ++iter)
     {
@@ -624,15 +626,10 @@ void Mailbox::FillTimePacket(WorldPacket& data)
     }
 
     if (c == 0)
-    {
-
         *(uint32*)(&data.contents()[0]) = 0xc7a8c000;
-    }
     else
-    {
-
         *(uint32*)(&data.contents()[4]) = c;
-    }
+
 }
 
 void WorldSession::HandleMailTime(WorldPacket& recv_data)

@@ -43,7 +43,7 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_flySpeed = 7.0f;
     m_backFlySpeed = 4.5f;
 
-    m_backWalkSpeed = 4.5f;	    // this should really be named m_backRunSpeed
+    m_backWalkSpeed = 4.5f;
     m_swimSpeed = 4.722222f;
     m_backSwimSpeed = 2.5f;
     m_turnRate = M_PI_FLOAT;
@@ -59,7 +59,6 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
     Active = false;
     m_inQueue = false;
-    m_extensions = NULL;
     m_loadedFromDB = false;
 
     m_faction = dbcFactionTemplate.LookupRow(0);
@@ -84,9 +83,6 @@ Object::~Object()
 
     // for linux
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
-
-    if (m_extensions != NULL)
-        delete m_extensions;
 
     if (m_currentSpell)
     {
@@ -2183,14 +2179,6 @@ void Object::PlaySoundToSet(uint32 sound_entry)
     data << sound_entry;
 
     SendMessageToSet(&data, true);
-}
-
-void Object::_SetExtension(const std::string & name, void* ptr)
-{
-    if (m_extensions == NULL)
-        m_extensions = new ExtensionSet;
-
-    m_extensions->insert(std::make_pair(name, ptr));
 }
 
 bool Object::IsInBg()
