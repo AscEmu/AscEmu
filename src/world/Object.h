@@ -172,15 +172,14 @@ struct MovementInfo
     float redirectCos;
     float redirect2DSpeed;  //9,10 changes if you are not on foot
 
-                            //fall_time in ms
-    uint32 fall_time;
+    uint32 fall_time;       //fall_time in ms
 
     float spline_elevation;
 
     struct TransporterInfo
     {
-        uint64 guid;
-        float x;
+        uint64 guid;        // switch to WoWGuid
+        float x;            // use LocationVector
         float y;
         float z;
         float o;
@@ -201,10 +200,9 @@ struct MovementInfo
         }
     }transporter_info;
 
-    //transport related
+    //transport related use struct TransporterInfo...
     WoWGuid transGuid;
-    //LocationVector trans_position;
-    float transX, transY, transZ, transO; //Use LocationVector instead?
+    LocationVector trans_position;
     uint8 transSeat;
     uint32 trans_time;
     uint32 trans_time2;
@@ -229,10 +227,7 @@ struct MovementInfo
         spline_elevation = 0;
 
         transGuid = 0;
-        transX = 0.0f;
-        transY = 0.0f;
-        transZ = 0.0f;
-        transO = 0.0f;
+        trans_position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
         trans_time = 0;
         trans_time2 = 0;
         transSeat = 0;

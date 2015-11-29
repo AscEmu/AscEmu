@@ -657,18 +657,18 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 /* set variables */
                 mover->obj_movement_info.transporter_info.guid = movement_info.transGuid;
                 mover->obj_movement_info.transporter_info.time = movement_info.trans_time;
-                mover->obj_movement_info.transporter_info.x = movement_info.transX;
-                mover->obj_movement_info.transporter_info.y = movement_info.transY;
-                mover->obj_movement_info.transporter_info.z = movement_info.transZ;
+                mover->obj_movement_info.transporter_info.x = movement_info.trans_position.x;
+                mover->obj_movement_info.transporter_info.y = movement_info.trans_position.y;
+                mover->obj_movement_info.transporter_info.z = movement_info.trans_position.z;
 
             }
             else
             {
                 /* no changes */
                 mover->obj_movement_info.transporter_info.time = movement_info.trans_time;
-                mover->obj_movement_info.transporter_info.x = movement_info.transX;
-                mover->obj_movement_info.transporter_info.y = movement_info.transY;
-                mover->obj_movement_info.transporter_info.z = movement_info.transZ;
+                mover->obj_movement_info.transporter_info.x = movement_info.trans_position.x;
+                mover->obj_movement_info.transporter_info.y = movement_info.trans_position.y;
+                mover->obj_movement_info.transporter_info.z = movement_info.trans_position.z;
             }
         }
     }
@@ -899,10 +899,10 @@ void MovementInfo::init(WorldPacket& data)
     if (flags & MOVEFLAG_TRANSPORT)
     {
         data >> transGuid;
-        data >> transX;
-        data >> transY;
-        data >> transZ;
-        data >> transO;
+        data >> trans_position.y;
+        data >> trans_position.y;
+        data >> trans_position.z;
+        data >> trans_position.o;
         data >> trans_time;
         data >> trans_time2;
     }
@@ -937,10 +937,10 @@ void MovementInfo::write(WorldPacket& data)
     if (flags & MOVEFLAG_TRANSPORT)
     {
         data << transGuid;
-        data << transX;
-        data << transY;
-        data << transZ;
-        data << transO;
+        data >> trans_position.y;
+        data >> trans_position.y;
+        data >> trans_position.z;
+        data >> trans_position.o;
         data << trans_time;
         data << trans_time2;
     }
