@@ -179,7 +179,7 @@ bool NetOMatic(uint32 i, Spell* pSpell)
 
 bool BanishExile(uint32 i, Spell* pSpell)
 {
-    Unit*   target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->GetUnitTarget();
     if (!pSpell->p_caster || !target)
         return true;
 

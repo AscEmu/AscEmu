@@ -1262,7 +1262,7 @@ class ArthasGossip : public GossipScript
             Menu->SendTo(Plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player*  Plr, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
         {
             switch (IntId)
             {

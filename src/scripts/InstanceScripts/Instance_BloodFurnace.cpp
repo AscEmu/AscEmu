@@ -154,11 +154,11 @@ class KelidanTheBreakerAI : public MoonScriptBossAI
         _unit->SendScriptTextChatMessage(4848);     // Good...luck. You'll need it.
     }
 
-    SpellDesc*      mShadowBoltVolley;
-    SpellDesc*      mFireNova;
-    SpellDesc*      mBurningNova;
-    SpellDesc*      mVortex;
-    int32           mBurningNovaTimer;
+    SpellDesc* mShadowBoltVolley;
+    SpellDesc* mFireNova;
+    SpellDesc* mBurningNova;
+    SpellDesc* mVortex;
+    int32 mBurningNovaTimer;
 };
 
 

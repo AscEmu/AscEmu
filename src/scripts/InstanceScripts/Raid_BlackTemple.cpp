@@ -156,7 +156,7 @@ class ShadowmoonRidingHoundAI : public MoonScriptCreatureAI
             AddSpell(SHADOWMOON_RIDING_HOUND_ENRAGE, Target_Self, 6, 0, 40);
         }
 
-        SpellDesc*    mCharge;
+        SpellDesc* mCharge;
 };
 
 void SpellFunc_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -306,7 +306,7 @@ class IllidariHeartseekerAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mRapidShot;
+        SpellDesc* mRapidShot;
 };
 
 void SpellFunc_RapidShot(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -384,7 +384,7 @@ class IllidariBoneslicerAI : public MoonScriptCreatureAI
             AddSpell(ILLIDARI_BONESLICER_SHADOWSTEP, Target_Current, 7, 0, 30);
         }
 
-        SpellDesc*    mGouge;
+        SpellDesc* mGouge;
 };
 
 void SpellFunc_Gouge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -570,7 +570,7 @@ class AshtongueStalkerAI : public MoonScriptCreatureAI
             ApplyAura(ASHTONGUE_STALKER_STEATH);
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
             SpellDesc* pSpell = FindSpellById(ASHTONGUE_STALKER_BLIND);
@@ -580,7 +580,7 @@ class AshtongueStalkerAI : public MoonScriptCreatureAI
             }
         }
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             ParentClass::OnCombatStop(pTarget);
             if (IsAlive())
@@ -1173,7 +1173,7 @@ class ImageOfDementiaAI : public MoonScriptCreatureAI
             AddSpellFunc(&SpellFunc_Whirlwind, Target_Self, 15, 15, 35, 0, 10);
         }
 
-        SpellDesc*    mWhirlwind;
+        SpellDesc* mWhirlwind;
 };
 
 void SpellFunc_Whirlwind(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -1261,7 +1261,7 @@ class ShadowmoonDeathshaperAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mRaiseDead;
+        SpellDesc* mRaiseDead;
 };
 
 void SpellFunc_RaiseDead(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -1429,8 +1429,8 @@ class ShadowmoonWeaponMasterAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*    mDefensiveStance;
-        SpellDesc*    mBerserkerStance;
+        SpellDesc* mDefensiveStance;
+        SpellDesc* mBerserkerStance;
 };
 
 void SpellFunc_DefensiveStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -1513,7 +1513,7 @@ class StormFuryAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*    mStormBlink;
+        SpellDesc* mStormBlink;
 };
 
 void SpellFunc_StormBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -2691,7 +2691,7 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mAuraOfSuffering;
+        SpellDesc* mAuraOfSuffering;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -2747,7 +2747,7 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mAuraOfDesire;
+        SpellDesc* mAuraOfDesire;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -2800,10 +2800,10 @@ class EssenceOfAngerAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mSoulScream;
-        SpellDesc*    mAuraOfAnger;
-        SpellDesc*    mTaunt;
-        SpellDesc*    mSpite;
+        SpellDesc* mSoulScream;
+        SpellDesc* mAuraOfAnger;
+        SpellDesc* mTaunt;
+        SpellDesc* mSpite;
 };
 
 #define CN_RELIQUARY_OF_SOULS    22856
@@ -2973,16 +2973,16 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
             }
         }
 
-        bool                    SpawnedEnsalvedSoul;
-        int                        Phase;
-        int                        DeadSoulCount;
-        int32                    mEnslavedSoulTimer;
-        MoonScriptCreatureAI*    mEoS;
-        MoonScriptCreatureAI*    mEoD;
-        MoonScriptCreatureAI*    mEoA;
-        SpellDesc*                mSummonAnger;
-        SpellDesc*                mSummonDesire;
-        SpellDesc*                mSummonSuffering;
+        bool SpawnedEnsalvedSoul;
+        int Phase;                  // do we have negative phase?
+        int DeadSoulCount;          // negative count?
+        int32 mEnslavedSoulTimer;   // negative timer?
+        MoonScriptCreatureAI* mEoS;
+        MoonScriptCreatureAI* mEoD;
+        MoonScriptCreatureAI* mEoA;
+        SpellDesc* mSummonAnger;
+        SpellDesc* mSummonDesire;
+        SpellDesc* mSummonSuffering;
 };
 
 //--------------------------Mother Shahraz------------------------------//
@@ -4008,14 +4008,14 @@ class ShadeofakamaAI : public CreatureAIScript
 
 struct Transformation
 {
-    uint32            mTimer;
-    uint32            mEmote;
-    uint32            mEmoteType;
-    const char*        mText;
-    uint32            mSoundId;
-    uint32            mAura;
-    uint32            mUnAura;
-    bool            mEquipWeapons;
+    uint32 mTimer;
+    uint32 mEmote;
+    uint32 mEmoteType;
+    const char* mText;
+    uint32 mSoundId;
+    uint32 mAura;
+    uint32 mUnAura;
+    bool mEquipWeapons;
 };
 
 // Transformations
@@ -4396,7 +4396,7 @@ class ShadowDemonAI : public MoonScriptCreatureAI
             }
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             if (GetTargetToChannel() != NULL)
             {
@@ -4407,7 +4407,7 @@ class ShadowDemonAI : public MoonScriptCreatureAI
             ParentClass::OnDied(pKiller);
         }
 
-        void OnTargetDied(Unit*  pTarget)
+        void OnTargetDied(Unit* pTarget)
         {
             Despawn(2000, 0);
             ParentClass::OnDied(pTarget);
@@ -4437,8 +4437,8 @@ class ShadowDemonAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*    mParalyze;
-        SpellDesc*    mConsumeSoul;
+        SpellDesc* mParalyze;
+        SpellDesc* mConsumeSoul;
 };
 
 // Parasitic Shadowfiend AI - This AI is one huge hack :P
@@ -4509,8 +4509,8 @@ class ParasiticShadowfiendAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mParasiticDmg;
-        SpellDesc*    mParasitic;
+        SpellDesc* mParasiticDmg;
+        SpellDesc* mParasitic;
 };
 
 void SpellFunc_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -4631,21 +4631,21 @@ class AkamaAI : public MoonScriptBossAI
             mTimeLeft = mScenePart = 0;
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
             SetWieldWeapon(true);
             CancelAllCooldowns();
         }
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
             SetWieldWeapon(false);
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             ParentClass::OnDied(pKiller);
         }
@@ -5151,17 +5151,17 @@ class AkamaAI : public MoonScriptBossAI
         }
 
         // SPells
-        SpellDesc*    mHealingPotion;
-        SpellDesc*    mDespawn;
+        SpellDesc* mHealingPotion;
+        SpellDesc* mDespawn;
 
         // AIs
-        MoonScriptCreatureAI*    mIllidanAI;
-        MoonScriptCreatureAI*    mUdaloAI;
-        MoonScriptCreatureAI*    mOlumAI;
+        MoonScriptCreatureAI* mIllidanAI;
+        MoonScriptCreatureAI* mUdaloAI;
+        MoonScriptCreatureAI* mOlumAI;
 
         // Other variables
-        int32        mScenePart;
-        uint32        mTimeLeft;
+        int32 mScenePart;
+        uint32 mTimeLeft;
 };
 
 /* Maiev AI - Creature AI Class */
@@ -5199,13 +5199,13 @@ class MaievAI : public MoonScriptBossAI
             mTimeLeft = 0;
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             SetWieldWeapon(true);
             CancelAllCooldowns();
         }
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             //OnCombatStop(pTarget);        // causes crashes
             CancelAllSpells();
@@ -5492,25 +5492,22 @@ class MaievAI : public MoonScriptBossAI
         }
 
         // AI class pointers
-        MoonScriptCreatureAI*        mIllidanAI;
+        MoonScriptCreatureAI* mIllidanAI;
 
         // Spell Description pointers
-        SpellDesc*                    mTrapSummon;
-        SpellDesc*                    mTeleport;
+        SpellDesc* mTrapSummon;
+        SpellDesc* mTeleport;
 
         // Other variables
-        bool                        mSummonTrap;
-        int32                        mTrapTimer;
-        int32                        mYellTimer;
-        uint32                        mScenePart;
-        uint32                        mTimeLeft;
+        bool mSummonTrap;
+        int32 mTrapTimer;
+        int32 mYellTimer;
+        uint32 mScenePart;
+        uint32 mTimeLeft;
 
 };
 
-/*START
-            .:Rewritten Illidan Script by M4ksiu:.
-START*/
-
+///\todo rewritten Illidan Script
 //------- Macros
 #define CN_ILLIDAN_STORMRAGE 22917
 
@@ -5646,7 +5643,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             mCurrentWaypoint = 0;
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             GameObject* pRightGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(745.07f, 241.802f, 354.292f, 200000);
             GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
@@ -5667,7 +5664,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             mParasitic->mEnabled = false;
         }
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             // General
             _unit->SetEmoteState(0);
@@ -5737,7 +5734,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             ParentClass::OnCombatStop(pTarget);
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             Creature* pMaiev = static_cast<Creature*>(ForceCreatureFind(CN_MAIEV));
             if (pMaiev != NULL && pMaiev->isAlive())
@@ -6721,45 +6718,45 @@ class IllidanStormrageAI : public MoonScriptBossAI
         }
 
         // Global variables
-        uint32                    mPhaseBackup;
-        uint32                    mScenePart;
-        int32                    mTimeLeft;
-        bool                    mAllow;
+        uint32 mPhaseBackup;
+        uint32 mScenePart;
+        int32 mTimeLeft;
+        bool mAllow;
 
         // Phase 1 variables
-        int32                    mParasiticTimer;
-        SpellDesc*                mParasiticDmg;
-        SpellDesc*                mParasitic;
+        int32 mParasiticTimer;
+        SpellDesc* mParasiticDmg;
+        SpellDesc* mParasitic;
 
         // Phase 2 variables
-        MoonScriptCreatureAI*    mFoA1;
-        MoonScriptCreatureAI*    mFoA2;
-        int32                    mMovementTimer;
-        int32                    mFireWallTimer;
-        int32                    mLastFireWall;
-        uint32                    mMiscEventPart;
+        MoonScriptCreatureAI* mFoA1;
+        MoonScriptCreatureAI* mFoA2;
+        int32 mMovementTimer;
+        int32 mFireWallTimer;
+        int32 mLastFireWall;
+        uint32 mMiscEventPart;
 
         // Phase 3 variables
-        SpellDesc*                mShadowPrison;
+        SpellDesc* mShadowPrison;
 
         // Phase 4 variables
-        int32                    mShadowDemonsTimer;
-        int32                    mFlameBurstTimer;
-        SpellDesc*                mFlameBurst;
-        SpellDesc*                mShadowDemons;
-        SpellDesc*                mShadowBlast;
-        bool                    mPlaySound;
+        int32 mShadowDemonsTimer;
+        int32 mFlameBurstTimer;
+        SpellDesc* mFlameBurst;
+        SpellDesc* mShadowDemons;
+        SpellDesc* mShadowBlast;
+        bool mPlaySound;
 
         // Phase 3 & 4 variables
-        int32                    mDemonTimer;
+        int32 mDemonTimer;
 
         // Phase 5 variables
-        int32                    mYellTimer;
-        int32                    mEnrageTimer;
-        SpellDesc*                mEnrage;
+        int32 mYellTimer;
+        int32 mEnrageTimer;
+        SpellDesc* mEnrage;
 
         // Temporary variables
-        uint32                    mCurrentWaypoint;
+        uint32 mCurrentWaypoint;
 };
 
 void SpellFunc_Illidan_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -6817,9 +6814,10 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
             mHasTrapped = false;
         }
 
-        void OnCombatStart(Unit*  pTarget) {}
+        void OnCombatStart(Unit* pTarget)
+        {}
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -7038,7 +7036,7 @@ class FlameOfAzzinothAI : public MoonScriptCreatureAI
             mBlaze = 0;
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
             CancelAllCooldowns();
@@ -7088,13 +7086,13 @@ class FlameOfAzzinothAI : public MoonScriptCreatureAI
         }
 
         // Flame Blast Spell Function
-        SpellDesc*    mFlameBlast;
-        SpellDesc*    mBlaze;
+        SpellDesc* mFlameBlast;
+        SpellDesc* mBlaze;
 
         // Charge Spell Function
-        SpellDesc*    mChargeSpellFunc;
-        SpellDesc*    mCharge;
-        SpellDesc*    mEnrage;
+        SpellDesc* mChargeSpellFunc;
+        SpellDesc* mCharge;
+        SpellDesc* mEnrage;
 };
 
 void SpellFunc_FlameOfAzzinothFlameBlast(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)

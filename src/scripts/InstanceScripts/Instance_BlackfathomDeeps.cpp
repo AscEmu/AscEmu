@@ -116,14 +116,14 @@ class FathomStone : public GameObjectAIScript
 {
     public:
 
-        FathomStone(GameObject*  goinstance) : GameObjectAIScript(goinstance)
+        FathomStone(GameObject* goinstance) : GameObjectAIScript(goinstance)
         {
             SpawnBaronAquanis = true;
         }
 
-        static GameObjectAIScript* Create(GameObject*  GO) { return new FathomStone(GO); }
+        static GameObjectAIScript* Create(GameObject* GO) { return new FathomStone(GO); }
 
-        void OnActivate(Player*  pPlayer)
+        void OnActivate(Player* pPlayer)
         {
             if (pPlayer->IsTeamHorde() && SpawnBaronAquanis == true) // Horde
             {

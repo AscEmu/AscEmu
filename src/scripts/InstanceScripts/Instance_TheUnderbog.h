@@ -21,7 +21,7 @@
 
 enum CreatureEntry
 {
-    /*    Boss AIs     */
+    // Boss AIs
     // HungarfenAI
     CN_HUNGARFEN        = 17770,
 

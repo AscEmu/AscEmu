@@ -151,7 +151,7 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature*  pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
+            Creature* pCreature = (pObject->IsCreature()) ? (static_cast<Creature*>(pObject)) : NULL;
             if(!pObject->IsCreature())
                 return;
 

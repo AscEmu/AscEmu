@@ -479,7 +479,7 @@ MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, fl
     return CreatureScriptAI;
 }
 
-Unit*    MoonScriptCreatureAI::ForceCreatureFind(uint32 pCreatureId)
+Unit* MoonScriptCreatureAI::ForceCreatureFind(uint32 pCreatureId)
 {
     return ForceCreatureFind(pCreatureId, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
 };
@@ -1126,8 +1126,8 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
 
 void MoonScriptCreatureAI::AIUpdate()
 {
-    SpellDesc*    Spell;
-    uint32        CurrentTime = (uint32)time(NULL);
+    SpellDesc* Spell;
+    uint32 CurrentTime = (uint32)time(NULL);
 
     //Elapse timers
     for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
@@ -1477,10 +1477,11 @@ Unit* MoonScriptCreatureAI::GetNearestTargetInArray(UnitArray & pTargetArray)
 
 Unit* MoonScriptCreatureAI::GetSecondMostHatedTargetInArray(UnitArray & pTargetArray)
 {
-    Unit*    TargetUnit = NULL;
-    Unit*    MostHatedUnit = NULL;
-    Unit*    CurrentTarget = static_cast<Unit*>(_unit->GetAIInterface()->getNextTarget());
-    uint32    Threat = 0, HighestThreat = 0;
+    Unit* TargetUnit = NULL;
+    Unit* MostHatedUnit = NULL;
+    Unit* CurrentTarget = static_cast<Unit*>(_unit->GetAIInterface()->getNextTarget());
+    uint32 Threat = 0;
+    uint32 HighestThreat = 0;
     for (UnitArray::iterator UnitIter = pTargetArray.begin(); UnitIter != pTargetArray.end(); ++UnitIter)
     {
         TargetUnit = static_cast<Unit*>(*UnitIter);
@@ -1491,9 +1492,9 @@ Unit* MoonScriptCreatureAI::GetSecondMostHatedTargetInArray(UnitArray & pTargetA
             {
                 MostHatedUnit = TargetUnit;
                 HighestThreat = Threat;
-            };
-        };
-    };
+            }
+        }
+    }
 
     return MostHatedUnit;
 };

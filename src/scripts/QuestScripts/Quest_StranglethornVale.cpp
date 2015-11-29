@@ -86,7 +86,7 @@ class Beka : public CreatureAIScript
             if(mKiller->IsPlayer())
             {
                 Player* mPlayer = static_cast<Player*>(mKiller);
-                Creature*  beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
+                Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
                 beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
@@ -95,7 +95,7 @@ class Beka : public CreatureAIScript
                 Player* mPlayer = _unit->GetMapMgr()->GetInterface()->GetPlayerNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
                 if(mPlayer)
                 {
-                    Creature*  beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
+                    Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
                     beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
                     beka1->Despawn(10 * 60 * 1000, 0);
                 }

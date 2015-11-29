@@ -63,9 +63,9 @@ class ElizaAI : public MoonScriptCreatureAI
             }
         }
 
-        int32        mElizaCombatTimer;
-        SpellDesc*    mSummonGuard;
-        Creature*    mElizaGuard;
+        int32 mElizaCombatTimer;
+        SpellDesc*  mSummonGuard;
+        Creature* mElizaGuard;
 };
 
 class SummonElizaQuest : public QuestScript

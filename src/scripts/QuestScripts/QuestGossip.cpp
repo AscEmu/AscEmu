@@ -117,7 +117,7 @@ class TeleportQ_Gossip : public GossipScript
             menu.Send(plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player*  plr, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, uint32 IntId, const char* Code)
         {
             if (IntId == 1)
             {

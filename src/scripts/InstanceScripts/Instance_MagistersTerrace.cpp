@@ -265,8 +265,8 @@ class VexallusAI : public MoonScriptBossAI
         ParentClass::AIUpdate();
     }
 
-    SpellDesc*    mPureEnergy;
-    uint8        mSummon;
+    SpellDesc* mPureEnergy;
+    uint8 mSummon;
 };
 
 

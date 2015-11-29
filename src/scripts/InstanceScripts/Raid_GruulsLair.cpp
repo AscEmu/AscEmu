@@ -43,7 +43,7 @@ class LairBruteAI : public MoonScriptCreatureAI
             AddSpellFunc(&SpellFunc_LairBrute_Charge, Target_Current, 7, 0, 35, 0, 40);
         }
 
-        SpellDesc*    mCharge;
+        SpellDesc* mCharge;
 };
 
 void SpellFunc_LairBrute_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -209,9 +209,9 @@ class HighKingMaulgarAI : public MoonScriptBossAI
             }
         }
 
-        uint32        mAliveAdds;
-        int32        mLastYell;
-        SpellDesc*    mEnrage;
+        uint32 mAliveAdds;
+        int32 mLastYell;
+        SpellDesc* mEnrage;
 };
 
 void SpellFunc_Maulgar_Enrage(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -419,10 +419,10 @@ class KroshFirehandAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*      mSpellShield;
-        SpellDesc*      mBlastWave;
-        int32           mEventTimer;
-        int32           mBlastWaveTimer;
+        SpellDesc* mSpellShield;
+        SpellDesc* mBlastWave;
+        int32 mEventTimer;
+        int32 mBlastWaveTimer;
 };
 
 #define CN_GRUUL_THE_DRAGONKILLER                    19044
@@ -572,16 +572,16 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
             return TargetArray;
         }
 
-        uint32        mGrowthStacks;        // temporary way to store it
-        int32        mHurtfulTimer;
-        int32        mGrowthTimer;
+        uint32 mGrowthStacks;        // temporary way to store it
+        int32 mHurtfulTimer;
+        int32 mGrowthTimer;
 
-        SpellDesc*    mHurtfulStrike;
-        SpellDesc*    mGroundSlam;
-        SpellDesc*    mGroundSlam2;
-        SpellDesc*    mStoned;
-        SpellDesc*    mShatter;
-        SpellDesc*    mShatter2;
+        SpellDesc* mHurtfulStrike;
+        SpellDesc* mGroundSlam;
+        SpellDesc* mGroundSlam2;
+        SpellDesc* mStoned;
+        SpellDesc* mShatter;
+        SpellDesc*  mShatter2;
 };
 
 void SpellFunc_Gruul_GroundSlam(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)

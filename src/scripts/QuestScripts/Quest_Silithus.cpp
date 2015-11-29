@@ -266,7 +266,7 @@ class highlord_demitrianGossip : public GossipScript
             menu.Send(pPlayer);
         };
 
-        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
         {
             switch(IntId)
             {

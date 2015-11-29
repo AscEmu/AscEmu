@@ -28,7 +28,7 @@ class PX238WinterWondervolt : public GameObjectAIScript
 {
     public:
 
-        PX238WinterWondervolt(GameObject*  goinstance) : GameObjectAIScript(goinstance) {}
+        PX238WinterWondervolt(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new PX238WinterWondervolt(GO); }
 
         void OnSpawn()

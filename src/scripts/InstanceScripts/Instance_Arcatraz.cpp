@@ -773,11 +773,11 @@ class WardenMellicharAI : public MoonScriptBossAI
         uint32 Spawncounter;
         int32 Phase_Timer;
 
-        MoonScriptCreatureAI*    NPC_orb1;
-        MoonScriptCreatureAI*    NPC_orb2;
-        MoonScriptCreatureAI*    NPC_orb3;
-        MoonScriptCreatureAI*    NPC_orb4;
-        MoonScriptCreatureAI*    NPC_orb5;
+        MoonScriptCreatureAI* NPC_orb1;
+        MoonScriptCreatureAI* NPC_orb2;
+        MoonScriptCreatureAI* NPC_orb3;
+        MoonScriptCreatureAI* NPC_orb4;
+        MoonScriptCreatureAI* NPC_orb5;
         GameObject* shield;
         GameObject* orb1;
         GameObject* orb2;

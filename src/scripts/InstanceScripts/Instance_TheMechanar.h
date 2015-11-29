@@ -63,7 +63,7 @@ enum CreatureEntry
     // Tempest-Forge PatrollerAI
     CN_TEMPEST_FORGE_PATROLLER = 19166,
 
-    /*  Boss AIs  */
+    // Boss AIs
     // Gatewatcher Gyro-Kill AI
     CN_GATEWATCHER_GYRO_KILL = 19218,
 
@@ -163,7 +163,7 @@ enum CreatureSpells
     SP_TEMPEST_PAT_CHARGED_ARCANE_MISSILE   = 35012,
     SP_TEMPEST_PAT_KNOCKDOWN                = 35011,
 
-    /*   Boss AIs   */
+    // Boss AIs
     // Gatewatcher Gyro-Kill AI
     SP_GW_GYRO_KILL_SAW_BLADE               = 35318,
     SP_GW_GYRO_KILL_SHADOW_POWER            = 35322,

@@ -406,8 +406,8 @@ class AstromancerAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*      mArcaneBurst;
-        int32           mArcaneBurstTimer;
+        SpellDesc* mArcaneBurst;
+        int32 mArcaneBurstTimer;
 };
 
 
@@ -1626,9 +1626,9 @@ class CrystalMechanicAI : public CreatureAIScript
 };
 
 
-/****************/
-/*    Bosses    */
-/****************/
+//////////////////////////////////////////////////////////////////////////////////////////
+//Bosses
+//////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------
 //    -= Void Reaver =-
@@ -1689,8 +1689,8 @@ class VoidReaverAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
         }
 
-        int32        mArcaneOrbTimer;
-        SpellDesc*    mArcaneOrb;
+        int32 mArcaneOrbTimer;
+        SpellDesc* mArcaneOrb;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1799,11 +1799,13 @@ class HighAstromancerSolarianAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*    mVoidForm;
-        SpellDesc*    mDisappear;
-        SpellDesc*    mReappear;
-        int32        mSplitTimer, mAgentsTimer, mSolarianTimer;
-        float        mSpawnPositions[3][2];
+        SpellDesc* mVoidForm;
+        SpellDesc* mDisappear;
+        SpellDesc* mReappear;
+        int32 mSplitTimer;
+        int32 mAgentsTimer;
+        int32 mSolarianTimer;
+        float mSpawnPositions[3][2];
 };
 
 bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
@@ -2603,7 +2605,7 @@ class DarkenerAI : public MoonScriptCreatureAI
             mGazeSwitchTimer = 0;
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
             SetCanEnterCombat(true);
@@ -2612,7 +2614,7 @@ class DarkenerAI : public MoonScriptCreatureAI
             mGazeSwitchTimer = AddTimer((RandomUInt(4) + 8) * 1000);
         }
 
-        void OnCombatStop(Unit*  mTarget)
+        void OnCombatStop(Unit* mTarget)
         {
             ParentClass::OnCombatStop(mTarget);
             mCurrentTarget = NULL;
@@ -2660,8 +2662,8 @@ class DarkenerAI : public MoonScriptCreatureAI
             return false;
         }
 
-        int32    mGazeSwitchTimer;
-        Unit*    mCurrentTarget;
+        int32 mGazeSwitchTimer;
+        Unit* mCurrentTarget;
 };
 
 // Lord Sanguinar AI (2nd advisor)
@@ -2680,13 +2682,13 @@ class SanguinarAI : public MoonScriptCreatureAI
             SetCanEnterCombat(false);
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
             SetCanEnterCombat(true);
         }
 
-        void OnCombatStop(Unit*  mTarget)
+        void OnCombatStop(Unit* mTarget)
         {
             ParentClass::OnCombatStop(mTarget);
 
@@ -2717,7 +2719,7 @@ class CapernianAI : public MoonScriptCreatureAI
             SetCanEnterCombat(false);
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
             SetCanEnterCombat(true);
@@ -2761,7 +2763,7 @@ class CapernianAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mArcaneBurst;
+        SpellDesc* mArcaneBurst;
 };
 
 // Master Engineer Telonicus AI (4th advisor)
@@ -2782,13 +2784,13 @@ class TelonicusAI : public MoonScriptCreatureAI
             SetCanEnterCombat(false);
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
             SetCanEnterCombat(true);
         }
 
-        void OnCombatStop(Unit*  mTarget)
+        void OnCombatStop(Unit* mTarget)
         {
             ParentClass::OnCombatStop(mTarget);
 
@@ -2855,11 +2857,11 @@ class PhoenixAI : public MoonScriptCreatureAI
             mBurnTimer = AddTimer(3000);
         }
 
-        void OnCombatStart(Unit*  mTarget) {}
+        void OnCombatStart(Unit* mTarget) {}
 
-        void OnCombatStop(Unit*  pTarget) {}
+        void OnCombatStop(Unit* pTarget) {}
 
-        void OnTargetDied(Unit*  mTarget)
+        void OnTargetDied(Unit* mTarget)
         {
             ParentClass::OnTargetDied(mTarget);
             Unit* pTarget = GetBestPlayerTarget(TargetFilter_Closest);
@@ -2958,7 +2960,7 @@ class WeaponsAI : public MoonScriptCreatureAI
             }
         }
 
-        void OnCombatStop(Unit*  mTarget)
+        void OnCombatStop(Unit* mTarget)
         {
             Unit* pTarget = GetBestPlayerTarget();
             if (pTarget != NULL)
@@ -2972,11 +2974,8 @@ class WeaponsAI : public MoonScriptCreatureAI
         }
 };
 
-/*
- *    TO DO:
- *        - Add weapon summon effect
- *        - Check why some features block (like melee, movement and so on) if there's only 1 target and spell req. NotCurrent one
- */
+///\todo Add weapon summon effect
+/// Check why some features block (like melee, movement and so on) if there's only 1 target and spell req. NotCurrent one
 
 //Prince Kael'Thas
 #define CN_KAELTHAS                        19622
@@ -3126,7 +3125,7 @@ class KaelThasAI : public MoonScriptBossAI
 
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             SetAIUpdateFreq(24000);
@@ -3397,24 +3396,24 @@ class KaelThasAI : public MoonScriptBossAI
             return GetBestPlayerTarget(TargetFilter_NotCurrent);
         }
 
-        SpellDesc*            mSummonWeapons;
-        SpellDesc*            mArcaneDisruption;
-        SpellDesc*            mArcaneDisruptionFunc;
-        SpellDesc*            mShockBarrier;
-        SpellDesc*            mPyroblast;
-        SpellDesc*            mFlameStrike;
-        SpellDesc*            mFlameStrikeFunc;
-        SpellDesc*            mPhoenix;
-        SpellDesc*            mNetherBeam;
+        SpellDesc* mSummonWeapons;
+        SpellDesc* mArcaneDisruption;
+        SpellDesc* mArcaneDisruptionFunc;
+        SpellDesc* mShockBarrier;
+        SpellDesc* mPyroblast;
+        SpellDesc* mFlameStrike;
+        SpellDesc* mFlameStrikeFunc;
+        SpellDesc* mPhoenix;
+        SpellDesc* mNetherBeam;
 
-        AdvisorPhase        mAdvisorPhase;
-        int32                mArcaneDisruptionTimer;
-        int32                mShockBarrierTimer;
-        int32                mFlameStrikeTimer;
-        int32                mPhoenixTimer;
-        int32                mEventTimer;
+        AdvisorPhase mAdvisorPhase;
+        int32 mArcaneDisruptionTimer;
+        int32 mShockBarrierTimer;
+        int32 mFlameStrikeTimer;
+        int32 mPhoenixTimer;
+        int32 mEventTimer;
 
-        std::vector<LocationExtra>    mAdvCoords;
+        std::vector<LocationExtra> mAdvCoords;
 };
 
 void SpellFunc_KaelThasArcaneDisruption(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)

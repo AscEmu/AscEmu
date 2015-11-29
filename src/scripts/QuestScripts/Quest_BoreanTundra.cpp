@@ -238,7 +238,7 @@ class FizzcrankGossip : public GossipScript
             Menu->SendTo(pPlayer);
         }
 
-        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
         {
             GossipMenu* Menu;
             switch (IntId)
@@ -320,7 +320,7 @@ class SurristraszGossip : public GossipScript
             menu.Send(pPlayer);
         }
 
-        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
         {
             if (!pObject->IsCreature())
                 return;

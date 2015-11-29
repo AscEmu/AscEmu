@@ -158,7 +158,7 @@ class ChaoticRiftAI : public MoonScriptBossAI
             ParentClass::OnLoad();
         };
 
-        void OnDied(Unit*  mKiller)
+        void OnDied(Unit* mKiller)
         {
             Despawn(2000, 0);
             ParentClass::OnDied(mKiller);
@@ -184,7 +184,7 @@ class CraziedManaWrathAI : public MoonScriptBossAI
             ParentClass::OnCombatStop(pTarget);
         };
 
-        void OnDied(Unit*  mKiller)
+        void OnDied(Unit* mKiller)
         {
             Despawn(2000, 0);
             ParentClass::OnDied(mKiller);

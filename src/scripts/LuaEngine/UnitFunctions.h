@@ -2981,7 +2981,7 @@ class LuaUnit
         return 1;
     }
 
-    static int CreateGuardian(lua_State* L, Unit*  ptr)
+    static int CreateGuardian(lua_State* L, Unit* ptr)
     {
         uint32 entry = CHECK_ULONG(L, 1);
         uint32 duration = CHECK_ULONG(L, 2);
@@ -5902,13 +5902,13 @@ class LuaUnit
             lua_pushboolean(L, 0);
         return 1;
     }
-    static int IsHostile(lua_State*  L, Unit* ptr)
+    static int IsHostile(lua_State* L, Unit* ptr)
     {
         Object* B = CHECK_OBJECT(L, 1);
         lua_pushboolean(L, isHostile(ptr, B));
         return 1;
     }
-    static int IsAttackable(lua_State*  L, Unit* ptr)
+    static int IsAttackable(lua_State* L, Unit* ptr)
     {
         Object* B = CHECK_OBJECT(L, 1);
         lua_pushboolean(L, isAttackable(ptr, B));

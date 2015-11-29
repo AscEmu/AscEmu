@@ -270,10 +270,11 @@ class MoroesAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*   mVanish;
-        SpellDesc*   mGarrote;
-        SpellDesc*   mEnrage;
-        int32        mVanishTimer, mGarroteTimer;
+        SpellDesc* mVanish;
+        SpellDesc* mGarrote;
+        SpellDesc* mEnrage;
+        int32 mVanishTimer;
+        int32 mGarroteTimer;
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -779,8 +780,6 @@ class GrandMother : public GossipScript
 
 };
 
-/*   Alot of the code for this script was taken from M4ksiu and his Black Temple script,
-    who I'd like to thank for his contributions to the scripting scene.    */
 static Location Barnes[] =
 {
     { },

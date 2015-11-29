@@ -143,7 +143,7 @@ class TrollgoreAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit*  mKiller)
+        void OnDied(Unit* mKiller)
         {
             RemoveAIUpdateEvent();
         }
@@ -375,7 +375,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             _unit->RemoveAllAuras();
         }
 
-        void OnDied(Unit*  mKiller)
+        void OnDied(Unit* mKiller)
         {
             _unit->SendScriptTextChatMessage(SAY_NOVOS_SUMMONER_03);
             RemoveAIUpdateEvent();
@@ -660,7 +660,7 @@ class CrystalHandlerAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit*  mKiller)
+        void OnDied(Unit* mKiller)
         {
             RemoveAIUpdateEvent();
             Unit* Novos = _unit->GetMapMgr()->GetUnit(_unit->GetSummonedByGUID());
@@ -825,7 +825,7 @@ class KingDreadAI : public CreatureAIScript
             RemoveAIUpdateEvent();
         }
 
-        void OnDied(Unit*  mKiller)
+        void OnDied(Unit* mKiller)
         {
             RemoveAIUpdateEvent();
         }
@@ -1021,7 +1021,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             _unit->SetDisplayId(_unit->GetNativeDisplayId());
         }
 
-        void OnDied(Unit*  mKiller)
+        void OnDied(Unit* mKiller)
         {
             RemoveAIUpdateEvent();
         }

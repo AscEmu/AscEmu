@@ -311,7 +311,7 @@ class Stasis_Chamber_Alpha : public GameObjectAIScript
         {
             if (pPlayer->HasQuest(10974))
             {
-                Creature*  pCreature = nullptr;
+                Creature* pCreature = nullptr;
                 pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(3989.094482f, 6071.562500f, 266.416656f, 22920);
                 if (pCreature != nullptr)
                 {

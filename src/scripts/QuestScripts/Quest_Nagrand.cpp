@@ -175,7 +175,7 @@ class Quest_The_Ring_of_Blood_Rokdar_the_Sundered_Lord : public QuestScript
             if(mogor != NULL)
                 mogor->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "WUT!? UNPOSSIBLE!!");
 
-            Creature*  pRokdar = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18400);
+            Creature* pRokdar = mTarget->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(mTarget->GetPositionX(), mTarget->GetPositionY(), 0, 18400);
 
             if(pRokdar != NULL)
                 pRokdar->Despawn(1000, 0);

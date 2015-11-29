@@ -228,7 +228,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     _unit->SchoolImmunityList[SCHOOL_NATURE] = 1;
 
                     //Summon 4 elementals
-                    Creature*  summon;
+                    Creature* summon;
                     float posx = _unit->GetPositionX();
                     float posy = _unit->GetPositionY();
                     float posz = _unit->GetPositionZ();
@@ -312,7 +312,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     _unit->SchoolImmunityList[SCHOOL_NATURE] = 0;
 
                     //Summon 4 elementals
-                    Creature*  summon;
+                    Creature* summon;
                     float posx = _unit->GetPositionX();
                     float posy = _unit->GetPositionY();
                     float posz = _unit->GetPositionZ();
@@ -1424,7 +1424,7 @@ class FathomGuardTidalvessAI : public MoonScriptCreatureAI
             AddSpell(WINDFURY, Target_Current, 10.0f, 0, 0);
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             Creature* FLK = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1481,7 +1481,7 @@ class FathomGuardCaribdisAI : public MoonScriptCreatureAI
             MoonScriptCreatureAI::AIUpdate();
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             Creature* FLK = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)

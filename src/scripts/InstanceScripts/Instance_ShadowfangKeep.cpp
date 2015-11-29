@@ -242,9 +242,9 @@ class NandosAI : public MoonScriptCreatureAI
     MOONSCRIPT_FACTORY_FUNCTION(NandosAI, MoonScriptCreatureAI);
     NandosAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature) {}
 
-    void OnDied(Unit*  pKiller)
+    void OnDied(Unit* pKiller)
     {
-        GameObject*  pDoor = GetUnit()->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-118.11f, 2161.86f, 155.678f, 18971);
+        GameObject* pDoor = GetUnit()->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-118.11f, 2161.86f, 155.678f, 18971);
         if (pDoor)
             pDoor->SetState(GAMEOBJECT_STATE_OPEN);
 

@@ -1362,12 +1362,12 @@ class UNDERBOGLORDAI : public CreatureAIScript
 };
 
 
-/*    Murkblood Lost Ones - Humanoid mobs Spearmen (flings spears and cast Viper Sting),
-    Tribesmen, Oracles (casts Fireball) and Healers (casts Holy Light, Heal and
-    Prayer of Healing}. Come in groups together. Healers will cast Prayer of Healing
-    if left alone which will completely heal all nearby Murkbloods and Wrathfins and so
-    should be killed first or crowd-controlled until last. The heal is interruptible.
-                                                                                        */
+//Murkblood Lost Ones - Humanoid mobs Spearmen (flings spears and cast Viper Sting),
+//Tribesmen, Oracles (casts Fireball) and Healers (casts Holy Light, Heal and
+//Prayer of Healing}. Come in groups together. Healers will cast Prayer of Healing
+//if left alone which will completely heal all nearby Murkbloods and Wrathfins and so
+//should be killed first or crowd-controlled until last. The heal is interruptible.
+
 // Murkblood Spearman AI
 #define CN_MURKBLOOD_SPEARMAN 17729
 

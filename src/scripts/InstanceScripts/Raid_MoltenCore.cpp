@@ -702,9 +702,9 @@ class FireswornAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*            mEruption;
-        SpellDesc*            mSeparationAnxiety;
-        MoonScriptBossAI*    mGarr;
+        SpellDesc* mEruption;
+        SpellDesc* mSeparationAnxiety;
+        MoonScriptBossAI* mGarr;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
