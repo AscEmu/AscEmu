@@ -8355,15 +8355,16 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         if (Unit* u = GetVehicleBase())
             obj_movement_info.transporter_info.guid = u->GetGUID();
         *data << obj_movement_info.transporter_info.guid;
-        *data << obj_movement_info.transporter_info.x;
-        *data << obj_movement_info.transporter_info.y;
-        *data << obj_movement_info.transporter_info.z;
-        *data << obj_movement_info.transporter_info.o;
-        *data << obj_movement_info.transporter_info.time;
-        *data << obj_movement_info.transporter_info.seat;
+        *data << obj_movement_info.transporter_info.guid;
+        *data << GetTransPositionX();
+        *data << GetTransPositionY();
+        *data << GetTransPositionZ();
+        *data << GetTransPositionO();
+        *data << GetTransTime();
+        *data << GetTransSeat();
 
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(GetMovementInfo()->trans_time2);
+            *data << uint32(GetMovementInfo()->transporter_info.time2);
     }
 
     // 0x02200000
@@ -8406,15 +8407,15 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         if (Unit* u = GetVehicleBase())
             obj_movement_info.transporter_info.guid = u->GetGUID();
         *data << obj_movement_info.transporter_info.guid;
-        *data << obj_movement_info.transporter_info.x;
-        *data << obj_movement_info.transporter_info.y;
-        *data << obj_movement_info.transporter_info.z;
-        *data << obj_movement_info.transporter_info.o;
-        *data << obj_movement_info.transporter_info.time;
-        *data << obj_movement_info.transporter_info.seat;
+        *data << GetTransPositionX();
+        *data << GetTransPositionY();
+        *data << GetTransPositionZ();
+        *data << GetTransPositionO();
+        *data << GetTransTime();
+        *data << GetTransSeat();
 
         if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
-            *data << uint32(GetMovementInfo()->trans_time2);
+            *data << uint32(GetMovementInfo()->transporter_info.time2);
     }
 
     // 0x02200000

@@ -178,34 +178,24 @@ struct MovementInfo
 
     struct TransporterInfo
     {
+        WoWGuid transGuid;
         uint64 guid;        // switch to WoWGuid
-        float x;            // use LocationVector
-        float y;
-        float z;
-        float o;
+        LocationVector position;
         uint32 time;
         uint32 time2;
         uint8 seat;
 
-        TransporterInfo()
+        void Clear()
         {
+            transGuid = 0;
             guid = 0;
-            x = 0.0f;
-            y = 0.0f;
-            z = 0.0f;
-            o = 0.0f;
+            position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
             time = 0;
             time2 = 0;
             seat = 0;
         }
-    }transporter_info;
 
-    //transport related use struct TransporterInfo...
-    WoWGuid transGuid;
-    LocationVector trans_position;
-    uint8 transSeat;
-    uint32 trans_time;
-    uint32 trans_time2;
+    }transporter_info;
 
     MovementInfo()
     {
@@ -226,11 +216,7 @@ struct MovementInfo
         fall_time = 0;
         spline_elevation = 0;
 
-        transGuid = 0;
-        trans_position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-        trans_time = 0;
-        trans_time2 = 0;
-        transSeat = 0;
+        transporter_info.Clear();
     }
 
     void init(WorldPacket& data);
@@ -369,6 +355,14 @@ class SERVER_DECL Object : public EventableObject
         const LocationVector & GetPosition() { return m_position; }
         LocationVector & GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
+
+        // TransporterInfo
+        float GetTransPositionX() const { return obj_movement_info.transporter_info.position.x; }
+        float GetTransPositionY() const { return obj_movement_info.transporter_info.position.y; }
+        float GetTransPositionZ() const { return obj_movement_info.transporter_info.position.z; }
+        float GetTransPositionO() const { return obj_movement_info.transporter_info.position.o; }
+        uint32 GetTransTime() const { return obj_movement_info.transporter_info.time; }
+        uint8 GetTransSeat() const { return obj_movement_info.transporter_info.seat; }
 
         /// Distance Calculation
         float CalcDistance(Object* Ob);

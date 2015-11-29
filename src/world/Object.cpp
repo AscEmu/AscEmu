@@ -450,12 +450,12 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
         if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
         {
             *data << WoWGuid(obj_movement_info.transporter_info.guid);
-            *data << float(obj_movement_info.transporter_info.x);
-            *data << float(obj_movement_info.transporter_info.y);
-            *data << float(obj_movement_info.transporter_info.z);
-            *data << float(obj_movement_info.transporter_info.o);
-            *data << uint32(obj_movement_info.transporter_info.time);
-            *data << uint8(obj_movement_info.transporter_info.seat);
+            *data << float(GetTransPositionX());
+            *data << float(GetTransPositionY());
+            *data << float(GetTransPositionZ());
+            *data << float(GetTransPositionO());
+            *data << uint32(GetTransTime());
+            *data << uint8(GetTransSeat());
         }
 
         if ((flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH

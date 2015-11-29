@@ -984,9 +984,9 @@ void WorldSession::FullLogin(Player* plr)
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
             }
 
-            float c_tposx = pTrans->GetPositionX() + plr->obj_movement_info.transporter_info.x;
-            float c_tposy = pTrans->GetPositionY() + plr->obj_movement_info.transporter_info.y;
-            float c_tposz = pTrans->GetPositionZ() + plr->obj_movement_info.transporter_info.z;
+            float c_tposx = pTrans->GetPositionX() + plr->GetTransPositionX();
+            float c_tposy = pTrans->GetPositionY() + plr->GetTransPositionY();
+            float c_tposz = pTrans->GetPositionZ() + plr->GetTransPositionZ();
 
             if (plr->GetMapId() != pTrans->GetMapId())       // loaded wrong map
             {

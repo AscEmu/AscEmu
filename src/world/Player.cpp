@@ -2530,7 +2530,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     }
 
     ss << "," << (m_CurrentTransporter ? m_CurrentTransporter->GetEntry() : (uint32)0);
-    ss << ",'" << obj_movement_info.transporter_info.x << "','" << obj_movement_info.transporter_info.y << "','" << obj_movement_info.transporter_info.z << "'";
+    ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "'";
     ss << ",'";
 
     SaveSpells(bNewCharacter, buf);
@@ -3157,9 +3157,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         obj_movement_info.transporter_info.guid = t ? t->GetGUID() : 0;
     }
 
-    obj_movement_info.transporter_info.x = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.y = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.z = get_next_field.GetFloat();
+    obj_movement_info.transporter_info.position.x = get_next_field.GetFloat();
+    obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
+    obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
 
     LoadSpells(results[13].result);
 
@@ -3677,9 +3677,9 @@ void Player::AddToWorld()
     // check transporter
     if (obj_movement_info.transporter_info.guid && m_CurrentTransporter)
     {
-        SetPosition(m_CurrentTransporter->GetPositionX() + obj_movement_info.transporter_info.x,
-                    m_CurrentTransporter->GetPositionY() + obj_movement_info.transporter_info.y,
-                    m_CurrentTransporter->GetPositionZ() + obj_movement_info.transporter_info.z,
+        SetPosition(m_CurrentTransporter->GetPositionX() + GetTransPositionX(),
+                    m_CurrentTransporter->GetPositionY() + GetTransPositionY(),
+                    m_CurrentTransporter->GetPositionZ() + GetTransPositionZ(),
                     GetOrientation(), false);
     }
 
@@ -3712,9 +3712,9 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     // check transporter
     if (obj_movement_info.transporter_info.guid && m_CurrentTransporter)
     {
-        SetPosition(m_CurrentTransporter->GetPositionX() + obj_movement_info.transporter_info.x,
-                    m_CurrentTransporter->GetPositionY() + obj_movement_info.transporter_info.y,
-                    m_CurrentTransporter->GetPositionZ() + obj_movement_info.transporter_info.z,
+        SetPosition(m_CurrentTransporter->GetPositionX() + GetTransPositionX(),
+                    m_CurrentTransporter->GetPositionY() + GetTransPositionY(),
+                    m_CurrentTransporter->GetPositionZ() + GetTransPositionZ(),
                     GetOrientation(), false);
     }
 

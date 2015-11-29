@@ -85,9 +85,9 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
         /* wow, our pc must really suck. */
         Transporter* pTrans = _player->m_CurrentTransporter;
 
-        float c_tposx = pTrans->GetPositionX() + _player->obj_movement_info.transporter_info.x;
-        float c_tposy = pTrans->GetPositionY() + _player->obj_movement_info.transporter_info.y;
-        float c_tposz = pTrans->GetPositionZ() + _player->obj_movement_info.transporter_info.z;
+        float c_tposx = pTrans->GetPositionX() + _player->GetTransPositionX();
+        float c_tposy = pTrans->GetPositionY() + _player->GetTransPositionY();
+        float c_tposz = pTrans->GetPositionZ() + _player->GetTransPositionZ();
 
 
         _player->SetMapId(pTrans->GetMapId());
@@ -549,7 +549,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Hack Detection by Classic	                                        */
     /************************************************************************/
-    if (!movement_info.transGuid && recv_data.GetOpcode() != MSG_MOVE_JUMP && !_player->FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
+    if (!movement_info.transporter_info.guid && recv_data.GetOpcode() != MSG_MOVE_JUMP && !_player->FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -631,7 +631,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Transporter Setup                                                    */
     /************************************************************************/
-    if ((mover->obj_movement_info.transporter_info.guid != 0) && (movement_info.transGuid.GetOldGuid() == 0))
+    if ((mover->obj_movement_info.transporter_info.guid != 0) && (movement_info.transporter_info.transGuid.GetOldGuid() == 0))
     {
         /* we left the transporter we were on */
 
@@ -645,30 +645,30 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     }
     else
     {
-        if (movement_info.transGuid.GetOldGuid() != 0)
+        if (movement_info.transporter_info.transGuid.GetOldGuid() != 0)
         {
 
             if (mover->obj_movement_info.transporter_info.guid == 0)
             {
-                Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(movement_info.transGuid));
+                Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(movement_info.transporter_info.transGuid));
                 if (transporter != NULL)
                     transporter->AddPassenger(mover);
 
                 /* set variables */
-                mover->obj_movement_info.transporter_info.guid = movement_info.transGuid;
-                mover->obj_movement_info.transporter_info.time = movement_info.trans_time;
-                mover->obj_movement_info.transporter_info.x = movement_info.trans_position.x;
-                mover->obj_movement_info.transporter_info.y = movement_info.trans_position.y;
-                mover->obj_movement_info.transporter_info.z = movement_info.trans_position.z;
+                mover->obj_movement_info.transporter_info.guid = movement_info.transporter_info.transGuid;
+                mover->obj_movement_info.transporter_info.time = movement_info.transporter_info.time;
+                mover->obj_movement_info.transporter_info.position.x = movement_info.transporter_info.position.x;
+                mover->obj_movement_info.transporter_info.position.y = movement_info.transporter_info.position.y;
+                mover->obj_movement_info.transporter_info.position.z = movement_info.transporter_info.position.z;
 
             }
             else
             {
                 /* no changes */
-                mover->obj_movement_info.transporter_info.time = movement_info.trans_time;
-                mover->obj_movement_info.transporter_info.x = movement_info.trans_position.x;
-                mover->obj_movement_info.transporter_info.y = movement_info.trans_position.y;
-                mover->obj_movement_info.transporter_info.z = movement_info.trans_position.z;
+                mover->obj_movement_info.transporter_info.time = movement_info.transporter_info.time;
+                mover->obj_movement_info.transporter_info.position.x = movement_info.transporter_info.position.x;
+                mover->obj_movement_info.transporter_info.position.y = movement_info.transporter_info.position.y;
+                mover->obj_movement_info.transporter_info.position.z = movement_info.transporter_info.position.z;
             }
         }
     }
@@ -886,7 +886,7 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
 
 void MovementInfo::init(WorldPacket& data)
 {
-    transGuid = 0;
+    transporter_info.transGuid = 0;
     data >> flags;
     data >> flags2;
     data >> time;
@@ -898,13 +898,13 @@ void MovementInfo::init(WorldPacket& data)
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
-        data >> transGuid;
-        data >> trans_position.y;
-        data >> trans_position.y;
-        data >> trans_position.z;
-        data >> trans_position.o;
-        data >> trans_time;
-        data >> trans_time2;
+        data >> transporter_info.transGuid;
+        data >> transporter_info.position.y;
+        data >> transporter_info.position.y;
+        data >> transporter_info.position.z;
+        data >> transporter_info.position.o;
+        data >> transporter_info.time;
+        data >> transporter_info.time2;
     }
     if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING) || flags2 & MOVEFLAG2_NO_JUMPING)
     {
@@ -936,13 +936,13 @@ void MovementInfo::write(WorldPacket& data)
 
     if (flags & MOVEFLAG_TRANSPORT)
     {
-        data << transGuid;
-        data >> trans_position.y;
-        data >> trans_position.y;
-        data >> trans_position.z;
-        data >> trans_position.o;
-        data << trans_time;
-        data << trans_time2;
+        data << transporter_info.transGuid;
+        data >> transporter_info.position.y;
+        data >> transporter_info.position.y;
+        data >> transporter_info.position.z;
+        data >> transporter_info.position.o;
+        data << transporter_info.time;
+        data << transporter_info.time2;
     }
     if (flags & MOVEFLAG_SWIMMING)
     {
