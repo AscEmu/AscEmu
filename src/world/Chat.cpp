@@ -976,7 +976,7 @@ WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const ch
 
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 30);
 
-    *data << (uint8)type;
+    *data << uint8(type);
     *data << language;
 
     *data << guid;
@@ -996,13 +996,13 @@ WorldPacket* ChatHandler::FillSystemMessageData(const char* message) const
     uint32 messageLength = (uint32)strlen(message) + 1;
 
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, 30 + messageLength);
-    *data << (uint8)CHAT_MSG_SYSTEM;
-    *data << (uint32)LANG_UNIVERSAL;
+    *data << uint8(CHAT_MSG_SYSTEM);
+    *data << uint32(LANG_UNIVERSAL);
 
     // Who cares about guid when there's no nickname displayed heh ?
-    *data << (uint64)0;
-    *data << (uint32)0;
-    *data << (uint64)0;
+    *data << uint64(0);
+    *data << uint32(0);
+    *data << uint64(0);
 
     *data << messageLength;
     *data << message;

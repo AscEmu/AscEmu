@@ -952,12 +952,12 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
                 WorldPacket data(SMSG_MESSAGECHAT, 100);
                 std::string msg = "%s attempts to run away in fear!";
-                data << (uint8)CHAT_MSG_CHANNEL;
-                data << (uint32)LANG_UNIVERSAL;
-                data << (uint32)(strlen(static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name) + 1);
+                data << uint8(CHAT_MSG_CHANNEL);
+                data << uint32(LANG_UNIVERSAL);
+                data << uint32(strlen(static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name) + 1);
                 data << static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name;
-                data << (uint64)0;
-                data << (uint32)(msg.size() + 1);
+                data << uint64(0);
+                data << uint32(msg.size() + 1);
                 data << msg;
                 data << uint8(0);
 
@@ -1846,9 +1846,13 @@ void AIInterface::SendMoveToPacket()
         data << splinestart.setoff;
 
         if (m_currentSplineFinalOrientation != 0)
-            data << uint8(4) << m_currentSplineFinalOrientation;
+        {
+            data << uint8(4);
+            data << m_currentSplineFinalOrientation;
+        }
         else
             data << uint8(0);
+
         data << m_splineFlags;
         data << m_currentSplineTotalMoveTime;
 

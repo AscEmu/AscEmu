@@ -24,8 +24,8 @@
 void DeathKnight::SendRuneUpdate(uint8 slot)
 {
     WorldPacket data(SMSG_CONVERT_RUNE, 2);
-    data << (uint8)slot;
-    data << (uint8)m_runes[slot].type;
+    data << uint8(slot);
+    data << uint8(m_runes[slot].type);
     GetSession()->SendPacket(&data);
 }
 

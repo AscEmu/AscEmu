@@ -170,8 +170,11 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
         {
             _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << int32(-1) << uint32(0);
-
+            data << uint32(TIMER_BREATH);
+            data << _player->m_UnderwaterTime;
+            data << _player->m_UnderwaterMaxTime;
+            data << int32(-1);
+            data << uint32(0);
             pSession->SendPacket(&data);
         }
 
@@ -229,8 +232,11 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
         {
             _player->m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << int32(-1) << uint32(0);
-
+            data << uint32(TIMER_BREATH);
+            data << _player->m_UnderwaterTime;
+            data << _player->m_UnderwaterMaxTime;
+            data << int32(-1);
+            data << uint32(0);
             pSession->SendPacket(&data);
         }
     }
@@ -243,7 +249,11 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
         {
             _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << int32(10) << uint32(0);
+            data << uint32(TIMER_BREATH);
+            data << _player->m_UnderwaterTime;
+            data << _player->m_UnderwaterMaxTime;
+            data << int32(10);
+            data << uint32(0);
             pSession->SendPacket(&data);
         }
     }
@@ -256,7 +266,11 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
         {
             _player->m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH) << _player->m_UnderwaterTime << _player->m_UnderwaterMaxTime << int32(10) << uint32(0);
+            data << uint32(TIMER_BREATH);
+            data << _player->m_UnderwaterTime;
+            data << _player->m_UnderwaterMaxTime;
+            data << int32(10);
+            data << uint32(0);
             pSession->SendPacket(&data);
         }
     }

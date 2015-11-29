@@ -505,12 +505,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     {
         pNewChar->ok_to_remove = true;
         delete pNewChar;
-        /*
-        WorldPacket data(1);
-        data.SetOpcode(SMSG_CHAR_CREATE);
-        data << (uint8)56 + 1; // This errorcode is not the actual one. Need to find a real error code.
-        SendPacket(&data);
-        */
+
         OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_LEVEL_REQUIREMENT);
         return;
     }
@@ -679,7 +674,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     if (err != E_CHAR_NAME_SUCCESS)
     {
         data << uint8(err);
-        data << guid << name;
+        data << guid;
+        data << name;
         SendPacket(&data);
         return;
     }
@@ -691,7 +687,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
         {
             // That name is banned!
             data << uint8(E_CHAR_NAME_PROFANE);
-            data << guid << name;
+            data << guid;
+            data << name;
             SendPacket(&data);
         }
         delete result2;
@@ -701,7 +698,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     if (objmgr.GetPlayerInfoByName(name.c_str()) != NULL)
     {
         data << uint8(E_CHAR_CREATE_NAME_IN_USE);
-        data << guid << name;
+        data << guid;
+        data << name;
         SendPacket(&data);
         return;
     }
@@ -718,7 +716,9 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", name.c_str(), (uint32)guid);
     CharacterDatabase.WaitExecute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_NO_FLAG, (uint32)guid);
 
-    data << uint8(E_RESPONSE_SUCCESS) << guid << name;
+    data << uint8(E_RESPONSE_SUCCESS);
+    data << guid;
+    data << name;
     SendPacket(&data);
 }
 

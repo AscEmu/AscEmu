@@ -497,7 +497,9 @@ void Group::RemovePlayer(PlayerInfo* info)
             pPlayer->GetSession()->SendPacket(&data);
 
             data.Initialize(SMSG_PARTY_COMMAND_RESULT);
-            data << uint32(2) << uint8(0) << uint32(0);  // you leave the group
+            data << uint32(2);
+            data << uint8(0);
+            data << uint32(0);  // you leave the group
             pPlayer->GetSession()->SendPacket(&data);
         }
 
@@ -929,35 +931,38 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (mask & GROUP_UPDATE_FLAG_STATUS)
     {
         if (pPlayer && !pPlayer->m_isGmInvisible)
-            *data << (uint16)pPlayer->GetGroupStatus();
+            *data << uint16(pPlayer->GetGroupStatus());
         else
-            *data << (uint16)MEMBER_STATUS_OFFLINE;
+            *data << uint16(MEMBER_STATUS_OFFLINE);
     }
 
     if (mask & GROUP_UPDATE_FLAG_CUR_HP)
-        *data << (uint32)pPlayer->GetHealth();
+        *data << uint32(pPlayer->GetHealth());
 
     if (mask & GROUP_UPDATE_FLAG_MAX_HP)
-        *data << (uint32)pPlayer->GetMaxHealth();
+        *data << uint32(pPlayer->GetMaxHealth());
 
     uint8 powerType = pPlayer->GetPowerType();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
-        *data << (uint8)powerType;
+        *data << uint8(powerType);
 
     if (mask & GROUP_UPDATE_FLAG_CUR_POWER)
-        *data << (uint16)pPlayer->GetPower(powerType);
+        *data << uint16(pPlayer->GetPower(powerType));
 
     if (mask & GROUP_UPDATE_FLAG_MAX_POWER)
-        *data << (uint16)pPlayer->GetMaxPower(powerType);
+        *data << uint16(pPlayer->GetMaxPower(powerType));
 
     if (mask & GROUP_UPDATE_FLAG_LEVEL)
-        *data << (uint16)pPlayer->getLevel();
+        *data << uint16(pPlayer->getLevel());
 
     if (mask & GROUP_UPDATE_FLAG_ZONE)
-        *data << (uint16)pPlayer->GetZoneId();
+        *data << uint16(pPlayer->GetZoneId());
 
     if (mask & GROUP_UPDATE_FLAG_POSITION)
-        *data << (uint16)pPlayer->GetPositionX() << (uint16)pPlayer->GetPositionY();
+    {
+        *data << uint16(pPlayer->GetPositionX());
+        *data << uint16(pPlayer->GetPositionY());
+    }
 
     if (mask & GROUP_UPDATE_FLAG_AURAS)
     {
@@ -988,61 +993,61 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         if (pet)
             *data << pet->GetName().c_str();
         else
-            *data << (uint8)0;
+            *data << uint8(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_MODEL_ID)
     {
         if (pet)
-            *data << (uint16)pet->GetDisplayId();
+            *data << uint16(pet->GetDisplayId());
         else
-            *data << (uint16)0;
+            *data << uint16(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_HP)
     {
         if (pet)
-            *data << (uint32)pet->GetHealth();
+            *data << uint32(pet->GetHealth());
         else
-            *data << (uint32)0;
+            *data << uint32(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_HP)
     {
         if (pet)
-            *data << (uint32)pet->GetMaxHealth();
+            *data << uint32(pet->GetMaxHealth());
         else
-            *data << (uint32)0;
+            *data << uint32(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
     {
         if (pet)
-            *data << (uint8)pet->GetPowerType();
+            *data << uint8(pet->GetPowerType());
         else
-            *data << (uint8)0;
+            *data << uint8(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_POWER)
     {
         if (pet)
-            *data << (uint16)pet->GetPower(pet->GetPowerType());
+            *data << uint16(pet->GetPower(pet->GetPowerType()));
         else
-            *data << (uint16)0;
+            *data << uint16(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_POWER)
     {
         if (pet)
-            *data << (uint16)pet->GetMaxPower(pet->GetPowerType());
+            *data << uint16(pet->GetMaxPower(pet->GetPowerType()));
         else
-            *data << (uint16)0;
+            *data << uint16(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
     {
         if (Vehicle* veh = pPlayer->GetCurrentVehicle())
-            *data << (uint32)veh->GetVehicleInfo()->seatID[pPlayer->GetMovementInfo()->transSeat];
+            *data << uint32(veh->GetVehicleInfo()->seatID[pPlayer->GetMovementInfo()->transSeat]);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_AURAS)
@@ -1062,7 +1067,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
             }
         }
         else
-            *data << (uint64)0;
+            *data << uint64(0);
     }
     if (Distribute && pPlayer->IsInWorld())
     {
@@ -1442,7 +1447,7 @@ void Group::GoOffline(Player* p)
     WorldPacket data(SMSG_PARTY_MEMBER_STATS, 8 + 4 + byteCount);
     data << p->GetNewGUID();
     data << mask;
-    data << (uint16)MEMBER_STATUS_OFFLINE;
+    data << uint16(MEMBER_STATUS_OFFLINE);
 
     if (p->IsInWorld())
     {

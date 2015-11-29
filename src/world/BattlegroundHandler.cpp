@@ -161,7 +161,8 @@ void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data)
         restime = (restime - (uint32)UNIXTIME) * 1000;
 
     WorldPacket data(SMSG_AREA_SPIRIT_HEALER_TIME, 12);
-    data << guid << restime;
+    data << guid;
+    data << restime;
     SendPacket(&data);
 }
 
@@ -319,7 +320,8 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
 
     WorldPacket data(MSG_INSPECT_HONOR_STATS, 13);
 
-    data << player->GetGUID() << (uint8)player->GetHonorCurrency();
+    data << player->GetGUID();
+    data << uint8(player->GetHonorCurrency());
     data << player->GetUInt32Value(PLAYER_FIELD_KILLS);
     data << player->GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
     data << player->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);

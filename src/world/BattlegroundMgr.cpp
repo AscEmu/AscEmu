@@ -150,15 +150,16 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
 
 void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, WorldPacket& pck)
 {
-
-    Player *plr = m_session->GetPlayer();
+    Player* plr = m_session->GetPlayer();
     uint64 guid;
     uint32 pguid = plr->GetLowGUID();
     uint32 lgroup = GetLevelGrouping(plr->getLevel());
     uint32 bgtype;
     uint32 instance;
 
-    pck >> guid >> bgtype >> instance;
+    pck >> guid;
+    pck >> bgtype;
+    pck >> instance;
 
     if(bgtype == BATTLEGROUND_RANDOM)
     {
@@ -1220,7 +1221,8 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
         else
         {
             data << uint32(0);
-            data << uint8(0) << uint8(2);
+            data << uint8(0);
+            data << uint8(2);
             data << Type;
             data << uint8(0);                // 3.3.0
             data << uint8(0);                // 3.3.0
@@ -1234,7 +1236,8 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
         switch (Status)
         {
             case BGSTATUS_INQUEUE:                    // Waiting in queue
-                data << uint32(60) << uint32(0);    // Time / Elapsed time
+                data << uint32(60);
+                data << uint32(0);    // Time / Elapsed time
                 break;
             case BGSTATUS_READY:                    // Ready to join!
                 data << MapId;
