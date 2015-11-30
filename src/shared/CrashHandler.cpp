@@ -245,7 +245,7 @@ void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry & e
         if(entry.lineFileName[0] == 0)
         {
             if(entry.name[0] == 0)
-                sprintf(entry.name, "%p", entry.offset);
+                sprintf(entry.name, "%lld", entry.offset);
 
             sprintf(buffer, "%s!%s Line %u\n", p, entry.name, entry.lineNumber);
         }
