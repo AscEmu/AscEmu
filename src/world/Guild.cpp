@@ -1426,7 +1426,7 @@ void Guild::DepositMoney(WorldSession* pClient, uint32 uAmount)
 
     // broadcast guild event telling everyone the new balance
     char buf[20];
-    snprintf(buf, 20, "%lu", m_bankBalance);
+    snprintf(buf, 20, "%llu", m_bankBalance);
     LogGuildEvent(GUILD_EVENT_SETNEWBALANCE, 1, buf);
 
     // log it!
@@ -1491,7 +1491,7 @@ void Guild::SpendMoney(uint32 uAmount)
 
     // notify everyone with the new balance
     char buf[20];
-    snprintf(buf, 20, "%lu", m_bankBalance);
+    snprintf(buf, 20, "%llu", m_bankBalance);
     LogGuildEvent(GUILD_EVENT_SETNEWBALANCE, 1, buf);
 }
 
