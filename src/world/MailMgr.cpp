@@ -179,10 +179,16 @@ void Mailbox::Load(QueryResult* result)
     char* str;
     char* p;
     uint32 itemguid;
+    uint32 now = (uint32)UNIXTIME;
 
     do
     {
         fields = result->Fetch();
+        uint32 expiry_time = fields[10].GetUInt32();
+
+        // Do not load expired mails!
+        if (expiry_time < now)
+            continue;
 
         // Create message struct
         i = 0;
