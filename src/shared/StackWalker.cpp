@@ -906,7 +906,7 @@ static LPVOID s_readMemoryFunction_UserData = NULL;
 
 BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT* context, PReadProcessMemoryRoutine readMemoryFunction, LPVOID pUserData)
 {
-    CONTEXT c;;
+    CONTEXT c;
     CallstackEntry csEntry;
     IMAGEHLP_SYMBOL64* pSym = NULL;
     StackWalkerInternal::IMAGEHLP_MODULE64_V2 Module;

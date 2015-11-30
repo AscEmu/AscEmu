@@ -77,7 +77,7 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
     if (strlen(args) == 0)
         plr = getSelectedChar(m_session, true);
     else
-        plr = objmgr.GetPlayer(args, false);;
+        plr = objmgr.GetPlayer(args, false);
 
     if (!plr)
     {
@@ -123,7 +123,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     if (argc == 1)
         plr = getSelectedChar(m_session, true);
     else
-        plr = objmgr.GetPlayer((const char*)playername, false);;
+        plr = objmgr.GetPlayer((const char*)playername, false);
 
     if (!plr)
     {

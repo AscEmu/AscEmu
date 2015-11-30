@@ -250,7 +250,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
     /*    if (!time)
             return;
 
-            float traveled_len = (time/(getLength() * TAXI_TRAVEL_SPEED))*getLength();;
+            float traveled_len = (time/(getLength() * TAXI_TRAVEL_SPEED))*getLength();
             uint32 len = 0, count = 0;
             float x = 0,y = 0,z = 0;
 

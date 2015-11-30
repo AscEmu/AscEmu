@@ -8359,7 +8359,7 @@ void Aura::SpellAuraComprehendLang(bool apply)
 
 void Aura::SpellAuraModPossessPet(bool apply)
 {
-    Player* pCaster = GetPlayerCaster();;
+    Player* pCaster = GetPlayerCaster();
     if (pCaster == NULL || !pCaster->IsInWorld())
         return;
 

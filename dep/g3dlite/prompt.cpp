@@ -425,7 +425,7 @@ static int guiPrompt(
     *pNew = '\0';
 
     PromptParams params;
-    params.message  = newStr;;
+    params.message  = newStr;
     params.title    = windowTitle;
 
     HMODULE module = GetModuleHandle(0);
