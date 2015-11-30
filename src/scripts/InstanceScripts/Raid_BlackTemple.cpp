@@ -21,13 +21,13 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
+#include "Raid_BlackTemple.h"
 
-
-#define CN_SUPREMUS                                        22898
 
 class BlackTempleScript : public MoonInstanceScript
 {
     public:
+
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(BlackTempleScript, MoonInstanceScript);
         BlackTempleScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
@@ -48,9 +48,9 @@ class BlackTempleScript : public MoonInstanceScript
                         break;
                     default:
                         continue;
-                };
-            };
-        };
+                }
+            }
+        }
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
@@ -70,11 +70,9 @@ class BlackTempleScript : public MoonInstanceScript
                     AddGameObjectStateByEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
                     break;
                 default:
-                    {
-                    };
-            };
-        };
-
+                    break;
+            }
+        }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,10 +89,6 @@ class TemplateAI : public MoonScriptCreatureAI
 //////////////////////////////////////////////////////////////////////////
 /////// Beast AIs
 
-#define CN_DRAGON_TURTLE                    22885
-#define DRAGON_TRUTLE_SHELL_SHIELD            40087
-#define DRAGON_TURTLE_WATER_SPIT            40086
-
 class DragonTurtleAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonTurtleAI, MoonScriptCreatureAI);
@@ -105,10 +99,6 @@ class DragonTurtleAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_LEVIATHAN                        22884
-#define LEVIATHAN_DEBILITATING_SPRAY        40079
-#define LEVIATHAN_POISON_SPIT                40078
-#define LEVIATHAN_TAIL_SWEEP                40077
 
 class LeviathanAI : public MoonScriptCreatureAI
 {
@@ -121,8 +111,6 @@ class LeviathanAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_MUTANT_WAR_HOUND                    23232
-#define MUTANT_WAR_HOUND_CLOUD_OF_DISEASE    41193
 
 class MutantWarHoundAI : public MoonScriptCreatureAI
 {
@@ -137,12 +125,9 @@ class MutantWarHoundAI : public MoonScriptCreatureAI
             _unit->AddAura(pAura);
         }
 };
-// I don't have this creature in DB, so hasn't checked it yet
-#define CN_SHADOWMOON_RIDING_HOUND                    23083
-#define SHADOWMOON_RIDING_HOUND_CARNIVOROUS_BITE    41092
-#define SHADOWMOON_RIDING_HOUND_CHARGE                25821
-#define SHADOWMOON_RIDING_HOUND_ENRAGE                8599
 
+
+// I don't have this creature in DB, so hasn't checked it yet
 void SpellFunc_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class ShadowmoonRidingHoundAI : public MoonScriptCreatureAI
@@ -179,11 +164,6 @@ void SpellFunc_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit*
 //////////////////////////////////////////////////////////////////////////
 /////// Demon AIs
 
-#define    CN_SISTER_OF_PLEASURE                22964
-#define    SISTER_OF_PLEASURE_GREATER_HEAL        41378
-#define SISTER_OF_PLEASURE_HOLY_NOVA        41380
-#define SISTER_OF_PLEASURE_SHARED_BONDS        41362
-#define SISTER_OF_PLEASURE_SHELL_OF_LIFE    41381
 
 class SisterOfPleasureAI : public MoonScriptCreatureAI
 {
@@ -197,12 +177,6 @@ class SisterOfPleasureAI : public MoonScriptCreatureAI
         }
 };
 
-#define    CN_SISTER_OF_PAIN                    22956
-#define    SISTER_OF_PAIN_LASH_OF_PAIN            41353
-#define    SISTER_OF_PAIN_PAINFUL_RAGE            41369
-#define    SISTER_OF_PAIN_SHADOW_WORD_PAIN        41355
-#define    SISTER_OF_PAIN_SHARED_BONDS            41362
-#define    SISTER_OF_PAIN_SHELL_OF_PAIN        41371
 
 class SisterOfPainAI : public MoonScriptCreatureAI
 {
@@ -217,9 +191,6 @@ class SisterOfPainAI : public MoonScriptCreatureAI
         }
 };
 
-#define    CN_PRIESTESS_OF_DEMENTIA                22957
-#define PRIESTESS_OF_DEMENTIA_CONFUSION            41397
-#define PRIESTESS_OF_DEMENTIA_DEMENTIA            41404
 
 class PriestessOfDementiaAI : public MoonScriptCreatureAI
 {
@@ -231,8 +202,6 @@ class PriestessOfDementiaAI : public MoonScriptCreatureAI
         }
 };
 
-#define    CN_PRIESTESS_OF_DELIGHT                    22962
-#define PRIESTESS_OF_DELIGHT_CURSE_OF_VITALITY    41351
 
 class PriestessOfDelightAI : public MoonScriptCreatureAI
 {
@@ -243,11 +212,6 @@ class PriestessOfDelightAI : public MoonScriptCreatureAI
         }
 };
 
-#define    CN_ILLIDARI_NIGHTLORD                    22855
-#define ILLIDARI_NIGHTLORD_SUMMON_SHADOWFIENDS    39649
-#define ILLIDARI_NIGHTLORD_SHADOW_INFERNO        39645
-#define ILLIDARI_NIGHTLORD_FEAR                    41150
-#define ILLIDARI_NIGHTLORD_CURSE_OF_MENDING        39647
 
 class IllidariNightlordAI : public MoonScriptCreatureAI
 {
@@ -261,11 +225,6 @@ class IllidariNightlordAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_HEARTSEEKER                            23339
-#define ILLIDARI_HEARTSEEKER_CURSE_OF_THE_BLEAKHEART    41170
-#define ILLIDARI_HEARTSEEKER_RAPID_SHOT                    41173
-#define ILLIDARI_HEARTSEEKER_SHOOT                        41169
-#define ILLIDARI_HEARTSEEKER_SKELETON_SHOT                41171
 
 void SpellFunc_RapidShot(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -318,10 +277,6 @@ void SpellFunc_RapidShot(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     }
 }
 
-#define CN_ILLIDARI_FEARBRINGER                    22954
-#define ILLIDARI_FEARBRINGER_ILLIDARI_FLAMES    40938
-#define ILLIDARI_FEARBRINGER_RAIN_OF_CHAOS        40946
-#define ILLIDARI_FEARBRINGER_WAR_STOMP            40936
 
 class IllidariFearbringerAI : public MoonScriptCreatureAI
 {
@@ -334,11 +289,6 @@ class IllidariFearbringerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_DEFILER                    22853
-#define ILLIDARI_DEFILER_BANISH                39674
-#define ILLIDARI_DEFILER_CURSE_OF_AGONY        39672
-#define ILLIDARI_DEFILER_FEL_IMMOLATE        39670
-#define ILLIDARI_DEFILER_RAIN_OF_CHAOS        39671
 
 class IllidariDefilerAI : public MoonScriptCreatureAI
 {
@@ -352,9 +302,6 @@ class IllidariDefilerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_CENTURION                23337
-#define ILLIDARI_CENTURION_CLEAVE            15284
-#define ILLIDARI_CENTURION_SONIC_STRIKE        41168
 
 class IllidariCenturionAI : public MoonScriptCreatureAI
 {
@@ -366,10 +313,6 @@ class IllidariCenturionAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_BONESLICER                    22869
-#define ILLIDARI_BONESLICER_CLOAK_OF_SHADOWS    39666
-#define ILLIDARI_BONESLICER_GOUGE                24698
-#define ILLIDARI_BONESLICER_SHADOWSTEP            41176
 
 void SpellFunc_Gouge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -406,11 +349,6 @@ void SpellFunc_Gouge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* 
 //////////////////////////////////////////////////////////////////////////
 /////// Humanoid AIs
 
-#define CN_ASHTONGUE_BATTLELORD                    22844
-#define ASHTONGUE_BATTLELORD_CLEAVE                15284
-#define ASHTONGUE_BATTLELORD_CONCUSSION_BLOW    32588
-#define ASHTONGUE_BATTLELORD_CONCUSSIVE_THROW    41182
-#define ASHTONGUE_BATTLELORD_ENRAGE                34970
 
 class AshtongueBattlelordAI : public MoonScriptCreatureAI
 {
@@ -424,9 +362,6 @@ class AshtongueBattlelordAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_DEFENDER                    23216
-#define ASHTONGUE_DEFENDER_DEBILITATING_STRIKE    41178
-#define ASHTONGUE_DEFENDER_SHIELD_BASH            41180
 
 class AshtongueDefenderAI : public MoonScriptCreatureAI
 {
@@ -438,9 +373,6 @@ class AshtongueDefenderAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_ELEMENTALIST                23523
-#define ASHTONGUE_ELEMENTALIST_LIGHTNING_BOLT    42024
-#define ASHTONGUE_ELEMENTALIST_RAID_OF_FIRE        42023
 
 class AshtongueElementalistAI : public MoonScriptCreatureAI
 {
@@ -451,16 +383,9 @@ class AshtongueElementalistAI : public MoonScriptCreatureAI
             AddSpell(ASHTONGUE_ELEMENTALIST_RAID_OF_FIRE, Target_RandomPlayerDestination, 6, 0, 25);
         }
 };
-// TO DO: Add Totem AIs
-#define CN_ASHTONGUE_MYSTIC                        22845
-#define ASHTONGUE_MYSTIC_BLOODLUST                41185
-#define ASHTONGUE_MYSTIC_CHAIN_HEAL                41114
-#define ASHTONGUE_MYSTIC_CYCLONE_TOTEM            39589
-#define ASHTONGUE_MYSTIC_FLAME_SHOCK            41115
-#define ASHTONGUE_MYSTIC_FROST_SHOCK            41116
-#define ASHTONGUE_MYSTIC_SEARING_TOTEM            39588
-#define ASHTONGUE_MYSTIC_SUMMON_WINDFURY_TOTEM    39586
 
+
+///\ todo Add Totem AIs
 class AshtongueMysticAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(AshtongueMysticAI, MoonScriptCreatureAI);
@@ -476,11 +401,6 @@ class AshtongueMysticAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_PRIMALIST                    22847
-#define ASHTONGUE_PRIMALIST_MULTISHOT            41187
-#define ASHTONGUE_PRIMALIST_SHOOT                41188
-#define ASHTONGUE_PRIMALIST_SWEEPING_WING_CLIP    39584
-#define ASHTONGUE_PRIMALIST_WYVERN_STRING        41186
 
 class AshtonguePrimalistAI : public MoonScriptCreatureAI
 {
@@ -519,9 +439,6 @@ class AshtonguePrimalistAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_ROGUE                    23318
-#define ASHTONGUE_ROGUE_DEBILITATING_POISON    41978
-#define ASHTONGUE_ROGUE_EVISCERATE            41177
 
 class AshtongueRogueAI : public MoonScriptCreatureAI
 {
@@ -533,11 +450,6 @@ class AshtongueRogueAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_SPIRITBINDER            23524
-#define ASHTONGUE_SPIRITBINDER_CHAIN_HEAL    42027
-#define ASHTONGUE_SPIRITBINDER_SPIRIT_HEAL    42317
-#define ASHTONGUE_SPIRITBINDER_SPIRIT_HEAL2    42318
-#define ASHTONGUE_SPIRITBINDER_SPIRIT_MEND    42025
 
 class AshtongueSpiritbinderAI : public MoonScriptCreatureAI
 {
@@ -552,13 +464,9 @@ class AshtongueSpiritbinderAI : public MoonScriptCreatureAI
             AddSpell(ASHTONGUE_SPIRITBINDER_SPIRIT_MEND, Target_WoundedFriendly, 8, 0, 25);
         }
 };
-// Completely guessed mechanics
-#define CN_ASHTONGUE_STALKER                    23374
-#define ASHTONGUE_STALKER_BLIND                    34654
-#define ASHTONGUE_STALKER_INSTANT_POISON        41189
-#define ASHTONGUE_STALKER_MINDNUMBING_POISON    41190
-#define ASHTONGUE_STALKER_STEATH                34189
 
+
+///\brief Completely guessed mechanics
 class AshtongueStalkerAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(AshtongueStalkerAI, MoonScriptCreatureAI);
@@ -590,10 +498,6 @@ class AshtongueStalkerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_STORMCALLER                22846
-#define ASHTONGUE_STORMCALLER_CHAIN_LIGHTNING    41183
-#define ASHTONGUE_STORMCALLER_LIGHTNING_BOLT    41184
-#define ASHTONGUE_STORMCALLER_LIGHTNING_SHIELD    41151
 
 class AshtongueStormcallerAI : public MoonScriptCreatureAI
 {
@@ -606,12 +510,6 @@ class AshtongueStormcallerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_BEHEMOTH                    23196
-#define BONECHEWER_BEHEMOTH_BEHEMOTH_CHARGE        41272
-#define BONECHEWER_BEHEMOTH_ENRAGE                8269
-#define BONECHEWER_BEHEMOTH_FEL_STOMP            41274
-#define BONECHEWER_BEHEMOTH_FIERY_COMET            41277
-#define BONECHEWER_BEHEMOTH_METEOR                41276
 
 class BonechewerBehemothAI : public MoonScriptCreatureAI
 {
@@ -636,9 +534,6 @@ class BonechewerBehemothAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_BLADE_FURY                    23235
-#define BONECHEWER_BLADE_FURY_WHIRLWIND                41194
-#define BONECHEWER_BLADE_FURY_WHIRLWIND2            41195
 
 class BonechewerBladeFuryAI : public MoonScriptCreatureAI
 {
@@ -649,12 +544,6 @@ class BonechewerBladeFuryAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_BLOOD_PROPHET                    23237
-#define BONECHEWER_BLOOD_PROPHET_BLOOD_DRAIN        41238
-#define BONECHEWER_BLOOD_PROPHET_BLOODBOLT            41229
-#define BONECHEWER_BLOOD_PROPHET_ENRAGE                8269
-#define BONECHEWER_BLOOD_PROPHET_PROPHECY_OF_BLOOD    41230
-#define BONECHEWER_BLOOD_PROPHET_PROPHECY_OF_BLOOD2    41231
 
 class BonechewerBloodProphetAI : public MoonScriptCreatureAI
 {
@@ -671,8 +560,6 @@ class BonechewerBloodProphetAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_BRAWLER                23222
-#define BONECHEWER_BRAWLER_FRENZY            41254
 
 class BonechewerBrawlerAI : public MoonScriptCreatureAI
 {
@@ -683,8 +570,6 @@ class BonechewerBrawlerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_COMBATANT                23239
-#define BONECHEWER_COMBATANT_FRENZY            8269
 
 class BonechewerCombatantAI : public MoonScriptCreatureAI
 {
@@ -695,11 +580,6 @@ class BonechewerCombatantAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_SHIELD_DISCIPLE                23236
-#define BONECHEWER_SHIELD_DISCIPLE_INTERVENE        41198
-#define BONECHEWER_SHIELD_DISCIPLE_SHIELD_BASH        41197
-#define BONECHEWER_SHIELD_DISCIPLE_SHIELD_WALL        41196
-#define BONECHEWER_SHIELD_DISCIPLE_THROW_SHIELD        41213
 
 class BonechewerShieldDiscipleAI : public MoonScriptCreatureAI
 {
@@ -723,12 +603,6 @@ class BonechewerShieldDiscipleAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_SPECTATOR                    23223
-#define BONECHEWER_SPECTATOR_CHARGE                36140
-#define BONECHEWER_SPECTATOR_CLEAVE                40505
-#define BONECHEWER_SPECTATOR_MORTAL_WOUND        25646
-#define BONECHEWER_SPECTATOR_STRIKE                13446
-#define BONECHEWER_SPECTATOR_SUNDER_ARMOR        13444
 
 class BonechewerSpectatorAI : public MoonScriptCreatureAI
 {
@@ -753,9 +627,6 @@ class BonechewerSpectatorAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_TASKMASTER                23028
-#define BONECHEWER_TASKMASTER_DISGRUNTLED        40851
-#define BONECHEWER_TASKMASTER_FURY                40845
 
 class BonechewerTaskmasterAI : public MoonScriptCreatureAI
 {
@@ -767,8 +638,6 @@ class BonechewerTaskmasterAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_WORKER                    22963
-#define BONECHEWER_WORKER_THROW_PICK            40844
 
 class BonechewerWorkerAI : public MoonScriptCreatureAI
 {
@@ -779,9 +648,6 @@ class BonechewerWorkerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_CHARMING_COURTESAN                    22955
-#define CHARMING_COURTESAN_INFATUATION            41345
-#define CHARMING_COURTESAN_POISONOUS_THROW        41346
 
 class CharmingCourtesanAI : public MoonScriptCreatureAI
 {
@@ -793,9 +659,6 @@ class CharmingCourtesanAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_COILSKAR_GENERAL                        22873
-#define COILSKAR_GENERAL_BOOMING_VOICE            40080
-#define COILSKAR_GENERAL_FREE_FRIEND            40081
 
 class CoilskarGeneralAI : public MoonScriptCreatureAI
 {
