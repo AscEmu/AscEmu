@@ -27,8 +27,10 @@ initialiseSingleton(TaxiMgr);
 
 void TaxiPath::ComputeLen()
 {
-    m_length1 = m_length2 = 0;
-    m_map1 = m_map2 = 0;
+    m_length1 = 0;
+    m_length2 = 0;
+    m_map1 = 0;
+    m_map2 = 0;
     float* curptr = &m_length1;
 
     if (!m_pathNodes.size())
@@ -223,16 +225,17 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
     size_t pos;
 
     *data << riding->GetNewGUID();
-    *data << uint8(0); //VLack: usual uint8 after new style guid
+    *data << uint8(0);                  //VLack: usual uint8 after new style guid
     *data << riding->GetPositionX() << riding->GetPositionY() << riding->GetPositionZ();
     *data << getMSTime();
     *data << uint8(0);
-    //    *data << uint32(0x00000300);
     *data << uint32(0x00003000);
     *data << uint32(uint32((length * TAXI_TRAVEL_SPEED) - time));
     *data << uint32(nodecounter);
     pos = data->wpos();
-    *data << nx << ny << nz;
+    *data << nx;
+    *data << ny;
+    *data << nz;
 
     while (itr != m_pathNodes.end())
     {
@@ -240,77 +243,15 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
         if (pn->mapid != mapid)
             break;
 
-        *data << pn->x << pn->y << pn->z;
+        *data << pn->x;
+        *data << pn->y;
+        *data << pn->z;
         ++itr;
         ++nodecounter;
     }
 
     *(uint32*)&(data->contents()[pos]) = nodecounter;
     to->delayedPackets.add(data);
-    /*    if (!time)
-            return;
-
-            float traveled_len = (time/(getLength() * TAXI_TRAVEL_SPEED))*getLength();
-            uint32 len = 0, count = 0;
-            float x = 0,y = 0,z = 0;
-
-            if (!m_pathNodes.size())
-            return;
-
-            std::map<uint32, TaxiPathNode*>::iterator itr;
-            itr = m_pathNodes.begin();
-
-            float nx = itr->second->x;
-            float ny = itr->second->y;
-            float nz = itr->second->z;
-            itr++;
-
-            while (itr != m_pathNodes.end())
-            {
-            len = (uint32)sqrt((itr->second->x - nx)*(itr->second->x - nx) +
-            (itr->second->y - ny)*(itr->second->y - ny) +
-            (itr->second->z - nz)*(itr->second->z - nz));
-
-            if (len > traveled_len)
-            {
-            x = (itr->second->x - nx)*(traveled_len/len) + nx;
-            y = (itr->second->y - ny)*(traveled_len/len) + ny;
-            z = (itr->second->z - nz)*(traveled_len/len) + nz;
-            break;
-            }
-            else
-            {
-            traveled_len -= len;
-            }
-
-            nx = itr->second->x;
-            ny = itr->second->y;
-            nz = itr->second->z;
-            itr++;
-            count++;
-            }
-
-            if (itr == m_pathNodes.end())
-            return;
-
-            WorldPacket * data = new WorldPacket(SMSG_MONSTER_MOVE, 2000);
-
-            *data << riding->GetNewGUID();
-            *data << riding->GetPositionX() << riding->GetPositionY() << riding->GetPositionZ();
-            *data << getMSTime();
-            *data << uint8(0);
-            *data << uint32(0x00000300);
-            *data << uint32(uint32((getLength() * TAXI_TRAVEL_SPEED) - time));
-            *data << uint32(GetNodeCount() - count);
-            *data << nx << ny << nz;
-            while (itr != m_pathNodes.end())
-            {
-            TaxiPathNode *pn = itr->second;
-            *data << pn->x << pn->y << pn->z;
-            itr++;
-            }
-            //to->GetSession()->SendPacket(&data);
-            to->delayedPackets.add(data);*/
 }
 
 void TaxiMgr::_LoadTaxiNodes()
@@ -345,7 +286,6 @@ void TaxiMgr::_LoadTaxiPaths()
     for (i = 0; i < dbcTaxiPath.GetNumRows(); i++)
     {
         DBCTaxiPath* path = dbcTaxiPath.LookupRowForced(i);
-
         if (path)
         {
             TaxiPath* p = new TaxiPath;
@@ -372,7 +312,6 @@ void TaxiMgr::_LoadTaxiPaths()
                     }
                 }
             }
-
             p->ComputeLen();
             this->m_taxiPaths.insert(std::map<uint32, TaxiPath*>::value_type(p->id, p));
         }
@@ -384,7 +323,6 @@ TaxiPath* TaxiMgr::GetTaxiPath(uint32 path)
     std::unordered_map<uint32, TaxiPath*>::iterator itr;
 
     itr = this->m_taxiPaths.find(path);
-
     if (itr == m_taxiPaths.end())
         return NULL;
     else
@@ -437,7 +375,6 @@ uint32 TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid)
             }
         }
     }
-
     return nearest;
 }
 
@@ -451,10 +388,10 @@ bool TaxiMgr::GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask)
         /*if (itr->second->from == curloc)
         {*/
         field = (uint8)((itr->second->to - 1) / 32);
-        if (field >= 12) continue;  //The DBC can contain negative TO values??? That'll be 255 here (because we store everything unsigned), skip them!
+        if (field >= 12)    //The DBC can contain negative TO values??? That'll be 255 here (because we store everything unsigned), skip them!
+            continue;
         Mask[field] |= 1 << ((itr->second->to - 1) % 32);
         //}
     }
-
     return true;
 }
