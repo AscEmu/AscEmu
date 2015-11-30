@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef STORAGE_H_
-#define STORAGE_H_
+#ifndef STORAGE_H
+#define STORAGE_H
 
 #ifdef WIN32
 #pragma warning(disable:4312)
@@ -73,6 +73,7 @@ class SERVER_DECL StorageContainerIterator
          */
         T* Pointer;
     public:
+
         virtual ~StorageContainerIterator() {}
 
         /** Returns the currently stored object
@@ -100,6 +101,7 @@ template<class T>
 class SERVER_DECL ArrayStorageContainer
 {
     public:
+
 #ifdef STORAGE_ALLOCATION_POOLS
         StorageAllocationPool<T> _pool;
         void InitPool(uint32 cnt) { _pool.Init(cnt); }
@@ -250,6 +252,7 @@ template<class T>
 class SERVER_DECL HashMapStorageContainer
 {
     public:
+
 #ifdef STORAGE_ALLOCATION_POOLS
         StorageAllocationPool<T> _pool;
         void InitPool(uint32 cnt) { _pool.Init(cnt); }
@@ -834,4 +837,4 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
         }
 };
 
-#endif
+#endif  //STORAGE_H

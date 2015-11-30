@@ -51,6 +51,7 @@ typedef std::map<uint32, ConfigSetting> ConfigBlock;
 class SERVER_DECL ConfigFile
 {
     public:
+
         ConfigFile();
         ~ConfigFile();
 
@@ -75,7 +76,7 @@ class SERVER_DECL ConfigFile
 
     private:
 
-    std::map<uint32, ConfigBlock> m_settings;
+        std::map<uint32, ConfigBlock> m_settings;
 };
 
 
@@ -83,6 +84,7 @@ class SERVER_DECL ConfigMgr
 {
         // Mainly used for WS, others will probably only have one.
     public:
+
         ConfigFile MainConfig;
         ConfigFile RealmConfig;
         ConfigFile ClusterConfig;

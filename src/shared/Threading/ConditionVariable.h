@@ -17,15 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONDITIONVARIABLE_H
-#define CONDITIONVARIABLE_H
+#ifndef _CONDITION_VARIABLE_H
+#define _CONDITION_VARIABLE_H
 
 namespace Arcemu
 {
-
     namespace Threading
     {
-
         //////////////////////////////////////////////////////////////////////////////////////////
         //class ConditionVariable
         //  Class implementing a platform independent condition variable
@@ -34,10 +32,9 @@ namespace Arcemu
         //////////////////////////////////////////////////////////////////////////////////////////
         class ConditionVariable
         {
-
             public:
-                ConditionVariable();
 
+                ConditionVariable();
                 ~ConditionVariable();
 
                 //////////////////////////////////////////////////////////////////////////////////////////
@@ -75,4 +72,4 @@ namespace Arcemu
     }
 }
 
-#endif      //CONDITIONVARIABLE_H
+#endif  //_CONDITION_VARIABLE_H

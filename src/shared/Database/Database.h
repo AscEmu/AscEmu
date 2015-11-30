@@ -46,7 +46,7 @@ class SERVER_DECL AsyncQuery
     friend class Database;
 
         SQLCallbackBase* func;
-    std::vector<AsyncQueryResult> queries;
+        std::vector<AsyncQueryResult> queries;
         Database* db;
 
     public:
@@ -60,8 +60,9 @@ class SERVER_DECL AsyncQuery
 
 class SERVER_DECL QueryBuffer
 {
-    std::vector<char*> queries;
+        std::vector<char*> queries;
     public:
+
         friend class Database;
         void AddQuery(const char* format, ...);
         void AddQueryNA(const char* str);
@@ -155,10 +156,10 @@ class SERVER_DECL Database : public CThread
         int32 mConnectionCount;
 
         // For reconnecting a broken connection
-    std::string mHostname;
-    std::string mUsername;
-    std::string mPassword;
-    std::string mDatabaseName;
+        std::string mHostname;
+        std::string mUsername;
+        std::string mPassword;
+        std::string mDatabaseName;
         uint32 mPort;
 
         QueryThread* qt;
@@ -167,6 +168,7 @@ class SERVER_DECL Database : public CThread
 class SERVER_DECL QueryResult
 {
     public:
+
         QueryResult(uint32 fields, uint32 rows) : mFieldCount(fields), mRowCount(rows), mCurrentRow(NULL) {}
         virtual ~QueryResult() {}
 
@@ -178,6 +180,7 @@ class SERVER_DECL QueryResult
         inline uint32 GetRowCount() const { return mRowCount; }
 
     protected:
+
         uint32 mFieldCount;
         uint32 mRowCount;
         Field* mCurrentRow;
@@ -187,7 +190,7 @@ class SERVER_DECL QueryThread : public CThread
 {
     friend class Database;
 
-        Database* db;
+    Database* db;
 
     public:
 

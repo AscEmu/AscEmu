@@ -26,6 +26,7 @@
 class RWLock
 {
     public:
+
         inline void AcquireReadLock()
         {
             _lock.Acquire();
@@ -47,7 +48,8 @@ class RWLock
         }
 
     private:
+
         Mutex _lock;
 };
 
-#endif
+#endif  //RWLOCK_H

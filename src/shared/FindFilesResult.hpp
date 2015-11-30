@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _FINDFILERESULT_HPP
-#define _FINDFILERESULT_HPP
+#ifndef _FINDFILE_RESULT_HPP
+#define _FINDFILE_RESULT_HPP
 
 #include <string>
 #include <vector>
@@ -33,6 +33,7 @@ namespace Arcemu
     class FindFilesResult
     {
         public:
+
             FindFilesResult()
             {
                 filenames.reserve(10);
@@ -116,7 +117,8 @@ namespace Arcemu
             /// \return none
             ///
             //////////////////////////////////////////////////////////////////////////////////////////
-            void Clear(){
+            void Clear()
+            {
                 filenames.clear();
                 pos = 0;
             }
@@ -144,7 +146,6 @@ namespace Arcemu
             std::vector<std::string> filenames;
             std::vector<std::string>::size_type pos;
     };
-
 }
 
-#endif      //_FINDFILERESULT_HPP
+#endif      //_FINDFILE_RESULT_HPP

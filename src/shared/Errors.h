@@ -17,10 +17,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WOWSERVER_ERRORS_H
-#define WOWSERVER_ERRORS_H
+#ifndef _ERRORS_H
+#define _ERRORS_H
 
 #include "printStackTrace.h"
+
 ///\todo handle errors better
 
 #if CODE_ANALYSIS
@@ -41,4 +42,4 @@
 
 #define ASSERT WPAssert
 
-#endif      // WOWSERVER_ERRORS_H
+#endif      //_ERRORS_H

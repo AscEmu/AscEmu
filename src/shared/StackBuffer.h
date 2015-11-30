@@ -25,10 +25,11 @@
 #include "WoWGuid.h"
 #include "LocationVector.h"
 
-/* This is needed because of template gayness. */
+/// This is needed because of template gayness.
 class SERVER_DECL StackBufferBase
 {
     public:
+
         virtual ~StackBufferBase() {}
         virtual uint8* GetBufferPointer() = 0;
         virtual uint16 GetOpcode() { return 0; }
@@ -39,6 +40,7 @@ template<uint32 Size>
 class SERVER_DECL StackBuffer : public StackBufferBase
 {
     protected:
+
         uint8 m_stackBuffer[Size];
         uint32 m_readPos;
         uint32 m_writePos;
@@ -235,4 +237,4 @@ class SERVER_DECL StackBuffer : public StackBufferBase
         uint32 GetSize() { return m_writePos; }
 };
 
-#endif
+#endif  //_STACKBUFFER_H

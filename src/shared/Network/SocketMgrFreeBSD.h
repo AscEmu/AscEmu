@@ -7,10 +7,11 @@
  */
 
 
-#ifndef SOCKETMGR_LINUX_H
-#define SOCKETMGR_LINUX_H
+#ifndef SOCKETMGR_FREE_BSD_H
+#define SOCKETMGR_FREE_BSD_H
 
 #include "SocketDefines.h"
+
 #ifdef CONFIG_USE_KQUEUE
 
 #define SOCKET_HOLDER_SIZE 30000    // You don't want this number to be too big, otherwise you're gonna be eating
@@ -102,4 +103,4 @@ class SocketWorkerThread : public ThreadBase
 
 #endif
 
-#endif
+#endif  //SOCKETMGR_FREE_BSD_H

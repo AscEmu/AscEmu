@@ -636,4 +636,4 @@ template <typename K, typename V> ByteBuffer & operator>>(ByteBuffer & b, std::m
     return b;
 }
 
-#endif
+#endif  //_BYTEBUFFER_H

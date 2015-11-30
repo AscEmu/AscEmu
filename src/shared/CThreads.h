@@ -17,11 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Class CThread - Base class for all threads in the
-// server, and allows for easy management by ThreadMgr.
+//\brief Class CThread - Base class for all threads in the server, and allows for easy management by ThreadMgr.
 
-#ifndef _MAPUPDATER_H
-#define _MAPUPDATER_H
+#ifndef _C_THREADS_H
+#define _C_THREADS_H
 
 class MapMgr;
 class Object;
@@ -50,6 +49,7 @@ struct NameTableEntry;
 class SERVER_DECL CThread : public ThreadBase
 {
     public:
+
         CThread();
         ~CThread();
 
@@ -65,6 +65,7 @@ class SERVER_DECL CThread : public ThreadBase
         virtual void OnShutdown();
 
     protected:
+
         CThread & operator=(CThread & other)
         {
             this->start_time = other.start_time;
@@ -78,4 +79,4 @@ class SERVER_DECL CThread : public ThreadBase
         int ThreadId;
 };
 
-#endif
+#endif  //_C_THREADS_H

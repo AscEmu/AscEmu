@@ -18,6 +18,7 @@
 
 #ifndef NETWORK_INCLUDES_HPP
 #define NETWORK_INCLUDES_HPP
+
 #if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -32,4 +33,5 @@
 #include <signal.h>
 #include <netdb.h>
 #endif
+
 #endif      //NETWORK_INCLUDES_HPP

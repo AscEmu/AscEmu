@@ -1,7 +1,6 @@
 /*
- * Circular Queue
- * Template C++ class that can be used to store a set number of elements,
- * replacing old ones as new ones are added.
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2005-2007 Burlex <burlex@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,11 +15,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-#ifndef __CIRCULARQUEUE_H
-#define __CIRCULARQUEUE_H
+#ifndef _CIRCULARQUEUE_H
+#define _CIRCULARQUEUE_H
 
 template<class T, int ELEMENTCOUNT>
 class CircularQueue

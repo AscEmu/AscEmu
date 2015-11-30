@@ -16,6 +16,7 @@ class Socket;
 class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
 {
     public:
+
         SocketMgr();
         ~SocketMgr();
 
@@ -43,6 +44,7 @@ class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
         long threadcount;
 
     private:
+
         HANDLE m_completionPort;
         std::set<Socket*> _sockets;
         Mutex socketLock;
@@ -56,6 +58,7 @@ typedef void(*OperationHandler)(Socket* s, uint32 len);
 class SocketWorkerThread : public ThreadBase
 {
     public:
+
         bool run();
 };
 
@@ -71,4 +74,5 @@ static OperationHandler ophandlers[NUM_SOCKET_IO_EVENTS] =
 };
 
 #endif
-#endif
+
+#endif  //SOCKETMGR_H_WIN32

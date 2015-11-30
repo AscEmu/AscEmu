@@ -43,5 +43,4 @@ namespace SocketOps
     void ReuseAddr(SOCKET fd);
 };
 
-#endif
-
+#endif  //SOCKET_OPS_H

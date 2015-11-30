@@ -322,4 +322,4 @@ class SQLFunctionCallbackP1 : public SQLCallbackBase
         void run(QueryResult* data) { method(data, p1); }
 };
 
-#endif
+#endif  //_CALLBACK_H

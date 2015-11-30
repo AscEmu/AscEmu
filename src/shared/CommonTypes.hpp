@@ -16,8 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WOWSERVER_COMMON_TYPES_HPP
-#define WOWSERVER_COMMON_TYPES_HPP
+#ifndef _COMMON_TYPES_HPP
+#define _COMMON_TYPES_HPP
+
 #include <cstdint>
 
 typedef int64_t int64;
@@ -47,4 +48,5 @@ typedef uint8_t uint8;
 #define SCRIPT_DECL
 #define DECL_LOCAL
 #endif
-#endif      //WOWSERVER_COMMON_TYPES_HPP
+
+#endif  //_COMMON_TYPES_HPP

@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WOWSERVER_LOG_H
-#define WOWSERVER_LOG_H
+#ifndef _LOG_H
+#define _LOG_H
 
 #include "Common.h"
 #include "Singleton.h"
@@ -144,6 +144,7 @@ class SERVER_DECL SessionLogWriter
 {
         FILE* m_file;
         char* m_filename;
+
     public:
 
         SessionLogWriter(const char* filename, bool open);
@@ -178,6 +179,7 @@ class WorldLog : public Singleton<WorldLog>
         void LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction, uint32 accountid = 0);
         void Enable();
         void Disable();
+
     private:
 
         FILE* m_file;
@@ -187,4 +189,4 @@ class WorldLog : public Singleton<WorldLog>
 
 #define sWorldLog WorldLog::getSingleton()
 
-#endif      //WOWSERVER_LOG_H
+#endif      //_LOG_H

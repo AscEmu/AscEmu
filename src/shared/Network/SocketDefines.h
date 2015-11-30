@@ -93,4 +93,4 @@ class OverlappedStruct
 
 #endif
 
-#endif
+#endif  //SOCKET_DEFINES_H

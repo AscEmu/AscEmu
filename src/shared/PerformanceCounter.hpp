@@ -19,12 +19,11 @@
  */
 
 
-#ifndef ARCEMU_PERFORMANCECOUNTER_HPP
-#define ARCEMU_PERFORMANCECOUNTER_HPP
+#ifndef _PERFORMANCECOUNTER_HPP
+#define _PERFORMANCECOUNTER_HPP
 
 namespace Arcemu
 {
-
     //////////////////////////////////////////////////////////////////////////////////////////
     ///class PerformanceCounter
     /// A simple performance counter class, that samples
@@ -69,4 +68,4 @@ namespace Arcemu
 
 }
 
-#endif      //ARCEMU_PERFORMANCECOUNTER_HPP
+#endif      //_PERFORMANCECOUNTER_HPP
