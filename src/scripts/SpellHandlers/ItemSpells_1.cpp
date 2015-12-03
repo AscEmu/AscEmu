@@ -596,7 +596,7 @@ bool BrittleArmor(uint32 i, Spell* s)
     if (s->u_caster == NULL)
         return false;
 
-    for (int j = 0; j < 20; j++)
+    for (uint8 j = 0; j < 20; j++)
         s->u_caster->CastSpell(s->u_caster, 24575, true);
 
     return true;

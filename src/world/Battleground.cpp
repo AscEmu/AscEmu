@@ -565,7 +565,7 @@ void CBattleground::DistributePacketToAll(WorldPacket* packet)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (int i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             if ((*itr) && (*itr)->GetSession())
@@ -710,7 +710,7 @@ void CBattleground::EventCountdown()
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         m_countdownStage = 2;
 
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
@@ -727,7 +727,7 @@ void CBattleground::EventCountdown()
 
         m_countdownStage = 3;
 
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
@@ -744,7 +744,7 @@ void CBattleground::EventCountdown()
 
         m_countdownStage = 4;
 
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
@@ -760,7 +760,7 @@ void CBattleground::EventCountdown()
     else
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())

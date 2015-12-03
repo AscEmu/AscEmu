@@ -579,7 +579,7 @@ class SERVER_DECL Player : public Unit
         // Quests
         bool HasQuests()
         {
-            for (int i = 0; i < 25; ++i)
+            for (uint8 i = 0; i < 25; ++i)
             {
                 if (m_questlog[i] != 0)
                     return true;

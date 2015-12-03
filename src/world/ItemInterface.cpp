@@ -38,7 +38,7 @@ ItemInterface::ItemInterface(Player* pPlayer) : m_EquipmentSets(pPlayer->GetLowG
 
 ItemInterface::~ItemInterface()
 {
-    for (int i = 0; i < MAX_INVENTORY_SLOT; i++)
+    for (uint8 i = 0; i < MAX_INVENTORY_SLOT; i++)
     {
         if (m_pItems[i] != NULL && m_pItems[i]->GetOwner() == m_pOwner)
         {
@@ -53,7 +53,7 @@ uint32 ItemInterface::m_CreateForPlayer(ByteBuffer* data)       // 100%
     ARCEMU_ASSERT(m_pOwner != NULL);
     uint32 count = 0;
 
-    for (int i = 0; i < MAX_INVENTORY_SLOT; i++)
+    for (uint8 i = 0; i < MAX_INVENTORY_SLOT; i++)
     {
         if (m_pItems[i])
         {
@@ -90,7 +90,7 @@ void ItemInterface::m_DestroyForPlayer()        // 100%
 {
     ARCEMU_ASSERT(m_pOwner != NULL);
 
-    for (int i = 0; i < MAX_INVENTORY_SLOT; i++)
+    for (uint8 i = 0; i < MAX_INVENTORY_SLOT; i++)
     {
         if (m_pItems[i])
         {
@@ -2452,7 +2452,7 @@ void ItemInterface::BuyItem(ItemPrototype* item, uint32 total_amount, Creature* 
     ItemExtendedCostEntry* ex = pVendor->GetItemExtendedCostByItemId(item->ItemId);
     if (ex != NULL)
     {
-        for (int i = 0; i < 5; i++)
+        for (uint8 i = 0; i < 5; i++)
         {
             if (ex->item[i])
                 m_pOwner->GetItemInterface()->RemoveItemAmt(ex->item[i], total_amount * ex->count[i]);
@@ -2476,7 +2476,7 @@ int8 ItemInterface::CanAffordItem(ItemPrototype* item, uint32 amount, Creature* 
     ItemExtendedCostEntry* ex = pVendor->GetItemExtendedCostByItemId(item->ItemId);
     if (ex != NULL)
     {
-        for (int i = 0; i < 5; i++)
+        for (uint8 i = 0; i < 5; i++)
         {
             if (ex->item[i])
             {

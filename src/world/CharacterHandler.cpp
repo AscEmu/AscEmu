@@ -612,7 +612,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
                 inf->guild->RemoveGuildMember(inf, NULL);
         }
 
-        for (int i = 0; i < NUM_CHARTER_TYPES; ++i)
+        for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
         {
             Charter* c = objmgr.GetCharterByGuid(guid, (CharterTypes)i);
             if (c != NULL)
@@ -620,7 +620,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
         }
 
 
-        for (int i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+        for (uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
         {
             ArenaTeam* t = objmgr.GetArenaTeamByGuid((uint32)guid, i);
             if (t != NULL && t->m_leader == guid)

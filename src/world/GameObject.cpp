@@ -90,7 +90,7 @@ GameObject::~GameObject()
         m_respawnCell->_respawnObjects.erase(this);
 
     if (m_summonedGo && m_summoner)
-        for (int i = 0; i < 4; i++)
+        for (uint8 i = 0; i < 4; i++)
             if (m_summoner->m_ObjectSlots[i] == GetLowGUID())
                 m_summoner->m_ObjectSlots[i] = 0;
 }
@@ -740,7 +740,7 @@ void GameObject::OnRemoveInRangeObject(Object* pObj)
     Object::OnRemoveInRangeObject(pObj);
     if (m_summonedGo && m_summoner == pObj)
     {
-        for (int i = 0; i < 4; i++)
+        for (uint8 i = 0; i < 4; i++)
             if (m_summoner->m_ObjectSlots[i] == GetLowGUID())
                 m_summoner->m_ObjectSlots[i] = 0;
 

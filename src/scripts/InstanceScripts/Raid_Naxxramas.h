@@ -3832,7 +3832,7 @@ class KelthuzadAI : public CreatureAIScript
                     {
                         if (FrozenWastes[i] == false && (RandomUInt(3) == 0 || SpawnCounter > 0))
                         {
-                            for (int x = 0; x < 10; x++)
+                            for (uint8 x = 0; x < 10; x++)
                             {
                                 uint32 SpawnID = 10 * i + x;
                                 _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_SOLDIER_OF_THE_FROZEN_WASTES, SFrozenWastes[SpawnID].x, SFrozenWastes[SpawnID].y, SFrozenWastes[SpawnID].z, SFrozenWastes[SpawnID].o, true, false, 0, 0);
@@ -3844,7 +3844,7 @@ class KelthuzadAI : public CreatureAIScript
 
                         if (Abominations[i] == false && (RandomUInt(3) == 0 || SpawnCounter > 0))
                         {
-                            for (int x = 0; x < 3; x++)
+                            for (uint8 x = 0; x < 3; x++)
                             {
                                 uint32 SpawnID = 3 * i + x;
                                 _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_UNSTOPPABLE_ABOMINATION, Abomination[SpawnID].x, Abomination[SpawnID].y, Abomination[SpawnID].z, Abomination[SpawnID].o, true, false, 0, 0);

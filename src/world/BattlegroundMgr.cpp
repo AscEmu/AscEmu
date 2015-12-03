@@ -498,7 +498,7 @@ void CBattlegroundManager::AddPlayerToBgTeam(CBattleground* bg, std::deque<uint3
 void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 {
     std::deque<uint32> tempPlayerVec[2];
-    uint32 i, j, k;
+    uint8 i, j, k;
     Player* plr;
     CBattleground* bg;
     std::list<uint32>::iterator it3, it4;

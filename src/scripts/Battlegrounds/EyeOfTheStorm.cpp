@@ -141,7 +141,7 @@ const uint32 m_iconsStates[EOTS_TOWER_COUNT][3] =
 
 EyeOfTheStorm::EyeOfTheStorm(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
-    int i;
+    uint8 i;
 
     for (i = 0; i < 2; i++)
     {
@@ -667,7 +667,7 @@ void EyeOfTheStorm::RespawnCPFlag(uint32 i, uint32 id)
 
 void EyeOfTheStorm::UpdateCPs()
 {
-    uint32 i;
+    uint8 i;
     std::set< Object* >::iterator itr, itrend;
     Player* plr;
     GameObject* go;
@@ -825,7 +825,7 @@ void EyeOfTheStorm::UpdateCPs()
 
 void EyeOfTheStorm::GeneratePoints()
 {
-    uint32 i;
+    uint8 i;
     uint32 towers[2] = { 0, 0 };
 
     /*
@@ -954,15 +954,13 @@ LocationVector EyeOfTheStorm::GetStartingCoords(uint32 Team)
 
 void EyeOfTheStorm::OnStart()
 {
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
-
-    uint32 i;
 
     /* start the events */
     sEventMgr.AddEvent(this, &EyeOfTheStorm::GeneratePoints, EVENT_EOTS_GIVE_POINTS, 2000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -973,7 +971,7 @@ void EyeOfTheStorm::OnStart()
     AddSpiritGuide(SpawnSpiritGuide(EOTSStartLocations[1][0], EOTSStartLocations[1][1], EOTSStartLocations[1][2], 0, 1));
 
     /* remove the bubbles */
-    for (i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         m_bubbles[i]->RemoveFromWorld(false);
         delete m_bubbles[i];

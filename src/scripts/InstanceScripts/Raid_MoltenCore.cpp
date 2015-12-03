@@ -761,7 +761,8 @@ void SpellFunc_ShazzrahBlinkArcaneExplosions(SpellDesc* pThis, MoonScriptCreatur
     {
         //Teleport blink, then cast 4 arcane explosions
         Shazzrah->CastSpell(Shazzrah->mBlink);
-        for (int Iter = 0; Iter < 4; Iter++) Shazzrah->CastSpell(Shazzrah->mArcaneExplosion);
+        for (uint8 Iter = 0; Iter < 4; Iter++)
+            Shazzrah->CastSpell(Shazzrah->mArcaneExplosion);
     }
 }
 

@@ -198,7 +198,7 @@ bool BerserkerRage(uint32 i, Aura* a, bool apply)
         p_target->rageFromDamageTaken -= 100;
     }
 
-    for (int32 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         if (apply)
         {

@@ -304,7 +304,7 @@ void MaexxnaAI::AIUpdate()
     if (IsTimerFinished(mAddsSummonTimer))
     {
         MoonScriptCreatureAI* Spiderling = NULL;
-        for (int32 i = 0; i < 8; ++i)
+        for (uint8 i = 0; i < 8; ++i)
         {
             Spiderling = SpawnCreature(CN_MAEXXNA_SPIDERLING);
             if (Spiderling != NULL)

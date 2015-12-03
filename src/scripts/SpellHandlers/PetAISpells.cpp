@@ -189,7 +189,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
                     if (item != NULL)
                     {
-                        for (int s = 0; s < 5; s++)
+                        for (uint8 s = 0; s < 5; s++)
                         {
                             if (item->GetProto()->Spells[s].Id == 0)
                                 continue;
@@ -275,7 +275,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
         void OnHit(Unit* mTarget, float fAmount)
         {
-            for (int p = 0; p < 5; p++)
+            for (uint8 p = 0; p < 5; p++)
             {
                 if (procSpell[p] != 0)
                 {

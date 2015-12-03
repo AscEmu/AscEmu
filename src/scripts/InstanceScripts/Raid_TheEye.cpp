@@ -1787,7 +1787,7 @@ class HighAstromancerSolarianAI : public MoonScriptBossAI
                 }
                 else if (IsTimerFinished(mAgentsTimer) && !IsCasting())
                 {
-                    for (int SpawnIter = 0; SpawnIter < 4; SpawnIter++)
+                    for (uint8 SpawnIter = 0; SpawnIter < 4; SpawnIter++)
                     {
                         SpawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[0][0], mSpawnPositions[0][1], 17, 0, true);
                         SpawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[1][0], mSpawnPositions[1][1], 17, 0, true);

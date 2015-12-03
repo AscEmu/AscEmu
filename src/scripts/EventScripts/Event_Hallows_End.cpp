@@ -129,7 +129,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
                 {
                     WPCount = 29;
                     WayPoints = WaypointGoldshire;
-                    for (int i = 0; i <= WPCount; ++i)
+                    for (uint8 i = 0; i <= WPCount; ++i)
                     {
                         AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
                     }

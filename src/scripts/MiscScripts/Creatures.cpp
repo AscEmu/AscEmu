@@ -203,7 +203,7 @@ class DragonhawkMasters : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             LocationVector vect(GetUnit()->GetPositionX(), GetUnit()->GetPositionY(), GetUnit()->GetPositionZ(), GetUnit()->GetOrientation());
-            for (int i = 0; i < 2; ++i)
+            for (uint8 i = 0; i < 2; ++i)
             {
                 vect.x += RandomFloat(2.0f);
                 vect.y += RandomFloat(2.0f);
@@ -220,7 +220,7 @@ class NeutralMasters : public CreatureAIScript
         void OnCombatStart(Unit* mTarget)
         {
             LocationVector vect(GetUnit()->GetPositionX(), GetUnit()->GetPositionY(), GetUnit()->GetPositionZ(), GetUnit()->GetOrientation());
-            for (int i = 0; i < 2; ++i)
+            for (uint8 i = 0; i < 2; ++i)
             {
                 vect.x += RandomFloat(2.0f);
                 vect.y += RandomFloat(2.0f);

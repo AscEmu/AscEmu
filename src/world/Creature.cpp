@@ -2063,10 +2063,11 @@ void Creature::RemoveLimboState(Unit* healer)
 // Generates 3 random waypoints around the NPC
 void Creature::SetGuardWaypoints()
 {
-    if (!GetMapMgr()) return;
+    if (!GetMapMgr())
+        return;
 
     GetAIInterface()->setMoveType(1);
-    for (int i = 1; i <= 4; i++)
+    for (uint8 i = 1; i <= 4; i++)
     {
         float ang = RandomFloat(100.0f) / 100.0f;
         float ran = RandomFloat(100.0f) / 10.0f;
@@ -2568,7 +2569,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         if (spl != NULL)
         {
 
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
             {
                 if (spl->GetProto()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {

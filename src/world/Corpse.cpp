@@ -119,7 +119,7 @@ void Corpse::SpawnBones()
     SetUInt32Value(CORPSE_FIELD_FLAGS, 5);
     SetOwner(0); // remove corpse owner association
     //remove item association
-    for (int i = 0; i < EQUIPMENT_SLOT_END; i++)
+    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
         if (GetUInt32Value(CORPSE_FIELD_ITEM + i))
             SetUInt32Value(CORPSE_FIELD_ITEM + i, 0);

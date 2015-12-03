@@ -193,7 +193,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
             Find a FelCrystal
             */
         Unit* FC = NULL;
-        for (int x = 0; x < 5; x++)
+        for (uint8 x = 0; x < 5; x++)
         {
             FC = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(FelCrystals[x].x, FelCrystals[x].y, FelCrystals[x].z, FelCrystals[x].addition);
             if (!FC || !FC->isAlive() || FC->GetInstanceID() != _unit->GetInstanceID())

@@ -233,7 +233,7 @@ StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, ui
     RoundTime = 0;
     roundprogress = SOTA_ROUND_PREPARATION;
 
-    int i;
+    uint8 i;
 
     for (i = 0; i < BUFF_COUNT; ++i)
         m_buffs[i] = NULL;
@@ -354,7 +354,7 @@ bool StrandOfTheAncient::HookHandleRepop(Player* plr)
 void StrandOfTheAncient::OnCreate()
 {
     {
-        uint32 i;
+        uint8 i;
 
         BattleRound = 1;
         roundprogress = SOTA_ROUND_PREPARATION;

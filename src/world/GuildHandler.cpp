@@ -366,7 +366,6 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
 
     uint32 rankId;
     std::string newName;
-    uint32 i;
     GuildRank* pRank;
 
     recv_data >> rankId;
@@ -396,7 +395,7 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
         pRank->iGoldLimitPerDay = gold_limit;
 
 
-    for (i = 0; i < MAX_GUILD_BANK_TABS; ++i)
+    for (uint8 i = 0; i < MAX_GUILD_BANK_TABS; ++i)
     {
         recv_data >> pRank->iTabPermissions[i].iFlags;
         recv_data >> pRank->iTabPermissions[i].iStacksPerDay;
@@ -615,7 +614,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
     recv_data >> crap11;
     recv_data >> crap12;
     recv_data >> PetitionSignerCount;
-    for (uint32 s = 0; s < 10; ++s)
+    for (uint8 s = 0; s < 10; ++s)
     {
         recv_data >> crap13;
     }

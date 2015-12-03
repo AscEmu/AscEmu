@@ -1269,7 +1269,7 @@ bool Item::IsEligibleForRefund()
     if (proto->MaxCount > 1)
         return false;
 
-    for (int i = 0; i < 5; ++i)
+    for (uint8 i = 0; i < 5; ++i)
     {
         ItemSpell spell = proto->Spells[i];
 

@@ -24,7 +24,7 @@
 
 WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
-    int i;
+    uint8 i;
 
     for (i = 0; i < 2; i++)
     {
@@ -528,7 +528,7 @@ void WarsongGulch::SpawnBuff(uint32 x)
 void WarsongGulch::OnCreate()
 {
     /* add the buffs to the world */
-    for (int i = 0; i < 6; ++i)
+    for (uint8 i = 0; i < 6; ++i)
     {
         if (!m_buffs[i]->IsInWorld())
             m_buffs[i]->PushToWorld(m_mapMgr);
@@ -579,7 +579,7 @@ void WarsongGulch::OnCreate()
 
 void WarsongGulch::OnStart()
 {
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -597,7 +597,7 @@ void WarsongGulch::OnStart()
     DespawnGates(5000);
 
     /* add the flags to the world */
-    for (int i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         if (!m_homeFlags[i]->IsInWorld())
             m_homeFlags[i]->PushToWorld(m_mapMgr);

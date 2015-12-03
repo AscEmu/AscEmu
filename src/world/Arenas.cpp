@@ -27,9 +27,8 @@
 
 Arena::Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : CBattleground(mgr, id, lgroup, t)
 {
-    int i;
 
-    for (i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         m_players[i].clear();
         m_pendPlayers[i].clear();
@@ -91,9 +90,7 @@ Arena::Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per
 
 Arena::~Arena()
 {
-    int i;
-
-    for (i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         // buffs may not be spawned, so delete them if they're not
         if (m_buffs[i] && m_buffs[i]->IsInWorld() == false)
@@ -173,7 +170,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_CLOSE);
     sEventMgr.AddEvent(static_cast< CBattleground* >(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-    for (int i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         bool victorious = (i == winningTeam);
         std::set<Player*>::iterator itr = m_players[i].begin();
@@ -311,10 +308,8 @@ void Arena::HookOnShadowSight()
 
 void Arena::OnStart()
 {
-    int i;
-
     /* remove arena readiness buff */
-    for (i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -336,7 +331,7 @@ void Arena::OnStart()
         }
     }
 
-    for (i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         if (m_teams[i] == NULL) continue;
 

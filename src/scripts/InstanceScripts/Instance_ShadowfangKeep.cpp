@@ -183,7 +183,7 @@ class FenrusAI : public MoonScriptCreatureAI
 
         MoonScriptCreatureAI* voidwalker = NULL;
         // Spawn 4 x Arugal's Voidwalkers
-        for (int x = 1; x < 5; x++)
+        for (uint8 x = 1; x < 5; x++)
         {
             voidwalker = SpawnCreature(4627, VWSpawns[x].x, VWSpawns[x].y, VWSpawns[x].z, VWSpawns[x].o);
             if (voidwalker)

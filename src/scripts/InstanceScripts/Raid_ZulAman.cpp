@@ -143,7 +143,7 @@ class AkilzonAI : public MoonScriptBossAI
             {
                 MoonScriptCreatureAI* Eagle = NULL;
                 // Spawn 3 Soaring Eagles
-                for (int x = 0; x < 3; x++)
+                for (uint8 x = 0; x < 3; x++)
                 {
                     Eagle = SpawnCreature(CN_SOARING_EAGLE, (_unit->GetPositionX() + RandomFloat(12) - 10), (_unit->GetPositionY() + RandomFloat(12) - 15),
                                           _unit->GetPositionZ(), _unit->GetOrientation(), true);

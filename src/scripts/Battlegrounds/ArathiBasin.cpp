@@ -362,7 +362,7 @@ void ArathiBasin::OnStart()
 
 ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
-    int i;
+    uint8 i;
 
     for (i = 0; i < 2; i++)
     {

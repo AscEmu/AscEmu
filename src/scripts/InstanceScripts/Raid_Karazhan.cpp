@@ -1590,8 +1590,7 @@ class ShadeofAranAI : public CreatureAIScript
             if (FlameWreathTimer)
             {
                 FlameWreathTimer--;
-                uint32 i = 0;
-                for (i = 0; i < 3; i++)
+                for (uint8 i = 0; i < 3; i++)
                 {
                     if (!FlameWreathTarget[i])
                         continue;
@@ -1677,8 +1676,8 @@ class ShadeofAranAI : public CreatureAIScript
                 float ERX = 5 * cos(RandomFloat(6.28f)) + (_unit->GetPositionX());
                 float ERY = 5 * sin(RandomFloat(6.28f)) + (_unit->GetPositionY());
                 float ERZ = _unit->GetPositionZ();
-                uint32 i = 0;
-                for (i = 0; i < 4; i++)
+
+                for (uint8 i = 0; i < 4; i++)
                 {
                     _unit->GetMapMgr()->GetInterface()->SpawnCreature(SHADOWOFARAN, ERX, ERY, ERZ, 0, true, false, 0, 0);
                 }

@@ -4157,7 +4157,8 @@ class LuaUnit
     static int RepairAllPlayerItems(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-            Player* plr = static_cast<Player*>(ptr);
+
+        Player* plr = static_cast<Player*>(ptr);
         Item* pItem = NULL;
         Container* pContainer = NULL;
         uint32 j, i;
