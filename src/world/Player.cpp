@@ -722,7 +722,15 @@ void Player::CharChange_Language(uint64 GUID, uint8 race)
 //////////////////////////////////////////////////////////////////////////////////////////
 bool Player::Create(WorldPacket& data)
 {
-    uint8 race, class_, gender, skin, face, hairStyle, hairColor, facialHair, outfitId;
+    uint8 race;
+    uint8 class_;
+    uint8 gender;
+    uint8 skin;
+    uint8 face;
+    uint8 hairStyle;
+    uint8 hairColor;
+    uint8 facialHair;
+    uint8 outfitId;
 
     // unpack data into member variables
     data >> m_name;
@@ -730,8 +738,15 @@ bool Player::Create(WorldPacket& data)
     // correct capitalization
     CapitalizeString(m_name);
 
-    data >> race >> class_ >> gender >> skin >> face;
-    data >> hairStyle >> hairColor >> facialHair >> outfitId;
+    data >> race;
+    data >> class_;
+    data >> gender;
+    data >> skin;
+    data >> face;
+    data >> hairStyle;
+    data >> hairColor;
+    data >> facialHair;
+    data >> outfitId;
 
     info = objmgr.GetPlayerCreateInfo(race, class_);
     if (!info)

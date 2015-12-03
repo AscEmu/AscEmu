@@ -646,8 +646,12 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
     bool gname = false;
     uint32 i;
 
-    recv_data >> min_level >> max_level;
-    recv_data >> chatname >> guildname >> race_mask >> class_mask;
+    recv_data >> min_level;
+    recv_data >> max_level;
+    recv_data >> chatname;
+    recv_data >> guildname;
+    recv_data >> race_mask;
+    recv_data >> class_mask;
     recv_data >> zone_count;
 
     if (zone_count > 0 && zone_count < 10)
@@ -1050,12 +1054,17 @@ void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 suggestion, contentlen;
+    uint32 suggestion;
+    uint32 contentlen;
     std::string content;
     uint32 typelen;
     std::string type;
 
-    recv_data >> suggestion >> contentlen >> content >> typelen >> type;
+    recv_data >> suggestion;
+    recv_data >> contentlen;
+    recv_data >> content;
+    recv_data >> typelen;
+    recv_data >> type;
 
     if (suggestion == 0)
         LOG_DEBUG("WORLD: Received CMSG_BUG [Bug Report]");
@@ -1304,10 +1313,19 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     LOG_DEBUG("WORLD: Received CMSG_SET_ACTION_BUTTON");
-    uint8 button, misc, type;
+
+    uint8 button;
+    uint8 misc;
+    uint8 type;
     uint16 action;
-    recv_data >> button >> action >> misc >> type;
+
+    recv_data >> button;
+    recv_data >> action;
+    recv_data >> misc;
+    recv_data >> type;
+
     LOG_DEBUG("BUTTON: %u ACTION: %u TYPE: %u MISC: %u", button, action, type, misc);
+
     if (action == 0)
     {
         LOG_DEBUG("MISC: Remove action from button %u", button);
@@ -1434,8 +1452,14 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
 
     LOG_DEBUG("WORLD: CMSG_ALTER_APPEARANCE ");
 
-    uint32 hair, haircolor, facialhairorpiercing;
-    recv_data >> hair >> haircolor >> facialhairorpiercing;
+    uint32 hair;
+    uint32 haircolor;
+    uint32 facialhairorpiercing;
+
+    recv_data >> hair;
+    recv_data >> haircolor;
+    recv_data >> facialhairorpiercing;
+
     uint32 oldhair = _player->GetByte(PLAYER_BYTES, 2);
     uint32 oldhaircolor = _player->GetByte(PLAYER_BYTES, 3);
     uint32 oldfacial = _player->GetByte(PLAYER_BYTES_2, 0);
@@ -2100,14 +2124,18 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 min, max;
-    recv_data >> min >> max;
+    uint32 min;
+    uint32 max;
+
+    recv_data >> min;
+    recv_data >> max;
 
     LOG_DETAIL("WORLD: Received MSG_RANDOM_ROLL: %u-%u", min, max);
 
     WorldPacket data(20);
     data.SetOpcode(MSG_RANDOM_ROLL);
-    data << min << max;
+    data << min;
+    data << max;
 
     uint32 roll;
 
@@ -2159,9 +2187,13 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     uint64 target_playerguid
 
     */
-    uint64 creatureguid, target_playerguid;
+    uint64 creatureguid;
+    uint64 target_playerguid;
     uint8 slotid;
-    recv_data >> creatureguid >> slotid >> target_playerguid;
+
+    recv_data >> creatureguid;
+    recv_data >> slotid;
+    recv_data >> target_playerguid;
 
     if (_player->GetGroup() == NULL || _player->GetGroup()->GetLooter() != _player->m_playerInfo)
         return;
@@ -2306,7 +2338,10 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
     uint64 creatureguid;
     uint32 slotid;
     uint8 choice;
-    recv_data >> creatureguid >> slotid >> choice;
+
+    recv_data >> creatureguid;
+    recv_data >> slotid;
+    recv_data >> choice;
 
     LootRoll* li = NULL;
 
@@ -2345,10 +2380,13 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
 void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
-
     CHECK_PACKET_SIZE(recv_data, 2);
-    int8 slot, containerslot;
-    recv_data >> containerslot >> slot;
+
+    int8 slot;
+    int8 containerslot;
+
+    recv_data >> containerslot;
+    recv_data >> slot;
 
     Item* pItem = _player->GetItemInterface()->GetInventoryItem(containerslot, slot);
     if (!pItem)
@@ -2510,7 +2548,8 @@ void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
     uint64 SummonerGUID;
     uint8 IsClickOk;
 
-    recv_data >> SummonerGUID >> IsClickOk;
+    recv_data >> SummonerGUID;
+    recv_data >> IsClickOk;
 
     if (!IsClickOk)
         return;

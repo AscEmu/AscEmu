@@ -450,7 +450,8 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
     recv_data >> guid;
 
     uint32 auction_id, price;
-    recv_data >> auction_id >> price;
+    recv_data >> auction_id;
+    recv_data >> price;
 
     Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
     if (!pCreature || !pCreature->auctionHouse)
@@ -551,12 +552,21 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint64 guid, item;
-    uint32 bid, buyout, etime, unk1, unk2;    // etime is in minutes
+    uint64 guid;
+    uint64 item;
+    uint32 bid;
+    uint32 buyout;
+    uint32 etime;   // in minutes
+    uint32 unk1;
+    uint32 unk2;
 
-    recv_data >> guid >> unk1 >> item;
+    recv_data >> guid;
+    recv_data >> unk1;
+    recv_data >> item;
     recv_data >> unk2;
-    recv_data >> bid >> buyout >> etime;
+    recv_data >> bid;
+    recv_data >> buyout;
+    recv_data >> etime;
 
     Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
     if (!pCreature || !pCreature->auctionHouse)

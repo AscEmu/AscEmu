@@ -123,9 +123,13 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     Item* pItem;
     //uint32 err = MAIL_OK;
 
-    recv_data >> gameobject >> recepient;
-    recv_data >> msg.subject >> msg.body >> msg.stationery;
-    recv_data >> unk2 >> itemcount;
+    recv_data >> gameobject;
+    recv_data >> recepient;
+    recv_data >> msg.subject;
+    recv_data >> msg.body;
+    recv_data >> msg.stationery;
+    recv_data >> unk2;
+    recv_data >> itemcount;
 
     if (itemcount > MAIL_MAX_ITEM_SLOT || msg.body.find("%") != std::string::npos || msg.subject.find("%") != std::string::npos)
     {

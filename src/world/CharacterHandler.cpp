@@ -75,8 +75,23 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     recv_data >> guid;
     recv_data >> newname;
 
-    uint8 gender, skin, face, hairStyle, hairColor, facialHair, race, faction;
-    recv_data >> gender >> skin >> hairColor >> hairStyle >> facialHair >> face >> race >> faction;
+    uint8 gender;
+    uint8 skin;
+    uint8 face;
+    uint8 hairStyle;
+    uint8 hairColor;
+    uint8 facialHair;
+    uint8 race;
+    uint8 faction;
+
+    recv_data >> gender;
+    recv_data >> skin;
+    recv_data >> hairColor;
+    recv_data >> hairStyle;
+    recv_data >> facialHair;
+    recv_data >> face;
+    recv_data >> race;
+    recv_data >> faction;
 
     LoginErrorCode res = VerifyName(newname.c_str(), newname.length());
     if (res != E_CHAR_NAME_SUCCESS)
@@ -1178,10 +1193,24 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 {
     uint64 guid;
     std::string newname;
-    uint8 gender, skin, face, hairStyle, hairColor, facialHair, race;
+    uint8 gender;
+    uint8 skin;
+    uint8 face;
+    uint8 hairStyle;
+    uint8 hairColor;
+    uint8 facialHair;
+    uint8 race;
+
     recv_data >> guid;
     recv_data >> newname;
-    recv_data >> gender >> skin >> hairColor >> hairStyle >> facialHair >> face >> race;
+    recv_data >> gender;
+    recv_data >> skin;
+    recv_data >> hairColor;
+    recv_data >> hairStyle;
+    recv_data >> facialHair;
+    recv_data >> face;
+    recv_data >> race;
+
     uint8 _class = 0;
     PlayerInfo* info = objmgr.GetPlayerInfo(guid);
 

@@ -24,11 +24,15 @@ void WorldSession::HandleBattlefieldPortOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        uint16 mapinfo, unk;
+    uint16 mapinfo;
+    uint16 unk;
     uint8 action;
     uint32 bgtype;
 
-    recv_data >> unk >> bgtype >> mapinfo >> action;
+    recv_data >> unk;
+    recv_data >> bgtype;
+    recv_data >> mapinfo;
+    recv_data >> action;
 
     if (action == 0)
     {
@@ -276,7 +280,12 @@ void WorldSession::HandleArenaJoinOpcode(WorldPacket& recv_data)
     uint8 arenacategory;
     uint8 as_group;
     uint8 rated_match;
-    recv_data >> guid >> arenacategory >> as_group >> rated_match;
+
+    recv_data >> guid;
+    recv_data >> arenacategory;
+    recv_data >> as_group;
+    recv_data >> rated_match;
+
     switch (arenacategory)
     {
         case 0:        // 2v2

@@ -39,12 +39,20 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN;
     CHECK_PACKET_SIZE(recv_data, 8);
-    int8 DstInvSlot = 0, DstSlot = 0, SrcInvSlot = 0, SrcSlot = 0;
+
+    int8 DstInvSlot = 0;
+    int8 DstSlot = 0;
+    int8 SrcInvSlot = 0;
+    int8 SrcSlot = 0;
     int32 count = 0;
 
     AddItemResult result;
 
-    recv_data >> SrcInvSlot >> SrcSlot >> DstInvSlot >> DstSlot >> count;
+    recv_data >> SrcInvSlot;
+    recv_data >> SrcSlot;
+    recv_data >> DstInvSlot;
+    recv_data >> DstSlot;
+    recv_data >> count;
 
     /* exploit fix */
     if (count <= 0 || (SrcInvSlot <= 0 && SrcSlot < INVENTORY_SLOT_ITEM_START))
@@ -169,12 +177,17 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
 void WorldSession::HandleSwapItemOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
+    CHECK_PACKET_SIZE(recv_data, 4);
 
-        CHECK_PACKET_SIZE(recv_data, 4);
+    int8 DstInvSlot = 0;
+    int8 DstSlot = 0;
+    int8 SrcInvSlot = 0;
+    int8 SrcSlot = 0;
 
-    int8 DstInvSlot = 0, DstSlot = 0, SrcInvSlot = 0, SrcSlot = 0;
-
-    recv_data >> DstInvSlot >> DstSlot >> SrcInvSlot >> SrcSlot;
+    recv_data >> DstInvSlot;
+    recv_data >> DstSlot;
+    recv_data >> SrcInvSlot;
+    recv_data >> SrcSlot;
 
     LOG_DETAIL("ITEM: swap, DstInvSlot %i DstSlot %i SrcInvSlot %i SrcSlot %i", DstInvSlot, DstSlot, SrcInvSlot, SrcSlot);
 
@@ -188,10 +201,12 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
 
     CHECK_PACKET_SIZE(recv_data, 2);
     WorldPacket data;
-    int8 srcslot = 0, dstslot = 0;
+    int8 srcslot = 0;
+    int8 dstslot = 0;
     int8 error = 0;
 
-    recv_data >> dstslot >> srcslot;
+    recv_data >> dstslot;
+    recv_data >> srcslot;
 
     LOG_DETAIL("ITEM: swap, src slot: %u dst slot: %u", (uint32)srcslot, (uint32)dstslot);
 
@@ -346,9 +361,11 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
 
     CHECK_PACKET_SIZE(recv_data, 2);
 
-    int8 SrcInvSlot, SrcSlot;
+    int8 SrcInvSlot;
+    int8 SrcSlot;
 
-    recv_data >> SrcInvSlot >> SrcSlot;
+    recv_data >> SrcInvSlot;
+    recv_data >> SrcSlot;
 
     LOG_DETAIL("ITEM: destroy, SrcInv Slot: %i Src slot: %i", SrcInvSlot, SrcSlot);
     Item* it = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
@@ -442,9 +459,12 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
     CHECK_PACKET_SIZE(recv_data, 2);
     WorldPacket data;
 
-    int8 SrcInvSlot, SrcSlot, error = 0;
+    int8 SrcInvSlot;
+    int8 SrcSlot;
+    int8 error = 0;
 
-    recv_data >> SrcInvSlot >> SrcSlot;
+    recv_data >> SrcInvSlot;
+    recv_data >> SrcSlot;
 
     LOG_DETAIL("ITEM: autoequip, Inventory slot: %i Source Slot: %i", SrcInvSlot, SrcSlot);
 
@@ -622,10 +642,13 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
 
     LOG_DETAIL("WORLD: Received CMSG_AUTOEQUIP_ITEM_SLOT");
     CHECK_PACKET_SIZE(recvData, 8 + 1);
+
     uint64 itemguid;
     int8 destSlot;
     //int8 error = 0; // useless?
-    recvData >> itemguid >> destSlot;
+
+    recvData >> itemguid;
+    recvData >> destSlot;
 
     int8    srcSlot = (int8)_player->GetItemInterface()->GetInventorySlotByGuid(itemguid);
     Item*    item = _player->GetItemInterface()->GetItemByGUID(itemguid);
@@ -848,7 +871,8 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
 
     LOG_DETAIL("WORLD: Received CMSG_BUYBACK_ITEM");
 
-    recv_data >> guid >> stuff;
+    recv_data >> guid;
+    recv_data >> stuff;
     stuff -= 74;
 
     Item* it = _player->GetItemInterface()->GetBuyBack(stuff);
@@ -1030,12 +1054,12 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
 void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag & drop
 {
     CHECK_INWORLD_RETURN
-
     CHECK_PACKET_SIZE(recv_data, 22);
 
     LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM_IN_SLOT");
 
-    uint64 srcguid, bagguid;
+    uint64 srcguid;
+    uint64 bagguid;
     uint32 itemid;
     int8 slot;
     uint8 amount = 0;
@@ -1043,7 +1067,8 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
     int8 bagslot = INVENTORY_SLOT_NOT_SET;
     int32 vendorslot; //VLack: 3.1.2
 
-    recv_data >> srcguid >> itemid;
+    recv_data >> srcguid;
+    recv_data >> itemid;
     recv_data >> vendorslot; //VLack: 3.1.2 This is the slot's number on the vendor's panel, starts from 1
     recv_data >> bagguid;
     recv_data >> slot; //VLack: 3.1.2 the target slot the player selected - backpack 23-38, other bags 0-15 (Or how big is the biggest bag? 0-127?)
@@ -1243,9 +1268,10 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
     SlotResult slotresult;
     AddItemResult result;
 
-    recv_data >> srcguid >> itemid;
-    recv_data >> slot >> amount;
-
+    recv_data >> srcguid;
+    recv_data >> itemid;
+    recv_data >> slot;
+    recv_data >> amount;
 
     Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
     if (unit == NULL || !unit->HasItems())
@@ -1505,7 +1531,9 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
     int8 error;
     AddItemResult result;
 
-    recv_data >> SrcInv >> Slot >> DstInv;
+    recv_data >> SrcInv;
+    recv_data >> Slot;
+    recv_data >> DstInv;
 
     srcitem = _player->GetItemInterface()->GetInventoryItem(SrcInv, Slot);
 
@@ -2041,14 +2069,18 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    int8 sourceitem_bagslot, sourceitem_slot;
-    int8 destitem_bagslot, destitem_slot;
+    int8 sourceitem_bagslot;
+    int8 sourceitem_slot;
+    int8 destitem_bagslot;
+    int8 destitem_slot;
     uint32 source_entry;
     uint32 itemid;
     Item* src, *dst;
 
-    recv_data >> sourceitem_bagslot >> sourceitem_slot;
-    recv_data >> destitem_bagslot >> destitem_slot;
+    recv_data >> sourceitem_bagslot;
+    recv_data >> sourceitem_slot;
+    recv_data >> destitem_bagslot;
+    recv_data >> destitem_slot;
 
     src = _player->GetItemInterface()->GetInventoryItem(sourceitem_bagslot, sourceitem_slot);
     dst = _player->GetItemInterface()->GetInventoryItem(destitem_bagslot, destitem_slot);

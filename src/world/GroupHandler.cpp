@@ -360,11 +360,14 @@ void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN;
     CHECK_PACKET_SIZE(recv_data, 16);
+
     uint32 lootMethod;
     uint64 lootMaster;
     uint32 threshold;
 
-    recv_data >> lootMethod >> lootMaster >> threshold;
+    recv_data >> lootMethod;
+    recv_data >> lootMaster;
+    recv_data >> threshold;
 
     if (!_player->IsGroupLeader())
     {

@@ -203,7 +203,13 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
 
     realm->Name = Name;
     realm->flags = 0;
-    recvData >> realm->Address >> realm->flags >> realm->Icon >> realm->TimeZone >> realm->Population >> realm->Lock >> realm->GameBuild;
+    recvData >> realm->Address;
+    recvData >> realm->flags;
+    recvData >> realm->Icon;
+    recvData >> realm->TimeZone;
+    recvData >> realm->Population;
+    recvData >> realm->Lock;
+    recvData >> realm->GameBuild;
 
     sLog.outString("TEST FLAGS %u", realm->flags);
 
@@ -392,7 +398,8 @@ void LogonCommServerSocket::HandleUpdateMapping(WorldPacket & recvData)
         return;
 
     sInfoCore.getRealmLock().Acquire();
-    recvData >> account_id >> chars_to_add;
+    recvData >> account_id;
+    recvData >> chars_to_add;
 
     std::unordered_map<uint32, uint8>::iterator itr = realm->CharacterMap.find(account_id);
     if (itr != realm->CharacterMap.end())
@@ -454,7 +461,9 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             std::string account;
             std::string banreason;
             uint32 duration;
-            recvData >> account >> duration >> banreason;
+            recvData >> account;
+            recvData >> duration;
+            recvData >> banreason;
 
             // remember we expect this in uppercase
             arcemu_TOUPPER(account);
@@ -475,7 +484,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         {
             std::string account;
             std::string gm;
-            recvData >> account >> gm;
+            recvData >> account;
+            recvData >> gm;
 
             // remember we expect this in uppercase
             arcemu_TOUPPER(account);
@@ -496,7 +506,8 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
         {
             std::string account;
             uint32 duration;
-            recvData >> account >> duration;
+            recvData >> account;
+            recvData >> duration;
 
             // remember we expect this in uppercase
             arcemu_TOUPPER(account);
@@ -518,7 +529,9 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             std::string banreason;
             uint32 duration;
 
-            recvData >> ip >> duration >> banreason;
+            recvData >> ip;
+            recvData >> duration;
+            recvData >> banreason;
 
             if (sIPBanner.Add(ip.c_str(), duration))
                 sLogonSQL->Execute("INSERT INTO ipbans VALUES(\"%s\", %u, \"%s\")", sLogonSQL->EscapeString(ip).c_str(), duration, sLogonSQL->EscapeString(banreason).c_str());

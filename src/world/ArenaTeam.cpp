@@ -397,7 +397,8 @@ void WorldSession::HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_ARENA_TEAM_INVITE, 40);
     std::string player_name;
     uint32 teamId;
-    recv_data >> teamId >> player_name;
+    recv_data >> teamId;
+    recv_data >> player_name;
 
     ArenaTeam* pTeam = objmgr.GetArenaTeamById(teamId);
     if (!pTeam)
@@ -461,7 +462,8 @@ void WorldSession::HandleArenaTeamRemoveMemberOpcode(WorldPacket& recv_data)
     uint32 teamId;
     std::string name;
     PlayerInfo* inf;
-    recv_data >> teamId >> name;
+    recv_data >> teamId;
+    recv_data >> name;
 
     team = objmgr.GetArenaTeamById(teamId);
     if (!team)
@@ -661,7 +663,8 @@ void WorldSession::HandleArenaTeamPromoteOpcode(WorldPacket& recv_data)
     std::string name;
     ArenaTeam* team;
     PlayerInfo* inf;
-    recv_data >> teamId >> name;
+    recv_data >> teamId;
+    recv_data >> name;
 
     team = objmgr.GetArenaTeamById(teamId);
     if (!team)

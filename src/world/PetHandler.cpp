@@ -30,9 +30,11 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
     uint64 petGuid = 0;
     uint16 misc = 0;
     uint16 action = 0;
-
     uint64 targetguid = 0;
-    recv_data >> petGuid >> misc >> action;
+
+    recv_data >> petGuid;
+    recv_data >> misc;
+    recv_data >> action;
     //recv_data.hexlike();
 
     //printf("Pet_Action: 0x%.4X 0x%.4X\n", misc, action);
@@ -248,7 +250,9 @@ void WorldSession::HandlePetNameQuery(WorldPacket& recv_data)
     uint32 petNumber = 0;
     uint64 petGuid = 0;
 
-    recv_data >> petNumber >> petGuid;
+    recv_data >> petNumber;
+    recv_data >> petGuid;
+
     Pet* pPet = _player->GetMapMgr()->GetPet(GET_LOWGUID_PART(petGuid));
     if (!pPet)
         return;
@@ -292,7 +296,9 @@ void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
     uint64 npcguid = 0;
     uint32 petnumber = 0;
 
-    recv_data >> npcguid >> petnumber;
+    recv_data >> npcguid;
+    recv_data >> petnumber;
+
     PlayerPet* pet = _player->GetPlayerPet(petnumber);
     if (!pet)
     {
@@ -314,9 +320,11 @@ void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        uint64 npcguid = 0;
+    uint64 npcguid = 0;
     uint32 petnumber = 0;
-    recv_data >> npcguid >> petnumber;
+
+    recv_data >> npcguid;
+    recv_data >> petnumber;
 
     PlayerPet* pet = _player->GetPlayerPet(petnumber);
     if (!pet)
@@ -398,7 +406,10 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
     uint16 spell;
     uint16 state;
 
-    recv_data >> guid >> slot >> spell >> state;
+    recv_data >> guid;
+    recv_data >> slot;
+    recv_data >> spell;
+    recv_data >> state;
 
     if (!_player->GetSummon())
         return;
@@ -423,7 +434,9 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
 
     uint64 guid;
     std::string name;
-    recv_data >> guid >> name;
+
+    recv_data >> guid;
+    recv_data >> name;
 
     Pet* pet = NULL;
     std::list<Pet*> summons = _player->GetSummons();

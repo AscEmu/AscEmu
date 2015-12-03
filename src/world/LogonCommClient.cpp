@@ -145,7 +145,10 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
     uint32 realmlid;
     uint32 error;
     std::string realmname;
-    recvData >> error >> realmlid >> realmname;
+
+    recvData >> error;
+    recvData >> realmlid;
+    recvData >> realmname;
 
 #ifdef WIN32
     Log.Success("LogonCommClient", "Realm `%s` (UNICODE) registered as realm %u.", _StringToANSI(realmname.c_str()), realmlid);
@@ -416,8 +419,11 @@ void LogonCommClientSocket::HandleDisconnectAccount(WorldPacket& recvData)
 void ConsoleAuthCallback(uint32 request, uint32 result);
 void LogonCommClientSocket::HandleConsoleAuthResult(WorldPacket& recvData)
 {
-    uint32 requestid, result;
-    recvData >> requestid >> result;
+    uint32 requestid;
+    uint32 result;
+
+    recvData >> requestid;
+    recvData >> result;
 
     ConsoleAuthCallback(requestid, result);
 }

@@ -305,7 +305,11 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     std::string lang = "enUS";
     uint32 i;
 
-    recvData >> AccountID >> AccountName >> GMFlags >> AccountFlags;
+    recvData >> AccountID;
+    recvData >> AccountName;
+    recvData >> GMFlags;
+    recvData >> AccountFlags;
+
     ForcedPermissions = sLogonCommHandler.GetForcedPermissions(AccountName);
     if (ForcedPermissions != NULL)
         GMFlags.assign(ForcedPermissions->c_str());

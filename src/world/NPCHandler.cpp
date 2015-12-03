@@ -422,7 +422,9 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
     uint32 unk24;
     uint64 guid;
 
-    recv_data >> guid >> unk24 >> option;
+    recv_data >> guid;
+    recv_data >> unk24;
+    recv_data >> option;
 
     LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION Option %i Guid %.8X", option, guid);
     Arcemu::Gossip::Script* script = NULL;

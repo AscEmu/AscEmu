@@ -325,7 +325,9 @@ void WorldSession::HandleSetAtWarOpcode(WorldPacket& recv_data)
 {
     uint32 id;
     uint8 state;
-    recv_data >> id >> state;
+
+    recv_data >> id;
+    recv_data >> state;
 
     _player->SetAtWar(id, (state == 1));
 }
@@ -447,7 +449,9 @@ void WorldSession::HandleSetFactionInactiveOpcode(WorldPacket& recv_data)
 
     uint32 id;
     uint8 inactive;
-    recv_data >> id >> inactive;
+
+    recv_data >> id;
+    recv_data >> inactive;
 
     _player->SetFactionInactive(id, (inactive == 1));
 }

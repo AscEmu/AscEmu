@@ -1329,11 +1329,17 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
 
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN uint32 talent_id, requested_rank, unk;
-    recv_data >> talent_id >> requested_rank >> unk;
+    CHECK_INWORLD_RETURN
+    
+    uint32 talent_id;
+    uint32 requested_rank;
+    uint32 unk;
+
+    recv_data >> talent_id;
+    recv_data >> requested_rank;
+    recv_data >> unk;
 
     _player->LearnTalent(talent_id, requested_rank);
-
 }
 
 void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
