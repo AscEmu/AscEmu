@@ -129,11 +129,17 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         }
 
         *data << uint8(1);
-        //In 3.1 this should be the uint32(negative rating), uint32(positive rating), uint32(0)[<-this is the new field in 3.1], and a name if available / which is a null-terminated string, and we send an uint8(0), so we provide a zero length name string /
+        
         if (!Rated())
         {
-            *data << uint32(0) << uint32(0) << uint32(0) << uint8(0);
-            *data << uint32(0) << uint32(0) << uint32(0) << uint8(0);
+            *data << uint32(0); //uint32(negative rating)
+            *data << uint32(0); //uint32(positive rating)
+            *data << uint32(0); //uint32(0)[<-this is the new field in 3.1]
+            *data << uint8(0);  //name if available / which is a null-terminated string, and we send an uint8(0), so we provide a zero length name string
+            *data << uint32(0);
+            *data << uint32(0);
+            *data << uint32(0);
+            *data << uint8(0);
         }
         else
         {
@@ -142,20 +148,32 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
 
             if (teams[0])
             {
-                *data << uint32(0) << uint32(3000 + m_deltaRating[0]) << uint32(0) << uint8(0);
+                *data << uint32(0);
+                *data << uint32(3000 + m_deltaRating[0]);
+                *data << uint32(0);
+                *data << uint8(0);
             }
             else
             {
-                *data << uint32(0) << uint32(0) << uint32(0) << uint8(0);
+                *data << uint32(0);
+                *data << uint32(0);
+                *data << uint32(0);
+                *data << uint8(0);
             }
 
             if (teams[1])
             {
-                *data << uint32(0) << uint32(3000 + m_deltaRating[1]) << uint32(0) << uint8(0);
+                *data << uint32(0);
+                *data << uint32(3000 + m_deltaRating[1]);
+                *data << uint32(0);
+                *data << uint8(0);
             }
             else
             {
-                *data << uint32(0) << uint32(0) << uint32(0) << uint8(0);
+                *data << uint32(0);
+                *data << uint32(0);
+                *data << uint32(0);
+                *data << uint8(0);
             }
         }
 
@@ -941,12 +959,27 @@ void CBattleground::EventResurrectPlayers()
             if (plr && plr->IsDead())
             {
                 data.Initialize(SMSG_SPELL_START);
-                data << plr->GetNewGUID() << plr->GetNewGUID() << uint32(RESURRECT_SPELL) << uint8(0) << uint16(0) << uint32(0) << uint16(2) << plr->GetGUID();
+                data << plr->GetNewGUID();
+                data << plr->GetNewGUID();
+                data << uint32(RESURRECT_SPELL);
+                data << uint8(0);
+                data << uint16(0);
+                data << uint32(0);
+                data << uint16(2);
+                data << plr->GetGUID();
                 plr->SendMessageToSet(&data, true);
 
                 data.Initialize(SMSG_SPELL_GO);
-                data << plr->GetNewGUID() << plr->GetNewGUID() << uint32(RESURRECT_SPELL) << uint8(0) << uint8(1) << uint8(1) << plr->GetGUID() << uint8(0) << uint16(2)
-                    << plr->GetGUID();
+                data << plr->GetNewGUID();
+                data << plr->GetNewGUID();
+                data << uint32(RESURRECT_SPELL);
+                data << uint8(0);
+                data << uint8(1);
+                data << uint8(1);
+                data << plr->GetGUID();
+                data << uint8(0);
+                data << uint16(2);
+                data << plr->GetGUID();
                 plr->SendMessageToSet(&data, true);
 
                 plr->ResurrectPlayer();

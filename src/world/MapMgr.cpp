@@ -1393,7 +1393,8 @@ void MapMgr::BeginInstanceExpireCountdown()
     forced_expire = true;
 
     // send our sexy packet
-    data << uint32(60000) << uint32(1);
+    data << uint32(60000);
+    data << uint32(1);
     for (itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
     {
         if (!itr->second->raidgrouponlysent)

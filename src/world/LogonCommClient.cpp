@@ -276,7 +276,9 @@ void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
     for (; itr != realm_ids.end(); ++itr)
     {
         data.clear();
-        data << (*itr) << account_id << add;
+        data << (*itr);
+        data << account_id;
+        data << add;
         SendPacket(&data, false);
     }
 }
@@ -428,7 +430,8 @@ void LogonCommClientSocket::HandlePopulationRequest(WorldPacket& recvData)
 
     // Send the result
     WorldPacket data(LRCMSG_REALM_POPULATION_RESULT, 16);
-    data << realmId << LogonCommHandler::getSingleton().GetServerPopulation();
+    data << realmId;
+    data << LogonCommHandler::getSingleton().GetServerPopulation();
     SendPacket(&data, false);
 }
 

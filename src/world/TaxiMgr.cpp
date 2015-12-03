@@ -226,7 +226,9 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
 
     *data << riding->GetNewGUID();
     *data << uint8(0);                  //VLack: usual uint8 after new style guid
-    *data << riding->GetPositionX() << riding->GetPositionY() << riding->GetPositionZ();
+    *data << riding->GetPositionX();
+    *data << riding->GetPositionY();
+    *data << riding->GetPositionZ();
     *data << getMSTime();
     *data << uint8(0);
     *data << uint32(0x00003000);

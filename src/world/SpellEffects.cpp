@@ -1774,11 +1774,16 @@ void Spell::SpellEffectBind(uint32 i)
     playerTarget->SetBindPoint(playerTarget->GetPositionX(), playerTarget->GetPositionY(), playerTarget->GetPositionZ(), mapid, areaid);
 
     data.Initialize(SMSG_BINDPOINTUPDATE);
-    data << playerTarget->GetBindPositionX() << playerTarget->GetBindPositionY() << playerTarget->GetBindPositionZ() << playerTarget->GetBindMapId() << playerTarget->GetBindZoneId();
+    data << playerTarget->GetBindPositionX();
+    data << playerTarget->GetBindPositionY();
+    data << playerTarget->GetBindPositionZ();
+    data << playerTarget->GetBindMapId();
+    data << playerTarget->GetBindZoneId();
     playerTarget->GetSession()->SendPacket(&data);
 
     data.Initialize(SMSG_PLAYERBOUND);
-    data << m_caster->GetGUID() << playerTarget->GetBindZoneId();
+    data << m_caster->GetGUID();
+    data << playerTarget->GetBindZoneId();
     playerTarget->GetSession()->SendPacket(&data);
 }
 
@@ -2719,7 +2724,8 @@ void Spell::SpellEffectLeap(uint32 i) // Leap
         WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
         data << playerTarget->GetNewGUID();
         data << getMSTime();
-        data << cosf(playerTarget->GetOrientation()) << sinf(playerTarget->GetOrientation());
+        data << cosf(playerTarget->GetOrientation());
+        data << sinf(playerTarget->GetOrientation());
         data << radius;
         data << float(-10.0f);
         playerTarget->GetSession()->SendPacket(&data);
@@ -5250,14 +5256,18 @@ void Spell::SpellEffectPlayerPull(uint32 i)
     WorldPacket data(SMSG_MONSTER_MOVE, 60);
     data << p_target->GetNewGUID();
     data << uint8(0);
-    data << p_target->GetPositionX() << p_target->GetPositionY() << p_target->GetPositionZ();
+    data << p_target->GetPositionX();
+    data << p_target->GetPositionY();
+    data << p_target->GetPositionZ();
     data << getMSTime();
     data << uint8(4);
     data << pullO;
     data << uint32(0x00001000);
     data << time;
     data << uint32(1);
-    data << pullX << pullY << pullZ;
+    data << pullX;
+    data << pullY;
+    data << pullZ;
 
     p_target->SendMessageToSet(&data, true);
 }

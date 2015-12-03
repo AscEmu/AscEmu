@@ -718,7 +718,11 @@ void LootRoll::Finalize()
     {
         /* all passed */
         data.Initialize(SMSG_LOOT_ALL_PASSED);
-        data << _guid << _groupcount << _itemid << _randomsuffixid << _randompropertyid;
+        data << _guid;
+        data << _groupcount;
+        data << _itemid;
+        data << _randomsuffixid;
+        data << _randompropertyid;
         std::set<uint32>::iterator pitr = m_passRolls.begin();
         while (_player == NULL && pitr != m_passRolls.end())
             _player = _mgr->GetPlayer((*(pitr++)));
@@ -736,8 +740,14 @@ void LootRoll::Finalize()
     }
     pLoot->items.at(_slotid).roll = 0;
     data.Initialize(SMSG_LOOT_ROLL_WON);
-    data << _guid << _slotid << _itemid << _randomsuffixid << _randompropertyid;
-    data << _player->GetGUID() << uint8(highest) << uint8(hightype);
+    data << _guid;
+    data << _slotid;
+    data << _itemid;
+    data << _randomsuffixid;
+    data << _randompropertyid;
+    data << _player->GetGUID();
+    data << uint8(highest);
+    data << uint8(hightype);
     if (_player->InGroup())
         _player->GetGroup()->SendPacketToAll(&data);
     else
@@ -820,22 +830,29 @@ void LootRoll::PlayerRolled(Player* player, uint8 choice)
     // create packet
     WorldPacket data(34);
     data.SetOpcode(SMSG_LOOT_ROLL);
-    data << _guid << _slotid << player->GetGUID();
-    data << _itemid << _randomsuffixid << _randompropertyid;
+    data << _guid;
+    data << _slotid;
+    data << player->GetGUID();
+    data << _itemid;
+    data << _randomsuffixid;
+    data << _randompropertyid;
     if (choice == NEED)
     {
         m_NeedRolls.insert(std::make_pair(player->GetLowGUID(), roll));
-        data << uint8(roll) << uint8(NEED);
+        data << uint8(roll);
+        data << uint8(NEED);
     }
     else if (choice == GREED)
     {
         m_GreedRolls.insert(std::make_pair(player->GetLowGUID(), roll));
-        data << uint8(roll) << uint8(GREED);
+        data << uint8(roll);
+        data << uint8(GREED);
     }
     else
     {
         m_passRolls.insert(player->GetLowGUID());
-        data << uint8(128) << uint8(128);
+        data << uint8(128);
+        data << uint8(128);
     }
     data << uint8(0);	// Requires research - possibly related to disenchanting of loot
     if (player->InGroup())

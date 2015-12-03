@@ -691,14 +691,19 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 void QuestMgr::BuildQuestUpdateAddItem(WorldPacket* data, uint32 itemid, uint32 count)
 {
     data->Initialize(SMSG_QUESTUPDATE_ADD_ITEM);
-    *data << itemid << count;
+    *data << itemid;
+    *data << count;
 }
 
 void QuestMgr::SendQuestUpdateAddKill(Player* plr, uint32 questid, uint32 entry, uint32 count, uint32 tcount, uint64 guid)
 {
     WorldPacket data(32);
     data.SetOpcode(SMSG_QUESTUPDATE_ADD_KILL);
-    data << questid << entry << count << tcount << guid;
+    data << questid;
+    data << entry;
+    data << count;
+    data << tcount;
+    data << guid;
     plr->GetSession()->SendPacket(&data);
 }
 
@@ -1316,7 +1321,8 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint3
             {
                 // "Teaching" effect
                 WorldPacket data(SMSG_SPELL_START, 42);
-                data << qst_giver->GetNewGUID() << qst_giver->GetNewGUID();
+                data << qst_giver->GetNewGUID();
+                data << qst_giver->GetNewGUID();
                 data << uint32(7763);
                 data << uint8(0);
                 data << uint16(0);
@@ -1326,7 +1332,8 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint3
                 plr->GetSession()->SendPacket(&data);
 
                 data.Initialize(SMSG_SPELL_GO);
-                data << qst_giver->GetNewGUID() << qst_giver->GetNewGUID();
+                data << qst_giver->GetNewGUID();
+                data << qst_giver->GetNewGUID();
                 data << uint32(7763);		    // spellID
                 data << uint8(0) << uint8(1);   // flags
                 data << uint8(1);			    // amount of targets

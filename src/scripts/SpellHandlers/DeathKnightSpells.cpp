@@ -208,7 +208,9 @@ bool DeathGrip(uint32 i, Spell* s)
         data << uint32(0x00001000);
         data << time;
         data << uint32(1);
-        data << posX << posY << posZ;
+        data << posX;
+        data << posY;
+        data << posZ;
 
         if(unitTarget->IsCreature())
             unitTarget->GetAIInterface()->StopMovement(2000);

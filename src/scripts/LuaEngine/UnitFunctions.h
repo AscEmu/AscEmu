@@ -1194,7 +1194,8 @@ class LuaUnit
         Player* plr = static_cast<Player*>(ptr);
         WorldPacket data;
         data.Initialize(SMSG_PLAY_OBJECT_SOUND);
-        data << uint32(soundid) << plr->GetGUID();
+        data << uint32(soundid);
+        data << plr->GetGUID();
         plr->GetSession()->SendPacket(&data);
         return 0;
     }
@@ -1299,11 +1300,26 @@ class LuaUnit
         WorldPacket data(SMSG_WEATHER, 9);
         data.Initialize(SMSG_WEATHER);
         if (type == 0)  // set all parameter to 0 for sunny.
-            data << uint32(0) << float(0) << uint32(0) << uint8(0);
+        {
+            data << uint32(0);
+            data << float(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
         else if (type == 1)  // No sound/density for fog
-            data << type << float(0) << uint32(0) << uint8(0);
+        {
+            data << type;
+            data << float(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
         else
-            data << type << Density << sound << uint8(0);
+        {
+            data << type;
+            data << Density;
+            data << sound;
+            data << uint8(0);
+        }
 
         sWorld.SendZoneMessage(&data, zone_id, 0);
 
@@ -1365,11 +1381,26 @@ class LuaUnit
         WorldPacket data(SMSG_WEATHER, 9);
         data.Initialize(SMSG_WEATHER);
         if (type == 0)  // set all parameter to 0 for sunny.
-            data << uint32(0) << float(0) << uint32(0) << uint8(0);
+        {
+            data << uint32(0);
+            data << float(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
         else if (type == 1)  // No sound/density for fog
-            data << type << float(0) << uint32(0) << uint8(0);
+        {
+            data << type;
+            data << float(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
         else
-            data << type << Density << sound << uint8(0);
+        {
+            data << type;
+            data << Density;
+            data << sound;
+            data << uint8(0);
+        }
 
         plr->GetSession()->SendPacket(&data);
 
@@ -5875,12 +5906,17 @@ class LuaUnit
         WorldPacket data(SMSG_MONSTER_MOVE, 50);
         data << ptr->GetNewGUID();
         data << uint8(0);
-        data << ptr->GetPositionX() << ptr->GetPositionY() << ptr->GetPositionZ();
+        data << ptr->GetPositionX();
+        data << ptr->GetPositionY();
+        data << ptr->GetPositionZ();
         data << getMSTime();
         data << uint8(0x0);
         data << uint32(0x100);
-        data << uint32(1) << uint32(1);
-        data << x << y << z;
+        data << uint32(1);
+        data << uint32(1);
+        data << x;
+        data << y;
+        data << z;
         ptr->SendMessageToSet(&data, false);
         return 0;
     }

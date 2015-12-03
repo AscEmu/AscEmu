@@ -75,7 +75,8 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
         return;
     }
 
-    data << guid << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
+    data << guid;
+    data << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
     SendPacket(&data);
 }
 

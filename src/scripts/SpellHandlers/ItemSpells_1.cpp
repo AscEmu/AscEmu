@@ -206,7 +206,8 @@ bool ForemansBlackjack(uint32 i, Spell* pSpell)
     c_target->RemoveAllAuras();
 
     WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 12);
-    data << uint32(6197) << c_target->GetGUID();
+    data << uint32(6197);
+    data << c_target->GetGUID();
     pSpell->p_caster->SendMessageToSet(&data, true);
 
     // send chat message

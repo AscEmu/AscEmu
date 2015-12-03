@@ -927,7 +927,9 @@ void World::SendWorldWideScreenText(const char* text, WorldSession* self)
 {
     WorldPacket data(256);
     data.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
-    data << (uint32)0 << text << (uint8)0x00;
+    data << uint32(0);
+    data << text;
+    data << uint8(0x00);
     SendGlobalMessage(&data, self);
 }
 

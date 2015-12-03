@@ -416,7 +416,9 @@ void WorldSession::SendBuyFailed(uint64 guid, uint32 itemid, uint8 error)
 {
     WorldPacket data(13);
     data.SetOpcode(SMSG_BUY_FAILED);
-    data << guid << itemid << error;
+    data << guid;
+    data << itemid;
+    data << error;
     SendPacket(&data);
 }
 
@@ -424,7 +426,9 @@ void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
 {
     WorldPacket data(17);
     data.SetOpcode(SMSG_SELL_ITEM);
-    data << vendorguid << itemid << error;
+    data << vendorguid;
+    data << itemid;
+    data << error;
     SendPacket(&data);
 }
 
@@ -1414,7 +1418,7 @@ void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 void WorldSession::SendMOTD()
 {
     WorldPacket data(SMSG_MOTD, 50);
-    data << (uint32)0;
+    data << uint32(0);
     uint32 linecount = 0;
     std::string str_motd = sWorld.GetMotd();
     std::string::size_type pos, nextpos;

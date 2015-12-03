@@ -41,10 +41,13 @@ void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
     WoWGuid pguid((uint64)pn->guid); //VLack: The usual new style guid handling on 3.1.2
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, strlen(pn->name) + 35);
     //    data << pn->guid << uint32(0);    //highguid
-    data << pguid << uint8(0); //VLack: usual, new-style guid with an uint8
+    data << pguid;
+    data << uint8(0); //VLack: usual, new-style guid with an uint8
     data << pn->name;
     data << uint8(0);       // this is a string showed besides players name (eg. in combat log), a custom title ?
-    data << uint8(pn->race) << uint8(pn->gender) << uint8(pn->cl);
+    data << uint8(pn->race);
+    data << uint8(pn->gender);
+    data << uint8(pn->cl);
     //    data << uint8(0);            // 2.4.0, why do i get the feeling blizz is adding custom classes or custom titles? (same thing in who list)
     data << uint8(0); //VLack: tell the server this name is not declined... (3.1 fix?)
     SendPacket(&data);
@@ -82,9 +85,11 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 
     if (entry == 300000)
     {
-        data << (uint32)entry;
+        data << entry;
         data << "WayPoint";
-        data << uint8(0) << uint8(0) << uint8(0);
+        data << uint8(0);
+        data << uint8(0);
+        data << uint8(0);
         data << "Level is WayPoint ID";
         for (uint32 i = 0; i < 8; i++)
         {
@@ -103,7 +108,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         if (lcn == NULL)
         {
             LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name);
-            data << (uint32)entry;
+            data << entry;
             data << ci->Name;       // name of the creature
             data << uint8(0);       // name2, always seems to be empty
             data << uint8(0);       // name3, always seems to be empty
@@ -113,7 +118,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         else
         {
             LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s' (localized to %s)", ci->Name, lcn->Name);
-            data << (uint32)entry;
+            data << entry;
             data << lcn->Name;
             data << uint8(0);
             data << uint8(0);

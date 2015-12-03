@@ -437,7 +437,8 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     uint64 guid;
     recv_data >> guid;
     WorldPacket data(SMSG_LOOT_RELEASE_RESPONSE, 9);
-    data << guid << uint8(1);
+    data << guid;
+    data << uint8(1);
     SendPacket(&data);
 
     _player->SetLootGUID(0);
@@ -902,7 +903,8 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
         if (!sHookInterface.OnLogoutRequest(pPlayer))
         {
             // Declined Logout Request
-            data << uint32(1) << uint8(0);
+            data << uint32(1);
+            data << uint8(0);
             SendPacket(&data);
             return;
         }
@@ -917,7 +919,8 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
         if (pPlayer->CombatStatus.IsInCombat() ||	//can't quit still in combat
             pPlayer->DuelingWith != NULL)			//can't quit still dueling or attacking
         {
-            data << uint32(1) << uint8(0);
+            data << uint32(1);
+            data << uint8(0);
             SendPacket(&data);
             return;
         }
@@ -2118,7 +2121,8 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
     roll = RandomUInt(max - min) + min;
 
     // append to packet, and guid
-    data << roll << _player->GetGUID();
+    data << roll;
+    data << _player->GetGUID();
 
     // send to set
     if (_player->InGroup())

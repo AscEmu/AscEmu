@@ -115,9 +115,15 @@ void Player::smsg_InitialFactions()
     {
         rep = reputationByListId[i];
         if (rep == NULL)
-            data << uint8(0) << uint32(0);
+        {
+            data << uint8(0);
+            data << uint32(0);
+        }
         else
-            data << rep->flag << rep->CalcStanding();
+        {
+            data << rep->flag;
+            data << rep->CalcStanding();
+        }
     }
     m_session->SendPacket(&data);
 }
@@ -483,7 +489,9 @@ void Player::OnModStanding(FactionDBC* dbc, FactionReputation* rep)
         WorldPacket data(SMSG_SET_FACTION_STANDING, 17);
         data << uint32(0);
         data << uint8(1);   //count
-        data << uint32(rep->flag) << dbc->RepListId << rep->CalcStanding();
+        data << uint32(rep->flag);
+        data << dbc->RepListId;
+        data << rep->CalcStanding();
         m_session->SendPacket(&data);
     }
 }

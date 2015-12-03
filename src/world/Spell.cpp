@@ -2040,9 +2040,15 @@ void Spell::SendSpellStart()
 
     data.SetOpcode(SMSG_SPELL_START);
     if (i_caster != NULL)
-        data << i_caster->GetNewGUID() << u_caster->GetNewGUID();
+    {
+        data << i_caster->GetNewGUID();
+        data << u_caster->GetNewGUID();
+    }
     else
-        data << m_caster->GetNewGUID() << m_caster->GetNewGUID();
+    {
+        data << m_caster->GetNewGUID();
+        data << m_caster->GetNewGUID();
+    }
 
     data << extra_cast_number;
     data << GetProto()->Id;
@@ -2169,11 +2175,13 @@ void Spell::SendSpellGo()
 
     if (i_caster != NULL && u_caster != NULL)   // this is needed for correct cooldown on items
     {
-        data << i_caster->GetNewGUID() << u_caster->GetNewGUID();
+        data << i_caster->GetNewGUID();
+        data << u_caster->GetNewGUID();
     }
     else
     {
-        data << m_caster->GetNewGUID() << m_caster->GetNewGUID();
+        data << m_caster->GetNewGUID();
+        data << m_caster->GetNewGUID();
     }
 
     data << extra_cast_number; //3.0.2
@@ -2219,9 +2227,15 @@ void Spell::SendSpellGo()
                 ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
         }
         if (ip != NULL)
-            data << ip->DisplayInfoID << ip->InventoryType;
+        {
+            data << ip->DisplayInfoID;
+            data << ip->InventoryType;
+        }
         else
-            data << uint32(0) << uint32(0);
+        {
+            data << uint32(0);
+            data << uint32(0);
+        }
     }
 
     //data order depending on flags : 0x800, 0x200000, 0x20000, 0x20, 0x80000, 0x40 (this is not spellgoflag but seems to be from spellentry or packet..)
@@ -2445,7 +2459,8 @@ void Spell::SendResurrectRequest(Player* target)
 {
     WorldPacket data(SMSG_RESURRECT_REQUEST, 13);
     data << m_caster->GetGUID();
-    data << uint32(0) << uint8(0);
+    data << uint32(0);
+    data << uint8(0);
 
     target->GetSession()->SendPacket(&data);
     target->m_resurrecter = m_caster->GetGUID();

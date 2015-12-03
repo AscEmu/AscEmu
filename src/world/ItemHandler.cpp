@@ -911,7 +911,8 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
         data.Initialize(SMSG_BUY_ITEM);
         data << uint64(guid);
         data << getMSTime(); //VLack: seen is Aspire code
-        data << uint32(itemid) << uint32(amount);
+        data << uint32(itemid);
+        data << uint32(amount);
         SendPacket(&data);
     }
 }
@@ -1018,7 +1019,9 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
     }
 
     WorldPacket data(SMSG_SELL_ITEM, 12);
-    data << vendorguid << itemguid << uint8(0);
+    data << vendorguid;
+    data << itemguid;
+    data << uint8(0);
     SendPacket(&data);
 
     LOG_DETAIL("WORLD: Sent SMSG_SELL_ITEM");
@@ -2353,7 +2356,9 @@ void WorldSession::SendItemQueryAndNameInfo(uint32 itemid)
 	else
 		data << itemProto->Name1;
 
-	data << uint8(0) << uint8(0) << uint8(0);		// name 2,3,4
+    data << uint8(0);       // name 2
+    data << uint8(0);       // name 3
+    data << uint8(0);       // name 4
 	data << itemProto->DisplayInfoID;
 	data << itemProto->Quality;
 	data << itemProto->Flags;

@@ -6518,14 +6518,18 @@ void Unit::SetFacing(float newo)
 
     data << GetNewGUID();
     data << uint8(0); //vehicle seat index
-    data << GetPositionX() << GetPositionY() << GetPositionZ();
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
     data << getMSTime();
     data << uint8(4); //set orientation
     data << newo;
     data << uint32(0x1000); //move flags: run
     data << uint32(0); //movetime
     data << uint32(1); //1 point
-    data << GetPositionX() << GetPositionY() << GetPositionZ();
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
 
     SendMessageToSet(&data, true);
 }

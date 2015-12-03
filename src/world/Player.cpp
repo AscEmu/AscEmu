@@ -6918,7 +6918,9 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
             return;
         }
 
-        data << pn->x << pn->y << pn->z;
+        data << pn->x;
+        data << pn->y;
+        data << pn->z;
     }
 
     SendMessageToSet(&data, true);
@@ -8622,7 +8624,9 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
     GetSession()->SendPacket(&data);
 
     data.Initialize(SMSG_NEW_WORLD);
-    data << mgr->GetMapId() << vec << vec.o;
+    data << mgr->GetMapId();
+    data << vec;
+    data << vec.o;
     GetSession()->SendPacket(&data);
 
     SetPlayerStatus(TRANSFER_PENDING);
@@ -9986,7 +9990,9 @@ void Player::SendAreaTriggerMessage(const char* message, ...)
     va_end(ap);
 
     WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 6 + strlen(msg));
-    data << (uint32)0 << msg << (uint8)0x00;
+    data << uint32(0);
+    data << msg;
+    data << uint8(0x00);
     m_session->SendPacket(&data);
 }
 
@@ -10102,7 +10108,9 @@ void Player::SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32
     m_summonMapId = MapID;
 
     WorldPacket data(SMSG_SUMMON_REQUEST, 16);
-    data << uint64(Requestor) << ZoneID << uint32(120000);        // 2 minutes
+    data << uint64(Requestor);
+    data << ZoneID;
+    data << uint32(120000);        // 2 minutes
     m_session->SendPacket(&data);
 }
 
@@ -10714,7 +10722,8 @@ void Player::CopyAndSendDelayedPacket(WorldPacket* data)
 void Player::SendMeetingStoneQueue(uint32 DungeonId, uint8 Status)
 {
     WorldPacket data(SMSG_MEETINGSTONE_SETQUEUE, 5);
-    data << DungeonId << Status;
+    data << DungeonId;
+    data << Status;
     m_session->SendPacket(&data);
 }
 
@@ -11312,7 +11321,8 @@ void Player::Social_AddFriend(const char* name, const char* note)
     // team check
     if (info->team != GetTeamInitial() && m_session->permissioncount == 0 && !sWorld.interfaction_friend)
     {
-        data << uint8(FRIEND_ENEMY) << uint64(info->guid);
+        data << uint8(FRIEND_ENEMY);
+        data << uint64(info->guid);
         m_session->SendPacket(&data);
         if (cache != NULL)
             cache->DecRef();
@@ -11322,7 +11332,8 @@ void Player::Social_AddFriend(const char* name, const char* note)
     // are we ourselves?
     if (cache != NULL && cache->GetUInt32Value(CACHE_PLAYER_LOWGUID) == GetLowGUID())
     {
-        data << uint8(FRIEND_SELF) << GetGUID();
+        data << uint8(FRIEND_SELF);
+        data << GetGUID();
         m_session->SendPacket(&data);
         if (cache != NULL)
             cache->DecRef();
@@ -11331,7 +11342,8 @@ void Player::Social_AddFriend(const char* name, const char* note)
 
     if (m_cache->CountValue64(CACHE_SOCIAL_FRIENDLIST, info->guid))
     {
-        data << uint8(FRIEND_ALREADY) << uint64(info->guid);
+        data << uint8(FRIEND_ALREADY);
+        data << uint64(info->guid);
         m_session->SendPacket(&data);
         if (cache != NULL)
             cache->DecRef();
@@ -11447,14 +11459,16 @@ void Player::Social_AddIgnore(const char* name)
     // are we ourselves?
     if (info == m_playerInfo)
     {
-        data << uint8(FRIEND_IGNORE_SELF) << GetGUID();
+        data << uint8(FRIEND_IGNORE_SELF);
+        data << GetGUID();
         m_session->SendPacket(&data);
         return;
     }
 
     if (m_cache->CountValue64(CACHE_SOCIAL_IGNORELIST, info->guid) > 0)
     {
-        data << uint8(FRIEND_IGNORE_ALREADY) << uint64(info->guid);
+        data << uint8(FRIEND_IGNORE_ALREADY);
+        data << uint64(info->guid);
         m_session->SendPacket(&data);
         return;
     }
@@ -11476,7 +11490,8 @@ void Player::Social_RemoveIgnore(uint32 guid)
     // are we ourselves?
     if (guid == GetLowGUID())
     {
-        data << uint8(FRIEND_IGNORE_SELF) << GetGUID();
+        data << uint8(FRIEND_IGNORE_SELF);
+        data << GetGUID();
         m_session->SendPacket(&data);
         return;
     }
@@ -11510,8 +11525,12 @@ void Player::Social_TellFriendsOnline()
     PlayerCache* cache;
 
     WorldPacket data(SMSG_FRIEND_STATUS, 22);
-    data << uint8(FRIEND_ONLINE) << GetGUID() << uint8(1);
-    data << GetAreaID() << getLevel() << uint32(getClass());
+    data << uint8(FRIEND_ONLINE);
+    data << GetGUID();
+    data << uint8(1);
+    data << GetAreaID();
+    data << getLevel();
+    data << uint32(getClass());
 
     m_cache->AcquireLock64(CACHE_SOCIAL_HASFRIENDLIST);
     for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_HASFRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_HASFRIENDLIST); ++itr)
@@ -11532,7 +11551,9 @@ void Player::Social_TellFriendsOffline()
         return;
 
     WorldPacket data(SMSG_FRIEND_STATUS, 10);
-    data << uint8(FRIEND_OFFLINE) << GetGUID() << uint8(0);
+    data << uint8(FRIEND_OFFLINE);
+    data << GetGUID();
+    data << uint8(0);
 
     PlayerCache* cache;
     m_cache->AcquireLock64(CACHE_SOCIAL_HASFRIENDLIST);
@@ -11962,7 +11983,8 @@ void Player::SetKnownTitle(RankTitles title, bool set)
         SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES + ((title >> 6) << 1), current & ~uint64(1) << (title % 64));
 
     WorldPacket data(SMSG_TITLE_EARNED, 8);
-    data << uint32(title) << uint32(set ? 1 : 0);
+    data << uint32(title);
+    data << uint32(set ? 1 : 0);
     m_session->SendPacket(&data);
 }
 
@@ -12058,13 +12080,17 @@ void Player::SendAvailSpells(SpellShapeshiftForm* ssf, bool active)
 
         WorldPacket data(SMSG_PET_SPELLS, 8 * 4 + 20);
         data << GetGUID();
-        data << uint32(0) << uint32(0);
-        data << uint8(0) << uint8(0) << uint16(0);
+        data << uint32(0);
+        data << uint32(0);
+        data << uint8(0);
+        data << uint8(0);
+        data << uint16(0);
 
         // Send the spells
         for (uint32 i = 0; i < 8; i++)
         {
-            data << uint16(ssf->spells[i]) << uint16(DEFAULT_SPELL_STATE);
+            data << uint16(ssf->spells[i]);
+            data << uint16(DEFAULT_SPELL_STATE);
         }
 
         data << uint8(1);

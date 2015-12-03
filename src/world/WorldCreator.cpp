@@ -960,7 +960,8 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
                     else if (in->m_mapMgr->HasPlayers())
                     {
                         WorldPacket data(SMSG_RAID_GROUP_ONLY, 8);
-                        data << uint32(60000) << uint32(1);
+                        data << uint32(60000);
+                        data << uint32(1);
 
                         for (PlayerStorageMap::iterator mitr = in->m_mapMgr->m_PlayerStorage.begin(); mitr != in->m_mapMgr->m_PlayerStorage.end(); ++mitr)
                         {
@@ -1217,7 +1218,8 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
                     // better make sure we're actually in that instance.. :P
                     if (!pPlayer->raidgrouponlysent && pPlayer->GetInstanceID() == (int32)in->m_instanceId)
                     {
-                        data << uint32(60000) << uint32(1);
+                        data << uint32(60000);
+                        data << uint32(1);
                         pPlayer->GetSession()->SendPacket(&data);
                         pPlayer->raidgrouponlysent = true;
 
