@@ -209,8 +209,9 @@ bool Master::Run(int argc, char** argv)
     uint32 LoadingTime = getMSTime();
 
     if (!loadWorldConfiguration(config_file, optional_config_file, realm_config_file))
+    {
         return false;
-
+    }
 
     if (!_StartDB())
     {
@@ -722,7 +723,9 @@ bool Master::loadWorldConfiguration(char* config_file, char* optional_config_fil
 {
     Log.Success("Config", "Loading Config Files...");
     if (Config.MainConfig.SetSource(config_file))
+    {
         Log.Notice("Config", ">> " CONFDIR "/world.conf loaded");
+    }
     else
     {
         sLog.Error("Config", ">> error occurred loading " CONFDIR "/world.conf");
@@ -731,7 +734,9 @@ bool Master::loadWorldConfiguration(char* config_file, char* optional_config_fil
     }
 
     if (Config.OptionalConfig.SetSource(optional_config_file))
+    {
         Log.Notice("Config", ">> " CONFDIR "/optional.conf loaded");
+    }
     else
     {
         sLog.Error("Config", ">> error occurred loading " CONFDIR "/optional.conf");
@@ -740,7 +745,9 @@ bool Master::loadWorldConfiguration(char* config_file, char* optional_config_fil
     }
 
     if (Config.RealmConfig.SetSource(realm_config_file))
+    {
         Log.Notice("Config", ">> " CONFDIR "/realms.conf loaded");
+    }
     else
     {
         sLog.Error("Config", ">> error occurred loading " CONFDIR "/realms.conf");
