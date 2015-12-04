@@ -21,6 +21,7 @@
 #define _PERIODIC_FUNCTION_CALL_THREAD_H
 
 #include "../shared/CallBack.h"
+#include "Master.hpp"
 
 #ifndef WIN32
 static pthread_cond_t abortcond;
