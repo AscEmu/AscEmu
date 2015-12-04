@@ -69,9 +69,12 @@ class Master : public Singleton<Master>
         void printBanner();
         bool loadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file);
         void openCheatLogFiles();
+        void startNetworkSubsystem();
         void startRemoteConsole();
         void writePidFile();
 
+        void shutdownThreadPools(bool listnersockcreate);
+        void shutdownLootSystem();
         bool m_ShutdownEvent;
         uint32 m_ShutdownTimer;
 
