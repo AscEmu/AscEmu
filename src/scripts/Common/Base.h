@@ -48,12 +48,12 @@ public:\
     AddEvent(1003, pTime, &EventFunc_RemoveUnitFieldFlags);
 
 
-// old text types
+///\todo remove old text types
 enum TextType
 {
     Text_Say,
     Text_Yell,
-    Text_Emote,
+    Text_Emote
 };
 
 enum EventType
@@ -155,7 +155,7 @@ enum TargetGenerator
     // Random Player
     TargetGen_RandomPlayer,                 // Random target player
     TargetGen_RandomPlayerDestination,      // Random player destination coordinates (X, Y, Z)
-    TargetGen_RandomPlayerApplyAura,        // Random target player to self cast aura
+    TargetGen_RandomPlayerApplyAura         // Random target player to self cast aura
 };
 
 enum TargetFilter
@@ -179,7 +179,7 @@ enum TargetFilter
     TargetFilter_ClosestNotCurrent      = TargetFilter_Closest | TargetFilter_NotCurrent,       // 5
     TargetFilter_WoundedFriendly        = TargetFilter_Wounded | TargetFilter_Friendly,         // 10
     TargetFilter_FriendlyCorpse         = TargetFilter_Corpse | TargetFilter_Friendly,          // 66
-    TargetFilter_ClosestFriendlyCorpse  = TargetFilter_Closest | TargetFilter_FriendlyCorpse,   // 67
+    TargetFilter_ClosestFriendlyCorpse  = TargetFilter_Closest | TargetFilter_FriendlyCorpse    // 67
 };
 
 enum RangeStatus

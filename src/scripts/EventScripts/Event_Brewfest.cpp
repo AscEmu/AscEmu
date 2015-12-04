@@ -27,7 +27,7 @@
 enum eGossipTexts
 {
     DIREBREW_1 = 15858,
-    DIREBREW_2 = 15859,
+    DIREBREW_2 = 15859
 };
 
 #define BOSS_DIREBREW 23872

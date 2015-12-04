@@ -30,7 +30,7 @@ enum ABBuffs
     AB_BUFF_FARM = 2,
     AB_BUFF_LUMBERMILL = 3,
     AB_BUFF_MINE = 4,
-    AB_NUM_BUFFS = 5,
+    AB_NUM_BUFFS = 5
 };
 
 enum ABControlPoints
@@ -40,7 +40,7 @@ enum ABControlPoints
     AB_CONTROL_POINT_BLACKSMITH = 2,
     AB_CONTROL_POINT_MINE = 3,
     AB_CONTROL_POINT_LUMBERMILL = 4,
-    AB_NUM_CONTROL_POINTS = 5,
+    AB_NUM_CONTROL_POINTS = 5
 };
 
 enum ABSpawnTypes
@@ -50,7 +50,7 @@ enum ABSpawnTypes
     AB_SPAWN_TYPE_HORDE_ASSAULT = 2,
     AB_SPAWN_TYPE_ALLIANCE_CONTROLLED = 3,
     AB_SPAWN_TYPE_HORDE_CONTROLLED = 4,
-    AB_NUM_SPAWN_TYPES = 5,
+    AB_NUM_SPAWN_TYPES = 5
 };
 
 class ArathiBasin : public CBattleground

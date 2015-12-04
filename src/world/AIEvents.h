@@ -40,7 +40,7 @@ enum AiEvents
     EVENT_UNITDIED,
     EVENT_HOSTILEACTION,
     EVENT_FORCEREDIRECTED,
-    NUM_AI_EVENTS,
+    NUM_AI_EVENTS
 };
 
 extern pAIEvent AIEventHandlers[NUM_AI_EVENTS];

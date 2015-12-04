@@ -79,7 +79,7 @@ enum DarkmoonFaireCreatureTexts
     BARK_SYLANNIA_4,
     // Maxima Blastenheimer
     BARK_MAXIMA_1 = 7789,       // in npc_text
-    BARK_MAXIMA_2 = 7790,       // in npc_text
+    BARK_MAXIMA_2 = 7790        // in npc_text
 };
 
 #endif // _DARKMOONFAIRE_H
