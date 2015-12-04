@@ -506,9 +506,6 @@ bool Master::Run(int argc, char** argv)
     return true;
 }
 
-static const char *REQUIRED_CHAR_DB_VERSION = "2015-11-06_01_event_save";
-static const char *REQUIRED_WORLD_DB_VERSION = "2015-11-28_01_event_names";
-
 bool Master::CheckDBVersion()
 {
     QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version;");

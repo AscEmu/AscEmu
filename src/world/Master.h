@@ -55,6 +55,8 @@
 #define DEFAULT_QUEST_XP_RATE 1
 #define DEFAULT_SAVE_RATE 300000    /// 5 mins
 
+static const char* REQUIRED_CHAR_DB_VERSION = "2015-11-06_01_event_save";
+static const char* REQUIRED_WORLD_DB_VERSION = "2015-11-28_01_event_names";
 
 class Master : public Singleton<Master>
 {
