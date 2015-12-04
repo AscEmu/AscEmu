@@ -20,6 +20,7 @@
 
 #include "../shared/Singleton.h"
 #include "LogonServer.hpp"
+#include "../shared/AscemuServerDefines.hpp"
 
 extern Arcemu::Threading::AtomicBoolean mrunning;
 class AuthSocket;

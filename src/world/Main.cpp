@@ -27,7 +27,7 @@
 #include "CrashHandler.h"
 
 
-uint8 loglevel = DEFAULT_LOG_LEVEL;
+uint8 loglevel = 0;
 
 #ifndef WIN32
 int unix_main(int argc, char** argv)

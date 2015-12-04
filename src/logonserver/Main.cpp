@@ -19,18 +19,6 @@
  */
 
 #include "LogonStdAfx.h"
-#include <signal.h>
-#include "git_version.h"
-#ifndef WIN32
-#include <sys/resource.h>
-#endif
-#include "../shared/ascemu_getopt.h"
-
-#define BANNER "<< AscEmu %s/%s-%s (%s) :: Logon Server >>"
-
-#ifndef WIN32
-#include <sched.h>
-#endif
 
 // Database impl
 Database* sLogonSQL;
@@ -161,9 +149,6 @@ bool startdb()
 
     return true;
 }
-
-#define DEF_VALUE_NOT_SET 0xDEADBEEF
-
 
 Mutex m_allowedIpLock;
 std::vector<AllowedIP> m_allowedIps;
@@ -321,9 +306,9 @@ void LogonServer::Run(int argc, char** argv)
 
     sLog.Init(0, LOGON_LOG);
     
-    sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic(LOGON_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
     sLog.outBasic("========================================================");
-    sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent(LOGON_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
     sLog.outErrorSilent("========================================================"); // Echo off.
 
     if(do_version)

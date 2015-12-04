@@ -21,17 +21,6 @@
 
 #include "StdAfx.h"
 
-
-#define BANNER "<< AscEmu %s/%s-%s (%s) :: World Server >>"
-
-#ifndef WIN32
-#include <sched.h>
-#endif
-
-#include "git_version.h"
-
-#include <signal.h>
-
 createFileSingleton(Master);
 std::string LogFileName;
 bool bLogChat;
@@ -92,8 +81,6 @@ struct Addr
     unsigned long unusedA;
     unsigned long unusedB;
 };
-
-#define DEF_VALUE_NOT_SET 0xDEADBEEF
 
 static const char* default_config_file = CONFDIR "/world.conf";
 static const char* default_optional_config_file = CONFDIR "/optional.conf";
@@ -249,8 +236,8 @@ bool Master::Run(int argc, char** argv)
     // Initialize Opcode Table
     WorldSession::InitPacketHandlerTable();
 
-    std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", DEFAULT_HOST);
-    int wsport = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", DEFAULT_WORLDSERVER_PORT);
+    std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
+    int wsport = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", 8129);
 
     new ScriptMgr;
 
@@ -603,9 +590,9 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic(WORLD_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
     sLog.outBasic("========================================================");
-    sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent(WORLD_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
     sLog.outErrorSilent("========================================================"); // Echo off.
 }
 
