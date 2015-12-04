@@ -64,6 +64,12 @@ class Master : public Singleton<Master>
         ~Master();
 
         bool Run(int argc, char** argv);
+        void printBanner();
+        bool loadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file);
+        void openCheatLogFiles();
+        void startRemoteConsole();
+        void writePidFile();
+
         bool m_ShutdownEvent;
         uint32 m_ShutdownTimer;
 

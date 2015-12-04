@@ -162,10 +162,7 @@ bool Master::Run(int argc, char** argv)
 
     sLog.Init(0, WORLD_LOG);
 
-    sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    sLog.outBasic("========================================================");
-    sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-    sLog.outErrorSilent("========================================================"); // Echo off.
+    printBanner();
 
     if (do_version)
     {
@@ -211,45 +208,9 @@ bool Master::Run(int argc, char** argv)
     ThreadPool.Startup();
     uint32 LoadingTime = getMSTime();
 
-    Log.Success("Config", "Loading Config Files...");
-    if (Config.MainConfig.SetSource(config_file))
-        Log.Notice("Config", ">> " CONFDIR "/world.conf loaded");
-    else
-    {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/world.conf");
-        sLog.Close();
+    if (!loadWorldConfiguration(config_file, optional_config_file, realm_config_file))
         return false;
-    }
 
-    if (Config.OptionalConfig.SetSource(optional_config_file))
-        Log.Notice("Config", ">> " CONFDIR "/optional.conf loaded");
-    else
-    {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/optional.conf");
-        sLog.Close();
-        return false;
-    }
-
-    if (Config.RealmConfig.SetSource(realm_config_file))
-        Log.Notice("Config", ">> " CONFDIR "/realms.conf loaded");
-    else
-    {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/realms.conf");
-        sLog.Close();
-        return false;
-    }
-
-#if !defined(WIN32) && defined(__DEBUG__)
-    if (Config.MainConfig.GetIntDefault("LogLevel", "DisableCrashdumpReport", 0) == 0)
-    {
-        char cmd[1024];
-        char banner[1024];
-        snprintf(banner, 1024, BANNER, BUILD_TAG, BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
-        snprintf(cmd, 1024, "./arcemu-crashreport -r %d -d \'%s\'", BUILD_REVISION, banner);
-        system(cmd);
-    }
-    unlink("worldserver.uptime");
-#endif
 
     if (!_StartDB())
     {
@@ -277,13 +238,7 @@ bool Master::Run(int argc, char** argv)
     new EventMgr;
     new World;
 
-    // optional time stamp in logs
-    bool useTimeStamp = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
-
-    // open cheat log file
-    Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", useTimeStamp).c_str(), false);
-    GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", useTimeStamp).c_str(), false);
-    Player_Log = new SessionLogWriter(FormatOutputString("logs", "players", useTimeStamp).c_str(), false);
+    openCheatLogFiles();
 
     /* load the config file */
     sWorld.Rehash(false);
@@ -347,33 +302,9 @@ bool Master::Run(int argc, char** argv)
 
     ThreadPool.ExecuteTask(new GameEventMgr::GameEventMgrThread());
 
-    Log.Notice("RemoteConsole", "Starting...");
-    if (StartConsoleListener())
-    {
-#ifdef WIN32
-        ThreadPool.ExecuteTask(GetConsoleListener());
-#endif
-        Log.Notice("RemoteConsole", "Now open.");
-    }
-    else
-    {
-        Log.Warning("RemoteConsole", "Not enabled or failed listen.");
-    }
+    startRemoteConsole();
 
-
-    /* write pid file */
-    FILE* fPid = fopen("worldserver.pid", "w");
-    if (fPid)
-    {
-        uint32 pid;
-#ifdef WIN32
-        pid = GetCurrentProcessId();
-#else
-        pid = getpid();
-#endif
-        fprintf(fPid, "%u", (unsigned int)pid);
-        fclose(fPid);
-    }
+    writePidFile();
 
     uint32 loopcounter = 0;
     //ThreadPool.Gobble();
@@ -778,3 +709,96 @@ void OnCrash(bool Terminate)
 }
 
 #endif
+
+void Master::printBanner()
+{
+    sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic("========================================================");
+    sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent("========================================================"); // Echo off.
+}
+
+bool Master::loadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file)
+{
+    Log.Success("Config", "Loading Config Files...");
+    if (Config.MainConfig.SetSource(config_file))
+        Log.Notice("Config", ">> " CONFDIR "/world.conf loaded");
+    else
+    {
+        sLog.Error("Config", ">> error occurred loading " CONFDIR "/world.conf");
+        sLog.Close();
+        return false;
+    }
+
+    if (Config.OptionalConfig.SetSource(optional_config_file))
+        Log.Notice("Config", ">> " CONFDIR "/optional.conf loaded");
+    else
+    {
+        sLog.Error("Config", ">> error occurred loading " CONFDIR "/optional.conf");
+        sLog.Close();
+        return false;
+    }
+
+    if (Config.RealmConfig.SetSource(realm_config_file))
+        Log.Notice("Config", ">> " CONFDIR "/realms.conf loaded");
+    else
+    {
+        sLog.Error("Config", ">> error occurred loading " CONFDIR "/realms.conf");
+        sLog.Close();
+        return false;
+    }
+
+#if !defined(WIN32) && defined(__DEBUG__)
+    if (Config.MainConfig.GetIntDefault("LogLevel", "DisableCrashdumpReport", 0) == 0)
+    {
+        char cmd[1024];
+        char banner[1024];
+        snprintf(banner, 1024, BANNER, BUILD_TAG, BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
+        snprintf(cmd, 1024, "./arcemu-crashreport -r %d -d \'%s\'", BUILD_REVISION, banner);
+        system(cmd);
+    }
+    unlink("worldserver.uptime");
+#endif
+    return true;
+}
+
+void Master::openCheatLogFiles()
+{
+    bool useTimeStamp = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
+
+    Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", useTimeStamp).c_str(), false);
+    GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", useTimeStamp).c_str(), false);
+    Player_Log = new SessionLogWriter(FormatOutputString("logs", "players", useTimeStamp).c_str(), false);
+}
+
+void Master::startRemoteConsole()
+{
+    Log.Notice("RemoteConsole", "Starting...");
+    if (StartConsoleListener())
+    {
+#ifdef WIN32
+        ThreadPool.ExecuteTask(GetConsoleListener());
+#endif
+        Log.Notice("RemoteConsole", "Now open.");
+    }
+    else
+    {
+        Log.Warning("RemoteConsole", "Not enabled or failed listen.");
+    }
+}
+
+void Master::writePidFile()
+{
+    FILE* fPid = fopen("worldserver.pid", "w");
+    if (fPid)
+    {
+        uint32 pid;
+#ifdef WIN32
+        pid = GetCurrentProcessId();
+#else
+        pid = getpid();
+#endif
+        fprintf(fPid, "%u", (unsigned int)pid);
+        fclose(fPid);
+    }
+}
