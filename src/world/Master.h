@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MASTER_H
-#define _MASTER_H
+#ifndef _WORLD_MASTER_H
+#define _WORLD_MASTER_H
 
 #include "Common.h"
 #include "Config/ConfigEnv.h"
@@ -66,4 +66,4 @@ class Master : public Singleton<Master>
 
 #define sMaster Master::getSingleton()
 
-#endif // _MASTER_H
+#endif // _WORLD_MASTER_H
