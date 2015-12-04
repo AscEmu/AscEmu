@@ -18,6 +18,9 @@
  *
  */
 
+#ifndef _LOGONSERVER_MAIN_H
+#define _LOGONSERVER_MAIN_H
+
 #include "../shared/Singleton.h"
 #include "LogonServer.hpp"
 #include "../shared/AscemuServerDefines.hpp"
@@ -26,7 +29,6 @@ extern Arcemu::Threading::AtomicBoolean mrunning;
 class AuthSocket;
 extern std::set<AuthSocket*> _authSockets;
 extern Mutex _authSocketLock;
-
 
 bool IsServerAllowed(unsigned int IP);
 bool IsServerAllowedMod(unsigned int IP);
@@ -52,3 +54,5 @@ class LogonServer : public Singleton< LogonServer >
 
         bool m_stopEvent;
 };
+
+#endif      //_LOGONSERVER_MAIN_H

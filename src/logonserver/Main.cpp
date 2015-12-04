@@ -20,7 +20,7 @@
 
 #include "LogonStdAfx.h"
 
-// Database impl
+ // Database impl
 Database* sLogonSQL;
 initialiseSingleton(LogonServer);
 Arcemu::Threading::AtomicBoolean mrunning(true);
@@ -30,15 +30,15 @@ std::set<AuthSocket*> _authSockets;
 /*** Signal Handler ***/
 void _OnSignal(int s)
 {
-    switch(s)
+    switch (s)
     {
 #ifndef WIN32
         case SIGHUP:
-            {
-                LOG_DETAIL("Received SIGHUP signal, reloading accounts.");
-                AccountMgr::getSingleton().ReloadAccounts(true);
-            }
-            break;
+        {
+            LOG_DETAIL("Received SIGHUP signal, reloading accounts.");
+            AccountMgr::getSingleton().ReloadAccounts(true);
+        }
+        break;
 #endif
         case SIGINT:
         case SIGTERM:
@@ -57,12 +57,12 @@ int main(int argc, char** argv)
 {
 #ifndef WIN32
     rlimit rl;
-    if(getrlimit(RLIMIT_CORE, &rl) == -1)
+    if (getrlimit(RLIMIT_CORE, &rl) == -1)
         printf("getrlimit failed. This could be problem.\n");
     else
     {
         rl.rlim_cur = rl.rlim_max;
-        if(setrlimit(RLIMIT_CORE, &rl) == -1)
+        if (setrlimit(RLIMIT_CORE, &rl) == -1)
             printf("setrlimit failed. Server may not save core.dump files.\n");
     }
 #endif
@@ -99,15 +99,15 @@ bool startdb()
     bool existsUsername = Config.MainConfig.GetString("LogonDatabase", "Username", &lusername);
     bool existsPassword = Config.MainConfig.GetString("LogonDatabase", "Password", &lpassword);
     bool existsHostname = Config.MainConfig.GetString("LogonDatabase", "Hostname", &lhostname);
-    bool existsName     = Config.MainConfig.GetString("LogonDatabase", "Name",     &ldatabase);
-    bool existsPort     = Config.MainConfig.GetInt("LogonDatabase", "Port",     &lport);
+    bool existsName = Config.MainConfig.GetString("LogonDatabase", "Name", &ldatabase);
+    bool existsPort = Config.MainConfig.GetInt("LogonDatabase", "Port", &lport);
 
     // Configure Logon Database...
 
     // logical AND every parameter to ensure we catch any error
     result = existsUsername && existsPassword && existsHostname && existsName && existsPort;
 
-    if(!result)
+    if (!result)
     {
         //Build informative error message
         //Built as one string and then printed rather than calling sLog.outString(...) for every line,
@@ -116,20 +116,20 @@ bool startdb()
         //If the <LogonDatabase> tag is malformed, all parameters will fail, and a different error message is given
 
         std::string errorMessage = "sql: Certain <LogonDatabase> parameters not found in " CONFDIR "\\logon.conf \r\n";
-        if(!(existsHostname || existsUsername || existsPassword  ||
-                existsName     || existsPort))
+        if (!(existsHostname || existsUsername || existsPassword ||
+            existsName || existsPort))
         {
             errorMessage += "  Double check that you have remembered the entire <LogonDatabase> tag.\r\n";
             errorMessage += "  All parameters missing. It is possible you forgot the first '<' character.\r\n";
         }
         else
         {
-            errorMessage +=                        "  Missing paramer(s):\r\n";
-            if(!existsHostname) { errorMessage += "    Hostname\r\n" ; }
-            if(!existsUsername) { errorMessage += "    Username\r\n" ; }
-            if(!existsPassword) { errorMessage += "    Password\r\n" ; }
-            if(!existsName) { errorMessage += "    Name\r\n"; }
-            if(!existsPort) { errorMessage += "    Port\r\n"; }
+            errorMessage += "  Missing paramer(s):\r\n";
+            if (!existsHostname) { errorMessage += "    Hostname\r\n"; }
+            if (!existsUsername) { errorMessage += "    Username\r\n"; }
+            if (!existsPassword) { errorMessage += "    Password\r\n"; }
+            if (!existsName) { errorMessage += "    Name\r\n"; }
+            if (!existsPort) { errorMessage += "    Port\r\n"; }
         }
 
         LOG_ERROR(errorMessage.c_str());
@@ -139,9 +139,9 @@ bool startdb()
     sLogonSQL = Database::CreateDatabaseInterface();
 
     // Initialize it
-    if(!sLogonSQL->Initialize(lhostname.c_str(), (unsigned int)lport, lusername.c_str(),
-                              lpassword.c_str(), ldatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase", "ConnectionCount", 5),
-                              16384))
+    if (!sLogonSQL->Initialize(lhostname.c_str(), (unsigned int)lport, lusername.c_str(),
+        lpassword.c_str(), ldatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase", "ConnectionCount", 5),
+        16384))
     {
         LOG_ERROR("sql: Logon database initialization failed. Exiting.");
         return false;
@@ -157,9 +157,9 @@ std::vector<AllowedIP> m_allowedModIps;
 bool IsServerAllowed(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
-    for(std::vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
+    for (std::vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
     {
-        if(ParseCIDRBan(IP, itr->IP, itr->Bytes))
+        if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
         {
             m_allowedIpLock.Release();
             return true;
@@ -172,9 +172,9 @@ bool IsServerAllowed(unsigned int IP)
 bool IsServerAllowedMod(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
-    for(std::vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
+    for (std::vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
     {
-        if(ParseCIDRBan(IP, itr->IP, itr->Bytes))
+        if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
         {
             m_allowedIpLock.Release();
             return true;
@@ -187,7 +187,7 @@ bool IsServerAllowedMod(unsigned int IP)
 bool Rehash()
 {
     char* config_file = (char*)CONFDIR "/logon.conf";
-    if(!Config.MainConfig.SetSource(config_file))
+    if (!Config.MainConfig.SetSource(config_file))
     {
         LOG_ERROR("Config file could not be rehashed.");
         return false;
@@ -204,10 +204,10 @@ bool Rehash()
     m_allowedIps.clear();
     m_allowedModIps.clear();
     std::vector<std::string>::iterator itr;
-    for(itr = vips.begin(); itr != vips.end(); ++itr)
+    for (itr = vips.begin(); itr != vips.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
-        if(i == std::string::npos)
+        if (i == std::string::npos)
         {
             LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
             continue;
@@ -218,7 +218,7 @@ bool Rehash()
 
         unsigned int ipraw = MakeIP(stmp.c_str());
         unsigned char ipmask = (char)atoi(smask.c_str());
-        if(ipraw == 0 || ipmask == 0)
+        if (ipraw == 0 || ipmask == 0)
         {
             LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
             continue;
@@ -230,10 +230,10 @@ bool Rehash()
         m_allowedIps.push_back(tmp);
     }
 
-    for(itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
+    for (itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
-        if(i == std::string::npos)
+        if (i == std::string::npos)
         {
             LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
             continue;
@@ -244,7 +244,7 @@ bool Rehash()
 
         unsigned int ipraw = MakeIP(stmp.c_str());
         unsigned char ipmask = (char)atoi(smask.c_str());
-        if(ipraw == 0 || ipmask == 0)
+        if (ipraw == 0 || ipmask == 0)
         {
             LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
             continue;
@@ -256,7 +256,7 @@ bool Rehash()
         m_allowedModIps.push_back(tmp);
     }
 
-    if(InformationCore::getSingletonPtr() != NULL)
+    if (InformationCore::getSingletonPtr() != NULL)
         sInfoCore.CheckServers();
 
     m_allowedIpLock.Release();
@@ -286,9 +286,9 @@ void LogonServer::Run(int argc, char** argv)
     };
 
     int c;
-    while((c = arcemu_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
+    while ((c = arcemu_getopt_long_only(argc, argv, ":f:", longopts, NULL)) != -1)
     {
-        switch(c)
+        switch (c)
         {
             case 'c':
                 /* Log filename was set */
@@ -305,19 +305,19 @@ void LogonServer::Run(int argc, char** argv)
     }
 
     sLog.Init(0, LOGON_LOG);
-    
+
     PrintBanner();
 
-    if(do_version)
+    if (do_version)
     {
         sLog.Close();
         return;
     }
 
-    if(do_check_conf)
+    if (do_check_conf)
     {
         LOG_BASIC("Checking config file: %s", config_file);
-        if(Config.MainConfig.SetSource(config_file, true))
+        if (Config.MainConfig.SetSource(config_file, true))
             LOG_BASIC("  Passed without errors.");
         else
             LOG_BASIC("  Encountered one or more errors.");
@@ -328,14 +328,14 @@ void LogonServer::Run(int argc, char** argv)
     }
 
     /* set new log levels */
-    if(file_log_level != (int)DEF_VALUE_NOT_SET)
+    if (file_log_level != (int)DEF_VALUE_NOT_SET)
         sLog.SetFileLoggingLevel(file_log_level);
 
     sLog.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
     Log.Success("System", "Initializing Random Number Generators...");
 
     Log.Success("Config", "Loading Config Files...");
-    if(!Rehash())
+    if (!Rehash())
     {
         sLog.Close();
         return;
@@ -346,7 +346,7 @@ void LogonServer::Run(int argc, char** argv)
 
     ThreadPool.Startup();
 
-    if(!startdb())
+    if (!startdb())
     {
         sLog.Close();
         return;
@@ -400,7 +400,7 @@ void LogonServer::Run(int argc, char** argv)
     // Spawn interserver listener
     bool authsockcreated = cl->IsOpen();
     bool intersockcreated = sl->IsOpen();
-    if(authsockcreated && intersockcreated)
+    if (authsockcreated && intersockcreated)
     {
 #ifdef WIN32
         ThreadPool.ExecuteTask(cl);
@@ -418,19 +418,19 @@ void LogonServer::Run(int argc, char** argv)
 #endif
 
         WritePidFile();
-        
+
         uint32 loop_counter = 0;
         //ThreadPool.Gobble();
         sLog.outString("Success! Ready for connections");
-        while(mrunning.GetVal())
+        while (mrunning.GetVal())
         {
-            if(!(++loop_counter % 20))     // 20 seconds
+            if (!(++loop_counter % 20))     // 20 seconds
                 CheckForDeadSockets();
 
-            if(!(loop_counter % 300))    // 5mins
+            if (!(loop_counter % 300))    // 5mins
                 ThreadPool.IntegrityCheck();
 
-            if(!(loop_counter % 5))
+            if (!(loop_counter % 5))
             {
                 sInfoCore.TimeoutSockets();
                 sSocketGarbageCollector.Update();
@@ -507,14 +507,14 @@ void LogonServer::CheckForDeadSockets()
     std::set<AuthSocket*>::iterator it2;
     AuthSocket* s;
 
-    for(itr = _authSockets.begin(); itr != _authSockets.end();)
+    for (itr = _authSockets.begin(); itr != _authSockets.end();)
     {
         it2 = itr;
         s = (*it2);
         ++itr;
 
         diff = t - s->GetLastRecv();
-        if(diff > 300)           // More than 5mins
+        if (diff > 300)           // More than 5mins
         {
             _authSockets.erase(it2);
             s->removedFromSet = true;
