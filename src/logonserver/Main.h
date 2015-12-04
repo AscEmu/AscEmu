@@ -35,14 +35,20 @@ class LogonServer;
 class LogonServer : public Singleton< LogonServer >
 {
     public:
+
         void CheckForDeadSockets();
         void Run(int argc, char** argv);
         void Stop();
+
+        void PrintBanner();
+        void WritePidFile();
+
         uint32 max_build;
         uint32 min_build;
         uint8 sql_hash[20];
 
         Arcemu::PerformanceCounter perfcounter;
     private:
+
         bool m_stopEvent;
 };

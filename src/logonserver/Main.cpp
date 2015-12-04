@@ -306,10 +306,7 @@ void LogonServer::Run(int argc, char** argv)
 
     sLog.Init(0, LOGON_LOG);
     
-    sLog.outBasic(LOGON_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    sLog.outBasic("========================================================");
-    sLog.outErrorSilent(LOGON_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-    sLog.outErrorSilent("========================================================"); // Echo off.
+    PrintBanner();
 
     if(do_version)
     {
@@ -324,12 +321,7 @@ void LogonServer::Run(int argc, char** argv)
             LOG_BASIC("  Passed without errors.");
         else
             LOG_BASIC("  Encountered one or more errors.");
-        /* Remved useless die directive */
-        /*
-        string die;
-        if(Config.MainConfig.GetString("die", "msg", &die) || Config.MainConfig.GetString("die2", "msg", &die))
-            printf("Die directive received: %s", die.c_str());
-        */
+
         sLog.Close();
         delete config_file;
         return;
@@ -387,13 +379,6 @@ void LogonServer::Run(int argc, char** argv)
     std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
     std::string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
 
-    /* Due to many people's inability to cope with us being out-of-sync with retail sometimes we were forced to hardcode this
-    min_build = Config.MainConfig.GetIntDefault("Client", "MinBuild", 6180);
-    max_build = Config.MainConfig.GetIntDefault("Client", "MaxBuild", 6999);
-    */
-
-    min_build = LOGON_MINBUILD;
-    max_build = LOGON_MAXBUILD;
 
     std::string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
     Sha1Hash hash;
@@ -432,19 +417,8 @@ void LogonServer::Run(int argc, char** argv)
         signal(SIGHUP, _OnSignal);
 #endif
 
-        /* write pid file */
-        FILE* fPid = fopen("logonserver.pid", "w");
-        if(fPid)
-        {
-            uint32 pid;
-#ifdef WIN32
-            pid = GetCurrentProcessId();
-#else
-            pid = getpid();
-#endif
-            fprintf(fPid, "%u", (unsigned int)pid);
-            fclose(fPid);
-        }
+        WritePidFile();
+        
         uint32 loop_counter = 0;
         //ThreadPool.Gobble();
         sLog.outString("Success! Ready for connections");
@@ -548,4 +522,28 @@ void LogonServer::CheckForDeadSockets()
         }
     }
     _authSocketLock.Release();
+}
+
+void LogonServer::PrintBanner()
+{
+    sLog.outBasic(LOGON_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic("========================================================");
+    sLog.outErrorSilent(LOGON_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent("========================================================"); // Echo off.
+}
+
+void LogonServer::WritePidFile()
+{
+    FILE* fPid = fopen("logonserver.pid", "w");
+    if (fPid)
+    {
+        uint32 pid;
+#ifdef WIN32
+        pid = GetCurrentProcessId();
+#else
+        pid = getpid();
+#endif
+        fprintf(fPid, "%u", (unsigned int)pid);
+        fclose(fPid);
+    }
 }
