@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LOGON_SERVER_HPP
-#define _LOGON_SERVER_HPP
+#ifndef _LOGON_SERVER_DEFINES_HPP
+#define _LOGON_SERVER_DEFINES_HPP
 
 enum RealmFlags
 {
@@ -38,4 +38,4 @@ struct AllowedIP
     unsigned char Bytes;
 };
 
-#endif  //_LOGON_SERVER_HPP
+#endif  //_LOGON_SERVER_DEFINES_HPP

@@ -20,7 +20,7 @@
 #define _LOGON_MASTER_HPP
 
 #include "../shared/Singleton.h"
-#include "LogonServer.hpp"
+#include "LogonServerDefines.hpp"
 #include "../shared/AscemuServerDefines.hpp"
 
 extern Arcemu::Threading::AtomicBoolean mrunning;
