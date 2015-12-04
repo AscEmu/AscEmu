@@ -67,7 +67,7 @@ void LogonCommServerSocket::OnDisconnect()
 
 void LogonCommServerSocket::OnConnect()
 {
-    if (!IsServerAllowed(GetRemoteAddress().s_addr))
+    if (!sLogonServer.IsServerAllowed(GetRemoteAddress().s_addr))
     {
         LOG_ERROR("Server connection from %s:%u DENIED, not an allowed IP.", GetRemoteIP().c_str(), GetRemotePort());
         Disconnect();

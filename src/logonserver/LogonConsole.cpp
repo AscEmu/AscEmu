@@ -27,7 +27,7 @@ bool Rehash();
 void LogonConsole::TranslateRehash(char* str)
 {
     sLog.outString("rehashing config file...");
-    Rehash();
+    sLogonServer.Rehash();
 }
 
 void LogonConsole::Kill()

@@ -30,8 +30,6 @@ class AuthSocket;
 extern std::set<AuthSocket*> _authSockets;
 extern Mutex _authSocketLock;
 
-bool IsServerAllowed(unsigned int IP);
-bool IsServerAllowedMod(unsigned int IP);
 
 class LogonServer;
 class LogonServer : public Singleton< LogonServer >
@@ -42,12 +40,18 @@ class LogonServer : public Singleton< LogonServer >
         void Run(int argc, char** argv);
         void Stop();
 
+        bool StartDb();
+        bool Rehash();
+
+        bool IsServerAllowed(unsigned int IP);
+        bool IsServerAllowedMod(unsigned int IP);
+
         void PrintBanner();
         void WritePidFile();
 
+        uint8 sql_hash[20];
         uint32 max_build;
         uint32 min_build;
-        uint8 sql_hash[20];
 
         Arcemu::PerformanceCounter perfcounter;
     private:
@@ -56,5 +60,7 @@ class LogonServer : public Singleton< LogonServer >
         void _UnhookSignals();
         bool m_stopEvent;
 };
+
+#define sLogonServer LogonServer::getSingleton()
 
 #endif      //_LOGONSERVER_MAIN_H

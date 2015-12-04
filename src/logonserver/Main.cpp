@@ -74,197 +74,6 @@ int main(int argc, char** argv)
     delete LogonServer::getSingletonPtr();
 }
 
-
-/**
-  * Initialises the logon database
-  *
-  * Reads the configs\logon.conf file and parses the <LogonDatabase> tag
-  *
-  * Any errors in this file, such as a missing parameter should be caught
-  * and the user notified in an intelligent way
-  *
-  * If no errors are found, the database is initialized
-  **/
-bool startdb()
-{
-    std::string lhostname, lusername, lpassword, ldatabase;
-    int lport = 0;
-    // Configure Main Database
-
-    bool result;
-
-    // Set up reusable parameter checks for each parameter
-    // Note that the Config.MainConfig.Get[$type] methods returns boolean value and not $type
-
-    bool existsUsername = Config.MainConfig.GetString("LogonDatabase", "Username", &lusername);
-    bool existsPassword = Config.MainConfig.GetString("LogonDatabase", "Password", &lpassword);
-    bool existsHostname = Config.MainConfig.GetString("LogonDatabase", "Hostname", &lhostname);
-    bool existsName = Config.MainConfig.GetString("LogonDatabase", "Name", &ldatabase);
-    bool existsPort = Config.MainConfig.GetInt("LogonDatabase", "Port", &lport);
-
-    // Configure Logon Database...
-
-    // logical AND every parameter to ensure we catch any error
-    result = existsUsername && existsPassword && existsHostname && existsName && existsPort;
-
-    if (!result)
-    {
-        //Build informative error message
-        //Built as one string and then printed rather than calling sLog.outString(...) for every line,
-        //  as experiments has seen other thread write to the console inbetween calls to sLog.outString(...)
-        //  resulting in unreadable error messages.
-        //If the <LogonDatabase> tag is malformed, all parameters will fail, and a different error message is given
-
-        std::string errorMessage = "sql: Certain <LogonDatabase> parameters not found in " CONFDIR "\\logon.conf \r\n";
-        if (!(existsHostname || existsUsername || existsPassword ||
-            existsName || existsPort))
-        {
-            errorMessage += "  Double check that you have remembered the entire <LogonDatabase> tag.\r\n";
-            errorMessage += "  All parameters missing. It is possible you forgot the first '<' character.\r\n";
-        }
-        else
-        {
-            errorMessage += "  Missing paramer(s):\r\n";
-            if (!existsHostname) { errorMessage += "    Hostname\r\n"; }
-            if (!existsUsername) { errorMessage += "    Username\r\n"; }
-            if (!existsPassword) { errorMessage += "    Password\r\n"; }
-            if (!existsName) { errorMessage += "    Name\r\n"; }
-            if (!existsPort) { errorMessage += "    Port\r\n"; }
-        }
-
-        LOG_ERROR(errorMessage.c_str());
-        return false;
-    }
-
-    sLogonSQL = Database::CreateDatabaseInterface();
-
-    // Initialize it
-    if (!sLogonSQL->Initialize(lhostname.c_str(), (unsigned int)lport, lusername.c_str(),
-        lpassword.c_str(), ldatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase", "ConnectionCount", 5),
-        16384))
-    {
-        LOG_ERROR("sql: Logon database initialization failed. Exiting.");
-        return false;
-    }
-
-    return true;
-}
-
-Mutex m_allowedIpLock;
-std::vector<AllowedIP> m_allowedIps;
-std::vector<AllowedIP> m_allowedModIps;
-
-bool IsServerAllowed(unsigned int IP)
-{
-    m_allowedIpLock.Acquire();
-    for (std::vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
-    {
-        if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
-        {
-            m_allowedIpLock.Release();
-            return true;
-        }
-    }
-    m_allowedIpLock.Release();
-    return false;
-}
-
-bool IsServerAllowedMod(unsigned int IP)
-{
-    m_allowedIpLock.Acquire();
-    for (std::vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
-    {
-        if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
-        {
-            m_allowedIpLock.Release();
-            return true;
-        }
-    }
-    m_allowedIpLock.Release();
-    return false;
-}
-
-bool Rehash()
-{
-    char* config_file = (char*)CONFDIR "/logon.conf";
-    if (!Config.MainConfig.SetSource(config_file))
-    {
-        LOG_ERROR("Config file could not be rehashed.");
-        return false;
-    }
-
-    // re-set the allowed server IP's
-    std::string ips = Config.MainConfig.GetStringDefault("LogonServer", "AllowedIPs", "");
-    std::string ipsmod = Config.MainConfig.GetStringDefault("LogonServer", "AllowedModIPs", "");
-
-    std::vector<std::string> vips = StrSplit(ips, " ");
-    std::vector<std::string> vipsmod = StrSplit(ips, " ");
-
-    m_allowedIpLock.Acquire();
-    m_allowedIps.clear();
-    m_allowedModIps.clear();
-    std::vector<std::string>::iterator itr;
-    for (itr = vips.begin(); itr != vips.end(); ++itr)
-    {
-        std::string::size_type i = itr->find("/");
-        if (i == std::string::npos)
-        {
-            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
-            continue;
-        }
-
-        std::string stmp = itr->substr(0, i);
-        std::string smask = itr->substr(i + 1);
-
-        unsigned int ipraw = MakeIP(stmp.c_str());
-        unsigned char ipmask = (char)atoi(smask.c_str());
-        if (ipraw == 0 || ipmask == 0)
-        {
-            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
-            continue;
-        }
-
-        AllowedIP tmp;
-        tmp.Bytes = ipmask;
-        tmp.IP = ipraw;
-        m_allowedIps.push_back(tmp);
-    }
-
-    for (itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
-    {
-        std::string::size_type i = itr->find("/");
-        if (i == std::string::npos)
-        {
-            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
-            continue;
-        }
-
-        std::string stmp = itr->substr(0, i);
-        std::string smask = itr->substr(i + 1);
-
-        unsigned int ipraw = MakeIP(stmp.c_str());
-        unsigned char ipmask = (char)atoi(smask.c_str());
-        if (ipraw == 0 || ipmask == 0)
-        {
-            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
-            continue;
-        }
-
-        AllowedIP tmp;
-        tmp.Bytes = ipmask;
-        tmp.IP = ipraw;
-        m_allowedModIps.push_back(tmp);
-    }
-
-    if (InformationCore::getSingletonPtr() != NULL)
-        sInfoCore.CheckServers();
-
-    m_allowedIpLock.Release();
-
-    return true;
-}
-
-
 void LogonServer::Run(int argc, char** argv)
 {
     UNIXTIME = time(NULL);
@@ -346,7 +155,7 @@ void LogonServer::Run(int argc, char** argv)
 
     ThreadPool.Startup();
 
-    if (!startdb())
+    if (!StartDb())
     {
         sLog.Close();
         return;
@@ -379,6 +188,8 @@ void LogonServer::Run(int argc, char** argv)
     std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
     std::string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
 
+    min_build = LOGON_MINBUILD;
+    max_build = LOGON_MAXBUILD;
 
     std::string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
     Sha1Hash hash;
@@ -556,4 +367,183 @@ void LogonServer::_UnhookSignals()
 #else
     signal(SIGHUP, 0);
 #endif
+}
+
+bool LogonServer::StartDb()
+{
+    std::string lhostname, lusername, lpassword, ldatabase;
+    int lport = 0;
+    // Configure Main Database
+
+    bool result;
+
+    // Set up reusable parameter checks for each parameter
+    // Note that the Config.MainConfig.Get[$type] methods returns boolean value and not $type
+
+    bool existsUsername = Config.MainConfig.GetString("LogonDatabase", "Username", &lusername);
+    bool existsPassword = Config.MainConfig.GetString("LogonDatabase", "Password", &lpassword);
+    bool existsHostname = Config.MainConfig.GetString("LogonDatabase", "Hostname", &lhostname);
+    bool existsName = Config.MainConfig.GetString("LogonDatabase", "Name", &ldatabase);
+    bool existsPort = Config.MainConfig.GetInt("LogonDatabase", "Port", &lport);
+
+    // Configure Logon Database...
+
+    // logical AND every parameter to ensure we catch any error
+    result = existsUsername && existsPassword && existsHostname && existsName && existsPort;
+
+    if (!result)
+    {
+        //Build informative error message
+        //Built as one string and then printed rather than calling sLog.outString(...) for every line,
+        //  as experiments has seen other thread write to the console inbetween calls to sLog.outString(...)
+        //  resulting in unreadable error messages.
+        //If the <LogonDatabase> tag is malformed, all parameters will fail, and a different error message is given
+
+        std::string errorMessage = "sql: Certain <LogonDatabase> parameters not found in " CONFDIR "\\logon.conf \r\n";
+        if (!(existsHostname || existsUsername || existsPassword ||
+            existsName || existsPort))
+        {
+            errorMessage += "  Double check that you have remembered the entire <LogonDatabase> tag.\r\n";
+            errorMessage += "  All parameters missing. It is possible you forgot the first '<' character.\r\n";
+        }
+        else
+        {
+            errorMessage += "  Missing paramer(s):\r\n";
+            if (!existsHostname) { errorMessage += "    Hostname\r\n"; }
+            if (!existsUsername) { errorMessage += "    Username\r\n"; }
+            if (!existsPassword) { errorMessage += "    Password\r\n"; }
+            if (!existsName) { errorMessage += "    Name\r\n"; }
+            if (!existsPort) { errorMessage += "    Port\r\n"; }
+        }
+
+        LOG_ERROR(errorMessage.c_str());
+        return false;
+    }
+
+    sLogonSQL = Database::CreateDatabaseInterface();
+
+    // Initialize it
+    if (!sLogonSQL->Initialize(lhostname.c_str(), (unsigned int)lport, lusername.c_str(),
+        lpassword.c_str(), ldatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase", "ConnectionCount", 5),
+        16384))
+    {
+        LOG_ERROR("sql: Logon database initialization failed. Exiting.");
+        return false;
+    }
+
+    return true;
+}
+
+Mutex m_allowedIpLock;
+std::vector<AllowedIP> m_allowedIps;
+std::vector<AllowedIP> m_allowedModIps;
+
+bool LogonServer::Rehash()
+{
+    char* config_file = (char*)CONFDIR "/logon.conf";
+    if (!Config.MainConfig.SetSource(config_file))
+    {
+        LOG_ERROR("Config file could not be rehashed.");
+        return false;
+    }
+
+    // re-set the allowed server IP's
+    std::string ips = Config.MainConfig.GetStringDefault("LogonServer", "AllowedIPs", "");
+    std::string ipsmod = Config.MainConfig.GetStringDefault("LogonServer", "AllowedModIPs", "");
+
+    std::vector<std::string> vips = StrSplit(ips, " ");
+    std::vector<std::string> vipsmod = StrSplit(ips, " ");
+
+    m_allowedIpLock.Acquire();
+    m_allowedIps.clear();
+    m_allowedModIps.clear();
+    std::vector<std::string>::iterator itr;
+    for (itr = vips.begin(); itr != vips.end(); ++itr)
+    {
+        std::string::size_type i = itr->find("/");
+        if (i == std::string::npos)
+        {
+            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
+            continue;
+        }
+
+        std::string stmp = itr->substr(0, i);
+        std::string smask = itr->substr(i + 1);
+
+        unsigned int ipraw = MakeIP(stmp.c_str());
+        unsigned char ipmask = (char)atoi(smask.c_str());
+        if (ipraw == 0 || ipmask == 0)
+        {
+            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
+            continue;
+        }
+
+        AllowedIP tmp;
+        tmp.Bytes = ipmask;
+        tmp.IP = ipraw;
+        m_allowedIps.push_back(tmp);
+    }
+
+    for (itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
+    {
+        std::string::size_type i = itr->find("/");
+        if (i == std::string::npos)
+        {
+            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
+            continue;
+        }
+
+        std::string stmp = itr->substr(0, i);
+        std::string smask = itr->substr(i + 1);
+
+        unsigned int ipraw = MakeIP(stmp.c_str());
+        unsigned char ipmask = (char)atoi(smask.c_str());
+        if (ipraw == 0 || ipmask == 0)
+        {
+            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
+            continue;
+        }
+
+        AllowedIP tmp;
+        tmp.Bytes = ipmask;
+        tmp.IP = ipraw;
+        m_allowedModIps.push_back(tmp);
+    }
+
+    if (InformationCore::getSingletonPtr() != NULL)
+        sInfoCore.CheckServers();
+
+    m_allowedIpLock.Release();
+
+    return true;
+}
+
+bool LogonServer::IsServerAllowed(unsigned int IP)
+{
+    m_allowedIpLock.Acquire();
+    for (std::vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
+    {
+        if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
+        {
+            m_allowedIpLock.Release();
+            return true;
+        }
+    }
+    m_allowedIpLock.Release();
+    return false;
+}
+
+bool LogonServer::IsServerAllowedMod(unsigned int IP)
+{
+    m_allowedIpLock.Acquire();
+    for (std::vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
+    {
+        if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
+        {
+            m_allowedIpLock.Release();
+            return true;
+        }
+    }
+    m_allowedIpLock.Release();
+    return false;
 }

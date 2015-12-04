@@ -592,8 +592,8 @@ void AuthSocket::HandleReconnectChallenge()
     readBuffer.Read(&m_challenge, full_size + 4);
 
     // Check client build.
-    if(m_challenge.build > LogonServer::getSingleton().max_build ||
-            m_challenge.build < LogonServer::getSingleton().min_build)
+    if(m_challenge.build > sLogonServer.max_build ||
+            m_challenge.build < sLogonServer.min_build)
     {
         SendChallengeError(CE_WRONG_BUILD_NUMBER);
         return;
