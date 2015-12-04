@@ -52,6 +52,8 @@ class LogonServer : public Singleton< LogonServer >
         Arcemu::PerformanceCounter perfcounter;
     private:
 
+        void _HookSignals();
+        void _UnhookSignals();
         bool m_stopEvent;
 };
 

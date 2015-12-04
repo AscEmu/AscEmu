@@ -406,16 +406,7 @@ void LogonServer::Run(int argc, char** argv)
         ThreadPool.ExecuteTask(cl);
         ThreadPool.ExecuteTask(sl);
 #endif
-        // hook signals
-        sLog.outString("Hooking signals...");
-        signal(SIGINT, _OnSignal);
-        signal(SIGTERM, _OnSignal);
-        signal(SIGABRT, _OnSignal);
-#ifdef _WIN32
-        signal(SIGBREAK, _OnSignal);
-#else
-        signal(SIGHUP, _OnSignal);
-#endif
+        _HookSignals();
 
         WritePidFile();
 
@@ -444,14 +435,8 @@ void LogonServer::Run(int argc, char** argv)
         }
 
         sLog.outString("Shutting down...");
-        signal(SIGINT, 0);
-        signal(SIGTERM, 0);
-        signal(SIGABRT, 0);
-#ifdef _WIN32
-        signal(SIGBREAK, 0);
-#else
-        signal(SIGHUP, 0);
-#endif
+
+        _UnhookSignals();
     }
     else
     {
@@ -546,4 +531,29 @@ void LogonServer::WritePidFile()
         fprintf(fPid, "%u", (unsigned int)pid);
         fclose(fPid);
     }
+}
+
+void LogonServer::_HookSignals()
+{
+    sLog.outString("Hooking signals...");
+    signal(SIGINT, _OnSignal);
+    signal(SIGTERM, _OnSignal);
+    signal(SIGABRT, _OnSignal);
+#ifdef _WIN32
+    signal(SIGBREAK, _OnSignal);
+#else
+    signal(SIGHUP, _OnSignal);
+#endif
+}
+
+void LogonServer::_UnhookSignals()
+{
+    signal(SIGINT, 0);
+    signal(SIGTERM, 0);
+    signal(SIGABRT, 0);
+#ifdef _WIN32
+    signal(SIGBREAK, 0);
+#else
+    signal(SIGHUP, 0);
+#endif
 }
