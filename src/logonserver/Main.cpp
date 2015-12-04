@@ -27,32 +27,6 @@ Arcemu::Threading::AtomicBoolean mrunning(true);
 Mutex _authSocketLock;
 std::set<AuthSocket*> _authSockets;
 
-/*** Signal Handler ***/
-void _OnSignal(int s)
-{
-    switch (s)
-    {
-#ifndef WIN32
-        case SIGHUP:
-        {
-            LOG_DETAIL("Received SIGHUP signal, reloading accounts.");
-            AccountMgr::getSingleton().ReloadAccounts(true);
-        }
-        break;
-#endif
-        case SIGINT:
-        case SIGTERM:
-        case SIGABRT:
-#ifdef _WIN32
-        case SIGBREAK:
-#endif
-            mrunning.SetVal(false);
-            break;
-    }
-
-    signal(s, _OnSignal);
-}
-
 int main(int argc, char** argv)
 {
 #ifndef WIN32
@@ -546,4 +520,29 @@ bool LogonServer::IsServerAllowedMod(unsigned int IP)
     }
     m_allowedIpLock.Release();
     return false;
+}
+
+void LogonServer::_OnSignal(int s)
+{
+    switch (s)
+    {
+#ifndef WIN32
+        case SIGHUP:
+        {
+            LOG_DETAIL("Received SIGHUP signal, reloading accounts.");
+            AccountMgr::getSingleton().ReloadAccounts(true);
+        }
+        break;
+#endif
+        case SIGINT:
+        case SIGTERM:
+        case SIGABRT:
+#ifdef _WIN32
+        case SIGBREAK:
+#endif
+            mrunning.SetVal(false);
+            break;
+    }
+
+    signal(s, _OnSignal);
 }

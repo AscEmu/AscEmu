@@ -58,6 +58,8 @@ class LogonServer : public Singleton< LogonServer >
 
         void _HookSignals();
         void _UnhookSignals();
+
+        static void _OnSignal(int s);
         bool m_stopEvent;
 };
 
