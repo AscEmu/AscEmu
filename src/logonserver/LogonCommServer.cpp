@@ -15,11 +15,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #include "Opcodes/LogonRealmOpcodes.hpp"
 #include "LogonStdAfx.h"
+
 #pragma pack(push, 1)
 typedef struct
 {
@@ -691,7 +691,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
             recvData >> additional;
 
             const char* additional_data = additional.c_str();
-            
+
             std::string account_name_save = account_name;  // save original account_name to check
 
             // remember we expect this in uppercase

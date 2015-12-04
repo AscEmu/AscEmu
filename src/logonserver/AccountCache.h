@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef __ACCOUNTCACHE_H
@@ -49,16 +48,16 @@ struct Account
 
     ~Account()
     {
-        delete [] GMFlags;
-        delete [] SessionKey;
+        delete[] GMFlags;
+        delete[] SessionKey;
     }
 
     void SetGMFlags(const char* flags)
     {
-        delete [] GMFlags;
+        delete[] GMFlags;
 
         size_t len = strlen(flags);
-        if(len == 0 || (len == 1 && flags[0] == '0'))
+        if (len == 0 || (len == 1 && flags[0] == '0'))
         {
             // no flags
             GMFlags = NULL;
@@ -72,7 +71,7 @@ struct Account
 
     void SetSessionKey(const uint8* key)
     {
-        if(SessionKey == NULL)
+        if (SessionKey == NULL)
             SessionKey = new uint8[40];
         memcpy(SessionKey, key, 40);
     }
@@ -99,25 +98,26 @@ enum BAN_STATUS
 
 class IPBanner : public Singleton< IPBanner >
 {
-    public:
-        void Reload();
+public:
+    void Reload();
 
-        bool Add(const char* ip, uint32 dur);
-        bool Remove(const char* ip);
+    bool Add(const char* ip, uint32 dur);
+    bool Remove(const char* ip);
 
-        BAN_STATUS CalculateBanStatus(in_addr ip_address);
+    BAN_STATUS CalculateBanStatus(in_addr ip_address);
 
-    protected:
-        Mutex listBusy;
+protected:
+    Mutex listBusy;
     std::list<IPBan> banList;
 };
 
 class AccountMgr : public Singleton < AccountMgr >
 {
     public:
+
         ~AccountMgr()
         {
-            for(std::map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
+            for (std::map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
             {
                 delete itr->second;
             }
@@ -133,7 +133,7 @@ class AccountMgr : public Singleton < AccountMgr >
 
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 
-            if(itr == AccountDatabase.end())    pAccount = NULL;
+            if (itr == AccountDatabase.end())    pAccount = NULL;
             else                                pAccount = itr->second;
 
             setBusy.Release();
@@ -147,18 +147,20 @@ class AccountMgr : public Singleton < AccountMgr >
         inline size_t GetCount() { return AccountDatabase.size(); }
 
     private:
+
         Account* __GetAccount(std::string Name)
         {
             // this should already be uppercase!
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 
-            if(itr == AccountDatabase.end())    return NULL;
+            if (itr == AccountDatabase.end())    return NULL;
             else                                return itr->second;
         }
 
         std::map<std::string, Account*> AccountDatabase;
 
     protected:
+
         Mutex setBusy;
 };
 
@@ -182,13 +184,14 @@ class InformationCore : public Singleton<InformationCore>
 {
     std::map<uint32, Realm*>          m_realms;
     std::set<LogonCommServerSocket*> m_serverSockets;
-        Mutex serverSocketLock;
-        Mutex realmLock;
+    Mutex serverSocketLock;
+    Mutex realmLock;
 
-        uint32 realmhigh;
-        bool usepings;
+    uint32 realmhigh;
+    bool usepings;
 
     public:
+
         ~InformationCore();
 
         inline Mutex & getServerSocketLock() { return serverSocketLock; }
@@ -197,12 +200,12 @@ class InformationCore : public Singleton<InformationCore>
         InformationCore()
         {
             realmhigh = 0;
-            usepings  = !Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
+            usepings = !Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
             m_realms.clear();
         }
 
         // Packets
-        void          SendRealms(AuthSocket* Socket);
+        void SendRealms(AuthSocket* Socket);
 
         // Realm management
         uint32 GenerateRealmID()
@@ -210,18 +213,28 @@ class InformationCore : public Singleton<InformationCore>
             return ++realmhigh;
         }
 
-        Realm*          AddRealm(uint32 realm_id, Realm* rlm);
-        Realm*        GetRealm(uint32 realm_id);
-        int32          GetRealmIdByName(std::string Name);
-        void          RemoveRealm(uint32 realm_id);
+        Realm* AddRealm(uint32 realm_id, Realm* rlm);
+        Realm* GetRealm(uint32 realm_id);
+        int32 GetRealmIdByName(std::string Name);
+        void RemoveRealm(uint32 realm_id);
         void SetRealmOffline(uint32 realm_id);
         void UpdateRealmStatus(uint32 realm_id, uint8 flags);
-        void          UpdateRealmPop(uint32 realm_id, float pop);
+        void UpdateRealmPop(uint32 realm_id, float pop);
 
-        inline void   AddServerSocket(LogonCommServerSocket* sock) { serverSocketLock.Acquire(); m_serverSockets.insert(sock); serverSocketLock.Release(); }
-        inline void   RemoveServerSocket(LogonCommServerSocket* sock) { serverSocketLock.Acquire(); m_serverSockets.erase(sock); serverSocketLock.Release(); }
+        inline void AddServerSocket(LogonCommServerSocket* sock)
+        {
+            serverSocketLock.Acquire();
+            m_serverSockets.insert(sock);
+            serverSocketLock.Release();
+        }
+        inline void RemoveServerSocket(LogonCommServerSocket* sock)
+        {
+            serverSocketLock.Acquire();
+            m_serverSockets.erase(sock);
+            serverSocketLock.Release();
+        }
 
-        void          TimeoutSockets();
+        void TimeoutSockets();
         void CheckServers();
 };
 
@@ -229,4 +242,4 @@ class InformationCore : public Singleton<InformationCore>
 #define sAccountMgr AccountMgr::getSingleton()
 #define sInfoCore InformationCore::getSingleton()
 
-#endif
+#endif  //__ACCOUNTCACHE_H
