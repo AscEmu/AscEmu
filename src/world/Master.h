@@ -66,15 +66,15 @@ class Master : public Singleton<Master>
         ~Master();
 
         bool Run(int argc, char** argv);
-        void printBanner();
-        bool loadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file);
-        void openCheatLogFiles();
-        void startNetworkSubsystem();
-        void startRemoteConsole();
-        void writePidFile();
+        void PrintBanner();
+        bool LoadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file);
+        void OpenCheatLogFiles();
+        void StartNetworkSubsystem();
+        void StartRemoteConsole();
+        void WritePidFile();
 
-        void shutdownThreadPools(bool listnersockcreate);
-        void shutdownLootSystem();
+        void ShutdownThreadPools(bool listnersockcreate);
+        void ShutdownLootSystem();
         bool m_ShutdownEvent;
         uint32 m_ShutdownTimer;
 
@@ -84,7 +84,7 @@ class Master : public Singleton<Master>
 
         bool _StartDB();
         void _StopDB();
-        bool CheckDBVersion();
+        bool _CheckDBVersion();
 
         void _HookSignals();
         void _UnhookSignals();

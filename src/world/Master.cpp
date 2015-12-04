@@ -161,7 +161,7 @@ bool Master::Run(int argc, char** argv)
 
     sLog.Init(0, WORLD_LOG);
 
-    printBanner();
+    PrintBanner();
 
     if (do_version)
     {
@@ -207,7 +207,7 @@ bool Master::Run(int argc, char** argv)
     ThreadPool.Startup();
     uint32 LoadingTime = getMSTime();
 
-    if (!loadWorldConfiguration(config_file, optional_config_file, realm_config_file))
+    if (!LoadWorldConfiguration(config_file, optional_config_file, realm_config_file))
     {
         return false;
     }
@@ -219,8 +219,7 @@ bool Master::Run(int argc, char** argv)
         return false;
     }
 
-    // Checking the DB version. If it's wrong or can't be validated we exit.
-    if (!CheckDBVersion())
+    if (!_CheckDBVersion())
     {
         sLog.Close();
         return false;
@@ -238,7 +237,7 @@ bool Master::Run(int argc, char** argv)
     new EventMgr;
     new World;
 
-    openCheatLogFiles();
+    OpenCheatLogFiles();
 
     /* load the config file */
     sWorld.Rehash(false);
@@ -276,7 +275,7 @@ bool Master::Run(int argc, char** argv)
     ConsoleThread* console = new ConsoleThread();
     ThreadPool.ExecuteTask(console);
 
-    startNetworkSubsystem();
+    StartNetworkSubsystem();
     
     sSocketMgr.SpawnWorkerThreads();
 
@@ -290,9 +289,9 @@ bool Master::Run(int argc, char** argv)
 
     ThreadPool.ExecuteTask(new GameEventMgr::GameEventMgrThread());
 
-    startRemoteConsole();
+    StartRemoteConsole();
 
-    writePidFile();
+    WritePidFile();
 
     //ThreadPool.Gobble();
 
@@ -308,7 +307,7 @@ bool Master::Run(int argc, char** argv)
         ThreadPool.ExecuteTask(ls);
 #endif
 
-    shutdownThreadPools(listnersockcreate);
+    ShutdownThreadPools(listnersockcreate);
 
     _UnhookSignals();
 
@@ -320,7 +319,7 @@ bool Master::Run(int argc, char** argv)
 
     // begin server shutdown
 
-    shutdownLootSystem();
+    ShutdownLootSystem();
     
     // send a query to wake it up if its inactive
     Log.Notice("Database", "Clearing all pending queries...");
@@ -400,7 +399,7 @@ bool Master::Run(int argc, char** argv)
     return true;
 }
 
-bool Master::CheckDBVersion()
+bool Master::_CheckDBVersion()
 {
     QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version;");
     if (wqr == NULL)
@@ -602,7 +601,7 @@ void OnCrash(bool Terminate)
 
 #endif
 
-void Master::printBanner()
+void Master::PrintBanner()
 {
     sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
     sLog.outBasic("========================================================");
@@ -610,7 +609,7 @@ void Master::printBanner()
     sLog.outErrorSilent("========================================================"); // Echo off.
 }
 
-bool Master::loadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file)
+bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file)
 {
     Log.Success("Config", "Loading Config Files...");
     if (Config.MainConfig.SetSource(config_file))
@@ -660,7 +659,7 @@ bool Master::loadWorldConfiguration(char* config_file, char* optional_config_fil
     return true;
 }
 
-void Master::openCheatLogFiles()
+void Master::OpenCheatLogFiles()
 {
     bool useTimeStamp = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
 
@@ -669,7 +668,7 @@ void Master::openCheatLogFiles()
     Player_Log = new SessionLogWriter(FormatOutputString("logs", "players", useTimeStamp).c_str(), false);
 }
 
-void Master::startRemoteConsole()
+void Master::StartRemoteConsole()
 {
     Log.Notice("RemoteConsole", "Starting...");
     if (StartConsoleListener())
@@ -685,7 +684,7 @@ void Master::startRemoteConsole()
     }
 }
 
-void Master::writePidFile()
+void Master::WritePidFile()
 {
     FILE* fPid = fopen("worldserver.pid", "w");
     if (fPid)
@@ -701,7 +700,7 @@ void Master::writePidFile()
     }
 }
 
-void Master::shutdownThreadPools(bool listnersockcreate)
+void Master::ShutdownThreadPools(bool listnersockcreate)
 {
     // Socket loop!
     time_t curTime;
@@ -802,14 +801,14 @@ void Master::shutdownThreadPools(bool listnersockcreate)
     }
 }
 
-void Master::startNetworkSubsystem()
+void Master::StartNetworkSubsystem()
 {
     Log.Success("Network", "Starting subsystem...");
     new SocketMgr;
     new SocketGarbageCollector;
 }
 
-void Master::shutdownLootSystem()
+void Master::ShutdownLootSystem()
 {
     Log.Success("Shutdown", "Initiated at %s", ConvertTimeStampToDataTime((uint32)UNIXTIME).c_str());
 
