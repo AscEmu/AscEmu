@@ -12,6 +12,7 @@ set(sources
    LogonConsole.cpp
    LogonStdAfx.cpp
    Main.cpp
+   Master.cpp
    LogonServer.cpp
    )
 
@@ -23,7 +24,7 @@ set(headers
 	LogonCommServer.h
 	LogonConsole.h
 	LogonStdAfx.h
-	Main.h
+   Master.hpp
    LogonServer.hpp
 	PeriodicFunctionCall_Thread.h
    Opcodes/LogonRealmOpcodes.hpp
