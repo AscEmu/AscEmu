@@ -1480,7 +1480,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     uint32 level = _player->getLevel();
     if (level >= 100)
         level = 100;
-    gtFloat* cutcosts = dbcBarberShopPrices.LookupEntryForced(level - 1);
+    auto cutcosts = sBarberShopCostBaseEntry.LookupEntry(level - 1);
     if (!cutcosts)
         return;
 
@@ -1489,15 +1489,15 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     // facial hair cost = cutcosts * 0.75
     if (newhair != oldhair)
     {
-        cost += (uint32)cutcosts->val;
+        cost += (uint32)cutcosts->cost;
     }
     else if (newhaircolor != oldhaircolor)
     {
-        cost += (uint32)(cutcosts->val) >> 1;
+        cost += (uint32)(cutcosts->cost) >> 1;
     }
     if (newfacial != oldfacial)
     {
-        cost += (uint32)(cutcosts->val * 0.75f);
+        cost += (uint32)(cutcosts->cost * 0.75f);
     }
 
     if (!_player->HasGold(cost))

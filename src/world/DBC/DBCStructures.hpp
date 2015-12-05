@@ -29,6 +29,7 @@ namespace DBC
         namespace
         {
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
+            char const gt_barber_shop_cost_format[] = "f";
             const char LFGDungeonEntryformat[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
         }
 
@@ -46,6 +47,11 @@ namespace DBC
             // 27, string flags, unused
             uint32  team;                                           // 28
             uint32  liquid_type_override[4];                        // 29-32 liquid override by type
+        };
+
+        struct GtBarberShopCostBaseEntry
+        {
+            float cost;                             // 0 cost base
         };
 
         struct LFGDungeonEntry
