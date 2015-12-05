@@ -105,13 +105,13 @@ class JainaProudmooreGS : public GossipScript
             switch (pObject->GetMapMgr()->GetScript()->GetInstanceData(HYJAL_TYPE_BASIC, 0))
             {
                 case HYJAL_PHASE_NOT_STARTED:
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
+                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
                     break;
                 case HYJAL_PHASE_RAGE_WINTERCHILL_COMPLETE:
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
+                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(435), 1);     // We are ready to defend the Alliance base.
                     break;
                 case HYJAL_PHASE_ANETHERON_COMPLETE:
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(436), 1);     // The defenses are holding up: we can continue.
+                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(436), 1);     // The defenses are holding up: we can continue.
                     break;
             }
 
@@ -165,10 +165,10 @@ class ThrallGS : public GossipScript
             switch (pObject->GetMapMgr()->GetScript()->GetInstanceData(HYJAL_TYPE_BASIC, 0))
             {
                 case HYJAL_PHASE_ANETHERON_COMPLETE:
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(437), 1);     // We're here to help! The Alliance are overrun.
+                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(437), 1);     // We're here to help! The Alliance are overrun.
                     break;
                 case HYJAL_PHASE_KAZROGAL_COMPLETE:
-                    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(438), 1);     // We're okay so far. Let's do this!
+                    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(438), 1);     // We're okay so far. Let's do this!
                     break;
             }
 

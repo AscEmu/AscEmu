@@ -98,31 +98,31 @@ class UlduarTeleporterAI : public GameObjectAIScript
 
             GossipMenu* menu = NULL;
             objmgr.CreateGossipMenuForPlayer(&menu, _gameobject->GetGUID(), 14424, player);
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(521), 0);      // Expedition Base Camp.
+            menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(521), 0);      // Expedition Base Camp.
 
             // Unlock after engaging Flame Leviathan
-            menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(522), 1);      // Formation Grounds
+            menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(522), 1);      // Formation Grounds
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_FLAME_LEVIATHAN) == State_Finished)
-                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(523), 2);      // Colossal Forge
+                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(523), 2);      // Colossal Forge
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_XT_002_DECONSTRUCTOR) == State_Finished)
             {
-                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(524), 3);      // Scrapyard
-                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(525), 4);      // Antechamber of Ulduar
+                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(524), 3);      // Scrapyard
+                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(525), 4);      // Antechamber of Ulduar
             }
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_KOLOGARN) == State_Finished)
-                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(526), 5);      // Shattered Walkway
+                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(526), 5);      // Shattered Walkway
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_AURIAYA) == State_Finished)
-                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(527), 6);      // Conservatory of Life
+                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(527), 6);      // Conservatory of Life
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_MIMIRON) == State_Finished)
-                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(528), 7);      // Spark of Imagination
+                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(528), 7);      // Spark of Imagination
 
             if (pInstance->GetInstanceData(Data_EncounterState, CN_GENERAL_VEZAX) == State_Finished)
-                menu->AddItem(ICON_CHAT, player->GetSession()->LocalizedGossipOption(529), 8);      // Prison of Yogg-Saron
+                menu->AddItem(GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(529), 8);      // Prison of Yogg-Saron
 
             menu->SendTo(player);
         }

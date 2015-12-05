@@ -231,6 +231,7 @@ set(headers
    GameEventMgr.h
 	GameObject.h
 	CRitual.h
+   Gossip/GossipDefines.hpp
 	Gossip.h
 	Group.h
 	Entities/Summons/GuardianSummon.h

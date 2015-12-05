@@ -24,7 +24,7 @@ class SkornWhitecloud_Gossip : public Arcemu::Gossip::Script
     public:
         void OnHello(Object* pObject, Player* plr)
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 522, plr, 1, ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MULGORE_STORY_SKORN));
+            Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 522, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MULGORE_STORY_SKORN));
         }
 
         void OnSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)

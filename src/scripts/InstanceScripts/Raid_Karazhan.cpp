@@ -32,14 +32,14 @@ class Berthold : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4037, Plr);
 
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(428), 1);     // What is this place?
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(429), 2);     // Where is Medivh?
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(430), 3);     // How do you navigate the tower?
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(428), 1);     // What is this place?
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(429), 2);     // Where is Medivh?
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(430), 3);     // How do you navigate the tower?
 
             //Killing the Shade of Aran makes a teleport to medivh's available from Berthold the Doorman.
             Unit* soa = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-11165.2f, -1912.13f, 232.009f, 16524);
             if (!soa || !soa->isAlive())
-                Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(431), 4); // Please teleport me to the Guardian's Library.
+                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(431), 4); // Please teleport me to the Guardian's Library.
 
             Menu->SendTo(Plr);
         }
@@ -704,7 +704,7 @@ class BarnesGS : public GossipScript
             else
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 8970, Plr);         // Finally, everything is in place. Are you ready for your big stage debut?
-                Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(432), 1);     // I'm not an actor.
+                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(432), 1);     // I'm not an actor.
 
                 Menu->SendTo(Plr);
 
@@ -723,7 +723,7 @@ class BarnesGS : public GossipScript
                     {
                         GossipMenu* Menu;
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 8971, Plr);         // Don't worry, you'll be fine. You look like a natural!
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(433), 2);     // Ok, I'll give it a try, then.
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(433), 2);     // Ok, I'll give it a try, then.
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -754,7 +754,7 @@ class GrandMother : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7245, Plr);             // Don't get too close, $N. I'm liable to fumble and bash your brains open with the face of my hammer.
 
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(434), 1);         // What phat lewts you have Grandmother!
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(434), 1);         // What phat lewts you have Grandmother!
 
             Menu->SendTo(Plr);
         }

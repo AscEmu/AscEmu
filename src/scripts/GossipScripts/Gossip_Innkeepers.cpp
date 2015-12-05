@@ -54,15 +54,15 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     if (ct->tm_mon == 9 && (ct->tm_mday > 17 && ct->tm_mday <= 31))
     {
         if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRICK_TREAT), 4);
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRICK_TREAT), 4);
     }
 
 
     if (pCreature->isVendor())
         menu.AddItem(Arcemu::Gossip::ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1);
 
-    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 2);
-    menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPERASK), 3);
+    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 2);
+    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPERASK), 3);
 
     sQuestMgr.FillQuestMenu(pCreature, Plr, menu);
 
@@ -88,7 +88,7 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
             break;
         case 3:     // WHAT CAN I DO ?
             // Prepare second menu
-            Arcemu::Gossip::Menu::SendQuickMenu(pCreature->GetGUID(), 1853, Plr, 2, ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
+            Arcemu::Gossip::Menu::SendQuickMenu(pCreature->GetGUID(), 1853, Plr, 2, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER));
             break;
         case 4:     // EVENT OF HALLOWEEN
             if (!Plr->HasAura(SPELL_TRICK_OR_TREATED))

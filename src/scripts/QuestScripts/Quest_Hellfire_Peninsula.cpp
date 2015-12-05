@@ -226,7 +226,7 @@ class PrisonerGossip : public GossipScript
                 {
                     GossipMenu* Menu;
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10104, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(463), 1);     // Walk free, Elder. Bring the spirits back to your tribe.
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(463), 1);     // Walk free, Elder. Bring the spirits back to your tribe.
 
                     Menu->SendTo(pPlayer);
                 }

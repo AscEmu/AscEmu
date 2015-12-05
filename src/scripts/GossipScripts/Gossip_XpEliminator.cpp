@@ -29,9 +29,9 @@ class XpEliminatorGossip : public Arcemu::Gossip::Script
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 14736);
             if (plr->CanGainXp())
-                menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DISABLE_XP_GAIN), 1, 100000, plr->GetSession()->LocalizedGossipOption(GI_BOXMSG_DISABLE_XP_GAIN));
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DISABLE_XP_GAIN), 1, 100000, plr->GetSession()->LocalizedGossipOption(GI_BOXMSG_DISABLE_XP_GAIN));
             else
-                menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_ENABLE_XP_GAIN), 1, 100000, plr->GetSession()->LocalizedGossipOption(GI_BOXMSG_ENABLE_XP_GAIN));
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_ENABLE_XP_GAIN), 1, 100000, plr->GetSession()->LocalizedGossipOption(GI_BOXMSG_ENABLE_XP_GAIN));
 
             menu.Send(plr);
         }

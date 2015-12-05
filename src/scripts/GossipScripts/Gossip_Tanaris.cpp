@@ -26,8 +26,8 @@ class CurgleCranklehop_Gossip : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* plr)
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 1519);
-            menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_HIPPO), 1);
-            menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_GORDUNNI), 2);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_HIPPO), 1);
+            menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_CRANK_GORDUNNI), 2);
             menu.Send(plr);
         }
 
@@ -51,7 +51,7 @@ class TrentonLighthammer_Gossip : public Arcemu::Gossip::Script
 
         void OnHello(Object* pObject, Player* plr)
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1758, plr, 1, ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
+            Arcemu::Gossip::Menu::SendQuickMenu(pObject->GetGUID(), 1758, plr, 1, GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TANARIS_TELL_TRENTON));
         }
 
         void GossipSelectOption(Object* pObject, Player* plr, uint32 Id, const char* Code)

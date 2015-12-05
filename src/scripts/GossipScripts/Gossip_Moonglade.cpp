@@ -29,7 +29,7 @@ class SilvaFilnaveth_Gossip : public Arcemu::Gossip::Script
             if (plr->getClass() == DRUID && plr->getRace() == RACE_NIGHTELF)
             {
                 menu.setTextID(4914);
-                menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MG_FLY_VILLAGE), 1);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MG_FLY_VILLAGE), 1);
             }
             else if (plr->getClass() == DRUID && plr->getRace() == RACE_TAUREN)
                 menu.setTextID(4915);
@@ -61,7 +61,7 @@ class BunthenPlainswind_Gossip : public Arcemu::Gossip::Script
             if (plr->getClass() == DRUID && plr->getRace() == RACE_TAUREN)
             {
                 menu.setTextID(4918);
-                menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MG_FLY_THUNDER_BLUFF), 1);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MG_FLY_THUNDER_BLUFF), 1);
             }
             else if (plr->getClass() == DRUID && plr->getRace() == RACE_NIGHTELF)
                 menu.setTextID(4917);

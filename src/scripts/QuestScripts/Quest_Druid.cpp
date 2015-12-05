@@ -58,12 +58,12 @@ class SCRIPT_DECL MoonkinGhost_Gossip : public GossipScript
             if(plr->HasQuest(6002))
             {
                 //Horde
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 1);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
             }
             else if(plr->HasQuest(6001))
             {
                 //Ally
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 2);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(455), 2);     // You have fought well, spirit. I ask you to grand me the strenght of your body and the strenght of your heart.
             }
 
             Menu->SendTo(plr);
@@ -139,11 +139,11 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
 
             if(plr->HasQuest(5930)) // horde
             {
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 1);     // What do you represent, spirit?
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 1);     // What do you represent, spirit?
             }
             else if(plr->HasQuest(5929)) // ally
             {
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 5);     // What do you represent, spirit?
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(456), 5);     // What do you represent, spirit?
             }
 
             Menu->SendTo(plr);
@@ -164,21 +164,21 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
                 case 1:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 2);     // I seek to understand the importance of strength of the body.
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 2);     // I seek to understand the importance of strength of the body.
                         Menu->SendTo(plr);
                         break;
                     }
                 case 2:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 3);     // I seek to understand the importance of strength of the heart.
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 3);     // I seek to understand the importance of strength of the heart.
                         Menu->SendTo(plr);
                         break;
                     }
                 case 3:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 4);     // I have heard your words, Great Bear Spirit, and I understand. I now...
                         Menu->SendTo(plr);
                         break;
                     }
@@ -202,21 +202,21 @@ class SCRIPT_DECL BearGhost_Gossip : public GossipScript
                 case 5:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4721, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 6);     // I seek to understand the importance of strength of the body.
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(457), 6);     // I seek to understand the importance of strength of the body.
                         Menu->SendTo(plr);
                         break;
                     }
                 case 6:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4733, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 7);     // I seek to understand the importance of strength of the heart.
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(458), 7);     // I seek to understand the importance of strength of the heart.
                         Menu->SendTo(plr);
                         break;
                     }
                 case 7:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4734, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(459), 8);     // I have heard your words, Great Bear Spirit, and I understand. I now...
                         Menu->SendTo(plr);
                         break;
                     }

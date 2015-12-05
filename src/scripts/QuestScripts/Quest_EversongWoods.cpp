@@ -55,7 +55,7 @@ void ProspectorAnvilwardGossip::GossipHello(Object* pObject, Player * Plr)
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), ANVILWARD_1, Plr);
 
     if (Plr->HasQuest(8483))
-        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(460), 1);     // I need a moment of your time, Sir.
+        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(460), 1);     // I need a moment of your time, Sir.
 
     Menu->SendTo(Plr);
 }
@@ -74,7 +74,7 @@ void ProspectorAnvilwardGossip::GossipSelectOption(Object* pObject, Player* Plr,
     {
         case 1:
         {
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(461), 2);     // Why... yes, of course. I've something to show you right inside this building. Mr. Anvilward.
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(461), 2);     // Why... yes, of course. I've something to show you right inside this building. Mr. Anvilward.
             Menu->SendTo(Plr);
         }break;
         case 2:

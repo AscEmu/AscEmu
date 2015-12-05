@@ -185,7 +185,7 @@ class ErozionGossip : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), EROZION_ON_HELLO, Plr);
 
             if (pInstance->GetData(OHF_PHASE_1) != OHF_DATA_DONE && !Plr->HasItemCount(25853, 1))
-                Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
+                Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(EROZION_NEED_PACKET), 1);
 
             // It should give another menu if instance is done id: 10474, NYI
 
@@ -216,7 +216,7 @@ class BrazenGossip : public GossipScript
             GossipMenu* Menu;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), BRAZAN_ON_HELLO, Plr);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(BRAZAN_DURNHOLDE_KEEP), 1);
 
             Menu->SendTo(Plr);
         }
@@ -321,7 +321,7 @@ class ThrallGossip : public GossipScript
                 return;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), THRALL_ON_HELLO, Plr);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(THRALL_START_ESCORT), 1);
 
             Menu->SendTo(Plr);
         }

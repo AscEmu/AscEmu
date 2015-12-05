@@ -36,7 +36,7 @@ enum UnorderedEntrys
 
         void OnActivate(Player* player)
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(_gameobject->GetGUID(), GT_DEDICATION_OF_HONOR, player, 1, ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
+            Arcemu::Gossip::Menu::SendQuickMenu(_gameobject->GetGUID(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
         }
 };
 
