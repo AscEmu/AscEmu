@@ -48,8 +48,8 @@ class LogonServer : public Singleton< LogonServer >
         void WritePidFile();
 
         uint8 sql_hash[20];
-        uint32 max_build;
-        uint32 min_build;
+        uint32 clientMinBuild;
+        uint32 clientMaxBuild;
 
         Arcemu::PerformanceCounter perfcounter;
     private:

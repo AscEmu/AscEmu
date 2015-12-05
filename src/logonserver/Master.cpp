@@ -87,7 +87,7 @@ void LogonServer::Run(int argc, char** argv)
         return;
     }
 
-    /* set new log levels */
+    // set new log levels
     if (file_log_level != (int)DEF_VALUE_NOT_SET)
         sLog.SetFileLoggingLevel(file_log_level);
 
@@ -125,26 +125,25 @@ void LogonServer::Run(int argc, char** argv)
     Log.Success("AccountMgr", "%u accounts are loaded and ready.", sAccountMgr.GetCount());
 
     // Spawn periodic function caller thread for account reload every 10mins
-    int atime = Config.MainConfig.GetIntDefault("Rates", "AccountRefresh", 600);
-    atime *= 1000;
-    //SpawnPeriodicCallThread(AccountMgr, AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, time);
-    PeriodicFunctionCaller<AccountMgr> * pfc = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, atime);
-    ThreadPool.ExecuteTask(pfc);
+    uint32 accountReloadPeriod = Config.MainConfig.GetIntDefault("Rates", "AccountRefresh", 600);
+    accountReloadPeriod *= 1000;
+
+    PeriodicFunctionCaller<AccountMgr> * periodicReloadAccounts = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, accountReloadPeriod);
+    ThreadPool.ExecuteTask(periodicReloadAccounts);
 
     // Load conf settings..
-    uint32 cport = Config.MainConfig.GetIntDefault("Listen", "RealmListPort", 3724);
-    uint32 sport = Config.MainConfig.GetIntDefault("Listen", "ServerPort", 8093);
-    //uint32 threadcount = Config.MainConfig.GetIntDefault("Network", "ThreadCount", 5);
-    //uint32 threaddelay = Config.MainConfig.GetIntDefault("Network", "ThreadDelay", 20);
+    uint32 realmlistPort = Config.MainConfig.GetIntDefault("Listen", "RealmListPort", 3724);
+    uint32 logonServerPort = Config.MainConfig.GetIntDefault("Listen", "ServerPort", 8093);
+
     std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
     std::string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
 
-    min_build = LOGON_MINBUILD;
-    max_build = LOGON_MAXBUILD;
+    clientMinBuild = LOGON_MINBUILD;
+    clientMaxBuild = LOGON_MAXBUILD;
 
-    std::string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
+    std::string logonServerPassword = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
     Sha1Hash hash;
-    hash.UpdateData(logon_pass);
+    hash.UpdateData(logonServerPassword);
     hash.Finalize();
     memcpy(sql_hash, hash.GetDigest(), 20);
 
@@ -153,20 +152,20 @@ void LogonServer::Run(int argc, char** argv)
     new SocketMgr;
     new SocketGarbageCollector;
 
-    ListenSocket<AuthSocket> * cl = new ListenSocket<AuthSocket>(host.c_str(), cport);
-    ListenSocket<LogonCommServerSocket> * sl = new ListenSocket<LogonCommServerSocket>(shost.c_str(), sport);
+    ListenSocket<AuthSocket> * realmlistSocket = new ListenSocket<AuthSocket>(host.c_str(), realmlistPort);
+    ListenSocket<LogonCommServerSocket> * logonServerSocket = new ListenSocket<LogonCommServerSocket>(shost.c_str(), logonServerPort);
 
     sSocketMgr.SpawnWorkerThreads();
 
     // Spawn auth listener
     // Spawn interserver listener
-    bool authsockcreated = cl->IsOpen();
-    bool intersockcreated = sl->IsOpen();
-    if (authsockcreated && intersockcreated)
+    bool isAuthsockCreated = realmlistSocket->IsOpen();
+    bool isIntersockCreated = logonServerSocket->IsOpen();
+    if (isAuthsockCreated && isIntersockCreated)
     {
 #ifdef WIN32
-        ThreadPool.ExecuteTask(cl);
-        ThreadPool.ExecuteTask(sl);
+        ThreadPool.ExecuteTask(realmlistSocket);
+        ThreadPool.ExecuteTask(logonServerSocket);
 #endif
         _HookSignals();
 
@@ -205,10 +204,10 @@ void LogonServer::Run(int argc, char** argv)
         LOG_ERROR("Error creating sockets. Shutting down...");
     }
 
-    pfc->kill();
+    periodicReloadAccounts->kill();
 
-    cl->Close();
-    sl->Close();
+    realmlistSocket->Close();
+    logonServerSocket->Close();
     sSocketMgr.CloseAll();
 #ifdef WIN32
     sSocketMgr.ShutdownThreads();
@@ -233,9 +232,9 @@ void LogonServer::Run(int argc, char** argv)
     delete IPBanner::getSingletonPtr();
     delete SocketMgr::getSingletonPtr();
     delete SocketGarbageCollector::getSingletonPtr();
-    delete pfc;
-    delete cl;
-    delete sl;
+    delete periodicReloadAccounts;
+    delete realmlistSocket;
+    delete logonServerSocket;
     LOG_BASIC("Shutdown complete.");
     sLog.Close();
 }
@@ -281,8 +280,8 @@ void LogonServer::PrintBanner()
 
 void LogonServer::WritePidFile()
 {
-    FILE* fPid = fopen("logonserver.pid", "w");
-    if (fPid)
+    FILE* pidFile = fopen("logonserver.pid", "w");
+    if (pidFile)
     {
         uint32 pid;
 #ifdef WIN32
@@ -290,8 +289,8 @@ void LogonServer::WritePidFile()
 #else
         pid = getpid();
 #endif
-        fprintf(fPid, "%u", (unsigned int)pid);
-        fclose(fPid);
+        fprintf(pidFile, "%u", (unsigned int)pid);
+        fclose(pidFile);
     }
 }
 
@@ -322,25 +321,21 @@ void LogonServer::_UnhookSignals()
 
 bool LogonServer::StartDb()
 {
-    std::string lhostname, lusername, lpassword, ldatabase;
-    int lport = 0;
+    std::string dbHostname;
+    std::string dbUsername;
+    std::string dbPassword;
+    std::string dbDatabase;
+
+    int dbPort = 0;
+
     // Configure Main Database
+    bool existsUsername = Config.MainConfig.GetString("LogonDatabase", "Username", &dbUsername);
+    bool existsPassword = Config.MainConfig.GetString("LogonDatabase", "Password", &dbPassword);
+    bool existsHostname = Config.MainConfig.GetString("LogonDatabase", "Hostname", &dbHostname);
+    bool existsName = Config.MainConfig.GetString("LogonDatabase", "Name", &dbDatabase);
+    bool existsPort = Config.MainConfig.GetInt("LogonDatabase", "Port", &dbPort);
 
-    bool result;
-
-    // Set up reusable parameter checks for each parameter
-    // Note that the Config.MainConfig.Get[$type] methods returns boolean value and not $type
-
-    bool existsUsername = Config.MainConfig.GetString("LogonDatabase", "Username", &lusername);
-    bool existsPassword = Config.MainConfig.GetString("LogonDatabase", "Password", &lpassword);
-    bool existsHostname = Config.MainConfig.GetString("LogonDatabase", "Hostname", &lhostname);
-    bool existsName = Config.MainConfig.GetString("LogonDatabase", "Name", &ldatabase);
-    bool existsPort = Config.MainConfig.GetInt("LogonDatabase", "Port", &lport);
-
-    // Configure Logon Database...
-
-    // logical AND every parameter to ensure we catch any error
-    result = existsUsername && existsPassword && existsHostname && existsName && existsPort;
+    bool result = existsUsername && existsPassword && existsHostname && existsName && existsPort;
 
     if (!result)
     {
@@ -351,8 +346,7 @@ bool LogonServer::StartDb()
         //If the <LogonDatabase> tag is malformed, all parameters will fail, and a different error message is given
 
         std::string errorMessage = "sql: Certain <LogonDatabase> parameters not found in " CONFDIR "\\logon.conf \r\n";
-        if (!(existsHostname || existsUsername || existsPassword ||
-            existsName || existsPort))
+        if (!(existsHostname || existsUsername || existsPassword || existsName || existsPort))
         {
             errorMessage += "  Double check that you have remembered the entire <LogonDatabase> tag.\r\n";
             errorMessage += "  All parameters missing. It is possible you forgot the first '<' character.\r\n";
@@ -374,8 +368,8 @@ bool LogonServer::StartDb()
     sLogonSQL = Database::CreateDatabaseInterface();
 
     // Initialize it
-    if (!sLogonSQL->Initialize(lhostname.c_str(), (unsigned int)lport, lusername.c_str(),
-        lpassword.c_str(), ldatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase", "ConnectionCount", 5),
+    if (!sLogonSQL->Initialize(dbHostname.c_str(), (unsigned int)dbPort, dbUsername.c_str(),
+        dbPassword.c_str(), dbDatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase", "ConnectionCount", 5),
         16384))
     {
         LOG_ERROR("sql: Logon database initialization failed. Exiting.");
@@ -399,22 +393,24 @@ bool LogonServer::Rehash()
     }
 
     // re-set the allowed server IP's
-    std::string ips = Config.MainConfig.GetStringDefault("LogonServer", "AllowedIPs", "");
-    std::string ipsmod = Config.MainConfig.GetStringDefault("LogonServer", "AllowedModIPs", "");
+    std::string allowedIps = Config.MainConfig.GetStringDefault("LogonServer", "AllowedIPs", "");
+    std::vector<std::string> vips = StrSplit(allowedIps, " ");
 
-    std::vector<std::string> vips = StrSplit(ips, " ");
-    std::vector<std::string> vipsmod = StrSplit(ips, " ");
+    std::string allowedModIps = Config.MainConfig.GetStringDefault("LogonServer", "AllowedModIPs", "");
+    std::vector<std::string> vipsmod = StrSplit(allowedModIps, " ");
 
     m_allowedIpLock.Acquire();
     m_allowedIps.clear();
     m_allowedModIps.clear();
+
     std::vector<std::string>::iterator itr;
+
     for (itr = vips.begin(); itr != vips.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
         if (i == std::string::npos)
         {
-            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
+            LOG_ERROR("Ips: %s could not be parsed. Ignoring", itr->c_str());
             continue;
         }
 
@@ -425,7 +421,7 @@ bool LogonServer::Rehash()
         unsigned char ipmask = (char)atoi(smask.c_str());
         if (ipraw == 0 || ipmask == 0)
         {
-            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
+            LOG_ERROR("Ips: %s could not be parsed. Ignoring", itr->c_str());
             continue;
         }
 
@@ -440,7 +436,7 @@ bool LogonServer::Rehash()
         std::string::size_type i = itr->find("/");
         if (i == std::string::npos)
         {
-            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
+            LOG_ERROR("ModIps: %s could not be parsed. Ignoring", itr->c_str());
             continue;
         }
 
@@ -451,7 +447,7 @@ bool LogonServer::Rehash()
         unsigned char ipmask = (char)atoi(smask.c_str());
         if (ipraw == 0 || ipmask == 0)
         {
-            LOG_ERROR("IP: %s could not be parsed. Ignoring", itr->c_str());
+            LOG_ERROR("ModIps: %s could not be parsed. Ignoring", itr->c_str());
             continue;
         }
 
