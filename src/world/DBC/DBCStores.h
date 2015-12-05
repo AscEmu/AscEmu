@@ -2082,7 +2082,7 @@ extern SERVER_DECL DBCStorage<AchievementCategoryEntry> dbcAchievementCategorySt
 //extern SERVER_DECL DBCStorage<BattlemasterListEntry> dbcBattlemasterListStore;
 extern SERVER_DECL DBCStorage<CharTitlesEntry> dbcCharTitlesEntry;
 extern SERVER_DECL DBCStorage<CurrencyTypesEntry> dbcCurrencyTypesStore;
-//extern SERVER_DECL DBCStorage<BarberShopStyleEntry> dbcBarberShopStyleStore;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 extern SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
 extern SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
