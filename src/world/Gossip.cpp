@@ -52,7 +52,12 @@ WorldPacket& operator<<(WorldPacket& packet, const Gossip::Item & item)
 template<uint32 size>
 StackBuffer<size>& operator<<(StackBuffer<size>& packet, const Gossip::Item & item)
 {
-    packet << uint32(item.id_) << item.icon_ << item.coded_ << item.boxmoney_ << item.text_ << item.boxmessage_;
+    packet << uint32(item.id_);
+    packet << item.icon_;
+    packet << item.coded_;
+    packet << item.boxmoney_;
+    packet << item.text_;
+    packet << item.boxmessage_;
     return packet;
 }
 
@@ -119,7 +124,11 @@ WorldPacket& operator<<(WorldPacket& packet, const Gossip::Menu & menu)
     {
         for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
         {
-            packet << itr->first->id << uint32(itr->second) << itr->first->min_level << itr->first->quest_flags << uint8(0);
+            packet << itr->first->id;
+            packet << uint32(itr->second);
+            packet << itr->first->min_level;
+            packet << itr->first->quest_flags;
+            packet << uint8(0);
             LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->id, menu.language_);
             if (lq != NULL)
                 packet << lq->Title;
@@ -146,7 +155,11 @@ StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & m
         std::string title;
         for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
         {
-            packet << itr->first->id << uint32(itr->second) << itr->first->min_level << itr->first->quest_flags << uint8(0);
+            packet << itr->first->id;
+            packet << uint32(itr->second);
+            packet << itr->first->min_level;
+            packet << itr->first->quest_flags;
+            packet << uint8(0);
             LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->id, menu.language_);
             if (lq != NULL)
                 title = lq->Title;
@@ -185,7 +198,11 @@ void Gossip::Menu::StackSend(Player* plr) const
 void Gossip::Menu::SendSimpleMenu(uint64 guid, size_t txt_id, Player* plr)
 {
     StackWorldPacket<32> packet(SMSG_GOSSIP_MESSAGE);
-    packet << guid << uint32(0) << uint32(txt_id) << uint32(0) << uint32(0);
+    packet << guid;
+    packet << uint32(0);
+    packet << uint32(txt_id);
+    packet << uint32(0);
+    packet << uint32(0);
     plr->GetSession()->SendPacket(&packet);
 }
 
@@ -194,7 +211,15 @@ void Gossip::Menu::SendQuickMenu(uint64 guid, size_t textid, Player* Plr, size_t
     StackWorldPacket<64> packet(SMSG_GOSSIP_MESSAGE);
     std::string itemtexts = (itemtext != NULL) ? itemtext : "";
     std::string moneytexts = (moneytext != NULL) ? moneytext : "";
-    packet << guid << uint32(0) << uint32(textid) << uint32(1) << uint32(itemid) << itemicon << extra << uint32(requiredmoney) << itemtexts;
+    packet << guid;
+    packet << uint32(0);
+    packet << uint32(textid);
+    packet << uint32(1);
+    packet << uint32(itemid);
+    packet << itemicon;
+    packet << extra;
+    packet << uint32(requiredmoney);
+    packet << itemtexts;
     if (moneytext != NULL)
         packet << moneytexts;
     else
