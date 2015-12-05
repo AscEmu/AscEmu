@@ -1407,21 +1407,6 @@ struct ItemRandomSuffixEntry
     uint32 prefixes[3];
 };
 
-struct BarberShopStyleEntry
-{
-    uint32 id;              // 0
-    uint32 type;            // 1 value 0 -> hair, value 2 -> facialhair
-    //char* name;           // 2 string hairstyle name
-    //char* name[15];       // 3-17 name of hair style
-    //uint32 name_flags;    // 18
-    //uint32 unk_name[16];  // 19-34, all empty
-    //uint32 unk_flags;     // 35
-    //float unk3;           // 36 values 1 and 0,75
-    uint32 race;            // 37 race
-    uint32 gender;          // 38 0 male, 1 female
-    uint32 hair_id;         // 39 Hair ID
-};
-
 struct gtFloat
 {
     float val;
@@ -2097,7 +2082,8 @@ extern SERVER_DECL DBCStorage<AchievementCategoryEntry> dbcAchievementCategorySt
 //extern SERVER_DECL DBCStorage<BattlemasterListEntry> dbcBattlemasterListStore;
 extern SERVER_DECL DBCStorage<CharTitlesEntry> dbcCharTitlesEntry;
 extern SERVER_DECL DBCStorage<CurrencyTypesEntry> dbcCurrencyTypesStore;
-extern SERVER_DECL DBCStorage<BarberShopStyleEntry> dbcBarberShopStyleStore;
+//extern SERVER_DECL DBCStorage<BarberShopStyleEntry> dbcBarberShopStyleStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 extern SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
 extern SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
 extern SERVER_DECL DBCStorage<GlyphSlotEntry> dbcGlyphSlot;

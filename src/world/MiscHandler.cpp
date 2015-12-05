@@ -1465,17 +1465,18 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     uint32 oldfacial = _player->GetByte(PLAYER_BYTES_2, 0);
     uint32 newhair, newhaircolor, newfacial;
     uint32 cost = 0;
-    BarberShopStyleEntry* bbse;
 
-    bbse = dbcBarberShopStyleStore.LookupEntryForced(hair);
-    if (!bbse)		return;
-    newhair = bbse->type;
+    auto barberShopHair = sBarberShopStyleStore.LookupEntry(hair);
+    if (!barberShopHair)
+        return;
+    newhair = barberShopHair->type;
 
     newhaircolor = haircolor;
 
-    bbse = dbcBarberShopStyleStore.LookupEntryForced(facialhairorpiercing);
-    if (!bbse)		return;
-    newfacial = bbse->type;
+    auto barberShopFacial = sBarberShopStyleStore.LookupEntry(facialhairorpiercing);
+    if (!barberShopFacial)
+        return;
+    newfacial = barberShopFacial->type;
 
     uint32 level = _player->getLevel();
     if (level >= 100)

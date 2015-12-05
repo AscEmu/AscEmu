@@ -34,7 +34,8 @@ SERVER_DECL DBCStorage<AreaTriggerEntry> dbcAreaTrigger;
 SERVER_DECL DBCStorage<AuctionHouseDBC> dbcAuctionHouse;
 SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
 SERVER_DECL DBCStorage<BankSlotPrice> dbcStableSlotPrices;
-SERVER_DECL DBCStorage<BarberShopStyleEntry> dbcBarberShopStyleStore;
+//SERVER_DECL DBCStorage<BarberShopStyleEntry> dbcBarberShopStyleStore;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore(DBC::Structures::barber_shop_style_entry);
 //SERVER_DECL DBCStorage<BattlemasterListEntry> dbcBattlemasterListStore;
 SERVER_DECL DBCStorage<CharClassEntry> dbcCharClass;
 SERVER_DECL DBCStorage<CharRaceEntry> dbcCharRace;
@@ -100,7 +101,7 @@ SERVER_DECL DBCStorage< VehicleEntry > dbcVehicle;
 SERVER_DECL DBCStorage< VehicleSeatEntry > dbcVehicleSeat;
 
 const char* WorldMapOverlayStoreFormat = "nxiiiixxxxxxxxxxx";
-const char* BarberShopStyleEntryFormat = "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
+//const char* BarberShopStyleEntryFormat = "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
 const char* ItemEntryFormat="uiiiiiii";
 const char* ItemSetFormat = "ulxxxxxxxxxxxxxxxxuuuuuuuuxxxxxxxxxuuuuuuuuuuuuuuuuuu";
 const char* LockFormat = "uuuuuuuuuuuuuuuuuuuuuuuuuxxxxxxxx";
@@ -377,7 +378,10 @@ bool LoadDBCs()
     //LOAD_DBC("DBC/BattlemasterList.dbc", BattlemasterListEntryFormat, true, dbcBattlemasterListStore, true);
     LOAD_DBC("DBC/CharTitles.dbc", CharTitlesEntryfmt, true, dbcCharTitlesEntry, true);
     LOAD_DBC("DBC/CurrencyTypes.dbc", CurrencyTypesEntryFormat, true, dbcCurrencyTypesStore, true);
-    LOAD_DBC("DBC/BarberShopStyle.dbc", BarberShopStyleEntryFormat, true, dbcBarberShopStyleStore, true);
+    //LOAD_DBC("DBC/BarberShopStyle.dbc", BarberShopStyleEntryFormat, true, dbcBarberShopStyleStore, true);
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopStyleStore, dbc_path, "BarberShopStyle.dbc");
+
     LOAD_DBC("DBC/Item.dbc", ItemEntryFormat, true, dbcItemEntry, true);
     LOAD_DBC("DBC/ItemSet.dbc", ItemSetFormat, true, dbcItemSet, true);
     LOAD_DBC("DBC/Lock.dbc", LockFormat, true, dbcLock, false);

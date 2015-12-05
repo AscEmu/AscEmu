@@ -29,6 +29,7 @@ namespace DBC
         namespace
         {
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
+            char const barber_shop_style_entry[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const gt_barber_shop_cost_format[] = "f";
             const char LFGDungeonEntryformat[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
         }
@@ -47,6 +48,21 @@ namespace DBC
             // 27, string flags, unused
             uint32  team;                                           // 28
             uint32  liquid_type_override[4];                        // 29-32 liquid override by type
+        };
+
+        struct BarberShopStyleEntry
+        {
+            uint32 id;              // 0
+            uint32 type;            // 1 value 0 -> hair, value 2 -> facialhair
+            //char* name;           // 2 string hairstyle name
+            //char* name[15];       // 3-17 name of hair style
+            //uint32 name_flags;    // 18
+            //uint32 unk_name[16];  // 19-34, all empty
+            //uint32 unk_flags;     // 35
+            //float unk3;           // 36 values 1 and 0,75
+            uint32 race;            // 37 race
+            uint32 gender;          // 38 0 male, 1 female
+            uint32 hair_id;         // 39 Hair ID
         };
 
         struct GtBarberShopCostBaseEntry
