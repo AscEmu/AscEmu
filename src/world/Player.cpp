@@ -7082,7 +7082,7 @@ void Player::RegenerateHealth(bool inCombat)
     if (cur >= mh)
         return;
 
-    gtFloat* HPRegenBase = dbcHPRegenBase.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
+    auto HPRegenBase = sGtRegenHPPerSptStore.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
     gtFloat* HPRegen = dbcHPRegen.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
 
     uint32 basespirit = m_uint32Values[UNIT_FIELD_SPIRIT];
@@ -7094,7 +7094,7 @@ void Player::RegenerateHealth(bool inCombat)
         basespirit = 50;
     }
 
-    float amt = basespirit * HPRegen->val + extraspirit * HPRegenBase->val;
+    float amt = basespirit * HPRegen->val + extraspirit * HPRegenBase->ratio;
 
     if (PctRegenModifier)
         amt += (amt * PctRegenModifier) / 100;
