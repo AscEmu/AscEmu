@@ -1435,14 +1435,6 @@ struct SpellShapeshiftForm
     uint32 spells[8];
 };
 
-struct ScalingStatDistributionEntry
-{
-    uint32 id;
-    int32 stat[10];
-    uint32 statmodifier[10];
-    uint32 maxlevel;
-};
-
 struct ScalingStatValuesEntry
 {
     uint32 id;
@@ -2113,7 +2105,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTReg
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore;
 
-extern SERVER_DECL DBCStorage<ScalingStatDistributionEntry> dbcScalingStatDistribution;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
 extern SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
 extern SERVER_DECL DBCStorage<ItemLimitCategoryEntry> dbcItemLimitCategory;
 extern SERVER_DECL DBCStorage<QuestXP> dbcQuestXP;

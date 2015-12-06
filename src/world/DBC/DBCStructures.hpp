@@ -37,6 +37,7 @@ namespace DBC
             char const gt_regen_mp_per_spt_format[] = "f";
             char const item_entry_format[] = "niiiiiii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
+            char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
         }
 
         #pragma pack(push, 1)
@@ -143,6 +144,14 @@ namespace DBC
 
             // Helpers
             uint32 Entry() const { return ID + (type << 24); }
+        };
+
+        struct ScalingStatDistributionEntry
+        {
+            uint32 id;                  // 0
+            int32 stat[10];             // 1-10
+            uint32 statmodifier[10];    // 11-20
+            uint32 maxlevel;            // 21
         };
         #pragma pack(pop)
     }

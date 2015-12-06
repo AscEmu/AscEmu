@@ -4166,7 +4166,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     if (proto->ScalingStatsEntry != 0)
     {
         int i = 0;
-        ScalingStatDistributionEntry* ssdrow = dbcScalingStatDistribution.LookupEntry(proto->ScalingStatsEntry);
+        auto scaling_stat_distribution = sScalingStatDistributionStore.LookupEntry(proto->ScalingStatsEntry);
         ScalingStatValuesEntry* ssvrow = NULL;
         uint32 StatType;
         uint32 StatMod;
@@ -4192,10 +4192,10 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         /* Not going to put a check here since unless you put a random id/flag in the tables these should never return NULL */
 
         /* Calculating the stats correct for our level and applying them */
-        for (i = 0; ssdrow->stat[i] != -1; i++)
+        for (i = 0; scaling_stat_distribution->stat[i] != -1; i++)
         {
-            StatType = ssdrow->stat[i];
-            StatMod = ssdrow->statmodifier[i];
+            StatType = scaling_stat_distribution->stat[i];
+            StatMod = scaling_stat_distribution->statmodifier[i];
             col = GetStatScalingStatValueColumn(proto, SCALINGSTATSTAT);
             if (col == -1)
                 continue;
@@ -4206,8 +4206,8 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
 
         if ((proto->ScalingStatsFlag & 32768) && i < 10)
         {
-            StatType = ssdrow->stat[i];
-            StatMod = ssdrow->statmodifier[i];
+            StatType = scaling_stat_distribution->stat[i];
+            StatMod = scaling_stat_distribution->statmodifier[i];
             col = GetStatScalingStatValueColumn(proto, SCALINGSTATSPELLPOWER);
             if (col != -1)
             {

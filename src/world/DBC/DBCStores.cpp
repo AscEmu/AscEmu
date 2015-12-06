@@ -69,7 +69,7 @@ SERVER_DECL DBCStorage<Lock> dbcLock;
 SERVER_DECL DBCStorage<MapEntry> dbcMap;
 SERVER_DECL DBCStorage<HolidaysEntry> dbcHolidayEntry;
 SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
-SERVER_DECL DBCStorage<ScalingStatDistributionEntry> dbcScalingStatDistribution;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore(DBC::Structures::scaling_stat_distribution_format);
 SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
 SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
 SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
@@ -346,8 +346,7 @@ const char* durabilitycostsFormat = "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
 const char* bankslotpriceformat = "uu";
 const char* barbershopstyleFormat = "nulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxuuu";
 const char* gtfloatformat = "f";
-const char* areatriggerformat = "uuffffffff";
-const char* scalingstatdistributionformat = "uiiiiiiiiiiuuuuuuuuuuu";
+
 const char* scalingstatvaluesformat = "uuuuuuuuuuuuuuuuuuxxxxxx";
 const char* itemlimitcategoryformat = "usxxxxxxxxxxxxxxxxuu";
 const char* spellshapeshiftformformat = "uxxxxxxxxxxxxxxxxxxuuxuuuxxuuuuuuuu";
@@ -442,8 +441,8 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtRegenHPPerSptStore, dbc_path, "gtRegenHPPerSpt.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenHPStore, dbc_path, "gtOCTRegenHP.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaTriggerStore, dbc_path, "AreaTrigger.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sScalingStatDistributionStore, dbc_path, "ScalingStatDistribution.dbc");
 
-    LOAD_DBC("DBC/ScalingStatDistribution.dbc", scalingstatdistributionformat, true, dbcScalingStatDistribution, false);
     LOAD_DBC("DBC/ScalingStatValues.dbc", scalingstatvaluesformat, true, dbcScalingStatValues, false);
     LOAD_DBC("DBC/ItemLimitCategory.dbc", itemlimitcategoryformat, true, dbcItemLimitCategory, true);
     LOAD_DBC("DBC/QuestXP.dbc", questxpformat, true, dbcQuestXP, false);
