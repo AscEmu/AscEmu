@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPELLSTORE_H
-#define _SPELLSTORE_H
+#ifndef _DBC_STORES_H
+#define _DBC_STORES_H
 
 #include "DBCGlobals.hpp"
 #include "Definitions.h"
@@ -2141,4 +2141,4 @@ bool LoadDBCs();
 
 const WMOAreaTableEntry* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
-#endif // _SPELLSTORE_H
+#endif // _DBC_STORES_H
