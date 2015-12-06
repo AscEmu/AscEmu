@@ -526,14 +526,6 @@ struct ItemSetEntry
     uint32 RequiredSkillAmt;        //45
 };
 
-struct ItemLimitCategoryEntry
-{
-    uint32 Id;              // 0    - Id
-    char* name;             // 1    - Displayed name
-    uint32 maxAmount;       // 18   - Max amount of items
-    uint32 equippedFlag;    // 19   - equipped (bool?)
-};
-
 #define LOCK_NUM_CASES 8
 
 struct Lock
@@ -2107,7 +2099,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTrigg
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
 extern SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
-extern SERVER_DECL DBCStorage<ItemLimitCategoryEntry> dbcItemLimitCategory;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
 extern SERVER_DECL DBCStorage<QuestXP> dbcQuestXP;
 extern SERVER_DECL DBCStorage<MailTemplateEntry> dbcMailTemplateEntry;
 extern SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;

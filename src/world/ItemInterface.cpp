@@ -1913,15 +1913,15 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
                     if (ip->ItemLimitCategory > 0)
                     {
                         uint32 LimitId = ip->ItemLimitCategory;
-                        ItemLimitCategoryEntry* ile = dbcItemLimitCategory.LookupEntryForced(LimitId);
-                        if (ile)
+                        auto item_limit_category = sItemLimitCategoryStore.LookupEntry(LimitId);
+                        if (item_limit_category)
                         {
                             uint32 gemCount = 0;
-                            if ((ile->equippedFlag & ILFLAG_EQUIP_ONLY  && slot < EQUIPMENT_SLOT_END) || (!(ile->equippedFlag & ILFLAG_EQUIP_ONLY) && slot > EQUIPMENT_SLOT_END))
-                                gemCount = item->CountGemsWithLimitId(ile->Id);
+                            if ((item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY  && slot < EQUIPMENT_SLOT_END) || (!(item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY) && slot > EQUIPMENT_SLOT_END))
+                                gemCount = item->CountGemsWithLimitId(item_limit_category->Id);
 
-                            uint32 gCount = GetEquippedCountByItemLimit(ile->Id);
-                            if ((gCount + gemCount) > ile->maxAmount)
+                            uint32 gCount = GetEquippedCountByItemLimit(item_limit_category->Id);
+                            if ((gCount + gemCount) > item_limit_category->maxAmount)
                                 return INV_ERR_CANT_CARRY_MORE_OF_THIS;
                         }
                     }
@@ -2427,11 +2427,11 @@ int8 ItemInterface::CanReceiveItem(ItemPrototype* item, uint32 amount)
 
     if (item->ItemLimitCategory > 0)
     {
-        ItemLimitCategoryEntry* ile = dbcItemLimitCategory.LookupEntryForced(item->ItemLimitCategory);
-        if (ile && !(ile->equippedFlag & ILFLAG_EQUIP_ONLY))
+        auto item_limit_category = sItemLimitCategoryStore.LookupEntry(item->ItemLimitCategory);
+        if (item_limit_category && !(item_limit_category->equippedFlag & ILFLAG_EQUIP_ONLY))
         {
-            uint32 count = GetItemCountByLimitId(ile->Id, false);
-            if (count >= ile->maxAmount || ((count + amount) > ile->maxAmount))
+            uint32 count = GetItemCountByLimitId(item_limit_category->Id, false);
+            if (count >= item_limit_category->maxAmount || ((count + amount) > item_limit_category->maxAmount))
                 return INV_ERR_ITEM_MAX_LIMIT_CATEGORY_COUNT_EXCEEDED;
         }
     }

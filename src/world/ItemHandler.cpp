@@ -2003,8 +2003,8 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
                 }
                 if (ip->ItemLimitCategory)
                 {
-                    ItemLimitCategoryEntry* ile = dbcItemLimitCategory.LookupEntryForced(ip->ItemLimitCategory);
-                    if (ile != NULL && itemi->GetEquippedCountByItemLimit(ip->ItemLimitCategory) >= ile->maxAmount)
+                    auto item_limit_category = sItemLimitCategoryStore.LookupEntry(ip->ItemLimitCategory);
+                    if (item_limit_category != nullptr && itemi->GetEquippedCountByItemLimit(ip->ItemLimitCategory) >= item_limit_category->maxAmount)
                     {
                         itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_ITEM_MAX_COUNT_EQUIPPED_SOCKETED);
                         continue;

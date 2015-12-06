@@ -59,7 +59,7 @@ SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
 SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
 SERVER_DECL DBCStorage<GlyphSlotEntry> dbcGlyphSlot;
 SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
-SERVER_DECL DBCStorage<ItemLimitCategoryEntry> dbcItemLimitCategory;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore(DBC::Structures::item_limit_category_format);
 SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore(DBC::Structures::item_entry_format);
@@ -348,7 +348,7 @@ const char* barbershopstyleFormat = "nulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxuuu";
 const char* gtfloatformat = "f";
 
 const char* scalingstatvaluesformat = "uuuuuuuuuuuuuuuuuuxxxxxx";
-const char* itemlimitcategoryformat = "usxxxxxxxxxxxxxxxxuu";
+
 const char* spellshapeshiftformformat = "uxxxxxxxxxxxxxxxxxxuuxuuuxxuuuuuuuu";
 const char* questxpformat = "uxuuuuuuuux";
 const char* mailTemplateEntryFormat = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
@@ -444,7 +444,9 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sScalingStatDistributionStore, dbc_path, "ScalingStatDistribution.dbc");
 
     LOAD_DBC("DBC/ScalingStatValues.dbc", scalingstatvaluesformat, true, dbcScalingStatValues, false);
-    LOAD_DBC("DBC/ItemLimitCategory.dbc", itemlimitcategoryformat, true, dbcItemLimitCategory, true);
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemLimitCategoryStore, dbc_path, "ItemLimitCategory.dbc");
+
     LOAD_DBC("DBC/QuestXP.dbc", questxpformat, true, dbcQuestXP, false);
     LOAD_DBC("DBC/MailTemplate.dbc", mailTemplateEntryFormat, true, dbcMailTemplateEntry, true);
     LOAD_DBC("DBC/WMOAreaTable.dbc", wmoareaformat, true, dbcWMOAreaTable, false);

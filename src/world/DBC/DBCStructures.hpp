@@ -36,6 +36,7 @@ namespace DBC
             char const gt_regen_hp_per_spt_format[] = "f";
             char const gt_regen_mp_per_spt_format[] = "f";
             char const item_entry_format[] = "niiiiiii";
+            char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
         }
@@ -120,6 +121,15 @@ namespace DBC
             uint32 DisplayId;               // 5
             uint32 InventoryType;           // 6
             uint32 Sheath;                  // 7
+        };
+
+        struct ItemLimitCategoryEntry
+        {
+            uint32 Id;                      // 0
+            //char* name[16];               // 1-16 name langs
+            //uint32 name_flags             // 17
+            uint32 maxAmount;               // 18
+            uint32 equippedFlag;            // 19 - equipped (bool?)
         };
 
         struct LFGDungeonEntry
