@@ -3799,8 +3799,8 @@ AreaTrigger const* ObjectMgr::GetMapEntranceTrigger(uint32 Map) const
     {
         if (itr->second.Mapid == Map)
         {
-            AreaTriggerEntry const* atEntry = dbcAreaTrigger.LookupEntry(itr->first);
-            if (atEntry)
+            auto const* area_trigger_entry = sAreaTriggerStore.LookupEntry(itr->first);
+            if (area_trigger_entry)
                 return &itr->second;
         }
     }
@@ -3839,8 +3839,8 @@ void ObjectMgr::LoadAreaTrigger()
         at.z = fields[7].GetFloat();
         at.o = fields[8].GetFloat();
 
-        AreaTriggerEntry const* atEntry = dbcAreaTrigger.LookupEntry(Trigger_ID);
-        if (!atEntry)
+        auto const* area_trigger_entry = sAreaTriggerStore.LookupEntry(Trigger_ID);
+        if (!area_trigger_entry)
         {
             Log.Notice("AreaTrigger", "Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
             continue;

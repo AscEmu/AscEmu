@@ -1435,20 +1435,6 @@ struct SpellShapeshiftForm
     uint32 spells[8];
 };
 
-struct AreaTriggerEntry
-{
-    uint32 id;          // 0
-    uint32 mapid;       // 1
-    float x;            // 2
-    float y;            // 3
-    float z;            // 4
-    float o;            // 5 radius?
-    float box_x;        // 6 extent x edge
-    float box_y;        // 7 extent y edge
-    float box_z;        // 8 extent z edge
-    float box_o;        // 9 extent rotation by about z axis
-};
-
 struct ScalingStatDistributionEntry
 {
     uint32 id;
@@ -2125,8 +2111,8 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenMPEntry> sGtOCTReg
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenMPPerSptEntry> sGtRegenMPPerSptStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore;
 
-extern SERVER_DECL DBCStorage<AreaTriggerEntry> dbcAreaTrigger;
 extern SERVER_DECL DBCStorage<ScalingStatDistributionEntry> dbcScalingStatDistribution;
 extern SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
 extern SERVER_DECL DBCStorage<ItemLimitCategoryEntry> dbcItemLimitCategory;

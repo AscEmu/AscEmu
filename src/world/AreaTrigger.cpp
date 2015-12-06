@@ -126,10 +126,10 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
     // Search quest log, find any exploration quests
     sQuestMgr.OnPlayerExploreArea(GetPlayer(), id);
 
-    AreaTriggerEntry* entry = dbcAreaTrigger.LookupEntryForced(id);
+    auto area_trigger_entry = sAreaTriggerStore.LookupEntry(id);
     AreaTrigger* pAreaTrigger = AreaTriggerStorage.LookupEntry(id);
 
-    if (entry == NULL)
+    if (area_trigger_entry == nullptr)
     {
         LOG_DEBUG("Missing AreaTrigger: %u", id);
         return;

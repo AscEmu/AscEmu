@@ -28,6 +28,7 @@ namespace DBC
         namespace
         {
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
+            char const area_trigger_entry_format[] = "niffffffff";
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const gt_barber_shop_cost_format[] = "f";
             char const gt_oct_regen_hp_format[] = "f";
@@ -52,6 +53,20 @@ namespace DBC
                                             // 27, string flags, unused
             uint32 team;                    // 28
             uint32 liquid_type_override[4]; // 29-32 liquid override by type
+        };
+
+        struct AreaTriggerEntry
+        {
+            uint32 id;              // 0
+            uint32 mapid;           // 1
+            float x;                // 2
+            float y;                // 3
+            float z;                // 4
+            float o;                // 5 radius?
+            float box_x;            // 6 extent x edge
+            float box_y;            // 7 extent y edge
+            float box_z;            // 8 extent z edge
+            float box_o;            // 9 extent rotation by about z axis
         };
 
         struct BarberShopStyleEntry

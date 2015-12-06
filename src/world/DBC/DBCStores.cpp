@@ -31,7 +31,7 @@ SERVER_DECL DBCStorage<AchievementCategoryEntry> dbcAchievementCategoryStore;
 SERVER_DECL DBCStorage<AreaGroup> dbcAreaGroup;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore(DBC::Structures::area_table_entry_format);
 static WMOAreaInfoByTripple sWMOAreaInfoByTripple;
-SERVER_DECL DBCStorage<AreaTriggerEntry> dbcAreaTrigger;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore(DBC::Structures::area_trigger_entry_format);
 SERVER_DECL DBCStorage<AuctionHouseDBC> dbcAuctionHouse;
 SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
 SERVER_DECL DBCStorage<BankSlotPrice> dbcStableSlotPrices;
@@ -441,8 +441,8 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenMPStore, dbc_path, "gtOCTRegenMP.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtRegenHPPerSptStore, dbc_path, "gtRegenHPPerSpt.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenHPStore, dbc_path, "gtOCTRegenHP.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaTriggerStore, dbc_path, "AreaTrigger.dbc");
 
-    LOAD_DBC("DBC/AreaTrigger.dbc", areatriggerformat, true, dbcAreaTrigger, true);
     LOAD_DBC("DBC/ScalingStatDistribution.dbc", scalingstatdistributionformat, true, dbcScalingStatDistribution, false);
     LOAD_DBC("DBC/ScalingStatValues.dbc", scalingstatvaluesformat, true, dbcScalingStatValues, false);
     LOAD_DBC("DBC/ItemLimitCategory.dbc", itemlimitcategoryformat, true, dbcItemLimitCategory, true);
