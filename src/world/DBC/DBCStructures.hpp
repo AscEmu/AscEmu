@@ -31,6 +31,7 @@ namespace DBC
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const gt_barber_shop_cost_format[] = "f";
             char const gt_oct_regen_hp_format[] = "f";
+            char const gt_oct_regen_mp_format[] = "f";
             char const gt_regen_hp_per_spt_format[] = "f";
             char const gt_regen_mp_per_spt_format[] = "f";
             char const item_entry_format[] = "niiiiiii";
@@ -74,6 +75,11 @@ namespace DBC
         };
 
         struct GtOCTRegenHPEntry
+        {
+            float ratio;            // 0
+        };
+
+        struct GtOCTRegenMPEntry
         {
             float ratio;            // 0
         };

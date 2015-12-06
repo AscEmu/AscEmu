@@ -2120,10 +2120,12 @@ extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;
 extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;
 extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCrit;
 extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCritBase;
-extern SERVER_DECL DBCStorage<gtFloat> dbcManaRegen;
+
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenMPPerSptEntry> sGtRegenMPPerSptStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore;
+
 extern SERVER_DECL DBCStorage<AreaTriggerEntry> dbcAreaTrigger;
 extern SERVER_DECL DBCStorage<ScalingStatDistributionEntry> dbcScalingStatDistribution;
 extern SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
