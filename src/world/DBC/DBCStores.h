@@ -1434,13 +1434,6 @@ struct ScalingStatValuesEntry
     uint32 multiplier[16];
 };
 
-struct QuestXP
-{
-    uint32 questLevel;     // 0
-    uint32 xpIndex[8];     // 1-9
-    //unk                  // 10
-};
-
 struct MailTemplateEntry
 {
     uint32 ID;              // 0
@@ -2100,7 +2093,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTrigg
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
 extern SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
-extern SERVER_DECL DBCStorage<QuestXP> dbcQuestXP;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore;
 extern SERVER_DECL DBCStorage<MailTemplateEntry> dbcMailTemplateEntry;
 extern SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;
 extern SERVER_DECL DBCStorage<SummonPropertiesEntry> dbcSummonProperties;

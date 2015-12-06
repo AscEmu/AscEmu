@@ -1602,7 +1602,7 @@ uint32 QuestMgr::GenerateQuestXP(Player* plr, Quest* qst)
             }
         }
 
-        if (const QuestXP* pXPData = dbcQuestXP.LookupEntry(baseLevel))
+        if (const auto pXPData = sQuestXPStore.LookupEntry(baseLevel))
         {
             uint32 rawXP = xpMultiplier * pXPData->xpIndex[qst->RewXPId] / 10;
 

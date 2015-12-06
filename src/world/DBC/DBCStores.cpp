@@ -95,7 +95,7 @@ SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;
 SERVER_DECL DBCStorage<gtFloat> dbcSpellCrit;
 SERVER_DECL DBCStorage<gtFloat> dbcSpellCritBase;
 SERVER_DECL DBCStorage<SpellShapeshiftForm> dbcSpellShapeshiftForm;
-SERVER_DECL DBCStorage<QuestXP> dbcQuestXP;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore(DBC::Structures::quest_xp_format);
 SERVER_DECL DBCStorage<MailTemplateEntry> dbcMailTemplateEntry;
 SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;
 SERVER_DECL DBCStorage< SummonPropertiesEntry > dbcSummonProperties;
@@ -350,7 +350,7 @@ const char* gtfloatformat = "f";
 const char* scalingstatvaluesformat = "uuuuuuuuuuuuuuuuuuxxxxxx";
 
 const char* spellshapeshiftformformat = "uxxxxxxxxxxxxxxxxxxuuxuuuxxuuuuuuuu";
-const char* questxpformat = "uxuuuuuuuux";
+
 const char* mailTemplateEntryFormat = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
 const char* wmoareaformat = "uiiixxxxxuuxxxxxxxxxxxxxxxxx";
 const char* summonpropertiesformat = "uuuuuu";
@@ -446,8 +446,8 @@ bool LoadDBCs()
     LOAD_DBC("DBC/ScalingStatValues.dbc", scalingstatvaluesformat, true, dbcScalingStatValues, false);
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemLimitCategoryStore, dbc_path, "ItemLimitCategory.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sQuestXPStore, dbc_path, "QuestXP.dbc");
 
-    LOAD_DBC("DBC/QuestXP.dbc", questxpformat, true, dbcQuestXP, false);
     LOAD_DBC("DBC/MailTemplate.dbc", mailTemplateEntryFormat, true, dbcMailTemplateEntry, true);
     LOAD_DBC("DBC/WMOAreaTable.dbc", wmoareaformat, true, dbcWMOAreaTable, false);
     LOAD_DBC("DBC/SummonProperties.dbc", summonpropertiesformat, true, dbcSummonProperties, false);

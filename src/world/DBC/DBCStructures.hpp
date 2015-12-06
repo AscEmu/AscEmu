@@ -38,6 +38,7 @@ namespace DBC
             char const item_entry_format[] = "niiiiiii";
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
+            char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
         }
 
@@ -154,6 +155,12 @@ namespace DBC
 
             // Helpers
             uint32 Entry() const { return ID + (type << 24); }
+        };
+
+        struct QuestXP
+        {
+            uint32 questLevel;     // 0
+            uint32 xpIndex[10];    // 1-10
         };
 
         struct ScalingStatDistributionEntry
