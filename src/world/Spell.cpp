@@ -6287,15 +6287,15 @@ void Spell::writeAmmoToPacket(WorldPacket* data)
 			// ^ ^ ^
             if (uint32 item_id = m_caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i))
             {
-				if (ItemEntry* itemEntry = dbcItemEntry.LookupRowForced(item_id))
+				if (auto item_entry = sItemStore.LookupEntry(item_id))
                 {
-                    if (itemEntry->Class == ITEM_CLASS_WEAPON)
+                    if (item_entry->Class == ITEM_CLASS_WEAPON)
                     {
-                        switch (itemEntry->SubClass)
+                        switch (item_entry->SubClass)
                         {
                             case ITEM_SUBCLASS_WEAPON_THROWN:
-								ammoDisplayID = itemEntry->DisplayId;
-                                ammoInventoryType = itemEntry->InventoryType;
+								ammoDisplayID = item_entry->DisplayId;
+                                ammoInventoryType = item_entry->InventoryType;
                                 break;
                             case ITEM_SUBCLASS_WEAPON_BOW:
                             case ITEM_SUBCLASS_WEAPON_CROSSBOW:

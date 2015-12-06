@@ -30,6 +30,7 @@ namespace DBC
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const gt_barber_shop_cost_format[] = "f";
+            char const item_entry_format[] = "niiiiiii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
         }
 
@@ -67,6 +68,18 @@ namespace DBC
         struct GtBarberShopCostBaseEntry
         {
             float cost;             // 0 cost base
+        };
+
+        struct ItemEntry
+        {
+            uint32 ID;                      // 0
+            uint32 Class;                   // 1
+            uint32 SubClass;                // 2 some items have strange subclasses
+            int32 SoundOverrideSubclass;    // 3
+            int32 Material;                 // 4
+            uint32 DisplayId;               // 5
+            uint32 InventoryType;           // 6
+            uint32 Sheath;                  // 7
         };
 
         struct LFGDungeonEntry

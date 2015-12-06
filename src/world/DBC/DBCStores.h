@@ -512,18 +512,6 @@ struct CurrencyTypesEntry
     uint32 BitIndex;                // 3 bit index in PLAYER_FIELD_KNOWN_CURRENCIES (1 << (index-1))
 };
 
-struct ItemEntry
-{
-   uint32   ID;                         // 0
-   uint32   Class;                      // 1
-   uint32   SubClass;                   // 2 some items have strange subclasses
-   int32    SoundOverrideSubclass;      // 3
-   int32    Material;                   // 4
-   uint32   DisplayId;                  // 5
-   uint32   InventoryType;              // 6
-   uint32   Sheath;                     // 7
-};
-
 struct ItemSetEntry
 {
     uint32 id;                      //1
@@ -2087,7 +2075,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarbe
 extern SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
 extern SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
 extern SERVER_DECL DBCStorage<GlyphSlotEntry> dbcGlyphSlot;
-extern SERVER_DECL DBCStorage<ItemEntry> dbcItemEntry;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;
 extern SERVER_DECL DBCStorage<ItemSetEntry> dbcItemSet;
 extern SERVER_DECL DBCStorage<Lock> dbcLock;
 extern SERVER_DECL DBCStorage<SpellEntry> dbcSpell;

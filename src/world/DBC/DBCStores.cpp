@@ -61,7 +61,9 @@ SERVER_DECL DBCStorage<GlyphSlotEntry> dbcGlyphSlot;
 SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
 SERVER_DECL DBCStorage<ItemLimitCategoryEntry> dbcItemLimitCategory;
 SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
-SERVER_DECL DBCStorage<ItemEntry> dbcItemEntry;
+
+SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore(DBC::Structures::item_entry_format);
+
 SERVER_DECL DBCStorage<ItemSetEntry> dbcItemSet;
 SERVER_DECL DBCStorage<Lock> dbcLock;
 SERVER_DECL DBCStorage<MapEntry> dbcMap;
@@ -103,7 +105,7 @@ SERVER_DECL DBCStorage< VehicleSeatEntry > dbcVehicleSeat;
 
 const char* WorldMapOverlayStoreFormat = "nxiiiixxxxxxxxxxx";
 
-const char* ItemEntryFormat="uiiiiiii";
+//const char* ItemEntryFormat="uiiiiiii";
 const char* ItemSetFormat = "ulxxxxxxxxxxxxxxxxuuuuuuuuxxxxxxxxxuuuuuuuuuuuuuuuuuu";
 const char* LockFormat = "uuuuuuuuuuuuuuuuuuuuuuuuuxxxxxxxx";
 const char* EmoteEntryFormat = "uxuuuuxuxuxxxxxxxxx";
@@ -382,7 +384,9 @@ bool LoadDBCs()
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopStyleStore, dbc_path, "BarberShopStyle.dbc");
 
-    LOAD_DBC("DBC/Item.dbc", ItemEntryFormat, true, dbcItemEntry, true);
+    //LOAD_DBC("DBC/Item.dbc", ItemEntryFormat, true, dbcItemEntry, true);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.dbc");
+
     LOAD_DBC("DBC/ItemSet.dbc", ItemSetFormat, true, dbcItemSet, true);
     LOAD_DBC("DBC/Lock.dbc", LockFormat, true, dbcLock, false);
     LOAD_DBC("DBC/EmotesText.dbc", EmoteEntryFormat, true, dbcEmoteEntry, false);
