@@ -1846,7 +1846,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> s
 extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;
 extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;
 extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCrit;
-extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCritBase;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToSpellCritBaseEntry> sGtChanceToSpellCritBaseStore;
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenMPPerSptEntry> sGtRegenMPPerSptStore;
