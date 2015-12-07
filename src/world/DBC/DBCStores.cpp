@@ -53,7 +53,7 @@ SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
 SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
 SERVER_DECL DBCStorage<FactionTemplateDBC> dbcFactionTemplate;
 SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
-SERVER_DECL DBCStorage<emoteentry> dbcEmoteEntry;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore(DBC::Structures::emotes_text_format);
 SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
 SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
 SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
@@ -107,7 +107,7 @@ SERVER_DECL DBCStorage< VehicleSeatEntry > dbcVehicleSeat;
 const char* WorldMapOverlayStoreFormat = "nxiiiixxxxxxxxxxx";
 
 
-const char* EmoteEntryFormat = "uxuuuuxuxuxxxxxxxxx";
+
 const char* skilllinespellFormat = "uuuxxxxuuuuuxx";
 const char* EnchantEntrYFormat = "uxuuuuuuuuuuuusxxxxxxxxxxxxxxxxuuuuxxx";
 const char* GemPropertyEntryFormat = "uuuuu";
@@ -384,8 +384,8 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemSetStore, dbc_path, "ItemSet.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLockStore, dbc_path, "Lock.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sEmotesTextStore, dbc_path, "EmotesText.dbc");
 
-    LOAD_DBC("DBC/EmotesText.dbc", EmoteEntryFormat, true, dbcEmoteEntry, false);
     LOAD_DBC("DBC/SkillLineAbility.dbc", skilllinespellFormat, false, dbcSkillLineSpell, false);
     LOAD_DBC("DBC/SpellItemEnchantment.dbc", EnchantEntrYFormat, true, dbcEnchant, true);
     LOAD_DBC("DBC/GemProperties.dbc", GemPropertyEntryFormat, true, dbcGemProperty, false);

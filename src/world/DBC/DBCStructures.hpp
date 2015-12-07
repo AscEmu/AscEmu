@@ -30,6 +30,7 @@ namespace DBC
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const area_trigger_entry_format[] = "niffffffff";
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
+            char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
             char const gt_barber_shop_cost_format[] = "f";
             char const gt_oct_regen_hp_format[] = "f";
             char const gt_oct_regen_mp_format[] = "f";
@@ -89,6 +90,29 @@ namespace DBC
             uint32 race;            // 37 race
             uint32 gender;          // 38 0 male, 1 female
             uint32 hair_id;         // 39 Hair ID
+        };
+
+        struct EmotesTextEntry
+        {
+            uint32 Id;              // 0
+            //uint32 name;          // 1
+            uint32 textid;          // 2
+            uint32 textid2;         // 3
+            uint32 textid3;         // 4
+            uint32 textid4;         // 5
+            //uint32 unk1;          // 6
+            uint32 textid5;         // 7
+            //uint32 unk2;          // 8
+            uint32 textid6;         // 9
+            //uint32 unk3;          // 10
+            //uint32 unk4;          // 11
+            //uint32 unk5;          // 12
+            //uint32 unk6;          // 13
+            //uint32 unk7;          // 14
+            //uint32 unk8;          // 15
+            //uint32 unk9;          // 16
+            //uint32 unk10;         // 17
+            //uint32 unk11;         // 18
         };
 
         struct GtBarberShopCostBaseEntry

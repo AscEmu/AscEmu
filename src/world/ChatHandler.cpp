@@ -630,28 +630,28 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         }
     }
 
-    emoteentry* em = dbcEmoteEntry.LookupEntryForced(text_emote);
-    if (em)
+    auto emote_text_entry = sEmotesTextStore.LookupEntry(text_emote);
+    if (emote_text_entry)
     {
         WorldPacket data(SMSG_EMOTE, 28 + namelen);
 
-        sHookInterface.OnEmote(_player, (EmoteType)em->textid, pUnit);
+        sHookInterface.OnEmote(_player, (EmoteType)emote_text_entry->textid, pUnit);
         if (pUnit)
-            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)em->textid);
+            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)emote_text_entry->textid);
 
-        switch (em->textid)
+        switch (emote_text_entry->textid)
         {
             case EMOTE_STATE_SLEEP:
             case EMOTE_STATE_SIT:
             case EMOTE_STATE_KNEEL:
             case EMOTE_STATE_DANCE:
             {
-                _player->SetEmoteState(em->textid);
+                _player->SetEmoteState(emote_text_entry->textid);
             }
             break;
         }
 
-        data << uint32(em->textid);
+        data << uint32(emote_text_entry->textid);
         data << uint64(GetPlayer()->GetGUID());
         GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
 

@@ -512,29 +512,6 @@ struct CurrencyTypesEntry
     uint32 BitIndex;                // 3 bit index in PLAYER_FIELD_KNOWN_CURRENCIES (1 << (index-1))
 };
 
-struct emoteentry
-{
-    uint32 Id;
-  //uint32 name;
-    uint32 textid;
-    uint32 textid2;
-    uint32 textid3;
-    uint32 textid4;
-  //uint32 unk1;
-    uint32 textid5;
-  //uint32 unk2;
-    uint32 textid6;
-  //uint32 unk3;
-  //uint32 unk4;
-  //uint32 unk5;
-  //uint32 unk6;
-  //uint32 unk7;
-  //uint32 unk8;
-  //uint32 unk9;
-  //uint32 unk10;
-  //uint32 unk11;
-};
-
 //SkillLineAbility.dbc
 struct skilllinespell
 {
@@ -2002,7 +1979,7 @@ extern SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
 extern SERVER_DECL DBCStorage<SpellDuration> dbcSpellDuration;
 extern SERVER_DECL DBCStorage<SpellRange> dbcSpellRange;
 extern SERVER_DECL DBCStorage<SpellShapeshiftForm> dbcSpellShapeshiftForm;
-extern SERVER_DECL DBCStorage<emoteentry> dbcEmoteEntry;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore;
 extern SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
 extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
 extern SERVER_DECL DBCStorage<AreaGroup> dbcAreaGroup;
