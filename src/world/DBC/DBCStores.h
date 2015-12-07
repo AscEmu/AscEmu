@@ -493,16 +493,6 @@ struct BankSlotPrice
     uint32 Price;
 };
 
-struct CharTitlesEntry
-{
-    uint32 ID;                      // 0, title ids
-    uint32 unk1;                    // 1 flags?
-    const char* name;               // 2-17, unused
-    uint32 name_flag;               // 18 string flag, unused
-    const char* name2;              // 19-34, unused
-    const char* name2_flag;         // 35 string flag, unused
-    uint32 bit_index;               // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
-};
 
 //SkillLineAbility.dbc
 struct skilllinespell
@@ -1935,7 +1925,7 @@ extern SERVER_DECL DBCStorage<AchievementCriteriaEntry> dbcAchievementCriteriaSt
 extern SERVER_DECL DBCStorage<AchievementCategoryEntry> dbcAchievementCategoryStore;
 #endif
 //extern SERVER_DECL DBCStorage<BattlemasterListEntry> dbcBattlemasterListStore;
-extern SERVER_DECL DBCStorage<CharTitlesEntry> dbcCharTitlesEntry;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitlesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore;

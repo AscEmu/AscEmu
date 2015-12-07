@@ -30,6 +30,7 @@ namespace DBC
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const area_trigger_entry_format[] = "niffffffff";
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
+            char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const currency_types_format[] = "xnxi";
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
             char const gt_barber_shop_cost_format[] = "f";
@@ -92,6 +93,17 @@ namespace DBC
             uint32 race;            // 37 race
             uint32 gender;          // 38 0 male, 1 female
             uint32 hair_id;         // 39 Hair ID
+        };
+
+        struct CharTitlesEntry
+        {
+            uint32 ID;                      // 0, title ids
+            //uint32 unk1;                  // 1 flags?
+            char* name_male[16];            // 2-17
+            //uint32 name_flag;             // 18 string flag, unused
+            char* name_female[16];          // 19-34
+            //const char* name2_flag;       // 35 string flag, unused
+            uint32 bit_index;               // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
         };
 
         struct CurrencyTypesEntry

@@ -987,8 +987,8 @@ void ObjectMgr::LoadAchievementRewards()
 
         if (reward.titel_A)
         {
-            CharTitlesEntry const* titleEntry = dbcCharTitlesEntry.LookupEntryForced(reward.titel_A);
-            if (!titleEntry)
+            auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_A);
+            if (!char_title_entry)
             {
                 sLog.Error("ObjectMgr", "achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
                 reward.titel_A = 0;
@@ -997,8 +997,8 @@ void ObjectMgr::LoadAchievementRewards()
 
         if (reward.titel_H)
         {
-            CharTitlesEntry const* titleEntry = dbcCharTitlesEntry.LookupEntryForced(reward.titel_H);
-            if (!titleEntry)
+            auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_H);
+            if (!char_title_entry)
             {
                 sLog.Error("ObjectMgr", "achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
                 reward.titel_H = 0;

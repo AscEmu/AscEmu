@@ -1760,18 +1760,18 @@ void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
     {
         if (Reward->titel_A)
         {
-            CharTitlesEntry* title = dbcCharTitlesEntry.LookupEntryForced(Reward->titel_A);
-            if (title)
-                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(title->bit_index), true);
+            auto char_title = sCharTitlesStore.LookupEntry(Reward->titel_A);
+            if (char_title)
+                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(char_title->bit_index), true);
         }
     }
     if (GetPlayer()->GetTeam() == TEAM_HORDE)
     {
         if (Reward->titel_H)
         {
-            CharTitlesEntry* title = dbcCharTitlesEntry.LookupEntryForced(Reward->titel_H);
-            if (title)
-                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(title->bit_index), true);
+            auto char_title = sCharTitlesStore.LookupEntry(Reward->titel_H);
+            if (char_title)
+                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(char_title->bit_index), true);
         }
     }
 
