@@ -4048,8 +4048,8 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     // Set
     if (setid != 0)
     {
-        ItemSetEntry* set = dbcItemSet.LookupEntryForced(setid);
-        if (set == NULL)
+        auto item_set_entry = sItemSetStore.LookupEntry(setid);
+        if (item_set_entry == nullptr)
         {
             LOG_ERROR("Item %u has wrong ItemSet %u", proto->ItemId, setid);
         }
@@ -4078,14 +4078,14 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                 else
                     Set->itemscount++;
 
-                if (!set->RequiredSkillID || (_GetSkillLineCurrent(set->RequiredSkillID, true) >= set->RequiredSkillAmt))
+                if (!item_set_entry->RequiredSkillID || (_GetSkillLineCurrent(item_set_entry->RequiredSkillID, true) >= item_set_entry->RequiredSkillAmt))
                 {
                     for (uint32 x = 0; x < 8; x++)
                     {
-                        if (Set->itemscount == set->itemscount[x])
+                        if (Set->itemscount == item_set_entry->itemscount[x])
                         {
                             //cast new spell
-                            SpellEntry* info = dbcSpell.LookupEntry(set->SpellID[x]);
+                            SpellEntry* info = dbcSpell.LookupEntry(item_set_entry->SpellID[x]);
                             Spell* spell = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
                             SpellCastTargets targets;
                             targets.m_unitTarget = this->GetGUID();
@@ -4104,9 +4104,9 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                 if (Set)
                 {
                     for (uint32 x = 0; x < 8; x++)
-                        if (Set->itemscount == set->itemscount[x])
+                        if (Set->itemscount == item_set_entry->itemscount[x])
                         {
-                            this->RemoveAura(set->SpellID[x], GetGUID());
+                            this->RemoveAura(item_set_entry->SpellID[x], GetGUID());
                         }
 
                     if (!(--Set->itemscount))

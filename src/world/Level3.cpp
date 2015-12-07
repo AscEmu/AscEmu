@@ -1241,9 +1241,9 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    ItemSetEntry* entry = dbcItemSet.LookupEntryForced(setid);
-    std::list<ItemPrototype*>* l = objmgr.GetListForItemSet(setid);
-    if (!entry || !l)
+    auto item_set_entry = sItemSetStore.LookupEntry(setid);
+    std::list<ItemPrototype*>* item_set_list = objmgr.GetListForItemSet(setid);
+    if (!item_set_entry || !item_set_list)
     {
         RedSystemMessage(m_session, "Invalid item set.");
         return true;
@@ -1252,7 +1252,7 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
     BlueSystemMessage(m_session, "Searching item set %u...", setid);
     uint32 start = getMSTime();
     sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, chr->GetName());
-    for (std::list<ItemPrototype*>::iterator itr = l->begin(); itr != l->end(); ++itr)
+    for (std::list<ItemPrototype*>::iterator itr = item_set_list->begin(); itr != item_set_list->end(); ++itr)
     {
         Item* itm = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
         if (!itm) continue;

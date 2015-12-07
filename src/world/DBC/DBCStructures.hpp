@@ -36,6 +36,7 @@ namespace DBC
             char const gt_regen_hp_per_spt_format[] = "f";
             char const gt_regen_mp_per_spt_format[] = "f";
             char const item_entry_format[] = "niiiiiii";
+            char const item_set_format[] = "issssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
@@ -124,6 +125,19 @@ namespace DBC
             uint32 DisplayId;               // 5
             uint32 InventoryType;           // 6
             uint32 Sheath;                  // 7
+        };
+
+        struct ItemSetEntry
+        {
+            uint32 id;                      // 1
+            char* name[16];                 // 1-16 name (lang)
+            //uint32 localeflag;            // 17 constant
+            uint32 itemid[10];              // 18-27 item set items
+            //uint32 unk[7];                // 28-34 all 0
+            uint32 SpellID[8];              // 35-42
+            uint32 itemscount[8];           // 43-50
+            uint32 RequiredSkillID;         // 51
+            uint32 RequiredSkillAmt;        // 52
         };
 
         struct ItemLimitCategoryEntry

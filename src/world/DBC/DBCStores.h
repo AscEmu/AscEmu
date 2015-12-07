@@ -512,20 +512,6 @@ struct CurrencyTypesEntry
     uint32 BitIndex;                // 3 bit index in PLAYER_FIELD_KNOWN_CURRENCIES (1 << (index-1))
 };
 
-struct ItemSetEntry
-{
-    uint32 id;                      //1
-    const char* name;               //2
-  //uint32 unused_shit[15];         //3 - 9
-  //uint32 localeflag;              //10 constant
-    uint32 itemid[8];               //11 - 18
-  //uint32 more_unused_shit[9];     //19 - 27
-    uint32 SpellID[8];              //28 - 35
-    uint32 itemscount[8];           //36 - 43
-    uint32 RequiredSkillID;         //44
-    uint32 RequiredSkillAmt;        //45
-};
-
 #define LOCK_NUM_CASES 8
 
 struct Lock
@@ -2020,7 +2006,7 @@ extern SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
 extern SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
 extern SERVER_DECL DBCStorage<GlyphSlotEntry> dbcGlyphSlot;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;
-extern SERVER_DECL DBCStorage<ItemSetEntry> dbcItemSet;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL DBCStorage<Lock> dbcLock;
 extern SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
 extern SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
