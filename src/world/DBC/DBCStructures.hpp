@@ -48,6 +48,7 @@ namespace DBC
             char const name_gen_format[] = "nsii";
             char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
+            char const stable_slot_prices_format[] = "ni";
         }
 
         #pragma pack(push, 1)
@@ -287,6 +288,12 @@ namespace DBC
             int32 stat[10];             // 1-10
             uint32 statmodifier[10];    // 11-20
             uint32 maxlevel;            // 21
+        };
+
+        struct StableSlotPrices
+        {
+            uint32 Id;              // 0
+            uint32 Price;           // 1
         };
         #pragma pack(pop)
     }

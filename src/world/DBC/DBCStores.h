@@ -1971,7 +1971,7 @@ extern SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
 extern SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
 extern SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
 extern SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
-extern SERVER_DECL DBCStorage<BankSlotPrice> dbcStableSlotPrices; //uses same structure as Bank
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
 extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;
 extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;

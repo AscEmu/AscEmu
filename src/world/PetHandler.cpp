@@ -378,18 +378,24 @@ void WorldSession::HandleBuyStableSlot(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    BankSlotPrice* bsp = dbcStableSlotPrices.LookupEntryForced(_player->GetStableSlotCount() + 1);
-    int32 cost = (bsp != NULL) ? bsp->Price : 99999999;
+    int32 stable_cost = 0;
+
+    auto stable_slot_prices = sStableSlotPricesStore.LookupEntry(_player->GetStableSlotCount() + 1);
+    if (stable_slot_prices != nullptr)
+        stable_cost = stable_slot_prices->Price;
+    else
+        stable_cost = 99999999;
+
 
     WorldPacket data(SMSG_STABLE_RESULT, 1);
 
-    if (!_player->HasGold(cost))
+    if (!_player->HasGold(stable_cost))
     {
         data << uint8(1);       // not enough money
         SendPacket(&data);
         return;
     }
-    _player->ModGold(-cost);
+    _player->ModGold(-stable_cost);
 
     data << uint8(0x0A);
     SendPacket(&data);
