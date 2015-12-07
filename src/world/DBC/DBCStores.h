@@ -1298,11 +1298,6 @@ struct gtFloat
     float val;
 };
 
-struct CombatRatingDBC
-{
-    float val;
-};
-
 struct SpellShapeshiftForm
 {
     uint32 id;
@@ -1940,7 +1935,7 @@ extern SERVER_DECL DBCStorage <HolidaysEntry> dbcHolidaysStore;
 extern SERVER_DECL DBCStorage<SpellRuneCostEntry> dbcSpellRuneCost;
 extern SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
 extern SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
-extern SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityQualityEntry> sDurabilityQualityStore;

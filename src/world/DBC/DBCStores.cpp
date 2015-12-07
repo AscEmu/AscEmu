@@ -42,7 +42,7 @@ SERVER_DECL DBCStorage<CharClassEntry> dbcCharClass;
 SERVER_DECL DBCStorage<CharRaceEntry> dbcCharRace;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitlesStore(DBC::Structures::char_titles_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore(DBC::Structures::chat_channels_format);
-SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore(DBC::Structures::gt_combat_ratings_format);
 SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
 SERVER_DECL DBCStorage<CreatureFamilyEntry> dbcCreatureFamily;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CurrencyTypesEntry> sCurrencyTypesStore(DBC::Structures::currency_types_format);
@@ -386,8 +386,8 @@ bool LoadDBCs()
     LOAD_DBC("DBC/Holidays.dbc", HolidayEntryFormat, true, dbcHolidayEntry, true);
     LOAD_DBC("DBC/AuctionHouse.dbc", auctionhousedbcFormat, true, dbcAuctionHouse, false);
     LOAD_DBC("DBC/ItemRandomSuffix.dbc", itemrandomsuffixformat, true, dbcItemRandomSuffix, false);
-    LOAD_DBC("DBC/gtCombatRatings.dbc", gtfloatformat, false, dbcCombatRating, false);
 
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtCombatRatingsStore, dbc_path, "gtCombatRatings.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sChatChannelsStore, dbc_path, "ChatChannels.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sDurabilityQualityStore, dbc_path, "DurabilityQuality.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sDurabilityCostsStore, dbc_path, "DurabilityCosts.dbc");

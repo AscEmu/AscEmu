@@ -8496,11 +8496,11 @@ float Player::CalcRating(uint32 index)
     if (level > 100)
         level = 100;
 
-    CombatRatingDBC* pDBCEntry = dbcCombatRating.LookupEntryForced(relative_index * 100 + level - 1);
-    if (pDBCEntry == NULL)
+    auto combat_rating_entry = sGtCombatRatingsStore.LookupEntry(relative_index * 100 + level - 1);
+    if (combat_rating_entry == nullptr)
         return rating;
     else
-        return (rating / pDBCEntry->val);
+        return (rating / combat_rating_entry->val);
 }
 
 bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O)
