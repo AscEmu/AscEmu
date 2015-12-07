@@ -1295,10 +1295,10 @@ void Item::RemoveFromRefundableMap()
 
 uint32 Item::RepairItemCost()
 {
-    DurabilityCostsEntry* dcosts = dbcDurabilityCosts.LookupEntryForced(m_itemProto->ItemLevel);
-    if (dcosts == NULL)
+    auto durability_costs = sDurabilityCostsStore.LookupEntry(m_itemProto->ItemLevel);
+    if (durability_costs == nullptr)
     {
-        LOG_ERROR("Repair: Unknown item level (%u)", dcosts);
+        LOG_ERROR("Repair: Unknown item level (%u)", durability_costs);
         return 0;
     }
 
@@ -1309,7 +1309,7 @@ uint32 Item::RepairItemCost()
         return 0;
     }
 
-    uint32 dmodifier = dcosts->modifier[m_itemProto->Class == ITEM_CLASS_WEAPON ? m_itemProto->SubClass : m_itemProto->SubClass + 21];
+    uint32 dmodifier = durability_costs->modifier[m_itemProto->Class == ITEM_CLASS_WEAPON ? m_itemProto->SubClass : m_itemProto->SubClass + 21];
     uint32 cost = long2int32((GetDurabilityMax() - GetDurability()) * dmodifier * double(dquality->quality_modifier));
     return cost;
 }

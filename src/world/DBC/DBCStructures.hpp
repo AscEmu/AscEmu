@@ -33,6 +33,7 @@ namespace DBC
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const currency_types_format[] = "xnxi";
+            char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
             char const gt_barber_shop_cost_format[] = "f";
             char const gt_oct_regen_hp_format[] = "f";
@@ -120,6 +121,12 @@ namespace DBC
             uint32 item_id;         // 1 used as index
             //uint32 Category;      // 2 may be category
             uint32 bit_index;       // 3 bit index in PLAYER_FIELD_KNOWN_CURRENCIES (1 << (index-1))
+        };
+
+        struct DurabilityCostsEntry
+        {
+            uint32 itemlevel;       // 0
+            uint32 modifier[29];    // 1-29
         };
 
         struct EmotesTextEntry

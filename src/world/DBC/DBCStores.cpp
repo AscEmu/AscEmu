@@ -49,7 +49,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::CurrencyTypesEntry> sCurrencyTypesS
 SERVER_DECL DBCStorage<DBCTaxiNode> dbcTaxiNode;
 SERVER_DECL DBCStorage<DBCTaxiPath> dbcTaxiPath;
 SERVER_DECL DBCStorage<DBCTaxiPathNode> dbcTaxiPathNode;
-SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore(DBC::Structures::durability_costs_format);
 SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
 SERVER_DECL DBCStorage<FactionTemplateDBC> dbcFactionTemplate;
 SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
@@ -312,7 +312,7 @@ const char* HolidayEntryFormat = "uiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
 const char* itemrandomsuffixformat = "uxxxxxxxxxxxxxxxxxxuuuxxuuuxx";//19, 20, 21, 24, 25, 26
 const char* chatchannelformat = "iixssssssssssssssslxxxxxxxxxxxxxxxxxx";
 const char* durabilityqualityFormat = "uf";
-const char* durabilitycostsFormat = "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
+
 
 const char* barbershopstyleFormat = "nulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxuuu";
 const char* gtfloatformat = "f";
@@ -396,8 +396,8 @@ bool LoadDBCs()
     LOAD_DBC("DBC/gtCombatRatings.dbc", gtfloatformat, false, dbcCombatRating, false);
     LOAD_DBC("DBC/ChatChannels.dbc", chatchannelformat, true, dbcChatChannels, true);
     LOAD_DBC("DBC/DurabilityQuality.dbc", durabilityqualityFormat, true, dbcDurabilityQuality, false);
-    LOAD_DBC("DBC/DurabilityCosts.dbc", durabilitycostsFormat, true, dbcDurabilityCosts, false);
-
+    //LOAD_DBC("DBC/DurabilityCosts.dbc", durabilitycostsFormat, true, dbcDurabilityCosts, false);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sDurabilityCostsStore, dbc_path, "DurabilityCosts.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBankBagSlotPricesStore, dbc_path, "BankBagSlotPrices.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sStableSlotPricesStore, dbc_path, "StableSlotPrices.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopCostBaseStore, dbc_path, "gtBarberShopCostBase.dbc");
