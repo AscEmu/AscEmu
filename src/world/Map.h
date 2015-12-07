@@ -23,11 +23,11 @@
 
 #include "TerrainMgr.h"
 #include "CellHandlerDefines.hpp"
+#include "DBC/DBCStructures.hpp"
 
 class MapMgr;
 struct MapInfo;
 class TerrainMgr;
-struct DBC::Structures::MapEntry;
 
 struct Formation;
 

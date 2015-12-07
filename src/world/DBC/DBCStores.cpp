@@ -399,7 +399,7 @@ bool LoadDBCs()
     LOAD_DBC("DBC/CreatureFamily.dbc", creaturefamilyFormat, true, dbcCreatureFamily, true);
     LOAD_DBC("DBC/ChrRaces.dbc", charraceFormat, true, dbcCharRace, true);
     LOAD_DBC("DBC/ChrClasses.dbc", charclassFormat, true, dbcCharClass, true);
-    //LOAD_DBC("DBC/Map.dbc", mapentryFormat, true, dbcMap, true);
+
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMapStore, dbc_path, "Map.dbc");
 
     LOAD_DBC("DBC/Holidays.dbc", HolidayEntryFormat, true, dbcHolidayEntry, true);
