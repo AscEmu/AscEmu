@@ -1497,7 +1497,7 @@ void ObjectMgr::LoadVendors()
             Log.Notice("ObjectMgr", "Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
-        ItemExtendedCostEntry* ec = NULL;
+        DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
         do
         {
             Field* fields = result->Fetch();
@@ -1521,13 +1521,13 @@ void ObjectMgr::LoadVendors()
             itm.incrtime = fields[4].GetUInt32();
             if (fields[5].GetUInt32() > 0)
             {
-                ec = dbcItemExtendedCost.LookupEntryForced(fields[5].GetUInt32());
-                if (ec == NULL)
+                item_extended_cost = sItemExtendedCostStore.LookupEntry(fields[5].GetUInt32());
+                if (item_extended_cost == nullptr)
                     Log.Error("LoadVendors", "Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
             }
             else
-                ec = NULL;
-            itm.extended_cost = ec;
+                item_extended_cost = NULL;
+            itm.extended_cost = item_extended_cost;
             items->push_back(itm);
         }
         while (result->NextRow());

@@ -2449,47 +2449,47 @@ void ItemInterface::BuyItem(ItemPrototype* item, uint32 total_amount, Creature* 
         else
             m_pOwner->ModGold(-(int32)itemprice);
     }
-    ItemExtendedCostEntry* ex = pVendor->GetItemExtendedCostByItemId(item->ItemId);
-    if (ex != NULL)
+    auto item_extended_cost = pVendor->GetItemExtendedCostByItemId(item->ItemId);
+    if (item_extended_cost != nullptr)
     {
         for (uint8 i = 0; i < 5; i++)
         {
-            if (ex->item[i])
-                m_pOwner->GetItemInterface()->RemoveItemAmt(ex->item[i], total_amount * ex->count[i]);
+            if (item_extended_cost->item[i])
+                m_pOwner->GetItemInterface()->RemoveItemAmt(item_extended_cost->item[i], total_amount * item_extended_cost->count[i]);
         }
 
-        if (m_pOwner->GetHonorCurrency() >= (ex->honor * total_amount))
+        if (m_pOwner->GetHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
         {
-            m_pOwner->ModHonorCurrency(-int32((ex->honor * total_amount)));
-            m_pOwner->m_honorPoints -= int32(ex->honor * total_amount);
+            m_pOwner->ModHonorCurrency(-int32((item_extended_cost->honor_points * total_amount)));
+            m_pOwner->m_honorPoints -= int32(item_extended_cost->honor_points * total_amount);
         }
-        if (m_pOwner->GetArenaCurrency() >= (ex->arena * total_amount))
+        if (m_pOwner->GetArenaCurrency() >= (item_extended_cost->arena_points * total_amount))
         {
-            m_pOwner->ModArenaCurrency(-int32(ex->arena * total_amount));
-            m_pOwner->m_arenaPoints -= int32(ex->arena * total_amount);
+            m_pOwner->ModArenaCurrency(-int32(item_extended_cost->arena_points * total_amount));
+            m_pOwner->m_arenaPoints -= int32(item_extended_cost->arena_points * total_amount);
         }
     }
 }
 
 int8 ItemInterface::CanAffordItem(ItemPrototype* item, uint32 amount, Creature* pVendor)
 {
-    ItemExtendedCostEntry* ex = pVendor->GetItemExtendedCostByItemId(item->ItemId);
-    if (ex != NULL)
+    auto item_extended_cost = pVendor->GetItemExtendedCostByItemId(item->ItemId);
+    if (item_extended_cost != nullptr)
     {
         for (uint8 i = 0; i < 5; i++)
         {
-            if (ex->item[i])
+            if (item_extended_cost->item[i])
             {
-                if (m_pOwner->GetItemInterface()->GetItemCount(ex->item[i], false) < (ex->count[i] * amount))
+                if (m_pOwner->GetItemInterface()->GetItemCount(item_extended_cost->item[i], false) < (item_extended_cost->count[i] * amount))
                     return INV_ERR_VENDOR_MISSING_TURNINS;
             }
         }
 
-        if (m_pOwner->GetHonorCurrency() < (ex->honor * amount))
+        if (m_pOwner->GetHonorCurrency() < (item_extended_cost->honor_points * amount))
             return INV_ERR_NOT_ENOUGH_HONOR_POINTS;
-        if (m_pOwner->GetArenaCurrency() < (ex->arena * amount))
+        if (m_pOwner->GetArenaCurrency() < (item_extended_cost->arena_points * amount))
             return INV_ERR_NOT_ENOUGH_ARENA_POINTS;
-        if (m_pOwner->GetMaxPersonalRating() < ex->personalrating)
+        if (m_pOwner->GetMaxPersonalRating() < item_extended_cost->personalrating)
             return INV_ERR_PERSONAL_ARENA_RATING_TOO_LOW;
     }
 

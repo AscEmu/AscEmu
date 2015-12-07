@@ -266,8 +266,8 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession* m_session)
     if (pcostid)
         costid = atoi(pcostid);
 
-    ItemExtendedCostEntry* ec = (costid > 0) ? dbcItemExtendedCost.LookupEntryForced(costid) : NULL;
-    if (costid > 0 && dbcItemExtendedCost.LookupEntryForced(costid) == NULL)
+    auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
+    if (costid > 0 && sItemExtendedCostStore.LookupEntry(costid) == NULL)
     {
         SystemMessage(m_session, "You've entered invalid extended cost id.");
         return true;
@@ -282,7 +282,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession* m_session)
         ss << "INSERT INTO vendors VALUES ('" << pCreature->GetEntry() << "', '" << item << "', '" << amount << "', 0, 0, " << costid << ")" << '\0';
         WorldDatabase.Execute(ss.str().c_str());
 
-        pCreature->AddVendorItem(item, amount, ec);
+        pCreature->AddVendorItem(item, amount, item_extended_cost);
 
         sstext << "Item '" << item << "' '" << tmpItem->Name1 << "' Added to list";
         if (costid > 0)

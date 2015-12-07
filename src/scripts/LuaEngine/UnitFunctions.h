@@ -4571,13 +4571,13 @@ class LuaUnit
     static int VendorAddItem(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-            Creature* ctr = static_cast<Creature*>(ptr);
+        Creature* ctr = static_cast<Creature*>(ptr);
         uint32 itemid = (uint32)luaL_checknumber(L, 1);
         uint32 amount = (uint32)luaL_checknumber(L, 2);
         uint32 costid = (uint32)luaL_checknumber(L, 3);
-        ItemExtendedCostEntry* ec = (costid > 0) ? dbcItemExtendedCost.LookupEntryForced(costid) : NULL;
+        auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
         if (itemid && amount)
-            ctr->AddVendorItem(itemid, amount, ec);
+            ctr->AddVendorItem(itemid, amount, item_extended_cost);
         return 0;
     }
 

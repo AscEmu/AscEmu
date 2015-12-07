@@ -53,6 +53,7 @@ namespace DBC
             char const gt_regen_mp_per_spt_format[] = "f";
             char const holidays_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
             char const item_entry_format[] = "niiiiiii";
+            char const item_extended_cost_format[] = "niiiiiiiiiiiiiix";
             char const item_set_format[] = "issssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
@@ -329,6 +330,18 @@ namespace DBC
             uint32 DisplayId;               // 5
             uint32 InventoryType;           // 6
             uint32 Sheath;                  // 7
+        };
+
+        struct ItemExtendedCostEntry
+        {
+            uint32 costid;                  // 0
+            uint32 honor_points;            // 1
+            uint32 arena_points;            // 2
+            uint32 arena_slot;              // 3
+            uint32 item[5];                 // 4-8
+            uint32 count[5];                // 9-13
+            uint32 personalrating;          // 14
+            //uint32 unk;                   // 15
         };
 
         struct ItemSetEntry

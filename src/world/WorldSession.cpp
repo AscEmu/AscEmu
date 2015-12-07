@@ -1239,8 +1239,8 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         if (RefundEntry.first == 0 || RefundEntry.second == 0)
             return;
 
-        ItemExtendedCostEntry* ex = dbcItemExtendedCost.LookupEntryForced(RefundEntry.second);
-        if (ex == NULL)
+        auto item_extended_cost = sItemExtendedCostStore.LookupEntry(RefundEntry.second);
+        if (item_extended_cost == nullptr)
             return;
 
         ItemPrototype* proto = itm->GetProto();
@@ -1287,13 +1287,13 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         WorldPacket packet(SMSG_ITEMREFUNDINFO, 68);
         packet << uint64(GUID);
         packet << uint32(proto->BuyPrice);
-        packet << uint32(ex->honor);
-        packet << uint32(ex->arena);
+        packet << uint32(item_extended_cost->honor_points);
+        packet << uint32(item_extended_cost->arena_points);
 
         for (int i = 0; i < 5; ++i)
         {
-            packet << uint32(ex->item[i]);
-            packet << uint32(ex->count[i]);
+            packet << uint32(item_extended_cost->item[i]);
+            packet << uint32(item_extended_cost->count[i]);
         }
 
         packet << uint32(0);	// always seems to be 0

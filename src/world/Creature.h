@@ -110,7 +110,7 @@ class SERVER_DECL Creature : public Unit
 
         void GetSellItemByItemId(uint32 itemid, CreatureItem& ci);
 
-        ItemExtendedCostEntry* GetItemExtendedCostByItemId(uint32 itemid);
+        DBC::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32 itemid);
 
         std::vector<CreatureItem>::iterator GetSellItemBegin();
 
@@ -119,7 +119,7 @@ class SERVER_DECL Creature : public Unit
         size_t GetSellItemCount();
 
         void RemoveVendorItem(uint32 itemid);
-        void AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry* ec);
+        void AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec);
         void ModAvItemAmount(uint32 itemid, uint32 value);
         void UpdateItemAmount(uint32 itemid);
         /// Quests

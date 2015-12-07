@@ -47,7 +47,7 @@ struct CreatureItem
     uint32 available_amount;
     uint32 max_amount;
     uint32 incrtime;
-    ItemExtendedCostEntry* extended_cost;
+    DBC::Structures::ItemExtendedCostEntry const* extended_cost;
 };
 
 enum CreatureAISpellFlags

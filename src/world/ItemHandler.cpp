@@ -1277,7 +1277,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
     if (unit == NULL || !unit->HasItems())
         return;
 
-    ItemExtendedCostEntry* ex = unit->GetItemExtendedCostByItemId(itemid);
+    auto ex = unit->GetItemExtendedCostByItemId(itemid);
 
     if (amount < 1)
         amount = 1;
@@ -2237,25 +2237,13 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     LOG_DEBUG("Recieved CMSG_ITEMREFUNDREQUEST.");
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //  As of 3.2.0a the client sends this packet to initiate refund of an item
-    //
-    //    {CLIENT} Packet: (0x04B4) UNKNOWN PacketSize = 8 TimeStamp = 266021296
-    //    E6 EE 09 18 02 00 00 42
-    //
-    //
-    //
-    //  Structure:
-    //  uint64 GUID
-    //////////////////////////////////////////////////////////////////////////////////////////
 
     uint64 GUID;
     uint32 error = 1;
     Item* itm = NULL;
     std::pair< time_t, uint32 > RefundEntry;
-    ItemExtendedCostEntry* ex = NULL;
+    DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
     ItemPrototype* proto = NULL;
-
 
     recvPacket >> GUID;
 
@@ -2276,10 +2264,10 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
                 uint32* played = _player->GetPlayedtime();
 
                 if (played[1] < (RefundEntry.first + 60 * 60 * 2))
-                    ex = dbcItemExtendedCost.LookupEntry(RefundEntry.second);
+                    item_extended_cost = sItemExtendedCostStore.LookupEntry(RefundEntry.second);
             }
 
-            if (ex != NULL)
+            if (item_extended_cost != NULL)
             {
                 proto = itm->GetProto();
 
@@ -2287,11 +2275,11 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
                 for (int i = 0; i < 5; ++i)
                 {
-                    _player->GetItemInterface()->AddItemById(ex->item[i], ex->count[i], 0);
+                    _player->GetItemInterface()->AddItemById(item_extended_cost->item[i], item_extended_cost->count[i], 0);
                 }
 
-                _player->GetItemInterface()->AddItemById(43308, ex->honor, 0);     // honor points
-                _player->GetItemInterface()->AddItemById(43307, ex->arena, 0);    // arena points
+                _player->GetItemInterface()->AddItemById(43308, item_extended_cost->honor_points, 0);
+                _player->GetItemInterface()->AddItemById(43307, item_extended_cost->arena_points, 0);
                 _player->ModGold(proto->BuyPrice);
 
                 _player->GetItemInterface()->RemoveItemAmtByGuid(GUID, 1);
@@ -2305,38 +2293,6 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  As of 3.1.3 the client sends this packet to provide refunded cost info to the client
-    //
-    //    {SERVER} Packet: (0x04B5) UNKNOWN PacketSize = 64 TimeStamp = 266021531
-    //    E6 EE 09 18 02 00 00 42 00 00 00 00 00 00 00 00 4B 25 00 00 00 00 00 00 50 50 00 00 0A 00 00 00 00
-    //  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-    //
-    //
-    //  Structure (on success):
-    //  uint64 GUID
-    //  uint32 errorcode
-    //
-    //
-    //  Structure (on failure):
-    //  uint64 GUID
-    //  uint32 price (in copper)
-    //  uint32 honor
-    //  uint32 arena
-    //  uint32 item1
-    //  uint32 item1cnt
-    //  uint32 item2
-    //  uint32 item2cnt
-    //  uint32 item3
-    //  uint32 item3cnt
-    //  uint32 item4
-    //  uint32 item4cnt
-    //  uint32 item5
-    //  uint32 item5cnt
-    //
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     WorldPacket packet(SMSG_ITEMREFUNDREQUEST, 60);
     packet << uint64(GUID);
     packet << uint32(error);
@@ -2344,13 +2300,13 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
     if (error == 0)
     {
         packet << uint32(proto->BuyPrice);
-        packet << uint32(ex->honor);
-        packet << uint32(ex->arena);
+        packet << uint32(item_extended_cost->honor_points);
+        packet << uint32(item_extended_cost->arena_points);
 
         for (int i = 0; i < 5; ++i)
         {
-            packet << uint32(ex->item[i]);
-            packet << uint32(ex->count[i]);
+            packet << uint32(item_extended_cost->item[i]);
+            packet << uint32(item_extended_cost->count[i]);
         }
 
     }
