@@ -1487,14 +1487,6 @@ struct SummonPropertiesEntry
     uint32 Flags;
 };
 
-struct NameGenEntry
-{
-    uint32 ID;
-    char* Name;
-    uint32 unk1;
-    uint32 unk2;
-};
-
 struct LFGDungeonEntry
 {
     uint32 ID;                  // 0
@@ -2086,7 +2078,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MailTemplateEntry> sMailTemplateStore;
 extern SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;
 extern SERVER_DECL DBCStorage<SummonPropertiesEntry> dbcSummonProperties;
-extern SERVER_DECL DBCStorage<NameGenEntry> dbcNameGen;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
 extern SERVER_DECL DBCStorage<VehicleEntry> dbcVehicle;
 extern SERVER_DECL DBCStorage<VehicleSeatEntry> dbcVehicleSeat;

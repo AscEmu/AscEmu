@@ -1682,15 +1682,17 @@ void World::Rehash(bool load)
 
 void World::LoadNameGenData()
 {
-    for (DBCStorage< NameGenEntry >::iterator itr = dbcNameGen.begin(); itr != dbcNameGen.end(); ++itr)
+    for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
     {
-        NameGenEntry* nge = *itr;
+        auto const name_gen_entry = sNameGenStore.LookupEntry(i);
+        if (name_gen_entry == nullptr)
+            continue;
 
-        NameGenData d;
+        NameGenData data;
 
-        d.name = std::string(nge->Name);
-        d.type = nge->unk2;
-        _namegendata[d.type].push_back(d);
+        data.name = std::string(name_gen_entry->Name);
+        data.type = name_gen_entry->type;
+        _namegendata[data.type].push_back(data);
     }
 }
 

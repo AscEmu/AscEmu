@@ -39,6 +39,7 @@ namespace DBC
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
+            char const name_gen_format[] = "nsii";
             char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
         }
@@ -167,6 +168,14 @@ namespace DBC
             char* content;          // 18
             //float unused2[15]     // 19-34
             //uint32 flags2         // 35 name flags, unused
+        };
+
+        struct NameGenEntry
+        {
+            uint32 ID;              // 0
+            char* Name;             // 1
+            uint32 unk1;            // 2
+            uint32 type;            // 3
         };
 
         struct QuestXP
