@@ -5195,7 +5195,7 @@ float Player::GetDodgeChance()
 
     // Base dodge + dodge from agility
 
-    gtFloat *baseCrit = dbcMeleeCritBase.LookupEntry(pClass - 1);
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(pClass - 1);
     gtFloat *CritPerAgi = dbcMeleeCrit.LookupEntry(level - 1 + (pClass - 1) * 100);
     uint32 agi = GetStat(STAT_AGILITY);
 
@@ -5291,7 +5291,7 @@ void Player::UpdateChances()
     SetFloatValue(PLAYER_PARRY_PERCENTAGE, tmp);
 
     // Critical
-    gtFloat* baseCrit = dbcMeleeCritBase.LookupEntry(pClass - 1);
+    auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(pClass - 1);
     gtFloat* CritPerAgi = dbcMeleeCrit.LookupEntry(pLevel - 1 + (pClass - 1) * 100);
 
     tmp = 100 * (baseCrit->val + GetStat(STAT_AGILITY) * CritPerAgi->val);

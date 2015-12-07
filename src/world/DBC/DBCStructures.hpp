@@ -42,6 +42,8 @@ namespace DBC
             char const durability_quality_format[] = "nf";
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
             char const gt_barber_shop_cost_format[] = "f";
+            char const gt_chance_to_melee_crit_format[] = "f";
+            char const gt_chance_to_melee_crit_base_format[] = "f";
             char const gt_chance_to_spell_crit_format[] = "f";
             char const gt_chance_to_spell_crit_base_format[] = "f";
             char const gt_combat_ratings_format[] = "f";
@@ -250,6 +252,16 @@ namespace DBC
         struct GtBarberShopCostBaseEntry
         {
             float cost;             // 0 cost base
+        };
+
+        struct GtChanceToMeleeCritEntry
+        {
+            float val;              // 0
+        };
+
+        struct GtChanceToMeleeCritBaseEntry
+        {
+            float val;              // 0
         };
 
         struct GtChanceToSpellCritEntry
