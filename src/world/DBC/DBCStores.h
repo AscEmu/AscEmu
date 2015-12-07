@@ -1194,11 +1194,6 @@ struct ItemRandomSuffixEntry
     uint32 prefixes[3];
 };
 
-struct gtFloat
-{
-    float val;
-};
-
 struct SpellShapeshiftForm
 {
     uint32 id;
