@@ -50,7 +50,7 @@ SERVER_DECL DBCStorage<DBCTaxiNode> dbcTaxiNode;
 SERVER_DECL DBCStorage<DBCTaxiPath> dbcTaxiPath;
 SERVER_DECL DBCStorage<DBCTaxiPathNode> dbcTaxiPathNode;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore(DBC::Structures::durability_costs_format);
-SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityQualityEntry> sDurabilityQualityStore(DBC::Structures::durability_quality_format);
 SERVER_DECL DBCStorage<FactionTemplateDBC> dbcFactionTemplate;
 SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore(DBC::Structures::emotes_text_format);
@@ -105,8 +105,6 @@ SERVER_DECL DBCStorage< VehicleEntry > dbcVehicle;
 SERVER_DECL DBCStorage< VehicleSeatEntry > dbcVehicleSeat;
 
 const char* WorldMapOverlayStoreFormat = "nxiiiixxxxxxxxxxx";
-
-
 
 const char* skilllinespellFormat = "uuuxxxxuuuuuxx";
 const char* EnchantEntrYFormat = "uxuuuuuuuuuuuusxxxxxxxxxxxxxxxxuuuuxxx";
@@ -307,20 +305,15 @@ const char* charraceFormat = "uxxxxxxuxxxxuxlxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 const char* charclassFormat = "uxuxlxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char* creaturefamilyFormat = "ufufuuuuuxlxxxxxxxxxxxxxxxxx";
 
-
 const char* HolidayEntryFormat = "uiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
 const char* itemrandomsuffixformat = "uxxxxxxxxxxxxxxxxxxuuuxxuuuxx";//19, 20, 21, 24, 25, 26
 const char* chatchannelformat = "iixssssssssssssssslxxxxxxxxxxxxxxxxxx";
-const char* durabilityqualityFormat = "uf";
 
-
-const char* barbershopstyleFormat = "nulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxuuu";
 const char* gtfloatformat = "f";
 
 const char* scalingstatvaluesformat = "uuuuuuuuuuuuuuuuuuxxxxxx";
 
 const char* spellshapeshiftformformat = "uxxxxxxxxxxxxxxxxxxuuxuuuxxuuuuuuuu";
-
 
 const char* wmoareaformat = "uiiixxxxxuuxxxxxxxxxxxxxxxxx";
 const char* summonpropertiesformat = "uuuuuu";
@@ -395,8 +388,8 @@ bool LoadDBCs()
     LOAD_DBC("DBC/ItemRandomSuffix.dbc", itemrandomsuffixformat, true, dbcItemRandomSuffix, false);
     LOAD_DBC("DBC/gtCombatRatings.dbc", gtfloatformat, false, dbcCombatRating, false);
     LOAD_DBC("DBC/ChatChannels.dbc", chatchannelformat, true, dbcChatChannels, true);
-    LOAD_DBC("DBC/DurabilityQuality.dbc", durabilityqualityFormat, true, dbcDurabilityQuality, false);
-    //LOAD_DBC("DBC/DurabilityCosts.dbc", durabilitycostsFormat, true, dbcDurabilityCosts, false);
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sDurabilityQualityStore, dbc_path, "DurabilityQuality.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sDurabilityCostsStore, dbc_path, "DurabilityCosts.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBankBagSlotPricesStore, dbc_path, "BankBagSlotPrices.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sStableSlotPricesStore, dbc_path, "StableSlotPrices.dbc");

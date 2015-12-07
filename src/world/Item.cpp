@@ -1302,15 +1302,15 @@ uint32 Item::RepairItemCost()
         return 0;
     }
 
-    DurabilityQualityEntry* dquality = dbcDurabilityQuality.LookupEntryForced((m_itemProto->Quality + 1) * 2);
-    if (dquality == NULL)
+    auto durability_quality = sDurabilityQualityStore.LookupEntry((m_itemProto->Quality + 1) * 2);
+    if (durability_quality == nullptr)
     {
-        LOG_ERROR("Repair: Unknown item quality (%u)", dquality);
+        LOG_ERROR("Repair: Unknown item quality (%u)", durability_quality);
         return 0;
     }
 
     uint32 dmodifier = durability_costs->modifier[m_itemProto->Class == ITEM_CLASS_WEAPON ? m_itemProto->SubClass : m_itemProto->SubClass + 21];
-    uint32 cost = long2int32((GetDurabilityMax() - GetDurability()) * dmodifier * double(dquality->quality_modifier));
+    uint32 cost = long2int32((GetDurabilityMax() - GetDurability()) * dmodifier * double(durability_quality->quality_modifier));
     return cost;
 }
 

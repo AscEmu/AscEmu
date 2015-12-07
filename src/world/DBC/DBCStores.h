@@ -1310,12 +1310,6 @@ struct ChatChannelDBC
     char* name_pattern[16];
 };
 
-struct DurabilityQualityEntry
-{
-    uint32 id;
-    float quality_modifier;
-};
-
 struct SpellShapeshiftForm
 {
     uint32 id;
@@ -1956,7 +1950,7 @@ extern SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
 extern SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
 extern SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
-extern SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;

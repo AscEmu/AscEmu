@@ -34,6 +34,7 @@ namespace DBC
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const currency_types_format[] = "xnxi";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
+            char const durability_quality_format[] = "nf";
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
             char const gt_barber_shop_cost_format[] = "f";
             char const gt_oct_regen_hp_format[] = "f";
@@ -127,6 +128,12 @@ namespace DBC
         {
             uint32 itemlevel;       // 0
             uint32 modifier[29];    // 1-29
+        };
+
+        struct DurabilityQualityEntry
+        {
+            uint32 id;              // 0
+            float quality_modifier; // 1
         };
 
         struct EmotesTextEntry
