@@ -4100,7 +4100,7 @@ uint8 Spell::CanCast(bool tolerate)
                         result = PETTAME_CANTCONTROLEXOTIC;
                     else
                     {
-                        CreatureFamilyEntry* cf = dbcCreatureFamily.LookupEntryForced(tame->GetCreatureInfo()->Family);
+                        auto cf = sCreatureFamilyStore.LookupEntry(tame->GetCreatureInfo()->Family);
                         if (cf && !cf->tameable)
                             result = PETTAME_NOTTAMEABLE;
                     }

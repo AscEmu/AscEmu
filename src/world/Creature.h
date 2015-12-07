@@ -277,7 +277,7 @@ class SERVER_DECL Creature : public Unit
         Trainer* GetTrainer();
         void RegenerateFocus();
 
-        CreatureFamilyEntry* myFamily;
+        DBC::Structures::CreatureFamilyEntry const* myFamily;
 
         bool IsExotic();
 
@@ -316,7 +316,7 @@ class SERVER_DECL Creature : public Unit
         bool IsInLimboState();
 
         void SetLimboState(bool set);
-        uint32 GetLineByFamily(CreatureFamilyEntry* family);
+        uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
         void SetGuardWaypoints();
         bool m_corpseEvent;

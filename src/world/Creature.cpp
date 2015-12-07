@@ -1577,7 +1577,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 
     //////////////AI
 
-    myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
 
     //HACK!
@@ -1787,7 +1787,7 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
 
     //////////////AI
 
-    myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
 
     //HACK!
@@ -2044,7 +2044,7 @@ void Creature::SetLimboState(bool set)
     m_limbostate = set;
 }
 
-uint32 Creature::GetLineByFamily(CreatureFamilyEntry* family)
+uint32 Creature::GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family)
 {
     return family->skilline ? family->skilline : 0;
 }

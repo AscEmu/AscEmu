@@ -136,7 +136,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureInfo* ci, Creature* created_from_
     m_phase = m_Owner->GetPhase();
     m_PetNumber = m_Owner->GeneratePetNumber();
     creature_info = ci;
-    myFamily = dbcCreatureFamily.LookupEntry(ci->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(ci->Family);
 
     float x, y, z;
     if (Vec)
@@ -203,7 +203,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureInfo* ci, Creature* created_from_
         if (myFamily == NULL || myFamily->name == NULL)
             m_name = "Pet";
         else
-            m_name.assign(myFamily->name);
+            m_name.assign(myFamily->name[0]);
 
         SetBoundingRadius(created_from_creature->GetBoundingRadius());
         SetCombatReach(created_from_creature->GetCombatReach());
@@ -442,7 +442,7 @@ void Pet::SendTalentsToOwner()
     size_t pos = data.wpos();
     data << uint8(0);                   // Amount of known talents (will be filled later)
 
-    CreatureFamilyEntry* cfe = dbcCreatureFamily.LookupEntryForced(GetCreatureInfo()->Family);
+    DBC::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.LookupEntry(GetCreatureInfo()->Family);
     if (!cfe || static_cast<int32>(cfe->talenttree) < 0)
         return;
 
@@ -588,7 +588,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         return;
 
     proto = CreatureProtoStorage.LookupEntry(mPi->entry);
-    myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
     Create(pi->name.c_str(), owner->GetMapId(), owner->GetPositionX() + 2, owner->GetPositionY() + 2, owner->GetPositionZ(), owner->GetOrientation());
 
@@ -743,7 +743,7 @@ void Pet::InitializeMe(bool first)
 
     auto creature_info = GetCreatureInfo();
     if (creature_info != nullptr)
-        myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
+        myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
     SetPetDiet();
     _setFaction();
@@ -1068,7 +1068,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     else
     {
         // Get Creature family from DB (table creature_names, field family), load the skill line from CreatureFamily.dbc for use with SkillLineAbiliby.dbc entry
-        CreatureFamilyEntry* f = dbcCreatureFamily.LookupEntryForced(GetCreatureInfo()->Family);
+        DBC::Structures::CreatureFamilyEntry const* f = sCreatureFamilyStore.LookupEntry(GetCreatureInfo()->Family);
         if (f)
         {
             s = f->skilline;

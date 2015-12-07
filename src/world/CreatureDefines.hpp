@@ -22,6 +22,7 @@
 
 #include "CommonTypes.hpp"
 #include "DBC/DBCStores.h"
+#include "DBC/DBCStructures.hpp"
 #include "UnitDefines.hpp"
 
 struct AI_Spell;

@@ -36,6 +36,7 @@ namespace DBC
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
             char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
+            char const creature_family_format[] = "nfifiiiiixssssssssssssssssxx";
             char const currency_types_format[] = "xnxi";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
@@ -182,6 +183,23 @@ namespace DBC
             //uint32 name_neutral_flags     // 64 string flags, unused
             //uint32 unk5[3]                // 65-67 unused
             uint32 expansion;               // 68
+        };
+
+        struct CreatureFamilyEntry
+        {
+            uint32 ID;                      // 0
+            float minsize;                  // 1
+            uint32 minlevel;                // 2
+            float maxsize;                  // 3
+            uint32 maxlevel;                // 4
+            uint32 skilline;                // 5
+            uint32 tameable;                // 6 second skill line - 270 Generic
+            uint32 petdietflags;            // 7
+            uint32 talenttree;              // 8 (-1 = none, 0 = ferocity(410), 1 = tenacity(409), 2 = cunning(411))
+            //uint32 unk;                   // 9 some index 0 - 63
+            char* name[16];                 // 10-25
+            //uint32 nameflags;             // 26
+            //uint32 iconFile;              // 27
         };
 
         struct CurrencyTypesEntry

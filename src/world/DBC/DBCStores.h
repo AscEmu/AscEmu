@@ -1187,24 +1187,6 @@ struct CreatureSpellDataEntry
     uint32 PH;
 };
 
-struct CreatureFamilyEntry
-{
-    uint32 ID;
-    float minsize;
-    uint32 minlevel;
-    float maxsize;
-    uint32 maxlevel;
-    uint32 skilline;
-    uint32 tameable;        /// second skill line - 270 Generic
-    uint32 petdietflags;
-    uint32 talenttree;      /// -1 = none, 0 = ferocity(410), 1 = tenacity(409), 2 = cunning(411)
-    //uint32 unk;           /// some index 0 - 63
-    const char* name;
-    //uint32 namealt[15];
-    //uint32 nameflags;
-    //uint32 iconFile;
-};
-
 struct ItemRandomSuffixEntry
 {
     uint32 id;
@@ -1846,7 +1828,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionH
 extern SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
 extern SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
 extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
-extern SERVER_DECL DBCStorage<CreatureFamilyEntry> dbcCreatureFamily;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
