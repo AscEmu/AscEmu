@@ -1311,27 +1311,6 @@ struct HolidaysEntry
     //uint32 flags;                                         // 54       m_flags (0 = Darkmoon Faire, Fishing Contest and Wotlk Launch, rest is 1)
 };
 
-struct MapEntry
-{
-    uint32 id;
-    const char* name_internal;
-    uint32 map_type;
-    uint32 is_pvp_zone;
-    const char* real_name;
-    uint32 linked_zone;             /// common zone for instance and continent map
-    const char* hordeIntro;         /// text for PvP Zones
-    const char* allianceIntro;      /// text for PvP Zones
-    uint32 multimap_id;
-    const char* normalReqText;      /// normal mode requirement text
-    const char* heroicReqText;      /// heroic mode requirement text
-    int32 parent_map;               /// map_id of parent map
-    float start_x;                  /// enter x coordinate (if exist single entry)
-    float start_y;                  /// enter y coordinate (if exist single entry)
-    //uint32 resetTimeRaid;         /// REMOVED IN 3.2.0
-    //uint32 resetTimeHeroic;       /// REMOVED IN 3.2.0
-    uint32 addon;                   /// 0-original maps, 1-tbc addon, 2-wotlk addon
-};
-
 struct ItemRandomSuffixEntry
 {
     uint32 id;
@@ -2000,7 +1979,7 @@ extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
 extern SERVER_DECL DBCStorage<CreatureFamilyEntry> dbcCreatureFamily;
 extern SERVER_DECL DBCStorage<CharClassEntry> dbcCharClass;
 extern SERVER_DECL DBCStorage<CharRaceEntry> dbcCharRace;
-extern SERVER_DECL DBCStorage<MapEntry> dbcMap;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
 extern SERVER_DECL DBCStorage <HolidaysEntry> dbcHolidaysStore;
 extern SERVER_DECL DBCStorage<SpellRuneCostEntry> dbcSpellRuneCost;
 extern SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
@@ -2011,7 +1990,7 @@ extern SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
 extern SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
 extern SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
 extern SERVER_DECL DBCStorage<BankSlotPrice> dbcStableSlotPrices; //uses same structure as Bank
-extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseEntry;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
 extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;
 extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCritBase;
 extern SERVER_DECL DBCStorage<gtFloat> dbcSpellCrit;

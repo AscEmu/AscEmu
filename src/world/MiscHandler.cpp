@@ -1481,7 +1481,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     uint32 level = _player->getLevel();
     if (level >= 100)
         level = 100;
-    auto cutcosts = sBarberShopCostBaseEntry.LookupEntry(level - 1);
+    auto cutcosts = sBarberShopCostBaseStore.LookupEntry(level - 1);
     if (!cutcosts)
         return;
 

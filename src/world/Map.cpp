@@ -38,7 +38,7 @@ Map::Map(uint32 mapid, MapInfo* inf)
     LoadSpawns(false);
 
     // get our name
-    me = dbcMap.LookupEntry(_mapId);
+    me = sMapStore.LookupEntry(_mapId);
     if (_mapInfo)
         name = _mapInfo->name;
     else
@@ -87,7 +87,7 @@ const char* Map::GetName()
     return name.c_str();
 }
 
-MapEntry* Map::GetDBCEntry()
+const DBC::Structures::MapEntry* Map::GetDBCEntry()
 {
     return me;
 }

@@ -66,7 +66,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore(DBC::Structur
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore(DBC::Structures::item_set_format);
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore(DBC::Structures::lock_format);
-SERVER_DECL DBCStorage<MapEntry> dbcMap;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore(DBC::Structures::map_format);
 SERVER_DECL DBCStorage<HolidaysEntry> dbcHolidayEntry;
 SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore(DBC::Structures::scaling_stat_distribution_format);
@@ -84,7 +84,7 @@ SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
 SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
 SERVER_DECL DBCStorage<WorldMapOverlay> dbcWorldMapOverlayStore;
 
-SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseEntry(DBC::Structures::gt_barber_shop_cost_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore(DBC::Structures::gt_barber_shop_cost_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore(DBC::Structures::gt_oct_regen_hp_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore(DBC::Structures::gt_regen_hp_per_spt_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore(DBC::Structures::gt_oct_regen_mp_format);
@@ -317,25 +317,7 @@ const char* creaturespelldataFormat = "uuuuuuuuu";
 const char* charraceFormat = "uxxxxxxuxxxxuxlxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char* charclassFormat = "uxuxlxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char* creaturefamilyFormat = "ufufuuuuuxlxxxxxxxxxxxxxxxxx";
-const char* mapentryFormat =
-"u"                    // 0 id
-"s"                    // 1 name_internal
-"u"                    // 2 map_type
-"u"                    // 3 is_pvp_zone
-"x"
-"lxxxxxxxxxxxxxxxx"    // 5-21 real_name
-"u"                    // 22 linked_zone
-"xxxxxxxxxxxxxxxxx" // 23-39 hordeIntro
-"xxxxxxxxxxxxxxxxx" // 40-56 allianceIntro
-"u"                    // 57 multimap_id
-"x"                    // 58 unk_float (all 1 but arathi 1.25)
-"u"                    // 59 parent_map
-"u"                    // 60 start_x
-"u"                    // 61 start_y
-"x"                    // 62 unk
-"u"                    // 63 addon
-"x"                    // 64 unk
-"x";                // 65 unk, but as it is always one of the following ones, it could be a max. player count: 0, 5, 10, 20, 25, 40
+
 
 const char* HolidayEntryFormat = "uiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
 const char* itemrandomsuffixformat = "uxxxxxxxxxxxxxxxxxxuuuxxuuuxx";//19, 20, 21, 24, 25, 26
@@ -417,7 +399,9 @@ bool LoadDBCs()
     LOAD_DBC("DBC/CreatureFamily.dbc", creaturefamilyFormat, true, dbcCreatureFamily, true);
     LOAD_DBC("DBC/ChrRaces.dbc", charraceFormat, true, dbcCharRace, true);
     LOAD_DBC("DBC/ChrClasses.dbc", charclassFormat, true, dbcCharClass, true);
-    LOAD_DBC("DBC/Map.dbc", mapentryFormat, true, dbcMap, true);
+    //LOAD_DBC("DBC/Map.dbc", mapentryFormat, true, dbcMap, true);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMapStore, dbc_path, "Map.dbc");
+
     LOAD_DBC("DBC/Holidays.dbc", HolidayEntryFormat, true, dbcHolidayEntry, true);
     LOAD_DBC("DBC/AuctionHouse.dbc", auctionhousedbcFormat, true, dbcAuctionHouse, false);
     LOAD_DBC("DBC/ItemRandomSuffix.dbc", itemrandomsuffixformat, true, dbcItemRandomSuffix, false);
@@ -428,7 +412,7 @@ bool LoadDBCs()
     LOAD_DBC("DBC/BankBagSlotPrices.dbc", bankslotpriceformat, true, dbcBankSlotPrices, false);
     LOAD_DBC("DBC/StableSlotPrices.dbc", bankslotpriceformat, true, dbcStableSlotPrices, false);
 
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopCostBaseEntry, dbc_path, "gtBarberShopCostBase.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopCostBaseStore, dbc_path, "gtBarberShopCostBase.dbc");
 
     LOAD_DBC("DBC/gtChanceToMeleeCrit.dbc", gtfloatformat, false, dbcMeleeCrit, false);
     LOAD_DBC("DBC/gtChanceToMeleeCritBase.dbc", gtfloatformat, false, dbcMeleeCritBase, false);
@@ -459,8 +443,12 @@ bool LoadDBCs()
 
     MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
     auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
-    for (auto map_object : dbcMap)
+    for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
     {
+        auto map_object = sMapStore.LookupEntry(i);
+        if (map_object == nullptr)
+            continue;
+
         area_map_collection->insert(std::pair<uint32, uint32>(map_object->id, map_object->linked_zone));
     }
     //auto wmo_row_count = dbcWMOAreaTable.GetNumRows();

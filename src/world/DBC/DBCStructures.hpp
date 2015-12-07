@@ -42,6 +42,7 @@ namespace DBC
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
+            char const map_format[] = "nxiixssssssssssssssssxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixiffxiii";
             char const name_gen_format[] = "nsii";
             char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
@@ -218,6 +219,31 @@ namespace DBC
             char* content;          // 18
             //float unused2[15]     // 19-34
             //uint32 flags2         // 35 name flags, unused
+        };
+
+        struct MapEntry
+        {
+            uint32 id;                      // 0
+            //char* name_internal;          // 1
+            uint32 map_type;                // 2
+            uint32 map_flags;               // 3
+            //uint32 is_pvp_zone;           // 4 -0 false -1 true
+            char* map_name[16];             // 5-20
+            //uint32 name_flags;            // 21
+            uint32 linked_zone;             // 22 common zone for instance and continent map
+            //char* horde_intro[16];        // 23-38 horde text for PvP Zones
+            //uint32 hordeIntro_flags;      // 39
+            //char* alliance_intro[16];     // 40-55 alliance text for PvP Zones
+            //uint32 allianceIntro_flags;   // 56
+            uint32 multimap_id;             // 57
+            //uint32 battlefield_map_icon;  // 58
+            int32 parent_map;               // 59 map_id of parent map
+            float start_x;                  // 60 enter x coordinate (if exist single entry)
+            float start_y;                  // 61 enter y coordinate (if exist single entry)
+            //uint32 dayTime;               // 62 
+            uint32 addon;                   // 63 0-original maps, 1-tbc addon, 2-wotlk addon
+            uint32 unk_time;                // 64
+            uint32 max_players;             // 65
         };
 
         struct NameGenEntry

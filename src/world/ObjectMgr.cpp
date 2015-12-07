@@ -3846,8 +3846,8 @@ void ObjectMgr::LoadAreaTrigger()
             continue;
         }
 
-        MapEntry const* mapEntry = dbcMap.LookupEntry(at.Mapid);
-        if (!mapEntry)
+        auto const* map_entry = sMapStore.LookupEntry(at.Mapid);
+        if (!map_entry)
         {
             Log.Notice("AreaTrigger", "Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", Trigger_ID, at.Mapid);
             continue;
