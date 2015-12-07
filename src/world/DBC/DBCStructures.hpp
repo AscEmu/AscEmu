@@ -29,6 +29,7 @@ namespace DBC
         {
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const area_trigger_entry_format[] = "niffffffff";
+            char const bank_bag_slot_prices_format[] = "ni";
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const currency_types_format[] = "xnxi";
@@ -79,6 +80,12 @@ namespace DBC
             float box_y;            // 7 extent y edge
             float box_z;            // 8 extent z edge
             float box_o;            // 9 extent rotation by about z axis
+        };
+
+        struct BankBagSlotPrices
+        {
+            uint32 Id;              // 0
+            uint32 Price;           // 1
         };
 
         struct BarberShopStyleEntry

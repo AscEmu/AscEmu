@@ -487,13 +487,6 @@ struct AchievementCriteriaEntry
     uint32 maxLevel;                // 31 Max level
 };*/
 
-struct BankSlotPrice
-{
-    uint32 Id;
-    uint32 Price;
-};
-
-
 //SkillLineAbility.dbc
 struct skilllinespell
 {
@@ -1970,7 +1963,7 @@ extern SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
 extern SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
 extern SERVER_DECL DBCStorage<DurabilityCostsEntry> dbcDurabilityCosts;
 extern SERVER_DECL DBCStorage<DurabilityQualityEntry> dbcDurabilityQuality;
-extern SERVER_DECL DBCStorage<BankSlotPrice> dbcBankSlotPrices;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore;
 extern SERVER_DECL DBCStorage<gtFloat> dbcMeleeCrit;

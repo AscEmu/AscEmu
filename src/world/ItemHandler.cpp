@@ -1784,8 +1784,8 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
     slots = (uint8)(bytes >> 16);
 
     LOG_DETAIL("PLAYER: Buy bytes bag slot, slot number = %d", slots);
-    BankSlotPrice* bsp = dbcBankSlotPrices.LookupEntryForced(slots + 1);
-    if (bsp == NULL)
+    auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots + 1);
+    if (bank_bag_slot_prices == nullptr)
     {
         WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
         data << uint32(0); // E_ERR_BANKSLOT_FAILED_TOO_MANY
@@ -1793,7 +1793,7 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    price = bsp->Price;
+    price = bank_bag_slot_prices->Price;
     if (_player->HasGold(price))
     {
         _player->SetUInt32Value(PLAYER_BYTES_2, (bytes & 0xff00ffff) | ((slots + 1) << 16));
