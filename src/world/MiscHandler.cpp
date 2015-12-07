@@ -501,7 +501,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 if (pGO->GetInfo()->parameter_3 == 1)
                     despawn = true;
 
-                Lock* pLock = dbcLock.LookupEntryForced(pGO->GetInfo()->parameter_0);
+                auto pLock = sLockStore.LookupEntry(pGO->GetInfo()->parameter_0);
                 if (pLock)
                 {
                     for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
@@ -2421,7 +2421,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    Lock* lock = dbcLock.LookupEntryForced(pItem->GetProto()->LockId);
+    auto lock = sLockStore.LookupEntry(pItem->GetProto()->LockId);
 
     uint32 removeLockItems[LOCK_NUM_CASES] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 

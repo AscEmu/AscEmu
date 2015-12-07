@@ -2914,8 +2914,10 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                 if (!itemTarget->locked)
                     return;
 
-                Lock* lock = dbcLock.LookupEntryForced(itemTarget->GetProto()->LockId);
-                if (!lock) return;
+                auto lock = sLockStore.LookupEntry(itemTarget->GetProto()->LockId);
+                if (!lock)
+                    return;
+
                 for (int j = 0; j < LOCK_NUM_CASES; j++)
                 {
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
@@ -2934,7 +2936,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                 if (gameObjTarget->GetState() == 0)
                     return;
 
-                Lock* lock = dbcLock.LookupEntry(gameobject_info->parameter_0);
+                auto lock = sLockStore.LookupEntry(gameobject_info->parameter_0);
                 if (lock == 0)
                     return;
 

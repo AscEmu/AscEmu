@@ -400,7 +400,7 @@ void GameObject::InitAI()
     }
     else if (pInfo->type == GAMEOBJECT_TYPE_CHEST)
     {
-        Lock* pLock = dbcLock.LookupEntryForced(GetInfo()->parameter_0);
+        auto pLock = sLockStore.LookupEntry(GetInfo()->parameter_0);
         if (pLock)
         {
             for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
@@ -779,8 +779,10 @@ bool GameObject::HasLoot()
 uint32 GameObject::GetGOReqSkill()
 {
     //! Here we check the SpellFocus table against the dbcs
-    Lock* lock = dbcLock.LookupEntryForced(GetInfo()->parameter_0);
-    if (!lock) return 0;
+    auto lock = sLockStore.LookupEntry(GetInfo()->parameter_0);
+    if (!lock)
+        return 0;
+
     for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
     {
         if (lock->locktype[i] == 2 && lock->minlockskill[i])

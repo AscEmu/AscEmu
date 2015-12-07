@@ -512,17 +512,6 @@ struct CurrencyTypesEntry
     uint32 BitIndex;                // 3 bit index in PLAYER_FIELD_KNOWN_CURRENCIES (1 << (index-1))
 };
 
-#define LOCK_NUM_CASES 8
-
-struct Lock
-{
-    uint32 Id;
-    uint32 locktype[LOCK_NUM_CASES];        /// If this is 1, then the next lockmisc is an item ID, if it's 2, then it's an iRef to LockTypes.dbc.
-    uint32 lockmisc[LOCK_NUM_CASES];        /// Item to unlock or iRef to LockTypes.dbc depending on the locktype.
-    uint32 minlockskill[LOCK_NUM_CASES];    /// Required skill needed for lockmisc (if locktype = 2).
-    //uint32 action[8];                     /// Something to do with direction / opening / closing.
-};
-
 struct emoteentry
 {
     uint32 Id;
@@ -2007,7 +1996,7 @@ extern SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
 extern SERVER_DECL DBCStorage<GlyphSlotEntry> dbcGlyphSlot;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
-extern SERVER_DECL DBCStorage<Lock> dbcLock;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore;
 extern SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
 extern SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
 extern SERVER_DECL DBCStorage<SpellDuration> dbcSpellDuration;

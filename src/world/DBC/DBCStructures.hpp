@@ -39,6 +39,7 @@ namespace DBC
             char const item_set_format[] = "issssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
+            char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
             char const name_gen_format[] = "nsii";
             char const quest_xp_format[] = "niiiiiiiiii";
@@ -171,6 +172,17 @@ namespace DBC
 
             // Helpers
             uint32 Entry() const { return ID + (type << 24); }
+        };
+
+#define LOCK_NUM_CASES 8
+
+        struct LockEntry
+        {
+            uint32 Id;                              // 0
+            uint32 locktype[LOCK_NUM_CASES];        // 1-8 If this is 1, then the next lockmisc is an item ID, if it's 2, then it's an iRef to LockTypes.dbc.
+            uint32 lockmisc[LOCK_NUM_CASES];        // 9-16 Item to unlock or iRef to LockTypes.dbc depending on the locktype.
+            uint32 minlockskill[LOCK_NUM_CASES];    // 17-24 Required skill needed for lockmisc (if locktype = 2).
+            //uint32 action[LOCK_NUM_CASES];        // 25-32 Something to do with direction / opening / closing.
         };
 
         struct MailTemplateEntry
