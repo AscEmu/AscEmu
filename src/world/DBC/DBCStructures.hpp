@@ -33,6 +33,7 @@ namespace DBC
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
+            char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
             char const currency_types_format[] = "xnxi";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
@@ -126,6 +127,25 @@ namespace DBC
             //uint32 name_pattern_flags;    // 19
             //char* channel_name[16];       // 20-35
             //uint32 channel_name_flags;    // 36
+        };
+
+        struct ChrClassesEntry
+        {
+            uint32 class_id;                // 0
+            //uint32 unk1;                  // 1
+            uint32 power_type;              // 2
+            //uint32 unk2[2];               // 3-4
+            char* name[16];                 // 5-20
+            //uint32 nameflags;             // 21
+            //char* name_female[16];        // 22-36
+            //uint32 name_female_flags;     // 37
+            //char* name_neutral[16];       // 38-53
+            //uint32 name_neutral_flags;    // 54
+            //uint32 unk3;                  // 55
+            uint32 spellfamily;             // 56
+            //uint32 unk4;                  // 57
+            uint32 cinematic_sequence;      // 58 CinematicSequences.dbc
+            uint32 expansion;               // 59
         };
 
         struct CurrencyTypesEntry

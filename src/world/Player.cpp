@@ -790,7 +790,7 @@ bool Player::Create(WorldPacket& data)
 
     // set race dbc
     myRace = dbcCharRace.LookupEntryForced(race);
-    myClass = dbcCharClass.LookupEntryForced(class_);
+    myClass = sChrClassesStore.LookupEntry(class_);
     if (!myRace || !myClass)
     {
         // information not found
@@ -2855,7 +2855,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // set race dbc
     myRace = dbcCharRace.LookupEntryForced(getRace());
-    myClass = dbcCharClass.LookupEntryForced(getClass());
+    myClass = sChrClassesStore.LookupEntry(getClass());
     if (!myClass || !myRace)
     {
         // bad character

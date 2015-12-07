@@ -38,7 +38,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPrices
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore(DBC::Structures::barber_shop_style_entry_format);
 //SERVER_DECL DBCStorage<BattlemasterListEntry> dbcBattlemasterListStore;
-SERVER_DECL DBCStorage<CharClassEntry> dbcCharClass;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore(DBC::Structures::chr_classes_format);
 SERVER_DECL DBCStorage<CharRaceEntry> dbcCharRace;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitlesStore(DBC::Structures::char_titles_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore(DBC::Structures::chat_channels_format);
@@ -302,7 +302,7 @@ const char* dbctaxipathFormat = "uuuu";
 const char* dbctaxipathnodeFormat = "uuuufffuuxx";
 const char* creaturespelldataFormat = "uuuuuuuuu";
 const char* charraceFormat = "uxxxxxxuxxxxuxlxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-const char* charclassFormat = "uxuxlxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+
 const char* creaturefamilyFormat = "ufufuuuuuxlxxxxxxxxxxxxxxxxx";
 
 const char* HolidayEntryFormat = "uiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
@@ -379,8 +379,8 @@ bool LoadDBCs()
     LOAD_DBC("DBC/CreatureSpellData.dbc", creaturespelldataFormat, true, dbcCreatureSpellData, false);
     LOAD_DBC("DBC/CreatureFamily.dbc", creaturefamilyFormat, true, dbcCreatureFamily, true);
     LOAD_DBC("DBC/ChrRaces.dbc", charraceFormat, true, dbcCharRace, true);
-    LOAD_DBC("DBC/ChrClasses.dbc", charclassFormat, true, dbcCharClass, true);
 
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sChrClassesStore, dbc_path, "ChrClasses.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMapStore, dbc_path, "Map.dbc");
 
     LOAD_DBC("DBC/Holidays.dbc", HolidayEntryFormat, true, dbcHolidayEntry, true);

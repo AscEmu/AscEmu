@@ -1220,34 +1220,6 @@ struct CharRaceEntry
     const char* name1;
 };
 
-struct CharClassEntry
-{
-    uint32 class_id;
-    //uint32 unk1;
-    uint32 power_type;
-    //uint32 unk2;
-    const char* name;
-    //uint32 namealt1;
-    //uint32 namealt2;
-    //uint32 namealt3;
-    //uint32 namealt4;
-    //uint32 namealt5;
-    //uint32 namealt6;
-    //uint32 namealt7;
-    //uint32 namealt8;
-    //uint32 namealt9;
-    //uint32 namealt10;
-    //uint32 namealt11;
-    //uint32 namealt12;
-    //uint32 namealt13;
-    //uint32 namealt14;
-    //uint32 namealt15;
-    //uint32 nameflags;
-    //uint32 unk3;
-    //uint32 unk4;
-    //uint32 unk5;
-};
-
 struct CreatureFamilyEntry
 {
     uint32 ID;
@@ -1928,7 +1900,7 @@ extern SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
 extern SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
 extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
 extern SERVER_DECL DBCStorage<CreatureFamilyEntry> dbcCreatureFamily;
-extern SERVER_DECL DBCStorage<CharClassEntry> dbcCharClass;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;
 extern SERVER_DECL DBCStorage<CharRaceEntry> dbcCharRace;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
 extern SERVER_DECL DBCStorage <HolidaysEntry> dbcHolidaysStore;

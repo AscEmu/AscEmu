@@ -30,6 +30,7 @@
 #include "ItemPrototype.h"
 #include "AchievementMgr.h"
 #include "Unit.h"
+#include "DBC/DBCStructures.hpp"
 
 class QuestLogEntry;
 struct BGScore;
@@ -1421,7 +1422,7 @@ class SERVER_DECL Player : public Unit
         uint32 m_explorationTimer;
         // DBC stuff
         CharRaceEntry* myRace;
-        CharClassEntry* myClass;
+        const DBC::Structures::ChrClassesEntry* myClass;
         Creature* linkTarget;
         bool ItemStackCheat;
         bool AuraStackCheat;
