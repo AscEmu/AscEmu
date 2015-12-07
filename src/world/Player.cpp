@@ -5328,7 +5328,7 @@ void Player::UpdateChances()
     SetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE, std::min(rcr, 95.0f));
 
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.LookupEntry(pClass - 1);
-    gtFloat* SpellCritPerInt = dbcSpellCrit.LookupEntry(pLevel - 1 + (pClass - 1) * 100);
+    auto SpellCritPerInt = sGtChanceToSpellCritStore.LookupEntry(pLevel - 1 + (pClass - 1) * 100);
 
     spellcritperc = 100 * (SpellCritBase->val + GetStat(STAT_INTELLECT) * SpellCritPerInt->val) +
         this->GetSpellCritFromSpell() +
