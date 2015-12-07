@@ -53,7 +53,6 @@ bool Channel::HasMember(Player* pPlayer)
 
 Channel::Channel(const char* name, uint32 team, uint32 type_id)
 {
-    ChatChannelDBC* pDBC;
     m_flags = 0;
     m_announce = true;
     m_muted = false;
@@ -63,8 +62,8 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
     m_id = type_id;
     m_minimumLevel = 1;
 
-    pDBC = dbcChatChannels.LookupEntryForced(type_id);
-    if (pDBC != NULL)
+    auto chat_channels = sChatChannelsStore.LookupEntry(type_id);
+    if (chat_channels != NULL)
     {
         m_general = true;
         m_announce = false;
@@ -72,13 +71,13 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
         m_flags |= 0x10;            // general flag
         // flags (0x01 = custom?, 0x04 = trade?, 0x20 = city?, 0x40 = lfg?, , 0x80 = voice?,
 
-        if (pDBC->flags & 0x08)
+        if (chat_channels->flags & 0x08)
             m_flags |= 0x08;        // trade
 
-        if (pDBC->flags & 0x10 || pDBC->flags & 0x20)
+        if (chat_channels->flags & 0x10 || chat_channels->flags & 0x20)
             m_flags |= 0x20;        // city flag
 
-        if (pDBC->flags & 0x40000)
+        if (chat_channels->flags & 0x40000)
             m_flags |= 0x40;        // lfg flag
     }
     else

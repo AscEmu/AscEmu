@@ -32,6 +32,7 @@ namespace DBC
             char const bank_bag_slot_prices_format[] = "ni";
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
+            char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const currency_types_format[] = "xnxi";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
@@ -114,6 +115,16 @@ namespace DBC
             char* name_female[16];          // 19-34
             //const char* name2_flag;       // 35 string flag, unused
             uint32 bit_index;               // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
+        };
+
+        struct ChatChannelsEntry
+        {
+            uint32 id;                      // 0
+            uint32 flags;                   // 1
+            char* name_pattern[16];         // 3-18
+            //uint32 name_pattern_flags;    // 19
+            //char* channel_name[16];       // 20-35
+            //uint32 channel_name_flags;    // 36
         };
 
         struct CurrencyTypesEntry

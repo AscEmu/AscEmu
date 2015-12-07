@@ -7929,16 +7929,16 @@ void Player::ZoneUpdate(uint32 ZoneId)
                 continue;
 
             char updatedName[95];
-            ChatChannelDBC* pDBC;
-            pDBC = dbcChatChannels.LookupEntryForced(chn->m_id);
-            if (!pDBC)
+
+            auto chat_channels = sChatChannelsStore.LookupEntry(chn->m_id);
+            if (!chat_channels)
             {
                 Log.Error("ChannelMgr", "Invalid channel entry %u for %s", chn->m_id, chn->m_name.c_str());
                 return;
             }
             //for (int i = 0 ; i <= 15 ; i ++)
             //    Log.Notice("asfssdf" , "%u %s" , i , pDBC->name_pattern[i]);
-            snprintf(updatedName, 95, pDBC->name_pattern[0], at->area_name[0]);
+            snprintf(updatedName, 95, chat_channels->name_pattern[0], at->area_name[0]);
             Channel* newChannel = channelmgr.GetCreateChannel(updatedName, NULL, chn->m_id);
             if (newChannel == NULL)
             {

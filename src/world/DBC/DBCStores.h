@@ -1303,13 +1303,6 @@ struct CombatRatingDBC
     float val;
 };
 
-struct ChatChannelDBC
-{
-    uint32 id;
-    uint32 flags;
-    char* name_pattern[16];
-};
-
 struct SpellShapeshiftForm
 {
     uint32 id;
@@ -1948,7 +1941,7 @@ extern SERVER_DECL DBCStorage<SpellRuneCostEntry> dbcSpellRuneCost;
 extern SERVER_DECL DBCStorage<ItemExtendedCostEntry> dbcItemExtendedCost;
 extern SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
 extern SERVER_DECL DBCStorage<CombatRatingDBC> dbcCombatRating;
-extern SERVER_DECL DBCStorage<ChatChannelDBC> dbcChatChannels;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityQualityEntry> sDurabilityQualityStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BankBagSlotPrices> sBankBagSlotPricesStore;
