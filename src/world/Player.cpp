@@ -5196,7 +5196,7 @@ float Player::GetDodgeChance()
     // Base dodge + dodge from agility
 
     auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(pClass - 1);
-    gtFloat *CritPerAgi = dbcMeleeCrit.LookupEntry(level - 1 + (pClass - 1) * 100);
+    auto CritPerAgi = sGtChanceToMeleeCritStore.LookupEntry(level - 1 + (pClass - 1) * 100);
     uint32 agi = GetStat(STAT_AGILITY);
 
     float tmp = 100.0f * (baseCrit->val + agi * CritPerAgi->val);
@@ -5292,7 +5292,7 @@ void Player::UpdateChances()
 
     // Critical
     auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(pClass - 1);
-    gtFloat* CritPerAgi = dbcMeleeCrit.LookupEntry(pLevel - 1 + (pClass - 1) * 100);
+    auto CritPerAgi = sGtChanceToMeleeCritStore.LookupEntry(pLevel - 1 + (pClass - 1) * 100);
 
     tmp = 100 * (baseCrit->val + GetStat(STAT_AGILITY) * CritPerAgi->val);
 
