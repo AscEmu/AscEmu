@@ -46,6 +46,7 @@ namespace DBC
             char const gt_oct_regen_mp_format[] = "f";
             char const gt_regen_hp_per_spt_format[] = "f";
             char const gt_regen_mp_per_spt_format[] = "f";
+            char const holidays_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
             char const item_entry_format[] = "niiiiiii";
             char const item_set_format[] = "issssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
@@ -254,6 +255,26 @@ namespace DBC
         struct GtRegenMPPerSptEntry
         {
             float ratio;            // 0 regen base
+        };
+
+#define MAX_HOLIDAY_DURATIONS 10
+#define MAX_HOLIDAY_DATES 26
+#define MAX_HOLIDAY_FLAGS 10
+
+        struct HolidaysEntry
+        {
+            uint32 Id;                                  // 0
+            uint32 Duration[MAX_HOLIDAY_DURATIONS];     // 1-10
+            uint32 Date[MAX_HOLIDAY_DATES];             // 11-36
+            uint32 Region;                              // 37
+            uint32 Looping;                             // 38
+            uint32 CalendarFlags[MAX_HOLIDAY_FLAGS];    // 39-48
+            //uint32 holidayNameId;                     // 49 HolidayNames.dbc
+            //uint32 holidayDescriptionId;              // 50 HolidayDescriptions.dbc
+            char* TextureFilename;                      // 51
+            uint32 Priority;                            // 52
+            uint32 CalendarFilterType;                  // 53
+            //uint32 flags;                             // 54
         };
 
         struct ItemEntry
