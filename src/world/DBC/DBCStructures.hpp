@@ -38,6 +38,7 @@ namespace DBC
             char const item_entry_format[] = "niiiiiii";
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
+            char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
             char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
         }
@@ -155,6 +156,17 @@ namespace DBC
 
             // Helpers
             uint32 Entry() const { return ID + (type << 24); }
+        };
+
+        struct MailTemplateEntry
+        {
+            uint32 ID;              // 0
+            char* subject;          // 1
+            //float unused1[15]     // 2-16
+            //uint32 flags1         // 17 name flags, unused
+            char* content;          // 18
+            //float unused2[15]     // 19-34
+            //uint32 flags2         // 35 name flags, unused
         };
 
         struct QuestXP

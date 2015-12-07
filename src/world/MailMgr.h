@@ -45,12 +45,12 @@ enum MailFlags
 
 enum MailTypes
 {
-    NORMAL      = 0,
-    COD         = 1,
-    AUCTION     = 2,
-    CREATURE    = 3,
-    GAMEOBJECT  = 4,
-    ITEM        = 5
+    MAIL_TYPE_NORMAL      = 0,
+    MAIL_TYPE_COD         = 1,
+    MAIL_TYPE_AUCTION     = 2,
+    MAIL_TYPE_CREATURE    = 3,
+    MAIL_TYPE_GAMEOBJECT  = 4,
+    MAIL_TYPE_ITEM        = 5
 };
 
 enum MailError

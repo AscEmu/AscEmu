@@ -6522,7 +6522,7 @@ void Player::ResetDualWield2H()
             offhand->RemoveFromWorld();
             offhand->SetOwner(NULL);
             offhand->SaveToDB(INVENTORY_SLOT_NOT_SET, 0, true, NULL);
-            sMailSystem.SendAutomatedMessage(NORMAL, GetGUID(), GetGUID(), "Your offhand item", "", 0, 0, offhand->GetLowGUID(), MAIL_STATIONERY_GM);
+            sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, GetGUID(), GetGUID(), "Your offhand item", "", 0, 0, offhand->GetLowGUID(), MAIL_STATIONERY_GM);
             offhand->DeleteMe();
             offhand = NULL;
         }

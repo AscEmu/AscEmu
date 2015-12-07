@@ -45,16 +45,16 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 
     switch (message_type)
     {
-        case NORMAL:
+        case MAIL_TYPE_NORMAL:
             data << uint64(sender_guid);
             break;
-        case COD:
-        case AUCTION:
-        case ITEM:
+        case MAIL_TYPE_COD:
+        case MAIL_TYPE_AUCTION:
+        case MAIL_TYPE_ITEM:
             data << uint32(Arcemu::Util::GUID_LOPART(sender_guid));
             break;
-        case GAMEOBJECT:
-        case CREATURE:
+        case MAIL_TYPE_GAMEOBJECT:
+        case MAIL_TYPE_CREATURE:
             data << uint32(static_cast<uint32>(sender_guid));
             break;
     }
@@ -432,7 +432,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
         _player->ModGold(-(int32)message->cod);
         std::string subject = "COD Payment: ";
         subject += message->subject;
-        sMailSystem.SendAutomatedMessage(NORMAL, message->player_guid, message->sender_guid, subject, "", message->cod, 0, 0, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_COD_PAYMENT);
+        sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, message->player_guid, message->sender_guid, subject, "", message->cod, 0, 0, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_COD_PAYMENT);
 
         message->cod = 0;
         CharacterDatabase.Execute("UPDATE mailbox SET cod = 0 WHERE message_id = %u", message->message_id);

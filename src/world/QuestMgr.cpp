@@ -1386,20 +1386,22 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint3
 
     if (qst->MailTemplateId != 0)
     {
-        MailTemplateEntry * mail = dbcMailTemplateEntry.LookupEntryForced(qst->MailTemplateId);
-        if (mail != NULL)
+        auto mail_template = sMailTemplateStore.LookupEntry(qst->MailTemplateId);
+        if (mail_template != nullptr)
         {
-            int mailType = NORMAL;
+            uint8 mailType = MAIL_TYPE_NORMAL;
+
             uint64 itemGuid = 0;
+
             if (qst_giver->IsCreature())
-                mailType = CREATURE;
+                mailType = MAIL_TYPE_CREATURE;
             else if (qst_giver->IsGameObject())
-                mailType = GAMEOBJECT;
+                mailType = MAIL_TYPE_GAMEOBJECT;
 
             if (qst->MailSendItem != 0)
             {
                 // the way it's done in World::PollMailboxInsertQueue
-                Item * pItem = objmgr.CreateItem(qst->MailSendItem, NULL);
+                Item* pItem = objmgr.CreateItem(qst->MailSendItem, NULL);
                 if (pItem != NULL)
                 {
                     pItem->SetStackCount(1);
@@ -1409,7 +1411,7 @@ void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint3
                 }
             }
 
-            sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->GetEntry(), plr->GetGUID(), mail->subject, mail->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
+            sMailSystem.SendCreatureGameobjectMail(mailType, qst_giver->GetEntry(), plr->GetGUID(), mail_template->subject, mail_template->content, 0, 0, itemGuid, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_HAS_BODY, qst->MailDelaySecs);
         }
     }
 }
