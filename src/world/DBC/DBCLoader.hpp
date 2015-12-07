@@ -40,34 +40,36 @@ namespace DBC
 
     class DBCLoader
     {
-    protected:
-        uint32 m_record_size;
-        uint32 m_record_count;
-        uint32 m_field_count;
-        uint32 m_string_size;
-        uint32* m_fields_offset;
-        unsigned char* m_data;
-        unsigned char* m_string_table;
+        protected:
 
-    public:
-        DBC::DBCRecord GetRecord(size_t record_id);
-        const uint32 GetNumRows();
-        const uint32 GetRowSize();
-        const uint32 GetNumColumns();
-        const uint32 GetOffset(size_t id);
+            uint32 m_record_size;
+            uint32 m_record_count;
+            uint32 m_field_count;
+            uint32 m_string_size;
+            uint32* m_fields_offset;
+            unsigned char* m_data;
+            unsigned char* m_string_table;
 
-        const bool IsLoaded();
+        public:
 
-        char* AutoProduceData(const char* dbc_format, uint32& record_count, char**& index_table, uint32 sql_record_count, uint32 sql_highest_index, char *& sql_data_table);
-        char* AutoProduceStrings(const char* dbc_format, char* data_table);
-        static uint32 GetFormatRecordSize(const char* dbc_format, int32* index_pos = NULL);
-        bool Load(const char* dbc_filename, const char* dbc_format);
+            DBC::DBCRecord GetRecord(size_t record_id);
+            const uint32 GetNumRows();
+            const uint32 GetRowSize();
+            const uint32 GetNumColumns();
+            const uint32 GetOffset(size_t id);
 
-        DBCLoader();
-        ~DBCLoader();
+            const bool IsLoaded();
 
-        DBCLoader(DBCLoader const& right) = delete;
-        DBCLoader& operator=(DBCLoader const& right) = delete;
+            char* AutoProduceData(const char* dbc_format, uint32& record_count, char**& index_table, uint32 sql_record_count, uint32 sql_highest_index, char *& sql_data_table);
+            char* AutoProduceStrings(const char* dbc_format, char* data_table);
+            static uint32 GetFormatRecordSize(const char* dbc_format, int32* index_pos = NULL);
+            bool Load(const char* dbc_filename, const char* dbc_format);
+
+            DBCLoader();
+            ~DBCLoader();
+
+            DBCLoader(DBCLoader const& right) = delete;
+            DBCLoader& operator=(DBCLoader const& right) = delete;
     };
 }
 

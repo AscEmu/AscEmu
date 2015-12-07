@@ -378,13 +378,17 @@ bool SpellEntry::CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Pl
 	if (RequiresAreaId > 0)
 	{
 		bool found = false;
-		AreaGroup* groupEntry = dbcAreaGroup.LookupEntry(RequiresAreaId);
-		while (groupEntry)
+		auto area_group = sAreaGroupStore.LookupEntry(RequiresAreaId);
+		while (area_group)
 		{
-			for (uint8 i = 0; i < 7; ++i)
-				if (groupEntry->AreaId[i] == zone_id || groupEntry->AreaId[i] == area_id)
+			for (uint8 i = 0; i < 6; ++i)
+				if (area_group->AreaId[i] == zone_id || area_group->AreaId[i] == area_id)
 					found = true;
-			break;
+            if (found || !area_group->next_group)
+			    break;
+
+            //try next group
+            area_group = sAreaGroupStore.LookupEntry(area_group->next_group);
 		}
 
 		if (!found)

@@ -1934,13 +1934,13 @@ void Spell::WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo,
         case SPELL_FAILED_REQUIRES_AREA:
             if (GetProto()->RequiresAreaId > 0)
             {
-                AreaGroup* ag = dbcAreaGroup.LookupEntry(GetProto()->RequiresAreaId);
+                auto area_group = sAreaGroupStore.LookupEntry(GetProto()->RequiresAreaId);
                 auto area = p_caster->GetArea();
-                for (uint8 i = 0; i < 7; i++)
+                for (uint8 i = 0; i < 6; i++)
                 {
-                    if (ag->AreaId[i] != 0 && ag->AreaId[i] != area->id)
+                    if (area_group->AreaId[i] != 0 && area_group->AreaId[i] != area->id)
                     {
-                        data << uint32(ag->AreaId[i]);
+                        data << uint32(area_group->AreaId[i]);
                         break;
                     }
                     else
@@ -3605,11 +3605,11 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (GetProto()->RequiresAreaId > 0)
         {
-            AreaGroup* ag = dbcAreaGroup.LookupEntry(GetProto()->RequiresAreaId);
+            auto area_group = sAreaGroupStore.LookupEntry(GetProto()->RequiresAreaId);
             auto area = p_caster->GetArea();
-            for (i = 0; i < 7; ++i)
+            for (i = 0; i < 6; ++i)
             {
-                if (ag->AreaId[i] == area->id || (area->zone != 0 && ag->AreaId[i] == area->zone))
+                if (area_group->AreaId[i] == area->id || (area->zone != 0 && area_group->AreaId[i] == area->zone))
                     break;
             }
 

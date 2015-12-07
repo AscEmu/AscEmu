@@ -27,6 +27,7 @@ namespace DBC
     {
         namespace
         {
+            char const area_group_format[] = "niiiiiii";
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const area_trigger_entry_format[] = "niffffffff";
             char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
@@ -67,6 +68,13 @@ namespace DBC
         }
 
         #pragma pack(push, 1)
+        struct AreaGroupEntry
+        {
+            uint32 AreaGroupId;             // 0
+            uint32 AreaId[6];               // 1-6
+            uint32 next_group;              // 7
+        };
+
         struct AreaTableEntry
         {
             uint32 id;                      // 0

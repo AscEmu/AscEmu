@@ -1084,12 +1084,6 @@ struct RandomProps
     //uint32 RankFlags;
 };
 
-struct AreaGroup
-{
-    uint32 AreaGroupId;
-    uint32 AreaId[7];
-};
-
 struct FactionTemplateDBC
 {
     uint32 ID;
@@ -1798,7 +1792,7 @@ extern SERVER_DECL DBCStorage<SpellShapeshiftForm> dbcSpellShapeshiftForm;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore;
 extern SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
 extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
-extern SERVER_DECL DBCStorage<AreaGroup> dbcAreaGroup;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL DBCStorage<FactionTemplateDBC> dbcFactionTemplate;
 extern SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
