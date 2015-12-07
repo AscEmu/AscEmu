@@ -306,11 +306,11 @@ void GameObject::SaveToDB()
         << GetPositionY() << ","
         << GetPositionZ() << ","
         << GetOrientation() << ","
+        << uint64(0) << ","
         << GetParentRotation(0) << ","
-        << GetParentRotation(1) << ","
         << GetParentRotation(2) << ","
         << GetParentRotation(3) << ","
-        << GetState() << ","
+        << "0,"              // initial state
         << GetFlags() << ","
         << GetFaction() << ","
         << GetScale() << ","
