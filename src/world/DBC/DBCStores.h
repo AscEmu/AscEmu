@@ -1112,31 +1112,6 @@ struct FactionTemplateDBC
     uint32 FriendlyFactions[4];
 };
 
-struct AuctionHouseDBC
-{
-    uint32 id;
-    uint32 unk;
-    uint32 fee;
-    uint32 tax;
-    //char* name;
-    //char* nameAlt1;
-    //char* nameAlt2;
-    //char* nameAlt3;
-    //char* nameAlt4;
-    //char* nameAlt5;
-    //char* nameAlt6;
-    //char* nameAlt7;
-    //char* nameAlt8;
-    //char* nameAlt9;
-    //char* nameAlt10;
-    //char* nameAlt11;
-    //char* nameAlt12;
-    //char* nameAlt13;
-    //char* nameAlt14;
-    //char* nameAlt15;
-    //char* nameFlags;
-};
-
 struct FactionDBC
 {
     uint32 ID;
@@ -1887,7 +1862,7 @@ extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
 extern SERVER_DECL DBCStorage<DBCTaxiNode> dbcTaxiNode;
 extern SERVER_DECL DBCStorage<DBCTaxiPath> dbcTaxiPath;
 extern SERVER_DECL DBCStorage<DBCTaxiPathNode> dbcTaxiPathNode;
-extern SERVER_DECL DBCStorage<AuctionHouseDBC> dbcAuctionHouse;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
 extern SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
 extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;

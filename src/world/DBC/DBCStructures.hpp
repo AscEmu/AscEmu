@@ -29,6 +29,7 @@ namespace DBC
         {
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const area_trigger_entry_format[] = "niffffffff";
+            char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
             char const bank_bag_slot_prices_format[] = "ni";
             char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
@@ -86,6 +87,16 @@ namespace DBC
             float box_y;            // 7 extent y edge
             float box_z;            // 8 extent z edge
             float box_o;            // 9 extent rotation by about z axis
+        };
+
+        struct AuctionHouseEntry
+        {
+            uint32 id;              // 0
+            uint32 faction;         // 1
+            uint32 fee;             // 2
+            uint32 tax;             // 3
+            //char* name[16];       // 4-19
+            //uint32 name_flags;    // 20
         };
 
         struct BankBagSlotPrices

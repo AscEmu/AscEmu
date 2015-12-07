@@ -21,6 +21,8 @@
 #ifndef _AUCTIONHOUSE_H
 #define _AUCTIONHOUSE_H
 
+#include "DBC/DBCStructures.hpp"
+
 enum AuctionRemoveType
 {
     AUCTION_REMOVE_EXPIRED,
@@ -108,7 +110,7 @@ class AuctionHouse
         Mutex removalLock;
         std::list<Auction*> removalList;
 
-        AuctionHouseDBC* dbc;
+        DBC::Structures::AuctionHouseEntry const* dbc;
 
     public:
 

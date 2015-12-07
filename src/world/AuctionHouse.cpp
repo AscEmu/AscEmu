@@ -37,7 +37,7 @@ void Auction::UpdateInDB()
 
 AuctionHouse::AuctionHouse(uint32 ID)
 {
-    dbc = dbcAuctionHouse.LookupEntryForced(ID);
+    dbc = sAuctionHouseStore.LookupEntry(ID);
     ARCEMU_ASSERT(dbc != NULL);
 
     cut_percent = dbc->tax / 100.0f;

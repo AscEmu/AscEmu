@@ -32,7 +32,7 @@ SERVER_DECL DBCStorage<AreaGroup> dbcAreaGroup;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore(DBC::Structures::area_table_entry_format);
 static WMOAreaInfoByTripple sWMOAreaInfoByTripple;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore(DBC::Structures::area_trigger_entry_format);
-SERVER_DECL DBCStorage<AuctionHouseDBC> dbcAuctionHouse;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore(DBC::Structures::auction_house_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BankBagSlotPrices> sBankBagSlotPricesStore(DBC::Structures::bank_bag_slot_prices_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore(DBC::Structures::stable_slot_prices_format);
 
@@ -294,7 +294,7 @@ const char* randompropsFormat = "uxuuuxxxxxxxxxxxxxxxxxxx";
 const char* areagroupFormat = "uuuuuuuu";
 const char* areatableFormat = "uuuuuxxxuxulxxxxxxxxxxxxxxxxuxxxxxxx";
 const char* factiontemplatedbcFormat = "uuuuuuuuuuuuuu";
-const char* auctionhousedbcFormat = "uuuuxxxxxxxxxxxxxxxxx";
+
 const char* factiondbcFormat = "uiuuuuuuuuiiiiuuuuulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 const char* dbctaxinodeFormat = "uufffxxxxxxxxxxxxxxxxxuu";
@@ -383,7 +383,9 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMapStore, dbc_path, "Map.dbc");
 
     LOAD_DBC("DBC/Holidays.dbc", HolidayEntryFormat, true, dbcHolidayEntry, true);
-    LOAD_DBC("DBC/AuctionHouse.dbc", auctionhousedbcFormat, true, dbcAuctionHouse, false);
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAuctionHouseStore, dbc_path, "AuctionHouse.dbc");
+
     LOAD_DBC("DBC/ItemRandomSuffix.dbc", itemrandomsuffixformat, true, dbcItemRandomSuffix, false);
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtCombatRatingsStore, dbc_path, "gtCombatRatings.dbc");
