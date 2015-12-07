@@ -789,7 +789,7 @@ bool Player::Create(WorldPacket& data)
     m_restState = 0;
 
     // set race dbc
-    myRace = dbcCharRace.LookupEntryForced(race);
+    myRace = sChrRacesStore.LookupEntry(race);
     myClass = sChrClassesStore.LookupEntry(class_);
     if (!myRace || !myClass)
     {
@@ -2854,7 +2854,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     uint32 cfaction = get_next_field.GetUInt32();
 
     // set race dbc
-    myRace = dbcCharRace.LookupEntryForced(getRace());
+    myRace = sChrRacesStore.LookupEntry(getRace());
     myClass = sChrClassesStore.LookupEntry(getClass());
     if (!myClass || !myRace)
     {

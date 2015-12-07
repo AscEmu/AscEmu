@@ -34,6 +34,7 @@ namespace DBC
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
+            char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
             char const currency_types_format[] = "xnxi";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
@@ -146,6 +147,29 @@ namespace DBC
             //uint32 unk4;                  // 57
             uint32 cinematic_sequence;      // 58 CinematicSequences.dbc
             uint32 expansion;               // 59
+        };
+
+        struct ChrRacesEntry
+        {
+            uint32 race_id;                 // 0
+            uint32 flags;                   // 1
+            uint32 faction_id;              // 2
+            //uint32 unk1;                  // 3
+            uint32 model_male;              // 4
+            uint32 model_female;            // 5
+            // uint32 unk2;                 // 6
+            uint32 team_id;                 // 7
+            //uint32 unk3[4];               // 8-11
+            uint32 cinematic_id;            // 12 CinematicSequences.dbc
+            //uint32 unk4                   // 13
+            char* name[16];                 // 14-29
+            //uint32 name_flags             // 30
+            //char* name_female[16];        // 31-46
+            //uint32 name_female_flags      // 47
+            //char* name_neutral[16];       // 48-63
+            //uint32 name_neutral_flags     // 64 string flags, unused
+            //uint32 unk5[3]                // 65-67 unused
+            uint32 expansion;               // 68
         };
 
         struct CurrencyTypesEntry

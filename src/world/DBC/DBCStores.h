@@ -1212,14 +1212,6 @@ struct CreatureSpellDataEntry
     uint32 PH;
 };
 
-struct CharRaceEntry
-{
-    uint32 race_id;
-    uint32 team_id;
-    uint32 cinematic_id;
-    const char* name1;
-};
-
 struct CreatureFamilyEntry
 {
     uint32 ID;
@@ -1901,7 +1893,7 @@ extern SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
 extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
 extern SERVER_DECL DBCStorage<CreatureFamilyEntry> dbcCreatureFamily;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;
-extern SERVER_DECL DBCStorage<CharRaceEntry> dbcCharRace;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
 extern SERVER_DECL DBCStorage <HolidaysEntry> dbcHolidaysStore;
 extern SERVER_DECL DBCStorage<SpellRuneCostEntry> dbcSpellRuneCost;

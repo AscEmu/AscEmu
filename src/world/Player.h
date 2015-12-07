@@ -1421,8 +1421,8 @@ class SERVER_DECL Player : public Unit
         bool blinked;
         uint32 m_explorationTimer;
         // DBC stuff
-        CharRaceEntry* myRace;
-        const DBC::Structures::ChrClassesEntry* myClass;
+        DBC::Structures::ChrRacesEntry const* myRace;
+        DBC::Structures::ChrClassesEntry const* myClass;
         Creature* linkTarget;
         bool ItemStackCheat;
         bool AuraStackCheat;
