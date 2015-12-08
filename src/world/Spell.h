@@ -2144,9 +2144,10 @@ class SERVER_DECL Spell : public EventableObject
 
         inline float GetRadius(uint32 i)
         {
-            if (bRadSet[i])return Rad[i];
+            if (bRadSet[i])
+                return Rad[i];
             bRadSet[i] = true;
-            Rad[i] = ::GetRadius(dbcSpellRadius.LookupEntry(GetProto()->EffectRadiusIndex[i]));
+            Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetProto()->EffectRadiusIndex[i]));
             if (u_caster != nullptr)
             {
                 SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetProto()->SpellGroupType);

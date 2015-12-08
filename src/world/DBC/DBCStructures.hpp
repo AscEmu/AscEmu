@@ -68,6 +68,7 @@ namespace DBC
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
             char const stable_slot_prices_format[] = "ni";
             char const spell_duration_format[] = "niii";
+            char const spell_radius_format[] = "nfff";
             char const spell_rune_cost_format[] = "niiii";
             char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
             char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
@@ -518,6 +519,14 @@ namespace DBC
             uint32 Duration1;       // 1
             uint32 Duration2;       // 2
             uint32 Duration3;       // 3
+        };
+
+        struct SpellRadiusEntry
+        {
+            uint32 ID;                  // 0
+            float radius_min;           // 1 Radius
+            float radius_per_level;     // 2
+            float radius_max;           // 3 Radius2
         };
 
         struct SpellRuneCostEntry

@@ -77,7 +77,7 @@ SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
 SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore(DBC::Structures::spell_duration_format);
 SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
-SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore(DBC::Structures::spell_radius_format);
 SERVER_DECL DBCStorage<SpellRange> dbcSpellRange;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
 SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
@@ -284,7 +284,7 @@ const char* spellentryFormat =
 const char* talententryFormat = "uuuuuuuuuxxxxuxxuxxxxxx";
 const char* talenttabentryFormat = "uxxxxxxxxxxxxxxxxxxxuuux";
 const char* spellcasttimeFormat = "uuxx";
-const char* spellradiusFormat = "ufxf";
+
 const char* spellrangeFormat = "uffffxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char* SpellRuneCostFormat = "uuuuu";
 
@@ -349,9 +349,11 @@ bool LoadDBCs()
     LOAD_DBC("DBC/TalentTab.dbc", talenttabentryFormat, true, dbcTalentTab, false);
     LOAD_DBC("DBC/SpellCastTimes.dbc", spellcasttimeFormat, true, dbcSpellCastTime, false);
     LOAD_DBC("DBC/SpellDifficulty.dbc", spelldifficultyentryformat, true, dbcSpellDifficultyEntry, false);
-    LOAD_DBC("DBC/SpellRadius.dbc", spellradiusFormat, true, dbcSpellRadius, false);
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");     ///\todo handle max and level radius
+
     LOAD_DBC("DBC/SpellRange.dbc", spellrangeFormat, true, dbcSpellRange, false);
-    //LOAD_DBC("DBC/SpellRuneCost.dbc", SpellRuneCostFormat, true, dbcSpellRuneCost, false);
+
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRuneCostStore, dbc_path, "SpellRuneCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellShapeshiftFormStore, dbc_path, "SpellShapeshiftForm.dbc");

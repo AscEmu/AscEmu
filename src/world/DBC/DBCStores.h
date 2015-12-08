@@ -1023,14 +1023,6 @@ struct SpellCastTime
     //uint32 unk2;
 };
 
-struct SpellRadius
-{
-    uint32 ID;
-    float Radius;
-    //float unk1;
-    float Radius2;
-};
-
 struct SpellRange
 {
     uint32 ID;
@@ -1310,9 +1302,12 @@ struct VehicleSeatEntry
 
 #pragma pack(pop)
 
-inline float GetRadius(SpellRadius* radius)
+inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
 {
-    return radius->Radius;
+    if (radius == nullptr)
+        return 0;
+
+    return radius->radius_min;
 }
 inline uint32 GetCastTime(SpellCastTime* time)
 {
@@ -1686,7 +1681,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDu
 extern SERVER_DECL DBCStorage<SpellRange> dbcSpellRange;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore;
-extern SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore;
 extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;

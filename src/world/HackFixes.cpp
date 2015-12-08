@@ -90,8 +90,8 @@ void ApplyNormalFixes()
         namehash = crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name));
         sp->NameHash = namehash; //need these set before we start processing spells
 
-        float radius = std::max(::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[0])), ::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[1])));
-        radius = std::max(::GetRadius(dbcSpellRadius.LookupEntry(sp->EffectRadiusIndex[2])), radius);
+        float radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[0])), ::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[1])));
+        radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[2])), radius);
         radius = std::max(GetMaxRange(dbcSpellRange.LookupEntry(sp->rangeIndex)), radius);
         sp->base_range_or_radius_sqr = radius * radius;
 
