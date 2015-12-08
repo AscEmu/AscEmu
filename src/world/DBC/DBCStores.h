@@ -1100,17 +1100,6 @@ struct ItemRandomSuffixEntry
     uint32 prefixes[3];
 };
 
-struct SpellShapeshiftForm
-{
-    uint32 id;
-    uint32 Flags;
-    uint32 unit_type;
-    uint32 AttackSpeed;
-    uint32 modelId;
-    uint32 modelId2;
-    uint32 spells[8];
-};
-
 struct ScalingStatValuesEntry
 {
     uint32 id;
@@ -1710,7 +1699,7 @@ extern SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
 extern SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
 extern SERVER_DECL DBCStorage<SpellDuration> dbcSpellDuration;
 extern SERVER_DECL DBCStorage<SpellRange> dbcSpellRange;
-extern SERVER_DECL DBCStorage<SpellShapeshiftForm> dbcSpellShapeshiftForm;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore;
 extern SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
 extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;

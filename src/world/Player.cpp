@@ -12086,11 +12086,11 @@ void Player::RemoveItemByGuid(uint64 GUID)
     this->GetItemInterface()->SafeFullRemoveItemByGuid(GUID);
 }
 
-void Player::SendAvailSpells(SpellShapeshiftForm* ssf, bool active)
+void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active)
 {
     if (active)
     {
-        if (!ssf)
+        if (!shapeshift_form)
             return;
 
         WorldPacket data(SMSG_PET_SPELLS, 8 * 4 + 20);
@@ -12104,7 +12104,7 @@ void Player::SendAvailSpells(SpellShapeshiftForm* ssf, bool active)
         // Send the spells
         for (uint32 i = 0; i < 8; i++)
         {
-            data << uint16(ssf->spells[i]);
+            data << uint16(shapeshift_form->spells[i]);
             data << uint16(DEFAULT_SPELL_STATE);
         }
 

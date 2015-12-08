@@ -5856,14 +5856,14 @@ uint8 Spell::GetErrorAtShapeshiftedCast(SpellEntry* spellInfo, uint32 form)
     bool actAsShifted = false;
     if (form > FORM_NORMAL)
     {
-        SpellShapeshiftForm* ssf = dbcSpellShapeshiftForm.LookupEntryForced(form);
-        if (!ssf)
+        auto shapeshift_form = sSpellShapeshiftFormStore.LookupEntry(form);
+        if (!shapeshift_form)
         {
             LOG_ERROR("GetErrorAtShapeshiftedCast: unknown shapeshift %u", form);
             return 0;
         }
 
-        switch (ssf->id)
+        switch (shapeshift_form->id)
         {
             case FORM_TREE:
             {
@@ -5880,7 +5880,7 @@ uint8 Spell::GetErrorAtShapeshiftedCast(SpellEntry* spellInfo, uint32 form)
             }
             break;
         }
-        actAsShifted = !(ssf->Flags & 1);						// shapeshift acts as normal form for spells
+        actAsShifted = !(shapeshift_form->Flags & 1);						// shapeshift acts as normal form for spells
     }
 
     if (actAsShifted)

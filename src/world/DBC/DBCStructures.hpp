@@ -67,6 +67,7 @@ namespace DBC
             char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
             char const stable_slot_prices_format[] = "ni";
+            char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
             char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
             char const taxi_path_format[] = "niii";
             char const taxi_path_node_format[] = "niiifffiiii";
@@ -507,6 +508,23 @@ namespace DBC
         {
             uint32 Id;              // 0
             uint32 Price;           // 1
+        };
+
+        struct SpellShapeshiftFormEntry
+        {
+            uint32 id;                  // 0
+            //uint32 button_pos;        // 1
+            //char* name[16];           // 2-17
+            //uint32 name_flags;        // 18
+            uint32 Flags;               // 19
+            uint32 unit_type;           // 20
+            //uint32 unk1               // 21
+            uint32 AttackSpeed;         // 22
+            uint32 modelId;             // 23 alliance?
+            uint32 modelId2;            // 24 horde?
+            //uint32 unk2               // 25
+            //uint32 unk3               // 26
+            uint32 spells[8];           // 27-34
         };
 
         struct TaxiNodesEntry

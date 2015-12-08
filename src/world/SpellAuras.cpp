@@ -3581,17 +3581,17 @@ void Aura::SpellAuraModShapeshift(bool apply)
         }
     }
 
-    SpellShapeshiftForm* ssf = dbcSpellShapeshiftForm.LookupEntry(mod->m_miscValue);
-    if (ssf == NULL)
+    auto shapeshift_form = sSpellShapeshiftFormStore.LookupEntry(mod->m_miscValue);
+    if (!shapeshift_form)
         return;
 
     uint32 spellId = 0;
     uint32 spellId2 = 0;
-    uint32 modelId = (uint32)(apply ? ssf->modelId : 0);
+    uint32 modelId = (uint32)(apply ? shapeshift_form->modelId : 0);
 
     bool freeMovements = false;
 
-    switch (ssf->id)
+    switch (shapeshift_form->id)
     {
         case FORM_CAT:
         {
@@ -3741,7 +3741,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             if (apply)
             {
                 if (m_target->getRace() != RACE_NIGHTELF)
-                    modelId = ssf->modelId2; // Lol, why is this the only one that has it in ShapeShift DBC? =/ lameeee...
+                    modelId = shapeshift_form->modelId2; // Lol, why is this the only one that has it in ShapeShift DBC? =/ lameeee...
             }
         }
         break;
@@ -3768,7 +3768,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         case FORM_ZOMBIE:
         {
             if (p_target != NULL)
-                p_target->SendAvailSpells(ssf, apply);
+                p_target->SendAvailSpells(shapeshift_form, apply);
         }
         break;
         case FORM_METAMORPHOSIS:
@@ -3876,7 +3876,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
     }
     else
     {
-        if (ssf->id != FORM_STEALTH)
+        if (shapeshift_form->id != FORM_STEALTH)
             m_target->RemoveAllAurasByRequiredShapeShift(DecimalToMask(mod->m_miscValue));
 
         if (m_target->IsCasting() && m_target->m_currentSpell && m_target->m_currentSpell->GetProto()
