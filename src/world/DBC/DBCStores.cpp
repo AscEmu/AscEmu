@@ -75,7 +75,7 @@ SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
 SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
 SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
 SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
-SERVER_DECL DBCStorage<SpellDuration> dbcSpellDuration;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore(DBC::Structures::spell_duration_format);
 SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
 SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
 SERVER_DECL DBCStorage<SpellRange> dbcSpellRange;
@@ -287,7 +287,7 @@ const char* spellcasttimeFormat = "uuxx";
 const char* spellradiusFormat = "ufxf";
 const char* spellrangeFormat = "uffffxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char* SpellRuneCostFormat = "uuuuu";
-const char* spelldurationFormat = "uuuu";
+
 const char* randompropsFormat = "uxuuuxxxxxxxxxxxxxxxxxxx";
 
 const char* areatableFormat = "uuuuuxxxuxulxxxxxxxxxxxxxxxxuxxxxxxx";
@@ -352,8 +352,8 @@ bool LoadDBCs()
     LOAD_DBC("DBC/SpellRadius.dbc", spellradiusFormat, true, dbcSpellRadius, false);
     LOAD_DBC("DBC/SpellRange.dbc", spellrangeFormat, true, dbcSpellRange, false);
     LOAD_DBC("DBC/SpellRuneCost.dbc", SpellRuneCostFormat, true, dbcSpellRuneCost, false);
-    LOAD_DBC("DBC/SpellDuration.dbc", spelldurationFormat, true, dbcSpellDuration, false);
-
+    //LOAD_DBC("DBC/SpellDuration.dbc", spelldurationFormat, true, dbcSpellDuration, false);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellShapeshiftFormStore, dbc_path, "SpellShapeshiftForm.dbc");
 
     LOAD_DBC("DBC/ItemRandomProperties.dbc", randompropsFormat, true, dbcRandomProps, false);

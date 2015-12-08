@@ -1050,14 +1050,6 @@ struct SpellRange
     //uint32 unks[35];
 };
 
-struct SpellDuration
-{
-    uint32 ID;
-    uint32 Duration1;
-    uint32 Duration2;
-    uint32 Duration3;
-};
-
 struct RandomProps
 {
     uint32 ID;
@@ -1343,8 +1335,10 @@ inline float GetMinRange(SpellRange* range)
 {
     return range->minRange;
 }
-inline uint32 GetDuration(SpellDuration* dur)
+inline uint32 GetDuration(DBC::Structures::SpellDurationEntry const* dur)
 {
+    if (dur == nullptr)
+        return 0;
     return dur->Duration1;
 }
 
@@ -1697,7 +1691,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore;
 extern SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
 extern SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
-extern SERVER_DECL DBCStorage<SpellDuration> dbcSpellDuration;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore;
 extern SERVER_DECL DBCStorage<SpellRange> dbcSpellRange;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore;

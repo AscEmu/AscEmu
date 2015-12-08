@@ -97,7 +97,7 @@ class ImprovedDevouringPlagueSpellProc : public SpellProc
         dmg = CastingSpell->EffectBasePoints[0] + 1;
 
         // Get total ticks
-        int ticks = GetDuration(dbcSpellDuration.LookupEntry(CastingSpell->DurationIndex)) / CastingSpell->EffectAmplitude[0];
+        int ticks = GetDuration(sSpellDurationStore.LookupEntry(CastingSpell->DurationIndex)) / CastingSpell->EffectAmplitude[0];
 
         dmg_overwrite[0] = dmg * ticks * (mOrigSpell->EffectBasePoints[0] + 1) / 100;
 
@@ -187,7 +187,7 @@ class EmpoweredRenewSpellProc : public SpellProc
         dmg = CastingSpell->EffectBasePoints[0] + 1;
 
         // Get total ticks
-        int ticks = GetDuration(dbcSpellDuration.LookupEntry(CastingSpell->DurationIndex)) / CastingSpell->EffectAmplitude[0];
+        int ticks = GetDuration(sSpellDurationStore.LookupEntry(CastingSpell->DurationIndex)) / CastingSpell->EffectAmplitude[0];
 
         // Total periodic effect is a single tick amount multiplied by number of ticks
         dmg_overwrite[0] = dmg * ticks * (mOrigSpell->EffectBasePoints[0] + 1) / 100;

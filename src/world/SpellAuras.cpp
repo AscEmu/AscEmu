@@ -2248,8 +2248,9 @@ void Aura::EventPeriodicHeal(uint32 amount)
         //example : Citrine Pendant of Golden Healing is in AA aura that does not have duration. In this case he would have full healbonus benefit
         if ((dur == 0 || dur == -1) && GetSpellProto()->DurationIndex)
         {
-            SpellDuration* sd = dbcSpellDuration.LookupEntry(GetSpellProto()->DurationIndex);
-            dur = ::GetDuration(sd);
+            auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellProto()->DurationIndex);
+            if (spell_duration != nullptr)
+                dur = ::GetDuration(spell_duration);
         }
         if (dur && dur != -1)
         {

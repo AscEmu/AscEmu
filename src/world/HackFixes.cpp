@@ -1087,7 +1087,7 @@ void ApplyNormalFixes()
         //Channeled spells
         if (sp->ChannelInterruptFlags != 0)
         {
-            float Duration = float(GetDuration(dbcSpellDuration.LookupEntry(sp->DurationIndex)));
+            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->DurationIndex)));
             if (Duration < 1500) Duration = 1500;
             else if (Duration > 7000) Duration = 7000;
             sp->fixed_hotdotcoef = (Duration / 3500.0f);
@@ -1111,7 +1111,7 @@ void ApplyNormalFixes()
         //Over-time spells
         else if (!(sp->spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && (sp->spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL))
         {
-            float Duration = float(GetDuration(dbcSpellDuration.LookupEntry(sp->DurationIndex)));
+            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->DurationIndex)));
             sp->fixed_hotdotcoef = (Duration / 15000.0f);
 
             if (sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
@@ -1124,7 +1124,7 @@ void ApplyNormalFixes()
         //Combined standard and over-time spells
         else if (sp->spell_coef_flags & SPELL_FLAG_IS_DD_DH_DOT_SPELL)
         {
-            float Duration = float(GetDuration(dbcSpellDuration.LookupEntry(sp->DurationIndex)));
+            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->DurationIndex)));
             float Portion_to_Over_Time = (Duration / 15000.0f) / ((Duration / 15000.0f) + sp->casttime_coef);
             float Portion_to_Standard = 1.0f - Portion_to_Over_Time;
 
@@ -1408,7 +1408,7 @@ void ApplyNormalFixes()
                         //we must set bonus per tick on triggered spells now (i.e. Arcane Missiles)
                         if (sp->ChannelInterruptFlags != 0)
                         {
-                            float Duration = float(GetDuration(dbcSpellDuration.LookupEntry(sp->DurationIndex)));
+                            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->DurationIndex)));
                             float amp = float(sp->EffectAmplitude[i]);
                             sp->fixed_dddhcoef = sp->fixed_hotdotcoef * amp / Duration;
                         }
@@ -1422,7 +1422,7 @@ void ApplyNormalFixes()
                         //we must set bonus per tick on triggered spells now (i.e. Arcane Missiles)
                         if (sp->ChannelInterruptFlags != 0)
                         {
-                            float Duration = float(GetDuration(dbcSpellDuration.LookupEntry(sp->DurationIndex)));
+                            float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->DurationIndex)));
                             float amp = float(sp->EffectAmplitude[i]);
                             sp->fixed_hotdotcoef *= amp / Duration;
                         }

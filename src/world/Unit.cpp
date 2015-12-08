@@ -1387,8 +1387,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell->School != SCHOOL_FIRE)
                         continue;
                     SpellEntry* spellInfo = dbcSpell.LookupEntry(spellId);   //we already modified this spell on server loading so it must exist
-                    SpellDuration* sd = dbcSpellDuration.LookupEntryForced(spellInfo->DurationIndex);
-                    uint32 tickcount = GetDuration(sd) / spellInfo->EffectAmplitude[0];
+                    auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
+                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
                     dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
                 }
                 break;
@@ -2024,8 +2024,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT)
                         continue;
                     SpellEntry* spellInfo = dbcSpell.LookupEntry(54203);
-                    SpellDuration* sd = dbcSpellDuration.LookupEntryForced(spellInfo->DurationIndex);
-                    uint32 tickcount = GetDuration(sd) / spellInfo->EffectAmplitude[0];
+                    auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
+                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
                     dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
                 }
                 break;
@@ -5181,7 +5181,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellEntry* spellInfo, int32 base_dm
             else
             {
                 plus_damage = plus_damage * spellInfo->casttime_coef;
-                float td = static_cast<float>(GetDuration(dbcSpellDuration.LookupEntry(spellInfo->DurationIndex)));
+                float td = static_cast<float>(GetDuration(sSpellDurationStore.LookupEntry(spellInfo->DurationIndex)));
                 if (spellInfo->NameHash == SPELL_HASH_MOONFIRE
                     || spellInfo->NameHash == SPELL_HASH_IMMOLATE
                     || spellInfo->NameHash == SPELL_HASH_ICE_LANCE

@@ -275,12 +275,12 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                     {
                         //now this will not be exact cooldown but maybe a bigger one to not make him spam spells to often
                         int cooldown;
-                        SpellDuration* sd = dbcSpellDuration.LookupEntry(sp->spell->DurationIndex);
+                        auto spell_duration = sSpellDurationStore.LookupEntry(sp->spell->DurationIndex);
                         int Dur = 0;
                         int Casttime = 0; //most of the time 0
                         int RecoveryTime = sp->spell->RecoveryTime;
                         if (sp->spell->DurationIndex)
-                            Dur =::GetDuration(sd);
+                            Dur =::GetDuration(spell_duration);
                         Casttime = GetCastTime(dbcSpellCastTime.LookupEntry(sp->spell->CastingTimeIndex));
                         cooldown = Dur + Casttime + RecoveryTime;
                         if (cooldown < 0)
