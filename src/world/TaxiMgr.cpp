@@ -258,21 +258,19 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
 
 void TaxiMgr::_LoadTaxiNodes()
 {
-    uint32 i;
-
-    for (i = 0; i < dbcTaxiNode.GetNumRows(); i++)
+    for (uint32 i = 0; i < sTaxiNodesStore.GetNumRows(); i++)
     {
-        DBCTaxiNode* node = dbcTaxiNode.LookupRowForced(i);
-        if (node)
+        auto taxi_nodes = sTaxiNodesStore.LookupEntry(i);
+        if (taxi_nodes)
         {
             TaxiNode* n = new TaxiNode;
-            n->id = node->id;
-            n->mapid = node->mapid;
-            n->alliance_mount = node->alliance_mount;
-            n->horde_mount = node->horde_mount;
-            n->x = node->x;
-            n->y = node->y;
-            n->z = node->z;
+            n->id = taxi_nodes->id;
+            n->mapid = taxi_nodes->mapid;
+            n->alliance_mount = taxi_nodes->alliance_mount;
+            n->horde_mount = taxi_nodes->horde_mount;
+            n->x = taxi_nodes->x;
+            n->y = taxi_nodes->y;
+            n->z = taxi_nodes->z;
 
             this->m_taxiNodes.insert(std::map<uint32, TaxiNode*>::value_type(n->id, n));
         }

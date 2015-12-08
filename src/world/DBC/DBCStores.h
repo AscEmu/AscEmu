@@ -1084,34 +1084,6 @@ struct RandomProps
     //uint32 RankFlags;
 };
 
-struct DBCTaxiNode
-{
-    uint32 id;
-    uint32 mapid;
-    float x;
-    float y;
-    float z;
-    //uint32 name;
-    //uint32 namealt1;
-    //uint32 namealt2;
-    //uint32 namealt3;
-    //uint32 namealt4;
-    //uint32 namealt5;
-    //uint32 namealt6;
-    //uint32 namealt7;
-    //uint32 namealt8;
-    //uint32 namealt9;
-    //uint32 namealt10;
-    //uint32 namealt11;
-    //uint32 namealt12;
-    //uint32 namealt13;
-    //uint32 namealt14;
-    //uint32 namealt15;
-    //uint32 nameflags;
-    uint32 horde_mount;
-    uint32 alliance_mount;
-};
-
 struct DBCTaxiPath
 {
     uint32 id;
@@ -1773,7 +1745,7 @@ extern SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
 extern SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
 extern SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
 extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
-extern SERVER_DECL DBCStorage<DBCTaxiNode> dbcTaxiNode;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesStore;
 extern SERVER_DECL DBCStorage<DBCTaxiPath> dbcTaxiPath;
 extern SERVER_DECL DBCStorage<DBCTaxiPathNode> dbcTaxiPathNode;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore;
