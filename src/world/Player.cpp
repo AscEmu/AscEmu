@@ -1819,11 +1819,11 @@ void Player::ActivateSpec(uint8 spec)
     // remove old glyphs
     for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
     {
-        GlyphPropertyEntry* glyph = dbcGlyphProperty.LookupEntryForced(m_specs[OldSpec].glyphs[i]);
-        if (glyph == NULL)
+        auto glyph_properties = sGlyphPropertiesStore.LookupEntry(m_specs[OldSpec].glyphs[i]);
+        if (glyph_properties == nullptr)
             continue;
 
-        RemoveAura(glyph->SpellID);
+        RemoveAura(glyph_properties->SpellID);
     }
 
     // remove old talents
@@ -1839,11 +1839,11 @@ void Player::ActivateSpec(uint8 spec)
     // add new glyphs
     for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
     {
-        GlyphPropertyEntry* glyph = dbcGlyphProperty.LookupEntryForced(m_specs[m_talentActiveSpec].glyphs[i]);
-        if (glyph == NULL)
+        auto glyph_properties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[i]);
+        if (glyph_properties == nullptr)
             continue;
 
-        CastSpell(this, glyph->SpellID, true);
+        CastSpell(this, glyph_properties->SpellID, true);
     }
 
     //add talents from new spec
@@ -9254,11 +9254,11 @@ void Player::CompleteLoading()
     // add glyphs
     for (uint8 j = 0; j < GLYPHS_COUNT; ++j)
     {
-        GlyphPropertyEntry* glyph = dbcGlyphProperty.LookupEntryForced(m_specs[m_talentActiveSpec].glyphs[j]);
-        if (glyph == NULL)
+        auto glyph_properties = sGlyphPropertiesStore.LookupEntry(m_specs[m_talentActiveSpec].glyphs[j]);
+        if (glyph_properties == nullptr)
             continue;
 
-        CastSpell(this, glyph->SpellID, true);
+        CastSpell(this, glyph_properties->SpellID, true);
     }
     //sEventMgr.AddEvent(this,&Player::SendAllAchievementData,EVENT_SEND_ACHIEVEMNTS_TO_PLAYER,ACHIEVEMENT_SEND_DELAY,1,0);
     sEventMgr.AddEvent(static_cast< Unit* >(this), &Unit::UpdatePowerAmm, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, LOGIN_CIENT_SEND_DELAY, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);

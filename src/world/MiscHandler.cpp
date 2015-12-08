@@ -2601,11 +2601,13 @@ void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
     uint32 glyphId = _player->GetGlyph(glyphNum);
     if (glyphId == 0)
         return;
-    GlyphPropertyEntry* glyph = dbcGlyphProperty.LookupEntryForced(glyphId);
-    if (!glyph)
+
+    auto glyph_properties = sGlyphPropertiesStore.LookupEntry(glyphId);
+    if (!glyph_properties)
         return;
+
     _player->SetGlyph(glyphNum, 0);
-    _player->RemoveAllAuras(glyph->SpellID, 0);
+    _player->RemoveAllAuras(glyph_properties->SpellID, 0);
     _player->m_specs[_player->m_talentActiveSpec].glyphs[glyphNum] = 0;
     _player->smsg_TalentsInfo(false);
 }

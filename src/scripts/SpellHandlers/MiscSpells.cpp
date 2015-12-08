@@ -201,12 +201,15 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
                         SpellEntry* se2 = dbcSpell.LookupEntryForced(itm->Spells[0].Id);
                         if (se2 && se2->Effect[0] == SPELL_EFFECT_USE_GLYPH)
                         {
-                            GlyphPropertyEntry* gpe = dbcGlyphProperty.LookupEntryForced(se2->EffectMiscValue[0]);
-                            if (gpe && gpe->Type == glyphType)
+                            auto glyph_properties = sGlyphPropertiesStore.LookupEntry(se2->EffectMiscValue[0]);
+                            if (glyph_properties)
                             {
-                                if (!s->p_caster->HasSpell(sls->spell))
+                                if (glyph_properties->Type == glyphType)
                                 {
-                                    discoverableGlyphs.push_back(sls->spell);
+                                    if (!s->p_caster->HasSpell(sls->spell))
+                                    {
+                                        discoverableGlyphs.push_back(sls->spell);
+                                    }
                                 }
                             }
                         }

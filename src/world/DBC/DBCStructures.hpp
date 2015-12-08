@@ -44,6 +44,7 @@ namespace DBC
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
             char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const faction_template_format[] = "niiiiiiiiiiiii";
+            char const glyph_properties_format[] = "niii";
             char const glyph_slot_format[] = "nii";
             char const gt_barber_shop_cost_format[] = "f";
             char const gt_chance_to_melee_crit_format[] = "f";
@@ -302,6 +303,14 @@ namespace DBC
             uint32 HostileMask;             // 5
             uint32 EnemyFactions[4];        // 6-9
             uint32 FriendlyFactions[4];     // 10-13
+        };
+
+        struct GlyphPropertiesEntry
+        {
+            uint32 Entry;                   // 0
+            uint32 SpellID;                 // 1
+            uint32 Type;                    // 2 (0 = Major, 1 = Minor)
+            uint32 unk;                     // 3 glyph_icon spell.dbc
         };
 
         struct GlyphSlotEntry

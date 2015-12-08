@@ -546,15 +546,6 @@ struct GemPropertyEntry
     uint32 SocketMask;
 };
 
-//GlyphProperties.dbc
-struct GlyphPropertyEntry
-{
-    uint32 Entry;
-    uint32 SpellID;
-    uint32 Type;        /// 0 = Major, 1 = Minor
-    uint32 unk;         /// some flag
-};
-
 //SkillLine.dbc
 struct skilllineentry
 {
@@ -1606,7 +1597,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CurrencyTypesEntry> sCurrenc
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 extern SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
-extern SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;

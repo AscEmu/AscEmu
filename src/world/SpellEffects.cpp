@@ -4202,11 +4202,12 @@ void Spell::SpellEffectAddFarsight(uint32 i) // Add Farsight
 
 void Spell::SpellEffectUseGlyph(uint32 i)
 {
-    if (!p_caster) return;
+    if (!p_caster)
+        return;
 
-    uint32 g_new = m_spellInfo->EffectMiscValue[i];
-    GlyphPropertyEntry* gp_new = dbcGlyphProperty.LookupEntryForced(g_new);
-    if (!gp_new)
+    uint32 glyph_new = m_spellInfo->EffectMiscValue[i];
+    auto glyph_prop_new = sGlyphPropertiesStore.LookupEntry(glyph_new);
+    if (!glyph_prop_new)
         return;
 
     // check if glyph is locked (obviously)
@@ -4216,30 +4217,32 @@ void Spell::SpellEffectUseGlyph(uint32 i)
         return;
     }
 
-    uint32 g_old = p_caster->GetGlyph(m_glyphslot);
-    if (g_old)
+    uint32 glyph_old = p_caster->GetGlyph(m_glyphslot);
+    if (glyph_old)
     {
-        if (g_old == g_new)
+        if (glyph_old == glyph_new)
+        {
             return;
+        }
         else
         {
-            GlyphPropertyEntry* gp_old = dbcGlyphProperty.LookupEntryForced(g_old);
-            if (gp_old)
-                p_caster->RemoveAura(gp_old->SpellID);
+            auto glyph_prop_old = sGlyphPropertiesStore.LookupEntry(glyph_old);
+            if (glyph_prop_old)
+                p_caster->RemoveAura(glyph_prop_old->SpellID);
         }
     }
 
     auto glyph_slot = sGlyphSlotStore.LookupEntry(p_caster->GetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + m_glyphslot));
     if (glyph_slot)
     {
-        if (glyph_slot->Type != gp_new->Type)
+        if (glyph_slot->Type != glyph_prop_new->Type)
         {
             SendCastResult(SPELL_FAILED_INVALID_GLYPH);
             return;
         }
-        p_caster->SetGlyph(m_glyphslot, g_new);
-        p_caster->CastSpell(p_caster, gp_new->SpellID, true);
-        p_caster->m_specs[p_caster->m_talentActiveSpec].glyphs[m_glyphslot] = static_cast<uint16>(g_new);
+        p_caster->SetGlyph(m_glyphslot, glyph_new);
+        p_caster->CastSpell(p_caster, glyph_prop_new->SpellID, true);
+        p_caster->m_specs[p_caster->m_talentActiveSpec].glyphs[m_glyphslot] = static_cast<uint16>(glyph_new);
         p_caster->smsg_TalentsInfo(false);
     }
 
