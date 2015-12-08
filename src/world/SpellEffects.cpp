@@ -3721,9 +3721,9 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
         return;
     }
 
-    EnchantEntry* Enchantment = dbcEnchant.LookupEntryForced(GetProto()->EffectMiscValue[i]);
+    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(GetProto()->EffectMiscValue[i]);
 
-    if (!Enchantment)
+    if (!spell_item_enchant)
     {
         LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetProto()->EffectMiscValue[i], GetProto()->Id);
         return;
@@ -3734,7 +3734,7 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
 
     //remove other perm enchantment that was enchanted by profession
     itemTarget->RemoveProfessionEnchant();
-    int32 Slot = itemTarget->AddEnchantment(Enchantment, 0, true, true, false, 0);
+    int32 Slot = itemTarget->AddEnchantment(spell_item_enchant, 0, true, true, false, 0);
     if (Slot < 0)
         return; // Apply failed
 
@@ -3766,8 +3766,8 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
         return;
     }
 
-    EnchantEntry* Enchantment = dbcEnchant.LookupEntryForced(EnchantmentID);
-    if (Enchantment == NULL)
+    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(EnchantmentID);
+    if (spell_item_enchant == nullptr)
     {
         LOG_ERROR("Invalid enchantment entry %u for Spell %u", EnchantmentID, GetProto()->Id);
         return;
@@ -3775,7 +3775,7 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
 
     itemTarget->RemoveEnchantment(TEMP_ENCHANTMENT_SLOT);
 
-    int32 Slot = itemTarget->AddEnchantment(Enchantment, Duration, false, true, false, TEMP_ENCHANTMENT_SLOT);
+    int32 Slot = itemTarget->AddEnchantment(spell_item_enchant, Duration, false, true, false, TEMP_ENCHANTMENT_SLOT);
     if (Slot < 0)
         return; // Apply failed
 
@@ -4461,21 +4461,16 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
     if (GetProto()->NameHash == SPELL_HASH_WINDFURY_WEAPON || GetProto()->NameHash == SPELL_HASH_FLAMETONGUE_WEAPON)
         Duration = 10;
 
-    EnchantEntry* Enchantment = dbcEnchant.LookupEntryForced(GetProto()->EffectMiscValue[i]);
+    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(GetProto()->EffectMiscValue[i]);
 
-    if (!Enchantment)
+    if (!spell_item_enchant)
     {
         LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetProto()->EffectMiscValue[i], GetProto()->Id);
         return;
     }
 
-    /* Windfury Totem removed in 3.0.2
-    if (m_spellInfo->NameHash == SPELL_HASH_WINDFURY_TOTEM_EFFECT && item->HasEnchantmentOnSlot(1) && item->GetEnchantment(1)->Enchantment != Enchantment) //dirty fix for Windfury totem not overwriting existing enchantments
-    return;
-    */
-
     item->RemoveEnchantment(1);
-    item->AddEnchantment(Enchantment, Duration, false, true, false, 1);
+    item->AddEnchantment(spell_item_enchant, Duration, false, true, false, 1);
 }
 
 void Spell::SpellEffectSelfResurrect(uint32 i)
@@ -5557,9 +5552,9 @@ void Spell::SpellEffectEnchantItemPrismatic(uint32 i)
     if (!itemTarget || !p_caster)
         return;
 
-    EnchantEntry* Enchantment = dbcEnchant.LookupEntry(m_spellInfo->EffectMiscValue[i]);
+    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(m_spellInfo->EffectMiscValue[i]);
 
-    if (!Enchantment)
+    if (!spell_item_enchant)
     {
         LOG_ERROR("Invalid enchantment entry %u for Spell %u", GetProto()->EffectMiscValue[i], GetProto()->Id);
         return;
@@ -5570,7 +5565,7 @@ void Spell::SpellEffectEnchantItemPrismatic(uint32 i)
 
     //remove other socket enchant
     itemTarget->RemoveEnchantment(6);
-    int32 Slot = itemTarget->AddEnchantment(Enchantment, 0, true, true, false, 6);
+    int32 Slot = itemTarget->AddEnchantment(spell_item_enchant, 0, true, true, false, 6);
 
     if (Slot < 6)
         return; // Apply failed

@@ -506,37 +506,6 @@ struct skilllinespell
     uint32 reqTP;
 };
 
-struct EnchantEntry
-{
-    uint32 Id;
-    uint32 type[3];
-    int32 min[3];      /// for compat, in practice min==max
-    int32 max[3];
-    uint32 spell[3];
-    const char* Name;
-  //uint32 NameAlt1;
-  //uint32 NameAlt2;
-  //uint32 NameAlt3;
-  //uint32 NameAlt4;
-  //uint32 NameAlt5;
-  //uint32 NameAlt6;
-  //uint32 NameAlt7;
-  //uint32 NameAlt8;
-  //uint32 NameAlt9;
-  //uint32 NameAlt10;
-  //uint32 NameAlt11;
-  //uint32 NameAlt12;
-  //uint32 NameAlt13;
-  //uint32 NameAlt14;
-  //uint32 NameAlt15;
-  //uint32 NameFlags;
-    uint32 visual;
-    uint32 EnchantGroups;
-    uint32 GemEntry;
-    uint32 unk7;        /// Gem Related
-
-};
-
 //SkillLine.dbc
 struct skilllineentry
 {
@@ -1605,7 +1574,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupSt
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionEntry> sFactionStore;
-extern SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
 extern SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
 extern SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
 extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;

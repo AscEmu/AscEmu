@@ -52,13 +52,14 @@ bool Shiv(uint32 i, Spell* pSpell)
     pSpell->p_caster->CastSpell(pTarget->GetGUID(), 5940, true);
 
     Item* it = pSpell->p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if(!it) return true;
+    if(!it)
+        return true;
 
     EnchantmentInstance* ench = it->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
     if(ench)
     {
-        EnchantEntry* Entry = ench->Enchantment;
-        for(uint32 c = 0; c < 3; c++)
+        DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
+        for(uint8 c = 0; c < 3; c++)
         {
             if(Entry->type[c] && Entry->spell[c])
             {

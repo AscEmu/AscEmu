@@ -1921,7 +1921,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
     uint64 gemguid[3];
     ItemInterface* itemi = _player->GetItemInterface();
     DBC::Structures::GemPropertiesEntry const* gem_properties;
-    EnchantEntry* Enchantment;
+    DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
     recvPacket >> itemguid;
 
     Item* TargetItem = itemi->GetItemByGUID(itemguid);
@@ -2035,9 +2035,13 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
             else//add gem
                 FilledSlots++;
 
-            Enchantment = dbcEnchant.LookupEntryForced(gem_properties->EnchantmentID);
-            if (Enchantment && TargetItem->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                TargetItem->AddEnchantment(Enchantment, 0, true, apply, false, 2 + i);
+            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(gem_properties->EnchantmentID);
+            if (spell_item_enchant != nullptr)
+            {
+                if (TargetItem->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, 2 + i);
+            }
+
         }
     }
 
@@ -2049,11 +2053,14 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
             if (TargetItem->HasEnchantment(TargetItem->GetProto()->SocketBonus) > 0)
                 return;
 
-            Enchantment = dbcEnchant.LookupEntryForced(TargetItem->GetProto()->SocketBonus);
-            if (Enchantment && TargetItem->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->GetProto()->SocketBonus);
+            if (spell_item_enchant != nullptr)
             {
-                uint32 Slot = TargetItem->FindFreeEnchantSlot(Enchantment, 0);
-                TargetItem->AddEnchantment(Enchantment, 0, true, apply, false, Slot);
+                if (TargetItem->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                {
+                    uint32 Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
+                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
+                }
             }
         }
         else  //remove

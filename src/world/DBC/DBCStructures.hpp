@@ -73,6 +73,7 @@ namespace DBC
             char const spell_cast_times_format[] = "nixx";
             char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
+            char const spell_item_enchantment_format[] = "nxiiiiiiiiiiiissssssssssssssssxiiiiiii";
             char const spell_radius_format[] = "nfff";
             char const spell_range_format[] = "nffffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const spell_rune_cost_format[] = "niiii";
@@ -565,6 +566,25 @@ namespace DBC
             uint32 Duration1;       // 1
             uint32 Duration2;       // 2
             uint32 Duration3;       // 3
+        };
+
+        struct SpellItemEnchantmentEntry
+        {
+            uint32 Id;                  // 0
+            //uint32 charges;           // 1
+            uint32 type[3];             // 2-4
+            int32 min[3];               // 5-7 for combat, in practice min==max
+            int32 max[3];               // 8-10
+            uint32 spell[3];            // 11-13
+            char* Name[16];             // 14-29
+            //uint32 NameFlags;         // 30
+            uint32 visual;              // 31 aura
+            uint32 EnchantGroups;       // 32 slot
+            uint32 GemEntry;            // 33
+            uint32 ench_condition;      // 34
+            uint32 req_skill;           // 35
+            uint32 req_skill_value;     // 36
+            uint32 req_level;           // 37
         };
 
         struct SpellRadiusEntry

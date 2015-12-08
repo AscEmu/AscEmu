@@ -4561,17 +4561,18 @@ int32 Spell::CalculateEffect(uint32 i, Unit* target)
     if (i_caster && (int32(i_caster->GetItemRandomPropertyId()) < 0))
     {
         ItemRandomSuffixEntry* si = dbcItemRandomSuffix.LookupEntry(abs(int(i_caster->GetItemRandomPropertyId())));
-        EnchantEntry* ent;
-        uint32 j, k;
 
-        for (j = 0; j < 3; ++j)
+        for (uint8 j = 0; j < 3; ++j)
         {
             if (si->enchantments[j] != 0)
             {
-                ent = dbcEnchant.LookupEntry(si->enchantments[j]);
-                for (k = 0; k < 3; ++k)
+                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(si->enchantments[j]);
+                if (spell_item_enchant == nullptr)
+                    continue;
+
+                for (uint8 k = 0; k < 3; ++k)
                 {
-                    if (ent->spell[k] == GetProto()->Id)
+                    if (spell_item_enchant->spell[k] == GetProto()->Id)
                     {
                         if (si->prefixes[k] == 0)
                             goto exit;

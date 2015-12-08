@@ -201,7 +201,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
     player_item items[23];
     int8 slot;
-    uint32 i;
+
     ItemPrototype* proto;
     QueryResult* res;
     CreatureInfo* info = NULL;
@@ -337,7 +337,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             memset(items, 0, sizeof(player_item) * 23);
             uint32 enchantid;
-            EnchantEntry* enc;
+
             if (res)
             {
                 do
@@ -356,9 +356,9 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                             const char* enchant_field = res->Fetch()[2].GetString();
                             if (sscanf(enchant_field , "%u,0,0;" , (unsigned int*)&enchantid) == 1 && enchantid > 0)
                             {
-                                enc = dbcEnchant.LookupEntryForced(enchantid);
-                                if (enc != NULL)
-                                    items[slot].enchantment = enc->visual;
+                                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantid);
+                                if (spell_item_enchant != nullptr)
+                                    items[slot].enchantment = spell_item_enchant->visual;
                             }
                         }
                     }
@@ -367,7 +367,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                 delete res;
             }
 
-            for (i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
+            for (uint8 i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
             {
                 data << uint32(items[i].displayid);
                 data << uint8(items[i].invtype);

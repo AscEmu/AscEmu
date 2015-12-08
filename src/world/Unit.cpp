@@ -4458,8 +4458,8 @@ void Unit::AddAura(Aura* aur)
                                     EnchantmentInstance* ench = mh->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
                                     if (ench)
                                     {
-                                        EnchantEntry* Entry = ench->Enchantment;
-                                        for (uint32 c = 0; c < 3; c++)
+                                        DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
+                                        for (uint8 c = 0; c < 3; c++)
                                         {
                                             if (Entry->type[c] && Entry->spell[c])
                                             {
@@ -4491,8 +4491,8 @@ void Unit::AddAura(Aura* aur)
                                         ench = oh->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
                                         if (ench)
                                         {
-                                            EnchantEntry* Entry = ench->Enchantment;
-                                            for (uint32 c = 0; c < 3; c++)
+                                            DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
+                                            for (uint8 c = 0; c < 3; c++)
                                             {
                                                 if (Entry->type[c] && Entry->spell[c])
                                                 {
