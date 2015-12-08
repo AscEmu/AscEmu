@@ -1984,16 +1984,11 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         {
             talent_tab_id = sWorld.InspectTalentTabPages[player->getClass()][i];
 
-            for (uint32 j = 0; j < dbcTalent.GetNumRows(); ++j)
+            for (uint32 j = 0; j < sTalentStore.GetNumRows(); ++j)
             {
-                TalentEntry const* talent_info = dbcTalent.LookupRowForced(j);
-
-                //LOG_DEBUG("HandleInspectOpcode: i(%i) j(%i)", i, j);
-
-                if (talent_info == NULL)
+                auto talent_info = sTalentStore.LookupEntry(j);
+                if (talent_info == nullptr)
                     continue;
-
-                //LOG_DEBUG("HandleInspectOpcode: talent_info->TalentTree(%i) talent_tab_id(%i)", talent_info->TalentTree, talent_tab_id);
 
                 if (talent_info->TalentTree != talent_tab_id)
                     continue;

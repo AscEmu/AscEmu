@@ -587,23 +587,23 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
         return;
 
     // find talent entry
-    TalentEntry* te = dbcTalent.LookupEntryForced(talentid);
-    if (te == NULL)
+    auto talent = sTalentStore.LookupEntry(talentid);
+    if (talent == nullptr)
         return;
 
     // check if it requires another talent
-    if (te->DependsOn > 0)
+    if (talent->DependsOn > 0)
     {
-        TalentEntry* dep_te = dbcTalent.LookupEntryForced(te->DependsOn);
-        if (dep_te == NULL)
+        auto depends_talent = sTalentStore.LookupEntry(talent->DependsOn);
+        if (depends_talent == nullptr)
             return;
 
         bool req_ok = false;
         for (uint8 i = 0; i < 5; ++i)
         {
-            if (dep_te->RankID[i] != 0)
+            if (depends_talent->RankID[i] != 0)
             {
-                if (pPet->HasSpell(dep_te->RankID[i]))
+                if (pPet->HasSpell(depends_talent->RankID[i]))
                 {
                     req_ok = true;
                     break;
@@ -615,15 +615,15 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     }
 
     // check if we have enough spent points
-    if (pPet->GetSpentTPs() < (te->Row * 3))
+    if (pPet->GetSpentTPs() < (talent->Row * 3))
         return;
 
     // remove lower talent rank
-    if (talentcol > 0 && te->RankID[talentcol - 1] != 0)
-        pPet->RemoveSpell(te->RankID[talentcol - 1]);
+    if (talentcol > 0 && talent->RankID[talentcol - 1] != 0)
+        pPet->RemoveSpell(talent->RankID[talentcol - 1]);
 
     // add spell, discount talent point
-    SpellEntry* sp = dbcSpell.LookupEntryForced(te->RankID[talentcol]);
+    SpellEntry* sp = dbcSpell.LookupEntryForced(talent->RankID[talentcol]);
     if (sp != NULL)
     {
         pPet->AddSpell(sp, true);

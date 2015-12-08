@@ -1829,11 +1829,11 @@ void Player::ActivateSpec(uint8 spec)
     // remove old talents
     for (std::map<uint32, uint8>::iterator itr = m_specs[OldSpec].talents.begin(); itr != m_specs[OldSpec].talents.end(); ++itr)
     {
-        TalentEntry* talentInfo = dbcTalent.LookupEntryForced(itr->first);
-        if (talentInfo == NULL)
+        auto talent_info = sTalentStore.LookupEntry(itr->first);
+        if (talent_info == nullptr)
             continue;
 
-        removeSpell(talentInfo->RankID[itr->second], true, false, 0);
+        removeSpell(talent_info->RankID[itr->second], true, false, 0);
     }
 
     // add new glyphs
@@ -1849,11 +1849,11 @@ void Player::ActivateSpec(uint8 spec)
     //add talents from new spec
     for (std::map<uint32, uint8>::iterator itr = m_specs[m_talentActiveSpec].talents.begin(); itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
     {
-        TalentEntry* talentInfo = dbcTalent.LookupEntryForced(itr->first);
-        if (talentInfo == NULL)
+        auto talent_info = sTalentStore.LookupEntry(itr->first);
+        if (talent_info == nullptr)
             continue;
 
-        addSpell(talentInfo->RankID[itr->second]);
+        addSpell(talent_info->RankID[itr->second]);
     }
     SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
     smsg_TalentsInfo(false);
@@ -6537,39 +6537,34 @@ void Player::ResetDualWield2H()
 
 void Player::Reset_Talents()
 {
-    unsigned int numRows = dbcTalent.GetNumRows();
     uint8 playerClass = getClass();
     SpellEntry* spellInfo;
     SpellEntry* spellInfo2;
-    uint32 i;
-    uint8 j, k;
 
     // Loop through all talents.
-    for (i = 0; i < numRows; ++i)
+    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
     {
-        TalentEntry* tmpTalent = dbcTalent.LookupRowForced(i);
-        if (tmpTalent == NULL)
-        {
-            // should not occur
+        auto temp_talent = sTalentStore.LookupEntry(i);
+        if (temp_talent == nullptr)
             continue;
-        }
-        if (tmpTalent->TalentTree != TalentTreesPerClass[playerClass][0] &&
-            tmpTalent->TalentTree != TalentTreesPerClass[playerClass][1] &&
-            tmpTalent->TalentTree != TalentTreesPerClass[playerClass][2])
+
+        if (temp_talent->TalentTree != TalentTreesPerClass[playerClass][0] && 
+            temp_talent->TalentTree != TalentTreesPerClass[playerClass][1] &&
+            temp_talent->TalentTree != TalentTreesPerClass[playerClass][2])
         {
             // Not a talent for this class
             continue;
         }
 
         // this is a normal talent (i hope)
-        for (j = 0; j < 5; ++j)
+        for (uint8 j = 0; j < 5; ++j)
         {
-            if (tmpTalent->RankID[j] != 0)
+            if (temp_talent->RankID[j] != 0)
             {
-                spellInfo = dbcSpell.LookupEntryForced(tmpTalent->RankID[j]);
+                spellInfo = dbcSpell.LookupEntryForced(temp_talent->RankID[j]);
                 if (spellInfo != NULL)
                 {
-                    for (k = 0; k < 3; ++k)
+                    for (uint8 k = 0; k < 3; ++k)
                     {
                         if (spellInfo->Effect[k] == SPELL_EFFECT_LEARN_SPELL)
                         {
@@ -12270,30 +12265,30 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
     if (rank > 4)
         return;
 
-    TalentEntry* talentInfo = dbcTalent.LookupEntryForced(talentid);
-    if (!talentInfo)return;
+    auto talent_info = sTalentStore.LookupEntry(talentid);
+    if (talent_info == nullptr)
+        return;
 
-    if (objmgr.IsSpellDisabled(talentInfo->RankID[rank]))
+    if (objmgr.IsSpellDisabled(talent_info->RankID[rank]))
     {
         if (IsInWorld())
-            SendCastResult(talentInfo->RankID[rank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
+            SendCastResult(talent_info->RankID[rank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
 
         return;
     }
 
     // Check if it requires another talent
-    if (talentInfo->DependsOn > 0)
+    if (talent_info->DependsOn > 0)
     {
-        TalentEntry* depTalentInfo = NULL;
-        depTalentInfo = dbcTalent.LookupEntryForced(talentInfo->DependsOn);
-        if (depTalentInfo)
+        auto depends_talent = sTalentStore.LookupEntry(talent_info->DependsOn);
+        if (depends_talent)
         {
             bool hasEnoughRank = false;
             for (int i = 0; i < 5; ++i)
             {
-                if (depTalentInfo->RankID[i] != 0)
+                if (depends_talent->RankID[i] != 0)
                 {
-                    if (HasSpell(depTalentInfo->RankID[i]))
+                    if (HasSpell(depends_talent->RankID[i]))
                     {
                         hasEnoughRank = true;
                         break;
@@ -12311,40 +12306,32 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
     // points we are spending now
     int32 points = 0;
 
-    uint32 tTree = talentInfo->TalentTree;
+    uint32 tTree = talent_info->TalentTree;
     uint32 cl = getClass();
 
-    unsigned int k;
-    for (k = 0; k < 3; ++k)
+    for (uint8 k = 0; k < 3; ++k)
     {
         if (tTree == TalentTreesPerClass[cl][k])
         {
             break;
         }
     }
-    if (3 == k)
-    {
-        // cheater!
-        m_session->Disconnect();
-        return;
-    }
 
-
-    if (talentInfo->Row > 0)
+    if (talent_info->Row > 0)
     {
-        for (unsigned int i = 0; i < dbcTalent.GetNumRows(); ++i)           // Loop through all talents.
+        for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)           // Loop through all talents.
         {
             // Someday, someone needs to revamp
-            TalentEntry* tmpTalent = dbcTalent.LookupRowForced(i);
-            if (tmpTalent)                                   // the way talents are tracked
+            auto temp_talent = sTalentStore.LookupEntry(i);
+            if (temp_talent)                                   // the way talents are tracked
             {
-                if (tmpTalent->TalentTree == tTree)
+                if (temp_talent->TalentTree == tTree)
                 {
-                    for (int j = 0; j < 5; j++)
+                    for (uint8 j = 0; j < 5; j++)
                     {
-                        if (tmpTalent->RankID[j] != 0)
+                        if (temp_talent->RankID[j] != 0)
                         {
-                            if (HasSpell(tmpTalent->RankID[j]))
+                            if (HasSpell(temp_talent->RankID[j]))
                             {
                                 spentPoints += j + 1;
                                 //    break;
@@ -12358,28 +12345,28 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
         }
     }
 
-    uint32 spellid = talentInfo->RankID[rank];
+    uint32 spellid = talent_info->RankID[rank];
     if (spellid == 0)
     {
         LOG_DETAIL("Talent: %u Rank: %u = 0", talentid, rank);
     }
     else
     {
-        if (spentPoints < (talentInfo->Row * 5))             // Min points spent
+        if (spentPoints < (talent_info->Row * 5))             // Min points spent
         {
             return;
         }
 
 
         // Check if we already have the talent with the same or higher rank
-        for (unsigned int i = rank; i < 5; ++i)
-            if (talentInfo->RankID[i] != 0 && HasSpell(talentInfo->RankID[i]))
+        for (uint8 i = rank; i < 5; ++i)
+            if (talent_info->RankID[i] != 0 && HasSpell(talent_info->RankID[i]))
                 return; // cheater
 
         if (rank > 0)
         {
             // If we are not learning thru the preview system, check if we have the lower rank of the talent
-            if (talentInfo->RankID[rank - 1] && !HasSpell(talentInfo->RankID[rank - 1]) && !isPreviewed)
+            if (talent_info->RankID[rank - 1] && !HasSpell(talent_info->RankID[rank - 1]) && !isPreviewed)
             {
                 // cheater
                 return;
@@ -12387,7 +12374,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
 
             int32 highest = 0;
             for (highest = 4; highest >= 0; highest--)
-                if ((talentInfo->RankID[highest] != 0) && HasSpell(talentInfo->RankID[highest]))
+                if ((talent_info->RankID[highest] != 0) && HasSpell(talent_info->RankID[highest]))
                     break;
 
             points = static_cast<int32>(rank)-highest;
@@ -12406,7 +12393,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
 
             if (rank > 0)
             {
-                uint32 respellid = talentInfo->RankID[rank - 1];
+                uint32 respellid = talent_info->RankID[rank - 1];
                 if (respellid && !isPreviewed)
                 {
                     removeSpell(respellid, false, false, 0);

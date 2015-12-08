@@ -457,20 +457,23 @@ void Pet::SendTalentsToOwner()
         if (!(talent_tab->PetTalentMask & (1 << cfe->talenttree)))
             continue;
 
-        TalentEntry* te;
-        for (uint32 t_id = 1; t_id < dbcTalent.GetNumRows(); t_id++)
+
+        for (uint32 t_id = 1; t_id < sTalentStore.GetNumRows(); t_id++)
         {
             // get talent entries for our talent tree
-            te = dbcTalent.LookupRowForced(t_id);
-            if (te == NULL || te->TalentTree != tte_id)
+            auto talent = sTalentStore.LookupEntry(t_id);
+            if (talent == nullptr)
+                continue;
+
+            if (talent->TalentTree != tte_id)
                 continue;
 
             // check our spells
             for (uint8 j = 0; j < 5; j++)
-                if (te->RankID[j] > 0 && HasSpell(te->RankID[j]))
+                if (talent->RankID[j] > 0 && HasSpell(talent->RankID[j]))
                 {
                     // if we have the spell, include it in packet
-                    data << te->TalentID;       // Talent ID
+                    data << talent->TalentID;       // Talent ID
                     data << j;                  // Rank
                     ++count;
                 }
@@ -1274,16 +1277,18 @@ void Pet::SetDefaultActionbar()
 
 void Pet::WipeTalents()
 {
-    uint32 rows, i, j;
-    rows = dbcTalent.GetNumRows();
-    for (i = 0; i < rows; i++)
+    for (uint32 i = 0; i < sTalentStore.GetNumRows(); i++)
     {
-        TalentEntry* te = dbcTalent.LookupRowForced(i);
-        if (te == NULL || te->TalentTree < PET_TALENT_TREE_START || te->TalentTree > PET_TALENT_TREE_END)   // 409-Tenacity, 410-Ferocity, 411-Cunning
+        auto talent = sTalentStore.LookupEntry(i);
+        if (talent == nullptr)
             continue;
-        for (j = 0; j < 5; j++)
-            if (te->RankID[j] != 0 && HasSpell(te->RankID[j]))
-                RemoveSpell(te->RankID[j]);
+
+        if (talent->TalentTree < PET_TALENT_TREE_START || talent->TalentTree > PET_TALENT_TREE_END)   // 409-Tenacity, 410-Ferocity, 411-Cunning
+            continue;
+
+        for (uint8 j = 0; j < 5; j++)
+            if (talent->RankID[j] != 0 && HasSpell(talent->RankID[j]))
+                RemoveSpell(talent->RankID[j]);
     }
     SendSpellsToOwner();
 }

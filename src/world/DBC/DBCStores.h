@@ -957,20 +957,6 @@ struct SpellEntry
     }
 };
 
-struct TalentEntry
-{
-    uint32 TalentID;
-    uint32 TalentTree;
-    uint32 Row;
-    uint32 Col;
-    uint32 RankID[5];
-  //uint32 unk[4];
-    uint32 DependsOn;
-  //uint32 unk1[2];
-    uint32 DependsOnRank;
-  //uint32 unk2[4];
-};
-
 struct Trainerspell
 {
     uint32 Id;
@@ -1652,7 +1638,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesSt
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathEntry> sTaxiPathStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore;
-extern SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore;
 extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;

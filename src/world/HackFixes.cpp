@@ -63,13 +63,16 @@ void ApplyNormalFixes()
 
     std::map<uint32, uint32> talentSpells;
     std::map<uint32, uint32>::iterator talentSpellIterator;
-    uint32 i, j;
-    for (i = 0; i < dbcTalent.GetNumRows(); ++i)
+
+    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
     {
-        TalentEntry* tal = dbcTalent.LookupRow(i);
-        for (j = 0; j < 5; ++j)
-            if (tal->RankID[j] != 0)
-                talentSpells.insert(std::make_pair(tal->RankID[j], tal->TalentTree));
+        auto talent = sTalentStore.LookupEntry(i);
+        if (talent == nullptr)
+            continue;
+
+        for (uint32 j = 0; j < 5; ++j)
+            if (talent->RankID[j] != 0)
+                talentSpells.insert(std::make_pair(talent->RankID[j], talent->TalentTree));
 
     }
 
@@ -109,7 +112,7 @@ void ApplyNormalFixes()
 
         // Save School as SchoolMask, and set School as an index
         sp->SchoolMask = sp->School;
-        for (i = 0; i < SCHOOL_COUNT; i++)
+        for (uint8 i = 0; i < SCHOOL_COUNT; i++)
         {
             if (sp->School & (1 << i))
             {
@@ -481,7 +484,7 @@ void ApplyNormalFixes()
                     pr = 0;
 
                     uint32 len = (uint32)strlen(sp->Description);
-                    for (i = 0; i < len; ++i)
+                    for (uint32 i = 0; i < len; ++i)
                         sp->Description[i] = static_cast<char>(tolower(sp->Description[i]));
                     //dirty code for procs, if any1 got any better idea-> u are welcome
                     //139944 --- some magic number, it will trigger on all hits etc
@@ -951,7 +954,7 @@ void ApplyNormalFixes()
         bool spcheck = false;
 
         //Flag for DoT and HoT
-        for (i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_DAMAGE ||
                 sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_HEAL ||
@@ -963,7 +966,7 @@ void ApplyNormalFixes()
         }
 
         //Flag for DD or DH
-        for (i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL && sp->EffectTriggerSpell[i])
             {
@@ -984,7 +987,7 @@ void ApplyNormalFixes()
             }
         }
 
-        for (i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             switch (sp->EffectImplicitTargetA[i])
             {
@@ -1010,7 +1013,7 @@ void ApplyNormalFixes()
             }
         }
 
-        for (i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             switch (sp->EffectImplicitTargetB[i])
             {
@@ -1044,7 +1047,7 @@ void ApplyNormalFixes()
 
 
         //Additional Effect (not healing or damaging)
-        for (i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (sp->Effect[i] == SPELL_EFFECT_NULL)
                 continue;
@@ -1394,7 +1397,7 @@ void ApplyNormalFixes()
         SpellEntry* spz;
 
         //Case SPELL_AURA_PERIODIC_TRIGGER_SPELL
-        for (i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
             {
@@ -1442,7 +1445,7 @@ void ApplyNormalFixes()
      * thrown - add a 1.6 second cooldown
      **********************************************************/
     const static uint32 thrown_spells[] = { SPELL_RANGED_GENERAL, SPELL_RANGED_THROW, SPELL_RANGED_WAND, 26679, 29436, 37074, 41182, 41346, 0 };
-    for (i = 0; thrown_spells[i] != 0; ++i)
+    for (uint32 i = 0; thrown_spells[i] != 0; ++i)
     {
         sp = CheckAndReturnSpellEntry(thrown_spells[i]);
         if (sp != NULL && sp->RecoveryTime == 0 && sp->StartRecoveryTime == 0)
@@ -3995,7 +3998,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(20608);   //Reincarnation
     if (sp != NULL)
     {
-        for (i = 0; i < 8; i++)
+        for (uint8 i = 0; i < 8; i++)
         {
             if (sp->Reagent[i])
             {
@@ -5119,7 +5122,7 @@ void ApplyNormalFixes()
         sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
-    for (i = 23833; i <= 23844; i++)
+    for (uint32 i = 23833; i <= 23844; i++)
     {
         sp = CheckAndReturnSpellEntry(i);
         if (sp != NULL)
@@ -5295,7 +5298,7 @@ void ApplyNormalFixes()
 
     //Warlock Healthstones
     int HealthStoneID[8] = { 6201, 6202, 5699, 11729, 11730, 27230, 47871, 47878 };
-    for (i = 0; i < 8; i++)
+    for (uint8 i = 0; i < 8; i++)
     {
         sp = CheckAndReturnSpellEntry(HealthStoneID[i]);
         if (sp != NULL)
@@ -6720,7 +6723,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(20619);
     if (sp != NULL)
     {
-        for (i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (sp->EffectImplicitTargetA[i] > 0)
                 sp->EffectImplicitTargetA[i] = EFF_TARGET_ALL_FRIENDLY_IN_AREA;
@@ -6733,7 +6736,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(21075);
     if (sp != NULL)
     {
-        for (i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (sp->EffectImplicitTargetA[i] > 0)
                 sp->EffectImplicitTargetA[i] = EFF_TARGET_ALL_FRIENDLY_IN_AREA;

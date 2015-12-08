@@ -74,6 +74,7 @@ namespace DBC
             char const spell_range_format[] = "nffffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const spell_rune_cost_format[] = "niiii";
             char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
+            char const talent_format[] = "niiiiiiiixxxxixxixxxxxx";
             char const talent_tab_format[] = "nxxxxxxxxxxxxxxxxxxxiiix";
             char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
             char const taxi_path_format[] = "niii";
@@ -585,6 +586,23 @@ namespace DBC
             //uint32 unk2               // 25
             //uint32 unk3               // 26
             uint32 spells[8];           // 27-34
+        };
+
+        struct TalentEntry
+        {
+            uint32 TalentID;            // 0
+            uint32 TalentTree;          // 1
+            uint32 Row;                 // 2
+            uint32 Col;                 // 3
+            uint32 RankID[5];           // 4-8
+            //uint32 unk[4];            // 9-12
+            uint32 DependsOn;           // 13
+            //uint32 unk1[2];           // 14-15
+            uint32 DependsOnRank;       // 16
+            //uint32 unk2[2];           // 17-18
+            //uint32 unk3;              // 19
+            //uint32 unk4;              // 20
+            //uint32 unk5;              // 21
         };
 
         struct TalentTabEntry

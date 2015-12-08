@@ -679,11 +679,14 @@ bool World::SetInitialWorldSettings()
     uint32 talent_pos;
     uint32 talent_class;
 
-    for (uint32 i = 0; i < dbcTalent.GetNumRows(); ++i)
+    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
     {
-        TalentEntry const* talent_info = dbcTalent.LookupRowForced(i);
+        auto talent_info = sTalentStore.LookupEntry(i);
+        if (talent_info == nullptr)
+            continue;
+
         // Don't add invalid talents or Hunter Pet talents (trees 409, 410 and 411) to the inspect table
-        if (talent_info == NULL || talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
+        if (talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
             continue;
 
         auto talent_tab = sTalentTabStore.LookupEntry(talent_info->TalentTree);
@@ -707,9 +710,11 @@ bool World::SetInitialWorldSettings()
     for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
     {
         auto talent_tab = sTalentTabStore.LookupEntry(i);
+        if (talent_tab == nullptr)
+            continue;
 
-        // Don't add invalid TalentTabs or Hunter Pet TalentTabs (ClassMask == 0) to the InspectTalentTabPages
-        if (talent_tab == nullptr || talent_tab->ClassMask == 0)
+        // Don't add Hunter Pet TalentTabs (ClassMask == 0) to the InspectTalentTabPages
+        if (talent_tab->ClassMask == 0)
             continue;
 
         talent_pos = 0;
@@ -725,8 +730,8 @@ bool World::SetInitialWorldSettings()
         for (std::map< uint32, uint32 >::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
         {
             uint32 talent_id = itr->first & 0xFFFF;
-            TalentEntry const* talent_info = dbcTalent.LookupEntryForced(talent_id);
-            if (talent_info == NULL)
+            auto talent_info = sTalentStore.LookupEntry(talent_id);
+            if (talent_info == nullptr)
                 continue;
 
             if (talent_info->TalentTree != talent_tab->TalentTabID)
