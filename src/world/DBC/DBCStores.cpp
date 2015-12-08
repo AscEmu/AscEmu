@@ -73,7 +73,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScal
 SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
 SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
 SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
-SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCastTimesEntry> sSpellCastTimesStore(DBC::Structures::spell_cast_times_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore(DBC::Structures::spell_difficulty_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore(DBC::Structures::spell_duration_format);
 SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
@@ -281,7 +281,6 @@ const char* spellentryFormat =
 
 const char* talententryFormat = "uuuuuuuuuxxxxuxxuxxxxxx";
 const char* talenttabentryFormat = "uxxxxxxxxxxxxxxxxxxxuuux";
-const char* spellcasttimeFormat = "uuxx";
 
 const char* randompropsFormat = "uxuuuxxxxxxxxxxxxxxxxxxx";
 
@@ -342,8 +341,8 @@ bool LoadDBCs()
 
     LOAD_DBC("DBC/Talent.dbc", talententryFormat, true, dbcTalent, false);
     LOAD_DBC("DBC/TalentTab.dbc", talenttabentryFormat, true, dbcTalentTab, false);
-    LOAD_DBC("DBC/SpellCastTimes.dbc", spellcasttimeFormat, true, dbcSpellCastTime, false);
 
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDifficultyStore, dbc_path, "SpellDifficulty.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");     ///\todo handle max and level radius
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");

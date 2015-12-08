@@ -938,8 +938,8 @@ void ApplyNormalFixes()
         sp = dbcSpell.LookupRow(x);
 
         //Setting Cast Time Coefficient
-        SpellCastTime* sd = dbcSpellCastTime.LookupEntry(sp->CastingTimeIndex);
-        float castaff = float(GetCastTime(sd));
+        auto spell_cast_time = sSpellCastTimesStore.LookupEntry(sp->CastingTimeIndex);
+        float castaff = float(GetCastTime(spell_cast_time));
         if (castaff < 1500)
             castaff = 1500;
         else if (castaff > 7000)

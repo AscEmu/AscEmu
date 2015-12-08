@@ -2446,9 +2446,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
 
                 if (CastingSpell)
                 {
-                    SpellCastTime* sd = dbcSpellCastTime.LookupEntryForced(CastingSpell->CastingTimeIndex);
-                    if (!sd)
-                        continue; // this shouldn't happen though :P
+                    auto spell_cast_time = sSpellCastTimesStore.LookupEntry(CastingSpell->CastingTimeIndex);
+                    if (!spell_cast_time)
+                        continue;
 
                     //if we did not proc these then we should not remove them
                     if (CastingSpell->Id == iter2->second.spellId)
@@ -2466,7 +2466,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         case 12043: // Mage - Presence of Mind
                         {
                             //if (!sd->CastTime||sd->CastTime>10000) continue;
-                            if (sd->CastTime == 0)
+                            if (spell_cast_time->CastTime == 0)
                                 continue;
                         }
                         break;
@@ -2474,7 +2474,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         case 16188:	// Druid - Nature's Swiftness
                         {
                             //if (CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
-                            if (CastingSpell->School != SCHOOL_NATURE || sd->CastTime == 0)
+                            if (CastingSpell->School != SCHOOL_NATURE || spell_cast_time->CastTime == 0)
                                 continue;
                         }
                         break;

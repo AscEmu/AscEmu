@@ -281,7 +281,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                         int RecoveryTime = sp->spell->RecoveryTime;
                         if (sp->spell->DurationIndex)
                             Dur =::GetDuration(spell_duration);
-                        Casttime = GetCastTime(dbcSpellCastTime.LookupEntry(sp->spell->CastingTimeIndex));
+                        Casttime = GetCastTime(sSpellCastTimesStore.LookupEntry(sp->spell->CastingTimeIndex));
                         cooldown = Dur + Casttime + RecoveryTime;
                         if (cooldown < 0)
                             sp->cooldown = 2000; //huge value that should not loop while adding some timestamp to it

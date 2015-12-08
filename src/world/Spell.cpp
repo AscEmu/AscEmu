@@ -940,7 +940,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         m_castTime = 0;
     else
     {
-        m_castTime = GetCastTime(dbcSpellCastTime.LookupEntry(GetProto()->CastingTimeIndex));
+        m_castTime = GetCastTime(sSpellCastTimesStore.LookupEntry(GetProto()->CastingTimeIndex));
 
         if (m_castTime && u_caster != nullptr)
         {

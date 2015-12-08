@@ -1009,14 +1009,6 @@ struct Trainerspell
     uint32 charclass;
 };
 
-struct SpellCastTime
-{
-    uint32 ID;
-    uint32 CastTime;
-    //uint32 unk1;
-    //uint32 unk2;
-};
-
 struct RandomProps
 {
     uint32 ID;
@@ -1293,8 +1285,11 @@ inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
 
     return radius->radius_min;
 }
-inline uint32 GetCastTime(SpellCastTime* time)
+inline uint32 GetCastTime(DBC::Structures::SpellCastTimesEntry const* time)
 {
+    if (time == nullptr)
+        return 0;
+
     return time->CastTime;
 }
 inline float GetMaxRange(DBC::Structures::SpellRangeEntry const* range)
@@ -1672,7 +1667,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRange
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore;
-extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore;
