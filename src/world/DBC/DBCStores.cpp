@@ -79,7 +79,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationS
 SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
 SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
 SERVER_DECL DBCStorage<SpellRange> dbcSpellRange;
-SERVER_DECL DBCStorage<SpellRuneCostEntry> dbcSpellRuneCost;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
 SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
 SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
 SERVER_DECL DBCStorage<WorldMapOverlay> dbcWorldMapOverlayStore;
@@ -351,8 +351,8 @@ bool LoadDBCs()
     LOAD_DBC("DBC/SpellDifficulty.dbc", spelldifficultyentryformat, true, dbcSpellDifficultyEntry, false);
     LOAD_DBC("DBC/SpellRadius.dbc", spellradiusFormat, true, dbcSpellRadius, false);
     LOAD_DBC("DBC/SpellRange.dbc", spellrangeFormat, true, dbcSpellRange, false);
-    LOAD_DBC("DBC/SpellRuneCost.dbc", SpellRuneCostFormat, true, dbcSpellRuneCost, false);
-    //LOAD_DBC("DBC/SpellDuration.dbc", spelldurationFormat, true, dbcSpellDuration, false);
+    //LOAD_DBC("DBC/SpellRuneCost.dbc", SpellRuneCostFormat, true, dbcSpellRuneCost, false);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRuneCostStore, dbc_path, "SpellRuneCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellShapeshiftFormStore, dbc_path, "SpellShapeshiftForm.dbc");
 

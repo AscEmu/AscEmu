@@ -2525,11 +2525,14 @@ bool Spell::HasPower()
         {
             if (GetProto()->RuneCostID && p_caster)
             {
-                SpellRuneCostEntry* runecost = dbcSpellRuneCost.LookupEntry(GetProto()->RuneCostID);
+                auto spell_rune_cost = sSpellRuneCostStore.LookupEntry(GetProto()->RuneCostID);
+                if (!spell_rune_cost)
+                    return false;
+
                 DeathKnight* dk = static_cast<DeathKnight*>(p_caster);
-                uint32 credit = dk->HasRunes(RUNE_BLOOD, runecost->bloodRuneCost) +
-                    dk->HasRunes(RUNE_FROST, runecost->frostRuneCost) +
-                    dk->HasRunes(RUNE_UNHOLY, runecost->unholyRuneCost);
+                uint32 credit = dk->HasRunes(RUNE_BLOOD, spell_rune_cost->bloodRuneCost) +
+                    dk->HasRunes(RUNE_FROST, spell_rune_cost->frostRuneCost) +
+                    dk->HasRunes(RUNE_UNHOLY, spell_rune_cost->unholyRuneCost);
                 if (credit > 0 && dk->HasRunes(RUNE_DEATH, credit) > 0)
                     return false;
             }
@@ -2669,15 +2672,18 @@ bool Spell::TakePower()
         {
             if (GetProto()->RuneCostID && p_caster)
             {
-                SpellRuneCostEntry* runecost = dbcSpellRuneCost.LookupEntry(GetProto()->RuneCostID);
+                auto spell_rune_cost = sSpellRuneCostStore.LookupEntry(GetProto()->RuneCostID);
+                if (!spell_rune_cost)
+                    return false;
+
                 DeathKnight* dk = static_cast<DeathKnight*>(p_caster);
-                uint32 credit = dk->TakeRunes(RUNE_BLOOD, runecost->bloodRuneCost) +
-                    dk->TakeRunes(RUNE_FROST, runecost->frostRuneCost) +
-                    dk->TakeRunes(RUNE_UNHOLY, runecost->unholyRuneCost);
+                uint32 credit = dk->TakeRunes(RUNE_BLOOD, spell_rune_cost->bloodRuneCost) +
+                    dk->TakeRunes(RUNE_FROST, spell_rune_cost->frostRuneCost) +
+                    dk->TakeRunes(RUNE_UNHOLY, spell_rune_cost->unholyRuneCost);
                 if (credit > 0 && dk->TakeRunes(RUNE_DEATH, credit) > 0)
                     return false;
-                if (runecost->runePowerGain)
-                    u_caster->SetPower(POWER_TYPE_RUNIC_POWER, runecost->runePowerGain + u_caster->GetPower(POWER_TYPE_RUNIC_POWER));
+                if (spell_rune_cost->runePowerGain)
+                    u_caster->SetPower(POWER_TYPE_RUNIC_POWER, spell_rune_cost->runePowerGain + u_caster->GetPower(POWER_TYPE_RUNIC_POWER));
             }
             return true;
         }

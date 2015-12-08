@@ -957,15 +957,6 @@ struct SpellEntry
     }
 };
 
-struct SpellRuneCostEntry
-{
-    uint32 ID;
-    uint32 bloodRuneCost;
-    uint32 frostRuneCost;
-    uint32 unholyRuneCost;
-    uint32 runePowerGain;
-};
-
 struct TalentEntry
 {
     uint32 TalentID;
@@ -1717,7 +1708,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClasses
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
 extern SERVER_DECL DBC::DBCStorage <DBC::Structures::HolidaysEntry> sHolidaysStore;
-extern SERVER_DECL DBCStorage<SpellRuneCostEntry> dbcSpellRuneCost;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore;
 extern SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore;
