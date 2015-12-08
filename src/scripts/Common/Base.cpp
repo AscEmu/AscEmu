@@ -543,8 +543,8 @@ SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetTyp
 #ifdef USE_DBC_SPELL_INFO
     float CastTime = (Info->CastingTimeIndex) ? GetCastTime(dbcSpellCastTime.LookupEntry(Info->CastingTimeIndex)) : pCastTime;
     int32 Cooldown = Info->RecoveryTime;
-    float MinRange = (Info->rangeIndex) ? GetMinRange(dbcSpellRange.LookupEntry(Info->rangeIndex)) : pMinRange;
-    float MaxRange = (Info->rangeIndex) ? GetMaxRange(dbcSpellRange.LookupEntry(Info->rangeIndex)) : pMaxRange;
+    float MinRange = (Info->rangeIndex) ? GetMinRange(sSpellRangeStore.LookupEntry(Info->rangeIndex)) : pMinRange;
+    float MaxRange = (Info->rangeIndex) ? GetMaxRange(sSpellRangeStore.LookupEntry(Info->rangeIndex)) : pMaxRange;
     sLog.outDebug("MoonScriptCreatureAI::AddSpell(%u) : casttime=%.1f cooldown=%d minrange=%.1f maxrange=%.1f", pSpellId, CastTime, Cooldown, MinRange, MaxRange);
 #else
     float CastTime = pCastTime;

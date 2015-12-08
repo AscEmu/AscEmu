@@ -543,10 +543,10 @@ AI_Spell* Pet::CreateAISpell(SpellEntry* info)
     sp->agent = AGENT_SPELL;
     sp->entryId = GetEntry();
     sp->floatMisc1 = 0;
-    sp->maxrange = GetMaxRange(dbcSpellRange.LookupEntry(info->rangeIndex));
+    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->rangeIndex));
     if (sp->maxrange < sqrt(info->base_range_or_radius_sqr))
         sp->maxrange = sqrt(info->base_range_or_radius_sqr);
-    sp->minrange = GetMinRange(dbcSpellRange.LookupEntry(info->rangeIndex));
+    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->rangeIndex));
     sp->Misc2 = 0;
     sp->procChance = 0;
     sp->spell = info;

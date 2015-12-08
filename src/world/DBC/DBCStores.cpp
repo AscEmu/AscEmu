@@ -78,7 +78,7 @@ SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore(DBC::Structures::spell_duration_format);
 SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore(DBC::Structures::spell_radius_format);
-SERVER_DECL DBCStorage<SpellRange> dbcSpellRange;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore(DBC::Structures::spell_range_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
 SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
 SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
@@ -285,9 +285,6 @@ const char* talententryFormat = "uuuuuuuuuxxxxuxxuxxxxxx";
 const char* talenttabentryFormat = "uxxxxxxxxxxxxxxxxxxxuuux";
 const char* spellcasttimeFormat = "uuxx";
 
-const char* spellrangeFormat = "uffffxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-const char* SpellRuneCostFormat = "uuuuu";
-
 const char* randompropsFormat = "uxuuuxxxxxxxxxxxxxxxxxxx";
 
 const char* areatableFormat = "uuuuuxxxuxulxxxxxxxxxxxxxxxxuxxxxxxx";
@@ -352,7 +349,8 @@ bool LoadDBCs()
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");     ///\todo handle max and level radius
 
-    LOAD_DBC("DBC/SpellRange.dbc", spellrangeFormat, true, dbcSpellRange, false);
+    //LOAD_DBC("DBC/SpellRange.dbc", spellrangeFormat, true, dbcSpellRange, false);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRuneCostStore, dbc_path, "SpellRuneCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");

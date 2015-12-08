@@ -114,7 +114,7 @@ class MirrorImageAI : public CreatureAIScript
                     _unit->SetMaxPower(POWER_TYPE_MANA, owner->GetMaxPower(POWER_TYPE_MANA));
                     _unit->SetPower(POWER_TYPE_MANA, owner->GetPower(POWER_TYPE_MANA));
 
-                    SpellRange* range = NULL;
+                    DBC::Structures::SpellRangeEntry const* range = NULL;
 
                     AI_Spell sp1;
                     sp1.entryId = 59638;
@@ -130,7 +130,7 @@ class MirrorImageAI : public CreatureAIScript
                     sp1.Misc2 = 0;
                     sp1.procCount = 0;
                     sp1.procChance = 100;
-                    range = dbcSpellRange.LookupEntry(sp1.spell->rangeIndex);
+                    range = sSpellRangeStore.LookupEntry(sp1.spell->rangeIndex);
                     sp1.minrange = GetMinRange(range);
                     sp1.maxrange = GetMaxRange(range);
 
@@ -150,7 +150,7 @@ class MirrorImageAI : public CreatureAIScript
                     sp2.Misc2 = 0;
                     sp2.procCount = 0;
                     sp2.procChance = 100;
-                    range = dbcSpellRange.LookupEntry(sp2.spell->rangeIndex);
+                    range = sSpellRangeStore.LookupEntry(sp2.spell->rangeIndex);
                     sp2.minrange = GetMinRange(range);
                     sp2.maxrange = GetMaxRange(range);
 

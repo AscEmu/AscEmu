@@ -69,6 +69,7 @@ namespace DBC
             char const stable_slot_prices_format[] = "ni";
             char const spell_duration_format[] = "niii";
             char const spell_radius_format[] = "nfff";
+            char const spell_range_format[] = "nffffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const spell_rune_cost_format[] = "niiii";
             char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
             char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
@@ -527,6 +528,20 @@ namespace DBC
             float radius_min;           // 1 Radius
             float radius_per_level;     // 2
             float radius_max;           // 3 Radius2
+        };
+
+        struct SpellRangeEntry
+        {
+            uint32 ID;                  // 0
+            float minRange;             // 1
+            float minRangeFriendly;     // 2
+            float maxRange;             // 3
+            float maxRangeFriendly;     // 4
+            uint32 range_type;          // 5
+            //char* name1[16]           // 6-21
+            //uint32 name1_falgs;       // 22
+            //char* name2[16]           // 23-38
+            //uint32 name2_falgs;       // 39
         };
 
         struct SpellRuneCostEntry

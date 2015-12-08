@@ -267,8 +267,8 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                         continue;
                     }
 
-                    sp->minrange = GetMinRange(dbcSpellRange.LookupEntry(sp->spell->rangeIndex));
-                    sp->maxrange = GetMaxRange(dbcSpellRange.LookupEntry(sp->spell->rangeIndex));
+                    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(sp->spell->rangeIndex));
+                    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(sp->spell->rangeIndex));
 
                     //omg the poor darling has no clue about making ai_agents
                     if (sp->cooldown == (uint32) - 1)

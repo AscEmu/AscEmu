@@ -458,7 +458,7 @@ void GameObject::InitAI()
     }
 
     if (r < 0.1)//no range
-        r = GetMaxRange(dbcSpellRange.LookupEntry(sp->rangeIndex));
+        r = GetMaxRange(sSpellRangeStore.LookupEntry(sp->rangeIndex));
 
     range = r * r; //square to make code faster
     checkrate = 20;//once in 2 seconds

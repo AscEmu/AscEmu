@@ -3589,7 +3589,7 @@ uint8 Spell::CanCast(bool tolerate)
                 if (gameobject_info->parameter_1)
                     focusRange = float(gameobject_info->parameter_1);
                 else
-                    focusRange = GetMaxRange(dbcSpellRange.LookupEntry(GetProto()->rangeIndex));
+                    focusRange = GetMaxRange(sSpellRangeStore.LookupEntry(GetProto()->rangeIndex));
 
                 // check if focus object is close enough
                 if (!IsInrange(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), (*itr), (focusRange * focusRange)))
@@ -3876,18 +3876,20 @@ uint8 Spell::CanCast(bool tolerate)
      */
     float maxRange = 0;
 
-    SpellRange* range = dbcSpellRange.LookupEntry(GetProto()->rangeIndex);
-
-    if (m_caster->IsInWorld())
+    auto spell_range = sSpellRangeStore.LookupEntry(GetProto()->rangeIndex);
+    if (spell_range != nullptr)
     {
-        Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-        if (target != NULL && isFriendly(m_caster, target))
-            maxRange = range->maxRangeFriendly;
+        if (m_caster->IsInWorld())
+        {
+            Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
+            if (target != NULL && isFriendly(m_caster, target))
+                maxRange = spell_range->maxRangeFriendly;
+            else
+                maxRange = spell_range->maxRange;
+        }
         else
-            maxRange = range->maxRange;
+            maxRange = spell_range->maxRange;
     }
-    else
-        maxRange = range->maxRange;
 
     if (u_caster && m_caster->GetMapMgr() && m_targets.m_unitTarget)
     {

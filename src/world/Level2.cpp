@@ -1371,8 +1371,8 @@ bool ChatHandler::HandleAddAIAgentCommand(const char* args, WorldSession* m_sess
     sp->procCount = 0;
     sp->procCounter = 0;
     sp->cooldowntime = 0;
-    sp->minrange = GetMinRange(dbcSpellRange.LookupEntry(dbcSpell.LookupEntry(atoi(spellId))->rangeIndex));
-    sp->maxrange = GetMaxRange(dbcSpellRange.LookupEntry(dbcSpell.LookupEntry(atoi(spellId))->rangeIndex));
+    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(dbcSpell.LookupEntry(atoi(spellId))->rangeIndex));
+    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(dbcSpell.LookupEntry(atoi(spellId))->rangeIndex));
 
     target->GetProto()->spells.push_back(sp);
 

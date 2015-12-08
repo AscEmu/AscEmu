@@ -6177,10 +6177,11 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     // So we'll use 114, which is the correct 35 yard range used by the other Hunter abilities (arcane shot, concussive shot...)
     uint8 fail = 0;
     uint32 rIndex = autoshot ? 114 : spellinfo->rangeIndex;
-    SpellRange* range = dbcSpellRange.LookupEntry(rIndex);
-    float minrange = GetMinRange(range);
+
+    auto spell_range = sSpellRangeStore.LookupEntry(rIndex);
+    float minrange = GetMinRange(spell_range);
     float dist = CalcDistance(this, target);
-    float maxr = GetMaxRange(range) + 2.52f;
+    float maxr = GetMaxRange(spell_range) + 2.52f;
 
     SM_FFValue(this->SM_FRange, &maxr, spellinfo->SpellGroupType);
     SM_PFValue(this->SM_PRange, &maxr, spellinfo->SpellGroupType);
