@@ -537,15 +537,6 @@ struct EnchantEntry
 
 };
 
-struct GemPropertyEntry
-{
-    uint32 Entry;
-    uint32 EnchantmentID;
-    uint32 unk1;            /// bool
-    uint32 unk2;            /// bool
-    uint32 SocketMask;
-};
-
 //SkillLine.dbc
 struct skilllineentry
 {
@@ -1596,7 +1587,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitles
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
-extern SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GemPropertiesEntry> sGemPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;

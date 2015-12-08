@@ -1920,7 +1920,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
     uint64 itemguid;
     uint64 gemguid[3];
     ItemInterface* itemi = _player->GetItemInterface();
-    GemPropertyEntry* gp;
+    DBC::Structures::GemPropertiesEntry const* gem_properties;
     EnchantEntry* Enchantment;
     recvPacket >> itemguid;
 
@@ -1951,12 +1951,12 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
         {
             FilledSlots++;
             ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(EI->Enchantment->GemEntry);
-            if (!ip)
-                gp = NULL;
+            if (ip)
+                gem_properties = nullptr;
             else
-                gp = dbcGemProperty.LookupEntry(ip->GemProperties);
+                gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
 
-            if (gp && !(gp->SocketMask & TargetProto->Sockets[i].SocketColor))
+            if (gem_properties && !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
                 ColorMatch = false;
         }
 
@@ -2016,26 +2016,26 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
             if (!it)
                 return; //someone sending hacked packets to crash server
 
-            gp = dbcGemProperty.LookupEntryForced(it->GetProto()->GemProperties);
+            gem_properties = sGemPropertiesStore.LookupEntry(it->GetProto()->GemProperties);
             it->DeleteMe();
 
-            if (!gp)
+            if (!gem_properties)
                 continue;
 
-            if (!(gp->SocketMask & TargetProto->Sockets[i].SocketColor))
+            if (!(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
                 ColorMatch = false;
 
-            if (!gp->EnchantmentID)//this is ok in few cases
+            if (!gem_properties->EnchantmentID)//this is ok in few cases
                 continue;
             //Meta gems only go in meta sockets.
-            if (TargetProto->Sockets[i].SocketColor != GEM_META_SOCKET && gp->SocketMask == GEM_META_SOCKET)
+            if (TargetProto->Sockets[i].SocketColor != GEM_META_SOCKET && gem_properties->SocketMask == GEM_META_SOCKET)
                 continue;
             if (EI)//replace gem
                 TargetItem->RemoveEnchantment(2 + i); //remove previous
             else//add gem
                 FilledSlots++;
 
-            Enchantment = dbcEnchant.LookupEntryForced(gp->EnchantmentID);
+            Enchantment = dbcEnchant.LookupEntryForced(gem_properties->EnchantmentID);
             if (Enchantment && TargetItem->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
                 TargetItem->AddEnchantment(Enchantment, 0, true, apply, false, 2 + i);
         }
