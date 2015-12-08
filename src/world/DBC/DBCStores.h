@@ -1084,21 +1084,6 @@ struct RandomProps
     //uint32 RankFlags;
 };
 
-struct DBCTaxiPathNode
-{
-    uint32 id;
-    uint32 path;
-    uint32 seq;            /// nodeIndex
-    uint32 mapid;
-    float x;
-    float y;
-    float z;
-    uint32 flags;
-    uint32 waittime;
-    //uint32 arivalEventID;
-    //uint32 departureEventID;
-};
-
 struct CreatureSpellDataEntry
 {
     uint32 id;
@@ -1739,7 +1724,7 @@ extern SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
 extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathEntry> sTaxiPathStore;
-extern SERVER_DECL DBCStorage<DBCTaxiPathNode> dbcTaxiPathNode;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
 extern SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;

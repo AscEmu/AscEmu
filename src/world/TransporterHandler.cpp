@@ -64,20 +64,20 @@ bool Transporter::CreateAsTransporter(uint32 EntryID, const char* Name, int32 Ti
 bool FillPathVector(uint32 PathID, TransportPath & Path)
 {
     // Store dbc values into current Path array
-    Path.Resize(dbcTaxiPathNode.GetNumRows());
+    Path.Resize(sTaxiPathNodeStore.GetNumRows());
 
     uint32 i = 0;
-    for (uint32 j = 0; j < dbcTaxiPathNode.GetNumRows(); j++)
+    for (uint32 j = 0; j < sTaxiPathNodeStore.GetNumRows(); j++)
     {
-        DBCTaxiPathNode* pathnode = dbcTaxiPathNode.LookupRow(j);
-        if (pathnode->path == PathID)
+        auto taxi_path_node = sTaxiPathNodeStore.LookupEntry(j);
+        if (taxi_path_node != nullptr && taxi_path_node->path == PathID)
         {
-            Path[i].mapid = pathnode->mapid;
-            Path[i].x = pathnode->x;
-            Path[i].y = pathnode->y;
-            Path[i].z = pathnode->z;
-            Path[i].actionFlag = pathnode->flags;
-            Path[i].delay = pathnode->waittime;
+            Path[i].mapid = taxi_path_node->mapid;
+            Path[i].x = taxi_path_node->x;
+            Path[i].y = taxi_path_node->y;
+            Path[i].z = taxi_path_node->z;
+            Path[i].actionFlag = taxi_path_node->flags;
+            Path[i].delay = taxi_path_node->waittime;
             ++i;
         }
     }

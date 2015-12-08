@@ -69,6 +69,7 @@ namespace DBC
             char const stable_slot_prices_format[] = "ni";
             char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
             char const taxi_path_format[] = "niii";
+            char const taxi_path_node_format[] = "niiifffiiii";
         }
 
         #pragma pack(push, 1)
@@ -527,6 +528,21 @@ namespace DBC
             uint32 from;                // 1
             uint32 to;                  // 2
             uint32 price;               // 3
+        };
+
+        struct TaxiPathNodeEntry
+        {
+            uint32 id;                  // 0
+            uint32 path;                // 1
+            uint32 seq;                 // 2 nodeIndex
+            uint32 mapid;               // 3
+            float x;                    // 4
+            float y;                    // 5
+            float z;                    // 6
+            uint32 flags;               // 7
+            uint32 waittime;            // 8
+            uint32 arivalEventID;       // 9
+            uint32 departureEventID;    // 10
         };
         #pragma pack(pop)
     }
