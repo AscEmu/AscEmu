@@ -74,7 +74,7 @@ SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
 SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
 SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
 SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
-SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore(DBC::Structures::spell_difficulty_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore(DBC::Structures::spell_duration_format);
 SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore(DBC::Structures::spell_radius_format);
@@ -167,8 +167,6 @@ const char* AchievementCriteriaStoreFormat =
 "u" // index
 ;
 #endif
-
-const char* spelldifficultyentryformat = "niiii";
 
 const char* spellentryFormat =
 "u" // Id
@@ -345,13 +343,10 @@ bool LoadDBCs()
     LOAD_DBC("DBC/Talent.dbc", talententryFormat, true, dbcTalent, false);
     LOAD_DBC("DBC/TalentTab.dbc", talenttabentryFormat, true, dbcTalentTab, false);
     LOAD_DBC("DBC/SpellCastTimes.dbc", spellcasttimeFormat, true, dbcSpellCastTime, false);
-    LOAD_DBC("DBC/SpellDifficulty.dbc", spelldifficultyentryformat, true, dbcSpellDifficultyEntry, false);
 
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDifficultyStore, dbc_path, "SpellDifficulty.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");     ///\todo handle max and level radius
-
-    //LOAD_DBC("DBC/SpellRange.dbc", spellrangeFormat, true, dbcSpellRange, false);
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");
-
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRuneCostStore, dbc_path, "SpellRuneCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellShapeshiftFormStore, dbc_path, "SpellShapeshiftForm.dbc");

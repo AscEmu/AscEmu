@@ -1009,12 +1009,6 @@ struct Trainerspell
     uint32 charclass;
 };
 
-struct SpellDifficultyEntry
-{
-    uint32 ID;
-    int32 SpellId[NUM_INSTANCE_MODES];
-};
-
 struct SpellCastTime
 {
     uint32 ID;
@@ -1672,7 +1666,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore;
 extern SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
-extern SERVER_DECL DBCStorage<SpellDifficultyEntry> dbcSpellDifficultyEntry;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
