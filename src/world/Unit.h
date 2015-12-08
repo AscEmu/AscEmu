@@ -74,7 +74,7 @@ class AIInterface;
 class GameObject;
 
 struct CreatureInfo;
-struct FactionTemplateDBC;
+
 struct FactionDBC;
 
 typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;

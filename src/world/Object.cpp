@@ -61,9 +61,6 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_inQueue = false;
     m_loadedFromDB = false;
 
-    m_faction = dbcFactionTemplate.LookupRow(0);
-    m_factionDBC = dbcFaction.LookupRow(0);
-
     m_objectTypeId = TYPEID_OBJECT;
 
     m_objectsInRange.clear();
@@ -1532,28 +1529,22 @@ bool Object::isInRange(Object* target, float range)
 
 void Object::_setFaction()
 {
-    FactionTemplateDBC* factT = NULL;
+    DBC::Structures::FactionTemplateEntry const* factT = NULL;
 
     if (IsUnit())
     {
-        factT = dbcFactionTemplate.LookupEntryForced(static_cast<Unit*>(this)->GetFaction());
+        factT = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->GetFaction());
         if (!factT)
             LOG_ERROR("Unit does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
     }
     else if (IsGameObject())
     {
-        factT = dbcFactionTemplate.LookupEntryForced(static_cast< GameObject* >(this)->GetFaction());
+        factT = sFactionTemplateStore.LookupEntry(static_cast< GameObject* >(this)->GetFaction());
         // A "dead" object is not able to choose/have a faction
         //if (!factT)
         //    LOG_ERROR("Game Object does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", TO< GameObject* >(this)->GetFaction(), GetEntry());
     }
 
-    if (!factT)
-    {
-        factT = dbcFactionTemplate.LookupRow(0);
-        //this is causing a lot of crashes cause people have shitty dbs
-        //		return;
-    }
     m_faction = factT;
     m_factionDBC = dbcFaction.LookupEntryForced(factT->Faction);
     if (!m_factionDBC)

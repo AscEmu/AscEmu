@@ -42,6 +42,7 @@ namespace DBC
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
+            char const faction_template_format[] = "niiiiiiiiiiiii";
             char const gt_barber_shop_cost_format[] = "f";
             char const gt_chance_to_melee_crit_format[] = "f";
             char const gt_chance_to_melee_crit_base_format[] = "f";
@@ -256,6 +257,18 @@ namespace DBC
             //uint32 unk9;          // 16
             //uint32 unk10;         // 17
             //uint32 unk11;         // 18
+        };
+
+        struct FactionTemplateEntry
+        {
+            uint32 ID;                      // 0
+            uint32 Faction;                 // 1
+            uint32 FactionGroup;            // 2
+            uint32 Mask;                    // 3
+            uint32 FriendlyMask;            // 4
+            uint32 HostileMask;             // 5
+            uint32 EnemyFactions[4];        // 6-9
+            uint32 FriendlyFactions[4];     // 10-13
         };
 
         struct GtBarberShopCostBaseEntry

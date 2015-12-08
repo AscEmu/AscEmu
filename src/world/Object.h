@@ -35,7 +35,7 @@
 #include "../shared/StackBuffer.h"
 
 struct SpellEntry;
-struct FactionTemplateDBC;
+
 struct FactionDBC;
 
 class Unit;
@@ -713,7 +713,7 @@ class SERVER_DECL Object : public EventableObject
         void _setFaction();
         uint32 _getFaction();
 
-        FactionTemplateDBC* m_faction;
+        DBC::Structures::FactionTemplateEntry const* m_faction;
         FactionDBC* m_factionDBC;
 
         void SetInstanceID(int32 instance) { m_instanceId = instance; }

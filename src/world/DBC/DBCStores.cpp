@@ -51,7 +51,7 @@ SERVER_DECL DBCStorage<DBCTaxiPath> dbcTaxiPath;
 SERVER_DECL DBCStorage<DBCTaxiPathNode> dbcTaxiPathNode;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore(DBC::Structures::durability_costs_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityQualityEntry> sDurabilityQualityStore(DBC::Structures::durability_quality_format);
-SERVER_DECL DBCStorage<FactionTemplateDBC> dbcFactionTemplate;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore(DBC::Structures::faction_template_format);
 SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore(DBC::Structures::emotes_text_format);
 SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
@@ -291,7 +291,7 @@ const char* spelldurationFormat = "uuuu";
 const char* randompropsFormat = "uxuuuxxxxxxxxxxxxxxxxxxx";
 
 const char* areatableFormat = "uuuuuxxxuxulxxxxxxxxxxxxxxxxuxxxxxxx";
-const char* factiontemplatedbcFormat = "uuuuuuuuuuuuuu";
+
 
 const char* factiondbcFormat = "uiuuuuuuuuiiiiuuuuulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
@@ -366,8 +366,8 @@ bool LoadDBCs()
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaGroupStore, dbc_path, "AreaGroup.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaStore, dbc_path, "AreaTable.dbc");
-
-    LOAD_DBC("DBC/FactionTemplate.dbc", factiontemplatedbcFormat, true, dbcFactionTemplate, false);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sFactionTemplateStore, dbc_path, "FactionTemplate.dbc");
+    //LOAD_DBC("DBC/FactionTemplate.dbc", factiontemplatedbcFormat, true, dbcFactionTemplate, false);
     LOAD_DBC("DBC/Faction.dbc", factiondbcFormat, true, dbcFaction, true);
     LOAD_DBC("DBC/TaxiNodes.dbc", dbctaxinodeFormat, false, dbcTaxiNode, false);
     LOAD_DBC("DBC/TaxiPath.dbc", dbctaxipathFormat, false, dbcTaxiPath, false);

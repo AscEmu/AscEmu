@@ -1084,18 +1084,6 @@ struct RandomProps
     //uint32 RankFlags;
 };
 
-struct FactionTemplateDBC
-{
-    uint32 ID;
-    uint32 Faction;
-    uint32 FactionGroup;
-    uint32 Mask;
-    uint32 FriendlyMask;
-    uint32 HostileMask;
-    uint32 EnemyFactions[4];
-    uint32 FriendlyFactions[4];
-};
-
 struct FactionDBC
 {
     uint32 ID;
@@ -1794,7 +1782,7 @@ extern SERVER_DECL DBCStorage<SpellRadius> dbcSpellRadius;
 extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
-extern SERVER_DECL DBCStorage<FactionTemplateDBC> dbcFactionTemplate;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore;
 extern SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
 extern SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
 extern SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
