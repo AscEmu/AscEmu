@@ -487,25 +487,6 @@ struct AchievementCriteriaEntry
     uint32 maxLevel;                // 31 Max level
 };*/
 
-//SkillLineAbility.dbc
-struct skilllinespell
-{
-    uint32 Id;
-    uint32 skilline;
-    uint32 spell;
-  //uint32 raceMask;
-  //uint32 classMask;
-  //uint32 excludeRace;
-  //uint32 excludeClass;
-    uint32 minSkillLineRank;
-    uint32 next;
-    uint32 acquireMethod;
-    uint32 grey;
-    uint32 green;
-  //uint32 abandonable;
-    uint32 reqTP;
-};
-
 //SkillLine.dbc
 struct skilllineentry
 {
@@ -1576,7 +1557,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFacti
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionEntry> sFactionStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
 extern SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
-extern SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
 extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathEntry> sTaxiPathStore;

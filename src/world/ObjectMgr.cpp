@@ -380,21 +380,18 @@ void ObjectMgr::RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char
 
 void ObjectMgr::LoadSpellSkills()
 {
-    uint32 i;
-    //    int total = sSkillStore.GetNumRows();
-
-    for (i = 0; i < dbcSkillLineSpell.GetNumRows(); i++)
+    for (uint32 i = 0; i < sSkillLineAbilityStore.GetNumRows(); i++)
     {
-        skilllinespell* sp = dbcSkillLineSpell.LookupRowForced(i);
-        if (sp)
+        auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(i);
+        if (skill_line_ability)
         {
-            mSpellSkills[sp->spell] = sp;
+            mSpellSkills[skill_line_ability->spell] = skill_line_ability;
         }
     }
     Log.Success("ObjectMgr", "%u spell skills loaded.", mSpellSkills.size());
 }
 
-skilllinespell* ObjectMgr::GetSpellSkill(uint32 id)
+DBC::Structures::SkillLineAbilityEntry const* ObjectMgr::GetSpellSkill(uint32 id)
 {
     return mSpellSkills[id];
 }
@@ -402,13 +399,13 @@ skilllinespell* ObjectMgr::GetSpellSkill(uint32 id)
 SpellEntry* ObjectMgr::GetNextSpellRank(SpellEntry* sp, uint32 level)
 {
     // Looks for next spell rank
-    if (sp == NULL)
+    if (sp == nullptr)
         return NULL;
 
-    skilllinespell* skill = GetSpellSkill(sp->Id);
-    if (skill != NULL && skill->next > 0)
+    auto skill_line_ability = GetSpellSkill(sp->Id);
+    if (skill_line_ability != nullptr && skill_line_ability->next > 0)
     {
-        SpellEntry* sp1 = dbcSpell.LookupEntry(skill->next);
+        SpellEntry* sp1 = dbcSpell.LookupEntry(skill_line_ability->next);
         if (sp1->baseLevel <= level)   // check level
             return GetNextSpellRank(sp1, level);   // recursive for higher ranks
     }

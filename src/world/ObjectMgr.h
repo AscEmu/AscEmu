@@ -489,7 +489,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::unordered_map<uint32, PlayerInfo*>                 PlayerNameMap;
         typedef std::unordered_map<uint32, PlayerCreateInfo*>           PlayerCreateInfoMap;
         typedef std::unordered_map<uint32, Guild*>                      GuildMap;
-        typedef std::unordered_map<uint32, skilllinespell*>             SLMap;
+        typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>             SLMap;
         typedef std::unordered_map<uint32, std::vector<CreatureItem>*>  VendorMap;
         typedef std::unordered_map<uint32, Transporter*>                TransportMap;
         typedef std::unordered_map<uint32, Trainer*>                    TrainerMap;
@@ -595,7 +595,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
         //std::list<GM_Ticket*>* GetGMTicketsByPlayer(uint64 playerGuid);
 
-        skilllinespell* GetSpellSkill(uint32 id);
+        DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
         SpellEntry* GetNextSpellRank(SpellEntry* sp, uint32 level);
 
         //Vendors

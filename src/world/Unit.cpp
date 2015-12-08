@@ -1536,10 +1536,10 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    skilllinespell* skillability = objmgr.GetSpellSkill(CastingSpell->Id);
-                    if (!skillability)
+                    auto skill_line_ability = objmgr.GetSpellSkill(CastingSpell->Id);
+                    if (!skill_line_ability)
                         continue;
-                    if (skillability->skilline != SKILL_DESTRUCTION)
+                    if (skill_line_ability->skilline != SKILL_DESTRUCTION)
                         continue;
                 }
                 break;

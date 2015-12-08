@@ -1955,8 +1955,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     if (p_caster != NULL)
     {
-
-        skilllinespell* skill = objmgr.GetSpellSkill(spellid);
+        auto skill_line_ability = objmgr.GetSpellSkill(spellid);
 
         // potions learned by discovery variables
         uint32 cast_chance = 5;
@@ -1979,7 +1978,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
                 break;
         }
 
-        if ((skill != NULL) && (skill->skilline == SKILL_ALCHEMY))
+        if ((skill_line_ability != nullptr) && (skill_line_ability->skilline == SKILL_ALCHEMY))
         {
             //Potion Master
             if (strstr(m_itemProto->Name1, "Potion"))
@@ -2088,16 +2087,16 @@ void Spell::SpellEffectCreateItem(uint32 i)
             }
         }
 
-        if (skill != 0)
+        if (skill_line_ability != nullptr)
         {
-            DetermineSkillUp(skill->skilline);
+            DetermineSkillUp(skill_line_ability->skilline);
 
             uint32 discovered_recipe = 0;
 
             for (std::set<ProfessionDiscovery*>::iterator itr = objmgr.ProfessionDiscoveryTable.begin(); itr != objmgr.ProfessionDiscoveryTable.end(); itr++)
             {
                 ProfessionDiscovery* pf = *itr;
-                if (spellid == pf->SpellId && p_caster->_GetSkillLineCurrent(skill->skilline) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Rand(pf->Chance))
+                if (spellid == pf->SpellId && p_caster->_GetSkillLineCurrent(skill_line_ability->skilline) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Rand(pf->Chance))
                 {
                     discovered_recipe = pf->SpellToDiscover;
                     break;
@@ -3779,9 +3778,9 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
     if (Slot < 0)
         return; // Apply failed
 
-    skilllinespell* skill = objmgr.GetSpellSkill(GetProto()->Id);
-    if (skill != NULL)
-        DetermineSkillUp(skill->skilline, itemTarget->GetProto()->ItemLevel);
+    auto skill_line_ability = objmgr.GetSpellSkill(GetProto()->Id);
+    if (skill_line_ability != nullptr)
+        DetermineSkillUp(skill_line_ability->skilline, itemTarget->GetProto()->ItemLevel);
 }
 
 void Spell::SpellEffectTameCreature(uint32 i)
@@ -3935,9 +3934,11 @@ void Spell::SpellEffectOpenLockItem(uint32 i)
 void Spell::SpellEffectProficiency(uint32 i)
 {
     uint32 skill = 0;
-    skilllinespell* skillability = objmgr.GetSpellSkill(GetProto()->Id);
-    if (skillability)
-        skill = skillability->skilline;
+
+    auto skill_line_ability = objmgr.GetSpellSkill(GetProto()->Id);
+    if (skill_line_ability != nullptr)
+        skill = skill_line_ability->skilline;
+
     skilllineentry* sk = dbcSkillLine.LookupEntryForced(skill);
     if (skill)
     {

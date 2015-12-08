@@ -182,17 +182,19 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
     {
         // Type 0 = Major, 1 = Minor
         uint32 glyphType = (s->GetProto()->Id == 61177) ? 0 : 1;
-        skilllinespell* sls;
-        uint32 num_sl = dbcSkillLineSpell.GetNumRows();
+
         std::vector<uint32> discoverableGlyphs;
 
         // how many of these are the right type (minor/major) of glyph, and learnable by the player
-        for (uint32 idx = 0; idx < num_sl; ++idx)
+        for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
-            sls = dbcSkillLineSpell.LookupRow(idx);
-            if (sls->skilline == SKILL_INSCRIPTION && sls->next == 0)
+            auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
+            if (skill_line_ability == nullptr)
+                continue;
+
+            if (skill_line_ability->skilline == SKILL_INSCRIPTION && skill_line_ability->next == 0)
             {
-                SpellEntry* se1 = dbcSpell.LookupEntryForced(sls->spell);
+                SpellEntry* se1 = dbcSpell.LookupEntryForced(skill_line_ability->spell);
                 if (se1 && se1->Effect[0] == SPELL_EFFECT_CREATE_ITEM)
                 {
                     ItemPrototype* itm = ItemPrototypeStorage.LookupEntry(se1->EffectItemType[0]);
@@ -206,9 +208,9 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
                             {
                                 if (glyph_properties->Type == glyphType)
                                 {
-                                    if (!s->p_caster->HasSpell(sls->spell))
+                                    if (!s->p_caster->HasSpell(skill_line_ability->spell))
                                     {
-                                        discoverableGlyphs.push_back(sls->spell);
+                                        discoverableGlyphs.push_back(skill_line_ability->spell);
                                     }
                                 }
                             }

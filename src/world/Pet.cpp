@@ -1081,16 +1081,17 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (s || s2)
     {
-        skilllinespell* sls;
-        uint32 rowcount = dbcSkillLineSpell.GetNumRows();
         SpellEntry* sp;
-        for (uint32 idx = 0; idx < rowcount; ++idx)
+        for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
-            sls = dbcSkillLineSpell.LookupRow(idx);
+            auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
+            if (skill_line_ability == nullptr)
+                continue;
+
             // Update existing spell, or add new "automatic-acquired" spell
-            if ((sls->skilline == s || sls->skilline == s2) && sls->acquireMethod == 2)
+            if ((skill_line_ability->skilline == s || skill_line_ability->skilline == s2) && skill_line_ability->acquireMethod == 2)
             {
-                sp = dbcSpell.LookupEntryForced(sls->spell);
+                sp = dbcSpell.LookupEntryForced(skill_line_ability->spell);
                 if (sp && getLevel() >= sp->baseLevel)
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it

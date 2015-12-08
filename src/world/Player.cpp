@@ -2155,11 +2155,11 @@ void Player::addSpell(uint32 spell_id)
         return;
 
     // Add the skill line for this spell if we don't already have it.
-    skilllinespell* sk = objmgr.GetSpellSkill(spell_id);
+    auto skill_line_ability = objmgr.GetSpellSkill(spell_id);
     SpellEntry* spell = dbcSpell.LookupEntry(spell_id);
-    if (sk && !_HasSkillLine(sk->skilline))
+    if (skill_line_ability && !_HasSkillLine(skill_line_ability->skilline))
     {
-        skilllineentry* skill = dbcSkillLine.LookupEntry(sk->skilline);
+        skilllineentry* skill = dbcSkillLine.LookupEntry(skill_line_ability->skilline);
         uint32 max = 1;
         switch (skill->type)
         {
@@ -2180,7 +2180,7 @@ void Player::addSpell(uint32 spell_id)
                 break;
         };
 
-        _AddSkillLine(sk->skilline, 1, max);
+        _AddSkillLine(skill_line_ability->skilline, 1, max);
         _UpdateMaxSkillCounts();
     }
 #ifdef ENABLE_ACHIEVEMENTS
@@ -6983,18 +6983,17 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
 
 void Player::RemoveSpellsFromLine(uint32 skill_line)
 {
-    uint32 cnt = dbcSkillLineSpell.GetNumRows();
-    for (uint32 i = 0; i < cnt; i++)
+    for (uint32 i = 0; i < sSkillLineAbilityStore.GetNumRows(); i++)
     {
-        skilllinespell* sp = dbcSkillLineSpell.LookupRowForced(i);
-        if (sp)
+        auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(i);
+        if (skill_line_ability)
         {
-            if (sp->skilline == skill_line)
+            if (skill_line_ability->skilline == skill_line)
             {
                 // Check ourselves for this spell, and remove it..
-                if (!removeSpell(sp->spell, 0, 0, 0))
+                if (!removeSpell(skill_line_ability->spell, 0, 0, 0))
                     // if we didn't unlearned spell check deleted spells
-                    removeDeletedSpell(sp->spell);
+                    removeDeletedSpell(skill_line_ability->spell);
             }
         }
     }
@@ -7404,14 +7403,13 @@ void Player::ClearCooldownsOnLine(uint32 skill_line, uint32 called_from)
 {
     // found an easier way.. loop spells, check skill line
     SpellSet::const_iterator itr = mSpells.begin();
-    skilllinespell* sk;
     for (; itr != mSpells.end(); ++itr)
     {
         if ((*itr) == called_from)       // skip calling spell.. otherwise spammies! :D
             continue;
 
-        sk = objmgr.GetSpellSkill((*itr));
-        if (sk && sk->skilline == skill_line)
+        auto skill_line_ability = objmgr.GetSpellSkill((*itr));
+        if (skill_line_ability && skill_line_ability->skilline == skill_line)
             ClearCooldownForSpell((*itr));
     }
 }
@@ -10279,18 +10277,20 @@ void Player::_AdvanceSkillLine(uint32 SkillLine, uint32 Count /* = 1 */)
 void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
 {
     // check for learn new spells (professions), from SkillLineAbility.dbc
-    skilllinespell* sls, *sl2;
-    uint32 rowcount = dbcSkillLineSpell.GetNumRows();
+
     SpellEntry* sp;
     uint32 removeSpellId = 0;
-    for (uint32 idx = 0; idx < rowcount; ++idx)
+    for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
     {
-        sls = dbcSkillLineSpell.LookupRow(idx);
+        auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
+        if (skill_line_ability == nullptr)
+            continue;
+
         // add new "automatic-acquired" spell
-        if ((sls->skilline == SkillLine) && (sls->acquireMethod == 1))
+        if ((skill_line_ability->skilline == SkillLine) && (skill_line_ability->acquireMethod == 1))
         {
-            sp = dbcSpell.LookupEntryForced(sls->spell);
-            if (sp && (curr_sk >= sls->minSkillLineRank))
+            sp = dbcSpell.LookupEntryForced(skill_line_ability->spell);
+            if (sp && (curr_sk >= skill_line_ability->minSkillLineRank))
             {
                 // Player is able to learn this spell; check if they already have it, or a higher rank (shouldn't, but just in case)
                 bool addThisSpell = true;
@@ -10311,19 +10311,21 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                 if (addThisSpell)
                 {
                     // Adding a spell, now check if there was a previous spell, to remove
-                    for (uint32 idx2 = 0; idx2 < rowcount; ++idx2)
+                    for (uint32 idx2 = 0; idx2 < sSkillLineAbilityStore.GetNumRows(); ++idx2)
                     {
-                        sl2 = dbcSkillLineSpell.LookupRow(idx2);
-                        if ((sl2->skilline == SkillLine) && (sl2->next == sls->spell))
+                        auto second_skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx2);
+                        if (second_skill_line_ability == nullptr)
+                            continue;
+
+                        if ((second_skill_line_ability->skilline == SkillLine) && (second_skill_line_ability->next == skill_line_ability->spell))
                         {
-                            removeSpellId = sl2->spell;
-                            idx2 = rowcount;
+                            removeSpellId = second_skill_line_ability->spell;
                         }
                     }
-                    addSpell(sls->spell);
+                    addSpell(skill_line_ability->spell);
                     if (removeSpellId)
                     {
-                        removeSpell(removeSpellId, true, true, sls->next);
+                        removeSpell(removeSpellId, true, true, skill_line_ability->next);
                     }
                     // if passive spell, apply it now
                     if (sp->Attributes & ATTRIBUTES_PASSIVE)

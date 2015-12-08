@@ -69,6 +69,7 @@ namespace DBC
             char const name_gen_format[] = "nsii";
             char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
+            char const skill_line_ability_format[] = "niiiixxiiiiixx";
             char const stable_slot_prices_format[] = "ni";
             char const spell_cast_times_format[] = "nixx";
             char const spell_difficulty_format[] = "niiii";
@@ -538,6 +539,24 @@ namespace DBC
             int32 stat[10];             // 1-10
             uint32 statmodifier[10];    // 11-20
             uint32 maxlevel;            // 21
+        };
+
+        struct SkillLineAbilityEntry
+        {
+            uint32 Id;                      // 0
+            uint32 skilline;                // 1 skill id
+            uint32 spell;                   // 2
+            uint32 race_mask;               // 3
+            uint32 class_mask;              // 4
+            //uint32 excludeRace;           // 5
+            //uint32 excludeClass;          // 6
+            uint32 minSkillLineRank;        // 7 req skill value
+            uint32 next;                    // 8
+            uint32 acquireMethod;           // 9 auto learn
+            uint32 grey;                    // 10 max
+            uint32 green;                   // 11 min
+            //uint32 abandonable;           // 12
+            //uint32 reqTP;                 // 13
         };
 
         struct StableSlotPrices

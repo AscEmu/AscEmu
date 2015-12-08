@@ -3127,29 +3127,29 @@ void Spell::DetermineSkillUp()
     if (p_caster == NULL)
         return;
 
-    skilllinespell* skill = objmgr.GetSpellSkill(GetProto()->Id);
-    if (skill == NULL)
+    auto skill_line_ability = objmgr.GetSpellSkill(GetProto()->Id);
+    if (skill_line_ability == nullptr)
         return;
 
     float chance = 0.0f;
 
-    if (p_caster->_HasSkillLine(skill->skilline))
+    if (p_caster->_HasSkillLine(skill_line_ability->skilline))
     {
-        uint32 amt = p_caster->_GetSkillLineCurrent(skill->skilline, false);
-        uint32 max = p_caster->_GetSkillLineMax(skill->skilline);
+        uint32 amt = p_caster->_GetSkillLineCurrent(skill_line_ability->skilline, false);
+        uint32 max = p_caster->_GetSkillLineMax(skill_line_ability->skilline);
         if (amt >= max)
             return;
-        if (amt >= skill->grey)   //grey
+        if (amt >= skill_line_ability->grey)   //grey
             chance = 0.0f;
-        else if ((amt >= (((skill->grey - skill->green) / 2) + skill->green)))          //green
+        else if ((amt >= (((skill_line_ability->grey - skill_line_ability->green) / 2) + skill_line_ability->green)))          //green
             chance = 33.0f;
-        else if (amt >= skill->green)   //yellow
+        else if (amt >= skill_line_ability->green)   //yellow
             chance = 66.0f;
         else //brown
             chance = 100.0f;
     }
     if (Rand(chance * sWorld.getRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skill->skilline, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+        p_caster->_AdvanceSkillLine(skill_line_ability->skilline, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
 }
 
 bool Spell::IsAspect()
@@ -5450,19 +5450,21 @@ void Spell::DetermineSkillUp(uint32 skillid)
     //This code is wrong for creating items and disenchanting.
     if (p_caster == NULL)
         return;
+
     float chance = 0.0f;
-    skilllinespell* skill = objmgr.GetSpellSkill(GetProto()->Id);
-    if (skill != NULL && skillid == skill->skilline && p_caster->_HasSkillLine(skillid))
+
+    auto skill_line_ability = objmgr.GetSpellSkill(GetProto()->Id);
+    if (skill_line_ability != nullptr && skillid == skill_line_ability->skilline && p_caster->_HasSkillLine(skillid))
     {
         uint32 amt = p_caster->_GetSkillLineCurrent(skillid, false);
         uint32 max = p_caster->_GetSkillLineMax(skillid);
         if (amt >= max)
             return;
-        if (amt >= skill->grey)   //grey
+        if (amt >= skill_line_ability->grey)   //grey
             chance = 0.0f;
-        else if ((amt >= (((skill->grey - skill->green) / 2) + skill->green)))          //green
+        else if ((amt >= (((skill_line_ability->grey - skill_line_ability->green) / 2) + skill_line_ability->green)))          //green
             chance = 33.0f;
-        else if (amt >= skill->green)   //yellow
+        else if (amt >= skill_line_ability->green)   //yellow
             chance = 66.0f;
         else //brown
             chance = 100.0f;
@@ -5878,15 +5880,15 @@ uint8 Spell::GetErrorAtShapeshiftedCast(SpellEntry* spellInfo, uint32 form)
         {
             case FORM_TREE:
             {
-                skilllinespell* sls = objmgr.GetSpellSkill(spellInfo->Id);
-                if (sls && sls->skilline == SPELLTREE_DRUID_RESTORATION)		// Restoration spells can be cast in Tree of Life form, for the rest: apply the default rules.
+                auto skill_line_ability = objmgr.GetSpellSkill(spellInfo->Id);
+                if (skill_line_ability && skill_line_ability->skilline == SPELLTREE_DRUID_RESTORATION)		// Restoration spells can be cast in Tree of Life form, for the rest: apply the default rules.
                     return 0;
             }
             break;
             case FORM_MOONKIN:
             {
-                skilllinespell* sls = objmgr.GetSpellSkill(spellInfo->Id);
-                if (sls && sls->skilline == SPELLTREE_DRUID_BALANCE)			// Balance spells can be cast in Moonkin form, for the rest: apply the default rules.
+                auto skill_line_ability = objmgr.GetSpellSkill(spellInfo->Id);
+                if (skill_line_ability && skill_line_ability->skilline == SPELLTREE_DRUID_BALANCE)			// Balance spells can be cast in Moonkin form, for the rest: apply the default rules.
                     return 0;
             }
             break;
