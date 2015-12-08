@@ -11944,16 +11944,17 @@ void Player::UpdateGlyphs()
 {
     uint32 level = getLevel();
 
-    // Init glyph slots
     if (level >= 15)
     {
-        GlyphSlotEntry* gse;
         uint32 y = 0;
-        for (uint32 i = 0; i < dbcGlyphSlot.GetNumRows(); ++i)
+        for (uint32 i = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
         {
-            gse = dbcGlyphSlot.LookupRow(i);
-            if (gse->Slot > 0)
-                SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + y++, gse->Id);
+            auto glyph_slot = sGlyphSlotStore.LookupEntry(i);
+            if (glyph_slot == nullptr)
+                continue;
+
+            if (glyph_slot->Slot > 0)
+                SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + y++, glyph_slot->Id);
         }
     }
 

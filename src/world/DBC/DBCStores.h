@@ -555,13 +555,6 @@ struct GlyphPropertyEntry
     uint32 unk;         /// some flag
 };
 
-struct GlyphSlotEntry
-{
-    uint32 Id;
-    uint32 Type;
-    uint32 Slot;
-};
-
 //SkillLine.dbc
 struct skilllineentry
 {
@@ -1614,7 +1607,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CurrencyTypesEntry> sCurrenc
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 extern SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
 extern SERVER_DECL DBCStorage<GlyphPropertyEntry> dbcGlyphProperty;
-extern SERVER_DECL DBCStorage<GlyphSlotEntry> dbcGlyphSlot;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore;

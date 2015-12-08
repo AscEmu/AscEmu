@@ -4229,10 +4229,10 @@ void Spell::SpellEffectUseGlyph(uint32 i)
         }
     }
 
-    GlyphSlotEntry* gs = dbcGlyphSlot.LookupEntryForced(p_caster->GetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + m_glyphslot));
-    if (gs)
+    auto glyph_slot = sGlyphSlotStore.LookupEntry(p_caster->GetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + m_glyphslot));
+    if (glyph_slot)
     {
-        if (gs->Type != gp_new->Type)
+        if (glyph_slot->Type != gp_new->Type)
         {
             SendCastResult(SPELL_FAILED_INVALID_GLYPH);
             return;
