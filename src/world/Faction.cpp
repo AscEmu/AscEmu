@@ -55,6 +55,9 @@ bool isHostile(Object* objA, Object* objB)
     if (objB->IsUnit() && objB->HasFlag(UNIT_FIELD_FLAGS, 2 | 128 | 256 | 65536))
         return false;
 
+    if (!objB->m_faction || !objA->m_faction)
+        return false;
+
     uint32 faction = objB->m_faction->Mask;
     uint32 host = objA->m_faction->HostileMask;
 

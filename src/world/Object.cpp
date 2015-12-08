@@ -53,8 +53,8 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_mapMgr = 0;
     m_mapCell_x = m_mapCell_y = uint32(-1);
 
-    m_faction = NULL;
-    m_factionDBC = NULL;
+    m_faction = nullptr;
+    m_factionDBC = nullptr;
 
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
     Active = false;
