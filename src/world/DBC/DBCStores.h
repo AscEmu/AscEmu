@@ -971,34 +971,6 @@ struct TalentEntry
   //uint32 unk2[4];
 };
 
-struct TalentTabEntry
-{
-    uint32 TalentTabID;
-    //char* Name;
-    //uint32 unk3;
-    //uint32 unk4;
-    //uint32 unk5;
-    //uint32 unk6;
-    //uint32 unk7;
-    //uint32 unk8;
-    //uint32 unk9;
-    //uint32 unk10;
-    //uint32 unk11;
-    //uint32 unk12;
-    //uint32 unk13;
-    //uint32 unk14;
-    //uint32 unk15;
-    //uint32 unk16;
-    //uint32 unk17;
-    //uint32 unk18;
-    //uint32 unk19;
-    //uint32 unk20;
-    uint32 ClassMask;
-    uint32 PetTalentMask;
-    uint32 TabPage;
-    //char* InternalName;
-};
-
 struct Trainerspell
 {
     uint32 Id;
@@ -1681,7 +1653,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathEntry> sTaxiPathStor
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
-extern SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore;
 extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;

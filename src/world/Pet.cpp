@@ -449,12 +449,12 @@ void Pet::SendTalentsToOwner()
     // go through talent trees
     for (uint32 tte_id = PET_TALENT_TREE_START; tte_id <= PET_TALENT_TREE_END; tte_id++)
     {
-        TalentTabEntry* tte = dbcTalentTab.LookupEntryForced(tte_id);
-        if (tte == NULL)
+        auto talent_tab = sTalentTabStore.LookupEntry(tte_id);
+        if (talent_tab == nullptr)
             continue;
 
         // check if we match talent tab
-        if (!(tte->PetTalentMask & (1 << cfe->talenttree)))
+        if (!(talent_tab->PetTalentMask & (1 << cfe->talenttree)))
             continue;
 
         TalentEntry* te;

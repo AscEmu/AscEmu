@@ -81,7 +81,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore(DBC::Structures::spell_range_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
 SERVER_DECL DBCStorage<TalentEntry> dbcTalent;
-SERVER_DECL DBCStorage<TalentTabEntry> dbcTalentTab;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore(DBC::Structures::talent_tab_format);
 SERVER_DECL DBCStorage<WorldMapOverlay> dbcWorldMapOverlayStore;
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore(DBC::Structures::gt_barber_shop_cost_format);
@@ -280,7 +280,6 @@ const char* spellentryFormat =
 ;
 
 const char* talententryFormat = "uuuuuuuuuxxxxuxxuxxxxxx";
-const char* talenttabentryFormat = "uxxxxxxxxxxxxxxxxxxxuuux";
 
 const char* randompropsFormat = "uxuuuxxxxxxxxxxxxxxxxxxx";
 
@@ -340,8 +339,8 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
 
     LOAD_DBC("DBC/Talent.dbc", talententryFormat, true, dbcTalent, false);
-    LOAD_DBC("DBC/TalentTab.dbc", talenttabentryFormat, true, dbcTalentTab, false);
-
+    //LOAD_DBC("DBC/TalentTab.dbc", talenttabentryFormat, true, dbcTalentTab, false);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDifficultyStore, dbc_path, "SpellDifficulty.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");     ///\todo handle max and level radius

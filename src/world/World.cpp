@@ -686,8 +686,8 @@ bool World::SetInitialWorldSettings()
         if (talent_info == NULL || talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
             continue;
 
-        TalentTabEntry const* tab_info = dbcTalentTab.LookupEntryForced(talent_info->TalentTree);
-        if (tab_info == NULL)
+        auto talent_tab = sTalentTabStore.LookupEntry(talent_info->TalentTree);
+        if (talent_tab == nullptr)
             continue;
 
         talent_max_rank = 0;
@@ -704,23 +704,23 @@ bool World::SetInitialWorldSettings()
         InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
     }
 
-    for (uint32 i = 0; i < dbcTalentTab.GetNumRows(); ++i)
+    for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
     {
-        TalentTabEntry const* tab_info = dbcTalentTab.LookupRowForced(i);
+        auto talent_tab = sTalentTabStore.LookupEntry(i);
 
         // Don't add invalid TalentTabs or Hunter Pet TalentTabs (ClassMask == 0) to the InspectTalentTabPages
-        if (tab_info == NULL || tab_info->ClassMask == 0)
+        if (talent_tab == nullptr || talent_tab->ClassMask == 0)
             continue;
 
         talent_pos = 0;
 
         for (talent_class = 0; talent_class < 12; ++talent_class)
         {
-            if (tab_info->ClassMask & (1 << talent_class))
+            if (talent_tab->ClassMask & (1 << talent_class))
                 break;
         }
 
-        InspectTalentTabPages[talent_class + 1][tab_info->TabPage] = tab_info->TalentTabID;
+        InspectTalentTabPages[talent_class + 1][talent_tab->TabPage] = talent_tab->TalentTabID;
 
         for (std::map< uint32, uint32 >::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
         {
@@ -729,7 +729,7 @@ bool World::SetInitialWorldSettings()
             if (talent_info == NULL)
                 continue;
 
-            if (talent_info->TalentTree != tab_info->TalentTabID)
+            if (talent_info->TalentTree != talent_tab->TalentTabID)
                 continue;
 
             InspectTalentTabPos[talent_id] = talent_pos;
