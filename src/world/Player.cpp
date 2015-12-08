@@ -13485,7 +13485,7 @@ bool Player::LoadReputations(QueryResult *result)
     if (result == NULL)
         return false;
 
-    FactionDBC *faction = NULL;
+    DBC::Structures::FactionEntry const* faction = NULL;
     FactionReputation *reputation = NULL;
 
     uint32 id = 0;
@@ -13503,7 +13503,7 @@ bool Player::LoadReputations(QueryResult *result)
         basestanding = field[2].GetInt32();
         standing = field[3].GetInt32();
 
-        faction = dbcFaction.LookupEntryForced(id);
+        faction = sFactionStore.LookupEntry(id);
         if ((faction == NULL) || (faction->RepListId < 0))
             continue;
 

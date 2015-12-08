@@ -130,10 +130,10 @@ void Player::smsg_InitialFactions()
 
 void Player::_InitialReputation()
 {
-    FactionDBC* f;
-    for (uint32 i = 0; i < dbcFaction.GetNumRows(); i++)
+    DBC::Structures::FactionEntry const* f;
+    for (uint32 i = 0; i < sFactionStore.GetNumRows(); i++)
     {
-        f = dbcFaction.LookupRow(i);
+        f = sFactionStore.LookupEntry(i);
         AddNewFaction(f, 0, true);
     }
 }
@@ -160,7 +160,7 @@ void Player::SetStanding(uint32 Faction, int32 Value)
     const int32 exaltedReputation = 42000;   //   0/1000  Exalted
     const int32 maxReputation = 42999;       // 999/1000  Exalted
     int32 newValue = Value;
-    FactionDBC* f = dbcFaction.LookupEntryForced(Faction);
+    DBC::Structures::FactionEntry const* f = sFactionStore.LookupEntry(Faction);
     if (f == NULL || f->RepListId < 0)
         return;
     ReputationMap::iterator itr = m_reputation.find(Faction);
@@ -214,7 +214,7 @@ Standing Player::GetStandingRank(uint32 Faction)
     return Standing(GetReputationRankFromStanding(GetStanding(Faction)));
 }
 
-bool Player::IsHostileBasedOnReputation(FactionDBC* dbc)
+bool Player::IsHostileBasedOnReputation(DBC::Structures::FactionEntry const* dbc)
 {
     if (dbc->RepListId < 0 || dbc->RepListId >= 128)
         return false;
@@ -244,7 +244,7 @@ void Player::ModStanding(uint32 Faction, int32 Value)
     if ((GetMapMgr()->GetMapInfo()->minlevel == 80 || (GetMapMgr()->iInstanceMode == MODE_HEROIC && GetMapMgr()->GetMapInfo()->minlevel_heroic == 80)) && ChampioningFactionID != 0)
         Faction = ChampioningFactionID;
 
-    FactionDBC* f = dbcFaction.LookupEntryForced(Faction);
+    DBC::Structures::FactionEntry const* f = sFactionStore.LookupEntry(Faction);
     int32 newValue = Value;
     if (f == NULL || f->RepListId < 0)
         return;
@@ -420,7 +420,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     }
 }
 
-void Player::Reputation_OnTalk(FactionDBC* dbc)
+void Player::Reputation_OnTalk(DBC::Structures::FactionEntry const* dbc)
 {
     // set faction visible if not visible
     if (dbc == NULL || dbc->RepListId < 0)
@@ -456,7 +456,7 @@ void WorldSession::HandleSetFactionInactiveOpcode(WorldPacket& recv_data)
     _player->SetFactionInactive(id, (inactive == 1));
 }
 
-bool Player::AddNewFaction(FactionDBC* dbc, int32 standing, bool base)    // if (base) standing = baseRepValue
+bool Player::AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 standing, bool base)    // if (base) standing = baseRepValue
 {
     if (dbc == NULL || dbc->RepListId < 0)
         return false;
@@ -479,7 +479,7 @@ bool Player::AddNewFaction(FactionDBC* dbc, int32 standing, bool base)    // if 
     return false;
 }
 
-void Player::OnModStanding(FactionDBC* dbc, FactionReputation* rep)
+void Player::OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionReputation* rep)
 {
     if (SetFlagVisible(rep->flag, true) && IsInWorld())
     {

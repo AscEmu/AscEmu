@@ -714,7 +714,7 @@ class SERVER_DECL Object : public EventableObject
         uint32 _getFaction();
 
         DBC::Structures::FactionTemplateEntry const* m_faction;
-        FactionDBC* m_factionDBC;
+        DBC::Structures::FactionEntry const* m_factionDBC;
 
         void SetInstanceID(int32 instance) { m_instanceId = instance; }
         int32 GetInstanceID() { return m_instanceId; }

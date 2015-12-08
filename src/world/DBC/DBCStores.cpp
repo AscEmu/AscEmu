@@ -52,7 +52,7 @@ SERVER_DECL DBCStorage<DBCTaxiPathNode> dbcTaxiPathNode;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore(DBC::Structures::durability_costs_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityQualityEntry> sDurabilityQualityStore(DBC::Structures::durability_quality_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore(DBC::Structures::faction_template_format);
-SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionEntry> sFactionStore(DBC::Structures::faction_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore(DBC::Structures::emotes_text_format);
 SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
 SERVER_DECL DBCStorage<GemPropertyEntry> dbcGemProperty;
@@ -292,9 +292,6 @@ const char* randompropsFormat = "uxuuuxxxxxxxxxxxxxxxxxxx";
 
 const char* areatableFormat = "uuuuuxxxuxulxxxxxxxxxxxxxxxxuxxxxxxx";
 
-
-const char* factiondbcFormat = "uiuuuuuuuuiiiiuuuuulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-
 const char* dbctaxinodeFormat = "uufffxxxxxxxxxxxxxxxxxuu";
 const char* dbctaxipathFormat = "uuuu";
 const char* dbctaxipathnodeFormat = "uuuufffuuxx";
@@ -367,8 +364,8 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaGroupStore, dbc_path, "AreaGroup.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaStore, dbc_path, "AreaTable.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sFactionTemplateStore, dbc_path, "FactionTemplate.dbc");
-    //LOAD_DBC("DBC/FactionTemplate.dbc", factiontemplatedbcFormat, true, dbcFactionTemplate, false);
-    LOAD_DBC("DBC/Faction.dbc", factiondbcFormat, true, dbcFaction, true);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sFactionStore, dbc_path, "Faction.dbc");
+
     LOAD_DBC("DBC/TaxiNodes.dbc", dbctaxinodeFormat, false, dbcTaxiNode, false);
     LOAD_DBC("DBC/TaxiPath.dbc", dbctaxipathFormat, false, dbcTaxiPath, false);
     LOAD_DBC("DBC/TaxiPathNode.dbc", dbctaxipathnodeFormat, false, dbcTaxiPathNode, false);

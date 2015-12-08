@@ -245,7 +245,7 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
 bool isAlliance(Object* objA)// A is alliance?
 {
     DBC::Structures::FactionTemplateEntry const* m_sw_faction = sFactionTemplateStore.LookupEntry(11);
-    FactionDBC* m_sw_factionDBC = dbcFaction.LookupEntry(72);
+    DBC::Structures::FactionEntry const* m_sw_factionDBC = sFactionStore.LookupEntry(72);
     if (!objA)          // || objA->m_factionDBC == NULL || objA->m_faction == NULL
         return true;
 

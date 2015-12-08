@@ -777,14 +777,14 @@ class SERVER_DECL Player : public Unit
         void                SetAtWar(uint32 Faction, bool Set);
         bool                IsAtWar(uint32 Faction);
         Standing            GetStandingRank(uint32 Faction);
-        bool                IsHostileBasedOnReputation(FactionDBC* dbc);
+        bool                IsHostileBasedOnReputation(DBC::Structures::FactionEntry const* dbc);
         void                UpdateInrangeSetsBasedOnReputation();
         void                Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop);
-        void                Reputation_OnTalk(FactionDBC* dbc);
+        void                Reputation_OnTalk(DBC::Structures::FactionEntry const* dbc);
         static Standing     GetReputationRankFromStanding(int32 Standing_);
         void                SetFactionInactive(uint32 faction, bool set);
-        bool                AddNewFaction(FactionDBC* dbc, int32 standing, bool base);
-        void                OnModStanding(FactionDBC* dbc, FactionReputation* rep);
+        bool                AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 standing, bool base);
+        void                OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionReputation* rep);
         uint32              GetExaltedCount(void);
 
         // Factions

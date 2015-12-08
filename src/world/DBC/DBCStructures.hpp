@@ -42,6 +42,7 @@ namespace DBC
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
+            char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const faction_template_format[] = "niiiiiiiiiiiii";
             char const gt_barber_shop_cost_format[] = "f";
             char const gt_chance_to_melee_crit_format[] = "f";
@@ -257,6 +258,25 @@ namespace DBC
             //uint32 unk9;          // 16
             //uint32 unk10;         // 17
             //uint32 unk11;         // 18
+        };
+
+        struct FactionEntry
+        {
+            uint32 ID;                      // 0
+            int32 RepListId;                // 1
+            uint32 RaceMask[4];             // 2-5
+            uint32 ClassMask[4];            // 6-9
+            int32 baseRepValue[4];          // 10-13
+            uint32 repFlags[4];             // 14-17
+            uint32 parentFaction;           // 18
+            float spillover_rate_in;        // 19
+            float spillover_rate_out;       // 20
+            uint32 spillover_max_in;        // 21
+            //uint32 unk1;                  // 22
+            char* Name[16];                 // 23-38
+            //uint32 name_flags;            // 39
+            //uint32 Description[16];       // 40-55
+            //uint32 description_flags;     // 56
         };
 
         struct FactionTemplateEntry

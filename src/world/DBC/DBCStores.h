@@ -1084,21 +1084,6 @@ struct RandomProps
     //uint32 RankFlags;
 };
 
-struct FactionDBC
-{
-    uint32 ID;
-    int32 RepListId;
-    uint32 RaceMask[4];
-    uint32 ClassMask[4];
-    int32 baseRepValue[4];
-    uint32 repFlags[4];
-    uint32 parentFaction;
-    const char* Name;
-    //uint32 poo[16];
-    //uint32 Description;
-    //uint32 poo2[16];
-};
-
 struct DBCTaxiNode
 {
     uint32 id;
@@ -1783,7 +1768,7 @@ extern SERVER_DECL DBCStorage<SpellCastTime> dbcSpellCastTime;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore;
-extern SERVER_DECL DBCStorage<FactionDBC> dbcFaction;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionEntry> sFactionStore;
 extern SERVER_DECL DBCStorage<EnchantEntry> dbcEnchant;
 extern SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
 extern SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;

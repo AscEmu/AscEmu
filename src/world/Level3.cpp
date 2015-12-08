@@ -3331,15 +3331,15 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
     GreenSystemMessage(m_session, "Starting search of faction `%s`...", x.c_str());
     uint32 t = getMSTime();
     uint32 count = 0;
-    for (uint32 index = 0; index < dbcFaction.GetNumRows(); ++index)
+    for (uint32 index = 0; index < sFactionStore.GetNumRows(); ++index)
     {
-        FactionDBC* faction = dbcFaction.LookupRow(index);
-        std::string y = std::string(faction->Name);
+        DBC::Structures::FactionEntry const* faction = sFactionStore.LookupEntry(index);
+        std::string y = std::string(faction->Name[0]);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
         {
             // Print out the name in a cool highlighted fashion
-            SendHighlightedName(m_session, "Faction", faction->Name, y, x, faction->ID);
+            SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
             ++count;
             if (count == 25)
             {

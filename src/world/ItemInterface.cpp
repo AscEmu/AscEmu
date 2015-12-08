@@ -2504,7 +2504,7 @@ int8 ItemInterface::CanAffordItem(ItemPrototype* item, uint32 amount, Creature* 
 
     if (item->RequiredFaction)
     {
-        FactionDBC* factdbc = dbcFaction.LookupEntryForced(item->RequiredFaction);
+        DBC::Structures::FactionEntry const* factdbc = sFactionStore.LookupEntry(item->RequiredFaction);
         if (!factdbc || factdbc->RepListId < 0)
             return INV_ERR_OK;
 

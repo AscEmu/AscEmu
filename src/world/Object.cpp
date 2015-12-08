@@ -1546,9 +1546,9 @@ void Object::_setFaction()
     }
 
     m_faction = factT;
-    m_factionDBC = dbcFaction.LookupEntryForced(factT->Faction);
+    m_factionDBC = sFactionStore.LookupEntry(factT->Faction);
     if (!m_factionDBC)
-        m_factionDBC = dbcFaction.LookupRow(0);
+        m_factionDBC = nullptr;
 }
 
 uint32 Object::_getFaction()
