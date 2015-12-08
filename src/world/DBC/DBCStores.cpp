@@ -101,13 +101,12 @@ SERVER_DECL DBCStorage< SummonPropertiesEntry > dbcSummonProperties;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore(DBC::Structures::name_gen_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore(DBC::Structures::lfg_dungeon_entry_format);
 SERVER_DECL DBCStorage< VehicleEntry > dbcVehicle;
-SERVER_DECL DBCStorage< VehicleSeatEntry > dbcVehicleSeat;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore(DBC::Structures::vehicle_seat_format);
 
 const char* WorldMapOverlayStoreFormat = "nxiiiixxxxxxxxxxx";
 
 const char* skilllineentrYFormat = "uuulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 const char* VehicleEntryfmt = "niffffiiiiiiiifffffffffffffffssssfifiixx";
-const char* VehicleSeatEntryfmt = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxx";
 
 // const char* BattlemasterListEntryFormat = "uiiiiiiiiuuuuuiiiiiiiiiiiiiiiiiiuux";
 // const char* BattlemasterListEntryFormat = "uiiiiiiiiuuiiiiiiiiiiiiiiiiiuux";
@@ -392,7 +391,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");
 
     LOAD_DBC("DBC/Vehicle.dbc", VehicleEntryfmt, true, dbcVehicle, true);
-    LOAD_DBC("DBC/VehicleSeat.dbc", VehicleSeatEntryfmt, true, dbcVehicleSeat, false);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sVehicleSeatStore, dbc_path, "VehicleSeat.dbc");
 
     MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
     auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();

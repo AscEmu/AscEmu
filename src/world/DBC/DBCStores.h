@@ -1065,100 +1065,6 @@ struct VehicleEntry
     uint32 powerType;                                   // 37, new in 3.1
 };
 
-enum VehicleSeatFlags
-{
-    VEHICLE_SEAT_FLAG_HIDE_PASSENGER             = 0x00000200,           // Passenger is hidden
-    VEHICLE_SEAT_FLAG_UNK11                      = 0x00000400,
-    VEHICLE_SEAT_FLAG_CAN_CONTROL                = 0x00000800,           // Lua_UnitInVehicleControlSeat
-    VEHICLE_SEAT_FLAG_CAN_ATTACK                 = 0x00004000,           // Can attack, cast spells and use items from vehicle?
-    VEHICLE_SEAT_FLAG_USABLE                     = 0x02000000,           // Lua_CanExitVehicle
-    VEHICLE_SEAT_FLAG_CAN_SWITCH                 = 0x04000000,           // Lua_CanSwitchVehicleSeats
-    VEHICLE_SEAT_FLAG_CAN_CAST                   = 0x20000000,           // Lua_UnitHasVehicleUI
-};
-
-enum VehicleSeatFlagsB
-{
-    VEHICLE_SEAT_FLAG_B_NONE                     = 0x00000000,
-    VEHICLE_SEAT_FLAG_B_USABLE_FORCED            = 0x00000002, 
-    VEHICLE_SEAT_FLAG_B_USABLE_FORCED_2          = 0x00000040,
-    VEHICLE_SEAT_FLAG_B_USABLE_FORCED_3          = 0x00000100,
-};
-
-struct VehicleSeatEntry
-{
-    uint32 ID;                                          // 0
-    uint32 flags;                                       // 1
-    int32 attachmentID;                                 // 2
-    float attachmentOffsetX;                            // 3
-    float attachmentOffsetY;                            // 4
-    float attachmentOffsetZ;                            // 5
-    float enterPreDelay;                                // 6
-    float enterSpeed;                                   // 7
-    float enterGravity;                                 // 8
-    float enterMinDuration;                             // 9
-    float enterMaxDuration;                             // 10
-    float enterMinArcHeight;                            // 11
-    float enterMaxArcHeight;                            // 12
-    int32 enterAnimStart;                               // 13
-    int32 enterAnimLoop;                                // 14
-    int32 rideAnimStart;                                // 15
-    int32 rideAnimLoop;                                 // 16
-    int32 rideUpperAnimStart;                           // 17
-    int32 rideUpperAnimLoop;                            // 18
-    float exitPreDelay;                                 // 19
-    float exitSpeed;                                    // 20
-    float exitGravity;                                  // 21
-    float exitMinDuration;                              // 22
-    float exitMaxDuration;                              // 23
-    float exitMinArcHeight;                             // 24
-    float exitMaxArcHeight;                             // 25
-    int32 exitAnimStart;                                // 26
-    int32 exitAnimLoop;                                 // 27
-    int32 exitAnimEnd;                                  // 28
-    float passengerYaw;                                 // 29
-    float passengerPitch;                               // 30
-    float passengerRoll;                                // 31
-    int32 passengerAttachmentID;                        // 32
-    int32 vehicleEnterAnim;                             // 33
-    int32 vehicleExitAnim;                              // 34
-    int32 vehicleRideAnimLoop;                          // 35
-    int32 vehicleEnterAnimBone;                         // 36
-    int32 vehicleExitAnimBone;                          // 37
-    int32 vehicleRideAnimLoopBone;                      // 38
-    float vehicleEnterAnimDelay;                        // 39
-    float vehicleExitAnimDelay;                         // 40
-    uint32 vehicleAbilityDisplay;                       // 41
-    uint32 enterUISoundID;                              // 42
-    uint32 exitUISoundID;                               // 43
-    int32 uiSkin;                                       // 44
-    uint32 flagsB;                                      // 45
-
-    bool IsUsable() const
-    {
-        if ((flags & VEHICLE_SEAT_FLAG_USABLE) != 0)
-            return true;
-        else
-            return false;
-    }
-
-    bool IsController() const
-    {
-        if ((flags & VEHICLE_SEAT_FLAG_CAN_CONTROL) != 0)
-            return true;
-        else
-            return false;
-    }
-
-    bool HidesPassenger() const
-    {
-        if ((flags & VEHICLE_SEAT_FLAG_HIDE_PASSENGER) != 0)
-            return true;
-        else
-            return false;
-    }
-};
-
-
 #pragma pack(pop)
 
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -1602,7 +1508,7 @@ extern SERVER_DECL DBCStorage<SummonPropertiesEntry> dbcSummonProperties;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
 extern SERVER_DECL DBCStorage<VehicleEntry> dbcVehicle;
-extern SERVER_DECL DBCStorage<VehicleSeatEntry> dbcVehicleSeat;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore;
 
 bool LoadDBCs();
 

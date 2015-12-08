@@ -24,7 +24,7 @@
 #include "DBC/DBCStores.h"
 #include <array>
 
-struct VehicleSeatEntry;
+
 struct VehicleEntry;
 //////////////////////////////////////////////////////////////////////////////////////////
 //class VehicleSeat
@@ -34,7 +34,7 @@ class VehicleSeat
 {
     public:
 
-    VehicleSeat(VehicleSeatEntry* info);
+    VehicleSeat(DBC::Structures::VehicleSeatEntry const* info);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ class VehicleSeat
         /// \return a pointer to a VehicleSeatEntry structure.
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        VehicleSeatEntry* GetSeatInfo() const
+        DBC::Structures::VehicleSeatEntry const* GetSeatInfo() const
         {
             return seat_info;
         }
@@ -144,7 +144,7 @@ class VehicleSeat
     private:
 
         uint64 passenger;              // GUID of the passenger
-        VehicleSeatEntry *seat_info;   // Seat info structure
+        DBC::Structures::VehicleSeatEntry const* seat_info;   // Seat info structure
 };
 
 

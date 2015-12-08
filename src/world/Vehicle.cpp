@@ -63,14 +63,14 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
 
             if (seatid != 0)
             {
-                VehicleSeatEntry *seatinfo = dbcVehicleSeat.LookupEntry(seatid);
-                if (seatinfo == NULL)
+                auto vehicle_seat = sVehicleSeatStore.LookupEntry(seatid);
+                if (vehicle_seat == nullptr)
                 {
                     LOG_ERROR("Invalid seat id %u for seat %u for vehicle id %u", seatid, i, vehicleid);
                     continue;
                 }
 
-                seats[i] = new VehicleSeat(seatinfo);
+                seats[i] = new VehicleSeat(vehicle_seat);
             }
         }
     }
@@ -618,7 +618,8 @@ uint32 Vehicle::GetPassengerSeatId(uint64 guid)
     return 0;
 }
 
-VehicleSeat::VehicleSeat(VehicleSeatEntry* info) {
+VehicleSeat::VehicleSeat(DBC::Structures::VehicleSeatEntry const* info)
+{
     passenger = 0;
     seat_info = info;
 }
