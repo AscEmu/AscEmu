@@ -68,6 +68,7 @@ namespace DBC
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
             char const stable_slot_prices_format[] = "ni";
             char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
+            char const taxi_path_format[] = "niii";
         }
 
         #pragma pack(push, 1)
@@ -518,6 +519,14 @@ namespace DBC
             //uint32 nameflags;         // 22
             uint32 horde_mount;         // 23
             uint32 alliance_mount;      // 24
+        };
+
+        struct TaxiPathEntry
+        {
+            uint32 id;                  // 0
+            uint32 from;                // 1
+            uint32 to;                  // 2
+            uint32 price;               // 3
         };
         #pragma pack(pop)
     }

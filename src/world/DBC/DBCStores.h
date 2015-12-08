@@ -1084,14 +1084,6 @@ struct RandomProps
     //uint32 RankFlags;
 };
 
-struct DBCTaxiPath
-{
-    uint32 id;
-    uint32 from;
-    uint32 to;
-    uint32 price;
-};
-
 struct DBCTaxiPathNode
 {
     uint32 id;
@@ -1746,7 +1738,7 @@ extern SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
 extern SERVER_DECL DBCStorage<skilllinespell> dbcSkillLineSpell;
 extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesStore;
-extern SERVER_DECL DBCStorage<DBCTaxiPath> dbcTaxiPath;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathEntry> sTaxiPathStore;
 extern SERVER_DECL DBCStorage<DBCTaxiPathNode> dbcTaxiPathNode;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL DBCStorage<TalentEntry> dbcTalent;

@@ -281,21 +281,19 @@ void TaxiMgr::_LoadTaxiNodes()
 
 void TaxiMgr::_LoadTaxiPaths()
 {
-    uint32 i, j;
-
-    for (i = 0; i < dbcTaxiPath.GetNumRows(); i++)
+    for (uint32 i = 0; i < sTaxiPathStore.GetNumRows(); i++)
     {
-        DBCTaxiPath* path = dbcTaxiPath.LookupRowForced(i);
-        if (path)
+        auto taxi_path = sTaxiPathStore.LookupEntry(i);
+        if (taxi_path)
         {
             TaxiPath* p = new TaxiPath;
-            p->from = path->from;
-            p->to = path->to;
-            p->id = path->id;
-            p->price = path->price;
+            p->from = taxi_path->from;
+            p->to = taxi_path->to;
+            p->id = taxi_path->id;
+            p->price = taxi_path->price;
 
             //Load Nodes
-            for (j = 0; j < dbcTaxiPathNode.GetNumRows(); j++)
+            for (uint32 j = 0; j < dbcTaxiPathNode.GetNumRows(); j++)
             {
                 DBCTaxiPathNode* pathnode = dbcTaxiPathNode.LookupRowForced(j);
 
