@@ -833,23 +833,6 @@ struct Trainerspell
     uint32 charclass;
 };
 
-struct WMOAreaTableEntry
-{
-    uint32 id;              // 0
-    int32 rootId;           // 1
-    int32 adtId;            // 2
-    int32 groupId;          // 3
-    //uint32 field4;
-    //uint32 field5;
-    //uint32 field6;
-    //uint32 field7;
-    //uint32 field8;
-    uint32 flags;           // 9
-    uint32 areaId;          // 10  ref -> AreaTableEntry
-    //char Name[16];
-    //uint32 nameflags;
-};
-
 #pragma pack(pop)
 
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -1287,9 +1270,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatValuesEntry> sSca
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MailTemplateEntry> sMailTemplateStore;
-
-extern SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;
-
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WMOAreaTableEntry> sWMOAreaTableStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SummonPropertiesEntry> sSummonPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
@@ -1298,6 +1279,6 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSe
 
 bool LoadDBCs();
 
-const WMOAreaTableEntry* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
+DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
 #endif // _DBC_STORES_H

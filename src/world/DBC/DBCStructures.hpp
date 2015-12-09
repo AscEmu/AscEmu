@@ -94,6 +94,7 @@ namespace DBC
             char const taxi_path_node_format[] = "niiifffiiii";
             char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
             char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxx";
+            char const wmo_area_table_format[] = "niiixxxxxiixxxxxxxxxxxxxxxxx";
             char const world_map_overlay_format[] = "nxiiiixxxxxxxxxxx";
         }
 
@@ -958,6 +959,23 @@ namespace DBC
                 else
                     return false;
             }
+        };
+
+        struct WMOAreaTableEntry
+        {
+            uint32 id;              // 0
+            int32 rootId;           // 1
+            int32 adtId;            // 2
+            int32 groupId;          // 3
+            //uint32 field4;        // 4
+            //uint32 field5;        // 5
+            //uint32 field6;        // 6
+            //uint32 field7;        // 7
+            //uint32 field8;        // 8
+            uint32 flags;           // 9
+            uint32 areaId;          // 10  ref -> AreaTableEntry
+            //char Name[16];        // 11-26
+            //uint32 nameflags;     // 27
         };
 
         struct WorldMapOverlayEntry

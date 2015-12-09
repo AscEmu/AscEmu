@@ -519,18 +519,21 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void LoadWMOAreaData()
         {
-            for (DBCStorage<WMOAreaTableEntry>::iterator itr = dbcWMOAreaTable.begin(); itr != dbcWMOAreaTable.end(); ++itr)
+            for (uint32 i = 0; i < sWMOAreaTableStore.GetNumRows(); ++i)
             {
-                WMOAreaTableTripple tmp((*itr)->rootId, (*itr)->adtId, (*itr)->groupId);
+                auto wmo_area_table = sWMOAreaTableStore.LookupEntry(i);
+                if (wmo_area_table == nullptr)
+                    continue;
+                WMOAreaTableTripple tmp(wmo_area_table->rootId, wmo_area_table->adtId, wmo_area_table->groupId);
 
-                m_WMOAreaTableTripples.insert(std::make_pair(tmp, (*itr)));
+                m_WMOAreaTableTripples.insert(std::make_pair(tmp, wmo_area_table));
             }
         }
 
-        WMOAreaTableEntry* GetWMOAreaData(int32 rootid, int32 adtid, int32 groupid)
+        DBC::Structures::WMOAreaTableEntry const* GetWMOAreaData(int32 rootid, int32 adtid, int32 groupid)
         {
             WMOAreaTableTripple tmp(rootid, adtid, groupid);
-            std::map<WMOAreaTableTripple, WMOAreaTableEntry*>::iterator itr = m_WMOAreaTableTripples.find(tmp);
+            std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*>::iterator itr = m_WMOAreaTableTripples.find(tmp);
 
             if (itr != m_WMOAreaTableTripples.end())
                 return itr->second;
@@ -750,7 +753,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         bool m_limitedNames;
         bool m_useAccountData;
         bool m_AdditionalFun;
-        std::map<WMOAreaTableTripple, WMOAreaTableEntry*> m_WMOAreaTableTripples;
+        std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> m_WMOAreaTableTripples;
 
         // Gold Cap
         bool GoldCapEnabled;

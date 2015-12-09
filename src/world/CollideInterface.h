@@ -152,7 +152,7 @@ class CCollideInterface
             if (!mgr->getAreaInfo(mapId, x, y, z, flags, adtid, rootid, groupid))
                 return true;
 
-            WMOAreaTableEntry* wmoArea = sWorld.GetWMOAreaData(rootid, adtid, groupid);
+            DBC::Structures::WMOAreaTableEntry const* wmoArea = sWorld.GetWMOAreaData(rootid, adtid, groupid);
 
             if (wmoArea != NULL)
             {
