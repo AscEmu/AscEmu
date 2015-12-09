@@ -4167,7 +4167,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     {
         int i = 0;
         auto scaling_stat_distribution = sScalingStatDistributionStore.LookupEntry(proto->ScalingStatsEntry);
-        ScalingStatValuesEntry* ssvrow = NULL;
+        DBC::Structures::ScalingStatValuesEntry const* ssvrow = NULL;
         uint32 StatType;
         uint32 StatMod;
         uint32 plrLevel = getLevel();
@@ -4179,16 +4179,18 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         if (plrLevel > 80)
             plrLevel = 80;
 
+        for (uint32 i = 0; i < sScalingStatValuesStore.GetNumRows(); ++i)
+        {
+            auto scaling_stat_values = sScalingStatValuesStore.LookupEntry(i);
+            if (scaling_stat_values == nullptr)
+                continue;
 
-        DBCStorage<ScalingStatValuesEntry>::iterator itr;
-
-        for (itr = dbcScalingStatValues.begin(); itr != dbcScalingStatValues.end(); ++itr)
-            if ((*itr)->level == plrLevel)
+            if (scaling_stat_values->level == plrLevel)
             {
-                ssvrow = *itr;
+                ssvrow = scaling_stat_values;
                 break;
             }
-
+        }
         /* Not going to put a check here since unless you put a random id/flag in the tables these should never return NULL */
 
         /* Calculating the stats correct for our level and applying them */

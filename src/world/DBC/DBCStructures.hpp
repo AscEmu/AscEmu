@@ -74,6 +74,7 @@ namespace DBC
             char const name_gen_format[] = "nsii";
             char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
+            char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiiii";
             char const skill_line_ability_format[] = "niiiixxiiiiixx";
             char const stable_slot_prices_format[] = "ni";
             char const spell_cast_times_format[] = "nixx";
@@ -601,6 +602,15 @@ namespace DBC
             int32 stat[10];             // 1-10
             uint32 statmodifier[10];    // 11-20
             uint32 maxlevel;            // 21
+        };
+
+        struct ScalingStatValuesEntry
+        {
+            uint32 id;                  // 0
+            uint32 level;               // 1
+            uint32 multiplier[16];      // 2-17 ///\todo split this
+            uint32 unk1;                // 18
+            uint32 amor_mod[5];         // 19-23
         };
 
         struct SkillLineAbilityEntry

@@ -848,13 +848,6 @@ struct Trainerspell
     uint32 charclass;
 };
 
-struct ScalingStatValuesEntry
-{
-    uint32 id;
-    uint32 level;
-    uint32 multiplier[16];
-};
-
 struct WMOAreaTableEntry
 {
     uint32 id;              // 0
@@ -1307,9 +1300,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTReg
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
-
-extern SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
-
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatValuesEntry> sScalingStatValuesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MailTemplateEntry> sMailTemplateStore;
