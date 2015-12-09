@@ -2450,14 +2450,17 @@ std::set<SpellEntry*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
 
 void ObjectMgr::LoadPetSpellCooldowns()
 {
-    for (DBCStorage< CreatureSpellDataEntry >::iterator itr = dbcCreatureSpellData.begin(); itr != dbcCreatureSpellData.end(); ++itr)
+    for (uint32 i = 0; i < sCreatureSpellDataStore.GetNumRows(); ++i)
     {
-        CreatureSpellDataEntry* csde = *itr;
+        auto creture_spell_data = sCreatureSpellDataStore.LookupEntry(i);
 
-        for (uint32 j = 0; j < 3; ++j)
+        for (uint8 j = 0; j < 3; ++j)
         {
-            uint32 SpellId = csde->Spells[j];
-            uint32 Cooldown = csde->Cooldowns[j] * 10;
+            if (creture_spell_data == nullptr)
+                continue;
+
+            uint32 SpellId = creture_spell_data->Spells[j];
+            uint32 Cooldown = creture_spell_data->Cooldowns[j] * 10;
 
             if (SpellId != 0)
             {

@@ -608,23 +608,29 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
 
                 if (c->GetProto()->spelldataid != 0)
                 {
-                    CreatureSpellDataEntry* spe = dbcCreatureSpellData.LookupEntry(c->GetProto()->spelldataid);
+                    auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(c->GetProto()->spelldataid);
 
-                    if (spe != NULL)
-                        for (uint32 i = 0; i < 3; i++)
-                            if (spe->Spells[i] == spellid)
+                    if (creature_spell_data != nullptr)
+                    {
+                        for (uint8 i = 0; i < 3; i++)
+                        {
+                            if (creature_spell_data->Spells[i] == spellid)
                             {
                                 check = true;
                                 break;
                             }
+                        }
+                    }
                 }
 
-                for (uint32 i = 0; i < 4; i++)
+                for (uint8 i = 0; i < 4; i++)
+                {
                     if (c->GetProto()->AISpells[i] == spellid)
                     {
                         check = true;
                         break;
                     }
+                }
             }
 
             if (!check)

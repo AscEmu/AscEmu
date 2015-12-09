@@ -848,15 +848,6 @@ struct Trainerspell
     uint32 charclass;
 };
 
-struct CreatureSpellDataEntry
-{
-    uint32 id;
-    uint32 Spells[3];
-    uint32 PHSpell;
-    uint32 Cooldowns[3];
-    uint32 PH;
-};
-
 struct ScalingStatValuesEntry
 {
     uint32 id;
@@ -1290,9 +1281,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathNodeEntry> sTaxiPath
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore;
-
-extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
-
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureSpellDataEntry> sCreatureSpellDataStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;

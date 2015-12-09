@@ -133,14 +133,17 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             // process creature spells from creaturespelldata.dbc
             if (cn->spelldataid != 0)
             {
-                CreatureSpellDataEntry* spe = dbcCreatureSpellData.LookupEntry(cn->spelldataid);
-                for (uint32 i = 0; i < 3; i++)
+                auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(cn->spelldataid);
+                for (uint8 i = 0; i < 3; i++)
                 {
-                    if (spe->Spells[ i ] == 0)
+                    if (creature_spell_data == nullptr)
                         continue;
 
-                    SpellEntry *sp = dbcSpell.LookupEntryForced(spe->Spells[ i ]);
-                    if (sp == NULL)
+                    if (creature_spell_data->Spells[i] == 0)
+                        continue;
+
+                    SpellEntry* sp = dbcSpell.LookupEntryForced(creature_spell_data->Spells[i]);
+                    if (sp == nullptr)
                         continue;
 
                     if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
@@ -171,8 +174,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
             cn->m_canFlee = cn->m_canRangedAttack = cn->m_canCallForHelp = false;
             cn->m_fleeHealth = 0.0f;
-            // please.... m_fleeDuration is a uint32...
-            //cn->m_fleeDuration = 0.0f;
             cn->m_fleeDuration = 0;
 
             if (!itr->Inc())

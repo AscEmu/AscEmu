@@ -40,6 +40,7 @@ namespace DBC
             char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
             char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
             char const creature_family_format[] = "nfifiiiiixssssssssssssssssxx";
+            char const creature_spell_data_format[] = "niiiiiiii";
             char const currency_types_format[] = "xnxi";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
@@ -261,6 +262,15 @@ namespace DBC
             char* name[16];                 // 10-25
             //uint32 nameflags;             // 26
             //uint32 iconFile;              // 27
+        };
+
+        struct CreatureSpellDataEntry
+        {
+            uint32 id;                      // 0
+            uint32 Spells[3];               // 1-3
+            uint32 PHSpell;                 // 4
+            uint32 Cooldowns[3];            // 5-7
+            uint32 PH;                      // 8
         };
 
         struct CurrencyTypesEntry
