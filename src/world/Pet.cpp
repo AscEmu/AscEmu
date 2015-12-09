@@ -200,7 +200,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureInfo* ci, Creature* created_from_
     }
     else // Hunter pet
     {
-        if (myFamily == NULL || myFamily->name == NULL)
+        if (myFamily == nullptr)
             m_name = "Pet";
         else
             m_name.assign(myFamily->name[0]);
