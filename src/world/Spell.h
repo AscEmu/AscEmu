@@ -1142,6 +1142,32 @@ enum TeleportEffectCustomFlags
     TELEPORT_TO_CASTER                  = 8
 };
 
+enum SummonControlTypes
+{
+    SUMMON_CONTROL_TYPE_WILD = 0,
+    SUMMON_CONTROL_TYPE_GUARDIAN = 1,
+    SUMMON_CONTROL_TYPE_PET = 2,
+    SUMMON_CONTROL_TYPE_POSSESSED = 3,
+    SUMMON_CONTROL_TYPE_VEHICLE = 4
+};
+
+enum SummonTypes
+{
+    SUMMON_TYPE_NONE = 0,
+    SUMMON_TYPE_PET = 1,
+    SUMMON_TYPE_GUARDIAN = 2,
+    SUMMON_TYPE_MINION = 3,
+    SUMMON_TYPE_TOTEM = 4,
+    SUMMON_TYPE_COMPANION = 5,
+    SUMMON_TYPE_RUNEBLADE = 6,
+    SUMMON_TYPE_CONSTRUCT = 7,
+    SUMMON_TYPE_OPPONENT = 8,
+    SUMMON_TYPE_VEHICLE = 9,
+    SUMMON_TYPE_MOUNT = 10,
+    SUMMON_TYPE_LIGHTWELL = 11,
+    SUMMON_TYPE_BUTLER = 12
+};
+
 inline bool CanAgroHash(uint32 spellhashname)
 {
     if (spellhashname == SPELL_HASH_HUNTER_S_MARK)   //hunter's mark

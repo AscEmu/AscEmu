@@ -27,7 +27,6 @@ class Player;
 
 #pragma pack(push,1)
 
-
 #ifdef ENABLE_ACHIEVEMENTS
 
 struct AchievementCategoryEntry
@@ -443,20 +442,6 @@ struct AchievementCriteriaEntry
 };
 
 #endif
-
-/*struct BattlemasterListEntry
-{
-    uint32 entry;                   // 0
-    int32 maps[8];                  // 1-8 mapid
-    uint32 instance_type;           // 9 (3 - BG, 4 - arena)
-    uint32 canJoinAsGroup;          // 10 (0 or 1)
-    char* name[16];                 // 11-26 name
-    uint32 nameFlags;               // 27 string flag, unused
-    uint32 maxGroupSize;            // 28 maxGroupSize, used for checking if queue as group
-    uint32 HolidayWorldStateId;     // 29 new 3.1
-    uint32 minLevel;                // 30 Min level
-    uint32 maxLevel;                // 31 Max level
-};*/
 
 //SkillLine.dbc
 struct skilllineentry
@@ -929,55 +914,6 @@ struct WMOAreaTableEntry
     //uint32 nameflags;
 };
 
-enum SummonControlTypes
-{
-    SUMMON_CONTROL_TYPE_WILD = 0,
-    SUMMON_CONTROL_TYPE_GUARDIAN = 1,
-    SUMMON_CONTROL_TYPE_PET = 2,
-    SUMMON_CONTROL_TYPE_POSSESSED = 3,
-    SUMMON_CONTROL_TYPE_VEHICLE = 4,
-};
-
-enum SummonTypes
-{
-    SUMMON_TYPE_NONE = 0,
-    SUMMON_TYPE_PET = 1,
-    SUMMON_TYPE_GUARDIAN = 2,
-    SUMMON_TYPE_MINION = 3,
-    SUMMON_TYPE_TOTEM = 4,
-    SUMMON_TYPE_COMPANION = 5,
-    SUMMON_TYPE_RUNEBLADE = 6,
-    SUMMON_TYPE_CONSTRUCT = 7,
-    SUMMON_TYPE_OPPONENT = 8,
-    SUMMON_TYPE_VEHICLE = 9,
-    SUMMON_TYPE_MOUNT = 10,
-    SUMMON_TYPE_LIGHTWELL = 11,
-    SUMMON_TYPE_BUTLER = 12
-};
-
-struct LFGDungeonEntry
-{
-    uint32 ID;                  // 0
-    //char* name[16];             // 1-17 Name lang
-    uint32 minlevel;            // 18
-    uint32 maxlevel;            // 19
-    uint32 reclevel;            // 20
-    uint32 recminlevel;         // 21
-    uint32 recmaxlevel;         // 22
-    int32 map;                  // 23
-    uint32 difficulty;          // 24
-    //uint32 flags;               // 25
-    uint32 type;                // 26
-    //uint32 unk2;              // 27
-    //char* unk3;               // 28
-    uint32 expansion;           // 29
-    //uint32 unk4;              // 30
-    uint32 grouptype;           // 31
-    //char* desc[16];           // 32-47 Description
-    /// Helpers
-    uint32 Entry() const { return ID + (type << 24); }
-};
-
 #pragma pack(pop)
 
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -1346,15 +1282,14 @@ class SERVER_DECL DBCStorage
 };
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore;
+
 #ifdef ENABLE_ACHIEVEMENTS
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore;
 extern SERVER_DECL DBC::DBCStorage<AchievementCriteriaEntry> sAchievementCriteriaStore;
-//extern SERVER_DECL DBCStorage<AchievementCategoryEntry> dbcAchievementCategoryStore;
 #endif
-//extern SERVER_DECL DBCStorage<BattlemasterListEntry> dbcBattlemasterListStore;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CharTitlesEntry> sCharTitlesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CurrencyTypesEntry> sCurrencyTypesStore;
-
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GemPropertiesEntry> sGemPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
@@ -1362,7 +1297,9 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotSt
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore;
+
 extern SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore;
@@ -1375,16 +1312,22 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionEntry> sFactionStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
+
 extern SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
+
 extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathEntry> sTaxiPathStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore;
+
 extern SERVER_DECL DBCStorage<CreatureSpellDataEntry> dbcCreatureSpellData;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;
@@ -1392,7 +1335,9 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
 extern SERVER_DECL DBC::DBCStorage <DBC::Structures::HolidaysEntry> sHolidaysStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore;
+
 extern SERVER_DECL DBCStorage<ItemRandomSuffixEntry> dbcItemRandomSuffix;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityCostsEntry> sDurabilityCostsStore;
@@ -1404,19 +1349,21 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToMeleeCritEntry> sG
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToMeleeCritBaseEntry> sGtChanceToMeleeCritBaseStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToSpellCritEntry> sGtChanceToSpellCritStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToSpellCritBaseEntry> sGtChanceToSpellCritBaseStore;
-
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenMPPerSptEntry> sGtRegenMPPerSptStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore;
-
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
+
 extern SERVER_DECL DBCStorage<ScalingStatValuesEntry> dbcScalingStatValues;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MailTemplateEntry> sMailTemplateStore;
+
 extern SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;
+
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SummonPropertiesEntry> sSummonPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
