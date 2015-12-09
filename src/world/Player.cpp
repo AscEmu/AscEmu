@@ -12079,13 +12079,13 @@ void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
         if (apply)
         {
             uint64 oldval = GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES);
-            uint64 newval = oldval | (uint64)(((uint32)1) << (currency_type_entry->bit_index - 1));
+            uint64 newval = oldval | (1LL << (currency_type_entry->bit_index - 1));
             SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
         }
         else
         {
             uint64 oldval = GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES);
-            uint64 newval = oldval & ~(((uint32)1) << (currency_type_entry->bit_index - 1));
+            uint64 newval = oldval & ~(1LL << (currency_type_entry->bit_index - 1));
             SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
         }
     }
