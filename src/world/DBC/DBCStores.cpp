@@ -211,9 +211,6 @@ const char* spellentryFormat =
 "i"
 ;
 
-const char* wmoareaformat = "uiiixxxxxuuxxxxxxxxxxxxxxxxx";
-
-
 template<class T>
 bool loader_stub(const char* filename, const char* format, bool ind, T & l, bool loadstrs)
 {
