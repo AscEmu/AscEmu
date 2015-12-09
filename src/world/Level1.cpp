@@ -1153,10 +1153,10 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
     if (lookupcriteria && numFound < 25)
     {
         std::set<uint32> foundList;
-        j = dbcAchievementCriteriaStore.GetNumRows();
+        j = sAchievementCriteriaStore.GetNumRows();
         for (i = 0; i < j && numFound < 25; ++i)
         {
-            AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupRowForced(i);
+            auto criteria = sAchievementCriteriaStore.LookupEntry(i);
             if (criteria)
             {
                 if (foundList.find(criteria->ID) != foundList.end())
@@ -1164,7 +1164,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                     // already listed this achievement (some achievements have multiple entries in dbc)
                     continue;
                 }
-                y = std::string(criteria->name);
+                y = std::string(criteria->name[0]);
                 arcemu_TOLOWER(y);
                 if (!FindXinYString(x, y))
                 {
@@ -1176,7 +1176,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 recout = "|cffffffffCriteria ";
                 recout += strm.str();
                 recout += ": |cfffff000";
-                recout += criteria->name;
+                recout += criteria->name[0];
                 strm.str("");
                 auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
                 if (achievement)

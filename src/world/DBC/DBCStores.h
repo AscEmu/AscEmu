@@ -30,7 +30,6 @@ class Player;
 
 #ifdef ENABLE_ACHIEVEMENTS
 
-
 struct AchievementCategoryEntry
 {
     uint32 ID;                 // 0
@@ -42,9 +41,9 @@ struct AchievementCategoryEntry
 
 struct AchievementCriteriaEntry
 {
-    uint32 ID;                     // 0
-    uint32 referredAchievement;    // 1
-    uint32 requiredType;           // 2
+    uint32 ID;                      // 0
+    uint32 referredAchievement;     // 1
+    uint32 requiredType;            // 2
     union
     {
         // ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE = 0
@@ -434,14 +433,15 @@ struct AchievementCriteriaEntry
             uint32 additionalRequirement2_value;           // 8 additional requirement 1 value
         } raw;
     };
-    const char* name;             // 9-24
-    uint32 name_flags;            // 25
-    uint32 completionFlag;        // 26
-    uint32 groupFlag;             // 27
-    uint32 unk1;                  // 28
-    uint32 timeLimit;             // 29 time limit in seconds
-    uint32 index;                 // 30
+    char* name[16];                 // 9-24
+                                    //uint32 name_flags;            // 25
+    uint32 completionFlag;          // 26
+    uint32 groupFlag;               // 27
+    uint32 unk1;                    // 28
+    uint32 timeLimit;               // 29 time limit in seconds
+    uint32 index;                   // 30
 };
+
 #endif
 
 /*struct BattlemasterListEntry
@@ -1348,7 +1348,7 @@ class SERVER_DECL DBCStorage
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore;
 #ifdef ENABLE_ACHIEVEMENTS
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore;
-extern SERVER_DECL DBCStorage<AchievementCriteriaEntry> dbcAchievementCriteriaStore;
+extern SERVER_DECL DBC::DBCStorage<AchievementCriteriaEntry> sAchievementCriteriaStore;
 //extern SERVER_DECL DBCStorage<AchievementCategoryEntry> dbcAchievementCategoryStore;
 #endif
 //extern SERVER_DECL DBCStorage<BattlemasterListEntry> dbcBattlemasterListStore;

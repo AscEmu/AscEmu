@@ -51,7 +51,7 @@ bool SendAchievementProgress(const CriteriaProgress* c)
         // achievement not started yet, don't send progress
         return false;
 
-    AchievementCriteriaEntry const* acEntry = dbcAchievementCriteriaStore.LookupEntryForced(c->id);
+    auto acEntry = sAchievementCriteriaStore.LookupEntry(c->id);
     if (!acEntry)
         return false;
 
@@ -76,7 +76,7 @@ bool SaveAchievementProgressToDB(const CriteriaProgress* c)
         // don't save it if it's not started yet
         return false;
     }
-    AchievementCriteriaEntry const* acEntry = dbcAchievementCriteriaStore.LookupEntry(c->id);
+    auto acEntry = sAchievementCriteriaStore.LookupEntry(c->id);
     switch (acEntry->requiredType)
     {
         // these get updated when character logs on, don't save to character progress db
@@ -1499,9 +1499,9 @@ AchievementCompletionState AchievementMgr::GetAchievementCompletionState(DBC::St
 
     uint32 completedCount = 0;
     bool foundOutstanding = false;
-    for (uint32 rowId = 0; rowId < dbcAchievementCriteriaStore.GetNumRows(); ++rowId)
+    for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
-        AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupRowForced(rowId);
+        auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
         if (criteria == NULL || criteria->referredAchievement != entry->ID)
         {
             continue;
@@ -1671,7 +1671,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
         data << int32(-1);
         for (; progressIter != m_criteriaProgress.end() && !packetFull; ++progressIter)
         {
-            acEntry = dbcAchievementCriteriaStore.LookupEntryForced(progressIter->first);
+            acEntry = sAchievementCriteriaStore.LookupEntry(progressIter->first);
             if (!acEntry)
             {
                 continue;
@@ -1889,11 +1889,11 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
 {
     if (criteriaID == -1)
     {
-        uint32 nr = dbcAchievementCriteriaStore.GetNumRows();
+        uint32 nr = sAchievementCriteriaStore.GetNumRows();
         AchievementCriteriaEntry const* crt;
         for (uint32 i = 0, j = 0; j < nr; ++i)
         {
-            crt = dbcAchievementCriteriaStore.LookupRowForced(i);
+            crt = sAchievementCriteriaStore.LookupEntry(i);
             if (crt == NULL)
             {
                 LOG_ERROR("Achievement Criteria %lu entry not found.", i);
@@ -1909,7 +1909,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
         m_player->GetSession()->SystemMessage("All achievement criteria completed.");
         return true;
     }
-    AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupEntryForced(criteriaID);
+    auto criteria = sAchievementCriteriaStore.LookupEntry(criteriaID);
     if (!criteria)
     {
         gmSession->SystemMessage("Achievement criteria %lu not found.", criteriaID);
@@ -1957,7 +1957,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
 
 bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32 criteriaID, uint32 count)
 {
-    AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupEntryForced(criteriaID);
+    auto criteria = sAchievementCriteriaStore.LookupEntry(criteriaID);
     if (!criteria)
     {
         Log.Debug("AchievementMgr", "Achievement ID %u is Invalid", criteriaID);

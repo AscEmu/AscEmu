@@ -25,7 +25,7 @@ typedef std::map<WMOAreaTableTripple, WMOAreaTableEntry const*> WMOAreaInfoByTri
 
 #ifdef ENABLE_ACHIEVEMENTS
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
-SERVER_DECL DBCStorage<AchievementCriteriaEntry> dbcAchievementCriteriaStore;
+SERVER_DECL DBC::DBCStorage<AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
 #endif
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore(DBC::Structures::area_group_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore(DBC::Structures::area_table_entry_format);
@@ -108,29 +108,6 @@ const char* skilllineentrYFormat = "uuulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 // const char* BattlemasterListEntryFormat = "uiiiiiiiiuuuuuiiiiiiiiiiiiiiiiiiuux";
 // const char* BattlemasterListEntryFormat = "uiiiiiiiiuuiiiiiiiiiiiiiiiiiuux";
 //const char* BattlemasterListEntryFormat = "uiiiiiiiiuuiiiiiiiiiiiiiiiiiuux";
-
-
-#ifdef ENABLE_ACHIEVEMENTS
-
-const char* AchievementCriteriaStoreFormat =
-"n" // ID
-"i" // referredAchievement
-"i" // requiredType
-"i" // raw.field3
-"i" // raw.field4
-"i" // raw.additionalRequirement1_type
-"i" // raw.additionalRequirement1_value
-"i" // raw.additionalRequirement2_type
-"i" // raw.additionalRequirement2_value
-"lxxxxxxxxxxxxxxx" // name
-"u" // name_flags
-"i" // completionFlag
-"i" // groupFlag
-"u" // unk1
-"i" // timeLimit
-"u" // index
-;
-#endif
 
 const char* spellentryFormat =
 "u" // Id
@@ -277,7 +254,7 @@ bool LoadDBCs()
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sWorldMapOverlayStore, dbc_path, "WorldMapOverlay.dbc");
 #ifdef ENABLE_ACHIEVEMENTS
-    LOAD_DBC("DBC/Achievement_Criteria.dbc", AchievementCriteriaStoreFormat, true, dbcAchievementCriteriaStore, true);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAchievementCriteriaStore, dbc_path, "Achievement_Criteria.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAchievementStore, dbc_path, "Achievement.dbc");
 #endif
     //LOAD_DBC("DBC/BattlemasterList.dbc", BattlemasterListEntryFormat, true, dbcBattlemasterListStore, true);

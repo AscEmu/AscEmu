@@ -11767,9 +11767,9 @@ void Player::PlaySound(uint32 sound_id)
 //really need to work on the speed of this. This will be called on a lot of events
 /*void Player::Event_Achiement_Received(uint32 achievementtype,uint32 pentry,uint32 pvalue)
 {
-for (uint32 i= 0; i<dbcAchievementCriteriaStore.GetNumRows(); i++)
+for (uint32 i= 0; i<sAchievementCriteriaStore.GetNumRows(); i++)
 {
-AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupRow(i);
+auto criteria = sAchievementCriteriaStore.LookupEntry(i);
 uint32 achientry = criteria->ID;
 //check if we need to even know about this criteria
 if (!criteria || criteria->requiredType != achievementtype)
@@ -11872,7 +11872,7 @@ std::map<uint32,AchievementVal*>::iterator itr;
 for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
 {
 //        uint32 critentry = itr->first;
-//        AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupEntry(critentry);
+//        auto criteria = sAchievementCriteriaStore.LookupEntry(critentry);
 //        if (!critentry) continue; //wtf ?
 //        if (criteria->requiredAchievementRelatedCount > itr->second)
 SendAchievmentStatus(itr->first, itr->second->cur_value, itr->second->completed_at_stamp);
@@ -11885,7 +11885,7 @@ std::map<uint32,AchievementVal*>::iterator itr;
 for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
 {
 uint32 critentry = itr->first;
-AchievementCriteriaEntry *criteria = dbcAchievementCriteriaStore.LookupEntry(critentry);
+auto criteria = sAchievementCriteriaStore.LookupEntry(critentry);
 if (!criteria)
 continue; //wtf ?
 if (criteria->requiredAchievementRelatedCount <= itr->second->cur_value)

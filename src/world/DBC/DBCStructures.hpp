@@ -28,6 +28,7 @@ namespace DBC
         namespace
         {
             char const achievement_format[] = "niixssssssssssssssssxssssssssssssssssxiixixssssssssssssssssxii";
+            char const achievement_criteria_format[] = "niiiiiiiissssssssssssssssxiiiii";
             char const area_group_format[] = "niiiiiii";
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const area_trigger_entry_format[] = "niffffffff";

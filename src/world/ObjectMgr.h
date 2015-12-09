@@ -429,7 +429,7 @@ typedef std::unordered_map<uint32, Player*>                     PlayerStorageMap
 typedef std::list<GM_Ticket*>                                       GmTicketList;
 typedef std::map<uint32, InstanceBossInfo*>                         InstanceBossInfoMap;
 #ifdef ENABLE_ACHIEVEMENTS
-typedef std::list<const AchievementCriteriaEntry*>                    AchievementCriteriaEntryList;
+typedef std::list<AchievementCriteriaEntry const*>                    AchievementCriteriaEntryList;
 #endif
 
 #ifndef WIN32
