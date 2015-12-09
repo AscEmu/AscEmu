@@ -11780,7 +11780,7 @@ if (pentry && criteria->requiredAchievementRelatedEntry != pentry)
 continue;
 
 //check if this achievement is even for us
-AchievementEntry *achi = dbcAchievementStore.LookupEntry(criteria->referredAchievement);
+auto achi = sAchievementStore.LookupEntry(criteria->referredAchievement);
 
 if (!achi
 //            || !(achi->factionFlag == -1 || (isAlliance(this) && achi->factionFlag == 1) || (!isAlliance(this) && achi->factionFlag == 0)) ||

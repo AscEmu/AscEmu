@@ -334,7 +334,7 @@ void AchievementMgr::LoadFromDB(QueryResult* achievementResult, QueryResult* cri
 /** Sends message to player(s) that the achievement has been completed.
     Realm first! achievements get sent to all players currently online.
     All other achievements get sent to all of the achieving player's guild members, group members, and other in-range players. */
-void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement)
+void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry const* achievement)
 {
     if (achievement == NULL || isCharacterLoading)
     {
@@ -568,7 +568,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
             continue;
         }
 
-        AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(achievementCriteria->referredAchievement);
+        auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
         if (!achievement)
         {
             // referred achievement not found (shouldn't normally happen)
@@ -1220,7 +1220,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
     {
         AchievementCriteriaEntry const* achievementCriteria = (*i);
 
-        AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(achievementCriteria->referredAchievement);
+        auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
         if (!achievement  //|| IsCompletedCriteria(achievementCriteria)
             || (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
             || (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && !m_player->IsTeamHorde())
@@ -1343,7 +1343,7 @@ bool AchievementMgr::IsCompletedCriteria(AchievementCriteriaEntry const* achieve
     {
         return false;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(achievementCriteria->referredAchievement);
+    auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
     if (achievement == NULL)
     {
         return false;
@@ -1478,7 +1478,7 @@ void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
     {
         return;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntry(criteria->referredAchievement);
+    auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
 
     if (criteria->completionFlag & ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL || GetAchievementCompletionState(achievement) == ACHIEVEMENT_COMPLETED_COMPLETED_NOT_STORED)
     {
@@ -1490,7 +1490,7 @@ void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
     ACHIEVEMENT_COMPLETED_COMPLETED_STORED: Achievement has been completed and stored already.
     ACHIVEMENT_COMPLETED_COMPLETED_NOT_STORED: Achievement has been completed but not stored yet.
     ACHIEVEMENT_COMPLETED_NONE: Achievement has not been completed yet. */
-AchievementCompletionState AchievementMgr::GetAchievementCompletionState(AchievementEntry const* entry)
+AchievementCompletionState AchievementMgr::GetAchievementCompletionState(DBC::Structures::AchievementEntry const* entry)
 {
     if (m_completedAchievements.find(entry->ID) != m_completedAchievements.end())
     {
@@ -1591,7 +1591,7 @@ void AchievementMgr::UpdateCriteriaProgress(AchievementCriteriaEntry const* entr
 }
 
 /// Completes the achievement for the player.
-void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
+void AchievementMgr::CompletedAchievement(DBC::Structures::AchievementEntry const* achievement)
 {
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER || m_completedAchievements.find(achievement->ID) != m_completedAchievements.end())
     {
@@ -1619,7 +1619,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
     bool doneCompleted = false;
     bool doneProgress = false;
     AchievementCriteriaEntry const* acEntry;
-    AchievementEntry const* achievement;
+    DBC::Structures::AchievementEntry const* achievement;
 
     WorldPacket data;
     if (packetSize < 0x8000)
@@ -1676,7 +1676,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
             {
                 continue;
             }
-            achievement = dbcAchievementStore.LookupEntryForced(acEntry->referredAchievement);
+            achievement = sAchievementStore.LookupEntry(acEntry->referredAchievement);
             if (!achievement)
             {
                 continue;
@@ -1744,7 +1744,7 @@ uint32 AchievementMgr::GetCriteriaProgressCount()
 }
 
 /// Gives reward to player for completing the achievement.
-void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
+void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry const* entry)
 {
     if (entry == NULL || isCharacterLoading)
     {
@@ -1833,11 +1833,11 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achiev
 {
     if (achievementID == -1)
     {
-        uint32 nr = dbcAchievementStore.GetNumRows();
-        AchievementEntry const* ach;
+        uint32 nr = sAchievementStore.GetNumRows();
+
         for (uint32 i = 0; i < nr; ++i)
         {
-            ach = dbcAchievementStore.LookupRowForced(i);
+            auto ach = sAchievementStore.LookupEntry(i);
             if (ach == NULL)
             {
                 m_player->GetSession()->SystemMessage("Achievement %lu entry not found.", i);
@@ -1863,7 +1863,7 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achiev
         gmSession->SystemMessage("Player has already completed that achievement.");
         return false;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(achievementID);
+    auto achievement = sAchievementStore.LookupEntry(achievementID);
     if (!achievement)
     {
         gmSession->SystemMessage("Achievement %lu entry not found.", achievementID);
@@ -1920,7 +1920,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
         gmSession->SystemMessage("Achievement criteria %lu already completed.", criteriaID);
         return false;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(criteria->referredAchievement);
+    auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
     if (!achievement)
     {
         // achievement not found
@@ -1968,7 +1968,7 @@ bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32 criteriaID,
         Log.Debug("AchievementMgr", "Achievement criteria %lu already completed.", criteriaID);
         return false;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(criteria->referredAchievement);
+    auto* achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
     if (!achievement)
     {
         // achievement not found
@@ -2064,7 +2064,7 @@ void AchievementMgr::GMResetCriteria(int32 criteriaID)
 }
 
 /// Date/Time (time_t) the achievement was completed, or 0 if achievement not completed yet
-time_t AchievementMgr::GetCompletedTime(AchievementEntry const* achievement)
+time_t AchievementMgr::GetCompletedTime(DBC::Structures::AchievementEntry const* achievement)
 {
     CompletedAchievementMap::iterator iter = m_completedAchievements.find(achievement->ID);
     if (iter != m_completedAchievements.end())

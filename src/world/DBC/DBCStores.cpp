@@ -24,7 +24,7 @@
 typedef std::map<WMOAreaTableTripple, WMOAreaTableEntry const*> WMOAreaInfoByTripple;
 
 #ifdef ENABLE_ACHIEVEMENTS
-SERVER_DECL DBCStorage<AchievementEntry> dbcAchievementStore;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
 SERVER_DECL DBCStorage<AchievementCriteriaEntry> dbcAchievementCriteriaStore;
 #endif
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore(DBC::Structures::area_group_format);
@@ -111,25 +111,6 @@ const char* skilllineentrYFormat = "uuulxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
 #ifdef ENABLE_ACHIEVEMENTS
-const char* AchievementStoreFormat =
-"n" // ID
-"i" // factionFlag
-"i" // mapID
-"u" // unknown1
-"lxxxxxxxxxxxxxxx" // name
-"u" // name_flags
-"lxxxxxxxxxxxxxxx" // description
-"u" // desc_flags
-"i" // categoryId
-"i" // points
-"u" // orderInCategory
-"i" // flags
-"u" // flags2
-"lxxxxxxxxxxxxxxx" // rewardName
-"u" // rewardName_flags
-"u" // count
-"u" // refAchievement
-;
 
 const char* AchievementCriteriaStoreFormat =
 "n" // ID
@@ -297,7 +278,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sWorldMapOverlayStore, dbc_path, "WorldMapOverlay.dbc");
 #ifdef ENABLE_ACHIEVEMENTS
     LOAD_DBC("DBC/Achievement_Criteria.dbc", AchievementCriteriaStoreFormat, true, dbcAchievementCriteriaStore, true);
-    LOAD_DBC("DBC/Achievement.dbc", AchievementStoreFormat, true, dbcAchievementStore, true);
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAchievementStore, dbc_path, "Achievement.dbc");
 #endif
     //LOAD_DBC("DBC/BattlemasterList.dbc", BattlemasterListEntryFormat, true, dbcBattlemasterListStore, true);
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCharTitlesStore, dbc_path, "CharTitles.dbc");

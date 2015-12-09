@@ -27,6 +27,7 @@ namespace DBC
     {
         namespace
         {
+            char const achievement_format[] = "niixssssssssssssssssxssssssssssssssssxiixixssssssssssssssssxii";
             char const area_group_format[] = "niiiiiii";
             char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const area_trigger_entry_format[] = "niffffffff";
@@ -91,6 +92,27 @@ namespace DBC
         }
 
         #pragma pack(push, 1)
+        struct AchievementEntry
+        {
+            uint32 ID;                      // 0
+            int32 factionFlag;              // 1 -1=all, 0=horde, 1=alliance
+            int32 mapID;                    // 2 -1=none
+            //uint32 unknown1;              // 3
+            char* name[16];                 // 4-19
+            //uint32 name_flags;            // 20
+            char* description[16];          // 21-36
+            //uint32 desc_flags;            // 37
+            uint32 categoryId;              // 38
+            uint32 points;                  // 39 reward points
+            //uint32 orderInCategory;       // 40
+            uint32 flags;                   // 41
+            //uint32 unknown2;              // 42
+            char* rewardName[16];           // 43-58 title/item reward name
+            //uint32 rewardName_flags;      // 59
+            uint32 count;                   // 60
+            uint32 refAchievement;          // 61
+        };
+
         struct AreaGroupEntry
         {
             uint32 AreaGroupId;             // 0

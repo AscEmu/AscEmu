@@ -942,7 +942,7 @@ void ObjectMgr::LoadAchievementRewards()
         Field* fields = result->Fetch();
         uint32 entry = fields[0].GetUInt32();
 
-        if (!dbcAchievementStore.LookupEntryForced(entry))
+        if (!sAchievementStore.LookupEntry(entry))
         {
             sLog.Error("ObjectMgr", "Achievement reward entry %u has wrong achievement, ignore", entry);
             continue;

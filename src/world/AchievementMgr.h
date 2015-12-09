@@ -302,19 +302,19 @@ class SERVER_DECL AchievementMgr
         bool HasCompleted(uint32 achievementID);
         uint32 GetCompletedAchievementsCount() const;
         uint32 GetCriteriaProgressCount();
-        time_t GetCompletedTime(AchievementEntry const* achievement);
+        time_t GetCompletedTime(DBC::Structures::AchievementEntry const* achievement);
         Player* GetPlayer() { return m_player; }
 
     private:
-        void GiveAchievementReward(AchievementEntry const* entry);
-        void SendAchievementEarned(AchievementEntry const* achievement);
+        void GiveAchievementReward(DBC::Structures::AchievementEntry const* entry);
+        void SendAchievementEarned(DBC::Structures::AchievementEntry const* achievement);
         void SendCriteriaUpdate(CriteriaProgress* progress);
         void SetCriteriaProgress(AchievementCriteriaEntry const* entry, int32 newValue, bool relative = false);
         void UpdateCriteriaProgress(AchievementCriteriaEntry const* entry, int32 updateByValue);
         void CompletedCriteria(AchievementCriteriaEntry const* entry);
-        void CompletedAchievement(AchievementEntry const* entry);
+        void CompletedAchievement(DBC::Structures::AchievementEntry const* entry);
         bool IsCompletedCriteria(AchievementCriteriaEntry const* entry);
-        AchievementCompletionState GetAchievementCompletionState(AchievementEntry const* entry);
+        AchievementCompletionState GetAchievementCompletionState(DBC::Structures::AchievementEntry const* entry);
 
         RWLock m_lock;
         Player* m_player;

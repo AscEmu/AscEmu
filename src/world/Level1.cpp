@@ -1069,11 +1069,11 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
     if (lookupname || lookupdesc || lookupreward)
     {
         std::set<uint32> foundList;
-        j = dbcAchievementStore.GetNumRows();
+        j = sAchievementStore.GetNumRows();
         bool foundmatch;
         for (i = 0; i < j && numFound < 25; ++i)
         {
-            AchievementEntry const* achievement = dbcAchievementStore.LookupRowForced(i);
+            auto achievement = sAchievementStore.LookupEntry(i);
             if (achievement)
             {
                 if (foundList.find(achievement->ID) != foundList.end())
@@ -1084,19 +1084,19 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 foundmatch = false;
                 if (lookupname)
                 {
-                    y = std::string(achievement->name);
+                    y = std::string(achievement->name[0]);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupdesc)
                 {
-                    y = std::string(achievement->description);
+                    y = std::string(achievement->description[0]);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupreward)
                 {
-                    y = std::string(achievement->rewardName);
+                    y = std::string(achievement->rewardName[0]);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
@@ -1129,7 +1129,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                     // achievement is not completed
                     recout += ":0:0:0:-1:0:0:0:0|h[";
                 }
-                recout += achievement->name;
+                recout += achievement->name[0];
                 if (!lookupreward)
                 {
                     recout += "]|h|r";
@@ -1137,7 +1137,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 else
                 {
                     recout += "]|h |cffffffff";
-                    recout += achievement->rewardName;
+                    recout += achievement->rewardName[0];
                     recout += "|r";
                 }
                 strm.str("");
@@ -1178,7 +1178,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 recout += ": |cfffff000";
                 recout += criteria->name;
                 strm.str("");
-                AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(criteria->referredAchievement);
+                auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
                 if (achievement)
                 {
                     // create achievement link
@@ -1204,7 +1204,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                         // achievement is not completed
                         recout += ":0:0:0:-1:0:0:0:0|h[";
                     }
-                    recout += achievement->name;
+                    recout += achievement->name[0];
                     if (!lookupreward)
                     {
                         recout += "]|h|r";
@@ -1212,7 +1212,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                     else
                     {
                         recout += "]|h |cffffffff";
-                        recout += achievement->rewardName;
+                        recout += achievement->rewardName[0];
                         recout += "|r";
                     }
                     strm.str("");
