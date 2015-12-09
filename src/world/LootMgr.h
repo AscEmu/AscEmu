@@ -39,7 +39,7 @@ enum LOOTTYPE
 
 struct ItemPrototype;
 class MapMgr;
-struct RandomProps;
+
 struct ItemRandomSuffixEntry;
 class Player;
 
@@ -68,7 +68,7 @@ class LootRoll : public EventableObject
         MapMgr* _mgr;
 };
 
-typedef std::vector<std::pair<RandomProps*, float>> RandomPropertyVector;
+typedef std::vector<std::pair<DBC::Structures::ItemRandomPropertiesEntry const*, float>> RandomPropertyVector;
 typedef std::vector<std::pair<ItemRandomSuffixEntry*, float>> RandomSuffixVector;
 
 typedef struct
@@ -83,7 +83,7 @@ struct __LootItem
 {
     _LootItem item;
     uint32 iItemsCount;
-    RandomProps* iRandomProperty;
+    DBC::Structures::ItemRandomPropertiesEntry const* iRandomProperty;
     ItemRandomSuffixEntry* iRandomSuffix;
     LootRoll* roll;
     bool passed;
@@ -230,7 +230,7 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
 
         std::map<uint32, std::set<uint32>> quest_loot_go;
 
-        RandomProps* GetRandomProperties(ItemPrototype* proto);
+        DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemPrototype* proto);
         ItemRandomSuffixEntry* GetRandomSuffix(ItemPrototype* proto);
 
         bool is_loading;

@@ -62,8 +62,9 @@ namespace DBC
             char const holidays_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
             char const item_entry_format[] = "niiiiiii";
             char const item_extended_cost_format[] = "niiiiiiiiiiiiiix";
-            char const item_set_format[] = "issssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
+            char const item_random_properties_format[] = "nxiiixxssssssssssssssssx";
+            char const item_set_format[] = "issssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
@@ -453,6 +454,26 @@ namespace DBC
             //uint32 unk;                   // 15
         };
 
+        struct ItemLimitCategoryEntry
+        {
+            uint32 Id;                      // 0
+            //char* name[16];               // 1-16 name langs
+            //uint32 name_flags             // 17
+            uint32 maxAmount;               // 18
+            uint32 equippedFlag;            // 19 - equipped (bool?)
+        };
+
+        struct ItemRandomPropertiesEntry
+        {
+            uint32 ID;                      // 0
+            //uint32 name1;                 // 1
+            uint32 spells[3];               // 2-4
+            //uint32 unk1;                  // 5
+            //uint32 unk2;                  // 6
+            char* name_suffix[16];          // 7-22
+            //uint32 name_suffix_flags;     // 23
+        };
+
         struct ItemSetEntry
         {
             uint32 id;                      // 1
@@ -464,15 +485,6 @@ namespace DBC
             uint32 itemscount[8];           // 43-50
             uint32 RequiredSkillID;         // 51
             uint32 RequiredSkillAmt;        // 52
-        };
-
-        struct ItemLimitCategoryEntry
-        {
-            uint32 Id;                      // 0
-            //char* name[16];               // 1-16 name langs
-            //uint32 name_flags             // 17
-            uint32 maxAmount;               // 18
-            uint32 equippedFlag;            // 19 - equipped (bool?)
         };
 
         struct LFGDungeonEntry

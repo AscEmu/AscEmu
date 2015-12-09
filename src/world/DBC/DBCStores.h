@@ -848,32 +848,6 @@ struct Trainerspell
     uint32 charclass;
 };
 
-struct RandomProps
-{
-    uint32 ID;
-    //uint32 name1;
-    uint32 spells[3];
-    //uint32 unk1;
-    //uint32 unk2;
-    //uint32 name2;
-    //uint32 RankAlt1;
-    //uint32 RankAlt2;
-    //uint32 RankAlt3;
-    //uint32 RankAlt4;
-    //uint32 RankAlt5;
-    //uint32 RankAlt6;
-    //uint32 RankAlt7;
-    //uint32 RankAlt8;
-    //uint32 RankAlt9;
-    //uint32 RankAlt10;
-    //uint32 RankAlt11;
-    //uint32 RankAlt12;
-    //uint32 RankAlt13;
-    //uint32 RankAlt14;
-    //uint32 RankAlt15;
-    //uint32 RankFlags;
-};
-
 struct CreatureSpellDataEntry
 {
     uint32 id;
@@ -1312,9 +1286,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTableEntry> sAreaStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionEntry> sFactionStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
-
-extern SERVER_DECL DBCStorage<RandomProps> dbcRandomProps;
-
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
 
 extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;

@@ -279,12 +279,15 @@ void Item::ApplyRandomProperties(bool apply)
     {
         if (int32(GetItemRandomPropertyId()) > 0)
         {
-            RandomProps* rp = dbcRandomProps.LookupEntry(GetItemRandomPropertyId());
+            auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(GetItemRandomPropertyId());
             for (uint8 k = 0; k < 3; k++)
             {
-                if (rp->spells[k] != 0)
+                if (item_random_properties == nullptr)
+                    continue;
+
+                if (item_random_properties->spells[k] != 0)
                 {
-                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(rp->spells[k]);
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(item_random_properties->spells[k]);
                     if (spell_item_enchant == nullptr)
                         continue;
 
