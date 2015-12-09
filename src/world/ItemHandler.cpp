@@ -1951,7 +1951,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
         {
             FilledSlots++;
             ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(EI->Enchantment->GemEntry);
-            if (ip)
+            if (!ip)
                 gem_properties = nullptr;
             else
                 gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
