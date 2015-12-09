@@ -443,21 +443,6 @@ struct AchievementCriteriaEntry
 
 #endif
 
-//SkillLine.dbc
-struct skilllineentry
-{
-    uint32 id;
-    uint32 type;
-    uint32 skillCostsID;
-    const char* Name;
-  //int32 NameAlt[15];
-  //uint32 NameFlags;
-  //uint32 Description;
-  //uint32 DescriptionAlt[15];
-  //uint32 DescriptionFlags;
-  //uint32 spellIconID;
-};
-
 #define MAX_SPELL_EFFECTS 3
 
 // Struct for the entry in Spell.dbc
@@ -1265,9 +1250,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionEntry> sFactionStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellItemEnchantmentEntry> sSpellItemEnchantmentStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemRandomPropertiesEntry> sItemRandomPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SkillLineAbilityEntry> sSkillLineAbilityStore;
-
-extern SERVER_DECL DBCStorage<skilllineentry> dbcSkillLine;
-
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SkillLineEntry> sSkillLineStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiNodesEntry> sTaxiNodesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathEntry> sTaxiPathStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::TaxiPathNodeEntry> sTaxiPathNodeStore;

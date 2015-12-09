@@ -2079,9 +2079,9 @@ void ObjectMgr::LoadTrainers()
                 if (ts.RequiredSkillLine == 0 && ts.pCastRealSpell != NULL && ts.pCastRealSpell->Effect[1] == SPELL_EFFECT_SKILL)
                 {
                     uint32 skill = ts.pCastRealSpell->EffectMiscValue[1];
-                    skilllineentry* sk = dbcSkillLine.LookupEntryForced(skill);
-                    ARCEMU_ASSERT(sk != NULL);
-                    if (sk->type == SKILL_TYPE_PROFESSION)
+                    auto skill_line = sSkillLineStore.LookupEntry(skill);
+                    ARCEMU_ASSERT(skill_line != NULL);
+                    if (skill_line->type == SKILL_TYPE_PROFESSION)
                         ts.IsProfession = true;
                     else
                         ts.IsProfession = false;

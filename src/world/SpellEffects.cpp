@@ -3455,12 +3455,13 @@ void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
     if (skill == 242)
         skill = SKILL_LOCKPICKING; // somehow for lockpicking misc is different than the skill :s
 
-    skilllineentry* sk = dbcSkillLine.LookupEntryForced(skill);
+    auto skill_line = sSkillLineStore.LookupEntry(skill);
 
-    if (!sk) return;
+    if (!skill_line)
+        return;
 
     uint32 max = 1;
-    switch (sk->type)
+    switch (skill_line->type)
     {
         case SKILL_TYPE_PROFESSION:
         case SKILL_TYPE_SECONDARY:
@@ -3488,7 +3489,7 @@ void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
         /*if ((GetProto()->Attributes & 64) && playerTarget->m_TeleportState == 1)
         return;*/
 
-        if (sk->type == SKILL_TYPE_PROFESSION)
+        if (skill_line->type == SKILL_TYPE_PROFESSION)
             target->ModPrimaryProfessionPoints(-1);
 
         if (skill == SKILL_RIDING)
@@ -3939,8 +3940,8 @@ void Spell::SpellEffectProficiency(uint32 i)
     if (skill_line_ability != nullptr)
         skill = skill_line_ability->skilline;
 
-    skilllineentry* sk = dbcSkillLine.LookupEntryForced(skill);
-    if (skill)
+    auto skill_line = sSkillLineStore.LookupEntry(skill);
+    if (skill_line)
     {
         if (playerTarget)
         {
@@ -3955,7 +3956,7 @@ void Spell::SpellEffectProficiency(uint32 i)
                 /*if ((GetProto()->Attributes & 64) && playerTarget->m_TeleportState == 1)
                 return;*/
 
-                if (sk && sk->type == SKILL_TYPE_WEAPON)
+                if (skill_line->type == SKILL_TYPE_WEAPON)
                     playerTarget->_AddSkillLine(skill, 1, 5 * playerTarget->getLevel());
                 else
                     playerTarget->_AddSkillLine(skill, 1, 1);

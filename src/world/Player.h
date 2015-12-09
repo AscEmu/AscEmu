@@ -52,7 +52,7 @@ class LfgMatch;
 struct LevelInfo;
 class SpeedCheatDetector;
 struct GuildMember;
-struct skilllineentry;
+
 class QueryBuffer;
 struct Quest;
 struct SpellShapeshiftForm;
@@ -265,7 +265,7 @@ class SpeedCheatDetector;
 struct TaxiPathNode;
 struct PlayerSkill
 {
-    skilllineentry* Skill;
+    DBC::Structures::SkillLineEntry const* Skill;
     uint32 CurrentValue;
     uint32 MaximumValue;
     uint32 BonusValue;

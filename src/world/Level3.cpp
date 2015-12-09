@@ -2390,7 +2390,6 @@ bool ChatHandler::HandleTriggerpassCheatCommand(const char* args, WorldSession* 
 
 bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession* m_session)
 {
-    skilllineentry* se;
     Player* plr = getSelectedChar(m_session, true);
     if (!plr)
         return true;
@@ -2403,8 +2402,11 @@ bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession* m_ses
 
     for (std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
     {
-        se = dbcSkillLine.LookupEntry(ss->skillid);
-        if (se->type != SKILL_TYPE_LANGUAGE && ss->skillid && ss->currentval && ss->maxval)
+        auto skill_line = sSkillLineStore.LookupEntry(ss->skillid);
+        if (skill_line == nullptr)
+            continue;
+
+        if (skill_line->type != SKILL_TYPE_LANGUAGE && ss->skillid && ss->currentval && ss->maxval)
             plr->_AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
     }
     //Chances depend on stats must be in this order!
@@ -3293,15 +3295,18 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
     GreenSystemMessage(m_session, "Starting search of skill `%s`...", x.c_str());
     uint32 t = getMSTime();
     uint32 count = 0;
-    for (uint32 index = 0; index < dbcSkillLine.GetNumRows(); ++index)
+    for (uint32 index = 0; index < sSkillLineStore.GetNumRows(); ++index)
     {
-        skilllineentry* skill = dbcSkillLine.LookupRow(index);
-        std::string y = std::string(skill->Name);
+        auto skill_line = sSkillLineStore.LookupEntry(index);
+        if (skill_line == nullptr)
+            continue;
+
+        std::string y = std::string(skill_line->Name[0]);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
         {
             // Print out the name in a cool highlighted fashion
-            SendHighlightedName(m_session, "Skill", skill->Name, y, x, skill->id);
+            SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);
             ++count;
             if (count == 25)
             {

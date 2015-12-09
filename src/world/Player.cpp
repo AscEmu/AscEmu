@@ -915,12 +915,15 @@ bool Player::Create(WorldPacket& data)
 
     m_FirstLogin = true;
 
-    skilllineentry* se;
+
     for (std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
     {
-        se = dbcSkillLine.LookupEntry(ss->skillid);
-        if (se->type != SKILL_TYPE_LANGUAGE)
-            _AddSkillLine(se->id, ss->currentval, ss->maxval);
+        auto skill_line = sSkillLineStore.LookupEntry(ss->skillid);
+        if (skill_line == nullptr)
+            continue;
+
+        if (skill_line->type != SKILL_TYPE_LANGUAGE)
+            _AddSkillLine(skill_line->id, ss->currentval, ss->maxval);
     }
     _UpdateMaxSkillCounts();
     //Chances depend on stats must be in this order!
@@ -2159,26 +2162,29 @@ void Player::addSpell(uint32 spell_id)
     SpellEntry* spell = dbcSpell.LookupEntry(spell_id);
     if (skill_line_ability && !_HasSkillLine(skill_line_ability->skilline))
     {
-        skilllineentry* skill = dbcSkillLine.LookupEntry(skill_line_ability->skilline);
+        auto skill_line = sSkillLineStore.LookupEntry(skill_line_ability->skilline);
         uint32 max = 1;
-        switch (skill->type)
+        if (skill_line != nullptr)
         {
-            case SKILL_TYPE_PROFESSION:
-                max = 75 * ((spell->RankNumber) + 1);
-                ModPrimaryProfessionPoints(-1);   // we are learning a profession, so subtract a point.
-                break;
-            case SKILL_TYPE_SECONDARY:
-                max = 75 * ((spell->RankNumber) + 1);
-                break;
-            case SKILL_TYPE_WEAPON:
-                max = 5 * getLevel();
-                break;
-            case SKILL_TYPE_CLASS:
-            case SKILL_TYPE_ARMOR:
-                if (skill->id == SKILL_LOCKPICKING)
+            switch (skill_line->type)
+            {
+                case SKILL_TYPE_PROFESSION:
+                    max = 75 * ((spell->RankNumber) + 1);
+                    ModPrimaryProfessionPoints(-1);   // we are learning a profession, so subtract a point.
+                    break;
+                case SKILL_TYPE_SECONDARY:
+                    max = 75 * ((spell->RankNumber) + 1);
+                    break;
+                case SKILL_TYPE_WEAPON:
                     max = 5 * getLevel();
-                break;
-        };
+                    break;
+                case SKILL_TYPE_CLASS:
+                case SKILL_TYPE_ARMOR:
+                    if (skill_line->id == SKILL_LOCKPICKING)
+                        max = 5 * getLevel();
+                    break;
+            };
+        }
 
         _AddSkillLine(skill_line_ability->skilline, 1, max);
         _UpdateMaxSkillCounts();
@@ -10136,8 +10142,8 @@ void Player::RemoveFromBattlegroundQueue()
 
 void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
 {
-    skilllineentry* CheckedSkill = dbcSkillLine.LookupEntryForced(SkillLine);
-    if (!CheckedSkill)  //skill doesn't exist, exit here
+    auto skill_line = sSkillLineStore.LookupEntry(SkillLine);
+    if (!skill_line)
         return;
 
     // force to be within limits
@@ -10162,7 +10168,7 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
     else
     {
         PlayerSkill inf;
-        inf.Skill = CheckedSkill;
+        inf.Skill = skill_line;
         inf.MaximumValue = Max_sk;
         inf.CurrentValue = (inf.Skill->id != SKILL_RIDING ? Curr_sk : Max_sk);
         inf.BonusValue = 0;
@@ -10477,7 +10483,7 @@ void PlayerSkill::Reset(uint32 Id)
     MaximumValue = 0;
     CurrentValue = 0;
     BonusValue = 0;
-    Skill = (Id == 0) ? NULL : dbcSkillLine.LookupEntry(Id);
+    Skill = (Id == 0) ? NULL : sSkillLineStore.LookupEntry(Id);
 }
 
 void Player::_AddLanguages(bool All)
@@ -10488,7 +10494,7 @@ void Player::_AddLanguages(bool All)
      */
 
     PlayerSkill sk;
-    skilllineentry* en;
+
     uint32 spell_id;
     static uint32 skills[] = { SKILL_LANG_COMMON, SKILL_LANG_ORCISH, SKILL_LANG_DWARVEN, SKILL_LANG_DARNASSIAN, SKILL_LANG_TAURAHE, SKILL_LANG_THALASSIAN,
         SKILL_LANG_TROLL, SKILL_LANG_GUTTERSPEAK, SKILL_LANG_DRAENEI, 0
@@ -10512,14 +10518,17 @@ void Player::_AddLanguages(bool All)
     {
         for (std::list<CreateInfo_SkillStruct>::iterator itr = info->skills.begin(); itr != info->skills.end(); ++itr)
         {
-            en = dbcSkillLine.LookupEntry(itr->skillid);
-            if (en->type == SKILL_TYPE_LANGUAGE)
+            auto skill_line = sSkillLineStore.LookupEntry(itr->skillid);
+            if (skill_line != nullptr)
             {
-                sk.Reset(itr->skillid);
-                sk.MaximumValue = sk.CurrentValue = 300;
-                m_skills.insert(std::make_pair(itr->skillid, sk));
-                if ((spell_id = ::GetSpellForLanguage(itr->skillid)) != 0)
-                    addSpell(spell_id);
+                if (skill_line->type == SKILL_TYPE_LANGUAGE)
+                {
+                    sk.Reset(itr->skillid);
+                    sk.MaximumValue = sk.CurrentValue = 300;
+                    m_skills.insert(std::make_pair(itr->skillid, sk));
+                    if ((spell_id = ::GetSpellForLanguage(itr->skillid)) != 0)
+                        addSpell(spell_id);
+                }
             }
         }
     }

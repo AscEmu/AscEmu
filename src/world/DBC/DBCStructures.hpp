@@ -75,6 +75,7 @@ namespace DBC
             char const quest_xp_format[] = "niiiiiiiiii";
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
             char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiiii";
+            char const skill_line_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxi";
             char const skill_line_ability_format[] = "niiiixxiiiiixx";
             char const stable_slot_prices_format[] = "ni";
             char const spell_cast_times_format[] = "nixx";
@@ -611,6 +612,21 @@ namespace DBC
             uint32 multiplier[16];      // 2-17 ///\todo split this
             uint32 unk1;                // 18
             uint32 amor_mod[5];         // 19-23
+        };
+
+        struct SkillLineEntry
+        {
+            uint32 id;                  // 0
+            uint32 type;                // 1
+            //uint32 skillCostsID;      // 2
+            char* Name[16];             // 3-18
+            //uint32 NameFlags;         // 19
+            //char* Description[16];    // 20-35
+            //uint32 DescriptionFlags;  // 36
+            uint32 spell_icon;          // 37
+            //char* add_name[16];       // 38-53
+            //uint32 add_name_flags;    // 54
+            uint32 linkable;            // 55
         };
 
         struct SkillLineAbilityEntry

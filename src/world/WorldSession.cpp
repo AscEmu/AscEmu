@@ -1356,28 +1356,28 @@ void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
 
 void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN uint32 skill_line;
+    CHECK_INWORLD_RETURN
+    
+    uint32 skill_line_id;
     uint32 points_remaining = _player->GetPrimaryProfessionPoints();
-    recv_data >> skill_line;
-
-    // Cheater detection
-    // if (!_player->HasSkillLine(skill_line)) return;
+    recv_data >> skill_line_id;
 
     // Remove any spells within that line that the player has
-    _player->RemoveSpellsFromLine(skill_line);
+    _player->RemoveSpellsFromLine(skill_line_id);
 
     // Finally, remove the skill line.
-    _player->_RemoveSkillLine(skill_line);
+    _player->_RemoveSkillLine(skill_line_id);
 
     // added by Zack : This is probably wrong or already made elsewhere :
     // restore skill learnability
     if (points_remaining == _player->GetPrimaryProfessionPoints())
     {
         // we unlearned a skill so we enable a new one to be learned
-        skilllineentry* sk = dbcSkillLine.LookupEntryForced(skill_line);
-        if (!sk)
+        auto skill_line = sSkillLineStore.LookupEntry(skill_line_id);
+        if (!skill_line)
             return;
-        if (sk->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
+
+        if (skill_line->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
             _player->SetPrimaryProfessionPoints(points_remaining + 1);
     }
 }
