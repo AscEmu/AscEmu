@@ -525,16 +525,16 @@ uint32 Vehicle::GetPassengerCount() const{
 uint16 Vehicle::GetMoveFlags2() const{
     uint16 flags2 = 0;
 
-    if (vehicle_info->flags & DBC::Structures::VEHICLE_FLAG_NO_STRAFE)
+    if (vehicle_info->flags & VEHICLE_FLAG_NO_STRAFE)
         flags2 |= MOVEFLAG2_NO_STRAFING;
 
-    if (vehicle_info->flags & DBC::Structures::VEHICLE_FLAG_NO_JUMPING)
+    if (vehicle_info->flags & VEHICLE_FLAG_NO_JUMPING)
         flags2 |= MOVEFLAG2_NO_JUMPING;
-    if (vehicle_info->flags & DBC::Structures::VEHICLE_FLAG_FULLSPEEDTURNING)
+    if (vehicle_info->flags & VEHICLE_FLAG_FULLSPEEDTURNING)
         flags2 |= MOVEFLAG2_FULLSPEED_TURNING;
-    if (vehicle_info->flags & DBC::Structures::VEHICLE_FLAG_ALLOW_PITCHING)
+    if (vehicle_info->flags & VEHICLE_FLAG_ALLOW_PITCHING)
         flags2 |= MOVEFLAG2_ALLOW_PITCHING;
-    if (vehicle_info->flags & DBC::Structures::VEHICLE_FLAG_FULLSPEEDPITCHING)
+    if (vehicle_info->flags & VEHICLE_FLAG_FULLSPEEDPITCHING)
         flags2 |= MOVEFLAG2_FULLSPEED_PITCHING;
 
     return flags2;
