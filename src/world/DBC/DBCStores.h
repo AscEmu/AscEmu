@@ -1017,54 +1017,6 @@ struct LFGDungeonEntry
     uint32 Entry() const { return ID + (type << 24); }
 };
 
-
-#define MAX_VEHICLE_SEATS 8
-
-enum VehicleFlags
-{
-    VEHICLE_FLAG_NO_STRAFE                       = 0x00000001,           // Sets MOVEFLAG2_NO_STRAFE
-    VEHICLE_FLAG_NO_JUMPING                      = 0x00000002,           // Sets MOVEFLAG2_NO_JUMPING
-    VEHICLE_FLAG_FULLSPEEDTURNING                = 0x00000004,           // Sets MOVEFLAG2_FULLSPEEDTURNING
-    VEHICLE_FLAG_ALLOW_PITCHING                  = 0x00000010,           // Sets MOVEFLAG2_ALLOW_PITCHING
-    VEHICLE_FLAG_FULLSPEEDPITCHING               = 0x00000020,           // Sets MOVEFLAG2_FULLSPEEDPITCHING
-    VEHICLE_FLAG_CUSTOM_PITCH                    = 0x00000040,           // If set use pitchMin and pitchMax from DBC, otherwise pitchMin = -pi/2, pitchMax = pi/2
-    VEHICLE_FLAG_ADJUST_AIM_ANGLE                = 0x00000400,           // Lua_IsVehicleAimAngleAdjustable
-    VEHICLE_FLAG_ADJUST_AIM_POWER                = 0x00000800,           // Lua_IsVehicleAimPowerAdjustable
-};
-
-struct VehicleEntry
-{
-    uint32 ID;                                          // 0
-    uint32 flags;                                       // 1
-    float turnSpeed;                                    // 2
-    float pitchSpeed;                                   // 3
-    float pitchMin;                                     // 4
-    float pitchMax;                                     // 5
-    uint32 seatID[MAX_VEHICLE_SEATS];                   // 6-13
-    float mouseLookOffsetPitch;                         // 14
-    float cameraFadeDistScalarMin;                      // 15
-    float cameraFadeDistScalarMax;                      // 16
-    float cameraPitchOffset;                            // 17
-    float facingLimitRight;                             // 18
-    float facingLimitLeft;                              // 19
-    float msslTrgtTurnLingering;                        // 20
-    float msslTrgtPitchLingering;                       // 21
-    float msslTrgtMouseLingering;                       // 22
-    float msslTrgtEndOpacity;                           // 23
-    float msslTrgtArcSpeed;                             // 24
-    float msslTrgtArcRepeat;                            // 25
-    float msslTrgtArcWidth;                             // 26
-    float msslTrgtImpactRadius[2];                      // 27-28
-    char* msslTrgtArcTexture;                           // 29
-    char* msslTrgtImpactTexture;                        // 30
-    char* msslTrgtImpactModel[2];                       // 31-32
-    float cameraYawOffset;                              // 33
-    uint32 uiLocomotionType;                            // 34
-    float msslTrgtImpactTexRadius;                      // 35
-    uint32 uiSeatIndicatorType;                         // 36
-    uint32 powerType;                                   // 37, new in 3.1
-};
-
 #pragma pack(pop)
 
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -1507,7 +1459,7 @@ extern SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;
 extern SERVER_DECL DBCStorage<SummonPropertiesEntry> dbcSummonProperties;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
-extern SERVER_DECL DBCStorage<VehicleEntry> dbcVehicle;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore;
 
 bool LoadDBCs();

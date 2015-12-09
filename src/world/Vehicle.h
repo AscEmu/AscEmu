@@ -25,7 +25,6 @@
 #include <array>
 
 
-struct VehicleEntry;
 //////////////////////////////////////////////////////////////////////////////////////////
 //class VehicleSeat
 //  Implements the seat functionality for Vehicles
@@ -354,7 +353,7 @@ class SERVER_DECL Vehicle
         bool HasAccessoryWithGUID(uint64 guid);
 
 
-        VehicleEntry* GetVehicleInfo() { return vehicle_info; }
+        DBC::Structures::VehicleEntry const* GetVehicleInfo() { return vehicle_info; }
         uint32 GetPassengerSeatId(uint64 guid);
 
     private:
@@ -362,7 +361,7 @@ class SERVER_DECL Vehicle
         std::vector<uint64> installed_accessories;
         uint32 creature_entry;
         Unit* owner;
-        VehicleEntry* vehicle_info;
+        DBC::Structures::VehicleEntry const* vehicle_info;
         uint32 passengercount;
         uint32 freeseats;
 };
