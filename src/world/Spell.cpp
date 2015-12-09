@@ -4560,13 +4560,16 @@ int32 Spell::CalculateEffect(uint32 i, Unit* target)
     /* Random suffix value calculation */
     if (i_caster && (int32(i_caster->GetItemRandomPropertyId()) < 0))
     {
-        ItemRandomSuffixEntry* si = dbcItemRandomSuffix.LookupEntry(abs(int(i_caster->GetItemRandomPropertyId())));
+        auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(abs(int(i_caster->GetItemRandomPropertyId())));
 
         for (uint8 j = 0; j < 3; ++j)
         {
-            if (si->enchantments[j] != 0)
+            if (item_random_suffix == nullptr)
+                continue;
+
+            if (item_random_suffix->enchantments[j] != 0)
             {
-                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(si->enchantments[j]);
+                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(item_random_suffix->enchantments[j]);
                 if (spell_item_enchant == nullptr)
                     continue;
 
@@ -4574,10 +4577,10 @@ int32 Spell::CalculateEffect(uint32 i, Unit* target)
                 {
                     if (spell_item_enchant->spell[k] == GetProto()->Id)
                     {
-                        if (si->prefixes[k] == 0)
+                        if (item_random_suffix->prefixes[k] == 0)
                             goto exit;
 
-                        value = RANDOM_SUFFIX_MAGIC_CALCULATION(si->prefixes[j], i_caster->GetItemRandomSuffixFactor());
+                        value = RANDOM_SUFFIX_MAGIC_CALCULATION(item_random_suffix->prefixes[j], i_caster->GetItemRandomSuffixFactor());
 
                         if (value == 0)
                             goto exit;

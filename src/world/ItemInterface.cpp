@@ -3951,11 +3951,11 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if (it->RandomSuffixId != 0)
             {
-                ItemRandomSuffixEntry* rs = lootmgr.GetRandomSuffix(it);
+                auto item_random_suffix = lootmgr.GetRandomSuffix(it);
 
-                if (rs != NULL)
+                if (item_random_suffix != NULL)
                 {
-                    randomprop = -1 * rs->id;
+                    randomprop = -1 * item_random_suffix->id;
                 }
                 else
                 {

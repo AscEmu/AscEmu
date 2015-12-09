@@ -304,13 +304,16 @@ void Item::ApplyRandomProperties(bool apply)
         }
         else
         {
-            ItemRandomSuffixEntry* rs = dbcItemRandomSuffix.LookupEntry(abs(int(GetItemRandomPropertyId())));
+            auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(abs(int(GetItemRandomPropertyId())));
 
             for (uint8 k = 0; k < 3; ++k)
             {
-                if (rs->enchantments[k] != 0)
+                if (item_random_suffix == nullptr)
+                    continue;
+
+                if (item_random_suffix->enchantments[k] != 0)
                 {
-                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(rs->enchantments[k]);
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(item_random_suffix->enchantments[k]);
                     if (spell_item_enchant == nullptr)
                         continue;
 
@@ -318,7 +321,7 @@ void Item::ApplyRandomProperties(bool apply)
                     if (Slot < 0)
                     {
                         Slot = FindFreeEnchantSlot(spell_item_enchant, 2);
-                        AddEnchantment(spell_item_enchant, 0, false, apply, true, Slot, rs->prefixes[k]);
+                        AddEnchantment(spell_item_enchant, 0, false, apply, true, Slot, item_random_suffix->prefixes[k]);
                     }
                     else if (apply)
                         ApplyEnchantmentBonus(Slot, true);

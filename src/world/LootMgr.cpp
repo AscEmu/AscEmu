@@ -118,7 +118,7 @@ DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(I
     return RandomChoiceVector<DBC::Structures::ItemRandomPropertiesEntry const>(itr->second);
 }
 
-ItemRandomSuffixEntry* LootMgr::GetRandomSuffix(ItemPrototype* proto)
+DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemPrototype* proto)
 {
     std::map<uint32, RandomSuffixVector>::iterator itr;
     if (proto->RandomSuffixId == 0)
@@ -126,7 +126,7 @@ ItemRandomSuffixEntry* LootMgr::GetRandomSuffix(ItemPrototype* proto)
     itr = _randomsuffix.find(proto->RandomSuffixId);
     if (itr == _randomsuffix.end())
         return NULL;
-    return RandomChoiceVector<ItemRandomSuffixEntry>(itr->second);
+    return RandomChoiceVector<DBC::Structures::ItemRandomSuffixEntry const>(itr->second);
 }
 
 void LootMgr::LoadLootProp()
@@ -134,7 +134,6 @@ void LootMgr::LoadLootProp()
     QueryResult* result = WorldDatabase.Query("SELECT * FROM item_randomprop_groups");
     uint32 id, eid;
 
-    ItemRandomSuffixEntry* rs;
     float ch;
     if (result)
     {
@@ -174,8 +173,8 @@ void LootMgr::LoadLootProp()
             id = result->Fetch()[0].GetUInt32();
             eid = result->Fetch()[1].GetUInt32();
             ch = result->Fetch()[2].GetFloat();
-            rs = dbcItemRandomSuffix.LookupEntryForced(eid);
-            if (rs == NULL)
+            auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(eid);
+            if (item_random_suffix == NULL)
             {
                 sLog.Error("LoadLootProp", "RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
                 continue;
@@ -184,12 +183,12 @@ void LootMgr::LoadLootProp()
             if (itr == _randomsuffix.end())
             {
                 RandomSuffixVector v;
-                v.push_back(std::make_pair(rs, ch));
+                v.push_back(std::make_pair(item_random_suffix, ch));
                 _randomsuffix.insert(make_pair(id, v));
             }
             else
             {
-                itr->second.push_back(std::make_pair(rs, ch));
+                itr->second.push_back(std::make_pair(item_random_suffix, ch));
             }
         }
         while (result->NextRow());

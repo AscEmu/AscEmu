@@ -64,6 +64,7 @@ namespace DBC
             char const item_extended_cost_format[] = "niiiiiiiiiiiiiix";
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const item_random_properties_format[] = "nxiiixxssssssssssssssssx";
+            char const item_random_suffix_format[] = "nssssssssssssssssxxiiixxiiixx";
             char const item_set_format[] = "issssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
@@ -472,6 +473,18 @@ namespace DBC
             //uint32 unk2;                  // 6
             char* name_suffix[16];          // 7-22
             //uint32 name_suffix_flags;     // 23
+        };
+
+        struct ItemRandomSuffixEntry
+        {
+            uint32 id;                      // 0
+            char* name_suffix[16];          // 1-16
+            //uint32 name_suffix_flags;     // 17
+            //uint32 unk1;                  // 18
+            uint32 enchantments[3];         // 19-21
+            //uint32 unk2[2];               // 22-23
+            uint32 prefixes[3];             // 24-26
+            //uint32[2];                    // 27-28
         };
 
         struct ItemSetEntry
