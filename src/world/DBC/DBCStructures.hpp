@@ -79,6 +79,7 @@ namespace DBC
             char const spell_range_format[] = "nffffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const spell_rune_cost_format[] = "niiii";
             char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
+            char const summon_properties_format[] = "niiiii";
             char const talent_format[] = "niiiiiiiixxxxixxixxxxxx";
             char const talent_tab_format[] = "nxxxxxxxxxxxxxxxxxxxiiix";
             char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
@@ -654,6 +655,16 @@ namespace DBC
             //uint32 unk2               // 25
             //uint32 unk3               // 26
             uint32 spells[8];           // 27-34
+        };
+
+        struct SummonPropertiesEntry
+        {
+            uint32 ID;                  // 0
+            uint32 ControlType;         // 1
+            uint32 FactionID;           // 2
+            uint32 Type;                // 3
+            uint32 Slot;                // 4
+            uint32 Flags;               // 5
         };
 
         struct TalentEntry

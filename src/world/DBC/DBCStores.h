@@ -984,16 +984,6 @@ enum SummonTypes
     SUMMON_TYPE_BUTLER = 12
 };
 
-struct SummonPropertiesEntry
-{
-    uint32 ID;
-    uint32 ControlType;
-    uint32 FactionID;
-    uint32 Type;
-    uint32 Slot;
-    uint32 Flags;
-};
-
 struct LFGDungeonEntry
 {
     uint32 ID;                  // 0
@@ -1456,7 +1446,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sIte
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MailTemplateEntry> sMailTemplateStore;
 extern SERVER_DECL DBCStorage<WMOAreaTableEntry> dbcWMOAreaTable;
-extern SERVER_DECL DBCStorage<SummonPropertiesEntry> dbcSummonProperties;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SummonPropertiesEntry> sSummonPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore;

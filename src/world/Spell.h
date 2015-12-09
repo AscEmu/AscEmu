@@ -1883,13 +1883,13 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectPersistentAA(uint32 i);
 
         virtual void SpellEffectSummon(uint32 i);
-        void SpellEffectSummonWild(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonGuardian(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonTemporaryPet(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonTotem(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonPossessed(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonCompanion(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonVehicle(uint32 i, SummonPropertiesEntry *spe, CreatureProto *proto, LocationVector &v);
+        void SpellEffectSummonWild(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
         void SpellEffectLeap(uint32 i);
         void SpellEffectEnergize(uint32 i);
         void SpellEffectWeaponDmgPerc(uint32 i);
