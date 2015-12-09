@@ -27,16 +27,6 @@ class Player;
 
 #pragma pack(push,1)
 
-struct WorldMapOverlay
-{
-    uint32 ID;              // 0
-    //uint32 worldMapID;    // 1
-    uint32 areaID;          // 2 - index to AreaTable
-    uint32 areaID_2;        // 3 - index to AreaTable
-    uint32 areaID_3;        // 4 - index to AreaTable
-    uint32 areaID_4;        // 5 - index to AreaTable
-// any of the four above indexes is enough to uncover the fragment
-};
 
 #ifdef ENABLE_ACHIEVEMENTS
 struct AchievementEntry
@@ -1374,7 +1364,7 @@ class SERVER_DECL DBCStorage
         }
 };
 
-extern SERVER_DECL DBCStorage<WorldMapOverlay> dbcWorldMapOverlayStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore;
 #ifdef ENABLE_ACHIEVEMENTS
 extern SERVER_DECL DBCStorage<AchievementEntry> dbcAchievementStore;
 extern SERVER_DECL DBCStorage<AchievementCriteriaEntry> dbcAchievementCriteriaStore;

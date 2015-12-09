@@ -1376,7 +1376,7 @@ void Player::EventAttackStop()
 
 bool Player::HasOverlayUncovered(uint32 overlayID)
 {
-    WorldMapOverlay const* overlay = dbcWorldMapOverlayStore.LookupEntry(overlayID);
+    auto overlay = sWorldMapOverlayStore.LookupEntry(overlayID);
     if (overlay == 0)
         return false;
 

@@ -87,6 +87,7 @@ namespace DBC
             char const taxi_path_node_format[] = "niiifffiiii";
             char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
             char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxx";
+            char const world_map_overlay_format[] = "nxiiiixxxxxxxxxxx";
         }
 
         #pragma pack(push, 1)
@@ -873,6 +874,19 @@ namespace DBC
                 else
                     return false;
             }
+        };
+
+        struct WorldMapOverlayEntry
+        {
+            uint32 ID;              // 0
+            //uint32 worldMapID;    // 1
+            uint32 areaID;          // 2 - index to AreaTable
+            uint32 areaID_2;        // 3 - index to AreaTable
+            uint32 areaID_3;        // 4 - index to AreaTable
+            uint32 areaID_4;        // 5 - index to AreaTable
+            //uint32 unk1[2];       // 6-7
+            //uint32 unk2;          // 8
+            //uint32 unk3[7];       // 9-16
         };
 
         #pragma pack(pop)
