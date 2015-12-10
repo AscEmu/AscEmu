@@ -1529,26 +1529,31 @@ bool Object::isInRange(Object* target, float range)
 
 void Object::_setFaction()
 {
-    DBC::Structures::FactionTemplateEntry const* factT = NULL;
+    DBC::Structures::FactionTemplateEntry const* faction_template = nullptr;
 
     if (IsUnit())
     {
-        factT = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->GetFaction());
-        if (!factT)
-            LOG_ERROR("Unit does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
+        faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->GetFaction());
+        if (!faction_template)
+            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
     }
     else if (IsGameObject())
     {
-        factT = sFactionTemplateStore.LookupEntry(static_cast< GameObject* >(this)->GetFaction());
-        // A "dead" object is not able to choose/have a faction
-        //if (!factT)
-        //    LOG_ERROR("Game Object does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", TO< GameObject* >(this)->GetFaction(), GetEntry());
+        faction_template = sFactionTemplateStore.LookupEntry(static_cast<GameObject*>(this)->GetFaction());
+        if (!faction_template)
+            LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), GetEntry());
     }
 
-    m_faction = factT;
-    m_factionDBC = sFactionStore.LookupEntry(factT->Faction);
-    if (!m_factionDBC)
-        m_factionDBC = nullptr;
+    //this solution looks a bit off, but our db is not perfect and this prevents some crashes.
+    if (faction_template == nullptr)
+        faction_template = sFactionTemplateStore.LookupEntry(0);
+
+    m_faction = faction_template;
+
+    //this solution looks a bit off, but our db is not perfect and this prevents some crashes.
+    m_factionDBC = sFactionStore.LookupEntry(faction_template->Faction);
+    if (m_factionDBC == nullptr)
+        m_factionDBC = sFactionStore.LookupEntry(0);
 }
 
 uint32 Object::_getFaction()
