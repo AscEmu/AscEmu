@@ -1482,7 +1482,12 @@ void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
     {
         return;
     }
+
     auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+    if (achievement == nullptr)
+    {
+        return;
+    }
 
     if (criteria->completionFlag & ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL || GetAchievementCompletionState(achievement) == ACHIEVEMENT_COMPLETED_COMPLETED_NOT_STORED)
     {
