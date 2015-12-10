@@ -47,12 +47,16 @@ class Field
             if (mValue)
             {
                 uint64 value;
+                int return_value;
 #ifndef WIN32    // Make GCC happy.
-                sscanf(mValue, I64FMTD, (long long unsigned int*)&value);
+                return_value = sscanf(mValue, I64FMTD, (long long unsigned int*)&value);
 #else
-                sscanf(mValue, I64FMTD, &value);
+                return_value = sscanf(mValue, I64FMTD, &value);
 #endif
-                return value;
+                if (return_value != 1)
+                    return 0;
+                else
+                    return value;
             }
             else
                 return 0;
