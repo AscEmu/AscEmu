@@ -1320,6 +1320,9 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
         //Set Dungeon difficult incomplete :D
 
+        if (grp == nullptr) // something went definitely wrong if we end up here... I'm sure it is just bad code design.
+            return;
+
         uint64 gguid = grp->GetGUID();
         SetDungeon(gguid, dungeon->ID);
         SetState(gguid, LFG_STATE_DUNGEON);
