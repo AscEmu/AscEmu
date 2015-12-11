@@ -13462,8 +13462,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     if (qst->count_required_item || qst_giver->IsGameObject())    // gameobject quests deactivate
         UpdateNearbyGameObjects();
 
-    //ScriptSystem->OnQuestEvent(qst, TO< Creature* >(qst_giver), _player, QUEST_EVENT_ON_ACCEPT);
-
     // Some spells applied at quest activation
     SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(quest_id, true);
     if (saBounds.first != saBounds.second)
