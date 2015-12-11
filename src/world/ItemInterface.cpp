@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
+
  */
 
 #include "StdAfx.h"
@@ -34,7 +34,6 @@ ItemInterface::ItemInterface(Player* pPlayer) : m_EquipmentSets(pPlayer->GetLowG
     m_refundableitems.clear();
 
 }
-
 
 ItemInterface::~ItemInterface()
 {
@@ -59,16 +58,16 @@ uint32 ItemInterface::m_CreateForPlayer(ByteBuffer* data)       // 100%
         {
             if (m_pItems[i]->IsContainer())
             {
-                count += static_cast< Container* >(m_pItems[i])->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
+                count += static_cast<Container*>(m_pItems[i])->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
 
                 for (uint32 e = 0; e < m_pItems[i]->GetProto()->ContainerSlots; e++)
                 {
-                    Item* pItem = static_cast< Container* >(m_pItems[i])->GetItem(static_cast<int16>(e));
+                    Item* pItem = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(e));
                     if (pItem)
                     {
                         if (pItem->IsContainer())
                         {
-                            count += static_cast< Container* >(pItem)->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
+                            count += static_cast<Container*>(pItem)->BuildCreateUpdateBlockForPlayer(data, m_pOwner);
                         }
                         else
                         {
@@ -98,7 +97,7 @@ void ItemInterface::m_DestroyForPlayer()        // 100%
             {
                 for (uint32 e = 0; e < m_pItems[i]->GetProto()->ContainerSlots; e++)
                 {
-                    Item* pItem = static_cast< Container* >(m_pItems[i])->GetItem(static_cast<int16>(e));
+                    Item* pItem = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(e));
                     if (pItem)
                     {
                         m_pOwner->SendDestroyObject(pItem->GetGUID());
@@ -124,7 +123,7 @@ Item* ItemInterface::SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot)
     if (pProto->InventoryType == INVTYPE_BAG)
     {
         pItem = static_cast<Item*>(new Container(HIGHGUID_TYPE_CONTAINER, objmgr.GenerateLowGuid(HIGHGUID_TYPE_CONTAINER)));
-        static_cast< Container* >(pItem)->Create(ItemId, m_pOwner);
+        static_cast<Container*>(pItem)->Create(ItemId, m_pOwner);
         if (m_AddItem(pItem, ContainerSlot, slot))
         {
             return pItem;
@@ -186,7 +185,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
                 k = tempitem->GetProto()->ContainerSlots;
                 for (j = 0; j < k; ++j)
                 {
-                    if (static_cast< Container* >(tempitem)->GetItem(static_cast<int16>(j)) == item)
+                    if (static_cast<Container*>(tempitem)->GetItem(static_cast<int16>(j)) == item)
                     {
                         return ADD_ITEM_RESULT_DUPLICATED;
                     }
@@ -206,7 +205,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 
             // send message to player
             sChatHandler.BlueSystemMessageToPlr(m_pOwner, "A duplicated item, `%s` was found in your inventory. We've attempted to add it to a free slot in your inventory, if there is none this will fail. It will be attempted again the next time you log on.",
-                                                item->GetProto()->Name1);
+                item->GetProto()->Name1);
             if (result.Result == true)
             {
                 // Found a new slot for that item.
@@ -255,7 +254,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         if (GetInventoryItem(ContainerSlot) && GetInventoryItem(ContainerSlot)->IsContainer() &&
             slot < (int32)GetInventoryItem(ContainerSlot)->GetProto()->ContainerSlots) //container exists
         {
-            bool result = static_cast< Container* >(m_pItems[(int)ContainerSlot])->AddItem(slot, item);
+            bool result = static_cast<Container*>(m_pItems[(int)ContainerSlot])->AddItem(slot, item);
             if (!result)
             {
                 return ADD_ITEM_RESULT_ERROR;
@@ -299,11 +298,8 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         /////////////////////////////////////////// Titan's grip stuff ////////////////////////////////////////////////////////////
 
         uint32 subclass = item->GetProto()->SubClass;
-        if (subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_AXE
-            || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_MACE
-            || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_SWORD)
+        if (subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_AXE || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_MACE || subclass == ITEM_SUBCLASS_WEAPON_TWOHAND_SWORD)
         {
-
             m_pOwner->CastSpell(m_pOwner, 49152, true);
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,7 +359,7 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
             return NULL;
         }
 
-        if (pItem->GetProto()->ContainerSlots > 0 && pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems())
+        if (pItem->GetProto()->ContainerSlots > 0 && pItem->IsContainer() && static_cast<Container*>(pItem)->HasItems())
         {
             // sounds weird? no. this will trigger a callstack display due to my other debug code.
             pItem->DeleteFromDB();
@@ -409,7 +405,7 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
         Item* pContainer = GetInventoryItem(ContainerSlot);
         if (pContainer && pContainer->IsContainer())
         {
-            pItem = static_cast< Container* >(pContainer)->SafeRemoveAndRetreiveItemFromSlot(slot, destroy);
+            pItem = static_cast<Container*>(pContainer)->SafeRemoveAndRetreiveItemFromSlot(slot, destroy);
         }
     }
 
@@ -470,10 +466,10 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemByGuid(uint64 guid, bool destroy)
             {
                 for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
                 {
-                    Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                    Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                     if (item2 && item2->GetGUID() == guid)
                     {
-                        return static_cast< Container* >(item)->SafeRemoveAndRetreiveItemFromSlot(static_cast<int16>(j), destroy);
+                        return static_cast<Container*>(item)->SafeRemoveAndRetreiveItemFromSlot(static_cast<int16>(j), destroy);
                     }
                 }
             }
@@ -502,10 +498,10 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemByGuid(uint64 guid, bool destroy)
             {
                 for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
                 {
-                    Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                    Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                     if (item2 && item2->GetGUID() == guid)
                     {
-                        return static_cast< Container* >(item)->SafeRemoveAndRetreiveItemFromSlot(static_cast<int16>(j), destroy);
+                        return static_cast<Container*>(item)->SafeRemoveAndRetreiveItemFromSlot(static_cast<int16>(j), destroy);
                     }
                 }
             }
@@ -528,7 +524,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
 
         if (pItem == NULL) { return false; }
 
-        if (pItem->GetProto()->ContainerSlots > 0 && pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems())
+        if (pItem->GetProto()->ContainerSlots > 0 && pItem->IsContainer() && static_cast<Container*>(pItem)->HasItems())
         {
             // sounds weird? no. this will trigger a callstack display due to my other debug code.
             pItem->DeleteFromDB();
@@ -576,7 +572,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
         Item* pContainer = GetInventoryItem(ContainerSlot);
         if (pContainer && pContainer->IsContainer())
         {
-            static_cast< Container* >(pContainer)->SafeFullRemoveItemFromSlot(slot);
+            static_cast<Container*>(pContainer)->SafeFullRemoveItemFromSlot(slot);
         }
     }
     return true;
@@ -636,10 +632,10 @@ bool ItemInterface::SafeFullRemoveItemByGuid(uint64 guid)
             {
                 for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
                 {
-                    Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                    Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                     if (item2 && item2->GetGUID() == guid)
                     {
-                        return static_cast< Container* >(item)->SafeFullRemoveItemFromSlot(static_cast<int16>(j));
+                        return static_cast<Container*>(item)->SafeFullRemoveItemFromSlot(static_cast<int16>(j));
                     }
                 }
             }
@@ -669,10 +665,10 @@ bool ItemInterface::SafeFullRemoveItemByGuid(uint64 guid)
             {
                 for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
                 {
-                    Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                    Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                     if (item2 && item2->GetGUID() == guid)
                     {
-                        return static_cast< Container* >(item)->SafeFullRemoveItemFromSlot(static_cast<int16>(j));
+                        return static_cast<Container*>(item)->SafeFullRemoveItemFromSlot(static_cast<int16>(j));
                     }
                 }
             }
@@ -706,7 +702,7 @@ Item* ItemInterface::GetInventoryItem(int8 ContainerSlot, int16 slot)
         {
             if (m_pItems[(int)ContainerSlot])
             {
-                return static_cast< Container* >(m_pItems[(int)ContainerSlot])->GetItem(slot);
+                return static_cast<Container*>(m_pItems[(int)ContainerSlot])->GetItem(slot);
             }
         }
     }
@@ -721,7 +717,7 @@ Container* ItemInterface::GetContainer(int8 containerSlot)
     if (m_pItems[containerSlot] == NULL)
         return NULL;
 
-    return static_cast< Container* >(m_pItems[containerSlot]);
+    return static_cast<Container*>(m_pItems[containerSlot]);
 }
 
 /// Checks for stacks that didn't reached max capacity
@@ -748,7 +744,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
         {
             for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
             {
-                Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
                     uint32 itemMaxStack = (item2->GetOwner()->ItemStackCheat) ? 0x7fffffff : item2->GetProto()->MaxCount;
@@ -798,7 +794,7 @@ Item* ItemInterface::FindItemLessMax(uint32 itemid, uint32 cnt, bool IncBank)
 
                 for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
                 {
-                    Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                    Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                     if (item2)
                     {
                         uint32 itemMaxStack = (item2->GetOwner()->ItemStackCheat) ? 0x7fffffff : item2->GetProto()->MaxCount;
@@ -841,7 +837,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
         {
             for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
             {
-                Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
                     if (item2->GetEntry() == itemid && item->wrapped_item_id == 0)
@@ -903,7 +899,7 @@ uint32 ItemInterface::GetItemCount(uint32 itemid, bool IncBank)
                 {
                     for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
                     {
-                        Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                        Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                         if (item2)
                         {
                             if (item2->GetProto()->ItemId == itemid && item->wrapped_item_id == 0)
@@ -1143,7 +1139,7 @@ uint32 ItemInterface::RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item**
         {
             for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
             {
-                Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
                     if (item2->GetProto()->ItemId == id && item->wrapped_item_id == 0)
@@ -1277,7 +1273,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
         {
             if (item->GetGUID() == guid && item->wrapped_item_id == 0)
             {
-                if (item->GetProto()->ContainerSlots > 0 && item->IsContainer() && static_cast< Container* >(item)->HasItems())
+                if (item->GetProto()->ContainerSlots > 0 && item->IsContainer() && static_cast<Container*>(item)->HasItems())
                 {
                     // sounds weird? no. this will trigger a callstack display due to my other debug code.
                     item->DeleteFromDB();
@@ -1319,7 +1315,7 @@ uint32 ItemInterface::RemoveItemAmtByGuid(uint64 guid, uint32 amt)
         {
             for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
             {
-                Item* item2 = static_cast< Container* >(item)->GetItem(static_cast<int16>(j));
+                Item* item2 = static_cast<Container*>(item)->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
                     if (item2->GetGUID() == guid && item->wrapped_item_id == 0)
@@ -1434,7 +1430,7 @@ void ItemInterface::RemoveAllConjured()
         {
             if (IsBagSlot(static_cast<int16>(x)) && m_pItems[x]->IsContainer())
             {
-                Container* bag = static_cast< Container* >(m_pItems[x]);
+                Container* bag = static_cast<Container*>(m_pItems[x]);
 
                 for (uint32 i = 0; i < bag->GetProto()->ContainerSlots; i++)
                 {
@@ -1558,7 +1554,7 @@ int16 ItemInterface::GetBagSlotByGuid(uint64 guid)
         {
             for (uint32 j = 0; j < m_pItems[i]->GetProto()->ContainerSlots; ++j)
             {
-                Item* inneritem = (static_cast< Container* >(m_pItems[i]))->GetItem(static_cast<int16>(j));
+                Item* inneritem = (static_cast<Container*>(m_pItems[i]))->GetItem(static_cast<int16>(j));
                 if (inneritem && inneritem->GetGUID() == guid)
                     return i;
             }
@@ -1623,8 +1619,8 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                     }
                 }
                 else if (m_pItems[i]->GetProto()->ItemId == item->GetProto()->ItemId && itemMaxStack > 1 &&
-                         m_pItems[i]->GetStackCount() < itemMaxStack  &&
-                         m_pItems[i]->GetStackCount() + item->GetStackCount() <= itemMaxStack)
+                    m_pItems[i]->GetStackCount() < itemMaxStack  &&
+                    m_pItems[i]->GetStackCount() + item->GetStackCount() <= itemMaxStack)
                 {
                     m_pItems[i]->SetStackCount(m_pItems[i]->GetStackCount() + item->GetStackCount());
                     result.Slot = static_cast<int8>(i);
@@ -1645,7 +1641,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                         if (m_pItems[i]->IsContainer())
                         {
                             uint32 r_slot;
-                            result2 = static_cast< Container* >(m_pItems[i])->AddItemToFreeSlot(item, &r_slot);
+                            result2 = static_cast<Container*>(m_pItems[i])->AddItemToFreeSlot(item, &r_slot);
                             if (result2)
                             {
                                 result.ContainerSlot = static_cast<int8>(i);
@@ -1677,9 +1673,9 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
             }
         }
         else if (m_pItems[i]->GetProto()->ItemId == item->GetProto()->ItemId &&
-                 itemMaxStack > 1 &&
-                 m_pItems[i]->GetStackCount() < itemMaxStack  &&
-                 m_pItems[i]->GetStackCount() + item->GetStackCount() <= itemMaxStack)
+            itemMaxStack > 1 &&
+            m_pItems[i]->GetStackCount() < itemMaxStack  &&
+            m_pItems[i]->GetStackCount() + item->GetStackCount() <= itemMaxStack)
         {
             m_pItems[i]->SetStackCount(m_pItems[i]->GetStackCount() + item->GetStackCount());
             m_pItems[i]->m_isDirty = true;
@@ -1703,7 +1699,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
         {
             for (uint32 j = 0; j < m_pItems[i]->GetProto()->ContainerSlots; j++)
             {
-                Item* item2 = (static_cast< Container* >(m_pItems[i]))->GetItem(static_cast<int16>(j));
+                Item* item2 = (static_cast<Container*>(m_pItems[i]))->GetItem(static_cast<int16>(j));
                 if (item2)
                     itemMaxStack = (p->ItemStackCheat) ? 0x7fffffff : item2->GetProto()->MaxCount;
                 if (item2 == NULL)
@@ -1718,9 +1714,9 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
                     }
                 }
                 else if (item2->GetProto()->ItemId == item->GetProto()->ItemId &&
-                         itemMaxStack > 1 &&
-                         item2->GetStackCount() < itemMaxStack &&
-                         item2->GetStackCount() + item->GetStackCount() <= itemMaxStack)
+                    itemMaxStack > 1 &&
+                    item2->GetStackCount() < itemMaxStack &&
+                    item2->GetStackCount() + item->GetStackCount() <= itemMaxStack)
                 {
                     item2->SetStackCount(item2->GetStackCount() + item->GetStackCount());
                     item2->m_isDirty = true;
@@ -1779,7 +1775,7 @@ uint32 ItemInterface::CalculateFreeSlots(ItemPrototype* proto)
                     {
                         if (m_pItems[i]->GetProto()->BagFamily & proto->BagFamily)
                         {
-                            int8 slot = static_cast< Container* >(m_pItems[i])->FindFreeSlot();
+                            int8 slot = static_cast<Container*>(m_pItems[i])->FindFreeSlot();
                             if (slot != ITEM_NO_SLOT_AVAILABLE)
                             {
                                 count++;
@@ -1808,7 +1804,7 @@ uint32 ItemInterface::CalculateFreeSlots(ItemPrototype* proto)
 
                 for (uint32 j = 0; j < m_pItems[i]->GetProto()->ContainerSlots; j++)
                 {
-                    Item* item2 = (static_cast< Container* >(m_pItems[i]))->GetItem(static_cast<int16>(j));
+                    Item* item2 = (static_cast<Container*>(m_pItems[i]))->GetItem(static_cast<int16>(j));
                     if (item2 == NULL)
                     {
                         count++;
@@ -2684,7 +2680,7 @@ Item* ItemInterface::GetItemByGUID(uint64 Guid)
 
             for (uint32 j = 0; j < m_pItems[i]->GetProto()->ContainerSlots; j++)
             {
-                Item* item2 = (static_cast< Container* >(m_pItems[i]))->GetItem(static_cast<int16>(j));
+                Item* item2 = (static_cast<Container*>(m_pItems[i]))->GetItem(static_cast<int16>(j));
                 if (item2)
                 {
                     if (item2->GetGUID() == Guid)
@@ -2783,10 +2779,10 @@ void ItemInterface::EmptyBuyBack()
 
             if (m_pBuyBack[j]->IsContainer())
             {
-                if (static_cast< Container* >(m_pBuyBack[j])->IsInWorld())
-                    static_cast< Container* >(m_pBuyBack[j])->RemoveFromWorld();
+                if (static_cast<Container*>(m_pBuyBack[j])->IsInWorld())
+                    static_cast<Container*>(m_pBuyBack[j])->RemoveFromWorld();
 
-                delete static_cast< Container* >(m_pBuyBack[j]);
+                delete static_cast<Container*>(m_pBuyBack[j]);
             }
             else
             {
@@ -2818,10 +2814,10 @@ void ItemInterface::AddBuyBackItem(Item* it, uint32 price)
 
             if (m_pBuyBack[0]->IsContainer())
             {
-                if (static_cast< Container* >(m_pBuyBack[0])->IsInWorld())
-                    static_cast< Container* >(m_pBuyBack[0])->RemoveFromWorld();
+                if (static_cast<Container*>(m_pBuyBack[0])->IsInWorld())
+                    static_cast<Container*>(m_pBuyBack[0])->RemoveFromWorld();
 
-                delete static_cast< Container* >(m_pBuyBack[0]);
+                delete static_cast<Container*>(m_pBuyBack[0]);
             }
             else
             {
@@ -3012,7 +3008,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
 
         for (uint32 Slot = 0; Slot < SrcItem->GetProto()->ContainerSlots; Slot++)
         {
-            tSrcItem = (static_cast< Container* >((m_pItems[(int)srcslot])))->GetItem(static_cast<int16>(Slot));
+            tSrcItem = (static_cast<Container*>((m_pItems[(int)srcslot])))->GetItem(static_cast<int16>(Slot));
 
             m_pOwner->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srcslot, static_cast<int16>(Slot), false);
 
@@ -3046,8 +3042,8 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         // swap items in the bags
         for (uint32 Slot = 0; Slot < TotalSlots; Slot++)
         {
-            tSrcItem = (static_cast< Container* >((m_pItems[(int)srcslot])))->GetItem(static_cast<int16>(Slot));
-            tDstItem = (static_cast< Container* >((m_pItems[(int)dstslot])))->GetItem(static_cast<int16>(Slot));
+            tSrcItem = (static_cast<Container*>((m_pItems[(int)srcslot])))->GetItem(static_cast<int16>(Slot));
+            tDstItem = (static_cast<Container*>((m_pItems[(int)dstslot])))->GetItem(static_cast<int16>(Slot));
 
             if (tSrcItem != NULL)
                 m_pOwner->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(srcslot, static_cast<int16>(Slot), false);
@@ -3055,9 +3051,9 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
                 m_pOwner->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(dstslot, static_cast<int16>(Slot), false);
 
             if (tSrcItem != NULL)
-                (static_cast< Container* >(DstItem))->AddItem(static_cast<int16>(Slot), tSrcItem);
+                (static_cast<Container*>(DstItem))->AddItem(static_cast<int16>(Slot), tSrcItem);
             if (tDstItem != NULL)
-                (static_cast< Container* >(SrcItem))->AddItem(static_cast<int16>(Slot), tDstItem);
+                (static_cast<Container*>(SrcItem))->AddItem(static_cast<int16>(Slot), tDstItem);
         }
     }
 
@@ -3223,7 +3219,7 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
                 if (proto->InventoryType == INVTYPE_BAG)
                 {
                     item = new Container(HIGHGUID_TYPE_CONTAINER, fields[1].GetUInt32());
-                    static_cast< Container* >(item)->LoadFromDB(fields);
+                    static_cast<Container*>(item)->LoadFromDB(fields);
 
                 }
                 else
@@ -3250,8 +3246,7 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
                     item = NULL;
                 }
             }
-        }
-        while (result->NextRow());
+        } while (result->NextRow());
     }
 }
 
@@ -3266,7 +3261,7 @@ void ItemInterface::mSaveItemsToDatabase(bool first, QueryBuffer* buf)
         {
             if (IsBagSlot(x) && GetInventoryItem(x)->IsContainer())
             {
-                static_cast< Container* >(GetInventoryItem(x))->SaveBagToDB(static_cast<int8>(x), first, buf);
+                static_cast<Container*>(GetInventoryItem(x))->SaveBagToDB(static_cast<int8>(x), first, buf);
             }
             else
             {
@@ -3287,7 +3282,7 @@ AddItemResult ItemInterface::AddItemToFreeBankSlot(Item* item)
             {
                 if (m_pItems[i]->IsContainer())
                 {
-                    bool result = static_cast< Container* >(m_pItems[i])->AddItemToFreeSlot(item, NULL);
+                    bool result = static_cast<Container*>(m_pItems[i])->AddItemToFreeSlot(item, NULL);
                     if (result)
                         return ADD_ITEM_RESULT_OK;
                 }
@@ -3309,7 +3304,7 @@ AddItemResult ItemInterface::AddItemToFreeBankSlot(Item* item)
         {
             for (uint32 j = 0; j < m_pItems[i]->GetProto()->ContainerSlots; j++)
             {
-                Item* item2 = static_cast< Container* >(m_pItems[i])->GetItem(static_cast<int16>(j));
+                Item* item2 = static_cast<Container*>(m_pItems[i])->GetItem(static_cast<int16>(j));
                 if (item2 == NULL)
                 {
                     return SafeAddItem(item, static_cast<int8>(i), static_cast<int16>(j));
@@ -3402,7 +3397,7 @@ SlotResult ItemInterface::FindFreeInventorySlot(ItemPrototype* proto)
                     {
                         if (m_pItems[i]->GetProto()->BagFamily & proto->BagFamily)
                         {
-                            int32 slot = static_cast< Container* >(m_pItems[i])->FindFreeSlot();
+                            int32 slot = static_cast<Container*>(m_pItems[i])->FindFreeSlot();
                             if (slot != ITEM_NO_SLOT_AVAILABLE)
                             {
                                 result.ContainerSlot = static_cast<int8>(i);
@@ -3438,7 +3433,7 @@ SlotResult ItemInterface::FindFreeInventorySlot(ItemPrototype* proto)
         {
             if (item->IsContainer() && !item->GetProto()->BagFamily)
             {
-                int32 slot = static_cast< Container* >(m_pItems[i])->FindFreeSlot();
+                int32 slot = static_cast<Container*>(m_pItems[i])->FindFreeSlot();
                 if (slot != ITEM_NO_SLOT_AVAILABLE)
                 {
                     result.ContainerSlot = static_cast<int8>(i);
@@ -3471,7 +3466,7 @@ SlotResult ItemInterface::FindFreeBankSlot(ItemPrototype* proto)
                 {
                     if (m_pItems[i]->GetProto()->BagFamily & proto->BagFamily)
                     {
-                        int32 slot = static_cast< Container* >(m_pItems[i])->FindFreeSlot();
+                        int32 slot = static_cast<Container*>(m_pItems[i])->FindFreeSlot();
                         if (slot != ITEM_NO_SLOT_AVAILABLE)
                         {
                             result.ContainerSlot = static_cast<int8>(i);
@@ -3506,7 +3501,7 @@ SlotResult ItemInterface::FindFreeBankSlot(ItemPrototype* proto)
         {
             if (item->IsContainer() && !item->GetProto()->BagFamily)
             {
-                int32 slot = static_cast< Container* >(m_pItems[i])->FindFreeSlot();
+                int32 slot = static_cast<Container*>(m_pItems[i])->FindFreeSlot();
                 if (slot != ITEM_NO_SLOT_AVAILABLE)
                 {
                     result.ContainerSlot = static_cast<int8>(i);
@@ -3604,7 +3599,7 @@ void ItemInterface::CheckAreaItems()
         {
             if (IsBagSlot(static_cast<int16>(x)) && m_pItems[x]->IsContainer())
             {
-                Container* bag = static_cast< Container* >(m_pItems[x]);
+                Container* bag = static_cast<Container*>(m_pItems[x]);
 
                 for (uint32 i = 0; i < bag->GetProto()->ContainerSlots; i++)
                 {
@@ -3669,7 +3664,7 @@ uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
         {
             for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
             {
-                Item* item2 = (static_cast< Container* >(item))->GetItem(static_cast<int16>(j));
+                Item* item2 = (static_cast<Container*>(item))->GetItem(static_cast<int16>(j));
                 if (item2 != NULL)
                 {
                     if (item2->GetProto()->ItemLimitCategory == LimitId
@@ -3732,7 +3727,7 @@ uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
                 {
                     for (uint32 j = 0; j < item->GetProto()->ContainerSlots; j++)
                     {
-                        Item* item2 = (static_cast< Container* >(item))->GetItem(static_cast<int16>(j));
+                        Item* item2 = (static_cast<Container*>(item))->GetItem(static_cast<int16>(j));
                         if (item2 != NULL)
                         {
                             if (item2->GetProto()->ItemLimitCategory == LimitId
@@ -3765,7 +3760,7 @@ void ItemInterface::HandleItemDurations()
 
             for (uint32 j = 0; j < item1->GetProto()->ContainerSlots; ++j)
             {
-                Item* item2 = static_cast< Container* >(item1)->GetItem(static_cast<int16>(j));
+                Item* item2 = static_cast<Container*>(item1)->GetItem(static_cast<int16>(j));
 
                 if (item2 != NULL && item2->GetProto()->ExistingDuration > 0)
                     realitem = item2;
@@ -4033,7 +4028,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         {
             if (DstItem->IsContainer())
             {
-                if (static_cast< Container* >(DstItem)->HasItems())
+                if (static_cast<Container*>(DstItem)->HasItems())
                 {
                     if (!IsBagSlot(SrcSlot))
                     {
@@ -4056,7 +4051,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         {
             if (DstItem->IsContainer())
             {
-                if (static_cast< Container* >(DstItem)->HasItems())
+                if (static_cast<Container*>(DstItem)->HasItems())
                 {
                     BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                     return false;
@@ -4078,7 +4073,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
 
             if (SrcItem->IsContainer())
             {
-                if (static_cast< Container* >(SrcItem)->HasItems())
+                if (static_cast<Container*>(SrcItem)->HasItems())
                 {
                     if (!IsBagSlot(DstSlot))
                     {
@@ -4101,7 +4096,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         {
             if (SrcItem->IsContainer())
             {
-                if (static_cast< Container* >(SrcItem)->HasItems())
+                if (static_cast<Container*>(SrcItem)->HasItems())
                 {
                     BuildInventoryChangeError(SrcItem, DstItem, INV_ERR_NONEMPTY_BAG_OVER_OTHER_BAG);
                     return false;
@@ -4158,7 +4153,7 @@ bool ItemInterface::SwapItems(int8 DstInvSlot, int8 DstSlot, int8 SrcInvSlot, in
         }
         else//in bag
         {
-            static_cast< Container* >(GetInventoryItem(SrcInvSlot))->SwapItems(SrcSlot, DstSlot);
+            static_cast<Container*>(GetInventoryItem(SrcInvSlot))->SwapItems(SrcSlot, DstSlot);
         }
     }
     else
@@ -4299,7 +4294,8 @@ void ItemInterface::removeLootableItems()
     }
 }
 
-void ItemIterator::Increment() {
+void ItemIterator::Increment()
+{
     if (!m_searchInProgress)
         BeginSearch();
 
@@ -4308,42 +4304,42 @@ void ItemIterator::Increment() {
     {
         /// loop the container.
         for (; m_containerSlot < m_container->GetProto()->ContainerSlots; ++m_containerSlot)
+        {
+            m_currentItem = m_container->GetItem(static_cast<int16>(m_containerSlot));
+            if (m_currentItem != nullptr)
             {
-                m_currentItem = m_container->GetItem(static_cast<int16>(m_containerSlot));
-                if (m_currentItem != nullptr)
-                {
-                    ++m_containerSlot;      /// increment the counter so we don't get the same item again
+                ++m_containerSlot;      /// increment the counter so we don't get the same item again
 
-                    return;
-                }
+                return;
             }
+        }
 
         m_container = nullptr;             /// unset this
     }
 
     for (; m_slot < MAX_INVENTORY_SLOT; ++m_slot)
+    {
+        if (m_target->m_pItems[m_slot])
         {
-            if (m_target->m_pItems[m_slot])
+            if (m_target->m_pItems[m_slot]->IsContainer())
             {
-                if (m_target->m_pItems[m_slot]->IsContainer())
-                {
-                    m_container = static_cast<Container*>(m_target->m_pItems[m_slot]);       /// we are a container :O lets look inside the box!
-                    m_containerSlot = 0;
-                    m_currentItem = nullptr;           /// clear the pointer up. so we can tell if we found an item or not
-                    ++m_slot;                       /// increment m_slot so we don't search this container again
+                m_container = static_cast<Container*>(m_target->m_pItems[m_slot]);       /// we are a container :O lets look inside the box!
+                m_containerSlot = 0;
+                m_currentItem = nullptr;        /// clear the pointer up. so we can tell if we found an item or not
+                ++m_slot;                       /// increment m_slot so we don't search this container again
 
-                    Increment();                    /// call increment() recursively. this will search the container.
+                Increment();                    /// call increment() recursively. this will search the container.
 
-                    return;                         /// jump out so we're not wasting cycles and skipping items
-                }
-
-
-                m_currentItem = m_target->m_pItems[m_slot];     /// we're not a container, just a regular item. Set the pointer
-                ++m_slot;                                       /// increment the slot counter so we don't do the same item again
-
-                return;             /// jump out
+                return;                         /// jump out so we're not wasting cycles and skipping items
             }
+
+
+            m_currentItem = m_target->m_pItems[m_slot];     /// we're not a container, just a regular item. Set the pointer
+            ++m_slot;                                       /// increment the slot counter so we don't do the same item again
+
+            return;             /// jump out
         }
+    }
 
     /// if we're here we've searched all items.
     m_atEnd = true;
