@@ -1,5 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
@@ -16,8 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef LUA_FUNCTIONTABLES_H
 #define LUA_FUNCTIONTABLES_H
+
 /************************************************************************/
 /* SCRIPT FUNCTION TABLES                                               */
 /************************************************************************/
