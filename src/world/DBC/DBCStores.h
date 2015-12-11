@@ -991,15 +991,22 @@ class SERVER_DECL DBCStorage
 
             if (load_strings)
             {
-                fseek(f, 20 + (rows * cols * 4), SEEK_SET);
+                if (fseek(f, 20 + (rows * cols * 4), SEEK_SET) != 0)
+                {
+                    fclose(f);
+                    return false;
+                }
+
                 m_stringData = (char*)malloc(string_length);
                 m_stringlength = string_length;
                 if (m_stringData)
+                {
                     if (fread(m_stringData, string_length, 1, f) != 1)
                     {
                         fclose(f);
                         return false;
                     }
+                }
             }
 
             if (fseek(f, pos, SEEK_SET) != 0)
