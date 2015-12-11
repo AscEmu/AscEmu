@@ -3521,8 +3521,8 @@ void ObjectMgr::LoadSpellTargetConstraints()
     if (result != NULL)
     {
         uint32 oldspellid = 0;
-        SpellTargetConstraint* stc = NULL;
-        Field* fields = NULL;
+        SpellTargetConstraint* stc = nullptr;
+        Field* fields = nullptr;
 
         do
         {
@@ -3543,9 +3543,15 @@ void ObjectMgr::LoadSpellTargetConstraints()
                 uint32 value = fields[2].GetUInt32();
 
                 if (type == CREATURE_TYPE)
-                    stc->AddCreature(value);
+                {
+                    if (stc != nullptr)
+                        stc->AddCreature(value);
+                }
                 else
-                    stc->AddGameobject(value);
+                {
+                    if (stc != nullptr)
+                        stc->AddGameobject(value);
+                }
 
                 oldspellid = spellid;
             }
