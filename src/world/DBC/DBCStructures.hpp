@@ -66,7 +66,7 @@ namespace DBC
             char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const item_random_properties_format[] = "nxiiixxssssssssssssssssx";
             char const item_random_suffix_format[] = "nssssssssssssssssxxiiixxiiixx";
-            char const item_set_format[] = "issssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
+            char const item_set_format[] = "nssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
