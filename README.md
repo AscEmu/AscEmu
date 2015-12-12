@@ -12,18 +12,25 @@ AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framewo
 We focus on optimizing the codebase and improving the ingame functionality.
 
 You can help us by contributing. It is completely open source and can be used by everyone.
+This project is for educational purpose. So, if you're looking for serverfiles to run your server or create some "custom" scripts  this is the wrong place for you. If you want to discuss/develop/work on an open source project and on important stuff for the framework feel free to join our community.
 
 
 ## Contributing
-Feel free to contribute any corrections but please make shure it is useful.
+Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
 
 What are "useful" commits?
  1. Fixing an open issue.
  2. Related to the milestones.
  3. Making the Framework stable/safer
- 4. Adding functions related to "blizzlike" functions 
+ 4. Adding blizzlike related functions 
 
 Anything else like "fun-content" is NOT useful!
+
+## Opening new issues
+Be patient with us and give us details.
+ 1. How to reproduce the issue
+ 2. How should it work
+ 3. Images will help us a lot
 
 
 ## Install
@@ -41,8 +48,7 @@ HowTo install (detailed guides on our wiki)
 * [World DB](http://www.board.ascemu.org/filebase/index.php/FileList/1-Database/)
 
 
-
-### Copyright and other Stuff
+### Copyright and other stuff
 * [License](LICENSE.md)
 * [Thanks to all](THANKS.md)
 * [Terms of use](TERMS OF USE AGREEMENT)
