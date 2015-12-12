@@ -1703,7 +1703,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         player->AddToFinishedQuests(qReward->id);
 
         // Reputation reward
-        for (int z = 0; z < 6; z++)
+        for (uint8 z = 0; z < 6; z++)
         {
             if (qReward->reward_repfaction[z])
             {
@@ -1722,7 +1722,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
             }
         }
         // Static Item reward
-        for (uint32 i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             if (qReward->reward_item[i])
             {
@@ -1733,33 +1733,31 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 }
                 else
                 {
-                    Item* add;
-                    SlotResult slotresult;
-                    add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
-                    if (!add)
+                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
+                    if (!item_add)
                     {
-                        slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
+                        auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
                             player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
-                            Item* itm = objmgr.CreateItem(qReward->reward_item[i], player);
-                            if (itm)
+                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
+                            if (item)
                             {
-                                itm->SetStackCount(uint32(qReward->reward_itemcount[i]));
-                                if (!player->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot))
+                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
+                                if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
-                                    itm->DeleteMe();
+                                    item->DeleteMe();
                                 }
                             }
                         }
                     }
                     else
                     {
-                        add->SetStackCount(add->GetStackCount() + qReward->reward_itemcount[i]);
-                        add->m_isDirty = true;
+                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
+                        item_add->m_isDirty = true;
                     }
                 }
             }
@@ -1796,7 +1794,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         player->AddToFinishedQuests(qReward->id);
 
         // Reputation reward
-        for (int z = 0; z < 6; z++)
+        for (uint8 z = 0; z < 6; z++)
         {
             if (qReward->reward_repfaction[z])
             {
@@ -1815,7 +1813,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
             }
         }
         // Static Item reward
-        for (uint32 i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             if (qReward->reward_item[i])
             {
@@ -1826,33 +1824,31 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 }
                 else
                 {
-                    Item* add;
-                    SlotResult slotresult;
-                    add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
-                    if (!add)
+                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
+                    if (!item_add)
                     {
-                        slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
+                        auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
                             player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
-                            Item* itm = objmgr.CreateItem(qReward->reward_item[i], player);
-                            if (itm)
+                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
+                            if (item)
                             {
-                                itm->SetStackCount(uint32(qReward->reward_itemcount[i]));
-                                if (!player->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot))
+                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
+                                if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
-                                    itm->DeleteMe();
+                                    item->DeleteMe();
                                 }
                             }
                         }
                     }
                     else
                     {
-                        add->SetStackCount(add->GetStackCount() + qReward->reward_itemcount[i]);
-                        add->m_isDirty = true;
+                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
+                        item_add->m_isDirty = true;
                     }
                 }
             }

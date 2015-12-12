@@ -2064,10 +2064,10 @@ void Spell::SendSpellStart()
         {
             if (p_caster != NULL)
             {
-                Item* itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                if (itm != NULL)
+                auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                if (item != nullptr)
                 {
-                    ip = itm->GetProto();
+                    ip = item->GetProto();
                     /* Throwing Weapon Patch by Supalosa
                     p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
                     (Supalosa: Instead of removing one from the stack, remove one from durability)
@@ -2075,11 +2075,11 @@ void Spell::SendSpellStart()
                     */
 
                     // burlex - added a check here anyway (wpe suckers :P)
-                    if (itm->GetDurability() > 0)
+                    if (item->GetDurability() > 0)
                     {
-                        itm->SetDurability(itm->GetDurability() - 1);
-                        if (itm->GetDurability() == 0)
-                            p_caster->ApplyItemMods(itm, EQUIPMENT_SLOT_RANGED, false, true);
+                        item->SetDurability(item->GetDurability() - 1);
+                        if (item->GetDurability() == 0)
+                            p_caster->ApplyItemMods(item, EQUIPMENT_SLOT_RANGED, false, true);
                     }
                 }
                 else
@@ -2108,7 +2108,7 @@ void Spell::SendSpellGo()
 {
     // Fill UniqueTargets
     TargetsList::iterator i, j;
-    for (uint32 x = 0; x < 3; x++)
+    for (uint8 x = 0; x < 3; x++)
     {
         if (GetProto()->Effect[x])
         {
@@ -3967,8 +3967,8 @@ uint8 Spell::CanCast(bool tolerate)
 
                 if (GetProto()->Id == SPELL_RANGED_THROW)
                 {
-                    Item* itm = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                    if (itm == NULL)
+                    auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+                    if (item == nullptr)
                         return SPELL_FAILED_NO_AMMO;
                 }
 

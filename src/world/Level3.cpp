@@ -1234,50 +1234,52 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    Player* chr = getSelectedChar(m_session);
-    if (chr == NULL)
+    auto player = getSelectedChar(m_session);
+    if (player == nullptr)
     {
         RedSystemMessage(m_session, "Unable to select character.");
         return true;
     }
 
     auto item_set_entry = sItemSetStore.LookupEntry(setid);
-    std::list<ItemPrototype*>* item_set_list = objmgr.GetListForItemSet(setid);
+    auto item_set_list = objmgr.GetListForItemSet(setid);
     if (!item_set_entry || !item_set_list)
     {
         RedSystemMessage(m_session, "Invalid item set.");
         return true;
     }
-    //const char* setname = sItemSetStore.LookupString(entry->name);
+
     BlueSystemMessage(m_session, "Searching item set %u...", setid);
-    uint32 start = getMSTime();
-    sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, chr->GetName());
+    sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, player->GetName());
+
     for (std::list<ItemPrototype*>::iterator itr = item_set_list->begin(); itr != item_set_list->end(); ++itr)
     {
-        Item* itm = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
-        if (!itm) continue;
-        if (itm->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
+        auto item = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
+        if (!item)
+            continue;
+
+        if (item->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
         {
-            if (itm->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
-                itm->AccountBind();
+            if (item->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
+                item->AccountBind();
             else
-                itm->SoulBind();
+                item->SoulBind();
         }
 
-        if (!chr->GetItemInterface()->AddItemToFreeSlot(itm))
+        if (!player->GetItemInterface()->AddItemToFreeSlot(item))
         {
             m_session->SendNotification("No free slots left!");
-            itm->DeleteMe();
+            item->DeleteMe();
             return true;
         }
         else
         {
-            //SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1, (*itr)->ItemId);
-            SlotResult* le = chr->GetItemInterface()->LastSearchResult();
-            chr->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, itm->GetEntry(), itm->GetItemRandomSuffixFactor(), itm->GetItemRandomPropertyId(), itm->GetStackCount());
+            SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1, (*itr)->ItemId);
+            SlotResult* le = player->GetItemInterface()->LastSearchResult();
+            player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
         }
     }
-    GreenSystemMessage(m_session, "Added set to inventory complete. Time: %u ms", getMSTime() - start);
+    GreenSystemMessage(m_session, "Added set to inventory complete.");
     return true;
 }
 

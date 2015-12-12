@@ -272,8 +272,8 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
 
     if (SourceSlot >= INVENTORY_SLOT_BAG_START && SourceSlot < INVENTORY_SLOT_BAG_END)
     {
-        Item* itm = _player->GetItemInterface()->GetInventoryItem(SourceBag); //NULL if it's the backpack or the item is equipped
-        if (itm == NULL || SourceSlot >= itm->GetProto()->ContainerSlots) //Required as there are bags with SourceSlot > INVENTORY_SLOT_BAG_START
+        auto item = _player->GetItemInterface()->GetInventoryItem(SourceBag);   //nullptr if it's the backpack or the item is equipped
+        if (item == nullptr || SourceSlot >= item->GetProto()->ContainerSlots)  //Required as there are bags with SourceSlot > INVENTORY_SLOT_BAG_START
         {
             //More duping woohoo
             sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");

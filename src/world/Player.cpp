@@ -6135,10 +6135,11 @@ uint32 Player::CalcTalentResetCost(uint32 resetnum)
 
 int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 {
-    SpellEntry* spellinfo = dbcSpell.LookupEntryForced(spellid);
+    SpellEntry* spell_info = dbcSpell.LookupEntryForced(spellid);
 
-    if (spellinfo == NULL)
+    if (spell_info == nullptr)
         return -1;
+
     //sLog.outString("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name);
 
     // Check if Morphed
@@ -6146,19 +6147,20 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         return SPELL_FAILED_NOT_SHAPESHIFT;
 
     // Check ammo
-    Item* itm = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-    ItemPrototype* iprot = ItemPrototypeStorage.LookupEntry(GetAmmoId());
-    if (itm == NULL || disarmed) //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
-        return SPELL_FAILED_NO_AMMO; //In proper language means "Requires Ranged Weapon to be equipped"
-    if (!m_requiresNoAmmo) //Thori'dal, Wild Quiver, but it still requires to have a weapon equipped
+    auto item = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+    auto item_proto = ItemPrototypeStorage.LookupEntry(GetAmmoId());
+    if (item == nullptr || disarmed)           //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
+        return SPELL_FAILED_NO_AMMO;        //In proper language means "Requires Ranged Weapon to be equipped"
+
+    if (!m_requiresNoAmmo)                  //Thori'dal, Wild Quiver, but it still requires to have a weapon equipped
     {
         // Check ammo level
-        if (iprot && getLevel() < iprot->RequiredLevel)
+        if (item_proto && getLevel() < item_proto->RequiredLevel)
             return SPELL_FAILED_LOWLEVEL;
 
         // Check ammo type
-        ItemPrototype* iprot1 = ItemPrototypeStorage.LookupEntry(itm->GetEntry());
-        if (iprot && iprot1 && iprot->SubClass != iprot1->AmmoType)
+        auto item_proto_ammo = ItemPrototypeStorage.LookupEntry(item->GetEntry());
+        if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
             return SPELL_FAILED_NEED_AMMO;
     }
 
@@ -6184,15 +6186,15 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     // Supalosa - The hunter ability Auto Shot is using Shoot range, which is 5 yards shorter.
     // So we'll use 114, which is the correct 35 yard range used by the other Hunter abilities (arcane shot, concussive shot...)
     uint8 fail = 0;
-    uint32 rIndex = autoshot ? 114 : spellinfo->rangeIndex;
+    uint32 rIndex = autoshot ? 114 : spell_info->rangeIndex;
 
     auto spell_range = sSpellRangeStore.LookupEntry(rIndex);
     float minrange = GetMinRange(spell_range);
     float dist = CalcDistance(this, target);
     float maxr = GetMaxRange(spell_range) + 2.52f;
 
-    SM_FFValue(this->SM_FRange, &maxr, spellinfo->SpellGroupType);
-    SM_PFValue(this->SM_PRange, &maxr, spellinfo->SpellGroupType);
+    SM_FFValue(this->SM_FRange, &maxr, spell_info->SpellGroupType);
+    SM_PFValue(this->SM_PRange, &maxr, spell_info->SpellGroupType);
 
     //float bonusRange = 0;
     // another hackfix: bonus range from hunter talent hawk eye: +2/4/6 yard range to ranged weapons
@@ -6210,9 +6212,9 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     }
 
     // Check ammo count
-    if (!m_requiresNoAmmo && iprot && itm->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
+    if (!m_requiresNoAmmo && item_proto && item->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
     {
-        uint32 ammocount = GetItemInterface()->GetItemCount(iprot->ItemId);
+        uint32 ammocount = GetItemInterface()->GetItemCount(item_proto->ItemId);
         if (ammocount == 0)
             fail = SPELL_FAILED_NO_AMMO;
     }
@@ -6231,9 +6233,8 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     if (spellid == SPELL_RANGED_THROW)
     {
-        if (itm != NULL)   // no need for this
-            if (GetItemInterface()->GetItemCount(itm->GetProto()->ItemId) == 0)
-                fail = SPELL_FAILED_NO_AMMO;
+        if (GetItemInterface()->GetItemCount(item->GetProto()->ItemId) == 0)
+            fail = SPELL_FAILED_NO_AMMO;
     }
 
     if (fail > 0)  // && fail != SPELL_FAILED_OUT_OF_RANGE)
@@ -12034,8 +12035,6 @@ void Player::CalcExpertise()
     int32 modifier = 0;
     int32 val = 0;
     SpellEntry* entry = NULL;
-    Item* itMH = NULL;
-    Item* itOH = NULL;
 
     SetUInt32Value(PLAYER_EXPERTISE, 0);
     SetUInt32Value(PLAYER_OFFHAND_EXPERTISE, 0);
@@ -12049,15 +12048,15 @@ void Player::CalcExpertise()
 
             if (entry->EquippedItemSubClass != 0)
             {
-                itMH = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                itOH = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                auto item_mainhand = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                auto item_offhand = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                 uint32 reqskillMH = 0;
                 uint32 reqskillOH = 0;
 
-                if (itMH != NULL)
-                    reqskillMH = entry->EquippedItemSubClass & (((uint32)1) << itMH->GetProto()->SubClass);
-                if (itOH != NULL)
-                    reqskillOH = entry->EquippedItemSubClass & (((uint32)1) << itOH->GetProto()->SubClass);
+                if (item_mainhand)
+                    reqskillMH = entry->EquippedItemSubClass & (((uint32)1) << item_mainhand->GetProto()->SubClass);
+                if (item_offhand)
+                    reqskillOH = entry->EquippedItemSubClass & (((uint32)1) << item_offhand->GetProto()->SubClass);
 
                 if (reqskillMH != 0 || reqskillOH != 0)
                     modifier = +val;

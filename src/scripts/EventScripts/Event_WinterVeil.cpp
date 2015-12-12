@@ -99,19 +99,21 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         }
         else
         {
-            Item* itm = objmgr.CreateItem(Winteritem, pPlayer);
-            if (itm == nullptr)
+            Item* item = objmgr.CreateItem(Winteritem, pPlayer);
+            if (item == nullptr)
                 return;
 
-            itm->SetStackCount(5);
-            auto item_add_result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+            item->SetStackCount(5);
+            auto item_add_result = pPlayer->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
             if (!item_add_result)
             {
-                Log.Error("Event_WinterVeil", "Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
-                itm->DeleteMe();
+                Log.Error("Event_WinterVeil", "Error while adding item %u to player %s", item->GetEntry(), pPlayer->GetNameString());
+                item->DeleteMe();
             }
             else
+            {
                 pUnit->CastSpell(pPlayer, 26218, true);
+            }
         }
     }
 }

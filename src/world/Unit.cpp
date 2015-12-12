@@ -1280,16 +1280,16 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 16459:
                 {
                     //sword specialization
-                    Item* itMH = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    Item* itOH = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                    Item* item_mainhand = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    Item* item_offhand = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     uint32 reqskillMH = 0;
                     uint32 reqskillOH = 0;
 
-                    if (itMH != NULL)
-                        reqskillMH = GetSkillByProto(itMH->GetProto()->Class, itMH->GetProto()->SubClass);
+                    if (item_mainhand != nullptr)
+                        reqskillMH = GetSkillByProto(item_mainhand->GetProto()->Class, item_mainhand->GetProto()->SubClass);
 
-                    if (itOH != NULL)
-                        reqskillOH = GetSkillByProto(itOH->GetProto()->Class, itOH->GetProto()->SubClass);
+                    if (item_offhand != nullptr)
+                        reqskillOH = GetSkillByProto(item_offhand->GetProto()->Class, item_offhand->GetProto()->SubClass);
 
                     if (reqskillMH != SKILL_SWORDS && reqskillMH != SKILL_2H_SWORDS && reqskillOH != SKILL_SWORDS && reqskillOH != SKILL_2H_SWORDS)
                         continue;
@@ -1298,12 +1298,11 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 12721:
                 {
                     //deep wound requires a melee weapon
-                    Item* it;
-                    it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    if (it != NULL)
+                    auto item = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    if (item)
                     {
                         //class 2 means weapons ;)
-                        if (it->GetProto()->Class != 2)
+                        if (item->GetProto()->Class != 2)
                             continue;
                     }
                     else continue; //no weapon no joy

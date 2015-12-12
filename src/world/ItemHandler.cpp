@@ -1256,14 +1256,10 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
     CHECK_PACKET_SIZE(recv_data, 14);
     LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM");
 
-    WorldPacket data(45);
     uint64 srcguid = 0;
     uint32 itemid = 0;
     int32 slot = 0;
     uint8 amount = 0;
-    //    int8 playerslot = 0;
-    //    int8 bagslot = 0;
-    Item* add = NULL;
     uint8 error = 0;
     SlotResult slotresult;
     AddItemResult result;
@@ -1273,26 +1269,26 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
     recv_data >> slot;
     recv_data >> amount;
 
-    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
-    if (unit == NULL || !unit->HasItems())
+    auto creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
+    if (creature == nullptr || !creature->HasItems())
         return;
 
-    auto ex = unit->GetItemExtendedCostByItemId(itemid);
+    auto item_extended_cost = creature->GetItemExtendedCostByItemId(itemid);
 
     if (amount < 1)
         amount = 1;
 
-    CreatureItem item;
-    unit->GetSellItemByItemId(itemid, item);
+    CreatureItem creature_item;
+    creature->GetSellItemByItemId(itemid, creature_item);
 
-    if (item.itemid == 0)
+    if (creature_item.itemid == 0)
     {
         // vendor does not sell this item.. bitch about cheaters?
         _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
         return;
     }
 
-    if (item.max_amount > 0 && item.available_amount < amount)
+    if (creature_item.max_amount > 0 && creature_item.available_amount < amount)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
         return;
@@ -1306,108 +1302,108 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
     }
 
     uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
-    if (itemMaxStack > 0 && amount * item.amount > itemMaxStack)
+    if (itemMaxStack > 0 && amount * creature_item.amount > itemMaxStack)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_CANT_STACK);
         return;
     }
 
-    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount * item.amount)) != 0)
+    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount * creature_item.amount)) != 0)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
         return;
     }
 
-    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, unit)) != 0)
+    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, creature)) != 0)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
         return;
     }
 
     // Find free slot and break if inv full
-    add = _player->GetItemInterface()->FindItemLessMax(itemid, amount * item.amount, false);
-    if (!add)
+    auto add_item = _player->GetItemInterface()->FindItemLessMax(itemid, amount * creature_item.amount, false);
+    if (!add_item)
     {
         slotresult = _player->GetItemInterface()->FindFreeInventorySlot(it);
     }
-    if ((!slotresult.Result) && (!add))
+    if (!slotresult.Result && !add_item)
     {
         //Player doesn't have a free slot in his/her bag(s)
         _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
         return;
     }
 
-    if (!add)
+    if (!add_item)
     {
-        Item* itm = objmgr.CreateItem(item.itemid, _player);
-        if (!itm)
+        Item* item = objmgr.CreateItem(creature_item.itemid, _player);
+        if (!item)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
             return;
         }
 
-        itm->m_isDirty = true;
-        itm->SetStackCount(amount * item.amount);
+        item->m_isDirty = true;
+        item->SetStackCount(amount * creature_item.amount);
 
         if (slotresult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
         {
-            result = _player->GetItemInterface()->SafeAddItem(itm, INVENTORY_SLOT_NOT_SET, slotresult.Slot);
+            result = _player->GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slotresult.Slot);
             if (!result)
             {
-                itm->DeleteMe();
+                item->DeleteMe();
             }
             else
             {
-                if (itm->IsEligibleForRefund() && ex != NULL)
+                if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
                 {
-                    itm->GetOwner()->GetItemInterface()->AddRefundable(itm->GetGUID(), ex->costid);
+                    item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
                 }
-                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * item.amount, itm->GetEntry(), itm->GetItemRandomSuffixFactor(), itm->GetItemRandomPropertyId(), itm->GetStackCount());
+                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
             }
         }
         else
         {
             if (Item* bag = _player->GetItemInterface()->GetInventoryItem(slotresult.ContainerSlot))
             {
-                if (!static_cast< Container* >(bag)->AddItem(slotresult.Slot, itm))
-                    itm->DeleteMe();
+                if (!static_cast<Container*>(bag)->AddItem(slotresult.Slot, item))
+                {
+                    item->DeleteMe();
+                }
                 else
                 {
-                    if (itm->IsEligibleForRefund() && ex != NULL)
+                    if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
                     {
-                        itm->GetOwner()->GetItemInterface()->AddRefundable(itm->GetGUID(), ex->costid);
+                        item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
                     }
-                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, itm->GetEntry(), itm->GetItemRandomSuffixFactor(), itm->GetItemRandomPropertyId(), itm->GetStackCount());
+                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
                 }
             }
         }
     }
     else
     {
-        add->ModStackCount(amount * item.amount);
-        add->m_isDirty = true;
-        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->GetGUID()), 1, amount * item.amount, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
+        add_item->ModStackCount(amount * creature_item.amount);
+        add_item->m_isDirty = true;
+        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->GetGUID()), 1, amount * creature_item.amount, add_item->GetEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
     }
 
+    _player->GetItemInterface()->BuyItem(it, amount, creature);
 
-
-    _player->GetItemInterface()->BuyItem(it, amount, unit);
-
+    WorldPacket data(45);
     data.Initialize(SMSG_BUY_ITEM);
-
     data << uint64(srcguid);
     data << getMSTime();
     data << uint32(itemid);
-    data << uint32(amount * item.amount);
+    data << uint32(amount * creature_item.amount);
 
     SendPacket(&data);
 
-    if (item.max_amount)
+    if (creature_item.max_amount)
     {
-        unit->ModAvItemAmount(item.itemid, item.amount * amount);
+        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount * amount);
 
         // there is probably a proper opcode for this. - burlex
-        SendInventoryList(unit);
+        SendInventoryList(creature);
     }
 }
 
@@ -2241,24 +2237,22 @@ void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
 void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
-
     LOG_DEBUG("Recieved CMSG_ITEMREFUNDREQUEST.");
-
 
     uint64 GUID;
     uint32 error = 1;
-    Item* itm = NULL;
-    std::pair< time_t, uint32 > RefundEntry;
+
+    std::pair<time_t, uint32> RefundEntry;
     DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
-    ItemPrototype* proto = NULL;
+    ItemPrototype* item_proto = nullptr;
 
     recvPacket >> GUID;
 
-    itm = _player->GetItemInterface()->GetItemByGUID(GUID);
+    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
 
-    if (itm != NULL)
+    if (item != nullptr)
     {
-        if (itm->IsEligibleForRefund())
+        if (item->IsEligibleForRefund())
         {
             RefundEntry.first = 0;
             RefundEntry.second = 0;
@@ -2276,18 +2270,18 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
             if (item_extended_cost != NULL)
             {
-                proto = itm->GetProto();
+                item_proto = item->GetProto();
 
                 ////////////////////////////////// We remove the refunded item and refund the cost //////////////////////////////////
 
-                for (int i = 0; i < 5; ++i)
+                for (uint8 i = 0; i < 5; ++i)
                 {
                     _player->GetItemInterface()->AddItemById(item_extended_cost->item[i], item_extended_cost->count[i], 0);
                 }
 
                 _player->GetItemInterface()->AddItemById(43308, item_extended_cost->honor_points, 0);
                 _player->GetItemInterface()->AddItemById(43307, item_extended_cost->arena_points, 0);
-                _player->ModGold(proto->BuyPrice);
+                _player->ModGold(item_proto->BuyPrice);
 
                 _player->GetItemInterface()->RemoveItemAmtByGuid(GUID, 1);
 
@@ -2306,11 +2300,11 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     if (error == 0)
     {
-        packet << uint32(proto->BuyPrice);
+        packet << uint32(item_proto->BuyPrice);
         packet << uint32(item_extended_cost->honor_points);
         packet << uint32(item_extended_cost->arena_points);
 
-        for (int i = 0; i < 5; ++i)
+        for (uint8 i = 0; i < 5; ++i)
         {
             packet << uint32(item_extended_cost->item[i]);
             packet << uint32(item_extended_cost->count[i]);

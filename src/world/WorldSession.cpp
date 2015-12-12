@@ -1226,11 +1226,11 @@ void WorldSession::SendRefundInfo(uint64 GUID)
     if (!_player || !_player->IsInWorld())
         return;
 
-    Item* itm = _player->GetItemInterface()->GetItemByGUID(GUID);
-    if (itm == NULL)
+    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
+    if (item == nullptr)
         return;
 
-    if (itm->IsEligibleForRefund())
+    if (item->IsEligibleForRefund())
     {
         std::pair <time_t, uint32> RefundEntry;
 
@@ -1243,9 +1243,9 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         if (item_extended_cost == nullptr)
             return;
 
-        ItemPrototype* proto = itm->GetProto();
+        ItemPrototype* proto = item->GetProto();
 
-        itm->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
+        item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
         // ////////////////////////////////////////////////////////////////////////////////////////
         // As of 3.2.0a the server sends this packet to provide refund info on
         // an item
@@ -1290,7 +1290,7 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         packet << uint32(item_extended_cost->honor_points);
         packet << uint32(item_extended_cost->arena_points);
 
-        for (int i = 0; i < 5; ++i)
+        for (uint8 i = 0; i < 5; ++i)
         {
             packet << uint32(item_extended_cost->item[i]);
             packet << uint32(item_extended_cost->count[i]);
