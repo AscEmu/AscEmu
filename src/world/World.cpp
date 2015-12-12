@@ -765,9 +765,7 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld()
-            && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
             itr->second->SendPacket(packet);
         }
@@ -778,7 +776,6 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
 
 void World::PlaySoundToAll(uint32 soundid)
 {
-
     WorldPacket data(SMSG_PLAY_SOUND, 4);
     data << uint32(soundid);
 
@@ -786,10 +783,10 @@ void World::PlaySoundToAll(uint32 soundid)
 
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        WorldSession* s = itr->second;
+        WorldSession* session = itr->second;
 
-        if ((s->GetPlayer() != NULL) && s->GetPlayer()->IsInWorld())
-            s->SendPacket(&data);
+        if ((session->GetPlayer() != NULL) && session->GetPlayer()->IsInWorld())
+            session->SendPacket(&data);
     }
 
     m_sessionlock.ReleaseWriteLock();
@@ -818,9 +815,7 @@ void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld()
-            && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
             if (itr->second->CanUseCommand('u'))
                 itr->second->SendPacket(packet);
@@ -836,9 +831,7 @@ void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* se
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld()
-            && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
             if (itr->second->GetPlayer()->GetZoneId() == zoneid)
                 itr->second->SendPacket(packet);
@@ -855,9 +848,7 @@ void World::SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSes
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld()
-            && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
             if (itr->second->GetPlayer()->GetInstanceID() == (int32)instanceid)
                 itr->second->SendPacket(packet);
@@ -872,19 +863,15 @@ void World::SendWorldText(const char* text, WorldSession* self)
     uint32 textLen = (uint32)strlen((char*)text) + 1;
 
     WorldPacket data(textLen + 40);
-
     data.Initialize(SMSG_MESSAGECHAT);
     data << uint8(CHAT_MSG_SYSTEM);
     data << uint32(LANG_UNIVERSAL);
-
-    data << (uint64)0; // Who cares about guid when there's no nickname displayed heh ?
-    data << (uint32)0;
-    data << (uint64)0;
-
+    data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
+    data << uint32(0);
+    data << uint64(0);
     data << textLen;
     data << text;
     data << uint8(0);
-
     SendGlobalMessage(&data, self);
 
     if (announce_output)
@@ -898,15 +885,12 @@ void World::SendGMWorldText(const char* text, WorldSession* self)
     uint32 textLen = (uint32)strlen((char*)text) + 1;
 
     WorldPacket data(textLen + 40);
-
     data.Initialize(SMSG_MESSAGECHAT);
     data << uint8(CHAT_MSG_SYSTEM);
     data << uint32(LANG_UNIVERSAL);
-
-    data << (uint64)0;
-    data << (uint32)0;
-    data << (uint64)0;
-
+    data << uint64(0);
+    data << uint32(0);
+    data << uint64(0);
     data << textLen;
     data << text;
     data << uint8(0);
@@ -943,7 +927,6 @@ void World::UpdateSessions(uint32 diff)
     SessionSet::iterator itr, it2;
     WorldSession* session;
     int result;
-
 
     std::list< WorldSession* > ErasableSessions;
 
@@ -1001,16 +984,16 @@ void World::DeleteSessions(std::list< WorldSession* > &slist)
 
     for (std::list< WorldSession* >::iterator itr = slist.begin(); itr != slist.end(); ++itr)
     {
-        WorldSession* s = *itr;
-        m_sessions.erase(s->GetAccountId());
+        WorldSession* session = *itr;
+        m_sessions.erase(session->GetAccountId());
     }
 
     m_sessionlock.ReleaseWriteLock();
 
     for (std::list< WorldSession* >::iterator itr = slist.begin(); itr != slist.end(); ++itr)
     {
-        WorldSession* s = *itr;
-        delete s;
+        WorldSession* session = *itr;
+        delete session;
     }
 }
 
@@ -1034,21 +1017,15 @@ uint32 World::GetNonGmSessionCount()
 
 uint32 World::AddQueuedSocket(WorldSocket* Socket)
 {
-    // Since we have multiple socket threads, better guard for this one,
-    // we don't want heap corruption ;)
     queueMutex.Acquire();
-
-    // Add socket to list
     mQueuedSessions.push_back(Socket);
     queueMutex.Release();
-    // Return queue position
+
     return (uint32)mQueuedSessions.size();
 }
 
 void World::RemoveQueuedSocket(WorldSocket* Socket)
 {
-    // Since we have multiple socket threads, better guard for this one,
-    // we don't want heap corruption ;)
     queueMutex.Acquire();
 
     // Find socket in list
@@ -1071,8 +1048,6 @@ void World::RemoveQueuedSocket(WorldSocket* Socket)
 
 uint32 World::GetQueuePos(WorldSocket* Socket)
 {
-    // Since we have multiple socket threads, better guard for this one,
-    // we don't want heap corruption ;)
     queueMutex.Acquire();
 
     // Find socket in list
@@ -1156,17 +1131,18 @@ void World::SaveAllPlayers()
 
     sLog.outString("Saving all players to database...");
     uint32 count = 0;
-    PlayerStorageMap::const_iterator itr;
-    // Servers started and obviously running. lets save all players.
-    uint32 mt;
+    uint32 save_start_time;
+
     objmgr._playerslock.AcquireReadLock();
+
+    PlayerStorageMap::const_iterator itr;
     for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
         {
-            mt = getMSTime();
+            save_start_time = getMSTime();
             itr->second->SaveToDB(false);
-            LOG_DETAIL("Saved player `%s` (level %u) in %ums.", itr->second->GetName(), itr->second->getLevel(), getMSTime() - mt);
+            LOG_DETAIL("Saved player `%s` (level %u) in %ums.", itr->second->GetName(), itr->second->getLevel(), getMSTime() - save_start_time);
             ++count;
         }
     }
@@ -1563,12 +1539,18 @@ void World::Rehash(bool load)
     BCSystemEnable = Config.OptionalConfig.GetBoolDefault("CommonSchedule", "AutoBroadCast", false);
     BCOrderMode = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastOrderMode", 0);
 
-    if (BCInterval < 10) BCInterval = 10;
-    else if (BCInterval > 1440) BCInterval = 1440;
-    if (BCTriggerPercentCap >= 99) BCTriggerPercentCap = 98;
-    else if (BCTriggerPercentCap <= 1) BCTriggerPercentCap = 0;
-    if (BCOrderMode < 0) BCOrderMode = 0;
-    else if (BCOrderMode > 1) BCOrderMode = 1;
+    if (BCInterval < 10)
+        BCInterval = 10;
+    else if (BCInterval > 1440)
+        BCInterval = 1440;
+    if (BCTriggerPercentCap >= 99)
+        BCTriggerPercentCap = 98;
+    else if (BCTriggerPercentCap <= 1)
+        BCTriggerPercentCap = 0;
+    if (BCOrderMode < 0)
+        BCOrderMode = 0;
+    else if (BCOrderMode > 1)
+        BCOrderMode = 1;
 
 
     if (!flood_lines || !flood_seconds)
@@ -1849,58 +1831,11 @@ void World::AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, in
 
 void World::LoadAccountDataProc(QueryResultVector & results, uint32 AccountId)
 {
-    WorldSession* s = FindSession(AccountId);
-    if (s == NULL)
+    WorldSession* session = FindSession(AccountId);
+    if (session == NULL)
         return;
 
-    s->LoadAccountDataProc(results[0].result);
-}
-
-void World::CleanupCheaters()
-{
-    /*uint32 guid;
-    string name;
-    uint32 cl;
-    uint32 level;
-    uint32 talentpts;
-    char * start, *end;
-    Field * f;
-    uint32 should_talents;
-    uint32 used_talents;
-    SpellEntry * sp;
-
-    QueryResult * result = CharacterDatabase.Query("SELECT guid, name, class, level, available_talent_points, spells FROM characters");
-    if (result == NULL)
-    return;
-
-    do
-    {
-    f = result->Fetch();
-    guid = f[0].GetUInt32();
-    name = string(f[1].GetString());
-    cl = f[2].GetUInt32();
-    level = f[3].GetUInt32();
-    talentpts = f[4].GetUInt32();
-    start = f[5].GetString();
-    should_talents = (level<10 ? 0 : level - 9);
-    used_talents -=
-
-
-    start = (char*)get_next_field.GetString();//buff;
-    while(true)
-    {
-    end = strchr(start,',');
-    if (!end)break;
-    *end= 0;
-    sp = dbcSpell.LookupEntry(atol(start));
-    start = end +1;
-
-    if (sp->talent_tree)
-
-    }
-
-    } while(result->NextRow());*/
-
+    session->LoadAccountDataProc(results[0].result);
 }
 
 void World::CheckForExpiredInstances()

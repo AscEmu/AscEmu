@@ -248,9 +248,6 @@ bool Master::Run(int argc, char** argv)
         return false;
     }
 
-    if (do_cheater_check)
-        sWorld.CleanupCheaters();
-
     sWorld.SetStartTime((uint32)UNIXTIME);
 
     WorldRunnable* wr = new WorldRunnable();

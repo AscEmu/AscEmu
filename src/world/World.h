@@ -353,11 +353,9 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void InitItemsSpells();
         void InitSpellNameHash();
 
-        /** Reloads the config and sets all of the setting variables
-         */
+        // Reloads the config and sets all of the setting variables
         void Rehash(bool load);
 
-        void CleanupCheaters();
         WorldSession* FindSession(uint32 id);
         WorldSession* FindSessionByName(const char*);
         void AddSession(WorldSession* s);
