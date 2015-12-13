@@ -17,7 +17,6 @@ set(headers
    MoveMapSharedDefines.h
    MapBuilder.h
    TerrainBuilder.h
-   CompilerDefs.h
    Define.h
    )
 
