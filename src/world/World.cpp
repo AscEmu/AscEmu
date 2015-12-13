@@ -436,56 +436,6 @@ bool World::SetInitialWorldSettings()
         return false;
     }
 
-    /* Convert area table ids/flags */
-    /* TODO: Why are we doing this? Is it still necessary after DBC rework? */
-    /*for (uint32 i = 0; i < sAreaStore.GetNumRows(); ++i)
-    {
-        auto at = sAreaStore.LookupEntry(i);
-        if (!at) continue;
-
-        uint32 area_ = at->id;
-        uint32 flag_ = at->explore_flag;
-        uint32 zone_ = at->zone;
-
-        mAreaIDToTable[flag_] = at;
-        if (mZoneIDToTable.find(zone_) != mZoneIDToTable.end())
-        {
-            if (mZoneIDToTable[zone_]->flags != 312 &&
-                mAreaIDToTable[flag_]->flags == 312)
-            {
-                // over ride.
-                mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
-            }
-        }
-        else
-        {
-            mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
-        }
-    }*/
-    /*for (DBCStorage<AreaTable>::iterator itr = dbcArea.begin(); itr != dbcArea.end(); ++itr)
-    {
-        AreaTable* at = *itr;
-
-        uint32 area_ = at->AreaId;
-        uint32 flag_ = at->explorationFlag;
-        uint32 zone_ = at->ZoneId;
-
-        mAreaIDToTable[flag_] = at;
-        if (mZoneIDToTable.find(zone_) != mZoneIDToTable.end())
-        {
-            if (mZoneIDToTable[zone_]->AreaFlags != 312 &&
-                mAreaIDToTable[flag_]->AreaFlags == 312)
-            {
-                // over ride.
-                mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
-            }
-        }
-        else
-        {
-            mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
-        }
-    }*/
-
     new ObjectMgr;
     new QuestMgr;
     new LootMgr;
@@ -511,7 +461,7 @@ bool World::SetInitialWorldSettings()
     // spawn worker threads (2 * number of cpus)
     tl.spawn();
 
-    /* storage stuff has to be loaded first */
+    // storage stuff has to be loaded first
     tl.wait();
 
     Storage_LoadAdditionalTables();
@@ -2250,19 +2200,18 @@ void World::SendBCMessageByID(uint32 id)
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld())
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())
         {
             const char* text = itr->second->LocalizedBroadCast(id);
             uint32 textLen = (uint32)strlen(text) + 1;
+
             WorldPacket data(textLen + 40);
             data.Initialize(SMSG_MESSAGECHAT);
             data << uint8(CHAT_MSG_SYSTEM);
             data << uint32(LANG_UNIVERSAL);
-
-            data << (uint64)0; // Who cares about guid when there's no nickname displayed heh ?
-            data << (uint32)0;
-            data << (uint64)0;
+            data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
+            data << uint32(0);
+            data << uint64(0);
             data << textLen;
             data << text;
             data << uint8(0);
