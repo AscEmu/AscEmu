@@ -1467,7 +1467,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     uint32 oldfacial = _player->GetByte(PLAYER_BYTES_2, 0);
     uint32 oldskincolor = _player->GetByte(PLAYER_BYTES, 0);
 
-    uint32 newhair, newhaircolor, newfacial, newskincolor;
+    uint32 newhair, newhaircolor, newfacial;
 
     uint32 cost = 0;
 
@@ -1484,9 +1484,8 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     newfacial = barberShopFacial->hair_id;
 
     auto barberShopSkinColor = sBarberShopStyleStore.LookupEntry(skincolor);
-    if (!barberShopSkinColor)
+    if (barberShopSkinColor && barberShopSkinColor->race != _player->getRace())
         return;
-    newskincolor = barberShopSkinColor->hair_id;
 
     uint32 level = _player->getLevel();
     if (level >= 100)
@@ -1526,7 +1525,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     _player->SetByte(PLAYER_BYTES, 3, static_cast<uint8>(newhaircolor));
     _player->SetByte(PLAYER_BYTES_2, 0, static_cast<uint8>(newfacial));
     if (barberShopSkinColor)
-        _player->SetByte(PLAYER_BYTES, 0, static_cast<uint8>(newskincolor));
+        _player->SetByte(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
     _player->ModGold(-(int32)cost);
 
     _player->SetStandState(STANDSTATE_STAND);                              // stand up
