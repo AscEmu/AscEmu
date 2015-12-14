@@ -2683,7 +2683,11 @@ bool Spell::TakePower()
                 if (credit > 0 && dk->TakeRunes(RUNE_DEATH, credit) > 0)
                     return false;
                 if (spell_rune_cost->runePowerGain)
-                    u_caster->SetPower(POWER_TYPE_RUNIC_POWER, spell_rune_cost->runePowerGain + u_caster->GetPower(POWER_TYPE_RUNIC_POWER));
+                {
+                    auto caster_runic_power = u_caster->GetPower(POWER_TYPE_RUNIC_POWER);
+                    auto spell_rune_gain = spell_rune_cost->runePowerGain;
+                    u_caster->SetPower(POWER_TYPE_RUNIC_POWER, (spell_rune_gain + caster_runic_power));
+                }
             }
             return true;
         }
