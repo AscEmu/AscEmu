@@ -1241,9 +1241,8 @@ bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    auto item_set_entry = sItemSetStore.LookupEntry(setid);
     auto item_set_list = objmgr.GetListForItemSet(setid);
-    if (!item_set_entry || !item_set_list)
+    if (!item_set_list)
     {
         RedSystemMessage(m_session, "Invalid item set.");
         return true;

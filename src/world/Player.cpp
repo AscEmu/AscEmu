@@ -3984,72 +3984,11 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     // These season pvp itemsets are interchangeable and each set group has the same
     // bonuses if you have a full set made up of parts from any of the 3 similar sets
     // you will get the highest sets bonus
+    if (item->HasGroupedSetBonus(setid))
+        setid = item->GetGroupedSetBonus(setid);
+
 
     ///\todo make a config for server so they can configure which season is active season
-
-    // * Gladiator's Battlegear
-    if (setid == 701 || setid == 736 || setid == 567)
-        setid = 736;
-
-    // * Gladiator's Dreadgear
-    if (setid == 702 || setid == 734 || setid == 568)
-        setid = 734;
-
-    // * Gladiator's Earthshaker
-    if (setid == 703 || setid == 732 || setid == 578)
-        setid = 732;
-
-    // * Gladiator's Felshroud
-    if (setid == 704 || setid == 735 || setid == 615)
-        setid = 735;
-
-    // * Gladiator's Investiture
-    if (setid == 705 || setid == 728 || setid == 687)
-        setid = 728;
-
-    // * Gladiator's Pursuit
-    if (setid == 706 || setid == 723 || setid == 586)
-        setid = 723;
-
-    // * Gladiator's Raiment
-    if (setid == 707 || setid == 729 || setid == 581)
-        setid = 729;
-
-    // * Gladiator's Redemption
-    if (setid == 708 || setid == 725 || setid == 690)
-        setid = 725;
-
-    // * Gladiator's Refuge
-    if (setid == 709 || setid == 720 || setid == 685)
-        setid = 720;
-
-    // * Gladiator's Regalia
-    if (setid == 710 || setid == 724 || setid == 579)
-        setid = 724;
-
-    // * Gladiator's Sanctuary
-    if (setid == 711 || setid == 721 || setid == 584)
-        setid = 721;
-
-    // * Gladiator's Thunderfist
-    if (setid == 712 || setid == 733 || setid == 580)
-        setid = 733;
-
-    // * Gladiator's Vestments
-    if (setid == 713 || setid == 730 || setid == 577)
-        setid = 730;
-
-    // * Gladiator's Vindication
-    if (setid == 714 || setid == 726 || setid == 583)
-        setid = 726;
-
-    // * Gladiator's Wartide
-    if (setid == 715 || setid == 731 || setid == 686)
-        setid = 731;
-
-    // * Gladiator's Wildhide
-    if (setid == 716 || setid == 722 || setid == 585)
-        setid = 722;
 
     // Set
     if (setid != 0)

@@ -704,6 +704,12 @@ struct ItemName
     uint32 slot;
 };
 
+struct ItemsLinkedItemSet
+{
+    uint32 itemset;
+    uint32 itemset_bonus;
+};
+
 typedef struct
 {
     uint32 setid;

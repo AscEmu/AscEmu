@@ -1337,3 +1337,20 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
     m_isDirty = true;
     return true;
 }
+
+bool Item::HasGroupedSetBonus(uint32 itemset)
+{
+    auto linked_itemset = ItemLinkedItemSetStorage.LookupEntry(itemset);
+    if (linked_itemset)
+        return true;
+    else
+        return false;
+}
+uint32 Item::GetGroupedSetBonus(uint32 itemset)
+{
+    auto linked_itemset = ItemLinkedItemSetStorage.LookupEntry(itemset);
+    if (linked_itemset)
+        return linked_itemset->itemset_bonus;
+    else
+        return itemset;
+}

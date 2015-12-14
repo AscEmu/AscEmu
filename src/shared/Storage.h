@@ -539,6 +539,14 @@ class SERVER_DECL Storage
             _formatString = strdup(FormatString);
         }
 
+        /** Loads the container using the specified name and format string
+        */
+        virtual void LoadWithoutEntry(const char* IndexName, const char* FormatString)
+        {
+            _indexName = strdup(IndexName);
+            _formatString = strdup(FormatString);
+        }
+
         /** Frees the duplicated strings and all entries inside the storage container
          */
         virtual void Cleanup()
@@ -715,6 +723,73 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
                 LoadBlock(fields, Allocated);
             }
             while(result->NextRow());
+            Log.Success("Storage", "%u entries loaded from table %s.", result->GetRowCount(), IndexName);
+            delete result;
+
+            //Log.Success("Storage", "Loaded database cache from `%s`.", IndexName);
+        }
+
+        /** Loads from the table.
+        */
+        void LoadWithoutEntry(const char* IndexName, const char* FormatString)
+        {
+            //printf("Loading database cache from `%s`...\n", IndexName);
+            Storage<T, StorageType>::LoadWithoutEntry(IndexName, FormatString);
+            QueryResult* result;
+            if (Storage<T, StorageType>::_storage.NeedsMax())
+            {
+                result = WorldDatabase.Query("SELECT * FROM %s", IndexName);
+                uint32 Max = STORAGE_ARRAY_MAX;
+                if (result)
+                {
+                    Max = result->Fetch()[0].GetUInt32() + 1;
+                    if (Max > STORAGE_ARRAY_MAX)
+                    {
+                        Log.Error("Storage", "The table, '%s', has a maximum entry of %u, which is less %u. Any items higher than %u will not be loaded.",
+                            IndexName, Max, STORAGE_ARRAY_MAX, STORAGE_ARRAY_MAX);
+
+                        Max = STORAGE_ARRAY_MAX;
+                    }
+                    delete result;
+                }
+
+                Storage<T, StorageType>::_storage.Setup(Max);
+            }
+
+            size_t cols = strlen(FormatString);
+            result = WorldDatabase.Query("SELECT * FROM %s", IndexName);
+            if (!result)
+                return;
+            Field* fields = result->Fetch();
+
+            if (result->GetFieldCount() != cols)
+            {
+                if (result->GetFieldCount() > cols)
+                {
+                    Log.Error("Storage", "Invalid format in %s (%u/%u), loading anyway because we have enough data", IndexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
+                }
+                else
+                {
+                    Log.Error("Storage", "Invalid format in %s (%u/%u), not enough data to proceed.", IndexName, (unsigned int)cols, (unsigned int)result->GetFieldCount());
+                    delete result;
+                    return;
+                }
+            }
+
+            uint32 Entry;
+            T* Allocated;
+#ifdef STORAGE_ALLOCATION_POOLS
+            Storage<T, StorageType>::_storage.InitPool(result->GetRowCount());
+#endif
+            do
+            {
+                Entry = fields[0].GetUInt32();
+                Allocated = Storage<T, StorageType>::_storage.AllocateEntry(Entry);
+                if (!Allocated)
+                    continue;
+
+                LoadBlock(fields, Allocated);
+            } while (result->NextRow());
             Log.Success("Storage", "%u entries loaded from table %s.", result->GetRowCount(), IndexName);
             delete result;
 
