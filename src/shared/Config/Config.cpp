@@ -152,6 +152,9 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         /* get the length of the file */
         fseek(f, 0, SEEK_END);
         length = ftell(f);
+        if (length < 0)
+            return false;
+
         buf = new char[length + 1];
         fseek(f, 0, SEEK_SET);
 
