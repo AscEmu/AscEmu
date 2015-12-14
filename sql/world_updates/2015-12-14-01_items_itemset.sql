@@ -1,6 +1,7 @@
 --
 -- Create Table items_linked_itemsets
 --
+DROP TABLE IF EXISTS `items_linked_itemsets`;
 CREATE TABLE IF NOT EXISTS `items_linked_itemsets` (
   `itemset` int(5) NOT NULL COMMENT 'itemset from items table',
   `itemset_bonus` int(5) NOT NULL COMMENT 'linked itemset for itemset bonus',
@@ -74,7 +75,39 @@ VALUES
    (854, 898),
    (243, 898),
    (262, 898),
-   (898, 898);
+   (898, 898),
+   (853, 897),
+   (242, 897),
+   (261, 897),
+   (897, 897),
+   (852, 896),
+   (241, 896),
+   (260, 896),
+   (896, 896),
+   (851, 895),
+   (240, 895),
+   (259, 895),
+   (895, 895),
+   (258, 894),
+   (239, 894),
+   (850, 894),
+   (894, 894),
+   (257, 893),
+   (238, 893),
+   (849, 893),
+   (893, 893),
+   (256, 892),
+   (237, 892),
+   (848, 892),
+   (892, 892),
+   (255, 891),
+   (236, 891),
+   (847, 891),
+   (891, 891),
+   (254, 890),
+   (235, 890),
+   (846, 890),
+   (890, 890);
 
 --
 -- Update items to correct itemsetid
@@ -149,6 +182,126 @@ UPDATE `items` SET `itemset` = 262 WHERE `entry` = 51306;
 UPDATE `items` SET `itemset` = 262 WHERE `entry` = 51307;
 UPDATE `items` SET `itemset` = 262 WHERE `entry` = 51308;
 UPDATE `items` SET `itemset` = 262 WHERE `entry` = 51309;
+UPDATE `items` SET `itemset` = 853 WHERE `entry` = 50094;
+UPDATE `items` SET `itemset` = 853 WHERE `entry` = 50095;
+UPDATE `items` SET `itemset` = 853 WHERE `entry` = 50096;
+UPDATE `items` SET `itemset` = 853 WHERE `entry` = 50097;
+UPDATE `items` SET `itemset` = 853 WHERE `entry` = 50098;
+UPDATE `items` SET `itemset` = 242 WHERE `entry` = 51125;
+UPDATE `items` SET `itemset` = 242 WHERE `entry` = 51126;
+UPDATE `items` SET `itemset` = 242 WHERE `entry` = 51127;
+UPDATE `items` SET `itemset` = 242 WHERE `entry` = 51128;
+UPDATE `items` SET `itemset` = 242 WHERE `entry` = 51129;
+UPDATE `items` SET `itemset` = 261 WHERE `entry` = 51310;
+UPDATE `items` SET `itemset` = 261 WHERE `entry` = 51311;
+UPDATE `items` SET `itemset` = 261 WHERE `entry` = 51312;
+UPDATE `items` SET `itemset` = 261 WHERE `entry` = 51313;
+UPDATE `items` SET `itemset` = 261 WHERE `entry` = 51314;
+UPDATE `items` SET `itemset` = 852 WHERE `entry` = 50846;
+UPDATE `items` SET `itemset` = 852 WHERE `entry` = 50847;
+UPDATE `items` SET `itemset` = 852 WHERE `entry` = 50848;
+UPDATE `items` SET `itemset` = 852 WHERE `entry` = 50849;
+UPDATE `items` SET `itemset` = 852 WHERE `entry` = 50850;
+UPDATE `items` SET `itemset` = 241 WHERE `entry` = 51215;
+UPDATE `items` SET `itemset` = 241 WHERE `entry` = 51216;
+UPDATE `items` SET `itemset` = 241 WHERE `entry` = 51217;
+UPDATE `items` SET `itemset` = 241 WHERE `entry` = 51218;
+UPDATE `items` SET `itemset` = 241 WHERE `entry` = 51219;
+UPDATE `items` SET `itemset` = 260 WHERE `entry` = 51220;
+UPDATE `items` SET `itemset` = 260 WHERE `entry` = 51221;
+UPDATE `items` SET `itemset` = 260 WHERE `entry` = 51222;
+UPDATE `items` SET `itemset` = 260 WHERE `entry` = 51223;
+UPDATE `items` SET `itemset` = 260 WHERE `entry` = 51224;
+UPDATE `items` SET `itemset` = 851 WHERE `entry` = 50078;
+UPDATE `items` SET `itemset` = 851 WHERE `entry` = 50079;
+UPDATE `items` SET `itemset` = 851 WHERE `entry` = 50080;
+UPDATE `items` SET `itemset` = 851 WHERE `entry` = 50081;
+UPDATE `items` SET `itemset` = 851 WHERE `entry` = 50082;
+UPDATE `items` SET `itemset` = 240 WHERE `entry` = 51210;
+UPDATE `items` SET `itemset` = 240 WHERE `entry` = 51211;
+UPDATE `items` SET `itemset` = 240 WHERE `entry` = 51212;
+UPDATE `items` SET `itemset` = 240 WHERE `entry` = 51213;
+UPDATE `items` SET `itemset` = 240 WHERE `entry` = 51214;
+UPDATE `items` SET `itemset` = 259 WHERE `entry` = 51225;
+UPDATE `items` SET `itemset` = 259 WHERE `entry` = 51226;
+UPDATE `items` SET `itemset` = 259 WHERE `entry` = 51227;
+UPDATE `items` SET `itemset` = 259 WHERE `entry` = 51228;
+UPDATE `items` SET `itemset` = 259 WHERE `entry` = 51229;
+UPDATE `items` SET `itemset` = 258 WHERE `entry` = 51240;
+UPDATE `items` SET `itemset` = 258 WHERE `entry` = 51241;
+UPDATE `items` SET `itemset` = 258 WHERE `entry` = 51242;
+UPDATE `items` SET `itemset` = 258 WHERE `entry` = 51243;
+UPDATE `items` SET `itemset` = 258 WHERE `entry` = 51244;
+UPDATE `items` SET `itemset` = 239 WHERE `entry` = 51195;
+UPDATE `items` SET `itemset` = 239 WHERE `entry` = 51196;
+UPDATE `items` SET `itemset` = 239 WHERE `entry` = 51197;
+UPDATE `items` SET `itemset` = 239 WHERE `entry` = 51198;
+UPDATE `items` SET `itemset` = 239 WHERE `entry` = 51199;
+UPDATE `items` SET `itemset` = 850 WHERE `entry` = 50830;
+UPDATE `items` SET `itemset` = 850 WHERE `entry` = 50831;
+UPDATE `items` SET `itemset` = 850 WHERE `entry` = 50832;
+UPDATE `items` SET `itemset` = 850 WHERE `entry` = 50833;
+UPDATE `items` SET `itemset` = 850 WHERE `entry` = 50834;
+UPDATE `items` SET `itemset` = 257 WHERE `entry` = 51235;
+UPDATE `items` SET `itemset` = 257 WHERE `entry` = 51236;
+UPDATE `items` SET `itemset` = 257 WHERE `entry` = 51237;
+UPDATE `items` SET `itemset` = 257 WHERE `entry` = 51238;
+UPDATE `items` SET `itemset` = 257 WHERE `entry` = 51239;
+UPDATE `items` SET `itemset` = 238 WHERE `entry` = 51200;
+UPDATE `items` SET `itemset` = 238 WHERE `entry` = 51201;
+UPDATE `items` SET `itemset` = 238 WHERE `entry` = 51202;
+UPDATE `items` SET `itemset` = 238 WHERE `entry` = 51203;
+UPDATE `items` SET `itemset` = 238 WHERE `entry` = 51204;
+UPDATE `items` SET `itemset` = 849 WHERE `entry` = 50841;
+UPDATE `items` SET `itemset` = 849 WHERE `entry` = 50842;
+UPDATE `items` SET `itemset` = 849 WHERE `entry` = 50843;
+UPDATE `items` SET `itemset` = 849 WHERE `entry` = 50844;
+UPDATE `items` SET `itemset` = 849 WHERE `entry` = 50845;
+UPDATE `items` SET `itemset` = 256 WHERE `entry` = 51245;
+UPDATE `items` SET `itemset` = 256 WHERE `entry` = 51246;
+UPDATE `items` SET `itemset` = 256 WHERE `entry` = 51247;
+UPDATE `items` SET `itemset` = 256 WHERE `entry` = 51248;
+UPDATE `items` SET `itemset` = 256 WHERE `entry` = 51249;
+UPDATE `items` SET `itemset` = 237 WHERE `entry` = 51190;
+UPDATE `items` SET `itemset` = 237 WHERE `entry` = 51191;
+UPDATE `items` SET `itemset` = 237 WHERE `entry` = 51192;
+UPDATE `items` SET `itemset` = 237 WHERE `entry` = 51193;
+UPDATE `items` SET `itemset` = 237 WHERE `entry` = 51194;
+UPDATE `items` SET `itemset` = 848 WHERE `entry` = 50835;
+UPDATE `items` SET `itemset` = 848 WHERE `entry` = 50836;
+UPDATE `items` SET `itemset` = 848 WHERE `entry` = 50837;
+UPDATE `items` SET `itemset` = 848 WHERE `entry` = 50838;
+UPDATE `items` SET `itemset` = 848 WHERE `entry` = 50839;
+UPDATE `items` SET `itemset` = 255 WHERE `entry` = 51285;
+UPDATE `items` SET `itemset` = 255 WHERE `entry` = 51286;
+UPDATE `items` SET `itemset` = 255 WHERE `entry` = 51287;
+UPDATE `items` SET `itemset` = 255 WHERE `entry` = 51288;
+UPDATE `items` SET `itemset` = 255 WHERE `entry` = 51289;
+UPDATE `items` SET `itemset` = 236 WHERE `entry` = 51150;
+UPDATE `items` SET `itemset` = 236 WHERE `entry` = 51151;
+UPDATE `items` SET `itemset` = 236 WHERE `entry` = 51152;
+UPDATE `items` SET `itemset` = 236 WHERE `entry` = 51153;
+UPDATE `items` SET `itemset` = 236 WHERE `entry` = 51154;
+UPDATE `items` SET `itemset` = 847 WHERE `entry` = 50114;
+UPDATE `items` SET `itemset` = 847 WHERE `entry` = 50115;
+UPDATE `items` SET `itemset` = 847 WHERE `entry` = 50116;
+UPDATE `items` SET `itemset` = 847 WHERE `entry` = 50117;
+UPDATE `items` SET `itemset` = 847 WHERE `entry` = 50118;
+UPDATE `items` SET `itemset` = 254 WHERE `entry` = 51250;
+UPDATE `items` SET `itemset` = 254 WHERE `entry` = 51251;
+UPDATE `items` SET `itemset` = 254 WHERE `entry` = 51252;
+UPDATE `items` SET `itemset` = 254 WHERE `entry` = 51253;
+UPDATE `items` SET `itemset` = 254 WHERE `entry` = 51254;
+UPDATE `items` SET `itemset` = 235 WHERE `entry` = 51185;
+UPDATE `items` SET `itemset` = 235 WHERE `entry` = 51186;
+UPDATE `items` SET `itemset` = 235 WHERE `entry` = 51187;
+UPDATE `items` SET `itemset` = 235 WHERE `entry` = 51188;
+UPDATE `items` SET `itemset` = 235 WHERE `entry` = 51189;
+UPDATE `items` SET `itemset` = 846 WHERE `entry` = 50087;
+UPDATE `items` SET `itemset` = 846 WHERE `entry` = 50088;
+UPDATE `items` SET `itemset` = 846 WHERE `entry` = 50089;
+UPDATE `items` SET `itemset` = 846 WHERE `entry` = 50090;
+UPDATE `items` SET `itemset` = 846 WHERE `entry` = 50105;
 
 --
 -- Update world_db_version
