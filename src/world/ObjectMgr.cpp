@@ -56,6 +56,13 @@ ObjectMgr::~ObjectMgr()
     }
     mItemSets.clear();
 
+    Log.Notice("ObjectMgr", "Deleting Defined Itemsets...");
+    for (ItemSetDefinedContentMap::iterator i = mDefinedItemSets.begin(); i != mDefinedItemSets.end(); ++i)
+    {
+        delete i->second;
+    }
+    mDefinedItemSets.clear();
+
     Log.Notice("ObjectMgr", "Deleting PlayerCreateInfo...");
     for (PlayerCreateInfoMap::iterator i = mPlayerCreateInfo.begin(); i != mPlayerCreateInfo.end(); ++i)
     {
@@ -1809,6 +1816,11 @@ void ObjectMgr::LoadAchievementCriteriaList()
 std::list<ItemPrototype*>* ObjectMgr::GetListForItemSet(uint32 setid)
 {
     return mItemSets[setid];
+}
+
+std::list<ItemPrototype*>* ObjectMgr::GetListForDefinedItemSet(uint32 setid)
+{
+    return mDefinedItemSets[setid];
 }
 
 void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
@@ -4053,4 +4065,21 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             objmgr.CheckforScripts(plr, itr->second.nextevent);
         }
     }
+}
+
+bool ObjectMgr::HasGroupedSetBonus(uint32 itemset)
+{
+    auto linked_itemset = ItemLinkedItemSetStorage.LookupEntry(itemset);
+    if (linked_itemset)
+        return true;
+    else
+        return false;
+}
+uint32 ObjectMgr::GetGroupedSetBonus(uint32 itemset)
+{
+    auto linked_itemset = ItemLinkedItemSetStorage.LookupEntry(itemset);
+    if (linked_itemset)
+        return linked_itemset->itemset_bonus;
+    else
+        return itemset;
 }

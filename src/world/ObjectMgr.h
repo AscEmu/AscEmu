@@ -502,6 +502,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::map<uint32, LevelInfo*>                                LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>                  LevelInfoMap;
         typedef std::map<uint32, std::list<ItemPrototype*>* >               ItemSetContentMap;
+        typedef std::map<uint32, std::list<ItemPrototype*>* >               ItemSetDefinedContentMap;
         typedef std::map<uint32, uint32>                                    NpcToGossipTextMap;
         typedef std::map<uint32, std::set<SpellEntry*> >                         PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
@@ -550,6 +551,9 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
             m_groups.erase(group->GetID());
             m_groupLock.ReleaseWriteLock();
         }
+
+        bool HasGroupedSetBonus(uint32 itemset);
+        uint32 GetGroupedSetBonus(uint32 itemset);
 
         void GroupVoiceReconnected();
 
@@ -603,6 +607,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_);
 
         std::list<ItemPrototype*>* GetListForItemSet(uint32 setid);
+        std::list<ItemPrototype*>* GetListForDefinedItemSet(uint32 setid);
 
         Pet* CreatePet(uint32 entry);
         // This is a cataclysm feature
@@ -911,6 +916,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         TransportMap mTransports;
 
         ItemSetContentMap mItemSets;
+        ItemSetDefinedContentMap mDefinedItemSets;
 
         TrainerMap mTrainers;
         LevelInfoMap mLevelInfo;

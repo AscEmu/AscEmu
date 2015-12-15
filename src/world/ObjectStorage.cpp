@@ -376,18 +376,35 @@ void ObjectMgr::LoadExtraItemStuff()
         pItemPrototype = itr->Get();
         if (pItemPrototype->ItemSet > 0)
         {
-            ItemSetContentMap::iterator itr2 = mItemSets.find(pItemPrototype->ItemSet);
+            uint32 itemsetid = pItemPrototype->ItemSet;
+            if ((objmgr.HasGroupedSetBonus(pItemPrototype->ItemSet)))
+                itemsetid = objmgr.GetGroupedSetBonus(pItemPrototype->ItemSet);
+
+            ItemSetContentMap::iterator itr2 = mItemSets.find(itemsetid);
             std::list<ItemPrototype*>* l;
             if (itr2 == mItemSets.end())
             {
                 l = new std::list<ItemPrototype*>;
-                mItemSets.insert(ItemSetContentMap::value_type(pItemPrototype->ItemSet, l));
+                mItemSets.insert(ItemSetContentMap::value_type(itemsetid, l));
             }
             else
             {
                 l = itr2->second;
             }
             l->push_back(pItemPrototype);
+
+            ItemSetDefinedContentMap::iterator itr3 = mDefinedItemSets.find(pItemPrototype->ItemSet);
+            std::list<ItemPrototype*>* l2;
+            if (itr3 == mDefinedItemSets.end())
+            {
+                l2 = new std::list<ItemPrototype*>;
+                mDefinedItemSets.insert(ItemSetDefinedContentMap::value_type(pItemPrototype->ItemSet, l2));
+            }
+            else
+            {
+                l2 = itr3->second;
+            }
+            l2->push_back(pItemPrototype);
         }
 
 

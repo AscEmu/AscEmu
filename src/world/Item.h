@@ -394,9 +394,6 @@ class SERVER_DECL Item : public Object
         bool RepairItem(Player* pPlayer, bool guildmoney = false, int32* pCost = NULL);
         uint32 RepairItemCost();
 
-        bool HasGroupedSetBonus(uint32 itemset);
-        uint32 GetGroupedSetBonus(uint32 itemset);
-
         uint32 GetOnUseSpellID(uint32 index) { return OnUseSpellIDs[index]; }
         bool HasOnUseSpellID(uint32 id)
         {

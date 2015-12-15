@@ -835,7 +835,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
     data << itemProto->RandomPropId;
     data << itemProto->RandomSuffixId;
     data << itemProto->Block;
-    data << itemProto->ItemSet;
+    data << objmgr.GetGroupedSetBonus(itemProto->ItemSet);
     data << itemProto->MaxDurability;
     data << itemProto->ZoneNameID;
     data << itemProto->MapID;
@@ -2422,7 +2422,7 @@ void WorldSession::SendItemQueryAndNameInfo(uint32 itemid)
 	data << itemProto->RandomPropId;
 	data << itemProto->RandomSuffixId;
 	data << itemProto->Block;
-	data << itemProto->ItemSet;
+	data << objmgr.GetGroupedSetBonus(itemProto->ItemSet);
 	data << itemProto->MaxDurability;
 	data << itemProto->ZoneNameID;
 	data << itemProto->MapID;
