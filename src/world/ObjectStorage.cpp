@@ -21,64 +21,61 @@
 
 #include "StdAfx.h"
 
-/** Table formats converted to strings
- */
-const char * gItemPrototypeFormat                       = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuiuuuuuuuuuuuuuuuuuu";
-const char * gItemNameFormat                            = "usu";
-const char * gCreatureNameFormat                        = "usssuuuuuuuuuuuffcuuuuuuu";
-const char * gGameObjectNameFormat                      = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
-const char * gCreatureProtoFormat                       = "uuuuuuufuuuffuuffuuuuuuuuffsuuufffuuuuuuuuuuuuuuuuu";
-const char * gDisplayBoundingFormat                     = "ufffffff";
-const char * gVendorRestrictionEntryFormat              = "uuuuuuuu";
-const char * gAreaTriggerFormat                         = "ucuusffffuu";
-const char * gItemPageFormat                            = "usu";
-const char * gNpcTextFormat                             = "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
-const char * gQuestFormat                               = "uuuuuuuuuuuuuuuuuuussssssssssuuuuuuuuuuuuiiiiuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuiiiiiiuiuuuuuuuuuuuuuuusuuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
-//const char * gSpellExtraFormat                          = "uuuu";
-const char* gGraveyardFormat                            = "uffffuuuux";
-const char* gTeleportCoordFormat                        = "uxufffx";
-const char* gPvPAreaFormat                              = "ush";
-const char* gFishingFormat                              = "uuu";
-const char* gWorldMapInfoFormat                         = "uuuuuufffusuuuuuuuufu";
-const char* gPointOfInterestFormat                      = "uffuuus"; // added for guards to point it to minimap
-const char* gZoneGuardsFormat                           = "uuu";
-const char* gUnitModelSizeFormat                        = "ufu";
-const char* gCreatureTextFormat                         = "usuuuuuuuuu";
-const char* gGossipMenuOptionFormat                     = "us";
-const char* gWorldStringTableFormat                     = "us";  // p2wow added [for worldserver common message storage]
-const char* gWorldBroadCastFormat                       = "usu"; // announce message
-const char* gBattleMasterFormat                         = "uu";
-const char* gSpellClickSpellsFormat                     = "uu";
-const char* gTotemDisplayIDsFormat                      = "uuuu";
+ // Table formats converted to strings
+const char* gItemPrototypeFormat = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuiuuuuuuuuuuuuuuuuuu";
+const char* gItemNameFormat = "usu";
+const char* gCreatureNameFormat = "usssuuuuuuuuuuuffcuuuuuuu";
+const char* gGameObjectNameFormat = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
+const char* gCreatureProtoFormat = "uuuuuuufuuuffuuffuuuuuuuuffsuuufffuuuuuuuuuuuuuuuuu";
+const char* gDisplayBoundingFormat = "ufffffff";
+const char* gVendorRestrictionEntryFormat = "uuuuuuuu";
+const char* gAreaTriggerFormat = "ucuusffffuu";
+const char* gItemPageFormat = "usu";
+const char* gNpcTextFormat = "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
+const char* gQuestFormat = "uuuuuuuuuuuuuuuuuuussssssssssuuuuuuuuuuuuiiiiuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuiiiiiiuiuuuuuuuuuuuuuuusuuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
+const char* gGraveyardFormat = "uffffuuuux";
+const char* gTeleportCoordFormat = "uxufffx";
+const char* gPvPAreaFormat = "ush";
+const char* gFishingFormat = "uuu";
+const char* gWorldMapInfoFormat = "uuuuuufffusuuuuuuuufu";
+const char* gPointOfInterestFormat = "uffuuus";
+const char* gZoneGuardsFormat = "uuu";
+const char* gUnitModelSizeFormat = "ufu";
+const char* gCreatureTextFormat = "usuuuuuuuuu";
+const char* gGossipMenuOptionFormat = "us";
+const char* gWorldStringTableFormat = "us";
+const char* gWorldBroadCastFormat = "usu";
+const char* gBattleMasterFormat = "uu";
+const char* gSpellClickSpellsFormat = "uu";
+const char* gTotemDisplayIDsFormat = "uuuu";
 
-/** SQLStorage symbols
- */
-SERVER_DECL SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >                ItemPrototypeStorage;
-SERVER_DECL SQLStorage<ItemName, ArrayStorageContainer<ItemName> >                            ItemNameStorage;
-SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                CreatureNameStorage;
-SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >            GameObjectNameStorage;
-SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                CreatureProtoStorage;
-SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >                DisplayBoundingStorage;
-SERVER_DECL SQLStorage<VendorRestrictionEntry, ArrayStorageContainer<VendorRestrictionEntry> > VendorRestrictionEntryStorage;
-SERVER_DECL SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >                    AreaTriggerStorage;
-SERVER_DECL SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >                        ItemPageStorage;
-SERVER_DECL SQLStorage<Quest, HashMapStorageContainer<Quest> >                                QuestStorage;
-SERVER_DECL SQLStorage<GossipText, HashMapStorageContainer<GossipText> >                    NpcTextStorage;
-SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >        GraveyardStorage;
-SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >            TeleportCoordStorage;
-SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >        FishingZoneStorage;
-SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >                            WorldMapInfoStorage;
-SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >            ZoneGuardStorage;
-SERVER_DECL SQLStorage<UnitModelSizeEntry, HashMapStorageContainer<UnitModelSizeEntry> >    UnitModelSizeStorage;
-SERVER_DECL SQLStorage<CreatureText, HashMapStorageContainer<CreatureText> >                CreatureTextStorage;
-SERVER_DECL SQLStorage<GossipMenuOption, HashMapStorageContainer<GossipMenuOption> >        GossipMenuOptionStorage;
-SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >        WorldStringTableStorage;
-SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >            WorldBroadCastStorage;
-SERVER_DECL SQLStorage<BGMaster, HashMapStorageContainer<BGMaster> >                        BGMasterStorage;
-SERVER_DECL SQLStorage< SpellClickSpell, HashMapStorageContainer< SpellClickSpell > >        SpellClickSpellStorage;
-SERVER_DECL SQLStorage< TotemDisplayIdEntry, HashMapStorageContainer< TotemDisplayIdEntry > > TotemDisplayIdStorage;
-SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest> >             PointOfInterestStorage;
 
+// SQLStorage symbols
+SERVER_DECL SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >                    ItemPrototypeStorage;
+SERVER_DECL SQLStorage<ItemName, ArrayStorageContainer<ItemName> >                              ItemNameStorage;
+SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                    CreatureNameStorage;
+SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                GameObjectNameStorage;
+SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                  CreatureProtoStorage;
+SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >              DisplayBoundingStorage;
+SERVER_DECL SQLStorage<VendorRestrictionEntry, ArrayStorageContainer<VendorRestrictionEntry> >  VendorRestrictionEntryStorage;
+SERVER_DECL SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >                      AreaTriggerStorage;
+SERVER_DECL SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >                            ItemPageStorage;
+SERVER_DECL SQLStorage<Quest, HashMapStorageContainer<Quest> >                                  QuestStorage;
+SERVER_DECL SQLStorage<GossipText, HashMapStorageContainer<GossipText> >                        NpcTextStorage;
+SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >          GraveyardStorage;
+SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >                TeleportCoordStorage;
+SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >            FishingZoneStorage;
+SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >                                WorldMapInfoStorage;
+SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                ZoneGuardStorage;
+SERVER_DECL SQLStorage<UnitModelSizeEntry, HashMapStorageContainer<UnitModelSizeEntry> >        UnitModelSizeStorage;
+SERVER_DECL SQLStorage<CreatureText, HashMapStorageContainer<CreatureText> >                    CreatureTextStorage;
+SERVER_DECL SQLStorage<GossipMenuOption, HashMapStorageContainer<GossipMenuOption> >            GossipMenuOptionStorage;
+SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >            WorldStringTableStorage;
+SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                WorldBroadCastStorage;
+SERVER_DECL SQLStorage<BGMaster, HashMapStorageContainer<BGMaster> >                            BGMasterStorage;
+SERVER_DECL SQLStorage< SpellClickSpell, HashMapStorageContainer< SpellClickSpell > >           SpellClickSpellStorage;
+SERVER_DECL SQLStorage< TotemDisplayIdEntry, HashMapStorageContainer< TotemDisplayIdEntry > >   TotemDisplayIdStorage;
+SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest> >              PointOfInterestStorage;
 
 
 SERVER_DECL std::set<std::string> ExtraMapCreatureTables;
@@ -98,8 +95,7 @@ void ObjectMgr::LoadProfessionDiscoveries()
             pf->SkillValue = f[2].GetUInt32();
             pf->Chance = f[3].GetFloat();
             ProfessionDiscoveryTable.insert(pf);
-        }
-        while(result->NextRow());
+        } while (result->NextRow());
         delete result;
     }
 }
@@ -109,17 +105,17 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
     {
         StorageContainerIterator<CreatureProto> * itr = CreatureProtoStorage.MakeIterator();
         CreatureProto* cn;
-        while(!itr->AtEnd())
+        while (!itr->AtEnd())
         {
             cn = itr->Get();
 
             // Process spell fields
             for (uint32 i = 0; i < MAX_CREATURE_PROTO_SPELLS; i++)
             {
-                if (cn->AISpells[ i ] == 0)
+                if (cn->AISpells[i] == 0)
                     continue;
 
-                SpellEntry *sp = dbcSpell.LookupEntryForced(cn->AISpells[ i ]);
+                SpellEntry *sp = dbcSpell.LookupEntryForced(cn->AISpells[i]);
                 if (sp == NULL)
                     continue;
 
@@ -186,13 +182,13 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
     {
         StorageContainerIterator<CreatureInfo> * itr = CreatureNameStorage.MakeIterator();
         CreatureInfo* ci;
-        while(!itr->AtEnd())
+        while (!itr->AtEnd())
         {
             ci = itr->Get();
 
             ci->lowercase_name = std::string(ci->Name);
             for (uint32 j = 0; j < ci->lowercase_name.length(); ++j)
-                ci->lowercase_name[j] = static_cast<char>(tolower(ci->lowercase_name[j]));   // Darvaleo 2008/08/15 - Copied lowercase conversion logic from ItemPrototype task
+                ci->lowercase_name[j] = static_cast<char>(tolower(ci->lowercase_name[j]));
 
             for (int i = 0; i < NUM_MONSTER_SAY_EVENTS; i++)
                 ci->MonsterSay[i] = objmgr.HasMonsterSay(ci->Id, MONSTER_SAY_EVENTS(i));
@@ -245,7 +241,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
                 sp->cooldown = fields[9].GetInt32();
                 sp->floatMisc1 = fields[10].GetFloat();
-                sp->autocast_type = (uint32) - 1;
+                sp->autocast_type = (uint32)-1;
                 sp->cooldowntime = getMSTime();
                 sp->procCounter = 0;
                 sp->Misc2 = fields[11].GetUInt32();
@@ -260,7 +256,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                     }
 
                     if (sp->spell->Effect[0] == SPELL_EFFECT_LEARN_SPELL || sp->spell->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
-                            sp->spell->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
+                        sp->spell->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
                     {
                         LOG_DEBUG("Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
                         delete sp;
@@ -272,7 +268,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                     sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(sp->spell->rangeIndex));
 
                     //omg the poor darling has no clue about making ai_agents
-                    if (sp->cooldown == (uint32) - 1)
+                    if (sp->cooldown == (uint32)-1)
                     {
                         //now this will not be exact cooldown but maybe a bigger one to not make him spam spells to often
                         int cooldown;
@@ -281,7 +277,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                         int Casttime = 0; //most of the time 0
                         int RecoveryTime = sp->spell->RecoveryTime;
                         if (sp->spell->DurationIndex)
-                            Dur =::GetDuration(spell_duration);
+                            Dur = ::GetDuration(spell_duration);
                         Casttime = GetCastTime(sSpellCastTimesStore.LookupEntry(sp->spell->CastingTimeIndex));
                         cooldown = Dur + Casttime + RecoveryTime;
                         if (cooldown < 0)
@@ -344,8 +340,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                 {
                     cn->spells.push_back(sp);
                 }
-            }
-            while(result->NextRow());
+            } while (result->NextRow());
 
             delete result;
         }
@@ -362,14 +357,13 @@ void ObjectMgr::LoadExtraItemStuff()
         do
         {
             foodItems.insert(std::make_pair(f[0].GetUInt32(), f[1].GetUInt32()));
-        }
-        while(result->NextRow());
+        } while (result->NextRow());
         delete result;
     }
 
     StorageContainerIterator<ItemPrototype> * itr = ItemPrototypeStorage.MakeIterator();
     ItemPrototype* pItemPrototype;
-    while(!itr->AtEnd())
+    while (!itr->AtEnd())
     {
         pItemPrototype = itr->Get();
         if (pItemPrototype->ItemSet != 0)
@@ -401,10 +395,10 @@ void ObjectMgr::LoadExtraItemStuff()
         std::map<uint32, uint32>::iterator iter = foodItems.find(pItemPrototype->ItemId);
         if (iter != foodItems.end())
             ft = iter->second;
-        pItemPrototype->FoodType = ft ;
+        pItemPrototype->FoodType = ft;
 
         // forced pet entries
-        switch(pItemPrototype->ItemId)
+        switch (pItemPrototype->ItemId)
         {
             case 28071: //Grimoire of Anguish (Rank 1)
             case 28072: //Grimoire of Anguish (Rank 2)
@@ -536,7 +530,7 @@ void ObjectMgr::LoadExtraGameObjectStuff()
 {
     StorageContainerIterator<GameObjectInfo> * itr = GameObjectNameStorage.MakeIterator();
     GameObjectInfo* gameobject_info;
-    while(!itr->AtEnd())
+    while (!itr->AtEnd())
     {
         gameobject_info = itr->Get();
 
@@ -569,7 +563,6 @@ void Storage_FillTaskList(TaskList & tl)
     make_task(WorldMapInfoStorage, MapInfo, ArrayStorageContainer, "worldmap_info", gWorldMapInfoFormat);
     make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
     make_task(UnitModelSizeStorage, UnitModelSizeEntry, HashMapStorageContainer, "unit_display_sizes", gUnitModelSizeFormat);
-
     make_task(CreatureTextStorage, CreatureText, HashMapStorageContainer, "npc_script_text", gCreatureTextFormat);
     make_task(GossipMenuOptionStorage, GossipMenuOption, HashMapStorageContainer, "gossip_menu_option", gGossipMenuOptionFormat);
     make_task(WorldStringTableStorage, WorldStringTable, HashMapStorageContainer, "worldstring_tables", gWorldStringTableFormat);
@@ -578,7 +571,6 @@ void Storage_FillTaskList(TaskList & tl)
     make_task(SpellClickSpellStorage, SpellClickSpell, HashMapStorageContainer, "spellclickspells", gSpellClickSpellsFormat);
     make_task(TotemDisplayIdStorage, TotemDisplayIdEntry, HashMapStorageContainer, "totemdisplayids", gTotemDisplayIDsFormat);
     make_task(PointOfInterestStorage, PointOfInterest, HashMapStorageContainer, "points_of_interest", gPointOfInterestFormat);
-
 }
 
 void Storage_Cleanup()
@@ -586,7 +578,7 @@ void Storage_Cleanup()
     {
         StorageContainerIterator<CreatureProto> * itr = CreatureProtoStorage.MakeIterator();
         CreatureProto* p;
-        while(!itr->AtEnd())
+        while (!itr->AtEnd())
         {
             p = itr->Get();
             if (p->aura_string)
@@ -782,27 +774,22 @@ void Storage_LoadAdditionalTables()
 }
 
 void ObjectMgr::StoreBroadCastGroupKey()
-// cebernic: plz feedback
 {
-    // init
     if (!sWorld.BCSystemEnable)
     {
         Log.Notice("ObjectMgr", "BCSystem Disabled.");
         return;
     }
-    // ----------------
 
     std::vector<std::string> keyGroup;
     QueryResult* result = WorldDatabase.Query("SELECT DISTINCT percent FROM `worldbroadcast` ORDER BY percent DESC");
-    // result->GetRowCount();
     if (result != NULL)
     {
         do
         {
             Field* f = result->Fetch();
             keyGroup.push_back(std::string(f[0].GetString()));
-        }
-        while(result->NextRow());
+        } while (result->NextRow());
         delete result;
         result = NULL;
     }
@@ -814,7 +801,9 @@ void ObjectMgr::StoreBroadCastGroupKey()
         return;
     }
     else
+    {
         Log.Notice("ObjectMgr", "BCSystem Enabled with %u KeyGroups.", keyGroup.size());
+    }
 
     for (std::vector<std::string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
     {
@@ -829,8 +818,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
             {
                 Field* f = result->Fetch();
                 m_BCEntryStorage.insert(std::pair<uint32, uint32>(uint32(atoi(curKey.c_str())), f[0].GetUInt32()));
-            }
-            while(result->NextRow());
+            } while (result->NextRow());
             delete result;
         }
     }
