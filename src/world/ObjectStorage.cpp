@@ -23,9 +23,8 @@
 
 /** Table formats converted to strings
  */
-const char * gItemPrototypeFormat                       = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
+const char * gItemPrototypeFormat                       = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuiuuuuuuuuuuuuuuuuuu";
 const char * gItemNameFormat                            = "usu";
-const char * gItemsLinkedItemSetFormat                  = "uu";
 const char * gCreatureNameFormat                        = "usssuuuuuuuuuuuffcuuuuuuu";
 const char * gGameObjectNameFormat                      = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
 const char * gCreatureProtoFormat                       = "uuuuuuufuuuffuuffuuuuuuuuffsuuufffuuuuuuuuuuuuuuuuu";
@@ -56,7 +55,6 @@ const char* gTotemDisplayIDsFormat                      = "uuuu";
  */
 SERVER_DECL SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >                ItemPrototypeStorage;
 SERVER_DECL SQLStorage<ItemName, ArrayStorageContainer<ItemName> >                            ItemNameStorage;
-SERVER_DECL SQLStorage<ItemsLinkedItemSet, ArrayStorageContainer<ItemsLinkedItemSet> >        ItemLinkedItemSetStorage;
 SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                CreatureNameStorage;
 SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >            GameObjectNameStorage;
 SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                CreatureProtoStorage;
@@ -374,11 +372,9 @@ void ObjectMgr::LoadExtraItemStuff()
     while(!itr->AtEnd())
     {
         pItemPrototype = itr->Get();
-        if (pItemPrototype->ItemSet > 0)
+        if (pItemPrototype->ItemSet != 0)
         {
-            uint32 itemsetid = pItemPrototype->ItemSet;
-            if ((objmgr.HasGroupedSetBonus(pItemPrototype->ItemSet)))
-                itemsetid = objmgr.GetGroupedSetBonus(pItemPrototype->ItemSet);
+            int32 itemsetid = pItemPrototype->ItemSet;
 
             ItemSetContentMap::iterator itr2 = mItemSets.find(itemsetid);
             std::list<ItemPrototype*>* l;
@@ -392,19 +388,6 @@ void ObjectMgr::LoadExtraItemStuff()
                 l = itr2->second;
             }
             l->push_back(pItemPrototype);
-
-            ItemSetDefinedContentMap::iterator itr3 = mDefinedItemSets.find(pItemPrototype->ItemSet);
-            std::list<ItemPrototype*>* l2;
-            if (itr3 == mDefinedItemSets.end())
-            {
-                l2 = new std::list<ItemPrototype*>;
-                mDefinedItemSets.insert(ItemSetDefinedContentMap::value_type(pItemPrototype->ItemSet, l2));
-            }
-            else
-            {
-                l2 = itr3->second;
-            }
-            l2->push_back(pItemPrototype);
         }
 
 
@@ -567,15 +550,10 @@ void ObjectMgr::LoadExtraGameObjectStuff()
     new CallbackP2< SQLStorage< itype, storagetype< itype > >, const char *, const char *> \
     (&storage, &SQLStorage< itype, storagetype< itype > >::Load, tablename, format)))
 
-#define make_task_without_entry(storage, itype, storagetype, tablename, format) tl.AddTask(new Task(\
-    new CallbackP2< SQLStorage< itype, storagetype< itype > >, const char *, const char *> \
-    (&storage, &SQLStorage< itype, storagetype< itype > >::LoadWithoutEntry, tablename, format)))
-
 void Storage_FillTaskList(TaskList & tl)
 {
     make_task(ItemPrototypeStorage, ItemPrototype, ArrayStorageContainer, "items", gItemPrototypeFormat);
     make_task(ItemNameStorage, ItemName, ArrayStorageContainer, "itemnames", gItemNameFormat);
-    make_task_without_entry(ItemLinkedItemSetStorage, ItemsLinkedItemSet, ArrayStorageContainer, "items_linked_itemsets", gItemsLinkedItemSetFormat);
     make_task(CreatureNameStorage, CreatureInfo, HashMapStorageContainer, "creature_names", gCreatureNameFormat);
     make_task(GameObjectNameStorage, GameObjectInfo, HashMapStorageContainer, "gameobject_names", gGameObjectNameFormat);
     make_task(CreatureProtoStorage, CreatureProto, HashMapStorageContainer, "creature_proto", gCreatureProtoFormat);
@@ -627,7 +605,6 @@ void Storage_Cleanup()
     }
     ItemPrototypeStorage.Cleanup();
     ItemNameStorage.Cleanup();
-    ItemLinkedItemSetStorage.Cleanup();
     CreatureNameStorage.Cleanup();
     GameObjectNameStorage.Cleanup();
     CreatureProtoStorage.Cleanup();

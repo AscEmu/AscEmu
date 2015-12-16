@@ -3979,13 +3979,23 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     item->ApplyRandomProperties(true);
 
     //Items Set check
-    uint32 setid = proto->ItemSet;
+    int32 proto_setid = proto->ItemSet;
 
+    uint32 setid = 0;
     // These season pvp itemsets are interchangeable and each set group has the same
     // bonuses if you have a full set made up of parts from any of the 3 similar sets
     // you will get the highest sets bonus
-    if (objmgr.HasGroupedSetBonus(setid))
-        setid = objmgr.GetGroupedSetBonus(setid);
+    if (proto_setid < 0)
+    {
+        if (objmgr.HasGroupedSetBonus(proto_setid))
+        {
+            setid = objmgr.GetGroupedSetBonus(proto_setid);
+        }
+    }
+    else
+    {
+        setid = uint32(proto_setid);
+    }
 
 
     ///\todo make a config for server so they can configure which season is active season

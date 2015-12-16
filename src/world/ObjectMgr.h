@@ -501,8 +501,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>                  LevelInfoMap;
-        typedef std::map<uint32, std::list<ItemPrototype*>* >               ItemSetContentMap;
-        typedef std::map<uint32, std::list<ItemPrototype*>* >               ItemSetDefinedContentMap;
+        typedef std::map<int32, std::list<ItemPrototype*>* >               ItemSetContentMap;
+        typedef std::map<int32, uint32>               ItemSetDefinedContentMap;
         typedef std::map<uint32, uint32>                                    NpcToGossipTextMap;
         typedef std::map<uint32, std::set<SpellEntry*> >                         PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
@@ -552,8 +552,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
             m_groupLock.ReleaseWriteLock();
         }
 
-        bool HasGroupedSetBonus(uint32 itemset);
-        uint32 GetGroupedSetBonus(uint32 itemset);
+        bool HasGroupedSetBonus(int32 itemset);
+        uint32 GetGroupedSetBonus(int32 itemset);
 
         void GroupVoiceReconnected();
 
@@ -606,8 +606,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
         void SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_);
 
-        std::list<ItemPrototype*>* GetListForItemSet(uint32 setid);
-        std::list<ItemPrototype*>* GetListForDefinedItemSet(uint32 setid);
+        std::list<ItemPrototype*>* GetListForItemSet(int32 setid);
 
         Pet* CreatePet(uint32 entry);
         // This is a cataclysm feature
@@ -800,6 +799,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         std::vector< VehicleAccessoryEntry* >* GetVehicleAccessories(uint32 creature_entry);
         void LoadWorldStateTemplates();
         std::multimap< uint32, WorldState >* GetWorldStatesForMap(uint32 map) const;
+
+        void LoadItemsetLink();
 
 #undef ENABLE_ALWAYS_SERIOUS_MODE_GCC_STL_HACK
 

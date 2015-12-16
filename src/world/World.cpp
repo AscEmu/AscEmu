@@ -498,6 +498,7 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
+    MAKE_TASK(ObjectMgr, LoadItemsetLink);
 
 
 #ifdef ENABLE_ACHIEVEMENTS

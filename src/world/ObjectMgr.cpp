@@ -56,13 +56,6 @@ ObjectMgr::~ObjectMgr()
     }
     mItemSets.clear();
 
-    Log.Notice("ObjectMgr", "Deleting Defined Itemsets...");
-    for (ItemSetDefinedContentMap::iterator i = mDefinedItemSets.begin(); i != mDefinedItemSets.end(); ++i)
-    {
-        delete i->second;
-    }
-    mDefinedItemSets.clear();
-
     Log.Notice("ObjectMgr", "Deleting PlayerCreateInfo...");
     for (PlayerCreateInfoMap::iterator i = mPlayerCreateInfo.begin(); i != mPlayerCreateInfo.end(); ++i)
     {
@@ -1813,14 +1806,9 @@ void ObjectMgr::LoadAchievementCriteriaList()
 }
 #endif
 
-std::list<ItemPrototype*>* ObjectMgr::GetListForItemSet(uint32 setid)
+std::list<ItemPrototype*>* ObjectMgr::GetListForItemSet(int32 setid)
 {
     return mItemSets[setid];
-}
-
-std::list<ItemPrototype*>* ObjectMgr::GetListForDefinedItemSet(uint32 setid)
-{
-    return mDefinedItemSets[setid];
 }
 
 void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
@@ -4067,19 +4055,48 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
     }
 }
 
-bool ObjectMgr::HasGroupedSetBonus(uint32 itemset)
+void ObjectMgr::LoadItemsetLink()
 {
-    auto linked_itemset = ItemLinkedItemSetStorage.LookupEntry(itemset);
-    if (linked_itemset)
-        return true;
-    else
-        return false;
+    Log.Notice("ObjectMgr", "Loading linked itemsets...");
+
+    QueryResult* result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM items_linked_itemsets;");
+
+    if (result != NULL)
+    {
+        do
+        {
+            Field* row = result->Fetch();
+            ItemsLinkedItemSet* entry = new ItemsLinkedItemSet();
+            int32 itemset_entry = 0;
+
+            itemset_entry = row[0].GetInt32();
+            entry->itemset_bonus = row[1].GetUInt32();
+            Log.Notice("ObjectMgr", "loaded linked itemset %u for itemset %i", entry->itemset_bonus, itemset_entry);
+
+            mDefinedItemSets.insert(std::make_pair(itemset_entry, entry->itemset_bonus));
+
+
+        } while (result->NextRow());
+        delete result;
+    }
 }
-uint32 ObjectMgr::GetGroupedSetBonus(uint32 itemset)
+
+bool ObjectMgr::HasGroupedSetBonus(int32 itemset)
 {
-    auto linked_itemset = ItemLinkedItemSetStorage.LookupEntry(itemset);
-    if (linked_itemset)
-        return linked_itemset->itemset_bonus;
+    std::map<int32, uint32>::iterator itr = mDefinedItemSets.find(itemset);
+
+    if (itr == mDefinedItemSets.end())
+        return false;
     else
-        return itemset;
+        return true; itr->second;
+
+}
+uint32 ObjectMgr::GetGroupedSetBonus(int32 itemset)
+{
+    std::map<int32, uint32>::iterator itr = mDefinedItemSets.find(itemset);
+
+    if (itr == mDefinedItemSets.end())
+        return 0;
+    else
+        return itr->second;
 }
