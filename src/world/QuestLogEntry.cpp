@@ -139,10 +139,10 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
 
     ss << "INSERT INTO questlog VALUES(";
     ss << m_plr->GetLowGUID() << "," << m_quest->id << "," << m_slot << "," << expirytime;
-    for (int i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
         ss << "," << m_explored_areas[i];
 
-    for (int i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
         ss << "," << m_mobcount[i];
 
     ss << "," << uint32(completed);
@@ -162,14 +162,14 @@ bool QuestLogEntry::LoadFromDB(Field* fields)
     ARCEMU_ASSERT(m_plr && m_quest);
     expirytime = fields[f].GetUInt32();
     f++;
-    for (int i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         m_explored_areas[i] = fields[f].GetUInt32();
         f++;
         CALL_QUESTSCRIPT_EVENT(this, OnExploreArea)(m_explored_areas[i], m_plr, this);
     }
 
-    for (int i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         m_mobcount[i] = fields[f].GetUInt32();
         f++;
@@ -338,7 +338,7 @@ void QuestLogEntry::UpdatePlayerFields()
     if (m_quest->count_requiredtriggers)
     {
         uint32 count = 0;
-        for (int i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             if (m_quest->required_triggers[i])
             {
@@ -359,7 +359,7 @@ void QuestLogEntry::UpdatePlayerFields()
     if (iscastquest)
     {
         bool cast_complete = true;
-        for (int i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             if (m_quest->required_spell[i] && m_quest->required_mobcount[i] > m_mobcount[i])
             {
@@ -375,7 +375,7 @@ void QuestLogEntry::UpdatePlayerFields()
     else if (isemotequest)
     {
         bool emote_complete = true;
-        for (int i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             if (m_quest->required_emote[i] && m_quest->required_mobcount[i] > m_mobcount[i])
             {
@@ -393,7 +393,7 @@ void QuestLogEntry::UpdatePlayerFields()
     if (m_quest->count_required_mob)
     {
         uint8* p = (uint8*)&field1;
-        for (int i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             if (m_quest->required_mob[i] && m_mobcount[i] > 0)
                 p[2 * i] |= (uint8)m_mobcount[i];

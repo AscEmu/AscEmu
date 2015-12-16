@@ -1805,7 +1805,7 @@ void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 update
     pos = data.wpos();
     data << uint8(0);               // number of items, will be filled later
 
-    for (int32 j = 0; j < MAX_GUILD_BANK_SLOTS; ++j)
+    for (int8 j = 0; j < MAX_GUILD_BANK_SLOTS; ++j)
     {
         if (pTab->pSlots[j] != NULL)
         {

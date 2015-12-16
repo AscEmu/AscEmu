@@ -443,7 +443,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 
             // Quest Rewards : Copied from QuestMgr::OnQuestFinished()
             // Reputation reward
-            for (int z = 0; z < 6; z++)
+            for (uint8 z = 0; z < 6; z++)
             {
                 if (qst->reward_repfaction[z])
                 {
@@ -462,7 +462,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
             }
             // Static Item reward
-            for (uint32 i = 0; i < 4; ++i)
+            for (uint8 i = 0; i < 4; ++i)
             {
                 if (qst->reward_item[i])
                 {

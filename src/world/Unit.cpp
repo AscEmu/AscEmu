@@ -1146,7 +1146,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
         int dmg_overwrite[3] = { 0, 0, 0 };
 
         // SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
-        for (int i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (ospinfo->EffectApplyAuraName[i] == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
             {
@@ -5441,7 +5441,7 @@ uint32 Unit::AbsorbDamage(uint32 School, uint32* dmg)
 bool Unit::setDetectRangeMod(uint64 guid, int32 amount)
 {
     int next_free_slot = -1;
-    for (int i = 0; i < 5; i++)
+    for (uint8 i = 0; i < 5; i++)
     {
         if (m_detectRangeGUID[i] == 0 && next_free_slot == -1)
         {
@@ -5464,7 +5464,7 @@ bool Unit::setDetectRangeMod(uint64 guid, int32 amount)
 
 void Unit::unsetDetectRangeMod(uint64 guid)
 {
-    for (int i = 0; i < 5; i++)
+    for (uint8 i = 0; i < 5; i++)
     {
         if (m_detectRangeGUID[i] == guid)
         {
@@ -5476,7 +5476,7 @@ void Unit::unsetDetectRangeMod(uint64 guid)
 
 int32 Unit::getDetectRangeMod(uint64 guid)
 {
-    for (int i = 0; i < 5; i++)
+    for (uint8 i = 0; i < 5; i++)
     {
         if (m_detectRangeGUID[i] == guid)
         {
@@ -7332,7 +7332,7 @@ bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel = -1, 
             }
             else if (MechanicType == MECHANIC_ENSNARED)   // if got immunity for slow, remove some that are not in the mechanics
             {
-                for (int i = 0; i < 3; i++)
+                for (uint8 i = 0; i < 3; i++)
                 {
                     // SNARE + ROOT
                     if (m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED || m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
@@ -7362,7 +7362,7 @@ void Unit::RemoveAllMovementImpairing()
             }
             else
             {
-                for (int i = 0; i < 3; i++)
+                for (uint8 i = 0; i < 3; i++)
                 {
                     if (m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED
                         || m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)

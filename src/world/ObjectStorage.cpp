@@ -190,7 +190,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             for (uint32 j = 0; j < ci->lowercase_name.length(); ++j)
                 ci->lowercase_name[j] = static_cast<char>(tolower(ci->lowercase_name[j]));
 
-            for (int i = 0; i < NUM_MONSTER_SAY_EVENTS; i++)
+            for (uint8 i = 0; i < NUM_MONSTER_SAY_EVENTS; i++)
                 ci->MonsterSay[i] = objmgr.HasMonsterSay(ci->Id, MONSTER_SAY_EVENTS(i));
 
             if (!itr->Inc())

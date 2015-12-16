@@ -743,7 +743,7 @@ bool ChatHandler::HandleGenerateWaypoints(const char* args, WorldSession* m_sess
     }
     int n = atol(pC);
 
-    for (int i = 0; i < n; i++)
+    for (uint8 i = 0; i < n; i++)
     {
         if (r < 1)
         {

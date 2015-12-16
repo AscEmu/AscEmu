@@ -922,7 +922,7 @@ void Channel::GetOwner(Player* plr)
 }
 ChannelMgr::~ChannelMgr()
 {
-    for (int i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         ChannelList::iterator itr = this->Channels[i].begin();
         for (; itr != this->Channels[i].end(); ++itr)

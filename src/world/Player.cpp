@@ -550,7 +550,7 @@ Player::~Player()
     // delete m_talenttree
 
     CleanupChannels();
-    for (int i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < 25; ++i)
     {
         if (m_questlog[i] != NULL)
         {
@@ -2700,7 +2700,7 @@ void Player::_SaveQuestLogEntry(QueryBuffer* buf)
 
     m_removequests.clear();
 
-    for (int i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < 25; ++i)
     {
         if (m_questlog[i] != NULL)
             m_questlog[i]->SaveToDB(buf);
@@ -3632,7 +3632,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
     uint32 baseindex;
 
     // clear all fields
-    for (int i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < 25; ++i)
     {
         baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
         SetUInt32Value(baseindex + 0, 0);
@@ -3674,7 +3674,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
 
 QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
 {
-    for (int i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
         if (m_questlog[i] != NULL)
         {
@@ -4035,7 +4035,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
 
                 if (!item_set_entry->RequiredSkillID || (_GetSkillLineCurrent(item_set_entry->RequiredSkillID, true) >= item_set_entry->RequiredSkillAmt))
                 {
-                    for (uint32 x = 0; x < 8; x++)
+                    for (uint8 x = 0; x < 8; x++)
                     {
                         if (Set->itemscount == item_set_entry->itemscount[x])
                         {
@@ -4058,7 +4058,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             {
                 if (Set)
                 {
-                    for (uint32 x = 0; x < 8; x++)
+                    for (uint8 x = 0; x < 8; x++)
                         if (Set->itemscount == item_set_entry->itemscount[x])
                         {
                             this->RemoveAura(item_set_entry->SpellID[x], GetGUID());
@@ -4223,7 +4223,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     else
     {
         // Stats
-        for (uint32 i = 0; i < proto->itemstatscount; i++)
+        for (uint8 i = 0; i < proto->itemstatscount; i++)
         {
             int32 val = proto->Stats[i].Value;
             /*
@@ -4279,7 +4279,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         item->ApplyEnchantmentBonuses();
 
         SpellEntry* spells;
-        for (int k = 0; k < 5; k++)
+        for (uint8 k = 0; k < 5; k++)
         {
             if (item->GetProto()->Spells[k].Id == 0)
                 continue;//this isn't needed since the check below handles this case but it's a lot faster performance-wise.
@@ -4313,7 +4313,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     {
         // Remove all enchantment bonuses
         item->RemoveEnchantmentBonuses();
-        for (int k = 0; k < 5; k++)
+        for (uint8 k = 0; k < 5; k++)
         {
             if (item->GetProto()->Spells[k].Trigger == ON_EQUIP)
             {
@@ -4786,7 +4786,7 @@ void Player::CreateCorpse()
     uint16 iIventoryType = 0;
     uint32 _cfi = 0;
     Item* pItem;
-    for (int8 i = 0; i < EQUIPMENT_SLOT_END; i++)
+    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
         if ((pItem = GetItemInterface()->GetInventoryItem(i)) != 0)
         {
@@ -4860,7 +4860,7 @@ void Player::DeathDurabilityLoss(double percent)
     int32 pNewDurability;
     Item* pItem;
 
-    for (int8 i = 0; i < EQUIPMENT_SLOT_END; i++)
+    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
         if ((pItem = GetItemInterface()->GetInventoryItem(i)) != 0)
         {
@@ -5084,7 +5084,7 @@ void Player::_LoadTutorials(QueryResult* result)
     if (result)
     {
         Field* fields = result->Fetch();
-        for (int iI = 0; iI < 8; iI++)
+        for (uint8 iI = 0; iI < 8; iI++)
             m_Tutorials[iI] = fields[iI + 1].GetUInt32();
     }
     tutorialsDirty = false;
@@ -12246,7 +12246,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
         if (depends_talent)
         {
             bool hasEnoughRank = false;
-            for (int i = 0; i < 5; ++i)
+            for (uint8 i = 0; i < 5; ++i)
             {
                 if (depends_talent->RankID[i] != 0)
                 {
@@ -13043,7 +13043,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         if (spl != NULL)
         {
 
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
             {
                 if (spl->GetProto()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {

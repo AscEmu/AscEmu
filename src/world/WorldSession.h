@@ -867,7 +867,7 @@ class SERVER_DECL WorldSession
         uint32 m_muted;
 
         void SendClientCacheVersion(uint32 version);
-        void SendItemQueryAndNameInfo(uint32 itemid);
+
 };
 
 typedef std::set<WorldSession*> SessionSet;

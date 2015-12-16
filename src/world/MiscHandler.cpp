@@ -2433,7 +2433,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
 
     if (lock) // locked item
     {
-        for (int i = 0; i < LOCK_NUM_CASES; i++)
+        for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
         {
             if (lock->locktype[i] == 1 && lock->lockmisc[i] > 0)
             {
@@ -2454,7 +2454,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
                 return;
             }
         }
-        for (int i = 0; i < LOCK_NUM_CASES; i++)
+        for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
             if (removeLockItems[i])
                 _player->GetItemInterface()->RemoveItemAmt(removeLockItems[i], 1);
     }

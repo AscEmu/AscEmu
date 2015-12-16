@@ -1874,7 +1874,7 @@ void World::PollMailboxInsertQueue(DatabaseConnection* con)
             std::vector<uint64> itemGuids;
 
             int fieldCounter = 6;
-            for (int itemSlot = 0; itemSlot < MAIL_MAX_ITEM_SLOT; itemSlot++)
+            for (uint8 itemSlot = 0; itemSlot < MAIL_MAX_ITEM_SLOT; itemSlot++)
             {
                 itemid = f[fieldCounter++].GetUInt32();
                 stackcount = f[fieldCounter++].GetUInt32();

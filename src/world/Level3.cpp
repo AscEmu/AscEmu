@@ -2129,7 +2129,7 @@ bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session
     }
 
     // this makes sure no moron casts a learn spell on everybody and wrecks the server
-    for (int i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         if (info->Effect[i] == SPELL_EFFECT_LEARN_SPELL)  //SPELL_EFFECT_LEARN_SPELL - 36
         {

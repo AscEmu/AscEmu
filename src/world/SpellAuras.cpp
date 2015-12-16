@@ -2051,7 +2051,7 @@ void Aura::SpellAuraModCharm(bool apply)
             data << uint32(PET_SPELL_ATTACK);
             data << uint32(PET_SPELL_FOLLOW);
             data << uint32(PET_SPELL_STAY);
-            for (int i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 data << uint32(0);
             data << uint32(PET_SPELL_AGRESSIVE);
             data << uint32(PET_SPELL_DEFENSIVE);
@@ -2761,7 +2761,7 @@ void Aura::SpellAuraModStealth(bool apply)
                     }
                     else // if got immunity for slow, remove some that are not in the mechanics
                     {
-                        for (int i = 0; i < 3; i++)
+                        for (uint8 i = 0; i < 3; i++)
                         {
                             uint32 AuraEntry = m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i];
                             if (AuraEntry == SPELL_AURA_MOD_DECREASE_SPEED || AuraEntry == SPELL_AURA_MOD_ROOT || AuraEntry == SPELL_AURA_MOD_STALKED)
@@ -3858,7 +3858,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
                     }
                     else // if got immunity for slow, remove some that are not in the mechanics
                     {
-                        for (int i = 0; i < 3; i++)
+                        for (uint8 i = 0; i < 3; i++)
                         {
                             if (m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED || m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
                             {

@@ -85,7 +85,7 @@ void Player::SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0,
     data << uint32(Hp);
     data << uint32(Mana);
 
-    for (int i = 0; i < 6; ++i)
+    for (uint8 i = 0; i < 6; ++i)
         data << uint32(0);
 
     data << uint32(Stat0);
@@ -567,7 +567,7 @@ void Player::SendInitialLogonPackets()
     //Tutorial Flags
     data.Initialize(SMSG_TUTORIAL_FLAGS);
 
-    for (int i = 0; i < 8; i++)
+    for (uint8 i = 0; i < 8; i++)
         data << uint32(m_Tutorials[i]);
 
     m_session->SendPacket(&data);

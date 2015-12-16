@@ -921,7 +921,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
     if (pPlayer->m_isGmInvisible)
         mask = GROUP_UPDATE_FLAG_STATUS;
     uint32 byteCount = 0;
-    for (int i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
+    for (uint8 i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
         if (mask & (1 << i))
             byteCount += GroupUpdateLength[i];
     data->Initialize(SMSG_PARTY_MEMBER_STATS, 8 + 4 + byteCount);
@@ -1440,7 +1440,7 @@ void Group::GoOffline(Player* p)
     uint32 mask = GROUP_UPDATE_FLAG_STATUS;
     uint32 byteCount = 0;
 
-    for (int i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
+    for (uint8 i = 1; i < GROUP_UPDATE_FLAGS_COUNT; ++i)
         if (mask & (1 << i))
             byteCount += GroupUpdateLength[i];
 
@@ -1452,7 +1452,7 @@ void Group::GoOffline(Player* p)
     if (p->IsInWorld())
     {
         m_groupLock.Acquire();
-        for (uint32 i = 0; i < m_SubGroupCount; ++i)
+        for (uint8 i = 0; i < m_SubGroupCount; ++i)
         {
             if (m_SubGroups[i] == NULL)
                 continue;

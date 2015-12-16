@@ -2917,7 +2917,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                 if (!lock)
                     return;
 
-                for (int j = 0; j < LOCK_NUM_CASES; j++)
+                for (uint8 j = 0; j < LOCK_NUM_CASES; j++)
                 {
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
@@ -2939,7 +2939,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                 if (lock == 0)
                     return;
 
-                for (int j = 0; j < LOCK_NUM_CASES; j++)
+                for (uint8 j = 0; j < LOCK_NUM_CASES; j++)
                 {
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
@@ -3158,7 +3158,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
         if (!i_caster || !p_caster) return;
 
         uint32 spellid = 0;
-        for (int j = 0; j < 5; ++j)
+        for (uint8 j = 0; j < 5; ++j)
         {
             if (i_caster->GetProto()->Spells[j].Trigger == LEARNING && i_caster->GetProto()->Spells[j].Id != 0)
             {

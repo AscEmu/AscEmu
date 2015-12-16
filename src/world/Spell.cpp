@@ -774,7 +774,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     {
         // Immune - IF, and ONLY IF, there is no damage component!
         bool no_damage_component = true;
-        for (int x = 0; x <= 2; x++)
+        for (uint8 x = 0; x <= 2; x++)
         {
             if (GetProto()->Effect[x] == SPELL_EFFECT_SCHOOL_DAMAGE
                 || GetProto()->Effect[x] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
@@ -1456,7 +1456,7 @@ void Spell::cast(bool check)
             std::vector<uint64>::iterator i, i2;
             // this is here to avoid double search in the unique list
             // bool canreflect = false, reflected = false;
-            for (int j = 0; j < 3; j++)
+            for (uint8 j = 0; j < 3; j++)
             {
                 switch (GetProto()->EffectImplicitTargetA[j])
                 {
@@ -6275,15 +6275,19 @@ void Spell::writeAmmoToPacket(WorldPacket* data)
                 if(pItem->GetDurability() == 0)
                     p_caster->ApplyItemMods(pItem, EQUIPMENT_SLOT_RANGED, false, true);
             }*/
+
             ammoInventoryType = pItem->GetProto()->InventoryType;
+
             if (ammoInventoryType == INVTYPE_THROWN)
+            {
                 ammoDisplayID = pItem->GetProto()->DisplayInfoID;
+            }
             else
             {
                 uint32 ammoID = p_caster->GetUInt32Value(PLAYER_AMMO_ID);
                 if (ammoID)
                 {
-                    ItemPrototype * pProto = ItemPrototypeStorage.LookupEntry(ammoID);
+                    ItemPrototype* pProto = ItemPrototypeStorage.LookupEntry(ammoID);
                     if (pProto)
                     {
                         ammoDisplayID = pProto->DisplayInfoID;

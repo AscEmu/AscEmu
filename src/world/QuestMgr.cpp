@@ -1991,7 +1991,7 @@ void QuestMgr::LoadExtraQuestStuff()
             }
         }
 
-        for (int i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < 4; ++i)
         {
             if (qst->required_mob[i] != 0)
             {
@@ -2037,11 +2037,11 @@ void QuestMgr::LoadExtraQuestStuff()
                 qst->count_requiredquests++;
         }
 
-        for (int i = 0; i < MAX_REQUIRED_QUEST_ITEM; i++)
+        for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; i++)
             if (qst->required_item[i] != 0)
                 qst->count_required_item++;
 
-        for (int i = 0; i < 6; ++i)
+        for (uint8 i = 0; i < 6; ++i)
         {
             if (qst->reward_choiceitem[i])
                 qst->count_reward_choiceitem++;

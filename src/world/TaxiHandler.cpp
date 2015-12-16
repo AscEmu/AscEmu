@@ -114,7 +114,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     data.Initialize(SMSG_SHOWTAXINODES);
     data << uint32(1) << guid;
     data << uint32(curloc);
-    for (int i = 0; i < 12; i++)
+    for (uint8 i = 0; i < 12; i++)
     {
         data << TaxiMask[i];
     }

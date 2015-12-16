@@ -47,7 +47,7 @@ class FireNova : public Spell
                 5926, 7412, 7413, 15486, 31171, 31172
                 };
                 Unit* totem;
-                for (int i = 0; i < 32; i++)
+                for (uint8 i = 0; i < 32; i++)
                 {
                     totem = u_caster->summonhandler.GetSummonWithEntry(totem_ids[i]);   // Get possible firetotem
                     if (totem != NULL)

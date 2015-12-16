@@ -54,7 +54,6 @@ Container::~Container()
 }
 void Container::LoadFromDB(Field* fields)
 {
-
     uint32 itemid = fields[2].GetUInt32();
     m_itemProto = ItemPrototypeStorage.LookupEntry(itemid);
 
@@ -81,7 +80,6 @@ void Container::LoadFromDB(Field* fields)
 
 void Container::Create(uint32 itemid, Player* owner)
 {
-
     m_itemProto = ItemPrototypeStorage.LookupEntry(itemid);
     ARCEMU_ASSERT(m_itemProto != NULL);
 

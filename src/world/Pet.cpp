@@ -1144,7 +1144,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
                 if (sp->NameHash == itr->first->NameHash)
                 {
                     // replace the action bar
-                    for (int i = 0; i < 10; ++i)
+                    for (uint8 i = 0; i < 10; ++i)
                     {
                         if (ActionBar[i] == itr->first->Id)
                         {
@@ -1176,7 +1176,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
         if (!ab_replace)
         {
             bool has = false;
-            for (int i = 0; i < 10; ++i)
+            for (uint8 i = 0; i < 10; ++i)
             {
                 if (ActionBar[i] == sp->Id)
                 {
@@ -1187,7 +1187,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
 
             if (!has)
             {
-                for (int i = 0; i < 10; ++i)
+                for (uint8 i = 0; i < 10; ++i)
                 {
                     if (ActionBar[i] == 0)
                     {
@@ -2109,7 +2109,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         if (spl != NULL)
         {
 
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
             {
                 if (spl->GetProto()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {

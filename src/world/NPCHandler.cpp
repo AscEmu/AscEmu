@@ -552,7 +552,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
             }
             data << pGossip->Texts[i].Lang;
 
-            for (int e = 0; e < GOSSIP_EMOTE_COUNT; e++)
+            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
             {
                 data << uint32(pGossip->Texts[i].Emotes[e].Delay);
                 data << uint32(pGossip->Texts[i].Emotes[e].Emote);
@@ -568,7 +568,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
             data << _player->GetSession()->LocalizedWorldSrv(70);
             data << uint32(0x00);           // Language
 
-            for (int e = 0; e < GOSSIP_EMOTE_COUNT; e++)
+            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
             {
                 data << uint32(0x00);       // Emote delay
                 data << uint32(0x00);       // Emote
