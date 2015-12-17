@@ -193,16 +193,15 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     }
 
     Realm* realm = new Realm;
-
     realm->flags = 0;
     realm->Icon = 0;
     realm->TimeZone = 0;
     realm->Population = 0;
     realm->Lock = 0;
     realm->GameBuild = 0;
-
     realm->Name = Name;
     realm->flags = 0;
+
     recvData >> realm->Address;
     recvData >> realm->flags;
     recvData >> realm->Icon;
@@ -210,12 +209,6 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     recvData >> realm->Population;
     recvData >> realm->Lock;
     recvData >> realm->GameBuild;
-
-    sLog.outString("TEST FLAGS %u", realm->flags);
-
-
-    //    uint32 my_id = sInfoCore.GenerateRealmID();
-    //    sLog.outString("Registering realm `%s` under ID %u.", realm->Name.c_str(), my_id);
 
     // Add to the main realm list
     sInfoCore.AddRealm(my_id, realm);
@@ -238,6 +231,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
 {
     uint32 request_id;
     std::string account_name;
+
     recvData >> request_id;
     recvData >> account_name;
 
@@ -251,6 +245,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
     WorldPacket data(LRSMSG_ACC_SESSION_RESULT, 150);
     data << request_id;
     data << error;
+
     if (!error)
     {
         // Append account information.
