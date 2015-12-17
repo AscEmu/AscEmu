@@ -184,16 +184,16 @@ class AlteracValley : public CBattleground
         void EventUpdateResources();
         bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
 
-        /* AV Functions */
+        // AV Functions
         void AddReinforcements(uint32 teamId, uint32 amt);
         void RemoveReinforcements(uint32 teamId, uint32 amt);
         void Finish(uint32 losingTeam);
 
-        /* looooooot */
+        // loot
         bool SupportsPlayerLoot() { return true; }
         void HookGenerateLoot(Player* plr, Object* pCorpse);
 
-        /* herald */
+        // herald
         void Herald(const char* format, ...);
 
         void HookOnFlagDrop(Player* plr);

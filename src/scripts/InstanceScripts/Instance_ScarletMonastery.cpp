@@ -388,16 +388,8 @@ class MograineAI : public CreatureAIScript
         {
             Timer = Timer + 1;
 
-            /*if (Timer == 30000000000)
-            {
-            _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
-            }
-
-            else
-            {*/
             float val = RandomFloat(100.0f);
             SpellCast(val);
-            //}
         }
 
         void SpellCast(float val)
@@ -536,19 +528,10 @@ class WhitemaneAI : public CreatureAIScript
             // Set phase var
             mPhase = 1;
 
-            // Play sound, and send text.
-            /*_unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Light, give me strength!");
-                   ^^ Notes for myself */
             _unit->SendScriptTextChatMessage(2106);
-            //MoveToRes();
             CastSleep();
             CastRes();
         }
-
-        /*void MoveToRes()
-        {
-        _unit->GetAIInterface ()->MoveTo(1154.859009,1403.924683,32.250183,3.466254);
-        }*/
 
         void CastSleep()
         {
@@ -578,16 +561,9 @@ class WhitemaneAI : public CreatureAIScript
         {
             Timer = Timer + 1;
 
-            /*if (Timer == 30000000000)
-            {
-            //_unit->CastSpell(_unit, spells[1].info, spells[1].instant);
-            }
-
-            else
-            {*/
             float val = RandomFloat(100.0f);
             SpellCast(val);
-            //}
+
         }
 
         void SpellCast(float val)

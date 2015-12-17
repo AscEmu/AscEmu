@@ -951,23 +951,6 @@ class MechanarTinkererAI : public CreatureAIScript
 
         void AIUpdate()
         {
-            /*    // not working yet, I must found out why you can't loot after death (hmm, sth is wrong? :P)
-            if (_unit->GetHealthPct() < 15 && _unit->GetAIInterface()->GetNextTarget())
-            {
-            uint32 val = sRand.rand(100);
-            if (val > 0 && val < 20)
-            {
-            _unit->SetUInt32Value(UNIT_FIELD_HEALTH, 0);
-            _unit->setDeathState(JUST_DIED);
-            _unit->GetAIInterface()->HandleEvent(EVENT_UNITDIED, _unit, 0);
-            //_unit->setDeathState(DEATH);
-            //CALL_SCRIPT_EVENT(m_Unit, OnDied)(_unit);
-            //_unit->GetAIInterface()->HandleEvent(EVENT_UNITDIED, _unit, misc1);    //, uint32 misc1
-            //CastTime();
-            //RemoveAIUpdateEvent();
-            }
-            }
-            */
             float val = RandomFloat(100.0f);
             SpellCast(val);
         }
@@ -2457,14 +2440,7 @@ class NethermancerSepethreaAI : public CreatureAIScript
             spells[3].cooldown = -1;
             spells[3].perctrigger = 8.0f;
             spells[3].attackstoptimer = 1000;
-            /*
-                    spells[4].info = dbcSpell.LookupEntry(KNOCKBAC);
-                    spells[4].targettype = TARGET_ATTACKING;
-                    spells[4].instant = true;
-                    spells[4].cooldown = -1;
-                    spells[4].perctrigger = 2.0f;
-                    spells[4].attackstoptimer = 1000;
-                    */
+
         }
 
         void OnCombatStart(Unit* mTarget)

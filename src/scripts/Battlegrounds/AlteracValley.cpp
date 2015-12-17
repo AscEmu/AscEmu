@@ -1547,7 +1547,7 @@ void AlteracValley::HookOnAreaTrigger(Player* plr, uint32 trigger)
 
 bool AlteracValley::HookHandleRepop(Player* plr)
 {
-    uint32 x;
+
     float dist = 999999.0f;
     float dt;
     LocationVector dest_pos;
@@ -1558,7 +1558,7 @@ bool AlteracValley::HookHandleRepop(Player* plr)
 
     if (m_started)
     {
-        for (x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
+        for (uint8 x = 0; x < AV_NUM_CONTROL_POINTS; ++x)
         {
             // skip non-graveyards
             if (!m_nodes[x]->m_template->m_isGraveyard)
@@ -1629,7 +1629,7 @@ void AlteracValley::OnCreate()
 
 void AlteracValley::OnStart()
 {
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -1644,7 +1644,6 @@ void AlteracValley::OnStart()
         (*itr)->SetState(GAMEOBJECT_STATE_OPEN);
     }
 
-    /* correct? - burlex */
     PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
 
     m_started = true;
@@ -1776,33 +1775,6 @@ void AlteracValley::HookOnUnitKill(Player* plr, Unit* pVictim)
             HonorHandler::AddHonorPointsToPlayer(plr2, AV_HONOR_ON_KILL_BOSS);
         }
     }
-    /*else if(pVictim->GetEntry() == AV_NPC_TASKMASTER_SNIVVLE)
-    {
-        sm.UpdateWorldState(WORLDSTATE_AV_COLDTOOTH_MINE_KOBOLD_CONTROLLED, 0);
-        sm.UpdateWorldState(WORLDSTATE_AV_COLDTOOTH_MINE_ALLIANCE_CONTROLLED + plr->GetTeam(), 1);
-
-        Creature *toDespawn;
-        for(uint32 i = 0; i < AV_NUM_COLDTOOTH_UNITS; ++i)
-        {
-            if( m_coldToothUnits[i] != 0 && (toDespawn = m_mapMgr->GetCreature(m_coldToothUnits[i])) != NULL )
-                toDespawn->Despawn(0, 0);
-        }
-
-        m_mineControl[ plr->GetTeam() ]++;
-    }
-    else if(pVictim->GetEntry() == AV_NPC_MORLOCH)
-    {
-        sm.UpdateWorldState(WORLDSTATE_AV_IRONDEEP_MINE_TROGG_CONTROLLED, 0);
-        sm.UpdateWorldState(WORLDSTATE_AV_IRONDEEP_MINE_ALLIANCE_CONTROLLED + plr->GetTeam(), 1);
-
-        m_mineControl[ plr->GetTeam() ]++;
-        Creature *toDespawn;
-        for(uint32 i = 0; i < AV_NUM_IRONDEEP_UNITS; ++i)
-        {
-            if( m_ironDeepUnits[i] != 0 && (toDespawn = m_mapMgr->GetCreature(m_ironDeepUnits[i])) != NULL )
-                toDespawn->Despawn(0, 0);
-        }
-    }*/
 }
 
 void AlteracValley::Finish(uint32 losingTeam)

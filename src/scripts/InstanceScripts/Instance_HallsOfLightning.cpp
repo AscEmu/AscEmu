@@ -312,12 +312,6 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
 };
 
 
-/*static Location MoltenGolemCoords[]=
-{
-{ 1335.296265f, -89.237503f, 56.717800f, 1.994538f },
-{ 1340.615234f, -89.083313f, 56.717800f, 0.028982f },
-};*/
-
 // Main Spells
 #define SPELL_HEAT                  HeroicInt(52237, 59529)
 #define SPELL_SHATTERING_STOMP      HeroicInt(52237, 59529)

@@ -21,10 +21,6 @@
 
 #include "Setup.h"
 
-/************************************************************************/
-/* Raid_GruulsLair.cpp Script                                            */
-/************************************************************************/
-
 #define CN_LAIR_BRUTE                19389
 #define LAIR_BRUTE_MORTALSTRIKE        39171
 #define LAIR_BRUTE_CLEAVE            39174

@@ -109,7 +109,7 @@ class ArathiBasin : public CBattleground
         void EventUpdateResources(uint32 Team);
         bool HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell);
 
-        /* AB Game Mechanics */
+        // AB Game Mechanics
         void SpawnControlPoint(uint32 Id, uint32 Type);
         void CaptureControlPoint(uint32 Id, uint32 Team);
         void AssaultControlPoint(Player* pPlayer, uint32 Id);

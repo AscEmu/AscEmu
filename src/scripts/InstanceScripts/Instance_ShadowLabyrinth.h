@@ -95,8 +95,7 @@ enum CreatureSpells
     // CabalZealotAI
     SP_CABAL_ZEALOT_SHADOW_BOLT             = 31618,    // no idea to this spell (added same as for warlock)
     SP_CABAL_ZEALOT_TRANSFROMATION          = 0,        // can't find correct id for now
-    /*turns into a mini-Magmadar at low health, cannot
-    cast but does extremely heavy melee damage.*/
+    //turns into a mini-Magmadar at low health, cannot cast but does extremely heavy melee damage.
 
     // CabalRitualistAI
     SP_CABAL_RITUALIST_GOUGE                = 36862,    // 36862 or 29425 or 34940 or 28456 (?)

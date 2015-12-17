@@ -102,7 +102,7 @@ class TrollgoreAI : public CreatureAIScript
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             invastion_timer = 0;
             spells.clear();
-            /* SPELLS INIT */
+
             ScriptSpell* Crush = new ScriptSpell;
             Crush->normal_spellid = 49639;
             Crush->heroic_spellid = 49639;
@@ -294,7 +294,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             invasion_timer = 0;
             handler_timer = 0;
             spells.clear();
-            /* SPELLS INIT */
+
             ScriptSpell* ArcaneBlast = new ScriptSpell;
             ArcaneBlast->normal_spellid = 49198;
             ArcaneBlast->heroic_spellid = 59909;
@@ -637,7 +637,7 @@ class CrystalHandlerAI : public CreatureAIScript
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
-            /* SPELLS INIT */
+
             ScriptSpell* FlashofDarkness = new ScriptSpell;
             FlashofDarkness->normal_spellid = 49668;
             FlashofDarkness->heroic_spellid = 59004;
@@ -775,7 +775,7 @@ class KingDreadAI : public CreatureAIScript
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
-            /* SPELLS INIT */
+
             ScriptSpell* BellowingRoar = new ScriptSpell;
             BellowingRoar->normal_spellid = 22686;
             BellowingRoar->heroic_spellid = 22686;
@@ -940,7 +940,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
             phase_timer = 0;
             phase_length = 0;
             phase = 0;
-            /* SPELLS INIT */
+
             ScriptSpell* CurseOfLife = new ScriptSpell;
             CurseOfLife->normal_spellid = 49527;
             CurseOfLife->heroic_spellid = 59972;

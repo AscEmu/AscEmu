@@ -42,9 +42,6 @@ class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
         void Destroy() { delete this; }
 };
 
-/*********************************************
-// Stormwind Harbor View Taxi Begin
-**********************************************/
 
 //This is when you talk to Thargold Ironwing...He will fly you through Stormwind Harbor to check it out.
 class SWHarborFlyAround : public Arcemu::Gossip::Script

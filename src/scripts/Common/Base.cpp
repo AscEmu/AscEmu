@@ -891,60 +891,6 @@ uint32 MoonScriptCreatureAI::GetAIUpdateFreq()
     return mAIUpdateFrequency;
 }
 
-/*
-void MoonScriptCreatureAI::AddLootToTable(LootTable* pTable, uint32 pItemID, uint32 pChance, uint32 pMinCount, uint32 pMaxCount, uint32 pFFA)
-{
-LootDesc loot;
-loot.mItemID = pItemID;
-loot.mChance = pChance;
-loot.mMinCount = pMinCount;
-loot.mMaxCount = pMaxCount;
-loot.mFFA = pFFA;
-pTable->push_back(loot);
-}
-
-void MoonScriptCreatureAI::ClearLoot(Unit* pTarget)
-{
-pTarget->ClearLoot();
-}
-
-void MoonScriptCreatureAI::AddLootFromTable(Unit* pTarget, LootTable* pTable, uint32 pCount)
-{
-uint32 total = 0;
-for (LootTable::iterator it = pTable->begin(); it != pTable->end(); ++it) total += (*it).mChance;
-for (uint32 count = 0; count < pCount; ++count)
-{
-uint32 result = RandomUInt(total);
-uint32 sum = 0;
-for (LootTable::iterator it = pTable->begin(); it != pTable->end(); ++it)
-{
-sum += (*it).mChance;
-if (result <= sum)
-{
-LootMgr::getSingleton().AddLoot(pTarget->loot(), (*it).mItemID, (*it).mMinCount, (*it).mMaxCount, (*it).mFFA);
-break;
-}
-}
-}
-}
-
-void MoonScriptCreatureAI::SetGoldLoot(Unit* pTarget, uint32 pMinGold, uint32 pMaxGold)
-{
-pTarget->GetLoot()->gold = RandomUInt(pMaxGold - pMinGold) + pMinGold;
-}
-
-void MoonScriptCreatureAI::AddLoot(Unit* pTarget, uint32 pItemID, uint32 pMinCount, uint32 pMaxCount, uint32 pFFA)
-{
-LootMgr::getSingleton().AddLoot(pTarget->GetLoot(), pItemID, pMinCount, pMaxCount, pFFA);
-}
-
-void MoonScriptCreatureAI::AddRareLoot(Unit* pTarget, uint32 pItemID, float pPercentChance)
-{
-float result = RandomFloat(100.0f);
-if (result <= pPercentChance)
-LootMgr::getSingleton().AddLoot(pTarget->GetLoot(), pItemID, 1, 1, 0);
-}*/
-
 WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Location pCoords)
 {
     WayPoint* wp = _unit->CreateWaypointStruct();

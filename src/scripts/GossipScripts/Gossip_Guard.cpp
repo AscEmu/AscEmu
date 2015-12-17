@@ -21,9 +21,6 @@
 #include "../world/Gossip.h"
 #include "Setup.h"
 
-/************************************************************************/
-/* GENERAL GUARD SCRIPT                                                 */
-/************************************************************************/
 
 // Covers *all* guard types, scripting their texts to guide players around.
 // Enable this define to make all gossip texts have a "back" / "I was looking
@@ -46,13 +43,11 @@
 
 #endif
 
-/************************************************************************/
-/* Stormwind CITY Guards                                                */
-/************************************************************************/
 
 class StormwindGuard : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
@@ -4449,13 +4444,11 @@ class AzureWatchGuard : public GossipScript
         }
 };
 
-/*****************************************************************************************/
-/* Shattrath Guards   original structure by AeThIs. Translated, updated and  by Pepsi1x1 */
-/*****************************************************************************************/
 
 class ShattrathGuard : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
@@ -5417,7 +5410,7 @@ class DalaranGuard : public GossipScript
 
 void SetupGuardGossip(ScriptMgr* mgr)
 {
-    /* Guard List */
+    // Guard List
     mgr->register_gossip_script(1423, new GoldshireGuard);              // Stormwind Guard
     mgr->register_gossip_script(68, new StormwindGuard);                // Stormwind City Guard
     mgr->register_gossip_script(1976, new StormwindGuard);              // Stormwind City Patroller
@@ -5478,5 +5471,4 @@ void SetupGuardGossip(ScriptMgr* mgr)
     mgr->register_gossip_script(32691, new DalaranGuard);
     mgr->register_gossip_script(32692, new DalaranGuard);
     mgr->register_gossip_script(32693, new DalaranGuard);
-
 }

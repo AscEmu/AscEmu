@@ -2192,19 +2192,6 @@ class ANZUAI : public CreatureAIScript
 
             spells[4].casttime = (uint32)time(NULL) + 60;
 
-            /*for (uint8 i = 0; i < 15; i++)
-            {
-            Unit* Bird = NULL;
-            Bird = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23132, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
-            if (Bird)
-            {
-            Unit* target = NULL;
-            target = FindTarget();
-            if (target)
-            _unit->GetAIInterface()->AttackReaction(target, 1, 0);
-            }
-            }*/
-
             Banished = true;
         }
 

@@ -156,7 +156,8 @@ void InnkeeperGossip::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, co
 void SetupInnkeepers(ScriptMgr* mgr)
 {
     Arcemu::Gossip::Script* gs = new InnkeeperGossip();
-    /* Innkeeper List */
+
+    // Innkeeper List
     mgr->register_creature_gossip(15174, gs);     //Calandrath
     mgr->register_creature_gossip(18251, gs);     //Caregiver Abidaar
     mgr->register_creature_gossip(16739, gs);     //Caregiver Breel
@@ -240,7 +241,4 @@ void SetupInnkeepers(ScriptMgr* mgr)
     mgr->register_creature_gossip(6806, gs);      //Tannok Frosthammer
     mgr->register_creature_gossip(25036, gs);     //Caregiver Inaara
 
-    //cleanup:
-    //added 36 new Innkeeper's ,81 working innkeeper's now :P
-    //removed Innkeeper Monica(she dos not have gossip option she is from Old Hillsbrad Foothills)
 }

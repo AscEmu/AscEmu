@@ -2670,36 +2670,6 @@ struct Location IceBlocks[] =    // Those are not blizzlike pos, because those b
     { 3571.978760f, -5209.633301f, 137.671906f, 3.514374f }
 };
 
-/*struct Spawns IceBlocks[]=    // Those are not blizzlike pos, because those blocks are spawned randomly
-{
-{  },
-{ 3580.986084f, -5241.330078f, 137.627304f, 3.006957f },
-{ 3562.967285f, -5257.952148f, 137.860916f, 2.468959f },
-{ 3569.620850f, -5276.108398f, 137.582733f, 2.480744f },
-
-{ 3535.933594f, -5294.710938f, 138.080002f, 1.823366f },
-{ 3522.235107f, -5286.610352f, 138.115601f, 1.532768f },
-{ 3503.184814f, -5296.418945f, 138.111252f, 1.222535f },
-
-{ 3473.002686f, -5277.641602f, 137.733414f, 0.680609f },
-{ 3472.302734f, -5255.734863f, 137.755569f, 0.331107f },
-{ 3458.193848f, -5241.013672f, 137.566147f, 0.111195f },
-
-{ 3467.574219f, -5200.617676f, 137.559662f, 5.860314f },
-{ 3479.394775f, -5178.301758f, 140.904312f, 5.405583f },
-{ 3507.219727f, -5180.725098f, 140.625473f, 4.431685f },
-
-{ 3542.516846f, -5184.699707f, 140.655182f, 4.470973f },
-{ 3559.013916f, -5183.916016f, 140.899689f, 4.644558f },
-{ 3559.006592f, -5183.923340f, 140.895554f, 3.952624f },
-
-{ 3551.420410f, -5283.535156f, 137.731903f, 2.009505f },
-{ 3489.055664f, -5278.863770f, 138.119934f, 0.884814f },
-{ 3463.324463f, -5221.530273f, 137.634888f, 6.084152f },
-{ 3518.371338f, -5172.666504f, 142.269135f, 4.694800f },
-{ 3571.978760f, -5209.633301f, 137.671906f, 3.514374f }
-};*/
-
 class FrostBreathTriggerAI : public CreatureAIScript
 {
     public:
@@ -3308,8 +3278,7 @@ class SapphironAI : public CreatureAIScript
 
         if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget() != NULL)
         {
-            std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-            /* If anyone wants to use this function, then leave this note!                                         */
+            std::vector<Unit*> TargetTable;
             for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && (*itr) != _unit && (*itr)->IsUnit())
@@ -4101,8 +4070,7 @@ class KelthuzadAI : public CreatureAIScript
 
         if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
         {
-            std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-            /* If anyone wants to use this function, then leave this note!                                         */
+            std::vector<Unit*> TargetTable;
             for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&

@@ -21,42 +21,20 @@
 
 enum CreatureEntry
 {
-    /* TRASH MOBS */
-    // Ragefire Shaman AI
+    // TRASH MOBS
     CN_RAGEFIRE_SHAMAN          = 11319,
-
-    // Ragefire Trogg AI
     CN_RAGEFIRE_TROGG           = 11318,
-
-    // Searing Blade Warlock AI
     CN_SEARING_BLADE_WARLOCK    = 11324,
-
-    // SearingBladeEnforcerAI
     CN_SEARING_BLADE_ENFORCER   = 11323,
-
-    // Blade Cultist AI
     CN_BLADE_CULTIST            = 11322,
-
-    // Molten Elemental AI
     CN_MOLTEN_ELEMENTAL         = 11321,
-
-    // Earthborer AI
     CN_EARTHBORER               = 11320,
-
-    // Zelmar
     CN_ZELMAR                   = 17830,
 
-    /* BOSSES */
-    // Oggleflint
+    // BOSSES
     CN_OGGLEFLINT               = 11517,
-
-    //Taragaman the Hungerer
     CN_TARAGAMAN                = 11520,
-
-    //Jergosh The Invoker
     CN_JERGOSH                  = 11518,
-
-    //Bazzalan
     CN_BAZZALAN                 = 11519
 };
 

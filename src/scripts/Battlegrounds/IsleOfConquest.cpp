@@ -316,7 +316,7 @@ IsleOfConquest::IsleOfConquest(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) 
 
     for (uint32 team = TEAM_ALLIANCE; team < MAX_PLAYER_TEAMS; team++)
     {
-        for (uint32 i = 0; i < 2; i++)
+        for (uint8 i = 0; i < 2; i++)
         {
             towergates[team][i] = NULL;
         }
@@ -329,7 +329,7 @@ IsleOfConquest::~IsleOfConquest()
 
     for (uint32 team = TEAM_ALLIANCE; team < MAX_PLAYER_TEAMS; team++)
     {
-        for (uint32 i = 0; i < 2; i++)
+        for (uint8 i = 0; i < 2; i++)
         {
             towergates[team][i] = NULL;
         }
@@ -350,45 +350,45 @@ void IsleOfConquest::OnCreate()
     SpawnGraveyard(IOC_GY_HORDE, TEAM_HORDE);
 
     // Spawn Teleporters
-    for (uint32 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         teleporter[i].teleporter = SpawnGameObject(IOC_TELEPORTER_A_IN, 628, iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3], 0, 1, 1.0f);
         teleporter[i].teleporter->PushToWorld(m_mapMgr);
     }
 
-    for (uint32 i = 3; i < 6; i++)
+    for (uint8 i = 3; i < 6; i++)
     {
         teleporter[i].teleporter = SpawnGameObject(IOC_TELEPORTER_A_OUT, 628, iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3], 0, 1, 1.0f);
         teleporter[i].teleporter->PushToWorld(m_mapMgr);
     }
 
-    for (uint32 i = 6; i < 9; i++)
+    for (uint8 i = 6; i < 9; i++)
     {
         teleporter[i].teleporter = SpawnGameObject(IOC_TELEPORTER_H_IN, 628, iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3], 0, 2, 1.0f);
         teleporter[i].teleporter->PushToWorld(m_mapMgr);
     }
 
-    for (uint32 i = 9; i < 12; i++)
+    for (uint8 i = 9; i < 12; i++)
     {
         teleporter[i].teleporter = SpawnGameObject(IOC_TELEPORTER_H_OUT, 628, iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3], 0, 2, 1.0f);
         teleporter[i].teleporter->PushToWorld(m_mapMgr);
     }
 
     // spawn teleporter effects
-    for (uint32 i = 0; i < 6; i++)
+    for (uint8 i = 0; i < 6; i++)
     {
         teleporter[i].effect = SpawnGameObject(TELEPORTER_EFFECT_A, 628, iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3], 0, 1, 1.0f);
         teleporter[i].effect->PushToWorld(m_mapMgr);
     }
 
-    for (uint32 i = 6; i < 12; i++)
+    for (uint8 i = 6; i < 12; i++)
     {
         teleporter[i].effect = SpawnGameObject(TELEPORTER_EFFECT_H, 628, iocTransporterLocation[i][0], iocTransporterLocation[i][1], iocTransporterLocation[i][2], iocTransporterLocation[i][3], 0, 1, 1.0f);
         teleporter[i].effect->PushToWorld(m_mapMgr);
     }
 
     // Spawn Alliance gates
-    for (uint32 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         gates[TEAM_ALLIANCE][i].gate = SpawnGameObject(allygateids[i], 628, allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3], 0, 1, 1.0f);
         gates[TEAM_ALLIANCE][i].gate->PushToWorld(m_mapMgr);
@@ -398,7 +398,7 @@ void IsleOfConquest::OnCreate()
     }
 
     //Spawn Horde gates
-    for (uint32 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         gates[TEAM_HORDE][i].gate = SpawnGameObject(hordegateids[i], 628, hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3], 0, 2, 1.0f);
         gates[TEAM_HORDE][i].gate->PushToWorld(m_mapMgr);
@@ -408,7 +408,7 @@ void IsleOfConquest::OnCreate()
     }
 
     //Spawn ally towergates
-    for (uint32 i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         towergates[TEAM_ALLIANCE][i] = SpawnGameObject(195436, AllyTowerGates[i], 0, 35, 1.0f);
         towergates[TEAM_ALLIANCE][i]->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE);
@@ -416,7 +416,7 @@ void IsleOfConquest::OnCreate()
     }
 
     //Spawn horde towergates
-    for (uint32 i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         towergates[TEAM_HORDE][i] = SpawnGameObject(195437, HordeTowerGates[i], 0, 35, 0.5f);
         towergates[TEAM_HORDE][i]->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE);
@@ -424,23 +424,23 @@ void IsleOfConquest::OnCreate()
     }
 
     //Spawn Alliance keep canons
-    for (uint32 i = 0; i < 12; i++)
+    for (uint8 i = 0; i < 12; i++)
         SpawnCreature(34944, AllyKeepCanons[i], 1);
 
     //Spawn Horde keep canons
-    for (uint32 i = 0; i < 13; i++)
+    for (uint8 i = 0; i < 13; i++)
         SpawnCreature(34944, HordeKeepCanons[i], 2);
 
     //Spawn Alliance Keep guards
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
         SpawnCreature(34919, AllyGuards[i], 1);
 
     //Spawn Horde Keep guards
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
         SpawnCreature(34918, HordeGuards[i], 2);
 
     // Flagpole
-    for (uint32 i = 0; i < IOC_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < IOC_NUM_CONTROL_POINTS; ++i)
     {
         controlpoint[i].pole = SpawnGameObject(IOC_FLAGPOLE, 628, ControlPointCoordinates[i][0], ControlPointCoordinates[i][1], ControlPointCoordinates[i][2], ControlPointCoordinates[i][3], 0, 35, 1.0f);
         controlpoint[i].pole->PushToWorld(m_mapMgr);
@@ -464,7 +464,7 @@ void IsleOfConquest::OnStart()
 
     m_started = true;
 
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player* >::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -479,9 +479,9 @@ void IsleOfConquest::OnStart()
 
 void IsleOfConquest::OpenGates()
 {
-    for (uint32 i = 0; i < MAX_PLAYER_TEAMS; i++)
+    for (uint8 i = 0; i < MAX_PLAYER_TEAMS; i++)
     {
-        for (uint32 j = 0; j < 3; j++)
+        for (uint8 j = 0; j < 3; j++)
         {
             gates[i][j].dyngate->SetState(0);
             gates[i][j].dyngate->RemoveFlags(GAMEOBJECT_FLAG_NONSELECTABLE);
@@ -490,7 +490,7 @@ void IsleOfConquest::OpenGates()
 
     for (uint32 team = TEAM_ALLIANCE; team < MAX_PLAYER_TEAMS; team++)
     {
-        for (uint32 i = 0; i < 2; i++)
+        for (uint8 i = 0; i < 2; i++)
         {
             towergates[team][i]->SetState(0);
             towergates[team][i]->RemoveFlags(GAMEOBJECT_FLAG_UNTARGETABLE);
@@ -503,9 +503,9 @@ void IsleOfConquest::OpenGates()
 
 void IsleOfConquest::CloseGates()
 {
-    for (uint32 i = 0; i < MAX_PLAYER_TEAMS; i++)
+    for (uint8 i = 0; i < MAX_PLAYER_TEAMS; i++)
     {
-        for (uint32 j = 0; j < 3; j++)
+        for (uint8 j = 0; j < 3; j++)
         {
             gates[i][j].dyngate->Despawn(0, 0);
             gates[i][j].dyngate = NULL;
@@ -804,7 +804,7 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
         if (c->GetVehicleComponent() != NULL)
         {
             // Was it a workshop vehicle?
-            for (uint32 i = 0; i < MAX_PLAYER_TEAMS; i++)
+            for (uint8 i = 0; i < MAX_PLAYER_TEAMS; i++)
             {
                 if ((workshopvehicle[i].c != NULL) && (c->GetGUID() == workshopvehicle[i].c->GetGUID()))
                 {
@@ -813,9 +813,9 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
                 }
             }
 
-            for (uint32 i = 0; i < MAX_PLAYER_TEAMS; i++)
+            for (uint8 i = 0; i < MAX_PLAYER_TEAMS; i++)
             {
-                for (uint32 j = 0; j < 4; j++)
+                for (uint8 j = 0; j < 4; j++)
                 {
                     if ((workshopdemolisher[i][j].c != NULL) && (c->GetGUID() == workshopdemolisher[i][j].c->GetGUID()))
                     {
@@ -826,9 +826,9 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
             }
 
             // Was it a dock vehicle?
-            for (uint32 i = 0; i < MAX_PLAYER_TEAMS; i++)
+            for (uint8 i = 0; i < MAX_PLAYER_TEAMS; i++)
             {
-                for (uint32 j = 0; j < 4; j++)
+                for (uint8 j = 0; j < 4; j++)
                 {
                     if ((dockvehicle[i][j].c != NULL) && (c->GetGUID() == dockvehicle[i][j].c->GetGUID()))
                     {
@@ -992,7 +992,7 @@ bool IsleOfConquest::HookHandleRepop(Player* plr)
     uint32 id = 0;
 
     // Let's find the closests GY
-    for (uint32 i = IOC_GY_DOCKS; i < IOC_NUM_GRAVEYARDS; i++)
+    for (uint8 i = IOC_GY_DOCKS; i < IOC_NUM_GRAVEYARDS; i++)
     {
         if (graveyards[i].owner == plr->GetTeam())
         {
@@ -1098,17 +1098,17 @@ void IsleOfConquest::EventDocksCaptured()
     switch (state)
     {
         case IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED:
-            for (uint32 i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 if (dockvehicle[TEAM_HORDE][i].IsCloseToBaseLocation() && dockvehicle[TEAM_HORDE][i].IsEmpty())
                     dockvehicle[TEAM_HORDE][i].Despawn();
 
-            for (uint32 i = 0; i < 2; i++)
+            for (uint8 i = 0; i < 2; i++)
             {
                 dockvehicle[TEAM_ALLIANCE][i].baselocation = DockVehicleLocations[i];
                 dockvehicle[TEAM_ALLIANCE][i].c = SpawnCreature(34802, DockVehicleLocations[i], 1);
             }
 
-            for (uint32 i = 2; i < 4; i++)
+            for (uint8 i = 2; i < 4; i++)
             {
                 dockvehicle[TEAM_ALLIANCE][i].baselocation = DockVehicleLocations[i];
                 dockvehicle[TEAM_ALLIANCE][i].c = SpawnCreature(34793, DockVehicleLocations[i], 1);
@@ -1116,17 +1116,17 @@ void IsleOfConquest::EventDocksCaptured()
             break;
 
         case IOC_SPAWN_TYPE_HORDE_CONTROLLED:
-            for (uint32 i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 if (dockvehicle[TEAM_ALLIANCE][i].IsCloseToBaseLocation() && dockvehicle[TEAM_ALLIANCE][i].IsEmpty())
                     dockvehicle[TEAM_ALLIANCE][i].Despawn();
 
-            for (uint32 i = 0; i < 2; i++)
+            for (uint8 i = 0; i < 2; i++)
             {
                 dockvehicle[TEAM_HORDE][i].baselocation = DockVehicleLocations[i];
                 dockvehicle[TEAM_HORDE][i].c = SpawnCreature(35273, DockVehicleLocations[i], 2);
             }
 
-            for (uint32 i = 2; i < 4; i++)
+            for (uint8 i = 2; i < 4; i++)
             {
                 dockvehicle[TEAM_HORDE][i].baselocation = DockVehicleLocations[i];
                 dockvehicle[TEAM_HORDE][i].c = SpawnCreature(34793, DockVehicleLocations[i], 2);
@@ -1150,13 +1150,13 @@ void IsleOfConquest::EventWorkshopCaptured()
             if (workshopvehicle[TEAM_HORDE].IsCloseToBaseLocation() && workshopvehicle[TEAM_HORDE].IsEmpty())
                 workshopvehicle[TEAM_HORDE].Despawn();
 
-            for (uint32 i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
             {
                 if (workshopdemolisher[TEAM_HORDE][i].IsCloseToBaseLocation() && workshopdemolisher[TEAM_HORDE][i].IsEmpty())
                     workshopdemolisher[TEAM_HORDE][i].Despawn();
             }
 
-            for (uint32 i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
             {
                 workshopdemolisher[TEAM_ALLIANCE][i].baselocation = DemolisherLocations[i];
                 workshopdemolisher[TEAM_ALLIANCE][i].c = SpawnCreature(34775, DemolisherLocations[i], 1);
@@ -1167,13 +1167,13 @@ void IsleOfConquest::EventWorkshopCaptured()
             if (workshopvehicle[TEAM_ALLIANCE].IsCloseToBaseLocation() && workshopvehicle[TEAM_ALLIANCE].IsEmpty())
                 workshopvehicle[TEAM_ALLIANCE].Despawn();
 
-            for (uint32 i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
             {
                 if (workshopdemolisher[TEAM_ALLIANCE][i].IsCloseToBaseLocation() && workshopdemolisher[TEAM_ALLIANCE][i].IsEmpty())
                     workshopdemolisher[TEAM_ALLIANCE][i].Despawn();
             }
 
-            for (uint32 i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
             {
                 workshopdemolisher[TEAM_HORDE][i].baselocation = DemolisherLocations[i];
                 workshopdemolisher[TEAM_HORDE][i].c = SpawnCreature(34775, DemolisherLocations[i], 2);
@@ -1189,7 +1189,7 @@ void IsleOfConquest::EventWorkshopCaptured()
 }
 
 void IsleOfConquest::EventAllianceKeepCaptured()
-{}
+{ }
 
 void IsleOfConquest::EventHordeKeepCaptured()
-{}
+{ }

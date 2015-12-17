@@ -32,30 +32,29 @@
 
 uint32 buffentries[3] = { 180380, 180362, 180146 };
 
-/* AB Battleground Data */
 
 static float GraveyardLocations[AB_NUM_CONTROL_POINTS][3] =
 {
-    { 1201.869507f, 1163.130615f, -56.285969f },                                                // STABLES
-    { 834.726379f, 784.978699f, -57.081944f },                                                    // FARM
-    { 1016.588318f, 955.184692f, -42.828693f },                                                    // BLACKSMITH
-    { 1211.523682f, 781.556946f, -82.709511f },                                                    // MINE
-    { 772.755676f, 1213.113770f, 15.797392f },                                                    // LUMBERMILL
+    { 1201.869507f, 1163.130615f, -56.285969f },        // STABLES
+    { 834.726379f, 784.978699f, -57.081944f },          // FARM
+    { 1016.588318f, 955.184692f, -42.828693f },         // BLACKSMITH
+    { 1211.523682f, 781.556946f, -82.709511f },         // MINE
+    { 772.755676f, 1213.113770f, 15.797392f },          // LUMBERMILL
 };
 
 static float NoBaseGYLocations[2][3] =
 {
-    { 1354.699951f, 1270.270020f, -11.129100f },                                                // ALLIANCE
-    { 713.710022f, 638.364014f, -10.599900f },                                                    // HORDE
+    { 1354.699951f, 1270.270020f, -11.129100f },        // ALLIANCE
+    { 713.710022f, 638.364014f, -10.599900f },          // HORDE
 };
 
 static const char* ControlPointNames[AB_NUM_CONTROL_POINTS] =
 {
-    "Stable",                                                                                    // STABLE
-    "Farm",                                                                                        // FARM
-    "Blacksmith",                                                                                // BLACKSMITH
-    "Mine",                                                                                        // MINE
-    "Lumber Mill",                                                                                // LUMBERMILL
+    "Stable",
+    "Farm",
+    "Blacksmith",
+    "Mine",
+    "Lumber Mill",
 };
 
 static uint32 ControlPointGoIds[AB_NUM_CONTROL_POINTS][AB_NUM_SPAWN_TYPES] =
@@ -70,56 +69,56 @@ static uint32 ControlPointGoIds[AB_NUM_CONTROL_POINTS][AB_NUM_SPAWN_TYPES] =
 
 static float ControlPointCoordinates[AB_NUM_CONTROL_POINTS][4] =
 {
-    { 1166.779541f, 1200.147583f, -56.701763f, -2.251474f },                                    // STABLE
-    { 806.2484741f, 874.2167358f, -55.9936981f, 0.8377580f },                                    // FARM
-    { 977.0503540f, 1046.5208740f, -44.8276138f, 0.5410520f },                                    // BLACKSMITH
-    { 1146.9224854f, 848.1899414f, -110.9200210f, 2.4260077f },                                    // MINE
-    { 856.141907f, 1148.902100f, 11.184692f, -2.303835f },                                        // LUMBERMILL
+    { 1166.779541f, 1200.147583f, -56.701763f, -2.251474f },            // STABLE
+    { 806.2484741f, 874.2167358f, -55.9936981f, 0.8377580f },           // FARM
+    { 977.0503540f, 1046.5208740f, -44.8276138f, 0.5410520f },          // BLACKSMITH
+    { 1146.9224854f, 848.1899414f, -110.9200210f, 2.4260077f },         // MINE
+    { 856.141907f, 1148.902100f, 11.184692f, -2.303835f },              // LUMBERMILL
 };
 
 static float ControlPointRotations[AB_NUM_CONTROL_POINTS][2] =
 {
-    { 0.9025853f, -0.4305111f },                                                                // STABLE
-    { 0.4067366f, 0.9135454f },                                                                    // FARM
-    { 0.2672384f, 0.9636304f },                                                                    // BLACKSMITH
-    { 0.9366722f, 0.3502073f },                                                                    // MINE
-    { 0.9135455f, -0.4067366f },                                                                // LUMBERMILL
+    { 0.9025853f, -0.4305111f },                                        // STABLE
+    { 0.4067366f, 0.9135454f },                                         // FARM
+    { 0.2672384f, 0.9636304f },                                         // BLACKSMITH
+    { 0.9366722f, 0.3502073f },                                         // MINE
+    { 0.9135455f, -0.4067366f },                                        // LUMBERMILL
 };
 
 static float BuffCoordinates[AB_NUM_CONTROL_POINTS][4] =
 {
-    { 1185.56616210938f, 1184.62854003906f, -56.3632850646973f, 2.30383467674255f },            // STABLE
-    { 990.113098144531f, 1008.73028564453f, -42.6032752990723f, 0.820304811000824f },            // FARM
-    { 816.906799f, 842.339844f, -56.538746f, 3.272740f },                                        // BLACKSMITH
-    { 808.846252441406f, 1185.41748046875f, 11.9216051101685f, -0.663225054740906f },            // MINE
-    { 1147.09057617188f, 816.836242675781f, -98.3989562988281f, -0.226892784237862f },            // LUMBERMILL
+    { 1185.56616210938f, 1184.62854003906f, -56.3632850646973f, 2.30383467674255f },        // STABLE
+    { 990.113098144531f, 1008.73028564453f, -42.6032752990723f, 0.820304811000824f },       // FARM
+    { 816.906799f, 842.339844f, -56.538746f, 3.272740f },                                   // BLACKSMITH
+    { 808.846252441406f, 1185.41748046875f, 11.9216051101685f, -0.663225054740906f },       // MINE
+    { 1147.09057617188f, 816.836242675781f, -98.3989562988281f, -0.226892784237862f },      // LUMBERMILL
 };
 
 static float BuffRotations[AB_NUM_CONTROL_POINTS][2] =
 {
-    { 0.913545489311218f, 0.406736612319946f },                                                    // STABLE
-    { 0.39874908328056f, 0.917060077190399f },                                                    // FARM
-    { 0.913545489311218f, 0.406736612319946f },                                                    // BLACKSMITH
-    { 0.325568109750748f, -0.945518612861633f },                                                // MINE
-    { 0.113203197717667f, -0.993571877479553f },                                                // LUMBERMILL
+    { 0.913545489311218f, 0.406736612319946f },                         // STABLE
+    { 0.39874908328056f, 0.917060077190399f },                          // FARM
+    { 0.913545489311218f, 0.406736612319946f },                         // BLACKSMITH
+    { 0.325568109750748f, -0.945518612861633f },                        // MINE
+    { 0.113203197717667f, -0.993571877479553f },                        // LUMBERMILL
 };
 
 static uint32 AssaultFields[AB_NUM_CONTROL_POINTS][2] =
 {
-    { WORLDSTATE_AB_CAPTURING_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURING_STABLES_HORDE },                                // STABLE
-    { WORLDSTATE_AB_CAPTURING_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURING_FARM_HORDE },                                    // FARM
-    { WORLDSTATE_AB_CAPTURING_BLACKSMITH_ALLIANCE, WORLDSTATE_AB_CAPTURING_BLACKSMITH_HORDE },                        // BLACKSMITH
-    { WORLDSTATE_AB_CAPTURING_GOLDMINE_ALLIANCE, WORLDSTATE_AB_CAPTURING_GOLDMINE_HORDE },                            // MINE
-    { WORLDSTATE_AB_CAPTURING_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURING_LUMBERMILL_HORDE },                        // LUMBERMILL
+    { WORLDSTATE_AB_CAPTURING_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURING_STABLES_HORDE },
+    { WORLDSTATE_AB_CAPTURING_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURING_FARM_HORDE },
+    { WORLDSTATE_AB_CAPTURING_BLACKSMITH_ALLIANCE, WORLDSTATE_AB_CAPTURING_BLACKSMITH_HORDE },
+    { WORLDSTATE_AB_CAPTURING_GOLDMINE_ALLIANCE, WORLDSTATE_AB_CAPTURING_GOLDMINE_HORDE },
+    { WORLDSTATE_AB_CAPTURING_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURING_LUMBERMILL_HORDE },
 };
 
 static uint32 OwnedFields[AB_NUM_CONTROL_POINTS][2] =
 {
-    { WORLDSTATE_AB_CAPTURED_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURED_STABLES_HORDE },                                // STABLE
-    { WORLDSTATE_AB_CAPTURED_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURED_FARM_HORDE },                                        // FARM
-    { WORLDSTATE_AB_CAPTURED_BLACKSMITH_ALLIANCE, WORLDSTATE_AB_CAPTURED_BLACKSMITH_HORDE },                            // BLACKSMITH
-    { WORLDSTATE_AB_CAPTURED_GOLDMINE_ALLIANCE, WORLDSTATE_AB_CAPTURED_GOLDMINE_HORDE },                                // MINE
-    { WORLDSTATE_AB_CAPTURED_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURED_LUMBERMILL_HORDE },                            // LUMBERMILL
+    { WORLDSTATE_AB_CAPTURED_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURED_STABLES_HORDE },
+    { WORLDSTATE_AB_CAPTURED_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURED_FARM_HORDE },
+    { WORLDSTATE_AB_CAPTURED_BLACKSMITH_ALLIANCE, WORLDSTATE_AB_CAPTURED_BLACKSMITH_HORDE },
+    { WORLDSTATE_AB_CAPTURED_GOLDMINE_ALLIANCE, WORLDSTATE_AB_CAPTURED_GOLDMINE_HORDE },
+    { WORLDSTATE_AB_CAPTURED_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURED_LUMBERMILL_HORDE },
 };
 
 static uint32 NeutralFields[AB_NUM_CONTROL_POINTS] =
@@ -154,7 +153,7 @@ static uint32 PointBonusPerUpdate[6] =
 static uint32 resourcesToGainBH = 260;
 static uint32 resourcesToGainBR = 160;
 
-/* End BG Data */
+// End BG Data
 
 void ArathiBasin::SpawnBuff(uint32 x)
 {
@@ -339,7 +338,7 @@ void ArathiBasin::OnCreate()
 
 void ArathiBasin::OnStart()
 {
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
@@ -354,7 +353,6 @@ void ArathiBasin::OnStart()
         (*itr)->SetState(GAMEOBJECT_STATE_OPEN);
     }
 
-    /* correct? - burlex */
     PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
 
     m_started = true;
@@ -362,9 +360,7 @@ void ArathiBasin::OnStart()
 
 ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
-    uint8 i;
-
-    for (i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         m_players[i].clear();
         m_pendPlayers[i].clear();
@@ -373,7 +369,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
     m_pvpData.clear();
     m_resurrectMap.clear();
 
-    for (i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         m_buffs[i] = nullptr;
         m_controlPointAuras[i] = nullptr;
@@ -384,7 +380,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
         m_basesLastOwnedBy[i] = -1;
     }
 
-    for (i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         m_resources[i] = 0;
         m_capturedBases[i] = 0;
@@ -395,7 +391,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
 
     m_lgroup = lgroup;
 
-    for (i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         DefFlag[i][0] = false;
         DefFlag[i][1] = true;
@@ -407,7 +403,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
 ArathiBasin::~ArathiBasin()
 {
     // gates are always spawned, so mapmgr will clean them up
-    for (uint32 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         // buffs may not be spawned, so delete them if they're not
         if (m_buffs[i] != nullptr)
@@ -667,12 +663,12 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
 
 bool ArathiBasin::HookHandleRepop(Player* plr)
 {
-    /* our uber leet ab graveyard handler */
+    // our uber leet ab graveyard handler
     LocationVector dest(NoBaseGYLocations[plr->m_bgTeam][0], NoBaseGYLocations[plr->m_bgTeam][1], NoBaseGYLocations[plr->m_bgTeam][2], 0.0f);
     float current_distance = 999999.0f;
     float dist;
 
-    for (uint32 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         if (m_basesOwnedBy[2] == static_cast<int32>(plr->m_bgTeam))
         {

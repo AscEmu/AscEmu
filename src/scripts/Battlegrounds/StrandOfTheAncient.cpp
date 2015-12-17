@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /***********************************************************************
+ /*
  Strand of the Ancients
  ======================
 
@@ -62,9 +62,7 @@
  * Also change so numbers are reused, once SOTA instance 1 is deleted, there is
  no reason why that instance id can't be reused. Also each BG needs it own
  unique numbering, instead of a shared pool.
-
-
- ************************************************************************/
+*/
 
 #include "StdAfx.h"
 #include "StrandOfTheAncient.h"
@@ -233,15 +231,13 @@ StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, ui
     RoundTime = 0;
     roundprogress = SOTA_ROUND_PREPARATION;
 
-    uint8 i;
-
-    for (i = 0; i < BUFF_COUNT; ++i)
+    for (uint8 i = 0; i < BUFF_COUNT; ++i)
         m_buffs[i] = NULL;
 
-    for (i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
         m_boats[i] = NULL;
 
-    for (i = 0; i < GATE_COUNT; ++i)
+    for (uint8 i = 0; i < GATE_COUNT; ++i)
     {
         m_gates[i] = NULL;
         m_gateSigils[i] = NULL;
@@ -324,7 +320,7 @@ bool StrandOfTheAncient::HookHandleRepop(Player* plr)
     uint32 id = 0;
 
     // Let's find the closests GY
-    for (uint32 i = SOTA_GY_EAST; i < NUM_SOTA_GRAVEYARDS; i++)
+    for (uint8 i = SOTA_GY_EAST; i < NUM_SOTA_GRAVEYARDS; i++)
     {
         if (graveyard[i].faction == plr->GetTeam())
         {
@@ -354,12 +350,10 @@ bool StrandOfTheAncient::HookHandleRepop(Player* plr)
 void StrandOfTheAncient::OnCreate()
 {
     {
-        uint8 i;
-
         BattleRound = 1;
         roundprogress = SOTA_ROUND_PREPARATION;
 
-        for (i = 0; i < 2; i++)
+        for (uint8 i = 0; i < 2; i++)
         {
             m_players[i].clear();
             m_pendPlayers[i].clear();
@@ -370,16 +364,16 @@ void StrandOfTheAncient::OnCreate()
         m_resurrectMap.clear();
 
         // Boats
-        for (i = 0; i < 4; i++)
+        for (uint8 i = 0; i < 4; i++)
         {
             m_boats[i] = m_mapMgr->CreateAndSpawnGameObject(20808, sotaBoats[i][0], sotaBoats[i][1], sotaBoats[i][2], sotaBoats[i][3], 1.0f);
             m_boats[i]->PushToWorld(m_mapMgr);
         }
 
-        /* Relic */
+        // Relic
         m_relic = m_mapMgr->CreateAndSpawnGameObject(GO_RELIC, sotaTitanRelic[0], sotaTitanRelic[1], sotaTitanRelic[2], sotaTitanRelic[3], 1.0f);
 
-        for (i = 0; i < GATE_COUNT; i++)
+        for (uint8 i = 0; i < GATE_COUNT; i++)
         {
             m_gates[i] = m_mapMgr->CreateAndSpawnGameObject(GateGOIds[i], sotaGates[i][0], sotaGates[i][1], sotaGates[i][2], sotaGates[i][3], 1.0f);
             m_gateSigils[i] = m_mapMgr->CreateAndSpawnGameObject(GateSigilGOIds[i], sotaGateSigils[i][0], sotaGateSigils[i][1], sotaGateSigils[i][2],
@@ -389,7 +383,7 @@ void StrandOfTheAncient::OnCreate()
         }
 
         // Spawn door for Chamber of Ancient Relics
-        m_endgate = m_mapMgr->CreateAndSpawnGameObject(GateGOIds[i], sotaChamberGate[0], sotaChamberGate[1], sotaChamberGate[2], sotaChamberGate[3], 1.0f);
+        //m_endgate = m_mapMgr->CreateAndSpawnGameObject(GateGOIds[i], sotaChamberGate[0], sotaChamberGate[1], sotaChamberGate[2], sotaChamberGate[3], 1.0f);
     }
 
     PrepareRound();
@@ -414,8 +408,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
 {
     if (victim->IsCreature())
     {
-
-        for (uint32 i = 0; i < SOTA_NUM_DEMOLISHERS; i++)
+        for (uint8 i = 0; i < SOTA_NUM_DEMOLISHERS; i++)
         {
             Creature *c = demolisher[i];
 
@@ -429,7 +422,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
             c->Despawn(1, 0);
         }
 
-        for (uint32 i = 0; i < SOTA_NUM_CANONS; i++)
+        for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
         {
             if (canon[i] == NULL)
                 continue;
@@ -525,7 +518,7 @@ void StrandOfTheAncient::PrepareRound()
         std::swap(Attackers, Defenders);
     }
 
-    for (uint32 i = 0; i < GATE_COUNT; i++)
+    for (uint8 i = 0; i < GATE_COUNT; i++)
     {
         m_gates[i]->Rebuild();
         m_gates[i]->SetFaction(TeamFactions[Defenders]);
@@ -536,17 +529,17 @@ void StrandOfTheAncient::PrepareRound()
 
     m_relic->SetFaction(TeamFactions[Attackers]);
 
-    for (uint32 i = 0; i < GATE_COUNT; i++)
+    for (uint8 i = 0; i < GATE_COUNT; i++)
         m_gateTransporters[i]->SetFaction(TeamFactions[Defenders]);
 
-    for (uint32 i = 0; i < SOTA_NUM_CANONS; i++)
+    for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
     {
         if (canon[i] != NULL)
             canon[i]->Despawn(0, 0);
         canon[i] = SpawnCreature(27894, CanonLocations[i], TeamFactions[Defenders]);
     }
 
-    for (uint32 i = 0; i < SOTA_NUM_DOCK_DEMOLISHERS; i++)
+    for (uint8 i = 0; i < SOTA_NUM_DOCK_DEMOLISHERS; i++)
     {
         Creature *c = demolisher[i];
         demolisher[i] = SpawnCreature(28781, DemolisherLocations[i], TeamFactions[Attackers]);
@@ -554,7 +547,7 @@ void StrandOfTheAncient::PrepareRound()
             c->Despawn(0, 0);
     }
 
-    for (uint32 i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; i++)
+    for (uint8 i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; i++)
     {
         if (demolisher[i] != NULL)
         {

@@ -604,14 +604,7 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
             spells[3].cooldown = 65;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
-            /*
-                    spells[4].info = dbcSpell.LookupEntry(PRAYER_OF_HEALING);
-                    spells[4].targettype = TARGET_VARIOUS;
-                    spells[4].instant = false;
-                    spells[4].cooldown = 15;
-                    spells[4].perctrigger = 0.0f;
-                    spells[4].attackstoptimer = 1000;
-                    */
+
         }
 
         void OnCombatStart(Unit* mTarget)

@@ -111,12 +111,6 @@ class ChronoLordAI : public CreatureAIScript
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            /*spells[2].info = dbcSpell.LookupEntry(MAGNETIC_PULL);
-            spells[2].targettype = TARGET_VARIOUS;
-            spells[2].instant = true;
-            spells[2].cooldown = 15;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;*/
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -253,12 +247,6 @@ class TemporusAI : public CreatureAIScript
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            /*spells[2].info = dbcSpell.LookupEntry(SPELL_REFLECTION);
-            spells[2].targettype = TARGET_VARIOUS;
-            spells[2].instant = true;
-            spells[2].cooldown = 15;
-            spells[2].perctrigger = 0.0f;
-            spells[2].attackstoptimer = 1000;*/
         }
 
         void OnCombatStart(Unit* mTarget)
