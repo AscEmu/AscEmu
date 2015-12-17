@@ -4061,8 +4061,9 @@ void ObjectMgr::LoadItemsetLink()
 
     QueryResult* result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM items_linked_itemsets;");
 
-    if (result != NULL)
+    if (result != nullptr)
     {
+        uint32 count = 0;
         do
         {
             Field* row = result->Fetch();
@@ -4071,13 +4072,20 @@ void ObjectMgr::LoadItemsetLink()
 
             itemset_entry = row[0].GetInt32();
             entry->itemset_bonus = row[1].GetUInt32();
-            Log.Notice("ObjectMgr", "loaded linked itemset %u for itemset %i", entry->itemset_bonus, itemset_entry);
+            //Log.Notice("ObjectMgr", "loaded linked itemset %u for itemset %i", entry->itemset_bonus, itemset_entry);
 
             mDefinedItemSets.insert(std::make_pair(itemset_entry, entry->itemset_bonus));
 
+            ++count;
 
         } while (result->NextRow());
         delete result;
+
+        Log.Success("ObjectMgr", "Loaded  %u linked itemsets...", count);
+    }
+    else
+    {
+        Log.Error("ObjectMgr", "Failed to load from items_linked_itemsets.");
     }
 }
 
