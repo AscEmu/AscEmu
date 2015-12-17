@@ -139,7 +139,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         FILE* f = fopen(file, "r");
 #endif
         char* buf;
-        int length;
+        uint32 length;
 
         if (!f)
         {
@@ -149,9 +149,11 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
 
         // get the length of the file
         fseek(f, 0, SEEK_END);
-        length = ftell(f);
-        if (length < 0)
+
+        if (ftell(f) <= 0)
             return false;
+        else
+            length = ftell(f);
 
         buf = new char[length + 1];
         fseek(f, 0, SEEK_SET);
