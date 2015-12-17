@@ -92,7 +92,6 @@ void LogonServer::Run(int argc, char** argv)
         sLog.SetFileLoggingLevel(file_log_level);
 
     sLog.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
-    Log.Success("System", "Initializing Random Number Generators...");
 
     Log.Success("Config", "Loading Config Files...");
     if (!Rehash())
@@ -101,9 +100,9 @@ void LogonServer::Run(int argc, char** argv)
         return;
     }
 
-    Log.Success("ThreadMgr", "Starting...");
     sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
 
+    Log.Success("ThreadMgr", "Starting...");
     ThreadPool.Startup();
 
     if (!StartDb())
@@ -172,14 +171,14 @@ void LogonServer::Run(int argc, char** argv)
         WritePidFile();
 
         uint32 loop_counter = 0;
-        //ThreadPool.Gobble();
+
         sLog.outString("Success! Ready for connections");
         while (mrunning.GetVal())
         {
-            if (!(++loop_counter % 20))     // 20 seconds
+            if (!(++loop_counter % 20))             // 20 seconds
                 CheckForDeadSockets();
 
-            if (!(loop_counter % 300))    // 5mins
+            if (!(loop_counter % 300))              // 5mins
                 ThreadPool.IntegrityCheck();
 
             if (!(loop_counter % 5))
