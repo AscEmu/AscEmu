@@ -18,12 +18,12 @@
  *
  */
 
-//////////////////////////////////////////////
-// Notes: .Execute is ASYNC! -
-// We should probably be using QueryBuffer for ASYNC and NONE-ASYNC queries to not lag the emu.
-// See: Player::_SavePetSpells for example of usage
-// updated: Tuesday, June 16th 2009 - Hasbro
-//////////////////////////////////////////////
+ //////////////////////////////////////////////
+ // Notes: .Execute is ASYNC! -
+ // We should probably be using QueryBuffer for ASYNC and NONE-ASYNC queries to not lag the emu.
+ // See: Player::_SavePetSpells for example of usage
+ // updated: Tuesday, June 16th 2009 - Hasbro
+ //////////////////////////////////////////////
 
 #include "DatabaseEnv.h"
 #include <string>
@@ -62,10 +62,10 @@ void Database::_Initialize()
 DatabaseConnection* Database::GetFreeConnection()
 {
     uint32 i = 0;
-    for(;;)
+    for (;;)
     {
-        DatabaseConnection* con = Connections[((i++) % mConnectionCount) ];
-        if(con->Busy.AttemptAcquire())
+        DatabaseConnection* con = Connections[((i++) % mConnectionCount)];
+        if (con->Busy.AttemptAcquire())
             return con;
     }
 
@@ -86,7 +86,7 @@ QueryResult* Database::Query(const char* QueryString, ...)
     QueryResult* qResult = NULL;
     DatabaseConnection* con = GetFreeConnection();
 
-    if(_SendQuery(con, sql, false))
+    if (_SendQuery(con, sql, false))
         qResult = _StoreQueryResult(con);
 
     con->Busy.Release();
@@ -136,7 +136,7 @@ QueryResult* Database::FQuery(const char* QueryString, DatabaseConnection* con)
 {
     // Send the query
     QueryResult* qResult = NULL;
-    if(_SendQuery(con, QueryString, false))
+    if (_SendQuery(con, QueryString, false))
         qResult = _StoreQueryResult(con);
 
     return qResult;
@@ -183,16 +183,16 @@ void QueryBuffer::AddQueryStr(const std::string & str)
 
 void Database::PerformQueryBuffer(QueryBuffer* b, DatabaseConnection* ccon)
 {
-    if(!b->queries.size())
+    if (!b->queries.size())
         return;
 
     DatabaseConnection* con = ccon;
-    if(ccon == NULL)
+    if (ccon == NULL)
         con = GetFreeConnection();
 
     _BeginTransaction(con);
 
-    for(std::vector<char*>::iterator itr = b->queries.begin(); itr != b->queries.end(); ++itr)
+    for (std::vector<char*>::iterator itr = b->queries.begin(); itr != b->queries.end(); ++itr)
     {
         _SendQuery(con, *itr, false);
         delete[](*itr);
@@ -200,7 +200,7 @@ void Database::PerformQueryBuffer(QueryBuffer* b, DatabaseConnection* ccon)
 
     _EndTransaction(con);
 
-    if(ccon == NULL)
+    if (ccon == NULL)
         con->Busy.Release();
 }
 // Use this when we do not have a result. ex: INSERT into SQL 1
@@ -213,7 +213,7 @@ bool Database::Execute(const char* QueryString, ...)
     vsnprintf(query, 16384, QueryString, vlist);
     va_end(vlist);
 
-    if(!ThreadRunning)
+    if (!ThreadRunning)
         return WaitExecuteNA(query);
 
     size_t len = strlen(query);
@@ -226,7 +226,7 @@ bool Database::Execute(const char* QueryString, ...)
 
 bool Database::ExecuteNA(const char* QueryString)
 {
-    if(!ThreadRunning)
+    if (!ThreadRunning)
         return WaitExecuteNA(QueryString);
 
     size_t len = strlen(QueryString);
@@ -267,36 +267,36 @@ bool Database::run()
     ThreadRunning = true;
     char* query = queries_queue.pop();
     DatabaseConnection* con = GetFreeConnection();
-    while(1)
+    while (1)
     {
 
-        if(query != NULL)
+        if (query != NULL)
         {
-            if(con == NULL)
+            if (con == NULL)
                 con = GetFreeConnection();
             _SendQuery(con, query, false);
             delete[] query;
         }
 
-        if(GetThreadState() == THREADSTATE_TERMINATE)
+        if (GetThreadState() == THREADSTATE_TERMINATE)
             break;
         query = queries_queue.pop();
 
-        if(query == NULL)
+        if (query == NULL)
         {
-            if(con != NULL)
+            if (con != NULL)
                 con->Busy.Release();
             con = NULL;
             Arcemu::Sleep(10);
         }
     }
 
-    if(con != NULL)
+    if (con != NULL)
         con->Busy.Release();
 
     // execute all the remaining queries
     query = queries_queue.pop();
-    while(query)
+    while (query)
     {
         con = GetFreeConnection();
         _SendQuery(con, query, false);
@@ -330,7 +330,7 @@ void AsyncQuery::AddQuery(const char* format, ...)
 void AsyncQuery::Perform()
 {
     DatabaseConnection* conn = db->GetFreeConnection();
-    for(std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
+    for (std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
         itr->result = db->FQuery(itr->query, conn);
 
     conn->Busy.Release();
@@ -342,9 +342,9 @@ void AsyncQuery::Perform()
 AsyncQuery::~AsyncQuery()
 {
     delete func;
-    for(std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
+    for (std::vector<AsyncQueryResult>::iterator itr = queries.begin(); itr != queries.end(); ++itr)
     {
-        if(itr->result)
+        if (itr->result)
             delete itr->result;
 
         delete[] itr->query;
@@ -354,27 +354,27 @@ AsyncQuery::~AsyncQuery()
 void Database::EndThreads()
 {
     //these 2 loops spin until theres nothing left
-    while(1)
+    while (1)
     {
         QueryBuffer* buf = query_buffer.pop();
-        if(buf == NULL)
+        if (buf == NULL)
             break;
         query_buffer.push(buf);
     }
-    while(1)
+    while (1)
     {
         char* buf = queries_queue.pop();
-        if(buf == NULL)
+        if (buf == NULL)
             break;
         queries_queue.push(buf);
     }
 
     SetThreadState(THREADSTATE_TERMINATE);
 
-    while(ThreadRunning || qt)
+    while (ThreadRunning || qt)
     {
         Arcemu::Sleep(100);
-        if(!ThreadRunning)
+        if (!ThreadRunning)
             break;
     }
 }
@@ -396,19 +396,19 @@ void Database::thread_proc_query()
     DatabaseConnection* con = GetFreeConnection();
 
     q = query_buffer.pop();
-    while(1)
+    while (1)
     {
-        if(q != NULL)
+        if (q != NULL)
         {
             PerformQueryBuffer(q, con);
             delete q;
         }
 
-        if(GetThreadState() == THREADSTATE_TERMINATE)
+        if (GetThreadState() == THREADSTATE_TERMINATE)
             break;
 
         q = query_buffer.pop();
-        if(q == NULL)
+        if (q == NULL)
             Arcemu::Sleep(10);
     }
 
@@ -416,7 +416,7 @@ void Database::thread_proc_query()
 
     // kill any queries
     q = query_buffer.pop();
-    while(q != NULL)
+    while (q != NULL)
     {
         PerformQueryBuffer(q, NULL);
         delete q;
@@ -440,7 +440,7 @@ void Database::QueueAsyncQuery(AsyncQuery* query)
 
 void Database::AddQueryBuffer(QueryBuffer* b)
 {
-    if(qt != NULL)
+    if (qt != NULL)
         query_buffer.push(b);
     else
     {
