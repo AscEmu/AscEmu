@@ -42,7 +42,7 @@ class PX238WinterWondervolt : public GameObjectAIScript
             if (!plr)
                 return;
 
-            if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26274))       /// aura given by the PX-238 Winter Wondervolt
+            if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26273))       /// aura given by the PX-238 Winter Wondervolt
             {
                 plr->CastSpell(plr, 26275, true);   /// Spell that change into random gnome dispalyid (respect male & female)
             }
