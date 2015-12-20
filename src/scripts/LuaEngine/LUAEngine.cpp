@@ -1106,34 +1106,34 @@ void LuaHookOnEnterWorld(Player* pPlayer)
 void LuaHookOnGuildJoin(Player* pPlayer, Guild* pGuild)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_JOIN].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_JOIN].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_JOIN);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_STRING(pGuild->GetGuildName());
-            sLuaMgr.ExecuteCall(3);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_JOIN].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_JOIN].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_JOIN);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PUSH_STRING(pGuild->GetGuildName());
+        sLuaMgr.ExecuteCall(3);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnDeath(Player* pPlayer)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_DEATH].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_DEATH].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_DEATH);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(2);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_DEATH].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_DEATH].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_DEATH);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.ExecuteCall(2);
+    }
     RELEASE_LOCK
 }
 
 bool LuaHookOnRepop(Player* pPlayer)
 {
     GET_LOCK
-        bool result = true;
+    bool result = true;
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_REPOP].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_REPOP].end(); ++itr)
     {
         sLuaMgr.BeginCall((*itr));
@@ -1150,42 +1150,42 @@ bool LuaHookOnRepop(Player* pPlayer)
         }
     }
     RELEASE_LOCK
-        return result;
+    return result;
 }
 
 void LuaHookOnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_EMOTE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_EMOTE].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_EMOTE);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PushUnit(pUnit);
-            sLuaMgr.PUSH_UINT(Emote);
-            sLuaMgr.ExecuteCall(4);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_EMOTE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_EMOTE].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_EMOTE);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PushUnit(pUnit);
+        sLuaMgr.PUSH_UINT(Emote);
+        sLuaMgr.ExecuteCall(4);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnEnterCombat(Player* pPlayer, Unit* pTarget)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_COMBAT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_COMBAT].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ENTER_COMBAT);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PushUnit(pTarget);
-            sLuaMgr.ExecuteCall(3);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_COMBAT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_COMBAT].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ENTER_COMBAT);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PushUnit(pTarget);
+        sLuaMgr.ExecuteCall(3);
+    }
     RELEASE_LOCK
 }
 
 bool LuaHookOnCastSpell(Player* pPlayer, SpellEntry* pSpell, Spell* spell)
 {
     GET_LOCK
-        bool result = true;
+    bool result = true;
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_CAST_SPELL].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_CAST_SPELL].end(); ++itr)
     {
         sLuaMgr.BeginCall((*itr));
@@ -1204,24 +1204,24 @@ bool LuaHookOnCastSpell(Player* pPlayer, SpellEntry* pSpell, Spell* spell)
         }
     }
     RELEASE_LOCK
-        return result;
+    return result;
 }
 
 void LuaHookOnTick()
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_TICK].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_TICK].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.ExecuteCall();
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_TICK].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_TICK].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.ExecuteCall();
+    }
     RELEASE_LOCK
 }
 
 bool LuaHookOnLogoutRequest(Player* pPlayer)
 {
     GET_LOCK
-        bool result = true;
+    bool result = true;
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST].end(); ++itr)
     {
         sLuaMgr.BeginCall((*itr));
@@ -1238,75 +1238,75 @@ bool LuaHookOnLogoutRequest(Player* pPlayer)
         }
     }
     RELEASE_LOCK
-        return result;
+    return result;
 }
 
 void LuaHookOnLogout(Player* pPlayer)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_LOGOUT);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(2);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_LOGOUT);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.ExecuteCall(2);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnQuestAccept(Player* pPlayer, Quest* pQuest, Object* pQuestGiver)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PUSH_UINT(pQuest->id);
+        if (!pQuestGiver)
         {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(pQuest->id);
-            if (!pQuestGiver)
-            {
-                sLuaMgr.PUSH_NIL();
-            }
-            else if (pQuestGiver->IsUnit())
-            {
-                sLuaMgr.PushUnit(pQuestGiver);
-            }
-            else if (pQuestGiver->IsGameObject())
-            {
-                sLuaMgr.PushGo(pQuestGiver);
-            }
-            else if (pQuestGiver->IsItem())
-            {
-                sLuaMgr.PushItem(pQuestGiver);
-            }
-            else
-            {
-                sLuaMgr.PUSH_NIL();
-            }
-            sLuaMgr.ExecuteCall(4);
+            sLuaMgr.PUSH_NIL();
         }
+        else if (pQuestGiver->IsUnit())
+        {
+            sLuaMgr.PushUnit(pQuestGiver);
+        }
+        else if (pQuestGiver->IsGameObject())
+        {
+            sLuaMgr.PushGo(pQuestGiver);
+        }
+        else if (pQuestGiver->IsItem())
+        {
+            sLuaMgr.PushItem(pQuestGiver);
+        }
+        else
+        {
+            sLuaMgr.PUSH_NIL();
+        }
+        sLuaMgr.ExecuteCall(4);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnZone(Player* pPlayer, uint32 Zone, uint32 oldZone)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ZONE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ZONE].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ZONE);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(Zone);
-            sLuaMgr.PUSH_UINT(oldZone);
-            sLuaMgr.ExecuteCall(4);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ZONE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ZONE].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ZONE);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PUSH_UINT(Zone);
+        sLuaMgr.PUSH_UINT(oldZone);
+        sLuaMgr.ExecuteCall(4);
+    }
     RELEASE_LOCK
 }
 
 bool LuaHookOnChat(Player* pPlayer, uint32 Type, uint32 Lang, const char* Message, const char* Misc)
 {
     GET_LOCK
-        bool result = true;
+    bool result = true;
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHAT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHAT].end(); ++itr)
     {
         sLuaMgr.BeginCall((*itr));
@@ -1327,190 +1327,190 @@ bool LuaHookOnChat(Player* pPlayer, uint32 Type, uint32 Lang, const char* Messag
         }
     }
     RELEASE_LOCK
-        return result;
+    return result;
 }
 
 void LuaHookOnLoot(Player* pPlayer, Unit* pTarget, uint32 Money, uint32 ItemId)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOOT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOOT].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_LOOT);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PushUnit(pTarget);
-            sLuaMgr.PUSH_UINT(Money);
-            sLuaMgr.PUSH_UINT(ItemId);
-            sLuaMgr.ExecuteCall(5);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOOT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOOT].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_LOOT);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PushUnit(pTarget);
+        sLuaMgr.PUSH_UINT(Money);
+        sLuaMgr.PUSH_UINT(ItemId);
+        sLuaMgr.ExecuteCall(5);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnGuildCreate(Player* pLeader, Guild* pGuild)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_CREATE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_CREATE].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_CREATE);
-            sLuaMgr.PushUnit(pLeader);
-            sLuaMgr.PUSH_STRING(pGuild->GetGuildName());
-            sLuaMgr.ExecuteCall(3);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_CREATE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_CREATE].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_CREATE);
+        sLuaMgr.PushUnit(pLeader);
+        sLuaMgr.PUSH_STRING(pGuild->GetGuildName());
+        sLuaMgr.ExecuteCall(3);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnEnterWorld2(Player* pPlayer)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_FULL_LOGIN].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_FULL_LOGIN].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_FULL_LOGIN);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(2);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_FULL_LOGIN].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_FULL_LOGIN].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_FULL_LOGIN);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.ExecuteCall(2);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnCharacterCreate(Player* pPlayer)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_CHARACTER_CREATE);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(2);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_CHARACTER_CREATE);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.ExecuteCall(2);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnQuestCancelled(Player* pPlayer, Quest* pQuest)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(pQuest->id);
-            sLuaMgr.ExecuteCall(3);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PUSH_UINT(pQuest->id);
+        sLuaMgr.ExecuteCall(3);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnQuestFinished(Player* pPlayer, Quest* pQuest, Object* pQuestGiver)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_FINISHED);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PUSH_UINT(pQuest->id);
+        if (!pQuestGiver)
         {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_FINISHED);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(pQuest->id);
-            if (!pQuestGiver)
-            {
-                sLuaMgr.PUSH_NIL();
-            }
-            else if (pQuestGiver->IsUnit())
-            {
-                sLuaMgr.PushUnit(pQuestGiver);
-            }
-            else if (pQuestGiver->IsGameObject())
-            {
-                sLuaMgr.PushGo(pQuestGiver);
-            }
-            else if (pQuestGiver->IsItem())
-            {
-                sLuaMgr.PushItem(pQuestGiver);
-            }
-            else
-            {
-                sLuaMgr.PUSH_NIL();
-            }
-            sLuaMgr.ExecuteCall(4);
+            sLuaMgr.PUSH_NIL();
         }
+        else if (pQuestGiver->IsUnit())
+        {
+            sLuaMgr.PushUnit(pQuestGiver);
+        }
+        else if (pQuestGiver->IsGameObject())
+        {
+            sLuaMgr.PushGo(pQuestGiver);
+        }
+        else if (pQuestGiver->IsItem())
+        {
+            sLuaMgr.PushItem(pQuestGiver);
+        }
+        else
+        {
+            sLuaMgr.PUSH_NIL();
+        }
+        sLuaMgr.ExecuteCall(4);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnHonorableKill(Player* pPlayer, Player* pKilled)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_HONORABLE_KILL].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_HONORABLE_KILL].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_HONORABLE_KILL);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PushUnit(pKilled);
-            sLuaMgr.ExecuteCall(3);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_HONORABLE_KILL].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_HONORABLE_KILL].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_HONORABLE_KILL);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PushUnit(pKilled);
+        sLuaMgr.ExecuteCall(3);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnArenaFinish(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool rated)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ARENA_FINISH].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ARENA_FINISH].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ARENA_FINISH);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_STRING(pTeam->m_name.c_str());
-            sLuaMgr.PUSH_BOOL(victory);
-            sLuaMgr.PUSH_BOOL(rated);
-            sLuaMgr.ExecuteCall(5);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ARENA_FINISH].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ARENA_FINISH].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ARENA_FINISH);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PUSH_STRING(pTeam->m_name.c_str());
+        sLuaMgr.PUSH_BOOL(victory);
+        sLuaMgr.PUSH_BOOL(rated);
+        sLuaMgr.ExecuteCall(5);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnObjectLoot(Player* pPlayer, Object* pTarget, uint32 Money, uint32 ItemId)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_OBJECTLOOT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_OBJECTLOOT].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_OBJECTLOOT);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PushUnit(pTarget);
-            sLuaMgr.PUSH_UINT(Money);
-            sLuaMgr.PUSH_UINT(ItemId);
-            sLuaMgr.ExecuteCall(5);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_OBJECTLOOT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_OBJECTLOOT].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_OBJECTLOOT);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PushUnit(pTarget);
+        sLuaMgr.PUSH_UINT(Money);
+        sLuaMgr.PUSH_UINT(ItemId);
+        sLuaMgr.ExecuteCall(5);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnAreaTrigger(Player* pPlayer, uint32 areaTrigger)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_AREATRIGGER].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_AREATRIGGER].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_AREATRIGGER);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(areaTrigger);
-            sLuaMgr.ExecuteCall(3);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_AREATRIGGER].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_AREATRIGGER].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_AREATRIGGER);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PUSH_UINT(areaTrigger);
+        sLuaMgr.ExecuteCall(3);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnPostLevelUp(Player* pPlayer)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_POST_LEVELUP].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_POST_LEVELUP].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_POST_LEVELUP);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(2);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_POST_LEVELUP].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_POST_LEVELUP].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_POST_LEVELUP);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.ExecuteCall(2);
+    }
     RELEASE_LOCK
 }
 
 bool LuaHookOnPreUnitDie(Unit* Killer, Unit* Victim)
 {
     GET_LOCK
-        bool result = true;
+    bool result = true;
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_PRE_DIE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_PRE_DIE].end(); ++itr)
     {
         sLuaMgr.BeginCall((*itr));
@@ -1528,55 +1528,55 @@ bool LuaHookOnPreUnitDie(Unit* Killer, Unit* Victim)
         }
     }
     RELEASE_LOCK
-        return result;
+    return result;
 }
 
 void LuaHookOnAdvanceSkillLine(Player* pPlayer, uint32 SkillLine, uint32 Current)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(SkillLine);
-            sLuaMgr.PUSH_UINT(Current);
-            sLuaMgr.ExecuteCall(4);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE);
+        sLuaMgr.PushUnit(pPlayer);
+        sLuaMgr.PUSH_UINT(SkillLine);
+        sLuaMgr.PUSH_UINT(Current);
+        sLuaMgr.ExecuteCall(4);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnDuelFinished(Player* pWinner, Player* pLoser)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_DUEL_FINISHED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_DUEL_FINISHED].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_DUEL_FINISHED);
-            sLuaMgr.PushUnit(pWinner);
-            sLuaMgr.PushUnit(pLoser);
-            sLuaMgr.ExecuteCall(3);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_DUEL_FINISHED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_DUEL_FINISHED].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_DUEL_FINISHED);
+        sLuaMgr.PushUnit(pWinner);
+        sLuaMgr.PushUnit(pLoser);
+        sLuaMgr.ExecuteCall(3);
+    }
     RELEASE_LOCK
 }
 
 void LuaHookOnAuraRemove(Aura* aura)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_AURA_REMOVE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_AURA_REMOVE].end(); ++itr)
-        {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_AURA_REMOVE);
-            sLuaMgr.PushAura(aura);
-            sLuaMgr.ExecuteCall(2);
-        }
+    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_AURA_REMOVE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_AURA_REMOVE].end(); ++itr)
+    {
+        sLuaMgr.BeginCall((*itr));
+        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_AURA_REMOVE);
+        sLuaMgr.PushAura(aura);
+        sLuaMgr.ExecuteCall(2);
+    }
     RELEASE_LOCK
 }
 
 bool LuaHookOnResurrect(Player* pPlayer)
 {
     GET_LOCK
-        bool result = true;
+    bool result = true;
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_RESURRECT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_RESURRECT].end(); ++itr)
     {
         sLuaMgr.BeginCall((*itr));
@@ -1593,598 +1593,601 @@ bool LuaHookOnResurrect(Player* pPlayer)
         }
     }
     RELEASE_LOCK
-        return result;
+    return result;
 }
 
 bool LuaOnDummySpell(uint32 effectIndex, Spell* pSpell)
 {
     GET_LOCK
-        sLuaMgr.BeginCall(m_luaDummySpells[pSpell->GetProto()->Id]);
+    sLuaMgr.BeginCall(m_luaDummySpells[pSpell->GetProto()->Id]);
     sLuaMgr.PUSH_UINT(effectIndex);
     sLuaMgr.PushSpell(pSpell);
     sLuaMgr.ExecuteCall(2);
     RELEASE_LOCK
-        return true;
+    return true;
 }
 
 class LuaCreature : public CreatureAIScript
 {
-public:
-    LuaCreature(Creature* creature) : CreatureAIScript(creature), m_binding(nullptr) {}
-    ~LuaCreature()
-    {}
-    inline void SetUnit(Creature* ncrc)
-    {
-        _unit = ncrc;
-    }
-    void OnCombatStart(Unit* mTarget)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+    public:
+
+        LuaCreature(Creature* creature) : CreatureAIScript(creature), m_binding(nullptr) {}
+        ~LuaCreature()
+        {}
+        inline void SetUnit(Creature* ncrc)
+        {
+            _unit = ncrc;
+        }
+        void OnCombatStart(Unit* mTarget)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_COMBAT]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_ENTER_COMBAT);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_ENTER_COMBAT);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
+            RELEASE_LOCK
+        }
 
-    void OnCombatStop(Unit* mTarget)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void OnCombatStop(Unit* mTarget)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LEAVE_COMBAT]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LEAVE_COMBAT);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LEAVE_COMBAT);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
+            RELEASE_LOCK
+        }
 
-    void OnTargetDied(Unit* mTarget)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void OnTargetDied(Unit* mTarget)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DIED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_DIED);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_DIED);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
+            RELEASE_LOCK
+        }
 
-    void OnDied(Unit* mKiller)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void OnDied(Unit* mKiller)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DIED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DIED);
-        sLuaMgr.PushUnit(mKiller);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DIED);
+            sLuaMgr.PushUnit(mKiller);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
-    void OnTargetParried(Unit* mTarget)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnTargetParried(Unit* mTarget)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_PARRIED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_PARRIED);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_PARRIED);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
-    void OnTargetDodged(Unit* mTarget)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnTargetDodged(Unit* mTarget)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DODGED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_DODGED);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_DODGED);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
-    void OnTargetBlocked(Unit* mTarget, int32 iAmount)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnTargetBlocked(Unit* mTarget, int32 iAmount)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_BLOCKED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_BLOCKED);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_INT(iAmount);
-        sLuaMgr.ExecuteCall(4);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_BLOCKED);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_INT(iAmount);
+            sLuaMgr.ExecuteCall(4);
 
-        RELEASE_LOCK
-    }
-    void OnTargetCritHit(Unit* mTarget, int32 fAmount)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnTargetCritHit(Unit* mTarget, int32 fAmount)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_CRIT_HIT]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_CRIT_HIT);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_INT(fAmount);
-        sLuaMgr.ExecuteCall(4);
-        RELEASE_LOCK
-    }
-    void OnParried(Unit* mTarget)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_CRIT_HIT);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_INT(fAmount);
+            sLuaMgr.ExecuteCall(4);
+            RELEASE_LOCK
+        }
+        void OnParried(Unit* mTarget)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_PARRY]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_PARRY);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_PARRY);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
-    void OnDodged(Unit* mTarget)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnDodged(Unit* mTarget)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DODGED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DODGED);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    }
-    void OnBlocked(Unit* mTarget, int32 iAmount)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DODGED);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        }
+        void OnBlocked(Unit* mTarget, int32 iAmount)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_BLOCKED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_BLOCKED);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_INT(iAmount);
-        sLuaMgr.ExecuteCall(4);
-        RELEASE_LOCK
-    }
-    void OnCritHit(Unit* mTarget, int32 fAmount)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_BLOCKED);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_INT(iAmount);
+            sLuaMgr.ExecuteCall(4);
+            RELEASE_LOCK
+        }
+        void OnCritHit(Unit* mTarget, int32 fAmount)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CRIT_HIT]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_CRIT_HIT);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_INT(fAmount);
-        sLuaMgr.ExecuteCall(4);
-        RELEASE_LOCK
-    }
-    void OnHit(Unit* mTarget, float fAmount)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_CRIT_HIT);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_INT(fAmount);
+            sLuaMgr.ExecuteCall(4);
+            RELEASE_LOCK
+        }
+        void OnHit(Unit* mTarget, float fAmount)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_HIT]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_HIT);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_FLOAT(fAmount);
-        sLuaMgr.ExecuteCall(4);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_HIT);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_FLOAT(fAmount);
+            sLuaMgr.ExecuteCall(4);
 
-        RELEASE_LOCK
-    }
-    void OnAssistTargetDied(Unit* mAssistTarget)
-    {
+            RELEASE_LOCK
+        }
+        void OnAssistTargetDied(Unit* mAssistTarget)
+        {
 
-        CHECK_BINDING_ACQUIRELOCK
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ASSIST_TARGET_DIED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_ASSIST_TARGET_DIED);
-        sLuaMgr.PushUnit(mAssistTarget);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_ASSIST_TARGET_DIED);
+            sLuaMgr.PushUnit(mAssistTarget);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
-    void OnFear(Unit* mFeared, uint32 iSpellId)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnFear(Unit* mFeared, uint32 iSpellId)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FEAR]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_FEAR);
-        sLuaMgr.PushUnit(mFeared);
-        sLuaMgr.PUSH_UINT(iSpellId);
-        sLuaMgr.ExecuteCall(4);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_FEAR);
+            sLuaMgr.PushUnit(mFeared);
+            sLuaMgr.PUSH_UINT(iSpellId);
+            sLuaMgr.ExecuteCall(4);
 
-        RELEASE_LOCK
-    }
-    void OnFlee(Unit* mFlee)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnFlee(Unit* mFlee)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FLEE]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_FLEE);
-        sLuaMgr.PushUnit(mFlee);
-        sLuaMgr.ExecuteCall(3);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_FLEE);
+            sLuaMgr.PushUnit(mFlee);
+            sLuaMgr.ExecuteCall(3);
 
-        RELEASE_LOCK
-    }
-    void OnCallForHelp()
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnCallForHelp()
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CALL_FOR_HELP]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_CALL_FOR_HELP);
-        sLuaMgr.ExecuteCall(2);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_CALL_FOR_HELP);
+            sLuaMgr.ExecuteCall(2);
 
-        RELEASE_LOCK
-    }
-    void OnLoad()
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnLoad()
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOAD]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LOAD);
-        sLuaMgr.ExecuteCall(2);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LOAD);
+            sLuaMgr.ExecuteCall(2);
 
-        RELEASE_LOCK
-            uint32 iid = _unit->GetInstanceID();
-        if (_unit->GetMapMgr() == nullptr || _unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
-        {
-            iid = 0;
+            RELEASE_LOCK
+                uint32 iid = _unit->GetInstanceID();
+            if (_unit->GetMapMgr() == nullptr || _unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_NULL)
+            {
+                iid = 0;
+            }
+            OnLoadInfo.push_back(_unit->GetMapId());
+            OnLoadInfo.push_back(iid);
+            OnLoadInfo.push_back(GET_LOWGUID_PART(_unit->GetGUID()));
         }
-        OnLoadInfo.push_back(_unit->GetMapId());
-        OnLoadInfo.push_back(iid);
-        OnLoadInfo.push_back(GET_LOWGUID_PART(_unit->GetGUID()));
-    }
-    void OnReachWP(uint32 iWaypointId, bool bForwards)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_REACH_WP]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_REACH_WP);
-        sLuaMgr.PUSH_UINT(iWaypointId);
-        sLuaMgr.PUSH_BOOL(bForwards);
-        sLuaMgr.ExecuteCall(4);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_REACH_WP);
+            sLuaMgr.PUSH_UINT(iWaypointId);
+            sLuaMgr.PUSH_BOOL(bForwards);
+            sLuaMgr.ExecuteCall(4);
 
-        RELEASE_LOCK
-    }
-    void OnLootTaken(Player* pPlayer, ItemPrototype* pItemPrototype)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnLootTaken(Player* pPlayer, ItemPrototype* pItemPrototype)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOOT_TAKEN]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LOOT_TAKEN);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(pItemPrototype->ItemId);
-        sLuaMgr.ExecuteCall(4);
-        RELEASE_LOCK
-    }
-    void AIUpdate()
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LOOT_TAKEN);
+            sLuaMgr.PushUnit(pPlayer);
+            sLuaMgr.PUSH_UINT(pItemPrototype->ItemId);
+            sLuaMgr.ExecuteCall(4);
+            RELEASE_LOCK
+        }
+        void AIUpdate()
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_AIUPDATE]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_AIUPDATE);
-        sLuaMgr.ExecuteCall(2);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_AIUPDATE);
+            sLuaMgr.ExecuteCall(2);
 
-        RELEASE_LOCK
-    }
-    void OnEmote(Player* pPlayer, EmoteType Emote)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnEmote(Player* pPlayer, EmoteType Emote)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EMOTE]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_EMOTE);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_INT((int32)Emote);
-        sLuaMgr.ExecuteCall(4);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_EMOTE);
+            sLuaMgr.PushUnit(pPlayer);
+            sLuaMgr.PUSH_INT((int32)Emote);
+            sLuaMgr.ExecuteCall(4);
 
-        RELEASE_LOCK
-    }
-    void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DAMAGE_TAKEN]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DAMAGE_TAKEN);
-        sLuaMgr.PushUnit(mAttacker);
-        sLuaMgr.PUSH_UINT(fAmount);
-        sLuaMgr.ExecuteCall(4);
-        RELEASE_LOCK
-    }
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DAMAGE_TAKEN);
+            sLuaMgr.PushUnit(mAttacker);
+            sLuaMgr.PUSH_UINT(fAmount);
+            sLuaMgr.ExecuteCall(4);
+            RELEASE_LOCK
+        }
 
-    void OnEnterVehicle()
-    {
-        CHECK_BINDING_ACQUIRELOCK;
+        void OnEnterVehicle()
+        {
+            CHECK_BINDING_ACQUIRELOCK;
 
-        sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_VEHICLE]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.ExecuteCall(1);
+            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_VEHICLE]);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.ExecuteCall(1);
 
-        RELEASE_LOCK;
-    }
+            RELEASE_LOCK;
+        }
 
-    void OnExitVehicle()
-    {
-        CHECK_BINDING_ACQUIRELOCK;
+        void OnExitVehicle()
+        {
+            CHECK_BINDING_ACQUIRELOCK;
 
-        sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EXIT_VEHICLE]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.ExecuteCall(1);
+            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EXIT_VEHICLE]);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.ExecuteCall(1);
 
-        RELEASE_LOCK;
-    }
+            RELEASE_LOCK;
+        }
 
-    void OnFirstPassengerEntered(Unit* passenger)
-    {
-        CHECK_BINDING_ACQUIRELOCK;
+        void OnFirstPassengerEntered(Unit* passenger)
+        {
+            CHECK_BINDING_ACQUIRELOCK;
 
-        sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PushUnit(passenger);
-        sLuaMgr.ExecuteCall(2);
+            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED]);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PushUnit(passenger);
+            sLuaMgr.ExecuteCall(2);
 
-        RELEASE_LOCK;
-    }
+            RELEASE_LOCK;
+        }
 
-    void OnVehicleFull()
-    {
-        CHECK_BINDING_ACQUIRELOCK;
+        void OnVehicleFull()
+        {
+            CHECK_BINDING_ACQUIRELOCK;
 
-        sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_VEHICLE_FULL]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.ExecuteCall(1);
+            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_VEHICLE_FULL]);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.ExecuteCall(1);
 
-        RELEASE_LOCK;
-    }
+            RELEASE_LOCK;
+        }
 
-    void OnLastPassengerLeft(Unit* passenger)
-    {
-        CHECK_BINDING_ACQUIRELOCK;
+        void OnLastPassengerLeft(Unit* passenger)
+        {
+            CHECK_BINDING_ACQUIRELOCK;
 
-        sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LAST_PASSENGER_LEFT]);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.PushUnit(passenger);
-        sLuaMgr.ExecuteCall(2);
+            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LAST_PASSENGER_LEFT]);
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.PushUnit(passenger);
+            sLuaMgr.ExecuteCall(2);
 
-        RELEASE_LOCK;
-    }
+            RELEASE_LOCK;
+        }
 
-    void StringFunctionCall(int fRef)
-    {
+        void StringFunctionCall(int fRef)
+        {
 
-        CHECK_BINDING_ACQUIRELOCK
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(fRef);
-        sLuaMgr.PushUnit(_unit);
-        sLuaMgr.ExecuteCall(1);
-        RELEASE_LOCK
-    }
-    void Destroy()
-    {
+            sLuaMgr.PushUnit(_unit);
+            sLuaMgr.ExecuteCall(1);
+            RELEASE_LOCK
+        }
+        void Destroy()
         {
-            typedef std::multimap<uint32, LuaCreature*> CMAP;
-            CMAP& cMap = sLuaMgr.getLuCreatureMap();
-            CMAP::iterator itr = cMap.find(_unit->GetEntry());
-            CMAP::iterator itend = cMap.upper_bound(_unit->GetEntry());
-            CMAP::iterator it;
-            for (; itr != cMap.end() && itr != itend;)
             {
-                it = itr++;
-                if (it->second != nullptr && it->second == this)
+                typedef std::multimap<uint32, LuaCreature*> CMAP;
+                CMAP& cMap = sLuaMgr.getLuCreatureMap();
+                CMAP::iterator itr = cMap.find(_unit->GetEntry());
+                CMAP::iterator itend = cMap.upper_bound(_unit->GetEntry());
+                CMAP::iterator it;
+                for (; itr != cMap.end() && itr != itend;)
                 {
-                    cMap.erase(it);
+                    it = itr++;
+                    if (it->second != nullptr && it->second == this)
+                    {
+                        cMap.erase(it);
+                    }
                 }
             }
-        }
-        {
-            //Function Ref clean up
-            std::map< uint64, std::set<int> >& objRefs = sLuaMgr.getObjectFunctionRefs();
-            std::map< uint64, std::set<int> >::iterator itr = objRefs.find(_unit->GetGUID());
-            if (itr != objRefs.end())
             {
-                std::set<int>& refs = itr->second;
-                for (std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
+                //Function Ref clean up
+                std::map< uint64, std::set<int> >& objRefs = sLuaMgr.getObjectFunctionRefs();
+                std::map< uint64, std::set<int> >::iterator itr = objRefs.find(_unit->GetGUID());
+                if (itr != objRefs.end())
                 {
-                    luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it));
-                    sEventMgr.RemoveEvents(_unit, (*it) + EVENT_LUA_CREATURE_EVENTS);
+                    std::set<int>& refs = itr->second;
+                    for (std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
+                    {
+                        luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it));
+                        sEventMgr.RemoveEvents(_unit, (*it) + EVENT_LUA_CREATURE_EVENTS);
+                    }
+                    refs.clear();
                 }
-                refs.clear();
             }
+            delete this;
         }
-        delete this;
-    }
-    LuaObjectBinding* m_binding;
+        LuaObjectBinding* m_binding;
 };
 
 class LuaGameObjectScript : public GameObjectAIScript
 {
-public:
-    LuaGameObjectScript(GameObject* go) : GameObjectAIScript(go), m_binding(nullptr) {}
-    ~LuaGameObjectScript() {}
-    inline GameObject* getGO()
-    {
-        return _gameobject;
-    }
-    void OnCreate()
-    {
-        CHECK_BINDING_ACQUIRELOCK
+    public:
+
+        LuaGameObjectScript(GameObject* go) : GameObjectAIScript(go), m_binding(nullptr) {}
+        ~LuaGameObjectScript() {}
+        inline GameObject* getGO()
+        {
+            return _gameobject;
+        }
+        void OnCreate()
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_CREATE]);
-        sLuaMgr.PushGo(_gameobject);
-        sLuaMgr.ExecuteCall(1);
+            sLuaMgr.PushGo(_gameobject);
+            sLuaMgr.ExecuteCall(1);
 
-        RELEASE_LOCK
-    }
-    void OnSpawn()
-    {
+            RELEASE_LOCK
+        }
+        void OnSpawn()
+        {
 
-        CHECK_BINDING_ACQUIRELOCK
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_SPAWN]);
-        sLuaMgr.PushGo(_gameobject);
-        sLuaMgr.ExecuteCall(1);
+            sLuaMgr.PushGo(_gameobject);
+            sLuaMgr.ExecuteCall(1);
 
-        RELEASE_LOCK
-    }
-    void OnDespawn()
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            RELEASE_LOCK
+        }
+        void OnDespawn()
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESPAWN]);
-        sLuaMgr.PushGo(_gameobject);
-        sLuaMgr.ExecuteCall(1);
-        RELEASE_LOCK
-    }
-    void OnLootTaken(Player* pLooter, ItemPrototype* pItemInfo)
-    {
+            sLuaMgr.PushGo(_gameobject);
+            sLuaMgr.ExecuteCall(1);
+            RELEASE_LOCK
+        }
+        void OnLootTaken(Player* pLooter, ItemPrototype* pItemInfo)
+        {
 
-        CHECK_BINDING_ACQUIRELOCK
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_LOOT_TAKEN]);
-        sLuaMgr.PushGo(_gameobject);
-        sLuaMgr.PUSH_UINT(GAMEOBJECT_EVENT_ON_LOOT_TAKEN);
-        sLuaMgr.PushUnit(pLooter);
-        sLuaMgr.PUSH_UINT(pItemInfo->ItemId);
-        sLuaMgr.ExecuteCall(4);
-        RELEASE_LOCK
-    }
-    void OnActivate(Player* pPlayer)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PushGo(_gameobject);
+            sLuaMgr.PUSH_UINT(GAMEOBJECT_EVENT_ON_LOOT_TAKEN);
+            sLuaMgr.PushUnit(pLooter);
+            sLuaMgr.PUSH_UINT(pItemInfo->ItemId);
+            sLuaMgr.ExecuteCall(4);
+            RELEASE_LOCK
+        }
+        void OnActivate(Player* pPlayer)
+        {
+            CHECK_BINDING_ACQUIRELOCK
 
             sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_USE]);
-        sLuaMgr.PushGo(_gameobject);
-        sLuaMgr.PUSH_UINT(GAMEOBJECT_EVENT_ON_USE);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    }
+            sLuaMgr.PushGo(_gameobject);
+            sLuaMgr.PUSH_UINT(GAMEOBJECT_EVENT_ON_USE);
+            sLuaMgr.PushUnit(pPlayer);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        }
 
-    void AIUpdate()
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void AIUpdate()
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_AIUPDATE]);
-        sLuaMgr.PushGo(_gameobject);
-        sLuaMgr.ExecuteCall(1);
-        RELEASE_LOCK
-    }
-
-    void OnDamaged(uint32 damage)
-    {
-        CHECK_BINDING_ACQUIRELOCK;
-        sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DAMAGED]);
-        sLuaMgr.PushGo(_gameobject);
-        sLuaMgr.PUSH_UINT(damage);
-        sLuaMgr.ExecuteCall(2);
-        RELEASE_LOCK;
-    }
-
-    void OnDestroyed()
-    {
-        CHECK_BINDING_ACQUIRELOCK;
-        sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESTROYED]);
-        sLuaMgr.PushGo(_gameobject);
-        sLuaMgr.ExecuteCall(1);
-        RELEASE_LOCK;
-    }
-
-    void Destroy()
-    {
-        typedef std::multimap<uint32, LuaGameObjectScript*> GMAP;
-        GMAP& gMap = sLuaMgr.getLuGameObjectMap();
-        GMAP::iterator itr = gMap.find(_gameobject->GetEntry());
-        GMAP::iterator itend = gMap.upper_bound(_gameobject->GetEntry());
-        GMAP::iterator it;
-        //uint64 guid = _gameobject->GetGUID(); Unused?
-        for (; itr != itend;)
-        {
-            it = itr++;
-            if (it->second != nullptr && it->second == this)
-            {
-                gMap.erase(it);
-            }
+            sLuaMgr.PushGo(_gameobject);
+            sLuaMgr.ExecuteCall(1);
+            RELEASE_LOCK
         }
 
-        std::map< uint64, std::set<int> >& objRefs = sLuaMgr.getObjectFunctionRefs();
-        std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->GetGUID());
-        std::set<int>::iterator it2;
-        if (itr2 != objRefs.end())
+        void OnDamaged(uint32 damage)
         {
-            std::set<int>& refs = itr2->second;
-            for (it2 = refs.begin(); it2 != refs.end(); ++it2)
-            {
-                luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it2));
-            }
-            refs.clear();
+            CHECK_BINDING_ACQUIRELOCK;
+            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DAMAGED]);
+            sLuaMgr.PushGo(_gameobject);
+            sLuaMgr.PUSH_UINT(damage);
+            sLuaMgr.ExecuteCall(2);
+            RELEASE_LOCK;
         }
-        delete this;
-    }
-    LuaObjectBinding* m_binding;
+
+        void OnDestroyed()
+        {
+            CHECK_BINDING_ACQUIRELOCK;
+            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESTROYED]);
+            sLuaMgr.PushGo(_gameobject);
+            sLuaMgr.ExecuteCall(1);
+            RELEASE_LOCK;
+        }
+
+        void Destroy()
+        {
+            typedef std::multimap<uint32, LuaGameObjectScript*> GMAP;
+            GMAP& gMap = sLuaMgr.getLuGameObjectMap();
+            GMAP::iterator itr = gMap.find(_gameobject->GetEntry());
+            GMAP::iterator itend = gMap.upper_bound(_gameobject->GetEntry());
+            GMAP::iterator it;
+            //uint64 guid = _gameobject->GetGUID(); Unused?
+            for (; itr != itend;)
+            {
+                it = itr++;
+                if (it->second != nullptr && it->second == this)
+                {
+                    gMap.erase(it);
+                }
+            }
+
+            std::map< uint64, std::set<int> >& objRefs = sLuaMgr.getObjectFunctionRefs();
+            std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->GetGUID());
+            std::set<int>::iterator it2;
+            if (itr2 != objRefs.end())
+            {
+                std::set<int>& refs = itr2->second;
+                for (it2 = refs.begin(); it2 != refs.end(); ++it2)
+                {
+                    luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it2));
+                }
+                refs.clear();
+            }
+            delete this;
+        }
+        LuaObjectBinding* m_binding;
 };
 
 class LuaGossip : public Arcemu::Gossip::Script
 {
-public:
-    LuaGossip() : Arcemu::Gossip::Script(), m_unit_gossip_binding(nullptr), m_item_gossip_binding(nullptr), m_go_gossip_binding(nullptr) {}
-    ~LuaGossip()
-    {
-        typedef std::unordered_map<uint32, LuaGossip*> MapType;
-        MapType gMap;
-        if (this->m_go_gossip_binding != nullptr)
-        {
-            gMap = g_luaMgr.getGameObjectGossipInterfaceMap();
-            for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
-            {
-                if (itr->second == this)
-                {
-                    gMap.erase(itr);
-                    break;
-                }
-            }
-        }
-        else if (this->m_unit_gossip_binding != nullptr)
-        {
-            gMap = g_luaMgr.getUnitGossipInterfaceMap();
-            for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
-            {
-                if (itr->second == this)
-                {
-                    gMap.erase(itr);
-                    break;
-                }
-            }
-        }
-        else if (this->m_item_gossip_binding != nullptr)
-        {
-            gMap = g_luaMgr.getItemGossipInterfaceMap();
-            for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
-            {
-                if (itr->second == this)
-                {
-                    gMap.erase(itr);
-                    break;
-                }
-            }
-        }
-    }
+    public:
 
-    void OnHello(Object* pObject, Player* plr)
-    {
-        GET_LOCK
+        LuaGossip() : Arcemu::Gossip::Script(), m_unit_gossip_binding(nullptr), m_item_gossip_binding(nullptr), m_go_gossip_binding(nullptr) {}
+        ~LuaGossip()
+        {
+            typedef std::unordered_map<uint32, LuaGossip*> MapType;
+            MapType gMap;
+            if (this->m_go_gossip_binding != nullptr)
+            {
+                gMap = g_luaMgr.getGameObjectGossipInterfaceMap();
+                for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
+                {
+                    if (itr->second == this)
+                    {
+                        gMap.erase(itr);
+                        break;
+                    }
+                }
+            }
+            else if (this->m_unit_gossip_binding != nullptr)
+            {
+                gMap = g_luaMgr.getUnitGossipInterfaceMap();
+                for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
+                {
+                    if (itr->second == this)
+                    {
+                        gMap.erase(itr);
+                        break;
+                    }
+                }
+            }
+            else if (this->m_item_gossip_binding != nullptr)
+            {
+                gMap = g_luaMgr.getItemGossipInterfaceMap();
+                for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
+                {
+                    if (itr->second == this)
+                    {
+                        gMap.erase(itr);
+                        break;
+                    }
+                }
+            }
+        }
+
+        void OnHello(Object* pObject, Player* plr)
+        {
+            GET_LOCK
             if (pObject->IsCreature())
             {
                 if (m_unit_gossip_binding == nullptr)
@@ -2228,11 +2231,11 @@ public:
                 sLuaMgr.ExecuteCall(3);
             }
             RELEASE_LOCK
-    }
+        }
 
-    void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
-    {
-        GET_LOCK
+        void OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
+        {
+            GET_LOCK
             if (pObject->IsCreature())
             {
                 if (m_unit_gossip_binding == nullptr)
@@ -2283,11 +2286,11 @@ public:
                 sLuaMgr.ExecuteCall(6);
             }
             RELEASE_LOCK
-    }
+        }
 
-    void OnEnd(Object* pObject, Player* Plr)
-    {
-        GET_LOCK
+        void OnEnd(Object* pObject, Player* Plr)
+        {
+            GET_LOCK
             if (pObject->IsCreature())
             {
                 if (m_unit_gossip_binding == nullptr)
@@ -2328,233 +2331,235 @@ public:
                 sLuaMgr.ExecuteCall(3);
             }
             RELEASE_LOCK
-    }
+        }
 
-    LuaObjectBinding* m_unit_gossip_binding;
-    LuaObjectBinding* m_item_gossip_binding;
-    LuaObjectBinding* m_go_gossip_binding;
+        LuaObjectBinding* m_unit_gossip_binding;
+        LuaObjectBinding* m_item_gossip_binding;
+        LuaObjectBinding* m_go_gossip_binding;
 };
 
 class LuaQuest : public QuestScript
 {
-public:
-    LuaQuest() : QuestScript()
-    {
-        m_binding = nullptr;
-    }
-    ~LuaQuest()
-    {
-        typedef std::unordered_map<uint32, LuaQuest*> QuestType;
-        QuestType qMap = g_luaMgr.getLuQuestMap();
-        for (QuestType::iterator itr = qMap.begin(); itr != qMap.end(); ++itr)
+    public:
+
+        LuaQuest() : QuestScript()
         {
-            if (itr->second == this)
+            m_binding = nullptr;
+        }
+        ~LuaQuest()
+        {
+            typedef std::unordered_map<uint32, LuaQuest*> QuestType;
+            QuestType qMap = g_luaMgr.getLuQuestMap();
+            for (QuestType::iterator itr = qMap.begin(); itr != qMap.end(); ++itr)
             {
-                qMap.erase(itr);
-                break;
+                if (itr->second == this)
+                {
+                    qMap.erase(itr);
+                    break;
+                }
             }
         }
-    }
 
-    void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
-    {
+        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+        {
 
-        CHECK_BINDING_ACQUIRELOCK
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_ACCEPT]);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-        sLuaMgr.ExecuteCall(2);
-        RELEASE_LOCK
-    }
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
+            sLuaMgr.ExecuteCall(2);
+            RELEASE_LOCK
+        }
 
-    void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
-    {
+        void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry)
+        {
 
-        CHECK_BINDING_ACQUIRELOCK
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_COMPLETE]);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-        sLuaMgr.ExecuteCall(2);
-        RELEASE_LOCK
-    }
-    void OnQuestCancel(Player* mTarget)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
+            sLuaMgr.ExecuteCall(2);
+            RELEASE_LOCK
+        }
+        void OnQuestCancel(Player* mTarget)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CANCEL]);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.ExecuteCall(1);
-        RELEASE_LOCK
-    }
-    void OnGameObjectActivate(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.ExecuteCall(1);
+            RELEASE_LOCK
+        }
+        void OnGameObjectActivate(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_GAMEOBJECT_ACTIVATE]);
-        sLuaMgr.PUSH_UINT(entry);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    }
-    void OnCreatureKill(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PUSH_UINT(entry);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        }
+        void OnCreatureKill(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CREATURE_KILL]);
-        sLuaMgr.PUSH_UINT(entry);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    }
-    void OnExploreArea(uint32 areaId, Player* mTarget, QuestLogEntry* qLogEntry)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PUSH_UINT(entry);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        }
+        void OnExploreArea(uint32 areaId, Player* mTarget, QuestLogEntry* qLogEntry)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_EXPLORE_AREA]);
-        sLuaMgr.PUSH_UINT(areaId);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    }
-    void OnPlayerItemPickup(uint32 itemId, uint32 totalCount, Player* mTarget, QuestLogEntry* qLogEntry)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+            sLuaMgr.PUSH_UINT(areaId);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        }
+        void OnPlayerItemPickup(uint32 itemId, uint32 totalCount, Player* mTarget, QuestLogEntry* qLogEntry)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_PLAYER_ITEMPICKUP]);
-        sLuaMgr.PUSH_UINT(itemId);
-        sLuaMgr.PUSH_UINT(totalCount);
-        sLuaMgr.PushUnit(mTarget);
-        sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-        sLuaMgr.ExecuteCall(4);
-        RELEASE_LOCK
-    }
-    LuaObjectBinding* m_binding;
+            sLuaMgr.PUSH_UINT(itemId);
+            sLuaMgr.PUSH_UINT(totalCount);
+            sLuaMgr.PushUnit(mTarget);
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
+            sLuaMgr.ExecuteCall(4);
+            RELEASE_LOCK
+        }
+        LuaObjectBinding* m_binding;
 };
 
 class LuaInstance : public InstanceScript
 {
-public:
-    LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()) {}
-    ~LuaInstance() {}
+    public:
 
-    // Player
-    void OnPlayerDeath(Player* pVictim, Unit* pKiller)
-    {
-        CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_DEATH]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.PushUnit(pVictim);
-        sLuaMgr.PushUnit(pKiller);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    };
+        LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()) {}
+        ~LuaInstance() {}
 
-    // Area and AreaTrigger
-    void OnPlayerEnter(Player* pPlayer)
-    {
-        CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_ENTER]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.ExecuteCall(2);
-        RELEASE_LOCK
-    };
-    void OnAreaTrigger(Player* pPlayer, uint32 uAreaId)
-    {
-        CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_AREA_TRIGGER]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(uAreaId);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    };
-    void OnZoneChange(Player* pPlayer, uint32 uNewZone, uint32 uOldZone)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        // Player
+        void OnPlayerDeath(Player* pVictim, Unit* pKiller)
+        {
+            CHECK_BINDING_ACQUIRELOCK
+                sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_DEATH]);
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.PushUnit(pVictim);
+            sLuaMgr.PushUnit(pKiller);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        };
+
+        // Area and AreaTrigger
+        void OnPlayerEnter(Player* pPlayer)
+        {
+            CHECK_BINDING_ACQUIRELOCK
+                sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_ENTER]);
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.PushUnit(pPlayer);
+            sLuaMgr.ExecuteCall(2);
+            RELEASE_LOCK
+        };
+        void OnAreaTrigger(Player* pPlayer, uint32 uAreaId)
+        {
+            CHECK_BINDING_ACQUIRELOCK
+                sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_AREA_TRIGGER]);
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.PushUnit(pPlayer);
+            sLuaMgr.PUSH_UINT(uAreaId);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        };
+        void OnZoneChange(Player* pPlayer, uint32 uNewZone, uint32 uOldZone)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_ZONE_CHANGE]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(uNewZone);
-        sLuaMgr.PUSH_UINT(uOldZone);
-        sLuaMgr.ExecuteCall(4);
-        RELEASE_LOCK
-    };
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.PushUnit(pPlayer);
+            sLuaMgr.PUSH_UINT(uNewZone);
+            sLuaMgr.PUSH_UINT(uOldZone);
+            sLuaMgr.ExecuteCall(4);
+            RELEASE_LOCK
+        };
 
-    // Creature / GameObject - part of it is simple reimplementation for easier use Creature / GO < --- > Script
-    void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        // Creature / GameObject - part of it is simple reimplementation for easier use Creature / GO < --- > Script
+        void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_DEATH]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.PushUnit(pVictim);
-        sLuaMgr.PushUnit(pKiller);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    };
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.PushUnit(pVictim);
+            sLuaMgr.PushUnit(pKiller);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        };
 
-    void OnCreaturePushToWorld(Creature* pCreature)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void OnCreaturePushToWorld(Creature* pCreature)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_PUSH]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.PushUnit(pCreature);
-        sLuaMgr.ExecuteCall(2);
-        RELEASE_LOCK
-    };
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.PushUnit(pCreature);
+            sLuaMgr.ExecuteCall(2);
+            RELEASE_LOCK
+        };
 
-    void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_ACTIVATE]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.PushGo(pGameObject);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.ExecuteCall(3);
-        RELEASE_LOCK
-    };
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.PushGo(pGameObject);
+            sLuaMgr.PushUnit(pPlayer);
+            sLuaMgr.ExecuteCall(3);
+            RELEASE_LOCK
+        };
 
-    void OnGameObjectPushToWorld(GameObject* pGameObject)
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void OnGameObjectPushToWorld(GameObject* pGameObject)
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_PUSH]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.PushGo(pGameObject);
-        sLuaMgr.ExecuteCall(2);
-        RELEASE_LOCK
-    };
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.PushGo(pGameObject);
+            sLuaMgr.ExecuteCall(2);
+            RELEASE_LOCK
+        };
 
-    // Standard virtual methods
-    void OnLoad()
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        // Standard virtual methods
+        void OnLoad()
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ONLOAD]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.ExecuteCall(1);
-        RELEASE_LOCK
-    };
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.ExecuteCall(1);
+            RELEASE_LOCK
+        };
 
-    void Destroy()
-    {
-        CHECK_BINDING_ACQUIRELOCK
+        void Destroy()
+        {
+            CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_DESTROY]);
-        sLuaMgr.PUSH_UINT(m_instanceId);
-        sLuaMgr.ExecuteCall(1);
-        RELEASE_LOCK
+            sLuaMgr.PUSH_UINT(m_instanceId);
+            sLuaMgr.ExecuteCall(1);
+            RELEASE_LOCK
 
             typedef std::unordered_map<uint32, LuaInstance*> IMAP;
-        IMAP& iMap = sLuaMgr.getLuInstanceMap();
-        for (IMAP::iterator itr = iMap.begin(); itr != iMap.end(); ++itr)
-        {
-            if (itr->second == this)
+            IMAP& iMap = sLuaMgr.getLuInstanceMap();
+            for (IMAP::iterator itr = iMap.begin(); itr != iMap.end(); ++itr)
             {
-                iMap.erase(itr);
-                break;
+                if (itr->second == this)
+                {
+                    iMap.erase(itr);
+                    break;
+                }
             }
-        }
-        delete this;
-    };
+            delete this;
+        };
 
-    uint32 m_instanceId;
-    LuaObjectBinding* m_binding;
+        uint32 m_instanceId;
+        LuaObjectBinding* m_binding;
 };
 
 CreatureAIScript* CreateLuaCreature(Creature* src)
@@ -2816,46 +2821,46 @@ void LuaEngine::Startup()
     //big server hook chunk. it only hooks if there are functions present to save on unnecessary processing.
 
     RegisterHook(SERVER_HOOK_EVENT_ON_NEW_CHARACTER, (void*)LuaHookOnNewCharacter)
-        RegisterHook(SERVER_HOOK_EVENT_ON_KILL_PLAYER, (void*)LuaHookOnKillPlayer)
-        RegisterHook(SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD, (void*)LuaHookOnFirstEnterWorld)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ENTER_WORLD, (void*)LuaHookOnEnterWorld)
-        RegisterHook(SERVER_HOOK_EVENT_ON_GUILD_JOIN, (void*)LuaHookOnGuildJoin)
-        RegisterHook(SERVER_HOOK_EVENT_ON_DEATH, (void*)LuaHookOnDeath)
-        RegisterHook(SERVER_HOOK_EVENT_ON_REPOP, (void*)LuaHookOnRepop)
-        RegisterHook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)LuaHookOnEmote)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ENTER_COMBAT, (void*)LuaHookOnEnterCombat)
-        RegisterHook(SERVER_HOOK_EVENT_ON_CAST_SPELL, (void*)LuaHookOnCastSpell)
-        RegisterHook(SERVER_HOOK_EVENT_ON_TICK, (void*)LuaHookOnTick)
-        RegisterHook(SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST, (void*)LuaHookOnLogoutRequest)
-        RegisterHook(SERVER_HOOK_EVENT_ON_LOGOUT, (void*)LuaHookOnLogout)
-        RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT, (void*)LuaHookOnQuestAccept)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ZONE, (void*)LuaHookOnZone)
-        RegisterHook(SERVER_HOOK_EVENT_ON_CHAT, (void*)LuaHookOnChat)
-        RegisterHook(SERVER_HOOK_EVENT_ON_LOOT, (void*)LuaHookOnLoot)
-        RegisterHook(SERVER_HOOK_EVENT_ON_GUILD_CREATE, (void*)LuaHookOnGuildCreate)
-        RegisterHook(SERVER_HOOK_EVENT_ON_FULL_LOGIN, (void*)LuaHookOnEnterWorld2)
-        RegisterHook(SERVER_HOOK_EVENT_ON_CHARACTER_CREATE, (void*)LuaHookOnCharacterCreate)
-        RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED, (void*)LuaHookOnQuestCancelled)
-        RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_FINISHED, (void*)LuaHookOnQuestFinished)
-        RegisterHook(SERVER_HOOK_EVENT_ON_HONORABLE_KILL, (void*)LuaHookOnHonorableKill)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ARENA_FINISH, (void*)LuaHookOnArenaFinish)
-        RegisterHook(SERVER_HOOK_EVENT_ON_OBJECTLOOT, (void*)LuaHookOnObjectLoot)
-        RegisterHook(SERVER_HOOK_EVENT_ON_AREATRIGGER, (void*)LuaHookOnAreaTrigger)
-        RegisterHook(SERVER_HOOK_EVENT_ON_POST_LEVELUP, (void*)LuaHookOnPostLevelUp)
-        RegisterHook(SERVER_HOOK_EVENT_ON_PRE_DIE, (void*)LuaHookOnPreUnitDie)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE, (void*)LuaHookOnAdvanceSkillLine)
-        RegisterHook(SERVER_HOOK_EVENT_ON_DUEL_FINISHED, (void*)LuaHookOnDuelFinished)
-        RegisterHook(SERVER_HOOK_EVENT_ON_AURA_REMOVE, (void*)LuaHookOnAuraRemove)
-        RegisterHook(SERVER_HOOK_EVENT_ON_RESURRECT, (void*)LuaHookOnResurrect)
+    RegisterHook(SERVER_HOOK_EVENT_ON_KILL_PLAYER, (void*)LuaHookOnKillPlayer)
+    RegisterHook(SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD, (void*)LuaHookOnFirstEnterWorld)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ENTER_WORLD, (void*)LuaHookOnEnterWorld)
+    RegisterHook(SERVER_HOOK_EVENT_ON_GUILD_JOIN, (void*)LuaHookOnGuildJoin)
+    RegisterHook(SERVER_HOOK_EVENT_ON_DEATH, (void*)LuaHookOnDeath)
+    RegisterHook(SERVER_HOOK_EVENT_ON_REPOP, (void*)LuaHookOnRepop)
+    RegisterHook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)LuaHookOnEmote)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ENTER_COMBAT, (void*)LuaHookOnEnterCombat)
+    RegisterHook(SERVER_HOOK_EVENT_ON_CAST_SPELL, (void*)LuaHookOnCastSpell)
+    RegisterHook(SERVER_HOOK_EVENT_ON_TICK, (void*)LuaHookOnTick)
+    RegisterHook(SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST, (void*)LuaHookOnLogoutRequest)
+    RegisterHook(SERVER_HOOK_EVENT_ON_LOGOUT, (void*)LuaHookOnLogout)
+    RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT, (void*)LuaHookOnQuestAccept)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ZONE, (void*)LuaHookOnZone)
+    RegisterHook(SERVER_HOOK_EVENT_ON_CHAT, (void*)LuaHookOnChat)
+    RegisterHook(SERVER_HOOK_EVENT_ON_LOOT, (void*)LuaHookOnLoot)
+    RegisterHook(SERVER_HOOK_EVENT_ON_GUILD_CREATE, (void*)LuaHookOnGuildCreate)
+    RegisterHook(SERVER_HOOK_EVENT_ON_FULL_LOGIN, (void*)LuaHookOnEnterWorld2)
+    RegisterHook(SERVER_HOOK_EVENT_ON_CHARACTER_CREATE, (void*)LuaHookOnCharacterCreate)
+    RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED, (void*)LuaHookOnQuestCancelled)
+    RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_FINISHED, (void*)LuaHookOnQuestFinished)
+    RegisterHook(SERVER_HOOK_EVENT_ON_HONORABLE_KILL, (void*)LuaHookOnHonorableKill)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ARENA_FINISH, (void*)LuaHookOnArenaFinish)
+    RegisterHook(SERVER_HOOK_EVENT_ON_OBJECTLOOT, (void*)LuaHookOnObjectLoot)
+    RegisterHook(SERVER_HOOK_EVENT_ON_AREATRIGGER, (void*)LuaHookOnAreaTrigger)
+    RegisterHook(SERVER_HOOK_EVENT_ON_POST_LEVELUP, (void*)LuaHookOnPostLevelUp)
+    RegisterHook(SERVER_HOOK_EVENT_ON_PRE_DIE, (void*)LuaHookOnPreUnitDie)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE, (void*)LuaHookOnAdvanceSkillLine)
+    RegisterHook(SERVER_HOOK_EVENT_ON_DUEL_FINISHED, (void*)LuaHookOnDuelFinished)
+    RegisterHook(SERVER_HOOK_EVENT_ON_AURA_REMOVE, (void*)LuaHookOnAuraRemove)
+    RegisterHook(SERVER_HOOK_EVENT_ON_RESURRECT, (void*)LuaHookOnResurrect)
 
-        for (std::map<uint32, uint16>::iterator itr = m_luaDummySpells.begin(); itr != m_luaDummySpells.end(); ++itr)
+    for (std::map<uint32, uint16>::iterator itr = m_luaDummySpells.begin(); itr != m_luaDummySpells.end(); ++itr)
+    {
+        if (find(sLuaMgr.HookInfo.dummyHooks.begin(), sLuaMgr.HookInfo.dummyHooks.end(), itr->first) == sLuaMgr.HookInfo.dummyHooks.end())
         {
-            if (find(sLuaMgr.HookInfo.dummyHooks.begin(), sLuaMgr.HookInfo.dummyHooks.end(), itr->first) == sLuaMgr.HookInfo.dummyHooks.end())
-            {
-                m_scriptMgr->register_dummy_spell(itr->first, &LuaOnDummySpell);
-                sLuaMgr.HookInfo.dummyHooks.push_back(itr->first);
-            }
+            m_scriptMgr->register_dummy_spell(itr->first, &LuaOnDummySpell);
+            sLuaMgr.HookInfo.dummyHooks.push_back(itr->first);
         }
+    }
 }
 void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 functionRef)
 {
@@ -3152,7 +3157,7 @@ void LuaEngine::Restart()
 {
     Log.Notice("LuaEngineMgr", "Restarting Engine.");
     GET_LOCK
-        getcoLock().Acquire();
+    getcoLock().Acquire();
     Unload();
     lu = luaL_newstate();
     LoadScripts();
@@ -3310,48 +3315,48 @@ void LuaEngine::Restart()
     BIG SERV HOOK CHUNK EEK
     */
     RegisterHook(SERVER_HOOK_EVENT_ON_NEW_CHARACTER, (void*)LuaHookOnNewCharacter)
-        RegisterHook(SERVER_HOOK_EVENT_ON_KILL_PLAYER, (void*)LuaHookOnKillPlayer)
-        RegisterHook(SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD, (void*)LuaHookOnFirstEnterWorld)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ENTER_WORLD, (void*)LuaHookOnEnterWorld)
-        RegisterHook(SERVER_HOOK_EVENT_ON_GUILD_JOIN, (void*)LuaHookOnGuildJoin)
-        RegisterHook(SERVER_HOOK_EVENT_ON_DEATH, (void*)LuaHookOnDeath)
-        RegisterHook(SERVER_HOOK_EVENT_ON_REPOP, (void*)LuaHookOnRepop)
-        RegisterHook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)LuaHookOnEmote)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ENTER_COMBAT, (void*)LuaHookOnEnterCombat)
-        RegisterHook(SERVER_HOOK_EVENT_ON_CAST_SPELL, (void*)LuaHookOnCastSpell)
-        RegisterHook(SERVER_HOOK_EVENT_ON_TICK, (void*)LuaHookOnTick)
-        RegisterHook(SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST, (void*)LuaHookOnLogoutRequest)
-        RegisterHook(SERVER_HOOK_EVENT_ON_LOGOUT, (void*)LuaHookOnLogout)
-        RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT, (void*)LuaHookOnQuestAccept)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ZONE, (void*)LuaHookOnZone)
-        RegisterHook(SERVER_HOOK_EVENT_ON_CHAT, (void*)LuaHookOnChat)
-        RegisterHook(SERVER_HOOK_EVENT_ON_LOOT, (void*)LuaHookOnLoot)
-        RegisterHook(SERVER_HOOK_EVENT_ON_GUILD_CREATE, (void*)LuaHookOnGuildCreate)
-        RegisterHook(SERVER_HOOK_EVENT_ON_FULL_LOGIN, (void*)LuaHookOnEnterWorld2)
-        RegisterHook(SERVER_HOOK_EVENT_ON_CHARACTER_CREATE, (void*)LuaHookOnCharacterCreate)
-        RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED, (void*)LuaHookOnQuestCancelled)
-        RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_FINISHED, (void*)LuaHookOnQuestFinished)
-        RegisterHook(SERVER_HOOK_EVENT_ON_HONORABLE_KILL, (void*)LuaHookOnHonorableKill)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ARENA_FINISH, (void*)LuaHookOnArenaFinish)
-        RegisterHook(SERVER_HOOK_EVENT_ON_OBJECTLOOT, (void*)LuaHookOnObjectLoot)
-        RegisterHook(SERVER_HOOK_EVENT_ON_AREATRIGGER, (void*)LuaHookOnAreaTrigger)
-        RegisterHook(SERVER_HOOK_EVENT_ON_POST_LEVELUP, (void*)LuaHookOnPostLevelUp)
-        RegisterHook(SERVER_HOOK_EVENT_ON_PRE_DIE, (void*)LuaHookOnPreUnitDie)
-        RegisterHook(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE, (void*)LuaHookOnAdvanceSkillLine)
-        RegisterHook(SERVER_HOOK_EVENT_ON_DUEL_FINISHED, (void*)LuaHookOnDuelFinished)
-        RegisterHook(SERVER_HOOK_EVENT_ON_AURA_REMOVE, (void*)LuaHookOnAuraRemove)
-        RegisterHook(SERVER_HOOK_EVENT_ON_RESURRECT, (void*)LuaHookOnResurrect)
+    RegisterHook(SERVER_HOOK_EVENT_ON_KILL_PLAYER, (void*)LuaHookOnKillPlayer)
+    RegisterHook(SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD, (void*)LuaHookOnFirstEnterWorld)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ENTER_WORLD, (void*)LuaHookOnEnterWorld)
+    RegisterHook(SERVER_HOOK_EVENT_ON_GUILD_JOIN, (void*)LuaHookOnGuildJoin)
+    RegisterHook(SERVER_HOOK_EVENT_ON_DEATH, (void*)LuaHookOnDeath)
+    RegisterHook(SERVER_HOOK_EVENT_ON_REPOP, (void*)LuaHookOnRepop)
+    RegisterHook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)LuaHookOnEmote)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ENTER_COMBAT, (void*)LuaHookOnEnterCombat)
+    RegisterHook(SERVER_HOOK_EVENT_ON_CAST_SPELL, (void*)LuaHookOnCastSpell)
+    RegisterHook(SERVER_HOOK_EVENT_ON_TICK, (void*)LuaHookOnTick)
+    RegisterHook(SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST, (void*)LuaHookOnLogoutRequest)
+    RegisterHook(SERVER_HOOK_EVENT_ON_LOGOUT, (void*)LuaHookOnLogout)
+    RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT, (void*)LuaHookOnQuestAccept)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ZONE, (void*)LuaHookOnZone)
+    RegisterHook(SERVER_HOOK_EVENT_ON_CHAT, (void*)LuaHookOnChat)
+    RegisterHook(SERVER_HOOK_EVENT_ON_LOOT, (void*)LuaHookOnLoot)
+    RegisterHook(SERVER_HOOK_EVENT_ON_GUILD_CREATE, (void*)LuaHookOnGuildCreate)
+    RegisterHook(SERVER_HOOK_EVENT_ON_FULL_LOGIN, (void*)LuaHookOnEnterWorld2)
+    RegisterHook(SERVER_HOOK_EVENT_ON_CHARACTER_CREATE, (void*)LuaHookOnCharacterCreate)
+    RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED, (void*)LuaHookOnQuestCancelled)
+    RegisterHook(SERVER_HOOK_EVENT_ON_QUEST_FINISHED, (void*)LuaHookOnQuestFinished)
+    RegisterHook(SERVER_HOOK_EVENT_ON_HONORABLE_KILL, (void*)LuaHookOnHonorableKill)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ARENA_FINISH, (void*)LuaHookOnArenaFinish)
+    RegisterHook(SERVER_HOOK_EVENT_ON_OBJECTLOOT, (void*)LuaHookOnObjectLoot)
+    RegisterHook(SERVER_HOOK_EVENT_ON_AREATRIGGER, (void*)LuaHookOnAreaTrigger)
+    RegisterHook(SERVER_HOOK_EVENT_ON_POST_LEVELUP, (void*)LuaHookOnPostLevelUp)
+    RegisterHook(SERVER_HOOK_EVENT_ON_PRE_DIE, (void*)LuaHookOnPreUnitDie)
+    RegisterHook(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE, (void*)LuaHookOnAdvanceSkillLine)
+    RegisterHook(SERVER_HOOK_EVENT_ON_DUEL_FINISHED, (void*)LuaHookOnDuelFinished)
+    RegisterHook(SERVER_HOOK_EVENT_ON_AURA_REMOVE, (void*)LuaHookOnAuraRemove)
+    RegisterHook(SERVER_HOOK_EVENT_ON_RESURRECT, (void*)LuaHookOnResurrect)
 
-        for (std::map<uint32, uint16>::iterator itr = m_luaDummySpells.begin(); itr != m_luaDummySpells.end(); ++itr)
+    for (std::map<uint32, uint16>::iterator itr = m_luaDummySpells.begin(); itr != m_luaDummySpells.end(); ++itr)
+    {
+        if (find(sLuaMgr.HookInfo.dummyHooks.begin(), sLuaMgr.HookInfo.dummyHooks.end(), itr->first) == sLuaMgr.HookInfo.dummyHooks.end())
         {
-            if (find(sLuaMgr.HookInfo.dummyHooks.begin(), sLuaMgr.HookInfo.dummyHooks.end(), itr->first) == sLuaMgr.HookInfo.dummyHooks.end())
-            {
-                m_scriptMgr->register_dummy_spell(itr->first, &LuaOnDummySpell);
-                sLuaMgr.HookInfo.dummyHooks.push_back(itr->first);
-            }
+            m_scriptMgr->register_dummy_spell(itr->first, &LuaOnDummySpell);
+            sLuaMgr.HookInfo.dummyHooks.push_back(itr->first);
         }
+    }
     RELEASE_LOCK
-        getcoLock().Release();
+    getcoLock().Release();
 
     //hyper: do OnSpawns for spawned creatures.
     std::vector<uint32> temp = OnLoadInfo;
