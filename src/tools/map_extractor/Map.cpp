@@ -110,9 +110,9 @@ static const char* const langs[] = { "enGB", "enUS", "deDE", "esES", "frFR", "ko
 
 void CreateDir(const std::string& Path)
 {
-    if (chdir(Path.c_str()) == 0)
+    if (_chdir(Path.c_str()) == 0)
     {
-        chdir("../");
+        _chdir("../");
         return;
     }
 
