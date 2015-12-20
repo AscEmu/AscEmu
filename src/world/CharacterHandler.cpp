@@ -1085,21 +1085,23 @@ void WorldSession::FullLogin(Player* plr)
     }
 #endif
 
-
+    if (Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", false))
+    {
 #ifdef WIN32
-    _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
+        _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
 #else
-    _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
+        _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
 #endif
 
-    // Revision
-    _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
-    // Shows Online players, and connection peak
-    _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
-                              MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
+        // Revision
+        _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
+        // Shows Online players, and connection peak
+        _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
+            MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
 
-    // Shows Server uptime
-    _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+        // Shows Server uptime
+        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+    }
 
     // server Message Of The Day
     SendMOTD();
