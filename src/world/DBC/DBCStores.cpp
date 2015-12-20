@@ -313,7 +313,7 @@ bool LoadDBCs()
         area_map_collection->insert(std::pair<uint32, uint32>(map_object->id, map_object->linked_zone));
     }
     auto wmo_row_count = sWMOAreaTableStore.GetNumRows();
-    for (auto i = 0; i < wmo_row_count; ++i) // < 51119 This is a hack, dbc loading needs rework
+    for (uint32 i = 0; i < wmo_row_count; ++i)
     {
         if (auto entry = sWMOAreaTableStore.LookupEntry(i))
         {
