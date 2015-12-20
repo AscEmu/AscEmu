@@ -267,9 +267,8 @@ bool Database::run()
     ThreadRunning = true;
     char* query = queries_queue.pop();
     DatabaseConnection* con = GetFreeConnection();
-    while (1)
+    while (true)
     {
-
         if (query != NULL)
         {
             if (con == NULL)
@@ -354,14 +353,14 @@ AsyncQuery::~AsyncQuery()
 void Database::EndThreads()
 {
     //these 2 loops spin until theres nothing left
-    while (1)
+    while (true)
     {
         QueryBuffer* buf = query_buffer.pop();
         if (buf == NULL)
             break;
         query_buffer.push(buf);
     }
-    while (1)
+    while (true)
     {
         char* buf = queries_queue.pop();
         if (buf == NULL)
@@ -396,7 +395,7 @@ void Database::thread_proc_query()
     DatabaseConnection* con = GetFreeConnection();
 
     q = query_buffer.pop();
-    while (1)
+    while (true)
     {
         if (q != NULL)
         {
