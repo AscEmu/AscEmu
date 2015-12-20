@@ -2,6 +2,7 @@
 -- Drop table transport_creatures
 --
 DROP TABLE IF EXISTS `transport_creatures`;
+
 --
 -- Create table transport_creatures
 --
@@ -13,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `transport_creatures` (
   `position_z` float DEFAULT NULL,
   `orientation` float DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
 --
 -- Inserting updated records in the table transport_creatures
 --
@@ -252,6 +254,7 @@ REPLACE INTO `transport_creatures` (`transport_entry`, `creature_entry`, `positi
     (187038, 24911, 19.1465, -9.70741, 14.7601, 4.79434),
     (187038, 24911, 5.53691, -10.9158, 14.0808, 4.59956),
     (192242, 31261, -46.1663, 12.044, 13.2206, 1.43738);
+    
 --
 -- Update world_db_version
 --
