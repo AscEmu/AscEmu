@@ -24,29 +24,25 @@ class QueryBuffer;
 struct AchievementEntry;
 struct AchievementCriteriaEntry;
 
-// Achievement Reward Types
-/// Achievement has no reward
-#define ACHIEVEMENT_REWARDTYPE_NONE 0
-/// Achievement has an item reward
-#define ACHIEVEMENT_REWARDTYPE_ITEM 1
-/// Achievement has a title reward
-#define ACHIEVEMENT_REWARDTYPE_TITLE 2
-/// Achievement has a spell reward
-#define ACHIEVEMENT_REWARDTYPE_SPELL 4
 
-// Achievement Flags
-/// (0) : No flags
-#define ACHIEVEMENT_FLAG_NONE 0x0000
-/// (1) : Counter flag; used for statistics
-#define ACHIEVEMENT_FLAG_COUNTER 0x0001
-/// (4) : Reach level? Currently unused in ArcEmu.
-#define ACHIEVEMENT_FLAG_REACH_LEVEL 0x0004
-/// (64) : Average? Currently unused in ArcEmu.
-#define ACHIEVEMENT_FLAG_AVERAGE 0x0040
-/// (256) : Realm First achievement
-#define ACHIEVEMENT_FLAG_REALM_FIRST_REACH 0x0100
-/// (512) : Realm First Kill; Currently only used in Realm First! Obsidian Slayer (456)
-#define ACHIEVEMENT_FLAG_REALM_FIRST_KILL 0x0200
+enum AchievementRewardTypes
+{
+    ACHIEVEMENT_REWARDTYPE_NONE     = 0,
+    ACHIEVEMENT_REWARDTYPE_ITEM     = 1,
+    ACHIEVEMENT_REWARDTYPE_TITLE    = 2,
+    ACHIEVEMENT_REWARDTYPE_SPELL    = 4
+};
+
+enum AchievementFlags
+{
+    ACHIEVEMENT_FLAG_NONE               = 0x0000,
+    ACHIEVEMENT_FLAG_COUNTER            = 0x0001,   // used for statistics
+    ACHIEVEMENT_FLAG_REACH_LEVEL        = 0x0004,   // unused
+    ACHIEVEMENT_FLAG_AVERAGE            = 0x0040,
+    ACHIEVEMENT_FLAG_REALM_FIRST_REACH  = 0x0100,
+    ACHIEVEMENT_FLAG_REALM_FIRST_KILL   = 0x0200    // Currently only used in Realm First! Obsidian Slayer (456)
+};
+
 
 /// All criteria must be completed for the achievement to be complete.
 #define ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL 2
@@ -61,11 +57,6 @@ struct AchievementCriteriaEntry;
 /// Horde-only achievement
 #define ACHIEVEMENT_FACTION_FLAG_HORDE 1
 
-
-
-/**
-    CriteriaProgress structure
-*/
 struct CriteriaProgress
 {
     CriteriaProgress(uint32 iid, uint32 icounter, time_t tdate = time(NULL))
@@ -101,9 +92,7 @@ class Player;
 class WorldPacket;
 class ObjectMgr;
 
-/**
-    Achievement completion state
-*/
+
 enum AchievementCompletionState
 {
     ACHIEVEMENT_COMPLETED_NONE,                 ///< #0# Achievement is not completed
@@ -111,10 +100,7 @@ enum AchievementCompletionState
     ACHIEVEMENT_COMPLETED_COMPLETED_STORED,     ///< #2# Achievement is completed and has been stored
 };
 
-/**
-    Achievement criteria conditions
-    Currently these are not being used at all.
-*/
+/// \note Currently these are not being used at all.
 enum AchievementCriteriaCondition
 {
     ACHIEVEMENT_CRITERIA_CONDITION_NONE      = 0,  ///< #0# No condition
@@ -126,9 +112,7 @@ enum AchievementCriteriaCondition
     ACHIEVEMENT_CRITERIA_CONDITION_UNK3      = 13, ///< #13# unk
 };
 
-/**
-    Achievement Criteria Types
-*/
+
 enum AchievementCriteriaTypes
 {
     ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE = 0,               ///< #0# Kill creature x
@@ -286,6 +270,7 @@ Achievement Working List:
 class SERVER_DECL AchievementMgr
 {
     public:
+
         AchievementMgr(Player* pl);
         ~AchievementMgr();
         void LoadFromDB(QueryResult* achievementResult, QueryResult* criteriaResult);
@@ -306,6 +291,7 @@ class SERVER_DECL AchievementMgr
         Player* GetPlayer() { return m_player; }
 
     private:
+
         void GiveAchievementReward(DBC::Structures::AchievementEntry const* entry);
         void SendAchievementEarned(DBC::Structures::AchievementEntry const* achievement);
         void SendCriteriaUpdate(CriteriaProgress* progress);
@@ -329,5 +315,5 @@ bool SendAchievementProgress(const CriteriaProgress* c);
 bool SaveAchievementProgressToDB(const CriteriaProgress* c);
 
 
-#endif
+#endif  //_ACHIEVEMENTMGR_H
 

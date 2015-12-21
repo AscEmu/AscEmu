@@ -183,7 +183,7 @@ bool Master::Run(int argc, char** argv)
 
 #ifndef WIN32
     if (geteuid() == 0 || getegid() == 0)
-        Log.LargeErrorMessage("You are running ArcEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.", NULL);
+        Log.LargeErrorMessage("You are running AscEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.", NULL);
 #endif
 
     InitImplicitTargetFlags();
