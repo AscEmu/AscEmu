@@ -1,5 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
@@ -66,10 +67,9 @@ class CustomTeleport : public GameObjectAIScript // Custom Portals
                     pPlayer->BroadcastMessage("You must be at least level %ld to use this portal", required_level);
                     return;
                 }
-
-                else if (req_class != 0 || req_class != pPlayer->getClass())
+                else if (req_class != 0 && req_class != pPlayer->getClass())
                 {
-                    pPlayer->BroadcastMessage("You do not have the required class to use this Portal", req_class, pPlayer->getClass());
+                    pPlayer->BroadcastMessage("You do not have the required class to use this Portal");
                     return;
                 }
                 else if (req_achievement != 0 && pPlayer->GetAchievementMgr().HasCompleted(req_achievement))
@@ -95,8 +95,7 @@ class CustomTeleport : public GameObjectAIScript // Custom Portals
 
 void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
 {
-    QueryResult* result = NULL;
-    result = WorldDatabase.Query("SELECT * FROM gameobject_teleports");
+    QueryResult* result = WorldDatabase.Query("SELECT entry, mapid, x_pos, y_pos, z_pos, orientation, required_level, required_class, required_achievement FROM gameobject_teleports");
     if (result != NULL)
     {
         // Check if the SQL table is setup correctly
