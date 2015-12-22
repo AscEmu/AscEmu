@@ -29,7 +29,6 @@ namespace DBC
     template <class T>
     class DBCStorage
     {
-
         private:
 
             typedef std::list<char*> StringPoolList;
@@ -80,7 +79,7 @@ namespace DBC
             bool Load(char const* dbc_filename, DBC::SQL::SqlDbc* sql)
             {
                 DBC::DBCLoader dbc_loader;
-                /* Only continue if load is successful */
+                // Only continue if load is successful
                 if (!dbc_loader.Load(dbc_filename, m_format))
                 {
                     return false;
@@ -89,9 +88,9 @@ namespace DBC
                 uint32 sql_record_count = 0;
                 uint32 sql_highest_index = 0;
                 Field* fields = NULL;
-                /* SQL not yet implemented */
+                // SQL not yet implemented
                 auto result = 0;
-                /* Load data from SQL */
+                // Load data from SQL
                 if (sql)
                 {
                     assert(false && "SqlDbc not yet implemented");
@@ -114,11 +113,11 @@ namespace DBC
 
             bool LoadStringsFrom(char const* dbc_filename)
             {
-                /* DBCs must already be loaded using Load */
+                // DBCs must already be loaded using Load
                 if (!m_index_table.as_t) return false;
 
                 DBC::DBCLoader dbc_loader;
-                /* Only continue if Load was successful */
+                // Only continue if Load was successful
                 if (!dbc_loader.Load(dbc_filename, m_format)) return false;
 
                 m_string_pool_list.push_back(dbc_loader.AutoProduceStrings(m_format, reinterpret_cast<char*>(m_data_table)));

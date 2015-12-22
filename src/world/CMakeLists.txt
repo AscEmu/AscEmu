@@ -223,7 +223,6 @@ set(headers
 	Druid.h
 	DynamicObject.h
 	EquipmentSetMgr.h
-	Events.h
 	EventableObject.h
 	EventMgr.h
 	Faction.h

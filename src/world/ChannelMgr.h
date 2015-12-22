@@ -21,6 +21,7 @@
 #ifndef _CHANNEL_MGR_H
 #define _CHANNEL_MGR_H
 
+
 class SERVER_DECL ChannelMgr : public Singleton <ChannelMgr>
 {
     public:
@@ -36,9 +37,10 @@ class SERVER_DECL ChannelMgr : public Singleton <ChannelMgr>
 
     private:
 
-        /// team 0: alliance, team 1 horde
         typedef std::map<std::string, Channel*> ChannelList;
+
         ChannelList Channels[2];
+
         Mutex lock;
 };
 

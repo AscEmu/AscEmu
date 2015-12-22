@@ -80,7 +80,7 @@ enum ChatMsg
     CHAT_MSG_RESTRICTED                 = 46,
     CHAT_MSG_ACHIEVEMENT                = 48,
     CHAT_MSG_GUILD_ACHIEVEMENT          = 49,
-    CHAT_MSG_PARTY_LEADER               = 51,
+    CHAT_MSG_PARTY_LEADER               = 51
 };
 
 enum Languages
@@ -142,12 +142,18 @@ class ChatCommand
     public:
 
         const char* Name;
+
         char CommandGroup;
+
         bool (ChatHandler::*Handler)(const char* args, WorldSession* m_session) ;
+
         std::string Help;
+
         ChatCommand* ChildCommands;
+
         uint32 NormalValueField;
         uint32 MaxValueField;
+
         /// ValueType: 0 = nothing, 1 = uint, 2 = float
         uint16 ValueType;
 };

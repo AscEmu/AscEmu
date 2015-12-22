@@ -85,14 +85,14 @@ namespace DBC
 
                 if (!storage.LoadStringsFrom(localised_name.c_str()))
                 {
-                    /* Mark as not available to speed up next checks */
+                    // Mark as not available to speed up next checks
                     available_dbc_locales &= ~(1 << i);
                 }
             }
         }
         else
         {
-            /* We failed to load the dbc, so work out if it's incompatible or just doesn't exist */
+            // We failed to load the dbc, so work out if it's incompatible or just doesn't exist
             if (auto file = fopen(dbc_file_path.c_str(), "rb"))
             {
                 std::ostringstream stream;

@@ -959,7 +959,7 @@ class SERVER_DECL DBCStorage
             if (f == NULL)
                 return false;
 
-            /* read the number of rows, and allocate our block on the heap */
+            // read the number of rows, and allocate our block on the heap
             if (fread(&header, 4, 1, f) != 1)
             {
                 fclose(f);
@@ -1016,7 +1016,7 @@ class SERVER_DECL DBCStorage
             m_heapBlock = (T*)malloc(rows * sizeof(T));
             ASSERT(m_heapBlock);
 
-            /* read the data for each row */
+            // read the data for each row
             for (i = 0; i < rows; ++i)
             {
                 memset(&m_heapBlock[i], 0, sizeof(T));
@@ -1024,7 +1024,7 @@ class SERVER_DECL DBCStorage
 
                 if (load_indexed)
                 {
-                    /* all the time the first field in the dbc is our unique entry */
+                    // all the time the first field in the dbc is our unique entry
                     if (*(uint32*)&m_heapBlock[i] > m_max)
                         m_max = *(uint32*)&m_heapBlock[i];
                 }

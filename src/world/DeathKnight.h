@@ -56,6 +56,7 @@ class DeathKnight : public Player
         void SendRuneUpdate(uint8 slot);
 
     public:
+
         DeathKnight(uint32 guid) : Player(guid)
         {
             m_last_used_rune_slot = 0;

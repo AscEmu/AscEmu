@@ -25,16 +25,18 @@ namespace DBC
 {
     class DBCRecord
     {
-    protected:
-        unsigned char* m_offset;
+        protected:
 
-    public:
-        DBCRecord(unsigned char* offset);
+            unsigned char* m_offset;
 
-        const float GetFloat(size_t field, uint32 field_count, const uint32 field_offset);
-        const uint32 GetUInt32(size_t field, uint32 field_count, const uint32 field_offset);
-        const uint8 GetUInt8(size_t field, uint32 field_count, const uint32 field_offset);
-        const char* GetString(size_t field, uint32 field_count, const uint32 field_offset, uint32 string_size, unsigned char* string_table);
+        public:
+
+            DBCRecord(unsigned char* offset);
+
+            const float GetFloat(size_t field, uint32 field_count, const uint32 field_offset);
+            const uint32 GetUInt32(size_t field, uint32 field_count, const uint32 field_offset);
+            const uint8 GetUInt8(size_t field, uint32 field_count, const uint32 field_offset);
+            const char* GetString(size_t field, uint32 field_count, const uint32 field_offset, uint32 string_size, unsigned char* string_table);
     };
 }
 

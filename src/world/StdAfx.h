@@ -101,7 +101,6 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "AuthCodes.h"
 #include "../shared/CallBack.h"
 #include "WordFilter.h"
-#include "Events.h"
 #include "EventMgr.h"
 #include "EventableObject.h"
 #include "Object.h"

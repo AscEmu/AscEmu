@@ -27,6 +27,7 @@ class CommonScheduleThread : public CThread
 {
     bool m_running;
     bool m_busy;
+
     std::multimap<uint32, uint32>::iterator itOrderMSGEntry;
 
     uint32 BCTimerCount;

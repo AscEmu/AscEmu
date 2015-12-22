@@ -26,7 +26,7 @@ enum DAYWATCHERSETTINGS
     WEEKLY  = 1,
     DAILY   = 2,
     MONTHLY = 3,
-    HOURLY  = 4,
+    HOURLY  = 4
 };
 
 class DayWatcherThread : public CThread

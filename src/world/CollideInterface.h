@@ -65,6 +65,7 @@ class NavMeshData;
 class NavMeshTile
 {
     public:
+
         Arcemu::Threading::AtomicCounter refs;
         dtTileRef dtref;
 };

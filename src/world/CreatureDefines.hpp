@@ -83,7 +83,7 @@ enum MONSTER_SAY_EVENTS
     MONSTER_SAY_EVENT_ON_COMBAT_STOP    = 3,
     MONSTER_SAY_EVENT_ON_DAMAGE_TAKEN   = 4,
     MONSTER_SAY_EVENT_ON_DIED           = 5,
-    NUM_MONSTER_SAY_EVENTS,
+    NUM_MONSTER_SAY_EVENTS
 };
 
 
@@ -176,7 +176,7 @@ struct CreatureProto
     uint32 vehicleid;
     uint32 rooted;
 
-    /* AI Stuff */
+    // AI Stuff
     bool m_canRangedAttack;
     bool m_canFlee;
     float m_fleeHealth;

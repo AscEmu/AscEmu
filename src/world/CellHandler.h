@@ -30,6 +30,7 @@ template <class Class>
 class CellHandler
 {
     public:
+
         CellHandler(Map* map);
         ~CellHandler();
 
@@ -47,8 +48,8 @@ class CellHandler
         Map* GetBaseMap() { return _map; }
 
     protected:
-        void _Init();
 
+        void _Init();
 
         Class*** _cells;
 
