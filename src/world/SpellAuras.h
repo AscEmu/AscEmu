@@ -26,12 +26,12 @@
 /// 4-bit flag
 enum AURA_FLAGS
 {
-    AFLAG_EMPTY			= 0x0,
-    AFLAG_EFFECT_1		= 0x1,
-    AFLAG_EFFECT_2		= 0x2,
-    AFLAG_EFFECT_3		= 0x4,
-    AFLAG_NOT_CASTER	= 0x8,
-    AFLAG_SET			= 0x9,
+    AFLAG_EMPTY			= 0x00,
+    AFLAG_EFFECT_1		= 0x01,
+    AFLAG_EFFECT_2		= 0x02,
+    AFLAG_EFFECT_3		= 0x04,
+    AFLAG_NOT_CASTER	= 0x08,
+    AFLAG_SET			= 0x09,
     AFLAG_CANCELLABLE	= 0x10,
     AFLAG_DURATION		= 0x20,
     AFLAG_HIDE			= 0x40, // Seems to hide the aura and tell client the aura was removed
@@ -44,28 +44,28 @@ enum AURA_INTERNAL_USAGE_FLAGS
     //don't change the value of these !
     MOD_0_RESISTED	= 1,
     MOD_1_RESISTED	= 2,
-    MOD_2_RESISTED	= 4,
+    MOD_2_RESISTED	= 4
 };
 
 enum AURA_STATE_FLAGS
 {
-    AURASTATE_NONE                      = 0x000000, //0
-    AURASTATE_FLAG_DODGE_BLOCK			= 0x000001,	//1
-    AURASTATE_FLAG_HEALTH20				= 0x000002,	//2
-    AURASTATE_FLAG_BERSERK				= 0x000004,	//3
-    AURASTATE_FLAG_FROZEN				= 0x000008,	//4
-    AURASTATE_FLAG_JUDGEMENT			= 0x000010,	//5
-    AURASTATE_FLAG_PARRY				= 0x000040,	//7
-    AURASTATE_FLAG_LASTKILLWITHHONOR	= 0x000200,	//10
-    AURASTATE_FLAG_CRITICAL				= 0x000400,	//11
-    AURASTATE_FLAG_HEALTH35				= 0x001000,	//13
-    AURASTATE_FLAG_IMMOLATE				= 0x002000,	//14
-    AURASTATE_FLAG_REJUVENATE			= 0x004000,	//15
-    AURASTATE_FLAG_POISON				= 0x008000,	//16
-    AURASTATE_FLAG_ENRAGED				= 0x010000,	//17
-    AURASTATE_FLAG_BLEED				= 0x020000,	//18
-    AURASTATE_FLAG_EVASIVE_CHARGE		= 0x200000,	//22
-    AURASTATE_FLAG_HEALTH75				= 0x400000,	//23 (Health ABOVE 75%)
+    AURASTATE_NONE                      = 0x000000,     // 0
+    AURASTATE_FLAG_DODGE_BLOCK          = 0x000001,     // 1
+    AURASTATE_FLAG_HEALTH20             = 0x000002,     // 2
+    AURASTATE_FLAG_BERSERK              = 0x000004,     // 4
+    AURASTATE_FLAG_FROZEN               = 0x000008,     // 8
+    AURASTATE_FLAG_JUDGEMENT            = 0x000010,     // 16
+    AURASTATE_FLAG_PARRY                = 0x000040,     // 64
+    AURASTATE_FLAG_LASTKILLWITHHONOR    = 0x000200,     // 512
+    AURASTATE_FLAG_CRITICAL             = 0x000400,     // 1024
+    AURASTATE_FLAG_HEALTH35             = 0x001000,     // 4096
+    AURASTATE_FLAG_IMMOLATE             = 0x002000,     // 8192
+    AURASTATE_FLAG_REJUVENATE           = 0x004000,     // 16384
+    AURASTATE_FLAG_POISON               = 0x008000,     // 32768
+    AURASTATE_FLAG_ENRAGED              = 0x010000,     // 65536
+    AURASTATE_FLAG_BLEED                = 0x020000,     // 131072
+    AURASTATE_FLAG_EVASIVE_CHARGE       = 0x200000,     // 2097152
+    AURASTATE_FLAG_HEALTH75             = 0x400000      // 4194304
 };
 
 enum MOD_TYPES
@@ -370,7 +370,7 @@ enum AuraTickFlags
     FLAG_PERIODIC_TRIGGER_SPELL     = 4,
     FLAG_PERIODIC_HEAL              = 8,
     FLAG_PERIODIC_LEECH             = 16,
-    FLAG_PERIODIC_ENERGIZE          = 32,
+    FLAG_PERIODIC_ENERGIZE          = 32
 };
 
 struct Modifier
@@ -397,26 +397,26 @@ struct ProcTriggerSpellOnSpell
 	uint32 procFlags;
 	uint32 RemainingCharges;
 	uint32 LastTrigger;
-	void*  owner;//mark the owner of this proc to know which one to delete
+	void* owner;                //mark the owner of this proc to know which one to delete
 };
 
 struct DamageProc
 {
 	uint32 m_spellId;
 	uint32 m_damage;
-	//  uint64 m_caster;//log is: some reflects x arcane/nature damage to 'attacker' no matter who casted
+	//  uint64 m_caster;        //log is: some reflects x arcane/nature damage to 'attacker' no matter who casted
 	uint32 m_school;
 	uint32 m_flags;
-	void*  owner;//mark the owner of this proc to know which one to delete
+	void* owner;                //mark the owner of this proc to know which one to delete
 };
 
 struct DamageSplitTarget
 {
-	uint64 m_target; // we store them
+	uint64 m_target;            // we store them
 	uint32 m_spellId;
-	float m_pctDamageSplit; // % of taken damage to transfer (i.e. Soul Link)
-	uint32 m_flatDamageSplit; // flat damage to transfer (i.e. Blessing of Sacrifice)
-	uint8 damage_type; // bitwise 0-127 thingy
+	float m_pctDamageSplit;     // % of taken damage to transfer (i.e. Soul Link)
+	uint32 m_flatDamageSplit;   // flat damage to transfer (i.e. Blessing of Sacrifice)
+	uint8 damage_type;          // bitwise 0-127 thingy
 	void* creator;
 };
 
@@ -434,6 +434,7 @@ typedef std::set< uint64 > AreaAuraList;
 class SERVER_DECL Aura : public EventableObject
 {
 	public:
+
 		Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
 		~Aura();
 
@@ -448,18 +449,10 @@ class SERVER_DECL Aura : public EventableObject
 
 		void ResetDuration();
 
-		//////////////////////////////////////////////////////////////
-		//void Refresh()
-		//  Refreshes the aura, resets the duration
-		//
-		//Parameter(s)
-		//  None
-		//
-		//Return Value
-		//  None
-		//
-		// 
-		//////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+		/// Refreshes the aura, resets the duration
+		/// \param none     \return none
+        //////////////////////////////////////////////////////////////////////////////////////////
 		void Refresh();
 
 		inline int32 GetDuration() const { return m_duration; }
@@ -486,9 +479,9 @@ class SERVER_DECL Aura : public EventableObject
 		void ApplyModifiers(bool apply);
 		void UpdateModifiers();
 
-
-//////////////////////////////////////////////////////////// Area Auras //////////////////////////////////////////////////////
-
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Area Auras
+        //////////////////////////////////////////////////////////////////////////////////////////
 
 		void EventUpdateAA(float r);
 
@@ -499,45 +492,30 @@ class SERVER_DECL Aura : public EventableObject
 		void EventUpdateEnemyAA(float r);
 		void EventUpdateOwnerAA(float r);
 
-		/////////////////////////////////////////////////////////
-		//void ClearAATargets()
-		//  Removes the Area Aura from all targets and clears
-		//  the target set.
-		//
-		//Parameters
-		//  None
-		//
-		//Return Value
-		//  None
-		//
-		//
-		////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+		/// Removes the Area Aura from all targets and clears the target set.
+		/// \param none    \return none
+        //////////////////////////////////////////////////////////////////////////////////////////
 		void ClearAATargets();
 
-		////////////////////////////////////////////////////////
-		//bool IsAreaAura()
-		//  Tells if the Aura is an area Aura.
-		//
-		//Parameters
-		//  None
-		//
-		//Return Value
-		//  Returns true if it is.
-		//  Returns false otherwise.
-		//
-		///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+		/// Tells if the Aura is an area Aura.
+        /// \param none    \return true if it is false otherwise.
+        //////////////////////////////////////////////////////////////////////////////////////////
 		bool IsAreaAura();
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        //////////////////////////////////////////////////////////////////////////////////////////
 
 		bool DotCanCrit();
 
 		//! GetTimeLeft() milliseconds
 		uint32 GetTimeLeft()
 		{
-			if (m_duration == -1)return (uint32) - 1;
+			if (m_duration == -1)
+                return (uint32) - 1;
 			int32 n = int32((UNIXTIME - time_t(expirytime)) * 1000);
-			if (n >= m_duration) return 0;
+			if (n >= m_duration)
+                return 0;
 			else
 				return (m_duration - n);
 		}
@@ -715,8 +693,8 @@ class SERVER_DECL Aura : public EventableObject
 		void SpellAuraReduceEnemyRCritChance(bool apply);
 		void SpellAuraLimitSpeed(bool apply);
 		void SpellAuraIncreaseTimeBetweenAttacksPCT(bool apply);
-//	void SpellAuraIncreaseSpellDamageByInt(bool apply);
-//	void SpellAuraIncreaseHealingByInt(bool apply);
+        //	void SpellAuraIncreaseSpellDamageByInt(bool apply);
+        //	void SpellAuraIncreaseHealingByInt(bool apply);
 		void SpellAuraIncreaseAllWeaponSkill(bool apply);
 		void SpellAuraModAttackerCritChance(bool apply);
 		void SpellAuraIncreaseHitRate(bool apply);
@@ -828,6 +806,7 @@ class SERVER_DECL Aura : public EventableObject
 		bool m_castInDuel;
 
 	private:
+
 		uint32 GetCasterFaction() { return m_casterfaction; }
 		void SetCasterFaction(uint32 faction) { m_casterfaction = faction; }
 
@@ -845,11 +824,12 @@ class SERVER_DECL Aura : public EventableObject
 		}
 
 	protected:
+
 		uint32 m_casterfaction;
 		Unit* m_target;
 		Player* p_target;
 		uint32 expirytime;
-		int32 m_duration; // In Milliseconds
+		int32 m_duration;       // In Milliseconds
 		//	bool m_positive;
 		signed char m_positive;
 		uint32	m_dynamicValue;
@@ -863,10 +843,11 @@ class SERVER_DECL Aura : public EventableObject
 		void SendTickImmune(Unit* target, Unit* caster);
 
 	public:
-		bool m_temporary;	// Skip saving
+
+		bool m_temporary;	    // Skip saving
 		bool m_deleted;
 		int16 m_interrupted;
-		bool m_ignoreunapply; // \\\"special\\\" case, for unapply
+		bool m_ignoreunapply;   // \\\"special\\\" case, for unapply
 
 		inline bool IsInterrupted() { return (m_interrupted >= 0); }
 };
@@ -881,6 +862,7 @@ class SERVER_DECL Aura : public EventableObject
 class AbsorbAura : public Aura
 {
 	public:
+
 		AURA_FACTORY_FUNCTION(AbsorbAura);
 
 		virtual uint32 AbsorbDamage(uint32 School, uint32* dmg);

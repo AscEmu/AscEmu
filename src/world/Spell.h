@@ -2286,40 +2286,40 @@ class SERVER_DECL Spell : public EventableObject
     protected:
 
         /// Spell state's
-        bool    m_usesMana;
-        bool    m_Spell_Failed;         //for 5sr
-        bool    m_IsReflected;
-        bool    m_Delayed;
-        uint8   m_DelayStep;            //3.0.2 - spells can only be delayed twice.
+        bool m_usesMana;
+        bool m_Spell_Failed;         //for 5sr
+        bool m_IsReflected;
+        bool m_Delayed;
+        uint8 m_DelayStep;            //3.0.2 - spells can only be delayed twice.
 
         // Spell possibility's
-        bool    m_CanRelect;
+        bool m_CanRelect;
 
-        bool    m_IsCastedOnSelf;
+        bool m_IsCastedOnSelf;
 
-        bool    hadEffect;
+        bool hadEffect;
 
-        uint32  m_spellState;
-        int32   m_castTime;
-        int32   m_timer;
-        int64   m_magnetTarget;
+        uint32 m_spellState;
+        int32 m_castTime;
+        int32 m_timer;
+        int64 m_magnetTarget;
 
         // Current Targets to be used in effect handler
-        Unit*       unitTarget;
-        Item*       itemTarget;
+        Unit* unitTarget;
+        Item* itemTarget;
         GameObject* gameObjTarget;
-        Player*     playerTarget;
-        Corpse*     corpseTarget;
-        uint32      add_damage;
+        Player* playerTarget;
+        Corpse* corpseTarget;
+        uint32 add_damage;
 
-        uint8       cancastresult;
-        uint32      Dur;
-        bool        bDurSet;
-        float       Rad[3];
-        bool        bRadSet[3];
-        bool        m_cancelled;
-        bool        m_isCasting;
-        uint8       m_rune_avail_before;
+        uint8 cancastresult;
+        uint32 Dur;
+        bool bDurSet;
+        float Rad[3];
+        bool bRadSet[3];
+        bool m_cancelled;
+        bool m_isCasting;
+        uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();
 
         inline bool HasTarget(const uint64 & guid, TargetsList* tmpMap)
@@ -2375,8 +2375,10 @@ class SERVER_DECL Spell : public EventableObject
 
 void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spell);
 void UnapplyDiminishingReturnTimer(Unit* Target, SpellEntry* spell);
+
 uint32 GetDiminishingGroup(uint32 NameHash);
 uint32 GetSpellDuration(SpellEntry* sp, Unit* caster = NULL);
+
 //Logs if the spell doesn't exist, using Debug loglevel.
 SpellEntry* CheckAndReturnSpellEntry(uint32 spellid);
 

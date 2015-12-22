@@ -26,14 +26,14 @@
 struct SpellArea
 {
 	uint32 spellId;
-	uint32 areaId;                                          // zone/subzone/or 0 is not limited to zone
-	uint32 questStart;                                      // quest start (quest must be active or rewarded for spell apply)
-	uint32 questEnd;                                        // quest end (quest must not be rewarded for spell apply)
-	int32  auraSpell;                                       // spell aura must be applied for spell apply)if possitive) and it must not be applied in other case
-	uint32 raceMask;                                        // can be applied only to races
-	Gender gender;                                          // can be applied only to gender
-	bool questStartCanActive;                               // if true then quest start can be active (not only rewarded)
-	bool autocast;                                          // if true then auto applied at area enter, in other case just allowed to cast
+	uint32 areaId;              // zone/subzone/or 0 is not limited to zone
+	uint32 questStart;          // quest start (quest must be active or rewarded for spell apply)
+	uint32 questEnd;            // quest end (quest must not be rewarded for spell apply)
+	int32 auraSpell;           // spell aura must be applied for spell apply)if possitive) and it must not be applied in other case
+	uint32 raceMask;            // can be applied only to races
+	Gender gender;              // can be applied only to gender
+	bool questStartCanActive;   // if true then quest start can be active (not only rewarded)
+	bool autocast;              // if true then auto applied at area enter, in other case just allowed to cast
 
 	// helpers
 	bool IsFitToRequirements(Player* player, uint32 newZone, uint32 newArea) const;
@@ -45,8 +45,8 @@ typedef std::multimap<uint32, SpellArea const*> SpellAreaForAuraMap;
 typedef std::multimap<uint32, SpellArea const*> SpellAreaForAreaMap;
 typedef std::pair<SpellAreaMap::const_iterator, SpellAreaMap::const_iterator> SpellAreaMapBounds;
 typedef std::pair<SpellAreaForQuestMap::const_iterator, SpellAreaForQuestMap::const_iterator> SpellAreaForQuestMapBounds;
-typedef std::pair<SpellAreaForAuraMap::const_iterator, SpellAreaForAuraMap::const_iterator>  SpellAreaForAuraMapBounds;
-typedef std::pair<SpellAreaForAreaMap::const_iterator, SpellAreaForAreaMap::const_iterator>  SpellAreaForAreaMapBounds;
+typedef std::pair<SpellAreaForAuraMap::const_iterator, SpellAreaForAuraMap::const_iterator> SpellAreaForAuraMapBounds;
+typedef std::pair<SpellAreaForAreaMap::const_iterator, SpellAreaForAreaMap::const_iterator> SpellAreaForAreaMapBounds;
 
 
 class Aura;
@@ -67,6 +67,7 @@ typedef Aura* (*aura_factory_function)(SpellEntry* proto, int32 duration, Object
 class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 {
 	public:
+
 		SpellFactoryMgr()
 		{
 			Setup();
@@ -112,12 +113,12 @@ class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 		void SetupWarlock();
 		void SetupWarrior();
 
-		SpellAreaMap               mSpellAreaMap;
-		SpellAreaForQuestMap       mSpellAreaForQuestMap;
-		SpellAreaForQuestMap       mSpellAreaForActiveQuestMap;
-		SpellAreaForQuestMap       mSpellAreaForQuestEndMap;
-		SpellAreaForAuraMap        mSpellAreaForAuraMap;
-		SpellAreaForAreaMap        mSpellAreaForAreaMap;
+		SpellAreaMap mSpellAreaMap;
+		SpellAreaForQuestMap mSpellAreaForQuestMap;
+		SpellAreaForQuestMap mSpellAreaForActiveQuestMap;
+		SpellAreaForQuestMap mSpellAreaForQuestEndMap;
+		SpellAreaForAuraMap mSpellAreaForAuraMap;
+		SpellAreaForAreaMap mSpellAreaForAreaMap;
 };
 
 #define sSpellFactoryMgr SpellFactoryMgr::getSingleton()

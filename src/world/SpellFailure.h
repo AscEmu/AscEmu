@@ -209,9 +209,10 @@ enum SpellCastResult
     SPELL_FAILED_SUMMON_PENDING                 = 0xB7,
     SPELL_FAILED_MAX_SOCKETS                    = 0xB8,
     SPELL_FAILED_PET_CAN_RENAME                 = 0xB9,
-    SPELL_FAILED_TARGET_CANNOT_BE_RESURRECTED    = 0xBA,
+    SPELL_FAILED_TARGET_CANNOT_BE_RESURRECTED   = 0xBA,
     SPELL_FAILED_UNKNOWN                        = 0xBB
 };
+
 #define SPELL_CANCAST_OK SPELL_FAILED_SUCCESS
 
 // Extra errormsg... Just to keep it in mind
@@ -333,7 +334,7 @@ enum PetTameFailure
     PETTAME_DEAD                                                 = 10,
     PETTAME_NOTDEAD                                              = 11,
     PETTAME_CANTCONTROLEXOTIC                                    = 12,
-    PETTAME_UNKNOWNERROR                                         = 13,
+    PETTAME_UNKNOWNERROR                                         = 13
 };
 
 enum MOUNT_FAILURE

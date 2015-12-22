@@ -32,7 +32,7 @@ enum Stats
     STAT_AGILITY,
     STAT_STAMINA,
     STAT_INTELLECT,
-    STAT_SPIRIT,
+    STAT_SPIRIT
 };
 
 SERVER_DECL uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl);
@@ -42,4 +42,4 @@ SERVER_DECL uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon
 SERVER_DECL uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat);
 SERVER_DECL bool isEven(int num);
 
-#endif
+#endif      //__STATS_H
