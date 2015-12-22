@@ -30,9 +30,10 @@ class Map;
 class SERVER_DECL MapCell
 {
     friend class MapMgr;
+
     public:
 
-    MapCell() : _x(0), _y(0), _active(false), _loaded(false), _unloadpending(false), _playerCount(0), _mapmgr(nullptr) {};
+        MapCell() : _x(0), _y(0), _active(false), _loaded(false), _unloadpending(false), _playerCount(0), _mapmgr(nullptr) {};
         ~MapCell();
 
         typedef std::set<Object*> ObjectSet;
@@ -75,6 +76,7 @@ class SERVER_DECL MapCell
         /// the corpse has no more an owner (like if he resurrected) so it can be despawned and
         /// the MapCell can be unloaded(if CanUnload() returns true)
         void CorpseGoneIdle(Object* corpse);
+
     private:
 
         uint16 _x;

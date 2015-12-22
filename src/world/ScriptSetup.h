@@ -24,6 +24,7 @@
 #ifdef SCRIPTLIB
 
 #include <git_version.h>
+
 #ifndef SKIP_ALLOCATOR_SHARING
 #include "CoreMemoryAllocator.cpp"
 #endif

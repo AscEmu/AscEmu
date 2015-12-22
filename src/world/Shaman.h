@@ -24,6 +24,7 @@
 class Shaman : public Player
 {
     public:
+
         Shaman(uint32 guid) : Player(guid) {}
 
         bool IsShaman() { return true; }

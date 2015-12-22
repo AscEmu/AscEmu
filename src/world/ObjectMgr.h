@@ -253,13 +253,13 @@ struct InstanceReputationModifier
 
 enum AREATABLE_FLAGS
 {
-    AREA_CITY_AREA          = 0x20,
-    AREA_NEUTRAL_AREA       = 0x40,
-    AREA_PVP_ARENA          = 0x80,
-    AREA_CITY               = 0x200,
-    AREA_SANCTUARY          = 0x800,
+    AREA_CITY_AREA          = 0x0020,
+    AREA_NEUTRAL_AREA       = 0x0040,
+    AREA_PVP_ARENA          = 0x0080,
+    AREA_CITY               = 0x0200,
+    AREA_SANCTUARY          = 0x0800,
     AREA_ISLAND             = 0x1000,
-    AREA_PVP_OBJECTIVE_AREA = 0x8000,
+    AREA_PVP_OBJECTIVE_AREA = 0x8000
 };
 
 enum AREATABLE_CATEGORY
@@ -267,7 +267,7 @@ enum AREATABLE_CATEGORY
     AREAC_CONTESTED          = 0,
     AREAC_ALLIANCE_TERRITORY = 2,
     AREAC_HORDE_TERRITORY    = 4,
-    AREAC_SANCTUARY          = 6,
+    AREAC_SANCTUARY          = 6
 };
 
 struct SimpleEventScript
@@ -333,6 +333,7 @@ typedef std::pair<SpellEffectMaps::const_iterator, SpellEffectMaps::const_iterat
 class SERVER_DECL GossipMenu
 {
     public:
+
         GossipMenu(uint64 Creature_Guid, uint32 Text_Id);
         void AddItem(GossipMenuItem* GossipItem);
         void AddItem(uint8 Icon, const char* Text, int32 Id = -1, int8 Extra = 0);
@@ -344,6 +345,7 @@ class SERVER_DECL GossipMenu
         inline void SetTextID(uint32 TID) { TextId = TID; }
 
     protected:
+
         uint32 TextId;
         uint64 CreatureGuid;
         std::vector<GossipMenuItem> Menu;
@@ -353,6 +355,7 @@ class SERVER_DECL GossipMenu
 class Charter
 {
     public:
+
         uint32 GetNumberOfSlotsByType()
         {
             switch(CharterType)
@@ -469,6 +472,7 @@ class PlayerCache;
 class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableObject
 {
     public:
+
         ObjectMgr();
         ~ObjectMgr();
 
@@ -802,60 +806,17 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         void LoadItemsetLink();
 
-#undef ENABLE_ALWAYS_SERIOUS_MODE_GCC_STL_HACK
-
-// it's for private persons (pps)
     private:
 
-        EventScriptMaps      mEventScriptMaps;
-        SpellEffectMaps      mSpellEffectMaps;
-
-// we don't want too serious people to see this, they'd freak out!
-#ifndef ENABLE_ALWAYS_SERIOUS_MODE_GCC_STL_HACK
-
-#define GRRR "Group Rest & Relaxation & Recreation"
-
-        /*
-
-        //////////////////////////////////////////////////////////////////////////////
-        // I've been asked if there was an easter egg in the source code
-        // No there isn't really, but now here's this easter octagon instead, enjoy!
-        // (if you are artistic, female, blue eyed with good imagination, and
-        //   at least some sense of humor, this might even look like an egg. :P)
-        //
-        //                  ---------
-        //                 /         \
-        //                /           \
-        //               /             \
-        //              |               |
-        //              |               |
-        //              |               |
-        //              |               |
-        //              |               |
-        //              |               |
-        //              |               |
-        //              \               /
-        //               \             /
-        //                \           /
-        //                 -----------
-        //
-        //
-        // dfighter March, 2010
-        //////////////////////////////////////////////////////////////////////////////
-
-        */
-
-#undef GRRR
-
-#endif
-
-#define ENABLE_ALWAYS_SERIOUS_MODE_GCC_STL_HACK
+        EventScriptMaps mEventScriptMaps;
+        SpellEffectMaps mSpellEffectMaps;
 
     protected:
+
         BCEntryStorage m_BCEntryStorage;        /// broadcast system.
         RWLock playernamelock;
-        // highest GUIDs, used for creating new objects
 
+        // highest GUIDs, used for creating new objects
         Arcemu::Threading::AtomicCounter m_hiItemGuid;
         Arcemu::Threading::AtomicCounter m_hiGroupId;
         Arcemu::Threading::AtomicCounter m_hiCharterId;

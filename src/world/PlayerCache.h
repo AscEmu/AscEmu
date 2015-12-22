@@ -21,9 +21,11 @@
 #define _PLAYERCACHE_H
 
 #include <CommonTypes.hpp>
+
 #ifndef WIN32
 #include <bits/stl_pair.h>
 #endif
+
 #include <WorldPacket.h>
 #include "Threading/Queue.h"
 #include "Object.h"
@@ -43,7 +45,7 @@ enum StringFields
 {
     CACHE_PLAYER_NAME,
     CACHE_AFK_DND_REASON,
-    NUM_STRING_CACHE_FIELDS,
+    NUM_STRING_CACHE_FIELDS
 };
 
 enum Map64Fields
@@ -65,7 +67,6 @@ union CacheField
 typedef std::map<uint64, void*> PlayerCacheMap;
 
 class Player;
-
 
 class PlayerCache : public Arcemu::Shared::CRefCounter
 {
@@ -129,23 +130,23 @@ class PlayerCache : public Arcemu::Shared::CRefCounter
         void RemoveValue64(uint32 field, uint64 value) { m_set64lock.Acquire(); m_map64fields[field].erase(value); m_set64lock.Release(); }
         size_t CountValue64(uint32 field, uint64 value) { m_set64lock.Acquire(); size_t ret = m_map64fields[field].count(value); m_set64lock.Release(); return ret; }
         size_t GetSize64(uint32 field) { m_set64lock.Acquire(); size_t ret = m_map64fields[field].size(); m_set64lock.Release(); return ret; }
-        //64bit guid lists
+
         //These functions request the field you're going to use, so we can turn them into an array of mutexes if needed. Scalability testing needs done first :P
         void AcquireLock64(uint32 field) { m_set64lock.Acquire(); }
         void ReleaseLock64(uint32 field) { m_set64lock.Release(); }
+
         //Set64 iterators, you must have the lock before using these!
         PlayerCacheMap::iterator Begin64(uint32 field) { return m_map64fields[field].begin(); }
         PlayerCacheMap::iterator End64(uint32 field) { return m_map64fields[field].end(); }
         PlayerCacheMap::iterator Find64(uint32 field, uint64 value) { return m_map64fields[field].find(value); }
 
 
-    void SendPacket(WorldPacket* p);
+        void SendPacket(WorldPacket* p);
 
-    void SendPacket(WorldPacket & p);
+        void SendPacket(WorldPacket & p);
 
-        //BEGINNING OF WRAPPERS
         uint64 GetGUID() { return (uint64(HIGHGUID_TYPE_PLAYER) << 32) | GetUInt32Value(CACHE_PLAYER_LOWGUID); }
-        //END OF WRAPPERS
+
 };
 
 #endif // _PLAYERCACHE_H

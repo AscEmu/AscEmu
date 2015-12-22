@@ -35,10 +35,11 @@ extern SERVER_DECL SessionLogWriter* GMCommand_Log;
 
 class LogonCommClientSocket : public Socket
 {
-        uint32 remaining;
-        uint16 opcode;
-        RC4Engine _sendCrypto;
-        RC4Engine _recvCrypto;
+    uint32 remaining;
+    uint16 opcode;
+    RC4Engine _sendCrypto;
+    RC4Engine _recvCrypto;
+
     public:
 
         LogonCommClientSocket(SOCKET fd);

@@ -23,6 +23,7 @@
 class Mage : public Player
 {
     public:
+
         Mage(uint32 guid) : Player(guid) {}
 
         bool IsMage() { return true; }

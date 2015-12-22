@@ -114,35 +114,38 @@ typedef struct
 class SERVER_DECL Map
 {
     public:
+
         Map(uint32 mapid, MapInfo* inf);
         ~Map();
 
-    inline std::string GetNameString();
+        inline std::string GetNameString();
 
-    const char* GetName();
+        const char* GetName();
 
-    inline const DBC::Structures::MapEntry* GetDBCEntry();
+        inline const DBC::Structures::MapEntry* GetDBCEntry();
 
-    CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
+        CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
 
-    CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
+        CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
 
-    void LoadSpawns(bool reload);           /// set to true to make clean up
+        void LoadSpawns(bool reload);           /// set to true to make clean up
         uint32 CreatureSpawnCount;
         uint32 GameObjectSpawnCount;
 
-    void CellGoneActive(uint32 x, uint32 y);
+        void CellGoneActive(uint32 x, uint32 y);
 
-    void CellGoneIdle(uint32 x, uint32 y);
-private:
+        void CellGoneIdle(uint32 x, uint32 y);
+
+    private:
 
         MapInfo* _mapInfo;
         uint32 _mapId;
         std::string name;
+
         const DBC::Structures::MapEntry* me;
 
-        /// new stuff
         CellSpawns** spawns[_sizeX];
+
     public:
 
         CellSpawns staticSpawns;

@@ -52,6 +52,7 @@ class Master : public Singleton<Master>
 
         static volatile bool m_stopEvent;
         bool m_restartEvent;
+
     private:
 
         bool _StartDB();

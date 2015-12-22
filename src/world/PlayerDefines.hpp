@@ -52,44 +52,44 @@ enum PlayerTeam : int
 
 enum Gender
 {
-    GENDER_MALE = 0,
-    GENDER_FEMALE = 1,
-    GENDER_NONE = 2
+    GENDER_MALE     = 0,
+    GENDER_FEMALE   = 1,
+    GENDER_NONE     = 2
 };
 
 enum Classes
 {
-    WARRIOR = 1,
-    PALADIN = 2,
-    HUNTER = 3,
-    ROGUE = 4,
-    PRIEST = 5,
-    DEATHKNIGHT = 6,
-    SHAMAN = 7,
-    MAGE = 8,
-    WARLOCK = 9,
-    DRUID = 11,
+    WARRIOR         = 1,
+    PALADIN         = 2,
+    HUNTER          = 3,
+    ROGUE           = 4,
+    PRIEST          = 5,
+    DEATHKNIGHT     = 6,
+    SHAMAN          = 7,
+    MAGE            = 8,
+    WARLOCK         = 9,
+    DRUID           = 11,
     MAX_PLAYER_CLASSES
 };
 
 enum Races
 {
-    RACE_HUMAN = 1,
-    RACE_ORC = 2,
-    RACE_DWARF = 3,
-    RACE_NIGHTELF = 4,
-    RACE_UNDEAD = 5,
-    RACE_TAUREN = 6,
-    RACE_GNOME = 7,
-    RACE_TROLL = 8,
-    RACE_BLOODELF = 10,
-    RACE_DRAENEI = 11,
+    RACE_HUMAN      = 1,
+    RACE_ORC        = 2,
+    RACE_DWARF      = 3,
+    RACE_NIGHTELF   = 4,
+    RACE_UNDEAD     = 5,
+    RACE_TAUREN     = 6,
+    RACE_GNOME      = 7,
+    RACE_TROLL      = 8,
+    RACE_BLOODELF   = 10,
+    RACE_DRAENEI    = 11
 };
 
 enum PlayerStatus
 {
     NONE             = 0,
-    TRANSFER_PENDING = 1,
+    TRANSFER_PENDING = 1
 };
 
 enum RankTitles
@@ -242,28 +242,28 @@ enum RankTitles
 
 enum PvPAreaStatus
 {
-    AREA_ALLIANCE = 1,
-    AREA_HORDE = 2,
-    AREA_CONTESTED = 3,
-    AREA_PVPARENA = 4,
+    AREA_ALLIANCE       = 1,
+    AREA_HORDE          = 2,
+    AREA_CONTESTED      = 3,
+    AREA_PVPARENA       = 4
 };
 
 enum PlayerMovementType
 {
-    MOVE_ROOT        = 1,
-    MOVE_UNROOT        = 2,
-    MOVE_WATER_WALK = 3,
-    MOVE_LAND_WALK  = 4,
+    MOVE_ROOT           = 1,
+    MOVE_UNROOT         = 2,
+    MOVE_WATER_WALK     = 3,
+    MOVE_LAND_WALK      = 4,
 };
 
 enum PlayerSpeedType
 {
-    RUN             = 1,
-    RUNBACK         = 2,
-    SWIM            = 3,
-    SWIMBACK        = 4,
-    WALK            = 5,
-    FLY             = 6,
+    RUN                 = 1,
+    RUNBACK             = 2,
+    SWIM                = 3,
+    SWIMBACK            = 4,
+    WALK                = 5,
+    FLY                 = 6,
 };
 
 /*
@@ -290,60 +290,60 @@ enum Standing
 
 enum PlayerFlags
 {
-    PLAYER_FLAG_PARTY_LEADER        = 0x01,
-    PLAYER_FLAG_AFK                 = 0x02,
-    PLAYER_FLAG_DND                 = 0x04,
-    PLAYER_FLAG_GM                  = 0x08,
-    PLAYER_FLAG_DEATH_WORLD_ENABLE  = 0x10,
-    PLAYER_FLAG_RESTING             = 0x20,
-    PLAYER_FLAG_ADMIN               = 0x40,
-    PLAYER_FLAG_FREE_FOR_ALL_PVP    = 0x80,
-    PLAYER_FLAG_UNKNOWN2            = 0x100,
-    PLAYER_FLAG_PVP_TOGGLE          = 0x200,
-    PLAYER_FLAG_NOHELM              = 0x400,
-    PLAYER_FLAG_NOCLOAK             = 0x800,
-    PLAYER_FLAG_NEED_REST_3_HOURS   = 0x1000,
-    PLAYER_FLAG_NEED_REST_5_HOURS   = 0x2000,
-    PLAYER_FLAG_DEVELOPER           = 0x8000,
+    PLAYER_FLAG_PARTY_LEADER        = 0x00001,
+    PLAYER_FLAG_AFK                 = 0x00002,
+    PLAYER_FLAG_DND                 = 0x00004,
+    PLAYER_FLAG_GM                  = 0x00008,
+    PLAYER_FLAG_DEATH_WORLD_ENABLE  = 0x00010,
+    PLAYER_FLAG_RESTING             = 0x00020,
+    PLAYER_FLAG_ADMIN               = 0x00040,
+    PLAYER_FLAG_FREE_FOR_ALL_PVP    = 0x00080,
+    PLAYER_FLAG_UNKNOWN2            = 0x00100,
+    PLAYER_FLAG_PVP_TOGGLE          = 0x00200,
+    PLAYER_FLAG_NOHELM              = 0x00400,
+    PLAYER_FLAG_NOCLOAK             = 0x00800,
+    PLAYER_FLAG_NEED_REST_3_HOURS   = 0x01000,
+    PLAYER_FLAG_NEED_REST_5_HOURS   = 0x02000,
+    PLAYER_FLAG_DEVELOPER           = 0x08000,
     PLAYER_FLAG_PVP                 = 0x40000,
 };
 
 enum CustomizeFlags
 {
-    CHAR_CUSTOMIZE_FLAG_NONE = 0x00000000,          // Implemented          * Allows normal login no customization needed
-    CHAR_CUSTOMIZE_FLAG_CUSTOMIZE = 0x00000001,     // Implemented          * Allows name, gender, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_FACTION = 0x00010000,       ///\todo Implement      * Allows name, gender, race, faction, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_RACE = 0x00100000           ///\todo Implement      * Allows name, gender, race, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_NONE        = 0x00000000,   // Implemented          * Allows normal login no customization needed
+    CHAR_CUSTOMIZE_FLAG_CUSTOMIZE   = 0x00000001,   // Implemented          * Allows name, gender, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   ///\todo Implement      * Allows name, gender, race, faction, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    ///\todo Implement      * Allows name, gender, race, and looks to be customized
 };
 
 enum LoginFlags
 {
-    LOGIN_NO_FLAG = 0,
-    LOGIN_FORCED_RENAME = 1,
-    LOGIN_CUSTOMIZE_FACTION = 2,
-    LOGIN_CUSTOMIZE_RACE = 4,
-    LOGIN_CUSTOMIZE_LOOKS = 8,
+    LOGIN_NO_FLAG               = 0,
+    LOGIN_FORCED_RENAME         = 1,
+    LOGIN_CUSTOMIZE_FACTION     = 2,
+    LOGIN_CUSTOMIZE_RACE        = 4,
+    LOGIN_CUSTOMIZE_LOOKS       = 8
 };
 
 enum FriendsResult
 {
-    FRIEND_DB_ERROR = 0x00,
-    FRIEND_LIST_FULL = 0x01,
-    FRIEND_ONLINE = 0x02,
-    FRIEND_OFFLINE = 0x03,
-    FRIEND_NOT_FOUND = 0x04,
-    FRIEND_REMOVED = 0x05,
-    FRIEND_ADDED_ONLINE = 0x06,
-    FRIEND_ADDED_OFFLINE = 0x07,
-    FRIEND_ALREADY = 0x08,
-    FRIEND_SELF = 0x09,
-    FRIEND_ENEMY = 0x0A,
-    FRIEND_IGNORE_FULL = 0x0B,
-    FRIEND_IGNORE_SELF = 0x0C,
-    FRIEND_IGNORE_NOT_FOUND = 0x0D,
-    FRIEND_IGNORE_ALREADY = 0x0E,
-    FRIEND_IGNORE_ADDED = 0x0F,
-    FRIEND_IGNORE_REMOVED = 0x10
+    FRIEND_DB_ERROR             = 0x00,
+    FRIEND_LIST_FULL            = 0x01,
+    FRIEND_ONLINE               = 0x02,
+    FRIEND_OFFLINE              = 0x03,
+    FRIEND_NOT_FOUND            = 0x04,
+    FRIEND_REMOVED              = 0x05,
+    FRIEND_ADDED_ONLINE         = 0x06,
+    FRIEND_ADDED_OFFLINE        = 0x07,
+    FRIEND_ALREADY              = 0x08,
+    FRIEND_SELF                 = 0x09,
+    FRIEND_ENEMY                = 0x0A,
+    FRIEND_IGNORE_FULL          = 0x0B,
+    FRIEND_IGNORE_SELF          = 0x0C,
+    FRIEND_IGNORE_NOT_FOUND     = 0x0D,
+    FRIEND_IGNORE_ALREADY       = 0x0E,
+    FRIEND_IGNORE_ADDED         = 0x0F,
+    FRIEND_IGNORE_REMOVED       = 0x10
 };
 
 enum CharterTypes
@@ -501,7 +501,7 @@ enum TRADE_STATUS
 enum TRADE_DATA
 {
     TRADE_GIVE        = 0x00,
-    TRADE_RECEIVE     = 0x01,
+    TRADE_RECEIVE     = 0x01
 };
 
 enum DUEL_STATUS
@@ -520,7 +520,7 @@ enum DUEL_STATE
 enum DUEL_WINNER
 {
     DUEL_WINNER_KNOCKOUT,
-    DUEL_WINNER_RETREAT,
+    DUEL_WINNER_RETREAT
 };
 
 #define PLAYER_ATTACK_TIMEOUT_INTERVAL 5000

@@ -102,14 +102,14 @@ struct Quest
 	uint32 receive_itemcount[4];
 	int is_repeatable;
     uint32 GetRewardItemCount();
-	//
+
 	uint32 bonushonor;
 	uint32 bonusarenapoints;
 	uint32 rewardtitleid;
 	uint32 rewardtalents;
 	uint32 suggestedplayers;
 
-	/* emotes */
+	// emotes
 	uint32 detailemotecount;
 	uint32 detailemote[4];
 	uint32 detailemotedelay[4];
@@ -121,7 +121,7 @@ struct Quest
 	uint32 iscompletedbyspelleffect;
 	uint32 RewXPId;
 
-	/* this marks the end of the fields loaded from db - don't remove the comment please */
+	// this marks the end of the fields loaded from db - don't remove the comment please
 
 	uint32 count_required_mob;
 	uint32 count_requiredquests;
@@ -131,13 +131,13 @@ struct Quest
 	uint32 count_required_item;
 	uint32 required_mobtype[4];
 	uint32 count_reward_item;
+
 	std::set<uint32> quest_list;
 	std::set<uint32> remove_quest_list;
 
 	QuestScript* pQuestScript;
 
     //////////////////////////////////////////////////////////////////////////////////////////
-	/// bool HasFlag(uint32 flag)
 	/// Tells if the quest has a specific flag.
 	///
 	/// \param uint32 flag  -  flag to check

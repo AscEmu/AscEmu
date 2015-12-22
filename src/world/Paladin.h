@@ -23,6 +23,7 @@
 class Paladin : public Player
 {
     public:
+
         Paladin(uint32 guid) : Player(guid) {}
 
         bool IsPaladin() { return true; }

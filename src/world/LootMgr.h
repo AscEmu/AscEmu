@@ -52,11 +52,12 @@ class LootRoll : public EventableObject
         void PlayerRolled(Player* player, uint8 choice);
         void Finalize();
         int32 event_GetInstanceID();
+
     private:
 
         std::map<uint32, uint32> m_NeedRolls;
         std::map<uint32, uint32> m_GreedRolls;
-    std::set<uint32> m_passRolls;
+        std::set<uint32> m_passRolls;
         uint32 _groupcount;
         uint32 _slotid;
         uint32 _itemid;
@@ -189,6 +190,7 @@ typedef std::map<uint32, StoreLootList> LootStore;
 class SERVER_DECL LootMgr : public Singleton <LootMgr>
 {
     public:
+
         LootMgr();
         ~LootMgr();
 
@@ -233,12 +235,13 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
         DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemPrototype* proto);
 
         bool is_loading;
+
     private:
 
         void LoadLootTables(const char* szTableName, LootStore* LootTable);
         void PushLoot(StoreLootList* list, Loot* loot, uint32 type);
-    std::map<uint32, RandomPropertyVector> _randomprops;
-    std::map<uint32, RandomSuffixVector> _randomsuffix;
+        std::map<uint32, RandomPropertyVector> _randomprops;
+        std::map<uint32, RandomSuffixVector> _randomsuffix;
 };
 
 #define lootmgr LootMgr::getSingleton()

@@ -66,19 +66,19 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
     typedef std::map<std::string, std::string> ForcedPermissionMap;
 #endif
 
-        ForcedPermissionMap forced_permissions;
-        std::map<LogonServer*, LogonCommClientSocket*> logons;
-        std::map<uint32, WorldSocket*> pending_logons;
-        std::set<Realm*> realms;
-        std::set<LogonServer*> servers;
-        uint32 idhigh;
-        uint32 next_request;
-        Mutex mapLock;
-        Mutex pendingLock;
-        bool pings;
-        uint32 _realmType;
-        uint32 pLimit;
-        float server_population;
+    ForcedPermissionMap forced_permissions;
+    std::map<LogonServer*, LogonCommClientSocket*> logons;
+    std::map<uint32, WorldSocket*> pending_logons;
+    std::set<Realm*> realms;
+    std::set<LogonServer*> servers;
+    uint32 idhigh;
+    uint32 next_request;
+    Mutex mapLock;
+    Mutex pendingLock;
+    bool pings;
+    uint32 _realmType;
+    uint32 pLimit;
+    float server_population;
 
     public:
 

@@ -305,9 +305,11 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
         WorldStatesHandler& GetWorldStatesHandler();
 
         void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) override;
+
 	protected:
 
 		InstanceScript* mInstanceScript;
+
 	private:
 
 		WorldStatesHandler worldstateshandler;

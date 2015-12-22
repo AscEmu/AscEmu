@@ -23,10 +23,8 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// class PossessedSummon
 /// Class that implements summons that are possessed by the player after spawning.
 /// They despawn when killed or dismissed
-///
 //////////////////////////////////////////////////////////////////////////////////////////
 class PossessedSummon : public Summon
 {
@@ -39,8 +37,6 @@ class PossessedSummon : public Summon
 
         void OnPushToWorld();
         void OnPreRemoveFromWorld();
-    private:
-
 };
 
 #endif // _POSSESSEDSUMMON_H

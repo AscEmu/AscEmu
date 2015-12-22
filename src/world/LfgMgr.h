@@ -372,6 +372,7 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
         LfgGroupDataMap m_Groups;                          ///< Group data
 
 	protected:
+
 		Mutex m_lock;
 };
 

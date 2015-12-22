@@ -103,7 +103,7 @@ enum AutoCastEvents
     AUTOCAST_EVENT_ON_SPAWN             = 2,
     AUTOCAST_EVENT_OWNER_ATTACKED       = 3,
     AUTOCAST_EVENT_LEAVE_COMBAT         = 4,
-    AUTOCAST_EVENT_COUNT                = 5,
+    AUTOCAST_EVENT_COUNT                = 5
 };
 
 #define PET_TALENT_TREE_START 409           /// Tenacity

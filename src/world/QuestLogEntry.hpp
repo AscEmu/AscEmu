@@ -33,6 +33,7 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 	friend class QuestMgr;
 
 	public:
+
 		QuestLogEntry();
 		~QuestLogEntry();
 
@@ -80,10 +81,10 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		/// \return true if the quest has failed, false otherwise.
 		///
         //////////////////////////////////////////////////////////////////////////////////////////
-    bool HasFailed();
+        bool HasFailed();
 
 
-    void SendQuestComplete();
+        void SendQuestComplete();
 		void SendUpdateAddKill(uint32 i);
 		inline uint32 GetMobCount(uint32 i) { return m_mobcount[i]; }
 		inline uint32 GetExploredAreas(uint32 i) { return m_explored_areas[i]; }

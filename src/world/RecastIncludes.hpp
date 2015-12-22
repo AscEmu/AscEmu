@@ -18,10 +18,12 @@
 
 #ifndef _RECAST_INCLUDES_HPP
 #define _RECAST_INCLUDES_HPP
+
 #include "DetourNavMeshQuery.h"
 #include "DetourNavMesh.h"
 #include "DetourNode.h"
 #include "DetourCommon.h"
 #include "DetourAlloc.h"
 #include "DetourAssert.h"
+
 #endif      // _RECAST_INCLUDES_HPP

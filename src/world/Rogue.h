@@ -24,6 +24,7 @@
 class Rogue : public Player
 {
     public:
+
         Rogue(uint32 guid) : Player(guid) {}
 
         bool IsRogue() { return true; }

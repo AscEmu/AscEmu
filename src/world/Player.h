@@ -221,14 +221,14 @@ enum MeetingStoneQueueStatus
     MEETINGSTONE_STATUS_PARTY_MEMBER_LEFT_LFG               = 2,
     MEETINGSTONE_STATUS_PARTY_MEMBER_REMOVED_PARTY_REMOVED  = 3,
     MEETINGSTONE_STATUS_LOOKING_FOR_NEW_PARTY_IN_QUEUE      = 4,
-    MEETINGSTONE_STATUS_NONE_UNK                            = 5,
+    MEETINGSTONE_STATUS_NONE_UNK                            = 5
 };
 
 enum ItemPushResultTypes
 {
     ITEM_PUSH_TYPE_LOOT     = 0x00000000,
     ITEM_PUSH_TYPE_RECEIVE  = 0x00000001,
-    ITEM_PUSH_TYPE_CREATE   = 0x00000002,
+    ITEM_PUSH_TYPE_CREATE   = 0x00000002
 };
 
 struct WeaponModifier
@@ -255,6 +255,7 @@ struct classScriptOverride
 #ifdef ENABLE_ACHIEVEMENTS
 class AchievementMgr;
 #endif
+
 class Spell;
 class Item;
 class Container;
@@ -263,6 +264,7 @@ class ItemInterface;
 class GossipMenu;
 class SpeedCheatDetector;
 struct TaxiPathNode;
+
 struct PlayerSkill
 {
     DBC::Structures::SkillLineEntry const* Skill;
@@ -276,9 +278,11 @@ struct PlayerSkill
 enum SPELL_INDEX2
 {
     SPELL_TYPE2_PALADIN_AURA        = 1,
-    SPELL_TYPE3_DEATH_KNIGHT_AURA   = 1,
+    SPELL_TYPE3_DEATH_KNIGHT_AURA   = 1
 };
+
 class ArenaTeam;
+
 struct PlayerCooldown
 {
     uint32 ExpireTime;
@@ -321,12 +325,7 @@ class PlayerSpec
         uint32 tp;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Player
-/// Class that holds every created character on the server.
-///
-///\todo Attach characters to user accounts
-//////////////////////////////////////////////////////////////////////////////////////////
+
 typedef std::set<uint32>                            SpellSet;
 typedef std::list<classScriptOverride*>             ScriptOverrideList;
 typedef std::set<uint32>                            SaveSet;
@@ -341,6 +340,11 @@ typedef std::map<uint32, PlayerSkill>               SkillMap;
 typedef std::set<Player**>                          ReferenceSet;
 typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
 
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Class that holds every created character on the server.
+///
+///\todo Attach characters to user accounts
+//////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL Player : public Unit
 {
     friend class WorldSession;
@@ -545,9 +549,9 @@ class SERVER_DECL Player : public Unit
 
         ArenaTeam* m_arenaTeams[NUM_ARENA_TEAM_TYPES];
 
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         // Taxi
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         TaxiPath* GetTaxiPath() { return m_CurrentTaxiPath; }
         bool GetTaxiState() { return m_onTaxi; }
         const uint32 & GetTaximask(uint8 index) const { return m_taximask[index]; }
@@ -564,7 +568,7 @@ class SERVER_DECL Player : public Unit
         void UnSetTaxiPos() { m_taxi_pos_x = 0; m_taxi_pos_y = 0; m_taxi_pos_z = 0; }
 
         // Taxi related variables
-    std::vector<TaxiPath*> m_taxiPaths;
+        std::vector<TaxiPath*> m_taxiPaths;
         TaxiPath* m_CurrentTaxiPath;
         uint32 taxi_model_id;
         uint32 lastNode;
@@ -576,8 +580,9 @@ class SERVER_DECL Player : public Unit
         bool m_onTaxi;
         uint32 m_taxiMapChangeNode;
 
-
+        /////////////////////////////////////////////////////////////////////////////////////////
         // Quests
+        /////////////////////////////////////////////////////////////////////////////////////////
         bool HasQuests()
         {
             for (uint8 i = 0; i < 25; ++i)
@@ -669,12 +674,12 @@ class SERVER_DECL Player : public Unit
          *  \sa Player::GetTeamReal */
         uint32 GetTeam() { return m_team; }
 
-    PlayerTeam GetTeamReal();
+        PlayerTeam GetTeamReal();
 
-    uint32 GetTeamInitial();
+        uint32 GetTeamInitial();
         void SetTeam(uint32 t) { m_team = t; m_bgTeam = t; }
 
-    void ResetTeam();
+        void ResetTeam();
         bool IsTeamHorde() { return m_team == TEAM_HORDE; }
         bool IsTeamAlliance() { return m_team == TEAM_ALLIANCE; }
 
@@ -714,9 +719,9 @@ class SERVER_DECL Player : public Unit
         void SetSelection(const uint64 & guid) { m_curSelection = guid; }
         void SetTarget(const uint64 & guid) { m_curTarget = guid; }
 
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         // Spells
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         bool HasSpell(uint32 spell);
         bool HasSpellwithNameHash(uint32 hash);
         bool HasDeletedSpell(uint32 spell);
@@ -752,40 +757,40 @@ class SERVER_DECL Player : public Unit
         }
 
         //Spells variables
-        StrikeSpellMap      m_onStrikeSpells;
-        StrikeSpellDmgMap   m_onStrikeSpellDmg;
-        SpellOverrideMap    mSpellOverrideMap;
-        SpellSet            mSpells;
-        SpellSet            mDeletedSpells;
-        SpellSet            mShapeShiftSpells;
+        StrikeSpellMap m_onStrikeSpells;
+        StrikeSpellDmgMap m_onStrikeSpellDmg;
+        SpellOverrideMap mSpellOverrideMap;
+        SpellSet mSpells;
+        SpellSet mDeletedSpells;
+        SpellSet mShapeShiftSpells;
 
         void AddShapeShiftSpell(uint32 id);
         void RemoveShapeShiftSpell(uint32 id);
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         // Actionbar
-        /************************************************************************/
-        void                setAction(uint8 button, uint16 action, uint8 type, uint8 misc);
-        void                SendInitialActions();
+        /////////////////////////////////////////////////////////////////////////////////////////
+        void setAction(uint8 button, uint16 action, uint8 type, uint8 misc);
+        void SendInitialActions();
 
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         // Reputation
-        /************************************************************************/
-        void                ModStanding(uint32 Faction, int32 Value);
-        int32               GetStanding(uint32 Faction);
-        int32               GetBaseStanding(uint32 Faction);
-        void                SetStanding(uint32 Faction, int32 Value);
-        void                SetAtWar(uint32 Faction, bool Set);
-        bool                IsAtWar(uint32 Faction);
-        Standing            GetStandingRank(uint32 Faction);
-        bool                IsHostileBasedOnReputation(DBC::Structures::FactionEntry const* dbc);
-        void                UpdateInrangeSetsBasedOnReputation();
-        void                Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop);
-        void                Reputation_OnTalk(DBC::Structures::FactionEntry const* dbc);
-        static Standing     GetReputationRankFromStanding(int32 Standing_);
-        void                SetFactionInactive(uint32 faction, bool set);
-        bool                AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 standing, bool base);
-        void                OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionReputation* rep);
-        uint32              GetExaltedCount(void);
+        /////////////////////////////////////////////////////////////////////////////////////////
+        void ModStanding(uint32 Faction, int32 Value);
+        int32 GetStanding(uint32 Faction);
+        int32 GetBaseStanding(uint32 Faction);
+        void SetStanding(uint32 Faction, int32 Value);
+        void SetAtWar(uint32 Faction, bool Set);
+        bool IsAtWar(uint32 Faction);
+        Standing GetStandingRank(uint32 Faction);
+        bool IsHostileBasedOnReputation(DBC::Structures::FactionEntry const* dbc);
+        void UpdateInrangeSetsBasedOnReputation();
+        void Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop);
+        void Reputation_OnTalk(DBC::Structures::FactionEntry const* dbc);
+        static Standing GetReputationRankFromStanding(int32 Standing_);
+        void SetFactionInactive(uint32 faction, bool set);
+        bool AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 standing, bool base);
+        void OnModStanding(DBC::Structures::FactionEntry const* dbc, FactionReputation* rep);
+        uint32 GetExaltedCount(void);
 
         // Factions
         void smsg_InitialFactions();
@@ -793,9 +798,9 @@ class SERVER_DECL Player : public Unit
         // factions variables
         int32 pctReputationMod;
 
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         // PVP
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         uint8 GetPVPRank()
         {
             return (uint8)((GetUInt32Value(PLAYER_BYTES_3) >> 24) & 0xFF);
@@ -813,64 +818,64 @@ class SERVER_DECL Player : public Unit
         void SetKnownTitle(RankTitles title, bool set);
         void SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* shapeshift_form, bool active);
 
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
         // Groups
-        /************************************************************************/
-        void        SetInviter(uint32 pInviter) { m_GroupInviter = pInviter; }
-        uint32      GetInviter() { return m_GroupInviter; }
-        bool        InGroup() { return (m_playerInfo->m_Group != NULL && !m_GroupInviter); }
+        /////////////////////////////////////////////////////////////////////////////////////////
+        void SetInviter(uint32 pInviter) { m_GroupInviter = pInviter; }
+        uint32 GetInviter() { return m_GroupInviter; }
+        bool InGroup() { return (m_playerInfo->m_Group != NULL && !m_GroupInviter); }
 
-    bool IsGroupLeader();
-        int         HasBeenInvited() { return m_GroupInviter != 0; }
-        Group*      GetGroup() { return m_playerInfo ? m_playerInfo->m_Group : NULL; }
-        int8        GetSubGroup() { return m_playerInfo->subGroup; }
-        bool        IsGroupMember(Player* plyr);
+        bool IsGroupLeader();
+        int HasBeenInvited() { return m_GroupInviter != 0; }
+        Group* GetGroup() { return m_playerInfo ? m_playerInfo->m_Group : NULL; }
+        int8 GetSubGroup() { return m_playerInfo->subGroup; }
+        bool IsGroupMember(Player* plyr);
 
-    bool IsBanned();
-        void        SetBanned() { m_banned = 4;}
-        void        SetBanned(std::string Reason) { m_banned = 4; m_banreason = Reason;}
-        void        SetBanned(uint32 timestamp, std::string & Reason) { m_banned = timestamp; m_banreason = Reason; }
-        void        UnSetBanned() { m_banned = 0; }
-        std::string      GetBanReason() {return m_banreason;}
+        bool IsBanned();
+        void SetBanned() { m_banned = 4;}
+        void SetBanned(std::string Reason) { m_banned = 4; m_banreason = Reason;}
+        void SetBanned(uint32 timestamp, std::string & Reason) { m_banned = timestamp; m_banreason = Reason; }
+        void UnSetBanned() { m_banned = 0; }
+        std::string GetBanReason() {return m_banreason;}
 
-        /************************************************************************/
-        /* Guilds                                                               */
-        /************************************************************************/
-        Guild*         GetGuild() { return m_playerInfo->guild; }
-        bool            IsInGuild() {return (m_uint32Values[PLAYER_GUILDID] != 0) ? true : false;}
-        uint32        GetGuildId() { return m_uint32Values[PLAYER_GUILDID]; }
-        void                        SetGuildId(uint32 guildId);
-        uint32        GetGuildRank() { return m_uint32Values[PLAYER_GUILDRANK]; }
-        GuildRank*    GetGuildRankS() { return m_playerInfo->guildRank; }
-        void                        SetGuildRank(uint32 guildRank);
-        uint32                        GetGuildInvitersGuid() { return m_invitersGuid; }
-        void                        SetGuildInvitersGuid(uint32 guid) { m_invitersGuid = guid; }
-        void                        UnSetGuildInvitersGuid() { m_invitersGuid = 0; }
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Guilds
+        /////////////////////////////////////////////////////////////////////////////////////////
+        Guild* GetGuild() { return m_playerInfo->guild; }
+        bool IsInGuild() {return (m_uint32Values[PLAYER_GUILDID] != 0) ? true : false;}
+        uint32 GetGuildId() { return m_uint32Values[PLAYER_GUILDID]; }
+        void SetGuildId(uint32 guildId);
+        uint32 GetGuildRank() { return m_uint32Values[PLAYER_GUILDRANK]; }
+        GuildRank* GetGuildRankS() { return m_playerInfo->guildRank; }
+        void SetGuildRank(uint32 guildRank);
+        uint32 GetGuildInvitersGuid() { return m_invitersGuid; }
+        void SetGuildInvitersGuid(uint32 guid) { m_invitersGuid = guid; }
+        void UnSetGuildInvitersGuid() { m_invitersGuid = 0; }
         GuildMember* GetGuildMember() { return m_playerInfo->guildMember; }
 
-        /************************************************************************/
-        /* Duel                                                                 */
-        /************************************************************************/
-        void                RequestDuel(Player* pTarget);
-        void                DuelBoundaryTest();
-        void                EndDuel(uint8 WinCondition);
-        void                DuelCountdown();
-        void                SetDuelStatus(uint8 status) { m_duelStatus = status; }
-        uint8               GetDuelStatus() { return m_duelStatus; }
-        void                SetDuelState(uint8 state) { m_duelState = state; }
-        uint8               GetDuelState() { return m_duelState; }
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Duel
+        /////////////////////////////////////////////////////////////////////////////////////////
+        void RequestDuel(Player* pTarget);
+        void DuelBoundaryTest();
+        void EndDuel(uint8 WinCondition);
+        void DuelCountdown();
+        void SetDuelStatus(uint8 status) { m_duelStatus = status; }
+        uint8 GetDuelStatus() { return m_duelStatus; }
+        void SetDuelState(uint8 state) { m_duelState = state; }
+        uint8 GetDuelState() { return m_duelState; }
         // duel variables
-        Player*             DuelingWith;
-        void                SetDuelArbiter(uint64 guid) { SetUInt64Value(PLAYER_DUEL_ARBITER, guid); }
-        uint64              GetDuelArbiter() { return GetUInt64Value(PLAYER_DUEL_ARBITER); }
-        void                SetDuelTeam(uint32 team) { SetUInt32Value(PLAYER_DUEL_TEAM, team); }
-        uint32              GetDuelTeam() { return GetUInt32Value(PLAYER_DUEL_TEAM); }
+        Player* DuelingWith;
+        void SetDuelArbiter(uint64 guid) { SetUInt64Value(PLAYER_DUEL_ARBITER, guid); }
+        uint64 GetDuelArbiter() { return GetUInt64Value(PLAYER_DUEL_ARBITER); }
+        void SetDuelTeam(uint32 team) { SetUInt32Value(PLAYER_DUEL_TEAM, team); }
+        uint32 GetDuelTeam() { return GetUInt32Value(PLAYER_DUEL_TEAM); }
 
-        /************************************************************************/
-        /* Trade                                                                */
-        /************************************************************************/
-        void                SendTradeUpdate(void);
-        void         ResetTradeVariables()
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Trade
+        /////////////////////////////////////////////////////////////////////////////////////////
+        void SendTradeUpdate(void);
+        void ResetTradeVariables()
         {
             mTradeGold = 0;
             memset(&mTradeItems, 0, sizeof(Item*) * 8);
@@ -879,11 +884,11 @@ class SERVER_DECL Player : public Unit
             m_tradeSequence = 2;
         }
 
-        /************************************************************************/
-        /* Pets                                                                 */
-        /************************************************************************/
-        void            AddSummon(Pet* pet) { m_Summons.push_front(pet); }
-        Pet*            GetSummon(void)     /// returns 1st summon
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Pets
+        /////////////////////////////////////////////////////////////////////////////////////////
+        void AddSummon(Pet* pet) { m_Summons.push_front(pet); }
+        Pet* GetSummon(void)     /// returns 1st summon
         {
             if (!m_Summons.empty())
                 return m_Summons.front();
@@ -892,41 +897,42 @@ class SERVER_DECL Player : public Unit
         }
         std::list<Pet*> GetSummons(void) { return m_Summons; }
 
-    void RemoveSummon(Pet* pet);
-        uint32          GeneratePetNumber(void);
-        void            RemovePlayerPet(uint32 pet_number);
-        void            AddPlayerPet(PlayerPet* pet, uint32 index) { m_Pets[index] = pet; }
-        PlayerPet*      GetPlayerPet(uint32 idx)
+        void RemoveSummon(Pet* pet);
+        uint32 GeneratePetNumber(void);
+        void RemovePlayerPet(uint32 pet_number);
+        void AddPlayerPet(PlayerPet* pet, uint32 index) { m_Pets[index] = pet; }
+        PlayerPet* GetPlayerPet(uint32 idx)
         {
             std::map<uint32, PlayerPet*>::iterator itr = m_Pets.find(idx);
-            if (itr != m_Pets.end()) return itr->second;
+            if (itr != m_Pets.end())
+                return itr->second;
             else
                 return NULL;
         }
-        void            SpawnPet(uint32 pet_number);
-        void            SpawnActivePet();
-        void            DismissActivePets();
-        uint8           GetPetCount(void) { return (uint8)m_Pets.size(); }
-        void            SetStableSlotCount(uint8 count) { m_StableSlotCount = count; }
-        uint8           GetStableSlotCount(void) { return m_StableSlotCount; }
+        void SpawnPet(uint32 pet_number);
+        void SpawnActivePet();
+        void DismissActivePets();
+        uint8 GetPetCount(void) { return (uint8)m_Pets.size(); }
+        void SetStableSlotCount(uint8 count) { m_StableSlotCount = count; }
+        uint8 GetStableSlotCount(void) { return m_StableSlotCount; }
 
-    uint32 GetUnstabledPetNumber(void);
-        void        EventSummonPet(Pet* new_pet);   /// if we charmed or simply summoned a pet, this function should get called
-        void        EventDismissPet();              /// if pet/charm died or whatever happened we should call this function
+        uint32 GetUnstabledPetNumber(void);
+        void EventSummonPet(Pet* new_pet);   /// if we charmed or simply summoned a pet, this function should get called
+        void EventDismissPet();              /// if pet/charm died or whatever happened we should call this function
 
-        /************************************************************************/
-        /* Item Interface                                                       */
-        /************************************************************************/
-        ItemInterface*  GetItemInterface() { return m_ItemInterface; }       /// Player Inventory Item storage
-        void            ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) {  _ApplyItemMods(item, slot, apply, justdrokedown); }
-        bool            HasItemCount(uint32 item, uint32 count, bool inBankAlso = false) const;
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Item Interface
+        /////////////////////////////////////////////////////////////////////////////////////////
+        ItemInterface* GetItemInterface() { return m_ItemInterface; }       /// Player Inventory Item storage
+        void ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedown = false) { _ApplyItemMods(item, slot, apply, justdrokedown); }
+        bool HasItemCount(uint32 item, uint32 count, bool inBankAlso = false) const;
         /// item interface variables
-        ItemInterface*  m_ItemInterface;
+        ItemInterface* m_ItemInterface;
         int32 GetVisibleBase(int16 slot) { return (PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * PLAYER_VISIBLE_ITEM_LENGTH)); }
 
-        /************************************************************************/
-        /* Loot                                                                 */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Loot
+        /////////////////////////////////////////////////////////////////////////////////////////
         const uint64 & GetLootGUID() const { return m_lootGuid; }
         void SetLootGUID(const uint64 & guid) { m_lootGuid = guid; }
         void SendLoot(uint64 guid, uint8 loot_type, uint32 mapid);
@@ -938,14 +944,14 @@ class SERVER_DECL Player : public Unit
         uint64 m_currentLoot;
         bool bShouldHaveLootableOnCorpse;
 
-        /************************************************************************/
-        /* World Session                                                        */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // World Session
+        /////////////////////////////////////////////////////////////////////////////////////////
         WorldSession* GetSession() const { return m_session; }
         void SetSession(WorldSession* s) { m_session = s; }
         void SetBindPoint(float x, float y, float z, uint32 m, uint32 v) { m_bind_pos_x = x; m_bind_pos_y = y; m_bind_pos_z = z; m_bind_mapid = m; m_bind_zoneid = v;}
 
-    void SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend);
+        void SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend);
         float offhand_dmg_mod;
         int GetSpellDamageMod(uint32 id);
         int32 GetSpellManaMod(uint32 id);
@@ -959,10 +965,9 @@ class SERVER_DECL Player : public Unit
 
         std::list<LoginAura> loginauras;
 
-        /************************************************************************/
-        /* Player loading and savings                                           */
-        /* Serialize character to db                                            */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Player loading and savings Serialize character to db
+        /////////////////////////////////////////////////////////////////////////////////////////
         void SaveToDB(bool bNewCharacter);
         void SaveAuras(std::stringstream &);
         bool LoadFromDB(uint32 guid);
@@ -983,9 +988,9 @@ class SERVER_DECL Player : public Unit
         void LoadNamesFromDB(uint32 guid);
         bool m_FirstLogin;
 
-        /************************************************************************/
-        /* Drunk system                                                         */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Drunk system
+        /////////////////////////////////////////////////////////////////////////////////////////
         void SetDrunkValue(uint16 newDrunkValue, uint32 itemid = 0);
         uint16 GetDrunkValue() const { return m_drunk; }
         static DrunkenState GetDrunkenstateByValue(uint16 value);
@@ -994,9 +999,9 @@ class SERVER_DECL Player : public Unit
         uint32 m_drunkTimer;
         uint16 m_drunk;
 
-        /************************************************************************/
-        /* Death system                                                         */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Death system
+        /////////////////////////////////////////////////////////////////////////////////////////
         void SpawnCorpseBody();
         void SpawnCorpseBones();
         void CreateCorpse();
@@ -1009,9 +1014,9 @@ class SERVER_DECL Player : public Unit
 
         uint64 m_resurrecter;
 
-        /************************************************************************/
-        /* Movement system                                                      */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Movement system
+        /////////////////////////////////////////////////////////////////////////////////////////
         void SetMovement(uint8 pType, uint32 flag);
         void SetSpeeds(uint8 type, float speed);
         float GetPlayerSpeed() { return m_runSpeed; }
@@ -1024,22 +1029,24 @@ class SERVER_DECL Player : public Unit
         //Invisibility stuff
         bool m_isGmInvisible;
 
-        /************************************************************************/
-        /* Channel stuff                                                        */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Channel stuff
+        /////////////////////////////////////////////////////////////////////////////////////////
         void JoinedChannel(Channel* c);
         void LeftChannel(Channel* c);
         void CleanupChannels();
 
-        /************************************************************************/
-        /* Attack stuff                                                            */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Attack stuff
+        /////////////////////////////////////////////////////////////////////////////////////////
         void EventAttackStart();
         void EventAttackStop();
         void EventAttackUpdateSpeed() { }
         void EventDeath();
+
         //Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --weird
         float GetSkillUpChance(uint32 id);
+
         // std::list<struct skilllines>getSkillLines() { return m_skilllines; }
         float SpellHasteRatingBonus;
         void ModAttackSpeed(int32 mod, ModType type);
@@ -1054,24 +1061,31 @@ class SERVER_DECL Player : public Unit
         void ApplyFeralAttackPower(bool apply, Item* item = NULL);
 
         bool canCast(SpellEntry* m_spellInfo);
+
         float GetSpellCritFromSpell() { return m_spellcritfromspell; }
         float GetHitFromSpell() { return m_hitfromspell; }
         void SetSpellCritFromSpell(float value) { m_spellcritfromspell = value; }
         void SetHitFromSpell(float value) { m_hitfromspell = value; }
+
         uint32 GetHealthFromSpell() { return m_healthfromspell; }
         uint32 GetManaFromSpell() { return m_manafromspell; }
         void SetHealthFromSpell(uint32 value) { m_healthfromspell = value;}
         void SetManaFromSpell(uint32 value) { m_manafromspell = value;}
+
         uint32 CalcTalentResetCost(uint32 resetnum);
         void SendTalentResetConfirm();
         void SendPetUntrainConfirm();
+
         uint32 GetTalentResetTimes() { return m_talentresettimes; }
         void SetTalentResetTimes(uint32 value) { m_talentresettimes = value; }
+
         void SetPlayerStatus(uint8 pStatus) { m_status = pStatus; }
         uint8 GetPlayerStatus() { return m_status; }
+
         const float & GetBindPositionX() const { return m_bind_pos_x; }
         const float & GetBindPositionY() const { return m_bind_pos_y; }
         const float & GetBindPositionZ() const { return m_bind_pos_z; }
+
         const uint32 & GetBindMapId() const { return m_bind_mapid; }
         const uint32 & GetBindZoneId() const { return m_bind_zoneid; }
 
@@ -1156,16 +1170,20 @@ class SERVER_DECL Player : public Unit
         bool m_bgIsQueued;
         uint32 m_bgQueueType;
         uint32 m_bgQueueInstanceId;
-        protected:
-            /*! True if player queued for Random Battleground */
-            bool m_bgIsRbg;
-            /*! True if player has won a Random Battleground today */
-            bool m_bgIsRbgWon;
-        public:
-            bool QueuedForRbg();
-            void SetQueuedForRbg(bool value);
-            bool HasWonRbgToday();
-            void SetHasWonRbgToday(bool value);
+
+    protected:
+
+        ///True if player queued for Random Battleground
+        bool m_bgIsRbg;
+
+        ///True if player has won a Random Battleground today
+        bool m_bgIsRbgWon;
+
+    public:
+        bool QueuedForRbg();
+        void SetQueuedForRbg(bool value);
+        bool HasWonRbgToday();
+        void SetHasWonRbgToday(bool value);
 
         void EventRepeatSpell();
         void EventCastRepeatedSpell(uint32 spellid, Unit* target);
@@ -1183,7 +1201,7 @@ class SERVER_DECL Player : public Unit
         void CalcResistance(uint32 type);
         float res_M_crit_get() { return m_resist_critical[0]; }
         void res_M_crit_set(float newvalue) { m_resist_critical[0] = newvalue; }
-        float res_R_crit_get() {return m_resist_critical[1];}
+        float res_R_crit_get() { return m_resist_critical[1]; }
         void res_R_crit_set(float newvalue) { m_resist_critical[1] = newvalue; }
         uint32 FlatResistanceModifierPos[SCHOOL_COUNT];
         uint32 FlatResistanceModifierNeg[SCHOOL_COUNT];
@@ -1220,12 +1238,7 @@ class SERVER_DECL Player : public Unit
         int32 DetectedRange;
         float PctIgnoreRegenModifier;
         uint32 m_retainedrage;
-        /*
-            union {
-                float mRatingToPct[37];
-                uint32 mRatingToPoint[37]; //block, skill.. cant be decimal values
-            };
-        */
+
         uint32* GetPlayedtime() { return m_playedtime; };
         void CalcStat(uint32 t);
         float CalcRating(uint32 t);
@@ -1259,9 +1272,9 @@ class SERVER_DECL Player : public Unit
         int32 rageFromDamageDealt;
         int32 rageFromDamageTaken;
         // GameObject commands
-    GameObject * GetSelectedGo();
+        GameObject * GetSelectedGo();
 
-    uint64 m_GM_SelectedGO;
+        uint64 m_GM_SelectedGO;
 
         void _Relocate(uint32 mapid, const LocationVector & v, bool sendpending, bool force_new_world, uint32 instance_id);
 
@@ -1273,7 +1286,7 @@ class SERVER_DECL Player : public Unit
         uint32 m_MountSpellId;
         uint32 mountvehicleid;
 
-    bool IsMounted();
+        bool IsMounted();
 
         void Dismount()
         {
@@ -1297,9 +1310,9 @@ class SERVER_DECL Player : public Unit
 
         void RemoveVehicleComponent();
 
-    void SendMountResult(uint32 result);
+        void SendMountResult(uint32 result);
 
-    void SendDismountResult(uint32 result);
+        void SendDismountResult(uint32 result);
 
         bool bHasBindDialogOpen;
         uint32 TrackingSpell;
@@ -1352,7 +1365,6 @@ class SERVER_DECL Player : public Unit
         bool IsInCity();
 
         // Instance IDs
-
         uint32 GetPersistentInstanceId(uint32 mapId, uint32 difficulty)
         {
             if (mapId >= NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == NULL)
@@ -1378,6 +1390,7 @@ class SERVER_DECL Player : public Unit
         // DualWield2H (ex: Titan's grip)
         bool DualWield2H;
         void ResetDualWield2H();
+
     public:
 
         bool m_Autojoin;
@@ -1450,9 +1463,9 @@ class SERVER_DECL Player : public Unit
         bool HasAreaExplored(::DBC::Structures::AreaTableEntry const*);
         bool HasOverlayUncovered(uint32 overlayID);
 
-        /*****************
-          PVP Stuff
-        ******************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        //  PVP Stuff
+        /////////////////////////////////////////////////////////////////////////////////////////
         uint32 m_pvpTimer;
 
         bool IsPvPFlagged();
@@ -1467,9 +1480,9 @@ class SERVER_DECL Player : public Unit
         void SetSanctuaryFlag();
         void RemoveSanctuaryFlag();
 
-        /////////////////////////////////////////////////
-        // EASY FUNCTIONS - PLAYER GOLD
-        /////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Player gold
+        /////////////////////////////////////////////////////////////////////////////////////////
         void SetGold(int32 coins)
         {
             SetUInt32Value(PLAYER_FIELD_COINAGE, coins);
@@ -1487,10 +1500,10 @@ class SERVER_DECL Player : public Unit
             return (GetUInt32Value(PLAYER_FIELD_COINAGE) >= coins);
         }
 
-        /////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
         // DEPRICATED FUNCTIONS USE
         // SetGold and ModGold
-        /////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
         void GiveGold(int32 coins)
         {
             ModUnsigned32Value(PLAYER_FIELD_COINAGE , coins);
@@ -1500,9 +1513,9 @@ class SERVER_DECL Player : public Unit
             ModUnsigned32Value(PLAYER_FIELD_COINAGE, -coins);
         }
 
-        /////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
         // EASY FUNCTIONS - MISC
-        /////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         void SetChosenTitle(uint32 id) { SetUInt32Value(PLAYER_CHOSEN_TITLE, id); }
 
@@ -1661,7 +1674,7 @@ class SERVER_DECL Player : public Unit
         // Trade Target
         //Player* getTradeTarget() {return mTradeTarget;};
 
-    Player * GetTradeTarget();
+        Player* GetTradeTarget();
 
         Item* getTradeItem(uint32 slot) {return mTradeItems[slot];};
 
@@ -1669,9 +1682,9 @@ class SERVER_DECL Player : public Unit
         /// Nose level of the character (needed for proper breathing)
         float m_noseLevel;
 
-    void UpdateLastSpeeds();
+        void UpdateLastSpeeds();
 
-    void RemoteRevive();
+        void RemoteRevive();
 
         LocationVector m_last_group_position;
         int32 m_rap_mod_pct;
@@ -1692,9 +1705,9 @@ class SERVER_DECL Player : public Unit
         void ResetTimeSync();
         void SendTimeSync();
 
-        /************************************************************************/
-        /* Spell Packet wrapper Please keep this separated                      */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Spell Packet wrapper Please keep this separated
+        /////////////////////////////////////////////////////////////////////////////////////////
         void SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0, uint32 Stat1, uint32 Stat2, uint32 Stat3, uint32 Stat4);
         void SendLogXPGain(uint64 guid, uint32 NormalXP, uint32 RestedXP, bool type);
         void SendWorldStateUpdate(uint32 WorldState, uint32 Value);
@@ -1709,9 +1722,9 @@ class SERVER_DECL Player : public Unit
         void SendPlaySpellVisual(uint64 guid, uint32 visualid);
         void SendNewDrunkState(uint32 state, uint32 itemid);
 
-        /************************************************************************/
-        /* End of SpellPacket wrapper                                           */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // End of SpellPacket wrapper
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         Mailbox m_mailBox;
         bool m_waterwalk;
@@ -1728,7 +1741,9 @@ class SERVER_DECL Player : public Unit
         void CopyAndSendDelayedPacket(WorldPacket* data);
         void PartLFGChannel();
         SpeedCheatDetector* SDetector;
+
     protected:
+
         LocationVector m_summonPos;
         uint32 m_summonInstanceId;
         uint32 m_summonMapId;
@@ -1737,7 +1752,7 @@ class SERVER_DECL Player : public Unit
         void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
         void _SetUpdateBits(UpdateMask* updateMask, Player* target) const;
 
-        /* Update system components */
+        // Update system components
         ByteBuffer bUpdateBuffer;
         ByteBuffer bCreationBuffer;
         uint32 mUpdateCount;
@@ -1745,7 +1760,7 @@ class SERVER_DECL Player : public Unit
         uint32 mOutOfRangeIdCount;
         ByteBuffer mOutOfRangeIds;
         SplineMap _splineMap;
-        /* End update system */
+        // End update system
 
         void _LoadTutorials(QueryResult* result);
         void _SaveTutorials(QueryBuffer* buf);
@@ -1766,35 +1781,35 @@ class SERVER_DECL Player : public Unit
         /// Water level related stuff
         void SetNoseLevel();
 
-        /************************************************************************/
-        /* Trade                                                                */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Trade
+        /////////////////////////////////////////////////////////////////////////////////////////
         Item* mTradeItems[8];
         uint32 mTradeGold;
         uint32 mTradeTarget;
         uint32 mTradeStatus;
 
-        /************************************************************************/
-        /* Player Class systems, info and misc things                           */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Player Class systems, info and misc things
+        /////////////////////////////////////////////////////////////////////////////////////////
         PlayerCreateInfo* info;
-        uint32      m_AttackMsgTimer;       /// "too far away" and "wrong facing" timer
-        bool        m_attacking;
-        std::string m_name;                 /// max 21 character name
-        uint32      m_Tutorials[8];
+        uint32 m_AttackMsgTimer;        /// "too far away" and "wrong facing" timer
+        bool m_attacking;
+        std::string m_name;             /// max 21 character name
+        uint32 m_Tutorials[8];
 
         // Character Ban
-        uint32      m_banned;
-        std::string      m_banreason;
-        uint32      m_AreaID;
+        uint32 m_banned;
+        std::string m_banreason;
+        uint32 m_AreaID;
         std::list<Pet*>  m_Summons;
-        uint32      m_PetNumberMax;
+        uint32 m_PetNumberMax;
         std::map<uint32, PlayerPet*> m_Pets;
 
-        uint32      m_invitersGuid;         /// It is guild inviters guid ,0 when its not used
+        uint32 m_invitersGuid;      /// It is guild inviters guid ,0 when its not used
 
 #ifdef TRACK_IMMUNITY_BUG
-        uint32        m_immunityTime;
+        uint32 m_immunityTime;
 #endif
 
         // bind
@@ -1855,22 +1870,24 @@ class SERVER_DECL Player : public Unit
 
         // other system
         LocationVector myCorpseLocation;
-        int32        myCorpseInstanceId;
+        int32 myCorpseInstanceId;
 
-        uint32      m_lastHonorResetTime;
-        uint32      _fields[PLAYER_END];
-        int            hearth_of_wild_pct;        /// druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
+        uint32 m_lastHonorResetTime;
+        uint32 _fields[PLAYER_END];
+        int hearth_of_wild_pct;        /// druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
 
         uint32 m_team;
-        float       m_lastRunSpeed;
-        float       m_lastRunBackSpeed;
-        float       m_lastSwimSpeed;
-        float       m_lastBackSwimSpeed;
-        float       m_lastFlySpeed;
+        float m_lastRunSpeed;
+        float m_lastRunBackSpeed;
+        float m_lastSwimSpeed;
+        float m_lastBackSwimSpeed;
+        float m_lastFlySpeed;
 
         uint32 m_indoorCheckTimer;
         void RemovePendingPlayer();
+
     public:
+
 #ifdef ENABLE_COMPRESSED_MOVEMENT
         void EventDumpCompressedMovement();
         void AppendMovementData(uint32 op, uint32 sz, const uint8* data);
@@ -1893,10 +1910,11 @@ class SERVER_DECL Player : public Unit
 
         void SendGuildMOTD();
 
-        /************************************************************************/
-        /* SOCIAL                                                               */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // SOCIAL
+        /////////////////////////////////////////////////////////////////////////////////////////
     private:
+
         void Social_SendFriendList(uint32 flag);
 
         void Social_AddFriend(const char* name, const char* note);
@@ -1908,15 +1926,16 @@ class SERVER_DECL Player : public Unit
         void Social_SetNote(uint32 guid, const char* note);
 
     public:
+
         bool Social_IsIgnoring(PlayerInfo* m_info);
         bool Social_IsIgnoring(uint32 guid);
 
         void Social_TellFriendsOnline();
         void Social_TellFriendsOffline();
 
-        /************************************************************************/
-        /* end social                                                           */
-        /************************************************************************/
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // end social
+        /////////////////////////////////////////////////////////////////////////////////////////
 
         bool m_castFilterEnabled;
         uint32 m_castFilter[3];    /// spell group relation of only spells that player can currently cast
@@ -1926,7 +1945,9 @@ class SERVER_DECL Player : public Unit
         uint32 m_outStealthDamageBonusTimer;
 
         ///\todo sort out where all the publics and privates go. This will do for now..
+
     private:
+
         PlayerInfo* m_playerInfo;
         uint32 m_RaidDifficulty;
         bool m_XpGain;
@@ -1943,6 +1964,7 @@ class SERVER_DECL Player : public Unit
         uint32 m_timeSyncServer;
 
     public:
+
         void SetChampioningFaction(uint32 f) { ChampioningFactionID = f; }
         void AddGarbageItem(Item* it);
         uint32 CheckDamageLimits(uint32 dmg, uint32 spellid);
@@ -1963,14 +1985,10 @@ class SERVER_DECL Player : public Unit
         AchievementMgr & GetAchievementMgr() { return m_achievementMgr; }
         AchievementMgr m_achievementMgr;
 #endif
-        /************************************************************************/
-        /* Player Achievements - end                                            */
-        /************************************************************************/
 
-        /************************************************************************/
-        /* Talent Specs                                                         */
-        /************************************************************************/
-        // VLack: Talent Specs from Aspire, now just the values for an empty packet
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // Talent Specs
+        /////////////////////////////////////////////////////////////////////////////////////////
         uint16 m_maxTalentPoints;
         uint8 m_talentSpecsCount;
         uint8 m_talentActiveSpec;
@@ -1981,6 +1999,7 @@ class SERVER_DECL Player : public Unit
 		uint32 GroupUpdateFlags;
 
     public:
+
         void SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself);
 
         bool CanBuyAt(VendorRestrictionEntry* vendor);
@@ -2005,16 +2024,18 @@ class SERVER_DECL Player : public Unit
         void SendCinematicCamera(uint32 id);
         void SetClientControl(Unit* target, uint8 allowMove);
 
-    void SetMover(Unit* target);
+        void SetMover(Unit* target);
 };
 
 class SkillIterator
 {
-        SkillMap::iterator m_itr;
-        SkillMap::iterator m_endItr;
-        bool m_searchInProgress;
-        Player* m_target;
+    SkillMap::iterator m_itr;
+    SkillMap::iterator m_endItr;
+    bool m_searchInProgress;
+    Player* m_target;
+
     public:
+
         SkillIterator(Player* target) : m_searchInProgress(false), m_target(target) {}
         ~SkillIterator() { if (m_searchInProgress) { EndSearch(); } }
 
