@@ -403,7 +403,7 @@ void GameObject::InitAI()
         auto pLock = sLockStore.LookupEntry(GetInfo()->parameter_0);
         if (pLock)
         {
-            for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
+            for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
             {
                 if (pLock->locktype[i])
                 {
@@ -447,7 +447,7 @@ void GameObject::InitAI()
 
     float r = 0;
 
-    for (uint32 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         if (sp->Effect[i])
         {
@@ -783,7 +783,7 @@ uint32 GameObject::GetGOReqSkill()
     if (!lock)
         return 0;
 
-    for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
+    for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
     {
         if (lock->locktype[i] == 2 && lock->minlockskill[i])
             return lock->minlockskill[i];

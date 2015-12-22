@@ -1991,7 +1991,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         size_t pos = data.wpos();
         data << uint8(talent_count); //fake value, will be overwritten at the end
 
-        for (uint32 i = 0; i < 3; ++i)
+        for (uint8 i = 0; i < 3; ++i)
         {
             talent_tab_id = sWorld.InspectTalentTabPages[player->getClass()][i];
 

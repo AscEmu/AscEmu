@@ -1317,7 +1317,7 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
     data << uint32(UNIXTIME);	// unix time of something
     data << uint8(1);
     data << uint32(mask);		// type mask
-    for (uint32 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
+    for (uint8 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
         if (mask & (1 << i))
         {
             // data << uint32(GetAccountData(AccountDataType(i))->Time);
@@ -1695,7 +1695,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
             EQUIPMENT_SLOT_TABARD
         };
 
-        for (uint32 i = 0; i < 11; ++i)
+        for (uint8 i = 0; i < 11; ++i)
         {
             Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
 

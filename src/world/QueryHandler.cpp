@@ -91,7 +91,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         data << uint8(0);
         data << uint8(0);
         data << "Level is WayPoint ID";
-        for (uint32 i = 0; i < 8; i++)
+        for (uint8 i = 0; i < 8; i++)
         {
             data << uint32(0);
         }
@@ -141,7 +141,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         data << ci->Leader;         // faction leader
 
         // these are the 6 seperate quest items a creature can drop
-        for (uint32 i = 0; i < 6; ++i)
+        for (uint8 i = 0; i < 6; ++i)
         {
             data << uint32(ci->QuestItems[i]);
         }
@@ -218,7 +218,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     data << float(gameobject_info->size);       // scaling of the GO
 
     // questitems that the go can contain
-    for (uint32 i = 0; i < 6; ++i)
+    for (uint8 i = 0; i < 6; ++i)
     {
         data << uint32(gameobject_info->QuestItems[i]);
     }

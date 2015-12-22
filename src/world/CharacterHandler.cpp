@@ -400,7 +400,7 @@ void WorldSession::LoadAccountDataProc(QueryResult* result)
         return;
     }
 
-    for (uint32 i = 0; i < 7; ++i)
+    for (uint8 i = 0; i < 7; ++i)
     {
         data = result->Fetch()[1 + i].GetString();
         len = data ? strlen(data) : 0;

@@ -1118,7 +1118,7 @@ void Player::Update(unsigned long time_passed)
 
 #ifdef TRACK_IMMUNITY_BUG
     bool immune = false;
-    for (uint32 i = 0; i < 7; i++)
+    for (uint8 i = 0; i < 7; i++)
         if (SchoolImmunityList[i]) immune = true;
 
     if (immune)
@@ -1133,7 +1133,7 @@ void Player::Update(unsigned long time_passed)
             LOG_DETAIL("plr guid=%d has been immune for > 15sec: %u %u %u %u %u %u %u, resetting states", GetLowGUID(),
                        SchoolImmunityList[0], SchoolImmunityList[1], SchoolImmunityList[2], SchoolImmunityList[3],
                        SchoolImmunityList[4], SchoolImmunityList[5], SchoolImmunityList[6]);
-            for (uint32 i = 0; i < 7; i++)
+            for (uint8 i = 0; i < 7; i++)
                 if (SchoolImmunityList[i]) SchoolImmunityList[i] = 0;
         }
     }
@@ -1651,7 +1651,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         sHookInterface.OnPostLevelUp(this);
 
         // Set stats
-        for (uint32 i = 0; i < 5; ++i)
+        for (uint8 i = 0; i < 5; ++i)
         {
             BaseStats[i] = lvlinfo->Stat[i];
             CalcStat(i);
@@ -2410,7 +2410,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         // dump exploration data
         << "'";
 
-    for (uint32 i = 0; i < PLAYER_EXPLORED_ZONES_LENGTH; ++i)
+    for (uint8 i = 0; i < PLAYER_EXPLORED_ZONES_LENGTH; ++i)
         ss << m_uint32Values[PLAYER_EXPLORED_ZONES_1 + i] << ",";
 
     ss << "',";
@@ -2481,7 +2481,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << m_zoneId << ", '";
 
-    for (uint32 i = 0; i < 12; i++)
+    for (uint8 i = 0; i < 12; i++)
         ss << m_taximask[i] << " ";
     ss << "', "
 
@@ -2563,7 +2563,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     // Add player action bars
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
-        for (uint32 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+        for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
         {
             ss << uint32(m_specs[s].mActions[i].Action) << ","
                 << uint32(m_specs[s].mActions[i].Misc) << ","
@@ -3007,7 +3007,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     SetZoneId(m_zoneId);
 
     // Calculate the base stats now they're all loaded
-    for (uint32 i = 0; i < 5; ++i)
+    for (uint8 i = 0; i < 5; ++i)
         CalcStat(i);
 
     //  for (uint32 x = PLAYER_SPELL_CRIT_PERCENTAGE1; x < PLAYER_SPELL_CRIT_PERCENTAGE06 + 1; ++x)
@@ -4671,7 +4671,7 @@ void Player::ResurrectPlayer()
 
     // Zack : shit on grill. So auras should be removed on player death instead of making this :P
     // We can afford this bullshit atm since auras are lost upon death -> no immunities
-    for (uint32 i = 0; i < 7; i++)
+    for (uint8 i = 0; i < 7; i++)
         SchoolImmunityList[i] = 0;
 
     SpawnActivePet();
@@ -5005,7 +5005,7 @@ void Player::SendInitialActions()
 
     data << uint8(0);         // VLack: 3.1, some bool - 0 or 1. seems to work both ways
 
-    for (uint32 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
+    for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
     {
         data << m_specs[m_talentActiveSpec].mActions[i].Action;
         data << m_specs[m_talentActiveSpec].mActions[i].Misc; // 3.3.5 Misc have to be sent before Type (buttons with value over 0xFFFF)
@@ -5035,7 +5035,7 @@ bool Player::IsGroupMember(Player* plyr)
 
 int32 Player::GetOpenQuestSlot()
 {
-    for (uint32 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < 25; ++i)
         if (m_questlog[i] == NULL)
             return i;
 
@@ -5058,7 +5058,7 @@ bool Player::HasFinishedQuest(uint32 quest_id)
 
 bool Player::HasTimedQuest()
 {
-    for (uint32 i = 0; i < 25; i++)
+    for (uint8 i = 0; i < 25; i++)
         if ((m_questlog[i] != NULL) && (m_questlog[i]->GetQuest()->time != 0))
             return true;
 
@@ -5296,7 +5296,7 @@ void Player::UpdateChances()
 void Player::UpdateChanceFields()
 {
     // Update spell crit values in fields
-    for (uint32 i = 0; i < 7; ++i)
+    for (uint8 i = 0; i < 7; ++i)
     {
         SetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + i, SpellCritChanceSchool[i] + spellcritperc);
     }
@@ -6024,7 +6024,7 @@ void Player::LoadTaxiMask(const char* data)
 bool Player::HasQuestForItem(uint32 itemid)
 {
     Quest* qst;
-    for (uint32 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < 25; ++i)
     {
         if (m_questlog[i] != NULL)
         {
@@ -7251,7 +7251,7 @@ void Player::AddItemsToWorld()
 void Player::RemoveItemsFromWorld()
 {
     Item* pItem;
-    for (uint32 i = 0; i < CURRENCYTOKEN_SLOT_END; i++)
+    for (uint8 i = 0; i < CURRENCYTOKEN_SLOT_END; i++)
     {
         pItem = m_ItemInterface->GetInventoryItem((int8)i);
         if (pItem)
@@ -9518,7 +9518,7 @@ void Player::SaveAuras(std::stringstream & ss)
         if (m_auras[x] != NULL && m_auras[x]->GetTimeLeft() > 3000)
         {
             Aura* aur = m_auras[x];
-            for (uint32 i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
             {
                 if (aur->m_spellProto->Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->m_spellProto->Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->m_spellProto->Effect[i] == SPELL_EFFECT_ADD_FARSIGHT)
                 {
@@ -10452,7 +10452,7 @@ void Player::_AddLanguages(bool All)
 
     if (All)
     {
-        for (uint32 i = 0; skills[i] != 0; ++i)
+        for (uint8 i = 0; skills[i] != 0; ++i)
         {
             if (!skills[i])
                 break;
@@ -10667,7 +10667,7 @@ bool Player::HasQuestMob(uint32 entry) //Only for Kill Quests
 
 bool Player::HasQuest(uint32 entry)
 {
-    for (uint32 i = 0; i < 25; i++)
+    for (uint8 i = 0; i < 25; i++)
     {
         if (m_questlog[i] != NULL && m_questlog[i]->GetQuest()->id == entry)
             return true;
@@ -10940,7 +10940,7 @@ bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoint
     {
         SpellEntry *sp = dbcSpell.LookupEntry(*itr);
 
-        for (uint32 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (sp->Effect[i] == SPELL_EFFECT_APPLY_AURA)
             {
@@ -12060,7 +12060,7 @@ void Player::SendAvailSpells(DBC::Structures::SpellShapeshiftFormEntry const* sh
         data << uint16(0);
 
         // Send the spells
-        for (uint32 i = 0; i < 8; i++)
+        for (uint8 i = 0; i < 8; i++)
         {
             data << uint16(shapeshift_form->spells[i]);
             data << uint16(DEFAULT_SPELL_STATE);
@@ -13375,7 +13375,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     qle->UpdatePlayerFields();
 
     // If the quest should give any items on begin, give them the items.
-    for (uint32 i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         if (qst->receive_items[i])
         {

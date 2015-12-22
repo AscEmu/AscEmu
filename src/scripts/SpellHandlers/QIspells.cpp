@@ -2720,7 +2720,7 @@ bool LeyLine(uint32 i, Spell* pSpell)
     uint32 portals[] = { 25156, 25154, 25157 };
     Object* portal = NULL;
 
-    for (uint32 i = 0; i < sizeof(portals) / sizeof(uint32); i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         portal = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), portals[i]);
         if (portal != NULL && qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
@@ -2749,7 +2749,7 @@ bool ManaRemnants(uint32 i, Spell* pSpell)
     QuestLogEntry* qle;
 
     uint32 quests[] = { 11496, 11523 };
-    for (uint32 i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         qle = pPlayer->GetQuestLogForEntry(quests[i]);
         if (qle != NULL && qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[0])

@@ -259,7 +259,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
         }
     }
 
-    for (uint32 i = 0; i < 8; ++i)
+    for (uint8 i = 0; i < 8; ++i)
     {
         // duping little shits
         if (_player->mTradeItems[i] == pItem || pTarget->mTradeItems[i] == pItem)

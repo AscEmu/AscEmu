@@ -3124,7 +3124,7 @@ void Aura::EventPeriodicTriggerSpell(SpellEntry* spellInfo, bool overridevalues,
     if (overridevalues)
     {
         spell->m_overrideBasePoints = true;
-        for (uint32 i = 0; i < 3; ++i)
+        for (uint8 i = 0; i < 3; ++i)
             spell->m_overridenBasePoints[i] = overridevalue;
     }
     SpellCastTargets targets;
@@ -7217,7 +7217,7 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(bool apply)
         val = -mod->fixed_amount[mod->i];
 
     uint32 stat = 3;
-    for (uint32 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         //bit hacky but it will work with all currently available spells
         if (m_spellProto->EffectApplyAuraName[i] == SPELL_AURA_INCREASE_SPELL_HEALING_PCT)
@@ -8778,7 +8778,7 @@ bool Aura::DotCanCrit()
 
         SpellEntry* aura_sp = aura->GetSpellProto();
 
-        uint32 i = 0;
+        uint8 i = 0;
         if (aura_sp->EffectApplyAuraName[1] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
             i = 1;
         else if (aura_sp->EffectApplyAuraName[2] == SPELL_AURA_ALLOW_DOT_TO_CRIT)

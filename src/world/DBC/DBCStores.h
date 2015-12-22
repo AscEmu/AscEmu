@@ -624,7 +624,7 @@ struct SpellEntry
     //////////////////////////////////////////////////////////////////////////////////////////
     bool HasEffect(uint32 effect)
     {
-        for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             if (Effect[i] == effect)
                 return true;
 
@@ -661,7 +661,7 @@ struct SpellEntry
     //////////////////////////////////////////////////////////////////////////////////////////
     bool AppliesAura(uint32 aura)
     {
-        for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
 
             if ((Effect[i] == 6 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
@@ -690,7 +690,7 @@ struct SpellEntry
     uint32 GetAAEffectId()
     {
 
-        for (uint32 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
         {
 
             if (Effect[i] == 35 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
@@ -735,7 +735,7 @@ struct SpellEntry
 
         CustomFlags = 0;
 
-        for (uint32 i = 0; i < MAX_SPELL_EFFECTS; i++)
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
             EffectCustomFlag[i] = 0;
 
         SpellFactoryFunc = NULL;

@@ -74,7 +74,7 @@ class PlayerCache : public Arcemu::Shared::CRefCounter
 
         PlayerCache()
         {
-            for (uint32 i = 0; i < NUM_FOURBYTE_CACHE_FIELDS; ++i)
+            for (uint8 i = 0; i < NUM_FOURBYTE_CACHE_FIELDS; ++i)
                 m_fields[i].u = 0;
 
             //default values

@@ -111,7 +111,7 @@ void Player::smsg_InitialFactions()
     WorldPacket data(SMSG_INITIALIZE_FACTIONS, 764);
     data << uint32(128);
     FactionReputation* rep;
-    for (uint32 i = 0; i < 128; ++i)
+    for (uint8 i = 0; i < 128; ++i)
     {
         rep = reputationByListId[i];
         if (rep == NULL)
@@ -463,7 +463,7 @@ bool Player::AddNewFaction(DBC::Structures::FactionEntry const* dbc, int32 stand
 
     uint32 RaceMask = getRaceMask();
     uint32 ClassMask = getClassMask();
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if ((dbc->RaceMask[i] & RaceMask || (dbc->RaceMask[i] == 0 && dbc->ClassMask[i] != 0)) && (dbc->ClassMask[i] & ClassMask || dbc->ClassMask[i] == 0))
         {

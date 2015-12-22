@@ -617,7 +617,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         char* q = ab;
         uint32 spellid;
         uint32 spstate;
-        uint32 i = 0;
+        uint8 i = 0;
 
         while (p && i < 10)
         {
@@ -837,7 +837,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 
     // save actionbar
     ss.rdbuf()->str("");
-    for (uint32 i = 0; i < 10; ++i)
+    for (uint8 i = 0; i < 10; ++i)
     {
         if (ActionBar[i] & 0x4000000)
             ss << ActionBar[i] << " 0";

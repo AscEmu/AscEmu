@@ -244,7 +244,7 @@ void Auction::AddToPacket(WorldPacket& data)
     data << uint32(Id);
     data << uint32(pItem->GetEntry());
 
-    for (uint32 i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
+    for (uint8 i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; i++)
     {
         data << uint32(pItem->GetEnchantmentId(i));             // Enchantment ID
         data << uint32(pItem->GetEnchantmentApplytime(i));      // Unknown / maybe ApplyTime

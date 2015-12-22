@@ -71,7 +71,7 @@ bool isHostile(Object* objA, Object* objB)
         hostile = true;
 
     // check friend/enemy list
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if (objA->m_faction->EnemyFactions[i] == objB->m_faction->Faction)
         {
@@ -228,7 +228,7 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
         combatSupport = true;
     }
     // check friend/enemy list
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if (objB->m_faction->EnemyFactions[i] == objA->m_faction->Faction)
         {
@@ -263,7 +263,7 @@ bool isAlliance(Object* objA)// A is alliance?
         return false;
 
     // check friend/enemy list
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if (objA->m_faction->EnemyFactions[i] == faction)
             return false;
@@ -276,7 +276,7 @@ bool isAlliance(Object* objA)// A is alliance?
         return false;
 
     // check friend/enemy list
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if (objA->m_faction->EnemyFactions[i] == faction)
             return false;

@@ -493,7 +493,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
 
     bool result = false;
 
-    for (uint32 i = 0; i < 3; ++i)
+    for (uint8 i = 0; i < 3; ++i)
     {
         if (m_spellInfo->Effect[i] == 0)
             continue;

@@ -1929,7 +1929,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
     uint32 FilledSlots = 0;
 
     //cheat -> tried to socket same gem multiple times
-    for (uint32 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
         recvPacket >> gemguid[i];
 
     if ((gemguid[0] && (gemguid[0] == gemguid[1] || gemguid[0] == gemguid[2])) || (gemguid[1] && (gemguid[1] == gemguid[2])))

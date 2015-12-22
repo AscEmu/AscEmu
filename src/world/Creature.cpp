@@ -1455,7 +1455,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     if (mode && info)
         modLevel(std::min(73 - getLevel(), info->lvl_mod_a));
 
-    for (uint32 i = 0; i < 7; ++i)
+    for (uint8 i = 0; i < 7; ++i)
         SetResistance(i, proto->Resistances[i]);
 
     SetBaseAttackTime(MELEE, proto->AttackTime);
@@ -1697,7 +1697,7 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
     //setLevel((mode ? proto->Level + (info ? info->lvl_mod_a : 0) : proto->Level));
     setLevel(proto->MinLevel + (RandomUInt(proto->MaxLevel - proto->MinLevel)));
 
-    for (uint32 i = 0; i < 7; ++i)
+    for (uint8 i = 0; i < 7; ++i)
         SetResistance(i, proto->Resistances[i]);
 
     SetBaseAttackTime(MELEE, proto->AttackTime);
@@ -2874,7 +2874,7 @@ void Creature::BuildPetSpellList(WorldPacket& data)
     std::vector< uint32 >::iterator itr = proto->castable_spells.begin();
 
     // Send the actionbar
-    for (uint32 i = 0; i < 10; ++i)
+    for (uint8 i = 0; i < 10; ++i)
     {
         if (itr != proto->castable_spells.end())
         {

@@ -116,9 +116,9 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     if (rated_match)
     {
         m_deltaRating[0] = m_deltaRating[1] = 0;
-        for (uint32 i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
-            uint32 j = i ? 0 : 1; // opposing side
+            uint8 j = i ? 0 : 1; // opposing side
             bool outcome;
 
             if (m_teams[i] == NULL || m_teams[j] == NULL)

@@ -126,7 +126,7 @@ ObjectMgr::~ObjectMgr()
     }
 
     Log.Notice("ObjectMgr", "Deleting NPC Say Texts...");
-    for (uint32 i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
+    for (uint8 i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
     {
         NpcMonsterSay* p;
         for (MonsterSayMap::iterator itr = mMonsterSays[i].begin(); itr != mMonsterSays[i].end(); ++itr)
@@ -3149,7 +3149,7 @@ void ObjectMgr::LoadMonsterSay()
         char* text;
         uint32 textcount = 0;
 
-        for (uint32 i = 0; i < 5; ++i)
+        for (uint8 i = 0; i < 5; ++i)
         {
             text = (char*)fields[6 + i].GetString();
             if (!text) continue;
@@ -3416,7 +3416,7 @@ class ArenaSorter
 void ObjectMgr::UpdateArenaTeamRankings()
 {
     m_arenaTeamLock.Acquire();
-    for (uint32 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+    for (uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
     {
         std::vector<ArenaTeam*> ranking;
 
@@ -3441,7 +3441,7 @@ void ObjectMgr::UpdateArenaTeamRankings()
 void ObjectMgr::ResetArenaTeamRatings()
 {
     m_arenaTeamLock.Acquire();
-    for (uint32 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+    for (uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
     {
         for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[i].begin(); itr != m_arenaTeamMap[i].end(); ++itr)
         {
@@ -3474,7 +3474,7 @@ void ObjectMgr::UpdateArenaTeamWeekly()
 {
     // reset weekly matches count for all teams and all members
     m_arenaTeamLock.Acquire();
-    for (uint32 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+    for (uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
     {
         for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeamMap[i].begin(); itr != m_arenaTeamMap[i].end(); ++itr)
         {

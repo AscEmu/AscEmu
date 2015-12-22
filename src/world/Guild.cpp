@@ -71,7 +71,7 @@ Guild::~Guild()
 
     for (GuildBankTabVector::iterator itr = m_bankTabs.begin(); itr != m_bankTabs.end(); ++itr)
     {
-        for (uint32 i = 0; i < MAX_GUILD_BANK_SLOTS; ++i)
+        for (uint8 i = 0; i < MAX_GUILD_BANK_SLOTS; ++i)
             if ((*itr)->pSlots[i] != NULL)
                 (*itr)->pSlots[i]->DeleteMe();
 
@@ -1236,7 +1236,7 @@ void Guild::SendGuildRoster(WorldSession* pClient)
 
 void Guild::SendGuildQuery(WorldSession* pClient)
 {
-    uint32 i = 0;
+    uint8 i = 0;
     GuildRank* r;
     WorldPacket data(SMSG_GUILD_QUERY_RESPONSE, 300);
     data << m_guildId;

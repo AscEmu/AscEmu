@@ -57,7 +57,7 @@ void QuestLogEntry::Init(Quest* quest, Player* plr, uint32 slot)
 
     iscastquest = false;
     isemotequest = false;
-    for (uint32 i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         if (quest->required_spell[i] != 0)
         {

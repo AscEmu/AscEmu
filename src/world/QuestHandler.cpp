@@ -255,7 +255,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     qEntry->Finish();
 
     // Remove all items given by the questgiver at the beginning
-    for (uint32 i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         if (qPtr->receive_items[i])
             GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->receive_items[i], 1);
@@ -269,7 +269,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
                 _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
     }
     //remove all quest items (but not trade goods) collected and required only by this quest
-    for (uint32 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
         if (qPtr->required_item[i] != 0)
         {

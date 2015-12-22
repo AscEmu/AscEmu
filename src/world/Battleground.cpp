@@ -49,7 +49,7 @@ CBattleground::CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 t
     sEventMgr.AddEvent(this, &CBattleground::EventResurrectPlayers, EVENT_BATTLEGROUND_QUEUE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     /* create raid groups */
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         m_groups[i] = new Group(true);
         m_groups[i]->m_disbandOnNoMembers = false;
@@ -61,7 +61,7 @@ CBattleground::CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 t
 CBattleground::~CBattleground()
 {
     sEventMgr.RemoveEvents(this);
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         PlayerInfo* inf;
         for (uint32 j = 0; j < m_groups[i]->GetSubGroupCount(); ++j)
@@ -181,11 +181,12 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         *data << uint8(m_winningteam);
 
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
-        for (uint32 i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
-                if ((*itr)->m_isGmInvisible)continue;
+                if ((*itr)->m_isGmInvisible)
+                    continue;
                 *data << (*itr)->GetGUID();
                 bs = &(*itr)->m_bgScore;
                 *data << bs->KillingBlows;
@@ -212,7 +213,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
 
         uint32 FieldCount = GetFieldCount(GetType());
-        for (uint32 i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
@@ -793,7 +794,7 @@ void CBattleground::Close()
 
     /* remove all players from the battleground */
     m_ended = true;
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         std::set<Player*>::iterator itr;
         std::set<uint32>::iterator it2;

@@ -326,7 +326,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
 
     UniqueTargets.clear();
     ModeratedTargets.clear();
-    for (uint32 i = 0; i < 3; ++i)
+    for (uint8 i = 0; i < 3; ++i)
     {
         m_targetUnits[i].clear();
     }
@@ -368,7 +368,7 @@ Spell::~Spell()
     ////////////////////////////////////////////////////////////////////////////////////////
 
 
-    for (uint32 i = 0; i < 3; ++i)
+    for (uint8 i = 0; i < 3; ++i)
     {
         m_targetUnits[i].clear();
     }
@@ -1215,7 +1215,7 @@ void Spell::cast(bool check)
             }
         }
 
-        for (uint32 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             uint32 TargetType = 0;
             TargetType |= GetTargetType(m_spellInfo->EffectImplicitTargetA[i], i);
@@ -4535,7 +4535,7 @@ void Spell::RemoveItems()
         // Reagent Removal
         if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(FLAGS6_REAGENT_REMOVAL)))
         {
-            for (uint32 i = 0; i < 8; i++)
+            for (uint8 i = 0; i < 8; i++)
             {
                 if (GetProto()->Reagent[i])
                 {

@@ -43,7 +43,7 @@ Item::Item()//this is called when constructing as container
     ItemExpiresOn = 0;
     Enchantments.clear();
 
-    for (uint32 i = 0; i < 3; ++i)
+    for (uint8 i = 0; i < 3; ++i)
         OnUseSpellIDs[i] = 0;
 
     m_isDirty = false;
@@ -847,13 +847,13 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 {
                     if (Apply)
                     {
-                        for (uint32 i = 0; i < 3; ++i)
+                        for (uint8 i = 0; i < 3; ++i)
                             OnUseSpellIDs[i] = Entry->spell[i];
 
                     }
                     else
                     {
-                        for (uint32 i = 0; i < 3; ++i)
+                        for (uint8 i = 0; i < 3; ++i)
                             OnUseSpellIDs[i] = 0;
                     }
                     break;

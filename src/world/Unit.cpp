@@ -4274,7 +4274,7 @@ void Unit::AddAura(Aura* aur)
     if (m_mapId != 530 && (m_mapId != 571 || (IsPlayer() && !static_cast<Player*>(this)->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING) && static_cast<Player*>(this)->getDeathState() == ALIVE)))
         // can't use flying auras in non-outlands or non-northrend (northrend requires cold weather flying)
     {
-        for (uint32 i = 0; i < 3; ++i)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (aur->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_ENABLE_FLIGHT_WITH_UNMOUNTED_SPEED || aur->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_ENABLE_FLIGHT2)
             {

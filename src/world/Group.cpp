@@ -210,7 +210,7 @@ void Group::Update()
     WorldPacket data(50 + (m_MemberCount * 20));
     GroupMembersSet::iterator itr1, itr2;
 
-    uint32 i = 0, j = 0;
+    uint8 i = 0, j = 0;
     uint8 flags;
     SubGroup* sg1 = NULL;
     SubGroup* sg2 = NULL;
@@ -355,7 +355,7 @@ void Group::Disband()
         BattlegroundManager.RemoveGroupFromQueues(this);
     }
 
-    uint32 i = 0;
+    uint8 i = 0;
     for (i = 0; i < m_SubGroupCount; i++)
     {
         SubGroup* sg = m_SubGroups[i];
@@ -412,7 +412,7 @@ Player* Group::FindFirstPlayer()
     GroupMembersSet::iterator itr;
     m_groupLock.Acquire();
 
-    for (uint32 i = 0; i < m_SubGroupCount; i++)
+    for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
         if (m_SubGroups[i] != NULL)
         {
@@ -591,7 +591,7 @@ void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
 void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
 {
     GroupMembersSet::iterator itr;
-    uint32 i = 0;
+    uint8 i = 0;
     m_groupLock.Acquire();
     for (; i < m_SubGroupCount; i++)
     {
@@ -608,7 +608,7 @@ void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
 void Group::OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player* pSkipTarget)
 {
     GroupMembersSet::iterator itr;
-    uint32 i = 0;
+    uint8 i = 0;
     m_groupLock.Acquire();
     for (; i < m_SubGroupCount; i++)
     {
@@ -630,7 +630,7 @@ bool Group::HasMember(Player* pPlayer)
     GroupMembersSet::iterator itr;
     m_groupLock.Acquire();
 
-    for (uint32 i = 0; i < m_SubGroupCount; i++)
+    for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
         if (m_SubGroups[i] != NULL)
         {
@@ -649,7 +649,7 @@ bool Group::HasMember(Player* pPlayer)
 bool Group::HasMember(PlayerInfo* info)
 {
     GroupMembersSet::iterator itr;
-    uint32 i = 0;
+    uint8 i = 0;
 
     m_groupLock.Acquire();
 
@@ -861,9 +861,9 @@ void Group::SaveToDB()
     auto membersNotFilled = 40;
 
     // For each subgroup
-    for (uint32 i = 0; i < m_SubGroupCount; ++i)
+    for (uint8 i = 0; i < m_SubGroupCount; ++i)
     {
-        uint32 j = 0;
+        uint8 j = 0;
 
         // For each member in the group, while membercount is less than 5 (guard clause), add their ID to query
         for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); j < 5 && itr != m_SubGroups[i]->GetGroupMembersEnd(); ++j, ++itr)
@@ -1074,7 +1074,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
         Player* plr;
         float dist = pPlayer->GetMapMgr()->m_UpdateDistance;
         m_groupLock.Acquire();
-        for (uint32 i = 0; i < m_SubGroupCount; ++i)
+        for (uint8 i = 0; i < m_SubGroupCount; ++i)
         {
             if (m_SubGroups[i] == NULL)
                 continue;
@@ -1118,7 +1118,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
     hisMask.SetCount(PLAYER_END);
 
     m_groupLock.Acquire();
-    for (uint32 i = 0; i < m_SubGroupCount; ++i)
+    for (uint8 i = 0; i < m_SubGroupCount; ++i)
     {
         if (m_SubGroups[i] == NULL)
             continue;
@@ -1217,7 +1217,7 @@ void Group::SetDungeonDifficulty(uint32 diff)
     m_difficulty = static_cast<uint8>(diff);
 
     Lock();
-    for (uint32 i = 0; i < GetSubGroupCount(); ++i)
+    for (uint8 i = 0; i < GetSubGroupCount(); ++i)
     {
         for (GroupMembersSet::iterator itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
@@ -1237,7 +1237,7 @@ void Group::SetRaidDifficulty(uint32 diff)
 
     Lock();
 
-    for (uint32 i = 0; i < GetSubGroupCount(); ++i)
+    for (uint8 i = 0; i < GetSubGroupCount(); ++i)
     {
         for (GroupMembersSet::iterator itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
@@ -1389,7 +1389,7 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
 void Group::Teleport(WorldSession* m_session)
 {
 	GroupMembersSet::iterator itr1, itr2;
-	uint32 i = 0;
+	uint8 i = 0;
 	SubGroup* sg1 = NULL;
 	SubGroup* sg2 = NULL;
 	Player * member = NULL;

@@ -1700,7 +1700,7 @@ class LuaUnit
                         qle->UpdatePlayerFields();
 
                         // If the quest should give any items on begin, give them the items.
-                        for (uint32 i = 0; i < 4; ++i)
+                        for (uint8 i = 0; i < 4; ++i)
                         {
                             if (qst->receive_items[i])
                             {

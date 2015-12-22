@@ -1572,7 +1572,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
     if (item->GetProto() == NULL)
         return ADD_ITEM_RESULT_ERROR;
 
-    uint32 i = 0;
+    uint8 i = 0;
     bool result2;
     AddItemResult result3;
     Player* p = m_pOwner;
@@ -3641,7 +3641,7 @@ uint32 ItemInterface::GetEquippedCountByItemLimit(uint32 LimitId)
 uint32 ItemInterface::GetItemCountByLimitId(uint32 LimitId, bool IncBank)
 {
     uint32 cnt = 0;
-    uint32 i = 0;
+    uint8 i = 0;
     for (i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; i++)
     {
         Item* item = GetInventoryItem(static_cast<int16>(i));

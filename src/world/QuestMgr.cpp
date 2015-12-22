@@ -1912,7 +1912,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, Quest* qst, uint32 reward_slot)
     uint32 slotsrequired = 0;
     available_slots = plyr->GetItemInterface()->CalculateFreeSlots(NULL);
     // Static Item reward
-    for (uint32 i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         if (qst->reward_item[i])
         {

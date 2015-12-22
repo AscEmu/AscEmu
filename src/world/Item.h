@@ -397,7 +397,7 @@ class SERVER_DECL Item : public Object
         uint32 GetOnUseSpellID(uint32 index) { return OnUseSpellIDs[index]; }
         bool HasOnUseSpellID(uint32 id)
         {
-            for (uint32 i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
                 if (OnUseSpellIDs[i] == id)
                     return true;
 

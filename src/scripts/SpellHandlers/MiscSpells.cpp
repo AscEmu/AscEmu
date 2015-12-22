@@ -585,7 +585,7 @@ bool SOTATeleporter(uint32 i, Spell* s)
     LocationVector dest;
     uint32 closest_platform = 0;
 
-    for (uint32 i = 0; i < 5; i++)
+    for (uint8 i = 0; i < 5; i++)
     {
         float distance = plr->GetDistanceSq(sotaTransDest[i][0], sotaTransDest[i][1], sotaTransDest[i][2]);
 

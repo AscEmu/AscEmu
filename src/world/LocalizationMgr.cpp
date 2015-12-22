@@ -432,7 +432,7 @@ void LocalizationMgr::Reload(bool first)
                     continue;        // no loading enUS stuff.. lawl
 
                 counter = 2;
-                for (uint32 i = 0; i < 8; ++i)
+                for (uint8 i = 0; i < 8; ++i)
                 {
                     nt.Texts[i][0] = strdup(f[counter++].GetString());
                     nt.Texts[i][1] = strdup(f[counter++].GetString());
