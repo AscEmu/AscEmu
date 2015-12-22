@@ -21,6 +21,10 @@
 #include "WorldPacket.h"
 #include "StackBuffer.h"
 #include <map>
+
+#ifndef _GOSSIP_H
+#define _GOSSIP_H
+
 #pragma once
 
 struct Quest;
@@ -29,7 +33,6 @@ class Item;
 class Player;
 class Object;
 class GameObject;
-
 
 enum MenuItemOptions
 {
@@ -332,6 +335,7 @@ namespace Arcemu
         class Item
         {
             public:
+
                 uint16 id_;
                 bool coded_;
                 uint8 icon_;
@@ -350,6 +354,7 @@ namespace Arcemu
         class SERVER_DECL Menu
         {
             public:
+
                 Menu(uint64, uint32, uint32 = 0);
                 Menu(Object*, uint32, uint32 = 0);
 
@@ -463,6 +468,7 @@ namespace Arcemu
         class SERVER_DECL Script
         {
             public:
+
                 Script() {}
                 virtual ~Script() {}
 
@@ -479,6 +485,7 @@ namespace Arcemu
         class SERVER_DECL SpiritHealer : public Script
         {
             public:
+
                 SpiritHealer() {}
                 virtual ~SpiritHealer() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -487,6 +494,7 @@ namespace Arcemu
         class SERVER_DECL Vendor : public Script
         {
             public:
+
                 Vendor() {}
                 virtual ~Vendor() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -495,6 +503,7 @@ namespace Arcemu
         class SERVER_DECL Trainer : public Script
         {
             public:
+
                 Trainer() {}
                 virtual ~Trainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
@@ -503,6 +512,7 @@ namespace Arcemu
         class SERVER_DECL ClassTrainer : public Script
         {
             public:
+
                 ClassTrainer() {}
                 virtual ~ClassTrainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
@@ -511,6 +521,7 @@ namespace Arcemu
         class SERVER_DECL PetTrainer : public Script
         {
             public:
+
                 PetTrainer() {}
                 virtual ~PetTrainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
@@ -519,6 +530,7 @@ namespace Arcemu
         class SERVER_DECL FlightMaster : public Script
         {
             public:
+
                 FlightMaster() {}
                 virtual ~FlightMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -527,6 +539,7 @@ namespace Arcemu
         class SERVER_DECL Auctioneer: public Script
         {
             public:
+
                 Auctioneer() {}
                 virtual ~Auctioneer() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -535,6 +548,7 @@ namespace Arcemu
         class SERVER_DECL InnKeeper : public Script
         {
             public:
+
                 InnKeeper() {}
                 virtual ~InnKeeper() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -543,6 +557,7 @@ namespace Arcemu
         class SERVER_DECL BattleMaster : public Script
         {
             public:
+
                 BattleMaster() {}
                 virtual ~BattleMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -551,6 +566,7 @@ namespace Arcemu
         class SERVER_DECL Banker : public Script
         {
             public:
+
                 Banker() {}
                 virtual ~Banker() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -559,6 +575,7 @@ namespace Arcemu
         class SERVER_DECL CharterGiver : public Script
         {
             public:
+
                 CharterGiver() {}
                 virtual ~CharterGiver() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -567,6 +584,7 @@ namespace Arcemu
         class SERVER_DECL TabardDesigner : public Script
         {
             public:
+
                 TabardDesigner() {}
                 virtual ~TabardDesigner() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -575,6 +593,7 @@ namespace Arcemu
         class SERVER_DECL StableMaster : public Script
         {
             public:
+
                 StableMaster() {}
                 virtual ~StableMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -583,6 +602,7 @@ namespace Arcemu
         class SERVER_DECL Generic : public Script
         {
             public:
+
                 Generic() {}
                 virtual ~Generic() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -590,3 +610,5 @@ namespace Arcemu
         };
     }
 }
+
+#endif      //_GOSSIP_H

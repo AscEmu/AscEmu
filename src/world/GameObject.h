@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WOWSERVER_GAMEOBJECT_H
-#define _WOWSERVER_GAMEOBJECT_H
+#ifndef _GAMEOBJECT_H
+#define _GAMEOBJECT_H
 
 enum GO_STATE
 {
@@ -433,4 +433,4 @@ class SERVER_DECL GameObject : public Object
 
 };
 
-#endif // _WOWSERVER_GAMEOBJECT_H
+#endif // _GAMEOBJECT_H
