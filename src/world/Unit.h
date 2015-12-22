@@ -74,35 +74,31 @@ class AIInterface;
 class GameObject;
 
 struct CreatureInfo;
-
 struct FactionDBC;
 
 typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
 
-////////////////////////////////////////////////////////////////
-//class AuraCondition
-//  Checks for conditions specified in subclasses on Auras.
-//  When calling operator() it tells if the conditions are met.
-//
-////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Checks for conditions specified in subclasses on Auras. When calling operator()
+/// it tells if the conditions are met.
+//////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL AuraCondition
 {
     public:
+
         virtual bool operator()(Aura* aura)
         {
-        return true;
+            return true;
         }
 };
 
-///////////////////////////////////////////////////////////////
-//class AuraAction
-//  Performs the actions specified in subclasses on the Aura,
-//  when calling operator().
-//
-///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Performs the actions specified in subclasses on the Aura, when calling operator().
+//////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL AuraAction
 {
     public:
+
         virtual void operator()(Aura* aura){}
 };
 
@@ -116,7 +112,6 @@ struct DisplayBounding
     float boundradius;
 };
 #pragma pack(pop)
-
 
 struct ReflectSpellSchool
 {
@@ -157,25 +152,30 @@ struct AuraCheckResponse
 
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 
-/************************************************************************/
-/* "In-Combat" Handler                                                  */
-/************************************************************************/
 
 class Unit;
 class SERVER_DECL CombatStatusHandler
 {
-        typedef std::set<uint64> AttackerMap;
-        typedef std::set<uint32> HealedSet;      // Must Be Players!
-        HealedSet m_healers;
-        HealedSet m_healed;
-        Unit* m_Unit;
-        bool m_lastStatus;
-        AttackerMap m_attackTargets;
-        uint64 m_primaryAttackTarget;
+    typedef std::set<uint64> AttackerMap;
+    typedef std::set<uint32> HealedSet;      // Must Be Players!
+
+    HealedSet m_healers;
+    HealedSet m_healed;
+
+    Unit* m_Unit;
+
+    bool m_lastStatus;
+
+    AttackerMap m_attackTargets;
+
+    uint64 m_primaryAttackTarget;
 
     public:
+
         CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
+
         AttackerMap m_attackers;
+
         void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.
         void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.
 
@@ -203,6 +203,7 @@ class SERVER_DECL CombatStatusHandler
         void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home
 
     protected:
+
         bool InternalIsInCombat();                                      // called by UpdateFlag, do not call from anything else!
         bool IsAttacking(Unit* pTarget);                                // internal function used to determine if we are still attacking target x.
         void AddAttacker(const uint64 & guid);                          // internal function to add an attacker
@@ -212,11 +213,9 @@ class SERVER_DECL CombatStatusHandler
         void ClearMyHealers();
 };
 
-//====================================================================
-//  Unit
-//  Base class for Players and Creatures
-//====================================================================
-
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Base class for Players and Creatures
+//////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL Unit : public Object
 {
     public:
@@ -331,9 +330,9 @@ class SERVER_DECL Unit : public Object
         void SetInvisFlag(uint8 pInvisFlag) { m_invisFlag = pInvisFlag; m_invisible = pInvisFlag != INVIS_FLAG_NORMAL; UpdateVisibility(); }
         uint8 GetInvisFlag() { return m_invisFlag; }
 
-        //************************************************************************************************************************
+        //////////////////////////////////////////////////////////////////////////////////////////
         // AURAS
-        //************************************************************************************************************************
+        //////////////////////////////////////////////////////////////////////////////////////////
 
         bool HasAura(uint32 spellid);                   //this checks passive auras too
         uint16 GetAuraStackCount(uint32 spellid);
@@ -358,54 +357,29 @@ class SERVER_DECL Unit : public Object
         bool RemoveAuras(uint32* SpellIds);
         bool RemoveAurasByHeal();
 
-        ////////////////////////////////////////////////////////////////////////////////////////
-        //bool AuraActionIf(AuraAction *a, AuraCondition *c)
-        //  Performs the specified action on the auras that meet the specified condition
-        //
-        //Parameter(s)
-        //  AuraAction *action        -  The action to perform
-        //  AuraCondition *condition  -  The condition that the aura(s) need to meet
-        //
-        //Return Value
-        //  Returns true if at least one action was performed.
-        //  Returns false otherwise.
-        //
-        ////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /// Performs the specified action on the auras that meet the specified condition
+        /// \param     AuraAction *action        -  The action to perform
+        /// \param     AuraCondition *condition  -  The condition that the aura(s) need to meet
+        /// \returns true if at least one action was performed, false otherwise.
+        //////////////////////////////////////////////////////////////////////////////////////////
         bool AuraActionIf(AuraAction* action, AuraCondition* condition);
-
 
         void RemoveAurasByInterruptFlag(uint32 flag);
         void RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip);
         void RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 skip);
         void RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune);
 
-        ////////////////////////////////////////////////////////////////
-        //void ClearAllAreaAuraTargets()
-        //  Removes all area auras casted by us from the targets, and
-        //  clears the target sets.
-        //
-        //Parameters
-        //  None
-        //
-        //Return Value
-        //  None
-        //
-        //
-        ////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /// Removes all area auras casted by us from the targets, and clears the target sets.
+        /// \param none        \return none
+        //////////////////////////////////////////////////////////////////////////////////////////
         void ClearAllAreaAuraTargets();
 
-        //////////////////////////////////////////////////////////////////
-        //void RemoveAllAreaAuraByOther()
-        //  Removes all Area Auras that are from other Units.
-        //
-        //Parameters
-        //  None
-        //
-        //Return Value
-        //  None
-        //
-        //
-        /////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /// Removes all Area Auras that are from other Units.
+        /// \param none        \return none
+        //////////////////////////////////////////////////////////////////////////////////////////
         void RemoveAllAreaAuraByOther();
 
 
@@ -436,19 +410,15 @@ class SERVER_DECL Unit : public Object
         bool SetAurDuration(uint32 spellId, uint32 duration);
         void DropAurasOnDeath();
         bool IsControlledByPlayer();
-        //******************************************************
+
         // Auras that can affect only one target at a time
-        //******************************************************
         uint64 GetCurrentUnitForSingleTargetAura(SpellEntry* spell);
         uint64 GetCurrentUnitForSingleTargetAura(uint32* name_hashes, uint32* index);
         void SetCurrentUnitForSingleTargetAura(SpellEntry* spell, uint64 guid);
         void RemoveCurrentUnitForSingleTargetAura(SpellEntry* spell);
         void RemoveCurrentUnitForSingleTargetAura(uint32 name_hash);
 
-
-        /********************************************************/
-        /*   ProcTrigger                                        */
-        /********************************************************/
+        // ProcTrigger
         std::list<SpellProc*> m_procSpells;
         SpellProc* AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
         SpellProc* AddProcTriggerSpell(SpellEntry* spell, SpellEntry* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
@@ -501,7 +471,7 @@ class SERVER_DECL Unit : public Object
 
         std::map<uint32, struct SpellCharge> m_chargeSpells;
 
-    std::deque<uint32> m_chargeSpellRemoveQueue;
+        std::deque<uint32> m_chargeSpellRemoveQueue;
 
         bool m_chargeSpellsInUse;
         void SetOnMeleeSpell(uint32 spell, uint8 ecn = 0) { m_meleespell = spell; m_meleespell_ecn = ecn; }
@@ -659,13 +629,11 @@ class SERVER_DECL Unit : public Object
         void EventAurastateExpire(uint32 aurastateflag) { RemoveFlag(UNIT_FIELD_AURASTATE, aurastateflag); }    //hmm this looks like so not necessary :S
         void EventHealthChangeSinceLastUpdate();
 
-        /************************************************************************/
-        /* Stun Immobilize                                                      */
-        /************************************************************************/
-        uint32      trigger_on_stun;        //bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
-        uint32      trigger_on_stun_chance;
-        uint32      trigger_on_stun_victim;
-        uint32      trigger_on_stun_chance_victim;
+        // Stun Immobilize
+        uint32 trigger_on_stun;        //bah, warrior talent but this will not get triggered on triggered spells if used on proc so I'm forced to used a special variable
+        uint32 trigger_on_stun_chance;
+        uint32 trigger_on_stun_victim;
+        uint32 trigger_on_stun_chance_victim;
 
         void SetTriggerStunOrImmobilize(uint32 newtrigger, uint32 new_chance, bool is_victim = false)
         {
@@ -683,13 +651,11 @@ class SERVER_DECL Unit : public Object
         void EventStunOrImmobilize(Unit* proc_target, bool is_victim = false);
 
         ///\todo Remove this hack
-        /************************************************************************/
-        /* Chill                                                                */
-        /************************************************************************/
-        uint32      trigger_on_chill;         //mage "Frostbite" talent chill
-        uint32      trigger_on_chill_chance;
-        uint32      trigger_on_chill_victim;
-        uint32      trigger_on_chill_chance_victim;
+        // Chill
+        uint32 trigger_on_chill;         //mage "Frostbite" talent chill
+        uint32 trigger_on_chill_chance;
+        uint32 trigger_on_chill_victim;
+        uint32 trigger_on_chill_chance_victim;
 
         void SetTriggerChill(uint32 newtrigger, uint32 new_chance, bool is_victim = false)
         {
@@ -812,21 +778,22 @@ class SERVER_DECL Unit : public Object
         bool disarmed;
         uint64 m_detectRangeGUID[5];
         int32  m_detectRangeMOD[5];
+
         // Affect Speed
         int32 m_speedModifier;
         int32 m_slowdown;
         float m_maxSpeed;
-    std::map< uint32, int32 > speedReductionMap;
+        std::map< uint32, int32 > speedReductionMap;
         bool GetSpeedDecrease();
         int32 m_mountedspeedModifier;
         int32 m_flyspeedModifier;
         virtual void SetSpeeds(uint8 type, float speed){}
         void UpdateSpeed();
+
         void EnableFlight();
         void DisableFlight();
 
         // Escort Quests
-
         void MoveToWaypoint(uint32 wp_id);
         void PlaySpellVisual(uint64 target, uint32 spellVisual);
 
@@ -863,7 +830,7 @@ class SERVER_DECL Unit : public Object
 
         bool IsSpiritHealer()
         {
-            switch(GetEntry())
+            switch (GetEntry())
             {
                 case 6491:  // Spirit Healer
                 case 13116: // Alliance Spirit Guide
@@ -871,10 +838,10 @@ class SERVER_DECL Unit : public Object
                 case 9299:  // Gaeriyan (Qnpc)
                 case 8888:  // Franclorn Forgewright (Qnpc)
                 case 29259: // Scarlet Enclave
-                    {
-                        return true;
-                    }
-                    break;
+                {
+                    return true;
+                }
+                break;
             }
             return false;
         }
@@ -894,7 +861,6 @@ class SERVER_DECL Unit : public Object
         void Unroot();
         bool isRooted()
         {
-
             if (m_rooted)
                 return true;
             else
@@ -903,15 +869,15 @@ class SERVER_DECL Unit : public Object
 
         virtual bool isTrainingDummy() { return false; }
 
-        void SetFacing(float newo);//only working if creature is idle
+        void SetFacing(float newo);     //only working if creature is idle
 
         AuraCheckResponse AuraCheck(SpellEntry* proto, Object* caster = NULL);
         AuraCheckResponse AuraCheck(SpellEntry* proto, Aura* aur, Object* caster = NULL);
 
         uint16 m_diminishCount[DIMINISHING_GROUP_COUNT];
-        uint8  m_diminishAuraCount[DIMINISHING_GROUP_COUNT];
+        uint8 m_diminishAuraCount[DIMINISHING_GROUP_COUNT];
         uint16 m_diminishTimer[DIMINISHING_GROUP_COUNT];
-        bool   m_diminishActive;
+        bool m_diminishActive;
 
         void SetDiminishTimer(uint32 index)
         {
@@ -976,7 +942,9 @@ class SERVER_DECL Unit : public Object
         uint8 GetShapeShift() { return GetByte(UNIT_FIELD_BYTES_2, 3); }
         uint32 GetShapeShiftMask() { return ((uint32)1 << (GetShapeShift() - 1)); }
 
-/////////////////////////////////////////////////////// Unit properties ///////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Unit properties
+        //////////////////////////////////////////////////////////////////////////////////////////
         void SetCharmedUnitGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_CHARM, GUID); }
         void SetSummonedUnitGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_SUMMON, GUID); }
         void SetSummonedCritterGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_CRITTER, GUID); }
@@ -1099,7 +1067,8 @@ class SERVER_DECL Unit : public Object
         float GetRangedAttackPowerMultiplier() { return GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER); }
         void ModRangedAttackPowerMultiplier(float amt) { ModFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
 
-        //////////////////////////////////////////////////// bytes 0 //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // bytes 0
 
         void setRace(uint8 race) { SetByte(UNIT_FIELD_BYTES_0, 0, race); }
         uint8 getRace() { return GetByte(UNIT_FIELD_BYTES_0, 0); }
@@ -1149,7 +1118,7 @@ class SERVER_DECL Unit : public Object
 
         uint32 GetMaxPower(uint32 index) { return GetUInt32Value(UNIT_FIELD_MAXPOWER1 + index); }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         virtual void TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras = false);
         virtual void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
@@ -1168,6 +1137,7 @@ class SERVER_DECL Unit : public Object
         void HandleUpdateFieldChange(uint32 Index);
 
     protected:
+
         Unit();
         void RemoveGarbage();
         void AddGarbageAura(Aura* aur);
@@ -1201,7 +1171,7 @@ class SERVER_DECL Unit : public Object
         // AI
         AIInterface* m_aiInterface;
         bool m_useAI;
-        bool can_parry;//will be enabled by block spell
+        bool can_parry;         //will be enabled by block spell
         int32 m_threatModifyer;
         int32 m_generatedThreatModifyer[SCHOOL_COUNT];
 
@@ -1232,13 +1202,14 @@ class SERVER_DECL Unit : public Object
         uint64 m_auraRaidUpdateMask;
 
     public:
+
         void SetCurrentVehicle(Vehicle* v){ currentvehicle = v; }
         void EnterVehicle(uint64 guid, uint32 delay);
-    Vehicle* GetCurrentVehicle();
+        Vehicle* GetCurrentVehicle();
 
-    Vehicle* GetVehicleComponent();
+        Vehicle* GetVehicleComponent();
 
-    virtual void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid){}
+        virtual void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid){}
         virtual void RemoveVehicleComponent(){}
 
         void SendHopOnVehicle(Unit* vehicleowner, uint32 seat);
@@ -1269,6 +1240,5 @@ class SERVER_DECL Unit : public Object
 
         MovementInfo movement_info;
 };
-
 
 #endif      // _UNIT_H
