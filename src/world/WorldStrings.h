@@ -1,4 +1,4 @@
-/**
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
  *
@@ -15,6 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+#ifndef WORLD_STRINGS_H
+#define WORLD_STRINGS_H
 
 namespace Worldstring
 {
@@ -74,3 +77,5 @@ namespace Worldstring
     };
 
 };
+
+#endif      //WORLD_STRINGS_H

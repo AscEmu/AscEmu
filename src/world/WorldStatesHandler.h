@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef WORLDSTATEHANDLER_H
@@ -31,9 +30,9 @@ class SERVER_DECL WorldStatesHandler
 
         class SERVER_DECL WorldStatesObserver
         {
-        public:
-            virtual ~WorldStatesObserver(){}
-            virtual void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) = 0;
+            public:
+                virtual ~WorldStatesObserver(){}
+                virtual void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) = 0;
         };
 
         WorldStatesHandler(uint32 mapid)
@@ -45,79 +44,55 @@ class SERVER_DECL WorldStatesHandler
         ~WorldStatesHandler(){}
 
 
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        //void SetWorldStateForZone(uint32 zone, uint32 area, uint32 field, uint32 value)
-        //  Sets the specified worldstate's value for the specified zone
-        //
-        //Parameter(s)
-        //  uint32 zone  -  the zone where we set the worldstate
-        //  uint32 area  -  the area where we set the worldstate
-        //  uint32 field -  the worldstate field we are setting
-        //  uint32 value -  the value we assign to the field
-        //
-        //Return Value
-        //  None
-        //
-        //
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /// Sets the specified worldstate's value for the specified zone
+        /// \param  uint32 zone  -  the zone where we set the worldstate
+        /// \param  uint32 area  -  the area where we set the worldstate
+        /// \param  uint32 field -  the worldstate field we are setting
+        /// \param  uint32 value -  the value we assign to the field
+        ///
+        /// \return none
         ////////////////////////////////////////////////////////////////////////////////////////////
         void SetWorldStateForZone(uint32 zone, uint32 area, uint32 field, uint32 value);
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        //uint32 GetWorldStateForZone(uint32 zone, uint32 area, uint32 field) const;
-        //  Returns the value of the worldstate field queried.
-        //
-        //Parameter(s)
-        //  uint32 zone  -  the zone where we are querying
-        //  uint32 area  -  the area where we querying
-        //  uint32 field -  the field that we querying
-        //
-        //Return Value
-        //  Returns the value of the queried field.
-        //  Returns 0 even if there is no such field.
-        //
-        //
+        /// Returns the value of the worldstate field queried.
+        /// \param   uint32 zone  -  the zone where we are querying
+        /// \param  uint32 area  -  the area where we querying
+        /// \param  uint32 field -  the field that we querying
+        ///
+        /// \return the value of the queried field. 0 even if there is no such field.
         ////////////////////////////////////////////////////////////////////////////////////////////
         uint32 GetWorldStateForZone(uint32 zone, uint32 area, uint32 field) const;
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        //void BuildInitWorldStatesForZone(uint32 zone, uint32 area, WorldPacket &data) const;
-        //  Builds the initial worldstates packet, that tells the client what worldstates exist
-        //
-        //Parameter(s)
-        //  uint32 zone        -  The zone we are building the packet for
-        //  uint32 area        -  The area we are building the packet for
-        //  WorldPacket &data  -  The packet we will fill with the worldstates data
-        //
-        //Return Value
-        //  None
-        //
-        //
+        /// Builds the initial worldstates packet, that tells the client what worldstates exist
+        /// \param  uint32 zone        -  The zone we are building the packet for
+        /// \param  uint32 area        -  The area we are building the packet for
+        /// \param  WorldPacket &data  -  The packet we will fill with the worldstates data
+        ///
+        /// \return none
         ////////////////////////////////////////////////////////////////////////////////////////////
         void BuildInitWorldStatesForZone(uint32 zone, uint32 area, WorldPacket &data) const;
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////
-        //void InitWorldStates(std::multimap< uint32, WorldState > *states);
-        //  Sets up this worldstate handler with the initial data
-        //
-        //Parameter(s)
-        //  std::multimap< uint32, WorldState > *states  -  The source of the initial data
-        //
-        //Return Value
-        //  None
-        //
-        //
+        /// Sets up this worldstate handler with the initial data
+        /// \param  std::multimap< uint32, WorldState > *states  -  The source of the initial data
+        ///
+        /// \return none
         ////////////////////////////////////////////////////////////////////////////////////////////
-        void InitWorldStates(std::multimap< uint32, WorldState > *states);
+        void InitWorldStates(std::multimap<uint32, WorldState> *states);
 
         void setObserver(WorldStatesObserver *observer){ this->observer = observer; }
 
     private:
-        std::unordered_map< uint32, std::unordered_map< uint32, uint32 > > worldstates;
+
+        std::unordered_map<uint32, std::unordered_map<uint32, uint32>> worldstates;
         uint32 map;
-        WorldStatesObserver *observer;
+        WorldStatesObserver* observer;
 };
 
-#endif
+#endif      //WORLDSTATEHANDLER_H

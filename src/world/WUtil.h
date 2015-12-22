@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ARCWORLDUTILS_H
-#define _ARCWORLDUTILS_H
+#ifndef _WORLDUTILS_H
+#define _WORLDUTILS_H
 
 #include "Errors.h"
 
@@ -40,6 +40,7 @@ namespace Arcemu
             static uint32 MAKE_GAME_TIME();
     };
 }
+
 #define ARCEMU_ASSERT(EXPR) Arcemu::Util::ArcemuAssert(EXPR); ANALYSIS_ASSUME(EXPR)
 
-#endif  // _ARCWORLDUTILS_H
+#endif  // _WORLDUTILS_H

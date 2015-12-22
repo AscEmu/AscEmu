@@ -16,11 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
-
-// Class WorldSocket - Main network code functions, handles
-// reading/writing of all packets.
 
 #ifndef __WORLDSOCKET_H
 #define __WORLDSOCKET_H
@@ -45,9 +41,13 @@ enum OUTPACKET_RESULT
     OUTPACKET_RESULT_SOCKET_ERROR = 4,
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief Main network code functions, handles reading/writing of all packets.
+//////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL WorldSocket : public Socket
 {
     public:
+
         WorldSocket(SOCKET fd);
         ~WorldSocket();
 
@@ -56,14 +56,14 @@ class SERVER_DECL WorldSocket : public Socket
         inline void SendPacket(StackBufferBase* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
 
         void  OutPacket(uint16 opcode, size_t len, const void* data);
-        OUTPACKET_RESULT  _OutPacket(uint16 opcode, size_t len, const void* data);
+        OUTPACKET_RESULT _OutPacket(uint16 opcode, size_t len, const void* data);
 
         inline uint32 GetLatency() { return _latency; }
 
         void Authenticate();
         void InformationRetreiveCallback(WorldPacket & recvData, uint32 requestid);
 
-        void  UpdateQueuePosition(uint32 Position);
+        void UpdateQueuePosition(uint32 Position);
 
         void OnRead();
         void OnConnect();
@@ -228,4 +228,4 @@ static inline unsigned int FastGUIDPack(const uint64 & oldguid, unsigned char* b
     return (j - pos);
 }
 
-#endif
+#endif      //__WORLDSOCKET_H

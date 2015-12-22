@@ -16,12 +16,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-//
-// WorldCreator.h
-//
 
 #ifndef __WORLDCREATOR_H
 #define __WORLDCREATOR_H
@@ -41,7 +37,9 @@ class Battleground;
 class SERVER_DECL FormationMgr : public Singleton < FormationMgr >
 {
     std::map<uint32, Formation*> m_formations;
+
     public:
+
         typedef std::map<uint32, Formation*> FormationMap;
         FormationMgr();
         ~FormationMgr();
@@ -56,6 +54,7 @@ class SERVER_DECL FormationMgr : public Singleton < FormationMgr >
 class SERVER_DECL Instance
 {
     public:
+
         uint32 m_instanceId;
         uint32 m_mapId;
         MapMgr* m_mapMgr;
@@ -63,7 +62,7 @@ class SERVER_DECL Instance
         uint32 m_creatorGroup;
         bool m_persistent;
         uint32 m_difficulty;
-    std::set<uint32> m_killedNpcs;
+        std::set<uint32> m_killedNpcs;
         time_t m_creation;
         time_t m_expiration;
         MapInfo* m_mapInfo;
@@ -78,8 +77,10 @@ typedef std::unordered_map<uint32, Instance*> InstanceMap;
 
 class SERVER_DECL InstanceMgr
 {
-        friend class MapMgr;
+    friend class MapMgr;
+
     public:
+
         InstanceMgr();
         ~InstanceMgr();
 
@@ -124,7 +125,9 @@ class SERVER_DECL InstanceMgr
             }
             // Default instance handling
             else if ((pPlayer->GetGroup() && pInstance->m_creatorGroup == pPlayer->GetGroup()->GetID()) || pPlayer->GetLowGUID() == pInstance->m_creatorGuid)
+            {
                 return true;
+            }
 
             return false;
         }
@@ -188,6 +191,7 @@ class SERVER_DECL InstanceMgr
         }
 
     private:
+
         void _LoadInstances();
         void _CreateMap(uint32 mapid);
         MapMgr* _CreateInstance(Instance* in);
@@ -205,4 +209,4 @@ class SERVER_DECL InstanceMgr
 
 extern SERVER_DECL InstanceMgr sInstanceMgr;
 
-#endif
+#endif      //__WORLDCREATOR_H

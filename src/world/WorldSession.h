@@ -16,7 +16,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef __WORLDSESSION_H
@@ -37,7 +36,9 @@ class WorldSession;
 class MapMgr;
 class Creature;
 struct TrainerSpell;
+
 template<class T, class LOCK>
+
 class FastQueue;
 class Mutex;
 
@@ -51,9 +52,8 @@ struct LfgRoleCheck;
 //#define SESSION_CAP 5
 #define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
 
-/////////////////////////////////////////
+
 // Does nothing on release builds
-////////////////////////////////////////
 #ifdef _DEBUG
 #define CHECK_INWORLD_ASSERT ARCEMU_ASSERT(_player != NULL && _player->IsInWorld())
 #else
@@ -63,16 +63,14 @@ struct LfgRoleCheck;
 #define CHECK_GUID_EXISTS(guidx) if (_player == NULL || _player->GetMapMgr() == NULL || _player->GetMapMgr()->GetUnit((guidx)) == NULL) { return; }
 #define CHECK_PACKET_SIZE(pckp, ssize) if (ssize && pckp.size() < ssize) { Disconnect(); return; }
 
-/**********************************************************************************
-* Worldsocket related
-**********************************************************************************/
+// Worldsocket related
 #define WORLDSOCKET_TIMEOUT 120
 #define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough to gank ya.
 
 #define NOTIFICATION_MESSAGE_NO_PERMISSION "You do not have permission to perform that function."
 //#define CHECK_PACKET_SIZE(x, y) if (y > 0 && x.size() < y) { _socket->Disconnect(); return; }
 
-// MovementFlags Contribution by Tenshi
+
 enum MovementFlags
 {
     // Byte 1 (Resets on Movement Key Press)
@@ -210,6 +208,7 @@ class SERVER_DECL WorldSession
     friend class WorldSocket;
 
     public:
+
         WorldSession(uint32 id, std::string Name, WorldSocket* sock);
         ~WorldSession();
 
@@ -231,12 +230,12 @@ class SERVER_DECL WorldSession
         uint32 GetAccountId() const { return _accountId; }
         Player* GetPlayer() { return _player; }
 
-        /* Acct flags */
+        // Acct flags
         void SetAccountFlags(uint32 flags) { _accountFlags = flags; }
         bool HasFlag(uint32 flag) { return (_accountFlags & flag) != 0; }
         uint8 GetFlags() { return _accountFlags; }
 
-        /* GM Permission System */
+        // GM Permission System
         void LoadSecurity(std::string securitystring);
         void SetSecurity(std::string securitystring);
         char* GetPermissions() const { return permissions; }
@@ -819,7 +818,7 @@ class SERVER_DECL WorldSession
         // Used to know race on login
         void LoadPlayerFromDBProc(QueryResultVector & results);
 
-        /* Preallocated buffers for movement handlers */
+        // Preallocated buffers for movement handlers
         MovementInfo movement_info;
         uint8 movement_packet[90];
 
@@ -850,6 +849,7 @@ class SERVER_DECL WorldSession
         uint32 client_build;
         uint32 instanceId;
         uint8 _updatecount;
+
     public:
 
         MovementInfo* GetMovementInfo() { return &movement_info; }

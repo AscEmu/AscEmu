@@ -16,7 +16,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef _WARLOCK_H
@@ -25,9 +24,10 @@
 class Warlock : public Player
 {
     public:
+
         Warlock(uint32 guid) : Player(guid) {}
 
         bool IsWarlock() { return true; }
 };
 
-#endif
+#endif      //_WARLOCK_H
