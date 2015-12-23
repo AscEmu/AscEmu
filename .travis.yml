@@ -53,4 +53,4 @@ script:
  - gcc --version
  - g++ --version
  - cmake --version
- - make -j 10
+ - make -j 4
