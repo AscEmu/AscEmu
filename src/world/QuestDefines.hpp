@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WOWSERVER_QUEST_DEFINES_HPP
-#define WOWSERVER_QUEST_DEFINES_HPP
+#ifndef _QUEST_DEFINES_HPP
+#define _QUEST_DEFINES_HPP
 
 #define MAX_QUEST_LOG_SIZE 25
 
@@ -49,7 +49,7 @@ enum QUEST_TYPE
     QUEST_SLAY      = 0x02
 };
 
-enum QUEST_FLAG
+enum QuestFlag
 {
     QUEST_FLAG_NONE               = 0x00000000,
     QUEST_FLAG_DELIVER            = 0x00000001,
@@ -58,6 +58,7 @@ enum QUEST_FLAG
     QUEST_FLAG_REPEATABLE         = 0x00000008,
     QUEST_FLAG_EXPLORATION        = 0x00000010,
     QUEST_FLAG_TIMED              = 0x00000020,
+    QUEST_FLAG_UNK1               = 0x00000040,
     QUEST_FLAG_REPUTATION         = 0x00000080,
     QUEST_FLAGS_UNK2			  = 0x00000100,     /// Not used currently: _DELIVER_MORE Quest needs more than normal _q-item_ drops from mobs
     QUEST_FLAGS_HIDDEN_REWARDS    = 0x00000200,     /// Items and money rewarded only sent in SMSG_QUESTGIVER_OFFER_REWARD (not in SMSG_QUESTGIVER_QUEST_DETAILS or in client quest log(SMSG_QUEST_QUERY_RESPONSE))
@@ -127,4 +128,4 @@ enum QuestCompletionStatus
 	QUEST_FAILED     = 2
 };
 
-#endif // WOWSERVER_QUEST_DEFINES_HPP
+#endif // _QUEST_DEFINES_HPP

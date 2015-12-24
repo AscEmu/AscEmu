@@ -290,22 +290,24 @@ enum Standing
 
 enum PlayerFlags
 {
-    PLAYER_FLAG_PARTY_LEADER        = 0x00001,
-    PLAYER_FLAG_AFK                 = 0x00002,
-    PLAYER_FLAG_DND                 = 0x00004,
-    PLAYER_FLAG_GM                  = 0x00008,
-    PLAYER_FLAG_DEATH_WORLD_ENABLE  = 0x00010,
-    PLAYER_FLAG_RESTING             = 0x00020,
-    PLAYER_FLAG_ADMIN               = 0x00040,
-    PLAYER_FLAG_FREE_FOR_ALL_PVP    = 0x00080,
-    PLAYER_FLAG_UNKNOWN2            = 0x00100,
-    PLAYER_FLAG_PVP_TOGGLE          = 0x00200,
-    PLAYER_FLAG_NOHELM              = 0x00400,
-    PLAYER_FLAG_NOCLOAK             = 0x00800,
-    PLAYER_FLAG_NEED_REST_3_HOURS   = 0x01000,
-    PLAYER_FLAG_NEED_REST_5_HOURS   = 0x02000,
-    PLAYER_FLAG_DEVELOPER           = 0x08000,
-    PLAYER_FLAG_PVP                 = 0x40000,
+    PLAYER_FLAG_PARTY_LEADER        = 0x00000001,
+    PLAYER_FLAG_AFK                 = 0x00000002,
+    PLAYER_FLAG_DND                 = 0x00000004,
+    PLAYER_FLAG_GM                  = 0x00000008,
+    PLAYER_FLAG_DEATH_WORLD_ENABLE  = 0x00000010,
+    PLAYER_FLAG_RESTING             = 0x00000020,
+    PLAYER_FLAG_ADMIN               = 0x00000040,
+    PLAYER_FLAG_FREE_FOR_ALL_PVP    = 0x00000080,
+    PLAYER_FLAG_UNKNOWN2            = 0x00000100,
+    PLAYER_FLAG_PVP_TOGGLE          = 0x00000200,
+    PLAYER_FLAG_NOHELM              = 0x00000400,
+    PLAYER_FLAG_NOCLOAK             = 0x00000800,
+    PLAYER_FLAG_NEED_REST_3_HOURS   = 0x00001000,
+    PLAYER_FLAG_IS_DEAD             = 0x00002000,
+    PLAYER_FLAGS_RENAME_FIRST       = 0x00004000,
+    PLAYER_FLAG_DEVELOPER           = 0x00008000,
+    PLAYER_FLAG_PVP                 = 0x00040000,
+    PLAYER_FLAG_IS_BANNED           = 0x01000000
 };
 
 enum CustomizeFlags

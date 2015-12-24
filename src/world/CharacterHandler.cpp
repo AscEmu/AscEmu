@@ -182,7 +182,8 @@ bool ChatHandler::HandleRenameAllCharacter(const char* args, WorldSession* m_ses
 
 void CapitalizeString(std::string& arg)
 {
-    if (arg.length() == 0) return;
+    if (arg.length() == 0)
+        return;
     arg[0] = static_cast<char>(toupper(arg[0]));
     for (uint32 x = 1; x < arg.size(); ++x)
         arg[x] = static_cast<char>(tolower(arg[x]));
@@ -256,34 +257,34 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             has_dk = has_dk || (Class == 6);
 
             /* build character enum, w0000t :p */
-            data << uint64(guid);                        //guid
-            data << fields[7].GetString();                //name
-            data << uint8(race);                        //race
-            data << uint8(Class);                        //class
-            data << uint8(fields[4].GetUInt8());        //gender
-            data << uint32(fields[5].GetUInt32());        //PLAYER_BYTES
-            data << uint8(bytes2 & 0xFF);                //facial hair
-            data << uint8(fields[1].GetUInt8());        //Level
-            data << uint32(fields[12].GetUInt32());        //zoneid
-            data << uint32(fields[11].GetUInt32());        //Mapid
-            data << float(fields[8].GetFloat());        //X
-            data << float(fields[9].GetFloat());        //Y
-            data << float(fields[10].GetFloat());        //Z
-            data << uint32(fields[18].GetUInt32());        //GuildID
+            data << uint64(guid);                           //guid
+            data << fields[7].GetString();                  //name
+            data << uint8(race);                            //race
+            data << uint8(Class);                           //class
+            data << uint8(fields[4].GetUInt8());            //gender
+            data << uint32(fields[5].GetUInt32());          //PLAYER_BYTES
+            data << uint8(bytes2 & 0xFF);                   //facial hair
+            data << uint8(fields[1].GetUInt8());            //Level
+            data << uint32(fields[12].GetUInt32());         //zoneid
+            data << uint32(fields[11].GetUInt32());         //Mapid
+            data << float(fields[8].GetFloat());            //X
+            data << float(fields[9].GetFloat());            //Y
+            data << float(fields[10].GetFloat());           //Z
+            data << uint32(fields[18].GetUInt32());         //GuildID
 
             banned = fields[13].GetUInt32();
             uint32 char_flags = 0;
 
             if (banned && (banned < 10 || banned > (uint32)UNIXTIME))
-                char_flags |= 0x01000000;    //Character is banned
+                char_flags |= PLAYER_FLAG_IS_BANNED;
             if (fields[15].GetUInt32() != 0)
-                char_flags |= 0x00002000;    //Character is dead
+                char_flags |= PLAYER_FLAG_IS_DEAD;
             if (flags & PLAYER_FLAG_NOHELM)
-                char_flags |= 0x00000400;    //Helm not displayed
+                char_flags |= PLAYER_FLAG_NOHELM;
             if (flags & PLAYER_FLAG_NOCLOAK)
-                char_flags |= 0x00000800;    //Cloak not displayed
+                char_flags |= PLAYER_FLAG_NOCLOAK;
             if (fields[16].GetUInt32() == 1)
-                char_flags |= 0x00004000;    //Character has to be renamed before logging in
+                char_flags |= PLAYER_FLAGS_RENAME_FIRST;
 
             data << uint32(char_flags);
 
@@ -417,9 +418,12 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
 {
     CHECK_PACKET_SIZE(recv_data, 10);
     std::string name;
-    uint8 race, class_;
+    uint8 race;
+    uint8 class_;
 
-    recv_data >> name >> race >> class_;
+    recv_data >> name;
+    recv_data >> race;
+    recv_data >> class_;
     recv_data.rpos(0);
 
     LoginErrorCode res = VerifyName(name.c_str(), name.length());
@@ -657,7 +661,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
         CharacterDatabase.Execute("DELETE FROM playerreputations WHERE guid = '%u'", guid);
         CharacterDatabase.Execute("DELETE FROM playerskills WHERE GUID = '%u'", guid);
 
-        /* remove player info */
+        // remove player info
         objmgr.DeletePlayerInfo((uint32)guid);
         return E_CHAR_DELETE_SUCCESS;
     }
@@ -670,7 +674,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 
     uint64 guid;
     std::string name;
-    recv_data >> guid >> name;
+    recv_data >> guid;
+    recv_data >> name;
 
     PlayerInfo* pi = objmgr.GetPlayerInfo((uint32)guid);
     if (pi == 0) return;
