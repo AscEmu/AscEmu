@@ -180,7 +180,7 @@ class BroggokAI : public MoonScriptCreatureAI
             GameObject* pDoor = NULL;
             pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(456.157349f, 34.248005f, 9.559463f, GO_BROGGOK);
             if (pDoor)
-                pDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                pDoor->SetState(GO_STATE_OPEN);
 
             MoonScriptCreatureAI::OnDied(pKiller);
         }
@@ -236,7 +236,7 @@ class TheMakerAI : public MoonScriptCreatureAI
             GameObject* pDoor = NULL;
             pDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(327.155487f, 149.753418f, 9.559869f, GO_THE_MAKER);
             if (pDoor)
-                pDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                pDoor->SetState(GO_STATE_OPEN);
 
             MoonScriptCreatureAI::OnDied(pKiller);
         }

@@ -144,7 +144,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_GENERAL_BJARNGRIM, State_Finished);
                     pDoors = GetGameObjectByGuid(mGeneralDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_VOLKHAN:
@@ -152,7 +152,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_VOLKHAN, State_Finished);
                     pDoors = GetGameObjectByGuid(mVolkhanDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_LOKEN:
@@ -160,7 +160,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_LOKEN, State_Finished);
                     pDoors = GetGameObjectByGuid(mLokenDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_IONAR:
@@ -168,11 +168,11 @@ class HallsOfLightningScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_IONAR, State_Finished);
                     pDoors = GetGameObjectByGuid(mIonarDoors1GUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
 
                     pDoors = GetGameObjectByGuid(mIonarDoors2GUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
                 }
                 break;
             };

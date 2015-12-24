@@ -3113,7 +3113,7 @@ class KaelThasAI : public MoonScriptBossAI
                 GameObject* pGameobject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
                 if (pGameobject != NULL && pGameobject->GetState() == 0)
                 {
-                    pGameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                    pGameobject->SetState(GO_STATE_CLOSED);
                 }
             }
 
@@ -3147,7 +3147,7 @@ class KaelThasAI : public MoonScriptBossAI
                 GameObject* pGameobject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
                 if (pGameobject != NULL && pGameobject->GetState() == 1)
                 {
-                    pGameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                    pGameobject->SetState(GO_STATE_OPEN);
                 }
             }
         }

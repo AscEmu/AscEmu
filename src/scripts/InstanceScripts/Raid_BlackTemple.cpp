@@ -4447,7 +4447,7 @@ class AkamaAI : public MoonScriptBossAI
                     mOlumAI  = SpawnCreature(23411, 751.687744f, 297.408600f, 312.124817f, 0.054958f);
                     if (mUdaloAI == NULL || mOlumAI == NULL)
                     {
-                        pGate->SetState(GAMEOBJECT_STATE_OPEN);
+                        pGate->SetState(GO_STATE_OPEN);
                         break;
                     }
                     break;
@@ -4474,7 +4474,7 @@ class AkamaAI : public MoonScriptBossAI
                     }
                     break;
                 case 11:
-                    pGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pGate->SetState(GO_STATE_OPEN);
                     if (pDoorTrigger != NULL)
                     {
                         pDoorTrigger->CastSpell(pDoorTrigger, dbcSpell.LookupEntry(GATE_FAILURE), true);
@@ -4596,11 +4596,11 @@ class AkamaAI : public MoonScriptBossAI
                     GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
-                        pRightGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                        pRightGate->SetState(GO_STATE_CLOSED);
                     }
                     if (pLeftGate != NULL)
                     {
-                        pLeftGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                        pLeftGate->SetState(GO_STATE_CLOSED);
                     }
 
                     SetCanMove(true);
@@ -5136,11 +5136,11 @@ class MaievAI : public MoonScriptBossAI
                             GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                             if (pRightGate != NULL)
                             {
-                                pRightGate->SetState(GAMEOBJECT_STATE_OPEN);
+                                pRightGate->SetState(GO_STATE_OPEN);
                             }
                             if (pLeftGate != NULL)
                             {
-                                pLeftGate->SetState(GAMEOBJECT_STATE_OPEN);
+                                pLeftGate->SetState(GO_STATE_OPEN);
                             }
 
                             mIllidanAI->GetUnit()->SetEmoteState(0);
@@ -5367,11 +5367,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
             GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
             if (pRightGate != NULL)
             {
-                pRightGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                pRightGate->SetState(GO_STATE_CLOSED);
             }
             if (pLeftGate != NULL)
             {
-                pLeftGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                pLeftGate->SetState(GO_STATE_CLOSED);
             }
 
             _unit->SetEmoteState(EMOTE_ONESHOT_READY1H);
@@ -5435,11 +5435,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
-                    pRightGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pRightGate->SetState(GO_STATE_OPEN);
                 }
                 if (pLeftGate != NULL)
                 {
-                    pLeftGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pLeftGate->SetState(GO_STATE_OPEN);
                 }
 
                 Creature* pMaiev = static_cast<Creature*>(ForceCreatureFind(CN_MAIEV));
@@ -5473,11 +5473,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
-                    pRightGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pRightGate->SetState(GO_STATE_OPEN);
                 }
                 if (pLeftGate != NULL)
                 {
-                    pLeftGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pLeftGate->SetState(GO_STATE_OPEN);
                 }
             }
 
@@ -6425,11 +6425,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
-                        pRightGate->SetState(GAMEOBJECT_STATE_OPEN);
+                        pRightGate->SetState(GO_STATE_OPEN);
                     }
                     if (pLeftGate != NULL)
                     {
-                        pLeftGate->SetState(GAMEOBJECT_STATE_OPEN);
+                        pLeftGate->SetState(GO_STATE_OPEN);
                     }*/
 
             delete this;
@@ -6674,7 +6674,7 @@ class CageTrapGO : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            _gameobject->SetFlags(1);
+            _gameobject->SetFlags(GO_FLAG_NONSELECTABLE);
             Creature* pTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
             if (pTrigger != NULL && pTrigger->GetScript() != NULL)
             {

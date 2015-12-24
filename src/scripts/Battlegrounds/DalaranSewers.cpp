@@ -32,12 +32,12 @@ void DalaranSewers::OnCreate()
     GameObject* obj = NULL;
 
     obj = SpawnGameObject(192643, 617, 1232.11f, 764.699f, 20.3f, 0.0f, 32, 1375, 2.0f);
-    obj->SetState(1);
+    obj->SetState(GO_STATE_CLOSED);
     obj->SetAnimProgress(100);
     m_gates.insert(obj);
 
     obj = SpawnGameObject(192642, 617, 1350.02f, 817.502f, 19.1398f, 0.0f, 32, 1375, 2.0f);
-    obj->SetState(1);
+    obj->SetState(GO_STATE_CLOSED);
     obj->SetAnimProgress(100);
     m_gates.insert(obj);
 

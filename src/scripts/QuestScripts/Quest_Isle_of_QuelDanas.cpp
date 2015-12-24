@@ -40,7 +40,7 @@ class ScryingOrb : public GameObjectAIScript
                 GameObject* pOrb = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 187578);
                 if(pOrb)
                 {
-                    pOrb->SetState(GAMEOBJECT_STATE_OPEN);
+                    pOrb->SetState(GO_STATE_OPEN);
                     qle->SetMobCount(0, 1);
                     qle->SendUpdateAddKill(0);
                     qle->UpdatePlayerFields();

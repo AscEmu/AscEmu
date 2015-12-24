@@ -513,7 +513,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 if (despawn)
                                     pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : 900000 + (RandomUInt(600000))));
                                 else
-                                    pGO->SetState(1);
+                                    pGO->SetState(GO_STATE_CLOSED);
 
                                 return;
                             }
@@ -525,7 +525,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                     //we still have loot inside.
                                     if (pGO->HasLoot() || !despawn)
                                     {
-                                        pGO->SetState(1);
+                                        pGO->SetState(GO_STATE_CLOSED);
                                         ///\todo redo this temporary fix, because for some reason hasloot is true even when we loot everything my guess is we need to set up some even that rechecks the GO in 10 seconds or something
                                         //pGO->Despawn(600000 + (RandomUInt(300000)));
                                         return;
@@ -548,7 +548,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 {
                                     if (pGO->HasLoot() || !despawn)
                                     {
-                                        pGO->SetState(1);
+                                        pGO->SetState(GO_STATE_CLOSED);
                                         return;
                                     }
                                     pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
@@ -559,7 +559,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                             {
                                 if (pGO->HasLoot() || !despawn)
                                 {
-                                    pGO->SetState(1);
+                                    pGO->SetState(GO_STATE_CLOSED);
                                     return;
                                 }
                                 pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
@@ -572,7 +572,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 {
                     if (pGO->HasLoot() || !despawn)
                     {
-                        pGO->SetState(1);
+                        pGO->SetState(GO_STATE_CLOSED);
                         return;
                     }
                     pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
@@ -1619,7 +1619,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             else
             {
                 obj->SetFlags(obj->GetFlags() | 1);   // lock door
-                obj->SetState(0);
+                obj->SetState(GO_STATE_OPEN);
                 sEventMgr.AddEvent(obj, &GameObject::EventCloseDoor, EVENT_GAMEOBJECT_DOOR_CLOSE, 20000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             }
         }
@@ -2226,7 +2226,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
         pGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(creatureguid));
         if (!pGameObject)
             return;
-        pGameObject->SetState(0);
+        pGameObject->SetState(GO_STATE_OPEN);
         pLoot = &pGameObject->loot;
     }
 

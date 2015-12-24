@@ -221,7 +221,7 @@ class SinclariAI : public MoonScriptCreatureAI
 
                     GameObject* pVioletHoldDoor = pInstance->FindClosestGameObjectOnMap(GO_TVH_PRISON_SEAL, 1822.59f, 803.93f, 44.36f);
                     if (pVioletHoldDoor != NULL)
-                        pVioletHoldDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                        pVioletHoldDoor->SetState(GO_STATE_CLOSED);
                 }
                 break;
             }

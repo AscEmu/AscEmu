@@ -524,7 +524,7 @@ void EyeOfTheStorm::DropFlag2(Player* plr, uint32 id)
 
     plr->CastSpell(plr, 42792, true);
 
-    m_dropFlag->SetFlags(1);
+    m_dropFlag->SetFlags(GO_FLAG_NONSELECTABLE);
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
     sEventMgr.AddEvent(this, &EyeOfTheStorm::EventResetFlag, EVENT_EOTS_RESET_FLAG, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -613,8 +613,8 @@ void EyeOfTheStorm::OnCreate()
         }
 
         m_bubbles[i]->SetScale(0.1f);
-        m_bubbles[i]->SetState(GAMEOBJECT_STATE_CLOSED);
-        m_bubbles[i]->SetFlags(32);;
+        m_bubbles[i]->SetState(GO_STATE_CLOSED);
+        m_bubbles[i]->SetFlags(GO_FLAG_NEVER_DESPAWN);
         m_bubbles[i]->SetFaction(114);
         m_bubbles[i]->SetAnimProgress(100);
 
@@ -915,7 +915,7 @@ void EyeOfTheStorm::SpawnBuff(uint32 x)
 
         EOTSm_buffs[x]->SetParentRotation(2, EOTSBuffRotations[x][0]);
         EOTSm_buffs[x]->SetParentRotation(3, EOTSBuffRotations[x][1]);
-        EOTSm_buffs[x]->SetState(GAMEOBJECT_STATE_CLOSED);
+        EOTSm_buffs[x]->SetState(GO_STATE_CLOSED);
         EOTSm_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
         EOTSm_buffs[x]->SetAnimProgress(100);
         EOTSm_buffs[x]->PushToWorld(m_mapMgr);

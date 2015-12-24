@@ -21,20 +21,27 @@
 #ifndef _GAMEOBJECT_H
 #define _GAMEOBJECT_H
 
-enum GO_STATE
+enum GameObject_State
 {
-    GAMEOBJECT_STATE_OPEN               = 0,
-    GAMEOBJECT_STATE_CLOSED             = 1,
-    GAMEOBJECT_STATE_ALTERNATIVE_OPEN   = 2
+    GO_STATE_OPEN               = 0,
+    GO_STATE_CLOSED             = 1,
+    GO_STATE_ALTERNATIVE_OPEN   = 2
 };
 
-enum GO_FLAGS
+enum GameObject_Flags
 {
-    GAMEOBJECT_FLAG_NONSELECTABLE   = 0x001,
-    GAMEOBJECT_FLAG_LOCKED          = 0x002,
-    GAMEOBJECT_FLAG_UNTARGETABLE    = 0x004,
-    GAMEOBJECT_FLAG_DAMAGED         = 0x200,
-    GAMEOBJECT_FLAG_DESTROYED       = 0x400
+    GO_FLAG_NONE                = 0x000,
+    GO_FLAG_NONSELECTABLE       = 0x001,
+    GO_FLAG_LOCKED              = 0x002,
+    GO_FLAG_UNTARGETABLE        = 0x004,
+    GO_FLAG_TRANSPORT           = 0x008,
+    GO_FLAG_NOT_SELECTABLE      = 0x010,
+    GO_FLAG_NEVER_DESPAWN       = 0x020,
+    GO_FLAG_TRIGGERED           = 0x040,
+    GO_FLAG_UNK1                = 0x080,
+    GO_FLAG_UNK2                = 0x100,
+    GO_FLAG_DAMAGED             = 0x200,
+    GO_FLAG_DESTROYED           = 0x400
 };
 
 class Player;

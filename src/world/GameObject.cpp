@@ -610,7 +610,7 @@ void GameObject::FishHooked(Player* player)
     data << uint64(GetGUID());
     data << uint32(0);      // value < 4
     player->GetSession()->SendPacket(&data);
-    SetFlags(32);
+    SetFlags(GO_FLAG_NEVER_DESPAWN);
 }
 
 /////////////
@@ -840,8 +840,8 @@ void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUI
         // Instant destruction
         hitpoints = 0;
 
-        SetFlags(GAMEOBJECT_FLAG_DESTROYED);
-        SetFlags(GetFlags() & ~GAMEOBJECT_FLAG_DAMAGED);
+        SetFlags(GO_FLAG_DESTROYED);
+        SetFlags(GetFlags() & ~GO_FLAG_DAMAGED);
         SetDisplayId(pInfo->parameter_9);   // destroyed display id
 
         CALL_GO_SCRIPT_EVENT(this, OnDestroyed)();
@@ -852,14 +852,14 @@ void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUI
         // Simply damaging
         hitpoints -= damage;
 
-        if (!HasFlags(GAMEOBJECT_FLAG_DAMAGED))
+        if (!HasFlags(GO_FLAG_DAMAGED))
         {
             // Intact  ->  Damaged
 
             // Are we below the intact-damaged transition treshold?
             if (hitpoints <= (maxhitpoints - pInfo->parameter_0))
             {
-                SetFlags(GAMEOBJECT_FLAG_DAMAGED);
+                SetFlags(GO_FLAG_DAMAGED);
                 SetDisplayId(pInfo->parameter_4); // damaged display id
             }
         }
@@ -886,7 +886,7 @@ void GameObject::SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 Con
 
 void GameObject::Rebuild()
 {
-    SetFlags(GetFlags() & uint32(~(GAMEOBJECT_FLAG_DAMAGED | GAMEOBJECT_FLAG_DESTROYED)));
+    SetFlags(GetFlags() & uint32(~(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED)));
     SetDisplayId(pInfo->display_id);
     maxhitpoints = pInfo->parameter_0 + pInfo->parameter_5;
     hitpoints = maxhitpoints;

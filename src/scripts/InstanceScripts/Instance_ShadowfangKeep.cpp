@@ -210,7 +210,7 @@ class VoidWalkerAI : public MoonScriptCreatureAI
     {
         GameObject* pDoor = GetUnit()->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-129.034f, 2166.16f, 129.187f, GO_SORCERER_GATE);
         if (pDoor)
-            pDoor->SetState(GAMEOBJECT_STATE_OPEN);
+            pDoor->SetState(GO_STATE_OPEN);
 
         ParentClass::OnDied(pKiller);
     }
@@ -246,7 +246,7 @@ class NandosAI : public MoonScriptCreatureAI
     {
         GameObject* pDoor = GetUnit()->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-118.11f, 2161.86f, 155.678f, 18971);
         if (pDoor)
-            pDoor->SetState(GAMEOBJECT_STATE_OPEN);
+            pDoor->SetState(GO_STATE_OPEN);
 
         ParentClass::OnDied(pKiller);
     }
@@ -283,10 +283,10 @@ class RightLever : public GameObjectAIScript
             GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-252.696f, 2114.22f, 82.8052f, GO_RIGHT_CELL);
             if (CellDoor != NULL)
             {
-                if (CellDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
-                    CellDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                if (CellDoor->GetState() == GO_STATE_CLOSED)
+                    CellDoor->SetState(GO_STATE_OPEN);
                 else
-                    CellDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                    CellDoor->SetState(GO_STATE_CLOSED);
             }
         }
 };
@@ -303,10 +303,10 @@ class MiddleLever : public GameObjectAIScript
             GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-249.22f, 2123.1f, 82.8052f, GO_MIDDLE_CELL);
             if (CellDoor != NULL)
             {
-                if (CellDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
-                    CellDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                if (CellDoor->GetState() == GO_STATE_CLOSED)
+                    CellDoor->SetState(GO_STATE_OPEN);
                 else
-                    CellDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                    CellDoor->SetState(GO_STATE_CLOSED);
             }
         }
 };
@@ -323,10 +323,10 @@ class LeftLever : public GameObjectAIScript
             GameObject* CellDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-245.598f, 2132.32f, 82.8052f, GO_LEFT_CELL);
             if (CellDoor != NULL)
             {
-                if (CellDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
-                    CellDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                if (CellDoor->GetState() == GO_STATE_CLOSED)
+                    CellDoor->SetState(GO_STATE_OPEN);
                 else
-                    CellDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                    CellDoor->SetState(GO_STATE_CLOSED);
             }
         }
 };

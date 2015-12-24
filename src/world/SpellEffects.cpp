@@ -2944,8 +2944,8 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
                         v = lock->minlockskill[j];
-                        gameObjTarget->SetFlags(0);
-                        gameObjTarget->SetState(1);
+                        gameObjTarget->SetFlags(GO_FLAG_NONE);
+                        gameObjTarget->SetState(GO_STATE_CLOSED);
                         //Add Fill GO loot here
                         if (gameObjTarget->loot.items.size() == 0)
                         {
@@ -3593,8 +3593,8 @@ void Spell::SpellEffectSummonObject(uint32 i)
         GameObject* go = u_caster->GetMapMgr()->CreateGameObject(GO_FISHING_BOBBER);
 
         go->CreateFromProto(GO_FISHING_BOBBER, mapid, posx, posy, posz, orient);
-        go->SetFlags(0);
-        go->SetState(0);
+        go->SetFlags(GO_FLAG_NONE);
+        go->SetState(GO_STATE_OPEN);
         go->SetUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->GetGUID());
         u_caster->SetChannelSpellTargetGUID(go->GetGUID());
         go->Phase(PHASE_SET, u_caster->GetPhase());
@@ -3632,7 +3632,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
         GameObject* go = m_caster->GetMapMgr()->CreateGameObject(entry);
 
         go->CreateFromProto(entry, mapid, posx, posy, pz, orient);
-        go->SetState(1);
+        go->SetState(GO_STATE_CLOSED);
         go->SetUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->GetGUID());
         go->Phase(PHASE_SET, u_caster->GetPhase());
         go->PushToWorld(m_caster->GetMapMgr());
@@ -3640,7 +3640,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
         if (entry == 17032 && p_caster)   // this is a portal
         {
             // enable it for party only
-            go->SetState(0);
+            go->SetState(GO_STATE_OPEN);
             //disable by default
             WorldPacket* pkt = go->BuildFieldUpdatePacket(GAMEOBJECT_BYTES_1, 1 << 24);
             SubGroup* pGroup = p_caster->GetGroup() ? p_caster->GetGroup()->GetSubGroup(p_caster->GetSubGroup()) : NULL;

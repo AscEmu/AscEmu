@@ -626,7 +626,7 @@ void GrandWidowFaerlinaAI::OnCombatStart(Unit* pTarget)
 
     GameObject* WebGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
-        WebGate->SetState(GAMEOBJECT_STATE_CLOSED);
+        WebGate->SetState(GO_STATE_CLOSED);
 
     for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
@@ -646,7 +646,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
 
     GameObject* WebGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3318.65f, -3695.85f, 259.094f, 181235);
     if (WebGate != NULL)
-        WebGate->SetState(GAMEOBJECT_STATE_OPEN);
+        WebGate->SetState(GO_STATE_OPEN);
 
     for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
@@ -1283,11 +1283,11 @@ void NothThePlaguebringerAI::OnCombatStart(Unit* pTarget)
     {
         GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
-            Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+            Gate->SetState(GO_STATE_CLOSED);
 
         Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2683.670654f, -3556.429688f, 261.823334f, 181201);
         if (Gate != NULL)
-            Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+            Gate->SetState(GO_STATE_CLOSED);
     };
 };
 
@@ -1298,11 +1298,11 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
     {
         GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2740.689209f, -3489.697266f, 262.117767f, 181200);
         if (Gate != NULL)
-            Gate->SetState(GAMEOBJECT_STATE_OPEN);
+            Gate->SetState(GO_STATE_OPEN);
 
         Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2683.670654f, -3556.429688f, 261.823334f, 181201);
         if (Gate != NULL)
-            Gate->SetState(GAMEOBJECT_STATE_OPEN);
+            Gate->SetState(GO_STATE_OPEN);
     };
 
     for (std::set< PlaguedWarriorAI* >::iterator Iter = mWarriors.begin(); Iter != mWarriors.end(); ++Iter)
@@ -1748,11 +1748,11 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
     {
         GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
-            Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+            Gate->SetState(GO_STATE_CLOSED);
 
         Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2771.718506f, -3739.965820f, 273.616211f, 181203);
         if (Gate != NULL)
-            Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+            Gate->SetState(GO_STATE_CLOSED);
 
         if (mFissures.size() == 0)
         {
@@ -1778,7 +1778,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
                 FissureGO = static_cast< PlagueFissureGO* >(Fissure->GetScript());
                 mFissures.insert(std::make_pair(AreaId, FissureGO));
                 FissureGO->mHeiganAI = this;
-                FissureGO->SetState(GAMEOBJECT_STATE_CLOSED);
+                FissureGO->SetState(GO_STATE_CLOSED);
             };
         };
     };
@@ -1792,11 +1792,11 @@ void HeiganTheUncleanAI::OnCombatStop(Unit* pTarget)
     {
         GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2790.709961f, -3708.669922f, 276.584991f, 181202);
         if (Gate != NULL)
-            Gate->SetState(GAMEOBJECT_STATE_OPEN);
+            Gate->SetState(GO_STATE_OPEN);
 
         Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2771.718506f, -3739.965820f, 273.616211f, 181203);
         if (Gate != NULL)
-            Gate->SetState(GAMEOBJECT_STATE_OPEN);
+            Gate->SetState(GO_STATE_OPEN);
     };
 
     mFissures.clear();

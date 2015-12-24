@@ -861,9 +861,9 @@ class LuaGameObject
         {
             TEST_GO_RET();
             if (ptr->GetState() == 1)
-                ptr->SetState(0);
+                ptr->SetState(GO_STATE_OPEN);
             else
-                ptr->SetState(1);
+                ptr->SetState(GO_STATE_CLOSED);
             ptr->SetFlags((ptr->GetFlags() & ~1));
             RET_BOOL(true)
         }

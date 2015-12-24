@@ -393,7 +393,7 @@ void IsleOfConquest::OnCreate()
         gates[TEAM_ALLIANCE][i].gate = SpawnGameObject(allygateids[i], 628, allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3], 0, 1, 1.0f);
         gates[TEAM_ALLIANCE][i].gate->PushToWorld(m_mapMgr);
         gates[TEAM_ALLIANCE][i].dyngate = SpawnGameObject(IOC_DYNAMIC_GATE_ALLY, 628, allygatelocations[i][0], allygatelocations[i][1], allygatelocations[i][2], allygatelocations[i][3], 0, 1, 1.0f);
-        gates[TEAM_ALLIANCE][i].dyngate->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE);
+        gates[TEAM_ALLIANCE][i].dyngate->SetFlags(GO_FLAG_UNTARGETABLE);
         gates[TEAM_ALLIANCE][i].dyngate->PushToWorld(m_mapMgr);
     }
 
@@ -403,7 +403,7 @@ void IsleOfConquest::OnCreate()
         gates[TEAM_HORDE][i].gate = SpawnGameObject(hordegateids[i], 628, hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3], 0, 2, 1.0f);
         gates[TEAM_HORDE][i].gate->PushToWorld(m_mapMgr);
         gates[TEAM_HORDE][i].dyngate = SpawnGameObject(IOC_DYNAMIC_GATE_HORDE, 628, hordegatelocations[i][0], hordegatelocations[i][1], hordegatelocations[i][2], hordegatelocations[i][3], 0, 2, 1.0f);
-        gates[TEAM_HORDE][i].dyngate->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE);
+        gates[TEAM_HORDE][i].dyngate->SetFlags(GO_FLAG_UNTARGETABLE);
         gates[TEAM_HORDE][i].dyngate->PushToWorld(m_mapMgr);
     }
 
@@ -411,7 +411,7 @@ void IsleOfConquest::OnCreate()
     for (uint8 i = 0; i < 2; i++)
     {
         towergates[TEAM_ALLIANCE][i] = SpawnGameObject(195436, AllyTowerGates[i], 0, 35, 1.0f);
-        towergates[TEAM_ALLIANCE][i]->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE);
+        towergates[TEAM_ALLIANCE][i]->SetFlags(GO_FLAG_UNTARGETABLE);
         towergates[TEAM_ALLIANCE][i]->PushToWorld(m_mapMgr);
     }
 
@@ -419,7 +419,7 @@ void IsleOfConquest::OnCreate()
     for (uint8 i = 0; i < 2; i++)
     {
         towergates[TEAM_HORDE][i] = SpawnGameObject(195437, HordeTowerGates[i], 0, 35, 0.5f);
-        towergates[TEAM_HORDE][i]->SetFlags(GAMEOBJECT_FLAG_UNTARGETABLE);
+        towergates[TEAM_HORDE][i]->SetFlags(GO_FLAG_UNTARGETABLE);
         towergates[TEAM_HORDE][i]->PushToWorld(m_mapMgr);
     }
 
@@ -483,8 +483,8 @@ void IsleOfConquest::OpenGates()
     {
         for (uint8 j = 0; j < 3; j++)
         {
-            gates[i][j].dyngate->SetState(0);
-            gates[i][j].dyngate->RemoveFlags(GAMEOBJECT_FLAG_NONSELECTABLE);
+            gates[i][j].dyngate->SetState(GO_STATE_OPEN);
+            gates[i][j].dyngate->RemoveFlags(GO_FLAG_NONSELECTABLE);
         }
     }
 
@@ -492,8 +492,8 @@ void IsleOfConquest::OpenGates()
     {
         for (uint8 i = 0; i < 2; i++)
         {
-            towergates[team][i]->SetState(0);
-            towergates[team][i]->RemoveFlags(GAMEOBJECT_FLAG_UNTARGETABLE);
+            towergates[team][i]->SetState(GO_STATE_OPEN);
+            towergates[team][i]->RemoveFlags(GO_FLAG_UNTARGETABLE);
         }
     }
 
@@ -536,7 +536,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].banner = SpawnGameObject(gi->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
-        controlpoint[Id].banner->SetState(1);
+        controlpoint[Id].banner->SetState(GO_STATE_CLOSED);
         controlpoint[Id].banner->SetType(gi->type);
         controlpoint[Id].banner->SetAnimProgress(100);
         controlpoint[Id].banner->Activate();
@@ -636,7 +636,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].aura = SpawnGameObject(gi_aura->entry, 628, ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
             ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 5.0f);
 
-        controlpoint[Id].aura->SetState(1);
+        controlpoint[Id].aura->SetState(GO_STATE_CLOSED);
         controlpoint[Id].aura->SetType(6);
         controlpoint[Id].aura->SetAnimProgress(100);
         controlpoint[Id].aura->bannerauraslot = Id;

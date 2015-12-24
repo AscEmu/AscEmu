@@ -51,12 +51,12 @@ void RingOfValor::OnCreate()
     obj->PushToWorld(m_mapMgr);
 
     obj = SpawnGameObject(192392, 618, 763.93f, -295.0f, 27.0f, 0.0f, 32, 1375, 1.0f);
-    obj->SetState(1);
+    obj->SetState(GO_STATE_CLOSED);
     obj->SetAnimProgress(100);
     m_gates.insert(obj);
 
     obj = SpawnGameObject(192391, 618, 763.93f, -274.0f, 27.0f, 0.0f, 32, 1375, 1.0f);
-    obj->SetState(1);
+    obj->SetState(GO_STATE_CLOSED);
     obj->SetAnimProgress(100);
     m_gates.insert(obj);
 

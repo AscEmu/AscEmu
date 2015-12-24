@@ -406,10 +406,10 @@ class BigBadWolfAI : public CreatureAIScript
             GameObject* DoorRightO = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10872.195f, -1779.42f, 90.45f, 184278);
 
             if (DoorLeftO)
-                DoorLeftO->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorLeftO->SetState(GO_STATE_OPEN);
 
             if (DoorRightO)
-                DoorRightO->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorRightO->SetState(GO_STATE_OPEN);
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -579,13 +579,13 @@ class THEBIGBADWOLFAI : public CreatureAIScript
             GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GAMEOBJECT_STATE_CLOSED);
+                DoorLeft->SetState(GO_STATE_CLOSED);
 
             if (DoorRight)
-                DoorRight->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorRight->SetState(GO_STATE_OPEN);
 
             if (Curtain)
-                Curtain->SetState(GAMEOBJECT_STATE_CLOSED);
+                Curtain->SetState(GO_STATE_CLOSED);
 
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
@@ -600,14 +600,14 @@ class THEBIGBADWOLFAI : public CreatureAIScript
             GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorLeft->SetState(GO_STATE_OPEN);
 
             if (DoorRight)
-                DoorRight->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorRight->SetState(GO_STATE_OPEN);
 
             // Make sure the curtain stays up
             if (Curtain)
-                Curtain->SetState(GAMEOBJECT_STATE_OPEN);
+                Curtain->SetState(GO_STATE_OPEN);
 
             CastTime();
             _unit->PlaySoundToSet(9275);
@@ -877,13 +877,13 @@ class BarnesAI : public CreatureAIScript
             GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GAMEOBJECT_STATE_CLOSED);
+                DoorLeft->SetState(GO_STATE_CLOSED);
 
             if (DoorRight)
-                DoorRight->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorRight->SetState(GO_STATE_OPEN);
 
             if (Curtain)
-                Curtain->SetState(GAMEOBJECT_STATE_CLOSED);
+                Curtain->SetState(GO_STATE_CLOSED);
 
             Creature* Julianne      = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-10883.0f, -1751.81f, 90.4765f, 17534);
             Creature* Romulo        = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-10883.0f, -1751.81f, 90.4765f, 17533);
@@ -953,13 +953,13 @@ class BarnesAI : public CreatureAIScript
             GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GAMEOBJECT_STATE_CLOSED);
+                DoorLeft->SetState(GO_STATE_CLOSED);
 
             if (DoorRight)
-                DoorRight->SetState(GAMEOBJECT_STATE_CLOSED);
+                DoorRight->SetState(GO_STATE_CLOSED);
 
             if (Curtain)
-                Curtain->SetState(GAMEOBJECT_STATE_OPEN);
+                Curtain->SetState(GO_STATE_OPEN);
 
             _unit->SetDisplayId(16616);
 
@@ -990,13 +990,13 @@ class BarnesAI : public CreatureAIScript
             GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GAMEOBJECT_STATE_CLOSED);
+                DoorLeft->SetState(GO_STATE_CLOSED);
 
             if (DoorRight)
-                DoorRight->SetState(GAMEOBJECT_STATE_CLOSED);
+                DoorRight->SetState(GO_STATE_CLOSED);
 
             if (Curtain)
-                Curtain->SetState(GAMEOBJECT_STATE_OPEN);
+                Curtain->SetState(GO_STATE_OPEN);
 
             _unit->SetDisplayId(16616);
             _unit->GetMapMgr()->GetInterface()->SpawnCreature(17534, -10891.582f, -1755.5177f, 90.476f, 4.61f, true, true, 0, 0); //Spawn Julianne
@@ -1028,13 +1028,13 @@ class BarnesAI : public CreatureAIScript
             GameObject* BackDrop = _unit->GetMapMgr()->GetInterface()->SpawnGameObject(183491, -10890.9f, -1744.06f, 90.4765f, -1.67552f, false, 0, 0);*/
 
             if (DoorLeft)
-                DoorLeft->SetState(GAMEOBJECT_STATE_CLOSED);
+                DoorLeft->SetState(GO_STATE_CLOSED);
 
             if (DoorRight)
-                DoorRight->SetState(GAMEOBJECT_STATE_CLOSED);
+                DoorRight->SetState(GO_STATE_CLOSED);
 
             if (Curtain)
-                Curtain->SetState(GAMEOBJECT_STATE_OPEN);
+                Curtain->SetState(GO_STATE_OPEN);
 
             // Float Value does not work for go rotation any more, as of lastest patches
             /*// Back Right - House
@@ -1539,7 +1539,7 @@ class ShadeofAranAI : public CreatureAIScript
             SDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11190.012f, -1881.016f, 231.95f, 184517);
             if (SDoor)
             {
-                SDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                SDoor->SetState(GO_STATE_CLOSED);
                 SDoor->SetFlags(33);
             }
         }
@@ -2828,7 +2828,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             GameObject* MDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11018.5f, -1967.92f, 276.652f, 185134);
             if (MDoor != NULL)
             {
-                MDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                MDoor->SetState(GO_STATE_CLOSED);
                 MDoor->SetFlags(33);
             }
         }
@@ -2861,7 +2861,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             GameObject* MDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11018.5f, -1967.92f, 276.652f, 185134);
             // Open door
             if (MDoor != NULL)
-                MDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                MDoor->SetState(GO_STATE_OPEN);
 
             Creature* MAxes = NULL;
             MAxes = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_AXES);
@@ -2887,7 +2887,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             GameObject* MDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11018.5f, -1967.92f, 276.652f, 185134);
             // Open door
             if (MDoor)
-                MDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                MDoor->SetState(GO_STATE_OPEN);
         }
 
         void OnTargetDied(Unit* mTarget)
@@ -3401,7 +3401,7 @@ class NetherspiteAI : public CreatureAIScript
             GameObject* NDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11186.2f, -1665.14f, 281.398f, 185521);
             if (NDoor)
             {
-                NDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                NDoor->SetState(GO_STATE_CLOSED);
                 NDoor->SetFlags(33);
             }
         }
@@ -3416,7 +3416,7 @@ class NetherspiteAI : public CreatureAIScript
 
             GameObject* NDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11186.2f, -1665.14f, 281.398f, 185521);
             if (NDoor)
-                NDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                NDoor->SetState(GO_STATE_OPEN);
         }
 
         void OnDied(Unit* mKiller)
@@ -3425,7 +3425,7 @@ class NetherspiteAI : public CreatureAIScript
 
             GameObject* NDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-11186.2f, -1665.14f, 281.398f, 185521);
             if (NDoor)
-                NDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                NDoor->SetState(GO_STATE_OPEN);
         }
 
         void AIUpdate()
@@ -4699,13 +4699,13 @@ class CroneAI : public CreatureAIScript
                 GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
                 if (DoorLeft)
-                    DoorLeft->SetState(GAMEOBJECT_STATE_CLOSED);
+                    DoorLeft->SetState(GO_STATE_CLOSED);
 
                 if (DoorRight)
-                    DoorRight->SetState(GAMEOBJECT_STATE_OPEN);
+                    DoorRight->SetState(GO_STATE_OPEN);
 
                 if (Curtain)
-                    Curtain->SetState(GAMEOBJECT_STATE_CLOSED);
+                    Curtain->SetState(GO_STATE_CLOSED);
             }
 
             CastTime();
@@ -4725,14 +4725,14 @@ class CroneAI : public CreatureAIScript
             GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorLeft->SetState(GO_STATE_OPEN);
 
             if (DoorRight)
-                DoorRight->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorRight->SetState(GO_STATE_OPEN);
 
             // Make sure the curtain stays up
             if (Curtain)
-                Curtain->SetState(GAMEOBJECT_STATE_OPEN);
+                Curtain->SetState(GO_STATE_OPEN);
 
             CastTime();
             RemoveAIUpdateEvent();
@@ -4917,13 +4917,13 @@ class RomuloAI : public CreatureAIScript
                 GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
                 if (DoorLeft)
-                    DoorLeft->SetState(GAMEOBJECT_STATE_CLOSED);
+                    DoorLeft->SetState(GO_STATE_CLOSED);
 
                 if (DoorRight)
-                    DoorRight->SetState(GAMEOBJECT_STATE_OPEN);
+                    DoorRight->SetState(GO_STATE_OPEN);
 
                 if (Curtain)
-                    Curtain->SetState(GAMEOBJECT_STATE_CLOSED);
+                    Curtain->SetState(GO_STATE_CLOSED);
             }
 
             CastTime();
@@ -4950,14 +4950,14 @@ class RomuloAI : public CreatureAIScript
             GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
             if (DoorLeft)
-                DoorLeft->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorLeft->SetState(GO_STATE_OPEN);
 
             if (DoorRight)
-                DoorRight->SetState(GAMEOBJECT_STATE_OPEN);
+                DoorRight->SetState(GO_STATE_OPEN);
 
             // Make sure the curtain stays up
             if (Curtain)
-                Curtain->SetState(GAMEOBJECT_STATE_OPEN);
+                Curtain->SetState(GO_STATE_OPEN);
 
             CastTime();
             RemoveAIUpdateEvent();
@@ -5103,13 +5103,13 @@ class JulianneAI : public CreatureAIScript
                 GameObject* Curtain = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-10894.17f, -1774.218f, 90.477f, 183932);
 
                 if (DoorLeft)
-                    DoorLeft->SetState(GAMEOBJECT_STATE_CLOSED);
+                    DoorLeft->SetState(GO_STATE_CLOSED);
 
                 if (DoorRight)
-                    DoorRight->SetState(GAMEOBJECT_STATE_OPEN);
+                    DoorRight->SetState(GO_STATE_OPEN);
 
                 if (Curtain)
-                    Curtain->SetState(GAMEOBJECT_STATE_CLOSED);
+                    Curtain->SetState(GO_STATE_CLOSED);
             }
 
             CastTime();

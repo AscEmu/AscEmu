@@ -119,8 +119,8 @@ class NerubarEggSac : public GameObjectAIScript
                 return;
 
             sEAS.KillMobForQuest(pPlayer, 11602, 0);
-            _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
-            _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->SetState(GO_STATE_OPEN);
             _gameobject->Despawn(500, 60000);
         }
 };
@@ -193,8 +193,8 @@ class BlueDragonEgg : public GameObjectAIScript
 
             sEAS.KillMobForQuest(pPlayer, 11936, 0);
             ///\todo why setting gameobject state 1 and 0?!?!
-            _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
-            _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->SetState(GO_STATE_OPEN);
             _gameobject->Despawn(500, 60000);
         }
 };
@@ -358,9 +358,9 @@ class WestPointStationValve : public GameObjectAIScript
 
             Creature* Twonky = sEAS.SpawnCreature(pPlayer, 25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f, 0);
             if (Twonky->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -386,9 +386,9 @@ class NorthPointStationValve : public GameObjectAIScript
 
             Creature* Ed210 = sEAS.SpawnCreature(pPlayer, 25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f, 0);
             if (Ed210->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -414,9 +414,9 @@ class FizzcrankPumpingStationValve : public GameObjectAIScript
 
             Creature* MaxBlasto = sEAS.SpawnCreature(pPlayer, 25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f, 0);
             if (MaxBlasto->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -442,9 +442,9 @@ class SouthPointStationValve : public GameObjectAIScript
 
             Creature* TheGrinder = sEAS.SpawnCreature(pPlayer, 25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f, 0);
             if (TheGrinder->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -477,9 +477,9 @@ class TheGearmastersManual : public GameObjectAIScript
             Creature* GearmasterMechazod = sEAS.SpawnCreature(pPlayer, 25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f, 0);
             GearmasterMechazod->SetTargetGUID(pPlayer->GetGUID());
             if (GearmasterMechazod->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 

@@ -1202,14 +1202,14 @@ bool ChatHandler::HandleGOOpen(const char* args, WorldSession* m_session)
         return true;
     }
 
-    if (GObj->GetState() != GAMEOBJECT_STATE_OPEN)
+    if (GObj->GetState() != GO_STATE_OPEN)
     {
-        GObj->SetState(GAMEOBJECT_STATE_OPEN);
+        GObj->SetState(GO_STATE_OPEN);
         BlueSystemMessage(m_session, "Gameobject opened.");
     }
     else
     {
-        GObj->SetState(GAMEOBJECT_STATE_CLOSED);
+        GObj->SetState(GO_STATE_CLOSED);
         BlueSystemMessage(m_session, "Gameobject closed.");
     }
     return true;
