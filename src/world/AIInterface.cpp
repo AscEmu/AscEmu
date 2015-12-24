@@ -524,9 +524,8 @@ void AIInterface::_UpdateTargets()
     }
 }
 
-///====================================================================
-///  Desc: Updates Combat Status of m_Unit
-///====================================================================
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates Combat Status of m_Unit
 void AIInterface::_UpdateCombat(uint32 p_time)
 {
     if (m_AIType != AITYPE_PET && disable_combat)
@@ -578,7 +577,6 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
     if (sWorld.Collision)
     {
-
         if (m_Unit->GetMapMgr() != NULL && getNextTarget() != NULL)
         {
             if (!Flying())

@@ -177,10 +177,7 @@ bool ShowCompletedAchievement(uint32 achievementID, const Player* plr)
 }
 
 /// AchievementMgr constructor
-AchievementMgr::AchievementMgr(Player* player)
-    :
-    m_player(player),
-    isCharacterLoading(true)
+AchievementMgr::AchievementMgr(Player* player) : m_player(player), isCharacterLoading(true)
 {}
 
 /// AchievementMgr destructor
@@ -188,12 +185,15 @@ AchievementMgr::~AchievementMgr()
 {
     for (CriteriaProgressMap::iterator iter = m_criteriaProgress.begin(); iter != m_criteriaProgress.end(); ++iter)
         delete iter->second;
+
     m_criteriaProgress.clear();
     m_completedAchievements.clear();
 }
 
-/** Save Achievement data to database
-    Saves all completed achievements to database.  Saves all achievement progresses that have been started, and that aren't calculated on login, to database. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Save Achievement data to database
+/// \brief Saves all completed achievements to database. Saves all achievement
+/// progresses that have been started, and that aren't calculated on login, to database.
 void AchievementMgr::SaveToDB(QueryBuffer* buf)
 {
     if (!m_completedAchievements.empty())
@@ -298,8 +298,9 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
     }
 }
 
-/** Load achievements from database.
-    Loads completed achievements and achievement progresses from the database. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Load achievements from database.
+/// \brief Loads completed achievements and achievement progresses from the database
 void AchievementMgr::LoadFromDB(QueryResult* achievementResult, QueryResult* criteriaResult)
 {
     if (achievementResult)
@@ -335,9 +336,11 @@ void AchievementMgr::LoadFromDB(QueryResult* achievementResult, QueryResult* cri
     }
 }
 
-/** Sends message to player(s) that the achievement has been completed.
-    Realm first! achievements get sent to all players currently online.
-    All other achievements get sent to all of the achieving player's guild members, group members, and other in-range players. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Sends message to player(s) that the achievement has been completed.
+/// Realm first! achievements get sent to all players currently online.
+/// All other achievements get sent to all of the achieving player's guild members,
+/// group members, and other in-range players
 void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry const* achievement)
 {
     if (achievement == NULL || isCharacterLoading)
@@ -504,7 +507,8 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     }
 }
 
-/// Sends update to achievement criteria to the player.
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief Sends update to achievement criteria to the player.
 void AchievementMgr::SendCriteriaUpdate(CriteriaProgress* progress)
 {
     if (progress == NULL || isCharacterLoading)
@@ -528,23 +532,23 @@ void AchievementMgr::SendCriteriaUpdate(CriteriaProgress* progress)
         GetPlayer()->GetSession()->SendPacket(&data);
 }
 
-/**
-    Updates ALL achievement criteria
-    This is called during player login to update some criteria which aren't saved in achievement progress DB,
-    since they are saved in the character DB or can easily be computed.
-    */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates ALL achievement criteria
+/// \brief This is called during player login to update some criteria which aren't
+/// saved in achievement progress DB, since they are saved in the character DB or
+/// can easily be computed.
 void AchievementMgr::CheckAllAchievementCriteria()
 {
     for (uint8 i = 0; i < ACHIEVEMENT_CRITERIA_TYPE_TOTAL; i++)
         UpdateAchievementCriteria(AchievementCriteriaTypes(i));
 }
 
-/**
-    Updates achievement criteria of the specified type
-    This is what should be called from other places in the code (upon killing a monster, or looting an object, or completing a quest, etc.).
-    miscvalue1, miscvalue2 depend on the achievement type.
-    Generally, miscvalue1 is an ID of some type (quest ID, item ID, faction ID, etc.), and miscvalue2 is the amount to increase the progress.
-    */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates achievement criteria of the specified type
+/// \brief This is what should be called from other places in the code (upon killing a
+/// monster, or looting an object, or completing a quest, etc.). miscvalue1, miscvalue2
+/// depend on the achievement type. Generally, miscvalue1 is an ID of some type (quest ID,
+/// item ID, faction ID, etc.), and miscvalue2 is the amount to increase the progress.
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time)
 {
     if (m_player->GetSession()->HasGMPermissions() && sWorld.gamemaster_disableachievements)
@@ -1212,8 +1216,9 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
     }
 }
 
-/** Updates all achievement criteria of the specified type.
-    This is only called from CheckAllAchievementCriteria(), during player login */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates all achievement criteria of the specified type.
+/// \brief This is only called from CheckAllAchievementCriteria(), during player login
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
 {
     if (m_player->GetSession()->HasGMPermissions() && sWorld.gamemaster_disableachievements)
@@ -1310,8 +1315,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                     }
                     else if (achievementCriteria->number_of_mounts.unknown == 778 && sp && (sp->Effect[0] == SPELL_EFFECT_SUMMON))
                     {
-                        // Companion pet?
-                        // make sure it's a companion pet, not some other summon-type spell
+                        // Companion pet? Make sure it's a companion pet, not some other summon-type spell
                         if (strncmp(sp->Description, "Right Cl", 8) == 0)
                         {
                             // "Right Click to summon and dismiss " ...
@@ -1340,7 +1344,8 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
     }
 }
 
-/// True if the criteria has been completed; false if error; false if criteria has not been completed.
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \return True if the criteria has been completed otherwise false (error...)
 bool AchievementMgr::IsCompletedCriteria(AchievementCriteriaEntry const* achievementCriteria)
 {
     if (!achievementCriteria)
@@ -1475,6 +1480,7 @@ bool AchievementMgr::IsCompletedCriteria(AchievementCriteriaEntry const* achieve
     return false;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// If achievement criteria has been completed, checks whether to complete the achievement too.
 void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
 {
@@ -1495,10 +1501,11 @@ void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
     }
 }
 
-/** Returns the completion state of the achievement.
-    ACHIEVEMENT_COMPLETED_COMPLETED_STORED: Achievement has been completed and stored already.
-    ACHIVEMENT_COMPLETED_COMPLETED_NOT_STORED: Achievement has been completed but not stored yet.
-    ACHIEVEMENT_COMPLETED_NONE: Achievement has not been completed yet. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Returns the completion state of the achievement.
+/// \brief ACHIEVEMENT_COMPLETED_COMPLETED_STORED: has been completed and stored already.
+/// ACHIVEMENT_COMPLETED_COMPLETED_NOT_STORED: has been completed but not stored yet.
+/// ACHIEVEMENT_COMPLETED_NONE: has not been completed yet
 AchievementCompletionState AchievementMgr::GetAchievementCompletionState(DBC::Structures::AchievementEntry const* entry)
 {
     if (m_completedAchievements.find(entry->ID) != m_completedAchievements.end())
@@ -1542,8 +1549,9 @@ AchievementCompletionState AchievementMgr::GetAchievementCompletionState(DBC::St
     return ACHIEVEMENT_COMPLETED_NONE;
 }
 
-/** Sets progress of the achievement criteria.
-    If relative argument is true, this behaves the same as UpdateCriteriaProgress. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Sets progress of the achievement criteria.
+/// \brief If relative argument is true, this behaves the same as UpdateCriteriaProgress
 void AchievementMgr::SetCriteriaProgress(AchievementCriteriaEntry const* entry, int32 newValue, bool relative)
 {
     CriteriaProgress* progress = NULL;
@@ -1573,8 +1581,9 @@ void AchievementMgr::SetCriteriaProgress(AchievementCriteriaEntry const* entry, 
     }
 }
 
-/** Updates progress of the achievement criteria.
-    updateByValue is added to the current progress counter. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates progress of the achievement criteria.
+/// \brief updateByValue is added to the current progress counter
 void AchievementMgr::UpdateCriteriaProgress(AchievementCriteriaEntry const* entry, int32 updateByValue)
 {
     CriteriaProgress* progress = NULL;
@@ -1599,6 +1608,7 @@ void AchievementMgr::UpdateCriteriaProgress(AchievementCriteriaEntry const* entr
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Completes the achievement for the player.
 void AchievementMgr::CompletedAchievement(DBC::Structures::AchievementEntry const* achievement)
 {
@@ -1620,6 +1630,7 @@ void AchievementMgr::CompletedAchievement(DBC::Structures::AchievementEntry cons
     GiveAchievementReward(achievement);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Sends all achievement data to the player. Also used for achievement inspection.
 void AchievementMgr::SendAllAchievementData(Player* player)
 {
@@ -1737,6 +1748,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Returns the number of achievement progresses that get sent to the player.
 uint32 AchievementMgr::GetCriteriaProgressCount()
 {
@@ -1752,6 +1764,7 @@ uint32 AchievementMgr::GetCriteriaProgressCount()
     return criteriapc;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Gives reward to player for completing the achievement.
 void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry const* entry)
 {
@@ -1828,16 +1841,18 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Returns the number of completed achievements.
 uint32 AchievementMgr::GetCompletedAchievementsCount() const
 {
     return (uint32)m_completedAchievements.size();
 }
 
-/** GM has used a command to make the specified achievement to be completed.
-    If achievementID is -1, all achievements available for the player's faction get marked as completed
-    Returns true if able to complete specified achievement successfully.
-    Returns false if there is any error (already completed, not found, ...) */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief GM has used a command to make the specified achievement to be completed.
+/// If achievementID is -1, all achievements available for the player's faction get
+/// marked as completed
+/// \return true if able to complete specified achievement successfully, otherwise false
 bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achievementID)
 {
     if (achievementID == -1)
@@ -1888,12 +1903,10 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achiev
     return true;
 }
 
-/**
-    GM has used a command to make the specified achievement criteria to be completed.
-    If criteriaID is -1, all achievement criteria get marked as completed
-    Returns true if able to complete specified achievement criteria successfully.
-    Returns false if there is any error (already completed not found, ...)
-    */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief GM has used a command to make the specified achievement criteria to be completed.
+/// If criteriaID is -1, all achievement criteria get marked as completed
+/// \return true if able to complete the achievement criteria, otherwise false
 bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaID)
 {
     if (criteriaID == -1)
@@ -2011,8 +2024,9 @@ bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32 criteriaID,
     return true;
 }
 
-/** GM has used a command to reset achievement(s) for this player.
-    If achievementID is -1, all achievements get reset, otherwise only the one specified gets reset. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief GM has used a command to reset achievement(s) for this player. If
+/// achievementID is -1, all achievements get reset, otherwise the one specified gets reset
 void AchievementMgr::GMResetAchievement(int32 achievementID)
 {
     std::ostringstream ss;
@@ -2041,8 +2055,9 @@ void AchievementMgr::GMResetAchievement(int32 achievementID)
     }
 }
 
-/** GM has used a command to reset achievement criteria for this player.
-    If criteriaID is -1, all achievement criteria get reset, otherwise only the one specified gets reset. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// GM has used a command to reset achievement criteria for this player. If criteriaID
+/// is -1, all achievement criteria get reset, otherwise only the one specified gets reset
 void AchievementMgr::GMResetCriteria(int32 criteriaID)
 {
     std::ostringstream ss;
@@ -2072,6 +2087,7 @@ void AchievementMgr::GMResetCriteria(int32 criteriaID)
     CheckAllAchievementCriteria();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Date/Time (time_t) the achievement was completed, or 0 if achievement not completed yet
 time_t AchievementMgr::GetCompletedTime(DBC::Structures::AchievementEntry const* achievement)
 {
@@ -2084,7 +2100,8 @@ time_t AchievementMgr::GetCompletedTime(DBC::Structures::AchievementEntry const*
     return 0; // achievement not completed
 }
 
-/// true if achievementID has been completed by the player, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \return true if achievementID has been completed by the player, false otherwise.
 bool AchievementMgr::HasCompleted(uint32 achievementID)
 {
     return (m_completedAchievements.find(achievementID) != m_completedAchievements.end());
