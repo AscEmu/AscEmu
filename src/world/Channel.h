@@ -83,8 +83,8 @@ enum ChannelDBCFlags
     CHANNEL_DBC_FLAG_NONE           = 0x00000,
     CHANNEL_DBC_UNK_1               = 0x00001,
     CHANNEL_DBC_HAS_ZONENAME        = 0x00002,
-    CHANNEL_DBC_MUTED_DELAYED       = 0x00004,
-    CHANNEL_DBC_ALLOW_LINKS         = 0x00008,
+    CHANNEL_DBC_GLOBAL              = 0x00004,
+    CHANNEL_DBC_TRADE               = 0x00008,
     CHANNEL_DBC_CITY_ONLY_1         = 0x00010,
     CHANNEL_DBC_CITY_ONLY_2         = 0x00020,     // 2 identical columns, who knows?
     CHANNEL_DBC_UNUSED_1            = 0x00040,
@@ -97,8 +97,8 @@ enum ChannelDBCFlags
     CHANNEL_DBC_UNUSED_8            = 0x02000,
     CHANNEL_DBC_UNUSED_9            = 0x04000,
     CHANNEL_DBC_UNUSED_10           = 0x08000,
-    CHANNEL_DBC_UNK_2               = 0x10000,     // carried by local and worlddefense
-    CHANNEL_DBC_UNK_3               = 0x20000,     // carried by guildrecruitment. Perhaps a LeaveOnGuildJoin flag?
+    CHANNEL_DBC_DEFENSE             = 0x10000,
+    CHANNEL_DBC_GUILD_RECRUIT       = 0x20000,
     CHANNEL_DBC_LFG                 = 0x40000,
     CHANNEL_DBC_UNUSED_11           = 0x80000
 };

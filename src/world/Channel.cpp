@@ -63,25 +63,25 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
     m_minimumLevel = 1;
 
     auto chat_channels = sChatChannelsStore.LookupEntry(type_id);
-    if (chat_channels != NULL)
+    if (chat_channels != nullptr)
     {
         m_general = true;
         m_announce = false;
 
-        m_flags |= 0x10;            // general flag
+        m_flags |= CHANNEL_FLAGS_GENERAL;       // old 0x10;            // general flag
         // flags (0x01 = custom?, 0x04 = trade?, 0x20 = city?, 0x40 = lfg?, , 0x80 = voice?,
 
-        if (chat_channels->flags & 0x08)
-            m_flags |= 0x08;        // trade
+        if (chat_channels->flags & CHANNEL_DBC_TRADE)
+            m_flags |= CHANNEL_FLAGS_TRADE;     // old 0x08;        // trade
 
-        if (chat_channels->flags & 0x10 || chat_channels->flags & 0x20)
-            m_flags |= 0x20;        // city flag
+        if (chat_channels->flags & CHANNEL_DBC_CITY_ONLY_1 || chat_channels->flags & CHANNEL_DBC_CITY_ONLY_2)
+            m_flags |= CHANNEL_FLAGS_CITY;      // old 0x20;        // city flag
 
-        if (chat_channels->flags & 0x40000)
-            m_flags |= 0x40;        // lfg flag
+        if (chat_channels->flags & CHANNEL_DBC_LFG)
+            m_flags |= CHANNEL_FLAGS_LFG;       // old 0x40;        // lfg flag
     }
     else
-        m_flags = 0x01;
+        m_flags = CHANNEL_FLAGS_CUSTOM;         // old 0x01;
 
     for (std::vector<std::string>::iterator itr = m_minimumChannel.begin(); itr != m_minimumChannel.end(); ++itr)
     {
@@ -143,7 +143,7 @@ void Channel::AttemptJoin(Player* plr, const char* password)
     }
 
     data.clear();
-    if (m_flags & 0x40 && !plr->GetSession()->HasFlag(ACCOUNT_FLAG_NO_AUTOJOIN))
+    if (m_flags & CHANNEL_FLAGS_LFG && !plr->GetSession()->HasFlag(ACCOUNT_FLAG_NO_AUTOJOIN))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_YOUJOINED);
         data << m_name;
@@ -878,16 +878,16 @@ void Channel::List(Player* plr)
         data << itr->first->GetGUID();
         flags = 0;
         if (!(itr->second & CHANNEL_MEMBER_FLAG_MUTED))
-            flags |= 0x04;        // voice flag
+            flags |= CHANNEL_MEMBER_FLAG_VOICED;
 
         if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
-            flags |= 0x01;        // owner flag
+            flags |= CHANNEL_MEMBER_FLAG_OWNER;
 
         if (itr->second & CHANNEL_MEMBER_FLAG_MODERATOR)
-            flags |= 0x02;        // moderator flag
+            flags |= CHANNEL_MEMBER_FLAG_MODERATOR;
 
         if (!m_general)
-            flags |= 0x10;
+            flags |= CHANNEL_MEMBER_FLAG_CUSTOM;
 
         data << flags;
     }
