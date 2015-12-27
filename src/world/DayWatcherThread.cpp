@@ -2,7 +2,7 @@
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
+ * Copyright (C) 2005-2007 Ascent Team (Burlex)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- */
-
-/* Arena and Honor Point Calculation System
- *    Copyright (c) 2007 Burlex
  */
 
 #include "StdAfx.h"
@@ -214,7 +210,7 @@ void DayWatcherThread::update_daily()
 {
     Log.Notice("DayWatcherThread", "Running Daily Quest Reset...");
     CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
-    CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'"); /// Reset RBG
+    CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'");     // Reset RBG
     objmgr.ResetDailies();
     last_daily_time = UNIXTIME;
     dupe_tm_pointer(localtime(&last_daily_time), &local_last_daily_time);
@@ -224,7 +220,7 @@ void DayWatcherThread::update_daily()
 void DayWatcherThread::update_arena()
 {
     Log.Notice("DayWatcherThread", "Running Weekly Arena Point Maintenance...");
-    QueryResult* result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");        /* this one is a little more intensive. */
+    QueryResult* result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");  // this one is a little more intensive
     Player* plr;
     uint32 guid, arenapoints, orig_arenapoints;
     ArenaTeam* team;
@@ -242,7 +238,7 @@ void DayWatcherThread::update_arena()
             for (uint8 i = 0; i < 3; ++i)
                 arenapointsPerTeam[i] = 0;
 
-            /* are we in any arena teams? */
+            // are we in any arena teams?
             for (uint8 i = 0; i < 3; ++i)            // 3 arena team types
             {
                 team = objmgr.GetArenaTeamByGuid(guid, i);
@@ -252,8 +248,8 @@ void DayWatcherThread::update_arena()
                     if (member == NULL || team->m_stat_gamesplayedweek < 10 || ((member->Played_ThisWeek * 100) / team->m_stat_gamesplayedweek < 30))
                         continue;
 
-                    /* we're in an arena team of this type! */
-                    /* Source: http://www.wowwiki.com/Arena_point */
+                    // we're in an arena team of this type!
+                    // Source: http://www.wowwiki.com/Arena_point
                     X = (double)team->m_stat_rating;
                     if (X <= 510.0)    // "if X<=510"
                         continue;        // no change
@@ -315,14 +311,13 @@ void DayWatcherThread::update_arena()
                 {
                     plr->AddArenaPoints(arenapoints, false);
 
-                    /* update visible fields (must be done through an event because of no uint lock */
+                    // update visible fields (must be done through an event because of no uint lock
                     sEventMgr.AddEvent(plr, &Player::UpdateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
 
-                    /* send a little message :> */
                     sChatHandler.SystemMessage(plr->GetSession(), "Your arena points have been updated! Check your PvP tab!");
                 }
 
-                /* update in sql */
+                // update in sql
                 CharacterDatabase.Execute("UPDATE characters SET arenaPoints = %u WHERE guid = %u", arenapoints, guid);
             }
         }
@@ -332,7 +327,6 @@ void DayWatcherThread::update_arena()
 
     objmgr.UpdateArenaTeamWeekly();
 
-    //===========================================================================
     last_arena_time = UNIXTIME;
     dupe_tm_pointer(localtime(&last_arena_time), &local_last_arena_time);
     m_dirty = true;

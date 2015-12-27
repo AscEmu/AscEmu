@@ -25,16 +25,18 @@ Container::Container(uint32 high, uint32 low) : Item()
 {
     m_objectTypeId = TYPEID_CONTAINER;
     m_valuesCount = CONTAINER_END;
+
     m_uint32Values = __fields;
     memset(m_uint32Values, 0, (CONTAINER_END)*sizeof(uint32));
     m_updateMask.SetCount(CONTAINER_END);
+
     SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_CONTAINER | TYPE_ITEM | TYPE_OBJECT);
+
     SetLowGUID(low);
     SetHighGUID(high);
     m_wowGuid.Init(GetGUID());
 
     SetScale(1);   //always 1
-
 
     m_Slot = NULL;
     random_suffix = random_prop = 0;
@@ -52,6 +54,7 @@ Container::~Container()
 
     delete[] m_Slot;
 }
+
 void Container::LoadFromDB(Field* fields)
 {
     uint32 itemid = fields[2].GetUInt32();
@@ -99,7 +102,6 @@ void Container::Create(uint32 itemid, Player* owner)
 
     m_owner = owner;
 }
-
 
 int8 Container::FindFreeSlot()
 {
@@ -246,6 +248,7 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 
     if (pItem == NULL || pItem == this)
         return NULL;
+
     m_Slot[slot] = NULL;
 
     if (pItem->GetOwner() == m_owner)
@@ -263,7 +266,9 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
         }
     }
     else
+    {
         pItem = NULL;
+    }
 
     return pItem;
 }
@@ -323,7 +328,6 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
     }
     return false;
 }
-
 
 void Container::SaveBagToDB(int8 slot, bool first, QueryBuffer* buf)
 {
