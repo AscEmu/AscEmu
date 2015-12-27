@@ -26,18 +26,18 @@
 #define CHANNEL_LFG 26
 
 
-enum CHANNEL_FLAGS
+enum ChannelMemberFlags
 {
-    CHANNEL_FLAG_NONE                   = 0x00,
-    CHANNEL_FLAG_OWNER                  = 0x01,
-    CHANNEL_FLAG_MODERATOR              = 0x02,
-    CHANNEL_FLAG_VOICED                 = 0x04,
-    CHANNEL_FLAG_MUTED                  = 0x08,
-    CHANNEL_FLAG_CUSTOM                 = 0x10,
-    CHANNEL_FLAG_MICROPHONE_MUTE        = 0x20
+    CHANNEL_MEMBER_FLAG_NONE            = 0x00,
+    CHANNEL_MEMBER_FLAG_OWNER           = 0x01,
+    CHANNEL_MEMBER_FLAG_MODERATOR       = 0x02,
+    CHANNEL_MEMBER_FLAG_VOICED          = 0x04,
+    CHANNEL_MEMBER_FLAG_MUTED           = 0x08,
+    CHANNEL_MEMBER_FLAG_CUSTOM          = 0x10,
+    CHANNEL_MEMBER_FLAG_MIC_MUTED       = 0x20
 };
 
-enum CHANNEL_NOTIFY_FLAGS
+enum ChannelNotifyFlags
 {
     CHANNEL_NOTIFY_FLAG_JOINED          = 0x00,
     CHANNEL_NOTIFY_FLAG_LEFT            = 0x01,
@@ -77,40 +77,43 @@ enum CHANNEL_NOTIFY_FLAGS
     CHANNEL_NOTIFY_FLAG_VOICE_OFF       = 0x23
 };
 
-enum CHANNEL_DBC_FLAGS
+///\todo where did they come from?
+enum ChannelDBCFlags
 {
-    CHANNEL_DBC_UNK_1               = 0x000001,
-    CHANNEL_DBC_HAS_ZONENAME        = 0x000002,
-    CHANNEL_DBC_MUTED_DELAYED       = 0x000004,
-    CHANNEL_DBC_ALLOW_LINKS         = 0x000008,
-    CHANNEL_DBC_CITY_ONLY_1         = 0x000010,
-    CHANNEL_DBC_CITY_ONLY_2         = 0x000020,     // 2 identical columns, who knows?
-    CHANNEL_DBC_UNUSED_1            = 0x000040,
-    CHANNEL_DBC_UNUSED_2            = 0x000080,
-    CHANNEL_DBC_UNUSED_3            = 0x000100,
-    CHANNEL_DBC_UNUSED_4            = 0x000200,
-    CHANNEL_DBC_UNUSED_5            = 0x000400,
-    CHANNEL_DBC_UNUSED_6            = 0x000800,
-    CHANNEL_DBC_UNUSED_7            = 0x001000,
-    CHANNEL_DBC_UNUSED_8            = 0x002000,
-    CHANNEL_DBC_UNUSED_9            = 0x004000,
-    CHANNEL_DBC_UNUSED_10           = 0x008000,
-    CHANNEL_DBC_UNK_2               = 0x010000,     // carried by local and worlddefense
-    CHANNEL_DBC_UNK_3               = 0x020000,     // carried by guildrecruitment. Perhaps a LeaveOnGuildJoin flag?
-    CHANNEL_DBC_LFG                 = 0x040000,
-    CHANNEL_DBC_UNUSED_11           = 0x080000
+    CHANNEL_DBC_FLAG_NONE           = 0x00000,
+    CHANNEL_DBC_UNK_1               = 0x00001,
+    CHANNEL_DBC_HAS_ZONENAME        = 0x00002,
+    CHANNEL_DBC_MUTED_DELAYED       = 0x00004,
+    CHANNEL_DBC_ALLOW_LINKS         = 0x00008,
+    CHANNEL_DBC_CITY_ONLY_1         = 0x00010,
+    CHANNEL_DBC_CITY_ONLY_2         = 0x00020,     // 2 identical columns, who knows?
+    CHANNEL_DBC_UNUSED_1            = 0x00040,
+    CHANNEL_DBC_UNUSED_2            = 0x00080,
+    CHANNEL_DBC_UNUSED_3            = 0x00100,
+    CHANNEL_DBC_UNUSED_4            = 0x00200,
+    CHANNEL_DBC_UNUSED_5            = 0x00400,
+    CHANNEL_DBC_UNUSED_6            = 0x00800,
+    CHANNEL_DBC_UNUSED_7            = 0x01000,
+    CHANNEL_DBC_UNUSED_8            = 0x02000,
+    CHANNEL_DBC_UNUSED_9            = 0x04000,
+    CHANNEL_DBC_UNUSED_10           = 0x08000,
+    CHANNEL_DBC_UNK_2               = 0x10000,     // carried by local and worlddefense
+    CHANNEL_DBC_UNK_3               = 0x20000,     // carried by guildrecruitment. Perhaps a LeaveOnGuildJoin flag?
+    CHANNEL_DBC_LFG                 = 0x40000,
+    CHANNEL_DBC_UNUSED_11           = 0x80000
 };
 
-enum CHANNEL_PACKET_FLAGS
+enum ChannelFlags
 {
-    CHANNEL_PACKET_CUSTOM           = 0x01,
-    CHANNEL_PACKET_UNK1             = 0x02,     /// not seen yet, perhaps related to worlddefense
-    CHANNEL_PACKET_ALLOWLINKS       = 0x04,
-    CHANNEL_PACKET_ZONESPECIFIC     = 0x08,     /// I'm sure one of these is zone specific and the other is 'system channel' but not sure
-    CHANNEL_PACKET_SYSTEMCHAN       = 0x10,     /// which way round it is. I need a packet log of worlddefense but I'm guessing this order
-    CHANNEL_PACKET_CITY             = 0x20,
-    CHANNEL_PACKET_LFG              = 0x40,
-    CHANNEL_PACKET_VOICE            = 0x80
+    CHANNEL_FLAGS_NONE              = 0x00,
+    CHANNEL_FLAGS_CUSTOM            = 0x01,
+    CHANNEL_FLAGS_UNK1              = 0x02,     // not seen yet, perhaps related to worlddefense
+    CHANNEL_FLAGS_TRADE             = 0x04,
+    CHANNEL_FLAGS_NOT_LFG           = 0x08,
+    CHANNEL_FLAGS_GENERAL           = 0x10,
+    CHANNEL_FLAGS_CITY              = 0x20,
+    CHANNEL_FLAGS_LFG               = 0x40,
+    CHANNEL_FLAGS_VOICE             = 0x80
 };
 
 class SERVER_DECL Channel
