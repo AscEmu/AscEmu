@@ -41,7 +41,7 @@ enum LagReportType
     LAP_REPORT_MAIL,
     LAP_REPORT_CHAT,
     LAP_REPORT_MOVEMENT,
-    LAP_REPORT_SPELLS,
+    LAP_REPORT_SPELLS
 };
 
 void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
@@ -227,13 +227,22 @@ void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recv_data
 
 void WorldSession::HandleReportLag(WorldPacket& recv_data)
 {
-    uint32 lagType, mapId;
+    uint32 lagType;
+    uint32 mapId;
+    float position_x;
+    float position_y;
+    float position_z;
+
     recv_data >> lagType;
     recv_data >> mapId;
-    float x, y, z;
-    recv_data >> x;
-    recv_data >> y;
-    recv_data >> z;
+    recv_data >> position_x;
+    recv_data >> position_y;
+    recv_data >> position_z;
 
-    Log.Debug("HandleReportLag", "Unhandled... A bugreport was created Type: %u Map: %u", lagType, mapId);
+    if (GetPlayer() != nullptr)
+    {
+        CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", GetPlayer()->GetLowGUID(), _accountId, lagType, mapId, position_x, position_y, position_z);
+    }
+
+    Log.Debug("HandleReportLag", "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->GetName(), lagType, mapId);
 }

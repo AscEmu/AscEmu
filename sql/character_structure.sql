@@ -719,6 +719,22 @@ CREATE TABLE `instances` (
   KEY `a` (`mapid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+/* Table structure for lag_reports */
+DROP TABLE IF EXISTS `lag_reports`;
+
+CREATE TABLE `lag_reports` (
+  `lag_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `player` int(10) unsigned NOT NULL,
+  `account` int(10) unsigned NOT NULL,
+  `lag_type` smallint(2) unsigned NOT NULL,
+  `map_id` int(5) unsigned DEFAULT '0',
+  `position_x` float DEFAULT '0',
+  `position_y` float DEFAULT '0',
+  `position_z` float DEFAULT '0',
+  `timestamp` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`lag_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 /* Table structure for lfg_data */
 DROP TABLE IF EXISTS `lfg_data`;
