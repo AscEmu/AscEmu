@@ -92,7 +92,7 @@ struct GameObjectInfo
     char* cast_bar_text;
     char* Unkstr;
 
-    // different data fileds for GO-types
+    // different data fields for GO-types
     /// \todo add different structure for go types.
     union
     {
@@ -100,6 +100,26 @@ struct GameObjectInfo
         // 1 GAMEOBJECT_TYPE_BUTTON
         // 2 GAMEOBJECT_TYPE_QUESTGIVER
         // 3 GAMEOBJECT_TYPE_CHEST
+        struct
+        {
+            uint32 lock_id;                     // parameter_0 from Lock.dbc
+            uint32 loot_id;                     // parameter_1
+            uint32 restock_time;                // parameter_2
+            uint32 consumable;                  // parameter_3 bool
+            uint32 min_success_opens;           // parameter_4
+            uint32 max_success_opens;           // parameter_5
+            uint32 event_id;                    // parameter_6 lootedEvent
+            uint32 linked_trap_id;              // parameter_7
+            uint32 quest_id;                    // parameter_8 quest required for GO activation
+            uint32 level;                       // parameter_9
+            uint32 los_OK;                      // parameter_10
+            uint32 leave_loot;                  // parameter_11
+            uint32 not_in_combat;               // parameter_12
+            uint32 log_loot;                    // parameter_13
+            uint32 open_text_id;                // parameter_14
+            uint32 group_loot_rules;            // parameter_15
+            uint32 floating_tooltip;            // parameter_16
+        } chest;
         // 4 GAMEOBJECT_TYPE_BINDER
         // 5 GAMEOBJECT_TYPE_GENERIC
         // 6 GAMEOBJECT_TYPE_TRAP

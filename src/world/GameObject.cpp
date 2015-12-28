@@ -400,7 +400,7 @@ void GameObject::InitAI()
     }
     else if (pInfo->type == GAMEOBJECT_TYPE_CHEST)
     {
-        auto pLock = sLockStore.LookupEntry(GetInfo()->raw.parameter_0);
+        auto pLock = sLockStore.LookupEntry(GetInfo()->chest.lock_id);
         if (pLock)
         {
             for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
@@ -726,11 +726,11 @@ void GameObject::OnPushToWorld()
 
     // We have a field supposedly for this, but it's pointless to waste CPU time for this
     // unless it's longer than a minute (since usually then it's much longer)
-    if ((pInfo->type == GAMEOBJECT_TYPE_CHEST) && (pInfo->raw.parameter_3 == 0))
+    if ((pInfo->type == GAMEOBJECT_TYPE_CHEST) && (pInfo->chest.consumable == 0))
     {
         time_t restockTime = 60 * 1000;
-        if (pInfo->raw.parameter_2 > 60)
-            restockTime = pInfo->raw.parameter_2 * 1000;
+        if (pInfo->chest.restock_time > 60)
+            restockTime = pInfo->chest.restock_time * 1000;
 
         EventMgr::getSingleton().AddEvent(this, &GameObject::ReStock, EVENT_GO_CHEST_RESTOCK, restockTime, 0, 0);
     }

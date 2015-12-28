@@ -498,10 +498,10 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 //check for locktypes
 
                 bool despawn = false;
-                if (pGO->GetInfo()->raw.parameter_3 == 1)
+                if (pGO->GetInfo()->chest.consumable == 1)
                     despawn = true;
 
-                auto pLock = sLockStore.LookupEntry(pGO->GetInfo()->raw.parameter_0);
+                auto pLock = sLockStore.LookupEntry(pGO->GetInfo()->chest.lock_id);
                 if (pLock)
                 {
                     for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
@@ -1597,7 +1597,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             //			plyr->SendMessageToSet(&data2, true);
         }
         break;
-        case GAMEOBJECT_TYPE_CHEST://cast da spell
+        case GAMEOBJECT_TYPE_CHEST:     //cast da spell
         {
             spellInfo = dbcSpell.LookupEntry(OPEN_CHEST);
             spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
