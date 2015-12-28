@@ -363,13 +363,14 @@ void GameObject::InitAI()
         return;
 
     // this fixes those fuckers in booty bay
+    /*Zyres 2015-12-28 Remove this if it is not needed!
     if (pInfo->raw.parameter_0 == 0 &&
         pInfo->raw.parameter_1 == 0 &&
         pInfo->raw.parameter_2 == 0 &&
         pInfo->raw.parameter_3 != 0 &&
         pInfo->raw.parameter_5 != 3 &&
         pInfo->raw.parameter_9 == 1)
-        return;
+        return;*/
 
     uint32 spellid = 0;
     if (pInfo->type == GAMEOBJECT_TYPE_TRAP)
@@ -378,7 +379,7 @@ void GameObject::InitAI()
     }
     else if (pInfo->type == GAMEOBJECT_TYPE_SPELL_FOCUS)
     {
-        // get spellid from attached gameobject if there is such - by sound2 field
+        // get spellid from attached gameobject if there is such - by parameter_2 field
         if (pInfo->raw.parameter_2 != 0)
         {
 
@@ -445,9 +446,8 @@ void GameObject::InitAI()
     {
         spell = sp;
     }
-    //ok got valid spell that will be casted on target when it comes close enough
-    //get the range for that
 
+    //ok got valid spell that will be casted on target when it comes close enough get the range for that
     float r = 0;
 
     for (uint8 i = 0; i < 3; i++)
@@ -497,7 +497,6 @@ void GameObject::DeleteFromDB()
 void GameObject::EventCloseDoor()
 {
     SetState(1);
-    //RemoveFlag(GAMEOBJECT_FLAGS, 1);
     SetFlags(GetFlags() & ~1);
 }
 
@@ -511,7 +510,6 @@ void GameObject::UseFishingNode(Player* player)
         return;
     }
 
-    /* Unused code: sAreaStore.LookupEntry(GetMapMgr()->GetAreaID(GetPositionX(),GetPositionY()))->ZoneId*/
     uint32 zone = player->GetAreaID();
     if (zone == 0)   // If the player's area ID is 0, use the zone ID instead
         zone = player->GetZoneId();
@@ -616,9 +614,9 @@ void GameObject::FishHooked(Player* player)
     SetFlags(GO_FLAG_NEVER_DESPAWN);
 }
 
-/////////////
-/// Quests
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// Quests
+//////////////////////////////////////////////////////////////////////////////////////////
 void GameObject::AddQuest(QuestRelation* Q)
 {
     m_quests->push_back(Q);
@@ -676,9 +674,9 @@ void GameObject::_LoadQuests()
     sQuestMgr.LoadGOQuests(this);
 }
 
-/**
-* Summoned Go's
-*/
+//////////////////////////////////////////////////////////////////////////////////////////
+// Summoned Go's
+//////////////////////////////////////////////////////////////////////////////////////////
 void GameObject::_Expire()
 {
     sEventMgr.RemoveEvents(this);
@@ -698,7 +696,7 @@ void GameObject::ExpireAndDelete()
 
     m_deleted = true;
 
-    //! remove any events
+    // remove any events
     sEventMgr.RemoveEvents(this);
     if (IsInWorld())
         sEventMgr.AddEvent(this, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -751,7 +749,7 @@ void GameObject::OnRemoveInRangeObject(Object* pObj)
         ExpireAndDelete();
     }
 }
-//! Remove gameobject from world, using their despawn animation.
+// Remove gameobject from world, using their despawn animation.
 void GameObject::RemoveFromWorld(bool free_guid)
 {
     WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
@@ -762,7 +760,7 @@ void GameObject::RemoveFromWorld(bool free_guid)
     Object::RemoveFromWorld(free_guid);
 }
 
-//! Gameobject contains loot ex. chest
+// Gameobject contains loot ex. chest
 bool GameObject::HasLoot()
 {
     if (loot.gold > 0)
@@ -781,7 +779,7 @@ bool GameObject::HasLoot()
 
 uint32 GameObject::GetGOReqSkill()
 {
-    //! Here we check the SpellFocus table against the dbcs
+    // Here we check the SpellFocus table against the dbcs
     auto lock = sLockStore.LookupEntry(GetInfo()->raw.parameter_0);
     if (!lock)
         return 0;
@@ -832,6 +830,9 @@ void GameObject::UpdateRotation()
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Destructible GameObjects
+//////////////////////////////////////////////////////////////////////////////////////////
 void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
 {
     // If we are already destroyed there's nothing to damage!
@@ -904,6 +905,9 @@ void GameObject::Rebuild()
     hitpoints = maxhitpoints;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Loot
+//////////////////////////////////////////////////////////////////////////////////////////
 void GameObject::ReStock()
 {
     // this hasn't been looted yet so we don't want to restock
