@@ -60,13 +60,7 @@ struct GOQuestGameObject
     uint32 requiredcount;
 };
 
-enum GAMEOBJECT_FLAG_BIT
-{
-    GAMEOBJECT_UNCLICKABLE  = 0x01,
-    GAMEOBJECT_CLICKABLE    = 0x20,
-};
-
-enum GAMEOBJECT_OVERRIDES
+enum GameObjectOverrides
 {
     GAMEOBJECT_INFVIS = 0x01,                   /// Makes the gameobject forever visible on the map after you saw it at least once - for various transports; actually it just doesn't erase it while you're on the same map.
     GAMEOBJECT_MAPWIDE = 0x02,                  /// When you enter its map, the gameobject gets pushed to you no matter how far it is (but only for players), especially for Deeprun and Ulduar Trams.
@@ -218,7 +212,7 @@ struct GameObjectInfo
 };
 #pragma pack(pop)
 
-enum GAMEOBJECT_BYTES
+enum GameObjectBytes
 {
     GAMEOBJECT_BYTES_STATE          = 0,
     GAMEOBJECT_BYTES_TYPE_ID        = 1,
@@ -226,7 +220,7 @@ enum GAMEOBJECT_BYTES
     GAMEOBJECT_BYTES_ANIMPROGRESS   = 3,
 };
 
-enum GAMEOBJECT_TYPES
+enum GameObjectTypes
 {
     GAMEOBJECT_TYPE_DOOR                    = 0,
     GAMEOBJECT_TYPE_BUTTON                  = 1,
@@ -272,7 +266,6 @@ class SERVER_DECL GameObject : public Object
 {
     public:
 
-        /// LUA Stuff
         GameObject(uint64 guid);
         ~GameObject();
 
@@ -332,8 +325,7 @@ class SERVER_DECL GameObject : public Object
 
         void ExpireAndDelete();
 
-
-        /// Quest data
+        // Quest data
         std::list<QuestRelation*>* m_quests;
 
         uint32* m_ritualmembers;
@@ -347,8 +339,8 @@ class SERVER_DECL GameObject : public Object
         float range;
         uint8 checkrate;
         uint16 counter;
-        int32 charges;      /// used for type==22,to limit number of usages.
-        bool invisible;     /// invisible
+        int32 charges;      // used for type==22,to limit number of usages.
+        bool invisible;     // invisible
         uint8 invisibilityFlag;
         Unit* m_summoner;
         int8 bannerslot;
@@ -358,7 +350,7 @@ class SERVER_DECL GameObject : public Object
 
         GameObjectAIScript* GetScript() { return myScript; }
 
-        void TrapSearchTarget();	/// Traps need to find targets faster :P
+        void TrapSearchTarget();	// Traps need to find targets faster :P
 
         bool HasAI() { return spell != 0; }
 
@@ -440,64 +432,38 @@ class SERVER_DECL GameObject : public Object
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
         /// Damages the destructible GameObject with a spell
-        ///
         /// \param uint32 damage          -  The hit points that the GO will lose
         /// \param uint64 AttackerGUID    -  GUID of the caster of the damaging spell
         /// \param uint64 ControllerGUID  -  GUID of the controller of the caster of the damaging spell
         /// \param uint32 SpellID         -  ID of the damaging spell
-        ///
         /// \returns none
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         void Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID);
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void Rebuild()
         /// Rebuilds the damaged/destroyed GameObject.
-        ///
-        /// \param none
-        ///
-        /// \returns none
-        ///
+        /// \param none              \returns none
         //////////////////////////////////////////////////////////////////////////////////////////
         void Rebuild();
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// uint32 GetHP()
         /// Returns the current hitpoints of the GameObject
-        ///
         /// \param none
-        ///
         /// \returns the current hitpoints of the GameObject
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         uint32 GetHP() { return hitpoints; }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// uint32 GetMaxHP()
         /// Returns the maximum hitpoints of the GameObject
-        ///
         /// \param none
-        ///
         /// \returns the maximum hitpoints of the GameObject
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         uint32 GetMaxHP() { return maxhitpoints; }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void Restock()
         /// Restocks the gameobject's loot
-        ///
-        /// \param none
-        ///
-        /// \returns none
-        ///
+        /// \param none             \returns none
         //////////////////////////////////////////////////////////////////////////////////////////
         void ReStock();
 
@@ -513,21 +479,15 @@ class SERVER_DECL GameObject : public Object
 
         uint64 m_rotation;
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
         /// Notifies the surrounding clients about the GameObject taking damage
-        ///
         /// \param uint32 damage          -  The hit points that the GO will lose
         /// \param uint64 AttackerGUID    -  GUID of the caster of the damaging spell
         /// \param uint64 ControllerGUID  -  GUID of the controller of the caster of the damaging spell
         /// \param uint32 SpellID         -  ID of the damaging spell
-        ///
         /// \returns none
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         void SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID);
-
 
         uint32 hitpoints;
         uint32 maxhitpoints;
