@@ -54,8 +54,10 @@ GameObject::GameObject(uint64 guid)
     m_respawnCell = NULL;
     m_rotation = 0;
     m_overrides = 0;
+
     hitpoints = 0;
     maxhitpoints = 0;
+
     range = 0;
     checkrate = 0;
 }
@@ -360,9 +362,6 @@ void GameObject::InitAI()
     if (!pInfo)
         return;
 
-    if (pInfo->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
-        Rebuild();
-
     // this fixes those fuckers in booty bay
     if (pInfo->raw.parameter_0 == 0 &&
         pInfo->raw.parameter_1 == 0 &&
@@ -423,6 +422,10 @@ void GameObject::InitAI()
     else if (pInfo->type == GAMEOBJECT_TYPE_FISHINGHOLE)
     {
         CalcFishRemaining(true);
+    }
+    else if (pInfo->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    {
+        Rebuild();
     }
 
     if (myScript == NULL)
@@ -857,10 +860,19 @@ void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUI
             // Intact  ->  Damaged
 
             // Are we below the intact-damaged transition treshold?
-            if (hitpoints <= (maxhitpoints - pInfo->raw.parameter_0))
+            if (hitpoints <= (maxhitpoints - pInfo->destructible_building.intact_num_hits))
             {
                 SetFlags(GO_FLAG_DAMAGED);
-                SetDisplayId(pInfo->raw.parameter_4); // damaged display id
+                SetDisplayId(pInfo->destructible_building.damaged_display_id); // damaged display id
+            }
+        }
+        else
+        {
+            if (hitpoints == 0)
+            {
+                SetFlags(GetFlags() & ~GO_FLAG_DAMAGED);
+                SetFlags(GO_FLAG_DESTROYED);
+                SetDisplayId(pInfo->destructible_building.destroyed_display_id);
             }
         }
 
@@ -888,7 +900,7 @@ void GameObject::Rebuild()
 {
     SetFlags(GetFlags() & uint32(~(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED)));
     SetDisplayId(pInfo->display_id);
-    maxhitpoints = pInfo->raw.parameter_0 + pInfo->raw.parameter_5;
+    maxhitpoints = pInfo->destructible_building.intact_num_hits + pInfo->destructible_building.damaged_num_hits;
     hitpoints = maxhitpoints;
 }
 

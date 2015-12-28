@@ -93,6 +93,7 @@ struct GameObjectInfo
     char* Unkstr;
 
     // different data fileds for GO-types
+    /// \todo add different structure for go types.
     union
     {
         // 0 GAMEOBJECT_TYPE_DOOR
@@ -129,6 +130,33 @@ struct GameObjectInfo
         // 31 GAMEOBJECT_TYPE_DUNGEON_DIFFICULTY
         // 32 GAMEOBJECT_TYPE_BARBER_CHAIR
         // 33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING
+        struct
+        {
+            uint32 intact_num_hits;             // parameter_0
+            uint32 credit_proxy_creature;       // parameter_1
+            uint32 state1_name;                 // parameter_2
+            uint32 intact_event;                // parameter_3
+            uint32 damaged_display_id;          // parameter_4
+            uint32 damaged_num_hits;            // parameter_5
+            uint32 unused1;                     // parameter_6
+            uint32 unused2;                     // parameter_7
+            uint32 unused3;                     // parameter_8
+            uint32 damaged_event;               // parameter_9
+            uint32 destroyed_display_id;        // parameter_10
+            uint32 unused4;                     // parameter_11
+            uint32 unused5;                     // parameter_12
+            uint32 unused6;                     // parameter_13
+            uint32 destroyed_event;             // parameter_14
+            uint32 unused7;                     // parameter_15
+            uint32 debuilding_time_secs;        // parameter_16
+            uint32 unused8;                     // parameter_17
+            uint32 destructible_data;           // parameter_18
+            uint32 rebuilding_event;            // parameter_19
+            uint32 unused9;                     // parameter_20
+            uint32 unused10;                    // parameter_21
+            uint32 damage_event;                // parameter_22
+            uint32 unused11;                    // parameter_23
+        } destructible_building;
         // 34 GAMEOBJECT_TYPE_GUILD_BANK
         // 35 GAMEOBJECT_TYPE_TRAPDOOR
 

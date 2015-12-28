@@ -1470,10 +1470,13 @@ bool ChatHandler::HandleGOFactionCommand(const char *args, WorldSession* session
     return true;
 }
 
-bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession* session)
+bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
 {
-    GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL)
+    if (args == nullptr)
+        return false;
+
+    GameObject* go = session->GetPlayer()->GetSelectedGo();
+    if (go == nullptr)
     {
         RedSystemMessage(session, "You need to select a GO first!");
         return true;
@@ -1482,38 +1485,43 @@ bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession* session)
     if (go->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
         RedSystemMessage(session, "The selected GO must be a destructible building!");
-        return true;
-    }
-
-    if (*args == '\0')
-    {
-        RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
         return true;
     }
 
     uint32 damage = 0;
-    std::stringstream ss(args);
+    uint32 spellid = 0;
 
-    ss >> damage;
-    if (ss.fail())
+    if (sscanf(args, "%u %u", &damage, &spellid) != 2)
     {
-        RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
+        if (damage == 0)
+        {
+            RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
+            return true;
+        }
+    }
+
+    if (spellid == 0)
+        spellid = 57609;
+
+    if (go->GetHP() == 0)
+    {
+        RedSystemMessage(session, "Cannot further damage a destroyed GameObject");
         return true;
     }
 
     uint64 guid = session->GetPlayer()->GetGUID();
+    go->Damage(damage, guid, 0, spellid);
 
-    BlueSystemMessage(session, "Attempting to damage GO...");
-
-    go->Damage(damage, guid, guid, 0);
+    GreenSystemMessage(session, "GameObject has been damaged for %u hitpoints", damage);
+    GreenSystemMessage(session, "New hitpoints %u", go->GetHP());
 
     return true;
 }
 
-bool ChatHandler::HandleGORebuildCommand(const char *args, WorldSession* session)
+bool ChatHandler::HandleGORebuildCommand(const char* args, WorldSession* session)
 {
-    GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL)
+    GameObject* go = session->GetPlayer()->GetSelectedGo();
+    if (go == nullptr)
     {
         RedSystemMessage(session, "You need to select a GO first!");
         return true;
@@ -1525,9 +1533,12 @@ bool ChatHandler::HandleGORebuildCommand(const char *args, WorldSession* session
         return true;
     }
 
-    BlueSystemMessage(session, "Attempting to rebuild building...");
+    uint32 oldHitPoints = go->GetHP();
 
     go->Rebuild();
+
+    BlueSystemMessage(session, "GameObject has been rebuilt.");
+    GreenSystemMessage(session, "Old hitpoints: %u New hitpoints %u", oldHitPoints, go->GetHP());
 
     return true;
 }
