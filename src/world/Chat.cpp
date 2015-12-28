@@ -408,7 +408,6 @@ void CommandTableStorage::Init()
         { "enable",       'o', &ChatHandler::HandleGOEnable,       "Enables the selected GO for use.",           NULL, 0, 0, 0 },
         { "scale",        'o', &ChatHandler::HandleGOScale,        "Sets scale of selected GO",                  NULL, 0, 0, 0 },
         { "animprogress", 'o', &ChatHandler::HandleGOAnimProgress, "Sets anim progress",                         NULL, 0, 0, 0 },
-        { "faction",      'o', &ChatHandler::HandleGOFactionCommand,"Sets the faction of the GO",                NULL, 0, 0, 0 },
         { "export",       'o', &ChatHandler::HandleGOExport,       "Exports the current GO selected",            NULL, 0, 0, 0 },
         { "move",         'g', &ChatHandler::HandleGOMove,         "Moves gameobject to player xyz",             NULL, 0, 0, 0 },
         { "rotate",       'g', &ChatHandler::HandleGORotate,       "<Axis> <Value> - Rotates the object. <Axis> x,y, Default o.",             NULL, 0, 0, 0 },

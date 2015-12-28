@@ -481,7 +481,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGetTransporterTime(const char* args, WorldSession* m_session);
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
         bool HandleGOAnimProgress(const char* args, WorldSession* m_session);
-        bool HandleGOFactionCommand(const char* args, WorldSession* session);
         bool HandleGOExport(const char* args, WorldSession* m_session);
         bool HandleRemoveAurasCommand(const char* args, WorldSession* m_session);
         bool HandleParalyzeCommand(const char* args, WorldSession* m_session);

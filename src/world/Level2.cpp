@@ -679,13 +679,13 @@ bool ChatHandler::HandleMonsterYellCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleGOFaction(const char *args, WorldSession* m_session)
+bool ChatHandler::HandleGOFaction(const char* args, WorldSession* m_session)
 {
-    if (args == NULL)
+    if (args == nullptr)
         return false;
 
-    GameObject *go = m_session->GetPlayer()->GetSelectedGo();
-    if (go == NULL)
+    GameObject* go = m_session->GetPlayer()->GetSelectedGo();
+    if (go == nullptr)
     {
         RedSystemMessage(m_session, "No GameObject is selected.");
         return true;
@@ -697,8 +697,15 @@ bool ChatHandler::HandleGOFaction(const char *args, WorldSession* m_session)
         return false;
     }
 
+    auto faction_template = sFactionTemplateStore.LookupEntry(faction);
+    if (faction_template == nullptr)
+    {
+        RedSystemMessage(m_session, "The entered faction is invalid! Use a valid faction id.");
+        return false;
+    }
+
     go->SetFaction(faction);
-    GreenSystemMessage(m_session, "Set GO faction to %u.", faction);
+    GreenSystemMessage(m_session, "Faction changed for gameobject spawn to %u.", faction);
 
     return true;
 }
@@ -1435,38 +1442,6 @@ bool ChatHandler::HandleGOAnimProgress(const char* args, WorldSession* m_session
     uint32 ap = atol(args);
     GObj->SetAnimProgress(static_cast<uint8>(ap));
     BlueSystemMessage(m_session, "Set ANIMPROGRESS to %u", ap);
-    return true;
-}
-
-bool ChatHandler::HandleGOFactionCommand(const char *args, WorldSession* session)
-{
-    GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL)
-    {
-        RedSystemMessage(session, "You need to select a GO first!");
-        return true;
-    }
-
-    if (*args == '\0')
-    {
-        RedSystemMessage(session, "You need to specify a faction!");
-        return true;
-    }
-
-    std::stringstream ss(args);
-    uint32 faction = 0;
-
-    ss >> faction;
-    if (ss.fail())
-    {
-        RedSystemMessage(session, "You need to specify a faction!");
-        return true;
-    }
-
-    go->SetFaction(faction);
-
-    BlueSystemMessage(session, "GameObject faction has been changed to %u", faction);
-
     return true;
 }
 
