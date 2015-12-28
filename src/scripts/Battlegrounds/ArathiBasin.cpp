@@ -197,7 +197,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
     if (gameobject_info == nullptr)
         return;
 
-    auto gi_aura = gameobject_info->parameter_3 ? GameObjectNameStorage.LookupEntry(gameobject_info->parameter_3) : nullptr;
+    auto gi_aura = gameobject_info->raw.parameter_3 ? GameObjectNameStorage.LookupEntry(gameobject_info->raw.parameter_3) : nullptr;
 
     if (m_controlPoints[Id] == nullptr)
     {
@@ -643,7 +643,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
         if (m_buffs[buffslot] && m_buffs[buffslot]->IsInWorld())
         {
             // apply the spell
-            auto spellid = m_buffs[buffslot]->GetInfo()->parameter_3;
+            auto spellid = m_buffs[buffslot]->GetInfo()->raw.parameter_3;
             m_buffs[buffslot]->RemoveFromWorld(false);
 
             // respawn it in buffrespawntime

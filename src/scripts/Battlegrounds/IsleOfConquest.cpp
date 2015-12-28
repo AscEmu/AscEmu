@@ -529,7 +529,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
     if (controlpoint[Id].worldstate != 0)
         SetWorldState(controlpoint[Id].worldstate, 0);
 
-    gi_aura = gi->parameter_3 ? GameObjectNameStorage.LookupEntry(gi->parameter_3) : NULL;
+    gi_aura = gi->raw.parameter_3 ? GameObjectNameStorage.LookupEntry(gi->raw.parameter_3) : NULL;
 
     if (controlpoint[Id].banner == NULL)
     {

@@ -2935,7 +2935,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                 if (gameObjTarget->GetState() == 0)
                     return;
 
-                auto lock = sLockStore.LookupEntry(gameobject_info->parameter_0);
+                auto lock = sLockStore.LookupEntry(gameobject_info->raw.parameter_0);
                 if (lock == 0)
                     return;
 
@@ -2950,9 +2950,9 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                         if (gameObjTarget->loot.items.size() == 0)
                         {
                             if (gameObjTarget->GetMapMgr() != NULL)
-                                lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                                lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                             else
-                                lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->parameter_1, 0);
+                                lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
 
 
                             DetermineSkillUp(SKILL_LOCKPICKING, v / 5); //to prevent free skill up
@@ -2984,9 +2984,9 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                     if (gameObjTarget->loot.items.size() == 0)
                     {
                         if (gameObjTarget->GetMapMgr() != NULL)
-                            lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                            lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                         else
-                            lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->parameter_1, 0);
+                            lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
                     }
                     else
                         bAlreadyUsed = true;
@@ -3019,9 +3019,9 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                 else if (gameObjTarget->loot.items.size() == 0)
                 {
                     if (gameObjTarget->GetMapMgr() != NULL)
-                        lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                        lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                     else
-                        lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->parameter_1, 0);
+                        lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
                 }
                 else
                     bAlreadyUsed = true;
@@ -3044,7 +3044,7 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                 if (p_caster->m_bg->HookSlowLockOpen(gameObjTarget, p_caster, this))
                     return;
 
-            uint32 spellid = !gameObjTarget->GetInfo()->parameter_10 ? 23932 : gameObjTarget->GetInfo()->parameter_10;
+            uint32 spellid = !gameObjTarget->GetInfo()->raw.parameter_10 ? 23932 : gameObjTarget->GetInfo()->raw.parameter_10;
             SpellEntry* en = dbcSpell.LookupEntry(spellid);
             Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, en, true, NULL);
             SpellCastTargets tgt;
@@ -3089,9 +3089,9 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
             if (gameObjTarget->loot.items.size() == 0)
             {
                 if (gameObjTarget->GetMapMgr() != NULL)
-                    lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                    lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                 else
-                    lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->parameter_1, 0);
+                    lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
             }
             loottype = LOOT_CORPSE;
         }
@@ -3681,7 +3681,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
         }
         else if (entry == 186812 || entry == 181621)    // Refreshment Table, Soulwell
         {
-            go->charges = gameobject_info->parameter_1;
+            go->charges = gameobject_info->raw.parameter_1;
         }
         else//Lightwell,if there is some other type -- add it
         {

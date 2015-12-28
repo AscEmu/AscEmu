@@ -498,10 +498,10 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 //check for locktypes
 
                 bool despawn = false;
-                if (pGO->GetInfo()->parameter_3 == 1)
+                if (pGO->GetInfo()->raw.parameter_3 == 1)
                     despawn = true;
 
-                auto pLock = sLockStore.LookupEntry(pGO->GetInfo()->parameter_0);
+                auto pLock = sLockStore.LookupEntry(pGO->GetInfo()->raw.parameter_0);
                 if (pLock)
                 {
                     for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
@@ -1556,7 +1556,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
     Player* plyr = GetPlayer();
 
     //Event Scripts
-    objmgr.CheckforScripts(plyr, obj->GetInfo()->parameter_9);
+    objmgr.CheckforScripts(plyr, obj->GetInfo()->raw.parameter_9);
 
     CALL_GO_SCRIPT_EVENT(obj, OnActivate)(_player);
     CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(obj, _player);
@@ -1657,7 +1657,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     break;
             }
 
-            SpellEntry* info = dbcSpell.LookupEntryForced(gameobject_info->parameter_0);
+            SpellEntry* info = dbcSpell.LookupEntryForced(gameobject_info->raw.parameter_0);
             if (!info)
                 break;
             spell = sSpellFactoryMgr.NewSpell(plyr, info, false, NULL);
@@ -1676,7 +1676,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             if (!obj->m_ritualmembers || !obj->m_ritualspell || !obj->m_ritualcaster /*|| !obj->m_ritualtarget*/)
                 return;
 
-            for (i = 0; i < gameobject_info->parameter_0; i++)
+            for (i = 0; i < gameobject_info->raw.parameter_0; i++)
             {
                 if (!obj->m_ritualmembers[i])
                 {
@@ -1695,11 +1695,11 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 }
             }
 
-            if (i == gameobject_info->parameter_0 - 1)
+            if (i == gameobject_info->raw.parameter_0 - 1)
             {
                 obj->m_ritualspell = 0;
                 Player* plr;
-                for (i = 0; i < gameobject_info->parameter_0; i++)
+                for (i = 0; i < gameobject_info->raw.parameter_0; i++)
                 {
                     plr = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[i]);
                     if (plr)
@@ -1714,7 +1714,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 {
                     if (!obj->m_ritualtarget)
                         return;
-                    info = dbcSpell.LookupEntryForced(gameobject_info->parameter_1);
+                    info = dbcSpell.LookupEntryForced(gameobject_info->raw.parameter_1);
                     if (!info)
                         break;
                     Player* target = objmgr.GetPlayer(obj->m_ritualtarget);
@@ -1728,12 +1728,12 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 {
                     Player* psacrifice = NULL;
                     // kill the sacrifice player
-                    psacrifice = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[RandomUInt(gameobject_info->parameter_0 - 1)]);
+                    psacrifice = _player->GetMapMgr()->GetPlayer(obj->m_ritualmembers[RandomUInt(gameobject_info->raw.parameter_0 - 1)]);
                     Player* pCaster = obj->GetMapMgr()->GetPlayer(obj->m_ritualcaster);
                     if (!psacrifice || !pCaster)
                         return;
 
-                    info = dbcSpell.LookupEntryForced(gameobject_info->parameter_4);
+                    info = dbcSpell.LookupEntryForced(gameobject_info->raw.parameter_4);
                     if (!info)
                         break;
                     spell = sSpellFactoryMgr.NewSpell(psacrifice, info, true, NULL);
@@ -1741,7 +1741,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     spell->prepare(&targets);
 
                     // summons demon
-                    info = dbcSpell.LookupEntry(gameobject_info->parameter_1);
+                    info = dbcSpell.LookupEntry(gameobject_info->raw.parameter_1);
                     spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, NULL);
                     SpellCastTargets targets2;
                     targets2.m_unitTarget = pCaster->GetGUID();
@@ -1757,7 +1757,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     if (!pleader)
                         return;
 
-                    info = dbcSpell.LookupEntry(gameobject_info->parameter_1);
+                    info = dbcSpell.LookupEntry(gameobject_info->raw.parameter_1);
                     spell = sSpellFactoryMgr.NewSpell(pleader, info, true, NULL);
                     SpellCastTargets targets2(plr->GetGUID());
                     spell->prepare(&targets2);
@@ -1767,7 +1767,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 }
                 else if (gameobject_info->entry == 186811 || gameobject_info->entry == 181622)
                 {
-                    info = dbcSpell.LookupEntryForced(gameobject_info->parameter_1);
+                    info = dbcSpell.LookupEntryForced(gameobject_info->raw.parameter_1);
                     if (info == NULL)
                         return;
                     spell = sSpellFactoryMgr.NewSpell(_player->GetMapMgr()->GetPlayer(obj->m_ritualcaster), info, true, NULL);
@@ -1780,10 +1780,10 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_GOOBER:
         {
-            plyr->CastSpell(guid, gameobject_info->parameter_10, false);
+            plyr->CastSpell(guid, gameobject_info->raw.parameter_10, false);
 
             // show page
-            if (gameobject_info->parameter_7)
+            if (gameobject_info->raw.parameter_7)
             {
                 WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
                 data << obj->GetGUID();
@@ -1797,9 +1797,9 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             pkt << (uint32)1;//i ve found only on such item,id =1
             SendPacket(&pkt);*/
 
-            if (gameobject_info->parameter_10)
+            if (gameobject_info->raw.parameter_10)
             {
-                uint32 cinematicid = gameobject_info->parameter_1;
+                uint32 cinematicid = gameobject_info->raw.parameter_1;
                 plyr->GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &cinematicid);
             }
         }

@@ -3590,8 +3590,8 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 // professions use rangeIndex 1, which is 0yds, so we will use 5yds, which is standard interaction range.
-                if (gameobject_info->parameter_1)
-                    focusRange = float(gameobject_info->parameter_1);
+                if (gameobject_info->raw.parameter_1)
+                    focusRange = float(gameobject_info->raw.parameter_1);
                 else
                     focusRange = GetMaxRange(sSpellRangeStore.LookupEntry(GetProto()->rangeIndex));
 
@@ -3599,7 +3599,7 @@ uint8 Spell::CanCast(bool tolerate)
                 if (!IsInrange(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), (*itr), (focusRange * focusRange)))
                     continue;
 
-                if (gameobject_info->parameter_0 == GetProto()->RequiresSpellFocus)
+                if (gameobject_info->raw.parameter_0 == GetProto()->RequiresSpellFocus)
                 {
                     found = true;
                     break;

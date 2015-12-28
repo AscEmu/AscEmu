@@ -191,30 +191,30 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     data << gameobject_info->category_name;  // Category string of the GO, like "attack", "pvp", "point", etc
     data << gameobject_info->cast_bar_text;  // text displayed when using the go, like "collecting", "summoning" etc
     data << gameobject_info->Unkstr;
-    data << gameobject_info->parameter_0;     // spellfocus id, ex.: spell casted when interacting with the GO
-    data << gameobject_info->parameter_1;
-    data << gameobject_info->parameter_2;
-    data << gameobject_info->parameter_3;
-    data << gameobject_info->parameter_4;
-    data << gameobject_info->parameter_5;
-    data << gameobject_info->parameter_6;
-    data << gameobject_info->parameter_7;
-    data << gameobject_info->parameter_8;
-    data << gameobject_info->parameter_9;
-    data << gameobject_info->parameter_10;
-    data << gameobject_info->parameter_11;
-    data << gameobject_info->parameter_12;
-    data << gameobject_info->parameter_13;
-    data << gameobject_info->parameter_14;
-    data << gameobject_info->parameter_15;
-    data << gameobject_info->parameter_16;
-    data << gameobject_info->parameter_17;
-    data << gameobject_info->parameter_18;
-    data << gameobject_info->parameter_19;
-    data << gameobject_info->parameter_20;
-    data << gameobject_info->parameter_21;
-    data << gameobject_info->parameter_22;
-    data << gameobject_info->parameter_23;
+    data << gameobject_info->raw.parameter_0;     // spellfocus id, ex.: spell casted when interacting with the GO
+    data << gameobject_info->raw.parameter_1;
+    data << gameobject_info->raw.parameter_2;
+    data << gameobject_info->raw.parameter_3;
+    data << gameobject_info->raw.parameter_4;
+    data << gameobject_info->raw.parameter_5;
+    data << gameobject_info->raw.parameter_6;
+    data << gameobject_info->raw.parameter_7;
+    data << gameobject_info->raw.parameter_8;
+    data << gameobject_info->raw.parameter_9;
+    data << gameobject_info->raw.parameter_10;
+    data << gameobject_info->raw.parameter_11;
+    data << gameobject_info->raw.parameter_12;
+    data << gameobject_info->raw.parameter_13;
+    data << gameobject_info->raw.parameter_14;
+    data << gameobject_info->raw.parameter_15;
+    data << gameobject_info->raw.parameter_16;
+    data << gameobject_info->raw.parameter_17;
+    data << gameobject_info->raw.parameter_18;
+    data << gameobject_info->raw.parameter_19;
+    data << gameobject_info->raw.parameter_20;
+    data << gameobject_info->raw.parameter_21;
+    data << gameobject_info->raw.parameter_22;
+    data << gameobject_info->raw.parameter_23;
     data << float(gameobject_info->size);       // scaling of the GO
 
     // questitems that the go can contain

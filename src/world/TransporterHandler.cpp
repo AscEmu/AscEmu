@@ -89,7 +89,7 @@ bool FillPathVector(uint32 PathID, TransportPath & Path)
 bool Transporter::GenerateWaypoints()
 {
     TransportPath path;
-    FillPathVector(GetInfo()->parameter_0, path);
+    FillPathVector(GetInfo()->raw.parameter_0, path);
 
     if (path.Size() == 0) return false;
 

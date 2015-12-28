@@ -364,43 +364,43 @@ void GameObject::InitAI()
         Rebuild();
 
     // this fixes those fuckers in booty bay
-    if (pInfo->parameter_0 == 0 &&
-        pInfo->parameter_1 == 0 &&
-        pInfo->parameter_2 == 0 &&
-        pInfo->parameter_3 != 0 &&
-        pInfo->parameter_5 != 3 &&
-        pInfo->parameter_9 == 1)
+    if (pInfo->raw.parameter_0 == 0 &&
+        pInfo->raw.parameter_1 == 0 &&
+        pInfo->raw.parameter_2 == 0 &&
+        pInfo->raw.parameter_3 != 0 &&
+        pInfo->raw.parameter_5 != 3 &&
+        pInfo->raw.parameter_9 == 1)
         return;
 
     uint32 spellid = 0;
     if (pInfo->type == GAMEOBJECT_TYPE_TRAP)
     {
-        spellid = pInfo->parameter_3;
+        spellid = pInfo->raw.parameter_3;
     }
     else if (pInfo->type == GAMEOBJECT_TYPE_SPELL_FOCUS)
     {
         // get spellid from attached gameobject if there is such - by sound2 field
-        if (pInfo->parameter_2 != 0)
+        if (pInfo->raw.parameter_2 != 0)
         {
 
-            auto gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->parameter_2);
+            auto gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->raw.parameter_2);
             if (gameobject_info == nullptr)
             {
-                LOG_ERROR("Gamobject %u is of spellfocus type, has attachment GO data (%u), but attachment not found in database.", pInfo->entry, pInfo->parameter_2);
+                LOG_ERROR("Gamobject %u is of spellfocus type, has attachment GO data (%u), but attachment not found in database.", pInfo->entry, pInfo->raw.parameter_2);
                 return;
             }
 
-            spellid = gameobject_info->parameter_3;
+            spellid = gameobject_info->raw.parameter_3;
         }
     }
     else if (pInfo->type == GAMEOBJECT_TYPE_RITUAL)
     {
-        m_ritualmembers = new uint32[pInfo->parameter_0];
-        memset(m_ritualmembers, 0, sizeof(uint32)*pInfo->parameter_0);
+        m_ritualmembers = new uint32[pInfo->raw.parameter_0];
+        memset(m_ritualmembers, 0, sizeof(uint32)*pInfo->raw.parameter_0);
     }
     else if (pInfo->type == GAMEOBJECT_TYPE_CHEST)
     {
-        auto pLock = sLockStore.LookupEntry(GetInfo()->parameter_0);
+        auto pLock = sLockStore.LookupEntry(GetInfo()->raw.parameter_0);
         if (pLock)
         {
             for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
@@ -539,7 +539,7 @@ void GameObject::UseFishingNode(Player* player)
 
         school = static_cast< GameObject* >(*it);
 
-        if (!isInRange(school, (float)school->GetInfo()->parameter_1))
+        if (!isInRange(school, (float)school->GetInfo()->raw.parameter_1))
         {
             school = nullptr;
             continue;
@@ -552,9 +552,9 @@ void GameObject::UseFishingNode(Player* player)
     {
 
         if (school->GetMapMgr() != NULL)
-            lootmgr.FillGOLoot(&school->loot, school->GetInfo()->parameter_1, school->GetMapMgr()->iInstanceMode);
+            lootmgr.FillGOLoot(&school->loot, school->GetInfo()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
         else
-            lootmgr.FillGOLoot(&school->loot, school->GetInfo()->parameter_1, 0);
+            lootmgr.FillGOLoot(&school->loot, school->GetInfo()->raw.parameter_1, 0);
 
         player->SendLoot(school->GetGUID(), LOOT_FISHING, school->GetMapId());
         EndFishing(player, false);
@@ -725,11 +725,11 @@ void GameObject::OnPushToWorld()
 
     // We have a field supposedly for this, but it's pointless to waste CPU time for this
     // unless it's longer than a minute (since usually then it's much longer)
-    if ((pInfo->type == GAMEOBJECT_TYPE_CHEST) && (pInfo->parameter_3 == 0))
+    if ((pInfo->type == GAMEOBJECT_TYPE_CHEST) && (pInfo->raw.parameter_3 == 0))
     {
         time_t restockTime = 60 * 1000;
-        if (pInfo->parameter_2 > 60)
-            restockTime = pInfo->parameter_2 * 1000;
+        if (pInfo->raw.parameter_2 > 60)
+            restockTime = pInfo->raw.parameter_2 * 1000;
 
         EventMgr::getSingleton().AddEvent(this, &GameObject::ReStock, EVENT_GO_CHEST_RESTOCK, restockTime, 0, 0);
     }
@@ -779,7 +779,7 @@ bool GameObject::HasLoot()
 uint32 GameObject::GetGOReqSkill()
 {
     //! Here we check the SpellFocus table against the dbcs
-    auto lock = sLockStore.LookupEntry(GetInfo()->parameter_0);
+    auto lock = sLockStore.LookupEntry(GetInfo()->raw.parameter_0);
     if (!lock)
         return 0;
 
@@ -842,7 +842,7 @@ void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUI
 
         SetFlags(GO_FLAG_DESTROYED);
         SetFlags(GetFlags() & ~GO_FLAG_DAMAGED);
-        SetDisplayId(pInfo->parameter_9);   // destroyed display id
+        SetDisplayId(pInfo->raw.parameter_9);   // destroyed display id
 
         CALL_GO_SCRIPT_EVENT(this, OnDestroyed)();
 
@@ -857,10 +857,10 @@ void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUI
             // Intact  ->  Damaged
 
             // Are we below the intact-damaged transition treshold?
-            if (hitpoints <= (maxhitpoints - pInfo->parameter_0))
+            if (hitpoints <= (maxhitpoints - pInfo->raw.parameter_0))
             {
                 SetFlags(GO_FLAG_DAMAGED);
-                SetDisplayId(pInfo->parameter_4); // damaged display id
+                SetDisplayId(pInfo->raw.parameter_4); // damaged display id
             }
         }
 
@@ -888,7 +888,7 @@ void GameObject::Rebuild()
 {
     SetFlags(GetFlags() & uint32(~(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED)));
     SetDisplayId(pInfo->display_id);
-    maxhitpoints = pInfo->parameter_0 + pInfo->parameter_5;
+    maxhitpoints = pInfo->raw.parameter_0 + pInfo->raw.parameter_5;
     hitpoints = maxhitpoints;
 }
 
@@ -904,5 +904,5 @@ void GameObject::ReStock()
     if (loot.HasRoll())
         return;
 
-    lootmgr.FillGOLoot(&loot, pInfo->parameter_1, m_mapMgr->iInstanceMode);
+    lootmgr.FillGOLoot(&loot, pInfo->raw.parameter_1, m_mapMgr->iInstanceMode);
 }
