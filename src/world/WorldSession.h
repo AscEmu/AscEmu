@@ -112,7 +112,7 @@ enum MovementFlags
     MOVEFLAG_WATER_WALK                 = 0x10000000,
     MOVEFLAG_FEATHER_FALL               = 0x20000000,   // Does not negate fall damage.
     MOVEFLAG_LEVITATE                   = 0x40000000,
-    MOVEFLAG_LOCAL                      = 0x80000000,   // This flag defaults to on. (Assumption)
+    //MOVEFLAG_LOCAL                      = 0x80000000,   // Zyres: commented unused 2015/12/20 This flag defaults to on. (Assumption)
 
     // Masks
     MOVEFLAG_MOVING_MASK                = 0x03,

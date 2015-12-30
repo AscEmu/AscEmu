@@ -315,8 +315,8 @@ static MovementFlagName MoveFlagsToNames[] =
     { MOVEFLAG_SPLINE_ENABLED, "MOVEFLAG_SPLINE_ENABLED" },
     { MOVEFLAG_WATER_WALK, "MOVEFLAG_WATER_WALK" },
     { MOVEFLAG_FEATHER_FALL, "MOVEFLAG_FEATHER_FALL" },
-    { MOVEFLAG_LEVITATE, "MOVEFLAG_LEVITATE" },
-    { MOVEFLAG_LOCAL, "MOVEFLAG_LOCAL" }
+    { MOVEFLAG_LEVITATE, "MOVEFLAG_LEVITATE" }
+    //{ MOVEFLAG_LOCAL, "MOVEFLAG_LOCAL" }
 };
 
 static const uint32 nmovementflags = sizeof(MoveFlagsToNames) / sizeof(MovementFlagName);

@@ -372,16 +372,17 @@ enum CooldownTypes
     NUM_COOLDOWN_TYPES,
 };
 
+///\todo are the values really ignored by client?
 enum LootType
 {
     LOOT_CORPSE                 = 1,
-    LOOT_SKINNING               = 2,
+    LOOT_SKINNING               = 2,        // 6
     LOOT_FISHING                = 3,
-    LOOT_PICKPOCKETING          = 2,        // 4 unsupported by client, sending LOOT_SKINNING instead
-    LOOT_DISENCHANTING          = 2,        // 5 unsupported by client, sending LOOT_SKINNING instead
-    LOOT_PROSPECTING            = 2,        // 6 unsupported by client, sending LOOT_SKINNING instead
-    LOOT_MILLING                = 2,
-    LOOT_INSIGNIA               = 2         // 7 unsupported by client, sending LOOT_SKINNING instead
+    LOOT_PICKPOCKETING          = 2,        // 2
+    LOOT_DISENCHANTING          = 2,        // 4    // ignored
+    LOOT_PROSPECTING            = 2,        // 7
+    LOOT_MILLING                = 2,        // 8    
+    LOOT_INSIGNIA               = 2         // 21 unsupported by client, sending LOOT_SKINNING instead
 };
 
 enum ModType
@@ -466,21 +467,28 @@ static const uint32 TalentTreesPerClass[DRUID + 1][3] =
         };
 
 
-#define RESTSTATE_RESTED 1
-#define RESTSTATE_NORMAL 2
-#define RESTSTATE_TIRED100 3
-#define RESTSTATE_TIRED50 4
-#define RESTSTATE_EXHAUSTED 5
-#define UNDERWATERSTATE_NONE 0
-#define UNDERWATERSTATE_SWIMMING 1
-#define UNDERWATERSTATE_UNDERWATER 2
-#define UNDERWATERSTATE_RECOVERING 4
-#define UNDERWATERSTATE_TAKINGDAMAGE 8
-#define UNDERWATERSTATE_FATIGUE 16
-#define UNDERWATERSTATE_LAVA 32
-#define UNDERWATERSTATE_SLIME 64
+enum RestState
+{
+    RESTSTATE_RESTED        = 1,
+    RESTSTATE_NORMAL        = 2,
+    RESTSTATE_TIRED100      = 3,
+    RESTSTATE_TIRED50       = 4,
+    RESTSTATE_EXHAUSTED     = 5
+};
 
-enum TRADE_STATUS
+enum UnderwaterState
+{
+    UNDERWATERSTATE_NONE            = 0,
+    UNDERWATERSTATE_SWIMMING        = 1,
+    UNDERWATERSTATE_UNDERWATER      = 2,
+    UNDERWATERSTATE_RECOVERING      = 4,
+    UNDERWATERSTATE_TAKINGDAMAGE    = 8,
+    UNDERWATERSTATE_FATIGUE         = 16,
+    UNDERWATERSTATE_LAVA            = 32,
+    UNDERWATERSTATE_SLIME           = 64
+};
+
+enum TradeStatus
 {
     TRADE_STATUS_PLAYER_BUSY        = 0x00,
     TRADE_STATUS_PROPOSED           = 0x01,
@@ -500,26 +508,26 @@ enum TRADE_STATUS
     TRADE_STATUS_PLAYER_IGNORED     = 0x0F,
 };
 
-enum TRADE_DATA
+enum TradeData
 {
     TRADE_GIVE        = 0x00,
     TRADE_RECEIVE     = 0x01
 };
 
-enum DUEL_STATUS
+enum DuelStatus
 {
     DUEL_STATUS_OUTOFBOUNDS,
     DUEL_STATUS_INBOUNDS
 };
 
-enum DUEL_STATE
+enum DuelState
 {
     DUEL_STATE_REQUESTED,
     DUEL_STATE_STARTED,
     DUEL_STATE_FINISHED
 };
 
-enum DUEL_WINNER
+enum DuelWinner
 {
     DUEL_WINNER_KNOCKOUT,
     DUEL_WINNER_RETREAT
