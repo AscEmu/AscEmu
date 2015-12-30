@@ -661,7 +661,7 @@ enum ShapeshiftForm
 };
 
 
-enum UnitFieldFlags : uint32  // UNIT_FIELD_FLAGS #46 - these are client flags
+enum UnitFieldFlags  // UNIT_FIELD_FLAGS #46 - these are client flags
 {
     //                                            Hex    Bit     Decimal  Comments
     UNIT_FLAG_SERVER_CONTROLLED          = 0x00000001, // 1            1
