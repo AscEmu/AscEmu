@@ -217,7 +217,7 @@ Player::Player(uint32 guid)
     //////////////////////////////////////////////////////////////////////////
 
     //These should be set in the object constructor..
-    m_runSpeed = PLAYER_NORMAL_RUN_SPEED;
+    m_runSpeed = playerNormalRunSpeed;
     m_walkSpeed = 2.5f;
     m_objectTypeId = TYPEID_PLAYER;
     m_valuesCount = PLAYER_END;
@@ -1561,7 +1561,7 @@ void Player::EventDeath()
         sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
 
     if (!IS_INSTANCE(GetMapId()) && !sEventMgr.HasEvent(this, EVENT_PLAYER_FORCED_RESURRECT)) //Should never be true
-        sEventMgr.AddEvent(this, &Player::RepopRequestedPlayer, EVENT_PLAYER_FORCED_RESURRECT, PLAYER_FORCED_RESURRECT_INTERVAL, 1, 0); //in case he forgets to release spirit (afk or something)
+        sEventMgr.AddEvent(this, &Player::RepopRequestedPlayer, EVENT_PLAYER_FORCED_RESURRECT, forcedResurrectInterval, 1, 0); //in case he forgets to release spirit (afk or something)
 
     RemoveNegativeAuras();
 
@@ -14051,11 +14051,18 @@ void Player::SendCinematicCamera(uint32 id)
     GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &id);
 }
 
-uint32 Player::GetTeamInitial() { return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; }
+uint32 Player::GetTeamInitial()
+{
+    return myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE;
+}
 
-void Player::ResetTeam() { m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; m_bgTeam = m_team; }
+void Player::ResetTeam()
+{
+    m_team = myRace->team_id == 7 ? TEAM_ALLIANCE : TEAM_HORDE; m_bgTeam = m_team;
+}
 
-bool Player::IsBanned() {
+bool Player::IsBanned()
+{
     if (m_banned)
     {
         if (m_banned < 100 || (uint32)UNIXTIME < m_banned)
@@ -14064,7 +14071,8 @@ bool Player::IsBanned() {
     return false;
 }
 
-bool Player::IsGroupLeader() {
+bool Player::IsGroupLeader()
+{
     if (m_playerInfo->m_Group != NULL)
     {
         if (m_playerInfo->m_Group->GetLeader() == m_playerInfo)
@@ -14073,66 +14081,81 @@ bool Player::IsGroupLeader() {
     return false;
 }
 
-void Player::RemoveSummon(Pet* pet) {
+void Player::RemoveSummon(Pet* pet)
+{
     for (std::list<Pet*>::iterator itr = m_Summons.begin(); itr != m_Summons.end(); ++itr)
+    {
+        if ((*itr)->GetGUID() == pet->GetGUID())
         {
-            if ((*itr)->GetGUID() == pet->GetGUID())
-            {
-                m_Summons.erase(itr);
-                break;
-            }
+            m_Summons.erase(itr);
+            break;
         }
+    }
 }
 
-uint32 Player::GetUnstabledPetNumber(void) {
-    if (m_Pets.size() == 0) return 0;
+uint32 Player::GetUnstabledPetNumber(void)
+{
+    if (m_Pets.size() == 0)
+        return 0;
+
     std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin();
     for (; itr != m_Pets.end(); itr++)
-            if (itr->second->stablestate == STABLE_STATE_ACTIVE)
-                return itr->first;
+        if (itr->second->stablestate == STABLE_STATE_ACTIVE)
+            return itr->first;
     return 0;
 }
 
-void Player::SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend) {
+void Player::SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend)
+{
     if (data == NULL)
         return;
+
     if (GetSession() != NULL)
         GetSession()->SendPacket(data);
+
     if (bDeleteOnSend)
         delete data;
 }
 
-GameObject *Player::GetSelectedGo() {
+GameObject *Player::GetSelectedGo()
+{
     if (m_GM_SelectedGO)
         return GetMapMgr()->GetGameObject((uint32)m_GM_SelectedGO);
+
     return NULL;
 }
 
-void Player::SendMountResult(uint32 result) {
+void Player::SendMountResult(uint32 result)
+{
     WorldPacket data(SMSG_MOUNTRESULT, 4);
     data << (uint32)result;
     GetSession()->SendPacket(&data);
 }
 
-bool Player::IsMounted() {
+bool Player::IsMounted()
+{
     if (m_MountSpellId != 0)
         return true;
     else
         return false;
 }
 
-void Player::SendDismountResult(uint32 result) {
+void Player::SendDismountResult(uint32 result)
+{
     WorldPacket data(SMSG_DISMOUNTRESULT, 4);
     data << (uint32)result;
     GetSession()->SendPacket(&data);
 }
 
-Player *Player::GetTradeTarget() {
-    if (!IsInWorld()) return 0;
+Player* Player::GetTradeTarget()
+{
+    if (!IsInWorld())
+        return 0;
     return m_mapMgr->GetPlayer((uint32)mTradeTarget);
 }
 
-void Player::UpdateLastSpeeds() {
+void Player::UpdateLastSpeeds()
+{
     m_lastRunSpeed = m_runSpeed;
     m_lastRunBackSpeed = m_backWalkSpeed;
     m_lastSwimSpeed = m_swimSpeed;
@@ -14140,15 +14163,17 @@ void Player::UpdateLastSpeeds() {
     m_lastFlySpeed = m_flySpeed;
 }
 
-void Player::RemoteRevive() {
+void Player::RemoteRevive()
+{
     ResurrectPlayer();
     SetMovement(MOVE_UNROOT, 5);
-    SetSpeeds(RUN, PLAYER_NORMAL_RUN_SPEED);
-    SetSpeeds(SWIM, PLAYER_NORMAL_SWIM_SPEED);
+    SetSpeeds(RUN, playerNormalRunSpeed);
+    SetSpeeds(SWIM, playerNormalSwimSpeed);
     SetMovement(MOVE_LAND_WALK, 8);
     SetHealth(GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 }
 
-void Player::SetMover(Unit* target) {
+void Player::SetMover(Unit* target)
+{
     GetSession()->m_MoverWoWGuid.Init(target->GetGUID());
 }

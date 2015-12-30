@@ -110,7 +110,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             cn = itr->Get();
 
             // Process spell fields
-            for (uint8 i = 0; i < MAX_CREATURE_PROTO_SPELLS; i++)
+            for (uint8 i = 0; i < creatureMaxProtoSpells; i++)
             {
                 if (cn->AISpells[i] == 0)
                     continue;

@@ -1652,7 +1652,7 @@ void Spell::AddTime(uint32 type)
             //in case cast is delayed, make sure we do not exit combat
             else
             {
-                //				sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,PLAYER_ATTACK_TIMEOUT_INTERVAL,true);
+                //				sEventMgr.ModifyEventTimeLeft(p_caster,EVENT_ATTACK_TIMEOUT,attackTimeoutInterval,true);
                 // also add a new delay to offhand and main hand attacks to avoid cutting the cast short
                 p_caster->delayAttackTimer(delay);
             }

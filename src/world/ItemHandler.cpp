@@ -1497,7 +1497,7 @@ void WorldSession::SendInventoryList(Creature* unit)
                     data << uint32(0);
 
                 ++counter;
-                if (counter >= MAX_CREATURE_INV_ITEMS) break;  // cebernic: in 2.4.3, client can't take more than 15 pages,it making crash for us:(
+                if (counter >= creatureMaxInventoryItems) break;  // cebernic: in 2.4.3, client can't take more than 15 pages,it making crash for us:(
             }
         }
     }

@@ -27,11 +27,15 @@
 
 struct AI_Spell;
 
-#define MAX_CREATURE_INV_ITEMS 150
-#define MAX_CREATURE_LOOT 8
-#define MAX_CREATURE_PROTO_SPELLS 8
-#define MAX_PET_SPELL 4
-#define VENDOR_ITEMS_UPDATE_TIME 3600000
+// #define MAX_CREATURE_LOOT 8 Zyres 2015/12/30 unused
+// #define MAX_PET_SPELL 4 Zyres 2015/12/30 unused
+
+const uint8 creatureMaxProtoSpells = 8;
+const uint32 creatureMaxInventoryItems = 150;
+
+const time_t vendorItemsUpdate = 3600000;
+
+const float creatureNormalRunSpeed = 8.0f;
 
 enum creatureguardtype
 {
@@ -166,7 +170,7 @@ struct CreatureProto
     float run_speed;        /// most of the time mobs use this
     float fly_speed;
     uint32 extra_a9_flags;
-    uint32 AISpells[MAX_CREATURE_PROTO_SPELLS];
+    uint32 AISpells[creatureMaxProtoSpells];
     uint32 AISpellsFlags;
     uint32 modImmunities;
     uint32 isTrainingDummy;

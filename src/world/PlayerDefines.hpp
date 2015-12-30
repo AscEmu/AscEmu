@@ -29,11 +29,12 @@ enum PlayerTeam : int
 };
 
 
-#define PLAYER_NORMAL_RUN_SPEED 7.0f
-#define PLAYER_NORMAL_SWIM_SPEED 4.722222f
-#define PLAYER_NORMAL_FLIGHT_SPEED 7.0f
+const float playerNormalRunSpeed = 7.0f;
+const float playerNormalSwimSpeed = 4.72222f;
+const float playerNormalFlightSpeed = 7.0f;
+
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
-#define MONSTER_NORMAL_RUN_SPEED 8.0f
+
 /* action button defines */
 #define PLAYER_ACTION_BUTTON_COUNT 136
 #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
@@ -547,8 +548,8 @@ enum DuelWinner
     DUEL_WINNER_RETREAT
 };
 
-#define PLAYER_ATTACK_TIMEOUT_INTERVAL 5000
-#define PLAYER_FORCED_RESURRECT_INTERVAL 360000         /// 1000*60*6= 6 minutes
+const time_t attackTimeoutInterval = 5000;
+const time_t forcedResurrectInterval = 360000;  // 1000*60*6= 6 minutes
 
 #define PLAYER_RATING_MODIFIER_RANGED_SKILL                     PLAYER_FIELD_COMBAT_RATING_1
 #define PLAYER_RATING_MODIFIER_DEFENCE                          PLAYER_FIELD_COMBAT_RATING_1+1

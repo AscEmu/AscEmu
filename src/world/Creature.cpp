@@ -217,7 +217,7 @@ Creature::Creature(uint64 guid)
     m_corpseEvent = false;
     m_respawnCell = NULL;
     m_walkSpeed = 2.5f;
-    m_runSpeed = MONSTER_NORMAL_RUN_SPEED;
+    m_runSpeed = creatureNormalRunSpeed;
     m_base_runSpeed = m_runSpeed;
     m_base_walkSpeed = m_walkSpeed;
     m_noRespawn = false;
@@ -1862,7 +1862,7 @@ void Creature::OnPushToWorld()
             if (itr2->max_amount == 0)
                 itr2->available_amount = 0;
             else if (itr2->available_amount < itr2->max_amount)
-                sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, itr2->itemid, EVENT_ITEM_UPDATE, VENDOR_ITEMS_UPDATE_TIME, 1, 0);
+                sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, itr2->itemid, EVENT_ITEM_UPDATE, vendorItemsUpdate, 1, 0);
         }
 
     }
