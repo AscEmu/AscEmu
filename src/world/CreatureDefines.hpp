@@ -25,6 +25,8 @@
 #include "DBC/DBCStructures.hpp"
 #include "UnitDefines.hpp"
 
+#include <ctime>
+
 struct AI_Spell;
 
 // #define MAX_CREATURE_LOOT 8 Zyres 2015/12/30 unused

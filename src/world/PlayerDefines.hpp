@@ -21,6 +21,8 @@
 
 #include "CommonTypes.hpp"
 
+#include <ctime>
+
 enum PlayerTeam : int
 {
     TEAM_ALLIANCE = 0,
