@@ -306,8 +306,22 @@ enum PlayerFlags
     PLAYER_FLAG_IS_DEAD             = 0x00002000,
     PLAYER_FLAGS_RENAME_FIRST       = 0x00004000,
     PLAYER_FLAG_DEVELOPER           = 0x00008000,
+    PLAYER_FLAG_UNK1                = 0x00010000,
+    PLAYER_FLAG_UNK2                = 0x00020000,
     PLAYER_FLAG_PVP                 = 0x00040000,
-    PLAYER_FLAG_IS_BANNED           = 0x01000000
+    PLAYER_FLAG_UNK3                = 0x00080000,
+    PLAYER_FLAG_UNK4                = 0x00100000,
+    PLAYER_FLAG_UNK5                = 0x00200000,
+    PLAYER_FLAG_UNK6                = 0x00400000,
+    PLAYER_FLAG_UNK7                = 0x00800000,
+    PLAYER_FLAG_IS_BANNED           = 0x01000000,
+    PLAYER_FLAG_UNK8                = 0x02000000,
+    PLAYER_FLAG_UNK9                = 0x04000000,
+    PLAYER_FLAG_UNK10               = 0x08000000,
+    PLAYER_FLAG_UNK11               = 0x10000000,
+    PLAYER_FLAG_UNK12               = 0x20000000,
+    PLAYER_FLAG_UNK13               = 0x40000000,
+    PLAYER_FLAG_UNK14               = 0x80000000
 };
 
 enum CustomizeFlags
