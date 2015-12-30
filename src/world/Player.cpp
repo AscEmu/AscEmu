@@ -5822,19 +5822,31 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
         {
             Unit* uObj = static_cast< Unit* >(obj);
 
-            if (uObj->IsSpiritHealer())  // can't see spirit-healers when alive
+            // can't see spirit-healers when alive
+            if (uObj->IsSpiritHealer())
                 return false;
 
             // always see our units
             if (GetGUID() == uObj->GetCreatedByGUID())
                 return true;
 
-            if (uObj->m_invisible  // Invisibility - Detection of Units
+            // unit is invisible
+            if (uObj->m_invisible)
+            {
+                // gms can see invisible units
+                /// \todo is invis detection missing here?
+                if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+                    return true;
+                else
+                    return false;
+            }
+
+            /*if (uObj->m_invisible  // Invisibility - Detection of Units
                 && m_invisDetect[uObj->m_invisFlag] < 1) // can't see invisible without proper detection
                 return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see invisible units
 
             if (m_invisible && uObj->m_invisDetect[m_invisFlag] < 1)   // Invisible - can see those that detect, but not others
-                return m_isGmInvisible;
+                return m_isGmInvisible;*/
 
             return true;
         }
