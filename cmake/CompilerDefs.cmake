@@ -37,6 +37,8 @@ if(CMAKE_GENERATOR MATCHES Visual*)
    set(GLOBAL_DEFINES ${GLOBAL_DEFINES} "/bigobj")
 endif()
 
+IS_ARCH_64BIT()
+
 #check platform version.
 if(IS_64BIT)
 	set(GLOBAL_DEFINES ${GLOBAL_DEFINES} -"DX64")
