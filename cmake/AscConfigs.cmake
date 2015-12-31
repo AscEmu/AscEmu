@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-#set path for our configs
+#set path to our config files
 if(WIN32)
    set(ASCEMU_CONFIGSFILE_PATH configs CACHE PATH "Path to AscEmu configs.")
 else()
@@ -12,5 +12,5 @@ set(BUILD_ASCEMUSCRIPTS TRUE CACHE BOOL "Build AscEmu modules.")
 set(BUILD_TOOLS TRUE CACHE BOOL "Build AscEmu tools.")
 set(BUILD_EXTRAS FALSE CACHE BOOL "Build AscEmu extra.")
 
-#Compiler heap limit.
+#set compiler heap limit.
 set(VISUALSTUDIO_COMPILERHEAPLIMIT 460 CACHE STRING "Visual Studio compiler heap limit. Ignore on darwin and unix platforms.")
