@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 file(GLOB libmpq_sources libmpq/*.c libmpq/*.h)
 project(libmpq)

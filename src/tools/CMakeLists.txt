@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 #set tool path
 set(ASCEMU_TOOLS_PATH "tools" CACHE PATH "The directory where you want the tools installed.")
