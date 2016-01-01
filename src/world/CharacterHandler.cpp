@@ -460,7 +460,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         if (result->Fetch()[0].GetUInt32() > 0)
         {
             // That name is banned!
-            OutPacket(SMSG_CHAR_CREATE, 1, CHAR_NAME_PROFANE);
+            LoginErrorCode login_error = E_CHAR_NAME_PROFANE;
+
+            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
             delete result;
             return;
         }
@@ -468,10 +470,10 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     // Check if player got Death Knight already on this realm.
-    if (Config.OptionalConfig.GetBoolDefault("ClassOptions" , "DeathKnightLimit" , true) && has_dk
-            && (class_ == DEATHKNIGHT))
+    if (Config.OptionalConfig.GetBoolDefault("ClassOptions" , "DeathKnightLimit" , true) && has_dk && (class_ == DEATHKNIGHT))
     {
-        OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_UNIQUE_CLASS_LIMIT);
+        LoginErrorCode login_error = E_CHAR_CREATE_UNIQUE_CLASS_LIMIT;
+        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
         return;
     }
 
@@ -486,7 +488,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         if (result->Fetch()[0].GetUInt32() >= 10)
         {
             // We can't make any more characters.
-            OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_SERVER_LIMIT);
+            LoginErrorCode login_error = E_CHAR_CREATE_SERVER_LIMIT;
+            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
             delete result;
             return;
         }
@@ -500,7 +503,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         // failed.
         pNewChar->ok_to_remove = true;
         delete pNewChar;
-        OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_FAILED);
+
+        LoginErrorCode login_error = E_CHAR_CREATE_FAILED;
+        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
         return;
     }
 
@@ -512,7 +517,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         {
             pNewChar->ok_to_remove = true;
             delete pNewChar;
-            OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_PVP_TEAMS_VIOLATION);
+
+            LoginErrorCode login_error = E_CHAR_CREATE_PVP_TEAMS_VIOLATION;
+            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
             return;
         }
     }
@@ -525,7 +532,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         pNewChar->ok_to_remove = true;
         delete pNewChar;
 
-        OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_LEVEL_REQUIREMENT);
+        LoginErrorCode login_error = E_CHAR_CREATE_LEVEL_REQUIREMENT;
+        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
         return;
     }
 
@@ -571,7 +579,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     pNewChar->ok_to_remove = true;
     delete  pNewChar;
 
-    OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_SUCCESS);
+    LoginErrorCode login_error = E_CHAR_CREATE_SUCCESS;
+    OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
 
     sLogonCommHandler.UpdateAccountCount(GetAccountId(), 1);
 }
