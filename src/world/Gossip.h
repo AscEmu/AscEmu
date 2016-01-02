@@ -285,10 +285,6 @@ namespace Arcemu
     namespace Gossip
     {
         using namespace Arcemu;
-        const unsigned DEFAULT_TXTINDEX = 2;
-        const unsigned TRAINER_TALENTRESET_LVLIMIT = 10;    /// minimum
-        const unsigned PLAYER_TALENTRESET_LVLIMIT = 10;
-        const unsigned PLAYER_DUALTALENT_LVLIMIT = 40;
 
         enum ws
         {

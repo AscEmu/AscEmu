@@ -45,4 +45,7 @@ enum GossipIcons
     GOSSIP_ICON_MAX = 21
 };
 
+const unsigned TrainerTalentResetMinLevel = 10;
+const unsigned DefaultGossipTextId = 2;
+
 #endif  //_GOSSIP_DEFINES_HPP
