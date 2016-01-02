@@ -913,29 +913,35 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
             return;
         }
 
+        // Handle logging out for players
+        if (GetPermissionCount() == 0)
+        {
+            // Never instant logout for players while in combat or duelling
+            if (pPlayer->CombatStatus.IsInCombat() || pPlayer->DuelingWith != NULL)
+            {
+                data << uint32(1);
+                data << uint8(0);
+                SendPacket(&data);
+                return;
+            }
+
+            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || sWorld.m_InstantLogout == 2)
+            {
+                //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
+                SetLogoutTimer(1);
+                return;
+            }
+        }
         if (GetPermissionCount() > 0)
         {
-            //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
-            SetLogoutTimer(1);
-            return;
+            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || sWorld.m_InstantLogout > 0)
+            {
+                //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
+                SetLogoutTimer(1);
+                return;
+            }
         }
 
-        if (pPlayer->CombatStatus.IsInCombat() ||	//can't quit still in combat
-            pPlayer->DuelingWith != NULL)			//can't quit still dueling or attacking
-        {
-            data << uint32(1);
-            data << uint8(0);
-            SendPacket(&data);
-            return;
-        }
-
-        if (pPlayer->m_isResting ||	  // We are resting so log out instantly
-            pPlayer->GetTaxiState())  // or we are on a taxi
-        {
-            //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
-            SetLogoutTimer(1);
-            return;
-        }
 
         data << uint32(0); //Filler
         data << uint8(0); //Logout accepted
