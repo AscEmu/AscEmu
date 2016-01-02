@@ -12,6 +12,8 @@ set(prefix ${SCRIPTS_PATH}/InstanceScripts)
 
 #sources -contains source files for our library.
 set(sources
+	HeroicMode.cpp
+	Instance_Ahnkahet.cpp
     Instance_Arcatraz.cpp 
     Instance_AuchenaiCrypts.cpp 
     Instance_AzjolNerub.cpp 
