@@ -580,4 +580,17 @@ const time_t forcedResurrectInterval = 360000;  // 1000*60*6= 6 minutes
 #define PLAYER_RATING_MODIFIER_EXPERTISE                        PLAYER_FIELD_COMBAT_RATING_1+23
 #define PLAYER_RATING_MODIFIER_ARMOR_PENETRATION_RATING         PLAYER_FIELD_COMBAT_RATING_1+24
 
+enum PlayerCheats
+{
+    PLAYER_CHEAT_NONE           = 0x00,
+    PLAYER_CHEAT_COOLDOWN       = 0x01,
+    PLAYER_CHEAT_CAST_TIME      = 0x02,
+    PLAYER_CHEAT_GOD_MODE       = 0x04,
+    PLAYER_CHEAT_POWER          = 0x08,
+    PLAYER_CHEAT_FLY            = 0x10,
+    PLAYER_CHEAT_AURA_STACK     = 0x20,
+    PLAYER_CHEAT_ITEM_STACK     = 0x40,
+    PLAYER_CHEAT_TRIGGERPASS    = 0x80
+};
+
 #endif // _PLAYER_DEFINES_H

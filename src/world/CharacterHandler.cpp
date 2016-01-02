@@ -1045,7 +1045,7 @@ void WorldSession::FullLogin(Player* plr)
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
-    if (plr->m_FirstLogin)
+    if (plr->m_FirstLogin && !sWorld.m_SkipCinematics)
     {
         uint32 introid = plr->info->introid;
 
