@@ -25,7 +25,7 @@ using namespace Arcemu;
 
 Gossip::Item::Item(size_t itemid, uint8 icon)
 {
-    id_ = (uint16)itemid;
+    id_ = uint16(itemid);
     icon_ = icon;
     text_ = "";
     boxmessage_ = "";
@@ -35,7 +35,7 @@ Gossip::Item::Item(size_t itemid, uint8 icon)
 
 Gossip::Item::Item(size_t itemid, uint8 icon, const char* text, bool coded/*= false*/, size_t boxmoney/*=0*/, const char* boxmessage/*=NULL*/)
 {
-    id_ = (uint16)itemid;
+    id_ = uint16(itemid);
     icon_ = icon;
     text_ = (text != NULL) ? text : "";
     coded_ = coded;
@@ -45,7 +45,12 @@ Gossip::Item::Item(size_t itemid, uint8 icon, const char* text, bool coded/*= fa
 
 WorldPacket& operator<<(WorldPacket& packet, const Gossip::Item & item)
 {
-    packet << uint32(item.id_) << item.icon_ << item.coded_ << item.boxmoney_ << item.text_ << item.boxmessage_;
+    packet << uint32(item.id_);
+    packet << item.icon_;
+    packet << item.coded_;
+    packet << item.boxmoney_;
+    packet << item.text_;
+    packet << item.boxmessage_;
     return packet;
 }
 
