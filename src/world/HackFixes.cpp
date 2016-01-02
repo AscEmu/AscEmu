@@ -3531,6 +3531,18 @@ void ApplyNormalFixes()
     // SHAMAN                                //
     //////////////////////////////////////////
 
+	//Windfury Weapon
+	sp = dbcSpell.LookupEntryForced(33757);
+	if (sp != NULL)
+	{
+		sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+		sp->procFlags = PROC_ON_MELEE_ATTACK;
+		sp->EffectTriggerSpell[0] = 33750;
+		sp->procChance = 20;
+		sp->proc_interval = 3000;
+		sp->maxstack = 1;
+	}
+
     // Insert shaman spell fixes here
     //shaman - Healing Way
     sp = CheckAndReturnSpellEntry(29202);
