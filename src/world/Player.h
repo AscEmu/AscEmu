@@ -1345,19 +1345,25 @@ class SERVER_DECL Player : public Unit
         uint32 GetArmorProficiency() { return armor_proficiency; }
         uint32 GetWeaponProficiency() { return weapon_proficiency; }
 
-        void SpeedCheatDelay(uint32 ms_delay);
-        void SpeedCheatReset();
-
         void AddSplinePacket(uint64 guid, ByteBuffer* packet);
         ByteBuffer* GetAndRemoveSplinePacket(uint64 guid);
         void ClearSplinePackets();
         bool ExitInstance();
         void SaveEntryPoint(uint32 mapId);
+
+        // Cheat section
+        void SpeedCheatDelay(uint32 ms_delay);
+        void SpeedCheatReset();
+
         bool CooldownCheat;
         bool CastTimeCheat;
         bool GodModeCheat;
         bool PowerCheat;
         bool FlyCheat;
+        bool ItemStackCheat;
+        bool AuraStackCheat;
+        bool TriggerpassCheat;
+
         void ZoneUpdate(uint32 ZoneId);
         void UpdateChannels(uint16 AreaID);
         uint32 GetAreaID() { return m_AreaID; }
@@ -1437,9 +1443,7 @@ class SERVER_DECL Player : public Unit
         DBC::Structures::ChrRacesEntry const* myRace;
         DBC::Structures::ChrClassesEntry const* myClass;
         Creature* linkTarget;
-        bool ItemStackCheat;
-        bool AuraStackCheat;
-        bool TriggerpassCheat;
+        
         bool SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O);
         bool SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec);
         void SafeTeleport(MapMgr* mgr, const LocationVector & vec);
