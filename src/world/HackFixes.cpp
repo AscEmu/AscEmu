@@ -7404,4 +7404,16 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
         sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
     }
+
+    // Windfury (Enhancement)
+    sp = dbcSpell.LookupEntryForced(33757);
+    if (sp != NULL)
+    {
+        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;
+        sp->EffectTriggerSpell[0] = 33750;
+        sp->procChance = 20;
+        sp->proc_interval = 3000;
+        sp->maxstack = 1;
+    }
 }

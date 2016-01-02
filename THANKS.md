@@ -13,6 +13,7 @@ Not everyone can handle this source (or can invest so much effort) so these
 people are awsome:
 - armm77
 - aaron02
+- Cronicman
 - DankoDj
 - Evairfairy
 - master312
