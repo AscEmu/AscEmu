@@ -50,7 +50,7 @@ public:
 	{
 		Emote("Shgla'yos plahf mh'naus.", Text_Yell, 14043);
 		AchievementTimer = AddTimer(120000);
-		AchievementStatus == true;
+		AchievementStatus = true;
 		ParentClass::OnCombatStart(mTarget);
 	}
 
