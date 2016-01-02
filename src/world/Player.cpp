@@ -2919,21 +2919,21 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // Load active cheats
     uint32 active_cheats = get_next_field.GetUInt32();
-    if (active_cheats & 0x01)
+    if (active_cheats & PLAYER_CHEAT_COOLDOWN)
         CooldownCheat = true;
-    if (active_cheats & 0x02)
+    if (active_cheats & PLAYER_CHEAT_CAST_TIME)
         CastTimeCheat = true;
-    if (active_cheats & 0x04)
+    if (active_cheats & PLAYER_CHEAT_GOD_MODE)
         GodModeCheat = true;
-    if (active_cheats & 0x08)
+    if (active_cheats & PLAYER_CHEAT_POWER)
         PowerCheat = true;
-    if (active_cheats & 0x10)
+    if (active_cheats & PLAYER_CHEAT_FLY)
         FlyCheat = true;
-    if (active_cheats & 0x20)
+    if (active_cheats & PLAYER_CHEAT_AURA_STACK)
         AuraStackCheat = true;
-    if (active_cheats & 0x40)
+    if (active_cheats & PLAYER_CHEAT_ITEM_STACK)
         ItemStackCheat = true;
-    if (active_cheats & 0x80)
+    if (active_cheats & PLAYER_CHEAT_TRIGGERPASS)
         TriggerpassCheat = true;
 
     // Process exploration data.
