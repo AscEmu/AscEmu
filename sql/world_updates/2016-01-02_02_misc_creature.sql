@@ -6,7 +6,7 @@ UPDATE `creature_proto` SET `maxhealth`=4104 WHERE `entry`=16817;
 --
 -- Update Festival Talespinner Horde
 --
-UPDATE `creature_proto` SET `minhealth`=3052 `maxhealth`=4104 WHERE `entry`=16818;
+UPDATE `creature_proto` SET `minhealth`=3052, `maxhealth`=4104 WHERE `entry`=16818;
 
 --
 -- Update Thrallmar Wolf Rider
