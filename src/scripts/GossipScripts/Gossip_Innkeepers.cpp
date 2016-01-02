@@ -59,7 +59,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
 
 
     if (pCreature->isVendor())
-        menu.AddItem(Arcemu::Gossip::ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1);
+        menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1);
 
     menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 2);
     menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPERASK), 3);
