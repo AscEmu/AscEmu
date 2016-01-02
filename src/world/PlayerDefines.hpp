@@ -293,6 +293,7 @@ enum Standing
 
 enum PlayerFlags
 {
+    PLAYER_FLAG_PARTY_NONE          = 0x00000000,
     PLAYER_FLAG_PARTY_LEADER        = 0x00000001,
     PLAYER_FLAG_AFK                 = 0x00000002,
     PLAYER_FLAG_DND                 = 0x00000004,
@@ -371,7 +372,7 @@ enum CharterTypes
     CHARTER_TYPE_ARENA_2V2        = 1,
     CHARTER_TYPE_ARENA_3V3        = 2,
     CHARTER_TYPE_ARENA_5V5        = 3,
-    NUM_CHARTER_TYPES             = 4,
+    NUM_CHARTER_TYPES             = 4
 };
 
 enum ArenaTeamTypes
@@ -379,14 +380,14 @@ enum ArenaTeamTypes
     ARENA_TEAM_TYPE_2V2            = 0,
     ARENA_TEAM_TYPE_3V3            = 1,
     ARENA_TEAM_TYPE_5V5            = 2,
-    NUM_ARENA_TEAM_TYPES           = 3,
+    NUM_ARENA_TEAM_TYPES           = 3
 };
 
 enum CooldownTypes
 {
     COOLDOWN_TYPE_SPELL            = 0,
     COOLDOWN_TYPE_CATEGORY         = 1,
-    NUM_COOLDOWN_TYPES,
+    NUM_COOLDOWN_TYPES
 };
 
 ///\todo are the values really ignored by client?
@@ -468,20 +469,20 @@ enum DrunkenState
 */
 
 static const uint32 TalentTreesPerClass[DRUID + 1][3] =
-        {
-                { 0, 0, 0 },        // NONE
-                { 161, 163, 164 },  // WARRIOR
-                { 382, 383, 381 },  // PALADIN
-                { 361, 363, 362 },  // HUNTER
-                { 182, 181, 183 },  // ROGUE
-                { 201, 202, 203 },  // PRIEST
-                { 398, 399, 400 },  // DEATH KNIGHT
-                { 261, 263, 262 },  // SHAMAN
-                { 81, 41, 61 },     // MAGE
-                { 302, 303, 301 },  // WARLOCK
-                { 0, 0, 0 },        // NONE
-                { 283, 281, 282 },  // DRUID
-        };
+{
+        { 0, 0, 0 },        // NONE
+        { 161, 163, 164 },  // WARRIOR
+        { 382, 383, 381 },  // PALADIN
+        { 361, 363, 362 },  // HUNTER
+        { 182, 181, 183 },  // ROGUE
+        { 201, 202, 203 },  // PRIEST
+        { 398, 399, 400 },  // DEATH KNIGHT
+        { 261, 263, 262 },  // SHAMAN
+        { 81, 41, 61 },     // MAGE
+        { 302, 303, 301 },  // WARLOCK
+        { 0, 0, 0 },        // NONE
+        { 283, 281, 282 },  // DRUID
+};
 
 
 enum RestState
@@ -522,7 +523,7 @@ enum TradeStatus
     TRADE_STATUS_FAILED             = 0x0C,
     TRADE_STATUS_DEAD               = 0x0D,
     TRADE_STATUS_PETITION           = 0x0E,
-    TRADE_STATUS_PLAYER_IGNORED     = 0x0F,
+    TRADE_STATUS_PLAYER_IGNORED     = 0x0F
 };
 
 enum TradeData
