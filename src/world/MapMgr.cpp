@@ -2021,6 +2021,19 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
     }
 }
 
+void MapMgr::SendAchievementToAllPlayers(int32 AchID) // This will send all players on the targets AI list the achievement if they met the criteria.
+{
+	for (PlayerStorageMap::const_iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
+	{
+		Player* p = itr->second;
+
+		if (p == NULL || p->GetAchievementMgr().HasCompleted(AchID))
+			return;
+
+		p->GetAchievementMgr().GMCompleteAchievement(NULL, AchID);
+	}
+}
+
 void MapMgr::SendPacketToAllPlayers(WorldPacket *packet) const
 {
     for (PlayerStorageMap::const_iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
