@@ -1,5 +1,5 @@
 /********************************************************
-*				FrostwingCore Scripts					*
+*				AscEmu scripts by Cronic					*
 *	|													*
 *	V			Ahn'kahet: The Old Kingdom				*
 *														*
