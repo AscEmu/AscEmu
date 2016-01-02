@@ -293,7 +293,7 @@ enum Standing
 
 enum PlayerFlags
 {
-    PLAYER_FLAG_PARTY_NONE          = 0x00000000,
+    PLAYER_FLAG_NONE                = 0x00000000,
     PLAYER_FLAG_PARTY_LEADER        = 0x00000001,
     PLAYER_FLAG_AFK                 = 0x00000002,
     PLAYER_FLAG_DND                 = 0x00000004,
