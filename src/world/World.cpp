@@ -503,6 +503,7 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
     MAKE_TASK(ObjectMgr, LoadItemsetLink);
+    MAKE_TASK(ObjectMgr, LoadCreatureProtoDifficulty);
 
 
 #ifdef ENABLE_ACHIEVEMENTS

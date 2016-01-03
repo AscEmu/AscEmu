@@ -1677,6 +1677,7 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
     SetFaction(proto->Faction);
     SetBoundingRadius(proto->BoundingRadius);
     SetCombatReach(proto->CombatReach);
+
     original_emotestate = 0;
 
     // set position
@@ -1866,6 +1867,8 @@ void Creature::OnPushToWorld()
         }
 
     }
+
+    GetAIInterface()->SetCreatureProtoDifficulty(proto->Id);
 
     if (mEvent != nullptr)
     {

@@ -4108,3 +4108,61 @@ uint32 ObjectMgr::GetGroupedSetBonus(int32 itemset)
     else
         return itr->second;
 }
+
+void ObjectMgr::LoadCreatureProtoDifficulty()
+{
+    Log.Notice("ObjectMgr", "Loading creature_proto_difficulty...");
+
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_proto_difficulty;");
+
+    if (result != nullptr)
+    {
+        uint32 count = 0;
+        do
+        {
+            Field* row = result->Fetch();
+            CreatureProtoDifficulty* creature_proto_difficulty = new CreatureProtoDifficulty;
+            uint32 creature_entry = row[0].GetUInt32();
+            uint32 difficulty_type = row[1].GetUInt32();
+
+            creature_proto_difficulty->Id = row[0].GetUInt32();
+            creature_proto_difficulty->difficulty_type = row[1].GetUInt32();
+            creature_proto_difficulty->MinLevel = row[2].GetUInt32();
+            creature_proto_difficulty->MaxLevel = row[3].GetUInt32();
+            creature_proto_difficulty->MinHealth = row[5].GetUInt32();
+            creature_proto_difficulty->MaxHealth = row[6].GetUInt32();
+            creature_proto_difficulty->Mana = row[7].GetUInt32();
+            creature_proto_difficulty->MinDamage = row[12].GetUInt32();
+            creature_proto_difficulty->MaxDamage = row[13].GetUInt32();
+
+            std::pair<uint32, uint32> proto_identifier;
+            proto_identifier.first = creature_entry;
+            proto_identifier.second = difficulty_type;
+
+            Log.Notice("ObjectMgr", "loaded creature proto difficulty for creature %u", creature_entry);
+
+            m_creatureProtoDifficulty.insert(CreatureProtoDifficultyMap::value_type(proto_identifier, creature_proto_difficulty));
+
+            ++count;
+
+        } while (result->NextRow());
+        delete result;
+
+        Log.Success("ObjectMgr", "Loaded  %u creature proto difficulties", count);
+    }
+    else
+    {
+        Log.Error("ObjectMgr", "Failed to load from creature_proto_difficulty.");
+    }
+}
+
+CreatureProtoDifficulty* ObjectMgr::GetCreatureProtoDifficulty(uint32 creature_entry, uint32 difficulty_type)
+{
+    for (auto itr = m_creatureProtoDifficulty.begin(); itr != m_creatureProtoDifficulty.end(); ++itr)
+    {
+        if (itr->first.first == creature_entry && itr->first.second == difficulty_type)
+            return itr->second;
+    }
+
+    return nullptr;
+}

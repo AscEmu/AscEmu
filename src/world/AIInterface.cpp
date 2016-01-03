@@ -4698,3 +4698,46 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
     m_currentMoveSpline.clear();
     m_Unit->SetPosition(x, y, z, o);
 }
+
+void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
+{
+    uint32 difficulty_type = 0;  // standard MODE_NORMAL / MODE_NORMAL_10MEN
+
+    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, m_Unit->GetInstanceID());
+    if (instance != nullptr)
+        difficulty_type = instance->m_difficulty;
+
+    if (difficulty_type != 0)
+    {
+        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(entry, difficulty_type);
+        if (proto_difficulty != nullptr)
+        {
+            if (proto_difficulty->MinHealth != 0 && proto_difficulty->MaxHealth != 0)
+            {
+                uint32 health = proto_difficulty->MinHealth + RandomUInt(proto_difficulty->MaxHealth - proto_difficulty->MinHealth);
+
+                m_Unit->SetHealth(health);
+                m_Unit->SetMaxHealth(health);
+                m_Unit->SetBaseHealth(health);
+            }
+
+            if (proto_difficulty->Mana != 0)
+            {
+                m_Unit->SetMaxPower(POWER_TYPE_MANA, proto_difficulty->Mana);
+                m_Unit->SetBaseMana(proto_difficulty->Mana);
+                m_Unit->SetPower(POWER_TYPE_MANA, proto_difficulty->Mana);
+            }
+
+            if (proto_difficulty->MinLevel != 0 && proto_difficulty->MaxLevel != 0)
+            {
+                m_Unit->setLevel(proto_difficulty->MinLevel + (RandomUInt(proto_difficulty->MaxLevel - proto_difficulty->MinLevel)));
+            }
+
+            if (proto_difficulty->MinDamage != 0 && proto_difficulty->MaxDamage != 0)
+            {
+                m_Unit->SetMinDamage(proto_difficulty->MinDamage);
+                m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
+            }
+        }
+    }
+}

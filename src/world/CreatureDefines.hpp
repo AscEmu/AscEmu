@@ -391,4 +391,60 @@ struct PetSpellCooldown
     int32 cooldown;
 };
 
+struct CreatureProtoDifficulty
+{
+    uint32 Id;
+    uint32 difficulty_type;
+    uint32 MinLevel;
+    uint32 MaxLevel;
+    uint32 Faction;
+    uint32 MinHealth;
+    uint32 MaxHealth;
+    uint32 Mana;
+    float Scale;
+    uint32 NPCFLags;
+    uint32 AttackTime;
+    uint32 AttackType;
+    float MinDamage;
+    float MaxDamage;
+    uint32 CanRanged;
+    uint32 RangedAttackTime;
+    float RangedMinDamage;
+    float RangedMaxDamage;
+    uint32 RespawnTime;
+    uint32 Resistances[SCHOOL_COUNT];
+    float CombatReach;
+    float BoundingRadius;
+    char* aura_string;
+    uint32 boss;
+    uint32 money;
+    uint32 invisibility_type;
+    float walk_speed;       /// base movement
+    float run_speed;        /// most of the time mobs use this
+    float fly_speed;
+    uint32 extra_a9_flags;
+    uint32 AISpells[creatureMaxProtoSpells];
+    uint32 AISpellsFlags;
+    uint32 modImmunities;
+    uint32 isTrainingDummy;
+    uint32 guardtype;
+    uint32 summonguard;
+    uint32 spelldataid;
+    uint32 vehicleid;
+    uint32 rooted;
+
+    // AI Stuff
+    bool m_canRangedAttack;
+    bool m_canFlee;
+    float m_fleeHealth;
+    uint32 m_fleeDuration;
+    bool m_canCallForHelp;
+    float m_callForHelpHealth;
+
+    std::set<uint32> start_auras;
+    std::vector<uint32> castable_spells;
+    std::list<AI_Spell*> spells;
+};
+
+
 #endif // _CREATURE_DEFINES_HPP
