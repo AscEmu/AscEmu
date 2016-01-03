@@ -432,18 +432,6 @@ struct CreatureProtoDifficulty
     uint32 spelldataid;
     uint32 vehicleid;
     bool isRooted;
-
-    // AI Stuff
-    bool m_canRangedAttack;
-    bool m_canFlee;
-    float m_fleeHealth;
-    uint32 m_fleeDuration;
-    bool m_canCallForHelp;
-    float m_callForHelpHealth;
-
-    std::set<uint32> start_auras;
-    std::vector<uint32> castable_spells;
-    std::list<AI_Spell*> spells;
 };
 
 
