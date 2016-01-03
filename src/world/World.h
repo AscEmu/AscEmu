@@ -749,6 +749,13 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 m_MinTalentResetLevel;
         std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> m_WMOAreaTableTripples;
 
+        //CorpseDecaySettings
+        uint32 m_DecayNormal;
+        uint32 m_DecayRare;
+        uint32 m_DecayElite;
+        uint32 m_DecayRareElite;
+        uint32 m_DecayWorldboss;
+
         // Gold Cap
         bool GoldCapEnabled;
         uint32 GoldLimit;

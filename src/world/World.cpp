@@ -118,6 +118,12 @@ World::World()
     m_MinDualSpecLevel = 40;
     m_MinTalentResetLevel = 10;
 
+    m_DecayNormal = 60000;
+    m_DecayRare = 300000;
+    m_DecayElite = 300000;
+    m_DecayRareElite = 300000;
+    m_DecayWorldboss = 3600000;
+
     GoldCapEnabled = true;
     GoldLimit = 214748;
     GoldStartAmount = 0;
@@ -1518,6 +1524,13 @@ void World::Rehash(bool load)
     m_InstantLogout = Config.OptionalConfig.GetIntDefault("Optional", "InstantLogout", 1);
     m_MinDualSpecLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinDualSpecLevel", 40);
     m_MinTalentResetLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinTalentResetLevel", 10);
+
+    //CorpseDecaySettings
+    m_DecayNormal = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayNormal", 60)));
+    m_DecayRare = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRare", 300)));
+    m_DecayElite = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayElite", 300)));
+    m_DecayRareElite = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
+    m_DecayWorldboss = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
 
     // Max Gold Settings
     GoldCapEnabled = Config.OptionalConfig.GetBoolDefault("GoldSettings", "EnableGoldCap", true);
