@@ -512,7 +512,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                              BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                  SpellTargetConstraintMap;
-        typedef std::map<std::pair<uint32, uint32>, CreatureProtoDifficulty*>               CreatureProtoDifficultyMap;
+        typedef std::map<std::pair<uint32, uint8>, CreatureProtoDifficulty*>               CreatureProtoDifficultyMap;
 
         // object holders
         GmTicketList GM_TicketList;

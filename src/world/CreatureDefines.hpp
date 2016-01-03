@@ -165,7 +165,7 @@ struct CreatureProto
     float CombatReach;
     float BoundingRadius;
     char* aura_string;
-    uint32 boss;
+    bool isBoss;
     uint32 money;
     uint32 invisibility_type;
     float walk_speed;       /// base movement
@@ -175,12 +175,12 @@ struct CreatureProto
     uint32 AISpells[creatureMaxProtoSpells];
     uint32 AISpellsFlags;
     uint32 modImmunities;
-    uint32 isTrainingDummy;
+    bool isTrainingDummy;
     uint32 guardtype;
     uint32 summonguard;
     uint32 spelldataid;
     uint32 vehicleid;
-    uint32 rooted;
+    bool rooted;
 
     // AI Stuff
     bool m_canRangedAttack;
@@ -394,7 +394,7 @@ struct PetSpellCooldown
 struct CreatureProtoDifficulty
 {
     uint32 Id;
-    uint32 difficulty_type;
+    uint8 difficulty_type;
     uint32 MinLevel;
     uint32 MaxLevel;
     uint32 Faction;
@@ -416,7 +416,7 @@ struct CreatureProtoDifficulty
     float CombatReach;
     float BoundingRadius;
     char* aura_string;
-    uint32 boss;
+    bool isBoss;
     uint32 money;
     uint32 invisibility_type;
     float walk_speed;       /// base movement
@@ -426,12 +426,12 @@ struct CreatureProtoDifficulty
     uint32 AISpells[creatureMaxProtoSpells];
     uint32 AISpellsFlags;
     uint32 modImmunities;
-    uint32 isTrainingDummy;
+    bool isTrainingDummy;
     uint32 guardtype;
     uint32 summonguard;
     uint32 spelldataid;
     uint32 vehicleid;
-    uint32 rooted;
+    bool isRooted;
 
     // AI Stuff
     bool m_canRangedAttack;

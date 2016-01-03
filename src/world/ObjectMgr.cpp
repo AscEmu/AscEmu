@@ -3239,7 +3239,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
         return false;
 
     is_boss = false;//TO< Creature* >(pVictim)->GetCreatureInfo() ? ((Creature*)pVictim)->GetCreatureInfo()->Rank : 0;
-    if (static_cast< Creature* >(pVictim)->GetProto()->boss)
+    if (static_cast< Creature* >(pVictim)->GetProto()->isBoss)
         is_boss = true;
 
     // Apply the bonuses as normal.
@@ -4126,7 +4126,7 @@ void ObjectMgr::LoadCreatureProtoDifficulty()
             uint32 difficulty_type = row[1].GetUInt32();
 
             creature_proto_difficulty->Id = row[0].GetUInt32();
-            creature_proto_difficulty->difficulty_type = row[1].GetUInt32();
+            creature_proto_difficulty->difficulty_type = row[1].GetUInt8();
             creature_proto_difficulty->MinLevel = row[2].GetUInt32();
             creature_proto_difficulty->MaxLevel = row[3].GetUInt32();
             creature_proto_difficulty->MinHealth = row[5].GetUInt32();
@@ -4135,7 +4135,7 @@ void ObjectMgr::LoadCreatureProtoDifficulty()
             creature_proto_difficulty->MinDamage = row[12].GetUInt32();
             creature_proto_difficulty->MaxDamage = row[13].GetUInt32();
 
-            std::pair<uint32, uint32> proto_identifier;
+            std::pair<uint32, uint8> proto_identifier;
             proto_identifier.first = creature_entry;
             proto_identifier.second = difficulty_type;
 

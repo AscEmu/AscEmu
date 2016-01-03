@@ -2597,7 +2597,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << m_killsToday << ", " << m_killsYesterday << ", " << m_killsLifetime << ", ";
     ss << m_honorToday << ", " << m_honorYesterday << ", ";
     ss << m_honorPoints << ", ";
-    ss << iInstanceType << ", ";
+    ss << uint32(iInstanceType) << ", ";
 
     ss << (m_uint32Values[PLAYER_BYTES_3] & 0xFFFE) << ", ";
 
@@ -3588,7 +3588,7 @@ void Player::SetPersistentInstanceId(Instance* pInstance)
     LOG_DEBUG("Added player %u to saved instance %u on map %u.", (uint32)GetGUID(), pInstance->m_instanceId, pInstance->m_mapId);
 }
 
-void Player::SetPersistentInstanceId(uint32 mapId, uint32 difficulty, uint32 instanceId)
+void Player::SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId)
 {
     if (mapId >= NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == NULL)
         return;
@@ -12400,22 +12400,22 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
     }
 }
 
-void Player::SetDungeonDifficulty(uint32 diff)
+void Player::SetDungeonDifficulty(uint8 diff)
 {
     iInstanceType = diff;
 }
 
-uint32 Player::GetDungeonDifficulty()
+uint8 Player::GetDungeonDifficulty()
 {
     return iInstanceType;
 }
 
-void Player::SetRaidDifficulty(uint32 diff)
+void Player::SetRaidDifficulty(uint8 diff)
 {
     m_RaidDifficulty = diff;
 }
 
-uint32 Player::GetRaidDifficulty()
+uint8 Player::GetRaidDifficulty()
 {
     return m_RaidDifficulty;
 }

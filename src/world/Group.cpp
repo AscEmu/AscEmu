@@ -372,7 +372,9 @@ void SubGroup::Disband()
 {
     WorldPacket data(SMSG_GROUP_DESTROYED, 1);
     WorldPacket data2(SMSG_PARTY_COMMAND_RESULT, 12);
-    data2 << uint32(2) << uint8(0) << uint32(m_Parent->m_difficulty);	// you leave the group
+    data2 << uint32(2);
+    data2 << uint8(0);
+    data2 << uint32(m_Parent->m_difficulty);	// you leave the group
 
     GroupMembersSet::iterator itr = m_GroupMembers.begin();
     GroupMembersSet::iterator it2;
@@ -1212,9 +1214,9 @@ void Group::SetAssistantLeader(PlayerInfo* pMember)
     Update();
 }
 
-void Group::SetDungeonDifficulty(uint32 diff)
+void Group::SetDungeonDifficulty(uint8 diff)
 {
-    m_difficulty = static_cast<uint8>(diff);
+    m_difficulty = diff;
 
     Lock();
     for (uint8 i = 0; i < GetSubGroupCount(); ++i)
@@ -1231,9 +1233,9 @@ void Group::SetDungeonDifficulty(uint32 diff)
     Unlock();
 }
 
-void Group::SetRaidDifficulty(uint32 diff)
+void Group::SetRaidDifficulty(uint8 diff)
 {
-    m_raiddifficulty = static_cast< uint8 >(diff);
+    m_raiddifficulty = diff;
 
     Lock();
 

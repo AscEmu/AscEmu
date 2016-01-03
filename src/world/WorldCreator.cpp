@@ -334,7 +334,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
             if (pGroup != NULL) // we are in a group
             {
 
-                uint32 grpdiff;
+                uint8 grpdiff;
 
                 // We want to use the raid difficulty for raids, and dungeon difficulty for dungeons
                 if (inf->type == INSTANCE_RAID)
@@ -861,7 +861,7 @@ void Instance::LoadFromDB(Field* fields)
     m_mapId = fields[1].GetUInt32();
     m_creation = fields[2].GetUInt32();
     m_expiration = fields[3].GetUInt32();
-    m_difficulty = fields[5].GetUInt32();
+    m_difficulty = fields[5].GetUInt8();
     m_creatorGroup = fields[6].GetUInt32();
     m_creatorGuid = fields[7].GetUInt32();
     m_persistent = fields[8].GetBool();

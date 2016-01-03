@@ -4701,7 +4701,7 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
 
 void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 {
-    uint32 difficulty_type = 0;  // standard MODE_NORMAL / MODE_NORMAL_10MEN
+    uint8 difficulty_type = 0;  // standard MODE_NORMAL / MODE_NORMAL_10MEN
 
     Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, m_Unit->GetInstanceID());
     if (instance != nullptr)

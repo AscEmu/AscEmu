@@ -1371,7 +1371,7 @@ class SERVER_DECL Player : public Unit
         bool IsInCity();
 
         // Instance IDs
-        uint32 GetPersistentInstanceId(uint32 mapId, uint32 difficulty)
+        uint32 GetPersistentInstanceId(uint32 mapId, uint8 difficulty)
         {
             if (mapId >= NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == NULL)
                 return 0;
@@ -1388,7 +1388,7 @@ class SERVER_DECL Player : public Unit
 
         void SetPersistentInstanceId(Instance* pInstance);
         //Use this method carefully..
-        void SetPersistentInstanceId(uint32 mapId, uint32 difficulty, uint32 instanceId);
+        void SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId);
 
         void SendAchievmentStatus(uint32 criteriaid, uint32 new_value, uint32 at_stamp);
         void SendTriggerMovie(uint32 movieID);
@@ -1450,11 +1450,11 @@ class SERVER_DECL Player : public Unit
         void EjectFromInstance();
         bool raidgrouponlysent;
 
-        void SetDungeonDifficulty(uint32 diff);
-        uint32 GetDungeonDifficulty();
+        void SetDungeonDifficulty(uint8 diff);
+        uint8 GetDungeonDifficulty();
 
-        void SetRaidDifficulty(uint32 diff);
-        uint32 GetRaidDifficulty();
+        void SetRaidDifficulty(uint8 diff);
+        uint8 GetRaidDifficulty();
 
         void EventSafeTeleport(uint32 MapID, uint32 InstanceID, LocationVector vec)
         {
@@ -1656,7 +1656,7 @@ class SERVER_DECL Player : public Unit
         uint32 flying_aura;
         bool resend_speed;
         uint32 login_flags;
-        uint32 iInstanceType;
+        uint8 iInstanceType;
         void SetName(std::string & name) { m_name = name; }
         // spell to (delay, last time)
 
@@ -1953,7 +1953,7 @@ class SERVER_DECL Player : public Unit
     private:
 
         PlayerInfo* m_playerInfo;
-        uint32 m_RaidDifficulty;
+        uint8 m_RaidDifficulty;
         bool m_XpGain;
         bool resettalents;
         std::list< Item* > m_GarbageItems;

@@ -645,6 +645,10 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
                         *(uint16*)&structpointer[offset] = f->GetUInt16();
                         offset += sizeof(uint16);
                         break;
+                    case 'b':    // Boolean
+                        *(bool*)&structpointer[offset] = f->GetBool();
+                        offset += sizeof(bool);
+                        break;
 
                     default:    // unknown
                         sLog.outDebug("Unknown field type in string: `%c`", *p);

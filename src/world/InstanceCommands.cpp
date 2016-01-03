@@ -278,12 +278,12 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 
         if (instance->m_mapInfo->type == INSTANCE_MULTIMODE)
         {
-            ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(static_cast<uint8>(instance->m_difficulty)) << "|r)";
+            ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(instance->m_difficulty) << "|r)";
         }
 
         if (instance->m_mapInfo->type == INSTANCE_RAID)
         {
-            ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(static_cast<uint8>(instance->m_difficulty)) << "|r)";
+            ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(instance->m_difficulty) << "|r)";
         }
 
         ss << "\n";

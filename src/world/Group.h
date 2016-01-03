@@ -238,8 +238,8 @@ class SERVER_DECL Group
 
         uint32 m_instanceIds[NUM_MAPS][NUM_INSTANCE_MODES];
 
-        void SetDungeonDifficulty(uint32 diff);
-        void SetRaidDifficulty(uint32 diff);
+        void SetDungeonDifficulty(uint8 diff);
+        void SetRaidDifficulty(uint8 diff);
         void SendLootUpdates(Object* o);
 
         //////////////////////////////////////////////////////////////////////////////////////////
