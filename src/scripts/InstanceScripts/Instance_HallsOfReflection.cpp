@@ -299,15 +299,6 @@ class Falric : public MoonScriptBossAI
             }
         }
 
-        void OnLoad()
-        {
-            if (IsHeroic() == true) // HEROIC MODE
-            {
-                _unit->SetMaxHealth(633607); // SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
-                _unit->SetHealth(633607); //SET HP CAUSE ARCEMU DONT SUPPORT HEROIC MODES!
-            }
-        }
-
         void OnCombatStart(Unit* pKiller)
         {
             _unit->SendScriptTextChatMessage(4084);      // Men, women, and children... None were spared the master's wrath. Your death will be no different.
