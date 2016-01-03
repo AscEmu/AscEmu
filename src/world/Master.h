@@ -28,7 +28,7 @@
 #include "../shared/AscemuServerDefines.hpp"
 
 static const char* REQUIRED_CHAR_DB_VERSION = "2015-12-27_01_lag_reports";
-static const char* REQUIRED_WORLD_DB_VERSION = "2016-01-03_01_creature_proto_difficulty";
+static const char* REQUIRED_WORLD_DB_VERSION = "2016-01-03_02_gossip_menu_option";
 
 class Master : public Singleton<Master>
 {

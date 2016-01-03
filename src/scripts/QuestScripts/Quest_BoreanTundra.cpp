@@ -543,6 +543,102 @@ class GearmasterMechazodAI : public CreatureAIScript
         uint32 phase;
 };
 
+// Hunt Is On (Quest: 11794)
+const uint32 questHuntIsOn = 11794;
+
+class SaltyJohnGossip : public GossipScript
+{
+    public:
+
+        void GossipHello(Object* pObject, Player* pPlayer)
+        {
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
+            if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078))
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(603), 1);
+
+            Menu->SendTo(pPlayer);
+        }
+
+        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        {
+            switch (IntId)
+            {
+                case 1:
+                {
+                    Creature* SaltyJohn = static_cast< Creature* >(pObject);
+                    SaltyJohn->SetFaction(14);
+                    SaltyJohn->SendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
+                }
+                break;
+                default:
+                    break;
+            }
+        }
+};
+
+class TomHeggerGossip : public GossipScript
+{
+    public:
+
+        void GossipHello(Object* pObject, Player* pPlayer)
+        {
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
+            if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078)) // Has quest and has used the item.
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(604), 1);
+
+            Menu->SendTo(pPlayer);
+        }
+
+        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        {
+            switch (IntId)
+            {
+                case 1:
+                {
+                    Creature* TomHegger = static_cast< Creature* >(pObject);
+                    TomHegger->SetFaction(14);
+                    TomHegger->SendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
+                }
+                break;
+                default:
+                    break;
+            }
+        }
+};
+
+class GuardMitchGossip : public GossipScript
+{
+    public:
+
+        void GossipHello(Object* pObject, Player* pPlayer)
+        {
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
+            if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078))
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(605), 1);
+
+            Menu->SendTo(pPlayer);
+        }
+
+        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        {
+            switch (IntId)
+            {
+                case 1:
+                {
+                    Creature* GuardMitch = static_cast< Creature* >(pObject);
+                    GuardMitch->SetFaction(14);
+                    GuardMitch->SendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
+                }
+                break;
+                default:
+                    break;
+            }
+        }
+};
+
 void SetupBoreanTundra(ScriptMgr* mgr)
 {
     // Call to Arms!
@@ -579,4 +675,9 @@ void SetupBoreanTundra(ScriptMgr* mgr)
     // Quest: The Gearmaster 11798
     mgr->register_gameobject_script(190334, &TheGearmastersManual::Create);
     mgr->register_creature_script(25834, &GearmasterMechazodAI::Create);
+
+    // Hunt Is On
+    mgr->register_gossip_script(25248, new SaltyJohnGossip);
+    mgr->register_gossip_script(25827, new TomHeggerGossip);
+    mgr->register_gossip_script(25828, new GuardMitchGossip);
 }
