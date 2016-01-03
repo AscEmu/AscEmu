@@ -739,6 +739,9 @@ void Unit::Update(uint32 p_time)
     {
         //////////////////////////////////////////////////////////////////////////////////////////
         //POWER & HP REGENERATION
+        if (this->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_DISABLE_REGEN))
+            return;
+
         if (p_time >= m_H_regenTimer)
             RegenerateHealth();
         else
@@ -2611,7 +2614,7 @@ bool Unit::IsInInstance()
 
 void Unit::RegenerateHealth()
 {
-    m_H_regenTimer = 2000;          //set next regen time
+    m_H_regenTimer = 2000;      //set next regen time
 
     if (!isAlive())
         return;
@@ -2621,9 +2624,7 @@ void Unit::RegenerateHealth()
     {
         // These only NOT in combat
         if (!CombatStatus.IsInCombat())
-        {
             static_cast<Player*>(this)->RegenerateHealth(false);
-        }
         else
             static_cast<Player*>(this)->RegenerateHealth(true);
     }

@@ -371,6 +371,39 @@ class SilithidCreeperEgg : public CreatureAIScript
         }
 };
 
+class DraeneiSurvivor : public CreatureAIScript
+{
+    public:
+
+        ADD_CREATURE_FACTORY_FUNCTION(DraeneiSurvivor);
+        DraeneiSurvivor(Creature* pCreature) : CreatureAIScript(pCreature)
+        { }
+
+        void OnLoad()
+        {
+            _unit->SetHealth(_unit->GetMaxHealth() / 2);
+        }
+};
+
+class GuardRoberts : public CreatureAIScript
+{
+    public:
+
+        ADD_CREATURE_FACTORY_FUNCTION(GuardRoberts);
+        GuardRoberts(Creature* pCreature) : CreatureAIScript(pCreature)
+        { }
+
+        void OnLoad()
+        {
+            _unit->SetHealth(100);
+        }
+
+        void OnDied(Unit* mKiller)
+        {
+            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "Argh, the pain. Will it ever leave me?");
+        }
+};
+
 void SetupMiscCreatures(ScriptMgr* mgr)
 {
     mgr->register_creature_script(11120, &CrimsonHammersmith::Create);
@@ -425,4 +458,7 @@ void SetupMiscCreatures(ScriptMgr* mgr)
     mgr->register_creature_script(27989, &DISCO::Create);
 
     mgr->register_creature_script(5781, &SilithidCreeperEgg::Create);
+
+    mgr->register_creature_script(16483, &DraeneiSurvivor::Create);
+    mgr->register_creature_script(12423, &GuardRoberts::Create);
 }

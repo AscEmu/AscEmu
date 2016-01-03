@@ -272,7 +272,8 @@ enum NPCFlags
     UNIT_NPC_FLAG_GUILD_BANK            = 0x00800000,
     UNIT_NPC_FLAG_SPELLCLICK            = 0x01000000,
     UNIT_NPC_FLAG_PLAYER_VEHICLE        = 0x02000000,
-    UNIT_NPC_FLAG_MAILBOX               = 0x04000000
+    UNIT_NPC_FLAG_MAILBOX               = 0x04000000,
+    UNIT_NPC_FLAG_DISABLE_REGEN         = 0x08000000
 };
 
 enum CreatureFlag1
