@@ -364,11 +364,13 @@ enum ELITE
     ELITE_RARE      = 4
     // ELITE_UNKNOWN = 5
 };
-enum TIME_REMOVE_CORPSE
+enum TimeCorpseDecay
 {
-    TIME_CREATURE_REMOVE_CORPSE     = 180000,
-    TIME_CREATURE_REMOVE_RARECORPSE = 180000 * 3,
-    TIME_CREATURE_REMOVE_BOSSCORPSE = 180000 * 5
+    TIME_CORPSE_DECAY_NORMAL        = 60000,        // 1 minute
+    TIME_CORPSE_DECAY_RARE          = 300000,       // 5 minutes
+    TIME_CORPSE_DECAY_ELITE         = 300000,       // 5 minutes
+    TIME_CORPSE_DECAY_RAREELITE     = 300000,       // 5 minutes
+    TIME_CORPSE_DECAY_WORLDBOSS     = 3600000,      // 1 hour
 };
 
 // THIS IS NOT SAME AS DEATH STATE IN Unit.h
