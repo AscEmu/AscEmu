@@ -375,22 +375,22 @@ void GameObject::InitAI()
     uint32 spellid = 0;
     if (pInfo->type == GAMEOBJECT_TYPE_TRAP)
     {
-        spellid = pInfo->raw.parameter_3;
+        spellid = pInfo->trap.spell_id;
     }
     else if (pInfo->type == GAMEOBJECT_TYPE_SPELL_FOCUS)
     {
         // get spellid from attached gameobject if there is such - by parameter_2 field
-        if (pInfo->raw.parameter_2 != 0)
+        if (pInfo->spell_focus.linked_trap_id != 0)
         {
 
-            auto gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->raw.parameter_2);
-            if (gameobject_info == nullptr)
+            auto linked_trap = GameObjectNameStorage.LookupEntry(pInfo->spell_focus.linked_trap_id);
+            if (linked_trap == nullptr)
             {
-                LOG_ERROR("Gamobject %u is of spellfocus type, has attachment GO data (%u), but attachment not found in database.", pInfo->entry, pInfo->raw.parameter_2);
+                LOG_ERROR("Gamobject %u is of spellfocus type, has attachment GO data (%u), but attachment not found in database.", pInfo->entry, pInfo->spell_focus.linked_trap_id);
                 return;
             }
 
-            spellid = gameobject_info->raw.parameter_3;
+            spellid = linked_trap->trap.spell_id;
         }
     }
     else if (pInfo->type == GAMEOBJECT_TYPE_RITUAL)

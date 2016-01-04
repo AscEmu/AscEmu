@@ -117,8 +117,36 @@ struct GameObjectInfo
         // 4 GAMEOBJECT_TYPE_BINDER
         // 5 GAMEOBJECT_TYPE_GENERIC
         // 6 GAMEOBJECT_TYPE_TRAP
+        struct
+        {
+            uint32 lock_id;                     // parameter_0 from Lock.dbc
+            uint32 level;                       // parameter_1
+            uint32 radius;                      // parameter_2 radius for trap activation
+            uint32 spell_id;                    // parameter_3
+            uint32 charges;                     // parameter_4
+            uint32 cooldown;                    // parameter_5 in secs
+            uint32 auto_close_time;             // parameter_6 in secs
+            uint32 start_delay;                 // parameter_7
+            uint32 server_only;                 // parameter_8
+            uint32 stealthed;                   // parameter_9
+            uint32 large;                       // parameter_10
+            uint32 stealth_affected;            // parameter_11
+            uint32 open_text_id;                // parameter_12
+            uint32 close_text_id;               // parameter_13
+            uint32 ignore_totems;               // parameter_14
+        } trap;
         // 7 GAMEOBJECT_TYPE_CHAIR
         // 8 GAMEOBJECT_TYPE_SPELL_FOCUS
+        struct
+        {
+            uint32 focus_id;                    // parameter_0
+            uint32 distance;                    // parameter_1
+            uint32 linked_trap_id;              // parameter_2
+            uint32 server_only;                 // parameter_3
+            uint32 quest_id;                    // parameter_4
+            uint32 large;                       // parameter_5
+            uint32 floating_tooltip;            // parameter_6
+        } spell_focus;
         // 9 GAMEOBJECT_TYPE_TEXT
         // 10 GAMEOBJECT_TYPE_GOOBER
         // 11 GAMEOBJECT_TYPE_TRANSPORT
