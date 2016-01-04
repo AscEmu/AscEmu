@@ -4155,7 +4155,7 @@ void ObjectMgr::LoadCreatureProtoDifficulty()
             creature_proto_difficulty->BoundingRadius = row[27].GetFloat();
             //creature_proto_difficulty->aura_string = row[28].GetString();     // unhandled
             //creature_proto_difficulty->isBoss = row[29].GetBool();            // unhandled
-            //creature_proto_difficulty->money = row[30].GetUInt32();           // unhandled
+            creature_proto_difficulty->money = row[30].GetUInt32();
             creature_proto_difficulty->invisibility_type = row[31].GetUInt32();
             creature_proto_difficulty->walk_speed = row[32].GetFloat();
             creature_proto_difficulty->run_speed = row[33].GetFloat();
