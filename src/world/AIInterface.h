@@ -646,6 +646,7 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         bool MoveCharge(float x, float y, float z);
 
         void SetCreatureProtoDifficulty(uint32 entry);
+        uint8 GetDifficultyType();
 
 };
 

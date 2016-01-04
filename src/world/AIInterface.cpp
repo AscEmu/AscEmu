@@ -4701,15 +4701,9 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
 
 void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 {
-    uint8 difficulty_type = 0;  // standard MODE_NORMAL / MODE_NORMAL_10MEN
-
-    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, m_Unit->GetInstanceID());
-    if (instance != nullptr)
-        difficulty_type = instance->m_difficulty;
-
-    if (difficulty_type != 0)
+    if (GetDifficultyType() != 0)
     {
-        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(entry, difficulty_type);
+        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(entry, GetDifficultyType());
         Creature* creature = static_cast<Creature*>(m_Unit);
         if (proto_difficulty != nullptr)
         {
@@ -4866,4 +4860,17 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
                 m_Unit->Root();
         }
     }
+}
+
+uint8 AIInterface::GetDifficultyType()
+{
+    uint8 difficulty_type;
+
+    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, m_Unit->GetInstanceID());
+    if (instance != nullptr)
+        difficulty_type = instance->m_difficulty;
+    else
+        difficulty_type = 0;    // standard MODE_NORMAL / MODE_NORMAL_10MEN
+
+    return difficulty_type;
 }
