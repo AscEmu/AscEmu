@@ -4710,8 +4710,31 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
     if (difficulty_type != 0)
     {
         CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(entry, difficulty_type);
+        Creature* creature = static_cast<Creature*>(m_Unit);
         if (proto_difficulty != nullptr)
         {
+            if (!proto_difficulty->isTrainingDummy && !m_Unit->IsVehicle())
+            {
+                m_Unit->GetAIInterface()->SetAllowedToEnterCombat(true);
+            }
+            else
+            {
+                m_Unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+                m_Unit->GetAIInterface()->SetAIType(AITYPE_PASSIVE);
+            }
+
+            if (proto_difficulty->walk_speed != 0)
+                m_walkSpeed = m_Unit->m_base_walkSpeed = proto_difficulty->walk_speed;
+
+            if (proto_difficulty->run_speed != 0)
+                m_runSpeed = m_Unit->m_base_runSpeed = proto_difficulty->run_speed;
+
+            if (proto_difficulty->fly_speed != 0)
+                m_flySpeed = proto_difficulty->fly_speed;
+
+            if (proto_difficulty->Scale != 0)
+                m_Unit->SetScale(proto_difficulty->Scale);
+
             if (proto_difficulty->MinHealth != 0 && proto_difficulty->MaxHealth != 0)
             {
                 uint32 health = proto_difficulty->MinHealth + RandomUInt(proto_difficulty->MaxHealth - proto_difficulty->MinHealth);
@@ -4733,11 +4756,114 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
                 m_Unit->setLevel(proto_difficulty->MinLevel + (RandomUInt(proto_difficulty->MaxLevel - proto_difficulty->MinLevel)));
             }
 
+            for (uint8 i = 0; i < 7; ++i)
+                m_Unit->SetResistance(i, proto_difficulty->Resistances[i]);
+
             if (proto_difficulty->MinDamage != 0 && proto_difficulty->MaxDamage != 0)
             {
                 m_Unit->SetMinDamage(proto_difficulty->MinDamage);
                 m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
             }
+
+            if (proto_difficulty->RangedMinDamage != 0 && proto_difficulty->RangedMaxDamage != 0)
+            {
+                m_Unit->SetMinRangedDamage(proto_difficulty->RangedMinDamage);
+                m_Unit->SetMaxRangedDamage(proto_difficulty->RangedMaxDamage);
+            }
+
+            if (proto_difficulty->RangedAttackTime != 0)
+            {
+                m_Unit->SetBaseAttackTime(RANGED, proto_difficulty->RangedAttackTime);
+            }
+
+            if (proto_difficulty->AttackTime != 0)
+            {
+                m_Unit->SetBaseAttackTime(MELEE, proto_difficulty->AttackTime);
+            }
+
+            if (proto_difficulty->Faction != 0)
+            {
+                m_Unit->SetFaction(proto_difficulty->Faction);
+
+                if (!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->HostileMask == 0 && m_Unit->m_faction->FriendlyMask == 0))
+                {
+                    m_Unit->GetAIInterface()->m_canCallForHelp = true;
+                }
+            }
+
+            if (proto_difficulty->CanRanged == 1)
+                m_Unit->GetAIInterface()->m_canRangedAttack = true;
+            else
+                m_Unit->m_aiInterface->m_canRangedAttack = false;
+
+            if (proto_difficulty->BoundingRadius != 0)
+            {
+                m_Unit->SetBoundingRadius(proto_difficulty->BoundingRadius);
+            }
+
+            if (proto_difficulty->CombatReach != 0)
+            {
+                m_Unit->SetCombatReach(proto_difficulty->CombatReach);
+            }
+
+            if (proto_difficulty->MinDamage != 0 && proto_difficulty->MaxDamage != 0)
+            {
+                m_Unit->SetMinDamage(proto_difficulty->MinDamage);
+                m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
+            }
+
+            if (proto_difficulty->NPCFLags != 0)
+            {
+                m_Unit->SetUInt32Value(UNIT_NPC_FLAGS, proto_difficulty->NPCFLags);
+            }
+
+            // resistances
+            for (uint32 j = 0; j < 7; j++)
+                m_Unit->BaseResistance[j] = m_Unit->GetResistance(j);
+            for (uint32 j = 0; j < 5; j++)
+                m_Unit->BaseStats[j] = m_Unit->GetStat(j);
+
+            m_Unit->BaseDamage[0] = m_Unit->GetMinDamage();
+            m_Unit->BaseDamage[1] = m_Unit->GetMaxDamage();
+            m_Unit->BaseOffhandDamage[0] = m_Unit->GetMinOffhandDamage();
+            m_Unit->BaseOffhandDamage[1] = m_Unit->GetMaxOffhandDamage();
+            m_Unit->BaseRangedDamage[0] = m_Unit->GetMinRangedDamage();
+            m_Unit->BaseRangedDamage[1] = m_Unit->GetMaxRangedDamage();
+
+            if (proto_difficulty->AttackType != 0)
+            {
+                creature->BaseAttackType = proto_difficulty->AttackType;
+            }
+
+            //guard
+            if (proto_difficulty->guardtype == GUARDTYPE_CITY)
+                m_Unit->m_aiInterface->m_isGuard = true;
+            else
+                m_Unit->m_aiInterface->m_isGuard = false;
+
+            if (proto_difficulty->guardtype == GUARDTYPE_NEUTRAL)
+                m_Unit->m_aiInterface->m_isNeutralGuard = true;
+            else
+                m_Unit->m_aiInterface->m_isNeutralGuard = false;
+
+            m_Unit->m_aiInterface->UpdateSpeeds(); // use speed from creature_proto_difficulty.
+
+            //invisibility
+            m_Unit->m_invisFlag = static_cast<uint8>(proto_difficulty->invisibility_type);
+            if (m_Unit->m_invisFlag > 0)
+                m_Unit->m_invisible = true;
+            else
+                m_Unit->m_invisible = false;
+
+            if (m_Unit->IsVehicle())
+            {
+                m_Unit->AddVehicleComponent(proto_difficulty->Id, proto_difficulty->vehicleid);
+                m_Unit->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+                m_Unit->setAItoUse(false);
+            }
+
+            if (proto_difficulty->isRooted)
+                m_Unit->Root();
         }
     }
 }
