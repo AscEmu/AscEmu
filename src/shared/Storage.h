@@ -21,6 +21,10 @@
 #ifndef STORAGE_H
 #define STORAGE_H
 
+#include "Log.h"
+#include "Database/Database.h"
+#include "MainServerDefines.h"
+
 #ifdef WIN32
 #pragma warning(disable:4312)
 #endif
