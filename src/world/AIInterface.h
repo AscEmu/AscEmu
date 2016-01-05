@@ -269,7 +269,7 @@ typedef std::unordered_map<uint64, int32> TargetMap;
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
 
-class SERVER_DECL AIInterface : public Arcemu::IUpdatable
+class SERVER_DECL AIInterface : public IUpdatable
 {
     public:
 

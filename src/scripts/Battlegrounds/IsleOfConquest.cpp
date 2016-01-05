@@ -509,7 +509,7 @@ void IsleOfConquest::CloseGates()
         {
             gates[i][j].dyngate->Despawn(0, 0);
             gates[i][j].dyngate = NULL;
-            gates[i][j].gate->Damage(1, 0, 0, 0);
+            //gates[i][j].gate->Damage(1, 0, 0, 0);
         }
     }
 }
@@ -559,7 +559,6 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
                 break;
         }
 
-        controlpoint[Id].banner->bannerslot = static_cast<uint8>(Id);
         controlpoint[Id].banner->PushToWorld(m_mapMgr);
     }
     else
@@ -639,7 +638,6 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].aura->SetState(GO_STATE_CLOSED);
         controlpoint[Id].aura->SetType(6);
         controlpoint[Id].aura->SetAnimProgress(100);
-        controlpoint[Id].aura->bannerauraslot = Id;
         controlpoint[Id].aura->PushToWorld(m_mapMgr);
     }
     else
@@ -732,13 +730,24 @@ void IsleOfConquest::HookOnPlayerResurrect(Player *player)
 
 bool IsleOfConquest::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell)
 {
-    if (pGo->bannerslot >= 0 && pGo->bannerslot < IOC_NUM_CONTROL_POINTS)
+    uint32 cpid = 0; //control point id, not child porn id!
+    for (cpid = 0; cpid < IOC_NUM_CONTROL_POINTS; cpid++)
     {
-        AssaultControlPoint(pPlayer, pGo->bannerslot);
-        return true;
+        if (controlpoint[cpid].aura == NULL)
+            continue;
+        if (controlpoint[cpid].aura->GetGUID() == pGo->GetGUID())
+            break;
     }
 
-    return false;
+    if (cpid == IOC_NUM_CONTROL_POINTS)
+        return false;
+
+    if (pPlayer->IsStealth() || pPlayer->m_invisible)
+        return false;
+
+    AssaultControlPoint(pPlayer, cpid);
+
+    return true;
 }
 
 void IsleOfConquest::OnAddPlayer(Player *plr)

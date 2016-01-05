@@ -1545,14 +1545,12 @@ void MapMgr::_PerformObjectDuties()
     {
         difftime = mstime - lastGameobjectUpdate;
 
-        GameObjectSet::iterator itr = activeGameObjects.begin();
-        GameObject* ptr;
-        for (; itr != activeGameObjects.end();)
+        for (std::vector<GameObject*>::iterator itr = GOStorage.begin(); itr != GOStorage.end(); )
         {
-            ptr = *itr;
+            GameObject* gameobject = *itr;
             ++itr;
-            if (ptr != NULL)
-                ptr->Update(difftime);
+            if (gameobject != nullptr)
+                gameobject->Update(difftime);
         }
 
         lastGameobjectUpdate = mstime;
@@ -1917,20 +1915,32 @@ GameObject* MapMgr::GetGameObject(uint32 guid)
 
 GameObject* MapMgr::CreateGameObject(uint32 entry)
 {
+    uint32 GUID = 0;
+
     if (_reusable_guids_gameobject.size() > GO_GUID_RECYCLE_INTERVAL)
     {
         uint32 guid = _reusable_guids_gameobject.front();
         _reusable_guids_gameobject.pop_front();
-        return new GameObject((uint64)HIGHGUID_TYPE_GAMEOBJECT << 32 | guid);
+
+        GUID = guid;
+    }
+    else
+    {
+        if (++m_GOHighGuid >= GOStorage.size())
+        {
+            // Reallocate array with larger size.
+            size_t newsize = GOStorage.size() + RESERVE_EXPAND_SIZE;
+            GOStorage.resize(newsize, NULL);
+        }
+
+        GUID = m_GOHighGuid;
     }
 
-    if (++m_GOHighGuid >= GOStorage.size())
-    {
-        // Reallocate array with larger size.
-        size_t newsize = GOStorage.size() + RESERVE_EXPAND_SIZE;
-        GOStorage.resize(newsize, NULL);
-    }
-    return new GameObject((uint64)HIGHGUID_TYPE_GAMEOBJECT << 32 | m_GOHighGuid);
+    GameObject* gameobject = nullptr;
+    gameobject = ObjectFactory.CreateGameObject(entry, GUID);
+    
+
+    return gameobject;
 }
 
 DynamicObject* MapMgr::CreateDynamicObject()
@@ -1992,6 +2002,38 @@ float MapMgr::GetFirstZWithCPZ(float x, float y, float z)
             break;
     }
     return posZ;
+}
+
+GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
+{
+    GameObject* go = nullptr;
+    float r = FLT_MAX;
+
+    for (std::set<Object*>::iterator itr = o->GetInRangeSetBegin(); itr != o->GetInRangeSetEnd(); ++itr)
+    {
+        Object* iro = *itr;
+
+        if (!iro->IsGameObject())
+            continue;
+
+        GameObject* irgo = static_cast<GameObject*>(iro);
+
+        if (irgo->GetType() != type)
+            continue;
+
+        if ((irgo->GetPhase() & o->GetPhase()) == 0)
+            continue;
+
+        float range = o->GetDistanceSq(iro);
+
+        if (range < r)
+        {
+            r = range;
+            go = irgo;
+        }
+    }
+
+    return go;
 }
 
 void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Message, ...)

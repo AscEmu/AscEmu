@@ -686,12 +686,20 @@ void LootRoll::Finalize()
     if (guidtype == HIGHGUID_TYPE_UNIT)
     {
         Creature* pc = _mgr->GetCreature(GET_LOWGUID_PART(_guid));
-        if (pc) pLoot = &pc->loot;
+        if (pc)
+            pLoot = &pc->loot;
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
     {
         GameObject* go = _mgr->GetGameObject(GET_LOWGUID_PART(_guid));
-        if (go) pLoot = &go->loot;
+        if (go != nullptr)
+        {
+            if (go->IsLootable())
+            {
+                GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(go);
+                pLoot = &pLGO->loot;
+            }
+        }
     }
     if (!pLoot)
     {

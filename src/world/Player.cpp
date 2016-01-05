@@ -6707,10 +6707,12 @@ void Player::UpdateNearbyGameObjects()
             bool bPassed = !deactivate;
             if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
             {
-                if (go->HasQuests() && go->NumOfQuests() > 0)
+                GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
+
+                if (go_quest_giver->HasQuests() && go_quest_giver->NumOfQuests() > 0)
                 {
-                    std::list<QuestRelation*>::iterator itr2 = go->QuestsBegin();
-                    for (; itr2 != go->QuestsEnd(); ++itr2)
+                    std::list<QuestRelation*>::iterator itr2 = go_quest_giver->QuestsBegin();
+                    for (; itr2 != go_quest_giver->QuestsEnd(); ++itr2)
                     {
                         QuestRelation* qr = (*itr2);
 

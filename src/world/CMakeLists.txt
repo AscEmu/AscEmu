@@ -36,6 +36,7 @@ set(sources
 	CharacterHandler.cpp 
 	Chat.cpp 
 	ChatHandler.cpp
+   CObjectFactory.cpp
 	CombatHandler.cpp 
 	Container.cpp 
 	Corpse.cpp 
@@ -200,6 +201,7 @@ set(headers
 	Channel.h
 	ChannelMgr.h
 	Chat.h
+   CObjectFactory.h
 	CollideInterface.h
 	CommonScheduleThread.h
 	Entities/Summons/CompanionSummon.h

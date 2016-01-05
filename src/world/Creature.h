@@ -85,6 +85,10 @@ class SERVER_DECL Creature : public Unit
         uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
 
         bool HasItems();
+        void SummonExpire()
+        {
+            DeleteMe();
+        }
 
         CreatureProto* GetProto();
 

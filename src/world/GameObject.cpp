@@ -20,56 +20,39 @@
  */
 
 #include "StdAfx.h"
+
+GameObject::GameObject()
+{ }
+
 GameObject::GameObject(uint64 guid)
 {
     m_objectTypeId = TYPEID_GAMEOBJECT;
     m_valuesCount = GAMEOBJECT_END;
     m_uint32Values = _fields;
-    memset(m_uint32Values, 0, (GAMEOBJECT_END)*sizeof(uint32));
+    std::fill(m_uint32Values, &m_uint32Values[GAMEOBJECT_END], 0);
     m_updateMask.SetCount(GAMEOBJECT_END);
     SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_GAMEOBJECT | TYPE_OBJECT);
     SetGUID(guid);
     SetAnimProgress(100);
-    m_wowGuid.Init(GetGUID());
-    SetScale(1);  //info->Size );
-    counter = 0; //not needed at all but to prevent errors that var was not initialized, can be removed in release
-    bannerslot = bannerauraslot = -1;
+    m_wowGuid.Init(guid);
+    SetScale(1);
     m_summonedGo = false;
     invisible = false;
     invisibilityFlag = INVIS_FLAG_NORMAL;
-    spell = 0;
     m_summoner = NULL;
     charges = -1;
-    m_ritualcaster = 0;
-    m_ritualtarget = 0;
-    m_ritualmembers = NULL;
-    m_ritualspell = 0;
-    m_quests = NULL;
     pInfo = NULL;
     myScript = NULL;
     m_spawn = 0;
-    loot.gold = 0;
     m_deleted = false;
-    usage_remaining = 1;
     m_respawnCell = NULL;
     m_rotation = 0;
     m_overrides = 0;
-
-    hitpoints = 0;
-    maxhitpoints = 0;
-
-    range = 0;
-    checkrate = 0;
 }
 
 GameObject::~GameObject()
 {
     sEventMgr.RemoveEvents(this);
-    if (m_ritualmembers)
-    {
-        delete[] m_ritualmembers;
-        m_ritualmembers = NULL;
-    }
 
     if (myScript != NULL)
     {
@@ -125,24 +108,11 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     SetDisplayId(pInfo->display_id);
     SetType(static_cast<uint8>(pInfo->type));
     InitAI();
-    _LoadQuests();
 
     return true;
 }
 
-void GameObject::EventCastSpell(uint32 guid, uint32 sp, bool triggered)
-{
-    Spell* spp = sSpellFactoryMgr.NewSpell(this, dbcSpell.LookupEntry(sp), false, NULL);
-    SpellCastTargets tars(guid);
-    spp->prepare(&tars);
-}
-
-void GameObject::TrapSearchTarget()
-{
-    Update(100);
-}
-
-void GameObject::Update(uint32 p_time)
+void GameObject::Update(unsigned long time_passed)
 {
     if (m_event_Instanceid != m_instanceId)
     {
@@ -156,63 +126,6 @@ void GameObject::Update(uint32 p_time)
     if (m_deleted)
         return;
 
-    if (spell && (GetState() == 1))
-    {
-        if (checkrate > 1)
-        {
-            if (counter++ % checkrate)
-                return;
-        }
-
-        for (std::set< Object* >::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
-        {
-            float dist;
-
-            Object* o = *itr;
-
-            dist = GetDistanceSq(o);
-
-            if (o != m_summoner && o->IsUnit() && dist <= range)
-            {
-                if (m_summonedGo)
-                {
-                    if (!m_summoner)
-                    {
-                        ExpireAndDelete();
-                        return;
-                    }
-
-                    if (!isAttackable(m_summoner, o))
-                        continue;
-                }
-
-                Spell* sp = sSpellFactoryMgr.NewSpell(this, spell, true, NULL);
-                SpellCastTargets tgt(o->GetGUID());
-                tgt.m_destX = GetPositionX();
-                tgt.m_destY = GetPositionY();
-                tgt.m_destZ = GetPositionZ();
-                sp->prepare(&tgt);
-
-                // proc on trap trigger
-                if (pInfo->type == GAMEOBJECT_TYPE_TRAP)
-                {
-                    if (m_summoner != NULL)
-                        m_summoner->HandleProc(PROC_ON_TRAP_TRIGGER, reinterpret_cast<Unit*>(o), spell);
-                }
-
-                if (m_summonedGo)
-                {
-                    ExpireAndDelete();
-                    return;
-                }
-
-                if (spell->EffectImplicitTargetA[0] == 16 || spell->EffectImplicitTargetB[0] == 16)
-                {
-                    return;	 // on area don't continue.
-                }
-            }
-        }
-    }
 }
 
 void GameObject::Spawn(MapMgr* m)
@@ -230,8 +143,6 @@ void GameObject::Despawn(uint32 delay, uint32 respawntime)
 
     if (!IsInWorld())
         return;
-
-    loot.items.clear();
 
     //This is for go get deleted while looting
     if (m_spawn)
@@ -359,113 +270,8 @@ void GameObject::SaveToFile(std::stringstream & name)
 
 void GameObject::InitAI()
 {
-    if (!pInfo)
-        return;
-
-    // this fixes those fuckers in booty bay
-    /*Zyres 2015-12-28 Remove this if it is not needed!
-    if (pInfo->raw.parameter_0 == 0 &&
-        pInfo->raw.parameter_1 == 0 &&
-        pInfo->raw.parameter_2 == 0 &&
-        pInfo->raw.parameter_3 != 0 &&
-        pInfo->raw.parameter_5 != 3 &&
-        pInfo->raw.parameter_9 == 1)
-        return;*/
-
-    uint32 spellid = 0;
-    if (pInfo->type == GAMEOBJECT_TYPE_TRAP)
-    {
-        spellid = pInfo->trap.spell_id;
-    }
-    else if (pInfo->type == GAMEOBJECT_TYPE_SPELL_FOCUS)
-    {
-        // get spellid from attached gameobject if there is such - by parameter_2 field
-        if (pInfo->spell_focus.linked_trap_id != 0)
-        {
-
-            auto linked_trap = GameObjectNameStorage.LookupEntry(pInfo->spell_focus.linked_trap_id);
-            if (linked_trap == nullptr)
-            {
-                LOG_ERROR("Gamobject %u is of spellfocus type, has attachment GO data (%u), but attachment not found in database.", pInfo->entry, pInfo->spell_focus.linked_trap_id);
-                return;
-            }
-
-            spellid = linked_trap->trap.spell_id;
-        }
-    }
-    else if (pInfo->type == GAMEOBJECT_TYPE_RITUAL)
-    {
-        m_ritualmembers = new uint32[pInfo->raw.parameter_0];
-        memset(m_ritualmembers, 0, sizeof(uint32)*pInfo->raw.parameter_0);
-    }
-    else if (pInfo->type == GAMEOBJECT_TYPE_CHEST)
-    {
-        auto pLock = sLockStore.LookupEntry(GetInfo()->chest.lock_id);
-        if (pLock)
-        {
-            for (uint8 i = 0; i < LOCK_NUM_CASES; i++)
-            {
-                if (pLock->locktype[i])
-                {
-                    if (pLock->locktype[i] == 2) //locktype;
-                    {
-                        //herbalism and mining;
-                        if (pLock->lockmisc[i] == LOCKTYPE_MINING || pLock->lockmisc[i] == LOCKTYPE_HERBALISM)
-                        {
-                            CalcMineRemaining(true);
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-    else if (pInfo->type == GAMEOBJECT_TYPE_FISHINGHOLE)
-    {
-        CalcFishRemaining(true);
-    }
-    else if (pInfo->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
-    {
-        Rebuild();
-    }
-
     if (myScript == NULL)
         myScript = sScriptMgr.CreateAIScriptClassForGameObject(GetEntry(), this);
-
-    // hackfix for bad spell in BWL
-    if (!spellid || spellid == 22247)
-        return;
-
-    SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
-    if (!sp)
-    {
-        spell = NULL;
-        return;
-    }
-    else
-    {
-        spell = sp;
-    }
-
-    //ok got valid spell that will be casted on target when it comes close enough get the range for that
-    float r = 0;
-
-    for (uint8 i = 0; i < 3; i++)
-    {
-        if (sp->Effect[i])
-        {
-            float t = GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[i]));
-            if (t > r)
-                r = t;
-        }
-    }
-
-    if (r < 0.1)//no range
-        r = GetMaxRange(sSpellRangeStore.LookupEntry(sp->rangeIndex));
-
-    range = r * r; //square to make code faster
-    checkrate = 20;//once in 2 seconds
-
 }
 
 bool GameObject::Load(GameobjectSpawn* go_spawn)
@@ -475,9 +281,7 @@ bool GameObject::Load(GameobjectSpawn* go_spawn)
 
     m_spawn = go_spawn;
     m_phase = go_spawn->phase;
-    //SetRotation(spawn->o);
     SetFlags(go_spawn->flags);
-    //	SetLevel(spawn->level);
     SetState(static_cast<uint8>(go_spawn->state));
     if (go_spawn->faction)
     {
@@ -492,186 +296,6 @@ void GameObject::DeleteFromDB()
 {
     if (m_spawn != NULL)
         WorldDatabase.Execute("DELETE FROM gameobject_spawns WHERE id=%u", m_spawn->id);
-}
-
-void GameObject::EventCloseDoor()
-{
-    SetState(1);
-    SetFlags(GetFlags() & ~1);
-}
-
-void GameObject::UseFishingNode(Player* player)
-{
-    sEventMgr.RemoveEvents(this);
-    if (GetFlags() != 32)     // Clicking on the bobber before something is hooked
-    {
-        player->GetSession()->OutPacket(SMSG_FISH_NOT_HOOKED);
-        EndFishing(player, true);
-        return;
-    }
-
-    uint32 zone = player->GetAreaID();
-    if (zone == 0)   // If the player's area ID is 0, use the zone ID instead
-        zone = player->GetZoneId();
-
-    FishingZoneEntry* entry = FishingZoneStorage.LookupEntry(zone);
-    if (entry == NULL)   // No fishing information found for area or zone, log an error, and end fishing
-    {
-        LOG_ERROR("ERROR: Fishing zone information for zone %d not found!", zone);
-        EndFishing(player, true);
-        return;
-    }
-    uint32 maxskill = entry->MaxSkill;
-    uint32 minskill = entry->MinSkill;
-
-    if (player->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
-        player->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
-
-    GameObject* school = nullptr;
-    for (InRangeSet::iterator it = GetInRangeSetBegin(); it != GetInRangeSetEnd(); ++it)
-    {
-        if ((*it)->IsGameObject())
-            continue;
-
-        school = static_cast<GameObject*>(*it);
-
-        if (school->GetType() != GAMEOBJECT_TYPE_FISHINGHOLE)
-            continue;
-
-        school = static_cast< GameObject* >(*it);
-
-        if (!isInRange(school, (float)school->GetInfo()->raw.parameter_1))
-        {
-            school = nullptr;
-            continue;
-        }
-        else
-            break;
-    }
-
-    if (school !=nullptr)    // open school loot if school exists
-    {
-
-        if (school->GetMapMgr() != NULL)
-            lootmgr.FillGOLoot(&school->loot, school->GetInfo()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
-        else
-            lootmgr.FillGOLoot(&school->loot, school->GetInfo()->raw.parameter_1, 0);
-
-        player->SendLoot(school->GetGUID(), LOOT_FISHING, school->GetMapId());
-        EndFishing(player, false);
-        school->CatchFish();
-
-        if (!school->CanFish())
-            sEventMgr.AddEvent(school, &GameObject::Despawn, (uint32)0, (1800000 + RandomUInt(3600000)), EVENT_GAMEOBJECT_EXPIRE, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);       // respawn in 30 - 90 minutes
-    }
-    else if (Rand(((player->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))           // Open loot on success, otherwise FISH_ESCAPED.
-    {
-        lootmgr.FillFishingLoot(&loot, zone);
-        player->SendLoot(GetGUID(), LOOT_FISHING, GetMapId());
-        EndFishing(player, false);
-    }
-    else // Failed
-    {
-        player->GetSession()->OutPacket(SMSG_FISH_ESCAPED);
-        EndFishing(player, true);
-    }
-
-}
-
-void GameObject::EndFishing(Player* player, bool abort)
-{
-    Spell* spell = player->GetCurrentSpell();
-
-    if (spell)
-    {
-        if (abort)   // abort because of a reason
-        {
-            //FIX ME: here 'failed' should appear over progress bar
-            spell->SendChannelUpdate(0);
-            //spell->cancel();
-            spell->finish(false);
-        }
-        else		// spell ended
-        {
-            spell->SendChannelUpdate(0);
-            spell->finish();
-        }
-    }
-
-    if (!abort)
-        sEventMgr.AddEvent(this, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    else
-        ExpireAndDelete();
-}
-
-void GameObject::FishHooked(Player* player)
-{
-    WorldPacket  data(12);
-    data.Initialize(SMSG_GAMEOBJECT_CUSTOM_ANIM);
-    data << uint64(GetGUID());
-    data << uint32(0);      // value < 4
-    player->GetSession()->SendPacket(&data);
-    SetFlags(GO_FLAG_NEVER_DESPAWN);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// Quests
-//////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::AddQuest(QuestRelation* Q)
-{
-    m_quests->push_back(Q);
-}
-
-void GameObject::DeleteQuest(QuestRelation* Q)
-{
-    std::list<QuestRelation*>::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
-    {
-        if (((*it)->type == Q->type) && ((*it)->qst == Q->qst))
-        {
-            delete(*it);
-            m_quests->erase(it);
-            break;
-        }
-    }
-}
-
-Quest* GameObject::FindQuest(uint32 quest_id, uint8 quest_relation)
-{
-    std::list< QuestRelation* >::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
-    {
-        QuestRelation* ptr = (*it);
-        if ((ptr->qst->id == quest_id) && (ptr->type & quest_relation))
-        {
-            return ptr->qst;
-        }
-    }
-    return NULL;
-}
-
-uint16 GameObject::GetQuestRelation(uint32 quest_id)
-{
-    uint16 quest_relation = 0;
-    std::list< QuestRelation* >::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
-    {
-        if ((*it) != NULL && (*it)->qst->id == quest_id)
-        {
-            quest_relation |= (*it)->type;
-        }
-    }
-    return quest_relation;
-}
-
-uint32 GameObject::NumOfQuests()
-{
-    return (uint32)m_quests->size();
-}
-
-void GameObject::_LoadQuests()
-{
-    sQuestMgr.LoadGOQuests(this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -720,20 +344,10 @@ void GameObject::OnPushToWorld()
             mEvent->mEventScript->OnGameObjectPushToWorld(mEvent, this);
         }
     }
+
     CALL_GO_SCRIPT_EVENT(this, OnCreate)();
     CALL_GO_SCRIPT_EVENT(this, OnSpawn)();
     CALL_INSTANCE_SCRIPT_EVENT(m_mapMgr, OnGameObjectPushToWorld)(this);
-
-    // We have a field supposedly for this, but it's pointless to waste CPU time for this
-    // unless it's longer than a minute (since usually then it's much longer)
-    if ((pInfo->type == GAMEOBJECT_TYPE_CHEST) && (pInfo->chest.consumable == 0))
-    {
-        time_t restockTime = 60 * 1000;
-        if (pInfo->chest.restock_time > 60)
-            restockTime = pInfo->chest.restock_time * 1000;
-
-        EventMgr::getSingleton().AddEvent(this, &GameObject::ReStock, EVENT_GO_CHEST_RESTOCK, restockTime, 0, 0);
-    }
 }
 
 void GameObject::OnRemoveInRangeObject(Object* pObj)
@@ -753,28 +367,10 @@ void GameObject::OnRemoveInRangeObject(Object* pObj)
 void GameObject::RemoveFromWorld(bool free_guid)
 {
     WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
-    data << GetGUID();
+    data << uint64(GetGUID());
     SendMessageToSet(&data, true);
 
-    sEventMgr.RemoveEvents(this);
     Object::RemoveFromWorld(free_guid);
-}
-
-// Gameobject contains loot ex. chest
-bool GameObject::HasLoot()
-{
-    if (loot.gold > 0)
-        return true;
-
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
-    {
-        if (itr->item.itemproto->Bonding == ITEM_BIND_QUEST || itr->item.itemproto->Bonding == ITEM_BIND_QUEST2)
-            continue;
-
-        if (itr->iItemsCount > 0)
-            return true;
-    }
-    return false;
 }
 
 uint32 GameObject::GetGOReqSkill()
@@ -830,10 +426,692 @@ void GameObject::UpdateRotation()
     }
 }
 
+void GameObject::CastSpell(uint64 TargetGUID, SpellEntry* sp)
+{
+    Spell* s = new Spell(this, sp, true, NULL);
+
+    SpellCastTargets tgt(TargetGUID);
+
+    tgt.m_destX = GetPositionX();
+    tgt.m_destY = GetPositionY();
+    tgt.m_destZ = GetPositionZ();
+
+    s->prepare(&tgt);
+}
+
+void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
+{
+    SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
+    if (sp == nullptr)
+    {
+        sLog.outError("GameObject %u tried to cast a non-existing Spell %u.", pInfo->entry, SpellID);
+        return;
+    }
+
+    CastSpell(TargetGUID, sp);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
-// Destructible GameObjects
+// Class functions for GameObject_Door
+GameObject_Door::GameObject_Door() : GameObject()
+{ }
+
+GameObject_Door::GameObject_Door(uint64 GUID) : GameObject(GUID)
+{ }
+
+GameObject_Door::~GameObject_Door()
+{ }
+
+void GameObject_Door::InitAI()
+{
+    GameObject::InitAI();
+
+    if (pInfo->door.start_open != 0)
+        SetState(GO_STATE_OPEN);
+    else
+        SetState(GO_STATE_CLOSED);
+}
+
+void GameObject_Door::Open()
+{
+    SetState(GO_STATE_OPEN);
+    if (pInfo->door.auto_close_time != 0)
+        sEventMgr.AddEvent(this, &GameObject_Door::Close, 0, pInfo->door.auto_close_time, 1, 0);
+}
+
+void GameObject_Door::Close()
+{
+    sEventMgr.RemoveEvents(this, EVENT_GAMEOBJECT_CLOSE);
+    SetState(GO_STATE_CLOSED);
+}
+
+void GameObject_Door::SpecialOpen()
+{
+    SetState(GO_STATE_ALTERNATIVE_OPEN);
+}
+
+void GameObject_Door::Use(uint64 GUID)
+{
+    if (GetState() == GO_STATE_CLOSED)
+        Open();
+    else
+        Close();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
+// Class functions for GameObject_Button
+GameObject_Button::GameObject_Button() : GameObject()
+{ }
+
+GameObject_Button::GameObject_Button(uint64 GUID) : GameObject(GUID)
+{
+    spell = nullptr;
+}
+
+GameObject_Button::~GameObject_Button()
+{ }
+
+void GameObject_Button::InitAI()
+{
+    GameObject::InitAI();
+
+    if (pInfo->button.start_open != 0)
+        SetState(GO_STATE_OPEN);
+
+    if (pInfo->button.linked_trap_id != 0)
+    {
+        GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->button.linked_trap_id);
+
+        if (gameobject_info != nullptr)
+        {
+            if (gameobject_info->trap.spell_id != 0)
+                spell = dbcSpell.LookupEntryForced(gameobject_info->trap.spell_id);
+        }
+    }
+}
+
+void GameObject_Button::Open()
+{
+    SetState(GO_STATE_OPEN);
+    if (pInfo->button.auto_close_time != 0)
+        sEventMgr.AddEvent(this, &GameObject_Button::Close, EVENT_GAMEOBJECT_CLOSE, pInfo->button.auto_close_time, 1, 0);
+}
+
+void GameObject_Button::Close()
+{
+    sEventMgr.RemoveEvents(this, EVENT_GAMEOBJECT_CLOSE);
+    SetState(GO_STATE_CLOSED);
+}
+
+void GameObject_Button::Use(uint64 GUID)
+{
+    if (GetState() == GO_STATE_CLOSED)
+    {
+        Open();
+
+        if (spell != NULL)
+            CastSpell(GUID, spell);
+    }
+    else
+    {
+        Close();
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_QuestGiver
+GameObject_QuestGiver::GameObject_QuestGiver() : GameObject()
+{ }
+
+GameObject_QuestGiver::GameObject_QuestGiver(uint64 GUID) : GameObject(GUID)
+{
+    m_quests = NULL;
+}
+
+GameObject_QuestGiver::~GameObject_QuestGiver()
+{ }
+
+void GameObject_QuestGiver::InitAI()
+{
+    LoadQuests();
+    GameObject::InitAI();
+}
+
+void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
+{
+    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    {
+        QuestRelation* qr = *itr;
+
+        if ((qr->type == Q->type) && (qr->qst == Q->qst))
+        {
+            delete qr;
+            m_quests->erase(itr);
+            break;
+        }
+    }
+}
+
+Quest* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 quest_relation)
+{
+    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    {
+        QuestRelation* qr = *itr;
+
+        if ((qr->qst->id == quest_id) && ((qr->type & quest_relation) != 0))
+        {
+            return qr->qst;
+        }
+    }
+    return nullptr;
+}
+
+uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
+{
+    uint16 quest_relation = 0;
+
+    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    {
+        QuestRelation* qr = *itr;
+
+        if ((qr != nullptr) && (qr->qst->id == quest_id))
+            quest_relation |= qr->type;
+    }
+
+    return quest_relation;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Chest
+GameObject_Chest::GameObject_Chest() : GameObject_Lootable()
+{ }
+
+GameObject_Chest::GameObject_Chest(uint64 GUID) : GameObject_Lootable(GUID)
+{
+    spell = nullptr;
+}
+
+GameObject_Chest::~GameObject_Chest()
+{ }
+
+void GameObject_Chest::InitAI()
+{
+    GameObject::InitAI();
+
+    if (pInfo->chest.linked_trap_id != 0)
+    {
+        GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->chest.linked_trap_id);
+
+        if (gameobject_info != nullptr)
+        {
+            if (gameobject_info->trap.spell_id != 0)
+                spell = dbcSpell.LookupEntryForced(gameobject_info->trap.spell_id);
+        }
+    }
+}
+
+bool GameObject_Chest::HasLoot()
+{
+    if (loot.gold > 0)
+        return true;
+
+    for (std::vector< __LootItem >::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    {
+        if ((itr->item.itemproto->Bonding == ITEM_BIND_QUEST) || (itr->item.itemproto->Bonding == ITEM_BIND_QUEST2))
+            continue;
+
+        if (itr->iItemsCount > 0)
+            return true;
+    }
+    return false;
+}
+
+void GameObject_Chest::Open()
+{
+    SetState(GO_STATE_OPEN);
+}
+
+void GameObject_Chest::Close()
+{
+    SetState(GO_STATE_CLOSED);
+}
+
+void GameObject_Chest::Use(uint64 GUID)
+{
+    if (GetState() == GO_STATE_CLOSED)
+    {
+        Open();
+
+        if (spell != NULL)
+            CastSpell(GUID, spell);
+    }
+    else
+    {
+        Close();
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Trap
+GameObject_Trap::GameObject_Trap() : GameObject()
+{
+    spell = NULL;
+    targetupdatetimer = 0;
+}
+
+GameObject_Trap::GameObject_Trap(uint64 GUID) : GameObject(GUID)
+{
+    spell = NULL;
+    targetupdatetimer = 0;
+}
+
+GameObject_Trap::~GameObject_Trap()
+{ }
+
+void GameObject_Trap::InitAI()
+{
+    spell = dbcSpell.LookupEntryForced(pInfo->trap.spell_id);
+    charges = pInfo->trap.charges;
+
+    if (pInfo->trap.stealthed != 0)
+    {
+        invisible = true;
+        invisibilityFlag = INVIS_FLAG_TRAP;
+    }
+
+    cooldown = pInfo->trap.cooldown * 1000;
+    if (cooldown < 1000)
+        cooldown = 1000;
+
+    maxdistance = sqrt(float(pInfo->trap.radius));
+    if (maxdistance == 0.0f)
+        maxdistance = 1.0f;
+
+    GameObject::InitAI();
+}
+
+void GameObject_Trap::Update(unsigned long time_passed)
+{
+    if (m_deleted)
+        return;
+
+    if (m_event_Instanceid != m_instanceId)
+    {
+        event_Relocate();
+        return;
+    }
+
+    if (!IsInWorld())
+        return;
+
+    if (spell == NULL)
+        return;
+
+    if (GetState() == 1)
+    {
+        targetupdatetimer += time_passed;
+
+        if (targetupdatetimer > cooldown)   // Update targets only if cooldown finished
+            targetupdatetimer = 0;
+
+        if (targetupdatetimer != 0)
+            return;
+
+        for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+        {
+            float dist;
+
+            Object* o = *itr;
+
+            if (!o->IsUnit())
+                continue;
+
+            if ((m_summoner != NULL) && (o->GetGUID() == m_summoner->GetGUID()))
+                continue;
+
+            dist = GetDistanceSq(o);
+
+            if (dist <= maxdistance)
+            {
+
+                if (m_summonedGo)
+                {
+                    if (!m_summoner)
+                    {
+                        ExpireAndDelete();
+                        return;
+                    }
+
+                    if (!isAttackable(m_summoner, o))
+                        continue;
+                }
+
+                CastSpell(o->GetGUID(), spell);
+
+                if (m_summoner != NULL)
+                    m_summoner->HandleProc(PROC_ON_TRAP_TRIGGER, reinterpret_cast<Unit*>(o), spell);
+
+                if (charges != 0)
+                    charges--;
+
+                if (m_summonedGo && pInfo->trap.charges != 0 && charges == 0)
+                {
+                    ExpireAndDelete();
+                    return;
+                }
+
+                if (spell->EffectImplicitTargetA[0] == 16 || spell->EffectImplicitTargetB[0] == 16)
+                {
+                    return;	 // on area don't continue.
+                }
+            }
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_SpellFocus
+GameObject_SpellFocus::GameObject_SpellFocus() : GameObject()
+{ }
+
+GameObject_SpellFocus::GameObject_SpellFocus(uint64 GUID) : GameObject(GUID)
+{ }
+
+GameObject_SpellFocus::~GameObject_SpellFocus()
+{ }
+
+void GameObject_SpellFocus::OnPushToWorld()
+{
+    GameObject::OnPushToWorld();
+    SpawnLinkedTrap();
+}
+
+void GameObject_SpellFocus::SpawnLinkedTrap()
+{
+    uint32 trapid = pInfo->spell_focus.linked_trap_id;
+    if (trapid == 0)
+        return;
+
+    GameObject* go = m_mapMgr->CreateGameObject(trapid);
+    if (go == nullptr)
+    {
+        sLog.outError("Failed to create linked trap for GameObject %u ( %s ).", pInfo->entry, pInfo->name);
+        return;
+    }
+
+    if (!go->CreateFromProto(trapid, m_mapId, m_position.x, m_position.y, m_position.z, m_position.o))
+    {
+        sLog.outError("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", pInfo->entry, pInfo->name);
+        return;
+    }
+
+    go->SetFaction(GetFaction());
+    go->SetUInt64Value(OBJECT_FIELD_CREATED_BY, GetGUID());
+    go->PushToWorld(m_mapMgr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Goober
+GameObject_Goober::GameObject_Goober() : GameObject()
+{ }
+
+GameObject_Goober::GameObject_Goober(uint64 GUID) : GameObject(GUID)
+{
+    spell = NULL;
+}
+
+GameObject_Goober::~GameObject_Goober()
+{ }
+
+void GameObject_Goober::InitAI()
+{
+    GameObject::InitAI();
+
+    if (pInfo->goober.linked_trap_id != 0)
+    {
+        GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->goober.linked_trap_id);
+        if (gameobject_info != nullptr)
+        {
+            if (gameobject_info->trap.spell_id != 0)
+                spell = dbcSpell.LookupEntryForced(gameobject_info->trap.spell_id);
+        }
+    }
+}
+
+void GameObject_Goober::Open()
+{
+    SetState(GO_STATE_OPEN);
+    if (pInfo->goober.auto_close_time != 0)
+        sEventMgr.AddEvent(this, &GameObject_Goober::Close, EVENT_GAMEOBJECT_CLOSE, pInfo->goober.auto_close_time, 1, 0);
+}
+
+void GameObject_Goober::Close()
+{
+    sEventMgr.RemoveEvents(this, EVENT_GAMEOBJECT_CLOSE);
+    SetState(GO_STATE_CLOSED);
+}
+
+void GameObject_Goober::Use(uint64 GUID)
+{
+    if (GetState() == GO_STATE_CLOSED)
+    {
+        Open();
+
+        if (spell != NULL)
+        {
+            CastSpell(GUID, spell);
+        }
+    }
+    else
+    {
+        Close();
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_FishingNode
+GameObject_FishingNode::GameObject_FishingNode() : GameObject_Lootable()
+{
+    FishHooked = false;
+}
+
+GameObject_FishingNode::GameObject_FishingNode(uint64 GUID) : GameObject_Lootable(GUID)
+{
+    FishHooked = false;
+}
+
+GameObject_FishingNode::~GameObject_FishingNode()
+{ }
+
+void GameObject_FishingNode::OnPushToWorld()
+{
+    uint32 zone = 0; // GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
+    if (zone == 0)
+        zone = GetZoneId();
+
+    // Only set a 'splash' if there is any loot in this area / zone
+    if (lootmgr.IsFishable(zone))
+    {
+        uint32 seconds[] = { 0, 4, 10, 14 };
+        uint32 rnd = RandomUInt(3);
+        sEventMgr.AddEvent(this, &GameObject_FishingNode::EventFishHooked, EVENT_GAMEOBJECT_FISH_HOOKED, seconds[rnd] * 1000, 1, 0);
+
+    }
+    sEventMgr.AddEvent(this, &GameObject_FishingNode::EndFishing, true, EVENT_GAMEOBJECT_END_FISHING, 17 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+}
+
+bool GameObject_FishingNode::UseNode()
+{
+    sEventMgr.RemoveEvents(this);
+
+    // Clicking on the bobber before something is hooked
+    if (!FishHooked)
+    {
+        EndFishing(true);
+        return false;
+    }
+    return true;
+}
+
+void GameObject_FishingNode::EndFishing(bool abort)
+{
+    if (!abort)
+        sEventMgr.AddEvent(static_cast<GameObject*>(this), &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, 10 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    else
+        ExpireAndDelete();
+}
+
+void GameObject_FishingNode::EventFishHooked()
+{
+    WorldPacket data(SMSG_GAMEOBJECT_CUSTOM_ANIM, 12);
+    data << uint64(GetGUID());
+    data << uint32(0);          // value < 4
+    SendMessageToSet(&data, false, false);
+
+    FishHooked = true;
+}
+
+bool GameObject_FishingNode::HasLoot()
+{
+    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    {
+        if ((itr->item.itemproto->Bonding == ITEM_BIND_QUEST) || (itr->item.itemproto->Bonding == ITEM_BIND_QUEST2))
+            continue;
+
+        if (itr->iItemsCount > 0)
+            return true;
+    }
+    return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Ritual
+GameObject_Ritual::GameObject_Ritual()
+{ }
+
+GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID)
+{
+    Ritual = NULL;;
+}
+
+GameObject_Ritual::~GameObject_Ritual()
+{
+    delete Ritual;
+    Ritual = NULL;
+}
+
+void GameObject_Ritual::InitAI()
+{
+    Ritual = new CRitual(pInfo->summoning_ritual.req_participants);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_SpellCaster
+GameObject_SpellCaster::GameObject_SpellCaster() : GameObject()
+{ }
+
+GameObject_SpellCaster::GameObject_SpellCaster(uint64 GUID) : GameObject(GUID)
+{
+    spell = nullptr;
+}
+
+GameObject_SpellCaster::~GameObject_SpellCaster()
+{ }
+
+void GameObject_SpellCaster::InitAI()
+{
+    charges = pInfo->spell_caster.charges;
+
+    spell = dbcSpell.LookupEntry(pInfo->spell_caster.spell_id);
+    if (spell == nullptr)
+        sLog.outError("GameObject %u ( %s ) has a nonexistant spellID in the database.", pInfo->entry, pInfo->name);
+}
+
+void GameObject_SpellCaster::Use(uint64 GUID)
+{
+    if (spell == nullptr)
+        return;
+
+    CastSpell(GUID, spell);
+
+    if ((charges > 0) && (--charges == 0))
+        ExpireAndDelete();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_FishingHole
+GameObject_FishingHole::GameObject_FishingHole() : GameObject_Lootable()
+{ }
+
+GameObject_FishingHole::GameObject_FishingHole(uint64 GUID) : GameObject_Lootable(GUID)
+{
+    usage_remaining = 0;
+}
+
+GameObject_FishingHole::~GameObject_FishingHole()
+{ }
+
+void GameObject_FishingHole::InitAI()
+{
+    CalcFishRemaining(true);
+}
+
+bool GameObject_FishingHole::CanFish()
+{
+    if (usage_remaining > 0)
+        return true;
+    else
+        return false;
+}
+
+void GameObject_FishingHole::CatchFish()
+{
+    ASSERT(usage_remaining > 0);
+    usage_remaining--;
+    if (usage_remaining == 0)
+        sEventMgr.AddEvent(static_cast<GameObject*>(this), &GameObject::Despawn, uint32(0), (1800000 + RandomUInt(3600000)), EVENT_GAMEOBJECT_EXPIRE, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT); // respawn in 30 - 90 minutes
+}
+
+void GameObject_FishingHole::CalcFishRemaining(bool force)
+{
+    if (force || (usage_remaining == 0))
+        usage_remaining = pInfo->fishinghole.min_success_opens + RandomUInt(pInfo->fishinghole.max_success_opens - pInfo->fishinghole.min_success_opens) - 1;
+}
+
+bool GameObject_FishingHole::HasLoot()
+{
+    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    {
+        if (itr->item.itemproto->Bonding == ITEM_BIND_QUEST || itr->item.itemproto->Bonding == ITEM_BIND_QUEST2)
+            continue;
+
+        if (itr->iItemsCount > 0)
+            return true;
+    }
+    return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Class functions for GameObject_Destructible
+GameObject_Destructible::GameObject_Destructible() : GameObject()
+{ }
+
+GameObject_Destructible::GameObject_Destructible(uint64 GUID) : GameObject(GUID)
+{
+    hitpoints = 0;
+    maxhitpoints = 0;
+}
+
+GameObject_Destructible::~GameObject_Destructible()
+{ }
+
+void GameObject_Destructible::InitAI()
+{
+    GameObject::InitAI();
+    Rebuild();
+}
+
+void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
 {
     // If we are already destroyed there's nothing to damage!
     if (hitpoints == 0)
@@ -846,7 +1124,7 @@ void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUI
 
         SetFlags(GO_FLAG_DESTROYED);
         SetFlags(GetFlags() & ~GO_FLAG_DAMAGED);
-        SetDisplayId(pInfo->raw.parameter_9);   // destroyed display id
+        SetDisplayId(pInfo->destructible_building.destroyed_display_id);   // destroyed display id
 
         CALL_GO_SCRIPT_EVENT(this, OnDestroyed)();
 
@@ -885,7 +1163,7 @@ void GameObject::Damage(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUI
     SendDamagePacket(damage, AttackerGUID, ControllerGUID, SpellID);
 }
 
-void GameObject::SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
+void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
 {
     WorldPacket data(SMSG_DESTRUCTIBLE_BUILDING_DAMAGE, 29);
 
@@ -897,7 +1175,7 @@ void GameObject::SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 Con
     SendMessageToSet(&data, false, false);
 }
 
-void GameObject::Rebuild()
+void GameObject_Destructible::Rebuild()
 {
     SetFlags(GetFlags() & uint32(~(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED)));
     SetDisplayId(pInfo->display_id);
@@ -905,20 +1183,3 @@ void GameObject::Rebuild()
     hitpoints = maxhitpoints;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// Loot
-//////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::ReStock()
-{
-    // this hasn't been looted yet so we don't want to restock
-    if (loot.items.empty())
-        return;
-
-    if (!loot.looters.empty())
-        return;
-
-    if (loot.HasRoll())
-        return;
-
-    lootmgr.FillGOLoot(&loot, pInfo->raw.parameter_1, m_mapMgr->iInstanceMode);
-}

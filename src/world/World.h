@@ -301,7 +301,7 @@ class WorldSocket;
 typedef std::list<WorldSocket*> QueueSet;
 typedef std::set<WorldSession*> SessionSet;
 
-class SERVER_DECL World : public Singleton<World>, public EventableObject, public Arcemu::IUpdatable
+class SERVER_DECL World : public Singleton<World>, public EventableObject, public IUpdatable
 {
     private:
 

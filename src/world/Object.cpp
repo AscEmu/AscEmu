@@ -645,10 +645,14 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
             GameObject* go = static_cast<GameObject*>(this);
             QuestLogEntry* qle;
             GameObjectInfo* gameobject_info;
-            if (go->HasQuests())
+            GameObject_QuestGiver* go_quest_giver = nullptr;
+            if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+                go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
+
+            if (go_quest_giver != nullptr && go_quest_giver->HasQuests())
             {
                 std::list<QuestRelation*>::iterator itr;
-                for (itr = go->QuestsBegin(); itr != go->QuestsEnd(); ++itr)
+                for (itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
                 {
                     QuestRelation* qr = (*itr);
                     if (qr != NULL)
@@ -1534,26 +1538,27 @@ void Object::_setFaction()
     if (IsUnit())
     {
         faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->GetFaction());
-        if (!faction_template)
+        if (faction_template == nullptr)
             LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
     }
     else if (IsGameObject())
     {
         faction_template = sFactionTemplateStore.LookupEntry(static_cast<GameObject*>(this)->GetFaction());
-        if (!faction_template)
+        if (faction_template == nullptr)
             LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), GetEntry());
     }
 
     //this solution looks a bit off, but our db is not perfect and this prevents some crashes.
-    if (faction_template == nullptr)
-        faction_template = sFactionTemplateStore.LookupEntry(0);
-
     m_faction = faction_template;
-
-    //this solution looks a bit off, but our db is not perfect and this prevents some crashes.
-    m_factionDBC = sFactionStore.LookupEntry(faction_template->Faction);
-    if (m_factionDBC == nullptr)
+    if (m_faction == nullptr)
+    {
+        m_faction = sFactionTemplateStore.LookupEntry(0);
         m_factionDBC = sFactionStore.LookupEntry(0);
+    }
+    else
+    {
+        m_factionDBC = sFactionStore.LookupEntry(m_faction->Faction);
+    }
 }
 
 uint32 Object::_getFaction()
@@ -2038,7 +2043,7 @@ bool Object::CanActivate()
 
         case TYPEID_GAMEOBJECT:
         {
-            if (static_cast<GameObject*>(this)->HasAI() && static_cast<GameObject*>(this)->GetType() != GAMEOBJECT_TYPE_TRAP)
+            if (static_cast<GameObject*>(this)->GetType() != GAMEOBJECT_TYPE_TRAP)
                 return true;
         }
         break;

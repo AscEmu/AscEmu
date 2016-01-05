@@ -1675,7 +1675,7 @@ void Spell::AddTime(uint32 type)
     }
 }
 
-void Spell::update(uint32 difftime)
+void Spell::Update(unsigned long time_passed)
 {
     // skip cast if we're more than 2/3 of the way through
     ///\todo determine which spells can be cast while moving.
@@ -1711,13 +1711,12 @@ void Spell::update(uint32 difftime)
     {
         case SPELL_STATE_PREPARING:
         {
-            //printf("spell::update m_timer %u, difftime %d, newtime %d\n", m_timer, difftime, m_timer-difftime);
-            if ((int32)difftime >= m_timer)
+            if (static_cast<int32>(time_passed) >= m_timer)
                 cast(true);
             else
             {
-                m_timer -= difftime;
-                if ((int32)difftime >= m_timer)
+                m_timer -= time_passed;
+                if (static_cast<int32>(time_passed) >= m_timer)
                 {
                     m_timer = 0;
                     cast(true);
@@ -1731,10 +1730,10 @@ void Spell::update(uint32 difftime)
         {
             if (m_timer > 0)
             {
-                if ((int32)difftime >= m_timer)
+                if (static_cast<int32>(time_passed) >= m_timer)
                     m_timer = 0;
                 else
-                    m_timer -= difftime;
+                    m_timer -= time_passed;
             }
             if (m_timer <= 0)
             {
@@ -2395,7 +2394,7 @@ void Spell::SendChannelUpdate(uint32 time)
             if (dynObj)
                 dynObj->Remove();
 
-            if (dynObj == NULL && m_pendingAuras.find(m_caster->GetGUID()) == m_pendingAuras.end())  //no persistant aura or aura on caster
+            if (dynObj == NULL /*&& m_pendingAuras.find(m_caster->GetGUID()) == m_pendingAuras.end()*/)  //no persistant aura or aura on caster
             {
                 u_caster->SetChannelSpellTargetGUID(0);
                 u_caster->SetChannelSpellId(0);
@@ -2429,30 +2428,19 @@ void Spell::SendChannelStart(uint32 duration)
     {
         // Send Channel Start
         WorldPacket data(MSG_CHANNEL_START, 22);
-        data << m_caster->GetNewGUID();
-        data << GetProto()->Id;
-        data << duration;
+        data << WoWGuid(m_caster->GetNewGUID());
+        data << uint32(m_spellInfo->Id);
+        data << uint32(duration);
         m_caster->SendMessageToSet(&data, true);
     }
 
     m_castTime = m_timer = duration;
 
     if (u_caster != NULL)
+    {
         u_caster->SetChannelSpellId(GetProto()->Id);
-
-    /*
-    Unit* target = objmgr.GetCreature(TO< Player* >(m_caster)->GetSelection());
-    if (!target)
-    target = objmgr.GetObject<Player>(TO< Player* >(m_caster)->GetSelection());
-    if (!target)
-    return;
-
-    m_caster->SetUInt32Value(UNIT_FIELD_CHANNEL_OBJECT,target->GetGUIDLow());
-    m_caster->SetUInt32Value(UNIT_FIELD_CHANNEL_OBJECT+1,target->GetGUIDHigh());
-    //disabled it can be not only creature but GO as well
-    //and GO is not selectable, so this method will not work
-    //these fields must be filled @ place of call
-    */
+        sEventMgr.AddEvent(u_caster, &Unit::EventStopChanneling, false, EVENT_STOP_CHANNELING, duration, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    }
 }
 
 void Spell::SendResurrectRequest(Player* target)

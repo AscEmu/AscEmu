@@ -2426,7 +2426,7 @@ void Spell::SpellEffectSummon(uint32 i)
             if (summon_properties->ControlType == SUMMON_CONTROL_TYPE_GUARDIAN)
                 SpellEffectSummonGuardian(i, summon_properties, cp, v);
             else
-                SpellEffectSummonWild(i, summon_properties, cp, v);
+                SpellEffectSummonWild(i);
 
             return;
 
@@ -2465,33 +2465,66 @@ void Spell::SpellEffectSummon(uint32 i)
     LOG_ERROR("Unknown summon type in summon property %u in spell %u %s", summonpropid, m_spellInfo->Id, m_spellInfo->Name);
 }
 
-void Spell::SpellEffectSummonWild(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v)
+void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 {
-    if (g_caster != NULL)
-        u_caster = g_caster->m_summoner;
+    //these are some creatures that have your faction and do not respawn
+    //number of creatures is actually dmg (the usual formula), sometimes =3 sometimes =1
+    //if( u_caster == NULL || !u_caster->IsInWorld() )
+    //	return;
 
-    if (u_caster == NULL)
+    if ((!m_caster->IsGameObject() && !m_caster->IsUnit()) || !m_caster->IsInWorld())
         return;
 
-    for (int32 j = 0; j < damage; j++)
+    uint32 cr_entry = GetProto()->EffectMiscValue[i];
+    CreatureProto* proto = CreatureProtoStorage.LookupEntry(cr_entry);
+    CreatureInfo* info = CreatureNameStorage.LookupEntry(cr_entry);
+    if (!proto || !info)
     {
-        float followangle = -1 * M_PI_FLOAT / 2 * j;
-        v.x = v.x + (GetRadius(i) * (cosf(followangle + v.o)));
-        v.y = v.y + (GetRadius(i) * (sinf(followangle + v.o)));
+        sLog.outError("Warning : Missing summon creature template %u used by spell %u!", cr_entry, GetProto()->Id);
+        return;
+    }
+    float x, y, z;
+    if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION && m_targets.m_destX && m_targets.m_destY && m_targets.m_destZ)
+    {
+        x = m_targets.m_destX;
+        y = m_targets.m_destY;
+        z = m_targets.m_destZ;
+    }
+    else
+    {
+        x = m_caster->GetPositionX();
+        y = m_caster->GetPositionY();
+        z = m_caster->GetPositionZ();
+    }
+    for (int j = 0; j<damage; j++)
+    {
+        float m_fallowAngle = -((float(M_PI) / 2) * j);
+        float tempx = x + (GetRadius(i) * (cosf(m_fallowAngle + m_caster->GetOrientation())));
+        float tempy = y + (GetRadius(i) * (sinf(m_fallowAngle + m_caster->GetOrientation())));
+        Creature* p = m_caster->GetMapMgr()->CreateCreature(cr_entry);
 
-        Summon* s = u_caster->GetMapMgr()->CreateSummon(proto->Id, SUMMONTYPE_WILD);
-        if (s == NULL)
-            return;
+        ASSERT(p != NULL);
 
-        s->Load(proto, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
-        s->PushToWorld(m_caster->GetMapMgr());
+        p->Load(proto, tempx, tempy, z);
+        p->SetZoneId(m_caster->GetZoneId());
 
-        if ((p_caster != NULL) && (spe->Slot != 0))
-            p_caster->SendTotemCreated(spe->Slot - 1, s->GetGUID(), GetDuration(), m_spellInfo->Id);
+        if (p->GetProto()->Faction == 35)
+        {
+            p->SetSummonedByGUID(m_caster->GetGUID());
+            p->SetCreatedByGUID(m_caster->GetGUID());
 
-        int32 duration = static_cast<int32>(GetDuration());
-        if (duration > 0)
-            sEventMgr.AddEvent(static_cast< Object* >(s), &Object::Delete, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            if (m_caster->IsGameObject())
+                p->SetFaction(static_cast<GameObject*>(m_caster)->GetFaction());
+            else
+                p->SetFaction(static_cast<Unit*>(m_caster)->GetFaction());
+        }
+        else
+        {
+            p->SetFaction(proto->Faction);
+        }
+        p->PushToWorld(m_caster->GetMapMgr());
+        //make sure they will be desummoned (roxor)
+        sEventMgr.AddEvent(p, &Creature::SummonExpire, EVENT_SUMMON_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -2894,9 +2927,10 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
     }
 }
 
-void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
+void Spell::SpellEffectOpenLock(uint32 i)
 {
-    if (!p_caster) return;
+    if (!p_caster)
+        return;
 
     uint8 loottype = 0;
 
@@ -2947,15 +2981,18 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                         gameObjTarget->SetFlags(GO_FLAG_NONE);
                         gameObjTarget->SetState(GO_STATE_CLOSED);
                         //Add Fill GO loot here
-                        if (gameObjTarget->loot.items.size() == 0)
+                        if (gameObjTarget->IsLootable())
                         {
-                            if (gameObjTarget->GetMapMgr() != NULL)
-                                lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
-                            else
-                                lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                            GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(gameObjTarget);
+                            if (pLGO->loot.items.size() == 0)
+                            {
+                                if (gameObjTarget->GetMapMgr() != NULL)
+                                    lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                                else
+                                    lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
 
-
-                            DetermineSkillUp(SKILL_LOCKPICKING, v / 5); //to prevent free skill up
+                                DetermineSkillUp(SKILL_LOCKPICKING, v / 5);     //to prevent free skill up
+                            }
                         }
                         loottype = LOOT_CORPSE;
                         //End of it
@@ -2972,31 +3009,32 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
             uint32 v = gameObjTarget->GetGOReqSkill();
             bool bAlreadyUsed = false;
 
-            if (Rand(100.0f)) // 3% chance to fail//why?
+            if (static_cast<Player*>(m_caster)->_GetSkillLineCurrent(SKILL_HERBALISM) < v)
             {
-                if (static_cast< Player* >(m_caster)->_GetSkillLineCurrent(SKILL_HERBALISM) < v)
-                {
-                    //SendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
-                    return;
-                }
-                else
-                {
-                    if (gameObjTarget->loot.items.size() == 0)
-                    {
-                        if (gameObjTarget->GetMapMgr() != NULL)
-                            lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
-                        else
-                            lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
-                    }
-                    else
-                        bAlreadyUsed = true;
-                }
-                loottype = LOOT_SKINNING;
+                //SendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
+                return;
             }
             else
             {
-                SendCastResult(SPELL_FAILED_TRY_AGAIN);
+                if (gameObjTarget->IsLootable())
+                {
+                    GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(gameObjTarget);
+
+                    if (pLGO->loot.items.size() == 0)
+                    {
+                        if (gameObjTarget->GetMapMgr() != NULL)
+                            lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                        else
+                            lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                    }
+                    else
+                    {
+                        bAlreadyUsed = true;
+                    }
+                }
             }
+            loottype = LOOT_SKINNING;
+
             //Skill up
             if (!bAlreadyUsed) //Avoid cheats with opening/closing without taking the loot
                 DetermineSkillUp(SKILL_HERBALISM, v / 5);
@@ -3004,34 +3042,34 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
         break;
         case LOCKTYPE_MINING:
         {
-            if (!gameObjTarget) return;
+            if (!gameObjTarget)
+                return;
 
             uint32 v = gameObjTarget->GetGOReqSkill();
             bool bAlreadyUsed = false;
 
-            if (Rand(100.0f))     // 3% chance to fail//why?
+            if (static_cast<Player*>(m_caster)->_GetSkillLineCurrent(SKILL_MINING) < v)
             {
-                if (static_cast< Player* >(m_caster)->_GetSkillLineCurrent(SKILL_MINING) < v)
-                {
-                    //SendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
-                    return;
-                }
-                else if (gameObjTarget->loot.items.size() == 0)
+                //SendCastResult(SPELL_FAILED_LOW_CASTLEVEL);
+                return;
+            }
+            else if (gameObjTarget->IsLootable())
+            {
+                GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(gameObjTarget);
+                if (pLGO->loot.items.size() == 0)
                 {
                     if (gameObjTarget->GetMapMgr() != NULL)
-                        lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                     else
-                        lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
                 }
-                else
-                    bAlreadyUsed = true;
-
-                loottype = LOOT_SKINNING;
             }
             else
             {
-                SendCastResult(SPELL_FAILED_TRY_AGAIN);
+                bAlreadyUsed = true;
             }
+            loottype = LOOT_SKINNING;
+
             //Skill up
             if (!bAlreadyUsed) //Avoid cheats with opening/closing without taking the loot
                 DetermineSkillUp(SKILL_MINING, v / 5);
@@ -3055,8 +3093,10 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
         break;
         case LOCKTYPE_QUICK_CLOSE:
         {
-            if (!gameObjTarget) return;
-            gameObjTarget->EventCloseDoor();
+            if (gameObjTarget == NULL)
+                return;
+
+            gameObjTarget->Use(m_caster->GetGUID());
         }
         break;
 
@@ -3071,8 +3111,10 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
 
         default://not profession
         {
-            if (!gameObjTarget)
+            if (gameObjTarget == NULL)
                 return;
+
+            gameObjTarget->Use(m_caster->GetGUID());
 
             CALL_GO_SCRIPT_EVENT(gameObjTarget, OnActivate)(p_caster);
             CALL_INSTANCE_SCRIPT_EVENT(gameObjTarget->GetMapMgr(), OnGameObjectActivate)(gameObjTarget, p_caster);
@@ -3086,12 +3128,17 @@ void Spell::SpellEffectOpenLock(uint32 i) // Open Lock
                 return;
             }
 
-            if (gameObjTarget->loot.items.size() == 0)
+            if (gameObjTarget->IsLootable())
             {
-                if (gameObjTarget->GetMapMgr() != NULL)
-                    lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
-                else
-                    lootmgr.FillGOLoot(&gameObjTarget->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(gameObjTarget);
+
+                if (pLGO->loot.items.size() == 0)
+                {
+                    if (gameObjTarget->GetMapMgr() != NULL)
+                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                    else
+                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                }
             }
             loottype = LOOT_CORPSE;
         }
@@ -3442,7 +3489,8 @@ void Spell::SpellEffectSkillStep(uint32 i) // Skill Step
         if (m_targets.m_unitTarget)
         {
             target = objmgr.GetPlayer((uint32)m_targets.m_unitTarget);
-            if (!target) return;
+            if (!target)
+                return;
         }
         else return;
     }
@@ -3539,9 +3587,17 @@ void Spell::SpellEffectSpawn(uint32 i)
 
 void Spell::SpellEffectSummonObject(uint32 i)
 {
-    if (!u_caster) return;
+    if (!u_caster)
+        return;
 
     uint32 entry = GetProto()->EffectMiscValue[i];
+
+    GameObjectInfo* info = GameObjectNameStorage.LookupEntry(entry);
+    if (info == nullptr)
+    {
+        sLog.outError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name, i, entry);
+        return;
+    }
 
     uint32 mapid = u_caster->GetMapId();
     float px = u_caster->GetPositionX();
@@ -3550,12 +3606,16 @@ void Spell::SpellEffectSummonObject(uint32 i)
     float orient = m_caster->GetOrientation();
     float posx = 0, posy = 0, posz = 0;
 
-    if (entry == GO_FISHING_BOBBER && p_caster)
+    GameObject* go = nullptr;
+
+    if (info->type == GAMEOBJECT_TYPE_FISHINGNODE)
     {
+        if (p_caster == nullptr)
+            return;
+
         float co = cos(orient);
         float si = sin(orient);
         MapMgr* map = m_caster->GetMapMgr();
-        Spell* spell = u_caster->GetCurrentSpell();
 
         float r;
         for (r = 20; r > 10; r--)
@@ -3573,123 +3633,52 @@ void Spell::SpellEffectSummonObject(uint32 i)
         posx = px + r * co;
         posy = py + r * si;
 
-        ///\todo Fix me: This should be loaded / cached
-        uint32 zone = p_caster->GetAreaID();
-        if (zone == 0)   // If the player's area ID is 0, use the zone ID instead
-            zone = p_caster->GetZoneId();
+        go = u_caster->GetMapMgr()->CreateGameObject(entry);
 
-        uint32 minskill;
-        FishingZoneEntry* fishentry = FishingZoneStorage.LookupEntry(zone);
-        if (!fishentry)   // Check database if there is fishing area / zone information, if not, return
-            return;
-
-        ///\todo Fix me: Add fishskill to the calculations
-        minskill = fishentry->MinSkill;
-        spell->SendChannelStart(20000);   // 30 seconds
-        /*spell->SendSpellStart();
-        spell->SendCastResult(SPELL_CANCAST_OK);
-        spell->SendSpellGo ();*/
-
-        GameObject* go = u_caster->GetMapMgr()->CreateGameObject(GO_FISHING_BOBBER);
-
-        go->CreateFromProto(GO_FISHING_BOBBER, mapid, posx, posy, posz, orient);
+        go->CreateFromProto(entry, mapid, posx, posy, posz, orient);
         go->SetFlags(GO_FLAG_NONE);
         go->SetState(GO_STATE_OPEN);
         go->SetUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->GetGUID());
-        u_caster->SetChannelSpellTargetGUID(go->GetGUID());
+        go->SetFaction(u_caster->GetFaction());
         go->Phase(PHASE_SET, u_caster->GetPhase());
 
         go->PushToWorld(m_caster->GetMapMgr());
 
-        if (lootmgr.IsFishable(zone))     // Only set a 'splash' if there is any loot in this area / zone
-        {
-            uint32 seconds[] = { 0, 4, 10, 14 };
-            uint32 rnd = RandomUInt(3);
-            sEventMgr.AddEvent(go, &GameObject::FishHooked, static_cast< Player* >(m_caster), EVENT_GAMEOBJECT_FISH_HOOKED, seconds[rnd] * 1000, 1, 0);
-        }
-        sEventMgr.AddEvent(go, &GameObject::EndFishing, static_cast< Player* >(m_caster), false, EVENT_GAMEOBJECT_END_FISHING, 17 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        p_caster->SetSummonedObject(go);
+        u_caster->SetChannelSpellTargetGUID(go->GetGUID());
     }
     else
     {
         posx = px;
         posy = py;
-        auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
-        if (!gameobject_info)
-        {
-            if (p_caster)
-            {
-                sChatHandler.BlueSystemMessage(p_caster->GetSession(), "non-existent gameobject %u tried to be created by SpellEffectSummonObject. Report to devs!", entry);
-            }
-            return;
-        }
-        if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION && m_targets.m_destX && m_targets.m_destY && m_targets.m_destZ)
+        if ((m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION) && (m_targets.m_destX && m_targets.m_destY && m_targets.m_destZ))
         {
             posx = m_targets.m_destX;
             posy = m_targets.m_destY;
             pz = m_targets.m_destZ;
         }
-        GameObject* go = m_caster->GetMapMgr()->CreateGameObject(entry);
+        
+        go = m_caster->GetMapMgr()->CreateGameObject(entry);
 
         go->CreateFromProto(entry, mapid, posx, posy, pz, orient);
-        go->SetState(GO_STATE_CLOSED);
         go->SetUInt64Value(OBJECT_FIELD_CREATED_BY, m_caster->GetGUID());
         go->Phase(PHASE_SET, u_caster->GetPhase());
         go->PushToWorld(m_caster->GetMapMgr());
         sEventMgr.AddEvent(go, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        if (entry == 17032 && p_caster)   // this is a portal
-        {
-            // enable it for party only
-            go->SetState(GO_STATE_OPEN);
-            //disable by default
-            WorldPacket* pkt = go->BuildFieldUpdatePacket(GAMEOBJECT_BYTES_1, 1 << 24);
-            SubGroup* pGroup = p_caster->GetGroup() ? p_caster->GetGroup()->GetSubGroup(p_caster->GetSubGroup()) : NULL;
 
-            if (pGroup)
-            {
-                p_caster->GetGroup()->Lock();
-                for (GroupMembersSet::iterator itr = pGroup->GetGroupMembersBegin(); itr != pGroup->GetGroupMembersEnd(); ++itr)
-                {
-                    if ((*itr)->m_loggedInPlayer && m_caster != (*itr)->m_loggedInPlayer)
-                        (*itr)->m_loggedInPlayer->GetSession()->SendPacket(pkt);
-                }
-                p_caster->GetGroup()->Unlock();
-            }
-            delete pkt;
-        }
-        else if (entry == 36727 || entry == 177193 || entry == 194108)    // Portal of Summoning and portal of doom
+        if (info->type == GAMEOBJECT_TYPE_RITUAL)
         {
-            if (!p_caster) return;
-
-            //Player*  pTarget = p_caster->GetMapMgr()->GetPlayer(p_caster->GetSelection());
-            Player* pTarget = objmgr.GetPlayer((uint32)p_caster->GetSelection());
-            if (!pTarget || !pTarget->IsInWorld())
+            if (p_caster == NULL)
                 return;
-            go->m_ritualmembers[0] = p_caster->GetLowGUID();
-            go->m_ritualcaster = p_caster->GetLowGUID();
-            go->m_ritualtarget = pTarget->GetLowGUID();
-            go->m_ritualspell = static_cast<uint16>(GetProto()->Id);
-        }
-        else if (entry == 186811 || entry == 181622)    // ritual of refreshment, ritual of souls
-        {
-            if (!p_caster) return;
 
-            go->m_ritualmembers[0] = p_caster->GetLowGUID();
-            go->m_ritualcaster = p_caster->GetLowGUID();
-            go->m_ritualtarget = 0;
-            go->m_ritualspell = static_cast<uint16>(GetProto()->Id);
+            GameObject_Ritual* go_ritual = static_cast<GameObject_Ritual*>(go);
+
+            go_ritual->GetRitual()->Setup(p_caster->GetLowGUID(), 0, m_spellInfo->Id);
+            go_ritual->GetRitual()->Setup(p_caster->GetLowGUID(), static_cast< uint32 >(p_caster->GetSelection()), m_spellInfo->Id);
         }
-        else if (entry == 186812 || entry == 181621)    // Refreshment Table, Soulwell
-        {
-            go->charges = gameobject_info->raw.parameter_1;
-        }
-        else//Lightwell,if there is some other type -- add it
-        {
-            go->charges = 5;//Max 5 charges
-        }
-        if (p_caster)
-            p_caster->SetSummonedObject(go);//p_caster
     }
+
+    if (p_caster != NULL)
+        p_caster->SetSummonedObject(go);
 }
 
 void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
@@ -3898,7 +3887,8 @@ void Spell::SpellEffectLearnPetSpell(uint32 i)
 
 void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
 {
-    if (!unitTarget || !u_caster) return;
+    if (!unitTarget || !u_caster)
+        return;
 
     //Hackfix for Mangle
     if (GetProto()->NameHash == SPELL_HASH_MANGLE__CAT_ && p_caster != NULL)
@@ -4446,7 +4436,8 @@ void Spell::SpellEffectBuildingDamage(uint32 i)
         controller = u_caster;
 
     // Baaaam
-    gameObjTarget->Damage(damage, u_caster->GetGUID(), controller->GetGUID(), m_spellInfo->Id);
+    GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(gameObjTarget);
+    dgo->Damage(damage, u_caster->GetGUID(), controller->GetGUID(), m_spellInfo->Id);
 }
 
 void Spell::SpellEffectEnchantHeldItem(uint32 i)
@@ -4774,14 +4765,6 @@ void Spell::SpellEffectSummonObjectSlot(uint32 i)
 
     GoSummon->PushToWorld(m_caster->GetMapMgr());
 
-    if (GoSummon->GetType() == GAMEOBJECT_TYPE_TRAP)
-    {
-        GoSummon->invisible = true;
-        GoSummon->invisibilityFlag = INVIS_FLAG_TRAP;
-        GoSummon->charges = 1;
-        GoSummon->checkrate = 1;
-        sEventMgr.AddEvent(GoSummon, &GameObject::TrapSearchTarget, EVENT_GAMEOBJECT_TRAP_SEARCH_TARGET, 100, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
     sEventMgr.AddEvent(GoSummon, &GameObject::ExpireAndDelete, EVENT_GAMEOBJECT_EXPIRE, GetDuration(), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     GoSummon->SetSummoned(u_caster);
