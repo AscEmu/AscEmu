@@ -1185,7 +1185,7 @@ void Instance::SaveToDB()
         ss << (*itr) << " ";
 
     ss << "',"
-        << m_difficulty << ","
+        << (uint32)m_difficulty << ","
         << m_creatorGroup << ","
         << m_creatorGuid << ","
         << m_persistent << ")";
