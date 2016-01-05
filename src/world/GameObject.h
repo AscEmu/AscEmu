@@ -22,6 +22,7 @@
 #define _GAMEOBJECT_H
 
 #include "CRitual.h"
+#include "QuestMgr.h"
 
 enum GameObject_State
 {
