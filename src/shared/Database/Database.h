@@ -29,6 +29,7 @@
 class QueryResult;
 class QueryThread;
 class Database;
+class SQLCallbackBase;
 
 struct DatabaseConnection
 {
