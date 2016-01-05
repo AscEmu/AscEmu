@@ -25,6 +25,7 @@
 #include "UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "EventableObject.h"
+#include "IUpdatable.h"
 
 #include <set>
 #include <map>
