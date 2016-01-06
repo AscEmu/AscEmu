@@ -21,16 +21,13 @@
 
 #include "Lfg.h"
 
-
 enum LfgGroupEnum
 {
     LFG_GROUP_MAX_KICKS         = 3,
     LFG_GROUP_KICK_VOTES_NEEDED = 3
 };
 
-/**
-Stores all lfg data needed about a group.
-*/
+/// Stores all lfg data needed about a group.
 class LfgGroupData
 {
     public:

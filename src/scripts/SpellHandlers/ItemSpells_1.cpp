@@ -179,7 +179,7 @@ bool NetOMatic(uint32 i, Spell* pSpell)
 
 bool BanishExile(uint32 i, Spell* pSpell)
 {
-    Unit*   target = pSpell->GetUnitTarget();
+    Unit* target = pSpell->GetUnitTarget();
     if (!pSpell->p_caster || !target)
         return true;
 
@@ -206,7 +206,8 @@ bool ForemansBlackjack(uint32 i, Spell* pSpell)
     c_target->RemoveAllAuras();
 
     WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 12);
-    data << uint32(6197) << c_target->GetGUID();
+    data << uint32(6197);
+    data << c_target->GetGUID();
     pSpell->p_caster->SendMessageToSet(&data, true);
 
     // send chat message
@@ -595,7 +596,7 @@ bool BrittleArmor(uint32 i, Spell* s)
     if (s->u_caster == NULL)
         return false;
 
-    for (int j = 0; j < 20; j++)
+    for (uint8 j = 0; j < 20; j++)
         s->u_caster->CastSpell(s->u_caster, 24575, true);
 
     return true;

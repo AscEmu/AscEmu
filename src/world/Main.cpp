@@ -16,7 +16,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #include "StdAfx.h"
@@ -27,7 +26,7 @@
 #include "CrashHandler.h"
 
 
-uint8 loglevel = DEFAULT_LOG_LEVEL;
+uint8 loglevel = 0;
 
 #ifndef WIN32
 int unix_main(int argc, char** argv)

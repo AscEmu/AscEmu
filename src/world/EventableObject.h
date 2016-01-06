@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -35,7 +35,6 @@ typedef std::multimap<uint32, TimedEvent*> EventMap;
 #define WORLD_INSTANCE -1
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///class EventableObject
 /// \note EventableObject means that the class inheriting this is able to take
 /// events. This 'base' class will store and update these events upon
 /// receiving the call from the instance thread / WorldRunnable thread.
@@ -108,6 +107,7 @@ class EventableObjectHolder
         uint32 GetInstanceID() { return mInstanceId; }
 
     protected:
+
         int32 mInstanceId;
         Mutex m_lock;
         EventList m_events;

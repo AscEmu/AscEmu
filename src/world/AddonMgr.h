@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -39,22 +39,24 @@ typedef AddonData::iterator AddonDataItr;
 class AddonMgr : public Singleton < AddonMgr >
 {
     public:
+
         AddonMgr();
         ~AddonMgr();
 
-        void                    LoadFromDB();
-        void                    SaveToDB();
+        void LoadFromDB();
+        void SaveToDB();
 
-        void                    SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession* m_session);
-        bool                    AppendPublicKey(WorldPacket & data, std::string & AddonName, uint32 CRC);
+        void SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession* m_session);
+        bool AppendPublicKey(WorldPacket& data, std::string & AddonName, uint32 CRC);
 
     private:
-        bool                    IsAddonBanned(uint64 crc, std::string name = "");
-        bool                    IsAddonBanned(std::string name, uint64 crc = 0);
-        bool                    ShouldShowInList(std::string name);
 
-        KnownAddons                mKnownAddons;
-        AddonData                mAddonData;
+        bool IsAddonBanned(uint64 crc, std::string name = "");
+        bool IsAddonBanned(std::string name, uint64 crc = 0);
+        bool ShouldShowInList(std::string name);
+
+        KnownAddons mKnownAddons;
+        AddonData mAddonData;
 };
 
 #define sAddonMgr AddonMgr::getSingleton()

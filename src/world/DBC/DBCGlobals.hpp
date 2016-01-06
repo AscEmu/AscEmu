@@ -1,24 +1,23 @@
-/**
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2011 <http://www.ArcEmu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DBC_GLOBALS_H
-#define _DBC_GLOBALS_H
+#ifndef _DBC_GLOBALS_HPP
+#define _DBC_GLOBALS_HPP
 
 #include "DBCStorage.hpp"
 #include "DBCLoader.hpp"
@@ -30,7 +29,8 @@ namespace DBC
     namespace
     {
         const uint8 C_TOTAL_LOCALES = 9;
-        char const* C_LOCALE_NAMES[C_TOTAL_LOCALES] = {
+        char const* C_LOCALE_NAMES[C_TOTAL_LOCALES] =
+        {
             "enUS",
             "koKR",
             "frFR",
@@ -85,14 +85,14 @@ namespace DBC
 
                 if (!storage.LoadStringsFrom(localised_name.c_str()))
                 {
-                    /* Mark as not available to speed up next checks */
+                    // Mark as not available to speed up next checks
                     available_dbc_locales &= ~(1 << i);
                 }
             }
         }
         else
         {
-            /* We failed to load the dbc, so work out if it's incompatible or just doesn't exist */
+            // We failed to load the dbc, so work out if it's incompatible or just doesn't exist
             if (auto file = fopen(dbc_file_path.c_str(), "rb"))
             {
                 std::ostringstream stream;
@@ -112,4 +112,4 @@ namespace DBC
     }
 }
 
-#endif // _DBC_GLOBALS_H
+#endif // _DBC_GLOBALS_HPP

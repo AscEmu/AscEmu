@@ -2051,7 +2051,7 @@ void Aura::SpellAuraModCharm(bool apply)
             data << uint32(PET_SPELL_ATTACK);
             data << uint32(PET_SPELL_FOLLOW);
             data << uint32(PET_SPELL_STAY);
-            for (int i = 0; i < 4; i++)
+            for (uint8 i = 0; i < 4; i++)
                 data << uint32(0);
             data << uint32(PET_SPELL_AGRESSIVE);
             data << uint32(PET_SPELL_DEFENSIVE);
@@ -2248,8 +2248,9 @@ void Aura::EventPeriodicHeal(uint32 amount)
         //example : Citrine Pendant of Golden Healing is in AA aura that does not have duration. In this case he would have full healbonus benefit
         if ((dur == 0 || dur == -1) && GetSpellProto()->DurationIndex)
         {
-            SpellDuration* sd = dbcSpellDuration.LookupEntry(GetSpellProto()->DurationIndex);
-            dur = ::GetDuration(sd);
+            auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellProto()->DurationIndex);
+            if (spell_duration != nullptr)
+                dur = ::GetDuration(spell_duration);
         }
         if (dur && dur != -1)
         {
@@ -2760,7 +2761,7 @@ void Aura::SpellAuraModStealth(bool apply)
                     }
                     else // if got immunity for slow, remove some that are not in the mechanics
                     {
-                        for (int i = 0; i < 3; i++)
+                        for (uint8 i = 0; i < 3; i++)
                         {
                             uint32 AuraEntry = m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i];
                             if (AuraEntry == SPELL_AURA_MOD_DECREASE_SPEED || AuraEntry == SPELL_AURA_MOD_ROOT || AuraEntry == SPELL_AURA_MOD_STALKED)
@@ -3123,7 +3124,7 @@ void Aura::EventPeriodicTriggerSpell(SpellEntry* spellInfo, bool overridevalues,
     if (overridevalues)
     {
         spell->m_overrideBasePoints = true;
-        for (uint32 i = 0; i < 3; ++i)
+        for (uint8 i = 0; i < 3; ++i)
             spell->m_overridenBasePoints[i] = overridevalue;
     }
     SpellCastTargets targets;
@@ -3581,17 +3582,17 @@ void Aura::SpellAuraModShapeshift(bool apply)
         }
     }
 
-    SpellShapeshiftForm* ssf = dbcSpellShapeshiftForm.LookupEntry(mod->m_miscValue);
-    if (ssf == NULL)
+    auto shapeshift_form = sSpellShapeshiftFormStore.LookupEntry(mod->m_miscValue);
+    if (!shapeshift_form)
         return;
 
     uint32 spellId = 0;
     uint32 spellId2 = 0;
-    uint32 modelId = (uint32)(apply ? ssf->modelId : 0);
+    uint32 modelId = (uint32)(apply ? shapeshift_form->modelId : 0);
 
     bool freeMovements = false;
 
-    switch (ssf->id)
+    switch (shapeshift_form->id)
     {
         case FORM_CAT:
         {
@@ -3741,7 +3742,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             if (apply)
             {
                 if (m_target->getRace() != RACE_NIGHTELF)
-                    modelId = ssf->modelId2; // Lol, why is this the only one that has it in ShapeShift DBC? =/ lameeee...
+                    modelId = shapeshift_form->modelId2; // Lol, why is this the only one that has it in ShapeShift DBC? =/ lameeee...
             }
         }
         break;
@@ -3768,7 +3769,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         case FORM_ZOMBIE:
         {
             if (p_target != NULL)
-                p_target->SendAvailSpells(ssf, apply);
+                p_target->SendAvailSpells(shapeshift_form, apply);
         }
         break;
         case FORM_METAMORPHOSIS:
@@ -3857,7 +3858,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
                     }
                     else // if got immunity for slow, remove some that are not in the mechanics
                     {
-                        for (int i = 0; i < 3; i++)
+                        for (uint8 i = 0; i < 3; i++)
                         {
                             if (m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED || m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
                             {
@@ -3876,7 +3877,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
     }
     else
     {
-        if (ssf->id != FORM_STEALTH)
+        if (shapeshift_form->id != FORM_STEALTH)
             m_target->RemoveAllAurasByRequiredShapeShift(DecimalToMask(mod->m_miscValue));
 
         if (m_target->IsCasting() && m_target->m_currentSpell && m_target->m_currentSpell->GetProto()
@@ -4320,8 +4321,8 @@ void Aura::EventPeriodicLeech(uint32 amount)
             if (aura->GetSpellProto()->SpellFamilyName != 5)
                 continue;
 
-            skilllinespell* sk = objmgr.GetSpellSkill(aura->GetSpellId());
-            if (sk == NULL || sk->skilline != SKILL_AFFLICTION)
+            auto skill_line_ability = objmgr.GetSpellSkill(aura->GetSpellId());
+            if (skill_line_ability == nullptr || skill_line_ability->skilline != SKILL_AFFLICTION)
                 continue;
 
             itx = auras.find(aura->GetCasterGUID());
@@ -4712,7 +4713,7 @@ void Aura::SpellAuraIncreaseSwimSpeed(bool apply)
         m_target->m_swimSpeed = 0.04722222f * (100 + mod->m_amount);
     }
     else
-        m_target->m_swimSpeed = PLAYER_NORMAL_SWIM_SPEED;
+        m_target->m_swimSpeed = playerNormalSwimSpeed;
     if (p_target != NULL)
     {
         WorldPacket data(SMSG_FORCE_SWIM_SPEED_CHANGE, 17);
@@ -7216,7 +7217,7 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(bool apply)
         val = -mod->fixed_amount[mod->i];
 
     uint32 stat = 3;
-    for (uint32 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         //bit hacky but it will work with all currently available spells
         if (m_spellProto->EffectApplyAuraName[i] == SPELL_AURA_INCREASE_SPELL_HEALING_PCT)
@@ -8359,7 +8360,7 @@ void Aura::SpellAuraComprehendLang(bool apply)
 
 void Aura::SpellAuraModPossessPet(bool apply)
 {
-    Player* pCaster = GetPlayerCaster();;
+    Player* pCaster = GetPlayerCaster();
     if (pCaster == NULL || !pCaster->IsInWorld())
         return;
 
@@ -8777,7 +8778,7 @@ bool Aura::DotCanCrit()
 
         SpellEntry* aura_sp = aura->GetSpellProto();
 
-        uint32 i = 0;
+        uint8 i = 0;
         if (aura_sp->EffectApplyAuraName[1] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
             i = 1;
         else if (aura_sp->EffectApplyAuraName[2] == SPELL_AURA_ALLOW_DOT_TO_CRIT)

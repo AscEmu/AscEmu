@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,11 +22,11 @@
 
 enum SummonType
 {
-    SUMMONTYPE_GUARDIAN = 0,
-    SUMMONTYPE_WILD = 1,
-    SUMMONTYPE_TOTEM = 2,
-    SUMMONTYPE_COMPANION = 3,
-    SUMMONTYPE_POSSESSED = 4
+    SUMMONTYPE_GUARDIAN     = 0,
+    SUMMONTYPE_WILD         = 1,
+    SUMMONTYPE_TOTEM        = 2,
+    SUMMONTYPE_COMPANION    = 3,
+    SUMMONTYPE_POSSESSED    = 4
 };
 
-#endif
+#endif      //SUMMON_DEFINES_HPP

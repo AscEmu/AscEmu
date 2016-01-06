@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,29 +24,25 @@ class QueryBuffer;
 struct AchievementEntry;
 struct AchievementCriteriaEntry;
 
-// Achievement Reward Types
-/// Achievement has no reward
-#define ACHIEVEMENT_REWARDTYPE_NONE 0
-/// Achievement has an item reward
-#define ACHIEVEMENT_REWARDTYPE_ITEM 1
-/// Achievement has a title reward
-#define ACHIEVEMENT_REWARDTYPE_TITLE 2
-/// Achievement has a spell reward
-#define ACHIEVEMENT_REWARDTYPE_SPELL 4
 
-// Achievement Flags
-/// (0) : No flags
-#define ACHIEVEMENT_FLAG_NONE 0x0000
-/// (1) : Counter flag; used for statistics
-#define ACHIEVEMENT_FLAG_COUNTER 0x0001
-/// (4) : Reach level? Currently unused in ArcEmu.
-#define ACHIEVEMENT_FLAG_REACH_LEVEL 0x0004
-/// (64) : Average? Currently unused in ArcEmu.
-#define ACHIEVEMENT_FLAG_AVERAGE 0x0040
-/// (256) : Realm First achievement
-#define ACHIEVEMENT_FLAG_REALM_FIRST_REACH 0x0100
-/// (512) : Realm First Kill; Currently only used in Realm First! Obsidian Slayer (456)
-#define ACHIEVEMENT_FLAG_REALM_FIRST_KILL 0x0200
+enum AchievementRewardTypes
+{
+    ACHIEVEMENT_REWARDTYPE_NONE     = 0,
+    ACHIEVEMENT_REWARDTYPE_ITEM     = 1,
+    ACHIEVEMENT_REWARDTYPE_TITLE    = 2,
+    ACHIEVEMENT_REWARDTYPE_SPELL    = 4
+};
+
+enum AchievementFlags
+{
+    ACHIEVEMENT_FLAG_NONE               = 0x0000,
+    ACHIEVEMENT_FLAG_COUNTER            = 0x0001,   // used for statistics
+    ACHIEVEMENT_FLAG_REACH_LEVEL        = 0x0004,   // unused
+    ACHIEVEMENT_FLAG_AVERAGE            = 0x0040,
+    ACHIEVEMENT_FLAG_REALM_FIRST_REACH  = 0x0100,
+    ACHIEVEMENT_FLAG_REALM_FIRST_KILL   = 0x0200    // Currently only used in Realm First! Obsidian Slayer (456)
+};
+
 
 /// All criteria must be completed for the achievement to be complete.
 #define ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL 2
@@ -61,11 +57,6 @@ struct AchievementCriteriaEntry;
 /// Horde-only achievement
 #define ACHIEVEMENT_FACTION_FLAG_HORDE 1
 
-
-
-/**
-    CriteriaProgress structure
-*/
 struct CriteriaProgress
 {
     CriteriaProgress(uint32 iid, uint32 icounter, time_t tdate = time(NULL))
@@ -91,8 +82,8 @@ struct AchievementReward
     std::string text;
 };
 
-typedef HM_NAMESPACE::hash_map<uint32, CriteriaProgress*> CriteriaProgressMap;
-typedef HM_NAMESPACE::hash_map<uint32, time_t> CompletedAchievementMap;
+typedef std::unordered_map<uint32, CriteriaProgress*> CriteriaProgressMap;
+typedef std::unordered_map<uint32, time_t> CompletedAchievementMap;
 typedef std::multimap<uint32, AchievementReward> AchievementRewardsMap;
 typedef std::pair<AchievementRewardsMap::const_iterator, AchievementRewardsMap::const_iterator> AchievementRewardsMapBounds;
 typedef std::set<uint32> AchievementSet;
@@ -101,9 +92,7 @@ class Player;
 class WorldPacket;
 class ObjectMgr;
 
-/**
-    Achievement completion state
-*/
+
 enum AchievementCompletionState
 {
     ACHIEVEMENT_COMPLETED_NONE,                 ///< #0# Achievement is not completed
@@ -111,10 +100,7 @@ enum AchievementCompletionState
     ACHIEVEMENT_COMPLETED_COMPLETED_STORED,     ///< #2# Achievement is completed and has been stored
 };
 
-/**
-    Achievement criteria conditions
-    Currently these are not being used at all.
-*/
+/// \note Currently these are not being used at all.
 enum AchievementCriteriaCondition
 {
     ACHIEVEMENT_CRITERIA_CONDITION_NONE      = 0,  ///< #0# No condition
@@ -126,9 +112,7 @@ enum AchievementCriteriaCondition
     ACHIEVEMENT_CRITERIA_CONDITION_UNK3      = 13, ///< #13# unk
 };
 
-/**
-    Achievement Criteria Types
-*/
+
 enum AchievementCriteriaTypes
 {
     ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE = 0,               ///< #0# Kill creature x
@@ -286,6 +270,7 @@ Achievement Working List:
 class SERVER_DECL AchievementMgr
 {
     public:
+
         AchievementMgr(Player* pl);
         ~AchievementMgr();
         void LoadFromDB(QueryResult* achievementResult, QueryResult* criteriaResult);
@@ -294,6 +279,7 @@ class SERVER_DECL AchievementMgr
         void SendAllAchievementData(Player* player);
         void UpdateAchievementCriteria(AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time);
         void UpdateAchievementCriteria(AchievementCriteriaTypes type);
+        bool UpdateAchievementCriteria(Player* player, int32 criteriaID, uint32 count);
         bool GMCompleteAchievement(WorldSession* gmSession, int32 achievementID);
         bool GMCompleteCriteria(WorldSession* gmSession, int32 criteriaID);
         void GMResetAchievement(int achievementID);
@@ -301,19 +287,20 @@ class SERVER_DECL AchievementMgr
         bool HasCompleted(uint32 achievementID);
         uint32 GetCompletedAchievementsCount() const;
         uint32 GetCriteriaProgressCount();
-        time_t GetCompletedTime(AchievementEntry const* achievement);
+        time_t GetCompletedTime(DBC::Structures::AchievementEntry const* achievement);
         Player* GetPlayer() { return m_player; }
 
     private:
-        void GiveAchievementReward(AchievementEntry const* entry);
-        void SendAchievementEarned(AchievementEntry const* achievement);
+
+        void GiveAchievementReward(DBC::Structures::AchievementEntry const* entry);
+        void SendAchievementEarned(DBC::Structures::AchievementEntry const* achievement);
         void SendCriteriaUpdate(CriteriaProgress* progress);
         void SetCriteriaProgress(AchievementCriteriaEntry const* entry, int32 newValue, bool relative = false);
         void UpdateCriteriaProgress(AchievementCriteriaEntry const* entry, int32 updateByValue);
         void CompletedCriteria(AchievementCriteriaEntry const* entry);
-        void CompletedAchievement(AchievementEntry const* entry);
+        void CompletedAchievement(DBC::Structures::AchievementEntry const* entry);
         bool IsCompletedCriteria(AchievementCriteriaEntry const* entry);
-        AchievementCompletionState GetAchievementCompletionState(AchievementEntry const* entry);
+        AchievementCompletionState GetAchievementCompletionState(DBC::Structures::AchievementEntry const* entry);
 
         RWLock m_lock;
         Player* m_player;
@@ -328,5 +315,5 @@ bool SendAchievementProgress(const CriteriaProgress* c);
 bool SaveAchievementProgressToDB(const CriteriaProgress* c);
 
 
-#endif
+#endif  //_ACHIEVEMENTMGR_H
 

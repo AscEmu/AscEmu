@@ -319,7 +319,7 @@ class VanCleefAI : public MoonScriptBossAI
         {
             _unit->SendScriptTextChatMessage(7725);     // Fools! Our cause is righteous!
 
-            for (int x = 0; x < 2; x++)
+            for (uint8 x = 0; x < 2; x++)
             {
                 MoonScriptCreatureAI* Guard = SpawnCreature(636);
                 if (Guard != NULL)

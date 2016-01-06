@@ -183,11 +183,11 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     else
         obj = m_session->GetPlayer();
 
-    char buf[328];
+    char buf[400];
     auto at = obj->GetArea();
     if (!at)
     {
-        snprintf((char*)buf, 328, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
+        snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
                  (unsigned int)obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
         SystemMessage(m_session, buf);
         return true;
@@ -195,15 +195,17 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     auto out_map_id = obj->GetMapId();
     auto out_zone_id = at->zone; // uint32 at_old->ZoneId
     auto out_area_id = at->id; // uint32 at_old->AreaId
+    auto out_phase = obj->GetPhase();
     auto out_x = obj->GetPositionX();
     auto out_y = obj->GetPositionY();
     auto out_z = obj->GetPositionZ();
     auto out_o = obj->GetOrientation();
     auto out_area_name = at->area_name[0]; // enUS, hardcoded until locale is implemented properly
-    snprintf((char*)buf, 328, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
-        out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name);
+    snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffPhase: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
+             out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
     SystemMessage(m_session, "Use for report: .worldport %d %f %f %f", out_map_id, out_x, out_y, out_z);
+    SystemMessage(m_session, "Current z position: %f Landheigh: %f ", out_z, obj->GetMapMgr()->GetADTLandHeight(out_x, out_y));
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != NULL && *args == '1')
     {
@@ -793,16 +795,17 @@ bool ChatHandler::HandleTriggerCommand(const char* args, WorldSession* m_session
         return false;
     if (valcount == 1)
         instance_id = 0;
-    AreaTriggerEntry* entry = dbcAreaTrigger.LookupEntryForced(trigger_id);
-    if (trigger_id == 0 || entry == NULL)
+
+    auto area_trigger_entry = sAreaTriggerStore.LookupEntry(trigger_id);
+    if (trigger_id == 0 || area_trigger_entry == nullptr)
     {
         RedSystemMessage(m_session, "Could not find trigger %s", args);
         return true;
     }
-    m_session->GetPlayer()->SafeTeleport(entry->mapid, instance_id, LocationVector(entry->x, entry->y,
-        entry->z, entry->o));
-    BlueSystemMessage(m_session, "Teleported to trigger %u on [%u][%.2f][%.2f][%.2f]", entry->id,
-                      entry->mapid, entry->x, entry->y, entry->z);
+    m_session->GetPlayer()->SafeTeleport(area_trigger_entry->mapid, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y,
+        area_trigger_entry->z, area_trigger_entry->o));
+    BlueSystemMessage(m_session, "Teleported to trigger %u on [%u][%.2f][%.2f][%.2f]", area_trigger_entry->id,
+        area_trigger_entry->mapid, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
     return true;
 }
 
@@ -1063,15 +1066,15 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
     uint32 i, j, numFound = 0;
     std::string y, recout;
     char playerGUID[17];
-    snprintf(playerGUID, 17, "%lu", m_session->GetPlayer()->GetGUID());
+    snprintf(playerGUID, 17, "%llu", m_session->GetPlayer()->GetGUID());
     if (lookupname || lookupdesc || lookupreward)
     {
         std::set<uint32> foundList;
-        j = dbcAchievementStore.GetNumRows();
+        j = sAchievementStore.GetNumRows();
         bool foundmatch;
         for (i = 0; i < j && numFound < 25; ++i)
         {
-            AchievementEntry const* achievement = dbcAchievementStore.LookupRowForced(i);
+            auto achievement = sAchievementStore.LookupEntry(i);
             if (achievement)
             {
                 if (foundList.find(achievement->ID) != foundList.end())
@@ -1082,19 +1085,19 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 foundmatch = false;
                 if (lookupname)
                 {
-                    y = std::string(achievement->name);
+                    y = std::string(achievement->name[0]);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupdesc)
                 {
-                    y = std::string(achievement->description);
+                    y = std::string(achievement->description[0]);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupreward)
                 {
-                    y = std::string(achievement->rewardName);
+                    y = std::string(achievement->rewardName[0]);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
@@ -1127,7 +1130,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                     // achievement is not completed
                     recout += ":0:0:0:-1:0:0:0:0|h[";
                 }
-                recout += achievement->name;
+                recout += achievement->name[0];
                 if (!lookupreward)
                 {
                     recout += "]|h|r";
@@ -1135,7 +1138,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 else
                 {
                     recout += "]|h |cffffffff";
-                    recout += achievement->rewardName;
+                    recout += achievement->rewardName[0];
                     recout += "|r";
                 }
                 strm.str("");
@@ -1151,10 +1154,10 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
     if (lookupcriteria && numFound < 25)
     {
         std::set<uint32> foundList;
-        j = dbcAchievementCriteriaStore.GetNumRows();
+        j = sAchievementCriteriaStore.GetNumRows();
         for (i = 0; i < j && numFound < 25; ++i)
         {
-            AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupRowForced(i);
+            auto criteria = sAchievementCriteriaStore.LookupEntry(i);
             if (criteria)
             {
                 if (foundList.find(criteria->ID) != foundList.end())
@@ -1162,7 +1165,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                     // already listed this achievement (some achievements have multiple entries in dbc)
                     continue;
                 }
-                y = std::string(criteria->name);
+                y = std::string(criteria->name[0]);
                 arcemu_TOLOWER(y);
                 if (!FindXinYString(x, y))
                 {
@@ -1174,9 +1177,9 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                 recout = "|cffffffffCriteria ";
                 recout += strm.str();
                 recout += ": |cfffff000";
-                recout += criteria->name;
+                recout += criteria->name[0];
                 strm.str("");
-                AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(criteria->referredAchievement);
+                auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
                 if (achievement)
                 {
                     // create achievement link
@@ -1202,7 +1205,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                         // achievement is not completed
                         recout += ":0:0:0:-1:0:0:0:0|h[";
                     }
-                    recout += achievement->name;
+                    recout += achievement->name[0];
                     if (!lookupreward)
                     {
                         recout += "]|h|r";
@@ -1210,7 +1213,7 @@ bool ChatHandler::HandleLookupAchievementCmd(const char* args, WorldSession* m_s
                     else
                     {
                         recout += "]|h |cffffffff";
-                        recout += achievement->rewardName;
+                        recout += achievement->rewardName[0];
                         recout += "|r";
                     }
                     strm.str("");

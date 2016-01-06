@@ -1,5 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
@@ -150,9 +151,11 @@ namespace luaItem
         bool permanent = (duration == 0) ? true : false;
         bool temp = (luaL_checkinteger(L, 3) == 1) ? true : false;
 
-        EnchantEntry* eentry = dbcEnchant.LookupEntry(entry);
+        auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(entry);
+        if (spell_item_enchant == nullptr)
+            return 0;
 
-        lua_pushinteger(L, ptr->AddEnchantment(eentry, duration, permanent, true, temp)); //Return the enchantment Slot back to LUA
+        lua_pushinteger(L, ptr->AddEnchantment(spell_item_enchant, duration, permanent, true, temp)); //Return the enchantment Slot back to LUA
         return 1;
     }
 

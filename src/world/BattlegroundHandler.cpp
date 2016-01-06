@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -24,11 +24,15 @@ void WorldSession::HandleBattlefieldPortOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        uint16 mapinfo, unk;
+    uint16 mapinfo;
+    uint16 unk;
     uint8 action;
     uint32 bgtype;
 
-    recv_data >> unk >> bgtype >> mapinfo >> action;
+    recv_data >> unk;
+    recv_data >> bgtype;
+    recv_data >> mapinfo;
+    recv_data >> action;
 
     if (action == 0)
     {
@@ -161,7 +165,8 @@ void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data)
         restime = (restime - (uint32)UNIXTIME) * 1000;
 
     WorldPacket data(SMSG_AREA_SPIRIT_HEALER_TIME, 12);
-    data << guid << restime;
+    data << guid;
+    data << restime;
     SendPacket(&data);
 }
 
@@ -275,7 +280,12 @@ void WorldSession::HandleArenaJoinOpcode(WorldPacket& recv_data)
     uint8 arenacategory;
     uint8 as_group;
     uint8 rated_match;
-    recv_data >> guid >> arenacategory >> as_group >> rated_match;
+
+    recv_data >> guid;
+    recv_data >> arenacategory;
+    recv_data >> as_group;
+    recv_data >> rated_match;
+
     switch (arenacategory)
     {
         case 0:        // 2v2
@@ -319,7 +329,8 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
 
     WorldPacket data(MSG_INSPECT_HONOR_STATS, 13);
 
-    data << player->GetGUID() << (uint8)player->GetHonorCurrency();
+    data << player->GetGUID();
+    data << uint8(player->GetHonorCurrency());
     data << player->GetUInt32Value(PLAYER_FIELD_KILLS);
     data << player->GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
     data << player->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);

@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
 project(world)
@@ -37,6 +37,7 @@ set(sources
 	CharacterHandler.cpp 
 	Chat.cpp 
 	ChatHandler.cpp
+   CObjectFactory.cpp
 	CombatHandler.cpp 
 	Container.cpp 
 	Corpse.cpp 
@@ -201,6 +202,7 @@ set(headers
 	Channel.h
 	ChannelMgr.h
 	Chat.h
+   CObjectFactory.h
 	CollideInterface.h
 	CommonScheduleThread.h
 	Entities/Summons/CompanionSummon.h
@@ -224,7 +226,6 @@ set(headers
 	Druid.h
 	DynamicObject.h
 	EquipmentSetMgr.h
-	Events.h
 	EventableObject.h
 	EventMgr.h
 	Faction.h
@@ -232,6 +233,7 @@ set(headers
    GameEventMgr.h
 	GameObject.h
 	CRitual.h
+   Gossip/GossipDefines.hpp
 	Gossip.h
 	Group.h
 	Entities/Summons/GuardianSummon.h

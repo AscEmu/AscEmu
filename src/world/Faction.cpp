@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -55,6 +55,9 @@ bool isHostile(Object* objA, Object* objB)
     if (objB->IsUnit() && objB->HasFlag(UNIT_FIELD_FLAGS, 2 | 128 | 256 | 65536))
         return false;
 
+    if (!objB->m_faction || !objA->m_faction)
+        return false;
+
     uint32 faction = objB->m_faction->Mask;
     uint32 host = objA->m_faction->HostileMask;
 
@@ -68,7 +71,7 @@ bool isHostile(Object* objA, Object* objB)
         hostile = true;
 
     // check friend/enemy list
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if (objA->m_faction->EnemyFactions[i] == objB->m_faction->Faction)
         {
@@ -174,6 +177,9 @@ bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
             return true;
     }
 
+    if (objA->m_faction == nullptr)     // no faction, no kill (added because spell_caster gos should summon a trap instead of casting the spell directly.)
+        return false;
+
     if (objA->m_faction == objB->m_faction)    // same faction can't kill each other unless in ffa pvp/duel
         return false;
 
@@ -225,7 +231,7 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
         combatSupport = true;
     }
     // check friend/enemy list
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if (objB->m_faction->EnemyFactions[i] == objA->m_faction->Faction)
         {
@@ -244,8 +250,8 @@ bool isCombatSupport(Object* objA, Object* objB)// B combat supports A?
 
 bool isAlliance(Object* objA)// A is alliance?
 {
-    FactionTemplateDBC* m_sw_faction = dbcFactionTemplate.LookupEntry(11);
-    FactionDBC* m_sw_factionDBC = dbcFaction.LookupEntry(72);
+    DBC::Structures::FactionTemplateEntry const* m_sw_faction = sFactionTemplateStore.LookupEntry(11);
+    DBC::Structures::FactionEntry const* m_sw_factionDBC = sFactionStore.LookupEntry(72);
     if (!objA)          // || objA->m_factionDBC == NULL || objA->m_faction == NULL
         return true;
 
@@ -260,7 +266,7 @@ bool isAlliance(Object* objA)// A is alliance?
         return false;
 
     // check friend/enemy list
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if (objA->m_faction->EnemyFactions[i] == faction)
             return false;
@@ -273,7 +279,7 @@ bool isAlliance(Object* objA)// A is alliance?
         return false;
 
     // check friend/enemy list
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         if (objA->m_faction->EnemyFactions[i] == faction)
             return false;

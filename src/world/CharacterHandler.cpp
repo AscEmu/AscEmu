@@ -75,8 +75,23 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     recv_data >> guid;
     recv_data >> newname;
 
-    uint8 gender, skin, face, hairStyle, hairColor, facialHair, race, faction;
-    recv_data >> gender >> skin >> hairColor >> hairStyle >> facialHair >> face >> race >> faction;
+    uint8 gender;
+    uint8 skin;
+    uint8 face;
+    uint8 hairStyle;
+    uint8 hairColor;
+    uint8 facialHair;
+    uint8 race;
+    uint8 faction;
+
+    recv_data >> gender;
+    recv_data >> skin;
+    recv_data >> hairColor;
+    recv_data >> hairStyle;
+    recv_data >> facialHair;
+    recv_data >> face;
+    recv_data >> race;
+    recv_data >> faction;
 
     LoginErrorCode res = VerifyName(newname.c_str(), newname.length());
     if (res != E_CHAR_NAME_SUCCESS)
@@ -167,7 +182,8 @@ bool ChatHandler::HandleRenameAllCharacter(const char* args, WorldSession* m_ses
 
 void CapitalizeString(std::string& arg)
 {
-    if (arg.length() == 0) return;
+    if (arg.length() == 0)
+        return;
     arg[0] = static_cast<char>(toupper(arg[0]));
     for (uint32 x = 1; x < arg.size(); ++x)
         arg[x] = static_cast<char>(tolower(arg[x]));
@@ -186,7 +202,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
     player_item items[23];
     int8 slot;
-    uint32 i;
+
     ItemPrototype* proto;
     QueryResult* res;
     CreatureInfo* info = NULL;
@@ -241,34 +257,34 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             has_dk = has_dk || (Class == 6);
 
             /* build character enum, w0000t :p */
-            data << uint64(guid);                        //guid
-            data << fields[7].GetString();                //name
-            data << uint8(race);                        //race
-            data << uint8(Class);                        //class
-            data << uint8(fields[4].GetUInt8());        //gender
-            data << uint32(fields[5].GetUInt32());        //PLAYER_BYTES
-            data << uint8(bytes2 & 0xFF);                //facial hair
-            data << uint8(fields[1].GetUInt8());        //Level
-            data << uint32(fields[12].GetUInt32());        //zoneid
-            data << uint32(fields[11].GetUInt32());        //Mapid
-            data << float(fields[8].GetFloat());        //X
-            data << float(fields[9].GetFloat());        //Y
-            data << float(fields[10].GetFloat());        //Z
-            data << uint32(fields[18].GetUInt32());        //GuildID
+            data << uint64(guid);                           //guid
+            data << fields[7].GetString();                  //name
+            data << uint8(race);                            //race
+            data << uint8(Class);                           //class
+            data << uint8(fields[4].GetUInt8());            //gender
+            data << uint32(fields[5].GetUInt32());          //PLAYER_BYTES
+            data << uint8(bytes2 & 0xFF);                   //facial hair
+            data << uint8(fields[1].GetUInt8());            //Level
+            data << uint32(fields[12].GetUInt32());         //zoneid
+            data << uint32(fields[11].GetUInt32());         //Mapid
+            data << float(fields[8].GetFloat());            //X
+            data << float(fields[9].GetFloat());            //Y
+            data << float(fields[10].GetFloat());           //Z
+            data << uint32(fields[18].GetUInt32());         //GuildID
 
             banned = fields[13].GetUInt32();
             uint32 char_flags = 0;
 
             if (banned && (banned < 10 || banned > (uint32)UNIXTIME))
-                char_flags |= 0x01000000;    //Character is banned
+                char_flags |= PLAYER_FLAG_IS_BANNED;
             if (fields[15].GetUInt32() != 0)
-                char_flags |= 0x00002000;    //Character is dead
+                char_flags |= PLAYER_FLAG_IS_DEAD;
             if (flags & PLAYER_FLAG_NOHELM)
-                char_flags |= 0x00000400;    //Helm not displayed
+                char_flags |= PLAYER_FLAG_NOHELM;
             if (flags & PLAYER_FLAG_NOCLOAK)
-                char_flags |= 0x00000800;    //Cloak not displayed
+                char_flags |= PLAYER_FLAG_NOCLOAK;
             if (fields[16].GetUInt32() == 1)
-                char_flags |= 0x00004000;    //Character has to be renamed before logging in
+                char_flags |= PLAYER_FLAGS_RENAME_FIRST;
 
             data << uint32(char_flags);
 
@@ -322,7 +338,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             memset(items, 0, sizeof(player_item) * 23);
             uint32 enchantid;
-            EnchantEntry* enc;
+
             if (res)
             {
                 do
@@ -341,9 +357,9 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                             const char* enchant_field = res->Fetch()[2].GetString();
                             if (sscanf(enchant_field , "%u,0,0;" , (unsigned int*)&enchantid) == 1 && enchantid > 0)
                             {
-                                enc = dbcEnchant.LookupEntryForced(enchantid);
-                                if (enc != NULL)
-                                    items[slot].enchantment = enc->visual;
+                                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantid);
+                                if (spell_item_enchant != nullptr)
+                                    items[slot].enchantment = spell_item_enchant->visual;
                             }
                         }
                     }
@@ -352,7 +368,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                 delete res;
             }
 
-            for (i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
+            for (uint8 i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
             {
                 data << uint32(items[i].displayid);
                 data << uint8(items[i].invtype);
@@ -385,7 +401,7 @@ void WorldSession::LoadAccountDataProc(QueryResult* result)
         return;
     }
 
-    for (uint32 i = 0; i < 7; ++i)
+    for (uint8 i = 0; i < 7; ++i)
     {
         data = result->Fetch()[1 + i].GetString();
         len = data ? strlen(data) : 0;
@@ -402,9 +418,12 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
 {
     CHECK_PACKET_SIZE(recv_data, 10);
     std::string name;
-    uint8 race, class_;
+    uint8 race;
+    uint8 class_;
 
-    recv_data >> name >> race >> class_;
+    recv_data >> name;
+    recv_data >> race;
+    recv_data >> class_;
     recv_data.rpos(0);
 
     LoginErrorCode res = VerifyName(name.c_str(), name.length());
@@ -441,7 +460,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         if (result->Fetch()[0].GetUInt32() > 0)
         {
             // That name is banned!
-            OutPacket(SMSG_CHAR_CREATE, 1, CHAR_NAME_PROFANE);
+            LoginErrorCode login_error = E_CHAR_NAME_PROFANE;
+
+            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
             delete result;
             return;
         }
@@ -449,10 +470,10 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     // Check if player got Death Knight already on this realm.
-    if (Config.OptionalConfig.GetBoolDefault("ClassOptions" , "DeathKnightLimit" , true) && has_dk
-            && (class_ == DEATHKNIGHT))
+    if (Config.OptionalConfig.GetBoolDefault("ClassOptions" , "DeathKnightLimit" , true) && has_dk && (class_ == DEATHKNIGHT))
     {
-        OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_UNIQUE_CLASS_LIMIT);
+        LoginErrorCode login_error = E_CHAR_CREATE_UNIQUE_CLASS_LIMIT;
+        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
         return;
     }
 
@@ -467,7 +488,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         if (result->Fetch()[0].GetUInt32() >= 10)
         {
             // We can't make any more characters.
-            OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_SERVER_LIMIT);
+            LoginErrorCode login_error = E_CHAR_CREATE_SERVER_LIMIT;
+            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
             delete result;
             return;
         }
@@ -481,7 +503,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         // failed.
         pNewChar->ok_to_remove = true;
         delete pNewChar;
-        OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_FAILED);
+
+        LoginErrorCode login_error = E_CHAR_CREATE_FAILED;
+        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
         return;
     }
 
@@ -493,7 +517,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         {
             pNewChar->ok_to_remove = true;
             delete pNewChar;
-            OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_PVP_TEAMS_VIOLATION);
+
+            LoginErrorCode login_error = E_CHAR_CREATE_PVP_TEAMS_VIOLATION;
+            OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
             return;
         }
     }
@@ -505,13 +531,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     {
         pNewChar->ok_to_remove = true;
         delete pNewChar;
-        /*
-        WorldPacket data(1);
-        data.SetOpcode(SMSG_CHAR_CREATE);
-        data << (uint8)56 + 1; // This errorcode is not the actual one. Need to find a real error code.
-        SendPacket(&data);
-        */
-        OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_LEVEL_REQUIREMENT);
+
+        LoginErrorCode login_error = E_CHAR_CREATE_LEVEL_REQUIREMENT;
+        OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
         return;
     }
 
@@ -557,7 +579,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     pNewChar->ok_to_remove = true;
     delete  pNewChar;
 
-    OutPacket(SMSG_CHAR_CREATE, 1, CHAR_CREATE_SUCCESS);
+    LoginErrorCode login_error = E_CHAR_CREATE_SUCCESS;
+    OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
 
     sLogonCommHandler.UpdateAccountCount(GetAccountId(), 1);
 }
@@ -602,7 +625,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
                 inf->guild->RemoveGuildMember(inf, NULL);
         }
 
-        for (int i = 0; i < NUM_CHARTER_TYPES; ++i)
+        for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
         {
             Charter* c = objmgr.GetCharterByGuid(guid, (CharterTypes)i);
             if (c != NULL)
@@ -610,7 +633,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
         }
 
 
-        for (int i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
+        for (uint8 i = 0; i < NUM_ARENA_TEAM_TYPES; ++i)
         {
             ArenaTeam* t = objmgr.GetArenaTeamByGuid((uint32)guid, i);
             if (t != NULL && t->m_leader == guid)
@@ -647,7 +670,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
         CharacterDatabase.Execute("DELETE FROM playerreputations WHERE guid = '%u'", guid);
         CharacterDatabase.Execute("DELETE FROM playerskills WHERE GUID = '%u'", guid);
 
-        /* remove player info */
+        // remove player info
         objmgr.DeletePlayerInfo((uint32)guid);
         return E_CHAR_DELETE_SUCCESS;
     }
@@ -660,7 +683,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 
     uint64 guid;
     std::string name;
-    recv_data >> guid >> name;
+    recv_data >> guid;
+    recv_data >> name;
 
     PlayerInfo* pi = objmgr.GetPlayerInfo((uint32)guid);
     if (pi == 0) return;
@@ -679,7 +703,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     if (err != E_CHAR_NAME_SUCCESS)
     {
         data << uint8(err);
-        data << guid << name;
+        data << guid;
+        data << name;
         SendPacket(&data);
         return;
     }
@@ -691,7 +716,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
         {
             // That name is banned!
             data << uint8(E_CHAR_NAME_PROFANE);
-            data << guid << name;
+            data << guid;
+            data << name;
             SendPacket(&data);
         }
         delete result2;
@@ -701,7 +727,8 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     if (objmgr.GetPlayerInfoByName(name.c_str()) != NULL)
     {
         data << uint8(E_CHAR_CREATE_NAME_IN_USE);
-        data << guid << name;
+        data << guid;
+        data << name;
         SendPacket(&data);
         return;
     }
@@ -718,7 +745,9 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", name.c_str(), (uint32)guid);
     CharacterDatabase.WaitExecute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_NO_FLAG, (uint32)guid);
 
-    data << uint8(E_RESPONSE_SUCCESS) << guid << name;
+    data << uint8(E_RESPONSE_SUCCESS);
+    data << guid;
+    data << name;
     SendPacket(&data);
 }
 
@@ -972,9 +1001,9 @@ void WorldSession::FullLogin(Player* plr)
     bool enter_world = true;
 
     // Find our transporter and add us if we're on one.
-    if (plr->transporter_info.guid != 0)
+    if (plr->obj_movement_info.transporter_info.guid != 0)
     {
-        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->transporter_info.guid));
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->obj_movement_info.transporter_info.guid));
         if (pTrans)
         {
             if (plr->IsDead())
@@ -984,9 +1013,9 @@ void WorldSession::FullLogin(Player* plr)
                 plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
             }
 
-            float c_tposx = pTrans->GetPositionX() + plr->transporter_info.x;
-            float c_tposy = pTrans->GetPositionY() + plr->transporter_info.y;
-            float c_tposz = pTrans->GetPositionZ() + plr->transporter_info.z;
+            float c_tposx = pTrans->GetPositionX() + plr->GetTransPositionX();
+            float c_tposy = pTrans->GetPositionY() + plr->GetTransPositionY();
+            float c_tposz = pTrans->GetPositionZ() + plr->GetTransPositionZ();
 
             if (plr->GetMapId() != pTrans->GetMapId())       // loaded wrong map
             {
@@ -1016,7 +1045,7 @@ void WorldSession::FullLogin(Player* plr)
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
-    if (plr->m_FirstLogin)
+    if (plr->m_FirstLogin && !sWorld.m_SkipCinematics)
     {
         uint32 introid = plr->info->introid;
 
@@ -1070,21 +1099,23 @@ void WorldSession::FullLogin(Player* plr)
     }
 #endif
 
-
+    if (Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", false))
+    {
 #ifdef WIN32
-    _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
+        _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
 #else
-    _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
+        _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
 #endif
 
-    // Revision
-    _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
-    // Shows Online players, and connection peak
-    _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
-                              MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
+        // Revision
+        _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
+        // Shows Online players, and connection peak
+        _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
+            MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
 
-    // Shows Server uptime
-    _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+        // Shows Server uptime
+        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+    }
 
     // server Message Of The Day
     SendMOTD();
@@ -1178,10 +1209,24 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 {
     uint64 guid;
     std::string newname;
-    uint8 gender, skin, face, hairStyle, hairColor, facialHair, race;
+    uint8 gender;
+    uint8 skin;
+    uint8 face;
+    uint8 hairStyle;
+    uint8 hairColor;
+    uint8 facialHair;
+    uint8 race;
+
     recv_data >> guid;
     recv_data >> newname;
-    recv_data >> gender >> skin >> hairColor >> hairStyle >> facialHair >> face >> race;
+    recv_data >> gender;
+    recv_data >> skin;
+    recv_data >> hairColor;
+    recv_data >> hairStyle;
+    recv_data >> facialHair;
+    recv_data >> face;
+    recv_data >> race;
+
     uint8 _class = 0;
     PlayerInfo* info = objmgr.GetPlayerInfo(guid);
 

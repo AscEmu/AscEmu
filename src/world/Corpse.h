@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -24,7 +24,7 @@
 enum CORPSE_STATE
 {
     CORPSE_STATE_BODY   = 0,
-    CORPSE_STATE_BONES  = 1,
+    CORPSE_STATE_BONES  = 1
 };
 
 struct CorpseData
@@ -47,6 +47,7 @@ struct CorpseData
 class SERVER_DECL Corpse : public Object
 {
     public:
+
         Corpse(uint32 high, uint32 low);
         ~Corpse();
 
@@ -78,6 +79,7 @@ class SERVER_DECL Corpse : public Object
         uint32 GetDisplayId() { return GetUInt32Value(CORPSE_FIELD_DISPLAY_ID); }
 
     private:
+
         uint32 m_state;
         time_t m_time;
         uint32 _fields[CORPSE_END];

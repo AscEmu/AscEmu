@@ -42,7 +42,7 @@ enum CreatureEntry
     CN_AKKIRIS_LIGHTNING_WAKER  = 20908,    // ORB THREE
     CN_SULFURON_MAGMA_THROWER   = 20909,    // ORB THREE
     CN_TWILIGHT_DRAKONAAR       = 20910,    // ORB FOUR
-    CN_BLACKWING_DRAKONAAR      = 20911,    // ORB FOUR
+    CN_BLACKWING_DRAKONAAR      = 20911     // ORB FOUR
 
 };
 
@@ -73,7 +73,7 @@ enum CreatureSpells
     FEAR                    = 39415,
     DOMINATION              = 37162,
     SUMMON_ILLUSION_66      = 36931,    // don't work
-    SUMMON_ILLUSION_33      = 36932,    // don't work
+    SUMMON_ILLUSION_33      = 36932     // don't work
 
     // Warden MellicharAI
 
@@ -97,7 +97,7 @@ enum CreatureSay
 
     // Millhouse
     SAY_MILLHOUS_01         = 439,      // Where in Bonzo's Brass Buttons am I? And who are--...
-    SAY_MILLHOUS_02         = 440,      // "Lowly"? I don't care who you are, friend: no one refers ...
+    SAY_MILLHOUS_02         = 440       // "Lowly"? I don't care who you are, friend: no one refers ...
                                         // ID: 441 I just need to get some things ready first. You guys go ahead and get started. I need to summon up some water....
                                         // ID: 442 Fantastic! Next, some protective spells. Yeah, now we're cookin'!
                                         // ID: 443 And of course I'll need some mana. You guys are gonna love this; just wait....

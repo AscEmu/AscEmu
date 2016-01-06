@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -51,7 +51,7 @@ bool SendAchievementProgress(const CriteriaProgress* c)
         // achievement not started yet, don't send progress
         return false;
 
-    AchievementCriteriaEntry const* acEntry = dbcAchievementCriteriaStore.LookupEntryForced(c->id);
+    auto acEntry = sAchievementCriteriaStore.LookupEntry(c->id);
     if (!acEntry)
         return false;
 
@@ -76,8 +76,12 @@ bool SaveAchievementProgressToDB(const CriteriaProgress* c)
         // don't save it if it's not started yet
         return false;
     }
-    AchievementCriteriaEntry const* acEntry = dbcAchievementCriteriaStore.LookupEntry(c->id);
-    switch (acEntry->requiredType)
+
+    auto achievement = sAchievementCriteriaStore.LookupEntry(c->id);
+    if (achievement == nullptr)
+        return false;
+
+    switch (achievement->requiredType)
     {
         // these get updated when character logs on, don't save to character progress db
         case ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL:
@@ -173,10 +177,7 @@ bool ShowCompletedAchievement(uint32 achievementID, const Player* plr)
 }
 
 /// AchievementMgr constructor
-AchievementMgr::AchievementMgr(Player* player)
-    :
-    m_player(player),
-    isCharacterLoading(true)
+AchievementMgr::AchievementMgr(Player* player) : m_player(player), isCharacterLoading(true)
 {}
 
 /// AchievementMgr destructor
@@ -184,12 +185,15 @@ AchievementMgr::~AchievementMgr()
 {
     for (CriteriaProgressMap::iterator iter = m_criteriaProgress.begin(); iter != m_criteriaProgress.end(); ++iter)
         delete iter->second;
+
     m_criteriaProgress.clear();
     m_completedAchievements.clear();
 }
 
-/** Save Achievement data to database
-    Saves all completed achievements to database.  Saves all achievement progresses that have been started, and that aren't calculated on login, to database. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Save Achievement data to database
+/// \brief Saves all completed achievements to database. Saves all achievement
+/// progresses that have been started, and that aren't calculated on login, to database.
 void AchievementMgr::SaveToDB(QueryBuffer* buf)
 {
     if (!m_completedAchievements.empty())
@@ -294,8 +298,9 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
     }
 }
 
-/** Load achievements from database.
-    Loads completed achievements and achievement progresses from the database. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Load achievements from database.
+/// \brief Loads completed achievements and achievement progresses from the database
 void AchievementMgr::LoadFromDB(QueryResult* achievementResult, QueryResult* criteriaResult)
 {
     if (achievementResult)
@@ -331,10 +336,12 @@ void AchievementMgr::LoadFromDB(QueryResult* achievementResult, QueryResult* cri
     }
 }
 
-/** Sends message to player(s) that the achievement has been completed.
-    Realm first! achievements get sent to all players currently online.
-    All other achievements get sent to all of the achieving player's guild members, group members, and other in-range players. */
-void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement)
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Sends message to player(s) that the achievement has been completed.
+/// Realm first! achievements get sent to all players currently online.
+/// All other achievements get sent to all of the achieving player's guild members,
+/// group members, and other in-range players
+void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry const* achievement)
 {
     if (achievement == NULL || isCharacterLoading)
     {
@@ -500,7 +507,8 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement)
     }
 }
 
-/// Sends update to achievement criteria to the player.
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief Sends update to achievement criteria to the player.
 void AchievementMgr::SendCriteriaUpdate(CriteriaProgress* progress)
 {
     if (progress == NULL || isCharacterLoading)
@@ -524,23 +532,23 @@ void AchievementMgr::SendCriteriaUpdate(CriteriaProgress* progress)
         GetPlayer()->GetSession()->SendPacket(&data);
 }
 
-/**
-    Updates ALL achievement criteria
-    This is called during player login to update some criteria which aren't saved in achievement progress DB,
-    since they are saved in the character DB or can easily be computed.
-    */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates ALL achievement criteria
+/// \brief This is called during player login to update some criteria which aren't
+/// saved in achievement progress DB, since they are saved in the character DB or
+/// can easily be computed.
 void AchievementMgr::CheckAllAchievementCriteria()
 {
-    for (uint32 i = 0; i < ACHIEVEMENT_CRITERIA_TYPE_TOTAL; i++)
+    for (uint8 i = 0; i < ACHIEVEMENT_CRITERIA_TYPE_TOTAL; i++)
         UpdateAchievementCriteria(AchievementCriteriaTypes(i));
 }
 
-/**
-    Updates achievement criteria of the specified type
-    This is what should be called from other places in the code (upon killing a monster, or looting an object, or completing a quest, etc.).
-    miscvalue1, miscvalue2 depend on the achievement type.
-    Generally, miscvalue1 is an ID of some type (quest ID, item ID, faction ID, etc.), and miscvalue2 is the amount to increase the progress.
-    */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates achievement criteria of the specified type
+/// \brief This is what should be called from other places in the code (upon killing a
+/// monster, or looting an object, or completing a quest, etc.). miscvalue1, miscvalue2
+/// depend on the achievement type. Generally, miscvalue1 is an ID of some type (quest ID,
+/// item ID, faction ID, etc.), and miscvalue2 is the amount to increase the progress.
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time)
 {
     if (m_player->GetSession()->HasGMPermissions() && sWorld.gamemaster_disableachievements)
@@ -568,7 +576,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
             continue;
         }
 
-        AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(achievementCriteria->referredAchievement);
+        auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
         if (!achievement)
         {
             // referred achievement not found (shouldn't normally happen)
@@ -1208,8 +1216,9 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
     }
 }
 
-/** Updates all achievement criteria of the specified type.
-    This is only called from CheckAllAchievementCriteria(), during player login */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates all achievement criteria of the specified type.
+/// \brief This is only called from CheckAllAchievementCriteria(), during player login
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
 {
     if (m_player->GetSession()->HasGMPermissions() && sWorld.gamemaster_disableachievements)
@@ -1220,7 +1229,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
     {
         AchievementCriteriaEntry const* achievementCriteria = (*i);
 
-        AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(achievementCriteria->referredAchievement);
+        auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
         if (!achievement  //|| IsCompletedCriteria(achievementCriteria)
             || (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
             || (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && !m_player->IsTeamHorde())
@@ -1306,8 +1315,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                     }
                     else if (achievementCriteria->number_of_mounts.unknown == 778 && sp && (sp->Effect[0] == SPELL_EFFECT_SUMMON))
                     {
-                        // Companion pet?
-                        // make sure it's a companion pet, not some other summon-type spell
+                        // Companion pet? Make sure it's a companion pet, not some other summon-type spell
                         if (strncmp(sp->Description, "Right Cl", 8) == 0)
                         {
                             // "Right Click to summon and dismiss " ...
@@ -1336,14 +1344,15 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
     }
 }
 
-/// True if the criteria has been completed; false if error; false if criteria has not been completed.
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \return True if the criteria has been completed otherwise false (error...)
 bool AchievementMgr::IsCompletedCriteria(AchievementCriteriaEntry const* achievementCriteria)
 {
     if (!achievementCriteria)
     {
         return false;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(achievementCriteria->referredAchievement);
+    auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
     if (achievement == NULL)
     {
         return false;
@@ -1471,6 +1480,7 @@ bool AchievementMgr::IsCompletedCriteria(AchievementCriteriaEntry const* achieve
     return false;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// If achievement criteria has been completed, checks whether to complete the achievement too.
 void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
 {
@@ -1478,7 +1488,12 @@ void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
     {
         return;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntry(criteria->referredAchievement);
+
+    auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+    if (achievement == nullptr)
+    {
+        return;
+    }
 
     if (criteria->completionFlag & ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL || GetAchievementCompletionState(achievement) == ACHIEVEMENT_COMPLETED_COMPLETED_NOT_STORED)
     {
@@ -1486,11 +1501,12 @@ void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
     }
 }
 
-/** Returns the completion state of the achievement.
-    ACHIEVEMENT_COMPLETED_COMPLETED_STORED: Achievement has been completed and stored already.
-    ACHIVEMENT_COMPLETED_COMPLETED_NOT_STORED: Achievement has been completed but not stored yet.
-    ACHIEVEMENT_COMPLETED_NONE: Achievement has not been completed yet. */
-AchievementCompletionState AchievementMgr::GetAchievementCompletionState(AchievementEntry const* entry)
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Returns the completion state of the achievement.
+/// \brief ACHIEVEMENT_COMPLETED_COMPLETED_STORED: has been completed and stored already.
+/// ACHIVEMENT_COMPLETED_COMPLETED_NOT_STORED: has been completed but not stored yet.
+/// ACHIEVEMENT_COMPLETED_NONE: has not been completed yet
+AchievementCompletionState AchievementMgr::GetAchievementCompletionState(DBC::Structures::AchievementEntry const* entry)
 {
     if (m_completedAchievements.find(entry->ID) != m_completedAchievements.end())
     {
@@ -1499,9 +1515,9 @@ AchievementCompletionState AchievementMgr::GetAchievementCompletionState(Achieve
 
     uint32 completedCount = 0;
     bool foundOutstanding = false;
-    for (uint32 rowId = 0; rowId < dbcAchievementCriteriaStore.GetNumRows(); ++rowId)
+    for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
-        AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupRowForced(rowId);
+        auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
         if (criteria == NULL || criteria->referredAchievement != entry->ID)
         {
             continue;
@@ -1533,8 +1549,9 @@ AchievementCompletionState AchievementMgr::GetAchievementCompletionState(Achieve
     return ACHIEVEMENT_COMPLETED_NONE;
 }
 
-/** Sets progress of the achievement criteria.
-    If relative argument is true, this behaves the same as UpdateCriteriaProgress. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Sets progress of the achievement criteria.
+/// \brief If relative argument is true, this behaves the same as UpdateCriteriaProgress
 void AchievementMgr::SetCriteriaProgress(AchievementCriteriaEntry const* entry, int32 newValue, bool relative)
 {
     CriteriaProgress* progress = NULL;
@@ -1564,8 +1581,9 @@ void AchievementMgr::SetCriteriaProgress(AchievementCriteriaEntry const* entry, 
     }
 }
 
-/** Updates progress of the achievement criteria.
-    updateByValue is added to the current progress counter. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates progress of the achievement criteria.
+/// \brief updateByValue is added to the current progress counter
 void AchievementMgr::UpdateCriteriaProgress(AchievementCriteriaEntry const* entry, int32 updateByValue)
 {
     CriteriaProgress* progress = NULL;
@@ -1590,8 +1608,9 @@ void AchievementMgr::UpdateCriteriaProgress(AchievementCriteriaEntry const* entr
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Completes the achievement for the player.
-void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
+void AchievementMgr::CompletedAchievement(DBC::Structures::AchievementEntry const* achievement)
 {
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER || m_completedAchievements.find(achievement->ID) != m_completedAchievements.end())
     {
@@ -1611,6 +1630,7 @@ void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
     GiveAchievementReward(achievement);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Sends all achievement data to the player. Also used for achievement inspection.
 void AchievementMgr::SendAllAchievementData(Player* player)
 {
@@ -1619,7 +1639,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
     bool doneCompleted = false;
     bool doneProgress = false;
     AchievementCriteriaEntry const* acEntry;
-    AchievementEntry const* achievement;
+    DBC::Structures::AchievementEntry const* achievement;
 
     WorldPacket data;
     if (packetSize < 0x8000)
@@ -1671,12 +1691,12 @@ void AchievementMgr::SendAllAchievementData(Player* player)
         data << int32(-1);
         for (; progressIter != m_criteriaProgress.end() && !packetFull; ++progressIter)
         {
-            acEntry = dbcAchievementCriteriaStore.LookupEntryForced(progressIter->first);
+            acEntry = sAchievementCriteriaStore.LookupEntry(progressIter->first);
             if (!acEntry)
             {
                 continue;
             }
-            achievement = dbcAchievementStore.LookupEntryForced(acEntry->referredAchievement);
+            achievement = sAchievementStore.LookupEntry(acEntry->referredAchievement);
             if (!achievement)
             {
                 continue;
@@ -1728,6 +1748,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Returns the number of achievement progresses that get sent to the player.
 uint32 AchievementMgr::GetCriteriaProgressCount()
 {
@@ -1743,8 +1764,9 @@ uint32 AchievementMgr::GetCriteriaProgressCount()
     return criteriapc;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Gives reward to player for completing the achievement.
-void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
+void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry const* entry)
 {
     if (entry == NULL || isCharacterLoading)
     {
@@ -1760,18 +1782,18 @@ void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
     {
         if (Reward->titel_A)
         {
-            CharTitlesEntry* title = dbcCharTitlesEntry.LookupEntryForced(Reward->titel_A);
-            if (title)
-                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(title->bit_index), true);
+            auto char_title = sCharTitlesStore.LookupEntry(Reward->titel_A);
+            if (char_title)
+                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(char_title->bit_index), true);
         }
     }
     if (GetPlayer()->GetTeam() == TEAM_HORDE)
     {
         if (Reward->titel_H)
         {
-            CharTitlesEntry* title = dbcCharTitlesEntry.LookupEntryForced(Reward->titel_H);
-            if (title)
-                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(title->bit_index), true);
+            auto char_title = sCharTitlesStore.LookupEntry(Reward->titel_H);
+            if (char_title)
+                GetPlayer()->SetKnownTitle(static_cast< RankTitles >(char_title->bit_index), true);
         }
     }
 
@@ -1785,19 +1807,24 @@ void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
             return;
         }
         
-        uint64 Sender = pCreature->GetGUID();
+        uint32 Sender = Reward->sender;
         uint64 receiver = GetPlayer()->GetGUID();
         std::string messageheader = Reward->subject;
         std::string messagebody = Reward->text;
         
         //Create Item
-        Item* pItem = Reward->itemId ? objmgr.CreateItem(Reward->itemId, GetPlayer()) : nullptr;
+        Item* pItem = objmgr.CreateItem(Reward->itemId, GetPlayer());
 
-        if (pItem != nullptr)
+        if (Reward->itemId == 0)
+        {
+            //Sending mail
+            sMailSystem.SendCreatureGameobjectMail(MAIL_TYPE_CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, 0, 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
+        }
+        else if (pItem != nullptr)
         {
             pItem->SaveToDB(-1, -1, true, NULL);
             //Sending mail
-            sMailSystem.SendAutomatedMessage(CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, pItem->GetGUID(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
+            sMailSystem.SendCreatureGameobjectMail(MAIL_TYPE_CREATURE, Sender, receiver, messageheader, messagebody, 0, 0, pItem->GetGUID(), 0, MAIL_CHECK_MASK_HAS_BODY, MAIL_DEFAULT_EXPIRATION_TIME);
 
             //removing pItem
             pItem->DeleteMe();
@@ -1814,25 +1841,27 @@ void AchievementMgr::GiveAchievementReward(AchievementEntry const* entry)
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Returns the number of completed achievements.
 uint32 AchievementMgr::GetCompletedAchievementsCount() const
 {
     return (uint32)m_completedAchievements.size();
 }
 
-/** GM has used a command to make the specified achievement to be completed.
-    If achievementID is -1, all achievements available for the player's faction get marked as completed
-    Returns true if able to complete specified achievement successfully.
-    Returns false if there is any error (already completed, not found, ...) */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief GM has used a command to make the specified achievement to be completed.
+/// If achievementID is -1, all achievements available for the player's faction get
+/// marked as completed
+/// \return true if able to complete specified achievement successfully, otherwise false
 bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achievementID)
 {
     if (achievementID == -1)
     {
-        uint32 nr = dbcAchievementStore.GetNumRows();
-        AchievementEntry const* ach;
+        uint32 nr = sAchievementStore.GetNumRows();
+
         for (uint32 i = 0; i < nr; ++i)
         {
-            ach = dbcAchievementStore.LookupRowForced(i);
+            auto ach = sAchievementStore.LookupEntry(i);
             if (ach == NULL)
             {
                 m_player->GetSession()->SystemMessage("Achievement %lu entry not found.", i);
@@ -1858,7 +1887,7 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achiev
         gmSession->SystemMessage("Player has already completed that achievement.");
         return false;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(achievementID);
+    auto achievement = sAchievementStore.LookupEntry(achievementID);
     if (!achievement)
     {
         gmSession->SystemMessage("Achievement %lu entry not found.", achievementID);
@@ -1874,21 +1903,19 @@ bool AchievementMgr::GMCompleteAchievement(WorldSession* gmSession, int32 achiev
     return true;
 }
 
-/**
-    GM has used a command to make the specified achievement criteria to be completed.
-    If criteriaID is -1, all achievement criteria get marked as completed
-    Returns true if able to complete specified achievement criteria successfully.
-    Returns false if there is any error (already completed not found, ...)
-    */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief GM has used a command to make the specified achievement criteria to be completed.
+/// If criteriaID is -1, all achievement criteria get marked as completed
+/// \return true if able to complete the achievement criteria, otherwise false
 bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaID)
 {
     if (criteriaID == -1)
     {
-        uint32 nr = dbcAchievementCriteriaStore.GetNumRows();
+        uint32 nr = sAchievementCriteriaStore.GetNumRows();
         AchievementCriteriaEntry const* crt;
         for (uint32 i = 0, j = 0; j < nr; ++i)
         {
-            crt = dbcAchievementCriteriaStore.LookupRowForced(i);
+            crt = sAchievementCriteriaStore.LookupEntry(i);
             if (crt == NULL)
             {
                 LOG_ERROR("Achievement Criteria %lu entry not found.", i);
@@ -1904,7 +1931,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
         m_player->GetSession()->SystemMessage("All achievement criteria completed.");
         return true;
     }
-    AchievementCriteriaEntry const* criteria = dbcAchievementCriteriaStore.LookupEntryForced(criteriaID);
+    auto criteria = sAchievementCriteriaStore.LookupEntry(criteriaID);
     if (!criteria)
     {
         gmSession->SystemMessage("Achievement criteria %lu not found.", criteriaID);
@@ -1915,7 +1942,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
         gmSession->SystemMessage("Achievement criteria %lu already completed.", criteriaID);
         return false;
     }
-    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(criteria->referredAchievement);
+    auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
     if (!achievement)
     {
         // achievement not found
@@ -1949,8 +1976,57 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
     return true;
 }
 
-/** GM has used a command to reset achievement(s) for this player.
-    If achievementID is -1, all achievements get reset, otherwise only the one specified gets reset. */
+
+bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32 criteriaID, uint32 count)
+{
+    auto criteria = sAchievementCriteriaStore.LookupEntry(criteriaID);
+    if (!criteria)
+    {
+        Log.Debug("AchievementMgr", "Achievement ID %u is Invalid", criteriaID);
+        return false;
+    }
+    if (IsCompletedCriteria(criteria))
+    {
+        Log.Debug("AchievementMgr", "Achievement criteria %lu already completed.", criteriaID);
+        return false;
+    }
+    auto* achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
+    if (!achievement)
+    {
+        // achievement not found
+        Log.Debug("AchievementMgr", "Referred achievement (%lu) entry not found.", criteria->referredAchievement);
+        return false;
+    }
+    if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
+    {
+        // can't complete this type of achivement (counter)
+        Log.Debug("AchievementMgr", "Referred achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
+            achievement->ID, achievement->ID, player->GetGUID(), achievement->name);
+        return false;
+    }
+
+    CriteriaProgressMap::iterator itr = m_criteriaProgress.find(criteriaID);
+    CriteriaProgress* progress;
+    if (itr == m_criteriaProgress.end())
+    {
+        // not in progress map
+        progress = new CriteriaProgress(criteriaID, 0);
+        m_criteriaProgress[criteriaID] = progress;
+    }
+    else
+    {
+        progress = itr->second;
+    }
+
+    progress->counter = progress->counter + count;
+    SendCriteriaUpdate(progress);
+    CompletedCriteria(criteria);
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \brief GM has used a command to reset achievement(s) for this player. If
+/// achievementID is -1, all achievements get reset, otherwise the one specified gets reset
 void AchievementMgr::GMResetAchievement(int32 achievementID)
 {
     std::ostringstream ss;
@@ -1979,8 +2055,9 @@ void AchievementMgr::GMResetAchievement(int32 achievementID)
     }
 }
 
-/** GM has used a command to reset achievement criteria for this player.
-    If criteriaID is -1, all achievement criteria get reset, otherwise only the one specified gets reset. */
+//////////////////////////////////////////////////////////////////////////////////////////
+/// GM has used a command to reset achievement criteria for this player. If criteriaID
+/// is -1, all achievement criteria get reset, otherwise only the one specified gets reset
 void AchievementMgr::GMResetCriteria(int32 criteriaID)
 {
     std::ostringstream ss;
@@ -2010,8 +2087,9 @@ void AchievementMgr::GMResetCriteria(int32 criteriaID)
     CheckAllAchievementCriteria();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Date/Time (time_t) the achievement was completed, or 0 if achievement not completed yet
-time_t AchievementMgr::GetCompletedTime(AchievementEntry const* achievement)
+time_t AchievementMgr::GetCompletedTime(DBC::Structures::AchievementEntry const* achievement)
 {
     CompletedAchievementMap::iterator iter = m_completedAchievements.find(achievement->ID);
     if (iter != m_completedAchievements.end())
@@ -2022,7 +2100,8 @@ time_t AchievementMgr::GetCompletedTime(AchievementEntry const* achievement)
     return 0; // achievement not completed
 }
 
-/// true if achievementID has been completed by the player, false otherwise.
+//////////////////////////////////////////////////////////////////////////////////////////
+/// \return true if achievementID has been completed by the player, false otherwise.
 bool AchievementMgr::HasCompleted(uint32 achievementID)
 {
     return (m_completedAchievements.find(achievementID) != m_completedAchievements.end());

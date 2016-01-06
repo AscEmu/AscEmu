@@ -1,0 +1,63 @@
+--
+-- Remove creature_spawns Hellfire Peninsula.
+--
+CREATE TABLE IF NOT EXISTS `creature_proto_difficulty` (
+  `entry` int(30) unsigned NOT NULL DEFAULT '0',
+  `difficulty_type` smallint(1) unsigned NOT NULL DEFAULT '1' COMMENT '1 = heroic, 2 = 25 normal, 3 = 10 heroic, 4 = 25 heroic',
+  `minlevel` int(30) unsigned NOT NULL DEFAULT '0',
+  `maxlevel` int(30) unsigned NOT NULL DEFAULT '0',
+  `faction` int(30) unsigned NOT NULL DEFAULT '0',
+  `minhealth` int(30) unsigned NOT NULL DEFAULT '0',
+  `maxhealth` int(30) unsigned NOT NULL DEFAULT '0',
+  `mana` int(30) unsigned NOT NULL DEFAULT '0',
+  `scale` float NOT NULL DEFAULT '0',
+  `npcflags` int(30) unsigned NOT NULL DEFAULT '0',
+  `attacktime` int(30) unsigned NOT NULL DEFAULT '0',
+  `attacktype` tinyint(1) NOT NULL DEFAULT '0',
+  `mindamage` float NOT NULL DEFAULT '0',
+  `maxdamage` float NOT NULL DEFAULT '0',
+  `can_ranged` int(11) unsigned NOT NULL DEFAULT '0',
+  `rangedattacktime` int(30) unsigned NOT NULL DEFAULT '0',
+  `rangedmindamage` float unsigned NOT NULL DEFAULT '0',
+  `rangedmaxdamage` float unsigned NOT NULL DEFAULT '0',
+  `respawntime` int(30) unsigned NOT NULL DEFAULT '0',
+  `armor` mediumint(10) unsigned NOT NULL DEFAULT '0',
+  `resistance1` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Holy',
+  `resistance2` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Fire',
+  `resistance3` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Nature',
+  `resistance4` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Frost',
+  `resistance5` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Shadow',
+  `resistance6` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT 'Arcane',
+  `combat_reach` float NOT NULL DEFAULT '1',
+  `bounding_radius` float NOT NULL DEFAULT '1',
+  `auras` longtext,
+  `boss` int(11) unsigned NOT NULL DEFAULT '0',
+  `money` int(30) NOT NULL DEFAULT '0',
+  `invisibility_type` int(30) unsigned NOT NULL DEFAULT '0',
+  `walk_speed` float NOT NULL DEFAULT '2.5',
+  `run_speed` float NOT NULL DEFAULT '8',
+  `fly_speed` float NOT NULL DEFAULT '14',
+  `extra_a9_flags` int(30) NOT NULL DEFAULT '0',
+  `spell1` int(10) unsigned NOT NULL DEFAULT '0',
+  `spell2` int(10) unsigned NOT NULL DEFAULT '0',
+  `spell3` int(10) unsigned NOT NULL DEFAULT '0',
+  `spell4` int(10) unsigned NOT NULL DEFAULT '0',
+  `spell5` int(10) unsigned NOT NULL DEFAULT '0',
+  `spell6` int(10) unsigned NOT NULL DEFAULT '0',
+  `spell7` int(10) unsigned NOT NULL DEFAULT '0',
+  `spell8` int(10) unsigned NOT NULL DEFAULT '0',
+  `spell_flags` int(30) NOT NULL DEFAULT '0',
+  `modImmunities` int(30) unsigned NOT NULL DEFAULT '0',
+  `isTrainingDummy` int(10) unsigned NOT NULL DEFAULT '0',
+  `guardtype` int(10) unsigned NOT NULL DEFAULT '0',
+  `summonguard` int(10) unsigned NOT NULL DEFAULT '0',
+  `spelldataid` int(10) unsigned NOT NULL DEFAULT '0',
+  `vehicleid` int(10) unsigned NOT NULL DEFAULT '0',
+  `rooted` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`entry`,`difficulty_type`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Creature Difficulty System';
+
+--
+-- Update world_db_version
+--
+UPDATE `world_db_version` SET `LastUpdate` = '2016-01-03_01_creature_proto_difficulty' WHERE `LastUpdate` = '2016-01-02_03_misc_spawns';

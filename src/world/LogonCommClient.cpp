@@ -145,7 +145,10 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
     uint32 realmlid;
     uint32 error;
     std::string realmname;
-    recvData >> error >> realmlid >> realmname;
+
+    recvData >> error;
+    recvData >> realmlid;
+    recvData >> realmname;
 
 #ifdef WIN32
     Log.Success("LogonCommClient", "Realm `%s` (UNICODE) registered as realm %u.", _StringToANSI(realmname.c_str()), realmlid);
@@ -276,7 +279,9 @@ void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
     for (; itr != realm_ids.end(); ++itr)
     {
         data.clear();
-        data << (*itr) << account_id << add;
+        data << (*itr);
+        data << account_id;
+        data << add;
         SendPacket(&data, false);
     }
 }
@@ -414,8 +419,11 @@ void LogonCommClientSocket::HandleDisconnectAccount(WorldPacket& recvData)
 void ConsoleAuthCallback(uint32 request, uint32 result);
 void LogonCommClientSocket::HandleConsoleAuthResult(WorldPacket& recvData)
 {
-    uint32 requestid, result;
-    recvData >> requestid >> result;
+    uint32 requestid;
+    uint32 result;
+
+    recvData >> requestid;
+    recvData >> result;
 
     ConsoleAuthCallback(requestid, result);
 }
@@ -428,7 +436,8 @@ void LogonCommClientSocket::HandlePopulationRequest(WorldPacket& recvData)
 
     // Send the result
     WorldPacket data(LRCMSG_REALM_POPULATION_RESULT, 16);
-    data << realmId << LogonCommHandler::getSingleton().GetServerPopulation();
+    data << realmId;
+    data << LogonCommHandler::getSingleton().GetServerPopulation();
     SendPacket(&data, false);
 }
 

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -25,8 +25,8 @@ class PlayerInfo;
 
 enum
 {
-    MAX_GUILD_RANKS = 10,
-    MAX_GUILD_MEMBERS = 500
+    MAX_GUILD_RANKS     = 10,
+    MAX_GUILD_MEMBERS   = 500
 };
 
 enum PETITION_TURNIN_ERRORS
@@ -51,7 +51,7 @@ enum GUILDEMBLEM_ERRORS
     ERR_GUILDEMBLEM_NOGUILD,
     ERR_GUILDEMBLEM_NOTGUILDMASTER,
     ERR_GUILDEMBLEM_NOTENOUGHMONEY,
-    ERR_GUILDEMBLEM_INVALIDVENDOR,
+    ERR_GUILDEMBLEM_INVALIDVENDOR
 };
 
 enum GuildMessageTypes
@@ -59,14 +59,14 @@ enum GuildMessageTypes
     G_MSGTYPE_ALL,
     G_MSGTYPE_ALLBUTONE,
     G_MSGTYPE_PUBLICCHAT,
-    G_MSGTYPE_OFFICERCHAT,
+    G_MSGTYPE_OFFICERCHAT
 };
 
 enum MONEY
 {
     MONEY_ONE_COPPER        = 1,
     MONEY_ONE_SILVER        = MONEY_ONE_COPPER * 100,
-    MONEY_ONE_GOLD          = MONEY_ONE_SILVER * 100,
+    MONEY_ONE_GOLD          = MONEY_ONE_SILVER * 100
 };
 
 enum CommandErrors
@@ -84,7 +84,7 @@ enum CommandErrors
     GUILD_PLAYER_NOT_IN_GUILD     = 0x09,
     GUILD_PLAYER_NOT_IN_GUILD_S   = 0x0A,
     GUILD_PLAYER_NOT_FOUND        = 0x0B,
-    GUILD_NOT_ALLIED              = 0x0C,
+    GUILD_NOT_ALLIED              = 0x0C
 };
 
 //for uint32(0)<<name<<code
@@ -103,7 +103,7 @@ enum GUILD_COMMAND_RESULTS
     C_R_NAME_NOT_FOUND                      = 11,
     C_R_CANT_INVITE_PLYRS_FROM_OPP_ALLIANCE = 12,
     C_R_NAME_RANK_TOO_HIGH                  = 13,
-    C_R_NAME_RANK_AT_LOWEST_RANK            = 14,
+    C_R_NAME_RANK_AT_LOWEST_RANK            = 14
     /*
     ERR_NO_GUILD_CHARTER
 
@@ -162,14 +162,14 @@ enum GUILD_COMMAND_RESULTS
 
 enum typecommand
 {
-    GUILD_CREATE_S          = 0x00,
-    GUILD_INVITE_S          = 0x01,
-    GUILD_QUIT_S            = 0x02,
-    GUILD_PROMOTE_S         = 0x03,
-    GUILD_FOUNDER_S         = 0x0C,
-    GUILD_MEMBER_S          = 0x0D,
+    GUILD_CREATE_S                  = 0x00,
+    GUILD_INVITE_S                  = 0x01,
+    GUILD_QUIT_S                    = 0x02,
+    GUILD_PROMOTE_S                 = 0x03,
+    GUILD_FOUNDER_S                 = 0x0C,
+    GUILD_MEMBER_S                  = 0x0D,
     GUILD_PUBLIC_NOTE_CHANGED_S     = 0x13,
-    GUILD_OFFICER_NOTE_CHANGED_S    = 0x14,
+    GUILD_OFFICER_NOTE_CHANGED_S    = 0x14
 
 };
 
@@ -200,15 +200,8 @@ enum GuildRankRights
     GR_RIGHT_GUILD_BANK_VIEW_TAB       = 0x01,
     GR_RIGHT_GUILD_BANK_DEPOSIT_ITEMS  = 0x02,
     GR_RIGHT_GUILD_BANK_CHANGE_TABTXT  = 0x04,
-    GR_RIGHT_GUILD_BANK_ALL            = GR_RIGHT_GUILD_BANK_VIEW_TAB | GR_RIGHT_GUILD_BANK_DEPOSIT_ITEMS | GR_RIGHT_GUILD_BANK_CHANGE_TABTXT,
+    GR_RIGHT_GUILD_BANK_ALL            = GR_RIGHT_GUILD_BANK_VIEW_TAB | GR_RIGHT_GUILD_BANK_DEPOSIT_ITEMS | GR_RIGHT_GUILD_BANK_CHANGE_TABTXT
 };
-
-
-//#define GUILDRANK_INVITE GUILDRANK_VETERAN
-//#define GUILDRANK_KICK GUILDRANK_OFFICER
-//#define GUILDRANK_PROMOTE GUILDRANK_VETERAN
-//#define GUILDRANK_DEMOTE GUILDRANK_VETERAN
-//#define GUILDRANK_MOTD GUILDRANK_OFFICER
 
 enum GuildEvent
 {
@@ -228,7 +221,7 @@ enum GuildEvent
     GUILD_EVENT_HASGONEOFFLINE     = 0xD,
     GUILD_EVENT_BANKTABBOUGHT      = 0xF,
     GUILD_EVENT_SETNEWBALANCE      = 0x11,
-    GUILD_EVENT_TABINFO            = 0x13,
+    GUILD_EVENT_TABINFO            = 0x13
 };
 enum GuildLogEventE
 {
@@ -237,7 +230,7 @@ enum GuildLogEventE
     GUILD_LOG_EVENT_PROMOTION    = 3,
     GUILD_LOG_EVENT_DEMOTION     = 4,
     GUILD_LOG_EVENT_REMOVAL      = 5,
-    GUILD_LOG_EVENT_LEFT         = 6,
+    GUILD_LOG_EVENT_LEFT         = 6
 };
 
 enum GuildBankLogEvents
@@ -246,15 +239,18 @@ enum GuildBankLogEvents
     GUILD_BANK_LOG_EVENT_WITHDRAW_ITEM  = 2,
     GUILD_BANK_LOG_EVENT_DEPOSIT_MONEY  = 4,
     GUILD_BANK_LOG_EVENT_WITHDRAW_MONEY = 5,
-    GUILD_BANK_LOG_EVENT_REPAIR         = 6,
+    GUILD_BANK_LOG_EVENT_REPAIR         = 6
 };
 
 #define ITEM_ENTRY_GUILD_CHARTER 5863
-#define ARENA_TEAM_CHARTER_2v2      23560
+
+#define ARENA_TEAM_CHARTER_2v2 23560
 #define ARENA_TEAM_CHARTER_2v2_COST 800000  // 80 G
-#define ARENA_TEAM_CHARTER_3v3      23561
+
+#define ARENA_TEAM_CHARTER_3v3 23561
 #define ARENA_TEAM_CHARTER_3v3_COST 1200000 // 120 G
-#define ARENA_TEAM_CHARTER_5v5      23562
+
+#define ARENA_TEAM_CHARTER_5v5 23562
 #define ARENA_TEAM_CHARTER_5v5_COST 2000000 // 200 G
 
 #define MAX_GUILD_BANK_SLOTS 98
@@ -334,13 +330,16 @@ class SERVER_DECL Guild
 
         Guild();
         ~Guild();
+
         static Guild* Create();
         bool LoadFromDB(Field* f);
 
-        // Log entry processing
+
     protected:
 
+        // Log entry processing
         uint32 m_hiLogId;
+
     public:
 
         uint32 GenerateGuildLogEventId();
@@ -353,58 +352,41 @@ class SERVER_DECL Guild
         // only call at first create/save 
         void CreateInDB();
 
-        // Sets new MOTD, and updates in database
         void SetMOTD(const char* szNewMotd, WorldSession* pClient);
 
-        // Gets MOTD
         inline const char* GetMOTD() const { return (m_motd ? m_motd : ""); }
 
-        // Sets guild information, updates in database
         void SetGuildInformation(const char* szGuildInformation, WorldSession* pClient);
 
-        // Gets guild information
         inline const char* GetGuildInformation() const { return m_guildInfo; }
 
-        // Sends the guild roster to this client.
         void SendGuildRoster(WorldSession* pClient);
 
-        // Sends the guild query response to this client.
         void SendGuildQuery(WorldSession* pClient);
 
-        // Adds a member to the guild, saves him into the database. A provided rank of -1 means the lowest rank.
         void AddGuildMember(PlayerInfo* pMember, WorldSession* pClient, int32 ForcedRank = -1);
 
-        // Removes a member from the guild.
         // If this member is the guild master, the guild will be automatically handed down to the next highest member.
         void RemoveGuildMember(PlayerInfo* pMember, WorldSession* pClient);
 
-        // Promotes a member of a guild.
         // Do not use for changing guild master.Use ChangeGuildMaster() for that instead.
         void PromoteGuildMember(PlayerInfo* pMember, WorldSession* pClient);
 
-        // Demotes a member of a guild.
         // Do not use for changing guild master. Use ChangeGuildMaster() for that instead.
         void DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient);
 
-        // Changes the guild master of the guild.
         void ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient);
 
-        // Sends a guild command packet to the client.
         static void SendGuildCommandResult(WorldSession* pClient, uint32 iCmd, const char* szMsg, uint32 iType);
 
-        // Sends a turn in petition result to the client.
         static void SendTurnInPetitionResult(WorldSession* pClient, uint32 result);
 
-        // Logs a guild event and sends it to all online players.
         void LogGuildEvent(uint8 iEvent, uint8 iStringCount, ...);
 
-        // Guild event logging.
         void AddGuildLogEntry(uint8 iEvent, uint8 iParamCount, ...);
 
-        // Creates a guild from a charter.
         void CreateFromCharter(Charter* pCharter, WorldSession* pTurnIn);
 
-        // Sends a packet to all online players.
         void SendPacket(WorldPacket* data);
 
         // Sends a guild chat message.
@@ -413,17 +395,13 @@ class SERVER_DECL Guild
         // Sends an officer chat message.
         void OfficerChat(const char* szMessage, WorldSession* pClient, uint32 iType);
 
-        // Sends the guild log to a player.
         void SendGuildLog(WorldSession* pClient);
         void SendGuildBankLog(WorldSession* pClient, uint8 iSlot);
 
-        // Sets the public note for a player.
         void SetPublicNote(PlayerInfo* pMember, const char* szNewNote, WorldSession* pClient);
 
-        // Sets the officer note for a player.
         void SetOfficerNote(PlayerInfo* pMember, const char* szNewNote, WorldSession* pClient);
 
-        // Disbands a guild.
         void Disband();
 
         // creation time stuff
@@ -552,18 +530,3 @@ class SERVER_DECL Guild
 
 
 #endif // _GUILD_H
-
-/*0,1->guild created
-2->you are already in guild
-3->selection is already in guild
-4->you have been already invited to guild
-5->selection is already invited to guild
-6->guildname contains invalid characters please rename
-7->there is an already guild named "name"
-8->you don't have permission to do that
-9->you are not in guild
-10->selection is not in your guild
-11->"name" not found
-12->you cannot invite players from opposite alliance
-13->"name"'s rank is too high
-14->"name" is already at lowest rank*/

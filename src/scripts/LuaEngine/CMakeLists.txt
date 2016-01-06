@@ -1,14 +1,9 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 if(NOT BUILD_LUAENGINE)
   message("\tLuaEngine was skipped because BUILD_LUAENGINE is unchecked.")
   return()
 endif(NOT BUILD_LUAENGINE)
-
-if(BUILD_LUABRIDGE)
-	message(ERROR, "\tBUILD_LUABRIDGE is enabled but luabridge cannot run together with LuaEngine!")
-	return()
-endif(BUILD_LUABRIDGE)
 
 # set up our project name
 project(LuaEngine)

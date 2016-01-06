@@ -23,19 +23,21 @@
 
 #include "StdAfx.h"
 
-class CircleOfBlood : public Arena{
-public:
-    CircleOfBlood( MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side );
-    ~CircleOfBlood();
+class CircleOfBlood : public Arena
+{
+    public:
+        CircleOfBlood(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side);
+        ~CircleOfBlood();
 
-    static CBattleground* Create( MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side ){
-        return new CircleOfBlood( m, i, l, t, players_per_side );
-    }
+        static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t, uint32 players_per_side)
+        {
+            return new CircleOfBlood(m, i, l, t, players_per_side);
+        }
 
-    void OnCreate();
-    void HookOnShadowSight();
-    LocationVector GetStartingCoords( uint32 Team );
-    bool HookHandleRepop( Player *plr );
+        void OnCreate();
+        void HookOnShadowSight();
+        LocationVector GetStartingCoords(uint32 Team);
+        bool HookHandleRepop(Player *plr);
 };
 
 #endif  // _CIRCLE_OF_BLOOD_H

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,15 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
-   @file CrashHandler.h
-   Handles crashes/exceptions on a win32 based platform, writes a dump file,
-   for later bug fixing.
-*/
-
-#ifndef _CRASHHANDLER_H
-#define _CRASHHANDLER_H
-
+#ifndef _CRASH_HANDLER_H
+#define _CRASH_HANDLER_H
 
 #include "Common.h"
 
@@ -43,6 +36,7 @@ extern CircularQueue<uint32, 30> last_spells;
 class SERVER_DECL CStackWalker : public StackWalker
 {
     public:
+
         void OnOutput(LPCSTR szText);
         void OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName);
         void OnLoadModule(LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType, LPCSTR pdbName, ULONGLONG fileVersion);
@@ -66,4 +60,4 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs);
 
 #endif
 
-#endif      //_CRASHHANDLER_H
+#endif  //_CRASH_HANDLER_H

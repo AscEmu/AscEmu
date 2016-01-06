@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,9 +17,14 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Gossip/GossipDefines.hpp"
 #include "WorldPacket.h"
 #include "StackBuffer.h"
 #include <map>
+
+#ifndef _GOSSIP_H
+#define _GOSSIP_H
+
 #pragma once
 
 struct Quest;
@@ -28,32 +33,6 @@ class Item;
 class Player;
 class Object;
 class GameObject;
-
-enum Icons
-{
-    ICON_CHAT = 0,              // chat bubble
-    ICON_VENDOR = 1,            // vendor
-    ICON_FLIGHTMASTER = 2,      // flightmaster
-    ICON_TRAINER = 3,           // book
-    ICON_INTERACT_1 = 4,        // interaction wheel
-    ICON_INTERACT_2 = 5,        // interaction wheel
-    ICON_MONEY_BAG = 6,         // brown bag with yellow dot
-    ICON_TALK = 7,              // white chat bubble with black dots
-    ICON_TABARD = 8,            // tabard
-    ICON_BATTLE = 9,            // two swords
-    ICON_DOT = 10,              // yellow dot
-    ICON_CHAT_11 = 11,          // This and below are most the same visual as GOSSIP_ICON_CHAT
-    ICON_CHAT_12 = 12,          // but are still used for unknown reasons.
-    ICON_CHAT_13 = 13,
-    ICON_CHAT_14 = 14,          // probably invalid
-    ICON_CHAT_15 = 15,          // probably invalid
-    ICON_CHAT_16 = 16,
-    ICON_CHAT_17 = 17,
-    ICON_CHAT_18 = 18,
-    ICON_CHAT_19 = 19,
-    ICON_CHAT_20 = 20,
-    ICON_MAX = 21
-};
 
 enum MenuItemOptions
 {
@@ -306,36 +285,6 @@ namespace Arcemu
     namespace Gossip
     {
         using namespace Arcemu;
-        const unsigned DEFAULT_TXTINDEX = 2;
-        const unsigned TRAINER_TALENTRESET_LVLIMIT = 10;    /// minimum
-        const unsigned PLAYER_TALENTRESET_LVLIMIT = 10;
-        const unsigned PLAYER_DUALTALENT_LVLIMIT = 40;
-
-        enum Icons
-        {
-            ICON_CHAT = 0,              /// chat bubble
-            ICON_VENDOR = 1,            /// vendor
-            ICON_FLIGHTMASTER = 2,      /// flightmaster
-            ICON_TRAINER = 3,           /// book
-            ICON_INTERACT_1 = 4,        /// interaction wheel
-            ICON_INTERACT_2 = 5,        /// interaction wheel
-            ICON_MONEY_BAG = 6,         /// brown bag with yellow dot
-            ICON_TALK = 7,              /// white chat bubble with black dots
-            ICON_TABARD = 8,            /// tabard
-            ICON_BATTLE = 9,            /// two swords
-            ICON_DOT = 10,              /// yellow dot
-            ICON_CHAT_11 = 11,          /// This and below are most the same visual as GOSSIP_ICON_CHAT
-            ICON_CHAT_12 = 12,          /// but are still used for unknown reasons.
-            ICON_CHAT_13 = 13,
-            ICON_CHAT_14 = 14,          /// probably invalid
-            ICON_CHAT_15 = 15,          /// probably invalid
-            ICON_CHAT_16 = 16,
-            ICON_CHAT_17 = 17,
-            ICON_CHAT_18 = 18,
-            ICON_CHAT_19 = 19,
-            ICON_CHAT_20 = 20,
-            ICON_MAX = 21
-        };
 
         enum ws
         {
@@ -356,6 +305,7 @@ namespace Arcemu
         class Item
         {
             public:
+
                 uint16 id_;
                 bool coded_;
                 uint8 icon_;
@@ -374,6 +324,7 @@ namespace Arcemu
         class SERVER_DECL Menu
         {
             public:
+
                 Menu(uint64, uint32, uint32 = 0);
                 Menu(Object*, uint32, uint32 = 0);
 
@@ -487,6 +438,7 @@ namespace Arcemu
         class SERVER_DECL Script
         {
             public:
+
                 Script() {}
                 virtual ~Script() {}
 
@@ -503,6 +455,7 @@ namespace Arcemu
         class SERVER_DECL SpiritHealer : public Script
         {
             public:
+
                 SpiritHealer() {}
                 virtual ~SpiritHealer() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -511,6 +464,7 @@ namespace Arcemu
         class SERVER_DECL Vendor : public Script
         {
             public:
+
                 Vendor() {}
                 virtual ~Vendor() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -519,6 +473,7 @@ namespace Arcemu
         class SERVER_DECL Trainer : public Script
         {
             public:
+
                 Trainer() {}
                 virtual ~Trainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
@@ -527,6 +482,7 @@ namespace Arcemu
         class SERVER_DECL ClassTrainer : public Script
         {
             public:
+
                 ClassTrainer() {}
                 virtual ~ClassTrainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
@@ -535,6 +491,7 @@ namespace Arcemu
         class SERVER_DECL PetTrainer : public Script
         {
             public:
+
                 PetTrainer() {}
                 virtual ~PetTrainer() {}
                 virtual void OnHello(Object* pObject, Player* Plr);
@@ -543,6 +500,7 @@ namespace Arcemu
         class SERVER_DECL FlightMaster : public Script
         {
             public:
+
                 FlightMaster() {}
                 virtual ~FlightMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -551,6 +509,7 @@ namespace Arcemu
         class SERVER_DECL Auctioneer: public Script
         {
             public:
+
                 Auctioneer() {}
                 virtual ~Auctioneer() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -559,6 +518,7 @@ namespace Arcemu
         class SERVER_DECL InnKeeper : public Script
         {
             public:
+
                 InnKeeper() {}
                 virtual ~InnKeeper() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -567,6 +527,7 @@ namespace Arcemu
         class SERVER_DECL BattleMaster : public Script
         {
             public:
+
                 BattleMaster() {}
                 virtual ~BattleMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -575,6 +536,7 @@ namespace Arcemu
         class SERVER_DECL Banker : public Script
         {
             public:
+
                 Banker() {}
                 virtual ~Banker() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -583,6 +545,7 @@ namespace Arcemu
         class SERVER_DECL CharterGiver : public Script
         {
             public:
+
                 CharterGiver() {}
                 virtual ~CharterGiver() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -591,6 +554,7 @@ namespace Arcemu
         class SERVER_DECL TabardDesigner : public Script
         {
             public:
+
                 TabardDesigner() {}
                 virtual ~TabardDesigner() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -599,6 +563,7 @@ namespace Arcemu
         class SERVER_DECL StableMaster : public Script
         {
             public:
+
                 StableMaster() {}
                 virtual ~StableMaster() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -607,6 +572,7 @@ namespace Arcemu
         class SERVER_DECL Generic : public Script
         {
             public:
+
                 Generic() {}
                 virtual ~Generic() {}
                 void OnHello(Object* pObject, Player* Plr);
@@ -614,3 +580,5 @@ namespace Arcemu
         };
     }
 }
+
+#endif      //_GOSSIP_H

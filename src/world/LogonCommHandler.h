@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -61,24 +61,24 @@ enum RealmType
 class LogonCommHandler : public Singleton<LogonCommHandler>
 {
 #ifdef WIN32
-    typedef HM_NAMESPACE::hash_map<std::string, std::string> ForcedPermissionMap;
+    typedef std::unordered_map<std::string, std::string> ForcedPermissionMap;
 #else
     typedef std::map<std::string, std::string> ForcedPermissionMap;
 #endif
 
-        ForcedPermissionMap forced_permissions;
-        std::map<LogonServer*, LogonCommClientSocket*> logons;
-        std::map<uint32, WorldSocket*> pending_logons;
-        std::set<Realm*> realms;
-        std::set<LogonServer*> servers;
-        uint32 idhigh;
-        uint32 next_request;
-        Mutex mapLock;
-        Mutex pendingLock;
-        bool pings;
-        uint32 _realmType;
-        uint32 pLimit;
-        float server_population;
+    ForcedPermissionMap forced_permissions;
+    std::map<LogonServer*, LogonCommClientSocket*> logons;
+    std::map<uint32, WorldSocket*> pending_logons;
+    std::set<Realm*> realms;
+    std::set<LogonServer*> servers;
+    uint32 idhigh;
+    uint32 next_request;
+    Mutex mapLock;
+    Mutex pendingLock;
+    bool pings;
+    uint32 _realmType;
+    uint32 pLimit;
+    float server_population;
 
     public:
 

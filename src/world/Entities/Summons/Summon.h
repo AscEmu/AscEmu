@@ -25,13 +25,12 @@
 #include "Creature.h"
 
 /////////////////////////////////////////////////////////////////////////
-//class Summon
-//  Base class for Summoned creatures
-//
+/// Base class for Summoned creatures
 /////////////////////////////////////////////////////////////////////////
 class Summon : public Creature
 {
     public:
+
         Summon(uint64 GUID);
         ~Summon();
 
@@ -62,25 +61,19 @@ class Summon : public Creature
         }
         bool IsSummon() { return true; }
 
-        /////////////////////////////////////////////////////////
-        //Unit* GetOwner()
-        //  Returns the owner unit of this creature
-        //
-        //Parameter(s)
-        //  None
-        //
-        //Return Value
-        //  Returns a pointer to the owner unit of this creature
-        //
-        /////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /// Returns the owner unit of this creature
+        /// \param none  \return Returns a pointer to the owner unit of this creature
+        //////////////////////////////////////////////////////////////////////////////////////////
         Unit* GetOwner() { return owner; }
         Object* GetPlayerOwner();
         void Die(Unit* pAttacker, uint32 damage, uint32 spellid);
         void OnRemoveInRangeObject(Object* object);
 
     private:
+
         int32 summonslot;  // Summon slot of the creature in the owner's summonhandler, -1 means no slot
         Unit* owner;       // Summoner of the creature
 };
 
-#endif
+#endif      // SUMMON_HPP_

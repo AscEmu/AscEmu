@@ -24,17 +24,11 @@
 #include "StdAfx.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// float CalcHPCoefficient(MapInfo *mi, uint32 mode, bool boss)
-//  Returns the HP coefficient that is suited for the map, mode, and creature
-//
-// Parameters:
-//  MapInfo *mi        -        pointer to the mapinfo structure
-//    uint32  mode    -        numeric representation of the version of the map (normal, heroic, 10-25 men, etc)
-//    bool    boss    -        true if the creature is a boss, false if not
-//
-// Return Values:
-//    Returns the hp coefficient in a float
-//
+/// Returns the HP coefficient that is suited for the map, mode, and creature
+/// \param  MapInfo *mi        -        pointer to the mapinfo structure
+/// \param  uint32  mode    -        numeric representation of the version of the map (normal, heroic, 10-25 men, etc)
+/// \param  bool    boss    -        true if the creature is a boss, false if not
+/// \returns the hp coefficient in a float
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 float CalcHPCoefficient(MapInfo* mi, uint32 mode, bool boss)
 {
@@ -43,9 +37,9 @@ float CalcHPCoefficient(MapInfo* mi, uint32 mode, bool boss)
     if (mi == NULL)
         return 1.0f;
 
-    // This calculation is purely speculation as we have no way of finding out how Blizzard generates these values
-    // These cases are based on simple observation of trash/boss hp values for different modes
-    // If you know they are wrong AND you know a better calculation formula then DO change it.
+    /// \brief This calculation is purely speculation as we have no way of finding out how Blizzard generates these values
+    /// These cases are based on simple observation of trash/boss hp values for different modes
+    /// If you know they are wrong AND you know a better calculation formula then DO change it.
 
     // raid
     if (mi->type == INSTANCE_RAID)
@@ -121,23 +115,17 @@ float CalcHPCoefficient(MapInfo* mi, uint32 mode, bool boss)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// float CalcDMGCoefficient(MapInfo *mi, uint32 mode)
-//  Calculates the creature damage coefficient that is suitable for the map type and difficulty
-//
-// Parameters:
-//  MapInfo *mi        -        pointer to the MapInfo structure
-//  uint32 mode        -        numeric representation of the version of the map (normal, heroic, 10-25 men, etc)
-//
-// Return Value:
-//  Returns the suitable damage coefficient in a float
-//
+/// Calculates the creature damage coefficient that is suitable for the map type and difficulty
+/// \param  MapInfo *mi - pointer to the MapInfo structure
+/// \param  uint32 mode - numeric representation of the version of the map (normal, heroic, 10-25 men, etc)
+/// \returns the suitable damage coefficient in a float
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 float CalcDMGCoefficient(MapInfo* mi, uint32 mode)
 {
 
-    // This calculation is purely speculation as we have no way of finding out how Blizzard generates these values
-    // These cases are based on simple observation of trash/boss damage values for different modes
-    // If you know they are wrong AND you know a better calculation formula then DO change it.
+    /// \brief This calculation is purely speculation as we have no way of finding out how Blizzard generates these values
+    /// These cases are based on simple observation of trash/boss damage values for different modes
+    /// If you know they are wrong AND you know a better calculation formula then DO change it.
 
     if (mi == NULL)
         return 1.0f;
@@ -229,7 +217,7 @@ Creature::Creature(uint64 guid)
     m_corpseEvent = false;
     m_respawnCell = NULL;
     m_walkSpeed = 2.5f;
-    m_runSpeed = MONSTER_NORMAL_RUN_SPEED;
+    m_runSpeed = creatureNormalRunSpeed;
     m_base_runSpeed = m_runSpeed;
     m_base_walkSpeed = m_walkSpeed;
     m_noRespawn = false;
@@ -274,12 +262,25 @@ void Creature::Update(unsigned long time_passed)
     if (m_corpseEvent)
     {
         sEventMgr.RemoveEvents(this);
-        if (this->creature_info->Rank == ELITE_WORLDBOSS)
-            sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, TIME_CREATURE_REMOVE_BOSSCORPSE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        else if (this->creature_info->Rank == ELITE_RAREELITE || this->creature_info->Rank == ELITE_RARE)
-            sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, TIME_CREATURE_REMOVE_RARECORPSE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-        else
-            sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, TIME_CREATURE_REMOVE_CORPSE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+        switch (this->creature_info->Rank)
+        {
+            case ELITE_ELITE:
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayElite, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                break;
+            case ELITE_RAREELITE:
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayRareElite, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                break;
+            case ELITE_WORLDBOSS:
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayWorldboss, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                break;
+            case ELITE_RARE:
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayRare, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                break;
+            default:
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayNormal, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                break;
+        }
 
         m_corpseEvent = false;
     }
@@ -311,7 +312,7 @@ void Creature::OnRemoveCorpse()
         setDeathState(DEAD);
         m_position = m_spawnLocation;
 
-        if ((GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID && proto->boss) || m_noRespawn)
+        if ((GetMapMgr()->GetMapInfo() && GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID && proto->isBoss) || m_noRespawn)
         {
             RemoveFromWorld(false, true);
         }
@@ -372,7 +373,7 @@ void Creature::OnRespawn(MapMgr* m)
         SetUInt32Value(UNIT_NPC_FLAGS, proto->NPCFLags);
         SetEmoteState(m_spawn->emote_state);
 
-        /* creature's death state */
+        // creature's death state
         if (m_spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
         {
             m_limbostate = true;
@@ -412,7 +413,7 @@ void Creature::CreateWayPoint(uint32 WayPointID, uint32 mapid, float x, float y,
     Object::_Create(mapid, x, y, z, ang);
 }
 
-///////////
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Looting
 
 void Creature::generateLoot()
@@ -426,6 +427,16 @@ void Creature::generateLoot()
         lootmgr.FillCreatureLoot(&loot, GetEntry(), 0);
 
     loot.gold = proto->money;
+
+    if (GetAIInterface()->GetDifficultyType() != 0)
+    {
+        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        if (proto_difficulty != nullptr)
+        {
+            if (proto_difficulty->money != proto->money)
+                loot.gold = proto_difficulty->money;
+        }
+    }
 
     // Master Looting Ninja Checker
     if (sWorld.antiMasterLootNinja)
@@ -450,57 +461,44 @@ void Creature::generateLoot()
         }
     }
 
-    /*
-     * If there's an amount given, take it as an expected value and
-     * generated a corresponding random value. The random value is
-     * something similar to a normal distribution.
-     *
-     * You'd get a ``better'' distribution if you called `rand()' for each
-     * copper individually. However, if the loot was 1G we'd call `rand()'
-     * 15000 times, which is not ideal. So we use one call to `rand()' to
-     * (hopefully) get 24 random bits, which is then used to create a
-     * normal distribution over 1/24th of the difference.
-     */
+    /// \brief If there's an amount given, take it as an expected value and generated a corresponding random value. The random value is
+    /// something similar to a normal distribution.
+    /// You'd get a ``better'' distribution if you called `rand()' for each copper individually. However, if the loot was 1G we'd call `rand()'
+    /// 15000 times, which is not ideal. So we use one call to `rand()' to (hopefully) get 24 random bits, which is then used to create a
+    /// normal distribution over 1/24th of the difference.
     if (loot.gold >= 12)
     {
         uint32 random_bits;
         double chunk_size;
         double gold_fp;
 
-        /* Split up the difference into 12 chunks.. */
+        // Split up the difference into 12 chunks..
         chunk_size = loot.gold / 12.0;
 
-        /* Get 24 random bits. We use the low order bits, because we're
-         * too lazy to check how many random bits the system actually
-         * returned. */
+        // Get 24 random bits. We use the low order bits, because we're too lazy to check how many random bits the system actually returned
         random_bits = rand() & 0x00ffffff;
 
         gold_fp = 0.0;
         while (random_bits != 0)
         {
-            /* If last bit is one .. */
+            // If last bit is one .. 
             if ((random_bits & 0x01) == 1)
-                /* .. increase loot by 1/12th of expected value */
+                // .. increase loot by 1/12th of expected value
                 gold_fp += chunk_size;
 
-            /* Shift away the LSB */
+            // Shift away the LSB
             random_bits >>= 1;
         }
 
-        /* To hide your discrete values a bit, add another random
-         * amount between -(chunk_size/2) and +(chunk_size/2). */
+        // To hide your discrete values a bit, add another random amount between -(chunk_size/2) and +(chunk_size/2)
         gold_fp += (chunk_size * (RandomFloat(1.0f) - 0.5f));
 
-        /*
-         * In theory we can end up with a negative amount. Give at
-         * least one chunk_size here to prevent this from happening. In
-         * case you're interested, the probability is around 2.98e-8.
-         */
+        /// \ brief In theory we can end up with a negative amount. Give at least one chunk_size here to prevent this from happening. In
+        /// case you're interested, the probability is around 2.98e-8.
         if (gold_fp < chunk_size)
             gold_fp = chunk_size;
 
-        /* Convert the floating point gold value to an integer again
-         * and we're done. */
+        // Convert the floating point gold value to an integer again and we're done
         loot.gold = static_cast<uint32>(0.5 + gold_fp);
     }
 
@@ -578,7 +576,9 @@ void Creature::SaveToDB()
         << m_uint32Values[UNIT_FIELD_BYTES_2] << ","
         << m_uint32Values[UNIT_NPC_EMOTESTATE] << ",0,";
 
-    ss << m_spawn->channel_spell << "," << m_spawn->channel_target_go << "," << m_spawn->channel_target_creature << ",";
+    ss << m_spawn->channel_spell << "," 
+        << m_spawn->channel_target_go << "," 
+        << m_spawn->channel_target_creature << ",";
 
     ss << uint32(GetStandState()) << ",";
 
@@ -617,7 +617,7 @@ void Creature::DeleteFromDB()
 }
 
 
-/////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 /// Quests
 
 void Creature::AddQuest(QuestRelation* Q)
@@ -817,7 +817,7 @@ void Creature::setDeathState(DeathState s)
         m_deathState = CORPSE;
         m_corpseEvent = true;
 
-        /*sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);*/
+        //sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, 180000, 1,EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         if (m_enslaveSpell)
             RemoveEnslave();
 
@@ -1258,7 +1258,7 @@ Trainer* Creature::GetTrainer()
     return mTrainer;
 }
 
-void Creature::AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry* ec)
+void Creature::AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec)
 {
     CreatureItem ci;
     ci.amount = amount;
@@ -1274,6 +1274,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry
     }
     m_SellItems->push_back(ci);
 }
+
 void Creature::ModAvItemAmount(uint32 itemid, uint32 value)
 {
     for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
@@ -1297,6 +1298,7 @@ void Creature::ModAvItemAmount(uint32 itemid, uint32 value)
         }
     }
 }
+
 void Creature::UpdateItemAmount(uint32 itemid)
 {
     for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
@@ -1435,14 +1437,6 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     SetBaseMana(proto->Mana);
     SetPower(POWER_TYPE_MANA, proto->Mana);
 
-    // Whee, thank you blizz, I love patch 2.2! Later on, we can randomize male/female mobs! xD
-    // Determine gender (for voices)
-    //if (spawn->displayid != creature_info->Male_DisplayID)
-    //    setGender(1);   // Female
-
-    // uint32 model = 0;
-    // uint32 gender = creature_info->GenerateModelId(&model);
-    // setGender(gender);
 
     SetDisplayId(spawn->displayid);
     SetNativeDisplayId(spawn->displayid);
@@ -1455,7 +1449,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     if (mode && info)
         modLevel(std::min(73 - getLevel(), info->lvl_mod_a));
 
-    for (uint32 i = 0; i < 7; ++i)
+    for (uint8 i = 0; i < 7; ++i)
         SetResistance(i, proto->Resistances[i]);
 
     SetBaseAttackTime(MELEE, proto->AttackTime);
@@ -1577,7 +1571,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 
     //////////////AI
 
-    myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
 
     //HACK!
@@ -1593,7 +1587,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
         GetAIInterface()->SetFly();
     else if (spawn->CanFly == 2)
         GetAIInterface()->onGameobject = true;
-    /* more hacks! */
+    // more hacks!
     if (proto->Mana != 0)
         SetPowerType(POWER_TYPE_MANA);
     else
@@ -1611,7 +1605,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 
     m_aiInterface->UpdateSpeeds();
 
-    /* creature death state */
+    // creature death state
     if (spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
     {
         m_limbostate = true;
@@ -1647,7 +1641,6 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 
     return true;
 }
-
 
 void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
 {
@@ -1694,28 +1687,23 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
 
     EventModelChange();
 
-    //setLevel((mode ? proto->Level + (info ? info->lvl_mod_a : 0) : proto->Level));
     setLevel(proto->MinLevel + (RandomUInt(proto->MaxLevel - proto->MinLevel)));
 
-    for (uint32 i = 0; i < 7; ++i)
+    for (uint8 i = 0; i < 7; ++i)
         SetResistance(i, proto->Resistances[i]);
 
     SetBaseAttackTime(MELEE, proto->AttackTime);
     SetMinDamage(proto->MinDamage);
     SetMaxDamage(proto->MaxDamage);
 
-    // m_spawn is invalid here - don't use it!
-    // this is loading a CreatureProto, which doesn't have ItemSlotDisplays
-    //    SetEquippedItem(MELEE,m_spawn->Item1SlotDisplay);
-    //    SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID_1, m_spawn->Item2SlotDisplay);
-    //    SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID_2, m_spawn->Item3SlotDisplay);
 
     SetFaction(proto->Faction);
     SetBoundingRadius(proto->BoundingRadius);
     SetCombatReach(proto->CombatReach);
-    original_emotestate = 0;
-    // set position
 
+    original_emotestate = 0;
+
+    // set position
     m_position.ChangeCoords(x, y, z, o);
     m_spawnLocation.ChangeCoords(x, y, z, o);
 
@@ -1787,10 +1775,10 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
 
     //////////////AI
 
-    myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
 
-    //HACK!
+    /// \todo remove this HACK! already included few lines above
     if (m_uint32Values[UNIT_FIELD_DISPLAYID] == 17743 ||
         m_uint32Values[UNIT_FIELD_DISPLAYID] == 20242 ||
         m_uint32Values[UNIT_FIELD_DISPLAYID] == 15435 ||
@@ -1898,10 +1886,12 @@ void Creature::OnPushToWorld()
             if (itr2->max_amount == 0)
                 itr2->available_amount = 0;
             else if (itr2->available_amount < itr2->max_amount)
-                sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, itr2->itemid, EVENT_ITEM_UPDATE, VENDOR_ITEMS_UPDATE_TIME, 1, 0);
+                sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, itr2->itemid, EVENT_ITEM_UPDATE, vendorItemsUpdate, 1, 0);
         }
 
     }
+
+    GetAIInterface()->SetCreatureProtoDifficulty(proto->Id);
 
     if (mEvent != nullptr)
     {
@@ -1931,7 +1921,7 @@ void Creature::Despawn(uint32 delay, uint32 respawntime)
 
     if (respawntime && !m_noRespawn)
     {
-        /* get the cell with our SPAWN location. if we've moved cell this might break :P */
+        // get the cell with our SPAWN location. if we've moved cell this might break :P
         MapCell* pCell = m_mapMgr->GetCellByCoords(m_spawnLocation.x, m_spawnLocation.y);
         if (pCell == NULL)
             pCell = GetMapCell();
@@ -2044,7 +2034,7 @@ void Creature::SetLimboState(bool set)
     m_limbostate = set;
 }
 
-uint32 Creature::GetLineByFamily(CreatureFamilyEntry* family)
+uint32 Creature::GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family)
 {
     return family->skilline ? family->skilline : 0;
 }
@@ -2063,10 +2053,11 @@ void Creature::RemoveLimboState(Unit* healer)
 // Generates 3 random waypoints around the NPC
 void Creature::SetGuardWaypoints()
 {
-    if (!GetMapMgr()) return;
+    if (!GetMapMgr())
+        return;
 
     GetAIInterface()->setMoveType(1);
-    for (int i = 1; i <= 4; i++)
+    for (uint8 i = 1; i <= 4; i++)
     {
         float ang = RandomFloat(100.0f) / 100.0f;
         float ran = RandomFloat(100.0f) / 10.0f;
@@ -2076,7 +2067,7 @@ void Creature::SetGuardWaypoints()
         WayPoint* wp = new WayPoint;
         wp->id = i;
         wp->flags = 0;
-        wp->waittime = 800;  /* these guards are antsy :P */
+        wp->waittime = 800;  // these guards are antsy :P
         wp->x = GetSpawnX() + ran * sin(ang);
         wp->y = GetSpawnY() + ran * cos(ang);
         wp->z = m_mapMgr->GetLandHeight(wp->x, wp->y, m_spawnLocation.z + 2);
@@ -2197,7 +2188,6 @@ CreatureProto* Creature::GetProto()
     return proto;
 }
 
-//! Is PVP flagged?
 bool Creature::IsPvPFlagged()
 {
     return HasByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
@@ -2351,7 +2341,7 @@ void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
     ci.itemid = 0;
 }
 
-ItemExtendedCostEntry* Creature::GetItemExtendedCostByItemId(uint32 itemid)
+DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
 {
     for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {
@@ -2502,7 +2492,6 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint
     }
 }
 
-
 void Creature::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_remove_auras)
 {
     if (!no_remove_auras)
@@ -2534,6 +2523,9 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         GetVehicleComponent()->RemoveAccessories();
         GetVehicleComponent()->EjectAllPassengers();
     }
+
+    if (GetAIInterface()->Flying())
+        GetAIInterface()->MoveFalling(GetPositionX(), GetPositionY(), GetMapMgr()->GetADTLandHeight(GetPositionX(), GetPositionY()), 0);
 
     // Creature falls off vehicle on death
     if ((currentvehicle != NULL))
@@ -2568,7 +2560,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         if (spl != NULL)
         {
 
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
             {
                 if (spl->GetProto()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
@@ -2585,7 +2577,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         }
     }
 
-    /* Stop players from casting */
+    // Stop players from casting
     for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); itr++)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
@@ -2608,7 +2600,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);
 
-    /* Tell Unit that it's target has Died */
+    // Tell Unit that it's target has Died
     pAttacker->addStateFlag(UF_TARGET_DIED);
 
     GetAIInterface()->OnDeath(pAttacker);
@@ -2873,7 +2865,7 @@ void Creature::BuildPetSpellList(WorldPacket& data)
     std::vector< uint32 >::iterator itr = proto->castable_spells.begin();
 
     // Send the actionbar
-    for (uint32 i = 0; i < 10; ++i)
+    for (uint8 i = 0; i < 10; ++i)
     {
         if (itr != proto->castable_spells.end())
         {

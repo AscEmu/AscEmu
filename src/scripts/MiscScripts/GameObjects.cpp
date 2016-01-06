@@ -483,7 +483,7 @@ class UlagTheCleaver : public GameObjectAIScript
                 NewCreature->GetAIInterface()->setNextTarget(pPlayer);
                 NewCreature->GetAIInterface()->AttackReaction(pPlayer, 1);
                 pDoor->SetFlags(33);
-                pDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                pDoor->SetState(GO_STATE_OPEN);
             };
         }
 };

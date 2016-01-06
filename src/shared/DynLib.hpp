@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ARCEMU_DYNLIB_HPP
-#define _ARCEMU_DYNLIB_HPP
+#ifndef _DYN_LIB_HPP
+#define _DYN_LIB_HPP
 
 #include <string>
 
@@ -31,8 +31,8 @@ namespace Arcemu
     //////////////////////////////////////////////////////////////////////////////////////////
     class DynLib
     {
-
         public:
+
             //////////////////////////////////////////////////////////////////////////////////////////
             /// DynLib(const char *libfilename = "")
             /// Constructor of the class
@@ -124,4 +124,4 @@ namespace Arcemu
     };
 }
 
-#endif      //_ARCEMU_DYNLIB_HPP
+#endif      //_DYN_LIB_HPP

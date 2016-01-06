@@ -177,7 +177,7 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r,
 
         GameObject* go = static_cast<GameObject*>(o);
 
-        if (go->GetInfo()->parameter_0 == m_spellInfo->RequiresSpellFocus)
+        if (go->GetInfo()->raw.parameter_0 == m_spellInfo->RequiresSpellFocus)
         {
 
             if (!m_caster->isInRange(go, r))
@@ -233,7 +233,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
         firstTarget = u_caster;
 
     bool RaidOnly = false;
-    float range = GetMaxRange(dbcSpellRange.LookupEntry(m_spellInfo->rangeIndex));//this is probably wrong,
+    float range = GetMaxRange(sSpellRangeStore.LookupEntry(m_spellInfo->rangeIndex));//this is probably wrong,
     //this is cast distance, not searching distance
     range *= range;
 
@@ -448,36 +448,39 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     }
 
     //final checks, require line of sight unless range/radius is 50000 yards
-    SpellRange* r = dbcSpellRange.LookupEntry(m_spellInfo->rangeIndex);
-    if (sWorld.Collision && r->maxRange < 50000 && GetRadius(i) < 50000 && !obj->IsItem())
+    auto spell_range = sSpellRangeStore.LookupEntry(m_spellInfo->rangeIndex);
+    if (spell_range != nullptr)
     {
-        float x = m_caster->GetPositionX(), y = m_caster->GetPositionY(), z = m_caster->GetPositionZ() + 0.5f;
+        if (sWorld.Collision && spell_range->maxRange < 50000 && GetRadius(i) < 50000 && !obj->IsItem())
+        {
+            float x = m_caster->GetPositionX(), y = m_caster->GetPositionY(), z = m_caster->GetPositionZ() + 0.5f;
 
-        //are we using a different location?
-        if (TargetType & SPELL_TARGET_AREA)
-        {
-            x = m_targets.m_destX;
-            y = m_targets.m_destY;
-            z = m_targets.m_destZ;
-        }
-        else if (TargetType & SPELL_TARGET_AREA_CHAIN)
-        {
-            ///\todo Add support for this in arcemu
-            /*Object* lasttarget = NULL;
-            if (m_orderedObjects.size() > 0)
+            //are we using a different location?
+            if (TargetType & SPELL_TARGET_AREA)
             {
-            lasttarget = m_caster->GetMapMgr()->_GetObject(m_orderedObjects[m_orderedObjects.size() - 1]);
-            if (lasttarget != NULL)
-            {
-            x = lasttarget->GetPositionX();
-            y = lasttarget->GetPositionY();
-            z = lasttarget->GetPositionZ();
+                x = m_targets.m_destX;
+                y = m_targets.m_destY;
+                z = m_targets.m_destZ;
             }
-            }*/
-        }
+            else if (TargetType & SPELL_TARGET_AREA_CHAIN)
+            {
+                ///\todo Add support for this in arcemu
+                /*Object* lasttarget = NULL;
+                if (m_orderedObjects.size() > 0)
+                {
+                lasttarget = m_caster->GetMapMgr()->_GetObject(m_orderedObjects[m_orderedObjects.size() - 1]);
+                if (lasttarget != NULL)
+                {
+                x = lasttarget->GetPositionX();
+                y = lasttarget->GetPositionY();
+                z = lasttarget->GetPositionZ();
+                }
+                }*/
+            }
 
-        if (!CollideInterface.CheckLOS(m_caster->GetMapId(), x, y, z + 2, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + 2))
-            return false;
+            if (!CollideInterface.CheckLOS(m_caster->GetMapId(), x, y, z + 2, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + 2))
+                return false;
+        }
     }
 
     return true;
@@ -490,7 +493,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
 
     bool result = false;
 
-    for (uint32 i = 0; i < 3; ++i)
+    for (uint8 i = 0; i < 3; ++i)
     {
         if (m_spellInfo->Effect[i] == 0)
             continue;

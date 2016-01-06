@@ -16,7 +16,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef __WORLD_H
@@ -89,7 +88,6 @@ enum IntRates
     MAX_INTRATES
 };
 
-
 enum EnviromentalDamage
 {
     DAMAGE_EXHAUSTED = 0,
@@ -100,41 +98,40 @@ enum EnviromentalDamage
     DAMAGE_FIRE = 5
 };
 
-
 // ServerMessages.dbc
 enum ServerMessageType
 {
     SERVER_MSG_SHUTDOWN_TIME            = 1,
-    SERVER_MSG_RESTART_TIME                = 2,
-    SERVER_MSG_STRING                    = 3,
-    SERVER_MSG_SHUTDOWN_CANCELLED        = 4,
+    SERVER_MSG_RESTART_TIME             = 2,
+    SERVER_MSG_STRING                   = 3,
+    SERVER_MSG_SHUTDOWN_CANCELLED       = 4,
     SERVER_MSG_RESTART_CANCELLED        = 5,
     SERVER_MSG_BATTLEGROUND_SHUTDOWN    = 6,
-    SERVER_MSG_BATTLEGROUND_RESTART        = 7,
+    SERVER_MSG_BATTLEGROUND_RESTART     = 7,
     SERVER_MSG_INSTANCE_SHUTDOWN        = 8,
-    SERVER_MSG_INSTANCE_RESTART            = 9
+    SERVER_MSG_INSTANCE_RESTART         = 9
 };
 
 enum WorldMapInfoFlag
 {
-    WMI_INSTANCE_ENABLED            = 0x1,
-    WMI_INSTANCE_WELCOME            = 0x2,
-    WMI_INSTANCE_ARENA                = 0x4,
-    WMI_INSTANCE_XPACK_01            = 0x8, //The Burning Crusade expansion
-    WMI_INSTANCE_XPACK_02            = 0x10, //Wrath of the Lich King expansion
-    WMI_INSTANCE_HAS_NORMAL_10MEN    = 0x20,
-    WMI_INSTANCE_HAS_NORMAL_25MEN    = 0x40,
-    WMI_INSTANCE_HAS_HEROIC_10MEN    = 0x80,
-    WMI_INSTANCE_HAS_HEROIC_25MEN    = 0x100
+    WMI_INSTANCE_ENABLED            = 0x001,
+    WMI_INSTANCE_WELCOME            = 0x002,
+    WMI_INSTANCE_ARENA              = 0x004,
+    WMI_INSTANCE_XPACK_01           = 0x008, //The Burning Crusade expansion
+    WMI_INSTANCE_XPACK_02           = 0x010, //Wrath of the Lich King expansion
+    WMI_INSTANCE_HAS_NORMAL_10MEN   = 0x020,
+    WMI_INSTANCE_HAS_NORMAL_25MEN   = 0x040,
+    WMI_INSTANCE_HAS_HEROIC_10MEN   = 0x080,
+    WMI_INSTANCE_HAS_HEROIC_25MEN   = 0x100
 };
 
 enum AccountFlags
 {
-    ACCOUNT_FLAG_VIP         = 0x1,
-    ACCOUNT_FLAG_NO_AUTOJOIN = 0x2,
-    //ACCOUNT_FLAG_XTEND_INFO  = 0x4,
-    ACCOUNT_FLAG_XPACK_01    = 0x8,
-    ACCOUNT_FLAG_XPACK_02    = 0x10,
+    ACCOUNT_FLAG_VIP            = 0x1,
+    ACCOUNT_FLAG_NO_AUTOJOIN    = 0x2,
+    //ACCOUNT_FLAG_XTEND_INFO   = 0x4,
+    ACCOUNT_FLAG_XPACK_01       = 0x8,
+    ACCOUNT_FLAG_XPACK_02       = 0x10
 };
 
 #pragma pack(push,1)
@@ -162,18 +159,11 @@ struct MapInfo
     float update_distance;
     uint32 checkpoint_id;
 
-    //////////////////////////////////////////////////////////
-    //bool HasFlag(uint32 flag)
-    //  Tells if the map has this particular flag
-    //
-    //Parameters
-    //  uint32 flag  -  flag to check
-    //
-    //Return Value
-    //  Returns true if the map has the flag.
-    //  Returns false if the map doesn't have the flag.
-    //
-    /////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Tells if the map has this particular flag
+    /// \param  uint32 flag  -  flag to check
+    /// \return true if the map has the flag, otherwise false if the map doesn't have the flag.
+    //////////////////////////////////////////////////////////////////////////////////////////
     bool HasFlag(uint32 flag)
     {
         if ((flags & flag) != 0)
@@ -182,19 +172,12 @@ struct MapInfo
             return false;
     }
 
-    /////////////////////////////////////////////////////////
-    //bool HasDifficulty(uint32 difficulty)
-    //  Tells if the map has a particular raid difficulty.
-    //  Valid difficulties are in the RAID_MODE enum.
-    //
-    //Parameters
-    //  uint32 difficulty  -  difficulty to check
-    //
-    //Return Value
-    //  Returns true if the map has this difficulty.
-    //  Returns false if the map doesn't have this difficulty
-    //
-    //////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////
+    /// Tells if the map has a particular raid difficulty.
+    /// Valid difficulties are in the RAID_MODE enum.
+    /// \param    uint32 difficulty  -  difficulty to check
+    /// \return   true if the map has this difficulty, otherwise false.
+    //////////////////////////////////////////////////////////////////////////////////////////
     bool HasDifficulty(uint32 difficulty)
     {
         if (difficulty > uint32(TOTAL_RAID_MODES))
@@ -209,14 +192,16 @@ struct MapInfo
 enum REALM_TYPE
 {
     REALM_PVE = 0,
-    REALM_PVP = 1,
+    REALM_PVP = 1
 };
 
 class BasicTaskExecutor : public ThreadBase
 {
-        CallbackBase* cb;
-        uint32 priority;
+    CallbackBase* cb;
+    uint32 priority;
+
     public:
+
         BasicTaskExecutor(CallbackBase* Callback, uint32 Priority) : cb(Callback), priority(Priority) {}
         ~BasicTaskExecutor() { delete cb; }
         bool run();
@@ -224,8 +209,10 @@ class BasicTaskExecutor : public ThreadBase
 
 class Task
 {
-        CallbackBase* _cb;
+    CallbackBase* _cb;
+
     public:
+
         Task(CallbackBase* cb) : _cb(cb), completed(false), in_progress(false) {}
         ~Task() { delete _cb; }
         bool completed;
@@ -235,10 +222,12 @@ class Task
 
 struct CharacterLoaderThread : public ThreadBase
 {
-        Arcemu::Threading::ConditionVariable cond;
+    Arcemu::Threading::ConditionVariable cond;
 
-        bool running;
+    bool running;
+
     public:
+
         CharacterLoaderThread();
         ~CharacterLoaderThread();
         void OnShutdown();
@@ -247,9 +236,11 @@ struct CharacterLoaderThread : public ThreadBase
 
 class TaskList
 {
-        std::set<Task*> tasks;
-        Mutex queueLock;
+    std::set<Task*> tasks;
+    Mutex queueLock;
+
     public:
+
         TaskList() : thread_count(0), running(false) {};
         Task* GetTask();
         void AddTask(Task* task);
@@ -273,13 +264,15 @@ enum BasicTaskExecutorPriorities
 {
     BTE_PRIORITY_LOW        = 0,
     BTE_PRIORITY_MED        = 1,
-    BTW_PRIORITY_HIGH       = 2,
+    BTW_PRIORITY_HIGH       = 2
 };
 
 class TaskExecutor : public ThreadBase
 {
-        TaskList* starter;
+    TaskList* starter;
+
     public:
+
         TaskExecutor(TaskList* l) : starter(l) { ++l->thread_count; }
         ~TaskExecutor() { --starter->thread_count; }
 
@@ -289,8 +282,7 @@ class TaskExecutor : public ThreadBase
 struct WMOAreaTableTripple
 {
     WMOAreaTableTripple(int32 r, int32 a, int32 g) : groupId(g), rootId(r), adtId(a)
-    {
-    }
+    { }
 
     bool operator <(const WMOAreaTableTripple & b) const
     {
@@ -309,13 +301,15 @@ class WorldSocket;
 typedef std::list<WorldSocket*> QueueSet;
 typedef std::set<WorldSession*> SessionSet;
 
-class SERVER_DECL World : public Singleton<World>, public EventableObject, public Arcemu::IUpdatable
+class SERVER_DECL World : public Singleton<World>, public EventableObject, public IUpdatable
 {
     private:
+
         uint32 HordePlayers;
         uint32 AlliancePlayers;
 
     public:
+
         inline uint32 getHordePlayerCount() { return HordePlayers; }
         inline uint32 getAlliancePlayerCount() { return AlliancePlayers; }
         inline uint32 getPlayerCount() { return (HordePlayers + AlliancePlayers); }
@@ -337,9 +331,11 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         ///\todo Encapsulate below this point
     public:
+
         World();
         ~World();
-     #define DAMAGE(sp)     sp->OTspell_coef_override = sp->fixed_dddhcoef = sp->fixed_hotdotcoef = 0
+
+#define DAMAGE(sp)     sp->OTspell_coef_override = sp->fixed_dddhcoef = sp->fixed_hotdotcoef = 0
         void InitMiscSpells();
         void InitDruidSpells();
         void InitHunterSpells();
@@ -353,11 +349,9 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void InitItemsSpells();
         void InitSpellNameHash();
 
-        /** Reloads the config and sets all of the setting variables
-         */
+        // Reloads the config and sets all of the setting variables
         void Rehash(bool load);
 
-        void CleanupCheaters();
         WorldSession* FindSession(uint32 id);
         WorldSession* FindSessionByName(const char*);
         void AddSession(WorldSession* s);
@@ -385,12 +379,12 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         inline bool getAllowMovement() const { return m_allowMovement; }
         void SetAllowMovement(bool allow) { m_allowMovement = allow; }
-        inline bool getGMTicketStatus() { return m_gmTicketSystem; };
+        inline bool getGMTicketStatus() { return m_gmTicketSystem; }
         bool toggleGMTicketStatus()
         {
             m_gmTicketSystem = !m_gmTicketSystem;
             return m_gmTicketSystem;
-        };
+        }
 
         inline std::string getGmClientChannel() { return GmClientChannel; }
 
@@ -404,20 +398,12 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void SendGlobalMessage(WorldPacket* packet, WorldSession* self = 0);
 
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
-        //void PlaySoundToAll(uint32 soundid)
-        //  Plays the sound to everyone logged in and in the world
-        //
-        //Parameter(s)
-        //  uint32 soundid  -  Identifier of the sound to play
-        //
-        //Return Value
-        //  None
-        //
-        //
-        ///////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /// Plays the sound to everyone logged in and in the world
+        /// \param uint32 soundid  -  Identifier of the sound to play
+        /// \return none
+        //////////////////////////////////////////////////////////////////////////////////////////
         void PlaySoundToAll(uint32 soundid);
-
 
         void SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* self = 0);
         void SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSession* self = 0);
@@ -434,6 +420,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         inline uint32 GetUptime(void) { return (uint32)UNIXTIME - m_StartTime; }
         inline uint32 GetStartTime(void) { return m_StartTime; }
         std::string GetUptimeString();
+
         // cebernic: textfilter,no fast,but works:D ...
         inline std::string SessionLocalizedTextFilter(WorldSession* _session, const char* text)
         {
@@ -519,18 +506,21 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void LoadWMOAreaData()
         {
-            for (DBCStorage<WMOAreaTableEntry>::iterator itr = dbcWMOAreaTable.begin(); itr != dbcWMOAreaTable.end(); ++itr)
+            for (uint32 i = 0; i < sWMOAreaTableStore.GetNumRows(); ++i)
             {
-                WMOAreaTableTripple tmp((*itr)->rootId, (*itr)->adtId, (*itr)->groupId);
+                auto wmo_area_table = sWMOAreaTableStore.LookupEntry(i);
+                if (wmo_area_table == nullptr)
+                    continue;
+                WMOAreaTableTripple tmp(wmo_area_table->rootId, wmo_area_table->adtId, wmo_area_table->groupId);
 
-                m_WMOAreaTableTripples.insert(std::make_pair(tmp, (*itr)));
+                m_WMOAreaTableTripples.insert(std::make_pair(tmp, wmo_area_table));
             }
         }
 
-        WMOAreaTableEntry* GetWMOAreaData(int32 rootid, int32 adtid, int32 groupid)
+        DBC::Structures::WMOAreaTableEntry const* GetWMOAreaData(int32 rootid, int32 adtid, int32 groupid)
         {
             WMOAreaTableTripple tmp(rootid, adtid, groupid);
-            std::map<WMOAreaTableTripple, WMOAreaTableEntry*>::iterator itr = m_WMOAreaTableTripples.find(tmp);
+            std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*>::iterator itr = m_WMOAreaTableTripples.find(tmp);
 
             if (itr != m_WMOAreaTableTripples.end())
                 return itr->second;
@@ -607,7 +597,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         int Arena_Season;
         int Arena_Progress;
 
-
         // broadcast system config
         bool BCSystemEnable;
         int BCInterval;
@@ -644,7 +633,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         bool instance_CheckTriggerPrerequisites;
 
         // battleground settings
-        struct BGSettings{
+        struct BGSettings
+        {
             uint32 AV_MIN;
             uint32 AV_MAX;
             uint32 AB_MIN;
@@ -665,7 +655,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             uint32 RBG_LOSE_ARENA;
         }bgsettings;
 
-        struct ArenaSettings{
+        struct ArenaSettings
+        {
             // Min/Max players per side for the arenas
 
             uint32 A2V2_MIN;
@@ -704,22 +695,22 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void LogoutPlayers();
 
-        typedef HM_NAMESPACE::hash_map<uint32, WorldSession*> SessionMap;
+        typedef std::unordered_map<uint32, WorldSession*> SessionMap;
         SessionMap m_sessions;
         RWLock m_sessionlock;
 
     private:
+
         EventableObjectHolder* eventholder;
         //! Timers
-        
-
-        typedef HM_NAMESPACE::hash_map<uint32, AreaTrigger*> AreaTriggerMap;
+        typedef std::unordered_map<uint32, AreaTrigger*> AreaTriggerMap;
         AreaTriggerMap m_AreaTrigger;
 
         Arcemu::PerformanceCounter perfcounter;
 
     protected:
-        Mutex SessionsMutex;//FOR GLOBAL !
+
+        Mutex SessionsMutex;    //FOR GLOBAL !
         SessionSet Sessions;
 
         float regen_values[MAX_RATES];
@@ -739,8 +730,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         QueueSet mQueuedSessions;
 
-        uint32    m_KickAFKPlayers;//don't lag the server if you are useless anyway :P
+        uint32 m_KickAFKPlayers;//don't lag the server if you are useless anyway :P
+
     public:
+
         std::string GmClientChannel;
         bool m_reqGmForCommands;
         bool m_lfgForNonLfg;
@@ -750,7 +743,18 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         bool m_limitedNames;
         bool m_useAccountData;
         bool m_AdditionalFun;
-        std::map<WMOAreaTableTripple, WMOAreaTableEntry*> m_WMOAreaTableTripples;
+        bool m_SkipCinematics;
+        uint8 m_InstantLogout;
+        uint32 m_MinDualSpecLevel;
+        uint32 m_MinTalentResetLevel;
+        std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> m_WMOAreaTableTripples;
+
+        //CorpseDecaySettings
+        uint32 m_DecayNormal;
+        uint32 m_DecayRare;
+        uint32 m_DecayElite;
+        uint32 m_DecayRareElite;
+        uint32 m_DecayWorldboss;
 
         // Gold Cap
         bool GoldCapEnabled;
@@ -765,10 +769,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         static float m_movementCompressThresholdCreatures;
         static uint32 m_movementCompressRate;
         static uint32 m_movementCompressInterval;
-        /*
-         * Traffic meter stuff
-         */
+
     protected:
+
+        //Traffic meter stuff
         double TotalTrafficInKB;
         double TotalTrafficOutKB;
         double LastTotalTrafficInKB;
@@ -776,10 +780,11 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         time_t LastTrafficQuery;
 
         void UpdateTotalTraffic();
+
     public:
+
         void QueryTotalTraffic(double* totalin, double* totalout)
         {
-
             // We don't want to spam this
             if (LastTrafficQuery == 0 || LastTrafficQuery <= (UNIXTIME - 10))
                 UpdateTotalTraffic();
@@ -808,4 +813,4 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
 #define sWorld World::getSingleton()
 
-#endif
+#endif      //__WORLD_H

@@ -15,10 +15,13 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
+#ifndef _PERIODIC_FUNCTION_CALL_THREAD_H
+#define _PERIODIC_FUNCTION_CALL_THREAD_H
+
 #include "../shared/CallBack.h"
+#include "Master.hpp"
 
 #ifndef WIN32
 static pthread_cond_t abortcond;
@@ -29,6 +32,7 @@ template<class Type>
 class PeriodicFunctionCaller : public ThreadBase
 {
     public:
+
         template<class T>
         PeriodicFunctionCaller(T* callback, void (T::*method)(), uint32 Interval)
         {
@@ -52,9 +56,9 @@ class PeriodicFunctionCaller : public ThreadBase
             pthread_mutex_init(&abortmutex, NULL);
             pthread_cond_init(&abortcond, NULL);
 
-            while(running.GetVal() && mrunning.GetVal())
+            while (running.GetVal() && mrunning.GetVal())
             {
-                if(getMSTime() > next)
+                if (getMSTime() > next)
                 {
                     cb->execute();
                     next = getMSTime() + interval;
@@ -69,16 +73,16 @@ class PeriodicFunctionCaller : public ThreadBase
 #else
             thread_active = true;
             hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-            for(;;)
+            for (;;)
             {
-                if(hEvent)
+                if (hEvent)
                     WaitForSingleObject(hEvent, interval);
 
-                if(!running.GetVal())
+                if (!running.GetVal())
                     break;    /* we got killed */
 
                 /* times up */
-                if(hEvent)
+                if (hEvent)
                     ResetEvent(hEvent);
                 cb->execute();
             }
@@ -95,7 +99,7 @@ class PeriodicFunctionCaller : public ThreadBase
             SetEvent(hEvent);
             LOG_DETAIL("Waiting for PFC thread to exit...");
             /* wait for the thread to exit */
-            while(thread_active)
+            while (thread_active)
             {
                 Arcemu::Sleep(100);
             }
@@ -106,6 +110,7 @@ class PeriodicFunctionCaller : public ThreadBase
         }
 
     private:
+
         CallbackBase* cb;
         uint32 interval;
         Arcemu::Threading::AtomicBoolean running;
@@ -117,3 +122,5 @@ class PeriodicFunctionCaller : public ThreadBase
 
 #define SpawnPeriodicCallThread(otype, ptr, method, interval) \
     launch_thread(new PeriodicFunctionCaller<otype>(ptr, method, interval));
+
+#endif  //_PERIODIC_FUNCTION_CALL_THREAD_H

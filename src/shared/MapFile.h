@@ -11,8 +11,8 @@
  * without express or implied warranty.
  */
 
-#ifndef _DEV_MAPFILE_H
-#define _DEV_MAPFILE_H
+#ifndef _MAPFILE_H
+#define _MAPFILE_H
 
 class MapFileEntry;
 
@@ -73,4 +73,4 @@ class MapFile
         MapFile & operator=(const MapFile &);
 };
 
-#endif // _DEV_MAPFILE_H
+#endif // _MAPFILE_H

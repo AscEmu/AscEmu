@@ -144,7 +144,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_GENERAL_BJARNGRIM, State_Finished);
                     pDoors = GetGameObjectByGuid(mGeneralDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_VOLKHAN:
@@ -152,7 +152,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_VOLKHAN, State_Finished);
                     pDoors = GetGameObjectByGuid(mVolkhanDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_LOKEN:
@@ -160,7 +160,7 @@ class HallsOfLightningScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_LOKEN, State_Finished);
                     pDoors = GetGameObjectByGuid(mLokenDoorsGUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
                 }
                 break;
                 case CN_IONAR:
@@ -168,11 +168,11 @@ class HallsOfLightningScript : public MoonInstanceScript
                     SetInstanceData(Data_EncounterState, CN_IONAR, State_Finished);
                     pDoors = GetGameObjectByGuid(mIonarDoors1GUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
 
                     pDoors = GetGameObjectByGuid(mIonarDoors2GUID);
                     if (pDoors)
-                        pDoors->SetState(GAMEOBJECT_STATE_OPEN);
+                        pDoors->SetState(GO_STATE_OPEN);
                 }
                 break;
             };
@@ -311,12 +311,6 @@ class GeneralBjarngrimAI : public MoonScriptBossAI
         MoonInstanceScript* mInstance;
 };
 
-
-/*static Location MoltenGolemCoords[]=
-{
-{ 1335.296265f, -89.237503f, 56.717800f, 1.994538f },
-{ 1340.615234f, -89.083313f, 56.717800f, 0.028982f },
-};*/
 
 // Main Spells
 #define SPELL_HEAT                  HeroicInt(52237, 59529)

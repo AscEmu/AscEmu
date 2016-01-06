@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -26,6 +26,7 @@ class AuctionHouse;
 class AuctionMgr : public Singleton <AuctionMgr>
 {
     public:
+
         AuctionMgr()
         {
             loopcount = 0;
@@ -52,7 +53,8 @@ class AuctionMgr : public Singleton <AuctionMgr>
         }
 
     private:
-        HM_NAMESPACE::hash_map<uint32, AuctionHouse*> auctionHouseEntryMap;
+
+        std::unordered_map<uint32, AuctionHouse*> auctionHouseEntryMap;
         std::vector<AuctionHouse*> auctionHouses;
 
         Arcemu::Threading::AtomicCounter maxId;

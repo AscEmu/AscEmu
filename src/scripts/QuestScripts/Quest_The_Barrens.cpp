@@ -33,7 +33,7 @@ class BeatenCorpse : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3557, plr);
 
             if(plr->HasQuest(4921))
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(498), 1);     // I inspect the body further.
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(498), 1);     // I inspect the body further.
 
             Menu->SendTo(plr);
         }

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -18,30 +18,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef IUPDATABLE_HPP
-#define IUPDATABLE_HPP
+#ifndef IUPDATABLE_H
+#define IUPDATABLE_H
 
-namespace Arcemu
+
+ //////////////////////////////////////////////////////////////////////////////////////////
+ /// Abstract case class for every updatable class.
+ //////////////////////////////////////////////////////////////////////////////////////////
+class IUpdatable
 {
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// class IUpdatable
-    /// Abstract case class for every updatable class.
-    ///
-    //////////////////////////////////////////////////////////////////////////////////////////
-    class IUpdatable
-    {
-        public:
-            //////////////////////////////////////////////////////////////////////////////////////////
-            /// virtual void Update(unsigned long time_passed)
-            /// Updates the Object, allowing it's time-continous features to work
-            ///
-            /// \param unsigned long time_passed - Seconds passed since last update
-            ///
-            /// \return none
-            ///
-            //////////////////////////////////////////////////////////////////////////////////////////
-            virtual void Update(unsigned long time_passed) = 0;
-    };
-}
+    public:
 
-#endif // IUPDATABLE_HPP
+        //////////////////////////////////////////////////////////////////////////////////////////
+        /// Updates the Object, allowing it's time-continous features to work
+        /// \param unsigned long time_passed - Seconds passed since last update
+        /// \return none
+        //////////////////////////////////////////////////////////////////////////////////////////
+        virtual void Update(unsigned long time_passed) = 0;
+};
+
+
+#endif // IUPDATABLE_H

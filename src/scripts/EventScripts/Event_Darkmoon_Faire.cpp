@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2007-2008 Sun++ Team <http://www.sunplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -93,7 +93,7 @@ class Blastenheimer5000 : public GameObjectAIScript
 
             CurrentPlayer->SetMovement(MOVE_UNROOT, 1);
             CurrentPlayer->CastSpell(CurrentPlayer, 42867, true);   // 24742
-            _gameobject->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
+            _gameobject->SetFlags(0);
             mPlayerGuid = 0;
             RemoveAIUpdateEvent();
         }
@@ -128,8 +128,8 @@ GameObject* tonkConsole = NULL;
 tonkConsole = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 180524);
 
 // Open and disable the Tonk Console
-tonkConsole->SetUInt32Value(GAMEOBJECT_FLAGS, 1);
-tonkConsole->SetState(0);
+tonkConsole->SetFlags(GO_FLAG_NONSELECTABLE);
+tonkConsole->SetState(GO_STATE_OPEN);
 
 // Spawn Steam Tonk
 pPlayer->GetMapMgr()->GetInterface()->SpawnCreature(19405, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), true, false, 0, 0)->Despawn(310000, 0);;
@@ -160,8 +160,8 @@ Plr->RemoveAura(33849);
 Tonk->Despawn(10000,0);
 
 // Close the console so others can access it
-Console->SetUInt32Value(GAMEOBJECT_FLAGS, 0);
-Console->SetState(GAMEOBJECT_STATE_CLOSED);
+Console->SetFlags(0);
+Console->SetState(GO_STATE_CLOSED);
 RemoveAIUpdateEvent();
 }
 }
@@ -387,7 +387,7 @@ class MaximaBlastenheimer_Gossip : public GossipScript
             GossipMenu* gossipMenu = nullptr;
 
             objmgr.CreateGossipMenuForPlayer(&gossipMenu, pObject->GetGUID(), BARK_MAXIMA_1, plr);
-            gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_ULTRA_CANNON), 1);
+            gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_ULTRA_CANNON), 1);
             gossipMenu->SendTo(plr);
         }
 
@@ -445,9 +445,9 @@ class ProfessorThaddeusPaleo_Gossip : public GossipScript
         objmgr.CreateGossipMenuForPlayer(&gossipMenu, pObject->GetGUID(), 60016, plr);
 
         if (pObject->GetUInt32Value(UNIT_NPC_FLAGS) & UNIT_NPC_FLAG_VENDOR)
-            gossipMenu->AddItem(Arcemu::Gossip::ICON_VENDOR, plr->GetSession()->LocalizedGossipOption(GI_BROWS_GOODS), 1);
+            gossipMenu->AddItem(GOSSIP_ICON_VENDOR, plr->GetSession()->LocalizedGossipOption(GI_BROWS_GOODS), 1);
         
-        gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ME_DARKMOON_CARDS), 2);
+        gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ME_DARKMOON_CARDS), 2);
         gossipMenu->SendTo(plr);
     }
 
@@ -466,14 +466,14 @@ class ProfessorThaddeusPaleo_Gossip : public GossipScript
                 return;
             case 2:
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60017, plr);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BEAST_DECK), 5);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_PORTAL_DECK), 6);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ELEMENTALS_DECK), 7);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_WARLORDS_DECK), 8);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_FURIES_DECK), 9);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_LUNACY_DECK), 10);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BLESSINGS_DECK), 11);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_STORMS_DECK), 12);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BEAST_DECK), 5);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_PORTAL_DECK), 6);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_ELEMENTALS_DECK), 7);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_WARLORDS_DECK), 8);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_FURIES_DECK), 9);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_LUNACY_DECK), 10);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_BLESSINGS_DECK), 11);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_TELL_STORMS_DECK), 12);
                 break;
             case 5:
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60018, plr);
@@ -561,7 +561,7 @@ class Sayge_Gossip : public GossipScript
             else
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60026, plr);            // Player doesn't have any buff
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_READY_DISC_FORTUNE), 1);
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_READY_DISC_FORTUNE), 1);
             }
 
             if (Menu != nullptr)
@@ -578,138 +578,137 @@ class Sayge_Gossip : public GossipScript
 
             switch (IntId)
             {
-            case 1:        // Question 1 (Initial question, always the same)
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60027, plr);
-                // plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_1)
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_1), 10);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_2), 11);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_3), 12);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_4), 13);
-                break;
-            case 10:    // Question 2 (First Answer = 1)
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60028, plr);
+                case 1:        // Question 1 (Initial question, always the same)
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60027, plr);
+                    // plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_1)
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_1), 10);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_2), 11);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_3), 12);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_1_4), 13);
+                    break;
+                case 10:    // Question 2 (First Answer = 1)
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60028, plr);
 
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_1), 14);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_2), 15);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_3), 16);
-                break;
-            case 11:     // Question 2 (First Answer = 2)
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60029, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_1), 17);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_2), 18);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_3), 19);
-                break;
-            case 12:     // Question 2 (First Answer = 3)
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60030, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_1), 20);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_2), 21);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_3), 22);
-                break;
-            case 13:     // Question 2 (First Answer = 4)
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60031, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_1), 23);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_2), 24);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_3), 25);
-                break;
-                // Answers 1-#
-            case 14:     // Answers: 1-1
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23768, true);
-                break;
-            case 15:     // Answers: 1-2
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23769, true);
-                break;
-            case 16:     // Answers: 1-3
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23767, true);
-                break;
-                // Answers 2-#
-            case 17:     // Answers: 2-1
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23738, true);
-                break;
-            case 18:     // Answers: 2-2
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23766, true);
-                break;
-            case 19:     // Answers: 2-3
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23769, true);
-                break;
-                // Answers 3-#
-            case 20:     // Answers: 3-1
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23737, true);
-                break;
-            case 21:     // Answers: 3-2
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23735, true);
-                break;
-            case 22:     // Answers: 3-3
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23736, true);
-                break;
-                // Answers 4-#
-            case 23:     // Answers: 4-1
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23766, true);
-                break;
-            case 24:     // Answers: 4-2
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23738, true);
-                break;
-            case 25:     // Answers: 4-3
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
-                gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
-                pCreature->CastSpell(plr, 23737, true);
-                break;
-            case 30:
-            {
-                objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60033, plr);
-                // Cast the fortune into the player's inventory - Not working?
-                pCreature->CastSpell(plr, 23765, true);
-                // TEMP fix for spell not adding item to  player's inventory.
-                auto proto = ItemPrototypeStorage.LookupEntry(19422);
-                if (proto == nullptr)
-                    return;
-
-                auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
-                if (!slotresult.Result)
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_1), 14);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_2), 15);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_2_3), 16);
+                    break;
+                case 11:     // Question 2 (First Answer = 2)
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60029, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_1), 17);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_2), 18);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_3_3), 19);
+                    break;
+                case 12:     // Question 2 (First Answer = 3)
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60030, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_1), 20);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_2), 21);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_4_3), 22);
+                    break;
+                case 13:     // Question 2 (First Answer = 4)
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60031, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_1), 23);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_2), 24);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ANSWER_5_3), 25);
+                    break;
+                    // Answers 1-#
+                case 14:     // Answers: 1-1
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23768, true);
+                    break;
+                case 15:     // Answers: 1-2
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23769, true);
+                    break;
+                case 16:     // Answers: 1-3
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23767, true);
+                    break;
+                    // Answers 2-#
+                case 17:     // Answers: 2-1
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23738, true);
+                    break;
+                case 18:     // Answers: 2-2
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23766, true);
+                    break;
+                case 19:     // Answers: 2-3
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23769, true);
+                    break;
+                    // Answers 3-#
+                case 20:     // Answers: 3-1
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23737, true);
+                    break;
+                case 21:     // Answers: 3-2
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23735, true);
+                    break;
+                case 22:     // Answers: 3-3
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23736, true);
+                    break;
+                    // Answers 4-#
+                case 23:     // Answers: 4-1
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23766, true);
+                    break;
+                case 24:     // Answers: 4-2
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23738, true);
+                    break;
+                case 25:     // Answers: 4-3
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60032, plr);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WRITTEN_FORTUNES), 30);
+                    pCreature->CastSpell(plr, 23737, true);
+                    break;
+                case 30:
                 {
-                    plr->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
-                    return;
-                }
-                else
-                {
-                    auto item = objmgr.CreateItem(19422, plr);
-                    if (item == nullptr)
+                    objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60033, plr);
+                    // Cast the fortune into the player's inventory - Not working?
+                    pCreature->CastSpell(plr, 23765, true);
+                    // TEMP fix for spell not adding item to  player's inventory.
+                    auto proto = ItemPrototypeStorage.LookupEntry(19422);
+                    if (proto == nullptr)
                         return;
 
-                    auto result = plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
-                    if (!result)
+                    auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                    if (!slotresult.Result)
                     {
-                        Log.Error("Event_Darkmoon_Faire", "Error while adding item %u to player %s", item->GetEntry(), plr->GetNameString());
-                        item->DeleteMe();
+                        plr->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
                         return;
                     }
+                    else
+                    {
+                        auto item = objmgr.CreateItem(19422, plr);
+                        if (item == nullptr)
+                            return;
+
+                        auto result = plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
+                        if (!result)
+                        {
+                            Log.Error("Event_Darkmoon_Faire", "Error while adding item %u to player %s", item->GetEntry(), plr->GetNameString());
+                            item->DeleteMe();
+                            return;
+                        }
+                    }
+                    break;
                 }
-                break;
-            }
-            default:
-                return;
-            /* End of switch */
+                default:
+                    return;
             }
 
             gossipMenu->SendTo(plr);
@@ -766,10 +765,10 @@ class SelinaDourman_Gossip : public GossipScript
             GossipMenu* gossipMenu = nullptr;
 
             objmgr.CreateGossipMenuForPlayer(&gossipMenu, pObject->GetGUID(), 60035, plr);
-            gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WHAT_PURCHASE), 1);
-            gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_FAIRE_PRIZE), 2);
-            gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WHAT_ARE_DARKMOON), 3);
-            gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_THINGS_FAIRE), 4);
+            gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WHAT_PURCHASE), 1);
+            gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_FAIRE_PRIZE), 2);
+            gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_WHAT_ARE_DARKMOON), 3);
+            gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_THINGS_FAIRE), 4);
 
             gossipMenu->SendTo(plr);
         }
@@ -792,12 +791,12 @@ class SelinaDourman_Gossip : public GossipScript
                     break;
                 case 3:
                     objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60038, plr);            // What are Darkmoon Cards?
-                    gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_MORE), 10);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_MORE), 10);
                     break;
                 case 4:
                     objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60040, plr);            // What other things can I do at the faire?
-                    gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_TONK_CONTROLS), 20);
-                    gossipMenu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ABOUT_CANON), 21);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_TONK_CONTROLS), 20);
+                    gossipMenu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ABOUT_CANON), 21);
                     break;
                 case 10:
                     objmgr.CreateGossipMenuForPlayer(&gossipMenu, pCreature->GetGUID(), 60039, plr);            // What are Darkmoon Cards? <more>
@@ -826,7 +825,7 @@ class SilasDarkmoon_Gossip : public GossipScript
             GossipMenu* Menu = nullptr;
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60013, plr);                    /// \todo find right text
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ASK_PROFIT), 1);    // Silas, why is most everything at the fair free? How do you make a profit?
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ASK_PROFIT), 1);    // Silas, why is most everything at the fair free? How do you make a profit?
 
             if (Menu != nullptr)
                 Menu->SendTo(plr);

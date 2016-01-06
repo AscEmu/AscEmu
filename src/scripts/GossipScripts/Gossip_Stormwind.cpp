@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11469);
 
             if (plr->HasQuest(11223))
-                menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SW_ARCHMAGE_JAINA), 1);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_SW_ARCHMAGE_JAINA), 1);
 
             menu.Send(plr);
         }
@@ -42,9 +42,6 @@ class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
         void Destroy() { delete this; }
 };
 
-/*********************************************
-// Stormwind Harbor View Taxi Begin
-**********************************************/
 
 //This is when you talk to Thargold Ironwing...He will fly you through Stormwind Harbor to check it out.
 class SWHarborFlyAround : public Arcemu::Gossip::Script
@@ -54,8 +51,8 @@ class SWHarborFlyAround : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* Plr)
         {
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 13454);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SW_HARBOR_FLY_YES), 1);
-            menu.AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SW_HARBOR_FLY_NO), 2);
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SW_HARBOR_FLY_YES), 1);
+            menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SW_HARBOR_FLY_NO), 2);
 
             menu.Send(Plr);
         }

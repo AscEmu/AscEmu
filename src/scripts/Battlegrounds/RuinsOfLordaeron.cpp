@@ -20,25 +20,25 @@
 
 #include "RuinsOfLordaeron.h"
 
-RuinsOfLordaeron::RuinsOfLordaeron(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : 
-Arena(mgr, id, lgroup, t, players_per_side)
-{ }
+RuinsOfLordaeron::RuinsOfLordaeron(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) :
+    Arena(mgr, id, lgroup, t, players_per_side)
+{}
 
 RuinsOfLordaeron::~RuinsOfLordaeron()
-{ }
+{}
 
 void RuinsOfLordaeron::OnCreate()
 {
     GameObject* obj = NULL;
 
     obj = SpawnGameObject(185917, 572, 1278.647705f, 1730.556641f, 31.605574f, 1.684245f, 32, 1375, 1.0f);
-    obj->SetState(GAMEOBJECT_STATE_CLOSED);
+    obj->SetState(GO_STATE_CLOSED);
     obj->SetParentRotation(2, 0.746058f);
     obj->SetParentRotation(3, 0.665881f);
     m_gates.insert(obj);
-    
+
     obj = SpawnGameObject(185918, 572, 1293.560791f, 1601.937988f, 31.605574f, -1.457349f, 32, 1375, 1.0f);
-    obj->SetState(GAMEOBJECT_STATE_CLOSED);
+    obj->SetState(GO_STATE_CLOSED);
     obj->SetParentRotation(2, -0.665881f);
     obj->SetParentRotation(3, 0.746058f);
     m_gates.insert(obj);
@@ -49,15 +49,15 @@ void RuinsOfLordaeron::OnCreate()
 void RuinsOfLordaeron::HookOnShadowSight()
 {
     m_buffs[0] = SpawnGameObject(184664, 572, 1328.729268f, 1632.738403f, 34.838585f, 2.611449f, 32, 1375, 1.0f);
-    m_buffs[0]->SetState(GAMEOBJECT_STATE_CLOSED);
+    m_buffs[0]->SetState(GO_STATE_CLOSED);
     m_buffs[0]->SetParentRotation(2, 0.904455f);
     m_buffs[0]->SetParentRotation(3, -0.426569f);
     m_buffs[0]->SetType(GAMEOBJECT_TYPE_TRAP);
     m_buffs[0]->SetAnimProgress(100);
     m_buffs[0]->PushToWorld(m_mapMgr);
-    
+
     m_buffs[1] = SpawnGameObject(184664, 572, 1243.306763f, 1699.334351f, 34.837566f, 5.713773f, 32, 1375, 1.0f);
-    m_buffs[1]->SetState(GAMEOBJECT_STATE_CLOSED);
+    m_buffs[1]->SetState(GO_STATE_CLOSED);
     m_buffs[1]->SetParentRotation(2, 0.90445f);
     m_buffs[1]->SetParentRotation(3, -0.426569f);
     m_buffs[1]->SetType(GAMEOBJECT_TYPE_TRAP);
@@ -68,7 +68,7 @@ void RuinsOfLordaeron::HookOnShadowSight()
 
 LocationVector RuinsOfLordaeron::GetStartingCoords(uint32 Team)
 {
-    if(Team)
+    if (Team)
         return LocationVector(1277.105103f, 1743.956177f, 31.603209f);
     else
         return LocationVector(1295.322388f, 1585.953369f, 31.605387f);
@@ -77,7 +77,7 @@ LocationVector RuinsOfLordaeron::GetStartingCoords(uint32 Team)
 
 void RuinsOfLordaeron::HookOnAreaTrigger(Player* plr, uint32 trigger)
 {
-    switch(trigger)
+    switch (trigger)
     {
         case 4696:
         case 4697:

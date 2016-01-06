@@ -424,7 +424,6 @@ void CommandTableStorage::Init()
         { "enable",       'o', &ChatHandler::HandleGOEnable,       "Enables the selected GO for use.",           NULL, 0, 0, 0 },
         { "scale",        'o', &ChatHandler::HandleGOScale,        "Sets scale of selected GO",                  NULL, 0, 0, 0 },
         { "animprogress", 'o', &ChatHandler::HandleGOAnimProgress, "Sets anim progress",                         NULL, 0, 0, 0 },
-        { "faction",      'o', &ChatHandler::HandleGOFactionCommand,"Sets the faction of the GO",                NULL, 0, 0, 0 },
         { "export",       'o', &ChatHandler::HandleGOExport,       "Exports the current GO selected",            NULL, 0, 0, 0 },
         { "move",         'g', &ChatHandler::HandleGOMove,         "Moves gameobject to player xyz",             NULL, 0, 0, 0 },
         { "rotate",       'g', &ChatHandler::HandleGORotate,       "<Axis> <Value> - Rotates the object. <Axis> x,y, Default o.",             NULL, 0, 0, 0 },
@@ -1002,7 +1001,7 @@ WorldPacket* ChatHandler::FillMessageData(uint32 type, uint32 language, const ch
 
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, messageLength + 30);
 
-    *data << (uint8)type;
+    *data << uint8(type);
     *data << language;
 
     *data << guid;
@@ -1022,13 +1021,13 @@ WorldPacket* ChatHandler::FillSystemMessageData(const char* message) const
     uint32 messageLength = (uint32)strlen(message) + 1;
 
     WorldPacket* data = new WorldPacket(SMSG_MESSAGECHAT, 30 + messageLength);
-    *data << (uint8)CHAT_MSG_SYSTEM;
-    *data << (uint32)LANG_UNIVERSAL;
+    *data << uint8(CHAT_MSG_SYSTEM);
+    *data << uint32(LANG_UNIVERSAL);
 
     // Who cares about guid when there's no nickname displayed heh ?
-    *data << (uint64)0;
-    *data << (uint32)0;
-    *data << (uint64)0;
+    *data << uint64(0);
+    *data << uint32(0);
+    *data << uint64(0);
 
     *data << messageLength;
     *data << message;

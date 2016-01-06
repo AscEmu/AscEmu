@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ enum DarkmoonFaireCreatureTexts
     BARK_SYLANNIA_4,
     // Maxima Blastenheimer
     BARK_MAXIMA_1 = 7789,       // in npc_text
-    BARK_MAXIMA_2 = 7790,       // in npc_text
+    BARK_MAXIMA_2 = 7790        // in npc_text
 };
 
 #endif // _DARKMOONFAIRE_H

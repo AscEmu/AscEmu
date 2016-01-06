@@ -119,6 +119,7 @@ class SERVER_DECL Socket
         unsigned long m_BytesRecieved;
 
     public:
+
         // Atomic wrapper functions for increasing read/write locks
         inline void IncSendLock() { ++m_writeLock; }
         inline void DecSendLock() { --m_writeLock; }
@@ -131,6 +132,7 @@ class SERVER_DECL Socket
         }
 
     private:
+
         // Write lock, stops multiple write events from being posted.
         Arcemu::Threading::AtomicCounter m_writeLock;
 
@@ -235,6 +237,7 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
         std::map<Socket*, time_t> deletionQueue;
         Mutex lock;
     public:
+
         ~SocketGarbageCollector()
         {
             std::map<Socket*, time_t>::iterator i;
@@ -269,4 +272,4 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
 
 #define sSocketGarbageCollector SocketGarbageCollector::getSingleton()
 
-#endif
+#endif  //SOCKET_H

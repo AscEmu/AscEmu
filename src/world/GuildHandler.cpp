@@ -366,7 +366,6 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
 
     uint32 rankId;
     std::string newName;
-    uint32 i;
     GuildRank* pRank;
 
     recv_data >> rankId;
@@ -396,7 +395,7 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
         pRank->iGoldLimitPerDay = gold_limit;
 
 
-    for (i = 0; i < MAX_GUILD_BANK_TABS; ++i)
+    for (uint8 i = 0; i < MAX_GUILD_BANK_TABS; ++i)
     {
         recv_data >> pRank->iTabPermissions[i].iFlags;
         recv_data >> pRank->iTabPermissions[i].iStacksPerDay;
@@ -479,8 +478,11 @@ void WorldSession::HandleGuildSetPublicNote(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    std::string target, newnote;
-    recv_data >> target >> newnote;
+    std::string target;
+    std::string newnote;
+
+    recv_data >> target;
+    recv_data >> newnote;
 
     PlayerInfo* pTarget = objmgr.GetPlayerInfoByName(target.c_str());
     if (pTarget == NULL)
@@ -496,8 +498,11 @@ void WorldSession::HandleGuildSetOfficerNote(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    std::string target, newnote;
-    recv_data >> target >> newnote;
+    std::string target;
+    std::string newnote;
+
+    recv_data >> target;
+    recv_data >> newnote;
 
     PlayerInfo* pTarget = objmgr.GetPlayerInfoByName(target.c_str());
     if (pTarget == NULL)
@@ -516,14 +521,24 @@ void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
     uint64 guid;
     Guild* pGuild = _player->GetGuild();
     int32 cost = MONEY_ONE_GOLD * 10;
-    uint32 emblemStyle, emblemColor, borderStyle, borderColor, backgroundColor;
+    uint32 emblemStyle;
+    uint32 emblemColor;
+    uint32 borderStyle;
+    uint32 borderColor;
+    uint32 backgroundColor;
+
     WorldPacket data(MSG_SAVE_GUILD_EMBLEM, 4);
     recv_data >> guid;
 
     CHECK_PACKET_SIZE(recv_data, 28);
     CHECK_GUID_EXISTS(guid);
 
-    recv_data >> emblemStyle >> emblemColor >> borderStyle >> borderColor >> backgroundColor;
+    recv_data >> emblemStyle;
+    recv_data >> emblemColor;
+    recv_data >> borderStyle;
+    recv_data >> borderColor;
+    recv_data >> backgroundColor;
+
     if (pGuild == NULL)
     {
         data << uint32(ERR_GUILDEMBLEM_NOGUILD);
@@ -596,8 +611,10 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
     recv_data >> UnkString;
     recv_data >> Data[0] >> Data[1] >> Data[2] >> Data[3] >> Data[4] >> Data[5] >> Data[6];
     recv_data >> crap10;
-    recv_data >> crap11 >> crap12 >> PetitionSignerCount;
-    for (uint32 s = 0; s < 10; ++s)
+    recv_data >> crap11;
+    recv_data >> crap12;
+    recv_data >> PetitionSignerCount;
+    for (uint8 s = 0; s < 10; ++s)
     {
         recv_data >> crap13;
     }
@@ -921,9 +938,13 @@ void WorldSession::HandleCharterOffer(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     uint32 shit;
-    uint64 item_guid, target_guid;
+    uint64 item_guid;
+    uint64 target_guid;
     Charter* pCharter;
-    recv_data >> shit >> item_guid >> target_guid;
+
+    recv_data >> shit;
+    recv_data >> item_guid;
+    recv_data >> target_guid;
 
     Player* pTarget = _player->GetMapMgr()->GetPlayer((uint32)target_guid);
     pCharter = objmgr.GetCharterByItemGuid(item_guid);
@@ -1048,8 +1069,17 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
         ArenaTeam* team;
         uint32 type;
         uint32 i;
-        uint32 icon, iconcolor, bordercolor, border, background;
-        recv_data >> iconcolor >> icon >> bordercolor >> border >> background;
+        uint32 icon;
+        uint32 iconcolor;
+        uint32 bordercolor;
+        uint32 border;
+        uint32 background;
+
+        recv_data >> iconcolor;
+        recv_data >> icon;
+        recv_data >> bordercolor;
+        recv_data >> border;
+        recv_data >> background;
 
         switch (pCharter->CharterType)
         {
@@ -1121,7 +1151,9 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
 
     uint64 guid;
     std::string name;
-    recv_data >> guid >> name;
+
+    recv_data >> guid;
+    recv_data >> name;
 
     Charter* pCharter = objmgr.GetCharterByItemGuid(guid);
     if (pCharter == 0)
@@ -1337,7 +1369,9 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
     if (pGuild == NULL || pMember == NULL)
         return;
 
-    recv_data >> guid >> source_isfrombank;
+    recv_data >> guid;
+    recv_data >> source_isfrombank;
+
     if (source_isfrombank)
     {
         GuildBankTab* pSourceTab;
@@ -1445,6 +1479,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         recv_data >> dest_bankslot;
         recv_data >> wtf;
         recv_data >> wtf2;
+
         if (wtf2)
             recv_data >> withdraw_stack;
 
@@ -1452,7 +1487,10 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         recv_data >> source_slot;
 
         if (!(source_bagslot == 1 && source_slot == 0))
-            recv_data >> wtf2 >> deposit_stack;
+        {
+            recv_data >> wtf2;
+            recv_data >> deposit_stack;
+        }
 
         /* sanity checks to avoid overflows */
         if (dest_bank >= MAX_GUILD_BANK_TABS)
@@ -1767,7 +1805,7 @@ void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 update
     pos = data.wpos();
     data << uint8(0);               // number of items, will be filled later
 
-    for (int32 j = 0; j < MAX_GUILD_BANK_SLOTS; ++j)
+    for (int8 j = 0; j < MAX_GUILD_BANK_SLOTS; ++j)
     {
         if (pTab->pSlots[j] != NULL)
         {
@@ -1908,7 +1946,8 @@ void WorldSession::HandleSetGuildBankText(WorldPacket& recv_data)
     uint8 tabid;
     std::string text;
 
-    recv_data >> tabid >> text;
+    recv_data >> tabid;
+    recv_data >> text;
 
     GuildBankTab* tab = _player->GetGuild()->GetBankTab(tabid);
     if (tab != NULL &&

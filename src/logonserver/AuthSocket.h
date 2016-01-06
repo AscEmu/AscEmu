@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef AUTHSOCKET_H
@@ -33,18 +32,13 @@ class AuthSocket : public Socket
         friend class LogonCommServerSocket;
     public:
 
-        ///////////////////////////////////////////////////
-        // Netcore shit
-        //////////////////////////
+        // Netcore related
         AuthSocket(SOCKET fd);
         ~AuthSocket();
 
         void OnRead();
 
-        ///////////////////////////////////////////////////
         // Client Packet Handlers
-        //////////////////////////
-
         void HandleChallenge();
         void HandleProof();
         void HandleRealmlist();
@@ -54,10 +48,7 @@ class AuthSocket : public Socket
         void HandleTransferResume();
         void HandleTransferCancel();
 
-        ///////////////////////////////////////////////////
         // Server Packet Builders
-        //////////////////////////
-
         void SendChallengeError(uint8 Error);
         void SendProofError(uint8 Error, uint8* M2);
         inline sAuthLogonChallenge_C* GetChallenge() { return &m_challenge; }
@@ -82,19 +73,15 @@ class AuthSocket : public Socket
         BigNumber B; // server public value
         BigNumber rs;
 
-        //////////////////////////////////////////////////
         // Session Key
-        /////////////////////////
-
         BigNumber m_sessionkey;
         time_t last_recv;
 
-        //////////////////////////////////////////////////////////////////////////
-        // Patching stuff
-        //////////////////////////////////////////////////////////////////////////
     public:
+
+        // Patching stuff
         Patch* m_patch;
         PatchJob* m_patchJob;
 };
 
-#endif
+#endif  //AUTHSOCKET_H

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -68,34 +68,34 @@ enum SpellTreeName
 class SkillNameMgr
 {
     public:
+
         char** SkillNames;
         uint32 maxskill;
 
         SkillNameMgr()
         {
-            DBCStorage<skilllineentry>::iterator itr = dbcSkillLine.end();
-            --itr;
-            skilllineentry* skillline = *itr;
-
             /// This will become the size of the skill name lookup table
-            maxskill = skillline->id;
+            maxskill = sSkillLineStore.GetNumRows();
 
             /// SkillNames = (char **) malloc(maxskill * sizeof(char *));
             SkillNames = new char * [maxskill + 1]; //(+1, arrays count from 0.. not 1.)
             memset(SkillNames, 0, (maxskill + 1) * sizeof(char*));
 
-            for (itr = dbcSkillLine.begin(); itr != dbcSkillLine.end(); ++itr)
+            for (uint32 i = 0; i < sSkillLineStore.GetNumRows(); ++i)
             {
-                skillline = *itr;
+                auto skill_line = sSkillLineStore.LookupEntry(i);
+                if (skill_line == nullptr)
+                    continue;
 
-                unsigned int SkillID = skillline->id;
-                const char* SkillName = skillline->Name;
+                uint32 SkillID = skill_line->id;
+                char* SkillName = skill_line->Name[0];
 
                 SkillNames[SkillID] = new char [strlen(SkillName) + 1];
                 //When the DBCFile gets cleaned up, so does the record data, so make a copy of it..
                 memcpy(SkillNames[SkillID], SkillName, strlen(SkillName) + 1);
             }
         }
+
         ~SkillNameMgr()
         {
             for (uint32 i = 0; i <= maxskill; i++)
@@ -106,4 +106,5 @@ class SkillNameMgr
             delete[] SkillNames;
         }
 };
+
 #endif // _SKILLNAMEMGR_H

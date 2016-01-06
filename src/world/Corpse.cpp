@@ -25,10 +25,13 @@ Corpse::Corpse(uint32 high, uint32 low)
 {
     m_objectTypeId = TYPEID_CORPSE;
     m_valuesCount = CORPSE_END;
+
     m_uint32Values = _fields;
     memset(m_uint32Values, 0, (CORPSE_END)*sizeof(uint32));
     m_updateMask.SetCount(CORPSE_END);
+
     SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_CORPSE | TYPE_OBJECT);
+
     SetLowGUID(low);
     SetHighGUID(high);
     m_wowGuid.Init(GetGUID());
@@ -55,12 +58,6 @@ void Corpse::Create(Player* owner, uint32 mapid, float x, float y, float z, floa
 {
     Object::_Create(mapid, x, y, z, ang);
 
-    /*
-    SetFloatValue(CORPSE_FIELD_POS_X, x);
-    SetFloatValue(CORPSE_FIELD_POS_Y, y);
-    SetFloatValue(CORPSE_FIELD_POS_Z, z);
-    SetFloatValue(CORPSE_FIELD_FACING, ang);
-    */
     SetOwner(owner->GetGUID());
     _loadedfromdb = false;  // can't be created from db ;)
 }
@@ -74,7 +71,15 @@ void Corpse::SaveToDB()
 
     ss.rdbuf()->str("");
     ss << "INSERT INTO corpses (guid, positionx, positiony, positionz, orientation, zoneId, mapId, data, instanceid) VALUES ("
-        << GetLowGUID() << ", '" << GetPositionX() << "', '" << GetPositionY() << "', '" << GetPositionZ() << "', '" << GetOrientation() << "', '" << GetZoneId() << "', '" << GetMapId() << "', '";
+        << GetLowGUID()
+        << ", '" 
+        << GetPositionX() 
+        << "', '" << GetPositionY() 
+        << "', '" << GetPositionZ() 
+        << "', '" << GetOrientation() 
+        << "', '" << GetZoneId() 
+        << "', '" << GetMapId() 
+        << "', '";
 
     for (uint16 i = 0; i < m_valuesCount; i++)
         ss << GetUInt32Value(i) << " ";
@@ -119,7 +124,7 @@ void Corpse::SpawnBones()
     SetUInt32Value(CORPSE_FIELD_FLAGS, 5);
     SetOwner(0); // remove corpse owner association
     //remove item association
-    for (int i = 0; i < EQUIPMENT_SLOT_END; i++)
+    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
     {
         if (GetUInt32Value(CORPSE_FIELD_ITEM + i))
             SetUInt32Value(CORPSE_FIELD_ITEM + i, 0);

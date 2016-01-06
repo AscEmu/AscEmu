@@ -75,7 +75,8 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
         return;
     }
 
-    data << guid << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
+    data << guid;
+    data << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
     SendPacket(&data);
 }
 
@@ -152,11 +153,12 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
             qst_giver = quest_giver;
         else
             return;
-        bValid = quest_giver->isQuestGiver();
-        if (quest_giver->isQuestGiver())
+        bValid = false;
+        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
             bValid = true;
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
+            GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
@@ -254,7 +256,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     qEntry->Finish();
 
     // Remove all items given by the questgiver at the beginning
-    for (uint32 i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         if (qPtr->receive_items[i])
             GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->receive_items[i], 1);
@@ -268,7 +270,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
                 _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
     }
     //remove all quest items (but not trade goods) collected and required only by this quest
-    for (uint32 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
         if (qPtr->required_item[i] != 0)
         {
@@ -347,16 +349,18 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
             qst_giver = quest_giver;
         else
             return; // oops..
-        bValid = quest_giver->isQuestGiver();
-        if (bValid)
+        bValid = false;
+        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
-            qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
+            bValid = true;
+            GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
+            qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
                 LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
                 return;
             }
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
         }
     }
 
@@ -425,16 +429,17 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
             qst_giver = quest_giver;
         else
             return; // oops..
-        bValid = quest_giver->isQuestGiver();
-        if (bValid)
+        bValid = false;
+        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
-            qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
+            GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
+            qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
                 LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
                 return;
             }
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
         }
     }
 

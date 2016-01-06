@@ -1200,57 +1200,58 @@ bool ChatHandler::HandleSetMotdCommand(const char* args, WorldSession* m_session
 
 bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_session)
 {
-    uint32 setid = (args ? atoi(args) : 0);
+    int32 setid = (args ? atoi(args) : 0);
     if (!setid)
     {
         RedSystemMessage(m_session, "You must specify a setid.");
         return true;
     }
 
-    Player* chr = getSelectedChar(m_session);
-    if (chr == NULL)
+    auto player = getSelectedChar(m_session);
+    if (player == nullptr)
     {
         RedSystemMessage(m_session, "Unable to select character.");
         return true;
     }
 
-    ItemSetEntry* entry = dbcItemSet.LookupEntryForced(setid);
-    std::list<ItemPrototype*>* l = objmgr.GetListForItemSet(setid);
-    if (!entry || !l)
+    auto item_set_list = objmgr.GetListForItemSet(setid);
+    if (!item_set_list)
     {
         RedSystemMessage(m_session, "Invalid item set.");
         return true;
     }
-    //const char* setname = sItemSetStore.LookupString(entry->name);
+
     BlueSystemMessage(m_session, "Searching item set %u...", setid);
-    uint32 start = getMSTime();
-    sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, chr->GetName());
-    for (std::list<ItemPrototype*>::iterator itr = l->begin(); itr != l->end(); ++itr)
+    sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, player->GetName());
+
+    for (std::list<ItemPrototype*>::iterator itr = item_set_list->begin(); itr != item_set_list->end(); ++itr)
     {
-        Item* itm = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
-        if (!itm) continue;
-        if (itm->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
+        auto item = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
+        if (!item)
+            continue;
+
+        if (item->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
         {
-            if (itm->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
-                itm->AccountBind();
+            if (item->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
+                item->AccountBind();
             else
-                itm->SoulBind();
+                item->SoulBind();
         }
 
-        if (!chr->GetItemInterface()->AddItemToFreeSlot(itm))
+        if (!player->GetItemInterface()->AddItemToFreeSlot(item))
         {
             m_session->SendNotification("No free slots left!");
-            itm->DeleteMe();
+            item->DeleteMe();
             return true;
         }
         else
         {
-            //SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1, (*itr)->ItemId);
-            SlotResult* le = chr->GetItemInterface()->LastSearchResult();
-            chr->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, itm->GetEntry(), itm->GetItemRandomSuffixFactor(), itm->GetItemRandomPropertyId(), itm->GetStackCount());
+            SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1, (*itr)->ItemId);
+            SlotResult* le = player->GetItemInterface()->LastSearchResult();
+            player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
         }
     }
-    GreenSystemMessage(m_session, "Added set to inventory complete. Time: %u ms", getMSTime() - start);
+    GreenSystemMessage(m_session, "Added set to inventory complete.");
     return true;
 }
 
@@ -2101,7 +2102,7 @@ bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session
     }
 
     // this makes sure no moron casts a learn spell on everybody and wrecks the server
-    for (int i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         if (info->Effect[i] == SPELL_EFFECT_LEARN_SPELL)  //SPELL_EFFECT_LEARN_SPELL - 36
         {
@@ -2342,7 +2343,6 @@ bool ChatHandler::HandleTriggerpassCheatCommand(const char* args, WorldSession* 
 
 bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession* m_session)
 {
-    skilllineentry* se;
     Player* plr = getSelectedChar(m_session, true);
     if (!plr)
         return true;
@@ -2355,8 +2355,11 @@ bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession* m_ses
 
     for (std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
     {
-        se = dbcSkillLine.LookupEntry(ss->skillid);
-        if (se->type != SKILL_TYPE_LANGUAGE && ss->skillid && ss->currentval && ss->maxval)
+        auto skill_line = sSkillLineStore.LookupEntry(ss->skillid);
+        if (skill_line == nullptr)
+            continue;
+
+        if (skill_line->type != SKILL_TYPE_LANGUAGE && ss->skillid && ss->currentval && ss->maxval)
             plr->_AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
     }
     //Chances depend on stats must be in this order!
@@ -3245,15 +3248,18 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
     GreenSystemMessage(m_session, "Starting search of skill `%s`...", x.c_str());
     uint32 t = getMSTime();
     uint32 count = 0;
-    for (uint32 index = 0; index < dbcSkillLine.GetNumRows(); ++index)
+    for (uint32 index = 0; index < sSkillLineStore.GetNumRows(); ++index)
     {
-        skilllineentry* skill = dbcSkillLine.LookupRow(index);
-        std::string y = std::string(skill->Name);
+        auto skill_line = sSkillLineStore.LookupEntry(index);
+        if (skill_line == nullptr)
+            continue;
+
+        std::string y = std::string(skill_line->Name[0]);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
         {
             // Print out the name in a cool highlighted fashion
-            SendHighlightedName(m_session, "Skill", skill->Name, y, x, skill->id);
+            SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);
             ++count;
             if (count == 25)
             {
@@ -3283,15 +3289,15 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
     GreenSystemMessage(m_session, "Starting search of faction `%s`...", x.c_str());
     uint32 t = getMSTime();
     uint32 count = 0;
-    for (uint32 index = 0; index < dbcFaction.GetNumRows(); ++index)
+    for (uint32 index = 0; index < sFactionStore.GetNumRows(); ++index)
     {
-        FactionDBC* faction = dbcFaction.LookupRow(index);
-        std::string y = std::string(faction->Name);
+        DBC::Structures::FactionEntry const* faction = sFactionStore.LookupEntry(index);
+        std::string y = std::string(faction->Name[0]);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
         {
             // Print out the name in a cool highlighted fashion
-            SendHighlightedName(m_session, "Faction", faction->Name, y, x, faction->ID);
+            SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
             ++count;
             if (count == 25)
             {

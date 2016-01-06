@@ -92,7 +92,8 @@ void WorldSession::HandleGroupPromote(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint8 promotetype, on;
+    uint8 promotetype;
+    uint8 on;
     uint64 guid;
 
     if (_player->GetGroup() == NULL)
@@ -104,7 +105,8 @@ void WorldSession::HandleGroupPromote(WorldPacket& recv_data)
         return;
     }
 
-    recv_data >> promotetype >> on;
+    recv_data >> promotetype;
+    recv_data >> on;
     recv_data >> guid;
 
     void(Group::*function_to_call)(PlayerInfo*);

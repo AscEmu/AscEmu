@@ -119,8 +119,8 @@ class NerubarEggSac : public GameObjectAIScript
                 return;
 
             sEAS.KillMobForQuest(pPlayer, 11602, 0);
-            _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
-            _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->SetState(GO_STATE_OPEN);
             _gameobject->Despawn(500, 60000);
         }
 };
@@ -193,8 +193,8 @@ class BlueDragonEgg : public GameObjectAIScript
 
             sEAS.KillMobForQuest(pPlayer, 11936, 0);
             ///\todo why setting gameobject state 1 and 0?!?!
-            _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
-            _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+            _gameobject->SetState(GO_STATE_CLOSED);
+            _gameobject->SetState(GO_STATE_OPEN);
             _gameobject->Despawn(500, 60000);
         }
 };
@@ -233,54 +233,54 @@ class FizzcrankGossip : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
 
             if (sEAS.GetQuest(pPlayer, QUEST_THE_MECHAGNOMES))
-                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_1), 1);
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_1), 1);
 
             Menu->SendTo(pPlayer);
         }
 
-        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
         {
             GossipMenu* Menu;
             switch (IntId)
             {
                 case 1:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK1, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 2);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 2);
                     Menu->SendTo(pPlayer);
                     break;
                 case 2:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK2, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 3);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 3);
                     Menu->SendTo(pPlayer);
                     break;
                 case 3:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK3, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 4);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 4);
                     Menu->SendTo(pPlayer);
                     break;
                 case 4:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK4, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 5);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 5);
                     Menu->SendTo(pPlayer);
                     break;
                 case 5:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK5, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 6);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 6);
                     Menu->SendTo(pPlayer);
                     break;
                 case 6:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK6, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 7);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 7);
                     Menu->SendTo(pPlayer);
                     break;
                 case 7:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK7, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 8);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 8);
                     Menu->SendTo(pPlayer);
                     break;
                 case 8:
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GOSSIP_TEXTID_FIZZCRANK8, pPlayer);
-                    Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 9);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(GOSSIP_OPTION_FIZZCRANK_2), 9);
                     Menu->SendTo(pPlayer);
                     break;
                 case 9:
@@ -315,12 +315,12 @@ class SurristraszGossip : public GossipScript
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, pPlayer->GetSession()->language);
             sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), pPlayer, menu);
 
-            menu.AddItem(ICON_FLIGHTMASTER, pPlayer->GetSession()->LocalizedGossipOption(GI_SURRISTRASZ), 1);
+            menu.AddItem(GOSSIP_ICON_FLIGHTMASTER, pPlayer->GetSession()->LocalizedGossipOption(GI_SURRISTRASZ), 1);
 
             menu.Send(pPlayer);
         }
 
-        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
         {
             if (!pObject->IsCreature())
                 return;
@@ -358,9 +358,9 @@ class WestPointStationValve : public GameObjectAIScript
 
             Creature* Twonky = sEAS.SpawnCreature(pPlayer, 25830, 4117.513672f, 5089.670898f, -1.506265f, 2.043593f, 0);
             if (Twonky->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -386,9 +386,9 @@ class NorthPointStationValve : public GameObjectAIScript
 
             Creature* Ed210 = sEAS.SpawnCreature(pPlayer, 25831, 4218.529785f, 4802.284668f, -12.975346f, 5.833142f, 0);
             if (Ed210->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -414,9 +414,9 @@ class FizzcrankPumpingStationValve : public GameObjectAIScript
 
             Creature* MaxBlasto = sEAS.SpawnCreature(pPlayer, 25832, 4029.974609f, 4890.195313f, -12.775084f, 1.081481f, 0);
             if (MaxBlasto->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -442,9 +442,9 @@ class SouthPointStationValve : public GameObjectAIScript
 
             Creature* TheGrinder = sEAS.SpawnCreature(pPlayer, 25833, 3787.021484f, 4821.941895f, -12.967110f, 5.097224f, 0);
             if (TheGrinder->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -477,9 +477,9 @@ class TheGearmastersManual : public GameObjectAIScript
             Creature* GearmasterMechazod = sEAS.SpawnCreature(pPlayer, 25834, 4006.289551f, 4848.437500f, 25.957747f, 2.459837f, 0);
             GearmasterMechazod->SetTargetGUID(pPlayer->GetGUID());
             if (GearmasterMechazod->isAlive())
-                _gameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                _gameobject->SetState(GO_STATE_OPEN);
             else
-                _gameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 
@@ -543,6 +543,102 @@ class GearmasterMechazodAI : public CreatureAIScript
         uint32 phase;
 };
 
+// Hunt Is On (Quest: 11794)
+const uint32 questHuntIsOn = 11794;
+
+class SaltyJohnGossip : public GossipScript
+{
+    public:
+
+        void GossipHello(Object* pObject, Player* pPlayer)
+        {
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
+            if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078))
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(603), 1);
+
+            Menu->SendTo(pPlayer);
+        }
+
+        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        {
+            switch (IntId)
+            {
+                case 1:
+                {
+                    Creature* SaltyJohn = static_cast< Creature* >(pObject);
+                    SaltyJohn->SetFaction(14);
+                    SaltyJohn->SendChatMessage(12, 0, "I suppose this is it.. then? I won't go down quietly!");
+                }
+                break;
+                default:
+                    break;
+            }
+        }
+};
+
+class TomHeggerGossip : public GossipScript
+{
+    public:
+
+        void GossipHello(Object* pObject, Player* pPlayer)
+        {
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
+            if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078)) // Has quest and has used the item.
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(604), 1);
+
+            Menu->SendTo(pPlayer);
+        }
+
+        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        {
+            switch (IntId)
+            {
+                case 1:
+                {
+                    Creature* TomHegger = static_cast< Creature* >(pObject);
+                    TomHegger->SetFaction(14);
+                    TomHegger->SendChatMessage(12, 0, "You don't know who you're messing with, ! Death beckons!");
+                }
+                break;
+                default:
+                    break;
+            }
+        }
+};
+
+class GuardMitchGossip : public GossipScript
+{
+    public:
+
+        void GossipHello(Object* pObject, Player* pPlayer)
+        {
+            GossipMenu* Menu;
+            objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12435, pPlayer);
+            if (sEAS.GetQuest(pPlayer, questHuntIsOn) && pPlayer->HasAura(46078))
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(605), 1);
+
+            Menu->SendTo(pPlayer);
+        }
+
+        void GossipSelectOption(Object* pObject, Player*  pPlayer, uint32 Id, uint32 IntId, const char* Code)
+        {
+            switch (IntId)
+            {
+                case 1:
+                {
+                    Creature* GuardMitch = static_cast< Creature* >(pObject);
+                    GuardMitch->SetFaction(14);
+                    GuardMitch->SendChatMessage(12, 0, "Finally! This charade is over... Arthas give me strength!");
+                }
+                break;
+                default:
+                    break;
+            }
+        }
+};
+
 void SetupBoreanTundra(ScriptMgr* mgr)
 {
     // Call to Arms!
@@ -579,4 +675,9 @@ void SetupBoreanTundra(ScriptMgr* mgr)
     // Quest: The Gearmaster 11798
     mgr->register_gameobject_script(190334, &TheGearmastersManual::Create);
     mgr->register_creature_script(25834, &GearmasterMechazodAI::Create);
+
+    // Hunt Is On
+    mgr->register_gossip_script(25248, new SaltyJohnGossip);
+    mgr->register_gossip_script(25827, new TomHeggerGossip);
+    mgr->register_gossip_script(25828, new GuardMitchGossip);
 }

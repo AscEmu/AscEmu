@@ -29,6 +29,7 @@
 class Sha1Hash
 {
     public:
+
         Sha1Hash();
         ~Sha1Hash();
 
@@ -47,6 +48,7 @@ class Sha1Hash
         BigNumber GetBigNumber();
 
     private:
+
         SHA_CTX mC;
         uint8 mDigest[SHA_DIGEST_LENGTH];
 };

@@ -658,7 +658,7 @@ bool DemonicCircleSummon(uint32 i, Aura* a, bool apply)
         GameObject* circle = m_target->GetMapMgr()->GetGameObject(a->GetTarget()->m_ObjectSlots[ 0 ]);
         SpellEntry* sp = dbcSpell.LookupEntryForced(48020);
 
-        if(circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(dbcSpellRange.LookupEntry(sp->rangeIndex)))
+        if(circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(sSpellRangeStore.LookupEntry(sp->rangeIndex)))
         {
             if(!m_target->HasAura(62388))
                 m_target->CastSpell(m_target, 62388, true);

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -68,7 +68,7 @@ void AuctionMgr::LoadAuctionHouses()
 
 AuctionHouse* AuctionMgr::GetAuctionHouse(uint32 Entry)
 {
-    HM_NAMESPACE::hash_map<uint32, AuctionHouse*>::iterator itr = auctionHouseEntryMap.find(Entry);
+    std::unordered_map<uint32, AuctionHouse*>::iterator itr = auctionHouseEntryMap.find(Entry);
     if (itr == auctionHouseEntryMap.end()) return NULL;
     return itr->second;
 }

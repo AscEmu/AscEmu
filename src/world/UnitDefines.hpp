@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -661,7 +661,7 @@ enum ShapeshiftForm
 };
 
 
-enum UnitFieldFlags // UNIT_FIELD_FLAGS #46 - these are client flags
+enum UnitFieldFlags  // UNIT_FIELD_FLAGS #46 - these are client flags
 {
     //                                            Hex    Bit     Decimal  Comments
     UNIT_FLAG_SERVER_CONTROLLED          = 0x00000001, // 1            1
@@ -695,7 +695,7 @@ enum UnitFieldFlags // UNIT_FIELD_FLAGS #46 - these are client flags
     UNIT_FLAG_UNKNOWN_29                 = 0x10000000, // 29   268435456
     UNIT_FLAG_FEIGN_DEATH                = 0x20000000, // 30   536870912
     UNIT_FLAG_UNKNOWN_31                 = 0x40000000, // 31  1073741824  ? was WEAPON_OFF and being used for disarm
-    UNIT_FLAG_UNKNOWN_32                 = 0x80000000, // 32  2147483648
+    UNIT_FLAG_UNKNOWN_32                 = 0x80000000  // 32  2147483648
 };
 
 enum UnitFieldFlags2
@@ -810,7 +810,7 @@ enum AURA_CHECK_RESULT
 {
     AURA_CHECK_RESULT_NONE                  = 1,
     AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT   = 2,
-    AURA_CHECK_RESULT_LOWER_BUFF_PRESENT    = 3,
+    AURA_CHECK_RESULT_LOWER_BUFF_PRESENT    = 3
 };
 
 enum School
@@ -824,4 +824,5 @@ enum School
     SCHOOL_ARCANE = 6,
     SCHOOL_COUNT
 };
+
 #endif      // _UNIT_DEFINES_H

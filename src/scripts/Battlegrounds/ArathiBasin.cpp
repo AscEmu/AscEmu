@@ -19,8 +19,8 @@
  */
 
 #if COMPILER == COMPILER_GNU
-    // Required on gcc
-    #include "StdAfx.h"
+ // Required on gcc
+#include "StdAfx.h"
 #endif
 
 #include "ArathiBasin.h"
@@ -30,32 +30,31 @@
 #define RESOURCES_WINVAL 1600
 #include <QuestLogEntry.hpp>
 
-uint32 buffentries[3] = {180380, 180362, 180146};
+uint32 buffentries[3] = { 180380, 180362, 180146 };
 
-/* AB Battleground Data */
 
 static float GraveyardLocations[AB_NUM_CONTROL_POINTS][3] =
 {
-    { 1201.869507f, 1163.130615f, -56.285969f },                                                // STABLES
-    { 834.726379f, 784.978699f, -57.081944f },                                                    // FARM
-    { 1016.588318f, 955.184692f, -42.828693f },                                                    // BLACKSMITH
-    { 1211.523682f, 781.556946f, -82.709511f },                                                    // MINE
-    { 772.755676f, 1213.113770f, 15.797392f },                                                    // LUMBERMILL
+    { 1201.869507f, 1163.130615f, -56.285969f },        // STABLES
+    { 834.726379f, 784.978699f, -57.081944f },          // FARM
+    { 1016.588318f, 955.184692f, -42.828693f },         // BLACKSMITH
+    { 1211.523682f, 781.556946f, -82.709511f },         // MINE
+    { 772.755676f, 1213.113770f, 15.797392f },          // LUMBERMILL
 };
 
 static float NoBaseGYLocations[2][3] =
 {
-    { 1354.699951f, 1270.270020f, -11.129100f },                                                // ALLIANCE
-    { 713.710022f, 638.364014f, -10.599900f },                                                    // HORDE
+    { 1354.699951f, 1270.270020f, -11.129100f },        // ALLIANCE
+    { 713.710022f, 638.364014f, -10.599900f },          // HORDE
 };
 
 static const char* ControlPointNames[AB_NUM_CONTROL_POINTS] =
 {
-    "Stable",                                                                                    // STABLE
-    "Farm",                                                                                        // FARM
-    "Blacksmith",                                                                                // BLACKSMITH
-    "Mine",                                                                                        // MINE
-    "Lumber Mill",                                                                                // LUMBERMILL
+    "Stable",
+    "Farm",
+    "Blacksmith",
+    "Mine",
+    "Lumber Mill",
 };
 
 static uint32 ControlPointGoIds[AB_NUM_CONTROL_POINTS][AB_NUM_SPAWN_TYPES] =
@@ -70,56 +69,56 @@ static uint32 ControlPointGoIds[AB_NUM_CONTROL_POINTS][AB_NUM_SPAWN_TYPES] =
 
 static float ControlPointCoordinates[AB_NUM_CONTROL_POINTS][4] =
 {
-    { 1166.779541f, 1200.147583f, -56.701763f, -2.251474f },                                    // STABLE
-    { 806.2484741f, 874.2167358f, -55.9936981f, 0.8377580f },                                    // FARM
-    { 977.0503540f, 1046.5208740f, -44.8276138f, 0.5410520f },                                    // BLACKSMITH
-    { 1146.9224854f, 848.1899414f, -110.9200210f, 2.4260077f },                                    // MINE
-    { 856.141907f, 1148.902100f, 11.184692f, -2.303835f },                                        // LUMBERMILL
+    { 1166.779541f, 1200.147583f, -56.701763f, -2.251474f },            // STABLE
+    { 806.2484741f, 874.2167358f, -55.9936981f, 0.8377580f },           // FARM
+    { 977.0503540f, 1046.5208740f, -44.8276138f, 0.5410520f },          // BLACKSMITH
+    { 1146.9224854f, 848.1899414f, -110.9200210f, 2.4260077f },         // MINE
+    { 856.141907f, 1148.902100f, 11.184692f, -2.303835f },              // LUMBERMILL
 };
 
 static float ControlPointRotations[AB_NUM_CONTROL_POINTS][2] =
 {
-    { 0.9025853f, -0.4305111f },                                                                // STABLE
-    { 0.4067366f, 0.9135454f },                                                                    // FARM
-    { 0.2672384f, 0.9636304f },                                                                    // BLACKSMITH
-    { 0.9366722f, 0.3502073f },                                                                    // MINE
-    { 0.9135455f, -0.4067366f },                                                                // LUMBERMILL
+    { 0.9025853f, -0.4305111f },                                        // STABLE
+    { 0.4067366f, 0.9135454f },                                         // FARM
+    { 0.2672384f, 0.9636304f },                                         // BLACKSMITH
+    { 0.9366722f, 0.3502073f },                                         // MINE
+    { 0.9135455f, -0.4067366f },                                        // LUMBERMILL
 };
 
 static float BuffCoordinates[AB_NUM_CONTROL_POINTS][4] =
 {
-    { 1185.56616210938f, 1184.62854003906f, -56.3632850646973f, 2.30383467674255f },            // STABLE
-    { 990.113098144531f, 1008.73028564453f, -42.6032752990723f, 0.820304811000824f },            // FARM
-    { 816.906799f, 842.339844f, -56.538746f, 3.272740f },                                        // BLACKSMITH
-    { 808.846252441406f, 1185.41748046875f, 11.9216051101685f, -0.663225054740906f },            // MINE
-    { 1147.09057617188f, 816.836242675781f, -98.3989562988281f, -0.226892784237862f },            // LUMBERMILL
+    { 1185.56616210938f, 1184.62854003906f, -56.3632850646973f, 2.30383467674255f },        // STABLE
+    { 990.113098144531f, 1008.73028564453f, -42.6032752990723f, 0.820304811000824f },       // FARM
+    { 816.906799f, 842.339844f, -56.538746f, 3.272740f },                                   // BLACKSMITH
+    { 808.846252441406f, 1185.41748046875f, 11.9216051101685f, -0.663225054740906f },       // MINE
+    { 1147.09057617188f, 816.836242675781f, -98.3989562988281f, -0.226892784237862f },      // LUMBERMILL
 };
 
 static float BuffRotations[AB_NUM_CONTROL_POINTS][2] =
 {
-    { 0.913545489311218f, 0.406736612319946f },                                                    // STABLE
-    { 0.39874908328056f, 0.917060077190399f },                                                    // FARM
-    { 0.913545489311218f, 0.406736612319946f },                                                    // BLACKSMITH
-    { 0.325568109750748f, -0.945518612861633f },                                                // MINE
-    { 0.113203197717667f, -0.993571877479553f },                                                // LUMBERMILL
+    { 0.913545489311218f, 0.406736612319946f },                         // STABLE
+    { 0.39874908328056f, 0.917060077190399f },                          // FARM
+    { 0.913545489311218f, 0.406736612319946f },                         // BLACKSMITH
+    { 0.325568109750748f, -0.945518612861633f },                        // MINE
+    { 0.113203197717667f, -0.993571877479553f },                        // LUMBERMILL
 };
 
 static uint32 AssaultFields[AB_NUM_CONTROL_POINTS][2] =
 {
-    { WORLDSTATE_AB_CAPTURING_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURING_STABLES_HORDE },                                // STABLE
-    { WORLDSTATE_AB_CAPTURING_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURING_FARM_HORDE },                                    // FARM
-    { WORLDSTATE_AB_CAPTURING_BLACKSMITH_ALLIANCE, WORLDSTATE_AB_CAPTURING_BLACKSMITH_HORDE },                        // BLACKSMITH
-    { WORLDSTATE_AB_CAPTURING_GOLDMINE_ALLIANCE, WORLDSTATE_AB_CAPTURING_GOLDMINE_HORDE },                            // MINE
-    { WORLDSTATE_AB_CAPTURING_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURING_LUMBERMILL_HORDE },                        // LUMBERMILL
+    { WORLDSTATE_AB_CAPTURING_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURING_STABLES_HORDE },
+    { WORLDSTATE_AB_CAPTURING_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURING_FARM_HORDE },
+    { WORLDSTATE_AB_CAPTURING_BLACKSMITH_ALLIANCE, WORLDSTATE_AB_CAPTURING_BLACKSMITH_HORDE },
+    { WORLDSTATE_AB_CAPTURING_GOLDMINE_ALLIANCE, WORLDSTATE_AB_CAPTURING_GOLDMINE_HORDE },
+    { WORLDSTATE_AB_CAPTURING_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURING_LUMBERMILL_HORDE },
 };
 
 static uint32 OwnedFields[AB_NUM_CONTROL_POINTS][2] =
 {
-    { WORLDSTATE_AB_CAPTURED_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURED_STABLES_HORDE },                                // STABLE
-    { WORLDSTATE_AB_CAPTURED_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURED_FARM_HORDE },                                        // FARM
-    { WORLDSTATE_AB_CAPTURED_BLACKSMITH_ALLIANCE, WORLDSTATE_AB_CAPTURED_BLACKSMITH_HORDE },                            // BLACKSMITH
-    { WORLDSTATE_AB_CAPTURED_GOLDMINE_ALLIANCE, WORLDSTATE_AB_CAPTURED_GOLDMINE_HORDE },                                // MINE
-    { WORLDSTATE_AB_CAPTURED_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURED_LUMBERMILL_HORDE },                            // LUMBERMILL
+    { WORLDSTATE_AB_CAPTURED_STABLES_ALLIANCE, WORLDSTATE_AB_CAPTURED_STABLES_HORDE },
+    { WORLDSTATE_AB_CAPTURED_FARM_ALLIANCE, WORLDSTATE_AB_CAPTURED_FARM_HORDE },
+    { WORLDSTATE_AB_CAPTURED_BLACKSMITH_ALLIANCE, WORLDSTATE_AB_CAPTURED_BLACKSMITH_HORDE },
+    { WORLDSTATE_AB_CAPTURED_GOLDMINE_ALLIANCE, WORLDSTATE_AB_CAPTURED_GOLDMINE_HORDE },
+    { WORLDSTATE_AB_CAPTURED_LUMBERMILL_ALLIANCE, WORLDSTATE_AB_CAPTURED_LUMBERMILL_HORDE },
 };
 
 static uint32 NeutralFields[AB_NUM_CONTROL_POINTS] =
@@ -154,7 +153,7 @@ static uint32 PointBonusPerUpdate[6] =
 static uint32 resourcesToGainBH = 260;
 static uint32 resourcesToGainBR = 160;
 
-/* End BG Data */
+// End BG Data
 
 void ArathiBasin::SpawnBuff(uint32 x)
 {
@@ -163,14 +162,14 @@ void ArathiBasin::SpawnBuff(uint32 x)
     if (gameobject_info == nullptr)
         return;
 
-    if(m_buffs[x] == nullptr)
+    if (m_buffs[x] == nullptr)
     {
         m_buffs[x] = SpawnGameObject(chosen_buffid, m_mapMgr->GetMapId(), BuffCoordinates[x][0], BuffCoordinates[x][1], BuffCoordinates[x][2],
-                                     BuffCoordinates[x][3], 0, 114, 1);
+            BuffCoordinates[x][3], 0, 114, 1);
 
         m_buffs[x]->SetParentRotation(2, BuffRotations[x][0]);
         m_buffs[x]->SetParentRotation(3, BuffRotations[x][1]);
-        m_buffs[x]->SetState(GAMEOBJECT_STATE_CLOSED);
+        m_buffs[x]->SetState(GO_STATE_CLOSED);
         m_buffs[x]->SetType(GAMEOBJECT_TYPE_TRAP);
         m_buffs[x]->SetAnimProgress(100);
         m_buffs[x]->PushToWorld(m_mapMgr);
@@ -178,10 +177,10 @@ void ArathiBasin::SpawnBuff(uint32 x)
     else
     {
         // only need to reassign guid if the entry changes.
-        if(m_buffs[x]->IsInWorld())
+        if (m_buffs[x]->IsInWorld())
             m_buffs[x]->RemoveFromWorld(false);
 
-        if(chosen_buffid != m_buffs[x]->GetEntry())
+        if (chosen_buffid != m_buffs[x]->GetEntry())
         {
             m_buffs[x]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
             m_buffs[x]->SetEntry(chosen_buffid);
@@ -198,22 +197,22 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
     if (gameobject_info == nullptr)
         return;
 
-    auto gi_aura = gameobject_info->parameter_3 ? GameObjectNameStorage.LookupEntry(gameobject_info->parameter_3) : nullptr;
+    auto gi_aura = gameobject_info->raw.parameter_3 ? GameObjectNameStorage.LookupEntry(gameobject_info->raw.parameter_3) : nullptr;
 
-    if(m_controlPoints[Id] == nullptr)
+    if (m_controlPoints[Id] == nullptr)
     {
         m_controlPoints[Id] = SpawnGameObject(gameobject_info->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
-                                              ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
+            ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         m_controlPoints[Id]->SetParentRotation(2, ControlPointRotations[Id][0]);
         m_controlPoints[Id]->SetParentRotation(3, ControlPointRotations[Id][1]);
-        m_controlPoints[Id]->SetState(GAMEOBJECT_STATE_CLOSED);
+        m_controlPoints[Id]->SetState(GO_STATE_CLOSED);
         m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
         m_controlPoints[Id]->SetAnimProgress(100);
         m_controlPoints[Id]->Activate();
         m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
 
-        switch(Type)
+        switch (Type)
         {
             case AB_SPAWN_TYPE_ALLIANCE_ASSAULT:
             case AB_SPAWN_TYPE_ALLIANCE_CONTROLLED:
@@ -230,12 +229,11 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
                 break;
         }
 
-        m_controlPoints[Id]->bannerslot = static_cast<uint8>(Id);
         m_controlPoints[Id]->PushToWorld(m_mapMgr);
     }
     else
     {
-        if(m_controlPoints[Id]->IsInWorld())
+        if (m_controlPoints[Id]->IsInWorld())
             m_controlPoints[Id]->RemoveFromWorld(false);
 
         // assign it a new guid (client needs this to see the entry change?)
@@ -244,7 +242,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPoints[Id]->SetDisplayId(gameobject_info->display_id);
         m_controlPoints[Id]->SetType(static_cast<uint8>(gameobject_info->type));
 
-        switch(Type)
+        switch (Type)
         {
             case AB_SPAWN_TYPE_ALLIANCE_ASSAULT:
             case AB_SPAWN_TYPE_ALLIANCE_CONTROLLED:
@@ -265,31 +263,30 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPoints[Id]->PushToWorld(m_mapMgr);
     }
 
-    if(gi_aura == nullptr)
+    if (gi_aura == nullptr)
     {
         // remove it if it exists
-        if(m_controlPointAuras[Id] != nullptr && m_controlPointAuras[Id]->IsInWorld())
+        if (m_controlPointAuras[Id] != nullptr && m_controlPointAuras[Id]->IsInWorld())
             m_controlPointAuras[Id]->RemoveFromWorld(false);
 
         return;
     }
 
-    if(m_controlPointAuras[Id] == nullptr)
+    if (m_controlPointAuras[Id] == nullptr)
     {
         m_controlPointAuras[Id] = SpawnGameObject(gi_aura->entry, m_mapMgr->GetMapId(), ControlPointCoordinates[Id][0], ControlPointCoordinates[Id][1],
-                                  ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
+            ControlPointCoordinates[Id][2], ControlPointCoordinates[Id][3], 0, 35, 1.0f);
 
         m_controlPointAuras[Id]->SetParentRotation(2, ControlPointRotations[Id][0]);
         m_controlPointAuras[Id]->SetParentRotation(3, ControlPointRotations[Id][1]);
-        m_controlPointAuras[Id]->SetState(GAMEOBJECT_STATE_CLOSED);
+        m_controlPointAuras[Id]->SetState(GO_STATE_CLOSED);
         m_controlPointAuras[Id]->SetType(GAMEOBJECT_TYPE_TRAP);
         m_controlPointAuras[Id]->SetAnimProgress(100);
-        m_controlPointAuras[Id]->bannerauraslot = static_cast<uint8>(Id);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }
     else
     {
-        if(m_controlPointAuras[Id]->IsInWorld())
+        if (m_controlPointAuras[Id]->IsInWorld())
             m_controlPointAuras[Id]->RemoveFromWorld(false);
 
         // re-spawn the aura
@@ -316,11 +313,11 @@ void ArathiBasin::OnCreate()
     m_gates.push_back(gate);
 
     // spawn (default) control points
-    SpawnControlPoint(AB_CONTROL_POINT_STABLE,        AB_SPAWN_TYPE_NEUTRAL);
-    SpawnControlPoint(AB_CONTROL_POINT_BLACKSMITH,    AB_SPAWN_TYPE_NEUTRAL);
-    SpawnControlPoint(AB_CONTROL_POINT_LUMBERMILL,    AB_SPAWN_TYPE_NEUTRAL);
-    SpawnControlPoint(AB_CONTROL_POINT_MINE,        AB_SPAWN_TYPE_NEUTRAL);
-    SpawnControlPoint(AB_CONTROL_POINT_FARM,        AB_SPAWN_TYPE_NEUTRAL);
+    SpawnControlPoint(AB_CONTROL_POINT_STABLE, AB_SPAWN_TYPE_NEUTRAL);
+    SpawnControlPoint(AB_CONTROL_POINT_BLACKSMITH, AB_SPAWN_TYPE_NEUTRAL);
+    SpawnControlPoint(AB_CONTROL_POINT_LUMBERMILL, AB_SPAWN_TYPE_NEUTRAL);
+    SpawnControlPoint(AB_CONTROL_POINT_MINE, AB_SPAWN_TYPE_NEUTRAL);
+    SpawnControlPoint(AB_CONTROL_POINT_FARM, AB_SPAWN_TYPE_NEUTRAL);
 
     // spawn buffs
     SpawnBuff(AB_BUFF_STABLES);
@@ -334,27 +331,26 @@ void ArathiBasin::OnCreate()
     AddSpiritGuide(SpawnSpiritGuide(NoBaseGYLocations[1][0], NoBaseGYLocations[1][1], NoBaseGYLocations[1][2], 0.0f, 1));
 
     // Let's set this from the config
-    SetWorldState( WORLDSTATE_AB_MAX_SCORE, RESOURCES_WINVAL );
+    SetWorldState(WORLDSTATE_AB_MAX_SCORE, RESOURCES_WINVAL);
 }
 
 void ArathiBasin::OnStart()
 {
-    for(uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
-        for(std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
 
     // open gates
-    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
-        (*itr)->SetFlags(64);
-        (*itr)->SetState(GAMEOBJECT_STATE_OPEN);
+        (*itr)->SetFlags(GO_FLAG_TRIGGERED);
+        (*itr)->SetState(GO_STATE_OPEN);
     }
 
-    /* correct? - burlex */
     PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
 
     m_started = true;
@@ -362,9 +358,7 @@ void ArathiBasin::OnStart()
 
 ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
-    int i;
-
-    for(i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         m_players[i].clear();
         m_pendPlayers[i].clear();
@@ -373,7 +367,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
     m_pvpData.clear();
     m_resurrectMap.clear();
 
-    for(i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         m_buffs[i] = nullptr;
         m_controlPointAuras[i] = nullptr;
@@ -384,7 +378,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
         m_basesLastOwnedBy[i] = -1;
     }
 
-    for(i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         m_resources[i] = 0;
         m_capturedBases[i] = 0;
@@ -395,7 +389,7 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
 
     m_lgroup = lgroup;
 
-    for(i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         DefFlag[i][0] = false;
         DefFlag[i][1] = true;
@@ -407,45 +401,45 @@ ArathiBasin::ArathiBasin(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBat
 ArathiBasin::~ArathiBasin()
 {
     // gates are always spawned, so mapmgr will clean them up
-    for(uint32 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
         // buffs may not be spawned, so delete them if they're not
-        if(m_buffs[i] != nullptr)
+        if (m_buffs[i] != nullptr)
         {
-            if(!m_buffs[i]->IsInWorld())
+            if (!m_buffs[i]->IsInWorld())
                 delete m_buffs[i];
         }
 
-        if(m_controlPoints[i] != nullptr)
+        if (m_controlPoints[i] != nullptr)
         {
-            if(!m_controlPoints[i]->IsInWorld())
+            if (!m_controlPoints[i]->IsInWorld())
             {
                 delete m_controlPoints[i];
                 m_controlPoints[i] = nullptr;
             }
         }
 
-        if(m_controlPointAuras[i] != nullptr)
+        if (m_controlPointAuras[i] != nullptr)
         {
-            if(!m_controlPointAuras[i]->IsInWorld())
+            if (!m_controlPointAuras[i]->IsInWorld())
             {
                 delete m_controlPointAuras[i];
                 m_controlPointAuras[i] = nullptr;
             }
         }
 
-        if(m_spiritGuides[i])
+        if (m_spiritGuides[i])
         {
-            if(!m_spiritGuides[i]->IsInWorld())
+            if (!m_spiritGuides[i]->IsInWorld())
                 delete m_spiritGuides[i];
         }
     }
 
-    for(std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
-        if((*itr) != nullptr)
+        if ((*itr) != nullptr)
         {
-            if(!(*itr)->IsInWorld())
+            if (!(*itr)->IsInWorld())
                 delete(*itr);
         }
     }
@@ -473,25 +467,25 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     uint32 current_resources = m_resources[Team];
     uint32 current_bases = m_capturedBases[Team];
 
-    if(current_bases > 5)
+    if (current_bases > 5)
         current_bases = 5;
 
     // figure out how much resources we have to add to that team based on the number of captured bases.
     current_resources += (PointBonusPerUpdate[current_bases]);
 
     // did it change?
-    if(current_resources == m_resources[Team])
+    if (current_resources == m_resources[Team])
         return;
 
     // check for overflow
-    if(current_resources > RESOURCES_WINVAL)
+    if (current_resources > RESOURCES_WINVAL)
         current_resources = RESOURCES_WINVAL;
 
     m_resources[Team] = current_resources;
-    if((current_resources - m_lastRepGainResources[Team]) >= resourcesToGainBR)
+    if ((current_resources - m_lastRepGainResources[Team]) >= resourcesToGainBR)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        for(std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+        for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             uint32 fact = (*itr)->IsTeamHorde() ? 510 : 509; //The Defilers : The League of Arathor
             (*itr)->ModStanding(fact, 10);
@@ -499,11 +493,11 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
         m_lastRepGainResources[Team] += resourcesToGainBR;
     }
 
-    if((current_resources - m_lastHonorGainResources[Team]) >= resourcesToGainBH)
+    if ((current_resources - m_lastHonorGainResources[Team]) >= resourcesToGainBH)
     {
         uint32 honorToAdd = m_honorPerKill;
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        for(std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+        for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
@@ -516,7 +510,7 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     // update the world states
     SetWorldState(resource_fields[Team], current_resources);
 
-    if(current_resources >= RESOURCES_WARNING_THRESHOLD && !m_nearingVictory[Team])
+    if (current_resources >= RESOURCES_WARNING_THRESHOLD && !m_nearingVictory[Team])
     {
         m_nearingVictory[Team] = true;
         SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, static_cast<uint64>(0), "The %s has gathered %u resources and is nearing victory!", Team ? "Horde" : "Alliance", current_resources);
@@ -525,7 +519,7 @@ void ArathiBasin::EventUpdateResources(uint32 Team)
     }
 
     // check for winning condition
-    if(current_resources == RESOURCES_WINVAL)
+    if (current_resources == RESOURCES_WINVAL)
     {
         sEventMgr.RemoveEvents(this);
         sEventMgr.AddEvent(static_cast<CBattleground*>(this), &CBattleground::Close, EVENT_BATTLEGROUND_CLOSE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -560,7 +554,7 @@ void ArathiBasin::HookOnHK(Player* plr)
 
 void ArathiBasin::OnAddPlayer(Player* plr)
 {
-    if(!m_started && plr->IsInWorld())
+    if (!m_started && plr->IsInWorld())
     {
         plr->CastSpell(plr, BG_PREPARATION, true);
         plr->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED] = 0;
@@ -586,7 +580,7 @@ void ArathiBasin::HookFlagStand(Player* plr, GameObject* obj)
 
 LocationVector ArathiBasin::GetStartingCoords(uint32 Team)
 {
-    if(Team)
+    if (Team)
         return LocationVector(684.75629f, 681.945007f, -12.915456f, 0.881211f);
     else
         return LocationVector(1314.932495f, 1311.246948f, -9.00952f, 3.802896f);
@@ -595,7 +589,7 @@ LocationVector ArathiBasin::GetStartingCoords(uint32 Team)
 void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
 {
     int32 buffslot = -1;
-    switch(trigger)
+    switch (trigger)
     {
         case 3866:            // stables
             buffslot = AB_BUFF_STABLES;
@@ -634,12 +628,12 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
         case 4020:            // Trollbane Hall
         case 4021:            // Defiler's Den
             return;
-    default:
+        default:
             sLog.Error("ArathiBasin", "Encountered unhandled areatrigger id %u", trigger);
             return;
     }
 
-    if(plr->IsDead())        // don't apply to dead players... :P
+    if (plr->IsDead())        // don't apply to dead players... :P
         return;
 
     if (buffslot >= 0 && buffslot <= 4)
@@ -647,7 +641,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
         if (m_buffs[buffslot] && m_buffs[buffslot]->IsInWorld())
         {
             // apply the spell
-            auto spellid = m_buffs[buffslot]->GetInfo()->parameter_3;
+            auto spellid = m_buffs[buffslot]->GetInfo()->raw.parameter_3;
             m_buffs[buffslot]->RemoveFromWorld(false);
 
             // respawn it in buffrespawntime
@@ -667,21 +661,21 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
 
 bool ArathiBasin::HookHandleRepop(Player* plr)
 {
-    /* our uber leet ab graveyard handler */
+    // our uber leet ab graveyard handler
     LocationVector dest(NoBaseGYLocations[plr->m_bgTeam][0], NoBaseGYLocations[plr->m_bgTeam][1], NoBaseGYLocations[plr->m_bgTeam][2], 0.0f);
     float current_distance = 999999.0f;
     float dist;
 
-    for(uint32 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
+    for (uint8 i = 0; i < AB_NUM_CONTROL_POINTS; ++i)
     {
-        if(m_basesOwnedBy[2] == static_cast<int32>(plr->m_bgTeam))
+        if (m_basesOwnedBy[2] == static_cast<int32>(plr->m_bgTeam))
         {
             dest.ChangeCoords(GraveyardLocations[2][0], GraveyardLocations[2][1], GraveyardLocations[2][2]);
         }
-        else if(m_basesOwnedBy[i] == static_cast<int32>(plr->m_bgTeam))
+        else if (m_basesOwnedBy[i] == static_cast<int32>(plr->m_bgTeam))
         {
             dist = plr->GetPositionV()->Distance2DSq(GraveyardLocations[i][0], GraveyardLocations[i][1]);
-            if(dist < current_distance)
+            if (dist < current_distance)
             {
                 current_distance = dist;
                 dest.ChangeCoords(GraveyardLocations[i][0], GraveyardLocations[i][1], GraveyardLocations[i][2]);
@@ -696,7 +690,7 @@ bool ArathiBasin::HookHandleRepop(Player* plr)
 
 void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
 {
-    if(m_basesOwnedBy[Id] != -1)
+    if (m_basesOwnedBy[Id] != -1)
     {
         // there is a very slim chance of this happening, 2 teams events could clash..
         // just in case...
@@ -704,7 +698,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     }
 
     // anti cheat, not really necessary because this is a server method but anyway
-    if(m_basesAssaultedBy[Id] != static_cast<int32>(Team))
+    if (m_basesAssaultedBy[Id] != static_cast<int32>(Team))
         return;
 
     m_basesOwnedBy[Id] = Team;
@@ -712,7 +706,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     m_basesLastOwnedBy[Id] = -1;
 
     // remove the other spirit guide (if it exists) // burlex: shouldn't' happen
-    if(m_spiritGuides[Id] != nullptr)
+    if (m_spiritGuides[Id] != nullptr)
     {
         RemoveSpiritGuide(m_spiritGuides[Id]);
         m_spiritGuides[Id]->Despawn(0, 0);
@@ -732,24 +726,24 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     m_capturedBases[Team]++;
     SetWorldState(Team ? WORLDSTATE_AB_HORDE_CAPTUREBASE : WORLDSTATE_AB_ALLIANCE_CAPTUREBASE, m_capturedBases[Team]);
 
-    if(m_capturedBases[Team] >= 4)
+    if (m_capturedBases[Team] >= 4)
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-        for(std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+        for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
         {
-            if(Team)
+            if (Team)
             {
-                if(m_capturedBases[Team] >= 4 && (*itr)->GetQuestLogForEntry(8121))
+                if (m_capturedBases[Team] >= 4 && (*itr)->GetQuestLogForEntry(8121))
                     (*itr)->GetQuestLogForEntry(8121)->SendQuestComplete();
-                if(m_capturedBases[Team] == 5 && (*itr)->GetQuestLogForEntry(8122))
+                if (m_capturedBases[Team] == 5 && (*itr)->GetQuestLogForEntry(8122))
                     (*itr)->GetQuestLogForEntry(8122)->SendQuestComplete();
             }
             else
             {
-                if(m_capturedBases[Team] >= 4 && (*itr)->GetQuestLogForEntry(8114))
+                if (m_capturedBases[Team] >= 4 && (*itr)->GetQuestLogForEntry(8114))
                     (*itr)->GetQuestLogForEntry(8114)->SendQuestComplete();
-                if(m_capturedBases[Team] == 5 && (*itr)->GetQuestLogForEntry(8115))
+                if (m_capturedBases[Team] == 5 && (*itr)->GetQuestLogForEntry(8115))
                     (*itr)->GetQuestLogForEntry(8115)->SendQuestComplete();
             }
         }
@@ -763,11 +757,11 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
     SetWorldState(OwnedFields[Id][Team], 1);
 
     // resource update event. :)
-    if(m_capturedBases[Team] == 1)
+    if (m_capturedBases[Team] == 1)
     {
         // first
         sEventMgr.AddEvent(this, &ArathiBasin::EventUpdateResources, static_cast<uint32>(Team), EVENT_AB_RESOURCES_UPDATE_TEAM_0 + Team, ResourceUpdateIntervals[1], 0,
-                           EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
     {
@@ -779,7 +773,7 @@ void ArathiBasin::CaptureControlPoint(uint32 Id, uint32 Team)
 void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
 {
 #ifdef ANTI_CHEAT
-    if(!m_started)
+    if (!m_started)
     {
         Anticheat_Log->writefromsession(pPlayer->GetSession(), "%s tried to assault control point in arathi basin before battleground (ID %u) started.", pPlayer->GetName(), this->m_id);
         SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, pPlayer->GetGUID(), "%s will be removed from the game for cheating.", pPlayer->GetName());
@@ -796,13 +790,13 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
 
     pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_ASSAULTED]++;
 
-    if(m_basesOwnedBy[Id] == -1 && m_basesAssaultedBy[Id] == -1)
+    if (m_basesOwnedBy[Id] == -1 && m_basesAssaultedBy[Id] == -1)
     {
         // omgwtfbbq our flag is a virgin?
         SetWorldState(NeutralFields[Id], 0);
     }
 
-    if(m_basesOwnedBy[Id] != -1)
+    if (m_basesOwnedBy[Id] != -1)
     {
         Owner = m_basesOwnedBy[Id];
 
@@ -811,15 +805,15 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
         m_basesLastOwnedBy[Id] = Owner;
 
         // this control point just got taken over by someone! oh noes!
-        if(m_spiritGuides[Id] != nullptr)
+        if (m_spiritGuides[Id] != nullptr)
         {
             std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.find(m_spiritGuides[Id]);
-            if(itr != m_resurrectMap.end())
+            if (itr != m_resurrectMap.end())
             {
-                for(std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
+                for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                 {
                     Player* r_plr = m_mapMgr->GetPlayer(*it2);
-                    if(r_plr != nullptr && r_plr->IsDead())
+                    if (r_plr != nullptr && r_plr->IsDead())
                         HookHandleRepop(r_plr);
                 }
             }
@@ -836,14 +830,14 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
         SetWorldState(OwnedFields[Id][Owner], 0);
 
         // modify the resource update time period
-        if(m_capturedBases[Owner] == 0)
+        if (m_capturedBases[Owner] == 0)
             this->event_RemoveEvents(EVENT_AB_RESOURCES_UPDATE_TEAM_0 + Owner);
         else
             this->event_ModifyTime(EVENT_AB_RESOURCES_UPDATE_TEAM_0 + Owner, ResourceUpdateIntervals[m_capturedBases[Owner]]);
     }
 
     // nigga stole my flag!
-    if(m_basesAssaultedBy[Id] != -1)
+    if (m_basesAssaultedBy[Id] != -1)
     {
         Owner = m_basesAssaultedBy[Id];
 
@@ -853,7 +847,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
 
         // make sure the event does not trigger
         sEventMgr.RemoveEvents(this, EVENT_AB_CAPTURE_CP_1 + Id);
-        if(m_basesLastOwnedBy[Id] == static_cast<int32>(Team))
+        if (m_basesLastOwnedBy[Id] == static_cast<int32>(Team))
         {
             m_basesAssaultedBy[Id] = static_cast<int32>(Team);
             CaptureControlPoint(Id, Team);
@@ -872,7 +866,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     SetWorldState(AssaultFields[Id][Team], 1);
 
     // Check Assault/Defense, the time of capture is not the same.
-    if(DefFlag[Id][0] && !DefFlag[Id][1])
+    if (DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = false;
         SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->GetGUID(), "$N defend %s", ControlPointNames[Id]);
@@ -880,103 +874,103 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
         pPlayer->m_bgScore.MiscData[BG_SCORE_AB_BASES_CAPTURED]++;
         UpdatePvPData();
     }
-    else if(!DefFlag[Id][0] && !DefFlag[Id][1])
+    else if (!DefFlag[Id][0] && !DefFlag[Id][1])
     {
         DefFlag[Id][0] = true;
         SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->GetGUID(), "$N assault %s !", ControlPointNames[Id]);
         PlaySoundToAll(Team ? 8212 : 8174);
-        if(Team)
+        if (Team)
         {
             QuestLogEntry* en = pPlayer->GetQuestLogForEntry(8120);
-            switch(Id)
+            switch (Id)
             {
                 case AB_CONTROL_POINT_MINE:
+                {
+                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
                     {
-                        if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
-                        {
-                            en->SetMobCount(0, en->GetMobCount(0) + 1);
-                            en->SendUpdateAddKill(0);
-                            en->UpdatePlayerFields();
-                        }
+                        en->SetMobCount(0, en->GetMobCount(0) + 1);
+                        en->SendUpdateAddKill(0);
+                        en->UpdatePlayerFields();
                     }
-                    break;
+                }
+                break;
                 case AB_CONTROL_POINT_LUMBERMILL:
+                {
+                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
                     {
-                        if(en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
-                        {
-                            en->SetMobCount(1, en->GetMobCount(1) + 1);
-                            en->SendUpdateAddKill(1);
-                            en->UpdatePlayerFields();
-                        }
+                        en->SetMobCount(1, en->GetMobCount(1) + 1);
+                        en->SendUpdateAddKill(1);
+                        en->UpdatePlayerFields();
                     }
-                    break;
+                }
+                break;
                 case AB_CONTROL_POINT_BLACKSMITH:
+                {
+                    if (en && en->GetMobCount(2) < en->GetQuest()->required_mobcount[2])
                     {
-                        if(en && en->GetMobCount(2) < en->GetQuest()->required_mobcount[2])
-                        {
-                            en->SetMobCount(2, en->GetMobCount(2) + 1);
-                            en->SendUpdateAddKill(2);
-                            en->UpdatePlayerFields();
-                        }
+                        en->SetMobCount(2, en->GetMobCount(2) + 1);
+                        en->SendUpdateAddKill(2);
+                        en->UpdatePlayerFields();
                     }
-                    break;
+                }
+                break;
                 case AB_CONTROL_POINT_STABLE:
+                {
+                    if (en && en->GetMobCount(3) < en->GetQuest()->required_mobcount[3])
                     {
-                        if(en && en->GetMobCount(3) < en->GetQuest()->required_mobcount[3])
-                        {
-                            en->SetMobCount(3, en->GetMobCount(3) + 1);
-                            en->SendUpdateAddKill(3);
-                            en->UpdatePlayerFields();
-                        }
+                        en->SetMobCount(3, en->GetMobCount(3) + 1);
+                        en->SendUpdateAddKill(3);
+                        en->UpdatePlayerFields();
                     }
-                    break;
+                }
+                break;
             }
         }
         else
         {
             QuestLogEntry* en = pPlayer->GetQuestLogForEntry(8105);
-            switch(Id)
+            switch (Id)
             {
                 case AB_CONTROL_POINT_MINE:
+                {
+                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
                     {
-                        if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
-                        {
-                            en->SetMobCount(0, en->GetMobCount(0) + 1);
-                            en->SendUpdateAddKill(0);
-                            en->UpdatePlayerFields();
-                        }
+                        en->SetMobCount(0, en->GetMobCount(0) + 1);
+                        en->SendUpdateAddKill(0);
+                        en->UpdatePlayerFields();
                     }
-                    break;
+                }
+                break;
                 case AB_CONTROL_POINT_LUMBERMILL:
+                {
+                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
                     {
-                        if(en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
-                        {
-                            en->SetMobCount(1, en->GetMobCount(1) + 1);
-                            en->SendUpdateAddKill(1);
-                            en->UpdatePlayerFields();
-                        }
+                        en->SetMobCount(1, en->GetMobCount(1) + 1);
+                        en->SendUpdateAddKill(1);
+                        en->UpdatePlayerFields();
                     }
-                    break;
+                }
+                break;
                 case AB_CONTROL_POINT_BLACKSMITH:
+                {
+                    if (en && en->GetMobCount(2) < en->GetQuest()->required_mobcount[2])
                     {
-                        if(en && en->GetMobCount(2) < en->GetQuest()->required_mobcount[2])
-                        {
-                            en->SetMobCount(2, en->GetMobCount(2) + 1);
-                            en->SendUpdateAddKill(2);
-                            en->UpdatePlayerFields();
-                        }
+                        en->SetMobCount(2, en->GetMobCount(2) + 1);
+                        en->SendUpdateAddKill(2);
+                        en->UpdatePlayerFields();
                     }
-                    break;
+                }
+                break;
                 case AB_CONTROL_POINT_FARM:
+                {
+                    if (en && en->GetMobCount(3) < en->GetQuest()->required_mobcount[3])
                     {
-                        if(en && en->GetMobCount(3) < en->GetQuest()->required_mobcount[3])
-                        {
-                            en->SetMobCount(3, en->GetMobCount(3) + 1);
-                            en->SendUpdateAddKill(3);
-                            en->UpdatePlayerFields();
-                        }
+                        en->SetMobCount(3, en->GetMobCount(3) + 1);
+                        en->SendUpdateAddKill(3);
+                        en->UpdatePlayerFields();
                     }
-                    break;
+                }
+                break;
             }
         }
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, MSTIME_MINUTE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -987,7 +981,7 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
     {
         DefFlag[Id][0] = true;
         SendChatMessage(Team ? CHAT_MSG_BG_EVENT_HORDE : CHAT_MSG_BG_EVENT_ALLIANCE, pPlayer->GetGUID(), "$N claims the %s! If left unchallenged, the %s will control it in 1 minute!", ControlPointNames[Id],
-                        Team ? "Horde" : "Alliance");
+            Team ? "Horde" : "Alliance");
         PlaySoundToAll(8192);
         sEventMgr.AddEvent(this, &ArathiBasin::CaptureControlPoint, Id, Team, EVENT_AB_CAPTURE_CP_1 + Id, MSTIME_MINUTE, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
@@ -995,39 +989,42 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
 
 bool ArathiBasin::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell)
 {
-    ///\todo  find a cleaner way to do this that doesn't waste memory.
-    if(pGo->bannerslot >= 0 && pGo->bannerslot < AB_NUM_CONTROL_POINTS)
+    uint32 cpid = 0; //control point id, not child porn id!
+    for (cpid = 0; cpid < AB_NUM_CONTROL_POINTS; cpid++)
     {
-        //Stealthed / invisible players can't cap
-        //if(pPlayer->GetStealthLevel() > 0 || pPlayer->HasAurasWithNameHash(SPELL_HASH_PROWL) || pPlayer->HasAurasWithNameHash(SPELL_HASH_SHADOWMELD))
-        if(pPlayer->IsStealth() || pPlayer->m_invisible)
-            return false;
-
-        AssaultControlPoint(pPlayer, pGo->bannerslot);
-        return true;
+        if (m_controlPoints[cpid] == NULL)
+            continue;
+        if (m_controlPoints[cpid]->GetGUID() == pGo->GetGUID())
+            break;
     }
 
-    return false;
+    if (cpid == AB_NUM_CONTROL_POINTS)
+        return false;
+    ///\todo  find a cleaner way to do this that doesn't waste memory.
+        //Stealthed / invisible players can't cap
+        //if(pPlayer->GetStealthLevel() > 0 || pPlayer->HasAurasWithNameHash(SPELL_HASH_PROWL) || pPlayer->HasAurasWithNameHash(SPELL_HASH_SHADOWMELD))
+
+    if (pPlayer->IsStealth() || pPlayer->m_invisible)
+        return false;
+
+    AssaultControlPoint(pPlayer, cpid);
+    return true;
 }
 
 void ArathiBasin::HookOnShadowSight()
-{
-}
+{}
 void ArathiBasin::HookGenerateLoot(Player* plr, Object* pOCorpse)
-{
-}
+{}
 
 void ArathiBasin::HookOnUnitKill(Player* plr, Unit* pVictim)
-{
-}
+{}
 
 void ArathiBasin::HookOnFlagDrop(Player* plr)
-{
-}
+{}
 
 void ArathiBasin::SetIsWeekend(bool isweekend)
 {
-    if(isweekend)
+    if (isweekend)
     {
         resourcesToGainBH = 160;
         resourcesToGainBR = 150;
@@ -1038,4 +1035,3 @@ void ArathiBasin::SetIsWeekend(bool isweekend)
         resourcesToGainBR = 160;
     }
 }
-

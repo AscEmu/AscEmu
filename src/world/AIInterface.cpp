@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -524,9 +524,8 @@ void AIInterface::_UpdateTargets()
     }
 }
 
-///====================================================================
-///  Desc: Updates Combat Status of m_Unit
-///====================================================================
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Updates Combat Status of m_Unit
 void AIInterface::_UpdateCombat(uint32 p_time)
 {
     if (m_AIType != AITYPE_PET && disable_combat)
@@ -578,7 +577,6 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
     if (sWorld.Collision)
     {
-
         if (m_Unit->GetMapMgr() != NULL && getNextTarget() != NULL)
         {
             if (!Flying())
@@ -853,7 +851,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 if (!m_nextSpell || !getNextTarget())
                     return;  // this shouldn't happen
 
-                SpellCastTime* sd = dbcSpellCastTime.LookupEntry(m_nextSpell->spell->CastingTimeIndex);
+                auto spell_cast_time = sSpellCastTimesStore.LookupEntry(m_nextSpell->spell->CastingTimeIndex);
 
                 float distance = m_Unit->CalcDistance(getNextTarget());
                 bool los = true;
@@ -872,7 +870,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
                     /* if in range stop moving so we don't interrupt the spell */
                     //do not stop for instant spells
-                    if (sd && GetCastTime(sd) != 0)
+                    if (spell_cast_time && GetCastTime(spell_cast_time) != 0)
                         StopMovement(0);
 
                     /*                    if (m_nextSpell->procCount)
@@ -952,12 +950,12 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
                 WorldPacket data(SMSG_MESSAGECHAT, 100);
                 std::string msg = "%s attempts to run away in fear!";
-                data << (uint8)CHAT_MSG_CHANNEL;
-                data << (uint32)LANG_UNIVERSAL;
-                data << (uint32)(strlen(static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name) + 1);
+                data << uint8(CHAT_MSG_CHANNEL);
+                data << uint32(LANG_UNIVERSAL);
+                data << uint32(strlen(static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name) + 1);
                 data << static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name;
-                data << (uint64)0;
-                data << (uint32)(msg.size() + 1);
+                data << uint64(0);
+                data << uint32(msg.size() + 1);
                 data << msg;
                 data << uint8(0);
 
@@ -1846,9 +1844,13 @@ void AIInterface::SendMoveToPacket()
         data << splinestart.setoff;
 
         if (m_currentSplineFinalOrientation != 0)
-            data << uint8(4) << m_currentSplineFinalOrientation;
+        {
+            data << uint8(4);
+            data << m_currentSplineFinalOrientation;
+        }
         else
             data << uint8(0);
+
         data << m_splineFlags;
         data << m_currentSplineTotalMoveTime;
 
@@ -4695,4 +4697,200 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
     //complete move
     m_currentMoveSpline.clear();
     m_Unit->SetPosition(x, y, z, o);
+}
+
+void AIInterface::MoveFalling(float x, float y, float z, float o /*= 0*/)
+{
+    m_currentMoveSpline.clear();
+    m_currentMoveSplineIndex = 1;
+    m_currentSplineUpdateCounter = 0;
+    m_currentSplineTotalMoveTime = 0;
+    m_currentSplineFinalOrientation = o;
+
+    AddSplineFlag(SPLINEFLAG_FALLING);
+
+    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+    AddSpline(x, y, z);
+
+    SendMoveToPacket();
+
+    //complete move
+    m_currentMoveSpline.clear();
+    m_Unit->SetPosition(x, y, z, o);
+}
+
+void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
+{
+    if (GetDifficultyType() != 0)
+    {
+        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(entry, GetDifficultyType());
+        Creature* creature = static_cast<Creature*>(m_Unit);
+        if (proto_difficulty != nullptr)
+        {
+            if (!proto_difficulty->isTrainingDummy && !m_Unit->IsVehicle())
+            {
+                m_Unit->GetAIInterface()->SetAllowedToEnterCombat(true);
+            }
+            else
+            {
+                m_Unit->GetAIInterface()->SetAllowedToEnterCombat(false);
+                m_Unit->GetAIInterface()->SetAIType(AITYPE_PASSIVE);
+            }
+
+            if (proto_difficulty->walk_speed != 0)
+                m_walkSpeed = m_Unit->m_base_walkSpeed = proto_difficulty->walk_speed;
+
+            if (proto_difficulty->run_speed != 0)
+                m_runSpeed = m_Unit->m_base_runSpeed = proto_difficulty->run_speed;
+
+            if (proto_difficulty->fly_speed != 0)
+                m_flySpeed = proto_difficulty->fly_speed;
+
+            if (proto_difficulty->Scale != 0)
+                m_Unit->SetScale(proto_difficulty->Scale);
+
+            if (proto_difficulty->MinHealth != 0 && proto_difficulty->MaxHealth != 0)
+            {
+                uint32 health = proto_difficulty->MinHealth + RandomUInt(proto_difficulty->MaxHealth - proto_difficulty->MinHealth);
+
+                m_Unit->SetHealth(health);
+                m_Unit->SetMaxHealth(health);
+                m_Unit->SetBaseHealth(health);
+            }
+
+            if (proto_difficulty->Mana != 0)
+            {
+                m_Unit->SetMaxPower(POWER_TYPE_MANA, proto_difficulty->Mana);
+                m_Unit->SetBaseMana(proto_difficulty->Mana);
+                m_Unit->SetPower(POWER_TYPE_MANA, proto_difficulty->Mana);
+            }
+
+            if (proto_difficulty->MinLevel != 0 && proto_difficulty->MaxLevel != 0)
+            {
+                m_Unit->setLevel(proto_difficulty->MinLevel + (RandomUInt(proto_difficulty->MaxLevel - proto_difficulty->MinLevel)));
+            }
+
+            for (uint8 i = 0; i < 7; ++i)
+                m_Unit->SetResistance(i, proto_difficulty->Resistances[i]);
+
+            if (proto_difficulty->MinDamage != 0 && proto_difficulty->MaxDamage != 0)
+            {
+                m_Unit->SetMinDamage(proto_difficulty->MinDamage);
+                m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
+            }
+
+            if (proto_difficulty->RangedMinDamage != 0 && proto_difficulty->RangedMaxDamage != 0)
+            {
+                m_Unit->SetMinRangedDamage(proto_difficulty->RangedMinDamage);
+                m_Unit->SetMaxRangedDamage(proto_difficulty->RangedMaxDamage);
+            }
+
+            if (proto_difficulty->RangedAttackTime != 0)
+            {
+                m_Unit->SetBaseAttackTime(RANGED, proto_difficulty->RangedAttackTime);
+            }
+
+            if (proto_difficulty->AttackTime != 0)
+            {
+                m_Unit->SetBaseAttackTime(MELEE, proto_difficulty->AttackTime);
+            }
+
+            if (proto_difficulty->Faction != 0)
+            {
+                m_Unit->SetFaction(proto_difficulty->Faction);
+
+                if (!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->HostileMask == 0 && m_Unit->m_faction->FriendlyMask == 0))
+                {
+                    m_Unit->GetAIInterface()->m_canCallForHelp = true;
+                }
+            }
+
+            if (proto_difficulty->CanRanged == 1)
+                m_Unit->GetAIInterface()->m_canRangedAttack = true;
+            else
+                m_Unit->m_aiInterface->m_canRangedAttack = false;
+
+            if (proto_difficulty->BoundingRadius != 0)
+            {
+                m_Unit->SetBoundingRadius(proto_difficulty->BoundingRadius);
+            }
+
+            if (proto_difficulty->CombatReach != 0)
+            {
+                m_Unit->SetCombatReach(proto_difficulty->CombatReach);
+            }
+
+            if (proto_difficulty->MinDamage != 0 && proto_difficulty->MaxDamage != 0)
+            {
+                m_Unit->SetMinDamage(proto_difficulty->MinDamage);
+                m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
+            }
+
+            if (proto_difficulty->NPCFLags != 0)
+            {
+                m_Unit->SetUInt32Value(UNIT_NPC_FLAGS, proto_difficulty->NPCFLags);
+            }
+
+            // resistances
+            for (uint32 j = 0; j < 7; j++)
+                m_Unit->BaseResistance[j] = m_Unit->GetResistance(j);
+            for (uint32 j = 0; j < 5; j++)
+                m_Unit->BaseStats[j] = m_Unit->GetStat(j);
+
+            m_Unit->BaseDamage[0] = m_Unit->GetMinDamage();
+            m_Unit->BaseDamage[1] = m_Unit->GetMaxDamage();
+            m_Unit->BaseOffhandDamage[0] = m_Unit->GetMinOffhandDamage();
+            m_Unit->BaseOffhandDamage[1] = m_Unit->GetMaxOffhandDamage();
+            m_Unit->BaseRangedDamage[0] = m_Unit->GetMinRangedDamage();
+            m_Unit->BaseRangedDamage[1] = m_Unit->GetMaxRangedDamage();
+
+            if (proto_difficulty->AttackType != 0)
+            {
+                creature->BaseAttackType = proto_difficulty->AttackType;
+            }
+
+            //guard
+            if (proto_difficulty->guardtype == GUARDTYPE_CITY)
+                m_Unit->m_aiInterface->m_isGuard = true;
+            else
+                m_Unit->m_aiInterface->m_isGuard = false;
+
+            if (proto_difficulty->guardtype == GUARDTYPE_NEUTRAL)
+                m_Unit->m_aiInterface->m_isNeutralGuard = true;
+            else
+                m_Unit->m_aiInterface->m_isNeutralGuard = false;
+
+            m_Unit->m_aiInterface->UpdateSpeeds(); // use speed from creature_proto_difficulty.
+
+            //invisibility
+            m_Unit->m_invisFlag = static_cast<uint8>(proto_difficulty->invisibility_type);
+            if (m_Unit->m_invisFlag > 0)
+                m_Unit->m_invisible = true;
+            else
+                m_Unit->m_invisible = false;
+
+            if (m_Unit->IsVehicle())
+            {
+                m_Unit->AddVehicleComponent(proto_difficulty->Id, proto_difficulty->vehicleid);
+                m_Unit->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
+                m_Unit->setAItoUse(false);
+            }
+
+            if (proto_difficulty->isRooted)
+                m_Unit->Root();
+        }
+    }
+}
+
+uint8 AIInterface::GetDifficultyType()
+{
+    uint8 difficulty_type;
+
+    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, m_Unit->GetInstanceID());
+    if (instance != nullptr)
+        difficulty_type = instance->m_difficulty;
+    else
+        difficulty_type = 0;    // standard MODE_NORMAL / MODE_NORMAL_10MEN
+
+    return difficulty_type;
 }

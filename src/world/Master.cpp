@@ -16,21 +16,9 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #include "StdAfx.h"
-
-
-#define BANNER "<< AscEmu %s/%s-%s (%s) :: World Server >>"
-
-#ifndef WIN32
-#include <sched.h>
-#endif
-
-#include "git_version.h"
-
-#include <signal.h>
 
 createFileSingleton(Master);
 std::string LogFileName;
@@ -93,8 +81,6 @@ struct Addr
     unsigned long unusedB;
 };
 
-#define DEF_VALUE_NOT_SET 0xDEADBEEF
-
 static const char* default_config_file = CONFDIR "/world.conf";
 static const char* default_optional_config_file = CONFDIR "/optional.conf";
 static const char* default_realm_config_file = CONFDIR "/realms.conf";
@@ -116,7 +102,6 @@ bool Master::Run(int argc, char** argv)
     int do_version = 0;
     int do_cheater_check = 0;
     int do_database_clean = 0;
-    time_t curTime;
 
     struct arcemu_option longopts[] =
     {
@@ -162,10 +147,7 @@ bool Master::Run(int argc, char** argv)
 
     sLog.Init(0, WORLD_LOG);
 
-    sLog.outBasic(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    sLog.outBasic("========================================================");
-    sLog.outErrorSilent(BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-    sLog.outErrorSilent("========================================================"); // Echo off.
+    PrintBanner();
 
     if (do_version)
     {
@@ -201,7 +183,7 @@ bool Master::Run(int argc, char** argv)
 
 #ifndef WIN32
     if (geteuid() == 0 || getegid() == 0)
-        Log.LargeErrorMessage("You are running ArcEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.", NULL);
+        Log.LargeErrorMessage("You are running AscEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.", NULL);
 #endif
 
     InitImplicitTargetFlags();
@@ -211,45 +193,10 @@ bool Master::Run(int argc, char** argv)
     ThreadPool.Startup();
     uint32 LoadingTime = getMSTime();
 
-    Log.Success("Config", "Loading Config Files...");
-    if (Config.MainConfig.SetSource(config_file))
-        Log.Notice("Config", ">> " CONFDIR "/world.conf loaded");
-    else
+    if (!LoadWorldConfiguration(config_file, optional_config_file, realm_config_file))
     {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/world.conf");
-        sLog.Close();
         return false;
     }
-
-    if (Config.OptionalConfig.SetSource(optional_config_file))
-        Log.Notice("Config", ">> " CONFDIR "/optional.conf loaded");
-    else
-    {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/optional.conf");
-        sLog.Close();
-        return false;
-    }
-
-    if (Config.RealmConfig.SetSource(realm_config_file))
-        Log.Notice("Config", ">> " CONFDIR "/realms.conf loaded");
-    else
-    {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/realms.conf");
-        sLog.Close();
-        return false;
-    }
-
-#if !defined(WIN32) && defined(__DEBUG__)
-    if (Config.MainConfig.GetIntDefault("LogLevel", "DisableCrashdumpReport", 0) == 0)
-    {
-        char cmd[1024];
-        char banner[1024];
-        snprintf(banner, 1024, BANNER, BUILD_TAG, BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
-        snprintf(cmd, 1024, "./arcemu-crashreport -r %d -d \'%s\'", BUILD_REVISION, banner);
-        system(cmd);
-    }
-    unlink("worldserver.uptime");
-#endif
 
     if (!_StartDB())
     {
@@ -258,8 +205,7 @@ bool Master::Run(int argc, char** argv)
         return false;
     }
 
-    // Checking the DB version. If it's wrong or can't be validated we exit.
-    if (!CheckDBVersion())
+    if (!_CheckDBVersion())
     {
         sLog.Close();
         return false;
@@ -277,13 +223,7 @@ bool Master::Run(int argc, char** argv)
     new EventMgr;
     new World;
 
-    // optional time stamp in logs
-    bool useTimeStamp = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
-
-    // open cheat log file
-    Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", useTimeStamp).c_str(), false);
-    GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", useTimeStamp).c_str(), false);
-    Player_Log = new SessionLogWriter(FormatOutputString("logs", "players", useTimeStamp).c_str(), false);
+    OpenCheatLogFiles();
 
     /* load the config file */
     sWorld.Rehash(false);
@@ -295,8 +235,8 @@ bool Master::Run(int argc, char** argv)
     // Initialize Opcode Table
     WorldSession::InitPacketHandlerTable();
 
-    std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", DEFAULT_HOST);
-    int wsport = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", DEFAULT_WORLDSERVER_PORT);
+    std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
+    int wsport = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", 8129);
 
     new ScriptMgr;
 
@@ -308,9 +248,6 @@ bool Master::Run(int argc, char** argv)
         return false;
     }
 
-    if (do_cheater_check)
-        sWorld.CleanupCheaters();
-
     sWorld.SetStartTime((uint32)UNIXTIME);
 
     WorldRunnable* wr = new WorldRunnable();
@@ -321,20 +258,8 @@ bool Master::Run(int argc, char** argv)
     ConsoleThread* console = new ConsoleThread();
     ThreadPool.ExecuteTask(console);
 
-    uint32 realCurrTime, realPrevTime;
-    realCurrTime = realPrevTime = getMSTime();
-
-    // Socket loop!
-    uint32 start;
-    uint32 diff;
-    uint32 last_time = now();
-    uint32 etime;
-    uint32 next_printout = getMSTime(), next_send = getMSTime();
-
-    // Start Network Subsystem
-    Log.Success("Network", "Starting subsystem...");
-    new SocketMgr;
-    new SocketGarbageCollector;
+    StartNetworkSubsystem();
+    
     sSocketMgr.SpawnWorkerThreads();
 
     sScriptMgr.LoadScripts();
@@ -347,35 +272,10 @@ bool Master::Run(int argc, char** argv)
 
     ThreadPool.ExecuteTask(new GameEventMgr::GameEventMgrThread());
 
-    Log.Notice("RemoteConsole", "Starting...");
-    if (StartConsoleListener())
-    {
-#ifdef WIN32
-        ThreadPool.ExecuteTask(GetConsoleListener());
-#endif
-        Log.Notice("RemoteConsole", "Now open.");
-    }
-    else
-    {
-        Log.Warning("RemoteConsole", "Not enabled or failed listen.");
-    }
+    StartRemoteConsole();
 
+    WritePidFile();
 
-    /* write pid file */
-    FILE* fPid = fopen("worldserver.pid", "w");
-    if (fPid)
-    {
-        uint32 pid;
-#ifdef WIN32
-        pid = GetCurrentProcessId();
-#else
-        pid = getpid();
-#endif
-        fprintf(fPid, "%u", (unsigned int)pid);
-        fclose(fPid);
-    }
-
-    uint32 loopcounter = 0;
     //ThreadPool.Gobble();
 
     /* Connect to realmlist servers / logon servers */
@@ -390,94 +290,8 @@ bool Master::Run(int argc, char** argv)
         ThreadPool.ExecuteTask(ls);
 #endif
 
-    while (!m_stopEvent && listnersockcreate)
-    {
-        start = now();
-        diff = start - last_time;
-        if (!((++loopcounter) % 10000))        // 5mins
-        {
-            ThreadPool.ShowStats();
-            ThreadPool.IntegrityCheck();
-#if !defined(WIN32) && defined(__DEBUG__)
-            FILE* f = fopen("worldserver.uptime", "w");
-            if (f)
-            {
-                fprintf(f, "%u %u %u %u", sWorld.GetUptime(), sWorld.GetSessionCount(), sWorld.PeakSessionCount, sWorld.mAcceptedConnections);
-                fclose(f);
-            }
-#endif
-        }
+    ShutdownThreadPools(listnersockcreate);
 
-        /* since time() is an expensive system call, we only update it once per server loop */
-        curTime = time(NULL);
-        if (UNIXTIME != curTime)
-        {
-            UNIXTIME = time(NULL);
-            g_localTime = *localtime(&curTime);
-        }
-
-        sSocketGarbageCollector.Update();
-
-        /* UPDATE */
-        last_time = now();
-        etime = last_time - start;
-        if (m_ShutdownEvent)
-        {
-            if (getMSTime() >= next_printout)
-            {
-                if (m_ShutdownTimer > 60000.0f)
-                {
-                    if (!((int)(m_ShutdownTimer) % 60000))
-                        Log.Notice("Server", "Shutdown in %i minutes.", (int)(m_ShutdownTimer / 60000.0f));
-                }
-                else
-                    Log.Notice("Server", "Shutdown in %i seconds.", (int)(m_ShutdownTimer / 1000.0f));
-
-                next_printout = getMSTime() + 500;
-            }
-
-            if (getMSTime() >= next_send)
-            {
-                int time = m_ShutdownTimer / 1000;
-                if ((time % 30 == 0) || time < 10)
-                {
-                    // broadcast packet.
-                    WorldPacket data(20);
-                    data.SetOpcode(SMSG_SERVER_MESSAGE);
-                    if (m_restartEvent)
-                        data << uint32(SERVER_MSG_RESTART_TIME);
-                    else
-                        data << uint32(SERVER_MSG_SHUTDOWN_TIME);
-
-                    if (time > 0)
-                    {
-                        int mins = 0, secs = 0;
-                        if (time > 60)
-                            mins = time / 60;
-                        if (mins)
-                            time -= (mins * 60);
-                        secs = time;
-                        char str[20];
-                        snprintf(str, 20, "%02u:%02u", mins, secs);
-                        data << str;
-                        sWorld.SendGlobalMessage(&data, NULL);
-                    }
-                }
-                next_send = getMSTime() + 1000;
-            }
-            if (diff >= m_ShutdownTimer)
-                break;
-            else
-                m_ShutdownTimer -= diff;
-        }
-
-        if (50 > etime)
-        {
-
-            Arcemu::Sleep(50 - etime);
-
-        }
-    }
     _UnhookSignals();
 
     wr->SetThreadState(THREADSTATE_TERMINATE);
@@ -487,15 +301,9 @@ bool Master::Run(int argc, char** argv)
     delete console;
 
     // begin server shutdown
-    Log.Success("Shutdown", "Initiated at %s", ConvertTimeStampToDataTime((uint32)UNIXTIME).c_str());
 
-    if (lootmgr.is_loading)
-    {
-        Log.Notice("Shutdown", "Waiting for loot to finish loading...");
-        while (lootmgr.is_loading)
-            Arcemu::Sleep(100);
-    }
-
+    ShutdownLootSystem();
+    
     // send a query to wake it up if its inactive
     Log.Notice("Database", "Clearing all pending queries...");
 
@@ -574,10 +382,7 @@ bool Master::Run(int argc, char** argv)
     return true;
 }
 
-static const char *REQUIRED_CHAR_DB_VERSION = "2015-09-17_01_characters";
-static const char *REQUIRED_WORLD_DB_VERSION = "2015-10-15_02_transport_creature";
-
-bool Master::CheckDBVersion()
+bool Master::_CheckDBVersion()
 {
     QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version;");
     if (wqr == NULL)
@@ -778,3 +583,222 @@ void OnCrash(bool Terminate)
 }
 
 #endif
+
+void Master::PrintBanner()
+{
+    sLog.outBasic(WORLD_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic("========================================================");
+    sLog.outErrorSilent(WORLD_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent("========================================================"); // Echo off.
+}
+
+bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file)
+{
+    Log.Success("Config", "Loading Config Files...");
+    if (Config.MainConfig.SetSource(config_file))
+    {
+        Log.Notice("Config", ">> " CONFDIR "/world.conf loaded");
+    }
+    else
+    {
+        sLog.Error("Config", ">> error occurred loading " CONFDIR "/world.conf");
+        sLog.Close();
+        return false;
+    }
+
+    if (Config.OptionalConfig.SetSource(optional_config_file))
+    {
+        Log.Notice("Config", ">> " CONFDIR "/optional.conf loaded");
+    }
+    else
+    {
+        sLog.Error("Config", ">> error occurred loading " CONFDIR "/optional.conf");
+        sLog.Close();
+        return false;
+    }
+
+    if (Config.RealmConfig.SetSource(realm_config_file))
+    {
+        Log.Notice("Config", ">> " CONFDIR "/realms.conf loaded");
+    }
+    else
+    {
+        sLog.Error("Config", ">> error occurred loading " CONFDIR "/realms.conf");
+        sLog.Close();
+        return false;
+    }
+
+#if !defined(WIN32) && defined(__DEBUG__)
+    if (Config.MainConfig.GetIntDefault("LogLevel", "DisableCrashdumpReport", 0) == 0)
+    {
+        char cmd[1024];
+        char banner[1024];
+        snprintf(banner, 1024, BANNER, BUILD_TAG, BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
+        snprintf(cmd, 1024, "./arcemu-crashreport -r %d -d \'%s\'", BUILD_REVISION, banner);
+        system(cmd);
+    }
+    unlink("worldserver.uptime");
+#endif
+    return true;
+}
+
+void Master::OpenCheatLogFiles()
+{
+    bool useTimeStamp = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
+
+    Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", useTimeStamp).c_str(), false);
+    GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", useTimeStamp).c_str(), false);
+    Player_Log = new SessionLogWriter(FormatOutputString("logs", "players", useTimeStamp).c_str(), false);
+}
+
+void Master::StartRemoteConsole()
+{
+    Log.Notice("RemoteConsole", "Starting...");
+    if (StartConsoleListener())
+    {
+#ifdef WIN32
+        ThreadPool.ExecuteTask(GetConsoleListener());
+#endif
+        Log.Notice("RemoteConsole", "Now open.");
+    }
+    else
+    {
+        Log.Warning("RemoteConsole", "Not enabled or failed listen.");
+    }
+}
+
+void Master::WritePidFile()
+{
+    FILE* fPid = fopen("worldserver.pid", "w");
+    if (fPid)
+    {
+        uint32 pid;
+#ifdef WIN32
+        pid = GetCurrentProcessId();
+#else
+        pid = getpid();
+#endif
+        fprintf(fPid, "%u", (unsigned int)pid);
+        fclose(fPid);
+    }
+}
+
+void Master::ShutdownThreadPools(bool listnersockcreate)
+{
+    // Socket loop!
+    time_t curTime;
+    uint32 loopcounter = 0;
+    uint32 start;
+    uint32 diff;
+    uint32 last_time = now();
+    uint32 etime;
+    uint32 next_printout = getMSTime(), next_send = getMSTime();
+
+    while (!m_stopEvent && listnersockcreate)
+    {
+        start = now();
+        diff = start - last_time;
+        if (!((++loopcounter) % 10000))        // 5mins
+        {
+            ThreadPool.ShowStats();
+            ThreadPool.IntegrityCheck();
+#if !defined(WIN32) && defined(__DEBUG__)
+            FILE* f = fopen("worldserver.uptime", "w");
+            if (f)
+            {
+                fprintf(f, "%u %u %u %u", sWorld.GetUptime(), sWorld.GetSessionCount(), sWorld.PeakSessionCount, sWorld.mAcceptedConnections);
+                fclose(f);
+            }
+#endif
+        }
+
+        /* since time() is an expensive system call, we only update it once per server loop */
+        curTime = time(NULL);
+        if (UNIXTIME != curTime)
+        {
+            UNIXTIME = time(NULL);
+            g_localTime = *localtime(&curTime);
+        }
+
+        sSocketGarbageCollector.Update();
+
+        /* UPDATE */
+        last_time = now();
+        etime = last_time - start;
+        if (m_ShutdownEvent)
+        {
+            if (getMSTime() >= next_printout)
+            {
+                if (m_ShutdownTimer > 60000.0f)
+                {
+                    if (!((int)(m_ShutdownTimer) % 60000))
+                        Log.Notice("Server", "Shutdown in %i minutes.", (int)(m_ShutdownTimer / 60000.0f));
+                }
+                else
+                    Log.Notice("Server", "Shutdown in %i seconds.", (int)(m_ShutdownTimer / 1000.0f));
+
+                next_printout = getMSTime() + 500;
+            }
+
+            if (getMSTime() >= next_send)
+            {
+                int time = m_ShutdownTimer / 1000;
+                if ((time % 30 == 0) || time < 10)
+                {
+                    // broadcast packet.
+                    WorldPacket data(20);
+                    data.SetOpcode(SMSG_SERVER_MESSAGE);
+                    if (m_restartEvent)
+                        data << uint32(SERVER_MSG_RESTART_TIME);
+                    else
+                        data << uint32(SERVER_MSG_SHUTDOWN_TIME);
+
+                    if (time > 0)
+                    {
+                        int mins = 0, secs = 0;
+                        if (time > 60)
+                            mins = time / 60;
+                        if (mins)
+                            time -= (mins * 60);
+                        secs = time;
+                        char str[20];
+                        snprintf(str, 20, "%02u:%02u", mins, secs);
+                        data << str;
+                        sWorld.SendGlobalMessage(&data, NULL);
+                    }
+                }
+                next_send = getMSTime() + 1000;
+            }
+            if (diff >= m_ShutdownTimer)
+                break;
+            else
+                m_ShutdownTimer -= diff;
+        }
+
+        if (50 > etime)
+        {
+
+            Arcemu::Sleep(50 - etime);
+
+        }
+    }
+}
+
+void Master::StartNetworkSubsystem()
+{
+    Log.Success("Network", "Starting subsystem...");
+    new SocketMgr;
+    new SocketGarbageCollector;
+}
+
+void Master::ShutdownLootSystem()
+{
+    Log.Success("Shutdown", "Initiated at %s", ConvertTimeStampToDataTime((uint32)UNIXTIME).c_str());
+
+    if (lootmgr.is_loading)
+    {
+        Log.Notice("Shutdown", "Waiting for loot to finish loading...");
+        while (lootmgr.is_loading)
+            Arcemu::Sleep(100);
+    }
+}

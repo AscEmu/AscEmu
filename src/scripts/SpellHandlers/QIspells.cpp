@@ -864,7 +864,7 @@ bool RodofPurification(uint32 i, Spell* pSpell)
     if (qle == NULL)
         return true;
 
-    GameObject*   Darkstone = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-2512, 5418, 0, 185191);
+    GameObject* Darkstone = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-2512, 5418, 0, 185191);
     if (Darkstone != NULL)
     {
         if (pPlayer->CalcDistance(pPlayer, Darkstone) < 15)
@@ -2098,7 +2098,7 @@ bool ZethGorMustBurnHorde(uint32 i, Spell* pSpell)
                 pQuest->SendUpdateAddKill(2);
                 pQuest->UpdatePlayerFields();
 
-                GameObject*  pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1152.10f, 2066.20f, 72.959f, 0, 4, 0, 0, 0, 0);
+                GameObject* pGameobject = sEAS.SpawnGameobject(pPlayer, 183816, -1152.10f, 2066.20f, 72.959f, 0, 4, 0, 0, 0, 0);
                 if (pGameobject != NULL)
                 {
                     sEAS.GameobjectDelete(pGameobject, 1 * 60 * 1000);
@@ -2311,7 +2311,7 @@ bool TheSeersRelic(uint32 i, Spell* pSpell)
     if (qle == NULL || qle->GetMobCount(0) >= qle->GetQuest()->required_mobcount[0])
         return true;
 
-    Creature*  pTarget = pPlayer->GetMapMgr()->GetCreature(GET_LOWGUID_PART(pPlayer->GetSelection()));
+    Creature* pTarget = pPlayer->GetMapMgr()->GetCreature(GET_LOWGUID_PART(pPlayer->GetSelection()));
     if (pTarget == NULL)
         return true;
 
@@ -2720,7 +2720,7 @@ bool LeyLine(uint32 i, Spell* pSpell)
     uint32 portals[] = { 25156, 25154, 25157 };
     Object* portal = NULL;
 
-    for (uint32 i = 0; i < sizeof(portals) / sizeof(uint32); i++)
+    for (uint8 i = 0; i < 3; i++)
     {
         portal = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), portals[i]);
         if (portal != NULL && qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
@@ -2749,7 +2749,7 @@ bool ManaRemnants(uint32 i, Spell* pSpell)
     QuestLogEntry* qle;
 
     uint32 quests[] = { 11496, 11523 };
-    for (uint32 i = 0; i < 2; i++)
+    for (uint8 i = 0; i < 2; i++)
     {
         qle = pPlayer->GetQuestLogForEntry(quests[i]);
         if (qle != NULL && qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[0])

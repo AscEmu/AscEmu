@@ -581,10 +581,9 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         return;
 
     uint64 guid;
-    uint32
-        text_emote,
-        unk,
-        namelen = 1;
+    uint32 text_emote;
+    uint32 unk;
+    uint32 namelen = 1;
     const char* name = " ";
 
     recv_data >> text_emote;
@@ -631,38 +630,40 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         }
     }
 
-    emoteentry* em = dbcEmoteEntry.LookupEntryForced(text_emote);
-    if (em)
+    auto emote_text_entry = sEmotesTextStore.LookupEntry(text_emote);
+    if (emote_text_entry)
     {
         WorldPacket data(SMSG_EMOTE, 28 + namelen);
 
-        sHookInterface.OnEmote(_player, (EmoteType)em->textid, pUnit);
+        sHookInterface.OnEmote(_player, (EmoteType)emote_text_entry->textid, pUnit);
         if (pUnit)
-            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)em->textid);
+            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)emote_text_entry->textid);
 
-        switch (em->textid)
+        switch (emote_text_entry->textid)
         {
             case EMOTE_STATE_SLEEP:
             case EMOTE_STATE_SIT:
             case EMOTE_STATE_KNEEL:
             case EMOTE_STATE_DANCE:
             {
-                _player->SetEmoteState(em->textid);
+                _player->SetEmoteState(emote_text_entry->textid);
             }
             break;
         }
 
-        data << (uint32)em->textid;
-        data << (uint64)GetPlayer()->GetGUID();
+        data << uint32(emote_text_entry->textid);
+        data << uint64(GetPlayer()->GetGUID());
         GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
 
         data.Initialize(SMSG_TEXT_EMOTE);
-        data << (uint64)GetPlayer()->GetGUID();
-        data << (uint32)text_emote;
+        data << uint64(GetPlayer()->GetGUID());
+        data << uint32(text_emote);
         data << unk;
-        data << (uint32)namelen;
-        if (namelen > 1)   data.append(name, namelen);
-        else                data << (uint8)0x00;
+        data << uint32(namelen);
+        if (namelen > 1)
+            data.append(name, namelen);
+        else
+            data << uint8(0x00);
 
         GetPlayer()->SendMessageToSet(&data, true);
 #ifdef ENABLE_ACHIEVEMENTS
@@ -672,6 +673,8 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     }
 }
 
+
+///\todo remove these unk unk unk nighrmare!
 void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -681,7 +684,11 @@ void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)
 
     uint8 spam_type;                                        // 0 - mail, 1 - chat
     uint64 spammer_guid;
-    uint32 unk1 = 0, unk2 = 0, unk3 = 0, unk4 = 0;
+    uint32 unk1 = 0;
+    uint32 unk2 = 0;
+    uint32 unk3 = 0;
+    uint32 unk4 = 0;
+
     std::string description = "";
     recv_data >> spam_type;                                 // unk 0x01 const, may be spam type (mail/chat)
     recv_data >> spammer_guid;                              // player guid

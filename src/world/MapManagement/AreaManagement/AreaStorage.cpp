@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,7 +38,7 @@ namespace MapManagement
         {
             m_storage = dbc_storage;
 
-            /* Preload this stuff to make lookups easier elsewhere in code */
+            // Preload this stuff to make lookups easier elsewhere in code
             for (uint32 i = 0; i < m_storage->GetNumRows(); ++i)
             {
                 if (auto area = m_storage->LookupEntry(i))

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -19,22 +19,23 @@
  *
  */
 
-///\note Cebernic : This thread watching global schedule and execute it.
-
 #ifndef _COMMONSCHEDULETHREAD_H
 #define _COMMONSCHEDULETHREAD_H
 
+
 class CommonScheduleThread : public CThread
 {
-        bool m_running;
-        bool m_busy;
-        std::multimap<uint32, uint32>::iterator itOrderMSGEntry;
+    bool m_running;
+    bool m_busy;
 
-        uint32 BCTimerCount;
+    std::multimap<uint32, uint32>::iterator itOrderMSGEntry;
 
-        Arcemu::Threading::ConditionVariable cond;
+    uint32 BCTimerCount;
+
+    Arcemu::Threading::ConditionVariable cond;
 
     public:
+
         CommonScheduleThread();
         ~CommonScheduleThread();
 

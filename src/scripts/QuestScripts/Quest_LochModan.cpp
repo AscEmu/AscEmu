@@ -67,7 +67,7 @@ class Miran : public MoonScriptCreatureAI
             WPCount = 7;
             WayPoints = WaypointsMiran;
 
-            for (int i = 1; i <= WPCount; ++i)
+            for (uint8 i = 1; i <= WPCount; ++i)
             {
                 AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
             }

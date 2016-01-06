@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,8 @@
 
 #include "CommonTypes.hpp"
 
+#include <ctime>
+
 enum PlayerTeam : int
 {
     TEAM_ALLIANCE = 0,
@@ -29,11 +31,12 @@ enum PlayerTeam : int
 };
 
 
-#define PLAYER_NORMAL_RUN_SPEED 7.0f
-#define PLAYER_NORMAL_SWIM_SPEED 4.722222f
-#define PLAYER_NORMAL_FLIGHT_SPEED 7.0f
+const float playerNormalRunSpeed = 7.0f;
+const float playerNormalSwimSpeed = 4.72222f;
+const float playerNormalFlightSpeed = 7.0f;
+
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
-#define MONSTER_NORMAL_RUN_SPEED 8.0f
+
 /* action button defines */
 #define PLAYER_ACTION_BUTTON_COUNT 136
 #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
@@ -52,44 +55,44 @@ enum PlayerTeam : int
 
 enum Gender
 {
-    GENDER_MALE = 0,
-    GENDER_FEMALE = 1,
-    GENDER_NONE = 2
+    GENDER_MALE     = 0,
+    GENDER_FEMALE   = 1,
+    GENDER_NONE     = 2
 };
 
 enum Classes
 {
-    WARRIOR = 1,
-    PALADIN = 2,
-    HUNTER = 3,
-    ROGUE = 4,
-    PRIEST = 5,
-    DEATHKNIGHT = 6,
-    SHAMAN = 7,
-    MAGE = 8,
-    WARLOCK = 9,
-    DRUID = 11,
+    WARRIOR         = 1,
+    PALADIN         = 2,
+    HUNTER          = 3,
+    ROGUE           = 4,
+    PRIEST          = 5,
+    DEATHKNIGHT     = 6,
+    SHAMAN          = 7,
+    MAGE            = 8,
+    WARLOCK         = 9,
+    DRUID           = 11,
     MAX_PLAYER_CLASSES
 };
 
 enum Races
 {
-    RACE_HUMAN = 1,
-    RACE_ORC = 2,
-    RACE_DWARF = 3,
-    RACE_NIGHTELF = 4,
-    RACE_UNDEAD = 5,
-    RACE_TAUREN = 6,
-    RACE_GNOME = 7,
-    RACE_TROLL = 8,
-    RACE_BLOODELF = 10,
-    RACE_DRAENEI = 11,
+    RACE_HUMAN      = 1,
+    RACE_ORC        = 2,
+    RACE_DWARF      = 3,
+    RACE_NIGHTELF   = 4,
+    RACE_UNDEAD     = 5,
+    RACE_TAUREN     = 6,
+    RACE_GNOME      = 7,
+    RACE_TROLL      = 8,
+    RACE_BLOODELF   = 10,
+    RACE_DRAENEI    = 11
 };
 
 enum PlayerStatus
 {
     NONE             = 0,
-    TRANSFER_PENDING = 1,
+    TRANSFER_PENDING = 1
 };
 
 enum RankTitles
@@ -242,28 +245,28 @@ enum RankTitles
 
 enum PvPAreaStatus
 {
-    AREA_ALLIANCE = 1,
-    AREA_HORDE = 2,
-    AREA_CONTESTED = 3,
-    AREA_PVPARENA = 4,
+    AREA_ALLIANCE       = 1,
+    AREA_HORDE          = 2,
+    AREA_CONTESTED      = 3,
+    AREA_PVPARENA       = 4
 };
 
 enum PlayerMovementType
 {
-    MOVE_ROOT        = 1,
-    MOVE_UNROOT        = 2,
-    MOVE_WATER_WALK = 3,
-    MOVE_LAND_WALK  = 4,
+    MOVE_ROOT           = 1,
+    MOVE_UNROOT         = 2,
+    MOVE_WATER_WALK     = 3,
+    MOVE_LAND_WALK      = 4,
 };
 
 enum PlayerSpeedType
 {
-    RUN             = 1,
-    RUNBACK         = 2,
-    SWIM            = 3,
-    SWIMBACK        = 4,
-    WALK            = 5,
-    FLY             = 6,
+    RUN                 = 1,
+    RUNBACK             = 2,
+    SWIM                = 3,
+    SWIMBACK            = 4,
+    WALK                = 5,
+    FLY                 = 6,
 };
 
 /*
@@ -290,60 +293,77 @@ enum Standing
 
 enum PlayerFlags
 {
-    PLAYER_FLAG_PARTY_LEADER        = 0x01,
-    PLAYER_FLAG_AFK                 = 0x02,
-    PLAYER_FLAG_DND                 = 0x04,
-    PLAYER_FLAG_GM                  = 0x08,
-    PLAYER_FLAG_DEATH_WORLD_ENABLE  = 0x10,
-    PLAYER_FLAG_RESTING             = 0x20,
-    PLAYER_FLAG_ADMIN               = 0x40,
-    PLAYER_FLAG_FREE_FOR_ALL_PVP    = 0x80,
-    PLAYER_FLAG_UNKNOWN2            = 0x100,
-    PLAYER_FLAG_PVP_TOGGLE          = 0x200,
-    PLAYER_FLAG_NOHELM              = 0x400,
-    PLAYER_FLAG_NOCLOAK             = 0x800,
-    PLAYER_FLAG_NEED_REST_3_HOURS   = 0x1000,
-    PLAYER_FLAG_NEED_REST_5_HOURS   = 0x2000,
-    PLAYER_FLAG_DEVELOPER           = 0x8000,
-    PLAYER_FLAG_PVP                 = 0x40000,
+    PLAYER_FLAG_NONE                = 0x00000000,
+    PLAYER_FLAG_PARTY_LEADER        = 0x00000001,
+    PLAYER_FLAG_AFK                 = 0x00000002,
+    PLAYER_FLAG_DND                 = 0x00000004,
+    PLAYER_FLAG_GM                  = 0x00000008,
+    PLAYER_FLAG_DEATH_WORLD_ENABLE  = 0x00000010,
+    PLAYER_FLAG_RESTING             = 0x00000020,
+    PLAYER_FLAG_ADMIN               = 0x00000040,
+    PLAYER_FLAG_FREE_FOR_ALL_PVP    = 0x00000080,
+    PLAYER_FLAG_UNKNOWN2            = 0x00000100,
+    PLAYER_FLAG_PVP_TOGGLE          = 0x00000200,
+    PLAYER_FLAG_NOHELM              = 0x00000400,
+    PLAYER_FLAG_NOCLOAK             = 0x00000800,
+    PLAYER_FLAG_NEED_REST_3_HOURS   = 0x00001000,
+    PLAYER_FLAG_IS_DEAD             = 0x00002000,
+    PLAYER_FLAGS_RENAME_FIRST       = 0x00004000,
+    PLAYER_FLAG_DEVELOPER           = 0x00008000,
+    PLAYER_FLAG_UNK1                = 0x00010000,
+    PLAYER_FLAG_UNK2                = 0x00020000,
+    PLAYER_FLAG_PVP                 = 0x00040000,
+    PLAYER_FLAG_UNK3                = 0x00080000,
+    PLAYER_FLAG_UNK4                = 0x00100000,
+    PLAYER_FLAG_UNK5                = 0x00200000,
+    PLAYER_FLAG_UNK6                = 0x00400000,
+    PLAYER_FLAG_UNK7                = 0x00800000,
+    PLAYER_FLAG_IS_BANNED           = 0x01000000,
+    PLAYER_FLAG_UNK8                = 0x02000000,
+    PLAYER_FLAG_UNK9                = 0x04000000,
+    PLAYER_FLAG_UNK10               = 0x08000000,
+    PLAYER_FLAG_UNK11               = 0x10000000,
+    PLAYER_FLAG_UNK12               = 0x20000000,
+    PLAYER_FLAG_UNK13               = 0x40000000,
+    PLAYER_FLAG_UNK14               = 0x80000000
 };
 
 enum CustomizeFlags
 {
-    CHAR_CUSTOMIZE_FLAG_NONE = 0x00000000,          // Implemented          * Allows normal login no customization needed
-    CHAR_CUSTOMIZE_FLAG_CUSTOMIZE = 0x00000001,     // Implemented          * Allows name, gender, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_FACTION = 0x00010000,       ///\todo Implement      * Allows name, gender, race, faction, and looks to be customized
-    CHAR_CUSTOMIZE_FLAG_RACE = 0x00100000           ///\todo Implement      * Allows name, gender, race, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_NONE        = 0x00000000,   // Implemented          * Allows normal login no customization needed
+    CHAR_CUSTOMIZE_FLAG_CUSTOMIZE   = 0x00000001,   // Implemented          * Allows name, gender, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_FACTION     = 0x00010000,   ///\todo Implement      * Allows name, gender, race, faction, and looks to be customized
+    CHAR_CUSTOMIZE_FLAG_RACE        = 0x00100000    ///\todo Implement      * Allows name, gender, race, and looks to be customized
 };
 
 enum LoginFlags
 {
-    LOGIN_NO_FLAG = 0,
-    LOGIN_FORCED_RENAME = 1,
-    LOGIN_CUSTOMIZE_FACTION = 2,
-    LOGIN_CUSTOMIZE_RACE = 4,
-    LOGIN_CUSTOMIZE_LOOKS = 8,
+    LOGIN_NO_FLAG               = 0,
+    LOGIN_FORCED_RENAME         = 1,
+    LOGIN_CUSTOMIZE_FACTION     = 2,
+    LOGIN_CUSTOMIZE_RACE        = 4,
+    LOGIN_CUSTOMIZE_LOOKS       = 8
 };
 
 enum FriendsResult
 {
-    FRIEND_DB_ERROR = 0x00,
-    FRIEND_LIST_FULL = 0x01,
-    FRIEND_ONLINE = 0x02,
-    FRIEND_OFFLINE = 0x03,
-    FRIEND_NOT_FOUND = 0x04,
-    FRIEND_REMOVED = 0x05,
-    FRIEND_ADDED_ONLINE = 0x06,
-    FRIEND_ADDED_OFFLINE = 0x07,
-    FRIEND_ALREADY = 0x08,
-    FRIEND_SELF = 0x09,
-    FRIEND_ENEMY = 0x0A,
-    FRIEND_IGNORE_FULL = 0x0B,
-    FRIEND_IGNORE_SELF = 0x0C,
-    FRIEND_IGNORE_NOT_FOUND = 0x0D,
-    FRIEND_IGNORE_ALREADY = 0x0E,
-    FRIEND_IGNORE_ADDED = 0x0F,
-    FRIEND_IGNORE_REMOVED = 0x10
+    FRIEND_DB_ERROR             = 0x00,
+    FRIEND_LIST_FULL            = 0x01,
+    FRIEND_ONLINE               = 0x02,
+    FRIEND_OFFLINE              = 0x03,
+    FRIEND_NOT_FOUND            = 0x04,
+    FRIEND_REMOVED              = 0x05,
+    FRIEND_ADDED_ONLINE         = 0x06,
+    FRIEND_ADDED_OFFLINE        = 0x07,
+    FRIEND_ALREADY              = 0x08,
+    FRIEND_SELF                 = 0x09,
+    FRIEND_ENEMY                = 0x0A,
+    FRIEND_IGNORE_FULL          = 0x0B,
+    FRIEND_IGNORE_SELF          = 0x0C,
+    FRIEND_IGNORE_NOT_FOUND     = 0x0D,
+    FRIEND_IGNORE_ALREADY       = 0x0E,
+    FRIEND_IGNORE_ADDED         = 0x0F,
+    FRIEND_IGNORE_REMOVED       = 0x10
 };
 
 enum CharterTypes
@@ -352,7 +372,7 @@ enum CharterTypes
     CHARTER_TYPE_ARENA_2V2        = 1,
     CHARTER_TYPE_ARENA_3V3        = 2,
     CHARTER_TYPE_ARENA_5V5        = 3,
-    NUM_CHARTER_TYPES             = 4,
+    NUM_CHARTER_TYPES             = 4
 };
 
 enum ArenaTeamTypes
@@ -360,26 +380,27 @@ enum ArenaTeamTypes
     ARENA_TEAM_TYPE_2V2            = 0,
     ARENA_TEAM_TYPE_3V3            = 1,
     ARENA_TEAM_TYPE_5V5            = 2,
-    NUM_ARENA_TEAM_TYPES           = 3,
+    NUM_ARENA_TEAM_TYPES           = 3
 };
 
 enum CooldownTypes
 {
     COOLDOWN_TYPE_SPELL            = 0,
     COOLDOWN_TYPE_CATEGORY         = 1,
-    NUM_COOLDOWN_TYPES,
+    NUM_COOLDOWN_TYPES
 };
 
+///\todo are the values really ignored by client?
 enum LootType
 {
     LOOT_CORPSE                 = 1,
-    LOOT_SKINNING               = 2,
+    LOOT_SKINNING               = 2,        // 6
     LOOT_FISHING                = 3,
-    LOOT_PICKPOCKETING          = 2,        // 4 unsupported by client, sending LOOT_SKINNING instead
-    LOOT_DISENCHANTING          = 2,        // 5 unsupported by client, sending LOOT_SKINNING instead
-    LOOT_PROSPECTING            = 2,        // 6 unsupported by client, sending LOOT_SKINNING instead
-    LOOT_MILLING                = 2,
-    LOOT_INSIGNIA               = 2         // 7 unsupported by client, sending LOOT_SKINNING instead
+    LOOT_PICKPOCKETING          = 2,        // 2
+    LOOT_DISENCHANTING          = 2,        // 4    // ignored
+    LOOT_PROSPECTING            = 2,        // 7
+    LOOT_MILLING                = 2,        // 8    
+    LOOT_INSIGNIA               = 2         // 21 unsupported by client, sending LOOT_SKINNING instead
 };
 
 enum ModType
@@ -448,37 +469,44 @@ enum DrunkenState
 */
 
 static const uint32 TalentTreesPerClass[DRUID + 1][3] =
-        {
-                { 0, 0, 0 },        // NONE
-                { 161, 163, 164 },  // WARRIOR
-                { 382, 383, 381 },  // PALADIN
-                { 361, 363, 362 },  // HUNTER
-                { 182, 181, 183 },  // ROGUE
-                { 201, 202, 203 },  // PRIEST
-                { 398, 399, 400 },  // DEATH KNIGHT
-                { 261, 263, 262 },  // SHAMAN
-                { 81, 41, 61 },     // MAGE
-                { 302, 303, 301 },  // WARLOCK
-                { 0, 0, 0 },        // NONE
-                { 283, 281, 282 },  // DRUID
-        };
+{
+        { 0, 0, 0 },        // NONE
+        { 161, 163, 164 },  // WARRIOR
+        { 382, 383, 381 },  // PALADIN
+        { 361, 363, 362 },  // HUNTER
+        { 182, 181, 183 },  // ROGUE
+        { 201, 202, 203 },  // PRIEST
+        { 398, 399, 400 },  // DEATH KNIGHT
+        { 261, 263, 262 },  // SHAMAN
+        { 81, 41, 61 },     // MAGE
+        { 302, 303, 301 },  // WARLOCK
+        { 0, 0, 0 },        // NONE
+        { 283, 281, 282 },  // DRUID
+};
 
 
-#define RESTSTATE_RESTED 1
-#define RESTSTATE_NORMAL 2
-#define RESTSTATE_TIRED100 3
-#define RESTSTATE_TIRED50 4
-#define RESTSTATE_EXHAUSTED 5
-#define UNDERWATERSTATE_NONE 0
-#define UNDERWATERSTATE_SWIMMING 1
-#define UNDERWATERSTATE_UNDERWATER 2
-#define UNDERWATERSTATE_RECOVERING 4
-#define UNDERWATERSTATE_TAKINGDAMAGE 8
-#define UNDERWATERSTATE_FATIGUE 16
-#define UNDERWATERSTATE_LAVA 32
-#define UNDERWATERSTATE_SLIME 64
+enum RestState
+{
+    RESTSTATE_RESTED        = 1,
+    RESTSTATE_NORMAL        = 2,
+    RESTSTATE_TIRED100      = 3,
+    RESTSTATE_TIRED50       = 4,
+    RESTSTATE_EXHAUSTED     = 5
+};
 
-enum TRADE_STATUS
+enum UnderwaterState
+{
+    UNDERWATERSTATE_NONE            = 0,
+    UNDERWATERSTATE_SWIMMING        = 1,
+    UNDERWATERSTATE_UNDERWATER      = 2,
+    UNDERWATERSTATE_RECOVERING      = 4,
+    UNDERWATERSTATE_TAKINGDAMAGE    = 8,
+    UNDERWATERSTATE_FATIGUE         = 16,
+    UNDERWATERSTATE_LAVA            = 32,
+    UNDERWATERSTATE_SLIME           = 64
+};
+
+enum TradeStatus
 {
     TRADE_STATUS_PLAYER_BUSY        = 0x00,
     TRADE_STATUS_PROPOSED           = 0x01,
@@ -495,36 +523,36 @@ enum TRADE_STATUS
     TRADE_STATUS_FAILED             = 0x0C,
     TRADE_STATUS_DEAD               = 0x0D,
     TRADE_STATUS_PETITION           = 0x0E,
-    TRADE_STATUS_PLAYER_IGNORED     = 0x0F,
+    TRADE_STATUS_PLAYER_IGNORED     = 0x0F
 };
 
-enum TRADE_DATA
+enum TradeData
 {
     TRADE_GIVE        = 0x00,
-    TRADE_RECEIVE     = 0x01,
+    TRADE_RECEIVE     = 0x01
 };
 
-enum DUEL_STATUS
+enum DuelStatus
 {
     DUEL_STATUS_OUTOFBOUNDS,
     DUEL_STATUS_INBOUNDS
 };
 
-enum DUEL_STATE
+enum DuelState
 {
     DUEL_STATE_REQUESTED,
     DUEL_STATE_STARTED,
     DUEL_STATE_FINISHED
 };
 
-enum DUEL_WINNER
+enum DuelWinner
 {
     DUEL_WINNER_KNOCKOUT,
-    DUEL_WINNER_RETREAT,
+    DUEL_WINNER_RETREAT
 };
 
-#define PLAYER_ATTACK_TIMEOUT_INTERVAL 5000
-#define PLAYER_FORCED_RESURRECT_INTERVAL 360000         /// 1000*60*6= 6 minutes
+const time_t attackTimeoutInterval = 5000;
+const time_t forcedResurrectInterval = 360000;  // 1000*60*6= 6 minutes
 
 #define PLAYER_RATING_MODIFIER_RANGED_SKILL                     PLAYER_FIELD_COMBAT_RATING_1
 #define PLAYER_RATING_MODIFIER_DEFENCE                          PLAYER_FIELD_COMBAT_RATING_1+1
@@ -551,5 +579,18 @@ enum DUEL_WINNER
 #define PLAYER_RATING_MODIFIER_MELEE_RANGED_SKILL               PLAYER_FIELD_COMBAT_RATING_1+22
 #define PLAYER_RATING_MODIFIER_EXPERTISE                        PLAYER_FIELD_COMBAT_RATING_1+23
 #define PLAYER_RATING_MODIFIER_ARMOR_PENETRATION_RATING         PLAYER_FIELD_COMBAT_RATING_1+24
+
+enum PlayerCheats
+{
+    PLAYER_CHEAT_NONE           = 0x00,
+    PLAYER_CHEAT_COOLDOWN       = 0x01,
+    PLAYER_CHEAT_CAST_TIME      = 0x02,
+    PLAYER_CHEAT_GOD_MODE       = 0x04,
+    PLAYER_CHEAT_POWER          = 0x08,
+    PLAYER_CHEAT_FLY            = 0x10,
+    PLAYER_CHEAT_AURA_STACK     = 0x20,
+    PLAYER_CHEAT_ITEM_STACK     = 0x40,
+    PLAYER_CHEAT_TRIGGERPASS    = 0x80
+};
 
 #endif // _PLAYER_DEFINES_H

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -80,7 +80,7 @@ enum ChatMsg
     CHAT_MSG_RESTRICTED                 = 46,
     CHAT_MSG_ACHIEVEMENT                = 48,
     CHAT_MSG_GUILD_ACHIEVEMENT          = 49,
-    CHAT_MSG_PARTY_LEADER               = 51,
+    CHAT_MSG_PARTY_LEADER               = 51
 };
 
 enum Languages
@@ -103,10 +103,6 @@ enum Languages
     NUM_LANGUAGES       = 0x24
 };
 
-/*#define MSG_COLOR_YELLOW            "|r"
-#define MSG_COLOR_RED               "|cffff2020"
-#define MSG_COLOR_GREEN             "|c1f40af20"
-#define MSG_COLOR_LIGHTRED          "|cffff6060"*/
 
 #define MSG_COLOR_LIGHTRED          "|cffff6060"
 #define MSG_COLOR_LIGHTBLUE         "|cff00ccff"
@@ -144,52 +140,61 @@ uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid);
 class ChatCommand
 {
     public:
+
         const char* Name;
+
         char CommandGroup;
+
         bool (ChatHandler::*Handler)(const char* args, WorldSession* m_session) ;
+
         std::string Help;
+
         ChatCommand* ChildCommands;
+
         uint32 NormalValueField;
         uint32 MaxValueField;
+
         /// ValueType: 0 = nothing, 1 = uint, 2 = float
         uint16 ValueType;
 };
 
 class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
 {
-        // List command containers ex. .character is a container of .character additem
-        ChatCommand* _modifyCommandTable;
-        ChatCommand* _debugCommandTable;
-        ChatCommand* _eventCommandTable;
-        ChatCommand* _waypointCommandTable;
-        ChatCommand* _GMTicketCommandTable;
-        ChatCommand* _GuildCommandTable;
-        ChatCommand* _GameObjectCommandTable;
-        ChatCommand* _BattlegroundCommandTable;
-        ChatCommand* _NPCCommandTable;
-        ChatCommand* _CheatCommandTable;
-        ChatCommand* _accountCommandTable;
-        ChatCommand* _honorCommandTable;
-        ChatCommand* _petCommandTable;
-        ChatCommand* _recallCommandTable;
-        ChatCommand* _questCommandTable;
-        ChatCommand* _serverCommandTable;
-        ChatCommand* _gmCommandTable;
-        ChatCommand* _characterCommandTable;
-        ChatCommand* _lookupCommandTable;
-        ChatCommand* _adminCommandTable;
-        ChatCommand* _kickCommandTable;
-        ChatCommand* _banCommandTable;
-        ChatCommand* _unbanCommandTable;
-        ChatCommand* _instanceCommandTable;
-        ChatCommand* _arenaCommandTable;
-        ChatCommand* _achievementCommandTable;
-        ChatCommand* _vehicleCommandTable;
-        ChatCommand* _transportCommandTable;
-        ChatCommand* _commandTable;
+    // List command containers ex. .character is a container of .character additem
+    ChatCommand* _modifyCommandTable;
+    ChatCommand* _debugCommandTable;
+    ChatCommand* _eventCommandTable;
+    ChatCommand* _waypointCommandTable;
+    ChatCommand* _GMTicketCommandTable;
+    ChatCommand* _GuildCommandTable;
+    ChatCommand* _GameObjectCommandTable;
+    ChatCommand* _BattlegroundCommandTable;
+    ChatCommand* _NPCCommandTable;
+    ChatCommand* _CheatCommandTable;
+    ChatCommand* _accountCommandTable;
+    ChatCommand* _honorCommandTable;
+    ChatCommand* _petCommandTable;
+    ChatCommand* _recallCommandTable;
+    ChatCommand* _questCommandTable;
+    ChatCommand* _serverCommandTable;
+    ChatCommand* _gmCommandTable;
+    ChatCommand* _characterCommandTable;
+    ChatCommand* _lookupCommandTable;
+    ChatCommand* _adminCommandTable;
+    ChatCommand* _kickCommandTable;
+    ChatCommand* _banCommandTable;
+    ChatCommand* _unbanCommandTable;
+    ChatCommand* _instanceCommandTable;
+    ChatCommand* _arenaCommandTable;
+    ChatCommand* _achievementCommandTable;
+    ChatCommand* _vehicleCommandTable;
+    ChatCommand* _transportCommandTable;
+    ChatCommand* _commandTable;
 
-        ChatCommand* GetSubCommandTable(const char* name);
+    ChatCommand* GetSubCommandTable(const char* name);
+
     public:
+
         void Init();
         void Dealloc();
         void Load();
@@ -199,8 +204,10 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
 
 class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 {
-        friend class CommandTableStorage;
+    friend class CommandTableStorage;
+
     public:
+
         ChatHandler();
         ~ChatHandler();
 
@@ -474,7 +481,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGetPosCommand(const char* args, WorldSession* m_session);
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
         bool HandleGOAnimProgress(const char* args, WorldSession* m_session);
-        bool HandleGOFactionCommand(const char* args, WorldSession* session);
         bool HandleGOExport(const char* args, WorldSession* m_session);
         bool HandleRemoveAurasCommand(const char* args, WorldSession* m_session);
         bool HandleParalyzeCommand(const char* args, WorldSession* m_session);

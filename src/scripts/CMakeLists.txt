@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 #check if scripts are selected
 if(NOT BUILD_ASCEMUSCRIPTS)
@@ -25,7 +25,6 @@ set(BUILD_GOSSIPSCRIPTS TRUE CACHE BOOL "Build ascGossipScripts.")
 set(BUILD_QUESTSCRIPTS TRUE CACHE BOOL "Build ascQuestScripts.")
 set(BUILD_MISCSCRIPTS TRUE CACHE BOOL "Build ascMiscScripts." )
 set(BUILD_LUAENGINE TRUE CACHE BOOL "Build LuaEngine.")
-set(BUILD_LUABRIDGE FALSE CACHE BOOL "Build LuaBridge.")
 
 # add our modules
 add_subdirectory(Battlegrounds)
@@ -34,7 +33,6 @@ add_subdirectory(EventScripts)
 add_subdirectory(ExtraScripts)
 add_subdirectory(GossipScripts)
 add_subdirectory(InstanceScripts)
-add_subdirectory(luabridge)
 add_subdirectory(LuaEngine)
 add_subdirectory(MiscScripts)
 add_subdirectory(QuestScripts)

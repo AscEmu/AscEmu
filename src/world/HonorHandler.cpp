@@ -126,7 +126,9 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         // Send PVP credit
                         WorldPacket data(SMSG_PVP_CREDIT, 12);
                         uint32 pvppoints = pts * 10;
-                        data << pvppoints << pVictim->GetGUID() << uint32(pVictim->GetPVPRank());
+                        data << pvppoints;
+                        data << pVictim->GetGUID();
+                        data << uint32(pVictim->GetPVPRank());
                         (*vtr)->GetSession()->SendPacket(&data);
                     }
                 }
@@ -189,7 +191,9 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
                 WorldPacket data(SMSG_PVP_CREDIT, 12);
                 uint32 pvppoints = contributorpts * 10; // Why *10?
-                data << pvppoints << pVictim->GetGUID() << uint32(pVictim->GetPVPRank());
+                data << pvppoints;
+                data << pVictim->GetGUID();
+                data << uint32(pVictim->GetPVPRank());
                 pAffectedPlayer->GetSession()->SendPacket(&data);
 
                 int PvPToken = 0;
@@ -293,7 +297,9 @@ bool ChatHandler::HandlePVPCreditCommand(const char* args, WorldSession* m_sessi
     BlueSystemMessage(m_session, "Building packet with Rank %u, Points %u, GUID " I64FMT ".", Rank, Points, Guid);
 
     WorldPacket data(SMSG_PVP_CREDIT, 12);
-    data << Points << Guid << Rank;
+    data << Points;
+    data << Guid;
+    data << Rank;
     m_session->SendPacket(&data);
     return true;
 }

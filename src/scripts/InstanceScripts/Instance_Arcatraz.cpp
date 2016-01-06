@@ -296,7 +296,7 @@ class DalliahTheDoomsayerAI : public MoonScriptBossAI
             GameObject* door2 = NULL;
             door2 = GetNearestGameObject(184319);
             if (door2 != NULL)
-                door2->SetState(GAMEOBJECT_STATE_OPEN);
+                door2->SetState(GO_STATE_OPEN);
 
             ParentClass::OnDied(mKiller);
         }
@@ -347,7 +347,7 @@ class WrathScryerSoccothratesAI : public MoonScriptBossAI
             GameObject* door1 = NULL;
             door1 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(199.969f, 118.5837f, 22.379f, 184318);
             if (door1 != NULL)
-                door1->SetState(GAMEOBJECT_STATE_OPEN);
+                door1->SetState(GO_STATE_OPEN);
 
             ParentClass::OnDied(mKiller);
         }
@@ -471,7 +471,7 @@ class WardenMellicharAI : public MoonScriptBossAI
 
             shield = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(445.786f, -169.263f, 43.0466f, 184802);
             if (shield)
-                shield->SetState(GAMEOBJECT_STATE_CLOSED);
+                shield->SetState(GO_STATE_CLOSED);
 
             _unit->SendScriptTextChatMessage(SAY_MELLICHAR_01);
             _unit->SendTimedScriptTextChatMessage(SAY_MELLICHAR_02, 27000);
@@ -500,7 +500,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     Spawncounter = 0;
                     orb1 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(482.929f, -151.114f, 43.654f, 183961);
                     if (orb1)
-                        orb1->SetState(GAMEOBJECT_STATE_OPEN);
+                        orb1->SetState(GO_STATE_OPEN);
 
                     switch (RandomUInt(1))
                     {
@@ -550,7 +550,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     Spawncounter = 0;
                     orb2 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(409.062f, -152.161f, 43.653f, 183963);
                     if (orb2)
-                        orb2->SetState(GAMEOBJECT_STATE_OPEN);
+                        orb2->SetState(GO_STATE_OPEN);
 
                     ResetTimer(Phase_Timer, 8000);
                     Phasepart = 1;
@@ -599,7 +599,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     Spawncounter = 0;
                     orb3 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(415.167f, -174.338f, 43.654f, 183964);
                     if (orb3)
-                        orb3->SetState(GAMEOBJECT_STATE_OPEN);
+                        orb3->SetState(GO_STATE_OPEN);
 
                     switch (RandomUInt(1))
                     {
@@ -657,7 +657,7 @@ class WardenMellicharAI : public MoonScriptBossAI
                     Spawncounter = 0;
                     orb4 = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(476.422f, -174.517f, 42.748f, 183962);
                     if (orb4)
-                        orb4->SetState(GAMEOBJECT_STATE_OPEN);
+                        orb4->SetState(GO_STATE_OPEN);
 
                     switch (RandomUInt(1))
                     {
@@ -720,19 +720,19 @@ class WardenMellicharAI : public MoonScriptBossAI
             _unit->SetEmoteState(8); // to be replaced for the standstate
 
             if (shield)
-                shield->SetState(GAMEOBJECT_STATE_OPEN);
+                shield->SetState(GO_STATE_OPEN);
 
             if (orb1)
-                orb1->SetState(GAMEOBJECT_STATE_CLOSED);
+                orb1->SetState(GO_STATE_CLOSED);
 
             if (orb2)
-                orb2->SetState(GAMEOBJECT_STATE_CLOSED);
+                orb2->SetState(GO_STATE_CLOSED);
 
             if (orb3)
-                orb3->SetState(GAMEOBJECT_STATE_CLOSED);
+                orb3->SetState(GO_STATE_CLOSED);
 
             if (orb4)
-                orb4->SetState(GAMEOBJECT_STATE_CLOSED);
+                orb4->SetState(GO_STATE_CLOSED);
 
             if (NPC_orb1)
             {
@@ -773,11 +773,11 @@ class WardenMellicharAI : public MoonScriptBossAI
         uint32 Spawncounter;
         int32 Phase_Timer;
 
-        MoonScriptCreatureAI*    NPC_orb1;
-        MoonScriptCreatureAI*    NPC_orb2;
-        MoonScriptCreatureAI*    NPC_orb3;
-        MoonScriptCreatureAI*    NPC_orb4;
-        MoonScriptCreatureAI*    NPC_orb5;
+        MoonScriptCreatureAI* NPC_orb1;
+        MoonScriptCreatureAI* NPC_orb2;
+        MoonScriptCreatureAI* NPC_orb3;
+        MoonScriptCreatureAI* NPC_orb4;
+        MoonScriptCreatureAI* NPC_orb5;
         GameObject* shield;
         GameObject* orb1;
         GameObject* orb2;

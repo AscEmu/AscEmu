@@ -67,7 +67,7 @@ class The_Plains_Vision : public MoonScriptCreatureAI
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
 
-            for (int i = 1; i < WPCount; ++i)
+            for (uint8 i = 1; i < WPCount; ++i)
             {
                 AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
             }

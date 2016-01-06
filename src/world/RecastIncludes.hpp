@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,10 +18,12 @@
 
 #ifndef _RECAST_INCLUDES_HPP
 #define _RECAST_INCLUDES_HPP
+
 #include "DetourNavMeshQuery.h"
 #include "DetourNavMesh.h"
 #include "DetourNode.h"
 #include "DetourCommon.h"
 #include "DetourAlloc.h"
 #include "DetourAssert.h"
+
 #endif      // _RECAST_INCLUDES_HPP

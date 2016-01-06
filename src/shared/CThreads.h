@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Class CThread - Base class for all threads in the
-// server, and allows for easy management by ThreadMgr.
+//\brief Class CThread - Base class for all threads in the server, and allows for easy management by ThreadMgr.
 
-#ifndef _MAPUPDATER_H
-#define _MAPUPDATER_H
+#ifndef _C_THREADS_H
+#define _C_THREADS_H
+
+#include "Threading/ThreadStarter.h"
 
 class MapMgr;
 class Object;
@@ -50,6 +51,7 @@ struct NameTableEntry;
 class SERVER_DECL CThread : public ThreadBase
 {
     public:
+
         CThread();
         ~CThread();
 
@@ -65,6 +67,7 @@ class SERVER_DECL CThread : public ThreadBase
         virtual void OnShutdown();
 
     protected:
+
         CThread & operator=(CThread & other)
         {
             this->start_time = other.start_time;
@@ -78,4 +81,4 @@ class SERVER_DECL CThread : public ThreadBase
         int ThreadId;
 };
 
-#endif
+#endif  //_C_THREADS_H

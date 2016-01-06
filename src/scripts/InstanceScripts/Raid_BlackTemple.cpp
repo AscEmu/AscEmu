@@ -21,13 +21,13 @@
 
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
+#include "Raid_BlackTemple.h"
 
-
-#define CN_SUPREMUS                                        22898
 
 class BlackTempleScript : public MoonInstanceScript
 {
     public:
+
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(BlackTempleScript, MoonInstanceScript);
         BlackTempleScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
@@ -48,9 +48,9 @@ class BlackTempleScript : public MoonInstanceScript
                         break;
                     default:
                         continue;
-                };
-            };
-        };
+                }
+            }
+        }
 
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
@@ -70,11 +70,9 @@ class BlackTempleScript : public MoonInstanceScript
                     AddGameObjectStateByEntry(185882, State_Active);    // Gate to Black Temple behind Supremus
                     break;
                 default:
-                    {
-                    };
-            };
-        };
-
+                    break;
+            }
+        }
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,10 +89,6 @@ class TemplateAI : public MoonScriptCreatureAI
 //////////////////////////////////////////////////////////////////////////
 /////// Beast AIs
 
-#define CN_DRAGON_TURTLE                    22885
-#define DRAGON_TRUTLE_SHELL_SHIELD            40087
-#define DRAGON_TURTLE_WATER_SPIT            40086
-
 class DragonTurtleAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonTurtleAI, MoonScriptCreatureAI);
@@ -105,10 +99,6 @@ class DragonTurtleAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_LEVIATHAN                        22884
-#define LEVIATHAN_DEBILITATING_SPRAY        40079
-#define LEVIATHAN_POISON_SPIT                40078
-#define LEVIATHAN_TAIL_SWEEP                40077
 
 class LeviathanAI : public MoonScriptCreatureAI
 {
@@ -121,8 +111,6 @@ class LeviathanAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_MUTANT_WAR_HOUND                    23232
-#define MUTANT_WAR_HOUND_CLOUD_OF_DISEASE    41193
 
 class MutantWarHoundAI : public MoonScriptCreatureAI
 {
@@ -137,12 +125,9 @@ class MutantWarHoundAI : public MoonScriptCreatureAI
             _unit->AddAura(pAura);
         }
 };
-// I don't have this creature in DB, so hasn't checked it yet
-#define CN_SHADOWMOON_RIDING_HOUND                    23083
-#define SHADOWMOON_RIDING_HOUND_CARNIVOROUS_BITE    41092
-#define SHADOWMOON_RIDING_HOUND_CHARGE                25821
-#define SHADOWMOON_RIDING_HOUND_ENRAGE                8599
 
+
+// I don't have this creature in DB, so hasn't checked it yet
 void SpellFunc_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class ShadowmoonRidingHoundAI : public MoonScriptCreatureAI
@@ -156,7 +141,7 @@ class ShadowmoonRidingHoundAI : public MoonScriptCreatureAI
             AddSpell(SHADOWMOON_RIDING_HOUND_ENRAGE, Target_Self, 6, 0, 40);
         }
 
-        SpellDesc*    mCharge;
+        SpellDesc* mCharge;
 };
 
 void SpellFunc_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -179,11 +164,6 @@ void SpellFunc_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit*
 //////////////////////////////////////////////////////////////////////////
 /////// Demon AIs
 
-#define    CN_SISTER_OF_PLEASURE                22964
-#define    SISTER_OF_PLEASURE_GREATER_HEAL        41378
-#define SISTER_OF_PLEASURE_HOLY_NOVA        41380
-#define SISTER_OF_PLEASURE_SHARED_BONDS        41362
-#define SISTER_OF_PLEASURE_SHELL_OF_LIFE    41381
 
 class SisterOfPleasureAI : public MoonScriptCreatureAI
 {
@@ -197,12 +177,6 @@ class SisterOfPleasureAI : public MoonScriptCreatureAI
         }
 };
 
-#define    CN_SISTER_OF_PAIN                    22956
-#define    SISTER_OF_PAIN_LASH_OF_PAIN            41353
-#define    SISTER_OF_PAIN_PAINFUL_RAGE            41369
-#define    SISTER_OF_PAIN_SHADOW_WORD_PAIN        41355
-#define    SISTER_OF_PAIN_SHARED_BONDS            41362
-#define    SISTER_OF_PAIN_SHELL_OF_PAIN        41371
 
 class SisterOfPainAI : public MoonScriptCreatureAI
 {
@@ -217,9 +191,6 @@ class SisterOfPainAI : public MoonScriptCreatureAI
         }
 };
 
-#define    CN_PRIESTESS_OF_DEMENTIA                22957
-#define PRIESTESS_OF_DEMENTIA_CONFUSION            41397
-#define PRIESTESS_OF_DEMENTIA_DEMENTIA            41404
 
 class PriestessOfDementiaAI : public MoonScriptCreatureAI
 {
@@ -231,8 +202,6 @@ class PriestessOfDementiaAI : public MoonScriptCreatureAI
         }
 };
 
-#define    CN_PRIESTESS_OF_DELIGHT                    22962
-#define PRIESTESS_OF_DELIGHT_CURSE_OF_VITALITY    41351
 
 class PriestessOfDelightAI : public MoonScriptCreatureAI
 {
@@ -243,11 +212,6 @@ class PriestessOfDelightAI : public MoonScriptCreatureAI
         }
 };
 
-#define    CN_ILLIDARI_NIGHTLORD                    22855
-#define ILLIDARI_NIGHTLORD_SUMMON_SHADOWFIENDS    39649
-#define ILLIDARI_NIGHTLORD_SHADOW_INFERNO        39645
-#define ILLIDARI_NIGHTLORD_FEAR                    41150
-#define ILLIDARI_NIGHTLORD_CURSE_OF_MENDING        39647
 
 class IllidariNightlordAI : public MoonScriptCreatureAI
 {
@@ -261,11 +225,6 @@ class IllidariNightlordAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_HEARTSEEKER                            23339
-#define ILLIDARI_HEARTSEEKER_CURSE_OF_THE_BLEAKHEART    41170
-#define ILLIDARI_HEARTSEEKER_RAPID_SHOT                    41173
-#define ILLIDARI_HEARTSEEKER_SHOOT                        41169
-#define ILLIDARI_HEARTSEEKER_SKELETON_SHOT                41171
 
 void SpellFunc_RapidShot(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -306,7 +265,7 @@ class IllidariHeartseekerAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mRapidShot;
+        SpellDesc* mRapidShot;
 };
 
 void SpellFunc_RapidShot(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -318,10 +277,6 @@ void SpellFunc_RapidShot(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     }
 }
 
-#define CN_ILLIDARI_FEARBRINGER                    22954
-#define ILLIDARI_FEARBRINGER_ILLIDARI_FLAMES    40938
-#define ILLIDARI_FEARBRINGER_RAIN_OF_CHAOS        40946
-#define ILLIDARI_FEARBRINGER_WAR_STOMP            40936
 
 class IllidariFearbringerAI : public MoonScriptCreatureAI
 {
@@ -334,11 +289,6 @@ class IllidariFearbringerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_DEFILER                    22853
-#define ILLIDARI_DEFILER_BANISH                39674
-#define ILLIDARI_DEFILER_CURSE_OF_AGONY        39672
-#define ILLIDARI_DEFILER_FEL_IMMOLATE        39670
-#define ILLIDARI_DEFILER_RAIN_OF_CHAOS        39671
 
 class IllidariDefilerAI : public MoonScriptCreatureAI
 {
@@ -352,9 +302,6 @@ class IllidariDefilerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_CENTURION                23337
-#define ILLIDARI_CENTURION_CLEAVE            15284
-#define ILLIDARI_CENTURION_SONIC_STRIKE        41168
 
 class IllidariCenturionAI : public MoonScriptCreatureAI
 {
@@ -366,10 +313,6 @@ class IllidariCenturionAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_BONESLICER                    22869
-#define ILLIDARI_BONESLICER_CLOAK_OF_SHADOWS    39666
-#define ILLIDARI_BONESLICER_GOUGE                24698
-#define ILLIDARI_BONESLICER_SHADOWSTEP            41176
 
 void SpellFunc_Gouge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -384,7 +327,7 @@ class IllidariBoneslicerAI : public MoonScriptCreatureAI
             AddSpell(ILLIDARI_BONESLICER_SHADOWSTEP, Target_Current, 7, 0, 30);
         }
 
-        SpellDesc*    mGouge;
+        SpellDesc* mGouge;
 };
 
 void SpellFunc_Gouge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -406,11 +349,6 @@ void SpellFunc_Gouge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* 
 //////////////////////////////////////////////////////////////////////////
 /////// Humanoid AIs
 
-#define CN_ASHTONGUE_BATTLELORD                    22844
-#define ASHTONGUE_BATTLELORD_CLEAVE                15284
-#define ASHTONGUE_BATTLELORD_CONCUSSION_BLOW    32588
-#define ASHTONGUE_BATTLELORD_CONCUSSIVE_THROW    41182
-#define ASHTONGUE_BATTLELORD_ENRAGE                34970
 
 class AshtongueBattlelordAI : public MoonScriptCreatureAI
 {
@@ -424,9 +362,6 @@ class AshtongueBattlelordAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_DEFENDER                    23216
-#define ASHTONGUE_DEFENDER_DEBILITATING_STRIKE    41178
-#define ASHTONGUE_DEFENDER_SHIELD_BASH            41180
 
 class AshtongueDefenderAI : public MoonScriptCreatureAI
 {
@@ -438,9 +373,6 @@ class AshtongueDefenderAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_ELEMENTALIST                23523
-#define ASHTONGUE_ELEMENTALIST_LIGHTNING_BOLT    42024
-#define ASHTONGUE_ELEMENTALIST_RAID_OF_FIRE        42023
 
 class AshtongueElementalistAI : public MoonScriptCreatureAI
 {
@@ -451,16 +383,9 @@ class AshtongueElementalistAI : public MoonScriptCreatureAI
             AddSpell(ASHTONGUE_ELEMENTALIST_RAID_OF_FIRE, Target_RandomPlayerDestination, 6, 0, 25);
         }
 };
-// TO DO: Add Totem AIs
-#define CN_ASHTONGUE_MYSTIC                        22845
-#define ASHTONGUE_MYSTIC_BLOODLUST                41185
-#define ASHTONGUE_MYSTIC_CHAIN_HEAL                41114
-#define ASHTONGUE_MYSTIC_CYCLONE_TOTEM            39589
-#define ASHTONGUE_MYSTIC_FLAME_SHOCK            41115
-#define ASHTONGUE_MYSTIC_FROST_SHOCK            41116
-#define ASHTONGUE_MYSTIC_SEARING_TOTEM            39588
-#define ASHTONGUE_MYSTIC_SUMMON_WINDFURY_TOTEM    39586
 
+
+///\ todo Add Totem AIs
 class AshtongueMysticAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(AshtongueMysticAI, MoonScriptCreatureAI);
@@ -476,11 +401,6 @@ class AshtongueMysticAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_PRIMALIST                    22847
-#define ASHTONGUE_PRIMALIST_MULTISHOT            41187
-#define ASHTONGUE_PRIMALIST_SHOOT                41188
-#define ASHTONGUE_PRIMALIST_SWEEPING_WING_CLIP    39584
-#define ASHTONGUE_PRIMALIST_WYVERN_STRING        41186
 
 class AshtonguePrimalistAI : public MoonScriptCreatureAI
 {
@@ -519,9 +439,6 @@ class AshtonguePrimalistAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_ROGUE                    23318
-#define ASHTONGUE_ROGUE_DEBILITATING_POISON    41978
-#define ASHTONGUE_ROGUE_EVISCERATE            41177
 
 class AshtongueRogueAI : public MoonScriptCreatureAI
 {
@@ -533,11 +450,6 @@ class AshtongueRogueAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_SPIRITBINDER            23524
-#define ASHTONGUE_SPIRITBINDER_CHAIN_HEAL    42027
-#define ASHTONGUE_SPIRITBINDER_SPIRIT_HEAL    42317
-#define ASHTONGUE_SPIRITBINDER_SPIRIT_HEAL2    42318
-#define ASHTONGUE_SPIRITBINDER_SPIRIT_MEND    42025
 
 class AshtongueSpiritbinderAI : public MoonScriptCreatureAI
 {
@@ -552,13 +464,9 @@ class AshtongueSpiritbinderAI : public MoonScriptCreatureAI
             AddSpell(ASHTONGUE_SPIRITBINDER_SPIRIT_MEND, Target_WoundedFriendly, 8, 0, 25);
         }
 };
-// Completely guessed mechanics
-#define CN_ASHTONGUE_STALKER                    23374
-#define ASHTONGUE_STALKER_BLIND                    34654
-#define ASHTONGUE_STALKER_INSTANT_POISON        41189
-#define ASHTONGUE_STALKER_MINDNUMBING_POISON    41190
-#define ASHTONGUE_STALKER_STEATH                34189
 
+
+///\brief Completely guessed mechanics
 class AshtongueStalkerAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(AshtongueStalkerAI, MoonScriptCreatureAI);
@@ -570,7 +478,7 @@ class AshtongueStalkerAI : public MoonScriptCreatureAI
             ApplyAura(ASHTONGUE_STALKER_STEATH);
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
             SpellDesc* pSpell = FindSpellById(ASHTONGUE_STALKER_BLIND);
@@ -580,7 +488,7 @@ class AshtongueStalkerAI : public MoonScriptCreatureAI
             }
         }
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             ParentClass::OnCombatStop(pTarget);
             if (IsAlive())
@@ -590,10 +498,6 @@ class AshtongueStalkerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_STORMCALLER                22846
-#define ASHTONGUE_STORMCALLER_CHAIN_LIGHTNING    41183
-#define ASHTONGUE_STORMCALLER_LIGHTNING_BOLT    41184
-#define ASHTONGUE_STORMCALLER_LIGHTNING_SHIELD    41151
 
 class AshtongueStormcallerAI : public MoonScriptCreatureAI
 {
@@ -606,12 +510,6 @@ class AshtongueStormcallerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_BEHEMOTH                    23196
-#define BONECHEWER_BEHEMOTH_BEHEMOTH_CHARGE        41272
-#define BONECHEWER_BEHEMOTH_ENRAGE                8269
-#define BONECHEWER_BEHEMOTH_FEL_STOMP            41274
-#define BONECHEWER_BEHEMOTH_FIERY_COMET            41277
-#define BONECHEWER_BEHEMOTH_METEOR                41276
 
 class BonechewerBehemothAI : public MoonScriptCreatureAI
 {
@@ -636,9 +534,6 @@ class BonechewerBehemothAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_BLADE_FURY                    23235
-#define BONECHEWER_BLADE_FURY_WHIRLWIND                41194
-#define BONECHEWER_BLADE_FURY_WHIRLWIND2            41195
 
 class BonechewerBladeFuryAI : public MoonScriptCreatureAI
 {
@@ -649,12 +544,6 @@ class BonechewerBladeFuryAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_BLOOD_PROPHET                    23237
-#define BONECHEWER_BLOOD_PROPHET_BLOOD_DRAIN        41238
-#define BONECHEWER_BLOOD_PROPHET_BLOODBOLT            41229
-#define BONECHEWER_BLOOD_PROPHET_ENRAGE                8269
-#define BONECHEWER_BLOOD_PROPHET_PROPHECY_OF_BLOOD    41230
-#define BONECHEWER_BLOOD_PROPHET_PROPHECY_OF_BLOOD2    41231
 
 class BonechewerBloodProphetAI : public MoonScriptCreatureAI
 {
@@ -671,8 +560,6 @@ class BonechewerBloodProphetAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_BRAWLER                23222
-#define BONECHEWER_BRAWLER_FRENZY            41254
 
 class BonechewerBrawlerAI : public MoonScriptCreatureAI
 {
@@ -683,8 +570,6 @@ class BonechewerBrawlerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_COMBATANT                23239
-#define BONECHEWER_COMBATANT_FRENZY            8269
 
 class BonechewerCombatantAI : public MoonScriptCreatureAI
 {
@@ -695,11 +580,6 @@ class BonechewerCombatantAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_SHIELD_DISCIPLE                23236
-#define BONECHEWER_SHIELD_DISCIPLE_INTERVENE        41198
-#define BONECHEWER_SHIELD_DISCIPLE_SHIELD_BASH        41197
-#define BONECHEWER_SHIELD_DISCIPLE_SHIELD_WALL        41196
-#define BONECHEWER_SHIELD_DISCIPLE_THROW_SHIELD        41213
 
 class BonechewerShieldDiscipleAI : public MoonScriptCreatureAI
 {
@@ -723,12 +603,6 @@ class BonechewerShieldDiscipleAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_SPECTATOR                    23223
-#define BONECHEWER_SPECTATOR_CHARGE                36140
-#define BONECHEWER_SPECTATOR_CLEAVE                40505
-#define BONECHEWER_SPECTATOR_MORTAL_WOUND        25646
-#define BONECHEWER_SPECTATOR_STRIKE                13446
-#define BONECHEWER_SPECTATOR_SUNDER_ARMOR        13444
 
 class BonechewerSpectatorAI : public MoonScriptCreatureAI
 {
@@ -753,9 +627,6 @@ class BonechewerSpectatorAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_TASKMASTER                23028
-#define BONECHEWER_TASKMASTER_DISGRUNTLED        40851
-#define BONECHEWER_TASKMASTER_FURY                40845
 
 class BonechewerTaskmasterAI : public MoonScriptCreatureAI
 {
@@ -767,8 +638,6 @@ class BonechewerTaskmasterAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_BONECHEWER_WORKER                    22963
-#define BONECHEWER_WORKER_THROW_PICK            40844
 
 class BonechewerWorkerAI : public MoonScriptCreatureAI
 {
@@ -779,9 +648,6 @@ class BonechewerWorkerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_CHARMING_COURTESAN                    22955
-#define CHARMING_COURTESAN_INFATUATION            41345
-#define CHARMING_COURTESAN_POISONOUS_THROW        41346
 
 class CharmingCourtesanAI : public MoonScriptCreatureAI
 {
@@ -793,9 +659,6 @@ class CharmingCourtesanAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_COILSKAR_GENERAL                        22873
-#define COILSKAR_GENERAL_BOOMING_VOICE            40080
-#define COILSKAR_GENERAL_FREE_FRIEND            40081
 
 class CoilskarGeneralAI : public MoonScriptCreatureAI
 {
@@ -806,12 +669,9 @@ class CoilskarGeneralAI : public MoonScriptCreatureAI
             AddSpell(COILSKAR_GENERAL_FREE_FRIEND, Target_RandomFriendly, 7, 0, 20);    // SpellFunc to check incapacitating effects?
         }
 };
-// Is it Ranged unit throwing spears all the time?
-#define CN_COILSKAR_HARPOONER                    22874
-#define COILSKAR_HARPOONER_HARPOONERS_MARK        40084
-#define COILSKAR_HARPOONER_HOOKED_NET            40082
-#define COILSKAR_HARPOONER_SPEAR_THROW            40083
 
+
+///\todo Is it Ranged unit throwing spears all the time?
 class CoilskarHarpoonerAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(CoilskarHarpoonerAI, MoonScriptCreatureAI);
@@ -833,10 +693,6 @@ class CoilskarHarpoonerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_COILSKAR_SEACALLER                    22875
-#define COILSKAR_SEACALLER_FORKED_LIGHTNING        40088
-#define COILSKAR_SEACALLER_HURRICANE            40090
-#define COILSKAR_SEACALLER_SUMMON_GEYSER        40091
 
 class CoilskarSeacallerAI : public MoonScriptCreatureAI
 {
@@ -849,9 +705,6 @@ class CoilskarSeacallerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_COILSKAR_SOOTHSAYER                    22876
-#define COILSKAR_SOOTHSAYER_HOLY_NOVA            40096
-#define COILSKAR_SOOTHSAYER_RESTORATION            40097
 
 class CoilskarSoothsayerAI : public MoonScriptCreatureAI
 {
@@ -863,10 +716,6 @@ class CoilskarSoothsayerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_COILSKAR_WRANGLER                    22877
-#define COILSKAR_WRANGLER_CLEAVE                15284
-#define COILSKAR_WRANGLER_ELECTRIC_SPUR            40076
-#define COILSKAR_WRANGLER_LIGHTNING_PROD        40066
 
 class CoilskarWranglerAI : public MoonScriptCreatureAI
 {
@@ -879,9 +728,6 @@ class CoilskarWranglerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_DRAGONMAW_SKY_STALKER                23030
-#define DRAGONMAW_SKY_STALKER_IMMOLATION_ARROW    40872
-#define DRAGONMAW_SKY_STALKER_SHOOT                40873
 
 class DragonmawSkyStalkerAI : public MoonScriptCreatureAI
 {
@@ -917,12 +763,9 @@ class DragonmawSkyStalkerAI : public MoonScriptCreatureAI
             }
         }
 };
-// Should it run away from tank when he's close?
-#define CN_DRAGONMAW_WIND_REAVER                    23330
-#define DRAGONMAW_WIND_REAVER_DOOM_BOLT                40876
-#define DRAGONMAW_WIND_REAVER_FIREBALL                40877
-#define DRAGONMAW_WIND_REAVER_FREEZE                40875
 
+
+///\todo Should it run away from tank when he's close?
 class DragonmawWindReaverAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonmawWindReaverAI, MoonScriptCreatureAI);
@@ -959,10 +802,6 @@ class DragonmawWindReaverAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_DRAGONMAW_WYRMCALLER                    22960
-#define DRAGONMAW_WYRMCALLER_CLEAVE                15284
-#define DRAGONMAW_WYRMCALLER_FIXATE                40892
-#define DRAGONMAW_WYRMCALLER_JAB                40895
 
 class DragonmawWyrmcallerAI : public MoonScriptCreatureAI
 {
@@ -975,9 +814,6 @@ class DragonmawWyrmcallerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ENSLAVED_SERVANT                        22965
-#define ENSLAVED_SERVANT_KIDNEY_SHOT            41389
-#define ENSLAVED_SERVANT_UPPERCUT                41388
 
 class EnslavedServantAI : public MoonScriptCreatureAI
 {
@@ -1010,8 +846,6 @@ class EnslavedServantAI : public MoonScriptCreatureAI
         int32    mHealthResetTimer;
 };
 
-#define CN_HAND_OF_GOREFIEND                23172
-#define HAND_OF_GOREFIEND_FRENZY            38166
 
 class HandOfGorefiendAI : public MoonScriptCreatureAI
 {
@@ -1021,15 +855,9 @@ class HandOfGorefiendAI : public MoonScriptCreatureAI
             AddSpell(HAND_OF_GOREFIEND_FRENZY, Target_Self, 6, 0, 45);
         }
 };
-// Mechanics are guessed. I'm also not sure if it's not typical caster unit
-#define CN_ILLIDARI_ARCHON                    23400
-#define ILLIDARI_ARCHON_HEAL                41372
-#define ILLIDARI_ARCHON_HOLY_SMITE            41370
-#define ILLIDARI_ARCHON_MIND_BLAST            41374
-#define ILLIDARI_ARCHON_POWER_WORD_SHIELD    41373
-#define ILLIDARI_ARCHON_SHADOW_WORD_DEATH    41375
-#define ILLIDARI_ARCHON_SHADOWFORM            29406
 
+
+///\todo Mechanics are guessed. I'm also not sure if it's not typical caster unit
 class IllidariArchonAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(IllidariArchonAI, MoonScriptCreatureAI);
@@ -1092,11 +920,9 @@ class IllidariArchonAI : public MoonScriptCreatureAI
 
         bool    mIsShadowPriest;
 };
-// Couldn't find mechanics nowhere around the net, so kept it simple
-#define CN_ILLIDARI_ASSASSIN                23403
-#define ILLIDARI_ASSASSIN_PARALYZING_POISON    3609
-#define ILLIDARI_ASSASSIN_VANISH            39667
 
+
+///\todo Couldn't find mechanics nowhere around the net, so kept it simple
 class IllidariAssassinAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(IllidariAssassinAI, MoonScriptCreatureAI);
@@ -1116,13 +942,9 @@ class IllidariAssassinAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 };
-// I've parted it on frost and fire mage - correct me if it's wrong (also slap me if it's typical caster)
-#define CN_ILLIDARI_BATTLEMAGE                    23402
-#define ILLIDARI_BATTLEMAGE_BLIZZARD            41382
-#define ILLIDARI_BATTLEMAGE_FIREBALL            41383
-#define ILLIDARI_BATTLEMAGE_FLAMESTRIKE            41379
-#define ILLIDARI_BATTLEMAGE_FROSTBOLT            41384
 
+
+///\todo I've parted it on frost and fire mage - correct me if it's wrong (also slap me if it's typical caster)
 class IllidariBattlemageAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(IllidariBattlemageAI, MoonScriptCreatureAI);
@@ -1142,10 +964,6 @@ class IllidariBattlemageAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ILLIDARI_BLOOD_LORD                        23397
-#define ILLIDARI_BLOOD_LORD_DIVINE_SHIELD            41367
-#define ILLIDARI_BLOOD_LORD_HAMMER_OF_JUSTICE        13005
-#define ILLIDARI_BLOOD_LORD_JUDGEMENT_OF_COMMAND    41368
 
 class IllidariBloodLordAI : public MoonScriptCreatureAI
 {
@@ -1157,11 +975,9 @@ class IllidariBloodLordAI : public MoonScriptCreatureAI
             AddSpell(ILLIDARI_BLOOD_LORD_JUDGEMENT_OF_COMMAND, Target_Current, 8, 0, 25, 0, 10);
         }
 };
-// Should be summoned by Priestess of Dementia
-#define CN_IMAGE_OF_DEMENTIA                        23436
-#define IMAGE_OF_DEMENTIA_WHRILWIND                    41399
-#define IMAGE_OF_DEMENTIA_WHIRLWIND2                41400
 
+
+///\todo Should be summoned by Priestess of Dementia
 void SpellFunc_Whirlwind(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
 class ImageOfDementiaAI : public MoonScriptCreatureAI
@@ -1173,7 +989,7 @@ class ImageOfDementiaAI : public MoonScriptCreatureAI
             AddSpellFunc(&SpellFunc_Whirlwind, Target_Self, 15, 15, 35, 0, 10);
         }
 
-        SpellDesc*    mWhirlwind;
+        SpellDesc* mWhirlwind;
 };
 
 void SpellFunc_Whirlwind(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -1186,9 +1002,6 @@ void SpellFunc_Whirlwind(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
     }
 }
 
-#define CN_SHADOWMOON_BLOOD_MAGE                    22945
-#define SHADOWMOON_BLOOD_MAGE_BLOOD_SIPHON            41068
-#define SHADOWMOON_BLOOD_MAGE_BLOOD_BOLT            41072
 
 class ShadowmoonBloodMageAI : public MoonScriptCreatureAI
 {
@@ -1200,9 +1013,6 @@ class ShadowmoonBloodMageAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_SHADOWMOON_CHAMPION                        22880
-#define SHADOWMOON_CHAMPION_CHAOTIC_LIGHT            41063
-#define SHADOWMOON_CHAMPION_WHIRLING_BLADE            41053
 
 class ShadowmoonChampionAI : public MoonScriptCreatureAI
 {
@@ -1214,11 +1024,6 @@ class ShadowmoonChampionAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_SHADOWMOON_DEATHSHAPER                    22882
-#define SHADOWMOON_DEATHSHAPER_DEATH_COIL            41070
-#define SHADOWMOON_DEATHSHAPER_DEMON_ARMOR            13787
-#define SHADOWMOON_DEATHSHAPER_RAISE_DEAD            41071
-#define SHADOWMOON_DEATHSHAPER_SHADOW_BOLT            41069
 
 void SpellFunc_RaiseDead(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -1261,7 +1066,7 @@ class ShadowmoonDeathshaperAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mRaiseDead;
+        SpellDesc* mRaiseDead;
 };
 
 void SpellFunc_RaiseDead(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -1280,9 +1085,9 @@ void SpellFunc_RaiseDead(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Un
         static_cast<Creature*>(pTarget)->Despawn(3000, 0);
     }
 }
-// No entry in my DB, but AI may stay :)
-#define CN_SHADOWMOON_FALLEN                    23371
 
+
+///\todo No entry in my DB, but AI may stay :)?
 class ShadowmoonFallenAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(ShadowmoonFallenAI, MoonScriptCreatureAI);
@@ -1292,14 +1097,6 @@ class ShadowmoonFallenAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_SHADOWMOON_HOUNDMASTER                        23018
-#define SHADOWMOON_HOUNDMASTER_FLARE                    41094
-#define SHADOWMOON_HOUNDMASTER_FREEZING_TRAP            41085
-#define SHADOWMOON_HOUNDMASTER_SHOOT                    41093
-#define SHADOWMOON_HOUNDMASTER_SILENCING_SHOT            41084
-#define SHADOWMOON_HOUNDMASTER_SUMMON_RIDING_WARHOUND    39906
-#define SHADOWMOON_HOUNDMASTER_VOLLEY                    41091
-#define SHADOWMOON_HOUNDMASTER_WING_CLIP                32908
 
 class ShadowmoonHoundmasterAI : public MoonScriptCreatureAI
 {
@@ -1340,8 +1137,6 @@ class ShadowmoonHoundmasterAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_SHADOWMOON_REAVER                    22879
-#define SHADOWMOON_REAVER_SPELL_ABSORPTION        41034
 
 class ShadowmoonReaverAI : public MoonScriptCreatureAI
 {
@@ -1352,8 +1147,6 @@ class ShadowmoonReaverAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_SHADOWMOON_SOLDIER                    23047
-#define SHADOWMOON_SOLDIER_STRIKE                11976
 
 class ShadowmoonSoldierAI : public MoonScriptCreatureAI
 {
@@ -1363,20 +1156,9 @@ class ShadowmoonSoldierAI : public MoonScriptCreatureAI
             AddSpell(SHADOWMOON_SOLDIER_STRIKE, Target_Current, 10, 0, 15, 0, 10);
         }
 };
-// Haven't found informations about Shield Wall ability
-#define CN_SHADOWMOON_WEAPON_MASTER                    23049
-#define SHADOWMOON_WEAPON_MASTER_BATTLE_AURA        41106
-#define SHADOWMOON_WEAPON_MASTER_BATTLE_STANCE        41099
-#define SHADOWMOON_WEAPON_MASTER_BERSEKER_AURA        41107
-#define SHADOWMOON_WEAPON_MASTER_BERSERKER_STANCE    41100
-#define SHADOWMOON_WEAPON_MASTER_DEFENSIVE_AURA        41105
-#define SHADOWMOON_WEAPON_MASTER_DEFENSIVE_STANCE    41101
-#define SHADOWMOON_WEAPON_MASTER_KNOCK_AWAY            18813
-#define SHADOWMOON_WEAPON_MASTER_MUTILATE            41103
-#define SHADOWMOON_WEAPON_MASTER_WHIRLWIND            41097
-#define SHADOWMOON_WEAPON_MASTER_WHIRLWIND2            41098
-#define SHADOWMOON_WEAPON_MASTER_SHIELD_WALL        41104    // guessed, but close Id :)
 
+
+///\todo Haven't found informations about Shield Wall ability
 void SpellFunc_DefensiveStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 void SpellFunc_BerserkerStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -1429,8 +1211,8 @@ class ShadowmoonWeaponMasterAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*    mDefensiveStance;
-        SpellDesc*    mBerserkerStance;
+        SpellDesc* mDefensiveStance;
+        SpellDesc* mBerserkerStance;
 };
 
 void SpellFunc_DefensiveStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -1458,9 +1240,6 @@ void SpellFunc_BerserkerStance(SpellDesc* pThis, MoonScriptCreatureAI* pCreature
     }
 }
 
-#define CN_SPELLBOUND_ATTENDANT                        22959
-#define SPELLBOUND_ATTENDANT_KICK                    41395
-#define SPELLBOUND_ATTENDANT_SLEEP                    41396
 
 class SpellboundAttendantAI : public MoonScriptCreatureAI
 {
@@ -1472,9 +1251,6 @@ class SpellboundAttendantAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_TEMPLE_CONCUBINE                            22939
-#define TEMPLE_CONCUBINE_LOVE_TAP                    41338
-#define TEMPLE_CONCUBINE_POLYMORPH                    41334
 
 class TempleConcubineAI : public MoonScriptCreatureAI
 {
@@ -1489,8 +1265,6 @@ class TempleConcubineAI : public MoonScriptCreatureAI
 //////////////////////////////////////////////////////////////////////////
 /////// Elemental AIs
 
-#define CN_STORM_FURY                22848
-#define STORM_FURY_STORM_BLINK        39581
 
 void SpellFunc_StormBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -1513,7 +1287,7 @@ class StormFuryAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*    mStormBlink;
+        SpellDesc* mStormBlink;
 };
 
 void SpellFunc_StormBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -1536,8 +1310,6 @@ void SpellFunc_StormBlink(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, U
     }
 }
 
-#define CN_AQUEOUS_SURGER                    22881
-#define AQUEOUS_SURGER_POISON_BOLT_VOLLEY    40095
 
 class AqueousSurgerAI : public MoonScriptCreatureAI
 {
@@ -1548,9 +1320,6 @@ class AqueousSurgerAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_AQUEOUS_SPAWN                22883
-#define AQUEOUS_SPAWN_MERGE                40106
-#define AQUEOUS_SPAWN_SLUDGE_NOVA        40102
 
 class AqueousSpawnAI : public MoonScriptCreatureAI
 {
@@ -1562,9 +1331,6 @@ class AqueousSpawnAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_AQUEOUS_LORD                    22878
-#define AQUEOUS_LORD_CRASHING_WAVE        40100
-#define AQUEOUS_LORD_VILE_SLIME            40099
 
 void SpellFunc_SpawnAqueousSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType);
 
@@ -1596,8 +1362,6 @@ void SpellFunc_SpawnAqueousSpawn(SpellDesc* pThis, MoonScriptCreatureAI* pCreatu
 //////////////////////////////////////////////////////////////////////////
 /////// Mechanical AIs
 
-#define CN_PROMENADE_SENTINEL                23394
-#define PROMENADE_SENTINEL_L5_ARCANE_CHARGE    41360
 
 class PromenadeSentinelAI : public MoonScriptCreatureAI
 {
@@ -1611,8 +1375,6 @@ class PromenadeSentinelAI : public MoonScriptCreatureAI
 //////////////////////////////////////////////////////////////////////////
 /////// Uncategorized AIs
 
-#define CN_ANGERED_SOUL_FRAGMENT            23398
-#define ANGERED_SOUL_FRAGMENT_ANGER            41986
 
 class AngeredSoulFragmentAI : public MoonScriptCreatureAI
 {
@@ -1623,9 +1385,6 @@ class AngeredSoulFragmentAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_ASHTONGUE_FERAL_SPIRIT                22849
-#define ASHTONGUE_FERAL_SPIRIT_SPIRIT_BOND        39578    // won't be used for now
-#define ASHTONGUE_FERAL_SPIRIT_CHARGE_FRENZY    39575    // won't be added for now (can cause crashes - self-kills)
 
 class AshtongueFeralSpiritAI : public MoonScriptCreatureAI
 {
@@ -1638,8 +1397,6 @@ class AshtongueFeralSpiritAI : public MoonScriptCreatureAI
 //////////////////////////////////////////////////////////////////////////
 /////// Undead AIs
 
-#define CN_ENSLAVED_SOUL                23469
-#define ENSLAVED_SOUL_SOUL_RELEASE        41542
 
 class EnslavedSoulAI : public MoonScriptCreatureAI
 {
@@ -1654,8 +1411,6 @@ class EnslavedSoulAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_HUNGERING_SOUL_FRAGMENT                    23401
-#define HUNGERING_SOUL_FRAGMENT_CONSUMING_STRIKES    41248
 
 class HungeringSoulFragmentAI : public MoonScriptCreatureAI
 {
@@ -1675,8 +1430,6 @@ class HungeringSoulFragmentAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_SHADOWY_CONSTRUCT                    23111
-#define SHADOWY_CONSTRUCT_ATROPHY                40327
 
 class ShadowyConstructAI : public MoonScriptCreatureAI
 {
@@ -1687,8 +1440,6 @@ class ShadowyConstructAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_SUFFERING_SOUL_FRAGMENT                23999
-#define SUFFERING_SOUL_FRAGMENT_SOUL_BLAST        41245
 
 class SufferingSoulFragmentAI : public MoonScriptCreatureAI
 {
@@ -1698,14 +1449,9 @@ class SufferingSoulFragmentAI : public MoonScriptCreatureAI
             AddSpell(SUFFERING_SOUL_FRAGMENT_SOUL_BLAST, Target_Self, 8, 2, 30);
         }
 };
-// Teron Gorefiend transforms random player into it with those abilities, but AI might be handy too (too overpowered?) - cannot check (no npc in DB)
-#define CN_VANGEFUL_SPIRIT                    23109
-#define VANGEFUL_SPIRIT_SPIRIT_CHAINS        40175
-#define VANGEFUL_SPIRIT_SPIRIT_LANCE        40157
-#define VANGEFUL_SPIRIT_SPIRIT_SHIELD        40322
-#define VANGEFUL_SPIRIT_SPIRIT_STRIKE        40325
-#define VANGEFUL_SPIRIT_SPIRIT_VOLLEY        40314
 
+
+///\todo Teron Gorefiend transforms random player into it with those abilities, but AI might be handy too (too overpowered?) - cannot check (no npc in DB)
 class VangefulSpiritAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(VangefulSpiritAI, MoonScriptCreatureAI);
@@ -1719,9 +1465,6 @@ class VangefulSpiritAI : public MoonScriptCreatureAI
         }
 };
 
-#define CN_WRATHBONE_FLAYER                22953
-#define WRATHBONE_FLAYER_CLEAVE            15496
-#define WRATHBONE_FLAYER_IGNORED        39544
 
 class WrathboneFlayerAI : public MoonScriptCreatureAI
 {
@@ -1841,17 +1584,6 @@ class NajentusAI : public CreatureAIScript
         {
             // Disabled till I find way to make it dispellable like on blizz
             uint32 t = (uint32)time(NULL);
-            /*if (t > spells[2].casttime)
-            {
-                _unit->setAttackTimer(spells[2].attackstoptimer, false);
-
-                _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
-
-                spells[2].casttime = t + spells[2].cooldown;
-                spells[1].casttime = t + 55;
-                spells[3].casttime = t + 65;
-                return;
-            }*/
 
             if (t > spells[3].casttime)
             {
@@ -1932,8 +1664,7 @@ class NajentusAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -2452,8 +2183,7 @@ class GurtoggAI : public CreatureAIScript
                 {
                     _unit->setAttackTimer(spells[7].attackstoptimer, false);
 
-                    std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                    /* If anyone wants to use this function, then leave this note!                                         */
+                    std::vector<Unit*> TargetTable;
                     for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                     {
                         if (isHostile(_unit, (*itr)) && (*itr) != _unit && (*itr)->IsUnit())
@@ -2570,8 +2300,7 @@ class GurtoggAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -2691,7 +2420,7 @@ class EssenceOfSufferingAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mAuraOfSuffering;
+        SpellDesc* mAuraOfSuffering;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -2747,7 +2476,7 @@ class EssenceOfDesireAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mAuraOfDesire;
+        SpellDesc* mAuraOfDesire;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -2800,10 +2529,10 @@ class EssenceOfAngerAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mSoulScream;
-        SpellDesc*    mAuraOfAnger;
-        SpellDesc*    mTaunt;
-        SpellDesc*    mSpite;
+        SpellDesc* mSoulScream;
+        SpellDesc* mAuraOfAnger;
+        SpellDesc* mTaunt;
+        SpellDesc* mSpite;
 };
 
 #define CN_RELIQUARY_OF_SOULS    22856
@@ -2973,16 +2702,16 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
             }
         }
 
-        bool                    SpawnedEnsalvedSoul;
-        int                        Phase;
-        int                        DeadSoulCount;
-        int32                    mEnslavedSoulTimer;
-        MoonScriptCreatureAI*    mEoS;
-        MoonScriptCreatureAI*    mEoD;
-        MoonScriptCreatureAI*    mEoA;
-        SpellDesc*                mSummonAnger;
-        SpellDesc*                mSummonDesire;
-        SpellDesc*                mSummonSuffering;
+        bool SpawnedEnsalvedSoul;
+        int Phase;                  // do we have negative phase?
+        int DeadSoulCount;          // negative count?
+        int32 mEnslavedSoulTimer;   // negative timer?
+        MoonScriptCreatureAI* mEoS;
+        MoonScriptCreatureAI* mEoD;
+        MoonScriptCreatureAI* mEoA;
+        SpellDesc* mSummonAnger;
+        SpellDesc* mSummonDesire;
+        SpellDesc* mSummonSuffering;
 };
 
 //--------------------------Mother Shahraz------------------------------//
@@ -3252,8 +2981,7 @@ class ShahrazAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -3673,8 +3401,7 @@ class TeronGorefiendAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -4008,14 +3735,14 @@ class ShadeofakamaAI : public CreatureAIScript
 
 struct Transformation
 {
-    uint32            mTimer;
-    uint32            mEmote;
-    uint32            mEmoteType;
-    const char*        mText;
-    uint32            mSoundId;
-    uint32            mAura;
-    uint32            mUnAura;
-    bool            mEquipWeapons;
+    uint32 mTimer;
+    uint32 mEmote;
+    uint32 mEmoteType;
+    const char* mText;
+    uint32 mSoundId;
+    uint32 mAura;
+    uint32 mUnAura;
+    bool mEquipWeapons;
 };
 
 // Transformations
@@ -4096,15 +3823,6 @@ static Location UnitPos[] =
     { 676.717346f, 322.445251f, 354.153320f, 5.732623f },    // Blade 1
     { 677.368286f, 285.374725f, 354.242157f, 5.645614f }    // Blade 2
 };
-
-/*            For further purpose
-
-uint32 EventTimers[x][6]
-{
-    // Door Event    |    Illidan Dialog    |    Akama Escape    |    Blade Event        |    Maiev Arrive    |    Death Scene
-};
-
-*/
 
 uint32 DoorEventTimers[] =
 {
@@ -4396,7 +4114,7 @@ class ShadowDemonAI : public MoonScriptCreatureAI
             }
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             if (GetTargetToChannel() != NULL)
             {
@@ -4407,7 +4125,7 @@ class ShadowDemonAI : public MoonScriptCreatureAI
             ParentClass::OnDied(pKiller);
         }
 
-        void OnTargetDied(Unit*  pTarget)
+        void OnTargetDied(Unit* pTarget)
         {
             Despawn(2000, 0);
             ParentClass::OnDied(pTarget);
@@ -4437,8 +4155,8 @@ class ShadowDemonAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*    mParalyze;
-        SpellDesc*    mConsumeSoul;
+        SpellDesc* mParalyze;
+        SpellDesc* mConsumeSoul;
 };
 
 // Parasitic Shadowfiend AI - This AI is one huge hack :P
@@ -4509,8 +4227,8 @@ class ParasiticShadowfiendAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mParasiticDmg;
-        SpellDesc*    mParasitic;
+        SpellDesc* mParasiticDmg;
+        SpellDesc* mParasitic;
 };
 
 void SpellFunc_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -4546,12 +4264,12 @@ class SCRIPT_DECL AkamaGossip : public GossipScript
             if (pAI->GetCurrentWaypoint() >= 10)
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 229902, pPlayer);
-                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(444), 2);     // We're ready to face Illidan.
             }
             else
             {
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 229901, pPlayer);
-                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(445), 1);     // I'm ready, Akama.
             }
 
             Menu->SendTo(pPlayer);
@@ -4631,21 +4349,21 @@ class AkamaAI : public MoonScriptBossAI
             mTimeLeft = mScenePart = 0;
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
             SetWieldWeapon(true);
             CancelAllCooldowns();
         }
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
             SetWieldWeapon(false);
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             ParentClass::OnDied(pKiller);
         }
@@ -4729,7 +4447,7 @@ class AkamaAI : public MoonScriptBossAI
                     mOlumAI  = SpawnCreature(23411, 751.687744f, 297.408600f, 312.124817f, 0.054958f);
                     if (mUdaloAI == NULL || mOlumAI == NULL)
                     {
-                        pGate->SetState(GAMEOBJECT_STATE_OPEN);
+                        pGate->SetState(GO_STATE_OPEN);
                         break;
                     }
                     break;
@@ -4756,7 +4474,7 @@ class AkamaAI : public MoonScriptBossAI
                     }
                     break;
                 case 11:
-                    pGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pGate->SetState(GO_STATE_OPEN);
                     if (pDoorTrigger != NULL)
                     {
                         pDoorTrigger->CastSpell(pDoorTrigger, dbcSpell.LookupEntry(GATE_FAILURE), true);
@@ -4878,11 +4596,11 @@ class AkamaAI : public MoonScriptBossAI
                     GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
-                        pRightGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                        pRightGate->SetState(GO_STATE_CLOSED);
                     }
                     if (pLeftGate != NULL)
                     {
-                        pLeftGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                        pLeftGate->SetState(GO_STATE_CLOSED);
                     }
 
                     SetCanMove(true);
@@ -5151,17 +4869,17 @@ class AkamaAI : public MoonScriptBossAI
         }
 
         // SPells
-        SpellDesc*    mHealingPotion;
-        SpellDesc*    mDespawn;
+        SpellDesc* mHealingPotion;
+        SpellDesc* mDespawn;
 
         // AIs
-        MoonScriptCreatureAI*    mIllidanAI;
-        MoonScriptCreatureAI*    mUdaloAI;
-        MoonScriptCreatureAI*    mOlumAI;
+        MoonScriptCreatureAI* mIllidanAI;
+        MoonScriptCreatureAI* mUdaloAI;
+        MoonScriptCreatureAI* mOlumAI;
 
         // Other variables
-        int32        mScenePart;
-        uint32        mTimeLeft;
+        int32 mScenePart;
+        uint32 mTimeLeft;
 };
 
 /* Maiev AI - Creature AI Class */
@@ -5199,13 +4917,13 @@ class MaievAI : public MoonScriptBossAI
             mTimeLeft = 0;
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             SetWieldWeapon(true);
             CancelAllCooldowns();
         }
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             //OnCombatStop(pTarget);        // causes crashes
             CancelAllSpells();
@@ -5418,11 +5136,11 @@ class MaievAI : public MoonScriptBossAI
                             GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                             if (pRightGate != NULL)
                             {
-                                pRightGate->SetState(GAMEOBJECT_STATE_OPEN);
+                                pRightGate->SetState(GO_STATE_OPEN);
                             }
                             if (pLeftGate != NULL)
                             {
-                                pLeftGate->SetState(GAMEOBJECT_STATE_OPEN);
+                                pLeftGate->SetState(GO_STATE_OPEN);
                             }
 
                             mIllidanAI->GetUnit()->SetEmoteState(0);
@@ -5492,25 +5210,22 @@ class MaievAI : public MoonScriptBossAI
         }
 
         // AI class pointers
-        MoonScriptCreatureAI*        mIllidanAI;
+        MoonScriptCreatureAI* mIllidanAI;
 
         // Spell Description pointers
-        SpellDesc*                    mTrapSummon;
-        SpellDesc*                    mTeleport;
+        SpellDesc* mTrapSummon;
+        SpellDesc* mTeleport;
 
         // Other variables
-        bool                        mSummonTrap;
-        int32                        mTrapTimer;
-        int32                        mYellTimer;
-        uint32                        mScenePart;
-        uint32                        mTimeLeft;
+        bool mSummonTrap;
+        int32 mTrapTimer;
+        int32 mYellTimer;
+        uint32 mScenePart;
+        uint32 mTimeLeft;
 
 };
 
-/*START
-            .:Rewritten Illidan Script by M4ksiu:.
-START*/
-
+///\todo rewritten Illidan Script
 //------- Macros
 #define CN_ILLIDAN_STORMRAGE 22917
 
@@ -5646,17 +5361,17 @@ class IllidanStormrageAI : public MoonScriptBossAI
             mCurrentWaypoint = 0;
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             GameObject* pRightGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(745.07f, 241.802f, 354.292f, 200000);
             GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
             if (pRightGate != NULL)
             {
-                pRightGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                pRightGate->SetState(GO_STATE_CLOSED);
             }
             if (pLeftGate != NULL)
             {
-                pLeftGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                pLeftGate->SetState(GO_STATE_CLOSED);
             }
 
             _unit->SetEmoteState(EMOTE_ONESHOT_READY1H);
@@ -5667,7 +5382,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             mParasitic->mEnabled = false;
         }
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             // General
             _unit->SetEmoteState(0);
@@ -5720,11 +5435,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
-                    pRightGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pRightGate->SetState(GO_STATE_OPEN);
                 }
                 if (pLeftGate != NULL)
                 {
-                    pLeftGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pLeftGate->SetState(GO_STATE_OPEN);
                 }
 
                 Creature* pMaiev = static_cast<Creature*>(ForceCreatureFind(CN_MAIEV));
@@ -5737,7 +5452,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             ParentClass::OnCombatStop(pTarget);
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             Creature* pMaiev = static_cast<Creature*>(ForceCreatureFind(CN_MAIEV));
             if (pMaiev != NULL && pMaiev->isAlive())
@@ -5758,11 +5473,11 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                 if (pRightGate != NULL)
                 {
-                    pRightGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pRightGate->SetState(GO_STATE_OPEN);
                 }
                 if (pLeftGate != NULL)
                 {
-                    pLeftGate->SetState(GAMEOBJECT_STATE_OPEN);
+                    pLeftGate->SetState(GO_STATE_OPEN);
                 }
             }
 
@@ -6710,56 +6425,56 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     GameObject* pLeftGate  = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(744.829f, 369.276f, 354.324f, 200001);
                     if (pRightGate != NULL)
                     {
-                        pRightGate->SetState(GAMEOBJECT_STATE_OPEN);
+                        pRightGate->SetState(GO_STATE_OPEN);
                     }
                     if (pLeftGate != NULL)
                     {
-                        pLeftGate->SetState(GAMEOBJECT_STATE_OPEN);
+                        pLeftGate->SetState(GO_STATE_OPEN);
                     }*/
 
             delete this;
         }
 
         // Global variables
-        uint32                    mPhaseBackup;
-        uint32                    mScenePart;
-        int32                    mTimeLeft;
-        bool                    mAllow;
+        uint32 mPhaseBackup;
+        uint32 mScenePart;
+        int32 mTimeLeft;
+        bool mAllow;
 
         // Phase 1 variables
-        int32                    mParasiticTimer;
-        SpellDesc*                mParasiticDmg;
-        SpellDesc*                mParasitic;
+        int32 mParasiticTimer;
+        SpellDesc* mParasiticDmg;
+        SpellDesc* mParasitic;
 
         // Phase 2 variables
-        MoonScriptCreatureAI*    mFoA1;
-        MoonScriptCreatureAI*    mFoA2;
-        int32                    mMovementTimer;
-        int32                    mFireWallTimer;
-        int32                    mLastFireWall;
-        uint32                    mMiscEventPart;
+        MoonScriptCreatureAI* mFoA1;
+        MoonScriptCreatureAI* mFoA2;
+        int32 mMovementTimer;
+        int32 mFireWallTimer;
+        int32 mLastFireWall;
+        uint32 mMiscEventPart;
 
         // Phase 3 variables
-        SpellDesc*                mShadowPrison;
+        SpellDesc* mShadowPrison;
 
         // Phase 4 variables
-        int32                    mShadowDemonsTimer;
-        int32                    mFlameBurstTimer;
-        SpellDesc*                mFlameBurst;
-        SpellDesc*                mShadowDemons;
-        SpellDesc*                mShadowBlast;
-        bool                    mPlaySound;
+        int32 mShadowDemonsTimer;
+        int32 mFlameBurstTimer;
+        SpellDesc* mFlameBurst;
+        SpellDesc* mShadowDemons;
+        SpellDesc* mShadowBlast;
+        bool mPlaySound;
 
         // Phase 3 & 4 variables
-        int32                    mDemonTimer;
+        int32 mDemonTimer;
 
         // Phase 5 variables
-        int32                    mYellTimer;
-        int32                    mEnrageTimer;
-        SpellDesc*                mEnrage;
+        int32 mYellTimer;
+        int32 mEnrageTimer;
+        SpellDesc* mEnrage;
 
         // Temporary variables
-        uint32                    mCurrentWaypoint;
+        uint32 mCurrentWaypoint;
 };
 
 void SpellFunc_Illidan_Parasitic(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -6817,9 +6532,10 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
             mHasTrapped = false;
         }
 
-        void OnCombatStart(Unit*  pTarget) {}
+        void OnCombatStart(Unit* pTarget)
+        {}
 
-        void OnCombatStop(Unit*  pTarget)
+        void OnCombatStop(Unit* pTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -6958,7 +6674,7 @@ class CageTrapGO : public GameObjectAIScript
 
         void OnActivate(Player* pPlayer)
         {
-            _gameobject->SetUInt32Value(GAMEOBJECT_FLAGS, 1);
+            _gameobject->SetFlags(GO_FLAG_NONSELECTABLE);
             Creature* pTrigger = _gameobject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), CN_CAGE_TRAP_DISTURB_TRIGGER);
             if (pTrigger != NULL && pTrigger->GetScript() != NULL)
             {
@@ -7038,7 +6754,7 @@ class FlameOfAzzinothAI : public MoonScriptCreatureAI
             mBlaze = 0;
         }
 
-        void OnCombatStart(Unit*  pTarget)
+        void OnCombatStart(Unit* pTarget)
         {
             ParentClass::OnCombatStart(pTarget);
             CancelAllCooldowns();
@@ -7088,13 +6804,13 @@ class FlameOfAzzinothAI : public MoonScriptCreatureAI
         }
 
         // Flame Blast Spell Function
-        SpellDesc*    mFlameBlast;
-        SpellDesc*    mBlaze;
+        SpellDesc* mFlameBlast;
+        SpellDesc* mBlaze;
 
         // Charge Spell Function
-        SpellDesc*    mChargeSpellFunc;
-        SpellDesc*    mCharge;
-        SpellDesc*    mEnrage;
+        SpellDesc* mChargeSpellFunc;
+        SpellDesc* mCharge;
+        SpellDesc* mEnrage;
 };
 
 void SpellFunc_FlameOfAzzinothFlameBlast(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)

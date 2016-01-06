@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -121,13 +121,13 @@ enum WalkMode
 {
     WALKMODE_SPRINT,
     WALKMODE_RUN,
-    WALKMODE_WALK,
+    WALKMODE_WALK
 };
 
 enum SplinePriority
 {
     SPLINE_PRIORITY_MOVEMENT,
-    SPLINE_PRIORITY_REDIRECTION,
+    SPLINE_PRIORITY_REDIRECTION
 };
 
 enum AIType
@@ -149,7 +149,7 @@ enum MovementType
     MOVEMENTTYPE_WANTEDWP,
     MOVEMENTTYPE_DONTMOVEWP,
     MOVEMENTTYPE_QUEST = 10,
-    MOVEMENTTYPE_FORWARDTHENSTOP = 11,
+    MOVEMENTTYPE_FORWARDTHENSTOP = 11
 };
 
 /*struct AI_Target
@@ -191,7 +191,7 @@ enum AI_SpellTargetType
     TTYPE_DESTINATION,
     TTYPE_SOURCE,
     TTYPE_CASTER,
-    TTYPE_OWNER,
+    TTYPE_OWNER
 };
 
 enum AI_State
@@ -264,12 +264,12 @@ struct SplinePoint
 };
 
 
-typedef HM_NAMESPACE::hash_map<uint64, int32> TargetMap;
+typedef std::unordered_map<uint64, int32> TargetMap;
 
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
 
-class SERVER_DECL AIInterface : public Arcemu::IUpdatable
+class SERVER_DECL AIInterface : public IUpdatable
 {
     public:
 
@@ -282,15 +282,15 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         Unit* GetUnit() { return m_Unit; }
         Unit* GetPetOwner() { return m_PetOwner; }
         void DismissPet();
-    void SetUnitToFollow(Unit* un);;
+        void SetUnitToFollow(Unit* un);
         void SetUnitToFollow(uint64 guid) { m_UnitToFollow = guid; };
         void ResetUnitToFollow() { m_UnitToFollow = 0; };
 
-    void SetUnitToFear(Unit* un);;
+        void SetUnitToFear(Unit* un);
         void SetUnitToFear(uint64 guid)  { m_UnitToFear = guid; };
         void ResetUnitToFear() { m_UnitToFear = 0; };
 
-    void SetUnitToFollowBackup(Unit* un);;
+        void SetUnitToFollowBackup(Unit* un);
         void SetUnitToFollowBackup(uint64 guid) { m_UnitToFollow_backup = guid; };
         void SetFollowDistance(float dist) { FollowDistance = dist; };
         void SetUnitToFollowAngle(float angle) { m_fallowAngle = angle; }
@@ -483,7 +483,7 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         TimedEmoteList* timed_emotes;
         inline void SetPetOwner(Unit* owner) { m_PetOwner = owner; }
 
-    std::list<AI_Spell*> m_spells;
+        std::list<AI_Spell*> m_spells;
 
         bool disable_combat;
 
@@ -515,6 +515,7 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         virtual void _UpdateCombat(uint32 p_time);
 
     protected:
+
         bool UnsafeCanOwnerAttackUnit(Unit* pUnit);        /// this is designed for internal use only
         bool m_AllowedToEnterCombat;
 
@@ -570,7 +571,6 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         Unit* soullinkedWith;   /// This mob can be hit only by a soul linked unit
         bool isSoulLinked;
 
-
         // Movement
         float m_walkSpeed;
         float m_runSpeed;
@@ -622,11 +622,15 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         int32 m_currentHighestThreat;
         std::list<spawn_timed_emotes*>::iterator next_timed_emote;
         uint32 timed_emote_expire;
+
     private:
+
         /// specifies if m_waypoints was loaded from DB, so shared between other AIInterface instances.
         bool m_waypointsLoadedFromDB;
         WayPointMap* m_waypoints;
+
     public:
+
         bool m_is_in_instance;
         bool skip_reset_hp;
 
@@ -639,7 +643,12 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         void MoveJump(float x, float y, float z, float o = 0, bool hugearc = false);
         void MoveJumpExt(float x, float y, float z, float o, float speedZ, bool hugearc);
         void MoveTeleport(float x, float y, float z, float o = 0);
+        void MoveFalling(float x, float y, float z, float o = 0);
         bool MoveCharge(float x, float y, float z);
+
+        void SetCreatureProtoDifficulty(uint32 entry);
+        uint8 GetDifficultyType();
+
 };
 
 

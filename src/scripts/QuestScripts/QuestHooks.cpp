@@ -400,7 +400,7 @@ void Scratches(Player* pPlayer, uint32 AreaTrigger)
     if(qle == NULL)
         return;
 
-    Creature*  Kaliri = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
+    Creature* Kaliri = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 21468);
     if(Kaliri == NULL)
         return;
 

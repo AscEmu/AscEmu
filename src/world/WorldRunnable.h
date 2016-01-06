@@ -16,12 +16,8 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-//
-// WorldRunnable.h
-//
 
 #ifndef __WORLDRUNNABLE_H
 #define __WORLDRUNNABLE_H
@@ -29,8 +25,9 @@
 class WorldRunnable : public CThread
 {
     public:
+
         WorldRunnable();
         bool run();
 };
 
-#endif
+#endif      //__WORLDRUNNABLE_H

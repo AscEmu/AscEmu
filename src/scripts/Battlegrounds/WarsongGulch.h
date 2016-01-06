@@ -38,14 +38,16 @@ enum WarsongGulchAreaTriggers
 
 class WarsongGulch : public CBattleground
 {
-        GameObject* m_buffs[6];
-        GameObject* m_homeFlags[2];
-        GameObject* m_dropFlags[2];
-        uint32 m_flagHolders[2];
+    GameObject* m_buffs[6];
+    GameObject* m_homeFlags[2];
+    GameObject* m_dropFlags[2];
+    uint32 m_flagHolders[2];
     std::list<GameObject*> m_gates;
-        uint32 m_scores[2];
-        uint32 m_lgroup;
+    uint32 m_scores[2];
+    uint32 m_lgroup;
+
     public:
+
         WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t);
         ~WarsongGulch();
 
@@ -74,7 +76,7 @@ class WarsongGulch : public CBattleground
         static CBattleground* Create(MapMgr* m, uint32 i, uint32 l, uint32 t) { return new WarsongGulch(m, i, l, t); }
 
         uint32 GetNameID() { return 39; }
-        uint64 GetFlagHolderGUID( uint32 faction ) const{ return m_flagHolders[ faction ]; }
+        uint64 GetFlagHolderGUID(uint32 faction) const { return m_flagHolders[faction]; }
         void OnStart();
 
         void SetIsWeekend(bool isweekend);

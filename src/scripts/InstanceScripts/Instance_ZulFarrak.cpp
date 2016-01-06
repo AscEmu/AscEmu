@@ -214,8 +214,7 @@ class AntusulAI : public CreatureAIScript
             add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
             servant = dbcSpell.LookupEntry(SP_ANTUSUL_SERVANTS);
-            //healing_ward = dbcSpell.LookupEntry(SP_ANTUSUL_HEALINGWARD);
-            //earthgrab_ward = dbcSpell.LookupEntry(SP_ANTUSUL_EARTHGRABWARD);
+
             secondspawncount = 0;
         }
 
@@ -224,7 +223,7 @@ class AntusulAI : public CreatureAIScript
             add1 = add2 = add3 = add4 = add5 = add6 = trigger = NULL;
             spawns = firstspawn = secondspawn = true;
             spawns2 = attack = false;
-            /*healingwardcount = earthgrabcount = hmax = emax =*/
+
             secondspawncount = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -232,7 +231,7 @@ class AntusulAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
-            /*healingwardcount = earthgrabcount = hmax = emax =*/
+
             secondspawncount = 0;
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -244,7 +243,7 @@ class AntusulAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             spawns = spawns2 = attack = firstspawn = secondspawn = false;
-            /*healingwardcount = earthgrabcount = hmax = emax =*/
+
             secondspawncount = 0;
             RemoveAIUpdateEvent();
             trigger = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(1811.943726f, 714.839417f, 12.897189f, 133337);
@@ -254,10 +253,6 @@ class AntusulAI : public CreatureAIScript
 
         void AIUpdate()
         {
-            //healingwardcount++;
-            //earthgrabcount++;
-            //hmax = 15 + RandomUInt(5);
-            //emax = 15 + RandomUInt(5);
             if (_unit->GetHealthPct() <= 75 && firstspawn)
             {
                 firstspawn = false;
@@ -326,16 +321,7 @@ class AntusulAI : public CreatureAIScript
                 spawnadds();
                 spawns2 = true;
             }
-            /*if (healingwardcount >= hmax)
-            {
-                //_unit->CastSpell(_unit, SP_ANTUSUL_HEALINGWARD, true);    wrong spell id cant find right one
-                healingwardcount = 0;
-            }
-            if (earthgrabcount >= emax)
-            {
-                //_unit->CastSpell(_unit, SP_ANTUSUL_EARTHGRABWARD, true);   the totem needs to be scripted with its own ai
-                earthgrabcount = 0;
-            }*/
+
         }
 
         void spawnadds()
@@ -399,7 +385,7 @@ class AntusulAI : public CreatureAIScript
 
     protected:
         bool spawns, spawns2, attack, firstspawn, secondspawn;
-        int /*healingwardcount, earthgrabcount, hmax, emax,*/ secondspawncount;
+        int secondspawncount;
 
         Creature* add1;
         Creature* add2;

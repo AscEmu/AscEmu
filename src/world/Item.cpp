@@ -43,7 +43,7 @@ Item::Item()//this is called when constructing as container
     ItemExpiresOn = 0;
     Enchantments.clear();
 
-    for (uint32 i = 0; i < 3; ++i)
+    for (uint8 i = 0; i < 3; ++i)
         OnUseSpellIDs[i] = 0;
 
     m_isDirty = false;
@@ -195,7 +195,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     std::string enchant_field = fields[15].GetString();
     std::vector< std::string > enchants = StrSplit(enchant_field, ";");
     uint32 enchant_id;
-    EnchantEntry* entry;
+
     uint32 time_left;
     uint32 enchslot;
 
@@ -203,24 +203,12 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     {
         if (sscanf((*itr).c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
         {
-            entry = dbcEnchant.LookupEntryForced(enchant_id);
-            if (entry && entry->Id == enchant_id && m_itemProto->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+            auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
+            if (spell_item_enchant == nullptr)
+                continue;
+            if (spell_item_enchant->Id == enchant_id && m_itemProto->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
             {
-                AddEnchantment(entry, time_left, (time_left == 0), false, false, enchslot);
-                //(enchslot != 2) ? false : true, false);
-            }
-            else
-            {
-                /*
-                EnchantEntry *pEnchant = new EnchantEntry;
-                memset(pEnchant,0,sizeof(EnchantEntry));
-
-                pEnchant->Id = enchant_id;
-                if (enchslot != 2)
-                AddEnchantment(pEnchant,0,true, false);
-                else
-                AddEnchantment(pEnchant,0,false,false);
-                */
+                AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
             }
         }
     }
@@ -291,18 +279,23 @@ void Item::ApplyRandomProperties(bool apply)
     {
         if (int32(GetItemRandomPropertyId()) > 0)
         {
-            RandomProps* rp = dbcRandomProps.LookupEntry(GetItemRandomPropertyId());
-            int32 Slot;
-            for (int k = 0; k < 3; k++)
+            auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(GetItemRandomPropertyId());
+            for (uint8 k = 0; k < 3; k++)
             {
-                if (rp->spells[k] != 0)
+                if (item_random_properties == nullptr)
+                    continue;
+
+                if (item_random_properties->spells[k] != 0)
                 {
-                    EnchantEntry* ee = dbcEnchant.LookupEntry(rp->spells[k]);
-                    Slot = HasEnchantment(ee->Id);
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(item_random_properties->spells[k]);
+                    if (spell_item_enchant == nullptr)
+                        continue;
+
+                    int32 Slot = HasEnchantment(spell_item_enchant->Id);
                     if (Slot < 0)
                     {
-                        Slot = FindFreeEnchantSlot(ee, 1);
-                        AddEnchantment(ee, 0, false, apply, true, Slot);
+                        Slot = FindFreeEnchantSlot(spell_item_enchant, 1);
+                        AddEnchantment(spell_item_enchant, 0, false, apply, true, Slot);
                     }
                     else if (apply)
                         ApplyEnchantmentBonus(Slot, true);
@@ -311,18 +304,24 @@ void Item::ApplyRandomProperties(bool apply)
         }
         else
         {
-            ItemRandomSuffixEntry* rs = dbcItemRandomSuffix.LookupEntry(abs(int(GetItemRandomPropertyId())));
-            int32 Slot;
-            for (uint32 k = 0; k < 3; ++k)
+            auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(abs(int(GetItemRandomPropertyId())));
+
+            for (uint8 k = 0; k < 3; ++k)
             {
-                if (rs->enchantments[k] != 0)
+                if (item_random_suffix == nullptr)
+                    continue;
+
+                if (item_random_suffix->enchantments[k] != 0)
                 {
-                    EnchantEntry* ee = dbcEnchant.LookupEntry(rs->enchantments[k]);
-                    Slot = HasEnchantment(ee->Id);
+                    auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(item_random_suffix->enchantments[k]);
+                    if (spell_item_enchant == nullptr)
+                        continue;
+
+                    int32 Slot = HasEnchantment(spell_item_enchant->Id);
                     if (Slot < 0)
                     {
-                        Slot = FindFreeEnchantSlot(ee, 2);
-                        AddEnchantment(ee, 0, false, apply, true, Slot, rs->prefixes[k]);
+                        Slot = FindFreeEnchantSlot(spell_item_enchant, 2);
+                        AddEnchantment(spell_item_enchant, 0, false, apply, true, Slot, item_random_suffix->prefixes[k]);
                     }
                     else if (apply)
                         ApplyEnchantmentBonus(Slot, true);
@@ -607,7 +606,7 @@ void Item::SetOwner(Player* owner)
     m_owner = owner;
 }
 
-int32 Item::AddEnchantment(EnchantEntry* Enchantment, uint32 Duration, bool Perm /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32 Slot_, uint32 RandomSuffix)
+int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool Perm /* = false */, bool apply /* = true */, bool RemoveAtLogout /* = false */, uint32 Slot_, uint32 RandomSuffix)
 {
     int32 Slot = Slot_;
     m_isDirty = true;
@@ -700,7 +699,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     if (itr == Enchantments.end())
         return;
 
-    EnchantEntry* Entry = itr->second.Enchantment;
+    DBC::Structures::SpellItemEnchantmentEntry const* Entry = itr->second.Enchantment;
     uint32 RandomSuffixAmount = itr->second.RandomSuffix;
 
     if (itr->second.BonusApplied == Apply)
@@ -848,13 +847,13 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 {
                     if (Apply)
                     {
-                        for (uint32 i = 0; i < 3; ++i)
+                        for (uint8 i = 0; i < 3; ++i)
                             OnUseSpellIDs[i] = Entry->spell[i];
 
                     }
                     else
                     {
-                        for (uint32 i = 0; i < 3; ++i)
+                        for (uint8 i = 0; i < 3; ++i)
                             OnUseSpellIDs[i] = 0;
                     }
                     break;
@@ -902,7 +901,7 @@ void Item::EventRemoveEnchantment(uint32 Slot)
     RemoveEnchantment(Slot);
 }
 
-int32 Item::FindFreeEnchantSlot(EnchantEntry* Enchantment, uint32 random_type)
+int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 random_type)
 {
     uint32 GemSlotsReserve = GetSocketsCount();
     if (GetProto()->SocketBonus)
@@ -1006,7 +1005,7 @@ void Item::RemoveAllEnchantments(bool OnlyTemporary)
     }
 }
 
-void Item::RemoveRelatedEnchants(EnchantEntry* newEnchant)
+void Item::RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant)
 {
     EnchantmentMap::iterator itr, itr2;
     for (itr = Enchantments.begin(); itr != Enchantments.end();)
@@ -1058,7 +1057,7 @@ EnchantmentInstance* Item::GetEnchantment(uint32 slot)
         return NULL;
 }
 
-bool Item::IsGemRelated(EnchantEntry* Enchantment)
+bool Item::IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment)
 {
     if (GetProto()->SocketBonus == Enchantment->Id)
         return true;
@@ -1269,7 +1268,7 @@ bool Item::IsEligibleForRefund()
     if (proto->MaxCount > 1)
         return false;
 
-    for (int i = 0; i < 5; ++i)
+    for (uint8 i = 0; i < 5; ++i)
     {
         ItemSpell spell = proto->Spells[i];
 
@@ -1295,22 +1294,22 @@ void Item::RemoveFromRefundableMap()
 
 uint32 Item::RepairItemCost()
 {
-    DurabilityCostsEntry* dcosts = dbcDurabilityCosts.LookupEntryForced(m_itemProto->ItemLevel);
-    if (dcosts == NULL)
+    auto durability_costs = sDurabilityCostsStore.LookupEntry(m_itemProto->ItemLevel);
+    if (durability_costs == nullptr)
     {
-        LOG_ERROR("Repair: Unknown item level (%u)", dcosts);
+        LOG_ERROR("Repair: Unknown item level (%u)", durability_costs);
         return 0;
     }
 
-    DurabilityQualityEntry* dquality = dbcDurabilityQuality.LookupEntryForced((m_itemProto->Quality + 1) * 2);
-    if (dquality == NULL)
+    auto durability_quality = sDurabilityQualityStore.LookupEntry((m_itemProto->Quality + 1) * 2);
+    if (durability_quality == nullptr)
     {
-        LOG_ERROR("Repair: Unknown item quality (%u)", dquality);
+        LOG_ERROR("Repair: Unknown item quality (%u)", durability_quality);
         return 0;
     }
 
-    uint32 dmodifier = dcosts->modifier[m_itemProto->Class == ITEM_CLASS_WEAPON ? m_itemProto->SubClass : m_itemProto->SubClass + 21];
-    uint32 cost = long2int32((GetDurabilityMax() - GetDurability()) * dmodifier * double(dquality->quality_modifier));
+    uint32 dmodifier = durability_costs->modifier[m_itemProto->Class == ITEM_CLASS_WEAPON ? m_itemProto->SubClass : m_itemProto->SubClass + 21];
+    uint32 cost = long2int32((GetDurabilityMax() - GetDurability()) * dmodifier * double(durability_quality->quality_modifier));
     return cost;
 }
 
@@ -1338,3 +1337,4 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
     m_isDirty = true;
     return true;
 }
+

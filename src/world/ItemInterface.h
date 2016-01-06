@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -23,8 +23,6 @@
 
 #include "EquipmentSetMgr.h"
 
-//In 1.8 client marked wrong slot like this
-// #define INVALID_BACKPACK_SLOT ((int8)(0xFF))
 const uint8 INVALID_BACKPACK_SLOT = 0xFF;
 
 struct SlotResult
@@ -47,7 +45,7 @@ enum AddItemResult
 {
     ADD_ITEM_RESULT_ERROR           = 0,
     ADD_ITEM_RESULT_OK              = 1,
-    ADD_ITEM_RESULT_DUPLICATED      = 2,
+    ADD_ITEM_RESULT_DUPLICATED      = 2
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -65,6 +63,7 @@ typedef std::map<uint64, std::pair<time_t, uint32>> RefundableMap;
 class SERVER_DECL ItemInterface
 {
     private:
+
         SlotResult result;
         Player* m_pOwner;
         Item* m_pItems[MAX_INVENTORY_SLOT];
@@ -75,6 +74,7 @@ class SERVER_DECL ItemInterface
         AddItemResult m_AddItem(Item* item, int8 ContainerSlot, int16 slot);
 
     public:
+
         Arcemu::EquipmentSetMgr m_EquipmentSets;
         friend class ItemIterator;
         ItemInterface(Player* pPlayer);
@@ -208,14 +208,16 @@ class SERVER_DECL ItemInterface
 
 class ItemIterator
 {
-        bool m_atEnd;
-        bool m_searchInProgress;
-        uint32 m_slot;
-        uint32 m_containerSlot;
-        Container* m_container;
-        Item* m_currentItem;
-        ItemInterface* m_target;
+    bool m_atEnd;
+    bool m_searchInProgress;
+    uint32 m_slot;
+    uint32 m_containerSlot;
+    Container* m_container;
+    Item* m_currentItem;
+    ItemInterface* m_target;
+
     public:
+
         ItemIterator(ItemInterface* target) : m_atEnd(false), m_searchInProgress(false), m_slot(0), m_containerSlot(0), m_container(nullptr), m_currentItem(nullptr), m_target(target) {}
         ~ItemIterator() { if (m_searchInProgress) { EndSearch(); } }
 
@@ -249,7 +251,7 @@ class ItemIterator
             return m_currentItem;
         }
 
-    void Increment();
+        void Increment();
 
         inline Item* Grab() { return m_currentItem; }
         inline bool End() { return m_atEnd; }

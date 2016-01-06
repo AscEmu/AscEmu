@@ -606,7 +606,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
             curObj = *iter;
             ++iter;
 
-            if (curObj->IsPlayer() && plObj != NULL && plObj->transporter_info.guid && plObj->transporter_info.guid == static_cast< Player* >(curObj)->transporter_info.guid)
+            if (curObj->IsPlayer() && plObj != NULL && plObj->obj_movement_info.transporter_info.guid && plObj->obj_movement_info.transporter_info.guid == static_cast< Player* >(curObj)->obj_movement_info.transporter_info.guid)
                 fRange = 0.0f;                      // unlimited distance for people on same boat
             else if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
                 fRange = 0.0f;                      // unlimited distance for transporters (only up to 2 cells +/- anyway.)
@@ -778,7 +778,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
         if (curObj == NULL)
             continue;
 
-        if (curObj->IsPlayer() && obj->IsPlayer() && plObj != NULL && plObj->transporter_info.guid && plObj->transporter_info.guid == static_cast< Player* >(curObj)->transporter_info.guid)
+        if (curObj->IsPlayer() && obj->IsPlayer() && plObj != NULL && plObj->obj_movement_info.transporter_info.guid && plObj->obj_movement_info.transporter_info.guid == static_cast< Player* >(curObj)->obj_movement_info.transporter_info.guid)
             fRange = 0.0f;                              // unlimited distance for people on same boat
         else if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
             fRange = 0.0f;                              // unlimited distance for transporters (only up to 2 cells +/- anyway.)
@@ -1393,7 +1393,8 @@ void MapMgr::BeginInstanceExpireCountdown()
     forced_expire = true;
 
     // send our sexy packet
-    data << uint32(60000) << uint32(1);
+    data << uint32(60000);
+    data << uint32(1);
     for (itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
     {
         if (!itr->second->raidgrouponlysent)
@@ -1544,14 +1545,12 @@ void MapMgr::_PerformObjectDuties()
     {
         difftime = mstime - lastGameobjectUpdate;
 
-        GameObjectSet::iterator itr = activeGameObjects.begin();
-        GameObject* ptr;
-        for (; itr != activeGameObjects.end();)
+        for (std::vector<GameObject*>::iterator itr = GOStorage.begin(); itr != GOStorage.end(); )
         {
-            ptr = *itr;
+            GameObject* gameobject = *itr;
             ++itr;
-            if (ptr != NULL)
-                ptr->Update(difftime);
+            if (gameobject != nullptr)
+                gameobject->Update(difftime);
         }
 
         lastGameobjectUpdate = mstime;
@@ -1885,8 +1884,8 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     go_spawn->rotation_1 = go->GetParentRotation(1);
     go_spawn->rotation_2 = go->GetParentRotation(2);
     go_spawn->rotation_3 = go->GetParentRotation(3);
-    go_spawn->state = go->GetByte(GAMEOBJECT_BYTES_1, 0);
-    go_spawn->flags = go->GetUInt32Value(GAMEOBJECT_FLAGS);
+    go_spawn->state = go->GetState();
+    go_spawn->flags = go->GetFlags();
     go_spawn->faction = go->GetFaction();
     go_spawn->scale = go->GetScale();
     //go_spawn->stateNpcLink = 0;
@@ -1916,20 +1915,32 @@ GameObject* MapMgr::GetGameObject(uint32 guid)
 
 GameObject* MapMgr::CreateGameObject(uint32 entry)
 {
+    uint32 GUID = 0;
+
     if (_reusable_guids_gameobject.size() > GO_GUID_RECYCLE_INTERVAL)
     {
         uint32 guid = _reusable_guids_gameobject.front();
         _reusable_guids_gameobject.pop_front();
-        return new GameObject((uint64)HIGHGUID_TYPE_GAMEOBJECT << 32 | guid);
+
+        GUID = guid;
+    }
+    else
+    {
+        if (++m_GOHighGuid >= GOStorage.size())
+        {
+            // Reallocate array with larger size.
+            size_t newsize = GOStorage.size() + RESERVE_EXPAND_SIZE;
+            GOStorage.resize(newsize, NULL);
+        }
+
+        GUID = m_GOHighGuid;
     }
 
-    if (++m_GOHighGuid >= GOStorage.size())
-    {
-        // Reallocate array with larger size.
-        size_t newsize = GOStorage.size() + RESERVE_EXPAND_SIZE;
-        GOStorage.resize(newsize, NULL);
-    }
-    return new GameObject((uint64)HIGHGUID_TYPE_GAMEOBJECT << 32 | m_GOHighGuid);
+    GameObject* gameobject = nullptr;
+    gameobject = ObjectFactory.CreateGameObject(entry, GUID);
+    
+
+    return gameobject;
 }
 
 DynamicObject* MapMgr::CreateDynamicObject()
@@ -1991,6 +2002,38 @@ float MapMgr::GetFirstZWithCPZ(float x, float y, float z)
             break;
     }
     return posZ;
+}
+
+GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
+{
+    GameObject* go = nullptr;
+    float r = FLT_MAX;
+
+    for (std::set<Object*>::iterator itr = o->GetInRangeSetBegin(); itr != o->GetInRangeSetEnd(); ++itr)
+    {
+        Object* iro = *itr;
+
+        if (!iro->IsGameObject())
+            continue;
+
+        GameObject* irgo = static_cast<GameObject*>(iro);
+
+        if (irgo->GetType() != type)
+            continue;
+
+        if ((irgo->GetPhase() & o->GetPhase()) == 0)
+            continue;
+
+        float range = o->GetDistanceSq(iro);
+
+        if (range < r)
+        {
+            r = range;
+            go = irgo;
+        }
+    }
+
+    return go;
 }
 
 void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Message, ...)

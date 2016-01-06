@@ -41,10 +41,13 @@ void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
     WoWGuid pguid((uint64)pn->guid); //VLack: The usual new style guid handling on 3.1.2
     WorldPacket data(SMSG_NAME_QUERY_RESPONSE, strlen(pn->name) + 35);
     //    data << pn->guid << uint32(0);    //highguid
-    data << pguid << uint8(0); //VLack: usual, new-style guid with an uint8
+    data << pguid;
+    data << uint8(0); //VLack: usual, new-style guid with an uint8
     data << pn->name;
     data << uint8(0);       // this is a string showed besides players name (eg. in combat log), a custom title ?
-    data << uint8(pn->race) << uint8(pn->gender) << uint8(pn->cl);
+    data << uint8(pn->race);
+    data << uint8(pn->gender);
+    data << uint8(pn->cl);
     //    data << uint8(0);            // 2.4.0, why do i get the feeling blizz is adding custom classes or custom titles? (same thing in who list)
     data << uint8(0); //VLack: tell the server this name is not declined... (3.1 fix?)
     SendPacket(&data);
@@ -82,11 +85,13 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 
     if (entry == 300000)
     {
-        data << (uint32)entry;
+        data << entry;
         data << "WayPoint";
-        data << uint8(0) << uint8(0) << uint8(0);
+        data << uint8(0);
+        data << uint8(0);
+        data << uint8(0);
         data << "Level is WayPoint ID";
-        for (uint32 i = 0; i < 8; i++)
+        for (uint8 i = 0; i < 8; i++)
         {
             data << uint32(0);
         }
@@ -103,7 +108,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         if (lcn == NULL)
         {
             LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name);
-            data << (uint32)entry;
+            data << entry;
             data << ci->Name;       // name of the creature
             data << uint8(0);       // name2, always seems to be empty
             data << uint8(0);       // name3, always seems to be empty
@@ -113,7 +118,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         else
         {
             LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s' (localized to %s)", ci->Name, lcn->Name);
-            data << (uint32)entry;
+            data << entry;
             data << lcn->Name;
             data << uint8(0);
             data << uint8(0);
@@ -136,7 +141,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         data << ci->Leader;         // faction leader
 
         // these are the 6 seperate quest items a creature can drop
-        for (uint32 i = 0; i < 6; ++i)
+        for (uint8 i = 0; i < 6; ++i)
         {
             data << uint32(ci->QuestItems[i]);
         }
@@ -186,34 +191,34 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     data << gameobject_info->category_name;  // Category string of the GO, like "attack", "pvp", "point", etc
     data << gameobject_info->cast_bar_text;  // text displayed when using the go, like "collecting", "summoning" etc
     data << gameobject_info->Unkstr;
-    data << gameobject_info->parameter_0;     // spellfocus id, ex.: spell casted when interacting with the GO
-    data << gameobject_info->parameter_1;
-    data << gameobject_info->parameter_2;
-    data << gameobject_info->parameter_3;
-    data << gameobject_info->parameter_4;
-    data << gameobject_info->parameter_5;
-    data << gameobject_info->parameter_6;
-    data << gameobject_info->parameter_7;
-    data << gameobject_info->parameter_8;
-    data << gameobject_info->parameter_9;
-    data << gameobject_info->parameter_10;
-    data << gameobject_info->parameter_11;
-    data << gameobject_info->parameter_12;
-    data << gameobject_info->parameter_13;
-    data << gameobject_info->parameter_14;
-    data << gameobject_info->parameter_15;
-    data << gameobject_info->parameter_16;
-    data << gameobject_info->parameter_17;
-    data << gameobject_info->parameter_18;
-    data << gameobject_info->parameter_19;
-    data << gameobject_info->parameter_20;
-    data << gameobject_info->parameter_21;
-    data << gameobject_info->parameter_22;
-    data << gameobject_info->parameter_23;
+    data << gameobject_info->raw.parameter_0;     // spellfocus id, ex.: spell casted when interacting with the GO
+    data << gameobject_info->raw.parameter_1;
+    data << gameobject_info->raw.parameter_2;
+    data << gameobject_info->raw.parameter_3;
+    data << gameobject_info->raw.parameter_4;
+    data << gameobject_info->raw.parameter_5;
+    data << gameobject_info->raw.parameter_6;
+    data << gameobject_info->raw.parameter_7;
+    data << gameobject_info->raw.parameter_8;
+    data << gameobject_info->raw.parameter_9;
+    data << gameobject_info->raw.parameter_10;
+    data << gameobject_info->raw.parameter_11;
+    data << gameobject_info->raw.parameter_12;
+    data << gameobject_info->raw.parameter_13;
+    data << gameobject_info->raw.parameter_14;
+    data << gameobject_info->raw.parameter_15;
+    data << gameobject_info->raw.parameter_16;
+    data << gameobject_info->raw.parameter_17;
+    data << gameobject_info->raw.parameter_18;
+    data << gameobject_info->raw.parameter_19;
+    data << gameobject_info->raw.parameter_20;
+    data << gameobject_info->raw.parameter_21;
+    data << gameobject_info->raw.parameter_22;
+    data << gameobject_info->raw.parameter_23;
     data << float(gameobject_info->size);       // scaling of the GO
 
     // questitems that the go can contain
-    for (uint32 i = 0; i < 6; ++i)
+    for (uint8 i = 0; i < 6; ++i)
     {
         data << uint32(gameobject_info->QuestItems[i]);
     }

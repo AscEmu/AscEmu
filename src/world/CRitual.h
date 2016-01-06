@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -21,19 +21,16 @@
 #ifndef _CRITUAL_H
 #define _CRITUAL_H
 
-namespace Arcemu
+#include <vector>
+
+ //////////////////////////////////////////////////////////////////////////////////////////
+ /// Class that implements Summoning Rituals
+ //////////////////////////////////////////////////////////////////////////////////////////
+class CRitual
 {
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// class CRitual
-    /// Class that implements Summoning Rituals
-    //
-    //////////////////////////////////////////////////////////////////////////////////////////
-    class CRitual
-    {
-
     public:
-        CRitual(){}
 
+        CRitual() {}
 
         CRitual(unsigned long MaxMembers) : Members(MaxMembers)
         {
@@ -41,118 +38,82 @@ namespace Arcemu
             CurrentMembers = 0;
         }
 
-        ~CRitual(){}
-
+        ~CRitual() {}
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note void Setup(...)   - Initializes the Ritual
-        ///
+        /// Initializes the Ritual
         /// \param unsigned long CasterGUID - GUID of the caster Player
         /// \param unsigned long TargetGUID - GUID of the target Player
         /// \param unsigned long SpellID - ID of the channeled spell (visual)
-        ///
         /// \returns none
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         void Setup(unsigned long CasterGUID, unsigned long TargetGUID, unsigned long SpellID);
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetCasterGUID() - Returns the GUID of the caster Player
-        ///
+        /// Returns the GUID of the caster Player
         /// \param none
-        ///
         /// \returns the GUID of the caster Player
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         unsigned long GetCasterGUID()
         {
             return CasterGUID;
         }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetTargetGUID() - Returns the GUID of the target Player
-        ///
+        /// Returns the GUID of the target Player
         /// \param none
-        ///
         /// \returns the GUID of the target Player
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         unsigned long GetTargetGUID()
         {
             return TargetGUID;
         }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetSpellID()    - Returns the ID of the channeled spell
-        ///
+        /// Returns the ID of the channeled spell
         /// \param none
-        ///
         /// \returns the ID of the channeled spell
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         unsigned long GetSpellID()
         {
             return SpellID;
         }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool AddMember(unsigned long GUID)  - Adds a member to the Ritual
-        ///
+        /// Adds a member to the Ritual
         /// \param unsigned long GUID - GUID of the ritual member to add
-        ///
         /// \returns true on success, false on failure.
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         bool AddMember(unsigned long GUID);
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool RemoveMember(unsigned long GUID)   - Removes a member to the Ritual
-        ///
+        /// Removes a member to the Ritual
         /// \param unsigned long GUID - GUID of the ritual member to remove
-        ///
         /// \returns true on success, false on failure.
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         bool RemoveMember(unsigned long GUID);
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool HasMember(unsigned long GUID)  - Checks if the Ritual has a member with this GUID
-        ///
+        /// Checks if the Ritual has a member with this GUID
         /// \param unsigned long GUID - GUID to search for
-        ///
         /// \returns true if a member with this GUID can be found and false otherwise
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         bool HasMember(unsigned long GUID);
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetMemberGUIDBySlot(unsigned long Slot) - Returns the GUID of the Ritual member in this slot
-        ///
+        /// Returns the GUID of the Ritual member in this slot
         /// \param unsigned long Slot - Slot ID
-        ///
         /// \returns the GUID of the Ritual member in this slot
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         unsigned long GetMemberGUIDBySlot(unsigned long Slot)
         {
             return Members[Slot];
         }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool HasFreeSlots()   - Tells is the Ritual has free slots
-        ///
+        /// Tells is the Ritual has free slots
         /// \param none
-        ///
         /// \returns true if there are still free slots and false otherwise
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         bool HasFreeSlots()
         {
@@ -162,42 +123,29 @@ namespace Arcemu
                 return false;
         }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note unsigned long GetMaxMembers() - Returns the number of members this Ritual requires
-        ///
+        /// Returns the number of members this Ritual requires
         /// \param none
-        ///
         /// \returns the number of members this Ritual requires
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         unsigned long GetMaxMembers()
         {
             return MaxMembers;
         }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note void Finish() - Finishes the ritual
-        ///
-        /// \param none
-        ///
-        /// \returns none
-        ///
+        /// Finishes the ritual
+        /// \param none           \returns none
         //////////////////////////////////////////////////////////////////////////////////////////
         void Finish()
         {
             SpellID = 0;
         }
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool IsFinished() - Tells if the ritual is finished
-        ///
+        /// Tells if the ritual is finished
         /// \param none
-        ///
         /// \returns true if the ritual is finished and false otherwise
-        ///
         //////////////////////////////////////////////////////////////////////////////////////////
         bool IsFinished()
         {
@@ -207,16 +155,15 @@ namespace Arcemu
                 return false;
         }
 
-
     private:
+
         unsigned long CasterGUID;
         unsigned long TargetGUID;
         unsigned long SpellID;
         unsigned long CurrentMembers;
         unsigned long MaxMembers;
 
-        std::vector< unsigned long > Members;
-    };
-}
+        std::vector<unsigned long> Members;
+};
 
 #endif // _CRITUAL_H

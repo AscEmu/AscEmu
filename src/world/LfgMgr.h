@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 TrinityCore <http://www.trinitycore.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -302,6 +302,7 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
         const LfgLockMap& GetLockedDungeons(uint64 guid);
         LfgState GetState(uint64 guid);
         const LfgDungeonSet& GetSelectedDungeons(uint64 guid);
+        void SetDungeon(uint64 guid, uint32 dungeon);
         uint32 GetDungeon(uint64 guid, bool asId = true);
         void SetState(uint64 guid, LfgState state);
         void ClearState(uint64 guid);
@@ -318,7 +319,6 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
         uint8 GetRoles(uint64 guid);
         const std::string& GetComment(uint64 gguid);
         void RestoreState(uint64 guid);
-        void SetDungeon(uint64 guid, uint32 dungeon);
         void SetLockedDungeons(uint64 guid, const LfgLockMap& lock);
         void DecreaseKicksLeft(uint64 guid);
 
@@ -372,6 +372,7 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
         LfgGroupDataMap m_Groups;                          ///< Group data
 
 	protected:
+
 		Mutex m_lock;
 };
 

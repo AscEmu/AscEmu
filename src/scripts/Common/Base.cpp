@@ -479,7 +479,7 @@ MoonScriptCreatureAI* MoonScriptCreatureAI::SpawnCreature(uint32 pCreatureId, fl
     return CreatureScriptAI;
 }
 
-Unit*    MoonScriptCreatureAI::ForceCreatureFind(uint32 pCreatureId)
+Unit* MoonScriptCreatureAI::ForceCreatureFind(uint32 pCreatureId)
 {
     return ForceCreatureFind(pCreatureId, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ());
 };
@@ -541,10 +541,10 @@ SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetTyp
     SpellEntry* Info = dbcSpell.LookupEntry(pSpellId);
 
 #ifdef USE_DBC_SPELL_INFO
-    float CastTime = (Info->CastingTimeIndex) ? GetCastTime(dbcSpellCastTime.LookupEntry(Info->CastingTimeIndex)) : pCastTime;
+    float CastTime = (Info->CastingTimeIndex) ? GetCastTime(sSpellCastTimesStore.LookupEntry(Info->CastingTimeIndex)) : pCastTime;
     int32 Cooldown = Info->RecoveryTime;
-    float MinRange = (Info->rangeIndex) ? GetMinRange(dbcSpellRange.LookupEntry(Info->rangeIndex)) : pMinRange;
-    float MaxRange = (Info->rangeIndex) ? GetMaxRange(dbcSpellRange.LookupEntry(Info->rangeIndex)) : pMaxRange;
+    float MinRange = (Info->rangeIndex) ? GetMinRange(sSpellRangeStore.LookupEntry(Info->rangeIndex)) : pMinRange;
+    float MaxRange = (Info->rangeIndex) ? GetMaxRange(sSpellRangeStore.LookupEntry(Info->rangeIndex)) : pMaxRange;
     sLog.outDebug("MoonScriptCreatureAI::AddSpell(%u) : casttime=%.1f cooldown=%d minrange=%.1f maxrange=%.1f", pSpellId, CastTime, Cooldown, MinRange, MaxRange);
 #else
     float CastTime = pCastTime;
@@ -891,60 +891,6 @@ uint32 MoonScriptCreatureAI::GetAIUpdateFreq()
     return mAIUpdateFrequency;
 }
 
-/*
-void MoonScriptCreatureAI::AddLootToTable(LootTable* pTable, uint32 pItemID, uint32 pChance, uint32 pMinCount, uint32 pMaxCount, uint32 pFFA)
-{
-LootDesc loot;
-loot.mItemID = pItemID;
-loot.mChance = pChance;
-loot.mMinCount = pMinCount;
-loot.mMaxCount = pMaxCount;
-loot.mFFA = pFFA;
-pTable->push_back(loot);
-}
-
-void MoonScriptCreatureAI::ClearLoot(Unit* pTarget)
-{
-pTarget->ClearLoot();
-}
-
-void MoonScriptCreatureAI::AddLootFromTable(Unit* pTarget, LootTable* pTable, uint32 pCount)
-{
-uint32 total = 0;
-for (LootTable::iterator it = pTable->begin(); it != pTable->end(); ++it) total += (*it).mChance;
-for (uint32 count = 0; count < pCount; ++count)
-{
-uint32 result = RandomUInt(total);
-uint32 sum = 0;
-for (LootTable::iterator it = pTable->begin(); it != pTable->end(); ++it)
-{
-sum += (*it).mChance;
-if (result <= sum)
-{
-LootMgr::getSingleton().AddLoot(pTarget->loot(), (*it).mItemID, (*it).mMinCount, (*it).mMaxCount, (*it).mFFA);
-break;
-}
-}
-}
-}
-
-void MoonScriptCreatureAI::SetGoldLoot(Unit* pTarget, uint32 pMinGold, uint32 pMaxGold)
-{
-pTarget->GetLoot()->gold = RandomUInt(pMaxGold - pMinGold) + pMinGold;
-}
-
-void MoonScriptCreatureAI::AddLoot(Unit* pTarget, uint32 pItemID, uint32 pMinCount, uint32 pMaxCount, uint32 pFFA)
-{
-LootMgr::getSingleton().AddLoot(pTarget->GetLoot(), pItemID, pMinCount, pMaxCount, pFFA);
-}
-
-void MoonScriptCreatureAI::AddRareLoot(Unit* pTarget, uint32 pItemID, float pPercentChance)
-{
-float result = RandomFloat(100.0f);
-if (result <= pPercentChance)
-LootMgr::getSingleton().AddLoot(pTarget->GetLoot(), pItemID, 1, 1, 0);
-}*/
-
 WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Location pCoords)
 {
     WayPoint* wp = _unit->CreateWaypointStruct();
@@ -1126,8 +1072,8 @@ void MoonScriptCreatureAI::OnDied(Unit* pKiller)
 
 void MoonScriptCreatureAI::AIUpdate()
 {
-    SpellDesc*    Spell;
-    uint32        CurrentTime = (uint32)time(NULL);
+    SpellDesc* Spell;
+    uint32 CurrentTime = (uint32)time(NULL);
 
     //Elapse timers
     for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
@@ -1477,10 +1423,11 @@ Unit* MoonScriptCreatureAI::GetNearestTargetInArray(UnitArray & pTargetArray)
 
 Unit* MoonScriptCreatureAI::GetSecondMostHatedTargetInArray(UnitArray & pTargetArray)
 {
-    Unit*    TargetUnit = NULL;
-    Unit*    MostHatedUnit = NULL;
-    Unit*    CurrentTarget = static_cast<Unit*>(_unit->GetAIInterface()->getNextTarget());
-    uint32    Threat = 0, HighestThreat = 0;
+    Unit* TargetUnit = NULL;
+    Unit* MostHatedUnit = NULL;
+    Unit* CurrentTarget = static_cast<Unit*>(_unit->GetAIInterface()->getNextTarget());
+    uint32 Threat = 0;
+    uint32 HighestThreat = 0;
     for (UnitArray::iterator UnitIter = pTargetArray.begin(); UnitIter != pTargetArray.end(); ++UnitIter)
     {
         TargetUnit = static_cast<Unit*>(*UnitIter);
@@ -1491,9 +1438,9 @@ Unit* MoonScriptCreatureAI::GetSecondMostHatedTargetInArray(UnitArray & pTargetA
             {
                 MostHatedUnit = TargetUnit;
                 HighestThreat = Threat;
-            };
-        };
-    };
+            }
+        }
+    }
 
     return MostHatedUnit;
 };

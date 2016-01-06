@@ -351,14 +351,14 @@ class DofNaralexGossip : public GossipScript
             {
                 GossipMenu* Menu;
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 699, plr);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(442), 1);     // Let's go!
                 Menu->SendTo(plr);
             }
             else
             {
                 GossipMenu* Menu;
                 objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 698, plr);
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(443), 1);     // I will slay those Fanglords
                 Menu->SendTo(plr);
             }
 

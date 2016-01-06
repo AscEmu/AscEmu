@@ -16,7 +16,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef _WARRIOR_H
@@ -25,9 +24,10 @@
 class Warrior : public Player
 {
     public:
+
         Warrior(uint32 guid) : Player(guid) {}
 
         bool IsWarrior() { return true; }
 };
 
-#endif
+#endif      //_WARRIOR_H

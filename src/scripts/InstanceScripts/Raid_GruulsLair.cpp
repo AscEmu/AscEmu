@@ -21,10 +21,6 @@
 
 #include "Setup.h"
 
-/************************************************************************/
-/* Raid_GruulsLair.cpp Script                                            */
-/************************************************************************/
-
 #define CN_LAIR_BRUTE                19389
 #define LAIR_BRUTE_MORTALSTRIKE        39171
 #define LAIR_BRUTE_CLEAVE            39174
@@ -43,7 +39,7 @@ class LairBruteAI : public MoonScriptCreatureAI
             AddSpellFunc(&SpellFunc_LairBrute_Charge, Target_Current, 7, 0, 35, 0, 40);
         }
 
-        SpellDesc*    mCharge;
+        SpellDesc* mCharge;
 };
 
 void SpellFunc_LairBrute_Charge(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -157,7 +153,7 @@ class HighKingMaulgarAI : public MoonScriptBossAI
             GameObject* pDoor = mKiller->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(95.26f, 251.836f, 0.47f, 183817);
             if (pDoor != NULL)
             {
-                pDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                pDoor->SetState(GO_STATE_OPEN);
             }
         }
 
@@ -209,9 +205,9 @@ class HighKingMaulgarAI : public MoonScriptBossAI
             }
         }
 
-        uint32        mAliveAdds;
-        int32        mLastYell;
-        SpellDesc*    mEnrage;
+        uint32 mAliveAdds;
+        int32 mLastYell;
+        SpellDesc* mEnrage;
 };
 
 void SpellFunc_Maulgar_Enrage(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)
@@ -419,10 +415,10 @@ class KroshFirehandAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*      mSpellShield;
-        SpellDesc*      mBlastWave;
-        int32           mEventTimer;
-        int32           mBlastWaveTimer;
+        SpellDesc* mSpellShield;
+        SpellDesc* mBlastWave;
+        int32 mEventTimer;
+        int32 mBlastWaveTimer;
 };
 
 #define CN_GRUUL_THE_DRAGONKILLER                    19044
@@ -478,7 +474,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
 
             GameObject* pGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
-                pGate->SetState(GAMEOBJECT_STATE_CLOSED);
+                pGate->SetState(GO_STATE_CLOSED);
         }
 
         void OnCombatStop(Unit* pTarget)
@@ -487,7 +483,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
 
             GameObject* pGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
-                pGate->SetState(GAMEOBJECT_STATE_OPEN);
+                pGate->SetState(GO_STATE_OPEN);
         }
 
         void OnDied(Unit* mKiller)
@@ -496,7 +492,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
 
             GameObject* pGate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(166.897f, 368.226f, 16.9209f, 184662);
             if (pGate != NULL)
-                pGate->SetState(GAMEOBJECT_STATE_OPEN);
+                pGate->SetState(GO_STATE_OPEN);
         }
 
         void AIUpdate()
@@ -572,16 +568,16 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
             return TargetArray;
         }
 
-        uint32        mGrowthStacks;        // temporary way to store it
-        int32        mHurtfulTimer;
-        int32        mGrowthTimer;
+        uint32 mGrowthStacks;        // temporary way to store it
+        int32 mHurtfulTimer;
+        int32 mGrowthTimer;
 
-        SpellDesc*    mHurtfulStrike;
-        SpellDesc*    mGroundSlam;
-        SpellDesc*    mGroundSlam2;
-        SpellDesc*    mStoned;
-        SpellDesc*    mShatter;
-        SpellDesc*    mShatter2;
+        SpellDesc* mHurtfulStrike;
+        SpellDesc* mGroundSlam;
+        SpellDesc* mGroundSlam2;
+        SpellDesc* mStoned;
+        SpellDesc* mShatter;
+        SpellDesc*  mShatter2;
 };
 
 void SpellFunc_Gruul_GroundSlam(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)

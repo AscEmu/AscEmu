@@ -16,7 +16,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef __UPDATEMASK_H
@@ -27,11 +26,12 @@
 
 class UpdateMask
 {
-        uint32* mUpdateMask;
-        uint32 mCount; // in values
-        uint32 mBlocks; // in uint32 blocks
+    uint32* mUpdateMask;
+    uint32 mCount; // in values
+    uint32 mBlocks; // in uint32 blocks
 
     public:
+
         UpdateMask() : mUpdateMask(0), mCount(0), mBlocks(0) { }
         UpdateMask(const UpdateMask & mask) : mUpdateMask(0) { *this = mask; }
 
@@ -142,5 +142,4 @@ class UpdateMask
         }
 };
 
-#endif
-
+#endif      //__UPDATEMASK_H

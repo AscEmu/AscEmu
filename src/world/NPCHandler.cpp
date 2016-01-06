@@ -422,7 +422,9 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
     uint32 unk24;
     uint64 guid;
 
-    recv_data >> guid >> unk24 >> option;
+    recv_data >> guid;
+    recv_data >> unk24;
+    recv_data >> option;
 
     LOG_DETAIL("WORLD: CMSG_GOSSIP_SELECT_OPTION Option %i Guid %.8X", option, guid);
     Arcemu::Gossip::Script* script = NULL;
@@ -550,7 +552,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
             }
             data << pGossip->Texts[i].Lang;
 
-            for (int e = 0; e < GOSSIP_EMOTE_COUNT; e++)
+            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
             {
                 data << uint32(pGossip->Texts[i].Emotes[e].Delay);
                 data << uint32(pGossip->Texts[i].Emotes[e].Emote);
@@ -566,7 +568,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
             data << _player->GetSession()->LocalizedWorldSrv(70);
             data << uint32(0x00);           // Language
 
-            for (int e = 0; e < GOSSIP_EMOTE_COUNT; e++)
+            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
             {
                 data << uint32(0x00);       // Emote delay
                 data << uint32(0x00);       // Emote

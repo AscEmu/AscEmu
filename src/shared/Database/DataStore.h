@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DATASTORE_H
-#define _DATASTORE_H
+#ifndef _DATA_STORE_H
+#define _DATA_STORE_H
 
 #include "Common.h"
 #include "Singleton.h"
 
-
-#endif      //_DATASTORE_H
+#endif      //_DATA_STORE_H

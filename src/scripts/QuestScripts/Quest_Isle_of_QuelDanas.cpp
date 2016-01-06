@@ -40,7 +40,7 @@ class ScryingOrb : public GameObjectAIScript
                 GameObject* pOrb = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 187578);
                 if(pOrb)
                 {
-                    pOrb->SetState(GAMEOBJECT_STATE_OPEN);
+                    pOrb->SetState(GO_STATE_OPEN);
                     qle->SetMobCount(0, 1);
                     qle->SendUpdateAddKill(0);
                     qle->UpdatePlayerFields();
@@ -77,10 +77,10 @@ class SCRIPT_DECL AyrenCloudbreaker_Gossip : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12252, pPlayer);
 
             if(pPlayer->HasQuest(11532) || pPlayer->HasQuest(11533))
-                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(466), 1);     // Speaking of action, I've been ordered to undertake an air strike.
 
             if(pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(467), 2);     // I need to intercept the Dawnblade reinforcements.
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(467), 2);     // I need to intercept the Dawnblade reinforcements.
 
             Menu->SendTo(pPlayer);
         }
@@ -119,7 +119,7 @@ class SCRIPT_DECL UnrestrainedDragonhawk_Gossip : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 12371, pPlayer);
             if(pPlayer->HasQuest(11543) || pPlayer->HasQuest(11542))
-                Menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
+                Menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(468), 1);     // <Ride the dragonhawk to Sun's Reach>
 
             Menu->SendTo(pPlayer);
         }

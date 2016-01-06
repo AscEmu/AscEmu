@@ -24,8 +24,8 @@
 void DeathKnight::SendRuneUpdate(uint8 slot)
 {
     WorldPacket data(SMSG_CONVERT_RUNE, 2);
-    data << (uint8)slot;
-    data << (uint8)m_runes[slot].type;
+    data << uint8(slot);
+    data << uint8(m_runes[slot].type);
     GetSession()->SendPacket(&data);
 }
 
@@ -59,6 +59,7 @@ uint32 DeathKnight::HasRunes(uint8 type, uint32 count)
     for (uint8 i = 0; i < MAX_RUNES && count != found; ++i)
         if (m_runes[i].type == type && !m_runes[i].is_used)
             found++;
+
     return (count - found);
 }
 
@@ -66,6 +67,7 @@ uint32 DeathKnight::TakeRunes(uint8 type, uint32 count)
 {
     uint8 found = 0;
     for (uint8 i = 0; i < MAX_RUNES && count != found; ++i)
+    {
         if (m_runes[i].type == type && !m_runes[i].is_used)
         {
             m_runes[i].is_used = true;
@@ -73,6 +75,7 @@ uint32 DeathKnight::TakeRunes(uint8 type, uint32 count)
             sEventMgr.AddEvent(this, &DeathKnight::ResetRune, i, EVENT_PLAYER_RUNE_REGEN + i, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             found++;
         }
+    }
     return (count - found);
 }
 
@@ -88,6 +91,7 @@ uint8 DeathKnight::GetRuneFlags()
     for (uint8 k = 0; k < MAX_RUNES; k++)
         if (!m_runes[k].is_used)
             result |= (1 << k);
+
     return result;
 }
 
@@ -96,5 +100,6 @@ bool DeathKnight::IsAllRunesOfTypeInUse(uint8 type)
     for (uint8 i = 0; i < MAX_RUNES; ++i)
         if (m_runes[i].type == type && !m_runes[i].is_used)
             return false;
+
     return true;
 }

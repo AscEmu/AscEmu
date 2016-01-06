@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), 11224);
             if (plr->HasQuest(11142))
-                menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_CROMSONWING), 1);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_CROMSONWING), 1);
 
             menu.Send(plr);
         }
@@ -59,11 +59,11 @@ class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
             //Send quests and gossip menu.
             uint32 Text = objmgr.GetGossipTextForNpc(pObject->GetEntry());
             if (NpcTextStorage.LookupEntry(Text) == NULL)
-                Text = Arcemu::Gossip::DEFAULT_TXTINDEX;
+                Text = DefaultGossipTextId;
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
             sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);
             if (plr->HasQuest(11123) || (plr->GetQuestRewardStatus(11123) == 0))
-                menu.AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_SHADY_REST), 0);
+                menu.AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THERAMORE_SHADY_REST), 0);
             menu.Send(plr);
         }
 

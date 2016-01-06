@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2007-2015 Moon++ Team <http://www.moonplusplus.info/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -21,9 +21,6 @@
 #include "../world/Gossip.h"
 #include "Setup.h"
 
-/************************************************************************/
-/* GENERAL GUARD SCRIPT                                                 */
-/************************************************************************/
 
 // Covers *all* guard types, scripting their texts to guide players around.
 // Enable this define to make all gossip texts have a "back" / "I was looking
@@ -41,38 +38,36 @@
 
 // Make code neater with this define.
 #define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, Plr); \
-    Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LOOKING_SOMTH_ELSE), 0); \
+    Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LOOKING_SOMTH_ELSE), 0); \
     Menu->SendTo(Plr);
 
 #endif
 
-/************************************************************************/
-/* Stormwind CITY Guards                                                */
-/************************************************************************/
 
 class StormwindGuard : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 933, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_BANK_OF_STORMWIND), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_STORMWIND_HARBOUR), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DEEPRUN_TRAM), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON3_M), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_OFFICERS_LOUNGE), 11);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 12);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 13);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 14);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 15);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_BANK_OF_STORMWIND), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_STORMWIND_HARBOUR), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DEEPRUN_TRAM), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON3_M), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_OFFICERS_LOUNGE), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 12);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 13);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 14);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 15);
 
             Menu->SendTo(plr);
         }
@@ -180,15 +175,15 @@ class StormwindGuard : public GossipScript
                 case 14:    // Class Trainers
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 898, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 24);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -196,19 +191,19 @@ class StormwindGuard : public GossipScript
                 case 15:    // Profession Trainers
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 918, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 30);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 31);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 32);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 33);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 34);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 35);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 36);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 37);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 31);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 32);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 33);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 34);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 35);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 36);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 37);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -382,18 +377,18 @@ class DarnassusGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3016, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_HYPPOGRYPH_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON3_M), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 11);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 27);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_HYPPOGRYPH_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON3_M), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 27);
 
             Menu->SendTo(plr);
         }
@@ -473,11 +468,11 @@ class DarnassusGuard : public GossipScript
                 case 10:    // Class Trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4264, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 16);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -485,16 +480,16 @@ class DarnassusGuard : public GossipScript
                 case 11:    // Profession Trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4273, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 26);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -624,13 +619,13 @@ class GoldshireGuard : public GossipScript
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4259, plr);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
 
             Menu->SendTo(plr);
         }
@@ -681,15 +676,15 @@ class GoldshireGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4264, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 8);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 10);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 11);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 8);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 10);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 11);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 16);
 
                         Menu->SendTo(Plr);
                     }
@@ -699,19 +694,19 @@ class GoldshireGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4273, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 29);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -875,19 +870,19 @@ class UndercityGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3543, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 11);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 12);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH), 32);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 12);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH), 32);
             Menu->SendTo(plr);
         }
 
@@ -973,12 +968,12 @@ class UndercityGuard : public GossipScript
                 case 11:    // A class trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3542, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE)         , 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN)      , 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST)       , 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE)        , 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK)      , 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR)      , 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE)         , 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN)      , 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST)       , 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE)        , 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK)      , 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR)      , 18);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -986,18 +981,18 @@ class UndercityGuard : public GossipScript
                 case 12:    // A profession trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY)           , 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING)     , 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING)           , 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING)       , 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING)       , 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID)         , 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING)          , 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM)         , 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W)    , 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING)            , 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING)          , 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING)         , 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY)           , 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING)     , 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING)           , 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING)       , 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING)       , 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID)         , 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING)          , 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM)         , 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W)    , 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING)            , 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING)          , 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING)         , 30);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -1143,20 +1138,20 @@ class UndercityGuardOverseer : public GossipScript
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 15321, Plr);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 1);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 3);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 4);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 5);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 6);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 7);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH), 8);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 9);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 10);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 11);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 12);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 13);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 14);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 12);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 13);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 14);
             Menu->SendTo(Plr);
         }
 
@@ -1256,12 +1251,12 @@ class UndercityGuardOverseer : public GossipScript
                 case 13:    // A class trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3542, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 20);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -1269,19 +1264,19 @@ class UndercityGuardOverseer : public GossipScript
                 case 14:    // A profession trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION) , 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 30);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 31);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 32);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 33);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION) , 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 31);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 32);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 33);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -1431,13 +1426,13 @@ class TeldrassilGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4316, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(530), 2);                 // Rut'Theran Ferry
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(530), 2);                 // Rut'Theran Ferry
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
 
             Menu->SendTo(plr);
         }
@@ -1486,11 +1481,11 @@ class TeldrassilGuard : public GossipScript
                 case 6:    // Class Trainers
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4264, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 8);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 10);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 11);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 8);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 10);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 11);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 12);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -1498,16 +1493,16 @@ class TeldrassilGuard : public GossipScript
                 case 7:    // Profession Trainers
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4273, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 22);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -1626,19 +1621,19 @@ class SilvermoonGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9316, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DRAGONHAWK_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON2_M), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 11);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MANA_LOOM), 12);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 40);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DRAGONHAWK_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON2_M), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MANA_LOOM), 12);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 40);
 
             Menu->SendTo(plr);
         }
@@ -1656,8 +1651,8 @@ class SilvermoonGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9317, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TO_THE_WEST), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TO_THE_EAST), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TO_THE_WEST), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TO_THE_EAST), 14);
 
                         Menu->SendTo(Plr);
                     }
@@ -1667,8 +1662,8 @@ class SilvermoonGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9320, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WEST), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_EAST), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WEST), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_EAST), 16);
 
                         Menu->SendTo(Plr);
                     }
@@ -1692,8 +1687,8 @@ class SilvermoonGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9325, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SILVERMOON_C_INN), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WAYFARERS_TAV), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SILVERMOON_C_INN), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_WAYFARERS_TAV), 18);
 
                         Menu->SendTo(Plr);
                     }
@@ -1731,13 +1726,13 @@ class SilvermoonGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9331, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 25);
 
                         Menu->SendTo(Plr);
                     }
@@ -1747,20 +1742,20 @@ class SilvermoonGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9338, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 30);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 31);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 32);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 33);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 34);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 35);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 36);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 37);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 38);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 39);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 31);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 32);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 33);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 34);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 35);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 36);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 37);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 38);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 39);
 
                         Menu->SendTo(Plr);
                     }
@@ -1978,18 +1973,18 @@ class ExodarGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9551, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_HYPPOGRYPH_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON2_M), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE2_M), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 11);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 34);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_HYPPOGRYPH_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON2_M), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE2_M), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 34);
 
             Menu->SendTo(plr);
         }
@@ -2063,7 +2058,7 @@ class ExodarGuard : public GossipScript
                     {
                     Plr->Gossip_SendSQLPOI(197);
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9531, Plr);
-                    Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 12);
+                    Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 12);
                     Menu->SendTo(Plr);
                     }
                     break;
@@ -2071,13 +2066,13 @@ class ExodarGuard : public GossipScript
                 case 10:    // Class Trainers
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9533, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 19);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -2086,20 +2081,20 @@ class ExodarGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 9555, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 30);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 31);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 32);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 33);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 31);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 32);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 33);
 
                         Menu->SendTo(Plr);
                     }
@@ -2277,19 +2272,19 @@ class OrgrimmarGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2593, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_OFFICERS), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 11);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 12);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 13);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_ZEPPELIN_M), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_OFFICERS), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 12);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 13);
 
             Menu->SendTo(plr);
         }
@@ -2384,14 +2379,14 @@ class OrgrimmarGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2599, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 21);
 
                         Menu->SendTo(Plr);
                     }
@@ -2401,18 +2396,18 @@ class OrgrimmarGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2594, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 30);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 31);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 32);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 33);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 31);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 32);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 33);
 
                         Menu->SendTo(Plr);
                     }
@@ -2569,17 +2564,17 @@ class ThunderbluffGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3543, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_MAILBOX), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_AH), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON_M), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE_M), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 11);
 
             Menu->SendTo(plr);
         }
@@ -2659,12 +2654,12 @@ class ThunderbluffGuard : public GossipScript
                 case 10:    // A class trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3542, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 17);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -2672,17 +2667,17 @@ class ThunderbluffGuard : public GossipScript
                 case 11:    // A profession trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 28);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -2817,12 +2812,12 @@ class BloodhoofGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3543, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 6);
 
             Menu->SendTo(plr);
         }
@@ -2866,10 +2861,10 @@ class BloodhoofGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4069, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 7);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 8);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 10);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 7);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 8);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 10);
 
                         Menu->SendTo(Plr);
                     }
@@ -2879,17 +2874,17 @@ class BloodhoofGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 11);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 11);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 21);
 
                         Menu->SendTo(Plr);
                     }
@@ -3005,12 +3000,12 @@ class RazorHillGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4037, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WIND_R_M), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 6);
 
             Menu->SendTo(plr);
         }
@@ -3054,13 +3049,13 @@ class RazorHillGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4035, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 7);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 8);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 10);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 11);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 7);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 8);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 10);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 11);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 13);
 
                         Menu->SendTo(Plr);
                     }
@@ -3070,18 +3065,18 @@ class RazorHillGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 3541, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 25);
 
                         Menu->SendTo(Plr);
                     }
@@ -3227,12 +3222,12 @@ class BrillGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2593, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BAT_H), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS_T), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION_T), 6);
 
             Menu->SendTo(plr);
         }
@@ -3276,12 +3271,12 @@ class BrillGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4292, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 7);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 8);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 10);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 11);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 7);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 8);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 10);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 11);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 12);
 
                         Menu->SendTo(Plr);
                     }
@@ -3291,18 +3286,18 @@ class BrillGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4300, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 24);
 
                         Menu->SendTo(Plr);
                     }
@@ -3440,20 +3435,20 @@ class IronforgeGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2760, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_BANK_OF_IRONFORGE), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DEEPRUN_TRAM), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON3_M), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 11);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 12);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 13);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 35);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_BANK_OF_IRONFORGE), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DEEPRUN_TRAM), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_WEAPON3_M), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 12);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 13);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 35);
 
             Menu->SendTo(plr);
         }
@@ -3548,14 +3543,14 @@ class IronforgeGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2766, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 21);
 
                         Menu->SendTo(Plr);
                     }
@@ -3565,19 +3560,19 @@ class IronforgeGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2793, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 30);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 31);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 32);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 33);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 34);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 31);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 32);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 33);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 34);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -3747,13 +3742,13 @@ class KharanosGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4287, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GRYPHON_M), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
 
             Menu->SendTo(plr);
         }
@@ -3803,13 +3798,13 @@ class KharanosGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4292, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 8);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 10);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 11);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 8);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 10);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 11);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 14);
 
                         Menu->SendTo(Plr);
                     }
@@ -3819,19 +3814,19 @@ class KharanosGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4300, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 27);
 
                         Menu->SendTo(Plr);
                     }
@@ -3981,12 +3976,12 @@ class FalconwingGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2593, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_BAT_HANDLER), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_BAT_HANDLER), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 6);
 
             Menu->SendTo(plr);
         }
@@ -4031,13 +4026,13 @@ class FalconwingGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 4292, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 7);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 8);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 10);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 11);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 7);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 8);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 10);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 11);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ROGUE), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARLOCK), 13);
 
                         Menu->SendTo(Plr);
                     }
@@ -4047,19 +4042,19 @@ class FalconwingGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 2593, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 26);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -4211,13 +4206,13 @@ class AzureWatchGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10066, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_HYPPOGRYPH_M), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_STABLE), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_HYPPOGRYPH_M), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_STABLE), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 7);
 
             Menu->SendTo(plr);
         }
@@ -4267,13 +4262,13 @@ class AzureWatchGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10076, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 8);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 10);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 11);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 13);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_DRUID), 8);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HUNTER), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MAGE), 10);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PALADIN), 11);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PRIEST), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SHAMAN), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_WARRIOR), 14);
 
                         Menu->SendTo(Plr);
                     }
@@ -4283,20 +4278,20 @@ class AzureWatchGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10087, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 23);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 28);
 
                         Menu->SendTo(Plr);
                     }
@@ -4449,29 +4444,27 @@ class AzureWatchGuard : public GossipScript
         }
 };
 
-/*****************************************************************************************/
-/* Shattrath Guards   original structure by AeThIs. Translated, updated and  by Pepsi1x1 */
-/*****************************************************************************************/
 
 class ShattrathGuard : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10524, plr);
 
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WORLDS_END_TAV), 1);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 2);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 3);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_FLIGHT_M), 4);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 5);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 6);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 7);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 8);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MANA_LOOM), 9);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_ALCHEMIE_LAB), 10);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_GEM_MERCHANT), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WORLDS_END_TAV), 1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_FLIGHT_M), 4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MAILBOX), 5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M), 6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE3_M), 7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_MANA_LOOM), 9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_ALCHEMIE_LAB), 10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_GEM_MERCHANT), 11);
 
             Menu->SendTo(plr);
         }
@@ -4496,8 +4489,8 @@ class ShattrathGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10395, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_BANK), 12);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYERS_BANK), 13);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_BANK), 12);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYERS_BANK), 13);
 
                         Menu->SendTo(Plr);
                     }
@@ -4508,8 +4501,8 @@ class ShattrathGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10398, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_INN), 14);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYERS_INN), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_INN), 14);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYERS_INN), 15);
 
                         Menu->SendTo(Plr);
                     }
@@ -4526,10 +4519,10 @@ class ShattrathGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10403, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_INN), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYERS_INN), 17);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_BANK), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYERS_BANK), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_INN), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYERS_INN), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_BANK), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYERS_BANK), 19);
 
                         Menu->SendTo(Plr);
                     }
@@ -4539,8 +4532,8 @@ class ShattrathGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10404, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_STABLE), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SVYERS_STABLE), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_STABLE), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SVYERS_STABLE), 21);
 
                         Menu->SendTo(Plr);
                     }
@@ -4550,8 +4543,8 @@ class ShattrathGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10405, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_BATTLEMASTERS), 22);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_H_ARENA_BATTLEMASTERS), 23);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_BATTLEMASTERS), 22);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_H_ARENA_BATTLEMASTERS), 23);
 
                         Menu->SendTo(Plr);
                     }
@@ -4561,14 +4554,14 @@ class ShattrathGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10391, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 26);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 30);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 31);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 26);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 31);
 
                         Menu->SendTo(Plr);
                     }
@@ -4592,8 +4585,8 @@ class ShattrathGuard : public GossipScript
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10410, Plr);
 
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_GEM_MERCHANT), 32);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYER_GEM_MERCHANT), 33);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ALDOR_GEM_MERCHANT), 32);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SCYER_GEM_MERCHANT), 33);
 
                         Menu->SendTo(Plr);
                     }
@@ -4765,21 +4758,21 @@ class DalaranGuard : public GossipScript
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 50000, Plr);
 
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ARENA),1);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK),2);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2),3);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER),4);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE2_M),5);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CAPITAL_PORTS),6);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_FLIGHT_M),7);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M),8);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN2),9);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH),77);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MAILBOX),10);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_POI), 11);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M),12);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS3_T),13);
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_VENDORS),14);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_ARENA),1);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK),2);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2),3);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BARBER),4);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BATTLE2_M),5);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CAPITAL_PORTS),6);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_FLIGHT_M),7);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_GUILD2_M),8);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN2),9);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LOCKSMITH),77);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MAILBOX),10);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_POI), 11);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_STABLE2_M),12);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS3_T),13);
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_VENDORS),14);
 
             Menu->SendTo(Plr);
         }
@@ -4796,9 +4789,9 @@ class DalaranGuard : public GossipScript
                 case 1:        // Arena
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13976, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_EAST_SEW_ENTR), 15);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WEST_SEW_ENTR), 16);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WELL_ENTR), 17);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_EAST_SEW_ENTR), 15);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WEST_SEW_ENTR), 16);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WELL_ENTR), 17);
 
                         Menu->SendTo(Plr);
                     }
@@ -4807,8 +4800,8 @@ class DalaranGuard : public GossipScript
                 case 2:        // Auction House
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14010, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -4816,9 +4809,9 @@ class DalaranGuard : public GossipScript
                 case 3:        // Bank
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14007, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_NORTH_BANK), 20);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SOUTH_BANK), 21);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 22); // Sewers 1
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_NORTH_BANK), 20);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SOUTH_BANK), 21);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 22); // Sewers 1
 
                         Menu->SendTo(Plr);
                     }
@@ -4834,8 +4827,8 @@ class DalaranGuard : public GossipScript
                 case 5:        // Battlemasters
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13977, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
 
                         Menu->SendTo(Plr);
                     }
@@ -4844,8 +4837,8 @@ class DalaranGuard : public GossipScript
                 case 6:        // Capital Portals
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13977, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
 
                         Menu->SendTo(Plr);
                     }
@@ -4868,9 +4861,9 @@ class DalaranGuard : public GossipScript
                 case 9:        // Inn
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14002, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_INN), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_INN), 25);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 26); // Sewers 2
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_INN), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_INN), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 26); // Sewers 2
 
                         Menu->SendTo(Plr);
                     }
@@ -4879,9 +4872,9 @@ class DalaranGuard : public GossipScript
                 case 10:    // Mailbox
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10090, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 9);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 3);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_KRASUS_LAND), 74);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_INN2), 9);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_BANK2), 3);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_KRASUS_LAND), 74);
 
                         Menu->SendTo(Plr);
                     }
@@ -4890,18 +4883,18 @@ class DalaranGuard : public GossipScript
                 case 11:    // Points of Interest
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10056, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_VIOLET_CITADEL), 27);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_VIOLET_HOLD), 28);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 22); // Sewers 1
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRADE_DISTRICT), 29);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_KRASUS_LAND), 74);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ANTONIDAS_MEMORIAL), 30);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_RUNEWEAV_SQUARE), 31);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_EVENTIDE), 32);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CEMETARY), 33);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 34);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_VIOLET_CITADEL), 27);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_VIOLET_HOLD), 28);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SEWERS), 22); // Sewers 1
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRADE_DISTRICT), 29);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_KRASUS_LAND), 74);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ANTONIDAS_MEMORIAL), 30);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_RUNEWEAV_SQUARE), 31);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_EVENTIDE), 32);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CEMETARY), 33);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LEXICON_OF_POWER), 34);
 
                         Menu->SendTo(Plr);
                     }
@@ -4917,10 +4910,10 @@ class DalaranGuard : public GossipScript
                 case 13:    // Trainers
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10082, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 35);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_CW_FLYING), 76);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PORTAL), 36);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 37);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_CLASS2_T), 35);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_CW_FLYING), 76);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_PORTAL), 36);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_PROFESSION2_T), 37);
 
                         Menu->SendTo(Plr);
                     }
@@ -4929,21 +4922,21 @@ class DalaranGuard : public GossipScript
                 case 14:    // Vendors
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 10173, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ARMOR), 38);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CLOTHING), 39);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_EMBLEM_GEAR), 40);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_FLOWERS), 41);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_FRUIT), 42);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_GENERAL_GOODS), 43);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_JEWELRY), 44);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PET_SUBS_EX_MOUNTS), 45);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PIE_PASTRY_CAKES), 46);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_REAGENTS_MAG_GOODS), 47);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TOYS), 48);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRADE_SUP), 43);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRINKETS_REL_OFF), 49);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WEAPONS), 50);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WINE_CHEESE), 51);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_ARMOR), 38);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CLOTHING), 39);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_EMBLEM_GEAR), 40);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_FLOWERS), 41);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_FRUIT), 42);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_GENERAL_GOODS), 43);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_JEWELRY), 44);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PET_SUBS_EX_MOUNTS), 45);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PIE_PASTRY_CAKES), 46);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_REAGENTS_MAG_GOODS), 47);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TOYS), 48);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRADE_SUP), 43);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_TRINKETS_REL_OFF), 49);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WEAPONS), 50);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_WINE_CHEESE), 51);
 
                         Menu->SendTo(Plr);
                     }
@@ -5085,8 +5078,8 @@ class DalaranGuard : public GossipScript
                 case 35:    // Class Trainers
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14018, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -5101,20 +5094,20 @@ class DalaranGuard : public GossipScript
                 case 37:    // Profession Trainer
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13996, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 52);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 53);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 54);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 55);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 56);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 57);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 58);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 59);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 60);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 61);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 62);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 63);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 64);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 65);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ALCHEMY), 52);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_BSMITHING), 53);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_COOKING), 54);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENCHANTING), 55);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_ENGINEERING), 56);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FIRST_AID), 57);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_FISHING), 58);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_HERBALISM), 59);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_INSCRIPTION), 60);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_JUWELCRAFTING), 61);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_LEATHER_W), 62);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_MINING), 63);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_SKINNING), 64);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(MENU_ITEM_TAILORING), 65);
 
                         Menu->SendTo(Plr);
                     }
@@ -5123,11 +5116,11 @@ class DalaranGuard : public GossipScript
                 case 38:    // Armor
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14117, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CLOTH_ARMOR), 66);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LEATHER_ARMOR), 67);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MAIL_ARMOR), 68);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PLATE_ARMOR), 69);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SHIELDS), 70);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_CLOTH_ARMOR), 66);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_LEATHER_ARMOR), 67);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MAIL_ARMOR), 68);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_PLATE_ARMOR), 69);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_SHIELDS), 70);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -5142,8 +5135,8 @@ class DalaranGuard : public GossipScript
                 case 40:    // Emblem Gear
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14108, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_A_QUART), 18);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_QUART), 19);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -5214,9 +5207,9 @@ class DalaranGuard : public GossipScript
                 case 50:    // Weapons
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14113, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MELEE_WEAPONS), 71);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_RANGE_THROW_WEAPONS), 72);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_STAVES_WANDS), 73);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_MELEE_WEAPONS), 71);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_RANGE_THROW_WEAPONS), 72);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_STAVES_WANDS), 73);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -5245,8 +5238,8 @@ class DalaranGuard : public GossipScript
                 case 54:    // Cooking
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 13991, Plr);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_INN), 24);
-                        Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_INN), 25);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_A_INN), 24);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(GI_THE_H_INN), 25);
                         Menu->SendTo(Plr);
                     }
                     break;
@@ -5417,7 +5410,7 @@ class DalaranGuard : public GossipScript
 
 void SetupGuardGossip(ScriptMgr* mgr)
 {
-    /* Guard List */
+    // Guard List
     mgr->register_gossip_script(1423, new GoldshireGuard);              // Stormwind Guard
     mgr->register_gossip_script(68, new StormwindGuard);                // Stormwind City Guard
     mgr->register_gossip_script(1976, new StormwindGuard);              // Stormwind City Patroller
@@ -5478,5 +5471,4 @@ void SetupGuardGossip(ScriptMgr* mgr)
     mgr->register_gossip_script(32691, new DalaranGuard);
     mgr->register_gossip_script(32692, new DalaranGuard);
     mgr->register_gossip_script(32693, new DalaranGuard);
-
 }

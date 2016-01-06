@@ -24,12 +24,15 @@
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
 {
     // Store dbc values into current Path array
-    Path.Resize(dbcTaxiPathNode.GetNumRows());
+    Path.Resize(sTaxiPathNodeStore.GetNumRows());
 
     uint32 i = 0;
-    for (uint32 j = 0; j < dbcTaxiPathNode.GetNumRows(); j++)
+    for (uint32 j = 0; j < sTaxiPathNodeStore.GetNumRows(); j++)
     {
-        DBCTaxiPathNode* pathnode = dbcTaxiPathNode.LookupRow(j);
+        auto pathnode = sTaxiPathNodeStore.LookupEntry(j);
+        if (pathnode == nullptr)
+            continue;
+
         if (pathnode->path == PathID)
         {
             Path[i].mapid = pathnode->mapid;
@@ -266,7 +269,7 @@ bool Transporter::Create(uint32 entry, int32 Time)
     m_period = Time;
 
     // Generate waypoints
-    if (!GenerateWaypoints(pInfo->parameter_0))
+    if (!GenerateWaypoints(pInfo->raw.parameter_0))
         return false;
 
     // Set position
@@ -525,9 +528,9 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
             Player* player = *itr;
             ++itr;
 
-            v.x = x + player->transporter_info.x;
-            v.y = y + player->transporter_info.y;
-            v.z = z + player->transporter_info.z;
+            v.x = x + player->movement_info.transporter_info.position.x;
+            v.y = y + player->movement_info.transporter_info.position.y;
+            v.z = z + player->movement_info.transporter_info.position.z;
             v.o = player->GetOrientation();
 
             if (newMapid == 530 && !player->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
@@ -626,7 +629,7 @@ void Transporter::Update()
             UpdatePlayerPositions(mCurrentWaypoint->second.x, mCurrentWaypoint->second.y, mCurrentWaypoint->second.z, std::atan2(mNextWaypoint->second.x, mNextWaypoint->second.y) + float(M_PI));
             // After a few tests (Durotar<->Northrend we need this, otherwise npc disappear on entering new map/zone/area DankoDJ
             // Update Creature Position with Movement Info from Gameobject too prevent coord changes from Transporter Waypoint and Gameobject Position Aaron02
-            UpdateNPCPositions(transporter_info.x, transporter_info.y, transporter_info.z, std::atan2(transporter_info.x, transporter_info.y) + float(M_PI));
+            UpdateNPCPositions(obj_movement_info.transporter_info.position.x, obj_movement_info.transporter_info.position.y, obj_movement_info.transporter_info.position.z, std::atan2(obj_movement_info.transporter_info.position.x, obj_movement_info.transporter_info.position.y) + float(M_PI));
         }
         if (mCurrentWaypoint->second.delayed)
         {
@@ -683,13 +686,13 @@ int32 Transporter::GetPeriod()
 void Transporter::BuildStartMovePacket(MapMgr* targetMap)
 {
     SetFlag(GAMEOBJECT_FLAGS, 1);
-    SetState(GAMEOBJECT_STATE_OPEN);
+    SetState(GO_STATE_OPEN);
 }
 
 void Transporter::BuildStopMovePacket(MapMgr* targetMap)
 {
     RemoveFlag(GAMEOBJECT_FLAGS, 1);
-    SetState(GAMEOBJECT_STATE_CLOSED);
+    SetState(GO_STATE_CLOSED);
 }
 
 uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y, float z, float o, uint32 anim)
@@ -701,20 +704,20 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     if (inf == nullptr || proto == nullptr)
         return 0;
 
-    float transporter_x = transporter_info.x + x;
-    float transporter_y = transporter_info.y + y;
-    float transporter_z = transporter_info.z + z;
+    float transporter_x = obj_movement_info.transporter_info.position.x + x;
+    float transporter_y = obj_movement_info.transporter_info.position.y + y;
+    float transporter_z = obj_movement_info.transporter_info.position.z + z;
 
     Creature* pCreature = GetMapMgr()->CreateCreature(entry);
     pCreature->Create(inf->Name, GetMapMgr()->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
-    pCreature->transporter_info.x = x;
-    pCreature->transporter_info.y = y;
-    pCreature->transporter_info.z = z;
-    pCreature->transporter_info.o = o;
-    pCreature->transporter_info.guid = GetGUID();
+    pCreature->obj_movement_info.transporter_info.position.x = x;
+    pCreature->obj_movement_info.transporter_info.position.y = y;
+    pCreature->obj_movement_info.transporter_info.position.z = z;
+    pCreature->obj_movement_info.transporter_info.position.o = o;
+    pCreature->obj_movement_info.transporter_info.guid = GetGUID();
     if (anim)
         pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);
 
@@ -741,20 +744,20 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     if (inf == NULL || proto == NULL)
         return NULL;
 
-    float transporter_x = transporter_info.x + x;
-    float transporter_y = transporter_info.y + y;
-    float transporter_z = transporter_info.z + z;
+    float transporter_x = obj_movement_info.transporter_info.position.x + x;
+    float transporter_y = obj_movement_info.transporter_info.position.y + y;
+    float transporter_z = obj_movement_info.transporter_info.position.z + z;
 
     Creature* pCreature = GetMapMgr()->CreateCreature(entry);
     pCreature->Create(inf->Name, GetMapMgr()->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
-    pCreature->transporter_info.x = x;
-    pCreature->transporter_info.y = y;
-    pCreature->transporter_info.z = z;
-    pCreature->transporter_info.o = o;
-    pCreature->transporter_info.guid = GetGUID();
+    pCreature->obj_movement_info.transporter_info.position.x = x;
+    pCreature->obj_movement_info.transporter_info.position.y = y;
+    pCreature->obj_movement_info.transporter_info.position.z = z;
+    pCreature->obj_movement_info.transporter_info.position.o = o;
+    pCreature->obj_movement_info.transporter_info.guid = GetGUID();
 
     pCreature->SetTransport(this);
     m_NPCPassengerSet.insert(pCreature);
@@ -767,7 +770,7 @@ void Transporter::UpdateNPCPositions(float x, float y, float z, float o)
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
-        npc->SetPosition(x + npc->transporter_info.x, y + npc->transporter_info.y, z + npc->transporter_info.z, o + npc->transporter_info.o, false);
+        npc->SetPosition(x + npc->obj_movement_info.transporter_info.position.x, y + npc->obj_movement_info.transporter_info.position.y, z + npc->obj_movement_info.transporter_info.position.z, o + npc->obj_movement_info.transporter_info.position.o, false);
     }
 }
 
@@ -776,7 +779,7 @@ void Transporter::UpdatePlayerPositions(float x, float y, float z, float o)
     for (PlayerSet::iterator itr = m_passengers.begin(); itr != m_passengers.end(); ++itr)
     {
         Player* plr = *itr;
-        plr->SetPosition(x + plr->transporter_info.x, y + plr->transporter_info.y, z + plr->transporter_info.z, o + plr->transporter_info.o, false);
+        plr->SetPosition(x + plr->obj_movement_info.transporter_info.position.x, y + plr->obj_movement_info.transporter_info.position.y, z + plr->obj_movement_info.transporter_info.position.z, o + plr->obj_movement_info.transporter_info.position.o, false);
 
     }
 }

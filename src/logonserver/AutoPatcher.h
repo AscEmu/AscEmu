@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef _AUTOPATCHER_H
@@ -33,13 +32,14 @@ struct Patch
 
 class PatchJob
 {
-        Patch* m_patchToSend;
-        AuthSocket* m_client;
-        uint32 m_bytesSent;
-        uint32 m_bytesLeft;
-        uint8* m_dataPointer;
+    Patch* m_patchToSend;
+    AuthSocket* m_client;
+    uint32 m_bytesSent;
+    uint32 m_bytesLeft;
+    uint8* m_dataPointer;
 
     public:
+
         PatchJob(Patch* patch, AuthSocket* client, uint32 skip) : m_patchToSend(patch), m_client(client), m_bytesSent(skip), m_bytesLeft(patch->FileSize - skip), m_dataPointer(patch->Data + skip) {}
         inline AuthSocket* GetClient() { return m_client; }
         bool Update();
@@ -48,6 +48,7 @@ class PatchJob
 class PatchMgr : public Singleton<PatchMgr>
 {
     public:
+
         PatchMgr();
         ~PatchMgr();
 
@@ -58,10 +59,11 @@ class PatchMgr : public Singleton<PatchMgr>
         bool InitiatePatch(Patch* pPatch, AuthSocket* pClient);
 
     protected:
-    std::vector<Patch*> m_patches;
+
+        std::vector<Patch*> m_patches;
 
         Mutex m_patchJobLock;
-    std::list<PatchJob*> m_patchJobs;
+        std::list<PatchJob*> m_patchJobs;
 };
 
-#endif
+#endif  //_AUTOPATCHER_H

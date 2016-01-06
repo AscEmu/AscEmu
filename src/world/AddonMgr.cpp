@@ -169,14 +169,6 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession
         unpacked >> crc;
         unpacked >> unknown;
 
-        // Hacky fix, Yea I know its a hacky fix I will make a proper handler one's I got the crc crap
-        /*        if (crc != 0x4C1C776D) // CRC of public key version 2.0.1
-                    returnpacket.append(PublicKey,264); // part of the hacky fix
-                else
-                    returnpacket << uint8(0x02) << uint8(0x01) << uint8(0x00) << uint32(0) << uint8(0);*/
-        /*if (!AppendPublicKey(returnpacket, name, crc))
-            returnpacket << uint8(1) << uint8(0) << uint8(0);*/
-
         unk = (Enable ? 2 : 1);
         returnpacket << unk;
         unk1 = (Enable ? 1 : 0);
@@ -200,9 +192,8 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession
             returnpacket << uint8(0);
     }
 
-    /*unknown 4 bytes at the end of the packet. Stays 0 for me. Tried custom addons, deleting, faulty etc. It stays 0.
-    */
-    returnpacket << uint32(0); //Some additional count for additional records, but we won't send them.
+    //unknown 4 bytes at the end of the packet. Stays 0 for me. Tried custom addons, deleting, faulty etc. It stays 0.
+    returnpacket << uint32(0);  //Some additional count for additional records, but we won't send them.
 
     m_session->SendPacket(&returnpacket);
 }

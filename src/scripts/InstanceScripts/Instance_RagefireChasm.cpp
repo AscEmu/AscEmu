@@ -163,10 +163,10 @@ class BloodFilledOrb : public GameObjectAIScript
 {
     public:
 
-        BloodFilledOrb(GameObject*  goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject*  GO) { return new BloodFilledOrb(GO); }
+        BloodFilledOrb(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+        static GameObjectAIScript* Create(GameObject* GO) { return new BloodFilledOrb(GO); }
 
-        void OnActivate(Player*  pPlayer)
+        void OnActivate(Player* pPlayer)
         {
             // Make sure player has the quest and Zelemar isn't spawned yet
             if (!pPlayer->HasQuest(9692)) // The Path of the Adept

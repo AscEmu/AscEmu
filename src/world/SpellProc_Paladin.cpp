@@ -38,9 +38,11 @@ class SealOfCommandSpellProc : public SpellProc
             return;
 
         uint32 weapspeed = 1;
-        Item* itm = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-        if (itm != NULL)
-            weapspeed = itm->GetProto()->Delay;
+
+        auto item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+        if (item != nullptr)
+            weapspeed = item->GetProto()->Delay;
+
         mProcChance = 7 * weapspeed / 600;
         if (mProcChance >= 50)
             mProcChance = 50;

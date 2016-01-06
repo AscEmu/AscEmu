@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WOWSERVER_COMMON_DEFINES_HPP
-#define WOWSERVER_COMMON_DEFINES_HPP
-/* platforms that already define M_PI in math.h */
+#ifndef _COMMON_DEFINES_HPP
+#define _COMMON_DEFINES_HPP
+
+// platforms that already define M_PI in math.h
 #ifdef M_PI
 #undef M_PI
 #endif
@@ -27,4 +28,6 @@
 #define M_H_PI     1.57079632679489661923
 #define M_Q_PI     0.785398163397448309615
 #define M_PI_FLOAT 3.14159f
-#endif      //WOWSERVER_COMMON_DEFINES_HPP
+
+
+#endif  //_COMMON_DEFINES_HPP

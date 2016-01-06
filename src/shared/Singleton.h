@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef WOWSERVER_SINGLETON_H
-#define WOWSERVER_SINGLETON_H
+#ifndef _SINGLETON_H
+#define _SINGLETON_H
 
 #include "Errors.h"
 
@@ -60,4 +60,5 @@ template < class type > class SERVER_DECL Singleton
         /// Singleton pointer, must be set to 0 prior to creating the object
         static type* mSingleton;
 };
-#endif
+
+#endif  //_SINGLETON_H

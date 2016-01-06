@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2009-2012 ArcEmu Team <http://www.arcemu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ enum UnorderedEntrys
 
         void OnActivate(Player* player)
         {
-            Arcemu::Gossip::Menu::SendQuickMenu(_gameobject->GetGUID(), GT_DEDICATION_OF_HONOR, player, 1, ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
+            Arcemu::Gossip::Menu::SendQuickMenu(_gameobject->GetGUID(), GT_DEDICATION_OF_HONOR, player, 1, GOSSIP_ICON_CHAT, player->GetSession()->LocalizedGossipOption(GI_SEE_FALL_LICH_KING));
         }
 };
 

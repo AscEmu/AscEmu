@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 if(NOT BUILD_QUESTSCRIPTS )
   message("\tQuestScripts was skipped because BUILD_QUESTSCRIPTS is unchecked.")

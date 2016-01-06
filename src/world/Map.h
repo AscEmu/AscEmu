@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -23,11 +23,11 @@
 
 #include "TerrainMgr.h"
 #include "CellHandlerDefines.hpp"
+#include "DBC/DBCStructures.hpp"
 
 class MapMgr;
 struct MapInfo;
 class TerrainMgr;
-struct MapEntry;
 
 struct Formation;
 
@@ -114,35 +114,38 @@ typedef struct
 class SERVER_DECL Map
 {
     public:
+
         Map(uint32 mapid, MapInfo* inf);
         ~Map();
 
-    inline std::string GetNameString();
+        inline std::string GetNameString();
 
-    const char* GetName();
+        const char* GetName();
 
-    inline MapEntry* GetDBCEntry();
+        inline const DBC::Structures::MapEntry* GetDBCEntry();
 
-    CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
+        CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
 
-    CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
+        CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
 
-    void LoadSpawns(bool reload);           /// set to true to make clean up
+        void LoadSpawns(bool reload);           /// set to true to make clean up
         uint32 CreatureSpawnCount;
         uint32 GameObjectSpawnCount;
 
-    void CellGoneActive(uint32 x, uint32 y);
+        void CellGoneActive(uint32 x, uint32 y);
 
-    void CellGoneIdle(uint32 x, uint32 y);
-private:
+        void CellGoneIdle(uint32 x, uint32 y);
+
+    private:
 
         MapInfo* _mapInfo;
         uint32 _mapId;
         std::string name;
-        MapEntry* me;
 
-        /// new stuff
+        const DBC::Structures::MapEntry* me;
+
         CellSpawns** spawns[_sizeX];
+
     public:
 
         CellSpawns staticSpawns;

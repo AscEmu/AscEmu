@@ -57,7 +57,7 @@ enum CreatureEntry
     // SteamSurgerAI
     CN_STEAM_SURGER                 = 21696,
 
-    /*   Boss AIs    */
+    // Boss AIs
     // Hydromancer ThespiaAI
     CN_HYDROMANCER_THESPIA          = 17797,
 

@@ -1,5 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 <http://www.ArcEmu.com/>
  *
  * Circular Buffer Class
@@ -18,11 +19,10 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
-#ifndef _NETLIB_CIRCULARBUFFER_H
-#define _NETLIB_CIRCULARBUFFER_H
+#ifndef _CIRCULARBUFFER_H
+#define _CIRCULARBUFFER_H
 
 #include "CommonTypes.hpp"
 
@@ -107,5 +107,4 @@ class CircularBuffer
         void* GetBufferStart();
 };
 
-#endif        // _NETLIB_CIRCULARBUFFER_H
-
+#endif  //_CIRCULARBUFFER_H

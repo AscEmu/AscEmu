@@ -31,7 +31,7 @@ class MeathookAI : public CreatureAIScript
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
-            /* SPELLS INIT */
+
             ScriptSpell* ConstrictingChains = new ScriptSpell;
             ConstrictingChains->normal_spellid = 52696;
             ConstrictingChains->heroic_spellid = 58823;
@@ -193,7 +193,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
-            /* SPELLS INIT */
+
             ScriptSpell* ShadowBolt = new ScriptSpell;
             ShadowBolt->normal_spellid = 57725;
             ShadowBolt->heroic_spellid = 58827;
@@ -380,7 +380,7 @@ class ChronoLordEpochAI : public CreatureAIScript
         {
             heroic = (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC);
             spells.clear();
-            /* SPELLS INIT */
+
             ScriptSpell* WoundingStrike = new ScriptSpell;
             WoundingStrike->normal_spellid = 52771;
             WoundingStrike->heroic_spellid = 58830;
@@ -541,7 +541,7 @@ class ChronoLordEpochAI : public CreatureAIScript
         std::vector< ScriptSpell* > spells;
 };
 
-//InfiniteCorruptorAI
+
 class InfiniteCorruptorAI : public CreatureAIScript
 {
     public:
@@ -678,7 +678,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
         std::vector< ScriptSpell* > spells;
 };
 
-//MalganisAI
+
 class MalganisAI : public CreatureAIScript
 {
     public:
@@ -764,13 +764,13 @@ class MalganisAI : public CreatureAIScript
             }
             if (_unit->GetHealthPct() < 2)
             {
-                //lala
                 _unit->Root();
                 _unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 for (uint8 i = 0; i < 7; i++)
                     _unit->SchoolImmunityList[i] = 1;
                 RemoveAIUpdateEvent();
                 _unit->SendScriptTextChatMessage(SAY_MALGANIS_17);
+
                 //spawn a chest and go
                 GameObject* go = _unit->GetMapMgr()->CreateGameObject(190663);
                 go->CreateFromProto(190663, _unit->GetMapMgr()->GetMapId(), _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), 0.0f, 0.0f, 0.0f, 0.0f);
@@ -1212,9 +1212,6 @@ class ArthasAI : public CreatureAIScript
                         _unit->SendTimedScriptTextChatMessage(SAY_ARTHAS_14, 32000);
                         c->Despawn(38500, 0);
                         //3 = 37s
-                        /*sEventMgr.AddEvent(TO_UNIT(_unit), &Unit::SendChatMessage, (uint8)CHAT_MSG_MONSTER_SAY, (uint32)LANG_UNIVERSAL,
-                        "Mal'Ganis will send out some of his blablabla - write that txt",
-                        EVENT_UNIT_CHAT_MSG, 37000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);*/
                         sEventMgr.AddEvent(static_cast<Object*>(_unit), &Object::PlaySoundToSet, (uint32)14885, EVENT_UNK, 39000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     }
                 }
@@ -1262,7 +1259,7 @@ class ArthasGossip : public GossipScript
             Menu->SendTo(Plr);
         }
 
-        void GossipSelectOption(Object* pObject, Player*  Plr, uint32 Id, uint32 IntId, const char* Code)
+        void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
         {
             switch (IntId)
             {

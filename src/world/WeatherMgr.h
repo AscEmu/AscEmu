@@ -16,7 +16,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef __WEATHERMGR_H
@@ -27,12 +26,13 @@
 class WeatherInfo;
 class WeatherMgr;
 
-void   BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density);
+void BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density);
 uint32 GetSound(uint32 Effect, float Density);
 
 class WeatherMgr :  public Singleton < WeatherMgr >
 {
     public:
+
         WeatherMgr();
         ~WeatherMgr();
 
@@ -40,13 +40,16 @@ class WeatherMgr :  public Singleton < WeatherMgr >
         void SendWeather(Player* plr);
 
     private:
+
         std::map<uint32, WeatherInfo*> m_zoneWeathers;
 };
 
 class WeatherInfo : public EventableObject
 {
-        friend class WeatherMgr;
+    friend class WeatherMgr;
+
     public:
+
         WeatherInfo();
         ~WeatherInfo();
 
@@ -56,6 +59,7 @@ class WeatherInfo : public EventableObject
         void SendUpdate(Player* plr);
 
     protected:
+
         void _GenerateWeather();
 
         uint32 m_zoneId;
@@ -72,4 +76,4 @@ class WeatherInfo : public EventableObject
 
 #define sWeatherMgr WeatherMgr::getSingleton()
 
-#endif
+#endif      //__WEATHERMGR_H

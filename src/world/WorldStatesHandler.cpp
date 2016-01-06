@@ -22,11 +22,11 @@
 
 void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 area, uint32 field, uint32 value)
 {
-    HM_NAMESPACE::hash_map< uint32, HM_NAMESPACE::hash_map< uint32, uint32 > >::iterator itr = worldstates.find(zone);
+    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::iterator itr = worldstates.find(zone);
     if (itr == worldstates.end())
         return;
 
-    HM_NAMESPACE::hash_map< uint32, uint32 >::iterator itr2 = itr->second.find(field);
+    std::unordered_map< uint32, uint32 >::iterator itr2 = itr->second.find(field);
     if (itr2 == itr->second.end())
         return;
 
@@ -37,11 +37,11 @@ void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 area, uint32 f
 }
 
 uint32 WorldStatesHandler::GetWorldStateForZone(uint32 zone, uint32 area, uint32 field) const{
-    HM_NAMESPACE::hash_map< uint32, HM_NAMESPACE::hash_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
+    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
     if (itr == worldstates.end())
         return 0;
 
-    HM_NAMESPACE::hash_map< uint32, uint32 >::const_iterator itr2 = itr->second.find(field);
+    std::unordered_map< uint32, uint32 >::const_iterator itr2 = itr->second.find(field);
     if (itr2 == itr->second.end())
         return 0;
 
@@ -53,13 +53,13 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32 zone, uint32 area, W
     data << uint32(zone);
     data << uint32(area);
 
-    HM_NAMESPACE::hash_map< uint32, HM_NAMESPACE::hash_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
+    std::unordered_map< uint32, std::unordered_map< uint32, uint32 > >::const_iterator itr = worldstates.find(zone);
 
     if (itr != worldstates.end())
     {
         data << uint16(2 + itr->second.size());
 
-        for (HM_NAMESPACE::hash_map< uint32, uint32 >::const_iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
+        for (std::unordered_map< uint32, uint32 >::const_iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
         {
             data << uint32(itr2->first);
             data << uint32(itr2->second);

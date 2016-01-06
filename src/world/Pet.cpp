@@ -136,7 +136,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureInfo* ci, Creature* created_from_
     m_phase = m_Owner->GetPhase();
     m_PetNumber = m_Owner->GeneratePetNumber();
     creature_info = ci;
-    myFamily = dbcCreatureFamily.LookupEntry(ci->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(ci->Family);
 
     float x, y, z;
     if (Vec)
@@ -200,10 +200,10 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureInfo* ci, Creature* created_from_
     }
     else // Hunter pet
     {
-        if (myFamily == NULL || myFamily->name == NULL)
+        if (myFamily == nullptr)
             m_name = "Pet";
         else
-            m_name.assign(myFamily->name);
+            m_name.assign(myFamily->name[0]);
 
         SetBoundingRadius(created_from_creature->GetBoundingRadius());
         SetCombatReach(created_from_creature->GetCombatReach());
@@ -442,35 +442,38 @@ void Pet::SendTalentsToOwner()
     size_t pos = data.wpos();
     data << uint8(0);                   // Amount of known talents (will be filled later)
 
-    CreatureFamilyEntry* cfe = dbcCreatureFamily.LookupEntryForced(GetCreatureInfo()->Family);
+    DBC::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.LookupEntry(GetCreatureInfo()->Family);
     if (!cfe || static_cast<int32>(cfe->talenttree) < 0)
         return;
 
     // go through talent trees
     for (uint32 tte_id = PET_TALENT_TREE_START; tte_id <= PET_TALENT_TREE_END; tte_id++)
     {
-        TalentTabEntry* tte = dbcTalentTab.LookupEntryForced(tte_id);
-        if (tte == NULL)
+        auto talent_tab = sTalentTabStore.LookupEntry(tte_id);
+        if (talent_tab == nullptr)
             continue;
 
         // check if we match talent tab
-        if (!(tte->PetTalentMask & (1 << cfe->talenttree)))
+        if (!(talent_tab->PetTalentMask & (1 << cfe->talenttree)))
             continue;
 
-        TalentEntry* te;
-        for (uint32 t_id = 1; t_id < dbcTalent.GetNumRows(); t_id++)
+
+        for (uint32 t_id = 1; t_id < sTalentStore.GetNumRows(); t_id++)
         {
             // get talent entries for our talent tree
-            te = dbcTalent.LookupRowForced(t_id);
-            if (te == NULL || te->TalentTree != tte_id)
+            auto talent = sTalentStore.LookupEntry(t_id);
+            if (talent == nullptr)
+                continue;
+
+            if (talent->TalentTree != tte_id)
                 continue;
 
             // check our spells
             for (uint8 j = 0; j < 5; j++)
-                if (te->RankID[j] > 0 && HasSpell(te->RankID[j]))
+                if (talent->RankID[j] > 0 && HasSpell(talent->RankID[j]))
                 {
                     // if we have the spell, include it in packet
-                    data << te->TalentID;       // Talent ID
+                    data << talent->TalentID;       // Talent ID
                     data << j;                  // Rank
                     ++count;
                 }
@@ -543,10 +546,10 @@ AI_Spell* Pet::CreateAISpell(SpellEntry* info)
     sp->agent = AGENT_SPELL;
     sp->entryId = GetEntry();
     sp->floatMisc1 = 0;
-    sp->maxrange = GetMaxRange(dbcSpellRange.LookupEntry(info->rangeIndex));
+    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->rangeIndex));
     if (sp->maxrange < sqrt(info->base_range_or_radius_sqr))
         sp->maxrange = sqrt(info->base_range_or_radius_sqr);
-    sp->minrange = GetMinRange(dbcSpellRange.LookupEntry(info->rangeIndex));
+    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->rangeIndex));
     sp->Misc2 = 0;
     sp->procChance = 0;
     sp->spell = info;
@@ -588,7 +591,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         return;
 
     proto = CreatureProtoStorage.LookupEntry(mPi->entry);
-    myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
     Create(pi->name.c_str(), owner->GetMapId(), owner->GetPositionX() + 2, owner->GetPositionY() + 2, owner->GetPositionZ(), owner->GetOrientation());
 
@@ -614,7 +617,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
         char* q = ab;
         uint32 spellid;
         uint32 spstate;
-        uint32 i = 0;
+        uint8 i = 0;
 
         while (p && i < 10)
         {
@@ -743,7 +746,7 @@ void Pet::InitializeMe(bool first)
 
     auto creature_info = GetCreatureInfo();
     if (creature_info != nullptr)
-        myFamily = dbcCreatureFamily.LookupEntry(creature_info->Family);
+        myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
     SetPetDiet();
     _setFaction();
@@ -834,7 +837,7 @@ void Pet::UpdatePetInfo(bool bSetToOffline)
 
     // save actionbar
     ss.rdbuf()->str("");
-    for (uint32 i = 0; i < 10; ++i)
+    for (uint8 i = 0; i < 10; ++i)
     {
         if (ActionBar[i] & 0x4000000)
             ss << ActionBar[i] << " 0";
@@ -1024,11 +1027,14 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (proto->spelldataid != 0)
     {
-        CreatureSpellDataEntry* sd = dbcCreatureSpellData.LookupEntry(proto->spelldataid);
+        auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(proto->spelldataid);
 
-        for (uint32 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
-            uint32 spellid = sd->Spells[i];
+            if (creature_spell_data == nullptr)
+                continue;
+
+            uint32 spellid = creature_spell_data->Spells[i];
 
             if (spellid != 0)
             {
@@ -1039,7 +1045,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         }
     }
 
-    for (uint32 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; i++)
     {
         uint32 spellid = proto->AISpells[i];
         if (spellid != 0)
@@ -1068,7 +1074,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     else
     {
         // Get Creature family from DB (table creature_names, field family), load the skill line from CreatureFamily.dbc for use with SkillLineAbiliby.dbc entry
-        CreatureFamilyEntry* f = dbcCreatureFamily.LookupEntryForced(GetCreatureInfo()->Family);
+        DBC::Structures::CreatureFamilyEntry const* f = sCreatureFamilyStore.LookupEntry(GetCreatureInfo()->Family);
         if (f)
         {
             s = f->skilline;
@@ -1078,16 +1084,17 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (s || s2)
     {
-        skilllinespell* sls;
-        uint32 rowcount = dbcSkillLineSpell.GetNumRows();
         SpellEntry* sp;
-        for (uint32 idx = 0; idx < rowcount; ++idx)
+        for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
-            sls = dbcSkillLineSpell.LookupRow(idx);
+            auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
+            if (skill_line_ability == nullptr)
+                continue;
+
             // Update existing spell, or add new "automatic-acquired" spell
-            if ((sls->skilline == s || sls->skilline == s2) && sls->acquireMethod == 2)
+            if ((skill_line_ability->skilline == s || skill_line_ability->skilline == s2) && skill_line_ability->acquireMethod == 2)
             {
-                sp = dbcSpell.LookupEntryForced(sls->spell);
+                sp = dbcSpell.LookupEntryForced(skill_line_ability->spell);
                 if (sp && getLevel() >= sp->baseLevel)
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it
@@ -1137,7 +1144,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
                 if (sp->NameHash == itr->first->NameHash)
                 {
                     // replace the action bar
-                    for (int i = 0; i < 10; ++i)
+                    for (uint8 i = 0; i < 10; ++i)
                     {
                         if (ActionBar[i] == itr->first->Id)
                         {
@@ -1169,7 +1176,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
         if (!ab_replace)
         {
             bool has = false;
-            for (int i = 0; i < 10; ++i)
+            for (uint8 i = 0; i < 10; ++i)
             {
                 if (ActionBar[i] == sp->Id)
                 {
@@ -1180,7 +1187,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
 
             if (!has)
             {
-                for (int i = 0; i < 10; ++i)
+                for (uint8 i = 0; i < 10; ++i)
                 {
                     if (ActionBar[i] == 0)
                     {
@@ -1274,16 +1281,18 @@ void Pet::SetDefaultActionbar()
 
 void Pet::WipeTalents()
 {
-    uint32 rows, i, j;
-    rows = dbcTalent.GetNumRows();
-    for (i = 0; i < rows; i++)
+    for (uint32 i = 0; i < sTalentStore.GetNumRows(); i++)
     {
-        TalentEntry* te = dbcTalent.LookupRowForced(i);
-        if (te == NULL || te->TalentTree < PET_TALENT_TREE_START || te->TalentTree > PET_TALENT_TREE_END)   // 409-Tenacity, 410-Ferocity, 411-Cunning
+        auto talent = sTalentStore.LookupEntry(i);
+        if (talent == nullptr)
             continue;
-        for (j = 0; j < 5; j++)
-            if (te->RankID[j] != 0 && HasSpell(te->RankID[j]))
-                RemoveSpell(te->RankID[j]);
+
+        if (talent->TalentTree < PET_TALENT_TREE_START || talent->TalentTree > PET_TALENT_TREE_END)   // 409-Tenacity, 410-Ferocity, 411-Cunning
+            continue;
+
+        for (uint8 j = 0; j < 5; j++)
+            if (talent->RankID[j] != 0 && HasSpell(talent->RankID[j]))
+                RemoveSpell(talent->RankID[j]);
     }
     SendSpellsToOwner();
 }
@@ -2100,7 +2109,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         if (spl != NULL)
         {
 
-            for (int i = 0; i < 3; i++)
+            for (uint8 i = 0; i < 3; i++)
             {
                 if (spl->GetProto()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {

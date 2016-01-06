@@ -1,5 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
@@ -294,7 +295,7 @@ namespace luaGlobalFunctions
         lua_newtable(L);
         objmgr._playerslock.AcquireReadLock();
 
-        HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+        std::unordered_map<uint32, Player*>::const_iterator itr;
         for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
         {
             count++,
@@ -381,7 +382,7 @@ namespace luaGlobalFunctions
         lua_newtable(L);
         uint32 zoneid = luaL_checkinteger(L, 1);
         objmgr._playerslock.AcquireReadLock();
-        HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+        std::unordered_map<uint32, Player*>::const_iterator itr;
         for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
         {
             if ((*itr).second->GetZoneId() == zoneid)

@@ -1219,8 +1219,6 @@ class WRATHFINMYRMIDONAI : public CreatureAIScript
 
 #define CN_UNDERBOG_LORD 17734
 
-/*#define KNOCKBACK 28405    // this is wrong id for sure. On Wiki there was sth about kickback, but there is no such spell in DBC -.-'
-                            // or maybe it's Boglord Bash: 32077 ?*/
 #define ENRAGE_LORD 8599    //33653 // This spell was added, but still I don't have infos abou it :| 
 // Can be: 37023, 33653 and others...
 #define KNOCK_AWAY 25778    // not sure to those
@@ -1240,14 +1238,7 @@ class UNDERBOGLORDAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            /*
-                    spells[0].info = dbcSpell.LookupEntry(KNOCKBACK);
-                    spells[0].targettype = TARGET_ATTACKING; // Affects also caster :|
-                    spells[0].instant = true;
-                    spells[0].cooldown = 35;
-                    spells[0].perctrigger = 0.0f;
-                    spells[0].attackstoptimer = 1000;
-            */
+
             spells[0].info = dbcSpell.LookupEntry(KNOCK_AWAY);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -1362,12 +1353,12 @@ class UNDERBOGLORDAI : public CreatureAIScript
 };
 
 
-/*    Murkblood Lost Ones - Humanoid mobs Spearmen (flings spears and cast Viper Sting),
-    Tribesmen, Oracles (casts Fireball) and Healers (casts Holy Light, Heal and
-    Prayer of Healing}. Come in groups together. Healers will cast Prayer of Healing
-    if left alone which will completely heal all nearby Murkbloods and Wrathfins and so
-    should be killed first or crowd-controlled until last. The heal is interruptible.
-                                                                                        */
+//Murkblood Lost Ones - Humanoid mobs Spearmen (flings spears and cast Viper Sting),
+//Tribesmen, Oracles (casts Fireball) and Healers (casts Holy Light, Heal and
+//Prayer of Healing}. Come in groups together. Healers will cast Prayer of Healing
+//if left alone which will completely heal all nearby Murkbloods and Wrathfins and so
+//should be killed first or crowd-controlled until last. The heal is interruptible.
+
 // Murkblood Spearman AI
 #define CN_MURKBLOOD_SPEARMAN 17729
 
@@ -1389,14 +1380,7 @@ class MURKBLOODSPEARMANAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            /*
-                    spells[0].info = dbcSpell.LookupEntry(SPEAR_THROW);
-                    spells[0].targettype = TARGET_ATTACKING;
-                    spells[0].instant = true;
-                    spells[0].cooldown = 10;
-                    spells[0].perctrigger = 0.0f;
-                    spells[0].attackstoptimer = 1000;
-            */
+
             spells[0].info = dbcSpell.LookupEntry(THROW);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -1714,14 +1698,7 @@ class MURKBLOODHEALERAI : public CreatureAIScript
             spells[2].cooldown = -1;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
-            /*
-                    spells[1].info = dbcSpell.LookupEntry(HEAL);
-                    spells[1].targettype = TARGET_SELF;
-                    spells[1].instant = true;
-                    spells[1].cooldown = 25;
-                    spells[1].perctrigger = 0.0f;
-                    spells[1].attackstoptimer = 1000;
-            */
+
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -1991,21 +1968,7 @@ class UNDERBOGSHAMBLERAI : public CreatureAIScript
             spells[2].cooldown = 25;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
-            /*
-                    spells[1].info = dbcSpell.LookupEntry(HEAL);
-                    spells[1].targettype = TARGET_SELF;
-                    spells[1].instant = true;
-                    spells[1].cooldown = ;
-                    spells[1].perctrigger = 0.0f;
-                    spells[1].attackstoptimer = 1000;
 
-                    spells[2].info = dbcSpell.LookupEntry(SPORE_EXPLOSION);
-                    spells[2].targettype = TARGET_DESTINATION; // Idk why it casts that on himself =/
-                    spells[2].instant = true;
-                    spells[2].cooldown = ;
-                    spells[2].perctrigger = 0.0f;
-                    spells[2].attackstoptimer = 1000;
-            */
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -2378,8 +2341,7 @@ class HungarfenAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (isHostile(_unit, (*itr)) && (*itr) != _unit && (*itr)->IsUnit())
@@ -2402,7 +2364,7 @@ class HungarfenAI : public CreatureAIScript
 
                 if (random_target == nullptr)
                     return;
-                /* Spawning mushroom - TO DO */
+                ///\todo Spawning mushroom
 
                 TargetTable.clear();
             }
@@ -3163,25 +3125,6 @@ void SetupTheUnderbog(ScriptMgr* mgr)
     mgr->register_instance_script(MAP_CF_THE_UNDERBOG, &InstanceTheUnderbogScript::Create);
 
     //Creatures
-    /*mgr->register_creature_script(CN_BOG_GIANT, &BOGGIANTAI::Create);
-    mgr->register_creature_script(CN_CLAW, &CLAWAI::Create);
-    mgr->register_creature_script(CN_FEN_RAY, &FENRAYAI::Create);
-    mgr->register_creature_script(CN_LYKUL_STINGER, &LYKULSTINGERAI::Create);
-    mgr->register_creature_script(CN_UNDERBAT, &UNDERBATAI::Create);
-    mgr->register_creature_script(CN_FEN_RAY, &FENRAYAI::Create);
-    mgr->register_creature_script(CN_LYKUL_STINGER, &LYKULSTINGERAI::Create);
-    mgr->register_creature_script(CN_LYKUL_WASP, &LYKULWASPAI::Create);
-    mgr->register_creature_script(CN_WRATHFIN_WARRIOR, &WRATHFINWARRIORAI::Create);
-    mgr->register_creature_script(CN_WRATHFIN_MYRMIDON, &WRATHFINMYRMIDONAI::Create);
-    mgr->register_creature_script(CN_WRATHFIN_SENTRY, &WRATHFINSENTRYAI::Create);
-    mgr->register_creature_script(CN_MURKBLOOD_SPEARMAN, &MURKBLOODSPEARMANAI::Create);
-    mgr->register_creature_script(CN_MURKBLOOD_ORACLE, &MURKBLOODORACLEAI::Create);
-    mgr->register_creature_script(CN_MURKBLOOD_HEALER, &MURKBLOODHEALERAI::Create);
-    mgr->register_creature_script(CN_MURKBLOOD_TRIBESMAN, &MURKBLOODTRIBESMANAI::Create);
-    mgr->register_creature_script(CN_UNDERBOG_SHAMBLER, &UNDERBOGSHAMBLERAI::Create);
-    mgr->register_creature_script(CN_UNDERBOG_FRENZY, &UNDERBOGFRENZYAI::Create);
-    mgr->register_creature_script(CN_UNDERBOG_LORD, &UNDERBOGLORDAI::Create);
-    mgr->register_creature_script(CN_UNDERBOG_LURKER, &UNDERBOGLURKERAI::Create);*/
     mgr->register_creature_script(CN_HUNGARFEN, &HungarfenAI::Create);
     mgr->register_creature_script(CN_GHAZAN, &GhazanAI::Create);
     mgr->register_creature_script(CN_CLAW, &ClawAI::Create);

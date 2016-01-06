@@ -202,7 +202,7 @@ void PrintCrashInformation(PEXCEPTION_POINTERS except)
     echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
     echo("Server has crashed. Reason was:\n");
     echo("   %s at 0x%08X\n", GetExceptionDescription(except->ExceptionRecord->ExceptionCode),
-         (unsigned long)except->ExceptionRecord->ExceptionAddress);
+         except->ExceptionRecord->ExceptionAddress);
 #ifdef REPACK
     echo("%s repack by %s has crashed. Visit %s for support.", REPACK, REPACK_AUTHOR, REPACK_WEBSITE);
 #endif
@@ -245,7 +245,7 @@ void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry & e
         if(entry.lineFileName[0] == 0)
         {
             if(entry.name[0] == 0)
-                sprintf(entry.name, "%p", entry.offset);
+                sprintf(entry.name, "%lld", entry.offset);
 
             sprintf(buffer, "%s!%s Line %u\n", p, entry.name, entry.lineNumber);
         }

@@ -300,9 +300,9 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         Magtheridon->RemoveAura(BANISH);
 
                     // If Gate is found we close it
-                    GameObject*  Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
+                    GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
                     if (Gate)
-                        Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+                        Gate->SetState(GO_STATE_CLOSED);
                 }
             }
             // We use different functions for each phase
@@ -386,9 +386,9 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         // If less than half of alive channelers is out of combat we open Magtheridon's gate
                         if (AliveInCombat < AliveChannelers.size() / 2)
                         {
-                            GameObject*  Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
+                            GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
                             if (Gate)
-                                Gate->SetState(GAMEOBJECT_STATE_OPEN);
+                                Gate->SetState(GO_STATE_OPEN);
                         }
                         // After doing our job we can clear temporary channeler list
                         AliveChannelers.clear();
@@ -418,7 +418,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
 class ManticronCubeGO : public GameObjectAIScript
 {
     public:
-        ManticronCubeGO(GameObject*  pGameObject) : GameObjectAIScript(pGameObject)
+        ManticronCubeGO(GameObject* pGameObject) : GameObjectAIScript(pGameObject)
         {
             CubeTrigger = NULL;
             MagYell = false;
@@ -429,7 +429,7 @@ class ManticronCubeGO : public GameObjectAIScript
             Channeler = 0;
         }
 
-        void OnActivate(Player*  pPlayer)
+        void OnActivate(Player* pPlayer)
         {
             // We check if player has aura that prevents anyone from using this GO
             Aura* aura = pPlayer->FindAura(MIND_EXHAUSTION);
@@ -596,7 +596,7 @@ class ManticronCubeGO : public GameObjectAIScript
 
         }
 
-        static GameObjectAIScript* Create(GameObject*  GO) { return new ManticronCubeGO(GO); }
+        static GameObjectAIScript* Create(GameObject* GO) { return new ManticronCubeGO(GO); }
 
     protected:
 
@@ -1330,7 +1330,7 @@ class MagtheridonAI : public CreatureAIScript
 
             GameObject* Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
-                Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+                Gate->SetState(GO_STATE_CLOSED);
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -1342,21 +1342,21 @@ class MagtheridonAI : public CreatureAIScript
             if (_unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9) || _unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2))
                 return;
 
-            GameObject*  Gate = NULL;
+            GameObject* Gate = NULL;
             for (uint8 i = 0; i < 6; i++)
             {
                 Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                 if (Gate)
-                    Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+                    Gate->SetState(GO_STATE_CLOSED);
             }
 
             Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(0.0f, 0.0f, 0.0f, 184653);
             if (Gate)
-                Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+                Gate->SetState(GO_STATE_CLOSED);
 
             Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-72.5866f, 1.559f, 0.0f, 183847);
             if (Gate)
-                Gate->SetState(GAMEOBJECT_STATE_OPEN);
+                Gate->SetState(GO_STATE_OPEN);
         }
 
         void OnDied(Unit* mKiller)
@@ -1505,17 +1505,17 @@ class MagtheridonAI : public CreatureAIScript
 
                 if (timer_caveIn == 3)
                 {
-                    GameObject*  Gate = NULL;
+                    GameObject* Gate = NULL;
                     for (uint8 i = 0; i < 6; i++)
                     {
                         Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Columns[i].x, Columns[i].y, Columns[i].z, 184634 + i);
                         if (Gate)
-                            Gate->SetState(GAMEOBJECT_STATE_OPEN);
+                            Gate->SetState(GO_STATE_OPEN);
                     }
 
                     Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(0.0f, 0.0f, 0.0f, 184653);
                     if (Gate)
-                        Gate->SetState(GAMEOBJECT_STATE_OPEN);
+                        Gate->SetState(GO_STATE_OPEN);
                 }
 
                 if (timer_caveIn == 5)

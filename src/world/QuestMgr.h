@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -71,13 +71,13 @@ struct QuestPOI
     QuestPOI() : PoiId(0), ObjectiveIndex(0), MapId(0), MapAreaId(0), FloorId(0), Unk3(0), Unk4(0) {}
 
     QuestPOI(uint32 poiId, int32 objIndex, uint32 mapId, uint32 mapAreaId, uint32 floorId, uint32 unk3, uint32 unk4) :
-        PoiId(poiId),
-        ObjectiveIndex(objIndex),
-        MapId(mapId),
-        MapAreaId(mapAreaId),
-        FloorId(floorId),
-        Unk3(unk3),
-        Unk4(unk4) {}
+    PoiId(poiId),
+    ObjectiveIndex(objIndex),
+    MapId(mapId),
+    MapAreaId(mapAreaId),
+    FloorId(floorId),
+    Unk3(unk3),
+    Unk4(unk4) {}
 };
 
 typedef std::vector<QuestPOI> QuestPOIVector;
@@ -156,7 +156,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
 
         inline int32 QuestHasMob(Quest* qst, uint32 mob)
         {
-            for (uint32 i = 0; i < 4; ++i)
+            for (uint8 i = 0; i < 4; ++i)
                 if (qst->required_mob[i] == (int32)mob)
                     return qst->required_mobcount[i];
             return -1;
@@ -164,7 +164,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
 
         inline int32 GetOffsetForMob(Quest* qst, uint32 mob)
         {
-            for (uint32 i = 0; i < 4; ++i)
+            for (uint8 i = 0; i < 4; ++i)
                 if (qst->required_mob[i] == (int32)mob)
                     return i;
 
@@ -173,7 +173,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
 
         inline int32 GetOffsetForItem(Quest* qst, uint32 itm)
         {
-            for (uint32 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+            for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
                 if (qst->required_item[i] == itm)
                     return i;
 
@@ -195,20 +195,20 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
 
     private:
 
-        HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* > m_npc_quests;
-        HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* > m_obj_quests;
-        HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* > m_itm_quests;
+        std::unordered_map<uint32, std::list<QuestRelation*>* > m_npc_quests;
+        std::unordered_map<uint32, std::list<QuestRelation*>* > m_obj_quests;
+        std::unordered_map<uint32, std::list<QuestRelation*>* > m_itm_quests;
         QuestPOIMap m_QuestPOIMap;
 
-        HM_NAMESPACE::hash_map<uint32, std::list<QuestAssociation*>* > m_quest_associations;
-        inline HM_NAMESPACE::hash_map<uint32, std::list<QuestAssociation*>* >& GetQuestAssociationList()
+        std::unordered_map<uint32, std::list<QuestAssociation*>* > m_quest_associations;
+        inline std::unordered_map<uint32, std::list<QuestAssociation*>* >& GetQuestAssociationList()
         {return m_quest_associations;}
 
-        HM_NAMESPACE::hash_map<uint32, uint32> m_ObjectLootQuestList;
+        std::unordered_map<uint32, uint32> m_ObjectLootQuestList;
 
         template <class T> void _AddQuest(uint32 entryid, Quest* qst, uint8 type);
 
-        template <class T> HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >& _GetList();
+        template <class T> std::unordered_map<uint32, std::list<QuestRelation*>* >& _GetList();
 
         void AddItemQuestAssociation(uint32 itemId, Quest* qst, uint8 item_count);
 
@@ -217,11 +217,11 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         void _CleanLine(std::string* str);
 };
 
-template<> inline HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Creature>()
+template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Creature>()
 { return m_npc_quests; }
-template<> inline HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<GameObject>()
+template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<GameObject>()
 { return m_obj_quests; }
-template<> inline HM_NAMESPACE::hash_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Item>()
+template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& QuestMgr::_GetList<Item>()
 { return m_itm_quests; }
 
 

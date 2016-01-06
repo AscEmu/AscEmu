@@ -16,7 +16,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #ifndef _WORDFILTER_H
@@ -35,12 +34,13 @@ struct WordFilterMatch
 
 class WordFilter
 {
-        WordFilterMatch** m_filters;
-        size_t m_filterCount;
+    WordFilterMatch** m_filters;
+    size_t m_filterCount;
 
-        bool CompileExpression(const char* szExpression, void** pOutput, void** pExtraOutput);
+    bool CompileExpression(const char* szExpression, void** pOutput, void** pExtraOutput);
 
     public:
+
         WordFilter() : m_filters(NULL), m_filterCount(0) {}
         ~WordFilter();
 

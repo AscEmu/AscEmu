@@ -228,7 +228,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     _unit->SchoolImmunityList[SCHOOL_NATURE] = 1;
 
                     //Summon 4 elementals
-                    Creature*  summon;
+                    Creature* summon;
                     float posx = _unit->GetPositionX();
                     float posy = _unit->GetPositionY();
                     float posz = _unit->GetPositionZ();
@@ -312,7 +312,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                     _unit->SchoolImmunityList[SCHOOL_NATURE] = 0;
 
                     //Summon 4 elementals
-                    Creature*  summon;
+                    Creature* summon;
                     float posx = _unit->GetPositionX();
                     float posy = _unit->GetPositionY();
                     float posz = _unit->GetPositionZ();
@@ -402,8 +402,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
             if (!maxdist2cast) maxdist2cast = 100.0f;
 
             Unit* RandomTarget = NULL;
-            std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-            /* If anyone wants to use this function, then leave this note!                                         */
+            std::vector<Unit*> TargetTable;
             for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && (*itr)->IsUnit())
@@ -1093,8 +1092,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
             if (!maxdist2cast) maxdist2cast = 100.0f;
 
             Unit* RandomTarget = NULL;
-            std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-            /* If anyone wants to use this function, then leave this note!                                         */
+            std::vector<Unit*> TargetTable;
             for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && (*itr)->IsUnit() && isAttackable(_unit, (*itr)))
@@ -1211,23 +1209,6 @@ class KarathressAI : public CreatureAIScript
             Enraged = false;
             CataclysmicBoltTimer = 0;
         }
-        /* we don't need to use that, as long we handle advisors counter with events
-            void CheckAdvisors()
-            {
-                Unit* advisor = NULL;
-
-                //Sharkkis
-                advisor = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_GUARD_SHARKKIS);
-                if (advisor && advisor->isAlive()) AdvisorsLeft--;
-
-                //Tidalvess
-                advisor = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_GUARD_TIDALVESS);
-                if (advisor && advisor->isAlive()) AdvisorsLeft--;
-
-                //Caribdis
-                advisor = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_GUARD_CARIBDIS);
-                if (advisor && advisor->isAlive()) AdvisorsLeft--;
-            }*/
 
         void OnCombatStart(Unit* mTarget)
         {
@@ -1424,7 +1405,7 @@ class FathomGuardTidalvessAI : public MoonScriptCreatureAI
             AddSpell(WINDFURY, Target_Current, 10.0f, 0, 0);
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             Creature* FLK = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1481,7 +1462,7 @@ class FathomGuardCaribdisAI : public MoonScriptCreatureAI
             MoonScriptCreatureAI::AIUpdate();
         }
 
-        void OnDied(Unit*  pKiller)
+        void OnDied(Unit* pKiller)
         {
             Creature* FLK = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
@@ -1957,19 +1938,7 @@ class VashjAI : public CreatureAIScript
 
         void PhaseOneAndThree()
         {
-            if (Phase == 3)
-            {
-                //WRONG
-                //sporebats are spawned faster and faster
-                /*SporebatTimer++;
-                if (SporebatTimer > 10)
-                {
-                    Creature* cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_TOXIC_SPORE_BAT,  29.769f, -866.190f, 43, 0, true, false, 0, 0);
-                    cre->GetAIInterface()->setOutOfCombatRange(1);
-                    SporebatTimer = 0;
-                }*/
-            }
-            else
+            if (Phase != 3)
             {
                 if (_unit->GetHealthPct() <= 70)
                 {
@@ -2243,8 +2212,7 @@ class VashjAI : public CreatureAIScript
             if (!maxdist2cast) maxdist2cast = 100.0f;
 
             Unit* RandomTarget = NULL;
-            std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-            /* If anyone wants to use this function, then leave this note!                                         */
+            std::vector<Unit*> TargetTable;
             for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && (*itr)->IsUnit())
@@ -2400,10 +2368,8 @@ class ToxicSporeBatAI : public CreatureAIScript
 
         ToxicSporeBatAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            /************************ Waypoint Place ************************/
-
+            // Waypoints
             m_entry = pCreature->GetEntry();
-
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(0, 0, Flag_Fly));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, Flag_Fly));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Fly));
@@ -2417,7 +2383,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, Flag_Fly));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, Flag_Fly));
 
-            /************************** Spells ****************************/
+            // Spells
 
             nrspells = 1;
             for (uint8 i = 0; i < nrspells; i++)
@@ -2432,7 +2398,7 @@ class ToxicSporeBatAI : public CreatureAIScript
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            /******************* Additional Settings *******************/
+            // Additional Settings
 
             Phase = 0;
             FlameQuills = false;
@@ -2476,7 +2442,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                     _unit->GetAIInterface()->setWaypointToMove(9);
                     break;
             }
-            //RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));    // Taken from here to add more abilities to code
+
         }
 
         void CastTime()
@@ -3040,11 +3006,11 @@ class SerpentshrineCavern : public MoonInstanceScript
             {
                 pBridgePart = GetGameObjectByGuid(mBridgePart[i]);
                 if (pBridgePart != NULL)
-                    pBridgePart->SetState(GAMEOBJECT_STATE_OPEN);
+                    pBridgePart->SetState(GO_STATE_OPEN);
             };
 
 
-            pGameObject->SetState(GAMEOBJECT_STATE_OPEN);
+            pGameObject->SetState(GO_STATE_OPEN);
         }
 
 };

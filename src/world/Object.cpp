@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -43,7 +43,7 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_flySpeed = 7.0f;
     m_backFlySpeed = 4.5f;
 
-    m_backWalkSpeed = 4.5f;	    // this should really be named m_backRunSpeed
+    m_backWalkSpeed = 4.5f;
     m_swimSpeed = 4.722222f;
     m_backSwimSpeed = 2.5f;
     m_turnRate = M_PI_FLOAT;
@@ -53,17 +53,13 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_mapMgr = 0;
     m_mapCell_x = m_mapCell_y = uint32(-1);
 
-    m_faction = NULL;
-    m_factionDBC = NULL;
+    m_faction = nullptr;
+    m_factionDBC = nullptr;
 
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
     Active = false;
     m_inQueue = false;
-    m_extensions = NULL;
     m_loadedFromDB = false;
-
-    m_faction = dbcFactionTemplate.LookupRow(0);
-    m_factionDBC = dbcFaction.LookupRow(0);
 
     m_objectTypeId = TYPEID_OBJECT;
 
@@ -84,9 +80,6 @@ Object::~Object()
 
     // for linux
     m_instanceId = INSTANCEID_NOT_IN_WORLD;
-
-    if (m_extensions != NULL)
-        delete m_extensions;
 
     if (m_currentSpell)
     {
@@ -375,7 +368,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
 
     }
 
-    *data << (uint16)flags;
+    *data << uint16(flags);
 
     Player* pThis = NULL;
     MovementInfo* moveinfo = NULL;
@@ -396,9 +389,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
 
     if (flags & UPDATEFLAG_LIVING)  //0x20
     {
-        if (pThis && pThis->transporter_info.guid != 0)
+        if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
             flags2 |= MOVEFLAG_TRANSPORT; //0x200
-        else if (uThis != NULL && transporter_info.guid != 0 && uThis->transporter_info.guid != 0)
+        else if (uThis != NULL && obj_movement_info.transporter_info.guid != 0 && uThis->obj_movement_info.transporter_info.guid != 0)
             flags2 |= MOVEFLAG_TRANSPORT; //0x200
 
         if ((pThis != NULL) && pThis->isRooted())
@@ -433,9 +426,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
             }
         }
 
-        *data << (uint32)flags2;
+        *data << uint32(flags2);
 
-        *data << (uint16)moveflags2;
+        *data << uint16(moveflags2);
 
         *data << getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
 
@@ -446,20 +439,20 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
         //   0x40 -> disables movement compensation and causes players to jump around all the place
 
         //Send position data, every living thing has these
-        *data << (float)m_position.x;
-        *data << (float)m_position.y;
-        *data << (float)m_position.z;
-        *data << (float)m_position.o;
+        *data << float(m_position.x);
+        *data << float(m_position.y);
+        *data << float(m_position.z);
+        *data << float(m_position.o);
 
         if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
         {
-            *data << WoWGuid(transporter_info.guid);
-            *data << float(transporter_info.x);
-            *data << float(transporter_info.y);
-            *data << float(transporter_info.z);
-            *data << float(transporter_info.o);
-            *data << uint32(transporter_info.flags);
-            *data << uint8(transporter_info.seat);
+            *data << WoWGuid(obj_movement_info.transporter_info.guid);
+            *data << float(GetTransPositionX());
+            *data << float(GetTransPositionY());
+            *data << float(GetTransPositionZ());
+            *data << float(GetTransPositionO());
+            *data << uint32(GetTransTime());
+            *data << uint8(GetTransSeat());
         }
 
         if ((flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
@@ -467,13 +460,13 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
             if (pThis && moveinfo)
                 *data << moveinfo->pitch;
             else
-                *data << (float)0; //pitch
+                *data << float(0); //pitch
         }
 
         if (pThis && moveinfo)
-            *data << moveinfo->unklast;
+            *data << moveinfo->fall_time;
         else
-            *data << (uint32)0; //last fall time
+            *data << uint32(0); //last fall time
 
         if (flags2 & MOVEFLAG_REDIRECTED)   // 0x00001000
         {
@@ -486,30 +479,30 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
             }
             else
             {
-                *data << (float)0;
-                *data << (float)1.0;
-                *data << (float)0;
-                *data << (float)0;
+                *data << float(0);
+                *data << float(1.0);
+                *data << float(0);
+                *data << float(0);
             }
         }
 
         if (m_walkSpeed == 0)
-            *data << 8.0f;
+            *data << float(8.0f);
         else
-            *data << m_walkSpeed;   // walk speed
+            *data << float(m_walkSpeed);   // walk speed
         if (m_runSpeed == 0)
-            *data << 8.0f;
+            *data << float(8.0f);
         else
-            *data << m_runSpeed;    // run speed
-        *data << m_backWalkSpeed;   // backwards walk speed
-        *data << m_swimSpeed;       // swim speed
-        *data << m_backSwimSpeed;   // backwards swim speed
+            *data << float(m_runSpeed);    // run speed
+        *data << float(m_backWalkSpeed);   // backwards walk speed
+        *data << float(m_swimSpeed);       // swim speed
+        *data << float(m_backSwimSpeed);   // backwards swim speed
         if (m_flySpeed == 0)
-            *data << 8.0f;
+            *data << float(8.0f);
         else
-            *data << m_flySpeed;    // fly speed
-        *data << m_backFlySpeed;    // back fly speed
-        *data << m_turnRate;        // turn rate
+            *data << float(m_flySpeed);    // fly speed
+        *data << float(m_backFlySpeed);    // back fly speed
+        *data << float(m_turnRate);        // turn rate
         *data << float(7);          // pitch rate, now a constant...
 
         if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
@@ -523,34 +516,34 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
         if (flags & UPDATEFLAG_POSITION)        //0x0100
         {
             *data << uint8(0);                  //some say it is like parent guid ?
-            *data << (float)m_position.x;
-            *data << (float)m_position.y;
-            *data << (float)m_position.z;
-            *data << (float)m_position.x;
-            *data << (float)m_position.y;
-            *data << (float)m_position.z;
-            *data << (float)m_position.o;
+            *data << float(m_position.x);
+            *data << float(m_position.y);
+            *data << float(m_position.z);
+            *data << float(m_position.x);
+            *data << float(m_position.y);
+            *data << float(m_position.z);
+            *data << float(m_position.o);
 
             if (IsCorpse())
-                *data << (float)m_position.o;   //VLack: repeat the orientation!
+                *data << float(m_position.o);   //VLack: repeat the orientation!
             else
-                *data << (float)0;
+                *data << float(0);
         }
         else if (flags & UPDATEFLAG_HAS_POSITION)  //0x40
         {
             if (flags & UPDATEFLAG_TRANSPORT && m_uint32Values[GAMEOBJECT_BYTES_1] == GAMEOBJECT_TYPE_MO_TRANSPORT)
             {
-                *data << (float)0;
-                *data << (float)0;
-                *data << (float)0;
+                *data << float(0);
+                *data << float(0);
+                *data << float(0);
             }
             else
             {
-                *data << (float)m_position.x;
-                *data << (float)m_position.y;
-                *data << (float)m_position.z;
+                *data << float(m_position.x);
+                *data << float(m_position.y);
+                *data << float(m_position.z);
             }
-            *data << (float)m_position.o;
+            *data << float(m_position.o);
         }
     }
 
@@ -590,9 +583,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
     if (flags & UPDATEFLAG_ROTATION)   //0x0200
     {
         if (IsGameObject())
-            *data << static_cast< GameObject* >(this)->m_rotation;
-        else
-            *data << uint64(0);   //?
+            *data << static_cast< GameObject* >(this)->GetRotation();
     }
 }
 
@@ -654,10 +645,14 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
             GameObject* go = static_cast<GameObject*>(this);
             QuestLogEntry* qle;
             GameObjectInfo* gameobject_info;
-            if (go->HasQuests())
+            GameObject_QuestGiver* go_quest_giver = nullptr;
+            if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+                go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
+
+            if (go_quest_giver != nullptr && go_quest_giver->HasQuests())
             {
                 std::list<QuestRelation*>::iterator itr;
-                for (itr = go->QuestsBegin(); itr != go->QuestsEnd(); ++itr)
+                for (itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
                 {
                     QuestRelation* qr = (*itr);
                     if (qr != NULL)
@@ -688,7 +683,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                         {
                             if (qle->GetQuest()->count_required_mob == 0)
                                 continue;
-                            for (uint32 i = 0; i < 4; ++i)
+                            for (uint8 i = 0; i < 4; ++i)
                             {
                                 if (qle->GetQuest()->required_mob[i] == static_cast<int32>(go->GetEntry()) && qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
                                 {
@@ -779,17 +774,12 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
     }
 }
 
-void Object::BuildHeartBeatMsg(WorldPacket* data) const
+// This is not called!
+void Unit::BuildHeartBeatMsg(WorldPacket* data)
 {
-    data->Initialize(MSG_MOVE_HEARTBEAT);
-
+    data->Initialize(MSG_MOVE_HEARTBEAT, 32);
     *data << GetGUID();
-
-    *data << uint32(0);     // flags
-    //	*data << uint32(0); // mysterious value #1
-    *data << getMSTime();
-    *data << m_position;
-    *data << m_position.o;
+    BuildMovementPacket(data);
 }
 
 bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false */)
@@ -1543,32 +1533,32 @@ bool Object::isInRange(Object* target, float range)
 
 void Object::_setFaction()
 {
-    FactionTemplateDBC* factT = NULL;
+    DBC::Structures::FactionTemplateEntry const* faction_template = nullptr;
 
     if (IsUnit())
     {
-        factT = dbcFactionTemplate.LookupEntryForced(static_cast<Unit*>(this)->GetFaction());
-        if (!factT)
-            LOG_ERROR("Unit does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
+        faction_template = sFactionTemplateStore.LookupEntry(static_cast<Unit*>(this)->GetFaction());
+        if (faction_template == nullptr)
+            LOG_ERROR("Unit does not have a valid faction. Faction: %u set to Entry: %u", static_cast<Unit*>(this)->GetFaction(), GetEntry());
     }
     else if (IsGameObject())
     {
-        factT = dbcFactionTemplate.LookupEntryForced(static_cast< GameObject* >(this)->GetFaction());
-        // A "dead" object is not able to choose/have a faction
-        //if (!factT)
-        //    LOG_ERROR("Game Object does not have a valid faction. It will make him act stupid in world. Don't blame us, blame yourself for not checking :P, faction %u set to entry %u", TO< GameObject* >(this)->GetFaction(), GetEntry());
+        faction_template = sFactionTemplateStore.LookupEntry(static_cast<GameObject*>(this)->GetFaction());
+        if (faction_template == nullptr)
+            LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), GetEntry());
     }
 
-    if (!factT)
+    //this solution looks a bit off, but our db is not perfect and this prevents some crashes.
+    m_faction = faction_template;
+    if (m_faction == nullptr)
     {
-        factT = dbcFactionTemplate.LookupRow(0);
-        //this is causing a lot of crashes cause people have shitty dbs
-        //		return;
+        m_faction = sFactionTemplateStore.LookupEntry(0);
+        m_factionDBC = sFactionStore.LookupEntry(0);
     }
-    m_faction = factT;
-    m_factionDBC = dbcFaction.LookupEntryForced(factT->Faction);
-    if (!m_factionDBC)
-        m_factionDBC = dbcFaction.LookupRow(0);
+    else
+    {
+        m_factionDBC = sFactionStore.LookupEntry(m_faction->Faction);
+    }
 }
 
 uint32 Object::_getFaction()
@@ -2053,7 +2043,7 @@ bool Object::CanActivate()
 
         case TYPEID_GAMEOBJECT:
         {
-            if (static_cast<GameObject*>(this)->HasAI() && static_cast<GameObject*>(this)->GetType() != GAMEOBJECT_TYPE_TRAP)
+            if (static_cast<GameObject*>(this)->GetType() != GAMEOBJECT_TYPE_TRAP)
                 return true;
         }
         break;
@@ -2190,14 +2180,6 @@ void Object::PlaySoundToSet(uint32 sound_entry)
     data << sound_entry;
 
     SendMessageToSet(&data, true);
-}
-
-void Object::_SetExtension(const std::string & name, void* ptr)
-{
-    if (m_extensions == NULL)
-        m_extensions = new ExtensionSet;
-
-    m_extensions->insert(std::make_pair(name, ptr));
 }
 
 bool Object::IsInBg()

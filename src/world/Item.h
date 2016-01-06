@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -25,7 +25,7 @@
 
 struct EnchantmentInstance
 {
-    EnchantEntry* Enchantment;
+    DBC::Structures::SpellItemEnchantmentEntry const* Enchantment;
     bool BonusApplied;
     uint32 Slot;
     time_t ApplyTime;
@@ -318,14 +318,14 @@ class SERVER_DECL Item : public Object
         }
 
         /// Adds an enchantment to the item.
-        int32 AddEnchantment(EnchantEntry* Enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
+        int32 AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 Duration, bool Perm = false, bool apply = true, bool RemoveAtLogout = false, uint32 Slot_ = 0, uint32 RandomSuffix = 0);
         uint32 GetSocketsCount();
 
         /// Removes an enchantment from the item.
         void RemoveEnchantment(uint32 EnchantmentSlot);
 
         // Removes related temporary enchants
-        void RemoveRelatedEnchants(EnchantEntry* newEnchant);
+        void RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant);
 
         /// Adds the bonus on an enchanted item.
         void ApplyEnchantmentBonus(uint32 Slot, bool Apply);
@@ -349,7 +349,7 @@ class SERVER_DECL Item : public Object
         void ModifyEnchantmentTime(uint32 Slot, uint32 Duration);
 
         /// Find free enchantment slot.
-        int32 FindFreeEnchantSlot(EnchantEntry* Enchantment, uint32 random_type);
+        int32 FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 random_type);
 
         /// Removes all enchantments.
         void RemoveAllEnchantments(bool OnlyTemporary);
@@ -379,7 +379,7 @@ class SERVER_DECL Item : public Object
         bool m_isDirty;
 
         EnchantmentInstance* GetEnchantment(uint32 slot);
-        bool IsGemRelated(EnchantEntry* Enchantment);
+        bool IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment);
 
         static uint32 GenerateRandomSuffixFactor(ItemPrototype* m_itemProto);
 
@@ -397,7 +397,7 @@ class SERVER_DECL Item : public Object
         uint32 GetOnUseSpellID(uint32 index) { return OnUseSpellIDs[index]; }
         bool HasOnUseSpellID(uint32 id)
         {
-            for (uint32 i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
                 if (OnUseSpellIDs[i] == id)
                     return true;
 

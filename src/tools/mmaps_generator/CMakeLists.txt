@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up project name
 project(mmaps_generator CXX)
@@ -17,7 +17,6 @@ set(headers
    MoveMapSharedDefines.h
    MapBuilder.h
    TerrainBuilder.h
-   CompilerDefs.h
    Define.h
    )
 

@@ -1,6 +1,6 @@
 /**
 * AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+* Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ class PX238WinterWondervolt : public GameObjectAIScript
 {
     public:
 
-        PX238WinterWondervolt(GameObject*  goinstance) : GameObjectAIScript(goinstance) {}
+        PX238WinterWondervolt(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new PX238WinterWondervolt(GO); }
 
         void OnSpawn()
@@ -42,7 +42,7 @@ class PX238WinterWondervolt : public GameObjectAIScript
             if (!plr)
                 return;
 
-            if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26274))       /// aura given by the PX-238 Winter Wondervolt
+            if (_gameobject->CalcDistance(_gameobject, plr) <= 1.050000f && !plr->HasAura(26273))       /// aura given by the PX-238 Winter Wondervolt
             {
                 plr->CastSpell(plr, 26275, true);   /// Spell that change into random gnome dispalyid (respect male & female)
             }
@@ -99,19 +99,21 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         }
         else
         {
-            Item* itm = objmgr.CreateItem(Winteritem, pPlayer);
-            if (itm == nullptr)
+            Item* item = objmgr.CreateItem(Winteritem, pPlayer);
+            if (item == nullptr)
                 return;
 
-            itm->SetStackCount(5);
-            auto item_add_result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
+            item->SetStackCount(5);
+            auto item_add_result = pPlayer->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
             if (!item_add_result)
             {
-                Log.Error("Event_WinterVeil", "Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
-                itm->DeleteMe();
+                Log.Error("Event_WinterVeil", "Error while adding item %u to player %s", item->GetEntry(), pPlayer->GetNameString());
+                item->DeleteMe();
             }
             else
+            {
                 pUnit->CastSpell(pPlayer, 26218, true);
+            }
         }
     }
 }

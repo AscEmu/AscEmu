@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,7 +150,7 @@ GameEventState GameEvent::OnStateChange(GameEventState pOldState, GameEventState
         return pNewState;
 
     // Save new state to DB before calling handler
-    const char* updateQuery = "REPLACE INTO event_save (eventEntry, state, next_start) VALUES (%u, %u, %u)";
+    const char* updateQuery = "REPLACE INTO event_save (event_entry, state, next_start) VALUES (%u, %u, %u)";
     CharacterDatabase.Execute(updateQuery, event_id, pNewState, nextstart);
 
     bool shouldStop = true;

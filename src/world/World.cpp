@@ -113,6 +113,16 @@ World::World()
     m_lfgForNonLfg = false;
     m_useAccountData = false;
     m_AdditionalFun = false;
+    m_SkipCinematics = false;
+    m_InstantLogout = 1;
+    m_MinDualSpecLevel = 40;
+    m_MinTalentResetLevel = 10;
+
+    m_DecayNormal = 60000;
+    m_DecayRare = 300000;
+    m_DecayElite = 300000;
+    m_DecayRareElite = 300000;
+    m_DecayWorldboss = 3600000;
 
     GoldCapEnabled = true;
     GoldLimit = 214748;
@@ -436,56 +446,6 @@ bool World::SetInitialWorldSettings()
         return false;
     }
 
-    /* Convert area table ids/flags */
-    /* TODO: Why are we doing this? Is it still necessary after DBC rework? */
-    /*for (uint32 i = 0; i < sAreaStore.GetNumRows(); ++i)
-    {
-        auto at = sAreaStore.LookupEntry(i);
-        if (!at) continue;
-
-        uint32 area_ = at->id;
-        uint32 flag_ = at->explore_flag;
-        uint32 zone_ = at->zone;
-
-        mAreaIDToTable[flag_] = at;
-        if (mZoneIDToTable.find(zone_) != mZoneIDToTable.end())
-        {
-            if (mZoneIDToTable[zone_]->flags != 312 &&
-                mAreaIDToTable[flag_]->flags == 312)
-            {
-                // over ride.
-                mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
-            }
-        }
-        else
-        {
-            mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
-        }
-    }*/
-    /*for (DBCStorage<AreaTable>::iterator itr = dbcArea.begin(); itr != dbcArea.end(); ++itr)
-    {
-        AreaTable* at = *itr;
-
-        uint32 area_ = at->AreaId;
-        uint32 flag_ = at->explorationFlag;
-        uint32 zone_ = at->ZoneId;
-
-        mAreaIDToTable[flag_] = at;
-        if (mZoneIDToTable.find(zone_) != mZoneIDToTable.end())
-        {
-            if (mZoneIDToTable[zone_]->AreaFlags != 312 &&
-                mAreaIDToTable[flag_]->AreaFlags == 312)
-            {
-                // over ride.
-                mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
-            }
-        }
-        else
-        {
-            mZoneIDToTable[zone_] = mAreaIDToTable[flag_];
-        }
-    }*/
-
     new ObjectMgr;
     new QuestMgr;
     new LootMgr;
@@ -511,7 +471,7 @@ bool World::SetInitialWorldSettings()
     // spawn worker threads (2 * number of cpus)
     tl.spawn();
 
-    /* storage stuff has to be loaded first */
+    // storage stuff has to be loaded first
     tl.wait();
 
     Storage_LoadAdditionalTables();
@@ -548,6 +508,8 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
+    MAKE_TASK(ObjectMgr, LoadItemsetLink);
+    MAKE_TASK(ObjectMgr, LoadCreatureProtoDifficulty);
 
 
 #ifdef ENABLE_ACHIEVEMENTS
@@ -680,15 +642,18 @@ bool World::SetInitialWorldSettings()
     uint32 talent_pos;
     uint32 talent_class;
 
-    for (uint32 i = 0; i < dbcTalent.GetNumRows(); ++i)
+    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
     {
-        TalentEntry const* talent_info = dbcTalent.LookupRowForced(i);
-        // Don't add invalid talents or Hunter Pet talents (trees 409, 410 and 411) to the inspect table
-        if (talent_info == NULL || talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
+        auto talent_info = sTalentStore.LookupEntry(i);
+        if (talent_info == nullptr)
             continue;
 
-        TalentTabEntry const* tab_info = dbcTalentTab.LookupEntryForced(talent_info->TalentTree);
-        if (tab_info == NULL)
+        // Don't add invalid talents or Hunter Pet talents (trees 409, 410 and 411) to the inspect table
+        if (talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
+            continue;
+
+        auto talent_tab = sTalentTabStore.LookupEntry(talent_info->TalentTree);
+        if (talent_tab == nullptr)
             continue;
 
         talent_max_rank = 0;
@@ -705,32 +670,34 @@ bool World::SetInitialWorldSettings()
         InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
     }
 
-    for (uint32 i = 0; i < dbcTalentTab.GetNumRows(); ++i)
+    for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
     {
-        TalentTabEntry const* tab_info = dbcTalentTab.LookupRowForced(i);
+        auto talent_tab = sTalentTabStore.LookupEntry(i);
+        if (talent_tab == nullptr)
+            continue;
 
-        // Don't add invalid TalentTabs or Hunter Pet TalentTabs (ClassMask == 0) to the InspectTalentTabPages
-        if (tab_info == NULL || tab_info->ClassMask == 0)
+        // Don't add Hunter Pet TalentTabs (ClassMask == 0) to the InspectTalentTabPages
+        if (talent_tab->ClassMask == 0)
             continue;
 
         talent_pos = 0;
 
         for (talent_class = 0; talent_class < 12; ++talent_class)
         {
-            if (tab_info->ClassMask & (1 << talent_class))
+            if (talent_tab->ClassMask & (1 << talent_class))
                 break;
         }
 
-        InspectTalentTabPages[talent_class + 1][tab_info->TabPage] = tab_info->TalentTabID;
+        InspectTalentTabPages[talent_class + 1][talent_tab->TabPage] = talent_tab->TalentTabID;
 
         for (std::map< uint32, uint32 >::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
         {
             uint32 talent_id = itr->first & 0xFFFF;
-            TalentEntry const* talent_info = dbcTalent.LookupEntryForced(talent_id);
-            if (talent_info == NULL)
+            auto talent_info = sTalentStore.LookupEntry(talent_id);
+            if (talent_info == nullptr)
                 continue;
 
-            if (talent_info->TalentTree != tab_info->TalentTabID)
+            if (talent_info->TalentTree != talent_tab->TalentTabID)
                 continue;
 
             InspectTalentTabPos[talent_id] = talent_pos;
@@ -761,9 +728,7 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld()
-            && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
             itr->second->SendPacket(packet);
         }
@@ -774,7 +739,6 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
 
 void World::PlaySoundToAll(uint32 soundid)
 {
-
     WorldPacket data(SMSG_PLAY_SOUND, 4);
     data << uint32(soundid);
 
@@ -782,10 +746,10 @@ void World::PlaySoundToAll(uint32 soundid)
 
     for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        WorldSession* s = itr->second;
+        WorldSession* session = itr->second;
 
-        if ((s->GetPlayer() != NULL) && s->GetPlayer()->IsInWorld())
-            s->SendPacket(&data);
+        if ((session->GetPlayer() != NULL) && session->GetPlayer()->IsInWorld())
+            session->SendPacket(&data);
     }
 
     m_sessionlock.ReleaseWriteLock();
@@ -814,9 +778,7 @@ void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld()
-            && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
             if (itr->second->CanUseCommand('u'))
                 itr->second->SendPacket(packet);
@@ -832,9 +794,7 @@ void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* se
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld()
-            && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
             if (itr->second->GetPlayer()->GetZoneId() == zoneid)
                 itr->second->SendPacket(packet);
@@ -851,9 +811,7 @@ void World::SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSes
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld()
-            && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
             if (itr->second->GetPlayer()->GetInstanceID() == (int32)instanceid)
                 itr->second->SendPacket(packet);
@@ -868,19 +826,15 @@ void World::SendWorldText(const char* text, WorldSession* self)
     uint32 textLen = (uint32)strlen((char*)text) + 1;
 
     WorldPacket data(textLen + 40);
-
     data.Initialize(SMSG_MESSAGECHAT);
     data << uint8(CHAT_MSG_SYSTEM);
     data << uint32(LANG_UNIVERSAL);
-
-    data << (uint64)0; // Who cares about guid when there's no nickname displayed heh ?
-    data << (uint32)0;
-    data << (uint64)0;
-
+    data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
+    data << uint32(0);
+    data << uint64(0);
     data << textLen;
     data << text;
     data << uint8(0);
-
     SendGlobalMessage(&data, self);
 
     if (announce_output)
@@ -894,15 +848,12 @@ void World::SendGMWorldText(const char* text, WorldSession* self)
     uint32 textLen = (uint32)strlen((char*)text) + 1;
 
     WorldPacket data(textLen + 40);
-
     data.Initialize(SMSG_MESSAGECHAT);
     data << uint8(CHAT_MSG_SYSTEM);
     data << uint32(LANG_UNIVERSAL);
-
-    data << (uint64)0;
-    data << (uint32)0;
-    data << (uint64)0;
-
+    data << uint64(0);
+    data << uint32(0);
+    data << uint64(0);
     data << textLen;
     data << text;
     data << uint8(0);
@@ -928,7 +879,9 @@ void World::SendWorldWideScreenText(const char* text, WorldSession* self)
 {
     WorldPacket data(256);
     data.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
-    data << (uint32)0 << text << (uint8)0x00;
+    data << uint32(0);
+    data << text;
+    data << uint8(0x00);
     SendGlobalMessage(&data, self);
 }
 
@@ -937,7 +890,6 @@ void World::UpdateSessions(uint32 diff)
     SessionSet::iterator itr, it2;
     WorldSession* session;
     int result;
-
 
     std::list< WorldSession* > ErasableSessions;
 
@@ -995,16 +947,16 @@ void World::DeleteSessions(std::list< WorldSession* > &slist)
 
     for (std::list< WorldSession* >::iterator itr = slist.begin(); itr != slist.end(); ++itr)
     {
-        WorldSession* s = *itr;
-        m_sessions.erase(s->GetAccountId());
+        WorldSession* session = *itr;
+        m_sessions.erase(session->GetAccountId());
     }
 
     m_sessionlock.ReleaseWriteLock();
 
     for (std::list< WorldSession* >::iterator itr = slist.begin(); itr != slist.end(); ++itr)
     {
-        WorldSession* s = *itr;
-        delete s;
+        WorldSession* session = *itr;
+        delete session;
     }
 }
 
@@ -1028,21 +980,15 @@ uint32 World::GetNonGmSessionCount()
 
 uint32 World::AddQueuedSocket(WorldSocket* Socket)
 {
-    // Since we have multiple socket threads, better guard for this one,
-    // we don't want heap corruption ;)
     queueMutex.Acquire();
-
-    // Add socket to list
     mQueuedSessions.push_back(Socket);
     queueMutex.Release();
-    // Return queue position
+
     return (uint32)mQueuedSessions.size();
 }
 
 void World::RemoveQueuedSocket(WorldSocket* Socket)
 {
-    // Since we have multiple socket threads, better guard for this one,
-    // we don't want heap corruption ;)
     queueMutex.Acquire();
 
     // Find socket in list
@@ -1065,8 +1011,6 @@ void World::RemoveQueuedSocket(WorldSocket* Socket)
 
 uint32 World::GetQueuePos(WorldSocket* Socket)
 {
-    // Since we have multiple socket threads, better guard for this one,
-    // we don't want heap corruption ;)
     queueMutex.Acquire();
 
     // Find socket in list
@@ -1150,17 +1094,18 @@ void World::SaveAllPlayers()
 
     sLog.outString("Saving all players to database...");
     uint32 count = 0;
-    PlayerStorageMap::const_iterator itr;
-    // Servers started and obviously running. lets save all players.
-    uint32 mt;
+    uint32 save_start_time;
+
     objmgr._playerslock.AcquireReadLock();
+
+    PlayerStorageMap::const_iterator itr;
     for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
         {
-            mt = getMSTime();
+            save_start_time = getMSTime();
             itr->second->SaveToDB(false);
-            LOG_DETAIL("Saved player `%s` (level %u) in %ums.", itr->second->GetName(), itr->second->getLevel(), getMSTime() - mt);
+            LOG_DETAIL("Saved player `%s` (level %u) in %ums.", itr->second->GetName(), itr->second->getLevel(), getMSTime() - save_start_time);
             ++count;
         }
     }
@@ -1557,12 +1502,18 @@ void World::Rehash(bool load)
     BCSystemEnable = Config.OptionalConfig.GetBoolDefault("CommonSchedule", "AutoBroadCast", false);
     BCOrderMode = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastOrderMode", 0);
 
-    if (BCInterval < 10) BCInterval = 10;
-    else if (BCInterval > 1440) BCInterval = 1440;
-    if (BCTriggerPercentCap >= 99) BCTriggerPercentCap = 98;
-    else if (BCTriggerPercentCap <= 1) BCTriggerPercentCap = 0;
-    if (BCOrderMode < 0) BCOrderMode = 0;
-    else if (BCOrderMode > 1) BCOrderMode = 1;
+    if (BCInterval < 10)
+        BCInterval = 10;
+    else if (BCInterval > 1440)
+        BCInterval = 1440;
+    if (BCTriggerPercentCap >= 99)
+        BCTriggerPercentCap = 98;
+    else if (BCTriggerPercentCap <= 1)
+        BCTriggerPercentCap = 0;
+    if (BCOrderMode < 0)
+        BCOrderMode = 0;
+    else if (BCOrderMode > 1)
+        BCOrderMode = 1;
 
 
     if (!flood_lines || !flood_seconds)
@@ -1570,6 +1521,17 @@ void World::Rehash(bool load)
 
     m_AdditionalFun = Config.OptionalConfig.GetBoolDefault("Optional", "AdditionalFun", false);
     MaxProfs = (uint32)Config.OptionalConfig.GetIntDefault("Optional", "MaxProfessions", 2);
+    m_SkipCinematics = Config.OptionalConfig.GetBoolDefault("Optional", "SkipCinematic", false);
+    m_InstantLogout = Config.OptionalConfig.GetIntDefault("Optional", "InstantLogout", 1);
+    m_MinDualSpecLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinDualSpecLevel", 40);
+    m_MinTalentResetLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinTalentResetLevel", 10);
+
+    //CorpseDecaySettings
+    m_DecayNormal = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayNormal", 60)));
+    m_DecayRare = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRare", 300)));
+    m_DecayElite = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayElite", 300)));
+    m_DecayRareElite = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
+    m_DecayWorldboss = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
 
     // Max Gold Settings
     GoldCapEnabled = Config.OptionalConfig.GetBoolDefault("GoldSettings", "EnableGoldCap", true);
@@ -1681,15 +1643,17 @@ void World::Rehash(bool load)
 
 void World::LoadNameGenData()
 {
-    for (DBCStorage< NameGenEntry >::iterator itr = dbcNameGen.begin(); itr != dbcNameGen.end(); ++itr)
+    for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
     {
-        NameGenEntry* nge = *itr;
+        auto const name_gen_entry = sNameGenStore.LookupEntry(i);
+        if (name_gen_entry == nullptr)
+            continue;
 
-        NameGenData d;
+        NameGenData data;
 
-        d.name = std::string(nge->Name);
-        d.type = nge->unk2;
-        _namegendata[d.type].push_back(d);
+        data.name = std::string(name_gen_entry->Name);
+        data.type = name_gen_entry->type;
+        _namegendata[data.type].push_back(data);
     }
 }
 
@@ -1841,58 +1805,11 @@ void World::AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, in
 
 void World::LoadAccountDataProc(QueryResultVector & results, uint32 AccountId)
 {
-    WorldSession* s = FindSession(AccountId);
-    if (s == NULL)
+    WorldSession* session = FindSession(AccountId);
+    if (session == NULL)
         return;
 
-    s->LoadAccountDataProc(results[0].result);
-}
-
-void World::CleanupCheaters()
-{
-    /*uint32 guid;
-    string name;
-    uint32 cl;
-    uint32 level;
-    uint32 talentpts;
-    char * start, *end;
-    Field * f;
-    uint32 should_talents;
-    uint32 used_talents;
-    SpellEntry * sp;
-
-    QueryResult * result = CharacterDatabase.Query("SELECT guid, name, class, level, available_talent_points, spells FROM characters");
-    if (result == NULL)
-    return;
-
-    do
-    {
-    f = result->Fetch();
-    guid = f[0].GetUInt32();
-    name = string(f[1].GetString());
-    cl = f[2].GetUInt32();
-    level = f[3].GetUInt32();
-    talentpts = f[4].GetUInt32();
-    start = f[5].GetString();
-    should_talents = (level<10 ? 0 : level - 9);
-    used_talents -=
-
-
-    start = (char*)get_next_field.GetString();//buff;
-    while(true)
-    {
-    end = strchr(start,',');
-    if (!end)break;
-    *end= 0;
-    sp = dbcSpell.LookupEntry(atol(start));
-    start = end +1;
-
-    if (sp->talent_tree)
-
-    }
-
-    } while(result->NextRow());*/
-
+    session->LoadAccountDataProc(results[0].result);
 }
 
 void World::CheckForExpiredInstances()
@@ -1980,7 +1897,7 @@ void World::PollMailboxInsertQueue(DatabaseConnection* con)
             std::vector<uint64> itemGuids;
 
             int fieldCounter = 6;
-            for (int itemSlot = 0; itemSlot < MAIL_MAX_ITEM_SLOT; itemSlot++)
+            for (uint8 itemSlot = 0; itemSlot < MAIL_MAX_ITEM_SLOT; itemSlot++)
             {
                 itemid = f[fieldCounter++].GetUInt32();
                 stackcount = f[fieldCounter++].GetUInt32();
@@ -2307,19 +2224,18 @@ void World::SendBCMessageByID(uint32 id)
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
     {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld())
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())
         {
             const char* text = itr->second->LocalizedBroadCast(id);
             uint32 textLen = (uint32)strlen(text) + 1;
+
             WorldPacket data(textLen + 40);
             data.Initialize(SMSG_MESSAGECHAT);
             data << uint8(CHAT_MSG_SYSTEM);
             data << uint32(LANG_UNIVERSAL);
-
-            data << (uint64)0; // Who cares about guid when there's no nickname displayed heh ?
-            data << (uint32)0;
-            data << (uint64)0;
+            data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
+            data << uint32(0);
+            data << uint64(0);
             data << textLen;
             data << text;
             data << uint8(0);
@@ -2396,7 +2312,7 @@ void World::UpdateTotalTraffic()
     WorldSocket* s = NULL;
 
     objmgr._playerslock.AcquireReadLock();
-    HM_NAMESPACE::hash_map<uint32, Player*>::const_iterator itr;
+    std::unordered_map<uint32, Player*>::const_iterator itr;
 
     for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {

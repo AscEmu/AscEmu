@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -182,17 +182,19 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
     {
         // Type 0 = Major, 1 = Minor
         uint32 glyphType = (s->GetProto()->Id == 61177) ? 0 : 1;
-        skilllinespell* sls;
-        uint32 num_sl = dbcSkillLineSpell.GetNumRows();
+
         std::vector<uint32> discoverableGlyphs;
 
         // how many of these are the right type (minor/major) of glyph, and learnable by the player
-        for (uint32 idx = 0; idx < num_sl; ++idx)
+        for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
-            sls = dbcSkillLineSpell.LookupRow(idx);
-            if (sls->skilline == SKILL_INSCRIPTION && sls->next == 0)
+            auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
+            if (skill_line_ability == nullptr)
+                continue;
+
+            if (skill_line_ability->skilline == SKILL_INSCRIPTION && skill_line_ability->next == 0)
             {
-                SpellEntry* se1 = dbcSpell.LookupEntryForced(sls->spell);
+                SpellEntry* se1 = dbcSpell.LookupEntryForced(skill_line_ability->spell);
                 if (se1 && se1->Effect[0] == SPELL_EFFECT_CREATE_ITEM)
                 {
                     ItemPrototype* itm = ItemPrototypeStorage.LookupEntry(se1->EffectItemType[0]);
@@ -201,12 +203,15 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
                         SpellEntry* se2 = dbcSpell.LookupEntryForced(itm->Spells[0].Id);
                         if (se2 && se2->Effect[0] == SPELL_EFFECT_USE_GLYPH)
                         {
-                            GlyphPropertyEntry* gpe = dbcGlyphProperty.LookupEntryForced(se2->EffectMiscValue[0]);
-                            if (gpe && gpe->Type == glyphType)
+                            auto glyph_properties = sGlyphPropertiesStore.LookupEntry(se2->EffectMiscValue[0]);
+                            if (glyph_properties)
                             {
-                                if (!s->p_caster->HasSpell(sls->spell))
+                                if (glyph_properties->Type == glyphType)
                                 {
-                                    discoverableGlyphs.push_back(sls->spell);
+                                    if (!s->p_caster->HasSpell(skill_line_ability->spell))
+                                    {
+                                        discoverableGlyphs.push_back(skill_line_ability->spell);
+                                    }
                                 }
                             }
                         }
@@ -405,22 +410,22 @@ bool CrystalSpikes(uint32 i, Spell* pSpell)
 
     Unit* pCaster = pSpell->u_caster;
 
-    for (int i = 1; i < 6; ++i)
+    for (uint8 i = 1; i < 6; ++i)
     {
         pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() + (3 * i) + RandomUInt(2), pCaster->GetPositionY() + (3 * i) + RandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
-    for (int i = 1; i < 6; ++i)
+    for (uint8 i = 1; i < 6; ++i)
     {
         pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() - (3 * i) - RandomUInt(2), pCaster->GetPositionY() + (3 * i) + RandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
-    for (int i = 1; i < 6; ++i)
+    for (uint8 i = 1; i < 6; ++i)
     {
         pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() + (3 * i) + RandomUInt(2), pCaster->GetPositionY() - (3 * i) - RandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
 
-    for (int i = 1; i < 6; ++i)
+    for (uint8 i = 1; i < 6; ++i)
     {
         pCaster->GetMapMgr()->GetInterface()->SpawnCreature(CN_CRYSTAL_SPIKE, pCaster->GetPositionX() - (3 * i) - RandomUInt(2), pCaster->GetPositionY() - (3 * i) - RandomUInt(2), pCaster->GetPositionZ(), pCaster->GetOrientation(), true, false, 0, 0);
     }
@@ -580,7 +585,7 @@ bool SOTATeleporter(uint32 i, Spell* s)
     LocationVector dest;
     uint32 closest_platform = 0;
 
-    for (uint32 i = 0; i < 5; i++)
+    for (uint8 i = 0; i < 5; i++)
     {
         float distance = plr->GetDistanceSq(sotaTransDest[i][0], sotaTransDest[i][1], sotaTransDest[i][2]);
 

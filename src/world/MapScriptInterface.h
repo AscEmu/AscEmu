@@ -113,6 +113,7 @@ class SERVER_DECL MapScriptInterface
 class SERVER_DECL StructFactory : public Singleton<StructFactory>
 {
     public:
+
         StructFactory() {}
         WayPoint* CreateWaypoint();
 };

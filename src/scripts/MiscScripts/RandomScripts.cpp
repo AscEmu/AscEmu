@@ -96,7 +96,7 @@ class JeanPierrePoulain : public GossipScript
             }
             else
             {
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(446), 1);     // I'll take the flight.
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(446), 1);     // I'll take the flight.
                 Menu->SendTo(plr);
             }
 }            
@@ -125,16 +125,16 @@ public:
         {
             GossipMenu* Menu;
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 14785, plr);
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
-            Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(447), 1);     // Borean Tundra
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(448), 2);     // Howling Fjord
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(449), 3);     // Sholazar Basin
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(450), 4);     // Icecrown
+            Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(451), 5);     // Storm Peaks
             
             uint8 chance = RandomUInt(1);
 
             if (chance == 1)
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(452), 6);     // Underground...
 
             Menu->SendTo(plr);
         }

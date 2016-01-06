@@ -152,7 +152,7 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& recv_data)
 
     // If we're this far, it means we have no existing group, and have to make one.
     grp = new Group(true);
-    grp->m_difficulty = static_cast<uint8>(player->iInstanceType);
+    grp->m_difficulty = player->iInstanceType;
     grp->AddMember(player->m_playerInfo);        // add the inviter first, therefore he is the leader
     grp->AddMember(_player->m_playerInfo);    // add us.
     _player->iInstanceType = grp->m_difficulty;
@@ -181,7 +181,8 @@ void WorldSession::HandleGroupDeclineOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_GROUP_DECLINE, 100);
 
     Player* player = objmgr.GetPlayer(_player->GetInviter());
-    if (!player) return;
+    if (!player)
+        return;
 
     data << GetPlayer()->GetName();
 
@@ -359,11 +360,14 @@ void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN;
     CHECK_PACKET_SIZE(recv_data, 16);
+
     uint32 lootMethod;
     uint64 lootMaster;
     uint32 threshold;
 
-    recv_data >> lootMethod >> lootMaster >> threshold;
+    recv_data >> lootMethod;
+    recv_data >> lootMaster;
+    recv_data >> threshold;
 
     if (!_player->IsGroupLeader())
     {
@@ -398,11 +402,14 @@ void WorldSession::HandleMinimapPingOpcode(WorldPacket& recv_data)
     if (!party)return;
 
     float x, y;
-    recv_data >> x >> y;
+    recv_data >> x;
+    recv_data >> y;
+
     WorldPacket data;
     data.SetOpcode(MSG_MINIMAP_PING);
     data << _player->GetGUID();
-    data << x << y;
+    data << x;
+    data << y;
     party->SendPacketToAllButOne(&data, _player);
 }
 
@@ -493,8 +500,8 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
         WorldPacket data(SMSG_PARTY_MEMBER_STATS_FULL, 3 + 4 + 2);
         data << uint8(0);                                   // only for SMSG_PARTY_MEMBER_STATS_FULL, probably arena/bg related
         data.appendPackGUID(guid);
-        data << (uint32)GROUP_UPDATE_FLAG_STATUS;
-        data << (uint16)MEMBER_STATUS_OFFLINE;
+        data << uint32(GROUP_UPDATE_FLAG_STATUS);
+        data << uint16(MEMBER_STATUS_OFFLINE);
         SendPacket(&data);
         return;
     }
@@ -516,28 +523,28 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
         mask1 = 0x7FFFFFFF;                                 // for hunters and other classes with pets
 
     uint8 powerType = plr->GetPowerType();
-    data << (uint32)mask1;
-    data << (uint16)MEMBER_STATUS_ONLINE;
-    data << (uint32)plr->GetHealth();
-    data << (uint32)plr->GetMaxHealth();
-    data << (uint8)powerType;
-    data << (uint16)plr->GetPower(powerType);
-    data << (uint16)plr->GetMaxPower(powerType);
-    data << (uint16)plr->getLevel();
-    data << (uint16)plr->GetZoneId();
-    data << (uint16)plr->GetPositionX();
-    data << (uint16)plr->GetPositionY();
+    data << uint32(mask1);
+    data << uint16(MEMBER_STATUS_ONLINE);
+    data << uint32(plr->GetHealth());
+    data << uint32(plr->GetMaxHealth());
+    data << uint8(powerType);
+    data << uint16(plr->GetPower(powerType));
+    data << uint16(plr->GetMaxPower(powerType));
+    data << uint16(plr->getLevel());
+    data << uint16(plr->GetZoneId());
+    data << uint16(plr->GetPositionX());
+    data << uint16(plr->GetPositionY());
 
     uint64 auramask = 0;
     size_t maskPos = data.wpos();
-    data << (uint64)auramask;
+    data << uint64(auramask);
     for (uint8 i = 0; i < 64; ++i)
     {
         if (Aura * aurApp = plr->GetAuraWithSlot(i))
         {
             auramask |= (uint64(1) << i);
-            data << (uint32)aurApp->GetSpellId();
-            data << (uint8)1;
+            data << uint32(aurApp->GetSpellId());
+            data << uint8(1);
         }
     }
     data.put<uint64>(maskPos, auramask);
@@ -545,33 +552,33 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
     if (pet)
     {
         uint8 petpowertype = pet->GetPowerType();
-        data << (uint64)pet->GetGUID();
+        data << uint64(pet->GetGUID());
         data << pet->GetName();
-        data << (uint16)pet->GetDisplayId();
-        data << (uint32)pet->GetHealth();
-        data << (uint32)pet->GetMaxHealth();
-        data << (uint8)petpowertype;
-        data << (uint16)pet->GetPower(petpowertype);
-        data << (uint16)pet->GetMaxPower(petpowertype);
+        data << uint16(pet->GetDisplayId());
+        data << uint32(pet->GetHealth());
+        data << uint32(pet->GetMaxHealth());
+        data << uint8(petpowertype);
+        data << uint16(pet->GetPower(petpowertype));
+        data << uint16(pet->GetMaxPower(petpowertype));
 
         uint64 petauramask = 0;
         size_t petMaskPos = data.wpos();
-        data << (uint64)petauramask;
+        data << uint64(petauramask);
         for (uint8 i = 0; i < 64; ++i)
         {
             if (Aura * auraApp = pet->GetAuraWithSlot(i))
             {
                 petauramask |= (uint64(1) << i);
-                data << (uint32)auraApp->GetSpellId();
-                data << (uint8)1;
+                data << uint32(auraApp->GetSpellId());
+                data << uint8(1);
             }
         }
         data.put<uint64>(petMaskPos, petauramask);
     }
     else
     {
-        data << (uint8)0;      // GROUP_UPDATE_FLAG_PET_NAME
-        data << (uint64)0;     // GROUP_UPDATE_FLAG_PET_AURAS
+        data << uint8(0);      // GROUP_UPDATE_FLAG_PET_NAME
+        data << uint64(0);     // GROUP_UPDATE_FLAG_PET_AURAS
     }
 
     SendPacket(&data);

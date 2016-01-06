@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -27,6 +27,7 @@
 #include "MapMgrDefines.hpp"
 #include "CThreads.h"
 #include "Entities/Summons/SummonDefines.hpp"
+#include "CObjectFactory.h"
 
 namespace Arcemu
 {
@@ -66,15 +67,19 @@ typedef std::set<uint64> CombatProgressMap;
 typedef std::set<Creature*> CreatureSet;
 typedef std::set<GameObject*> GameObjectSet;
 
-typedef HM_NAMESPACE::hash_map<uint32, Object*> StorageMap;
-typedef HM_NAMESPACE::hash_map<uint32, Creature*> CreatureSqlIdMap;
-typedef HM_NAMESPACE::hash_map<uint32, GameObject*> GameObjectSqlIdMap;
+typedef std::unordered_map<uint32, Object*> StorageMap;
+typedef std::unordered_map<uint32, Creature*> CreatureSqlIdMap;
+typedef std::unordered_map<uint32, GameObject*> GameObjectSqlIdMap;
 
 class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject, public CThread, public WorldStatesHandler::WorldStatesObserver
 {
     friend class MapCell;
     friend class MapScriptInterface;
+
     public:
+
+        CObjectFactory ObjectFactory;
+
         const uint16 GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr);
 
         /// This will be done in regular way soon
@@ -95,20 +100,20 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
 		uint32 GenerateGameobjectGuid() { return ++m_GOHighGuid; }
 
-    GameObject* GetGameObject(uint32 guid);
+        GameObject* GetGameObject(uint32 guid);
 
-    // Local (mapmgr) storage/generation of Creatures
+        // Local (mapmgr) storage/generation of Creatures
 		uint32 m_CreatureHighGuid;
 		std::vector<Creature*> CreatureStorage;
-		CreatureSet::iterator creature_iterator;            /// required by owners despawning creatures and deleting *(++itr)
+		CreatureSet::iterator creature_iterator;        /// required by owners despawning creatures and deleting *(++itr)
 		uint64 GenerateCreatureGUID(uint32 entry);
 		Creature* CreateCreature(uint32 entry);
         Creature* CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
 
-    Creature* GetCreature(uint32 guid);
+        Creature* GetCreature(uint32 guid);
 
 
-    //////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////
 		/// Summon* CreateSummon(uint32 entry, SummonType type)
 		/// Summon factory function, creates and returns the appropriate summon subclass.
 		///
@@ -123,32 +128,32 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
         // Local (mapmgr) storage/generation of DynamicObjects
 		uint32 m_DynamicObjectHighGuid;
-		typedef HM_NAMESPACE::hash_map<uint32, DynamicObject*> DynamicObjectStorageMap;
+		typedef std::unordered_map<uint32, DynamicObject*> DynamicObjectStorageMap;
 		DynamicObjectStorageMap m_DynamicObjectStorage;
 		DynamicObject* CreateDynamicObject();
 
-    DynamicObject* GetDynamicObject(uint32 guid);
+        DynamicObject* GetDynamicObject(uint32 guid);
 
-    // Local (mapmgr) storage of pets
-		typedef HM_NAMESPACE::hash_map<uint32, Pet*> PetStorageMap;
+        // Local (mapmgr) storage of pets
+		typedef std::unordered_map<uint32, Pet*> PetStorageMap;
 		PetStorageMap m_PetStorage;
 		PetStorageMap::iterator pet_iterator;
-    Pet* GetPet(uint32 guid);
+        Pet* GetPet(uint32 guid);
 
 
-    // Local (mapmgr) storage of players for faster lookup
+        // Local (mapmgr) storage of players for faster lookup
 		// double typedef lolz// a compile breaker..
-		typedef HM_NAMESPACE::hash_map<uint32, Player*> PlayerStorageMap;
+		typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 		PlayerStorageMap m_PlayerStorage;
-    Player* GetPlayer(uint32 guid);
+        Player* GetPlayer(uint32 guid);
 
-    // Local (mapmgr) storage of combats in progress
+        // Local (mapmgr) storage of combats in progress
 		CombatProgressMap _combatProgress;
-    void AddCombatInProgress(uint64 guid);
+        void AddCombatInProgress(uint64 guid);
 
-    void RemoveCombatInProgress(uint64 guid);
+        void RemoveCombatInProgress(uint64 guid);
 
-    // Lookup Wrappers
+        // Lookup Wrappers
 		Unit* GetUnit(const uint64 & guid);
 		Object* _GetObject(const uint64 & guid);
 
@@ -169,44 +174,44 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		void UpdateCellActivity(uint32 x, uint32 y, uint32 radius);
 
 		// Terrain Functions
-    float GetLandHeight(float x, float y, float z);
+        float GetLandHeight(float x, float y, float z);
 
-    float GetADTLandHeight(float x, float y);
+        float GetADTLandHeight(float x, float y);
 
-    bool IsUnderground(float x, float y, float z);
+        bool IsUnderground(float x, float y, float z);
 
-    bool GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype);
+        bool GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype);
 
-    float GetLiquidHeight(float x, float y);
+        float GetLiquidHeight(float x, float y);
 
-    uint8 GetLiquidType(float x, float y);
+        uint8 GetLiquidType(float x, float y);
 
-    const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z);
+        const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z);
 
-    bool InLineOfSight(float x, float y, float z, float x2, float y2, float z2);
+        bool InLineOfSight(float x, float y, float z, float x2, float y2, float z2);
 
-    uint32 GetMapId();
+        uint32 GetMapId();
 
-    void PushToProcessed(Player* plr);
+        void PushToProcessed(Player* plr);
 
-    bool HasPlayers();
+        bool HasPlayers();
 
-    bool IsCombatInProgress();
-    void TeleportPlayers();
+        bool IsCombatInProgress();
+        void TeleportPlayers();
 
-    uint32 GetInstanceID();
+        uint32 GetInstanceID();
 
-    MapInfo* GetMapInfo();
+        MapInfo* GetMapInfo();
 
-    bool _shutdown;
+        bool _shutdown;
 
-    MapScriptInterface* GetInterface();
+        MapScriptInterface* GetInterface();
 
-    virtual int32 event_GetInstanceID() override;
+        virtual int32 event_GetInstanceID() override;
 
-    void LoadAllCells();
-    uint32 GetPlayerCount();
-    uint32 GetTeamPlayersCount(uint32 teamId);
+        void LoadAllCells();
+        uint32 GetPlayerCount();
+        uint32 GetTeamPlayersCount(uint32 teamId);
 
 		void _PerformObjectDuties();
 		uint32 mLoopCounter;
@@ -229,12 +234,20 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		void BeginInstanceExpireCountdown();
 
 		/// better hope to clear any references to us when calling this :P
-    void InstanceShutdown();
+        void InstanceShutdown();
 
-    /// kill the worker thread only
-    void KillThread();
+        /// kill the worker thread only
+        void KillThread();
 
-    float GetFirstZWithCPZ(float x, float y, float z);
+        float GetFirstZWithCPZ(float x, float y, float z);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        ///Finds and returns the nearest GameObject with this type from Object's inrange set.
+        /// \param    Object* o - Pointer to the Object that's inrange set we are searching
+        /// \param    uint32 type - Type of the GameObject we want to find
+        /// \return a pointer to the GameObject if found, NULL if there isn't such a GameObject.
+        //////////////////////////////////////////////////////////////////////////////////////////
+        GameObject* FindNearestGoWithType(Object* o, uint32 type);
 
 	protected:
 
@@ -256,6 +269,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		float m_UpdateDistance;
 
 	private:
+
 		// Update System
 		Mutex m_updateMutex;
 		UpdateQueue _updates;
@@ -286,25 +300,27 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		GameObjectSqlIdMap _sqlids_gameobjects;
 
 		// Script related
-    InstanceScript* GetScript();
+        InstanceScript* GetScript();
 		void LoadInstanceScript();
 		void CallScriptUpdate();
 
 		Creature* GetSqlIdCreature(uint32 sqlid);
 		GameObject* GetSqlIdGameObject(uint32 sqlid);
-    std::deque<uint32> _reusable_guids_gameobject;
-    std::deque<uint32> _reusable_guids_creature;
+        std::deque<uint32> _reusable_guids_gameobject;
+        std::deque<uint32> _reusable_guids_creature;
 
 		bool forced_expire;
 		bool thread_kill_only;
 		bool thread_running;
 
-    WorldStatesHandler& GetWorldStatesHandler();
+        WorldStatesHandler& GetWorldStatesHandler();
 
-    void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) override;
+        void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) override;
+
 	protected:
 
 		InstanceScript* mInstanceScript;
+
 	private:
 
 		WorldStatesHandler worldstateshandler;

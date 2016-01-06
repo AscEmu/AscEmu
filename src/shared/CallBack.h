@@ -21,6 +21,8 @@
 #ifndef _CALLBACK_H
 #define _CALLBACK_H
 
+#include "Database/Database.h"
+
 class CallbackBase
 {
     public:
@@ -322,4 +324,4 @@ class SQLFunctionCallbackP1 : public SQLCallbackBase
         void run(QueryResult* data) { method(data, p1); }
 };
 
-#endif
+#endif  //_CALLBACK_H

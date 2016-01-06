@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +18,7 @@
 
 #ifndef NETWORK_INCLUDES_HPP
 #define NETWORK_INCLUDES_HPP
+
 #if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -32,4 +33,5 @@
 #include <signal.h>
 #include <netdb.h>
 #endif
+
 #endif      //NETWORK_INCLUDES_HPP

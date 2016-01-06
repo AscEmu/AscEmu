@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -51,9 +51,9 @@ class SERVER_DECL MySQLDatabase : public Database
 
         void Shutdown();
 
-    std::string EscapeString(std::string Escape);
+        std::string EscapeString(std::string Escape);
         void EscapeLongString(const char* str, uint32 len, std::stringstream & out);
-    std::string EscapeString(const char* esc, DatabaseConnection* con);
+        std::string EscapeString(const char* esc, DatabaseConnection* con);
 
         bool SupportsReplaceInto() { return true; }
         bool SupportsTableLocking() { return true; }

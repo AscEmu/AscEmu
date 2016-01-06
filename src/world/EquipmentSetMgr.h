@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,6 @@ namespace Arcemu
     //////////////////////////////////////////////////////////////////////////////////////////
     /// \note   struct EquipmentSet   - World of Warcraft Equipment Set structure
     ///         Contains the name, icon, Id, and item lowguids of the EquipmentSet
-    ///
     //////////////////////////////////////////////////////////////////////////////////////////
     struct EquipmentSet
     {

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -35,10 +35,11 @@ extern SERVER_DECL SessionLogWriter* GMCommand_Log;
 
 class LogonCommClientSocket : public Socket
 {
-        uint32 remaining;
-        uint16 opcode;
-        RC4Engine _sendCrypto;
-        RC4Engine _recvCrypto;
+    uint32 remaining;
+    uint16 opcode;
+    RC4Engine _sendCrypto;
+    RC4Engine _recvCrypto;
+
     public:
 
         LogonCommClientSocket(SOCKET fd);

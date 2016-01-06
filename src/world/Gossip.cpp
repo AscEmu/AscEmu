@@ -25,7 +25,7 @@ using namespace Arcemu;
 
 Gossip::Item::Item(size_t itemid, uint8 icon)
 {
-    id_ = (uint16)itemid;
+    id_ = uint16(itemid);
     icon_ = icon;
     text_ = "";
     boxmessage_ = "";
@@ -35,7 +35,7 @@ Gossip::Item::Item(size_t itemid, uint8 icon)
 
 Gossip::Item::Item(size_t itemid, uint8 icon, const char* text, bool coded/*= false*/, size_t boxmoney/*=0*/, const char* boxmessage/*=NULL*/)
 {
-    id_ = (uint16)itemid;
+    id_ = uint16(itemid);
     icon_ = icon;
     text_ = (text != NULL) ? text : "";
     coded_ = coded;
@@ -45,14 +45,24 @@ Gossip::Item::Item(size_t itemid, uint8 icon, const char* text, bool coded/*= fa
 
 WorldPacket& operator<<(WorldPacket& packet, const Gossip::Item & item)
 {
-    packet << uint32(item.id_) << item.icon_ << item.coded_ << item.boxmoney_ << item.text_ << item.boxmessage_;
+    packet << uint32(item.id_);
+    packet << item.icon_;
+    packet << item.coded_;
+    packet << item.boxmoney_;
+    packet << item.text_;
+    packet << item.boxmessage_;
     return packet;
 }
 
 template<uint32 size>
 StackBuffer<size>& operator<<(StackBuffer<size>& packet, const Gossip::Item & item)
 {
-    packet << uint32(item.id_) << item.icon_ << item.coded_ << item.boxmoney_ << item.text_ << item.boxmessage_;
+    packet << uint32(item.id_);
+    packet << item.icon_;
+    packet << item.coded_;
+    packet << item.boxmoney_;
+    packet << item.text_;
+    packet << item.boxmessage_;
     return packet;
 }
 
@@ -119,7 +129,11 @@ WorldPacket& operator<<(WorldPacket& packet, const Gossip::Menu & menu)
     {
         for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
         {
-            packet << itr->first->id << uint32(itr->second) << itr->first->min_level << itr->first->quest_flags << uint8(0);
+            packet << itr->first->id;
+            packet << uint32(itr->second);
+            packet << itr->first->min_level;
+            packet << itr->first->quest_flags;
+            packet << uint8(0);
             LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->id, menu.language_);
             if (lq != NULL)
                 packet << lq->Title;
@@ -146,7 +160,11 @@ StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & m
         std::string title;
         for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
         {
-            packet << itr->first->id << uint32(itr->second) << itr->first->min_level << itr->first->quest_flags << uint8(0);
+            packet << itr->first->id;
+            packet << uint32(itr->second);
+            packet << itr->first->min_level;
+            packet << itr->first->quest_flags;
+            packet << uint8(0);
             LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->id, menu.language_);
             if (lq != NULL)
                 title = lq->Title;
@@ -185,7 +203,11 @@ void Gossip::Menu::StackSend(Player* plr) const
 void Gossip::Menu::SendSimpleMenu(uint64 guid, size_t txt_id, Player* plr)
 {
     StackWorldPacket<32> packet(SMSG_GOSSIP_MESSAGE);
-    packet << guid << uint32(0) << uint32(txt_id) << uint32(0) << uint32(0);
+    packet << guid;
+    packet << uint32(0);
+    packet << uint32(txt_id);
+    packet << uint32(0);
+    packet << uint32(0);
     plr->GetSession()->SendPacket(&packet);
 }
 
@@ -194,7 +216,15 @@ void Gossip::Menu::SendQuickMenu(uint64 guid, size_t textid, Player* Plr, size_t
     StackWorldPacket<64> packet(SMSG_GOSSIP_MESSAGE);
     std::string itemtexts = (itemtext != NULL) ? itemtext : "";
     std::string moneytexts = (moneytext != NULL) ? moneytext : "";
-    packet << guid << uint32(0) << uint32(textid) << uint32(1) << uint32(itemid) << itemicon << extra << uint32(requiredmoney) << itemtexts;
+    packet << guid;
+    packet << uint32(0);
+    packet << uint32(textid);
+    packet << uint32(1);
+    packet << uint32(itemid);
+    packet << itemicon;
+    packet << extra;
+    packet << uint32(requiredmoney);
+    packet << itemtexts;
     if (moneytext != NULL)
         packet << moneytexts;
     else
@@ -277,7 +307,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
     Creature* creature = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(creature->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
 
     VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(creature->GetProto()->Id);
 
@@ -286,7 +316,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
     if (!Plr->CanBuyAt(vendor))
         menu.setTextID(vendor->cannotbuyattextid);
     else
-        menu.AddItem(Gossip::ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1, false);
+        menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 1, false);
 
     sQuestMgr.FillQuestMenu(creature, Plr, menu); //add any quests we have.
 
@@ -305,7 +335,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
     ::Trainer* trainerinfo = trainer->GetTrainer();
     uint32 Text = objmgr.GetGossipTextForNpc(trainer->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
 
     std::string name = trainer->GetCreatureInfo()->Name;
     std::string::size_type pos = name.find(" ");      // only take first name
@@ -323,13 +353,13 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
             // I seek
             std::string msg = std::string(Plr->GetSession()->LocalizedGossipOption(ISEEK));
             msg += std::string(Plr->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
-            menu.AddItem(Gossip::ICON_TRAINER, msg.c_str(), 1);
+            menu.AddItem(GOSSIP_ICON_TRAINER, msg.c_str(), 1);
 
             if (trainer->isVendor())
             {
                 VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(trainer->GetProto()->Id);
                 if (Plr->CanBuyAt(vendor))
-                    menu.AddItem(Gossip::ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
+                    menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
             }
         }
     }
@@ -352,10 +382,10 @@ void Arcemu::Gossip::FlightMaster::OnHello(Object* pObject, Player* Plr)
     Creature* flightmaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(flightmaster->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
-    menu.AddItem(Gossip::ICON_FLIGHTMASTER, Plr->GetSession()->LocalizedGossipOption(FLIGHTMASTER), 1);
+    menu.AddItem(GOSSIP_ICON_FLIGHTMASTER, Plr->GetSession()->LocalizedGossipOption(FLIGHTMASTER), 1);
     sQuestMgr.FillQuestMenu(flightmaster, Plr, menu);
 
     menu.StackSend<256>(Plr);
@@ -372,9 +402,9 @@ void Arcemu::Gossip::Auctioneer::OnHello(Object* pObject, Player* Plr)
     Creature* auctioneer = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(auctioneer->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
     //auctioneers don't offer quests.
-    Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, Gossip::ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(AUCTIONEER));
+    Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(AUCTIONEER));
 }
 
 void Arcemu::Gossip::Auctioneer::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
@@ -388,15 +418,15 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
     Creature* innkeeper = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(innkeeper->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
-    menu.AddItem(Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 1);
+    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 1);
     //inn keepers can sell stuff
     if (innkeeper->isVendor())
     {
         VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(innkeeper->GetProto()->Id);
         if (Plr->CanBuyAt(vendor))
-            menu.AddItem(Gossip::ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
+            menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
     }
     sQuestMgr.FillQuestMenu(innkeeper, Plr, menu);
     menu.StackSend<256>(Plr);
@@ -416,9 +446,9 @@ void Arcemu::Gossip::BattleMaster::OnHello(Object* pObject, Player* Plr)
     Creature* battlemaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(battlemaster->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
     Gossip::Menu menu(battlemaster->GetGUID(), Text, Plr->GetSession()->language);
-    menu.AddItem(Gossip::ICON_BATTLE, Plr->GetSession()->LocalizedGossipOption(BATTLEMASTER), 1);
+    menu.AddItem(GOSSIP_ICON_BATTLE, Plr->GetSession()->LocalizedGossipOption(BATTLEMASTER), 1);
     sQuestMgr.FillQuestMenu(battlemaster, Plr, menu);
     menu.StackSend<256>(Plr);
 }
@@ -445,11 +475,11 @@ void Arcemu::Gossip::CharterGiver::OnHello(Object* pObject, Player* Plr)
     Creature* chartergiver = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(chartergiver->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
     if (chartergiver->isTabardDesigner())
-        Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD));
+        Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD));
     else
-        Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_ARENATEAM));
+        Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_ARENATEAM));
 }
 
 void Arcemu::Gossip::CharterGiver::OnSelectOption(Object* pObject, Player* Plr, uint32 Id, const char* EnteredCode)
@@ -463,18 +493,18 @@ void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
     Creature* chartergiver = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(chartergiver->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
 
     Gossip::Menu menu(chartergiver->GetGUID(), Text, Plr->GetSession()->language);
-    menu.AddItem(Gossip::ICON_TABARD, Plr->GetSession()->LocalizedGossipOption(TABARD), 1);
+    menu.AddItem(GOSSIP_ICON_TABARD, Plr->GetSession()->LocalizedGossipOption(TABARD), 1);
     if (chartergiver->isCharterGiver())
-        menu.AddItem(Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD), 2);
+        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD), 2);
 
     if (chartergiver->isVendor())
     {
         VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(chartergiver->GetProto()->Id);
         if (Plr->CanBuyAt(vendor))
-            menu.AddItem(Gossip::ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 3);
+            menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 3);
     }
     menu.Send(Plr);
 }
@@ -502,9 +532,9 @@ void Arcemu::Gossip::StableMaster::OnHello(Object* pObject, Player* Plr)
     Creature* stablemaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(stablemaster->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
     if (Plr->getClass() == ::HUNTER)
-        Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(STABLE_MY_PET));
+        Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(STABLE_MY_PET));
     else
         Gossip::Menu::SendSimpleMenu(pObject->GetGUID(), Text, Plr);
 }
@@ -521,12 +551,12 @@ void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
     Creature* petrain = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(petrain->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
-    menu.AddItem(Gossip::ICON_TRAINER, Plr->GetSession()->LocalizedGossipOption(BEASTTRAINING), 1);
+    menu.AddItem(GOSSIP_ICON_TRAINER, Plr->GetSession()->LocalizedGossipOption(BEASTTRAINING), 1);
     if (Plr->getClass() == ::HUNTER && Plr->GetSummon() != NULL)
-        menu.AddItem(Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET), 2);
+        menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET), 2);
     sQuestMgr.FillQuestMenu(petrain, Plr, menu);
 
     menu.StackSend<256>(Plr);
@@ -537,7 +567,7 @@ void Arcemu::Gossip::PetTrainer::OnSelectOption(Object* pObject, Player* Plr, ui
     if (1 == Id)
         Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
     else if (2 == Id)
-        Gossip::Menu::SendQuickMenu(pObject->GetGUID(), TXTID_PETUNTRAIN, Plr, 3, Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
+        Gossip::Menu::SendQuickMenu(pObject->GetGUID(), TXTID_PETUNTRAIN, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(PETTRAINER_TALENTRESET));
     else
     {
         Gossip::Menu::Complete(Plr);
@@ -552,7 +582,7 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
     Creature* trainer = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(trainer->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
     uint8 playerclass = Plr->getClass();
@@ -611,15 +641,15 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
             itemname += " ";
             itemname += std::string(Plr->GetSession()->LocalizedGossipOption(TRAINING)) + ", " + name + ".";
 
-            menu.AddItem(Gossip::ICON_TRAINER, itemname.c_str(), 1);
+            menu.AddItem(GOSSIP_ICON_TRAINER, itemname.c_str(), 1);
 
             //talent reset option.
-            if (trainer->getLevel() > Gossip::TRAINER_TALENTRESET_LVLIMIT && Plr->getLevel() > Gossip::PLAYER_TALENTRESET_LVLIMIT && trainer->GetTrainer()->RequiredClass == playerclass)
+            if (trainer->getLevel() > TrainerTalentResetMinLevel && Plr->getLevel() > sWorld.m_MinTalentResetLevel && trainer->GetTrainer()->RequiredClass == playerclass)
             {
-                menu.AddItem(Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTRESET), 2);
+                menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTRESET), 2);
                 //dual speciliazation option.
-                if (Plr->getLevel() >= Gossip::PLAYER_DUALTALENT_LVLIMIT && Plr->m_talentSpecsCount < 2)
-                    menu.AddItem(Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(LEARN_DUAL_TS), 4);
+                if (Plr->getLevel() >= sWorld.m_MinDualSpecLevel && Plr->m_talentSpecsCount < 2)
+                    menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(LEARN_DUAL_TS), 4);
             }
         }
     }
@@ -636,7 +666,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
             Plr->GetSession()->SendTrainerList(static_cast<Creature*>(pObject));
             break;
         case 2:
-            Gossip::Menu::SendQuickMenu(pObject->GetGUID(), TXTID_TALENTRESET, Plr, 3, Gossip::ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
+            Gossip::Menu::SendQuickMenu(pObject->GetGUID(), TXTID_TALENTRESET, Plr, 3, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTCONFIRM), 3);
             break;
         case 3:
             Gossip::Menu::Complete(Plr);
@@ -644,7 +674,7 @@ void Arcemu::Gossip::ClassTrainer::OnSelectOption(Object* pObject, Player* Plr, 
             break;
         case 4:
             purchaseconfirm = Plr->GetSession()->LocalizedWorldSrv(Gossip::SURE_TO_PURCHASE_DTS);
-            Gossip::Menu::SendQuickMenu(pObject->GetGUID(), TXTID_DUALSPECPURCHASE, Plr, 5, Gossip::ICON_CHAT, Plr->GetSession()->LocalizedWorldSrv(Gossip::PURCHASE_DTS), 10000000, purchaseconfirm);
+            Gossip::Menu::SendQuickMenu(pObject->GetGUID(), TXTID_DUALSPECPURCHASE, Plr, 5, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedWorldSrv(Gossip::PURCHASE_DTS), 10000000, purchaseconfirm);
             break;
         case 5:
             if (!Plr->HasGold(10000000))
@@ -671,7 +701,7 @@ void Arcemu::Gossip::Generic::OnHello(Object* pObject, Player* Plr)
     //Simply send quests.
     uint32 Text = objmgr.GetGossipTextForNpc(pObject->GetEntry());
     if (NpcTextStorage.LookupEntry(Text) == NULL)
-        Text = Gossip::DEFAULT_TXTINDEX;
+        Text = DefaultGossipTextId;
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
     sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), Plr, menu);
     menu.StackSend<256>(Plr);

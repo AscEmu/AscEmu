@@ -69,7 +69,7 @@ enum Gate
     GATE_BLUE       = 2,
     GATE_RED        = 3,
     GATE_PURPLE     = 4,
-    GATE_COUNT      = 5,
+    GATE_COUNT      = 5
 };
 
 enum SOTABattleRoundProgress

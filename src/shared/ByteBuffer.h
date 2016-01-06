@@ -38,9 +38,9 @@
 class SERVER_DECL ByteBuffer
 {
     public:
+
         class error
-        {
-        };
+        {};
 
         const static size_t DEFAULT_SIZE = 0x1000;
 
@@ -87,22 +87,17 @@ class SERVER_DECL ByteBuffer
         }
         ByteBuffer & operator<<(uint16 value)
         {
-
             append<uint16>(value);
-
             return *this;
         }
         ByteBuffer & operator<<(uint32 value)
         {
-
             append<uint32>(value);
             return *this;
         }
         ByteBuffer & operator<<(uint64 value)
         {
-
             append<uint64>(value);
-
             return *this;
         }
         // signed as in 2e complement
@@ -113,37 +108,27 @@ class SERVER_DECL ByteBuffer
         }
         ByteBuffer & operator<<(int16 value)
         {
-
             append<int16>(value);
-
             return *this;
         }
         ByteBuffer & operator<<(int32 value)
         {
-
             append<int32>(value);
-
             return *this;
         }
         ByteBuffer & operator<<(int64 value)
         {
-
             append<int64>(value);
-
             return *this;
         }
         ByteBuffer & operator<<(float value)
         {
-
             append<float>(value);
-
             return *this;
         }
         ByteBuffer & operator<<(double value)
         {
-
             append<double>(value);
-
             return *this;
         }
         ByteBuffer & operator<<(const std::string & value)
@@ -179,22 +164,17 @@ class SERVER_DECL ByteBuffer
         }
         ByteBuffer & operator>>(uint16 & value)
         {
-
             value = read<uint16>();
-
             return *this;
         }
         ByteBuffer & operator>>(uint32 & value)
         {
-
             value = read<uint32>();
             return *this;
         }
         ByteBuffer & operator>>(uint64 & value)
         {
-
             value = read<uint64>();
-
             return *this;
         }
         //signed as in 2e complement
@@ -205,42 +185,33 @@ class SERVER_DECL ByteBuffer
         }
         ByteBuffer & operator>>(int16 & value)
         {
-
             value = read<int16>();
-
             return *this;
         }
         ByteBuffer & operator>>(int32 & value)
         {
-
             value = read<int32>();
-
             return *this;
         }
         ByteBuffer & operator>>(int64 & value)
         {
-
             value = read<int64>();
             return *this;
         }
         ByteBuffer & operator>>(float & value)
         {
-
             value = read<float>();
-
             return *this;
         }
         ByteBuffer & operator>>(double & value)
         {
-
             value = read<double>();
-
             return *this;
         }
         ByteBuffer & operator>>(std::string & value)
         {
             value.clear();
-            while(true)
+            while (true)
             {
                 char c = read<char>();
                 if(c == 0)
@@ -252,7 +223,6 @@ class SERVER_DECL ByteBuffer
         //! Only does X,Y,Z!
         ByteBuffer & operator << (const LocationVector & vec)
         {
-
             append<float>(vec.x);
             append<float>(vec.y);
             append<float>(vec.z);
@@ -263,7 +233,6 @@ class SERVER_DECL ByteBuffer
         //! Only does X,Y,Z!
         ByteBuffer & operator >> (LocationVector & vec)
         {
-
             vec.x = read<float>();
             vec.y = read<float>();
             vec.z = read<float>();
@@ -275,7 +244,7 @@ class SERVER_DECL ByteBuffer
         {
             uint8 field, mask = read<uint8>();
             value.Init((uint8)mask);
-            for(int i = 0; i < BitCount8(mask); i++)
+            for (int i = 0; i < BitCount8(mask); i++)
             {
                 field = read<uint8>();
                 value.AppendField(field);
@@ -355,7 +324,7 @@ class SERVER_DECL ByteBuffer
             lt.tm_mon = (packedDate >> 20) & 0xF;
             lt.tm_year = ((packedDate >> 24) & 0x1F) + 100;
 
-            return uint32(mktime(&lt) + timezone);
+            return uint32(mktime(&lt));
         }
 
         ByteBuffer& ReadPackedTime(uint32& time)
@@ -390,7 +359,8 @@ class SERVER_DECL ByteBuffer
         }
         void append(const uint8* src, size_t cnt)
         {
-            if(!cnt) return;
+            if(!cnt)
+                return;
 
             // noone should even need uint8buffer longer than 10mb
             // if you DO need, think about it
@@ -403,23 +373,24 @@ class SERVER_DECL ByteBuffer
             // this way hopefully people will report the callstack after it "crashes"
             assert(size() < 10000000);
 
-            if(_storage.size() < _wpos + cnt)
+            if (_storage.size() < _wpos + cnt)
                 _storage.resize(_wpos + cnt);
             memcpy(&_storage[_wpos], src, cnt);
             _wpos += cnt;
         }
         void append(const ByteBuffer & buffer)
         {
-            if(buffer.size() > 0) append(buffer.contents(), buffer.size());
+            if (buffer.size() > 0)
+                append(buffer.contents(), buffer.size());
         }
 
         void appendPackGUID(uint64 guid)
         {
             size_t mask_position = wpos();
             *this << uint8(0);
-            for(uint8 i = 0; i < 8; i++)
+            for (uint8 i = 0; i < 8; i++)
             {
-                if(guid & 0xFF)
+                if (guid & 0xFF)
                 {
                     _storage[mask_position] |= (1 << i);
                     *this << ((uint8)(guid & 0xFF));
@@ -435,9 +406,9 @@ class SERVER_DECL ByteBuffer
             uint8 mask;
             uint8 temp;
             *this >> mask;
-            for(uint8 i = 0; i < 8; ++i)
+            for (uint8 i = 0; i < 8; ++i)
             {
-                if(mask & (1 << i))
+                if (mask & (1 << i))
                 {
                     *this >> temp;
                     guid |= uint64(temp << uint64(i << 3));
@@ -459,11 +430,11 @@ class SERVER_DECL ByteBuffer
         {
             uint32 j = 1, k = 1;
             printf("STORAGE_SIZE: %u\n", (unsigned int)size());
-            for(uint32 i = 0; i < size(); i++)
+            for (uint32 i = 0; i < size(); i++)
             {
-                if((i == (j * 8)) && ((i != (k * 16))))
+                if ((i == (j * 8)) && ((i != (k * 16))))
                 {
-                    if(read<uint8>(i) <= 0x0F)
+                    if (read<uint8>(i) <= 0x0F)
                     {
                         printf("| 0%X ", read<uint8>(i));
                     }
@@ -474,17 +445,17 @@ class SERVER_DECL ByteBuffer
 
                     j++;
                 }
-                else if(i == (k * 16))
+                else if (i == (k * 16))
                 {
                     rpos(rpos() - 16);    // move read pointer 16 places back
                     printf(" | ");      // write split char
 
-                    for(int x = 0; x < 16; x++)
+                    for (int x = 0; x < 16; x++)
                     {
                         printf("%c", read<uint8>(i - 16 + x));
                     }
 
-                    if(read<uint8>(i) <= 0x0F)
+                    if (read<uint8>(i) <= 0x0F)
                     {
                         printf("\n0%X ", read<uint8>(i));
                     }
@@ -498,7 +469,7 @@ class SERVER_DECL ByteBuffer
                 }
                 else
                 {
-                    if(read<uint8>(i) <= 0x0F)
+                    if (read<uint8>(i) <= 0x0F)
                     {
                         printf("0%X ", read<uint8>(i));
                     }
@@ -554,6 +525,7 @@ class SERVER_DECL ByteBuffer
         }
 
     protected:
+
         // read and write positions
         size_t _rpos, _wpos;
         std::vector<uint8> _storage;
@@ -566,7 +538,7 @@ class SERVER_DECL ByteBuffer
 template <typename T> ByteBuffer & operator<<(ByteBuffer & b, std::vector<T> v)
 {
     b << (uint32)v.size();
-    for(typename std::vector<T>::iterator i = v.begin(); i != v.end(); ++i)
+    for (typename std::vector<T>::iterator i = v.begin(); i != v.end(); ++i)
     {
         b << *i;
     }
@@ -578,7 +550,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::vector<T> &v)
     uint32 vsize;
     b >> vsize;
     v.clear();
-    while(vsize--)
+    while (vsize--)
     {
         T t;
         b >> t;
@@ -590,7 +562,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::vector<T> &v)
 template <typename T> ByteBuffer & operator<<(ByteBuffer & b, std::list<T> v)
 {
     b << (uint32)v.size();
-    for(typename std::list<T>::iterator i = v.begin(); i != v.end(); ++i)
+    for (typename std::list<T>::iterator i = v.begin(); i != v.end(); ++i)
     {
         b << *i;
     }
@@ -602,7 +574,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::list<T> &v)
     uint32 vsize;
     b >> vsize;
     v.clear();
-    while(vsize--)
+    while (vsize--)
     {
         T t;
         b >> t;
@@ -614,7 +586,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::list<T> &v)
 template <typename K, typename V> ByteBuffer & operator<<(ByteBuffer & b, std::map<K, V> &m)
 {
     b << (uint32)m.size();
-    for(typename std::map<K, V>::iterator i = m.begin(); i != m.end(); i++)
+    for (typename std::map<K, V>::iterator i = m.begin(); i != m.end(); i++)
     {
         b << i->first << i->second;
     }
@@ -626,7 +598,7 @@ template <typename K, typename V> ByteBuffer & operator>>(ByteBuffer & b, std::m
     uint32 msize;
     b >> msize;
     m.clear();
-    while(msize--)
+    while (msize--)
     {
         K k;
         V v;
@@ -636,4 +608,4 @@ template <typename K, typename V> ByteBuffer & operator>>(ByteBuffer & b, std::m
     return b;
 }
 
-#endif
+#endif  //_BYTEBUFFER_H

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,8 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WOWSERVER_COMMON_TYPES_HPP
-#define WOWSERVER_COMMON_TYPES_HPP
+#ifndef _COMMON_TYPES_HPP
+#define _COMMON_TYPES_HPP
+
 #include <cstdint>
 
 typedef int64_t int64;
@@ -47,4 +48,5 @@ typedef uint8_t uint8;
 #define SCRIPT_DECL
 #define DECL_LOCAL
 #endif
-#endif      //WOWSERVER_COMMON_TYPES_HPP
+
+#endif  //_COMMON_TYPES_HPP

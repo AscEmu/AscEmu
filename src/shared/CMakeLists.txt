@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
 project(shared)
@@ -44,6 +44,7 @@ set(sources
 set(headers
 	ascemu_getopt.h
 	ascemuConfig.h
+   AscemuServerDefines.hpp
 	Array.h
 	AuthCodes.h
 	ByteBuffer.h

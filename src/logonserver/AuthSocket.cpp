@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #include "LogonStdAfx.h"
@@ -33,7 +32,7 @@ enum _errors
     CE_WRONG_BUILD_NUMBER = 0x09,                         //Unable to validate game version.  This may be caused by file corruption or the interference of another program.
     CE_UPDATE_CLIENT = 0x0a,
     CE_ACCOUNT_FREEZED = 0x0c
-} ;
+};
 
 AuthSocket::AuthSocket(SOCKET fd) : Socket(fd, 32768, 4096)
 {
@@ -68,14 +67,14 @@ AuthSocket::~AuthSocket()
 
 void AuthSocket::OnDisconnect()
 {
-    if(!removedFromSet)
+    if (!removedFromSet)
     {
         _authSocketLock.Acquire();
         _authSockets.erase(this);
         _authSocketLock.Release();
     }
 
-    if(m_patchJob)
+    if (m_patchJob)
     {
         PatchMgr::getSingleton().AbortPatchJob(m_patchJob);
         m_patchJob = NULL;
@@ -85,7 +84,7 @@ void AuthSocket::OnDisconnect()
 void AuthSocket::HandleChallenge()
 {
     // No header
-    if(readBuffer.GetContiguiousBytes() < 4)
+    if (readBuffer.GetContiguiousBytes() < 4)
     {
         LOG_ERROR("[AuthChallenge] Packet has no header. Refusing to handle.");
         return;
@@ -99,14 +98,14 @@ void AuthSocket::HandleChallenge()
 
     LOG_DETAIL("[AuthChallenge] got header, body is %u bytes", full_size);
 
-    if(readBuffer.GetSize() < uint32(full_size + 4))
+    if (readBuffer.GetSize() < uint32(full_size + 4))
     {
         LOG_ERROR("[AuthChallenge] Packet is smaller than expected, refusing to handle");
         return;
     }
 
     // Copy the data into our cached challenge structure
-    if(full_size > sizeof(sAuthLogonChallenge_C))
+    if (full_size > sizeof(sAuthLogonChallenge_C))
     {
         LOG_ERROR("[AuthChallenge] Packet is larger than expected, refusing to handle!");
         Disconnect();
@@ -174,10 +173,10 @@ void AuthSocket::HandleChallenge()
     // Check for a possible IP ban on this client.
     BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
 
-    if(ipb != BAN_STATUS_NOT_BANNED)
+    if (ipb != BAN_STATUS_NOT_BANNED)
         LOG_DETAIL("[AuthChallenge] Client %s is banned, refusing to continue.", GetRemoteIP().c_str());
 
-    switch(ipb)
+    switch (ipb)
     {
         case BAN_STATUS_PERMANENT_BAN:
             SendChallengeError(CE_ACCOUNT_CLOSED);
@@ -192,13 +191,13 @@ void AuthSocket::HandleChallenge()
     }
 
     // Null-terminate the account string
-    if(m_challenge.I_len >= 50) { Disconnect(); return; }
+    if (m_challenge.I_len >= 50) { Disconnect(); return; }
     m_challenge.I[m_challenge.I_len] = 0;
 
     // Clear the shitty hash (for server)
     std::string AccountName = (char*)&m_challenge.I;
     std::string::size_type i = AccountName.rfind("#");
-    if(i != std::string::npos)
+    if (i != std::string::npos)
     {
         LOG_ERROR("# ACCOUNTNAME!");
         return;
@@ -209,7 +208,7 @@ void AuthSocket::HandleChallenge()
     LOG_DEBUG("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = AccountMgr::getSingleton().GetAccount(AccountName);
-    if(m_account == 0)
+    if (m_account == 0)
     {
         LOG_DEBUG("[AuthChallenge] Invalid account.");
 
@@ -221,19 +220,19 @@ void AuthSocket::HandleChallenge()
     LOG_DEBUG("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
     // Check that the account isn't banned.
-    if(m_account->Banned == 1)
+    if (m_account->Banned == 1)
     {
         SendChallengeError(CE_ACCOUNT_CLOSED);
         return;
     }
-    else if(m_account->Banned > 0)
+    else if (m_account->Banned > 0)
     {
         SendChallengeError(CE_ACCOUNT_FREEZED);
         return;
     }
 
     // update cached locale
-    if(!m_account->forcedLocale)
+    if (!m_account->forcedLocale)
     {
         char temp[4];
         temp[0] = m_challenge.country[3];
@@ -293,37 +292,37 @@ void AuthSocket::HandleChallenge()
     challenge.unk2 = CE_SUCCESS;
     memcpy(challenge.B, B.AsByteArray(), 32);
     challenge.g_len = 1;
-    challenge.g = (g.AsByteArray())[ 0 ];
+    challenge.g = (g.AsByteArray())[0];
     challenge.N_len = 32;
     memcpy(challenge.N, N.AsByteArray(), 32);
     memcpy(challenge.s, s.AsByteArray(), 32);
     memcpy(challenge.unk3, unk.AsByteArray(), 16);
     challenge.unk4 = 0;
 
-    Send(reinterpret_cast< uint8* >(&challenge), sizeof(sAuthLogonChallenge_S));
+    Send(reinterpret_cast<uint8*>(&challenge), sizeof(sAuthLogonChallenge_S));
 }
 
 void AuthSocket::HandleProof()
 {
-    if(readBuffer.GetSize() < sizeof(sAuthLogonProof_C))
+    if (readBuffer.GetSize() < sizeof(sAuthLogonProof_C))
     {
         LOG_ERROR("[AuthLogonProof] The packet received is larger than expected, refusing to handle it!");
-        return ;
+        return;
     }
 
     // patch
-    if(m_patch && !m_account)
+    if (m_patch && !m_account)
     {
         //RemoveReadBufferBytes(75,false);
         readBuffer.Remove(75);
         LOG_DEBUG("[AuthLogonProof] Intitiating PatchJob");
-        uint8 bytes[2] = {0x01, 0x0a};
+        uint8 bytes[2] = { 0x01, 0x0a };
         Send(bytes, 2);
         PatchMgr::getSingleton().InitiatePatch(m_patch, this);
         return;
     }
 
-    if(!m_account)
+    if (!m_account)
         return;
 
     LOG_DEBUG("[AuthLogonProof] Interleaving and checking proof...");
@@ -362,25 +361,25 @@ void AuthSocket::HandleProof()
     uint8 t1[16];
     uint8 vK[40];
     memcpy(t, S.AsByteArray(), 32);
-    for(int i = 0; i < 16; i++)
+    for (int i = 0; i < 16; i++)
     {
         t1[i] = t[i * 2];
     }
     sha.Initialize();
     sha.UpdateData(t1, 16);
     sha.Finalize();
-    for(int i = 0; i < 20; i++)
+    for (int i = 0; i < 20; i++)
     {
         vK[i * 2] = sha.GetDigest()[i];
     }
-    for(int i = 0; i < 16; i++)
+    for (int i = 0; i < 16; i++)
     {
         t1[i] = t[i * 2 + 1];
     }
     sha.Initialize();
     sha.UpdateData(t1, 16);
     sha.Finalize();
-    for(int i = 0; i < 20; i++)
+    for (int i = 0; i < 20; i++)
     {
         vK[i * 2 + 1] = sha.GetDigest()[i];
     }
@@ -395,7 +394,7 @@ void AuthSocket::HandleProof()
     sha.Initialize();
     sha.UpdateBigNumbers(&g, NULL);
     sha.Finalize();
-    for(int i = 0; i < 20; i++)
+    for (int i = 0; i < 20; i++)
     {
         hash[i] ^= sha.GetDigest()[i];
     }
@@ -418,7 +417,7 @@ void AuthSocket::HandleProof()
 
     // Compare the M value the client sent us to the one we generated, this proves we both have the same values
     // which proves we have the same username-password pairs
-    if(memcmp(lp.M1, M.AsByteArray(), 20) != 0)
+    if (memcmp(lp.M1, M.AsByteArray(), 20) != 0)
     {
         // Authentication failed.
         //SendProofError(4, 0);
@@ -461,7 +460,7 @@ void AuthSocket::SendProofError(uint8 Error, uint8* M2)
 
     buffer[0] = 1;
     buffer[1] = Error;
-    if(M2 == 0)
+    if (M2 == 0)
     {
 
         *(uint32*)&buffer[2] = 3;
@@ -548,12 +547,12 @@ static AuthHandler Handlers[MAX_AUTH_CMD] =
 
 void AuthSocket::OnRead()
 {
-    if(readBuffer.GetContiguiousBytes() < 1)
+    if (readBuffer.GetContiguiousBytes() < 1)
         return;
 
     uint8 Command = *(uint8*)readBuffer.GetBufferStart();
     last_recv = UNIXTIME;
-    if(Command < MAX_AUTH_CMD && Handlers[Command] != NULL)
+    if (Command < MAX_AUTH_CMD && Handlers[Command] != NULL)
         (this->*Handlers[Command])();
     else
         LOG_DEBUG("AuthSocket", "Unknown cmd %u", Command);
@@ -567,7 +566,7 @@ void AuthSocket::HandleRealmlist()
 void AuthSocket::HandleReconnectChallenge()
 {
     // No header
-    if(readBuffer.GetContiguiousBytes() < 4)
+    if (readBuffer.GetContiguiousBytes() < 4)
         return;
 
     // Check the rest of the packet is complete.
@@ -575,11 +574,11 @@ void AuthSocket::HandleReconnectChallenge()
     uint16 full_size = *(uint16*)&ReceiveBuffer[2];
     LOG_DETAIL("[AuthChallenge] got header, body is %u bytes", full_size);
 
-    if(readBuffer.GetSize() < (uint32)full_size + 4)
+    if (readBuffer.GetSize() < (uint32)full_size + 4)
         return;
 
     // Copy the data into our cached challenge structure
-    if((size_t)(full_size + 4) > sizeof(sAuthLogonChallenge_C))
+    if ((size_t)(full_size + 4) > sizeof(sAuthLogonChallenge_C))
     {
         Disconnect();
         return;
@@ -592,8 +591,7 @@ void AuthSocket::HandleReconnectChallenge()
     readBuffer.Read(&m_challenge, full_size + 4);
 
     // Check client build.
-    if(m_challenge.build > LogonServer::getSingleton().max_build ||
-            m_challenge.build < LogonServer::getSingleton().min_build)
+    if (m_challenge.build > sLogonServer.clientMaxBuild || m_challenge.build < sLogonServer.clientMinBuild)
     {
         SendChallengeError(CE_WRONG_BUILD_NUMBER);
         return;
@@ -602,7 +600,7 @@ void AuthSocket::HandleReconnectChallenge()
     // Check for a possible IP ban on this client.
     BAN_STATUS ipb = IPBanner::getSingleton().CalculateBanStatus(GetRemoteAddress());
 
-    switch(ipb)
+    switch (ipb)
     {
         case BAN_STATUS_PERMANENT_BAN:
             SendChallengeError(CE_ACCOUNT_CLOSED);
@@ -617,7 +615,7 @@ void AuthSocket::HandleReconnectChallenge()
     }
 
     /* buffer overflow thing */
-    if(m_challenge.I_len >= 50)
+    if (m_challenge.I_len >= 50)
     {
         Disconnect();
         return;
@@ -637,12 +635,12 @@ void AuthSocket::HandleReconnectChallenge()
             }
         }*/
 
-    // Look up the account information
+        // Look up the account information
     std::string AccountName = (char*)&m_challenge.I;
     LOG_DEBUG("[AuthChallenge] Account Name: \"%s\"", AccountName.c_str());
 
     m_account = AccountMgr::getSingleton().GetAccount(AccountName);
-    if(m_account == 0)
+    if (m_account == 0)
     {
         LOG_DEBUG("[AuthChallenge] Invalid account.");
 
@@ -654,18 +652,18 @@ void AuthSocket::HandleReconnectChallenge()
     LOG_DEBUG("[AuthChallenge] Account banned state = %u", m_account->Banned);
 
     // Check that the account isn't banned.
-    if(m_account->Banned == 1)
+    if (m_account->Banned == 1)
     {
         SendChallengeError(CE_ACCOUNT_CLOSED);
         return;
     }
-    else if(m_account->Banned > 0)
+    else if (m_account->Banned > 0)
     {
         SendChallengeError(CE_ACCOUNT_FREEZED);
         return;
     }
 
-    if(!m_account->SessionKey)
+    if (!m_account->SessionKey)
     {
         SendChallengeError(CE_SERVER_FULL);
         return;
@@ -697,7 +695,7 @@ void AuthSocket::HandleReconnectProof()
     Read(58, const_cast<uint8*>(buf.contents()));
     buf.hexlike();*/
 
-    if(!m_account)
+    if (!m_account)
         return;
 
     // Don't update when IP banned, but update anyway if it's an account ban
@@ -705,7 +703,7 @@ void AuthSocket::HandleReconnectProof()
     //RemoveReadBufferBytes(GetReadBufferSize(), true);
     readBuffer.Remove(readBuffer.GetSize());
 
-    if(!m_account->SessionKey)
+    if (!m_account->SessionKey)
     {
         uint8 buffer[4];
         buffer[0] = 3;
@@ -724,7 +722,7 @@ void AuthSocket::HandleReconnectProof()
 void AuthSocket::HandleTransferAccept()
 {
     LOG_DEBUG("Accepted transfer");
-    if(!m_patch)
+    if (!m_patch)
         return;
 
     //RemoveReadBufferBytes(1,false);
@@ -735,7 +733,7 @@ void AuthSocket::HandleTransferAccept()
 void AuthSocket::HandleTransferResume()
 {
     LOG_DEBUG("Resuming transfer");
-    if(!m_patch)
+    if (!m_patch)
         return;
 
     //RemoveReadBufferBytes(1,false);
@@ -743,7 +741,7 @@ void AuthSocket::HandleTransferResume()
     uint64 size;
     //Read(8,(uint8*)&size);
     readBuffer.Read(&size, 8);
-    if(size >= m_patch->FileSize)
+    if (size >= m_patch->FileSize)
         return;
 
     PatchMgr::getSingleton().BeginPatchJob(m_patch, this, (uint32)size);

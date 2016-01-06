@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -22,14 +22,13 @@
 #define _COMPANIONSUMMON_H
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// class CompanionSummon
 /// \note   Class implementing companions/vanity pets/critterpets
 ///         These are totally passive and inattackable, they only serve iCandy purposes
-///
 //////////////////////////////////////////////////////////////////////////////////////////
 class CompanionSummon : public Summon
 {
     public:
+
         CompanionSummon(uint64 GUID);
         ~CompanionSummon();
 
@@ -37,7 +36,7 @@ class CompanionSummon : public Summon
 
         void OnPushToWorld();
         void OnPreRemoveFromWorld();
-    private:
+
 };
 
 #endif // _COMPANIONSUMMON_H

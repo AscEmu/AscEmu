@@ -1,5 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
@@ -1194,7 +1195,8 @@ class LuaUnit
         Player* plr = static_cast<Player*>(ptr);
         WorldPacket data;
         data.Initialize(SMSG_PLAY_OBJECT_SOUND);
-        data << uint32(soundid) << plr->GetGUID();
+        data << uint32(soundid);
+        data << plr->GetGUID();
         plr->GetSession()->SendPacket(&data);
         return 0;
     }
@@ -1299,11 +1301,26 @@ class LuaUnit
         WorldPacket data(SMSG_WEATHER, 9);
         data.Initialize(SMSG_WEATHER);
         if (type == 0)  // set all parameter to 0 for sunny.
-            data << uint32(0) << float(0) << uint32(0) << uint8(0);
+        {
+            data << uint32(0);
+            data << float(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
         else if (type == 1)  // No sound/density for fog
-            data << type << float(0) << uint32(0) << uint8(0);
+        {
+            data << type;
+            data << float(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
         else
-            data << type << Density << sound << uint8(0);
+        {
+            data << type;
+            data << Density;
+            data << sound;
+            data << uint8(0);
+        }
 
         sWorld.SendZoneMessage(&data, zone_id, 0);
 
@@ -1365,11 +1382,26 @@ class LuaUnit
         WorldPacket data(SMSG_WEATHER, 9);
         data.Initialize(SMSG_WEATHER);
         if (type == 0)  // set all parameter to 0 for sunny.
-            data << uint32(0) << float(0) << uint32(0) << uint8(0);
+        {
+            data << uint32(0);
+            data << float(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
         else if (type == 1)  // No sound/density for fog
-            data << type << float(0) << uint32(0) << uint8(0);
+        {
+            data << type;
+            data << float(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
         else
-            data << type << Density << sound << uint8(0);
+        {
+            data << type;
+            data << Density;
+            data << sound;
+            data << uint8(0);
+        }
 
         plr->GetSession()->SendPacket(&data);
 
@@ -1668,7 +1700,7 @@ class LuaUnit
                         qle->UpdatePlayerFields();
 
                         // If the quest should give any items on begin, give them the items.
-                        for (uint32 i = 0; i < 4; ++i)
+                        for (uint8 i = 0; i < 4; ++i)
                         {
                             if (qst->receive_items[i])
                             {
@@ -1691,11 +1723,6 @@ class LuaUnit
                                     item->DeleteMe();
                             }
                         }
-
-
-                        //if(qst->count_required_item || qst_giver->GetTypeId() == TYPEID_GAMEOBJECT)   // gameobject quests deactivate
-                        //  plr->UpdateNearbyGameObjects();
-                        //ScriptSystem->OnQuestEvent(qst, TO< Creature* >( qst_giver ), _player, QUEST_EVENT_ON_ACCEPT);
 
                         sHookInterface.OnQuestAccept(plr, qst, NULL);
 
@@ -2981,7 +3008,7 @@ class LuaUnit
         return 1;
     }
 
-    static int CreateGuardian(lua_State* L, Unit*  ptr)
+    static int CreateGuardian(lua_State* L, Unit* ptr)
     {
         uint32 entry = CHECK_ULONG(L, 1);
         uint32 duration = CHECK_ULONG(L, 2);
@@ -4126,7 +4153,8 @@ class LuaUnit
     static int RepairAllPlayerItems(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER_RET()
-            Player* plr = static_cast<Player*>(ptr);
+
+        Player* plr = static_cast<Player*>(ptr);
         Item* pItem = NULL;
         Container* pContainer = NULL;
         uint32 j, i;
@@ -4485,16 +4513,20 @@ class LuaUnit
         else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
         {
             GameObject* pGO = plr->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
-            switch (loot_type)
+            if (pGO != NULL && pGO->IsLootable())
             {
-                default:
-                    lootmgr.FillGOLoot(&pGO->loot, pGO->GetEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
-                    loot_type2 = 1;
-                    break;
-                case 5:
-                    lootmgr.FillSkinningLoot(&pGO->loot, pGO->GetEntry());
-                    loot_type2 = 2;
-                    break;
+                GameObject_Lootable* lt = static_cast<GameObject_Lootable*>(pGO);
+                switch (loot_type)
+                {
+                    default:
+                        lootmgr.FillGOLoot(&lt->loot, pGO->GetEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
+                        loot_type2 = 1;
+                        break;
+                    case 5:
+                        lootmgr.FillSkinningLoot(&lt->loot, pGO->GetEntry());
+                        loot_type2 = 2;
+                        break;
+                }
             }
         }
         else if (guidtype == HIGHGUID_TYPE_ITEM)
@@ -4539,13 +4571,13 @@ class LuaUnit
     static int VendorAddItem(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-            Creature* ctr = static_cast<Creature*>(ptr);
+        Creature* ctr = static_cast<Creature*>(ptr);
         uint32 itemid = (uint32)luaL_checknumber(L, 1);
         uint32 amount = (uint32)luaL_checknumber(L, 2);
         uint32 costid = (uint32)luaL_checknumber(L, 3);
-        ItemExtendedCostEntry* ec = (costid > 0) ? dbcItemExtendedCost.LookupEntryForced(costid) : NULL;
+        auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
         if (itemid && amount)
-            ctr->AddVendorItem(itemid, amount, ec);
+            ctr->AddVendorItem(itemid, amount, item_extended_cost);
         return 0;
     }
 
@@ -5389,16 +5421,16 @@ class LuaUnit
         {
             lua_newtable(L);
             lua_pushstring(L, "x");
-            lua_pushnumber(L, movement_info->x);
+            lua_pushnumber(L, movement_info->position.x);
             lua_rawset(L, -3);
             lua_pushstring(L, "y");
-            lua_pushnumber(L, movement_info->y);
+            lua_pushnumber(L, movement_info->position.y);
             lua_rawset(L, -3);
             lua_pushstring(L, "z");
-            lua_pushnumber(L, movement_info->z);
+            lua_pushnumber(L, movement_info->position.z);
             lua_rawset(L, -3);
             lua_pushstring(L, "o");
-            lua_pushnumber(L, movement_info->orientation);
+            lua_pushnumber(L, movement_info->position.o);
             lua_rawset(L, -3);
         }
         else
@@ -5875,12 +5907,17 @@ class LuaUnit
         WorldPacket data(SMSG_MONSTER_MOVE, 50);
         data << ptr->GetNewGUID();
         data << uint8(0);
-        data << ptr->GetPositionX() << ptr->GetPositionY() << ptr->GetPositionZ();
+        data << ptr->GetPositionX();
+        data << ptr->GetPositionY();
+        data << ptr->GetPositionZ();
         data << getMSTime();
         data << uint8(0x0);
         data << uint32(0x100);
-        data << uint32(1) << uint32(1);
-        data << x << y << z;
+        data << uint32(1);
+        data << uint32(1);
+        data << x;
+        data << y;
+        data << z;
         ptr->SendMessageToSet(&data, false);
         return 0;
     }
@@ -5902,13 +5939,13 @@ class LuaUnit
             lua_pushboolean(L, 0);
         return 1;
     }
-    static int IsHostile(lua_State*  L, Unit* ptr)
+    static int IsHostile(lua_State* L, Unit* ptr)
     {
         Object* B = CHECK_OBJECT(L, 1);
         lua_pushboolean(L, isHostile(ptr, B));
         return 1;
     }
-    static int IsAttackable(lua_State*  L, Unit* ptr)
+    static int IsAttackable(lua_State* L, Unit* ptr)
     {
         Object* B = CHECK_OBJECT(L, 1);
         lua_pushboolean(L, isAttackable(ptr, B));

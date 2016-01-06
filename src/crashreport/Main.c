@@ -1,5 +1,6 @@
 /*
- * ArcEmu MMORPG Server
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #include <stdio.h>
@@ -26,7 +26,8 @@
 #include <time.h>
 
 
-struct OPTS{
+struct OPTS
+{
     char uptime[256];
     char *revision;
     char *details;
@@ -40,7 +41,8 @@ struct OPTS opts;
 /* Sends a crashdump.log to sf.net, using curl
    TODO: wget support?
 */
-int sendCrashdump() {
+int sendCrashdump()
+{
     char cmd[1024];
     int ret;
 
@@ -54,42 +56,57 @@ int sendCrashdump() {
     return ret;
 }
 
-void buildCrashdump(char *filename) {
+void buildCrashdump(char *filename)
+{
     char cmd[1024];
     int ret;
 
     printf("%s: building crashdump from '%s'\n", __FUNCTION__, filename);
     snprintf(cmd, 1024, "gdb --batch --eval-command=\"bt ful\" arcemu-world %s &> crashdump.log", filename);
     ret = system(cmd);
-    if (ret == 0) {
+    if (ret == 0)
+    {
         char dstfile[1024];
 
         ret = sendCrashdump();
-        if (ret == 0) {
+        if (ret == 0)
+        {
+            int rename_result = 0;
+
             snprintf(dstfile, 1024, "sent.%s", filename);
-            rename(filename, dstfile);
+            rename_result = rename(filename, dstfile);
+            if (rename_result == 0)
+                printf("File successfully renamed");
+            else
+                printf("Faild file renaming!");
         }
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "%s: '%s' returned %d\n", __FUNCTION__, cmd, ret);
     }
 }
 
-int filter(const struct dirent *entry) {
+int filter(const struct dirent *entry)
+{
     return strncmp(entry->d_name, "core", 4) == 0;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     struct dirent **list;
     struct tm tm;
     FILE *f;
     time_t t;
     int n, i;
 
-    for (;;) {
+    for (;;)
+    {
         int c = getopt(argc, argv, "r:d:");
         if (c == -1) break;
 
-        switch (c) {
+        switch (c)
+        {
             case 'r': opts.revision = strdup(optarg); break;
             case 'd': opts.details = strdup(optarg); break;
             default: printf("default\n");
@@ -97,23 +114,29 @@ int main(int argc, char *argv[]) {
     }
 
     f = fopen("arcemu.uptime", "r");
-    if (f == NULL) return 1;
+    if (f == NULL)
+        return 1;
 
-    fscanf(f, "%ld %lu %lu %lu", &t, &opts.online, &opts.peak, &opts.accepted);
+    if (fscanf(f, "%ld %lu %lu %lu", &t, &opts.online, &opts.peak, &opts.accepted) != 4)
+        return 1;
+
     fclose(f);
 
     gmtime_r(&t, &tm);
     snprintf(opts.uptime, 256, "%u days, %u hours, %u minutes, %u seconds;", tm.tm_yday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-    /* Check for uptime, at last 10min, this way we will filter crashes 
+    /* Check for uptime, at last 10min, this way we will filter crashes
        by missing sql updates/wrong configs/etc */
-    if (t < (10*60)) {
+    if (t < (10 * 60))
+    {
         return 0;
     }
 
     n = scandir(".", &list, filter, NULL);
-    if (n != -1) {
-        for (i=0; i<n; i++) {
+    if (n != -1)
+    {
+        for (i = 0; i < n; i++)
+        {
             buildCrashdump(list[i]->d_name);
         }
     }

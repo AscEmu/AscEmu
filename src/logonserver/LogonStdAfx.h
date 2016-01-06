@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #pragma once
@@ -42,7 +41,6 @@
 #include "../shared/Auth/Sha1.h"
 #include "../shared/Auth/WowCrypt.h"
 
-#include "../logonserver/Main.h"
 #include "../world/Opcodes.h"
 #include "AccountCache.h"
 #include "PeriodicFunctionCall_Thread.h"
@@ -52,6 +50,7 @@
 #include "../logonserver/LogonCommServer.h"
 #include "../logonserver/LogonConsole.h"
 #include "../shared/WorldPacket.h"
+#include "Master.hpp"
 
 // database decl
 extern Database* sLogonSQL;

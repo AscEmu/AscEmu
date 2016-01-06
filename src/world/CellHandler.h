@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -30,6 +30,7 @@ template <class Class>
 class CellHandler
 {
     public:
+
         CellHandler(Map* map);
         ~CellHandler();
 
@@ -47,8 +48,8 @@ class CellHandler
         Map* GetBaseMap() { return _map; }
 
     protected:
-        void _Init();
 
+        void _Init();
 
         Class*** _cells;
 

@@ -41,7 +41,7 @@ void WorldSession::HandleDuelAccepted(WorldPacket& recv_data)
     _player->DuelingWith->m_duelState = DUEL_STATE_STARTED;
 
     WorldPacket data(SMSG_DUEL_COUNTDOWN, 4);
-    data << uint32(3000);
+    data << uint32(3000);   // time in ms
 
     SendPacket(&data);
     _player->DuelingWith->m_session->SendPacket(&data);
@@ -65,7 +65,7 @@ void WorldSession::HandleDuelCancelled(WorldPacket& recv_data)
     }
 
     WorldPacket data(SMSG_DUEL_COMPLETE, 1);
-    data << uint8(1);
+    data << uint8(1);   //bool 1 = true
 
     SendPacket(&data);
     _player->DuelingWith->m_session->SendPacket(&data);

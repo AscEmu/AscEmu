@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -40,7 +40,7 @@ enum AiEvents
     EVENT_UNITDIED,
     EVENT_HOSTILEACTION,
     EVENT_FORCEREDIRECTED,
-    NUM_AI_EVENTS,
+    NUM_AI_EVENTS
 };
 
 extern pAIEvent AIEventHandlers[NUM_AI_EVENTS];

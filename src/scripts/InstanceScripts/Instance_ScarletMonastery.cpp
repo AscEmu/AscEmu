@@ -378,7 +378,7 @@ class MograineAI : public CreatureAIScript
                 return;
 
             // Open the door
-            pDoor->SetState(GAMEOBJECT_STATE_OPEN);
+            pDoor->SetState(GO_STATE_OPEN);
 
             RemoveAIUpdateEvent();
         }
@@ -388,16 +388,8 @@ class MograineAI : public CreatureAIScript
         {
             Timer = Timer + 1;
 
-            /*if (Timer == 30000000000)
-            {
-            _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
-            }
-
-            else
-            {*/
             float val = RandomFloat(100.0f);
             SpellCast(val);
-            //}
         }
 
         void SpellCast(float val)
@@ -536,19 +528,10 @@ class WhitemaneAI : public CreatureAIScript
             // Set phase var
             mPhase = 1;
 
-            // Play sound, and send text.
-            /*_unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Light, give me strength!");
-                   ^^ Notes for myself */
             _unit->SendScriptTextChatMessage(2106);
-            //MoveToRes();
             CastSleep();
             CastRes();
         }
-
-        /*void MoveToRes()
-        {
-        _unit->GetAIInterface ()->MoveTo(1154.859009,1403.924683,32.250183,3.466254);
-        }*/
 
         void CastSleep()
         {
@@ -578,16 +561,9 @@ class WhitemaneAI : public CreatureAIScript
         {
             Timer = Timer + 1;
 
-            /*if (Timer == 30000000000)
-            {
-            //_unit->CastSpell(_unit, spells[1].info, spells[1].instant);
-            }
-
-            else
-            {*/
             float val = RandomFloat(100.0f);
             SpellCast(val);
-            //}
+
         }
 
         void SpellCast(float val)
@@ -796,10 +772,10 @@ class ScarletTorch : public GameObjectAIScript
             GameObject* SecretDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(1167.79f, 1347.26f, 31.5494f, GO_SCARLET_SECRET_DOOR);
             if (SecretDoor != NULL)
             {
-                if (SecretDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
-                    SecretDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                if (SecretDoor->GetState() == GO_STATE_CLOSED)
+                    SecretDoor->SetState(GO_STATE_OPEN);
                 else
-                    SecretDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                    SecretDoor->SetState(GO_STATE_CLOSED);
             }
         }
 };
@@ -816,10 +792,10 @@ class ArmoryLever : public GameObjectAIScript
             GameObject* ArmoryDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2886.31f, -827.261f, 160.336f, GO_ARMORY_DOOR);
             if (ArmoryDoor != NULL)
             {
-                if (ArmoryDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
-                    ArmoryDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                if (ArmoryDoor->GetState() == GO_STATE_CLOSED)
+                    ArmoryDoor->SetState(GO_STATE_OPEN);
                 else
-                    ArmoryDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                    ArmoryDoor->SetState(GO_STATE_CLOSED);
             }
         }
 };
@@ -836,10 +812,10 @@ class CathedralLever : public GameObjectAIScript
             GameObject* CathedralDoor = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(2908.18f, -818.203f, 160.332f, GO_CATHEDRAL_DOOR);
             if (CathedralDoor != NULL)
             {
-                if (CathedralDoor->GetState() == GAMEOBJECT_STATE_CLOSED)
-                    CathedralDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                if (CathedralDoor->GetState() == GO_STATE_CLOSED)
+                    CathedralDoor->SetState(GO_STATE_OPEN);
                 else
-                    CathedralDoor->SetState(GAMEOBJECT_STATE_CLOSED);
+                    CathedralDoor->SetState(GO_STATE_CLOSED);
             }
         }
 };

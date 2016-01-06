@@ -266,8 +266,8 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession* m_session)
     if (pcostid)
         costid = atoi(pcostid);
 
-    ItemExtendedCostEntry* ec = (costid > 0) ? dbcItemExtendedCost.LookupEntryForced(costid) : NULL;
-    if (costid > 0 && dbcItemExtendedCost.LookupEntryForced(costid) == NULL)
+    auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
+    if (costid > 0 && sItemExtendedCostStore.LookupEntry(costid) == NULL)
     {
         SystemMessage(m_session, "You've entered invalid extended cost id.");
         return true;
@@ -282,7 +282,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession* m_session)
         ss << "INSERT INTO vendors VALUES ('" << pCreature->GetEntry() << "', '" << item << "', '" << amount << "', 0, 0, " << costid << ")" << '\0';
         WorldDatabase.Execute(ss.str().c_str());
 
-        pCreature->AddVendorItem(item, amount, ec);
+        pCreature->AddVendorItem(item, amount, item_extended_cost);
 
         sstext << "Item '" << item << "' '" << tmpItem->Name1 << "' Added to list";
         if (costid > 0)
@@ -679,13 +679,13 @@ bool ChatHandler::HandleMonsterYellCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleGOFaction(const char *args, WorldSession* m_session)
+bool ChatHandler::HandleGOFaction(const char* args, WorldSession* m_session)
 {
-    if (args == NULL)
+    if (args == nullptr)
         return false;
 
-    GameObject *go = m_session->GetPlayer()->GetSelectedGo();
-    if (go == NULL)
+    GameObject* go = m_session->GetPlayer()->GetSelectedGo();
+    if (go == nullptr)
     {
         RedSystemMessage(m_session, "No GameObject is selected.");
         return true;
@@ -697,8 +697,15 @@ bool ChatHandler::HandleGOFaction(const char *args, WorldSession* m_session)
         return false;
     }
 
+    auto faction_template = sFactionTemplateStore.LookupEntry(faction);
+    if (faction_template == nullptr)
+    {
+        RedSystemMessage(m_session, "The entered faction is invalid! Use a valid faction id.");
+        return false;
+    }
+
     go->SetFaction(faction);
-    GreenSystemMessage(m_session, "Set GO faction to %u.", faction);
+    GreenSystemMessage(m_session, "Faction changed for gameobject spawn to %u.", faction);
 
     return true;
 }
@@ -1161,9 +1168,11 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
     SystemMessage(m_session, "%s Rotation 2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(2));
     SystemMessage(m_session, "%s Rotation 3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(3));
 
+    GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(gameobject);
+
     if (gameobject_info->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
-        SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetHP(), gameobject->GetMaxHP());
+        SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, dgo->GetHP(), dgo->GetMaxHP());
     }
 
     return true;
@@ -1202,14 +1211,14 @@ bool ChatHandler::HandleGOOpen(const char* args, WorldSession* m_session)
         return true;
     }
 
-    if (GObj->GetState() != GAMEOBJECT_STATE_OPEN)
+    if (GObj->GetState() != GO_STATE_OPEN)
     {
-        GObj->SetState(GAMEOBJECT_STATE_OPEN);
+        GObj->SetState(GO_STATE_OPEN);
         BlueSystemMessage(m_session, "Gameobject opened.");
     }
     else
     {
-        GObj->SetState(GAMEOBJECT_STATE_CLOSED);
+        GObj->SetState(GO_STATE_CLOSED);
         BlueSystemMessage(m_session, "Gameobject closed.");
     }
     return true;
@@ -1371,8 +1380,8 @@ bool ChatHandler::HandleAddAIAgentCommand(const char* args, WorldSession* m_sess
     sp->procCount = 0;
     sp->procCounter = 0;
     sp->cooldowntime = 0;
-    sp->minrange = GetMinRange(dbcSpellRange.LookupEntry(dbcSpell.LookupEntry(atoi(spellId))->rangeIndex));
-    sp->maxrange = GetMaxRange(dbcSpellRange.LookupEntry(dbcSpell.LookupEntry(atoi(spellId))->rangeIndex));
+    sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(dbcSpell.LookupEntry(atoi(spellId))->rangeIndex));
+    sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(dbcSpell.LookupEntry(atoi(spellId))->rangeIndex));
 
     target->GetProto()->spells.push_back(sp);
 
@@ -1438,42 +1447,13 @@ bool ChatHandler::HandleGOAnimProgress(const char* args, WorldSession* m_session
     return true;
 }
 
-bool ChatHandler::HandleGOFactionCommand(const char *args, WorldSession* session)
+bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
 {
-    GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL)
-    {
-        RedSystemMessage(session, "You need to select a GO first!");
-        return true;
-    }
+    if (args == nullptr)
+        return false;
 
-    if (*args == '\0')
-    {
-        RedSystemMessage(session, "You need to specify a faction!");
-        return true;
-    }
-
-    std::stringstream ss(args);
-    uint32 faction = 0;
-
-    ss >> faction;
-    if (ss.fail())
-    {
-        RedSystemMessage(session, "You need to specify a faction!");
-        return true;
-    }
-
-    go->SetFaction(faction);
-
-    BlueSystemMessage(session, "GameObject faction has been changed to %u", faction);
-
-    return true;
-}
-
-bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession* session)
-{
-    GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL)
+    GameObject* go = session->GetPlayer()->GetSelectedGo();
+    if (go == nullptr)
     {
         RedSystemMessage(session, "You need to select a GO first!");
         return true;
@@ -1482,38 +1462,45 @@ bool ChatHandler::HandleGODamageCommand(const char *args, WorldSession* session)
     if (go->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
         RedSystemMessage(session, "The selected GO must be a destructible building!");
-        return true;
-    }
-
-    if (*args == '\0')
-    {
-        RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
         return true;
     }
 
     uint32 damage = 0;
-    std::stringstream ss(args);
+    uint32 spellid = 0;
 
-    ss >> damage;
-    if (ss.fail())
+    if (sscanf(args, "%u %u", &damage, &spellid) != 2)
     {
-        RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
+        if (damage == 0)
+        {
+            RedSystemMessage(session, "You need to specify how much you want to damage the selected GO!");
+            return true;
+        }
+    }
+
+    if (spellid == 0)
+        spellid = 57609;
+
+    GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(go);
+
+    if (dgo->GetHP() == 0)
+    {
+        RedSystemMessage(session, "Cannot further damage a destroyed GameObject");
         return true;
     }
 
     uint64 guid = session->GetPlayer()->GetGUID();
+    dgo->Damage(damage, guid, 0, spellid);
 
-    BlueSystemMessage(session, "Attempting to damage GO...");
-
-    go->Damage(damage, guid, guid, 0);
+    GreenSystemMessage(session, "GameObject has been damaged for %u hitpoints", damage);
+    GreenSystemMessage(session, "New hitpoints %u", dgo->GetHP());
 
     return true;
 }
 
-bool ChatHandler::HandleGORebuildCommand(const char *args, WorldSession* session)
+bool ChatHandler::HandleGORebuildCommand(const char* args, WorldSession* session)
 {
-    GameObject *go = session->GetPlayer()->GetSelectedGo();
-    if (go == NULL)
+    GameObject* go = session->GetPlayer()->GetSelectedGo();
+    if (go == nullptr)
     {
         RedSystemMessage(session, "You need to select a GO first!");
         return true;
@@ -1525,9 +1512,14 @@ bool ChatHandler::HandleGORebuildCommand(const char *args, WorldSession* session
         return true;
     }
 
-    BlueSystemMessage(session, "Attempting to rebuild building...");
+    GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(go);
 
-    go->Rebuild();
+    uint32 oldHitPoints = dgo->GetHP();
+
+    dgo->Rebuild();
+
+    BlueSystemMessage(session, "GameObject has been rebuilt.");
+    GreenSystemMessage(session, "Old hitpoints: %u New hitpoints %u", oldHitPoints, dgo->GetHP());
 
     return true;
 }

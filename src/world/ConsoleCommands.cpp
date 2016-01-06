@@ -23,7 +23,7 @@
 #include <git_version.h>
 #include "ConsoleCommands.h"
 
-bool HandleTimeDateCommand(BaseConsole *console, int argc, const char *argv[])
+bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])
 {
     time_t unixTime = UNIXTIME;
 
@@ -325,7 +325,7 @@ bool HandlePlayerInfoCommand(BaseConsole* pConsole, int argc, const char* argv[]
     }
 
     pConsole->Write("Player: %s\r\n", plr->GetName());
-    pConsole->Write("Race: %s\r\n", plr->myRace->name1);
+    pConsole->Write("Race: %s\r\n", plr->myRace->name);
     pConsole->Write("Class: %s\r\n", plr->myClass->name);
     pConsole->Write("IP: %s\r\n", plr->GetSession()->GetSocket() ? plr->GetSession()->GetSocket()->GetRemoteIP().c_str() : "disconnected");
     pConsole->Write("Level: %u\r\n", plr->getLevel());
@@ -374,6 +374,7 @@ bool HandleNameHashCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
     if (!argc)
         return false;
+
     std::string spname;
     ConcatArgs(spname, argc, 0, argv);
     pConsole->Write("Name Hash for %s is 0x%X", spname.c_str(), crc32((const unsigned char*)spname.c_str(), (unsigned int)spname.length()));
@@ -437,6 +438,7 @@ bool HandleReloadConsoleCommand(BaseConsole* pConsole, int argc, const char* arg
     */
 
 }
+
 bool HandleScriptEngineReloadCommand(BaseConsole*, int, const char*[])
 {
     sScriptMgr.ReloadScriptEngines();

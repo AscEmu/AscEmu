@@ -16,12 +16,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
-
 
 #ifndef __WORLDSESSION_H
 #define __WORLDSESSION_H
+
 
 #include <Threading/Mutex.h>
 #include "Opcodes.h"
@@ -37,7 +36,9 @@ class WorldSession;
 class MapMgr;
 class Creature;
 struct TrainerSpell;
+
 template<class T, class LOCK>
+
 class FastQueue;
 class Mutex;
 
@@ -51,9 +52,8 @@ struct LfgRoleCheck;
 //#define SESSION_CAP 5
 #define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
 
-/////////////////////////////////////////
+
 // Does nothing on release builds
-////////////////////////////////////////
 #ifdef _DEBUG
 #define CHECK_INWORLD_ASSERT ARCEMU_ASSERT(_player != NULL && _player->IsInWorld())
 #else
@@ -63,58 +63,56 @@ struct LfgRoleCheck;
 #define CHECK_GUID_EXISTS(guidx) if (_player == NULL || _player->GetMapMgr() == NULL || _player->GetMapMgr()->GetUnit((guidx)) == NULL) { return; }
 #define CHECK_PACKET_SIZE(pckp, ssize) if (ssize && pckp.size() < ssize) { Disconnect(); return; }
 
-/**********************************************************************************
-* Worldsocket related
-**********************************************************************************/
-#define WORLDSOCKET_TIMEOUT      120
-#define PLAYER_LOGOUT_DELAY (20*1000) // 20 seconds should be more than enough to gank ya.
+// Worldsocket related
+#define WORLDSOCKET_TIMEOUT 120
+#define PLAYER_LOGOUT_DELAY (20 * 1000) // 20 seconds should be more than enough to gank ya.
 
 #define NOTIFICATION_MESSAGE_NO_PERMISSION "You do not have permission to perform that function."
 //#define CHECK_PACKET_SIZE(x, y) if (y > 0 && x.size() < y) { _socket->Disconnect(); return; }
 
-// MovementFlags Contribution by Tenshi
+
 enum MovementFlags
 {
     // Byte 1 (Resets on Movement Key Press)
-    MOVEFLAG_MOVE_STOP                  = 0x00,         //verified
-    MOVEFLAG_MOVE_FORWARD               = 0x01,         //verified
-    MOVEFLAG_MOVE_BACKWARD              = 0x02,         //verified
-    MOVEFLAG_STRAFE_LEFT                = 0x04,         //verified
-    MOVEFLAG_STRAFE_RIGHT               = 0x08,         //verified
-    MOVEFLAG_TURN_LEFT                  = 0x10,         //verified
-    MOVEFLAG_TURN_RIGHT                 = 0x20,         //verified
-    MOVEFLAG_PITCH_DOWN                 = 0x40,         //Unconfirmed
-    MOVEFLAG_PITCH_UP                   = 0x80,         //Unconfirmed
+    MOVEFLAG_MOVE_STOP                  = 0x00000000,   //verified
+    MOVEFLAG_MOVE_FORWARD               = 0x00000001,   //verified
+    MOVEFLAG_MOVE_BACKWARD              = 0x00000002,   //verified
+    MOVEFLAG_STRAFE_LEFT                = 0x00000004,   //verified
+    MOVEFLAG_STRAFE_RIGHT               = 0x00000008,   //verified
+    MOVEFLAG_TURN_LEFT                  = 0x00000010,   //verified
+    MOVEFLAG_TURN_RIGHT                 = 0x00000020,   //verified
+    MOVEFLAG_PITCH_DOWN                 = 0x00000040,   //Unconfirmed
+    MOVEFLAG_PITCH_UP                   = 0x00000080,   //Unconfirmed
 
     // Byte 2 (Resets on Situation Change)
-    MOVEFLAG_WALK                       = 0x100,        //verified
-    MOVEFLAG_TRANSPORT                  = 0x200,
-    MOVEFLAG_NO_COLLISION               = 0x400,
-    MOVEFLAG_ROOTED                     = 0x800,        //verified
-    MOVEFLAG_REDIRECTED                 = 0x1000,       //Unconfirmed, should be MOVEFLAG_JUMPING
-    MOVEFLAG_FALLING                    = 0x2000,       //verified
-    MOVEFLAG_FALLING_FAR                = 0x4000,       //verified
-    MOVEFLAG_FREE_FALLING               = 0x8000,       //half verified
+    MOVEFLAG_WALK                       = 0x00000100,   //verified
+    MOVEFLAG_TRANSPORT                  = 0x00000200,
+    MOVEFLAG_NO_COLLISION               = 0x00000400,
+    MOVEFLAG_ROOTED                     = 0x00000800,   //verified
+    MOVEFLAG_REDIRECTED                 = 0x00001000,   //Unconfirmed, should be MOVEFLAG_JUMPING
+    MOVEFLAG_FALLING                    = 0x00002000,   //verified
+    MOVEFLAG_FALLING_FAR                = 0x00004000,   //verified
+    MOVEFLAG_FREE_FALLING               = 0x00008000,   //half verified
 
     // Byte 3 (Set by server. TB = Third Byte. Completely unconfirmed.)
-    MOVEFLAG_TB_PENDING_STOP            = 0x10000,      // (MOVEFLAG_PENDING_STOP)
-    MOVEFLAG_TB_PENDING_UNSTRAFE        = 0x20000,      // (MOVEFLAG_PENDING_UNSTRAFE)
-    MOVEFLAG_TB_PENDING_FALL            = 0x40000,      // (MOVEFLAG_PENDING_FALL)
-    MOVEFLAG_TB_PENDING_FORWARD         = 0x80000,      // (MOVEFLAG_PENDING_FORWARD)
-    MOVEFLAG_TB_PENDING_BACKWARD        = 0x100000,     // (MOVEFLAG_PENDING_BACKWARD)
-    MOVEFLAG_SWIMMING                   = 0x200000,     //  verified
-    MOVEFLAG_FLYING_PITCH_UP            = 0x400000,     // (half confirmed)(MOVEFLAG_PENDING_STR_RGHT)
-    MOVEFLAG_CAN_FLY                    = 0x800000,     // (half confirmed) gets called when landing (MOVEFLAG_MOVED)
+    MOVEFLAG_TB_PENDING_STOP            = 0x00010000,   // (MOVEFLAG_PENDING_STOP)
+    MOVEFLAG_TB_PENDING_UNSTRAFE        = 0x00020000,   // (MOVEFLAG_PENDING_UNSTRAFE)
+    MOVEFLAG_TB_PENDING_FALL            = 0x00040000,   // (MOVEFLAG_PENDING_FALL)
+    MOVEFLAG_TB_PENDING_FORWARD         = 0x00080000,   // (MOVEFLAG_PENDING_FORWARD)
+    MOVEFLAG_TB_PENDING_BACKWARD        = 0x00100000,   // (MOVEFLAG_PENDING_BACKWARD)
+    MOVEFLAG_SWIMMING                   = 0x00200000,   //  verified
+    MOVEFLAG_FLYING_PITCH_UP            = 0x00400000,   // (half confirmed)(MOVEFLAG_PENDING_STR_RGHT)
+    MOVEFLAG_CAN_FLY                    = 0x00800000,   // (half confirmed) gets called when landing (MOVEFLAG_MOVED)
 
     // Byte 4 (Script Based Flags. Never reset, only turned on or off.)
-    MOVEFLAG_AIR_SUSPENSION             = 0x1000000,    // confirmed allow body air suspension(good name? lol).
-    MOVEFLAG_AIR_SWIMMING               = 0x2000000,    // confirmed while flying.
-    MOVEFLAG_SPLINE_MOVER               = 0x4000000,    // Unconfirmed
-    MOVEFLAG_SPLINE_ENABLED             = 0x8000000,
+    MOVEFLAG_AIR_SUSPENSION             = 0x01000000,   // confirmed allow body air suspension(good name? lol).
+    MOVEFLAG_AIR_SWIMMING               = 0x02000000,   // confirmed while flying.
+    MOVEFLAG_SPLINE_MOVER               = 0x04000000,   // Unconfirmed
+    MOVEFLAG_SPLINE_ENABLED             = 0x08000000,
     MOVEFLAG_WATER_WALK                 = 0x10000000,
     MOVEFLAG_FEATHER_FALL               = 0x20000000,   // Does not negate fall damage.
     MOVEFLAG_LEVITATE                   = 0x40000000,
-    MOVEFLAG_LOCAL                      = 0x80000000,   // This flag defaults to on. (Assumption)
+    //MOVEFLAG_LOCAL                      = 0x80000000,   // Zyres: commented unused 2015/12/20 This flag defaults to on. (Assumption)
 
     // Masks
     MOVEFLAG_MOVING_MASK                = 0x03,
@@ -130,11 +128,19 @@ enum MovementFlags
 
 enum MovementFlags2
 {
-    MOVEFLAG2_NO_STRAFING        = 0x01,
-    MOVEFLAG2_NO_JUMPING         = 0x02,
-    MOVEFLAG2_FULLSPEED_TURNING  = 0x08,
-    MOVEFLAG2_FULLSPEED_PITCHING = 0x10,
-    MOVEFLAG2_ALLOW_PITCHING     = 0x20
+    MOVEFLAG2_NO_STRAFING           = 0x0001,
+    MOVEFLAG2_NO_JUMPING            = 0x0002,
+    MOVEFLAG2_UNK1                  = 0x0004,
+    MOVEFLAG2_FULLSPEED_TURNING     = 0x0008,
+    MOVEFLAG2_FULLSPEED_PITCHING    = 0x0010,
+    MOVEFLAG2_ALLOW_PITCHING        = 0x0020,
+    MOVEFLAG2_UNK2                  = 0x0040,
+    MOVEFLAG2_UNK3                  = 0x0080,
+    MOVEFLAG2_UNK4                  = 0x0100,
+    MOVEFLAG2_UNK5                  = 0x0200,
+    MOVEFLAG2_INTERPOLATED_MOVE     = 0x0400,
+    MOVEFLAG2_INTERPOLATED_TURN     = 0x0800,
+    MOVEFLAG2_INTERPOLATED_PITCH    = 0x1000
 };
 
 struct OpcodeHandler
@@ -145,17 +151,17 @@ struct OpcodeHandler
 
 enum ObjectUpdateFlags
 {
-    UPDATEFLAG_NONE         = 0x00,
-    UPDATEFLAG_SELF         = 0x01,
-    UPDATEFLAG_TRANSPORT    = 0x02,
-    UPDATEFLAG_HAS_TARGET   = 0x04,
-    UPDATEFLAG_LOWGUID      = 0x08,
-    UPDATEFLAG_HIGHGUID     = 0x10,
-    UPDATEFLAG_LIVING       = 0x20,
-    UPDATEFLAG_HAS_POSITION = 0x40,
-    UPDATEFLAG_VEHICLE      = 0x80,
-    UPDATEFLAG_POSITION   = 0x0100,
-    UPDATEFLAG_ROTATION   = 0x0200
+    UPDATEFLAG_NONE         = 0x0000,
+    UPDATEFLAG_SELF         = 0x0001,
+    UPDATEFLAG_TRANSPORT    = 0x0002,
+    UPDATEFLAG_HAS_TARGET   = 0x0004,
+    UPDATEFLAG_LOWGUID      = 0x0008,
+    UPDATEFLAG_HIGHGUID     = 0x0010,
+    UPDATEFLAG_LIVING       = 0x0020,
+    UPDATEFLAG_HAS_POSITION = 0x0040,
+    UPDATEFLAG_VEHICLE      = 0x0080,
+    UPDATEFLAG_POSITION     = 0x0100,
+    UPDATEFLAG_ROTATION     = 0x0200
 };
 
 enum SessionStatus
@@ -202,16 +208,17 @@ class SERVER_DECL WorldSession
     friend class WorldSocket;
 
     public:
+
         WorldSession(uint32 id, std::string Name, WorldSocket* sock);
         ~WorldSession();
 
         Player* m_loggingInPlayer;
 
-    void SendPacket(WorldPacket* packet);
+        void SendPacket(WorldPacket* packet);
 
-    void SendPacket(StackBufferBase* packet);
+        void SendPacket(StackBufferBase* packet);
 
-    void OutPacket(uint16 opcode);
+        void OutPacket(uint16 opcode);
 
         void Delete();
 
@@ -224,12 +231,12 @@ class SERVER_DECL WorldSession
         Player* GetPlayer() { return _player; }
         Player* GetPlayerOrThrow();
 
-        /* Acct flags */
+        // Acct flags
         void SetAccountFlags(uint32 flags) { _accountFlags = flags; }
         bool HasFlag(uint32 flag) { return (_accountFlags & flag) != 0; }
         uint8 GetFlags() { return _accountFlags; }
 
-        /* GM Permission System */
+        // GM Permission System
         void LoadSecurity(std::string securitystring);
         void SetSecurity(std::string securitystring);
         char* GetPermissions() const { return permissions; }
@@ -280,13 +287,13 @@ class SERVER_DECL WorldSession
 
         void LogoutPlayer(bool Save);
 
-    void QueuePacket(WorldPacket* packet);
+        void QueuePacket(WorldPacket* packet);
 
-    void OutPacket(uint16 opcode, uint16 len, const void* data);
+        void OutPacket(uint16 opcode, uint16 len, const void* data);
 
         WorldSocket* GetSocket() { return _socket; }
 
-    void Disconnect();
+        void Disconnect();
 
         int  Update(uint32 InstanceID);
 
@@ -793,7 +800,7 @@ class SERVER_DECL WorldSession
         void SendLfgUpdateSearch(bool update);
         void SendLfgJoinResult(const LfgJoinResultData& joinData);
         void SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgWaitTime, int32 waitTimeTanks, int32 waitTimeHealer, int32 waitTimeDps, uint32 queuedTime, uint8 tanks, uint8 healers, uint8 dps);
-        void SendLfgPlayerReward(uint32 rdungeonEntry, uint32 sdungeonEntry, uint8 done, const LfgReward* reward, const Quest *qRew);
+        void SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 DungeonEntry, uint8 done, const LfgReward* reward, Quest *qReward);
         void SendLfgBootPlayer(const LfgPlayerBoot* pBoot);
         void SendLfgUpdateProposal(uint32 proposalId, const LfgProposal *pProp);
         void SendLfgDisabled();
@@ -812,13 +819,13 @@ class SERVER_DECL WorldSession
         // Used to know race on login
         void LoadPlayerFromDBProc(QueryResultVector & results);
 
-        /* Preallocated buffers for movement handlers */
+        // Preallocated buffers for movement handlers
         MovementInfo movement_info;
         uint8 movement_packet[90];
 
         uint32 _accountId;
         uint32 _accountFlags;
-    std::string _accountName;
+        std::string _accountName;
 
         bool has_level_55_char; // death knights
         bool has_dk;
@@ -843,6 +850,7 @@ class SERVER_DECL WorldSession
         uint32 client_build;
         uint32 instanceId;
         uint8 _updatecount;
+
     public:
 
         MovementInfo* GetMovementInfo() { return &movement_info; }
@@ -860,7 +868,7 @@ class SERVER_DECL WorldSession
         uint32 m_muted;
 
         void SendClientCacheVersion(uint32 version);
-        void SendItemQueryAndNameInfo(uint32 itemid);
+
 };
 
 typedef std::set<WorldSession*> SessionSet;

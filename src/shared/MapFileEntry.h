@@ -11,8 +11,8 @@
  * without express or implied warranty.
  */
 
-#ifndef _DEV_MAPFILEENTRY_H
-#define _DEV_MAPFILEENTRY_H
+#ifndef _MAPFILE_ENTRY_H
+#define _MAPFILE_ENTRY_H
 
 
 /// An entry in the map file.
@@ -54,4 +54,4 @@ class MapFileEntry
         char m_name[MAX_NAME + 1];
 };
 
-#endif // _DEV_MAPFILEENTRY_H
+#endif // _MAPFILE_ENTRY_H

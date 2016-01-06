@@ -85,7 +85,7 @@ void Player::SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0,
     data << uint32(Hp);
     data << uint32(Mana);
 
-    for (int i = 0; i < 6; ++i)
+    for (uint8 i = 0; i < 6; ++i)
         data << uint32(0);
 
     data << uint32(Stat0);
@@ -295,10 +295,16 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
     {
         GameObject* pGO = GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
-        if (!pGO)return;
-        pGO->SetByte(GAMEOBJECT_BYTES_1, 0, 0);
-        pLoot = &pGO->loot;
-        m_currentLoot = pGO->GetGUID();
+        if (!pGO)
+            return;
+
+        if (!pGO->IsLootable())
+            return;
+
+        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
+        pLGO->SetState(0);
+        pLoot = &pLGO->loot;
+        m_currentLoot = pLGO->GetGUID();
     }
     else if ((guidtype == HIGHGUID_TYPE_PLAYER))
     {
@@ -567,7 +573,7 @@ void Player::SendInitialLogonPackets()
     //Tutorial Flags
     data.Initialize(SMSG_TUTORIAL_FLAGS);
 
-    for (int i = 0; i < 8; i++)
+    for (uint8 i = 0; i < 8; i++)
         data << uint32(m_Tutorials[i]);
 
     m_session->SendPacket(&data);

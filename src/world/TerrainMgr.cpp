@@ -25,16 +25,16 @@
 
 TerrainHolder::TerrainHolder(uint32 mapid)
 {
-    for (int32 i = 0; i < TERRAIN_NUM_TILES; ++i)
-        for (int32 j = 0; j < TERRAIN_NUM_TILES; ++j)
+    for (uint8 i = 0; i < TERRAIN_NUM_TILES; ++i)
+        for (uint8 j = 0; j < TERRAIN_NUM_TILES; ++j)
             m_tiles[i][j] = NULL;
     m_mapid = mapid;
 }
 
 TerrainHolder::~TerrainHolder()
 {
-    for (int32 i = 0; i < TERRAIN_NUM_TILES; ++i)
-        for (int32 j = 0; j < TERRAIN_NUM_TILES; ++j)
+    for (uint8 i = 0; i < TERRAIN_NUM_TILES; ++i)
+        for (uint8 j = 0; j < TERRAIN_NUM_TILES; ++j)
             UnloadTile(i, j);
 }
 
@@ -489,7 +489,7 @@ void TileMap::LoadLiquidData(FILE* f, TileMapHeader & header)
 {
     TileMapLiquidHeader liquidHeader;
 
-    if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
+    if (fseek(f, header.liquidMapOffset, SEEK_SET) != 0)
         return;
 
     if (fread(&liquidHeader, sizeof(liquidHeader), 1, f) != 1)
@@ -521,7 +521,7 @@ void TileMap::LoadHeightData(FILE* f, TileMapHeader & header)
 {
     TileMapHeightHeader mapHeader;
 
-    if (fseek(f, header.areaMapOffset, SEEK_SET) != 0)
+    if (fseek(f, header.heightMapOffset, SEEK_SET) != 0)
         return;
 
     if (fread(&mapHeader, sizeof(mapHeader), 1, f) != 1)

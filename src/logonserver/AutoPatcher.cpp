@@ -15,7 +15,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 #include "LogonStdAfx.h"
@@ -47,23 +46,23 @@ PatchMgr::PatchMgr()
     char locality[5];
     uint32 i;
 
-    if(!GetCurrentDirectory(MAX_PATH * 10, Buffer))
+    if (!GetCurrentDirectory(MAX_PATH * 10, Buffer))
         return;
 
     strcpy(Buffer2, Buffer);
     strcat(Buffer, "\\ClientPatches\\*.*");
     fHandle = FindFirstFile(Buffer, &fd);
-    if(fHandle == INVALID_HANDLE_VALUE)
+    if (fHandle == INVALID_HANDLE_VALUE)
         return;
 
     do
     {
         snprintf(Buffer3, MAX_PATH * 10, "%s\\ClientPatches\\%s", Buffer2, fd.cFileName);
-        if(sscanf(fd.cFileName, "%4s%u.", locality, &srcversion) != 2)
+        if (sscanf(fd.cFileName, "%4s%u.", locality, &srcversion) != 2)
             continue;
 
         hFile = CreateFile(Buffer3, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_ARCHIVE, NULL);
-        if(hFile == INVALID_HANDLE_VALUE)
+        if (hFile == INVALID_HANDLE_VALUE)
             continue;
 
         Log.Notice("PatchMgr", "Found patch for %u locale `%s`.", srcversion, locality);
@@ -72,12 +71,12 @@ PatchMgr::PatchMgr()
         pPatch->FileSize = size;
         pPatch->Data = new uint8[size];
         pPatch->Version = srcversion;
-        for(i = 0; i < 4; ++i)
+        for (i = 0; i < 4; ++i)
             pPatch->Locality[i] = static_cast<char>(tolower(locality[i]));
         pPatch->Locality[4] = 0;
         pPatch->uLocality = *(uint32*)pPatch->Locality;
 
-        if(pPatch->Data == NULL)
+        if (pPatch->Data == NULL)
         {
             // shouldn't really happen
             delete pPatch;
@@ -101,8 +100,7 @@ PatchMgr::PatchMgr()
         // add the patch to the patchlist
         m_patches.push_back(pPatch);
 
-    }
-    while(FindNextFile(fHandle, &fd));
+    } while (FindNextFile(fHandle, &fd));
     FindClose(fHandle);
 #else
     /*
@@ -128,27 +126,27 @@ PatchMgr::PatchMgr()
     strcpy(Buffer2, Buffer);
 
     filecount = scandir("./ClientPatches", &list, 0, 0);
-    if(filecount <= 0 || list == NULL)
+    if (filecount <= 0 || list == NULL)
     {
         Log.Error("PatchMgr", "No patches found.");
         return;
     }
 
-    while(filecount--)
+    while (filecount--)
     {
         snprintf(Buffer3, MAX_PATH * 10, "./ClientPatches/%s", list[filecount]->d_name);
-        if(sscanf(list[filecount]->d_name, "%4s%u.", locality, &srcversion) != 2)
+        if (sscanf(list[filecount]->d_name, "%4s%u.", locality, &srcversion) != 2)
             continue;
 
         read_fd = open(Buffer3, O_RDONLY);
-        if(read_fd < 0)
+        if (read_fd < 0)
         {
             LOG_ERROR("Cannot open %s", Buffer3);
             close(read_fd);
             continue;
         }
 
-        if(fstat(read_fd, &sb) < 0)
+        if (fstat(read_fd, &sb) < 0)
         {
             LOG_ERROR("Cannot stat %s", Buffer3);
             close(read_fd);
@@ -161,12 +159,12 @@ PatchMgr::PatchMgr()
         pPatch->FileSize = size;
         pPatch->Data = new uint8[size];
         pPatch->Version = srcversion;
-        for(i = 0; i < 4; ++i)
+        for (i = 0; i < 4; ++i)
             pPatch->Locality[i] = tolower(locality[i]);
         pPatch->Locality[4] = 0;
         pPatch->uLocality = *(uint32*)pPatch->Locality;
 
-        if(pPatch->Data == NULL)
+        if (pPatch->Data == NULL)
         {
             // shouldn't really happen
             delete pPatch;
@@ -206,21 +204,21 @@ Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
     uint32 i;
     std::vector<Patch*>::iterator itr;
     Patch* fallbackPatch = NULL;
-    for(i = 0; i < 4; ++i)
+    for (i = 0; i < 4; ++i)
         tmplocality[i] = static_cast<char>(tolower(Locality[i]));
     tmplocality[4] = 0;
     ulocality = *(uint32*)tmplocality;
 
-    for(itr = m_patches.begin(); itr != m_patches.end(); ++itr)
+    for (itr = m_patches.begin(); itr != m_patches.end(); ++itr)
     {
         // since localities are always 4 bytes we can do a simple int compare,
         // saving a string compare ;)
-        if((*itr)->uLocality == ulocality)
+        if ((*itr)->uLocality == ulocality)
         {
-            if(fallbackPatch == NULL && (*itr)->Version == 0)
+            if (fallbackPatch == NULL && (*itr)->Version == 0)
                 fallbackPatch = (*itr);
 
-            if((*itr)->Version == Version)
+            if ((*itr)->Version == Version)
                 return (*itr);
         }
     }
@@ -243,12 +241,12 @@ void PatchMgr::UpdateJobs()
 {
     std::list<PatchJob*>::iterator itr, itr2;
     m_patchJobLock.Acquire();
-    for(itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
+    for (itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
     {
         itr2 = itr;
         ++itr;
 
-        if(!(*itr2)->Update())
+        if (!(*itr2)->Update())
         {
             (*itr2)->GetClient()->m_patchJob = NULL;
             delete(*itr2);
@@ -262,9 +260,9 @@ void PatchMgr::AbortPatchJob(PatchJob* pJob)
 {
     std::list<PatchJob*>::iterator itr;
     m_patchJobLock.Acquire();
-    for(itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
+    for (itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
-        if((*itr) == pJob)
+        if ((*itr) == pJob)
         {
             m_patchJobs.erase(itr);
             break;
@@ -304,7 +302,7 @@ bool PatchJob::Update()
 {
     // don't update unless the write buffer is empty
     m_client->BurstBegin();
-    if(m_client->writeBuffer.GetSize() != 0)
+    if (m_client->writeBuffer.GetSize() != 0)
     {
         m_client->BurstEnd();
         return true;
@@ -318,10 +316,10 @@ bool PatchJob::Update()
     //Log.Debug("PatchJob", "Sending %u byte chunk", header.chunk_size);
 
     result = m_client->BurstSend((const uint8*)&header, sizeof(TransferDataPacket));
-    if(result)
+    if (result)
     {
         result = m_client->BurstSend(m_dataPointer, header.chunk_size);
-        if(result)
+        if (result)
         {
             m_dataPointer += header.chunk_size;
             m_bytesSent += header.chunk_size;
@@ -329,7 +327,7 @@ bool PatchJob::Update()
         }
     }
 
-    if(result)
+    if (result)
         m_client->BurstPush();
 
     m_client->BurstEnd();
@@ -358,7 +356,7 @@ bool PatchMgr::InitiatePatch(Patch* pPatch, AuthSocket* pClient)
     // send it to the client
     pClient->BurstBegin();
     result = pClient->BurstSend((const uint8*)&init, sizeof(TransferInitiatePacket));
-    if(result)
+    if (result)
         pClient->BurstPush();
     pClient->BurstEnd();
     return result;

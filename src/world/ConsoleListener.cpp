@@ -33,33 +33,38 @@
 
 enum STATES
 {
-    STATE_USER = 1,
-    STATE_PASSWORD = 2,
-    STATE_LOGGED = 3,
-    STATE_WAITING = 4,
+    STATE_USER      = 1,
+    STATE_PASSWORD  = 2,
+    STATE_LOGGED    = 3,
+    STATE_WAITING   = 4
 };
 
 class ConsoleSocket : public Socket
 {
     RemoteConsole* m_pConsole;
+
     char* m_pBuffer;
+
     uint32 m_pBufferLen;
     uint32 m_pBufferPos;
     uint32 m_state;
+
     std::string m_username;
     std::string m_password;
+
     uint32 m_requestNo;
     uint8 m_failedLogins;
 
     public:
-    ConsoleSocket(SOCKET iFd);
-    ~ConsoleSocket();
 
-    void OnRead();
-    void OnDisconnect();
-    void OnConnect();
-    void TryAuthenticate();
-    void AuthCallback(bool result);
+        ConsoleSocket(SOCKET iFd);
+        ~ConsoleSocket();
+
+        void OnRead();
+        void OnDisconnect();
+        void OnConnect();
+        void TryAuthenticate();
+        void AuthCallback(bool result);
 };
 
 class ConsoleAuthMgr : public Singleton < ConsoleAuthMgr >
@@ -67,44 +72,45 @@ class ConsoleAuthMgr : public Singleton < ConsoleAuthMgr >
     Mutex authmgrlock;
     uint32 highrequestid;
     std::map<uint32, ConsoleSocket*> requestmap;
+
     public:
 
-    ConsoleAuthMgr()
-    {
-        highrequestid = 1;
-    }
+        ConsoleAuthMgr()
+        {
+            highrequestid = 1;
+        }
 
-    uint32 GenerateRequestId()
-    {
-        uint32 n;
-        authmgrlock.Acquire();
-        n = highrequestid++;
-        authmgrlock.Release();
-        return n;
-    }
+        uint32 GenerateRequestId()
+        {
+            uint32 n;
+            authmgrlock.Acquire();
+            n = highrequestid++;
+            authmgrlock.Release();
+            return n;
+        }
 
-    void SetRequest(uint32 id, ConsoleSocket* sock)
-    {
-        authmgrlock.Acquire();
-        if (sock == NULL)
-            requestmap.erase(id);
-        else
-            requestmap.insert(std::make_pair(id, sock));
-        authmgrlock.Release();
-    }
+        void SetRequest(uint32 id, ConsoleSocket* sock)
+        {
+            authmgrlock.Acquire();
+            if (sock == NULL)
+                requestmap.erase(id);
+            else
+                requestmap.insert(std::make_pair(id, sock));
+            authmgrlock.Release();
+        }
 
-    ConsoleSocket* GetRequest(uint32 id)
-    {
-        ConsoleSocket* rtn;
-        authmgrlock.Acquire();
-        std::map<uint32, ConsoleSocket*>::iterator itr = requestmap.find(id);
-        if (itr == requestmap.end())
-            rtn = NULL;
-        else
-            rtn = itr->second;
-        authmgrlock.Release();
-        return rtn;
-    }
+        ConsoleSocket* GetRequest(uint32 id)
+        {
+            ConsoleSocket* rtn;
+            authmgrlock.Acquire();
+            std::map<uint32, ConsoleSocket*>::iterator itr = requestmap.find(id);
+            if (itr == requestmap.end())
+                rtn = NULL;
+            else
+                rtn = itr->second;
+            authmgrlock.Release();
+            return rtn;
+        }
 };
 
 ListenSocket<ConsoleSocket> * g_pListenSocket = NULL;
@@ -195,6 +201,7 @@ void ConsoleSocket::OnRead()
     uint32 readlen = (uint32)readBuffer.GetSize();
     uint32 len;
     char* p;
+
     if ((readlen + m_pBufferPos) >= m_pBufferLen)
     {
         Disconnect();
@@ -338,9 +345,9 @@ void RemoteConsole::Write(const char* Format, ...)
 struct ConsoleCommand
 {
     bool(*CommandPointer)(BaseConsole*, int, const char*[]);
-    const char* Name;                    // 10 chars
-    const char* ArgumentFormat;        // 30 chars
-    const char* Description;            // 40 chars
+    const char* Name;               // 10 chars
+    const char* ArgumentFormat;     // 30 chars
+    const char* Description;        // 40 chars
     // = 70 chars
 };
 

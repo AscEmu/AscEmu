@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONFIGENVIRONMENT_H
-#define CONFIGENVIRONMENT_H
+#ifndef CONFIG_ENVIRONMENT_H
+#define CONFIG_ENVIRONMENT_H
 
 //! Other libs we depend on.
 #include "Common.h"
@@ -28,4 +28,4 @@
 #include "Log.h"
 
 
-#endif      //CONFIGENVIRONMENT_H
+#endif  //CONFIG_ENVIRONMENT_H

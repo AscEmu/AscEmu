@@ -11,8 +11,8 @@
  * without express or implied warranty.
  */
 
-#ifndef _DEV_STACKTRACE_H
-#define _DEV_STACKTRACE_H
+#ifndef _STACKTRACE_H
+#define _STACKTRACE_H
 
 class MapFile;
 
@@ -37,4 +37,4 @@ class StackTrace
                                     char* buffer, int bufferSize);
 };
 
-#endif // _DEV_STACKTRACE_H
+#endif // _STACKTRACE_H

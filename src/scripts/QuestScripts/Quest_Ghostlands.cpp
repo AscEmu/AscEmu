@@ -39,7 +39,7 @@ class Prisoner12 : public GossipScript
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
             if (plr->HasQuest(9164))
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 
             Menu->SendTo(plr);
         }
@@ -96,7 +96,7 @@ class Prisoner22 : public GossipScript
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
             if (plr->HasQuest(9164))
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 
             Menu->SendTo(plr);
         }
@@ -153,7 +153,7 @@ class Prisoner32 : public GossipScript
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 1, plr);
             if (plr->HasQuest(9164))
-                Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
+                Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(462), 1);     // Release Him.
 
             Menu->SendTo(plr);
         }

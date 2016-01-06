@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -852,7 +852,10 @@ enum LOCKTYPES
     LOCKTYPE_GAHZRIDIAN             = 15,
     LOCKTYPE_BLASTING               = 16,
     LOCKTYPE_SLOW_OPEN              = 17,
-    LOCKTYPE_SLOW_CLOSE             = 18
+    LOCKTYPE_SLOW_CLOSE             = 18,
+    LOCKTYPE_FISHING                = 19,
+    LOCKTYPE_INSCRIPTION            = 20,
+    LOCKTYPE_VEHICLE                = 21
 };
 
 enum TIMER_TYPE
@@ -1140,6 +1143,32 @@ enum TeleportEffectCustomFlags
     TELEPORT_TO_COORDINATES             = 2,
     TELEPORT_BEHIND_TARGET              = 4,
     TELEPORT_TO_CASTER                  = 8
+};
+
+enum SummonControlTypes
+{
+    SUMMON_CONTROL_TYPE_WILD = 0,
+    SUMMON_CONTROL_TYPE_GUARDIAN = 1,
+    SUMMON_CONTROL_TYPE_PET = 2,
+    SUMMON_CONTROL_TYPE_POSSESSED = 3,
+    SUMMON_CONTROL_TYPE_VEHICLE = 4
+};
+
+enum SummonTypes
+{
+    SUMMON_TYPE_NONE = 0,
+    SUMMON_TYPE_PET = 1,
+    SUMMON_TYPE_GUARDIAN = 2,
+    SUMMON_TYPE_MINION = 3,
+    SUMMON_TYPE_TOTEM = 4,
+    SUMMON_TYPE_COMPANION = 5,
+    SUMMON_TYPE_RUNEBLADE = 6,
+    SUMMON_TYPE_CONSTRUCT = 7,
+    SUMMON_TYPE_OPPONENT = 8,
+    SUMMON_TYPE_VEHICLE = 9,
+    SUMMON_TYPE_MOUNT = 10,
+    SUMMON_TYPE_LIGHTWELL = 11,
+    SUMMON_TYPE_BUTLER = 12
 };
 
 inline bool CanAgroHash(uint32 spellhashname)
@@ -1745,7 +1774,7 @@ class SERVER_DECL Spell : public EventableObject
         // Cancels the current spell
         void cancel();
         // Update spell state based on time difference
-        void update(uint32 difftime);
+        void Update(unsigned long time_passed);
         // Casts the spell
         void cast(bool);
         // Finishes the casted spell
@@ -1883,13 +1912,13 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectPersistentAA(uint32 i);
 
         virtual void SpellEffectSummon(uint32 i);
-        void SpellEffectSummonWild(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonGuardian(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonTemporaryPet(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonTotem(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonPossessed(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonCompanion(uint32 i, SummonPropertiesEntry* spe, CreatureProto* proto, LocationVector & v);
-        void SpellEffectSummonVehicle(uint32 i, SummonPropertiesEntry *spe, CreatureProto *proto, LocationVector &v);
+        void SpellEffectSummonWild(uint32 i);
+        void SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
         void SpellEffectLeap(uint32 i);
         void SpellEffectEnergize(uint32 i);
         void SpellEffectWeaponDmgPerc(uint32 i);
@@ -2079,17 +2108,17 @@ class SERVER_DECL Spell : public EventableObject
 
             if (GetProto()->DurationIndex)
             {
-                SpellDuration* sd = dbcSpellDuration.LookupEntryForced(GetProto()->DurationIndex);
-                if (sd)
+                auto spell_duration = sSpellDurationStore.LookupEntry(GetProto()->DurationIndex);
+                if (spell_duration)
                 {
                     //check for negative and 0 durations.
                     //duration affected by level
-                    if ((int32)sd->Duration1 < 0 && sd->Duration2 && u_caster)
+                    if ((int32)spell_duration->Duration1 < 0 && spell_duration->Duration2 && u_caster)
                     {
-                        this->Dur = uint32(((int32)sd->Duration1 + (sd->Duration2 * u_caster->getLevel())));
-                        if ((int32)this->Dur > 0 && sd->Duration3 > 0 && (int32)this->Dur > (int32)sd->Duration3)
+                        this->Dur = uint32(((int32)spell_duration->Duration1 + (spell_duration->Duration2 * u_caster->getLevel())));
+                        if ((int32)this->Dur > 0 && spell_duration->Duration3 > 0 && (int32)this->Dur > (int32)spell_duration->Duration3)
                         {
-                            this->Dur = sd->Duration3;
+                            this->Dur = spell_duration->Duration3;
                         }
 
                         if ((int32)this->Dur < 0)
@@ -2098,7 +2127,7 @@ class SERVER_DECL Spell : public EventableObject
                     }
                     if (!c_dur)
                     {
-                        this->Dur = sd->Duration1;
+                        this->Dur = spell_duration->Duration1;
                     }
                     //combo point lolerCopter? ;P
                     if (p_caster)
@@ -2106,7 +2135,7 @@ class SERVER_DECL Spell : public EventableObject
                         uint32 cp = p_caster->m_comboPoints;
                         if (cp)
                         {
-                            uint32 bonus = (cp * (sd->Duration3 - sd->Duration1)) / 5;
+                            uint32 bonus = (cp * (spell_duration->Duration3 - spell_duration->Duration1)) / 5;
                             if (bonus)
                             {
                                 this->Dur += bonus;
@@ -2144,9 +2173,10 @@ class SERVER_DECL Spell : public EventableObject
 
         inline float GetRadius(uint32 i)
         {
-            if (bRadSet[i])return Rad[i];
+            if (bRadSet[i])
+                return Rad[i];
             bRadSet[i] = true;
-            Rad[i] = ::GetRadius(dbcSpellRadius.LookupEntry(GetProto()->EffectRadiusIndex[i]));
+            Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetProto()->EffectRadiusIndex[i]));
             if (u_caster != nullptr)
             {
                 SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetProto()->SpellGroupType);
@@ -2259,40 +2289,40 @@ class SERVER_DECL Spell : public EventableObject
     protected:
 
         /// Spell state's
-        bool    m_usesMana;
-        bool    m_Spell_Failed;         //for 5sr
-        bool    m_IsReflected;
-        bool    m_Delayed;
-        uint8   m_DelayStep;            //3.0.2 - spells can only be delayed twice.
+        bool m_usesMana;
+        bool m_Spell_Failed;         //for 5sr
+        bool m_IsReflected;
+        bool m_Delayed;
+        uint8 m_DelayStep;            //3.0.2 - spells can only be delayed twice.
 
         // Spell possibility's
-        bool    m_CanRelect;
+        bool m_CanRelect;
 
-        bool    m_IsCastedOnSelf;
+        bool m_IsCastedOnSelf;
 
-        bool    hadEffect;
+        bool hadEffect;
 
-        uint32  m_spellState;
-        int32   m_castTime;
-        int32   m_timer;
-        int64   m_magnetTarget;
+        uint32 m_spellState;
+        int32 m_castTime;
+        int32 m_timer;
+        int64 m_magnetTarget;
 
         // Current Targets to be used in effect handler
-        Unit*       unitTarget;
-        Item*       itemTarget;
+        Unit* unitTarget;
+        Item* itemTarget;
         GameObject* gameObjTarget;
-        Player*     playerTarget;
-        Corpse*     corpseTarget;
-        uint32      add_damage;
+        Player* playerTarget;
+        Corpse* corpseTarget;
+        uint32 add_damage;
 
-        uint8       cancastresult;
-        uint32      Dur;
-        bool        bDurSet;
-        float       Rad[3];
-        bool        bRadSet[3];
-        bool        m_cancelled;
-        bool        m_isCasting;
-        uint8       m_rune_avail_before;
+        uint8 cancastresult;
+        uint32 Dur;
+        bool bDurSet;
+        float Rad[3];
+        bool bRadSet[3];
+        bool m_cancelled;
+        bool m_isCasting;
+        uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();
 
         inline bool HasTarget(const uint64 & guid, TargetsList* tmpMap)
@@ -2348,8 +2378,10 @@ class SERVER_DECL Spell : public EventableObject
 
 void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spell);
 void UnapplyDiminishingReturnTimer(Unit* Target, SpellEntry* spell);
+
 uint32 GetDiminishingGroup(uint32 NameHash);
 uint32 GetSpellDuration(SpellEntry* sp, Unit* caster = NULL);
+
 //Logs if the spell doesn't exist, using Debug loglevel.
 SpellEntry* CheckAndReturnSpellEntry(uint32 spellid);
 

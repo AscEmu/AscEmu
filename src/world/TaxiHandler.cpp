@@ -114,7 +114,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     data.Initialize(SMSG_SHOWTAXINODES);
     data << uint32(1) << guid;
     data << uint32(curloc);
-    for (int i = 0; i < 12; i++)
+    for (uint8 i = 0; i < 12; i++)
     {
         data << TaxiMask[i];
     }
@@ -130,14 +130,16 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     LOG_DEBUG("WORLD: Received CMSG_ACTIVATETAXI");
 
     uint64 guid;
-    uint32 sourcenode, destinationnode;
+    uint32 sourcenode;
+    uint32 destinationnode;
     int32 newmoney;
     uint32 curloc;
     uint8 field;
     uint32 submask;
-    WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
 
-    recv_data >> guid >> sourcenode >> destinationnode;
+    recv_data >> guid;
+    recv_data >> sourcenode;
+    recv_data >> destinationnode;
 
     if (GetPlayer()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER))
         return;
@@ -151,6 +153,8 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     curloc = taxinode->id;
     field = (uint8)((curloc - 1) / 32);
     submask = 1 << ((curloc - 1) % 32);
+
+    WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
 
     // Check for known nodes
     if ((GetPlayer()->GetTaximask(field) & submask) != submask)

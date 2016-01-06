@@ -63,7 +63,7 @@ class TotemofCoo : public QuestScript
                 if (itr->first == PlayerGuid)
                 {
                     Creature* pAkida = itr->second;
-                    if (pAkida != nullptr)                            // Can't happen, but whatever :)
+                    if (pAkida != nullptr)
                     {
                         pAkida->CastSpell(pAkida, 30428, true);    // Disparition Effect
                         pAkida->Despawn(5000, 0);
@@ -82,7 +82,7 @@ class TotemofCoo : public QuestScript
                 if (itr->first == PlayerGuid)
                 {
                     Creature* pAkida = itr->second;
-                    if (pAkida != nullptr)                            // Can't happen, but whatever :)
+                    if (pAkida != nullptr)
                     {
                         pAkida->CastSpell(pAkida, 30428, true);    // Disparition Effect
                         pAkida->Despawn(5000, 0);

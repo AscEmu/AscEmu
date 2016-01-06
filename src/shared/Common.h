@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WOWSERVER_COMMON_H
-#define WOWSERVER_COMMON_H
+#ifndef _COMMON_H
+#define _COMMON_H
 
 /* Define these if you are creating a repack */
 /*
@@ -205,6 +205,8 @@ enum MsTimeVariables
 #include <climits>
 #include <cstdlib>
 //#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "CommonHelpers.hpp"
 
@@ -269,54 +271,7 @@ namespace __gnu_cxx
         }
     };
 };
-#else
-#define HM_NAMESPACE ::stdext
-#include <hash_map>
-#include <hash_set>
 #endif
-
-
-
-/*#ifdef _STLPORT_VERSION
-#define HM_NAMESPACE std
-using std::hash_map;
-using std::hash_set;
-#elif COMPILER == COMPILER_MICROSOFT && _MSC_VER >= 1300
-#define HM_NAMESPACE stdext
-using stdext::hash_map;
-using stdext::hash_set;
-#define ENABLE_SHITTY_STL_HACKS 1
-
-// hacky stuff for vc++
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
-//#define strlen lstrlen
-
-/*#ifdef WIN32
-typedef char TCHAR;
-#define __T(x) x
-#endif/
-
-// cebernic added it
-#define __utf8(x) _StringToUTF8(x)
-#define __ansi(x) _StringToANSI(x)
-#define __isutf8(x) _IsStringUTF8(x)
-
-
-#elif COMPILER == COMPILER_INTEL
-#define HM_NAMESPACE std
-using std::hash_map;
-using std::hash_set;
-#elif defined(HAS_TR1)
-#define HM_NAMESPACE std
-#define hash_map std::tr1::unordered_map
-#define hash_set std::tr1::unordered_set
-/*using std::unordered_map;
-using std::unordered_set;/
-#elif COMPILER == COMPILER_GNU && __GNUC__ >= 3
-#define HM_NAMESPACE __gnu_cxx
-using __gnu_cxx::hash_map;
-using __gnu_cxx::hash_set;*/
 
 #include "CommonTypes.hpp"
 
@@ -477,12 +432,12 @@ struct WayPoint
 
 struct spawn_timed_emotes
 {
-    uint8       type; //1 standstate, 2 emotestate, 3 emoteoneshot
-    uint32      value; //get yar list elsewhere
-    char*       msg; //maybe we wish to say smething while changing emote state
-    uint8       msg_type; //yell ? say ?
-    uint8       msg_lang; //yell ? say ?
-    uint32      expire_after; //going to nex faze in
+    uint8 type;             //1 standstate, 2 emotestate, 3 emoteoneshot
+    uint32 value;           //get yar list elsewhere
+    char* msg;              //maybe we wish to say smething while changing emote state
+    uint8 msg_type;         //yell ? say ?
+    uint8 msg_lang;         //yell ? say ?
+    uint32 expire_after;    //going to nex faze in
 };
 typedef std::list<spawn_timed_emotes*> TimedEmoteList;
 
@@ -584,4 +539,4 @@ inline static unsigned int MakeIP(const char* str)
 #include "SysInfo.hpp"
 #include "PerformanceCounter.hpp"
 
-#endif      //WOWSERVER_COMMON_H
+#endif      //_COMMON_H

@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
 project(Ascemu)
@@ -15,7 +15,6 @@ set(ROOT_PATH ${CMAKE_SOURCE_DIR})
 set(CMAKE_MODULE_PATH ${ROOT_PATH}/cmake)
 set(DEPENDENCY_ROOT ${ROOT_PATH}/dep)
 set(DEPENDENCY_LIBS ${DEPENDENCY_ROOT}/lib)
-set(DEPENDENCY_DLLS64 ${DEPENDENCY_ROOT}/dll64)
 set(RECASTNAVIGATION ${DEPENDENCY_ROOT}/recastnavigation)
 set(LOADLIB_PATH ${ROOT_PATH}/src/tools/loadlib)
 

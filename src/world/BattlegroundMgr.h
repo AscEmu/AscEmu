@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -35,50 +35,50 @@ class Corpse;
 
 enum BattlegroundDbcIndex
 {
-    BGDBC_ALTERAC_VALLEY            = 1,
-    BGDBC_WARSONG_GULCH             = 2,
-    BGDBC_ARATHI_BASIN              = 3,
-    BGDBC_ARENA_NAGRAND             = 4,
-    BGDBC_ARENA_BLADES_EDGE         = 5,
-    BGDBC_ARENA_ALLMAPS             = 6,
-    BGDBC_EYE_OF_THE_STORM          = 7,
-    BGDBC_RUINS_OF_LORDAERON        = 8,
-    BGDBC_STRAND_OF_THE_ANCIENT     = 9,
-    BGDBC_DALARAN_SEWERS            = 10,
-    BGDBC_RING_OF_VALOR             = 11,
-    BGDBC_ROWS                      = 11,
+    BGDBC_ALTERAC_VALLEY = 1,
+    BGDBC_WARSONG_GULCH = 2,
+    BGDBC_ARATHI_BASIN = 3,
+    BGDBC_ARENA_NAGRAND = 4,
+    BGDBC_ARENA_BLADES_EDGE = 5,
+    BGDBC_ARENA_ALLMAPS = 6,
+    BGDBC_EYE_OF_THE_STORM = 7,
+    BGDBC_RUINS_OF_LORDAERON = 8,
+    BGDBC_STRAND_OF_THE_ANCIENT = 9,
+    BGDBC_DALARAN_SEWERS = 10,
+    BGDBC_RING_OF_VALOR = 11,
+    BGDBC_ROWS = 11
 };
 
 enum BattleGroundTypes
 {
-    BATTLEGROUND_ALTERAC_VALLEY         = 1,
-    BATTLEGROUND_WARSONG_GULCH          = 2,
-    BATTLEGROUND_ARATHI_BASIN           = 3,
-    BATTLEGROUND_ARENA_2V2              = 4,
-    BATTLEGROUND_ARENA_3V3              = 5,
-    BATTLEGROUND_ARENA_5V5              = 6,
-    BATTLEGROUND_EYE_OF_THE_STORM       = 7,
-    BATTLEGROUND_STRAND_OF_THE_ANCIENT  = 9,
-    BATTLEGROUND_ISLE_OF_CONQUEST       = 30,
-    BATTLEGROUND_RANDOM                 = 32,
-    BATTLEGROUND_NUM_TYPES              = 33,   /// Based on BattlemasterList.dbc, make the storage arrays big enough! On 3.1.3 the last one was 11 The Ring of Valor, so 12 was enough here, but on 3.2.0 there is 32 All Battlegrounds!
+    BATTLEGROUND_ALTERAC_VALLEY = 1,
+    BATTLEGROUND_WARSONG_GULCH = 2,
+    BATTLEGROUND_ARATHI_BASIN = 3,
+    BATTLEGROUND_ARENA_2V2 = 4,
+    BATTLEGROUND_ARENA_3V3 = 5,
+    BATTLEGROUND_ARENA_5V5 = 6,
+    BATTLEGROUND_EYE_OF_THE_STORM = 7,
+    BATTLEGROUND_STRAND_OF_THE_ANCIENT = 9,
+    BATTLEGROUND_ISLE_OF_CONQUEST = 30,
+    BATTLEGROUND_RANDOM = 32,
+    BATTLEGROUND_NUM_TYPES = 33   /// Based on BattlemasterList.dbc, make the storage arrays big enough! On 3.1.3 the last one was 11 The Ring of Valor, so 12 was enough here, but on 3.2.0 there is 32 All Battlegrounds!
 };
 
 #define IS_ARENA(x) ((x) >= BATTLEGROUND_ARENA_2V2 && (x) <= BATTLEGROUND_ARENA_5V5)
 
 enum BattleGroundMasterTypes
 {
-    BGMASTER_CREATURE   = 1,
-    BGMASTER_OBJECT     = 2,
-    BGMASTER_ITEM       = 3,
+    BGMASTER_CREATURE = 1,
+    BGMASTER_OBJECT = 2,
+    BGMASTER_ITEM = 3
 };
 
 enum BattleGroundStatus
 {
-    BGSTATUS_NOFLAGS    = 0,    /// wtfbbq, why aren't there any flags?
-    BGSTATUS_INQUEUE    = 1,    /// Battleground has a queue, player is now in queue
-    BGSTATUS_READY      = 2,    /// Battleground is ready to join
-    BGSTATUS_TIME       = 3,    /// Ex. Wintergrasp time remaining
+    BGSTATUS_NOFLAGS = 0,    /// wtfbbq, why aren't there any flags?
+    BGSTATUS_INQUEUE = 1,    /// Battleground has a queue, player is now in queue
+    BGSTATUS_READY = 2,    /// Battleground is ready to join
+    BGSTATUS_TIME = 3    /// Ex. Wintergrasp time remaining
 };
 
 
@@ -175,7 +175,7 @@ static inline uint32 GetLevelGrouping(uint32 level)
 
 static inline uint32 GetFieldCount(uint32 BGType)
 {
-    switch(BGType)
+    switch (BGType)
     {
         case BATTLEGROUND_ALTERAC_VALLEY:
             return 5;
@@ -204,34 +204,39 @@ typedef CBattleground* (*ArenaFactoryMethod)(MapMgr* mgr, uint32 iid, uint32 gro
 
 class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>, public EventableObject
 {
-        /// Battleground Instance Map
+    /// Battleground Instance Map
     std::map<uint32, CBattleground*> m_instances[BATTLEGROUND_NUM_TYPES];
-        Mutex m_instanceLock;
+    Mutex m_instanceLock;
 
-        /// Max Id
-        uint32 m_maxBattlegroundId[BATTLEGROUND_NUM_TYPES];
+    /// Max Id
+    uint32 m_maxBattlegroundId[BATTLEGROUND_NUM_TYPES];
 
-        /* Queue System */
-        // Instance Id -> list<Player guid> [ BattlegroundType ] (instance 0 - first available)
+    /// Queue System
+    // Instance Id -> list<Player guid> [ BattlegroundType ] (instance 0 - first available)
     std::list<uint32> m_queuedPlayers[BATTLEGROUND_NUM_TYPES][MAX_LEVEL_GROUP];
 
-        // Instance Id -> list<Group id> [BattlegroundType][LevelGroup]
+    // Instance Id -> list<Group id> [BattlegroundType][LevelGroup]
     std::list<uint32> m_queuedGroups[BATTLEGROUND_NUM_TYPES];
 
-        Mutex m_queueLock;
+    Mutex m_queueLock;
 
-        /// Bg factory methods by Bg map Id
-        std::map<uint32, BattlegroundFactoryMethod> bgFactories;
-        /// Arena factory methods
-        std::vector<ArenaFactoryMethod> arenaFactories;
-        /// Bg map IDs by Bg type Id
-        std::map<uint32, uint32> bgMaps;
-        /// Arena map IDs
-        std::vector<uint32> arenaMaps;
+    /// Bg factory methods by Bg map Id
+    std::map<uint32, BattlegroundFactoryMethod> bgFactories;
 
-        /// All battlegrounds that are available in random BG queue
-        std::vector<uint32> avalibleInRandom;
+    /// Arena factory methods
+    std::vector<ArenaFactoryMethod> arenaFactories;
+
+    /// Bg map IDs by Bg type Id
+    std::map<uint32, uint32> bgMaps;
+
+    /// Arena map IDs
+    std::vector<uint32> arenaMaps;
+
+    /// All battlegrounds that are available in random BG queue
+    std::vector<uint32> avalibleInRandom;
+
     public:
+
         CBattlegroundManager();
         ~CBattlegroundManager();
 
@@ -278,58 +283,42 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
         //////////////////////////////////////////////////////////////////////////////////////////
         void RegisterMapForBgType(uint32 type, uint32 map);
 
-        /* Packet Handlers */
+
         void HandleBattlegroundListPacket(WorldSession* m_session, uint32 BattlegroundType, uint8 from = 0);
         void HandleArenaJoin(WorldSession* m_session, uint32 BattlegroundType, uint8 as_group, uint8 rated_match);
 
-        /* Player Logout Handler */
         void OnPlayerLogout(Player* plr);
 
-        /* Handler On Update Event */
         void EventQueueUpdate();
         void EventQueueUpdate(bool forceStart);
 
-        /* Handle GetBattlegroundQueue Command */
         void HandleGetBattlegroundQueueCommand(WorldSession* m_session);
 
-        /* Handle Battleground Join */
         void HandleBattlegroundJoin(WorldSession* m_session, WorldPacket& pck);
 
-        /* Remove Player From All Queues */
         void RemovePlayerFromQueues(Player* plr);
         void RemoveGroupFromQueues(Group* grp);
 
-        /* Create a battleground instance of type x */
         CBattleground* CreateInstance(uint32 Type, uint32 LevelGroup);
 
-        /* Can we create a new instance of type x level group y? (NO LOCK!) */
         bool CanCreateInstance(uint32 Type, uint32 LevelGroup);
 
-        /* Deletes a battleground (called from MapMgr) */
         void DeleteBattleground(CBattleground* bg);
 
-        /* Build SMSG_BATTLEFIELD_STATUS */
         void SendBattlefieldStatus(Player* plr, BattleGroundStatus Status, uint32 Type, uint32 InstanceID, uint32 Time, uint32 MapId, uint8 RatedMatch);
 
-        /* Gets ArenaTeam info from group */
         uint32 GetArenaGroupQInfo(Group* group, int type, uint32* avgRating);
 
-        /* Creates an arena with groups group1 and group2 */
         int CreateArenaType(int type, Group* group1, Group* group2);
 
-        /* Add player to bg team */
         void AddPlayerToBgTeam(CBattleground* bg, std::deque<uint32> *playerVec, uint32 i, uint32 j, int Team);
 
-        /* Add player to bg */
         void AddPlayerToBg(CBattleground* bg, std::deque<uint32> *playerVec, uint32 i, uint32 j);
 
-        /* Add a group to an arena */
         void AddGroupToArena(CBattleground* bg, Group* group, int nteam);
 
-        /* Returns the minimum number of players (Only valid for battlegrounds) */
         uint32 GetMinimumPlayers(uint32 dbcIndex);
 
-        /* Returns the maximum number of players (Only valid for battlegrounds) */
         uint32 GetMaximumPlayers(uint32 dbcIndex);
 };
 

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -729,9 +729,9 @@ Unit::~Unit()
     RemoveGarbage();
 }
 
-void Unit::Update(uint32 p_time)
+void Unit::Update(unsigned long time_passed)
 {
-    _UpdateSpells(p_time);
+    _UpdateSpells(time_passed);
 
     RemoveGarbage();
 
@@ -739,32 +739,35 @@ void Unit::Update(uint32 p_time)
     {
         //////////////////////////////////////////////////////////////////////////////////////////
         //POWER & HP REGENERATION
-        if (p_time >= m_H_regenTimer)
+        if (this->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_DISABLE_REGEN))
+            return;
+
+        if (time_passed >= m_H_regenTimer)
             RegenerateHealth();
         else
-            m_H_regenTimer -= static_cast<uint16>(p_time);
+            m_H_regenTimer -= static_cast<uint16>(time_passed);
 
-        if (p_time >= m_P_regenTimer)
+        if (time_passed >= m_P_regenTimer)
         {
             RegeneratePower(false);
             m_interruptedRegenTime = 0;
         }
         else
         {
-            m_P_regenTimer -= static_cast<uint16>(p_time);
+            m_P_regenTimer -= static_cast<uint16>(time_passed);
             if (m_interruptedRegenTime)
             {
-                if (p_time >= m_interruptedRegenTime)
+                if (time_passed >= m_interruptedRegenTime)
                     RegeneratePower(true);
                 else
-                    m_interruptedRegenTime -= p_time;
+                    m_interruptedRegenTime -= time_passed;
             }
         }
 
         if (m_aiInterface != NULL)
         {
             if (m_useAI)
-                m_aiInterface->Update(p_time);
+                m_aiInterface->Update(time_passed);
             else if (!m_aiInterface->MoveDone())            //pending move
                 m_aiInterface->UpdateMovementSpline();
         }
@@ -777,7 +780,7 @@ void Unit::Update(uint32 p_time)
                 // diminishing return stuff
                 if (m_diminishTimer[x] && !m_diminishAuraCount[x])
                 {
-                    if (p_time >= m_diminishTimer[x])
+                    if (time_passed >= m_diminishTimer[x])
                     {
                         // resetting after 15 sec
                         m_diminishTimer[x] = 0;
@@ -786,7 +789,7 @@ void Unit::Update(uint32 p_time)
                     else
                     {
                         // reducing, still.
-                        m_diminishTimer[x] -= static_cast<uint16>(p_time);
+                        m_diminishTimer[x] -= static_cast<uint16>(time_passed);
                         ++count;
                     }
                 }
@@ -1146,7 +1149,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
         int dmg_overwrite[3] = { 0, 0, 0 };
 
         // SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
-        for (int i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; i++)
         {
             if (ospinfo->EffectApplyAuraName[i] == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
             {
@@ -1280,16 +1283,16 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 16459:
                 {
                     //sword specialization
-                    Item* itMH = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    Item* itOH = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
+                    Item* item_mainhand = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    Item* item_offhand = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
                     uint32 reqskillMH = 0;
                     uint32 reqskillOH = 0;
 
-                    if (itMH != NULL)
-                        reqskillMH = GetSkillByProto(itMH->GetProto()->Class, itMH->GetProto()->SubClass);
+                    if (item_mainhand != nullptr)
+                        reqskillMH = GetSkillByProto(item_mainhand->GetProto()->Class, item_mainhand->GetProto()->SubClass);
 
-                    if (itOH != NULL)
-                        reqskillOH = GetSkillByProto(itOH->GetProto()->Class, itOH->GetProto()->SubClass);
+                    if (item_offhand != nullptr)
+                        reqskillOH = GetSkillByProto(item_offhand->GetProto()->Class, item_offhand->GetProto()->SubClass);
 
                     if (reqskillMH != SKILL_SWORDS && reqskillMH != SKILL_2H_SWORDS && reqskillOH != SKILL_SWORDS && reqskillOH != SKILL_2H_SWORDS)
                         continue;
@@ -1298,12 +1301,11 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 12721:
                 {
                     //deep wound requires a melee weapon
-                    Item* it;
-                    it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    if (it != NULL)
+                    auto item = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    if (item)
                     {
                         //class 2 means weapons ;)
-                        if (it->GetProto()->Class != 2)
+                        if (item->GetProto()->Class != 2)
                             continue;
                     }
                     else continue; //no weapon no joy
@@ -1387,8 +1389,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell->School != SCHOOL_FIRE)
                         continue;
                     SpellEntry* spellInfo = dbcSpell.LookupEntry(spellId);   //we already modified this spell on server loading so it must exist
-                    SpellDuration* sd = dbcSpellDuration.LookupEntryForced(spellInfo->DurationIndex);
-                    uint32 tickcount = GetDuration(sd) / spellInfo->EffectAmplitude[0];
+                    auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
+                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
                     dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
                 }
                 break;
@@ -1536,10 +1538,10 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    skilllinespell* skillability = objmgr.GetSpellSkill(CastingSpell->Id);
-                    if (!skillability)
+                    auto skill_line_ability = objmgr.GetSpellSkill(CastingSpell->Id);
+                    if (!skill_line_ability)
                         continue;
-                    if (skillability->skilline != SKILL_DESTRUCTION)
+                    if (skill_line_ability->skilline != SKILL_DESTRUCTION)
                         continue;
                 }
                 break;
@@ -2024,8 +2026,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT)
                         continue;
                     SpellEntry* spellInfo = dbcSpell.LookupEntry(54203);
-                    SpellDuration* sd = dbcSpellDuration.LookupEntryForced(spellInfo->DurationIndex);
-                    uint32 tickcount = GetDuration(sd) / spellInfo->EffectAmplitude[0];
+                    auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
+                    uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
                     dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
                 }
                 break;
@@ -2446,9 +2448,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
 
                 if (CastingSpell)
                 {
-                    SpellCastTime* sd = dbcSpellCastTime.LookupEntryForced(CastingSpell->CastingTimeIndex);
-                    if (!sd)
-                        continue; // this shouldn't happen though :P
+                    auto spell_cast_time = sSpellCastTimesStore.LookupEntry(CastingSpell->CastingTimeIndex);
+                    if (!spell_cast_time)
+                        continue;
 
                     //if we did not proc these then we should not remove them
                     if (CastingSpell->Id == iter2->second.spellId)
@@ -2466,7 +2468,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         case 12043: // Mage - Presence of Mind
                         {
                             //if (!sd->CastTime||sd->CastTime>10000) continue;
-                            if (sd->CastTime == 0)
+                            if (spell_cast_time->CastTime == 0)
                                 continue;
                         }
                         break;
@@ -2474,7 +2476,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         case 16188:	// Druid - Nature's Swiftness
                         {
                             //if (CastingSpell->School!=SCHOOL_NATURE||(!sd->CastTime||sd->CastTime>10000)) continue;
-                            if (CastingSpell->School != SCHOOL_NATURE || sd->CastTime == 0)
+                            if (CastingSpell->School != SCHOOL_NATURE || spell_cast_time->CastTime == 0)
                                 continue;
                         }
                         break;
@@ -2612,7 +2614,7 @@ bool Unit::IsInInstance()
 
 void Unit::RegenerateHealth()
 {
-    m_H_regenTimer = 2000;          //set next regen time
+    m_H_regenTimer = 2000;      //set next regen time
 
     if (!isAlive())
         return;
@@ -2622,9 +2624,7 @@ void Unit::RegenerateHealth()
     {
         // These only NOT in combat
         if (!CombatStatus.IsInCombat())
-        {
             static_cast<Player*>(this)->RegenerateHealth(false);
-        }
         else
             static_cast<Player*>(this)->RegenerateHealth(true);
     }
@@ -4275,7 +4275,7 @@ void Unit::AddAura(Aura* aur)
     if (m_mapId != 530 && (m_mapId != 571 || (IsPlayer() && !static_cast<Player*>(this)->HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING) && static_cast<Player*>(this)->getDeathState() == ALIVE)))
         // can't use flying auras in non-outlands or non-northrend (northrend requires cold weather flying)
     {
-        for (uint32 i = 0; i < 3; ++i)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (aur->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_ENABLE_FLIGHT_WITH_UNMOUNTED_SPEED || aur->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_ENABLE_FLIGHT2)
             {
@@ -4458,8 +4458,8 @@ void Unit::AddAura(Aura* aur)
                                     EnchantmentInstance* ench = mh->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
                                     if (ench)
                                     {
-                                        EnchantEntry* Entry = ench->Enchantment;
-                                        for (uint32 c = 0; c < 3; c++)
+                                        DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
+                                        for (uint8 c = 0; c < 3; c++)
                                         {
                                             if (Entry->type[c] && Entry->spell[c])
                                             {
@@ -4491,8 +4491,8 @@ void Unit::AddAura(Aura* aur)
                                         ench = oh->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
                                         if (ench)
                                         {
-                                            EnchantEntry* Entry = ench->Enchantment;
-                                            for (uint32 c = 0; c < 3; c++)
+                                            DBC::Structures::SpellItemEnchantmentEntry const* Entry = ench->Enchantment;
+                                            for (uint8 c = 0; c < 3; c++)
                                             {
                                                 if (Entry->type[c] && Entry->spell[c])
                                                 {
@@ -5101,7 +5101,7 @@ void Unit::_UpdateSpells(uint32 time)
     if (m_currentSpell != NULL)
     {
         //		m_spellsbusy=true;
-        m_currentSpell->update(time);
+        m_currentSpell->Update(time);
         //		m_spellsbusy=false;
     }
 }
@@ -5181,7 +5181,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellEntry* spellInfo, int32 base_dm
             else
             {
                 plus_damage = plus_damage * spellInfo->casttime_coef;
-                float td = static_cast<float>(GetDuration(dbcSpellDuration.LookupEntry(spellInfo->DurationIndex)));
+                float td = static_cast<float>(GetDuration(sSpellDurationStore.LookupEntry(spellInfo->DurationIndex)));
                 if (spellInfo->NameHash == SPELL_HASH_MOONFIRE
                     || spellInfo->NameHash == SPELL_HASH_IMMOLATE
                     || spellInfo->NameHash == SPELL_HASH_ICE_LANCE
@@ -5442,7 +5442,7 @@ uint32 Unit::AbsorbDamage(uint32 School, uint32* dmg)
 bool Unit::setDetectRangeMod(uint64 guid, int32 amount)
 {
     int next_free_slot = -1;
-    for (int i = 0; i < 5; i++)
+    for (uint8 i = 0; i < 5; i++)
     {
         if (m_detectRangeGUID[i] == 0 && next_free_slot == -1)
         {
@@ -5465,7 +5465,7 @@ bool Unit::setDetectRangeMod(uint64 guid, int32 amount)
 
 void Unit::unsetDetectRangeMod(uint64 guid)
 {
-    for (int i = 0; i < 5; i++)
+    for (uint8 i = 0; i < 5; i++)
     {
         if (m_detectRangeGUID[i] == guid)
         {
@@ -5477,7 +5477,7 @@ void Unit::unsetDetectRangeMod(uint64 guid)
 
 int32 Unit::getDetectRangeMod(uint64 guid)
 {
-    for (int i = 0; i < 5; i++)
+    for (uint8 i = 0; i < 5; i++)
     {
         if (m_detectRangeGUID[i] == guid)
         {
@@ -5600,7 +5600,7 @@ void Unit::UpdateSpeed()
         m_runSpeed += (m_speedModifier < 0) ? (m_base_runSpeed * ((float)m_speedModifier) / 100.0f) : 0;
     }
 
-    m_flySpeed = PLAYER_NORMAL_FLIGHT_SPEED * (1.0f + ((float)m_flyspeedModifier) / 100.0f);
+    m_flySpeed = playerNormalFlightSpeed * (1.0f + ((float)m_flyspeedModifier) / 100.0f);
 
     // Limit speed due to effects such as http://www.wowhead.com/?spell=31896 [Judgement of Justice]
     if (m_maxSpeed && m_runSpeed > m_maxSpeed)
@@ -6518,14 +6518,18 @@ void Unit::SetFacing(float newo)
 
     data << GetNewGUID();
     data << uint8(0); //vehicle seat index
-    data << GetPositionX() << GetPositionY() << GetPositionZ();
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
     data << getMSTime();
     data << uint8(4); //set orientation
     data << newo;
     data << uint32(0x1000); //move flags: run
     data << uint32(0); //movetime
     data << uint32(1); //1 point
-    data << GetPositionX() << GetPositionY() << GetPositionZ();
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
 
     SendMessageToSet(&data, true);
 }
@@ -7283,6 +7287,17 @@ void Unit::CancelSpell(Spell* ptr)
     }
 }
 
+void Unit::EventStopChanneling(bool abort)
+{
+    auto spell = GetCurrentSpell();
+    
+    if (spell == nullptr)
+        return;
+
+    spell->SendChannelUpdate(0);
+    spell->finish(abort);
+}
+
 void Unit::EventStrikeWithAbility(uint64 guid, SpellEntry* sp, uint32 damage)
 {
     Unit* victim = m_mapMgr ? m_mapMgr->GetUnit(guid) : NULL;
@@ -7329,7 +7344,7 @@ bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel = -1, 
             }
             else if (MechanicType == MECHANIC_ENSNARED)   // if got immunity for slow, remove some that are not in the mechanics
             {
-                for (int i = 0; i < 3; i++)
+                for (uint8 i = 0; i < 3; i++)
                 {
                     // SNARE + ROOT
                     if (m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED || m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
@@ -7359,7 +7374,7 @@ void Unit::RemoveAllMovementImpairing()
             }
             else
             {
-                for (int i = 0; i < 3; i++)
+                for (uint8 i = 0; i < 3; i++)
                 {
                     if (m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED
                         || m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
@@ -8341,7 +8356,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
     *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
-    *data << uint32(GetMovementInfo()->time);                       // time / counter
+    *data << uint32(getMSTime());                       // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
     *data << GetPositionZ();
@@ -8351,19 +8366,20 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
     {
         if (IsPlayer() && static_cast<Player*>(this)->m_CurrentTransporter)
-            transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
+            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
         if (Unit* u = GetVehicleBase())
-            transporter_info.guid = u->GetGUID();
-        *data << transporter_info.guid;
-        *data << transporter_info.x;
-        *data << transporter_info.y;
-        *data << transporter_info.z;
-        *data << transporter_info.o;
-        *data << transporter_info.flags;
-        *data << transporter_info.seat;
+            obj_movement_info.transporter_info.guid = u->GetGUID();
+        *data << obj_movement_info.transporter_info.guid;
+        *data << obj_movement_info.transporter_info.guid;
+        *data << GetTransPositionX();
+        *data << GetTransPositionY();
+        *data << GetTransPositionZ();
+        *data << GetTransPositionO();
+        *data << GetTransTime();
+        *data << GetTransSeat();
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
-            *data << uint32(GetMovementInfo()->transUnk_2);
+        if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+            *data << uint32(GetMovementInfo()->transporter_info.time2);
     }
 
     // 0x02200000
@@ -8371,7 +8387,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
         *data << (float)GetMovementInfo()->pitch;
 
-    *data << (uint32)GetMovementInfo()->unk12;
+    *data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
@@ -8384,7 +8400,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
 
     // 0x04000000
     if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)GetMovementInfo()->unk13;
+        *data << (float)GetMovementInfo()->spline_elevation;
 }
 
 
@@ -8392,7 +8408,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
     *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
-    *data << uint32(GetMovementInfo()->time);                       // time / counter
+    *data << uint32(getMSTime());                       // time / counter
     *data << x;
     *data << y;
     *data << z;
@@ -8402,19 +8418,19 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
     {
         if (IsPlayer() && static_cast<Player*>(this)->m_CurrentTransporter)
-            transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
+            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
         if (Unit* u = GetVehicleBase())
-            transporter_info.guid = u->GetGUID();
-        *data << transporter_info.guid;
-        *data << transporter_info.x;
-        *data << transporter_info.y;
-        *data << transporter_info.z;
-        *data << transporter_info.o;
-        *data << transporter_info.flags;
-        *data << transporter_info.seat;
+            obj_movement_info.transporter_info.guid = u->GetGUID();
+        *data << obj_movement_info.transporter_info.guid;
+        *data << GetTransPositionX();
+        *data << GetTransPositionY();
+        *data << GetTransPositionZ();
+        *data << GetTransPositionO();
+        *data << GetTransTime();
+        *data << GetTransSeat();
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
-            *data << uint32(GetMovementInfo()->transUnk_2);
+        if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+            *data << uint32(GetMovementInfo()->transporter_info.time2);
     }
 
     // 0x02200000
@@ -8422,7 +8438,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
         *data << (float)GetMovementInfo()->pitch;
 
-    *data << (uint32)GetMovementInfo()->unk11;
+    *data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
@@ -8435,7 +8451,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
 
     // 0x04000000
     if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)GetMovementInfo()->unk13;
+        *data << (float)GetMovementInfo()->spline_elevation;
 }
 
 void Unit::setLevel(uint32 level)

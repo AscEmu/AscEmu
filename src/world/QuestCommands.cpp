@@ -69,7 +69,7 @@ std::string RemoveQuestFromPlayer(Player* plr, Quest* qst)
                 qLogEntry->Finish();
 
                 // Remove all items given by the questgiver at the beginning
-                for (uint32 i = 0; i < 4; ++i)
+                for (uint8 i = 0; i < 4; ++i)
                 {
                     if (qst->receive_items[i])
                         plr->GetItemInterface()->RemoveItemAmt(qst->receive_items[i], 1);
@@ -269,7 +269,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                     qle->UpdatePlayerFields();
 
                     // If the quest should give any items on begin, give them the items.
-                    for (uint32 i = 0; i < 4; ++i)
+                    for (uint8 i = 0; i < 4; ++i)
                     {
                         if (qst->receive_items[i])
                         {
@@ -443,7 +443,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 
             // Quest Rewards : Copied from QuestMgr::OnQuestFinished()
             // Reputation reward
-            for (int z = 0; z < 6; z++)
+            for (uint8 z = 0; z < 6; z++)
             {
                 if (qst->reward_repfaction[z])
                 {
@@ -462,7 +462,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
             }
             // Static Item reward
-            for (uint32 i = 0; i < 4; ++i)
+            for (uint8 i = 0; i < 4; ++i)
             {
                 if (qst->reward_item[i])
                 {
@@ -473,33 +473,31 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     }
                     else
                     {
-                        Item* add;
-                        SlotResult slotresult;
-                        add = plr->GetItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
-                        if (!add)
+                        auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
+                        if (!item_add)
                         {
-                            slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                            auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
                             if (!slotresult.Result)
                             {
                                 plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                             }
                             else
                             {
-                                Item* itm = objmgr.CreateItem(qst->reward_item[i], plr);
-                                if (itm)
+                                auto item = objmgr.CreateItem(qst->reward_item[i], plr);
+                                if (item)
                                 {
-                                    itm->SetStackCount(uint32(qst->reward_itemcount[i]));
-                                    if (!plr->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot))
+                                    item->SetStackCount(uint32(qst->reward_itemcount[i]));
+                                    if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                     {
-                                        itm->DeleteMe();
+                                        item->DeleteMe();
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            add->SetStackCount(add->GetStackCount() + qst->reward_itemcount[i]);
-                            add->m_isDirty = true;
+                            item_add->SetStackCount(item_add->GetStackCount() + qst->reward_itemcount[i]);
+                            item_add->m_isDirty = true;
                         }
                     }
                 }
@@ -514,33 +512,31 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
                 else
                 {
-                    Item* add;
-                    SlotResult slotresult;
-                    add = plr->GetItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
-                    if (!add)
+                    auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
+                    if (!item_add)
                     {
-                        slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
+                        auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
                         if (!slotresult.Result)
                         {
                             plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
                         }
                         else
                         {
-                            Item* itm = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
-                            if (itm)
+                            auto item = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
+                            if (item)
                             {
-                                itm->SetStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
-                                if (!plr->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot))
+                                item->SetStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
+                                if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
-                                    itm->DeleteMe();
+                                    item->DeleteMe();
                                 }
                             }
                         }
                     }
                     else
                     {
-                        add->SetStackCount(add->GetStackCount() + qst->reward_choiceitemcount[reward_slot]);
-                        add->m_isDirty = true;
+                        item_add->SetStackCount(item_add->GetStackCount() + qst->reward_choiceitemcount[reward_slot]);
+                        item_add->m_isDirty = true;
                     }
                 }
             }

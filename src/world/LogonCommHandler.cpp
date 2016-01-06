@@ -413,6 +413,7 @@ void LogonCommHandler::LoadRealmConfiguration()
             if (realm->GameBuild == 0)
             {
                 LOG_ERROR("   >> supported client build not found in realms.config. Update your configs!");
+                delete realm;
                 return;
             }
             std::string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);

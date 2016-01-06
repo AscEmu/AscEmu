@@ -4,6 +4,7 @@
  *
  *
  * History:
+ *  2015-12-20   v1.1  - switched while (0) to while (false) (style) *AscEmu-Team
  *  2005-07-27   v1    - First public release on http://www.codeproject.com/
  *  (for additional changes see History in 'StackWalker.cpp'!
  *
@@ -161,7 +162,7 @@ class __declspec(dllexport) StackWalker
     if (pExp != NULL) \
       memcpy(&c, pExp->ContextRecord, sizeof(CONTEXT)); \
       c.ContextFlags = contextFlags; \
-  } while(0);
+  } while (false);
 #else
 // The following should be enough for walking the callstack...
 #define GET_CURRENT_CONTEXT(c, contextFlags) \
@@ -173,7 +174,7 @@ class __declspec(dllexport) StackWalker
     __asm    mov c.Eip, eax \
     __asm    mov c.Ebp, ebp \
     __asm    mov c.Esp, esp \
-  } while(0);
+  } while (false);
 #endif
 
 #else
@@ -184,5 +185,5 @@ class __declspec(dllexport) StackWalker
     memset(&c, 0, sizeof(CONTEXT)); \
     c.ContextFlags = contextFlags; \
     RtlCaptureContext(&c); \
-} while(0);
+} while (false);
 #endif

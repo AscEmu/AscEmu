@@ -77,7 +77,7 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
     if (strlen(args) == 0)
         plr = getSelectedChar(m_session, true);
     else
-        plr = objmgr.GetPlayer(args, false);;
+        plr = objmgr.GetPlayer(args, false);
 
     if (!plr)
     {
@@ -123,7 +123,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     if (argc == 1)
         plr = getSelectedChar(m_session, true);
     else
-        plr = objmgr.GetPlayer((const char*)playername, false);;
+        plr = objmgr.GetPlayer((const char*)playername, false);
 
     if (!plr)
     {
@@ -278,12 +278,12 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 
         if (instance->m_mapInfo->type == INSTANCE_MULTIMODE)
         {
-            ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(static_cast<uint8>(instance->m_difficulty)) << "|r)";
+            ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(instance->m_difficulty) << "|r)";
         }
 
         if (instance->m_mapInfo->type == INSTANCE_RAID)
         {
-            ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(static_cast<uint8>(instance->m_difficulty)) << "|r)";
+            ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(instance->m_difficulty) << "|r)";
         }
 
         ss << "\n";

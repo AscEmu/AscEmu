@@ -31,9 +31,7 @@ CommonScheduleThread::CommonScheduleThread()
 }
 
 CommonScheduleThread::~CommonScheduleThread()
-{
-
-}
+{ }
 
 void CommonScheduleThread::terminate()
 {
@@ -50,17 +48,17 @@ bool CommonScheduleThread::run()
 
     if (sWorld.BCSystemEnable && sWorld.BCOrderMode == 1)
         itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
-    // cebernic nothing in storage
-    if (objmgr.IsBCEntryStorageEmpty()) sWorld.BCSystemEnable = 0;
+
+    if (objmgr.IsBCEntryStorageEmpty())
+        sWorld.BCSystemEnable = 0;
 
     BCTimerCount = getMSTime() + ((uint32)sWorld.BCInterval * 1000);
 
     while (GetThreadState() != THREADSTATE_TERMINATE)
     {
         m_busy = true;
-        // do job -------------------
+        // do job
         BroadCastExec();
-        // -----------------------
         m_busy = false;
         if (GetThreadState() == THREADSTATE_TERMINATE)
             break;
@@ -73,12 +71,11 @@ bool CommonScheduleThread::run()
 
     return true;
 }
-/*
-cebernic: AutoBroadCast System
-*/
+
 void CommonScheduleThread::BroadCastExec()
 {
-    if (!sWorld.BCSystemEnable) return;
+    if (!sWorld.BCSystemEnable)
+        return;
 
     if ((uint32)sWorld.BCInterval > THREAD_LOOP_INTERVAL)
     {
@@ -86,7 +83,10 @@ void CommonScheduleThread::BroadCastExec()
         {
             return;
         }
-        else    BCTimerCount = getMSTime() + ((uint32)sWorld.BCInterval * 1000);
+        else
+        {
+            BCTimerCount = getMSTime() + ((uint32)sWorld.BCInterval * 1000);
+        }
     }
 
     switch (sWorld.BCOrderMode)
@@ -94,6 +94,7 @@ void CommonScheduleThread::BroadCastExec()
         case 0:
         {
             int entry = objmgr.CalcCurrentBCEntry();
+
             if (entry < 0)
             {
                 sWorld.BCSystemEnable = false;
@@ -101,17 +102,20 @@ void CommonScheduleThread::BroadCastExec()
                 return;
             }
 
-            if (entry == 0) return;    // no anymessagez hitted.
-            else sWorld.SendBCMessageByID(entry);
-            //printf("random entry: %u\n",entry);
+            if (entry == 0)
+                return;
+            else
+                sWorld.SendBCMessageByID(entry);
         }
         break;
         case 1:
         {
             // re-assign
-            if (itOrderMSGEntry == objmgr.GetBCTotalItemEnd()) itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
+            if (itOrderMSGEntry == objmgr.GetBCTotalItemEnd())
+                itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
+
             sWorld.SendBCMessageByID((uint32)itOrderMSGEntry->second);
-            //printf("serial entry: %u\n",(uint32)itOrderMSGEntry->second);
+
             itOrderMSGEntry++;
         }
         break;

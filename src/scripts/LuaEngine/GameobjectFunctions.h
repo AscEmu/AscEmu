@@ -1,5 +1,6 @@
 /*
- * ArcScripts for ArcEmu MMORPG Server
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2007 Moon++ <http://www.moonplusplus.info/>
  *
@@ -851,7 +852,7 @@ class LuaGameObject
         static int IsActive(lua_State* L, GameObject* ptr)
         {
             TEST_GO_RET();
-            if (ptr->GetByte(GAMEOBJECT_BYTES_1, 0))
+            if (ptr->GetState())
                 RET_BOOL(true)
             RET_BOOL(false)
         }
@@ -859,11 +860,11 @@ class LuaGameObject
         static int Activate(lua_State* L, GameObject* ptr)
         {
             TEST_GO_RET();
-            if (ptr->GetByte(GAMEOBJECT_BYTES_1, 0) == 1)
-                ptr->SetByte(GAMEOBJECT_BYTES_1, 0, 0);
+            if (ptr->GetState() == 1)
+                ptr->SetState(GO_STATE_OPEN);
             else
-                ptr->SetByte(GAMEOBJECT_BYTES_1, 0, 1);
-            ptr->SetUInt32Value(GAMEOBJECT_FLAGS, (ptr->GetUInt32Value(GAMEOBJECT_FLAGS) & ~1));
+                ptr->SetState(GO_STATE_CLOSED);
+            ptr->SetFlags((ptr->GetFlags() & ~1));
             RET_BOOL(true)
         }
 
@@ -884,6 +885,10 @@ class LuaGameObject
             if ((lua_gettop(L) != 3) || (lua_gettop(L) != 5))
                 return 0;
 
+            if (!ptr->IsLootable())
+                return 0;
+            GameObject_Lootable* lt = static_cast<GameObject_Lootable*>(ptr);
+
             uint32 itemid = luaL_checkinteger(L, 1);
             uint32 mincount = luaL_checkinteger(L, 2);
             uint32 maxcount = luaL_checkinteger(L, 3);
@@ -896,7 +901,7 @@ class LuaGameObject
                     WorldDatabase.Execute("REPLACE INTO loot_gameobjects VALUES (%u, %u, %f, 0, 0, 0, %u, %u )", ptr->GetEntry(), itemid, chance, mincount, maxcount);
                 delete result;
             }
-            lootmgr.AddLoot(&ptr->loot, itemid, mincount, maxcount);
+            lootmgr.AddLoot(&lt->loot, itemid, mincount, maxcount);
             return 0;
         }
 
@@ -1244,11 +1249,12 @@ class LuaGameObject
             if (lua_gettop(L) != 3)
                 return 0;
 
+            GameObject_Destructible* dt = static_cast<GameObject_Destructible*>(ptr);
             uint32 damage = luaL_checkinteger(L, 1);
             uint64 guid = CHECK_GUID(L, 2);
             uint32 spellid = luaL_checkinteger(L, 3);
 
-            ptr->Damage(damage, guid, guid, spellid);
+            dt->Damage(damage, guid, guid, spellid);
 
             return 0;
         }
@@ -1260,10 +1266,10 @@ class LuaGameObject
             if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
-            ptr->Rebuild();
+            GameObject_Destructible* dt = static_cast<GameObject_Destructible*>(ptr);
+            dt->Rebuild();
 
-
-            return 0;
+            return 1;
         }
 
         static int GetHP(lua_State *L, GameObject *ptr)
@@ -1273,7 +1279,9 @@ class LuaGameObject
             if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
-            lua_pushinteger(L, ptr->GetHP());
+            GameObject_Destructible* dt = static_cast<GameObject_Destructible*>(ptr);
+
+            lua_pushinteger(L, dt->GetHP());
 
             return 1;
         }
@@ -1285,7 +1293,9 @@ class LuaGameObject
             if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
-            lua_pushinteger(L, ptr->GetMaxHP());
+            GameObject_Destructible* dt = static_cast<GameObject_Destructible*>(ptr);
+
+            lua_pushinteger(L, dt->GetMaxHP());
 
             return 1;
         }

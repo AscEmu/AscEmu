@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2009 FrozenThrone Shard
  *
  * This program is free software: you can redistribute it and/or modify
@@ -55,24 +55,24 @@ class WyrmrestTemple_Gossip : public GossipScript
                 case CN_TORASTRASZA:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GT_TORASTRASZA, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_TOP_TO_BOTTOM), 1);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_TOP_TO_MIDDLE), 2);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_TOP_TO_BOTTOM), 1);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_TOP_TO_MIDDLE), 2);
                         Menu->SendTo(plr);
                     }
                     break;
                 case CN_AFRASASTRASZ:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GT_AFRASASTRASZ, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_MIDDLE_TO_TOP), 3);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_MIDDLE_TO_BOTTOM), 4);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_MIDDLE_TO_TOP), 3);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_MIDDLE_TO_BOTTOM), 4);
                         Menu->SendTo(plr);
                     }
                     break;
                 case CN_TARIOLSTRASZ:
                     {
                         objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), GT_TARIOLSTRASZ, plr);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_BOTTOM_TO_TOP), 5);
-                        Menu->AddItem(ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_BOTTOM_TO_MIDDLE), 6);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_BOTTOM_TO_TOP), 5);
+                        Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_WYMREST_BOTTOM_TO_MIDDLE), 6);
                         Menu->SendTo(plr);
                     }
                     break;

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -49,7 +49,7 @@ CBattleground::CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 t
     sEventMgr.AddEvent(this, &CBattleground::EventResurrectPlayers, EVENT_BATTLEGROUND_QUEUE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     /* create raid groups */
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         m_groups[i] = new Group(true);
         m_groups[i]->m_disbandOnNoMembers = false;
@@ -61,7 +61,7 @@ CBattleground::CBattleground(MapMgr* mgr, uint32 id, uint32 levelgroup, uint32 t
 CBattleground::~CBattleground()
 {
     sEventMgr.RemoveEvents(this);
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         PlayerInfo* inf;
         for (uint32 j = 0; j < m_groups[i]->GetSubGroupCount(); ++j)
@@ -129,11 +129,17 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         }
 
         *data << uint8(1);
-        //In 3.1 this should be the uint32(negative rating), uint32(positive rating), uint32(0)[<-this is the new field in 3.1], and a name if available / which is a null-terminated string, and we send an uint8(0), so we provide a zero length name string /
+        
         if (!Rated())
         {
-            *data << uint32(0) << uint32(0) << uint32(0) << uint8(0);
-            *data << uint32(0) << uint32(0) << uint32(0) << uint8(0);
+            *data << uint32(0); //uint32(negative rating)
+            *data << uint32(0); //uint32(positive rating)
+            *data << uint32(0); //uint32(0)[<-this is the new field in 3.1]
+            *data << uint8(0);  //name if available / which is a null-terminated string, and we send an uint8(0), so we provide a zero length name string
+            *data << uint32(0);
+            *data << uint32(0);
+            *data << uint32(0);
+            *data << uint8(0);
         }
         else
         {
@@ -142,20 +148,32 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
 
             if (teams[0])
             {
-                *data << uint32(0) << uint32(3000 + m_deltaRating[0]) << uint32(0) << uint8(0);
+                *data << uint32(0);
+                *data << uint32(3000 + m_deltaRating[0]);
+                *data << uint32(0);
+                *data << uint8(0);
             }
             else
             {
-                *data << uint32(0) << uint32(0) << uint32(0) << uint8(0);
+                *data << uint32(0);
+                *data << uint32(0);
+                *data << uint32(0);
+                *data << uint8(0);
             }
 
             if (teams[1])
             {
-                *data << uint32(0) << uint32(3000 + m_deltaRating[1]) << uint32(0) << uint8(0);
+                *data << uint32(0);
+                *data << uint32(3000 + m_deltaRating[1]);
+                *data << uint32(0);
+                *data << uint8(0);
             }
             else
             {
-                *data << uint32(0) << uint32(0) << uint32(0) << uint8(0);
+                *data << uint32(0);
+                *data << uint32(0);
+                *data << uint32(0);
+                *data << uint8(0);
             }
         }
 
@@ -163,11 +181,12 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         *data << uint8(m_winningteam);
 
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
-        for (uint32 i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
-                if ((*itr)->m_isGmInvisible)continue;
+                if ((*itr)->m_isGmInvisible)
+                    continue;
                 *data << (*itr)->GetGUID();
                 bs = &(*itr)->m_bgScore;
                 *data << bs->KillingBlows;
@@ -194,7 +213,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
 
         uint32 FieldCount = GetFieldCount(GetType());
-        for (uint32 i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
@@ -366,7 +385,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
 
     go->SetFaction(faction);
     go->SetScale(scale);
-    go->SetUInt32Value(GAMEOBJECT_FLAGS, flags);
+    go->SetFlags(flags);
     go->SetPosition(x, y, z, o);
     go->SetInstanceID(m_mapMgr->GetInstanceID());
 
@@ -547,7 +566,7 @@ void CBattleground::DistributePacketToAll(WorldPacket* packet)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (int i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             if ((*itr) && (*itr)->GetSession())
@@ -692,7 +711,7 @@ void CBattleground::EventCountdown()
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         m_countdownStage = 2;
 
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
@@ -709,7 +728,7 @@ void CBattleground::EventCountdown()
 
         m_countdownStage = 3;
 
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
@@ -726,7 +745,7 @@ void CBattleground::EventCountdown()
 
         m_countdownStage = 4;
 
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
@@ -742,7 +761,7 @@ void CBattleground::EventCountdown()
     else
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        for (int i = 0; i < 2; ++i)
+        for (uint8 i = 0; i < 2; ++i)
         {
             for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
@@ -775,7 +794,7 @@ void CBattleground::Close()
 
     /* remove all players from the battleground */
     m_ended = true;
-    for (uint32 i = 0; i < 2; ++i)
+    for (uint8 i = 0; i < 2; ++i)
     {
         std::set<Player*>::iterator itr;
         std::set<uint32>::iterator it2;
@@ -941,12 +960,27 @@ void CBattleground::EventResurrectPlayers()
             if (plr && plr->IsDead())
             {
                 data.Initialize(SMSG_SPELL_START);
-                data << plr->GetNewGUID() << plr->GetNewGUID() << uint32(RESURRECT_SPELL) << uint8(0) << uint16(0) << uint32(0) << uint16(2) << plr->GetGUID();
+                data << plr->GetNewGUID();
+                data << plr->GetNewGUID();
+                data << uint32(RESURRECT_SPELL);
+                data << uint8(0);
+                data << uint16(0);
+                data << uint32(0);
+                data << uint16(2);
+                data << plr->GetGUID();
                 plr->SendMessageToSet(&data, true);
 
                 data.Initialize(SMSG_SPELL_GO);
-                data << plr->GetNewGUID() << plr->GetNewGUID() << uint32(RESURRECT_SPELL) << uint8(0) << uint8(1) << uint8(1) << plr->GetGUID() << uint8(0) << uint16(2)
-                    << plr->GetGUID();
+                data << plr->GetNewGUID();
+                data << plr->GetNewGUID();
+                data << uint32(RESURRECT_SPELL);
+                data << uint8(0);
+                data << uint8(1);
+                data << uint8(1);
+                data << plr->GetGUID();
+                data << uint8(0);
+                data << uint16(2);
+                data << plr->GetGUID();
                 plr->SendMessageToSet(&data, true);
 
                 plr->ResurrectPlayer();

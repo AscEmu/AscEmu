@@ -149,8 +149,7 @@ class AStarScryerAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -314,8 +313,7 @@ class StarScryerAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -406,8 +404,8 @@ class AstromancerAI : public MoonScriptCreatureAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*      mArcaneBurst;
-        int32           mArcaneBurstTimer;
+        SpellDesc* mArcaneBurst;
+        int32 mArcaneBurstTimer;
 };
 
 
@@ -545,8 +543,7 @@ class AstromancerLordAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -718,8 +715,7 @@ class BloodVindicatorAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -891,8 +887,7 @@ class BloodLegionnareAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1064,8 +1059,7 @@ class BloodMarshalAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1239,8 +1233,7 @@ class PhoenixHawkAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1412,8 +1405,7 @@ class CrystalSentinelAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit()) // isAttackable(_unit, (*itr)) &&
@@ -1578,8 +1570,7 @@ class CrystalMechanicAI : public CreatureAIScript
 
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
-                std::vector<Unit*> TargetTable;        /* From M4ksiu - Big THX to Capt who helped me with std stuff to make it simple and fully working <3 */
-                /* If anyone wants to use this function, then leave this note!                                         */
+                std::vector<Unit*> TargetTable;
                 for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
@@ -1626,9 +1617,9 @@ class CrystalMechanicAI : public CreatureAIScript
 };
 
 
-/****************/
-/*    Bosses    */
-/****************/
+//////////////////////////////////////////////////////////////////////////////////////////
+//Bosses
+//////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------
 //    -= Void Reaver =-
@@ -1689,8 +1680,8 @@ class VoidReaverAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
         }
 
-        int32        mArcaneOrbTimer;
-        SpellDesc*    mArcaneOrb;
+        int32 mArcaneOrbTimer;
+        SpellDesc* mArcaneOrb;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1787,7 +1778,7 @@ class HighAstromancerSolarianAI : public MoonScriptBossAI
                 }
                 else if (IsTimerFinished(mAgentsTimer) && !IsCasting())
                 {
-                    for (int SpawnIter = 0; SpawnIter < 4; SpawnIter++)
+                    for (uint8 SpawnIter = 0; SpawnIter < 4; SpawnIter++)
                     {
                         SpawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[0][0], mSpawnPositions[0][1], 17, 0, true);
                         SpawnCreature(CN_SOLARIUMAGENT, mSpawnPositions[1][0], mSpawnPositions[1][1], 17, 0, true);
@@ -1799,11 +1790,13 @@ class HighAstromancerSolarianAI : public MoonScriptBossAI
             ParentClass::AIUpdate();
         }
 
-        SpellDesc*    mVoidForm;
-        SpellDesc*    mDisappear;
-        SpellDesc*    mReappear;
-        int32        mSplitTimer, mAgentsTimer, mSolarianTimer;
-        float        mSpawnPositions[3][2];
+        SpellDesc* mVoidForm;
+        SpellDesc* mDisappear;
+        SpellDesc* mReappear;
+        int32 mSplitTimer;
+        int32 mAgentsTimer;
+        int32 mSolarianTimer;
+        float mSpawnPositions[3][2];
 };
 
 bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
@@ -1948,14 +1941,13 @@ class AlarAI : public CreatureAIScript
 
         AlarAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            /************************ Waypoint Place ************************/
-
+            // Waypoints
             for (uint8 i = 1; i < 12; i++)
             {
                 _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Flag_Fly));
             }
 
-            /************************** Spells ******************************/
+            // Spells
 
             nrspells = 7;
             for (uint8 i = 0; i < nrspells; i++)
@@ -2012,7 +2004,7 @@ class AlarAI : public CreatureAIScript
             spells[6].perctrigger = 0.0f;
             spells[6].attackstoptimer = 1000;
 
-            /******************* Additional Settings *******************/
+            // Additional Settings
 
             _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             _unit->GetAIInterface()->SetFly();
@@ -2023,7 +2015,7 @@ class AlarAI : public CreatureAIScript
             nDeath = 0;
             timer = lasttime = 0;
             _unit->GetAIInterface()->setOutOfCombatRange(200000);
-            //RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+
             _unit->GetAIInterface()->SetFly();
             _unit->GetAIInterface()->StopMovement(0);
             _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
@@ -2105,21 +2097,6 @@ class AlarAI : public CreatureAIScript
         void OnDied(Unit* mKiller)
         {
             nDeath++;
-            //azolex: commenting this "tag" code, no idea what is it for, nothing like this in arcemu
-            /*if (nDeath==1)
-            {
-                if (mKiller->IsPlayer())
-                {
-                    _unit->Tag(TO_PLAYER(mKiller));
-                }
-                else if (mKiller->IsPet() && TO_PET(mKiller)->GetPetOwner())
-                {
-                    _unit->Tag(TO_PET(mKiller)->GetPetOwner());
-                }
-
-                AlarAuxClass *cAux=new AlarAuxClass(this);
-                return;
-            }*/
             SetPhase(0);
             nDeath = 0;
             FlameQuills = false;
@@ -2481,7 +2458,7 @@ class EmberAlarAI : public CreatureAIScript
             }
 
             uint32 Phase = Alar->GetBaseMana();
-            if (Phase == 2/*&& Alar->isAlive()*/)
+            if (Phase == 2)
             {
                 uint32 maxhp = Alar->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
                 Alar->DealDamage(Alar, (maxhp * 3) / 100, 0, 0, 0);
@@ -2603,7 +2580,7 @@ class DarkenerAI : public MoonScriptCreatureAI
             mGazeSwitchTimer = 0;
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
             SetCanEnterCombat(true);
@@ -2612,7 +2589,7 @@ class DarkenerAI : public MoonScriptCreatureAI
             mGazeSwitchTimer = AddTimer((RandomUInt(4) + 8) * 1000);
         }
 
-        void OnCombatStop(Unit*  mTarget)
+        void OnCombatStop(Unit* mTarget)
         {
             ParentClass::OnCombatStop(mTarget);
             mCurrentTarget = NULL;
@@ -2660,8 +2637,8 @@ class DarkenerAI : public MoonScriptCreatureAI
             return false;
         }
 
-        int32    mGazeSwitchTimer;
-        Unit*    mCurrentTarget;
+        int32 mGazeSwitchTimer;
+        Unit* mCurrentTarget;
 };
 
 // Lord Sanguinar AI (2nd advisor)
@@ -2680,13 +2657,13 @@ class SanguinarAI : public MoonScriptCreatureAI
             SetCanEnterCombat(false);
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
             SetCanEnterCombat(true);
         }
 
-        void OnCombatStop(Unit*  mTarget)
+        void OnCombatStop(Unit* mTarget)
         {
             ParentClass::OnCombatStop(mTarget);
 
@@ -2717,7 +2694,7 @@ class CapernianAI : public MoonScriptCreatureAI
             SetCanEnterCombat(false);
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
             SetCanEnterCombat(true);
@@ -2761,7 +2738,7 @@ class CapernianAI : public MoonScriptCreatureAI
             }
         }
 
-        SpellDesc*    mArcaneBurst;
+        SpellDesc* mArcaneBurst;
 };
 
 // Master Engineer Telonicus AI (4th advisor)
@@ -2782,13 +2759,13 @@ class TelonicusAI : public MoonScriptCreatureAI
             SetCanEnterCombat(false);
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             ParentClass::OnCombatStart(mTarget);
             SetCanEnterCombat(true);
         }
 
-        void OnCombatStop(Unit*  mTarget)
+        void OnCombatStop(Unit* mTarget)
         {
             ParentClass::OnCombatStop(mTarget);
 
@@ -2855,11 +2832,11 @@ class PhoenixAI : public MoonScriptCreatureAI
             mBurnTimer = AddTimer(3000);
         }
 
-        void OnCombatStart(Unit*  mTarget) {}
+        void OnCombatStart(Unit* mTarget) {}
 
-        void OnCombatStop(Unit*  pTarget) {}
+        void OnCombatStop(Unit* pTarget) {}
 
-        void OnTargetDied(Unit*  mTarget)
+        void OnTargetDied(Unit* mTarget)
         {
             ParentClass::OnTargetDied(mTarget);
             Unit* pTarget = GetBestPlayerTarget(TargetFilter_Closest);
@@ -2958,7 +2935,7 @@ class WeaponsAI : public MoonScriptCreatureAI
             }
         }
 
-        void OnCombatStop(Unit*  mTarget)
+        void OnCombatStop(Unit* mTarget)
         {
             Unit* pTarget = GetBestPlayerTarget();
             if (pTarget != NULL)
@@ -2972,11 +2949,8 @@ class WeaponsAI : public MoonScriptCreatureAI
         }
 };
 
-/*
- *    TO DO:
- *        - Add weapon summon effect
- *        - Check why some features block (like melee, movement and so on) if there's only 1 target and spell req. NotCurrent one
- */
+///\todo Add weapon summon effect
+/// Check why some features block (like melee, movement and so on) if there's only 1 target and spell req. NotCurrent one
 
 //Prince Kael'Thas
 #define CN_KAELTHAS                        19622
@@ -3126,7 +3100,7 @@ class KaelThasAI : public MoonScriptBossAI
 
         }
 
-        void OnCombatStart(Unit*  mTarget)
+        void OnCombatStart(Unit* mTarget)
         {
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             SetAIUpdateFreq(24000);
@@ -3139,7 +3113,7 @@ class KaelThasAI : public MoonScriptBossAI
                 GameObject* pGameobject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
                 if (pGameobject != NULL && pGameobject->GetState() == 0)
                 {
-                    pGameobject->SetState(GAMEOBJECT_STATE_CLOSED);
+                    pGameobject->SetState(GO_STATE_CLOSED);
                 }
             }
 
@@ -3173,7 +3147,7 @@ class KaelThasAI : public MoonScriptBossAI
                 GameObject* pGameobject = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(Gates[i].x, Gates[i].y, Gates[i].z, Gates[i].addition);
                 if (pGameobject != NULL && pGameobject->GetState() == 1)
                 {
-                    pGameobject->SetState(GAMEOBJECT_STATE_OPEN);
+                    pGameobject->SetState(GO_STATE_OPEN);
                 }
             }
         }
@@ -3397,24 +3371,24 @@ class KaelThasAI : public MoonScriptBossAI
             return GetBestPlayerTarget(TargetFilter_NotCurrent);
         }
 
-        SpellDesc*            mSummonWeapons;
-        SpellDesc*            mArcaneDisruption;
-        SpellDesc*            mArcaneDisruptionFunc;
-        SpellDesc*            mShockBarrier;
-        SpellDesc*            mPyroblast;
-        SpellDesc*            mFlameStrike;
-        SpellDesc*            mFlameStrikeFunc;
-        SpellDesc*            mPhoenix;
-        SpellDesc*            mNetherBeam;
+        SpellDesc* mSummonWeapons;
+        SpellDesc* mArcaneDisruption;
+        SpellDesc* mArcaneDisruptionFunc;
+        SpellDesc* mShockBarrier;
+        SpellDesc* mPyroblast;
+        SpellDesc* mFlameStrike;
+        SpellDesc* mFlameStrikeFunc;
+        SpellDesc* mPhoenix;
+        SpellDesc* mNetherBeam;
 
-        AdvisorPhase        mAdvisorPhase;
-        int32                mArcaneDisruptionTimer;
-        int32                mShockBarrierTimer;
-        int32                mFlameStrikeTimer;
-        int32                mPhoenixTimer;
-        int32                mEventTimer;
+        AdvisorPhase mAdvisorPhase;
+        int32 mArcaneDisruptionTimer;
+        int32 mShockBarrierTimer;
+        int32 mFlameStrikeTimer;
+        int32 mPhoenixTimer;
+        int32 mEventTimer;
 
-        std::vector<LocationExtra>    mAdvCoords;
+        std::vector<LocationExtra> mAdvCoords;
 };
 
 void SpellFunc_KaelThasArcaneDisruption(SpellDesc* pThis, MoonScriptCreatureAI* pCreatureAI, Unit* pTarget, TargetType pType)

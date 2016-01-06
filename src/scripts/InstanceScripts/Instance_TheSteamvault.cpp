@@ -346,14 +346,7 @@ class CoilfangWarriorAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            /*
-                    spells[0].info = dbcSpell.LookupEntry(MORTAL_STRIKE);
-                    spells[0].targettype = TARGET_ATTACKING;
-                    spells[0].instant = false;
-                    spells[0].cooldown = ;
-                    spells[0].perctrigger = 0.0f;
-                    spells[0].attackstoptimer = 1000;
-            */
+
             spells[0].info = dbcSpell.LookupEntry(MORTAL_BLOW);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -496,14 +489,7 @@ class CoilfangSirenAI : public CreatureAIScript
             spells[2].cooldown = 15;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
-            /*
-                    spells[2].info = dbcSpell.LookupEntry(MOONFIRE);
-                    spells[2].targettype = TARGET_ATTACKING;
-                    spells[2].instant = true;
-                    spells[2].cooldown = ;
-                    spells[2].perctrigger = 0.0f;
-                    spells[2].attackstoptimer = 1000;
-            */
+
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -1165,14 +1151,7 @@ class CoilfangWaterElementalAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            /*
-                    spells[0].info = dbcSpell.LookupEntry(FROSTBOLT_VOLLEY);
-                    spells[0].targettype = TARGET_ATTACKING;
-                    spells[0].instant = true;        // Should be false, but doesn't work then
-                    spells[0].cooldown = ;
-                    spells[0].perctrigger = 0.0f;
-                    spells[0].attackstoptimer = 1000;
-            */
+
             spells[0].info = dbcSpell.LookupEntry(WATER_BOLT_WOLLEY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
@@ -1416,14 +1395,7 @@ class TidalSurgerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            /*
-                    spells[0].info = dbcSpell.LookupEntry(KNOCKBACK);
-                    spells[0].targettype = TARGET_ATTACKING; // should be random
-                    spells[0].instant = true;
-                    spells[0].cooldown = ;
-                    spells[0].perctrigger = 0.0f;
-                    spells[0].attackstoptimer = 1000;
-            */
+
             spells[0].info = dbcSpell.LookupEntry(WATER_SPOUT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -2331,7 +2303,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             GameObject* Gate = NULL;
             Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
-                Gate->SetState(GAMEOBJECT_STATE_CLOSED);
+                Gate->SetState(GO_STATE_CLOSED);
 
             switch (RandomUInt(2))
             {
@@ -2370,7 +2342,7 @@ class WarlordKalitreshAI : public CreatureAIScript
             GameObject* Gate = NULL;
             Gate = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-95.774361f, -439.608612f, 3.382976f, 183049);
             if (Gate)
-                Gate->SetState(GAMEOBJECT_STATE_OPEN);
+                Gate->SetState(GO_STATE_OPEN);
 
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             _unit->GetAIInterface()->m_canMove = true;

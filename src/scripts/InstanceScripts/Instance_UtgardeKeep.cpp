@@ -342,7 +342,7 @@ class DragonflayerSpiritualistAI : public MoonScriptCreatureAI
 class DragonflayerStrategistAI : public MoonScriptCreatureAI
 {
         MOONSCRIPT_FACTORY_FUNCTION(DragonflayerStrategistAI, MoonScriptCreatureAI);
-        DragonflayerStrategistAI(Creature*  pCreature) : MoonScriptCreatureAI(pCreature)
+        DragonflayerStrategistAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             AddSpell(DRAGONFLAYER_STRATEGIST_BLIND, Target_Current, 8, 0, 40, 0, 30);
             AddSpell(DRAGONFLAYER_STRATEGIST_HURL_DAGGER, Target_Current, 8, 0, 40, 0, 30);

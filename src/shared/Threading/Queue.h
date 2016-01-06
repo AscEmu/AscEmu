@@ -92,6 +92,7 @@ class FQueue
         }
 
     private:
+
         struct h
         {
             T value;
@@ -104,6 +105,4 @@ class FQueue
         Mutex lock;
 };
 
-#endif
-
-
+#endif  //FQUEUE_H

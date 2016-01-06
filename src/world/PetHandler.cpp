@@ -30,9 +30,11 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
     uint64 petGuid = 0;
     uint16 misc = 0;
     uint16 action = 0;
-
     uint64 targetguid = 0;
-    recv_data >> petGuid >> misc >> action;
+
+    recv_data >> petGuid;
+    recv_data >> misc;
+    recv_data >> action;
     //recv_data.hexlike();
 
     //printf("Pet_Action: 0x%.4X 0x%.4X\n", misc, action);
@@ -248,7 +250,9 @@ void WorldSession::HandlePetNameQuery(WorldPacket& recv_data)
     uint32 petNumber = 0;
     uint64 petGuid = 0;
 
-    recv_data >> petNumber >> petGuid;
+    recv_data >> petNumber;
+    recv_data >> petGuid;
+
     Pet* pPet = _player->GetMapMgr()->GetPet(GET_LOWGUID_PART(petGuid));
     if (!pPet)
         return;
@@ -292,7 +296,9 @@ void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
     uint64 npcguid = 0;
     uint32 petnumber = 0;
 
-    recv_data >> npcguid >> petnumber;
+    recv_data >> npcguid;
+    recv_data >> petnumber;
+
     PlayerPet* pet = _player->GetPlayerPet(petnumber);
     if (!pet)
     {
@@ -314,9 +320,11 @@ void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        uint64 npcguid = 0;
+    uint64 npcguid = 0;
     uint32 petnumber = 0;
-    recv_data >> npcguid >> petnumber;
+
+    recv_data >> npcguid;
+    recv_data >> petnumber;
 
     PlayerPet* pet = _player->GetPlayerPet(petnumber);
     if (!pet)
@@ -370,18 +378,24 @@ void WorldSession::HandleBuyStableSlot(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    BankSlotPrice* bsp = dbcStableSlotPrices.LookupEntryForced(_player->GetStableSlotCount() + 1);
-    int32 cost = (bsp != NULL) ? bsp->Price : 99999999;
+    int32 stable_cost = 0;
+
+    auto stable_slot_prices = sStableSlotPricesStore.LookupEntry(_player->GetStableSlotCount() + 1);
+    if (stable_slot_prices != nullptr)
+        stable_cost = stable_slot_prices->Price;
+    else
+        stable_cost = 99999999;
+
 
     WorldPacket data(SMSG_STABLE_RESULT, 1);
 
-    if (!_player->HasGold(cost))
+    if (!_player->HasGold(stable_cost))
     {
         data << uint8(1);       // not enough money
         SendPacket(&data);
         return;
     }
-    _player->ModGold(-cost);
+    _player->ModGold(-stable_cost);
 
     data << uint8(0x0A);
     SendPacket(&data);
@@ -398,7 +412,10 @@ void WorldSession::HandlePetSetActionOpcode(WorldPacket& recv_data)
     uint16 spell;
     uint16 state;
 
-    recv_data >> guid >> slot >> spell >> state;
+    recv_data >> guid;
+    recv_data >> slot;
+    recv_data >> spell;
+    recv_data >> state;
 
     if (!_player->GetSummon())
         return;
@@ -423,7 +440,9 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
 
     uint64 guid;
     std::string name;
-    recv_data >> guid >> name;
+
+    recv_data >> guid;
+    recv_data >> name;
 
     Pet* pet = NULL;
     std::list<Pet*> summons = _player->GetSummons();
@@ -568,23 +587,23 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
         return;
 
     // find talent entry
-    TalentEntry* te = dbcTalent.LookupEntryForced(talentid);
-    if (te == NULL)
+    auto talent = sTalentStore.LookupEntry(talentid);
+    if (talent == nullptr)
         return;
 
     // check if it requires another talent
-    if (te->DependsOn > 0)
+    if (talent->DependsOn > 0)
     {
-        TalentEntry* dep_te = dbcTalent.LookupEntryForced(te->DependsOn);
-        if (dep_te == NULL)
+        auto depends_talent = sTalentStore.LookupEntry(talent->DependsOn);
+        if (depends_talent == nullptr)
             return;
 
         bool req_ok = false;
         for (uint8 i = 0; i < 5; ++i)
         {
-            if (dep_te->RankID[i] != 0)
+            if (depends_talent->RankID[i] != 0)
             {
-                if (pPet->HasSpell(dep_te->RankID[i]))
+                if (pPet->HasSpell(depends_talent->RankID[i]))
                 {
                     req_ok = true;
                     break;
@@ -596,15 +615,15 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     }
 
     // check if we have enough spent points
-    if (pPet->GetSpentTPs() < (te->Row * 3))
+    if (pPet->GetSpentTPs() < (talent->Row * 3))
         return;
 
     // remove lower talent rank
-    if (talentcol > 0 && te->RankID[talentcol - 1] != 0)
-        pPet->RemoveSpell(te->RankID[talentcol - 1]);
+    if (talentcol > 0 && talent->RankID[talentcol - 1] != 0)
+        pPet->RemoveSpell(talent->RankID[talentcol - 1]);
 
     // add spell, discount talent point
-    SpellEntry* sp = dbcSpell.LookupEntryForced(te->RankID[talentcol]);
+    SpellEntry* sp = dbcSpell.LookupEntryForced(talent->RankID[talentcol]);
     if (sp != NULL)
     {
         pPet->AddSpell(sp, true);

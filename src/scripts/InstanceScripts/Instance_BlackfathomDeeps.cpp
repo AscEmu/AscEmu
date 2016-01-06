@@ -116,14 +116,14 @@ class FathomStone : public GameObjectAIScript
 {
     public:
 
-        FathomStone(GameObject*  goinstance) : GameObjectAIScript(goinstance)
+        FathomStone(GameObject* goinstance) : GameObjectAIScript(goinstance)
         {
             SpawnBaronAquanis = true;
         }
 
-        static GameObjectAIScript* Create(GameObject*  GO) { return new FathomStone(GO); }
+        static GameObjectAIScript* Create(GameObject* GO) { return new FathomStone(GO); }
 
-        void OnActivate(Player*  pPlayer)
+        void OnActivate(Player* pPlayer)
         {
             if (pPlayer->IsTeamHorde() && SpawnBaronAquanis == true) // Horde
             {
@@ -183,9 +183,9 @@ class MorriduneGossip : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&menu, pObject->GetGUID(), MORRIDUNE_ON_HELLO, pPlayer);
 
             if (pPlayer->IsTeamAlliance())
-                menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
+                menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_1), 1);
             else
-                menu->AddItem(ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_2), 2);
+                menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(MORRIDUNE_OPTION_2), 2);
 
             menu->SendTo(pPlayer);
         }

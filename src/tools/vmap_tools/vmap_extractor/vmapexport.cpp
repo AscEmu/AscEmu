@@ -110,10 +110,10 @@ void ReadLiquidTypeTableDBC()
     printf("Done! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
 }
 
-int ExtractWmo()
+bool ExtractWmo()
 {
     char szLocalFile[1024] = "";
-    bool success=true;
+    bool success = true;
 
     //const char* ParsArchiveNames[] = {"patch-2.MPQ", "patch.MPQ", "common.MPQ", "expansion.MPQ"};
 

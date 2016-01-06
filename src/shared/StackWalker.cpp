@@ -351,7 +351,7 @@ class __declspec(dllexport) StackWalkerInternal
             BOOL     Publics;                // contains public symbols
         };
         */
-        typedef struct IMAGEHLP_MODULE64_V2
+        /*typedef*/ struct IMAGEHLP_MODULE64_V2
         {
             DWORD    SizeOfStruct;           // set to sizeof(IMAGEHLP_MODULE64)
             DWORD64  BaseOfImage;            // base load address of module
@@ -906,7 +906,7 @@ static LPVOID s_readMemoryFunction_UserData = NULL;
 
 BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT* context, PReadProcessMemoryRoutine readMemoryFunction, LPVOID pUserData)
 {
-    CONTEXT c;;
+    CONTEXT c;
     CallstackEntry csEntry;
     IMAGEHLP_SYMBOL64* pSym = NULL;
     StackWalkerInternal::IMAGEHLP_MODULE64_V2 Module;

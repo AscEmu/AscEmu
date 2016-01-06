@@ -268,7 +268,14 @@ void WorldSession::LogoutPlayer(bool Save)
                         static_cast <Creature*>(obj)->loot.looters.erase(_player->GetLowGUID());
                         break;
                     case TYPEID_GAMEOBJECT:
-                        static_cast <GameObject*>(obj)->loot.looters.erase(_player->GetLowGUID());
+                        GameObject* go = static_cast<GameObject*>(obj);
+
+                        if (!go->IsLootable())
+                            break;
+
+                        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(go);
+                        pLGO->loot.looters.erase(_player->GetLowGUID());
+
                         break;
                 }
             }
@@ -417,7 +424,9 @@ void WorldSession::SendBuyFailed(uint64 guid, uint32 itemid, uint8 error)
 {
     WorldPacket data(13);
     data.SetOpcode(SMSG_BUY_FAILED);
-    data << guid << itemid << error;
+    data << guid;
+    data << itemid;
+    data << error;
     SendPacket(&data);
 }
 
@@ -425,7 +434,9 @@ void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
 {
     WorldPacket data(17);
     data.SetOpcode(SMSG_SELL_ITEM);
-    data << vendorguid << itemid << error;
+    data << vendorguid;
+    data << itemid;
+    data << error;
     SendPacket(&data);
 }
 
@@ -1232,11 +1243,11 @@ void WorldSession::SendRefundInfo(uint64 GUID)
     if (!_player || !_player->IsInWorld())
         return;
 
-    Item* itm = _player->GetItemInterface()->GetItemByGUID(GUID);
-    if (itm == NULL)
+    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
+    if (item == nullptr)
         return;
 
-    if (itm->IsEligibleForRefund())
+    if (item->IsEligibleForRefund())
     {
         std::pair <time_t, uint32> RefundEntry;
 
@@ -1245,13 +1256,13 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         if (RefundEntry.first == 0 || RefundEntry.second == 0)
             return;
 
-        ItemExtendedCostEntry* ex = dbcItemExtendedCost.LookupEntryForced(RefundEntry.second);
-        if (ex == NULL)
+        auto item_extended_cost = sItemExtendedCostStore.LookupEntry(RefundEntry.second);
+        if (item_extended_cost == nullptr)
             return;
 
-        ItemPrototype* proto = itm->GetProto();
+        ItemPrototype* proto = item->GetProto();
 
-        itm->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
+        item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
         // ////////////////////////////////////////////////////////////////////////////////////////
         // As of 3.2.0a the server sends this packet to provide refund info on
         // an item
@@ -1293,13 +1304,13 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         WorldPacket packet(SMSG_ITEMREFUNDINFO, 68);
         packet << uint64(GUID);
         packet << uint32(proto->BuyPrice);
-        packet << uint32(ex->honor);
-        packet << uint32(ex->arena);
+        packet << uint32(item_extended_cost->honor_points);
+        packet << uint32(item_extended_cost->arena_points);
 
-        for (int i = 0; i < 5; ++i)
+        for (uint8 i = 0; i < 5; ++i)
         {
-            packet << uint32(ex->item[i]);
-            packet << uint32(ex->count[i]);
+            packet << uint32(item_extended_cost->item[i]);
+            packet << uint32(item_extended_cost->count[i]);
         }
 
         packet << uint32(0);	// always seems to be 0
@@ -1323,7 +1334,7 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
     data << uint32(UNIXTIME);	// unix time of something
     data << uint8(1);
     data << uint32(mask);		// type mask
-    for (uint32 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
+    for (uint8 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
         if (mask & (1 << i))
         {
             // data << uint32(GetAccountData(AccountDataType(i))->Time);
@@ -1335,11 +1346,17 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
 
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN uint32 talent_id, requested_rank, unk;
-    recv_data >> talent_id >> requested_rank >> unk;
+    CHECK_INWORLD_RETURN
+    
+    uint32 talent_id;
+    uint32 requested_rank;
+    uint32 unk;
+
+    recv_data >> talent_id;
+    recv_data >> requested_rank;
+    recv_data >> unk;
 
     _player->LearnTalent(talent_id, requested_rank);
-
 }
 
 void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
@@ -1356,28 +1373,28 @@ void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
 
 void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN uint32 skill_line;
+    CHECK_INWORLD_RETURN
+    
+    uint32 skill_line_id;
     uint32 points_remaining = _player->GetPrimaryProfessionPoints();
-    recv_data >> skill_line;
-
-    // Cheater detection
-    // if (!_player->HasSkillLine(skill_line)) return;
+    recv_data >> skill_line_id;
 
     // Remove any spells within that line that the player has
-    _player->RemoveSpellsFromLine(skill_line);
+    _player->RemoveSpellsFromLine(skill_line_id);
 
     // Finally, remove the skill line.
-    _player->_RemoveSkillLine(skill_line);
+    _player->_RemoveSkillLine(skill_line_id);
 
     // added by Zack : This is probably wrong or already made elsewhere :
     // restore skill learnability
     if (points_remaining == _player->GetPrimaryProfessionPoints())
     {
         // we unlearned a skill so we enable a new one to be learned
-        skilllineentry* sk = dbcSkillLine.LookupEntryForced(skill_line);
-        if (!sk)
+        auto skill_line = sSkillLineStore.LookupEntry(skill_line_id);
+        if (!skill_line)
             return;
-        if (sk->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
+
+        if (skill_line->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
             _player->SetPrimaryProfessionPoints(points_remaining + 1);
     }
 }
@@ -1424,7 +1441,7 @@ void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
 void WorldSession::SendMOTD()
 {
     WorldPacket data(SMSG_MOTD, 50);
-    data << (uint32)0;
+    data << uint32(0);
     uint32 linecount = 0;
     std::string str_motd = sWorld.GetMotd();
     std::string::size_type pos, nextpos;
@@ -1695,7 +1712,7 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
             EQUIPMENT_SLOT_TABARD
         };
 
-        for (uint32 i = 0; i < 11; ++i)
+        for (uint8 i = 0; i < 11; ++i)
         {
             Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
 

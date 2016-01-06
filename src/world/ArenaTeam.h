@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -50,11 +50,12 @@ class SERVER_DECL ArenaTeam
         }
 
     public:
+
         uint32 m_id;
         uint32 m_type;
         uint32 m_leader;
         uint32 m_slots;
-    std::string m_name;
+        std::string m_name;
         uint32 m_memberCount;
         ArenaTeamMember* m_members;
 

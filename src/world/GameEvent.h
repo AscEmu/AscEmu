@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,67 +30,68 @@ class EventScript;
 
 class GameEvent
 {
-private:
-    void CreateNPCs();
-    void CreateObjects();
+    private:
 
-    std::vector<Creature*> active_npcs;
-    std::vector<GameObject*> active_gameobjects;
+        void CreateNPCs();
+        void CreateObjects();
 
-public:
+        std::vector<Creature*> active_npcs;
+        std::vector<GameObject*> active_gameobjects;
 
-    uint32 event_id; // Event ID
-    time_t start; // Event start time
-    time_t end; // Event end time
-    uint32 occurence;
-    uint32 length;
-    HolidayIds holiday_id;
-    std::string description;
-    GameEventState state; // state of the game event, these are saved into the game_event table on change!
-    uint8 announce;
+    public:
 
-    time_t nextstart; // The next time this event should be allowed to change from GAMEEVENT_INACTIVE
+        uint32 event_id; // Event ID
+        time_t start; // Event start time
+        time_t end; // Event end time
+        uint32 occurence;
+        uint32 length;
+        HolidayIds holiday_id;
+        std::string description;
+        GameEventState state; // state of the game event, these are saved into the game_event table on change!
+        uint8 announce;
 
-    std::vector<EventCreatureSpawnsQueryResult> npc_data;
-    std::vector<EventGameObjectSpawnsQueryResult> gameobject_data;
+        time_t nextstart; // The next time this event should be allowed to change from GAMEEVENT_INACTIVE
 
-    EventScript* mEventScript;
+        std::vector<EventCreatureSpawnsQueryResult> npc_data;
+        std::vector<EventGameObjectSpawnsQueryResult> gameobject_data;
 
-    // UNUSED
-    GameEventConditionMap conditions;  // conditions to finish
-    std::set<uint16 /*gameevent id*/> prerequisite_events;
+        EventScript* mEventScript;
 
-    void SetState(GameEventState pState);
-    GameEventState GetState() { return state; }
+        // UNUSED
+        GameEventConditionMap conditions;  // conditions to finish
+        std::set<uint16 /*gameevent id*/> prerequisite_events;
 
-    GameEventState OnStateChange(GameEventState pOldState, GameEventState pNewState);
-    bool StartEvent(bool forced = false);
-    bool StopEvent(bool forced = false);
+        void SetState(GameEventState pState);
+        GameEventState GetState() { return state; }
 
-    GameEvent(EventNamesQueryResult result)
-    {
-        event_id = result.entry;
-        start = result.start_time;
-        end = result.end_time;
-        occurence = result.occurence;
-        length = result.length;
-        holiday_id = result.holiday_id;
-        description = std::string(result.description);
-        //state = result.world_event;
-        announce = result.announce;
+        GameEventState OnStateChange(GameEventState pOldState, GameEventState pNewState);
+        bool StartEvent(bool forced = false);
+        bool StopEvent(bool forced = false);
 
-        // Set later by event_save data, if any
-        state = GAMEEVENT_INACTIVE;
-        nextstart = 0;
+        GameEvent(EventNamesQueryResult result)
+        {
+            event_id = result.entry;
+            start = result.start_time;
+            end = result.end_time;
+            occurence = result.occurence;
+            length = result.length;
+            holiday_id = result.holiday_id;
+            description = std::string(result.description);
+            //state = result.world_event;
+            announce = result.announce;
 
-        mEventScript = nullptr;
-    }
+            // Set later by event_save data, if any
+            state = GAMEEVENT_INACTIVE;
+            nextstart = 0;
 
-    GameEvent(){}
+            mEventScript = nullptr;
+        }
 
-    bool isValid() const { return length > 0 && end > time(0); }
-    void SpawnAllEntities();
-    void DestroyAllEntities();
+        GameEvent(){}
+
+        bool isValid() const { return length > 0 && end > time(0); }
+        void SpawnAllEntities();
+        void DestroyAllEntities();
 };
 
-#endif
+#endif  //__GAMEEVENT_H

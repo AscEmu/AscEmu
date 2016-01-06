@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -58,9 +58,9 @@ class SERVER_DECL Creature : public Unit
         GameEvent* mEvent = nullptr;
         
         /// For derived subclasses of Creature
-    bool IsVehicle();
+        bool IsVehicle();
 
-    void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
+        void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();
 
         bool Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info);
@@ -84,11 +84,15 @@ class SERVER_DECL Creature : public Unit
         uint32 GetItemIdBySlot(uint32 slot) { return m_SellItems->at(slot).itemid; }
         uint32 GetItemAmountBySlot(uint32 slot) { return m_SellItems->at(slot).amount; }
 
-    bool HasItems();
+        bool HasItems();
+        void SummonExpire()
+        {
+            DeleteMe();
+        }
 
-    CreatureProto* GetProto();
+        CreatureProto* GetProto();
 
-    bool IsPvPFlagged();
+        bool IsPvPFlagged();
         void SetPvPFlag();
         void RemovePvPFlag();
 
@@ -102,78 +106,79 @@ class SERVER_DECL Creature : public Unit
 
         void SetSpeeds(uint8 type, float speed);
 
-    int32 GetSlotByItemId(uint32 itemid);
+        int32 GetSlotByItemId(uint32 itemid);
 
-    uint32 GetItemAmountByItemId(uint32 itemid);
+        uint32 GetItemAmountByItemId(uint32 itemid);
 
-    void GetSellItemBySlot(uint32 slot, CreatureItem& ci);
+        void GetSellItemBySlot(uint32 slot, CreatureItem& ci);
 
-    void GetSellItemByItemId(uint32 itemid, CreatureItem& ci);
+        void GetSellItemByItemId(uint32 itemid, CreatureItem& ci);
 
-    ItemExtendedCostEntry* GetItemExtendedCostByItemId(uint32 itemid);
+        DBC::Structures::ItemExtendedCostEntry const* GetItemExtendedCostByItemId(uint32 itemid);
 
-    std::vector<CreatureItem>::iterator GetSellItemBegin();
+        std::vector<CreatureItem>::iterator GetSellItemBegin();
 
-    std::vector<CreatureItem>::iterator GetSellItemEnd();
+        std::vector<CreatureItem>::iterator GetSellItemEnd();
 
-    size_t GetSellItemCount();
+        size_t GetSellItemCount();
 
-    void RemoveVendorItem(uint32 itemid);
-    void AddVendorItem(uint32 itemid, uint32 amount, ItemExtendedCostEntry* ec);
+        void RemoveVendorItem(uint32 itemid);
+        void AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec);
         void ModAvItemAmount(uint32 itemid, uint32 value);
         void UpdateItemAmount(uint32 itemid);
+
         /// Quests
         void _LoadQuests();
-    bool HasQuests();
-    bool HasQuest(uint32 id, uint32 type);
-    void AddQuest(QuestRelation* Q);
+        bool HasQuests();
+        bool HasQuest(uint32 id, uint32 type);
+        void AddQuest(QuestRelation* Q);
         void DeleteQuest(QuestRelation* Q);
         Quest* FindQuest(uint32 quest_id, uint8 quest_relation);
         uint16 GetQuestRelation(uint32 quest_id);
         uint32 NumOfQuests();
-    std::list<QuestRelation*>::iterator QuestsBegin();
-    std::list<QuestRelation*>::iterator QuestsEnd();
-    void SetQuestList(std::list<QuestRelation*>* qst_lst);
+        std::list<QuestRelation*>::iterator QuestsBegin();
+        std::list<QuestRelation*>::iterator QuestsEnd();
+        void SetQuestList(std::list<QuestRelation*>* qst_lst);
 
-    uint32 isVendor() const;
+        uint32 isVendor() const;
 
-    uint32 isTrainer() const;
+        uint32 isTrainer() const;
 
-    uint32 isClass() const;
+        uint32 isClass() const;
 
-    uint32 isProf() const;
+        uint32 isProf() const;
 
-    uint32 isQuestGiver() const;
+        uint32 isQuestGiver() const;
 
-    uint32 isGossip() const;
+        uint32 isGossip() const;
 
-    uint32 isTaxi() const;
+        uint32 isTaxi() const;
 
-    uint32 isCharterGiver() const;
+        uint32 isCharterGiver() const;
 
-    uint32 isGuildBank() const;
+        uint32 isGuildBank() const;
 
-    uint32 isBattleMaster() const;
+        uint32 isBattleMaster() const;
 
-    uint32 isBanker() const;
+        uint32 isBanker() const;
 
-    uint32 isInnkeeper() const;
+        uint32 isInnkeeper() const;
 
-    uint32 isSpiritHealer() const;
+        uint32 isSpiritHealer() const;
 
-    uint32 isTabardDesigner() const;
+        uint32 isTabardDesigner() const;
 
-    uint32 isAuctioner() const;
+        uint32 isAuctioner() const;
 
-    uint32 isStableMaster() const;
+        uint32 isStableMaster() const;
 
-    uint32 isArmorer() const;
+        uint32 isArmorer() const;
 
-    uint32 GetHealthFromSpell();
+        uint32 GetHealthFromSpell();
 
-    void SetHealthFromSpell(uint32 value);
+        void SetHealthFromSpell(uint32 value);
 
-    int32 m_speedFromHaste;
+        int32 m_speedFromHaste;
         int32 FlatResistanceMod[SCHOOL_COUNT];
         int32 BaseResistanceModPct[SCHOOL_COUNT];
         int32 ResistanceModPct[SCHOOL_COUNT];
@@ -192,8 +197,8 @@ class SERVER_DECL Creature : public Unit
         void RegenerateMana();
         int BaseAttackType;
         
-    /// Invisibility & Stealth Detection - Partha
-    bool CanSee(Unit* obj);
+        /// Invisibility & Stealth Detection - Partha
+        bool CanSee(Unit* obj);
 
         /// Looting
         void generateLoot();
@@ -203,14 +208,14 @@ class SERVER_DECL Creature : public Unit
         uint32 GetRequiredLootSkill();
 
         // Misc
-    void setEmoteState(uint8 emote);
-    uint32 GetSQL_id();
+        void setEmoteState(uint8 emote);
+        uint32 GetSQL_id();
 
-    virtual void setDeathState(DeathState s);
+        virtual void setDeathState(DeathState s);
 
-    uint32 GetOldEmote();
+        uint32 GetOldEmote();
 
-    void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
+        void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
         void SendScriptTextChatMessage(uint32 textid);
         void SendTimedScriptTextChatMessage(uint32 textid, uint32 delay = 0);
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
@@ -229,8 +234,11 @@ class SERVER_DECL Creature : public Unit
         void TeleportFar(uint32 mapId, float x, float y, float z, float o);
 
     protected:
+
         virtual void SafeDelete();      /// use DeleteMe() instead of SafeDelete() to avoid crashes like InWorld Creatures deleted.
+
     public:
+
         // In Range
         void AddInRangeObject(Object* pObj);
         void OnRemoveInRangeObject(Object* pObj);
@@ -241,50 +249,50 @@ class SERVER_DECL Creature : public Unit
 
         // Pet
         void UpdatePet();
-    uint32 GetEnslaveCount();
+        uint32 GetEnslaveCount();
 
-    void SetEnslaveCount(uint32 count);
+        void SetEnslaveCount(uint32 count);
 
-    uint32 GetEnslaveSpell();
+        uint32 GetEnslaveSpell();
 
-    void SetEnslaveSpell(uint32 spellId);
-    bool RemoveEnslave();
+        void SetEnslaveSpell(uint32 spellId);
+        bool RemoveEnslave();
 
         Object* GetPlayerOwner();
 
         Group* GetGroup();
 
-    int32 GetDamageDoneMod(uint32 school);
+        int32 GetDamageDoneMod(uint32 school);
 
-    float GetDamageDonePctMod(uint32 school);
+        float GetDamageDonePctMod(uint32 school);
 
-    bool IsPickPocketed();
+        bool IsPickPocketed();
 
-    void SetPickPocketed(bool val = true);
+        void SetPickPocketed(bool val = true);
 
-    CreatureAIScript* GetScript();
-    void LoadScript();
+        CreatureAIScript* GetScript();
+        void LoadScript();
 
         void CallScriptUpdate();
 
-    CreatureInfo* GetCreatureInfo();
+        CreatureInfo* GetCreatureInfo();
 
-    void SetCreatureInfo(CreatureInfo* ci);
+        void SetCreatureInfo(CreatureInfo* ci);
 
-    void SetCreatureProto(CreatureProto* cp);
+        void SetCreatureProto(CreatureProto* cp);
 
-    Trainer* GetTrainer();
-    void RegenerateFocus();
+        Trainer* GetTrainer();
+        void RegenerateFocus();
 
-        CreatureFamilyEntry* myFamily;
+        DBC::Structures::CreatureFamilyEntry const* myFamily;
 
-    bool IsExotic();
+        bool IsExotic();
 
 
-    bool isCritter();
-    bool isTrainingDummy();
+        bool isCritter();
+        bool isTrainingDummy();
 
-    void FormationLinkUp(uint32 SqlId);
+        void FormationLinkUp(uint32 SqlId);
         void ChannelLinkUpGO(uint32 SqlId);
         void ChannelLinkUpCreature(uint32 SqlId);
         bool haslinkupevent;
@@ -312,10 +320,10 @@ class SERVER_DECL Creature : public Unit
         void SwitchToCustomWaypoints();
         Player* m_escorter;
         void DestroyCustomWaypointMap();
-    bool IsInLimboState();
+        bool IsInLimboState();
 
-    void SetLimboState(bool set);
-    uint32 GetLineByFamily(CreatureFamilyEntry* family);
+        void SetLimboState(bool set);
+        uint32 GetLineByFamily(DBC::Structures::CreatureFamilyEntry const* family);
         void RemoveLimboState(Unit* healer);
         void SetGuardWaypoints();
         bool m_corpseEvent;
@@ -332,11 +340,12 @@ class SERVER_DECL Creature : public Unit
 
         void HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event);
 
-    uint32 GetType();
+        uint32 GetType();
 
-    void SetType(uint32 t);
+        void SetType(uint32 t);
 
-protected:
+    protected:
+
         CreatureAIScript* _myScriptClass;
         bool m_limbostate;
         Trainer* mTrainer;
@@ -363,7 +372,9 @@ protected:
 
         CreatureInfo* creature_info;
         CreatureProto* proto;
+
     private:
+
         uint32 m_Creature_type;
 };
 

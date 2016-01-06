@@ -1671,8 +1671,8 @@ class DarkweaverSythAI : public CreatureAIScript
 
             if (LakkasCage != NULL)
             {
-                LakkasCage->SetState(GAMEOBJECT_STATE_OPEN);
-                LakkasCage->SetUInt32Value(GAMEOBJECT_FLAGS, LakkasCage->GetUInt32Value(GAMEOBJECT_FLAGS) - 1);
+                LakkasCage->SetState(GO_STATE_OPEN);
+                LakkasCage->SetFlags(LakkasCage->GetFlags() - 1);
             }
 
             if (mLakka != NULL && mLakka->GetScript())
@@ -1885,7 +1885,7 @@ class TalonKingIkissAI : public CreatureAIScript
 
             GameObject* IkissDoor = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(43.079f, 149.505f, 0.034f, 183398);
             if (IkissDoor != NULL)
-                IkissDoor->SetState(GAMEOBJECT_STATE_OPEN);
+                IkissDoor->SetState(GO_STATE_OPEN);
 
             RemoveAIUpdateEvent();
         }
@@ -2191,19 +2191,6 @@ class ANZUAI : public CreatureAIScript
             _unit->CastSpell(_unit, spells[4].info, spells[4].instant);
 
             spells[4].casttime = (uint32)time(NULL) + 60;
-
-            /*for (uint8 i = 0; i < 15; i++)
-            {
-            Unit* Bird = NULL;
-            Bird = _unit->GetMapMgr()->GetInterface()->SpawnCreature(23132, _unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), _unit->GetOrientation(), true, false, 0, 0);
-            if (Bird)
-            {
-            Unit* target = NULL;
-            target = FindTarget();
-            if (target)
-            _unit->GetAIInterface()->AttackReaction(target, 1, 0);
-            }
-            }*/
 
             Banished = true;
         }

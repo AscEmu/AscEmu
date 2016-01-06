@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 enum eGossipTexts
 {
     DIREBREW_1 = 15858,
-    DIREBREW_2 = 15859,
+    DIREBREW_2 = 15859
 };
 
 #define BOSS_DIREBREW 23872
@@ -51,7 +51,7 @@ void CorenDirebrewGossip::GossipHello(Object* pObject, Player * Plr)
 {
     GossipMenu* Menu;
     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), DIREBREW_1, Plr);
-    Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(439), 1);     // Insult Coren Direbrew's brew.
+    Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(439), 1);     // Insult Coren Direbrew's brew.
     Menu->SendTo(Plr);
 }
 
@@ -69,8 +69,8 @@ void CorenDirebrewGossip::GossipSelectOption(Object* pObject, Player* Plr, uint3
     {
         case 1:
         {
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(440), 1);     // Fight.
-            Menu->AddItem(ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(441), 1);     // Apologize.
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(440), 1);     // Fight.
+            Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(441), 1);     // Apologize.
             Menu->SendTo(Plr);
         }break;
         case 2:

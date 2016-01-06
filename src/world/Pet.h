@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -103,7 +103,7 @@ enum AutoCastEvents
     AUTOCAST_EVENT_ON_SPAWN             = 2,
     AUTOCAST_EVENT_OWNER_ATTACKED       = 3,
     AUTOCAST_EVENT_LEAVE_COMBAT         = 4,
-    AUTOCAST_EVENT_COUNT                = 5,
+    AUTOCAST_EVENT_COUNT                = 5
 };
 
 #define PET_TALENT_TREE_START 409           /// Tenacity

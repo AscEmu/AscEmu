@@ -23,6 +23,7 @@
 
 #include "EventableObject.h"
 #include "Singleton.h"
+#include "DBC/DBCStructures.hpp"
 
 #include <map>
 #include <vector>
@@ -39,8 +40,6 @@ enum LOOTTYPE
 
 struct ItemPrototype;
 class MapMgr;
-struct RandomProps;
-struct ItemRandomSuffixEntry;
 class Player;
 
 class LootRoll : public EventableObject
@@ -53,11 +52,12 @@ class LootRoll : public EventableObject
         void PlayerRolled(Player* player, uint8 choice);
         void Finalize();
         int32 event_GetInstanceID();
+
     private:
 
         std::map<uint32, uint32> m_NeedRolls;
         std::map<uint32, uint32> m_GreedRolls;
-    std::set<uint32> m_passRolls;
+        std::set<uint32> m_passRolls;
         uint32 _groupcount;
         uint32 _slotid;
         uint32 _itemid;
@@ -68,14 +68,14 @@ class LootRoll : public EventableObject
         MapMgr* _mgr;
 };
 
-typedef std::vector<std::pair<RandomProps*, float>> RandomPropertyVector;
-typedef std::vector<std::pair<ItemRandomSuffixEntry*, float>> RandomSuffixVector;
+typedef std::vector<std::pair<DBC::Structures::ItemRandomPropertiesEntry const*, float>> RandomPropertyVector;
+typedef std::vector<std::pair<DBC::Structures::ItemRandomSuffixEntry const*, float>> RandomSuffixVector;
 
-typedef struct
+struct _LootItem
 {
     ItemPrototype* itemproto;
     uint32 displayid;
-} _LootItem;
+};
 
 typedef std::set<uint32> LooterSet;
 
@@ -83,8 +83,8 @@ struct __LootItem
 {
     _LootItem item;
     uint32 iItemsCount;
-    RandomProps* iRandomProperty;
-    ItemRandomSuffixEntry* iRandomSuffix;
+    DBC::Structures::ItemRandomPropertiesEntry const* iRandomProperty;
+    DBC::Structures::ItemRandomSuffixEntry const* iRandomSuffix;
     LootRoll* roll;
     bool passed;
     LooterSet has_looted;
@@ -133,7 +133,7 @@ class ItemIsNotLooted
         }
 };
 
-typedef struct
+struct StoreLootItem
 {
     _LootItem item;	    /// the item that drops
     float chance;	    /// normal dungeon / normal 10men raid / old raid (10,25, or 40 men)
@@ -143,19 +143,25 @@ typedef struct
     uint32 mincount;	/// minimum quantity to drop
     uint32 maxcount;	/// maximum quantity to drop
     uint32 ffa_loot;	/// can everyone from the group loot the item?
-} StoreLootItem;
+};
 
-typedef struct
+struct StoreLootList
 {
     uint32 count;
     StoreLootItem* items;
-} StoreLootList;
+};
 
-typedef struct
+struct Loot
 {
     std::vector<__LootItem> items;
     uint32 gold;
     LooterSet looters;
+
+    Loot()
+    {
+        gold = 0;
+    }
+
     bool HasRoll()
     {
         for (std::vector< __LootItem >::iterator itr = items.begin(); itr != items.end(); ++itr)
@@ -165,7 +171,7 @@ typedef struct
         }
         return false;
     }
-} Loot;
+};
 
 struct tempy
 {
@@ -190,6 +196,7 @@ typedef std::map<uint32, StoreLootList> LootStore;
 class SERVER_DECL LootMgr : public Singleton <LootMgr>
 {
     public:
+
         LootMgr();
         ~LootMgr();
 
@@ -230,16 +237,17 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
 
         std::map<uint32, std::set<uint32>> quest_loot_go;
 
-        RandomProps* GetRandomProperties(ItemPrototype* proto);
-        ItemRandomSuffixEntry* GetRandomSuffix(ItemPrototype* proto);
+        DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemPrototype* proto);
+        DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemPrototype* proto);
 
         bool is_loading;
+
     private:
 
         void LoadLootTables(const char* szTableName, LootStore* LootTable);
         void PushLoot(StoreLootList* list, Loot* loot, uint32 type);
-    std::map<uint32, RandomPropertyVector> _randomprops;
-    std::map<uint32, RandomSuffixVector> _randomsuffix;
+        std::map<uint32, RandomPropertyVector> _randomprops;
+        std::map<uint32, RandomSuffixVector> _randomsuffix;
 };
 
 #define lootmgr LootMgr::getSingleton()

@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -45,23 +45,23 @@ enum MailFlags
 
 enum MailTypes
 {
-    NORMAL      = 0,
-    COD         = 1,
-    AUCTION     = 2,
-    CREATURE    = 3,
-    GAMEOBJECT  = 4,
-    ITEM        = 5
+    MAIL_TYPE_NORMAL      = 0,
+    MAIL_TYPE_COD         = 1,
+    MAIL_TYPE_AUCTION     = 2,
+    MAIL_TYPE_CREATURE    = 3,
+    MAIL_TYPE_GAMEOBJECT  = 4,
+    MAIL_TYPE_ITEM        = 5
 };
 
 enum MailError
 {
-    MAIL_OK = 0,
-    MAIL_ERR_BAG_FULL = 1,
-    MAIL_ERR_CANNOT_SEND_TO_SELF = 2,
-    MAIL_ERR_NOT_ENOUGH_MONEY = 3,
-    MAIL_ERR_RECIPIENT_NOT_FOUND = 4,
-    MAIL_ERR_NOT_YOUR_ALLIANCE = 5,
-    MAIL_ERR_INTERNAL_ERROR = 6
+    MAIL_OK                         = 0,
+    MAIL_ERR_BAG_FULL               = 1,
+    MAIL_ERR_CANNOT_SEND_TO_SELF    = 2,
+    MAIL_ERR_NOT_ENOUGH_MONEY       = 3,
+    MAIL_ERR_RECIPIENT_NOT_FOUND    = 4,
+    MAIL_ERR_NOT_YOUR_ALLIANCE      = 5,
+    MAIL_ERR_INTERNAL_ERROR         = 6
 };
 
 // see Stationery.dbc
@@ -72,8 +72,8 @@ enum MailStationery
     MAIL_STATIONERY_TEST2       = 41,    // 9311
     MAIL_STATIONERY_GM          = 61,    // 18154
     MAIL_STATIONERY_AUCTION     = 62,    // 21140
-    MAIL_STATIONERY_VAL         = 64,    /// 22058, Valentines day
-    MAIL_STATIONERY_CHR         = 65     /// 34171, Winter
+    MAIL_STATIONERY_VAL         = 64,    // 22058, Valentines day
+    MAIL_STATIONERY_CHR         = 65     // 34171, Winter
 };
 
 enum MailCheckMask
@@ -153,6 +153,9 @@ class SERVER_DECL MailSystem : public Singleton<MailSystem>, public EventableObj
 
         /// overload to keep backward compatibility (passing just 1 item guid instead of a vector)
         void SendAutomatedMessage(uint32 type, uint64 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
+                                  uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
+
+        void SendCreatureGameobjectMail(uint32 type, uint32 sender, uint64 receiver, std::string subject, std::string body, uint32 money,
                                   uint32 cod, uint64 item_guid, uint32 stationery, MailCheckMask checked = MAIL_CHECK_MASK_HAS_BODY, uint32 deliverdelay = 0);
 
         inline bool MailOption(uint32 flag)

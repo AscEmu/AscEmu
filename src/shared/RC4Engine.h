@@ -13,8 +13,9 @@
  *
  */
 
-#ifndef _SHARED_RC4ENGINE_H
-#define _SHARED_RC4ENGINE_H
+#ifndef _RC4ENGINE_H
+#define _RC4ENGINE_H
+
 #include <cstdlib>
 #include <cstring>
 
@@ -97,4 +98,4 @@ __inline void ReverseBytes(unsigned char* Pointer, unsigned int Length)
     std::free(Temp);
 }
 
-#endif  // _SHARED_RC4ENGINE_H
+#endif  // _RC4ENGINE_H

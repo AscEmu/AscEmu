@@ -71,7 +71,7 @@ Guild::~Guild()
 
     for (GuildBankTabVector::iterator itr = m_bankTabs.begin(); itr != m_bankTabs.end(); ++itr)
     {
-        for (uint32 i = 0; i < MAX_GUILD_BANK_SLOTS; ++i)
+        for (uint8 i = 0; i < MAX_GUILD_BANK_SLOTS; ++i)
             if ((*itr)->pSlots[i] != NULL)
                 (*itr)->pSlots[i]->DeleteMe();
 
@@ -1236,7 +1236,7 @@ void Guild::SendGuildRoster(WorldSession* pClient)
 
 void Guild::SendGuildQuery(WorldSession* pClient)
 {
-    uint32 i = 0;
+    uint8 i = 0;
     GuildRank* r;
     WorldPacket data(SMSG_GUILD_QUERY_RESPONSE, 300);
     data << m_guildId;
@@ -1426,7 +1426,7 @@ void Guild::DepositMoney(WorldSession* pClient, uint32 uAmount)
 
     // broadcast guild event telling everyone the new balance
     char buf[20];
-    snprintf(buf, 20, "%lu", m_bankBalance);
+    snprintf(buf, 20, "%llu", m_bankBalance);
     LogGuildEvent(GUILD_EVENT_SETNEWBALANCE, 1, buf);
 
     // log it!
@@ -1491,7 +1491,7 @@ void Guild::SpendMoney(uint32 uAmount)
 
     // notify everyone with the new balance
     char buf[20];
-    snprintf(buf, 20, "%lu", m_bankBalance);
+    snprintf(buf, 20, "%llu", m_bankBalance);
     LogGuildEvent(GUILD_EVENT_SETNEWBALANCE, 1, buf);
 }
 

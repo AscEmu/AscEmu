@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+
 initialiseSingleton(DatabaseCleaner);
 
 void DatabaseCleaner::Run()
@@ -46,6 +47,7 @@ void DatabaseCleaner::CleanCharacters()
     std::set<uint32> chr_guilds;
     std::set<uint32> chr_charters;
     Log.Notice("DatabaseCleaner", "Loading guids...");
+
     QueryResult* result = CharacterDatabase.Query("SELECT guid, guildid, charterId FROM characters");
     if (result)
     {

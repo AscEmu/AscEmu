@@ -178,11 +178,13 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     LfgDungeonSet randomDungeons;
     uint8 level = GetPlayer()->getLevel();
     uint8 expansion = GetPlayer()->GetSession()->GetFlags();
-    for (uint32 i = 0; i < dbcLFGDungeon.GetNumRows(); ++i)
+
+	for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
     {
-        LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(i);
+        DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
         if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
             randomDungeons.insert(dungeon->Entry());
+ 
     }
 
     // Get player locked Dungeons
@@ -198,14 +200,14 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     {
         data << uint32(*it);                               // Dungeon Entry (id + type)
         LfgReward const* reward = sLfgMgr.GetRandomDungeonReward(*it, level);
-        Quest const* qRew = NULL;
+        Quest* qRew = NULL;
         uint8 done = 0;
         if (reward)
         {
             qRew = QuestStorage.LookupEntry(reward->reward[0].questId);
             if (qRew)
             {
-                done = !GetPlayer()->HasFinishedQuest(qRew->id);
+                done = GetPlayer()->HasFinishedQuest(qRew->id);
                 if (done)
                     qRew = QuestStorage.LookupEntry(reward->reward[1].questId);
             }
@@ -217,24 +219,17 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             data << uint32(qRew->reward_xp);
             data << uint32(reward->reward[done].variableMoney);
             data << uint32(reward->reward[done].variableXP);
-            data << uint8(0);
-            ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision
-            /*data << uint8(qRew->reward_itemcount);
-            if (qRew->reward_itemcount)
-            {
-                ItemPrototype const* iProto = NULL;
-                for (uint8 i = 0; i < 4; ++i)
+            ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision 
+            /// can someone check this now ?
+            data << uint8(qRew->GetRewardItemCount());
+            for (uint8 i = 0; i < 4; ++i)
+                if (qRew->reward_item[i] != 0)
                 {
-                    if (!qRew->reward_item[i])
-                        continue;
-
-                    iProto = ItemPrototypeStorage.LookupEntry(qRew->reward_item[i]);
-
+                    ItemPrototype* item = ItemPrototypeStorage.LookupEntry(qRew->reward_item[i]);
                     data << uint32(qRew->reward_item[i]);
-                    data << uint32(iProto ? iProto->DisplayInfoID : 0);
+                    data << uint32(item ? item->DisplayInfoID : 0);
                     data << uint32(qRew->reward_itemcount[i]);
                 }
-            }*/
         }
         else
         {
@@ -444,7 +439,7 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
     {
         for (LfgDungeonSet::iterator it = dungeons.begin(); it != dungeons.end(); ++it)
         {
-            LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(*it);
+            DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
             data << uint32(dungeon ? dungeon->Entry() : 0); // Dungeon
         }
     }
@@ -499,45 +494,42 @@ void WorldSession::SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgW
     SendPacket(&data);
 }
 
-void WorldSession::SendLfgPlayerReward(uint32 rdungeonEntry, uint32 sdungeonEntry, uint8 done, const LfgReward* reward, const Quest* qRew)
+void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 DungeonEntry, uint8 done, const LfgReward* reward, Quest* qReward)
 {
-    ///\todo FIXME 
-    /*if (!rdungeonEntry || !sdungeonEntry || !qRew)
+    if (!RandomDungeonEntry || !DungeonEntry || !qReward)
         return;
 
-    uint8 itemNum = uint8(qRew ? qRew->reward_itemcount : 0);
+    uint8 itemNum = uint8(qReward->GetRewardItemCount());
 
-    Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_REWARD %u rdungeonEntry: %u - sdungeonEntry: %u - done: %u", GetPlayer()->GetGUID(), rdungeonEntry, sdungeonEntry, done);
+    Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_REWARD %u rdungeonEntry: %u - sdungeonEntry: %u - done: %u", GetPlayer()->GetGUID(), RandomDungeonEntry, DungeonEntry, done);
 
     WorldPacket data(SMSG_LFG_PLAYER_REWARD, 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 1 + itemNum * (4 + 4 + 4));
 
-    data << uint32(rdungeonEntry);                         // Random Dungeon Finished
-    data << uint32(sdungeonEntry);                         // Dungeon Finished
+    data << uint32(RandomDungeonEntry);                         // Random Dungeon Finished
+    data << uint32(DungeonEntry);                         // Dungeon Finished
     data << uint8(done);
     data << uint32(1);
-    data << uint32(qRew->reward_money);
-    data << uint32(qRew->reward_xp);
+    data << uint32(qReward->reward_money);
+    data << uint32(qReward->reward_xp);
     data << uint32(reward->reward[done].variableMoney);
     data << uint32(reward->reward[done].variableXP);
     data << uint8(itemNum);
 
     if (itemNum)
     {
-    ItemTemplate const* iProto = NULL;
-    for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
-    {
-    if (!qRew->RewardItemId[i])
-    continue;
+        for (uint8 i = 0; i < 4; ++i)
+        {
+            if (!qReward->reward_item[i])
+                continue;
 
-    iProto = sObjectMgr->GetItemTemplate(qRew->RewardItemId[i]);
+            ItemPrototype * iProto = ItemPrototypeStorage.LookupEntry(qReward->reward_item[i]);
 
-    data << uint32(qRew->RewardItemId[i]);
-    data << uint32(iProto ? iProto->DisplayInfoID : 0);
-    data << uint32(qRew->RewardItemIdCount[i]);
+            data << uint32(qReward->reward_item[i]);
+            data << uint32(iProto ? iProto->DisplayInfoID : 0);
+            data << uint32(qReward->reward_itemcount[i]);
+        }
     }
-    }
-    */
-    //   SendPacket(&data);
+    SendPacket(&data);
 }
 
 void WorldSession::SendLfgBootPlayer(const LfgPlayerBoot* pBoot)
@@ -611,7 +603,7 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
             dungeonId = (*playerDungeons.begin());
     }
 
-    if (LFGDungeonEntry const* dungeon = dbcLFGDungeon.LookupEntry(dungeonId))
+    if (DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
     {
         dungeonId = dungeon->Entry();
 

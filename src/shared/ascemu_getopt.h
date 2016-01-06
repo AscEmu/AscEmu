@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef _arcemu_GETOPT_H
-#define _arcemu_GETOPT_H
+#ifndef _ASCEMU_GETOPT_H
+#define _ASCEMU_GETOPT_H
 
 /* getopt() wrapper */
 #define arcemu_no_argument            0
@@ -35,4 +35,4 @@ struct arcemu_option
 extern char arcemu_optarg[514];
 int arcemu_getopt_long_only(int ___argc, char* const* ___argv, const char* __shortopts, const struct arcemu_option* __longopts, int* __longind);
 
-#endif
+#endif  //_ASCEMU_GETOPT_H

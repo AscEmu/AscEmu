@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -24,7 +24,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        CHECK_PACKET_SIZE(recv_data, 4);
+    CHECK_PACKET_SIZE(recv_data, 4);
     uint32 id;
     recv_data >> id;
     _HandleAreaTriggerOpcode(id);
@@ -32,20 +32,20 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
 
 enum AreaTriggerFailures
 {
-    AREA_TRIGGER_FAILURE_OK = 0,
-    AREA_TRIGGER_FAILURE_UNAVAILABLE = 1,
-    AREA_TRIGGER_FAILURE_NO_BC = 2,
-    AREA_TRIGGER_FAILURE_NO_HEROIC = 3,
-    AREA_TRIGGER_FAILURE_NO_RAID = 4,
-    AREA_TRIGGER_FAILURE_NO_ATTUNE_QA = 5,
-    AREA_TRIGGER_FAILURE_NO_ATTUNE_I = 6,
-    AREA_TRIGGER_FAILURE_LEVEL = 7,
-    AREA_TRIGGER_FAILURE_NO_GROUP = 8,
-    AREA_TRIGGER_FAILURE_NO_KEY = 9,
-    AREA_TRIGGER_FAILURE_NO_CHECK = 10,
-    AREA_TRIGGER_FAILURE_NO_WOTLK = 11,
-    AREA_TRIGGER_FAILURE_LEVEL_HEROIC = 12,
-    AREA_TRIGGER_FAILURE_NO_ATTUNE_QH = 13,
+    AREA_TRIGGER_FAILURE_OK             = 0,
+    AREA_TRIGGER_FAILURE_UNAVAILABLE    = 1,
+    AREA_TRIGGER_FAILURE_NO_BC          = 2,
+    AREA_TRIGGER_FAILURE_NO_HEROIC      = 3,
+    AREA_TRIGGER_FAILURE_NO_RAID        = 4,
+    AREA_TRIGGER_FAILURE_NO_ATTUNE_QA   = 5,
+    AREA_TRIGGER_FAILURE_NO_ATTUNE_I    = 6,
+    AREA_TRIGGER_FAILURE_LEVEL          = 7,
+    AREA_TRIGGER_FAILURE_NO_GROUP       = 8,
+    AREA_TRIGGER_FAILURE_NO_KEY         = 9,
+    AREA_TRIGGER_FAILURE_NO_CHECK       = 10,
+    AREA_TRIGGER_FAILURE_NO_WOTLK       = 11,
+    AREA_TRIGGER_FAILURE_LEVEL_HEROIC   = 12,
+    AREA_TRIGGER_FAILURE_NO_ATTUNE_QH   = 13
 };
 
 uint32 AreaTriggerFailureMessages[] =
@@ -119,17 +119,16 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
 {
     LOG_DEBUG("AreaTrigger: %u", id);
 
-    // Are we REALLY here?
     if (!_player->IsInWorld())
         return;
 
     // Search quest log, find any exploration quests
     sQuestMgr.OnPlayerExploreArea(GetPlayer(), id);
 
-    AreaTriggerEntry* entry = dbcAreaTrigger.LookupEntryForced(id);
+    auto area_trigger_entry = sAreaTriggerStore.LookupEntry(id);
     AreaTrigger* pAreaTrigger = AreaTriggerStorage.LookupEntry(id);
 
-    if (entry == NULL)
+    if (area_trigger_entry == nullptr)
     {
         LOG_DEBUG("Missing AreaTrigger: %u", id);
         return;

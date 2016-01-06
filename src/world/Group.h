@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,38 +22,38 @@
 
 enum PartyErrors
 {
-    ERR_PARTY_NO_ERROR = 0,
-    ERR_PARTY_CANNOT_FIND = 1,
-    ERR_PARTY_IS_NOT_IN_YOUR_PARTY = 2,
-    ERR_PARTY_UNK = 3,
-    ERR_PARTY_IS_FULL = 4,
-    ERR_PARTY_ALREADY_IN_GROUP = 5,
-    ERR_PARTY_YOU_ARENT_IN_A_PARTY = 6,
-    ERR_PARTY_YOU_ARE_NOT_LEADER = 7,
-    ERR_PARTY_WRONG_FACTION = 8,
-    ERR_PARTY_IS_IGNORING_YOU = 9,
+    ERR_PARTY_NO_ERROR              = 0,
+    ERR_PARTY_CANNOT_FIND           = 1,
+    ERR_PARTY_IS_NOT_IN_YOUR_PARTY  = 2,
+    ERR_PARTY_UNK                   = 3,
+    ERR_PARTY_IS_FULL               = 4,
+    ERR_PARTY_ALREADY_IN_GROUP      = 5,
+    ERR_PARTY_YOU_ARENT_IN_A_PARTY  = 6,
+    ERR_PARTY_YOU_ARE_NOT_LEADER    = 7,
+    ERR_PARTY_WRONG_FACTION         = 8,
+    ERR_PARTY_IS_IGNORING_YOU       = 9
 };
 
 enum GroupTypes
 {
-    GROUP_TYPE_PARTY = 0x0,
-    GROUP_TYPE_BG = 0x1,
-    GROUP_TYPE_RAID = 0x2,
-    GROUP_TYPE_BGRAID = GROUP_TYPE_BG | GROUP_TYPE_RAID,
-    GROUP_TYPE_UNK1 = 0x4,
-    GROUP_TYPE_LFD = 0x8,
+    GROUP_TYPE_PARTY    = 0x0,
+    GROUP_TYPE_BG       = 0x1,
+    GROUP_TYPE_RAID     = 0x2,
+    GROUP_TYPE_BGRAID   = GROUP_TYPE_BG | GROUP_TYPE_RAID,
+    GROUP_TYPE_UNK1     = 0x4,
+    GROUP_TYPE_LFD      = 0x8
 };
 
 enum MaxGroupCount
 {
-    MAX_GROUP_SIZE_PARTY = 5,
-    MAX_GROUP_SIZE_RAID = 40,
+    MAX_GROUP_SIZE_PARTY    = 5,
+    MAX_GROUP_SIZE_RAID     = 40
 };
 
 enum QuickGroupUpdateFlags
 {
-    PARTY_UPDATE_FLAG_POSITION = 1,
-    PARTY_UPDATE_FLAG_ZONEID = 2,
+    PARTY_UPDATE_FLAG_POSITION  = 1,
+    PARTY_UPDATE_FLAG_ZONEID    = 2
 };
 
 enum PartyUpdateFlags
@@ -80,27 +80,28 @@ enum PartyUpdateFlags
     GROUP_UPDATE_FLAG_PET_AURAS         = 0x00040000,       // uint64 mask, for each bit set uint32 spellid + uint8 unk, pet auras...
     GROUP_UPDATE_FLAG_VEHICLE_SEAT      = 0x00080000,       // uint32 vehicle_seat_id (index from VehicleSeat.dbc)
     GROUP_UPDATE_PET                    = 0x0007FC00,       // all pet flags
-    GROUP_UPDATE_FULL                   = 0x0007FFFF,       // all known flags
+    GROUP_UPDATE_FULL                   = 0x0007FFFF        // all known flags
 };
 
 
-#define GROUP_UPDATE_FLAGS_COUNT          20
+#define GROUP_UPDATE_FLAGS_COUNT 20
 static const uint8 GroupUpdateLength[GROUP_UPDATE_FLAGS_COUNT] = { 0, 2, 2, 2, 1, 2, 2, 2, 2, 4, 8, 8, 1, 2, 2, 2, 1, 2, 2, 8 };
 
 enum GroupMemberOnlineStatus
 {
     MEMBER_STATUS_OFFLINE   = 0x0000,
-    MEMBER_STATUS_ONLINE    = 0x0001,                       // Lua_UnitIsConnected
-    MEMBER_STATUS_PVP       = 0x0002,                       // Lua_UnitIsPVP
-    MEMBER_STATUS_DEAD      = 0x0004,                       // Lua_UnitIsDead
-    MEMBER_STATUS_GHOST     = 0x0008,                       // Lua_UnitIsGhost
-    MEMBER_STATUS_PVP_FFA   = 0x0010,                       // Lua_UnitIsPVPFreeForAll
-    MEMBER_STATUS_UNK3      = 0x0020,                       // used in calls from Lua_GetPlayerMapPosition/Lua_GetBattlefieldFlagPosition
-    MEMBER_STATUS_AFK       = 0x0040,                       // Lua_UnitIsAFK
-    MEMBER_STATUS_DND       = 0x0080,                       // Lua_UnitIsDND
+    MEMBER_STATUS_ONLINE    = 0x0001,       // Lua_UnitIsConnected
+    MEMBER_STATUS_PVP       = 0x0002,       // Lua_UnitIsPVP
+    MEMBER_STATUS_DEAD      = 0x0004,       // Lua_UnitIsDead
+    MEMBER_STATUS_GHOST     = 0x0008,       // Lua_UnitIsGhost
+    MEMBER_STATUS_PVP_FFA   = 0x0010,       // Lua_UnitIsPVPFreeForAll
+    MEMBER_STATUS_UNK3      = 0x0020,       // used in calls from Lua_GetPlayerMapPosition/Lua_GetBattlefieldFlagPosition
+    MEMBER_STATUS_AFK       = 0x0040,       // Lua_UnitIsAFK
+    MEMBER_STATUS_DND       = 0x0080        // Lua_UnitIsDND
 };
 
 class PlayerInfo;
+
 typedef struct
 {
     PlayerInfo* player_info;
@@ -237,8 +238,8 @@ class SERVER_DECL Group
 
         uint32 m_instanceIds[NUM_MAPS][NUM_INSTANCE_MODES];
 
-        void SetDungeonDifficulty(uint32 diff);
-        void SetRaidDifficulty(uint32 diff);
+        void SetDungeonDifficulty(uint8 diff);
+        void SetRaidDifficulty(uint8 diff);
         void SendLootUpdates(Object* o);
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -292,6 +293,7 @@ class SERVER_DECL Group
         bool m_dirty;
         bool m_updateblock;
         uint32 updatecounter;
+
     public:
 
         uint8 m_difficulty;

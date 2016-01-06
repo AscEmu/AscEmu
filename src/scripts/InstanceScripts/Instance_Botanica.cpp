@@ -184,11 +184,9 @@ class BloodProtectorAI : public CreatureAIScript
 // Bloodwarder Mender AI
 // \todo Script me!
 
-/*  * Healer
-    * Casts Shadow Word: Pain and Mind Blast
-    * Mind Control these for Holy Fury buff (+295 spell damage for 30 minutes, shows as DIVINE fury on the pet bar). Can be spellstolen.
-    */
-
+    //Healer
+    //Casts Shadow Word: Pain and Mind Blast
+    //Mind Control these for Holy Fury buff (+295 spell damage for 30 minutes, shows as DIVINE fury on the pet bar). Can be spellstolen.
 
 // Bloodwarder Greenkeeper AI
 class BloodGreenkeeperAI : public CreatureAIScript
