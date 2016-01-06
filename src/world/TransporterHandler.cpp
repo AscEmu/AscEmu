@@ -114,105 +114,106 @@ void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
 
 void ObjectMgr::LoadTransports()
 {
-    uint32 oldMSTime = getMSTime();
-
-    QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
-
-    if (!result)
+    Log.Success("TransportHandler", "Starting loading transport data...");
     {
-        Log.Error("Transporter Handler", ">> Loaded 0 transports. DB table `transport_data` is empty!");
-        return;
-    }
+        uint32 oldMSTime = getMSTime();
 
-    uint32 count = 0;
+        QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
 
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32 entry = fields[0].GetUInt32();
-        std::string name = fields[1].GetString();
-        uint32 period = fields[2].GetUInt32();
-
-        auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
-
-        if (!gameobject_info)
+        if (!result)
         {
-            Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names missing", entry, name.c_str());
-            continue;
+            Log.Error("Transporter Handler", ">> Loaded 0 transports. DB table `transport_data` is empty!");
+            return;
         }
 
-        if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
+        uint32 count = 0;
+
+        do
         {
-            Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names type wrong", entry, name.c_str());
-            continue;
-        }
+            Field* fields = result->Fetch();
+            uint32 entry = fields[0].GetUInt32();
+            std::string name = fields[1].GetString();
+            uint32 period = fields[2].GetUInt32();
 
-        std::set<uint32> mapsUsed;
+            auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
 
-        Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
-        if (!pTransporter->Create(entry, period))
-        {
-            delete pTransporter;
-            continue;
-        }
-
-        // AddObject To World
-        pTransporter->AddToWorld();
-
-        m_Transporters.insert(pTransporter);
-        AddTransport(pTransporter);
-        
-        for (std::set<uint32>::const_iterator i = mapsUsed.begin(); i != mapsUsed.end(); ++i)
-            m_TransportersByMap[*i].insert(pTransporter);
-
-        ++count;
-    } 
-    while (result->NextRow());
-
-    delete result;
-
-    Log.Success("Transporter Handler", ">> Loaded %u transports in %u ms", count, getMSTime() - oldMSTime);
-}
-
-void ObjectMgr::LoadTransportNPCs()
-{
-    uint32 oldMSTime = getMSTime();
-
-    QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM creature_transport");
-
-    if (!result)
-    {
-        Log.Error("Transport Handler", ">> Loaded 0 transport NPCs. DB table `creature_transport` is empty!");
-        return;
-    }
-
-    uint32 count = 0;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32 guid = fields[0].GetInt32();
-        uint32 entry = fields[1].GetInt32();
-        uint32 transportEntry = fields[2].GetInt32();
-        float tX = fields[3].GetFloat();
-        float tY = fields[4].GetFloat();
-        float tZ = fields[5].GetFloat();
-        float tO = fields[6].GetFloat();
-        uint32 anim = fields[7].GetInt32();
-
-        for (ObjectMgr::TransporterSet::iterator itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
-        {
-            if ((*itr)->GetEntry() == transportEntry)
+            if (!gameobject_info)
             {
-                (*itr)->AddNPCPassenger(guid, entry, tX, tY, tZ, tO, anim);
-                break;
+                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names missing", entry, name.c_str());
+                continue;
             }
+
+            if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
+            {
+                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names type wrong", entry, name.c_str());
+                continue;
+            }
+
+            std::set<uint32> mapsUsed;
+
+            Transporter* pTransporter = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | entry);
+            if (!pTransporter->Create(entry, period))
+            {
+                delete pTransporter;
+                continue;
+            }
+
+            // AddObject To World
+            pTransporter->AddToWorld();
+
+            m_Transporters.insert(pTransporter);
+            AddTransport(pTransporter);
+
+            for (std::set<uint32>::const_iterator i = mapsUsed.begin(); i != mapsUsed.end(); ++i)
+                m_TransportersByMap[*i].insert(pTransporter);
+
+            ++count;
+        } while (result->NextRow());
+
+        delete result;
+
+        Log.Success("Transporter Handler", ">> Loaded %u transports in %u ms", count, getMSTime() - oldMSTime);
+    }
+    Log.Success("TransportHandler", "Starting loading transport creatures...");
+    {
+        uint32 oldMSTime = getMSTime();
+
+        QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures");
+
+        if (!result)
+        {
+            Log.Error("Transport Handler", ">> Loaded 0 transport NPCs. DB table `transport_creatures` is empty!");
+            return;
         }
 
-        ++count;
-    } while (result->NextRow());
+        uint32 count = 0;
 
-    Log.Success("Transport Handler", ">> Loaded %u Transport Npcs in %u ms", count, getMSTime() - oldMSTime);
+        do
+        {
+            Field* fields = result->Fetch();
+            uint32 guid = fields[0].GetInt32();
+            uint32 entry = fields[1].GetInt32();
+            uint32 transportEntry = fields[2].GetInt32();
+            float tX = fields[3].GetFloat();
+            float tY = fields[4].GetFloat();
+            float tZ = fields[5].GetFloat();
+            float tO = fields[6].GetFloat();
+            uint32 anim = fields[7].GetInt32();
+
+            for (ObjectMgr::TransporterSet::iterator itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
+            {
+                if ((*itr)->GetEntry() == transportEntry)
+                {
+                    (*itr)->AddNPCPassenger(guid, entry, tX, tY, tZ, tO, anim);
+                    break;
+                }
+            }
+
+            ++count;
+        } while (result->NextRow());
+
+        Log.Success("Transport Handler", ">> Loaded %u Transport Npcs in %u ms", count, getMSTime() - oldMSTime);
+    }
 }
 
 Transporter::Transporter(uint64 guid) : GameObject(guid)

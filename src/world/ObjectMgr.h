@@ -695,9 +695,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Loads Transporters on Continents
         void LoadTransports();
 
-        // Loads Transport Creatures in Continents
-        void LoadTransportNPCs();
-
         // Load Transport in Instance	
         Transporter*LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period);
 

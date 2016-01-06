@@ -585,7 +585,6 @@ bool World::SetInitialWorldSettings()
 
     Log.Success("World", "Starting Transport System...");
     objmgr.LoadTransports();
-    objmgr.LoadTransportNPCs();
 
     //Start the Achievement system :D
 #ifdef ENABLE_ACHIEVEMENTS
