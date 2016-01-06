@@ -229,7 +229,6 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
                 break;
         }
 
-        m_controlPoints[Id]->bannerslot = static_cast<uint8>(Id);
         m_controlPoints[Id]->PushToWorld(m_mapMgr);
     }
     else
@@ -283,7 +282,6 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPointAuras[Id]->SetState(GO_STATE_CLOSED);
         m_controlPointAuras[Id]->SetType(GAMEOBJECT_TYPE_TRAP);
         m_controlPointAuras[Id]->SetAnimProgress(100);
-        m_controlPointAuras[Id]->bannerauraslot = static_cast<uint8>(Id);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }
     else
@@ -991,19 +989,26 @@ void ArathiBasin::AssaultControlPoint(Player* pPlayer, uint32 Id)
 
 bool ArathiBasin::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pSpell)
 {
-    ///\todo  find a cleaner way to do this that doesn't waste memory.
-    if (pGo->bannerslot >= 0 && pGo->bannerslot < AB_NUM_CONTROL_POINTS)
+    uint32 cpid = 0; //control point id, not child porn id!
+    for (cpid = 0; cpid < AB_NUM_CONTROL_POINTS; cpid++)
     {
-        //Stealthed / invisible players can't cap
-        //if(pPlayer->GetStealthLevel() > 0 || pPlayer->HasAurasWithNameHash(SPELL_HASH_PROWL) || pPlayer->HasAurasWithNameHash(SPELL_HASH_SHADOWMELD))
-        if (pPlayer->IsStealth() || pPlayer->m_invisible)
-            return false;
-
-        AssaultControlPoint(pPlayer, pGo->bannerslot);
-        return true;
+        if (m_controlPoints[cpid] == NULL)
+            continue;
+        if (m_controlPoints[cpid]->GetGUID() == pGo->GetGUID())
+            break;
     }
 
-    return false;
+    if (cpid == AB_NUM_CONTROL_POINTS)
+        return false;
+    ///\todo  find a cleaner way to do this that doesn't waste memory.
+        //Stealthed / invisible players can't cap
+        //if(pPlayer->GetStealthLevel() > 0 || pPlayer->HasAurasWithNameHash(SPELL_HASH_PROWL) || pPlayer->HasAurasWithNameHash(SPELL_HASH_SHADOWMELD))
+
+    if (pPlayer->IsStealth() || pPlayer->m_invisible)
+        return false;
+
+    AssaultControlPoint(pPlayer, cpid);
+    return true;
 }
 
 void ArathiBasin::HookOnShadowSight()

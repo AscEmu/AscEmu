@@ -228,7 +228,7 @@ class SERVER_DECL Unit : public Object
         friend class AIInterface;
         friend class Aura;
 
-        virtual void Update(uint32 time);
+        void Update(unsigned long time_passed);
         virtual void RemoveFromWorld(bool free_guid);
         virtual void OnPushToWorld();
 
@@ -923,6 +923,7 @@ class SERVER_DECL Unit : public Object
         bool m_temp_summon;
 
         void CancelSpell(Spell* ptr);
+        void EventStopChanneling(bool abort);
         void EventStrikeWithAbility(uint64 guid, SpellEntry* sp, uint32 damage);
         void DispelAll(bool positive);
 

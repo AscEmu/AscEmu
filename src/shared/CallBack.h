@@ -21,6 +21,8 @@
 #ifndef _CALLBACK_H
 #define _CALLBACK_H
 
+#include "Database/Database.h"
+
 class CallbackBase
 {
     public:

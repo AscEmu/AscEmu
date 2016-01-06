@@ -520,11 +520,11 @@ void StrandOfTheAncient::PrepareRound()
 
     for (uint8 i = 0; i < GATE_COUNT; i++)
     {
-        m_gates[i]->Rebuild();
+        //m_gates[i]->Rebuild();
         m_gates[i]->SetFaction(TeamFactions[Defenders]);
     }
 
-    m_endgate->Rebuild();
+    //m_endgate->Rebuild();
     m_endgate->SetFaction(TeamFactions[Defenders]);
 
     m_relic->SetFaction(TeamFactions[Attackers]);

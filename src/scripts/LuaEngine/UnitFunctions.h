@@ -4513,16 +4513,20 @@ class LuaUnit
         else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
         {
             GameObject* pGO = plr->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
-            switch (loot_type)
+            if (pGO != NULL && pGO->IsLootable())
             {
-                default:
-                    lootmgr.FillGOLoot(&pGO->loot, pGO->GetEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
-                    loot_type2 = 1;
-                    break;
-                case 5:
-                    lootmgr.FillSkinningLoot(&pGO->loot, pGO->GetEntry());
-                    loot_type2 = 2;
-                    break;
+                GameObject_Lootable* lt = static_cast<GameObject_Lootable*>(pGO);
+                switch (loot_type)
+                {
+                    default:
+                        lootmgr.FillGOLoot(&lt->loot, pGO->GetEntry(), pGO->GetMapMgr() ? (pGO->GetMapMgr()->iInstanceMode ? true : false) : false);
+                        loot_type2 = 1;
+                        break;
+                    case 5:
+                        lootmgr.FillSkinningLoot(&lt->loot, pGO->GetEntry());
+                        loot_type2 = 2;
+                        break;
+                }
             }
         }
         else if (guidtype == HIGHGUID_TYPE_ITEM)

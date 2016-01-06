@@ -209,6 +209,15 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     passengercount++;
     freeseats--;
 
+    if (passenger->IsPlayer() && passengercount == 1)
+    {
+        if (owner->IsCreature())
+        {
+            Creature* c = static_cast<Creature*>(owner);
+            c->SetFaction(passenger->GetFaction());
+        }
+    }
+
     // remove spellclick flag if full
     if (!HasEmptySeat())
     {
@@ -234,7 +243,9 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
         if (c->GetScript() != NULL)
         {
             if (passengercount == 1)
+            {
                 c->GetScript()->OnFirstPassengerEntered(passenger);
+            }
 
             if (!HasEmptySeat())
                 c->GetScript()->OnVehicleFull();
@@ -350,7 +361,9 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
         if (c->GetScript() != NULL)
         {
             if (passengercount == 0)
+            {
                 c->GetScript()->OnLastPassengerLeft(passenger);
+            }
         }
         else{
             // The passenger summoned the vehicle, and we have no script to remove it, so we remove it here

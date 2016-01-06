@@ -21,6 +21,19 @@
 #ifndef _OBJECTMGR_H
 #define _OBJECTMGR_H
 
+#include "Chat.h"
+#include "Corpse.h"
+#include "Player.h"
+#include "Guild.h"
+#include "DBC/DBCStructures.hpp"
+#include "DBC/DBCStores.h"
+#include "CreatureDefines.hpp"
+#include "TransporterHandler.h"
+#include "GameObject.h"
+#include "Spell.h"
+
+#include <string>
+
 inline bool FindXinYString(std::string & x, std::string & y)
 {
     return y.find(x) != std::string::npos;

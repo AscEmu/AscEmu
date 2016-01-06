@@ -205,6 +205,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
              out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
     SystemMessage(m_session, "Use for report: .worldport %d %f %f %f", out_map_id, out_x, out_y, out_z);
+    SystemMessage(m_session, "Current z position: %f Landheigh: %f ", out_z, obj->GetMapMgr()->GetADTLandHeight(out_x, out_y));
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != NULL && *args == '1')
     {

@@ -1168,9 +1168,11 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
     SystemMessage(m_session, "%s Rotation 2:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(2));
     SystemMessage(m_session, "%s Rotation 3:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetParentRotation(3));
 
+    GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(gameobject);
+
     if (gameobject_info->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
-        SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->GetHP(), gameobject->GetMaxHP());
+        SystemMessage(m_session, "%s HP:%s%u/%u", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, dgo->GetHP(), dgo->GetMaxHP());
     }
 
     return true;
@@ -1478,17 +1480,19 @@ bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
     if (spellid == 0)
         spellid = 57609;
 
-    if (go->GetHP() == 0)
+    GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(go);
+
+    if (dgo->GetHP() == 0)
     {
         RedSystemMessage(session, "Cannot further damage a destroyed GameObject");
         return true;
     }
 
     uint64 guid = session->GetPlayer()->GetGUID();
-    go->Damage(damage, guid, 0, spellid);
+    dgo->Damage(damage, guid, 0, spellid);
 
     GreenSystemMessage(session, "GameObject has been damaged for %u hitpoints", damage);
-    GreenSystemMessage(session, "New hitpoints %u", go->GetHP());
+    GreenSystemMessage(session, "New hitpoints %u", dgo->GetHP());
 
     return true;
 }
@@ -1508,12 +1512,14 @@ bool ChatHandler::HandleGORebuildCommand(const char* args, WorldSession* session
         return true;
     }
 
-    uint32 oldHitPoints = go->GetHP();
+    GameObject_Destructible* dgo = static_cast<GameObject_Destructible*>(go);
 
-    go->Rebuild();
+    uint32 oldHitPoints = dgo->GetHP();
+
+    dgo->Rebuild();
 
     BlueSystemMessage(session, "GameObject has been rebuilt.");
-    GreenSystemMessage(session, "Old hitpoints: %u New hitpoints %u", oldHitPoints, go->GetHP());
+    GreenSystemMessage(session, "Old hitpoints: %u New hitpoints %u", oldHitPoints, dgo->GetHP());
 
     return true;
 }

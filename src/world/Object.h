@@ -25,6 +25,7 @@
 #include "UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "EventableObject.h"
+#include "IUpdatable.h"
 
 #include <set>
 #include <map>
@@ -226,15 +227,16 @@ struct MovementInfo
 //////////////////////////////////////////////////////////////////////////////////////////
 /// class Object:Base object for every item, unit, player, corpse, container, etc
 //////////////////////////////////////////////////////////////////////////////////////////
-class SERVER_DECL Object : public EventableObject
+class SERVER_DECL Object : public EventableObject, public IUpdatable
 {
     public:
 
         typedef std::set<Object*> InRangeSet;
 
+        Object();
         virtual ~Object();
 
-        virtual void Update(uint32 time) { }
+        void Update(unsigned long time_passed) {}
 
         /// True if object exists in world, else false
         bool IsInWorld() { return m_mapMgr != NULL; }
@@ -751,8 +753,6 @@ class SERVER_DECL Object : public EventableObject
         virtual Group* GetGroup() { return NULL; }
 
     protected:
-
-        Object();
 
         //void _Create (uint32 guidlow, uint32 guidhigh);
         void _Create(uint32 mapid, float x, float y, float z, float ang);

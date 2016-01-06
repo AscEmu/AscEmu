@@ -19,57 +19,54 @@
  *
  */
 
-#include "StdAfx.h"
+#include "CRitual.h"
 
-namespace Arcemu
+void CRitual::Setup(unsigned long CasterGUID, unsigned long TargetGUID, unsigned long SpellID)
 {
-    void CRitual::Setup(unsigned long CasterGUID, unsigned long TargetGUID, unsigned long SpellID)
+    this->CasterGUID = CasterGUID;
+    this->TargetGUID = TargetGUID;
+    this->SpellID = SpellID;
+
+    AddMember(CasterGUID);
+}
+
+bool CRitual::AddMember(unsigned long GUID)
+{
+    unsigned long i = 0;
+    for (; i < MaxMembers; i++)
+        if (Members[i] == 0)
+            break;
+
+    if (i == MaxMembers)
+        return false;
+
+    Members[i] = GUID;
+    CurrentMembers++;
+
+    return true;
+}
+
+bool CRitual::RemoveMember(unsigned long GUID)
+{
+    unsigned long i = 0;
+    for (; i < MaxMembers; i++)
     {
-        this->CasterGUID = CasterGUID;
-        this->TargetGUID = TargetGUID;
-        this->SpellID = SpellID;
-
-        AddMember(CasterGUID);
-    }
-
-    bool CRitual::AddMember(unsigned long GUID)
-    {
-        unsigned long i = 0;
-        for (; i < MaxMembers; i++)
-            if (Members[i] == 0)
-                break;
-
-        if (i == MaxMembers)
-            return false;
-
-        Members[i] = GUID;
-        CurrentMembers++;
-
-        return true;
-    }
-
-    bool CRitual::RemoveMember(unsigned long GUID)
-    {
-        unsigned long i = 0;
-        for (; i < MaxMembers; i++)
+        if (Members[i] == GUID)
         {
-            if (Members[i] == GUID)
-            {
-                Members[i] = 0;
-                CurrentMembers--;
-                return true;
-            }
+            Members[i] = 0;
+            CurrentMembers--;
+            return true;
         }
-
-        return false;
     }
 
-    bool CRitual::HasMember(unsigned long GUID)
-    {
-        for (unsigned long i = 0; i < MaxMembers; i++)
-            if (Members[i] == GUID)
-                return true;
+    return false;
+}
 
-        return false;
-    }
+bool CRitual::HasMember(unsigned long GUID)
+{
+    for (unsigned long i = 0; i < MaxMembers; i++)
+        if (Members[i] == GUID)
+            return true;
+
+    return false;
 }

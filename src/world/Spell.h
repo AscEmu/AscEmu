@@ -1774,7 +1774,7 @@ class SERVER_DECL Spell : public EventableObject
         // Cancels the current spell
         void cancel();
         // Update spell state based on time difference
-        void update(uint32 difftime);
+        void Update(unsigned long time_passed);
         // Casts the spell
         void cast(bool);
         // Finishes the casted spell
@@ -1912,7 +1912,7 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectPersistentAA(uint32 i);
 
         virtual void SpellEffectSummon(uint32 i);
-        void SpellEffectSummonWild(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
+        void SpellEffectSummonWild(uint32 i);
         void SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
         void SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);
         void SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v);

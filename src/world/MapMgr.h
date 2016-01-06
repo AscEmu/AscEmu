@@ -27,6 +27,7 @@
 #include "MapMgrDefines.hpp"
 #include "CThreads.h"
 #include "Entities/Summons/SummonDefines.hpp"
+#include "CObjectFactory.h"
 
 namespace Arcemu
 {
@@ -76,6 +77,8 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
     friend class MapScriptInterface;
 
     public:
+
+        CObjectFactory ObjectFactory;
 
         const uint16 GetAreaFlag(float x, float y, float z, bool *is_outdoors = nullptr);
 
@@ -237,6 +240,14 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
         void KillThread();
 
         float GetFirstZWithCPZ(float x, float y, float z);
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        ///Finds and returns the nearest GameObject with this type from Object's inrange set.
+        /// \param    Object* o - Pointer to the Object that's inrange set we are searching
+        /// \param    uint32 type - Type of the GameObject we want to find
+        /// \return a pointer to the GameObject if found, NULL if there isn't such a GameObject.
+        //////////////////////////////////////////////////////////////////////////////////////////
+        GameObject* FindNearestGoWithType(Object* o, uint32 type);
 
 	protected:
 

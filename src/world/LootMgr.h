@@ -71,11 +71,11 @@ class LootRoll : public EventableObject
 typedef std::vector<std::pair<DBC::Structures::ItemRandomPropertiesEntry const*, float>> RandomPropertyVector;
 typedef std::vector<std::pair<DBC::Structures::ItemRandomSuffixEntry const*, float>> RandomSuffixVector;
 
-typedef struct
+struct _LootItem
 {
     ItemPrototype* itemproto;
     uint32 displayid;
-} _LootItem;
+};
 
 typedef std::set<uint32> LooterSet;
 
@@ -133,7 +133,7 @@ class ItemIsNotLooted
         }
 };
 
-typedef struct
+struct StoreLootItem
 {
     _LootItem item;	    /// the item that drops
     float chance;	    /// normal dungeon / normal 10men raid / old raid (10,25, or 40 men)
@@ -143,19 +143,25 @@ typedef struct
     uint32 mincount;	/// minimum quantity to drop
     uint32 maxcount;	/// maximum quantity to drop
     uint32 ffa_loot;	/// can everyone from the group loot the item?
-} StoreLootItem;
+};
 
-typedef struct
+struct StoreLootList
 {
     uint32 count;
     StoreLootItem* items;
-} StoreLootList;
+};
 
-typedef struct
+struct Loot
 {
     std::vector<__LootItem> items;
     uint32 gold;
     LooterSet looters;
+
+    Loot()
+    {
+        gold = 0;
+    }
+
     bool HasRoll()
     {
         for (std::vector< __LootItem >::iterator itr = items.begin(); itr != items.end(); ++itr)
@@ -165,7 +171,7 @@ typedef struct
         }
         return false;
     }
-} Loot;
+};
 
 struct tempy
 {

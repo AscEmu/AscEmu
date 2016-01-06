@@ -269,7 +269,7 @@ typedef std::unordered_map<uint64, int32> TargetMap;
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
 
-class SERVER_DECL AIInterface : public Arcemu::IUpdatable
+class SERVER_DECL AIInterface : public IUpdatable
 {
     public:
 
@@ -643,6 +643,7 @@ class SERVER_DECL AIInterface : public Arcemu::IUpdatable
         void MoveJump(float x, float y, float z, float o = 0, bool hugearc = false);
         void MoveJumpExt(float x, float y, float z, float o, float speedZ, bool hugearc);
         void MoveTeleport(float x, float y, float z, float o = 0);
+        void MoveFalling(float x, float y, float z, float o = 0);
         bool MoveCharge(float x, float y, float z);
 
         void SetCreatureProtoDifficulty(uint32 entry);

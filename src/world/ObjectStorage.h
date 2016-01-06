@@ -21,6 +21,9 @@
 #ifndef _OBJECTSTORAGE_H
 #define _OBJECTSTORAGE_H
 
+#include "Storage.h"
+#include "ObjectMgr.h"
+
 extern SERVER_DECL SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >                     ItemPrototypeStorage;
 extern SERVER_DECL SQLStorage<ItemName, ArrayStorageContainer<ItemName> >                               ItemNameStorage;
 extern SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                     CreatureNameStorage;
