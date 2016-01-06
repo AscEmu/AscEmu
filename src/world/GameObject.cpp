@@ -710,6 +710,19 @@ GameObject_Trap::~GameObject_Trap()
 
 void GameObject_Trap::InitAI()
 {
+    ///\brief prevent traps from casting periodic spells. This can be removed until proper event handling.
+    // e.g. BootyBay
+    switch (pInfo->entry)
+    {
+        case 171941:
+        case 175791:
+        case 176214:
+        case 179557:
+        case 179560:
+        case 180391:
+            return;
+    }
+
     spell = dbcSpell.LookupEntryForced(pInfo->trap.spell_id);
     charges = pInfo->trap.charges;
 
