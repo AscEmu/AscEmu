@@ -4699,6 +4699,26 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
     m_Unit->SetPosition(x, y, z, o);
 }
 
+void AIInterface::MoveFalling(float x, float y, float z, float o /*= 0*/)
+{
+    m_currentMoveSpline.clear();
+    m_currentMoveSplineIndex = 1;
+    m_currentSplineUpdateCounter = 0;
+    m_currentSplineTotalMoveTime = 0;
+    m_currentSplineFinalOrientation = o;
+
+    AddSplineFlag(SPLINEFLAG_FALLING);
+
+    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+    AddSpline(x, y, z);
+
+    SendMoveToPacket();
+
+    //complete move
+    m_currentMoveSpline.clear();
+    m_Unit->SetPosition(x, y, z, o);
+}
+
 void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 {
     if (GetDifficultyType() != 0)

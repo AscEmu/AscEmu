@@ -2524,6 +2524,9 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         GetVehicleComponent()->EjectAllPassengers();
     }
 
+    if (GetAIInterface()->Flying())
+        GetAIInterface()->MoveFalling(GetPositionX(), GetPositionY(), GetMapMgr()->GetADTLandHeight(GetPositionX(), GetPositionY()), 0);
+
     // Creature falls off vehicle on death
     if ((currentvehicle != NULL))
         currentvehicle->EjectPassenger(this);
