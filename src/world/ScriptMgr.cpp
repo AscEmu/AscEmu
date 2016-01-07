@@ -260,10 +260,14 @@ void ScriptMgr::DumpUnimplementedSpells()
 
 void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai callback)
 {
+	m_creaturesMutex.Acquire();
+
     if (_creatures.find(entry) != _creatures.end())
         LOG_ERROR("ScriptMgr is trying to register a script for Creature ID: %u even if there's already one for that Creature. Remove one of those scripts.", entry);
 
     _creatures.insert(CreatureCreateMap::value_type(entry, callback));
+
+	m_creaturesMutex.Release();
 }
 
 void ScriptMgr::register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback)
@@ -429,7 +433,12 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
 
 CreatureAIScript* ScriptMgr::CreateAIScriptClassForEntry(Creature* pCreature)
 {
-    CreatureCreateMap::iterator itr = _creatures.find(pCreature->GetEntry());
+	uint32 entry = pCreature->GetEntry();
+
+	m_creaturesMutex.Acquire();
+    CreatureCreateMap::iterator itr = _creatures.find(entry);
+	m_creaturesMutex.Release();
+
     if (itr == _creatures.end())
         return NULL;
 

@@ -294,6 +294,7 @@ class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
 
         InstanceCreateMap mInstances;
         CreatureCreateMap _creatures;
+		Mutex m_creaturesMutex;
         GameObjectCreateMap _gameobjects;
         HandleDummyAuraMap _auras;
         HandleDummySpellMap _spells;
