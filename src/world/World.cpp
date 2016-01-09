@@ -1471,10 +1471,11 @@ void World::Rehash(bool load)
     interfaction_friend = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionFriends", false);
     interfaction_misc = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionMisc", false);
     crossover_chars = Config.OptionalConfig.GetBoolDefault("Interfaction", "CrossOverCharacters", false);
+
+    gamemaster_startonGMIsland = Config.OptionalConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", false);
+    gamemaster_disableachievements = Config.OptionalConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
     gamemaster_listOnlyActiveGMs = Config.OptionalConfig.GetBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
     gamemaster_hidePermissions = Config.OptionalConfig.GetBoolDefault("GameMaster", "HidePermissions", false);
-    gamemaster_startonGMIsland = Config.MainConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", true);
-    gamemaster_disableachievements = Config.MainConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
 
     m_levelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", PLAYER_LEVEL_CAP);
     m_genLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", PLAYER_LEVEL_CAP);
