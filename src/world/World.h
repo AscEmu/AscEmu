@@ -595,6 +595,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         bool gamemaster_hidePermissions;
         bool gamemaster_startonGMIsland;
         bool gamemaster_disableachievements;
+        bool gamemaster_announceKick;
 
         //Arena Settings
         int Arena_Season;
