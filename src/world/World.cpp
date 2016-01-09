@@ -1329,6 +1329,7 @@ void World::Rehash(bool load)
     channelmgr.seperatechannels = Config.MainConfig.GetBoolDefault("Server", "SeperateChatChannels", false);
     MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
     vMapPath = Config.MainConfig.GetStringDefault("Terrain", "vMapPath", "vmaps");
+    mMapPath = Config.MainConfig.GetStringDefault("Terrain", "mMapPath", "mmaps");
     UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
     BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
     SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);

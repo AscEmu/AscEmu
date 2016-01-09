@@ -543,6 +543,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         std::string MapPath;
         std::string vMapPath;
+        std::string mMapPath;
         bool UnloadMapFiles;
         bool BreathingEnabled;
         bool SpeedhackProtection;

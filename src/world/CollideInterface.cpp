@@ -252,14 +252,14 @@ void CCollideInterface::ActivateMap(uint32 mapid)
         ++itr->second->refs;
     else
     {
-
         //load params
         char filename[1024];
-        sprintf(filename, "mmaps/%03i.mmap", mapid);
+        sprintf(filename, "%s/%03i.mmap", sWorld.mMapPath.c_str(), mapid);
         FILE* f = fopen(filename, "rb");
 
-        if (f == NULL)
+        if (f == nullptr)
         {
+            sLog.Error("CCollideInterface::ActivateMap", "File: %s was not found!", filename);
             m_navmaplock.Release();
             return;
         }
@@ -325,11 +325,14 @@ void CCollideInterface::LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY
         return;
 
     char filename[1024];
-    sprintf(filename, "mmaps/%03i%02i%02i.mmtile", mapId, tileX, tileY);
+    sprintf(filename, "%s/%03i%02i%02i.mmtile", sWorld.mMapPath.c_str(), mapId, tileX, tileY);
     FILE* f = fopen(filename, "rb");
 
-    if (f == NULL)
+    if (f == nullptr)
+    {
+        sLog.Error("CCollideInterface::LoadNavMeshTile", "File: %s was not found!", filename);
         return;
+    }
 
     MmapTileHeader header;
 
