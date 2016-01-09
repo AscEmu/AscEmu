@@ -593,14 +593,6 @@ namespace MMAP
 
         delete [] tiles;
 
-        // remove padding for extraction
-        for (int i = 0; i < iv.polyMesh->nverts; ++i)
-        {
-            unsigned short* v = &iv.polyMesh->verts[i * 3];
-            v[0] -= (unsigned short)config.borderSize;
-            v[2] -= (unsigned short)config.borderSize;
-        }
-
         // set polygons as walkable
         ///\todo special flags for DYNAMIC polygons, ie surfaces that can be turned on and off
         for (int i = 0; i < iv.polyMesh->npolys; ++i)
@@ -640,6 +632,7 @@ namespace MMAP
         params.cs = config.cs;
         params.ch = config.ch;
         params.tileLayer = 0;
+        params.buildBvTree = true;
 
         // will hold final navmesh
         unsigned char* navData = NULL;
