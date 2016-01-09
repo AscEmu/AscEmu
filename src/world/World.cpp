@@ -1476,6 +1476,7 @@ void World::Rehash(bool load)
     gamemaster_disableachievements = Config.OptionalConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
     gamemaster_listOnlyActiveGMs = Config.OptionalConfig.GetBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
     gamemaster_hidePermissions = Config.OptionalConfig.GetBoolDefault("GameMaster", "HidePermissions", false);
+    gamemaster_announceKick = Config.OptionalConfig.GetBoolDefault("GameMaster", "AnnounceKick", true);
 
     m_levelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", PLAYER_LEVEL_CAP);
     m_genLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", PLAYER_LEVEL_CAP);
