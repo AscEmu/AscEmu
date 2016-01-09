@@ -302,19 +302,23 @@ void CCollideInterface::DeactiveMap(uint32 mapid)
 
 NavMeshData* CCollideInterface::GetNavMesh(uint32 mapId)
 {
-#ifndef TEST_PATHFINDING
-    return NULL;
-#else
-    NavMeshData* retval = NULL;
-    m_navmaplock.Acquire();
-    std::map<uint32, NavMeshData*>::iterator itr = m_navdata.find(mapId);
+    if (sWorld.Pathfinding)
+    {
+        //Log.Debug("CCollideInterface::GetNavMesh", "Loading NavMeshData for map %u", mapId);
+        NavMeshData* retval = NULL;
+        m_navmaplock.Acquire();
+        std::map<uint32, NavMeshData*>::iterator itr = m_navdata.find(mapId);
 
-    if (itr != m_navdata.end())
-        retval = itr->second;
+        if (itr != m_navdata.end())
+            retval = itr->second;
 
-    m_navmaplock.Release();
-    return retval;
-#endif
+        m_navmaplock.Release();
+        return retval;
+    }
+    else
+    {
+        return NULL;
+    }
 }
 
 void CCollideInterface::LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY)

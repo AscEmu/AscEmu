@@ -546,6 +546,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::string mMapPath;
         bool UnloadMapFiles;
         bool Collision;
+        bool Pathfinding;
 
         bool BreathingEnabled;
         bool SpeedhackProtection;

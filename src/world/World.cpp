@@ -1332,6 +1332,7 @@ void World::Rehash(bool load)
     mMapPath = Config.MainConfig.GetStringDefault("Terrain", "mMapPath", "mmaps");
     UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
     Collision = Config.MainConfig.GetBoolDefault("Terrain", "Collision", false);
+    Pathfinding = Config.MainConfig.GetBoolDefault("Terrain", "Pathfinding", false);
 
     BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
     SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
