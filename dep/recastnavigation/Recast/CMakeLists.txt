@@ -6,6 +6,7 @@ set(Recast_SRCS
    Source/RecastArea.cpp
    Source/RecastContour.cpp
    Source/RecastFilter.cpp
+   Source/RecastLayers.cpp
    Source/RecastMesh.cpp
    Source/RecastMeshDetail.cpp
    Source/RecastRasterization.cpp
