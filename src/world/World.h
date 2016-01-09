@@ -545,6 +545,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::string vMapPath;
         std::string mMapPath;
         bool UnloadMapFiles;
+        bool Collision;
+
         bool BreathingEnabled;
         bool SpeedhackProtection;
         uint32 mAcceptedConnections;
@@ -560,7 +562,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 ArenaQueueDiff;
         bool SendStatsOnJoin;
         SessionSet gmList;
-        bool Collision;
         bool DisableFearMovement;
 
         void ShutdownClasses();

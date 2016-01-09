@@ -1331,6 +1331,8 @@ void World::Rehash(bool load)
     vMapPath = Config.MainConfig.GetStringDefault("Terrain", "vMapPath", "vmaps");
     mMapPath = Config.MainConfig.GetStringDefault("Terrain", "mMapPath", "mmaps");
     UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
+    Collision = Config.MainConfig.GetBoolDefault("Terrain", "Collision", false);
+
     BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
     SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
     compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
@@ -1373,7 +1375,7 @@ void World::Rehash(bool load)
     SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
     sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
     gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
-    Collision = Config.MainConfig.GetBoolDefault("Server", "Collision", 0);
+
     DisableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
     SocketRecvBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "RecvBufSize", WORLDSOCKET_RECVBUF_SIZE);
     SocketSendBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "SendBufSize", WORLDSOCKET_SENDBUF_SIZE);
