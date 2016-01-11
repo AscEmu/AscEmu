@@ -259,7 +259,7 @@ void CCollideInterface::ActivateMap(uint32 mapid)
 
         if (f == nullptr)
         {
-            sLog.Error("CCollideInterface::ActivateMap", "File: %s was not found!", filename);
+            sLog.Debug("CCollideInterface::ActivateMap", "File: %s was not found!", filename);
             m_navmaplock.Release();
             return;
         }
@@ -334,7 +334,7 @@ void CCollideInterface::LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY
 
     if (f == nullptr)
     {
-        sLog.Error("CCollideInterface::LoadNavMeshTile", "File: %s was not found!", filename);
+        sLog.Debug("CCollideInterface::LoadNavMeshTile", "File: %s was not found!", filename);
         return;
     }
 
