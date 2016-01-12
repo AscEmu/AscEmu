@@ -41,10 +41,10 @@ addons:
   coverity_scan:
      project:
        name: "AscEmu/AscEmu"
-       description: "MMORPG Framework"
+       description: "AscEmu MMORPG Framework"
    notification_email: autokaori@gmail.com
    build_command_prepend: "make clean"
-   build_command:   "make -j 2"
+   build_command: "make -j 2"
    branch_pattern: coverity_scan
 
 install:
@@ -59,3 +59,4 @@ script:
  - g++ --version
  - cmake --version
  - make -j 2
+ 
