@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -197,6 +197,33 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                 break;
         }
         itr->Destruct();
+    }
+    // Load creature_initiale_equip
+    Log.Notice("ObjectStorage", "Loading creature_initial_equip...");
+    {
+        QueryResult* result = WorldDatabase.Query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
+
+        if (result)
+        {
+            do
+            {
+                Field* fields = result->Fetch();
+                uint32 entry = fields[0].GetUInt32();
+                CreatureProto* creature_proto = CreatureProtoStorage.LookupEntry(entry);
+                if (creature_proto == nullptr)
+                {
+                    Log.Error("ObjectStorage", "Invalid creature_entry %u in table creature_initial_equip!", entry);
+                    continue;
+                }
+
+                creature_proto->itemslot_1 = fields[1].GetUInt32();
+                creature_proto->itemslot_2 = fields[2].GetUInt32();
+                creature_proto->itemslot_3 = fields[3].GetUInt32();
+
+            } while (result->NextRow());
+
+            delete result;
+        }
     }
 
     // Load AI Agents

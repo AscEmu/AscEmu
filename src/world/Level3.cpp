@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -2668,9 +2668,9 @@ bool ChatHandler::HandleCreatureSpawnCommand(const char* args, WorldSession* m_s
     sp->death_state = 0;
     sp->channel_target_creature = sp->channel_target_go = sp->channel_spell = 0;
     sp->MountedDisplayID = 0;
-    sp->Item1SlotDisplay = 0;
-    sp->Item2SlotDisplay = 0;
-    sp->Item3SlotDisplay = 0;
+    sp->Item1SlotDisplay = proto->itemslot_1;
+    sp->Item2SlotDisplay = proto->itemslot_2;
+    sp->Item3SlotDisplay = proto->itemslot_3;
     sp->CanFly = 0;
     sp->phase = m_session->GetPlayer()->GetPhase();
 

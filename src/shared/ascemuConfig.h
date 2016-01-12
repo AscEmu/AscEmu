@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -53,15 +53,7 @@
 //#define ENABLE_COMPRESSED_MOVEMENT 1
 //#define ENABLE_COMPRESSED_MOVEMENT_FOR_PLAYERS 1
 //#define ENABLE_COMPRESSED_MOVEMENT_FOR_CREATURES 1
-/**
- * DATABASE LAYER SET UP
- */
 
-#if !defined(NO_DBLAYER_MYSQL)
-#define ENABLE_DATABASE_MYSQL 1
-#endif
-
-#define OPTIMIZE_SERVER_FOR_MYSQL 1
 
 /**
  * Enable to track immunity bug

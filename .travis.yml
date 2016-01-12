@@ -1,4 +1,6 @@
 language: cpp
+sudo: required
+dist: trusty
 
 # only run travis on the master branch
 branches:
@@ -15,14 +17,6 @@ env:
   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
   #   via the "travis encrypt" command using the project repo's public key
   - secure: "Zk3bAxnp4OHPMMZYOSoM2chuMZXomp7BFcT54/Ag6C8RCqtpqQ+E6yHRp861xdWSVo9uZ/uGmD1pwPiIUK8Vs80+OwhFVvtor2MGXyQKX1oFYBg0mo5Z3Xzy+OPa3e0YBbe6SSqdUzDE1hIa7OrU8GWciIMobWQS7XIBbWg3TFU="
-
-#before_install:
-# - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
-# - echo "yes" | sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-# - sudo apt-get -qq update
-# - sudo apt-get -qq install build-essential libtool gcc-4.8 g++-4.8 make cmake
-# - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-# - sudo apt-get install -qq libbz2-dev libncurses5-dev libmysqlclient-dev libreadline-dev libsdl1.2-dev libssl-dev zlib1g-dev
 
 # experimental config
 before_install:
