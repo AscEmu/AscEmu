@@ -43,7 +43,6 @@ set(sources
 
 set(headers
 	ascemu_getopt.h
-	ascemuConfig.h
    AscemuServerDefines.hpp
 	Array.h
 	AuthCodes.h
