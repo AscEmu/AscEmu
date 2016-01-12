@@ -32,6 +32,8 @@
 #include "Unit.h"
 #include "DBC/DBCStructures.hpp"
 
+//#define TRACK_IMMUNITY_BUG 1
+
 class QuestLogEntry;
 struct BGScore;
 #ifdef ENABLE_ACHIEVEMENTS
