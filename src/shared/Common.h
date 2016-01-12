@@ -62,7 +62,7 @@ enum MsTimeVariables
 # include <config.h>
 #endif
 
-#include "ascemuConfig.h"
+#include "AscemuServerDefines.hpp"
 
 #include <cstdlib>
 #include <cstdio>

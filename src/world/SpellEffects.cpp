@@ -4418,7 +4418,10 @@ void Spell::SpellEffectActivateObject(uint32 i) // Activate Object
 void Spell::SpellEffectBuildingDamage(uint32 i)
 {
     if (gameObjTarget == NULL)
+    {
+        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name, i);
         return;
+    }
 
     if (gameObjTarget->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
         return;
