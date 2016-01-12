@@ -40,13 +40,6 @@
 #endif
 
 
-/// Use memory mapping for map files for faster access (let OS take care of caching)
-/// (currently only available under windows)
-/// Only recommended under X64 builds, X86 builds will most likely run out of address space.
-/// Default: Disabled
-//#define USE_MEMORY_MAPPING_FOR_MAPS
-
-
 /// Enable/Disable achievement mgr
 /// Default: Enabled
 /// To disable add // before #define below
