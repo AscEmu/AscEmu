@@ -182,6 +182,11 @@ struct CreatureProto
     uint32 vehicleid;
     bool rooted;
 
+    //itemslots
+    uint32 itemslot_1;
+    uint32 itemslot_2;
+    uint32 itemslot_3;
+
     // AI Stuff
     bool m_canRangedAttack;
     bool m_canFlee;
