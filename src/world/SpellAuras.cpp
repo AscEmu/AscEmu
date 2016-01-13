@@ -1933,7 +1933,7 @@ void Aura::SpellAuraDummy(bool apply)
     if (sScriptMgr.CallScriptedDummyAura(GetSpellId(), mod->i, this, apply))
         return;
 
-    LOG_ERROR("Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
+    Log.Debug("Aura::SpellAuraDummy", "Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
 }
 
 void Aura::SpellAuraModConfuse(bool apply)
@@ -6118,9 +6118,7 @@ void Aura::SpellAuraAddPctMod(bool apply)
             break;
 
         default://Unknown modifier type
-            LOG_ERROR(
-                "Unknown spell modifier type %u in spell %u.<<--report this line to the developer",
-                mod->m_miscValue, GetSpellId());
+            LOG_ERROR("Unknown spell modifier type %u in spell %u.<<--report this line to the developer", mod->m_miscValue, GetSpellId());
             break;
     }
 }
@@ -7303,9 +7301,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(bool apply)
         stat = mod->m_miscValue;
     else
     {
-        LOG_ERROR(
-            "Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type %u in spell %u.\n",
-            mod->m_miscValue, GetSpellId());
+        LOG_ERROR("Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type %u in spell %u.\n", mod->m_miscValue, GetSpellId());
         return;
     }
 
@@ -7470,10 +7466,8 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
             SendModifierLog(&m_target->SM_FRezist_dispell, val, AffectedGroups, static_cast<uint8>(mod->m_miscValue));
             break;
 
-        default://Unknown modifier type
-            LOG_ERROR(
-                "Unknown spell modifier type %u in spell %u.<<--report this line to the developer\n",
-                mod->m_miscValue, GetSpellId());
+        default: //Unknown modifier type
+            LOG_ERROR( "Unknown spell modifier type %u in spell %u.<<--report this line to the developer\n", mod->m_miscValue, GetSpellId());
             break;
     }
 

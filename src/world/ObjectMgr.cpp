@@ -4113,9 +4113,17 @@ void ObjectMgr::LoadCreatureProtoDifficulty()
 {
     Log.Notice("ObjectMgr", "Loading creature_proto_difficulty...");
 
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_proto_difficulty;");
+    const char* loadCreatureProtoDifficulty = "SELECT * FROM creature_proto_difficulty";
+    bool success = false;
 
-    if (result != nullptr)
+    QueryResult* result = WorldDatabase.Query(&success, loadCreatureProtoDifficulty);
+    if (!success)
+    {
+        Log.Error("ObjectMgr", "Query failed: %s", loadCreatureProtoDifficulty);
+        return;
+    }
+
+    if (result)
     {
         uint32 count = 0;
         do
@@ -4182,7 +4190,7 @@ void ObjectMgr::LoadCreatureProtoDifficulty()
             proto_identifier.first = creature_entry;
             proto_identifier.second = difficulty_type;
 
-            Log.Notice("ObjectMgr", "loaded creature proto difficulty for creature %u", creature_entry);
+            Log.Debug("ObjectMgr", "loaded creature proto difficulty for creature %u", creature_entry);
 
             m_creatureProtoDifficulty.insert(CreatureProtoDifficultyMap::value_type(proto_identifier, creature_proto_difficulty));
 
