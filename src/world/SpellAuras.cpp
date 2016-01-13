@@ -1933,7 +1933,7 @@ void Aura::SpellAuraDummy(bool apply)
     if (sScriptMgr.CallScriptedDummyAura(GetSpellId(), mod->i, this, apply))
         return;
 
-    LOG_ERROR("Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
+    Log.Debug("Aura::SpellAuraDummy", "Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
 }
 
 void Aura::SpellAuraModConfuse(bool apply)
