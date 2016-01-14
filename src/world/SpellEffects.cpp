@@ -1133,7 +1133,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
         return;
 
-    LOG_ERROR("Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
+    Log.Debug("Spell::SpellEffectDummy", "Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
 }
 
 void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
@@ -3965,7 +3965,7 @@ void Spell::SpellEffectSendEvent(uint32 i) //Send Event
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->Id, i, this))
         return;
 
-    LOG_ERROR("Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
+    Log.Debug("Spell::SpellEffectSendEvent", "Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
 
 }
 
