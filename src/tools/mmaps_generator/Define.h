@@ -23,10 +23,16 @@
 #include <sys/types.h>
 
 // Need to be cleaned up
+#ifdef _WIN32
 #include <windows.h>
-#include <minwinbase.h>
-#include <fileapi.h>
-#include <handleapi.h>
 
+#include <minwinbase.h>
+
+#include <fileapi.h>
+
+#include <handleapi.h>
+#else
+#include "limits.h"
+#endif
 
 #endif // MMAPS_DEFINE_H

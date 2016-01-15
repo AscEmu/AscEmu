@@ -109,7 +109,7 @@ namespace MMAP
             if ((dp = readdir(dirp)) != NULL)
             {
                 if (matchWildcardFilter(filter.c_str(), dp->d_name))
-                    fileList.push_back(string(dp->d_name));
+                    fileList.push_back(std::string(dp->d_name));
             }
             else
                 break;

@@ -61,3 +61,7 @@ include_directories(
    )
 
 add_library(${PROJECT_NAME} STATIC ${SRCS})
+
+target_link_libraries(${PROJECT_NAME} 
+  ${CMAKE_THREAD_LIBS_INIT}
+)
