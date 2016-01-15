@@ -582,6 +582,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         bool show_gm_in_who_list;
         uint32 map_unload_time;
+        uint8 map_cell_number;
 
         bool interfaction_chat;
         bool interfaction_group;
