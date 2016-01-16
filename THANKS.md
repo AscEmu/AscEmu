@@ -16,6 +16,7 @@ people are awsome:
 - Cronicman
 - DankoDj
 - Evairfairy
+- Lectro
 - master312
 - Nupper
 - sanctum32

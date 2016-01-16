@@ -69,6 +69,7 @@ World::World()
     NameinWAnnounce = false;
     announce_output = true;
     map_unload_time = 0;
+    map_cell_number = 0;
     antiMasterLootNinja = false;
 
     SocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
@@ -1554,6 +1555,13 @@ void World::Rehash(bool load)
     {
         LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
         map_unload_time = MAP_CELL_DEFAULT_UNLOAD_TIME;
+    }
+
+    map_cell_number = Config.MainConfig.GetIntDefault("Server", "MapCellNumber", 1);
+    if (map_cell_number == 0)
+    {
+        LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
+        map_cell_number = 1;
     }
 
     antihack_teleport = Config.MainConfig.GetBoolDefault("AntiHack", "Teleport", true);
