@@ -19,9 +19,7 @@
 
 #ifndef _MAP_H
 #define _MAP_H
-
 #include "loadlib.h"
-
 ///- Some parts of System.cpp moved to header.
 namespace ASCEMU
 {

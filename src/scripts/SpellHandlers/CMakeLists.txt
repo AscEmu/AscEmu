@@ -2,8 +2,6 @@
 
 project(SpellHandlers)
 
-set(prefix ${ROOT_PATH}/src/scripts/${PROJECT_NAME})
-
 #sources -contains source files for our library.
 set(sources
    DeathKnightSpells.cpp
@@ -21,25 +19,28 @@ set(sources
    WarlockSpells.cpp
    WarriorSpells.cpp
    MiscSpells.cpp
-   )
+)
 
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-
-include_directories(${GLOBAL_INCLUDE_DIRS} ${DEPENDENCY_ROOT}/zlib)
-add_library(${PROJECT_NAME} SHARED ${SRCS})
-add_dependencies(${PROJECT_NAME} ${script_dependencies})
+include_directories(
+   ${OPENSSL_INCLUDE_DIR}
+   ${PCRE_INCLUDE_DIR}
+   ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+   ${CMAKE_SOURCE_DIR}/dep/vmaplib/include
+   ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+   ${CMAKE_SOURCE_DIR}/src/shared
+   ${CMAKE_SOURCE_DIR}/src/world
+   ${ZLIB_INCLUDE_DIRS}
+)
+add_library(${PROJECT_NAME} SHARED ${sources})
+#add_dependencies(${PROJECT_NAME} ${script_dependencies})
 add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
-target_link_libraries(${PROJECT_NAME} ${script_linkages})
+target_link_libraries(${PROJECT_NAME} world)
 
-include(PCHSupport)
-IF( CMAKE_GENERATOR MATCHES Visual*)
-	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
+IF(MSVC)
+    include(PCHSupport)
+	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h Setup.cpp)
 ENDIF()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH} )
-#Cleap up our variables(Not required.)
-unset( prefix )
-unset( SRCS )
-unset( sources )
+
+unset(sources)
