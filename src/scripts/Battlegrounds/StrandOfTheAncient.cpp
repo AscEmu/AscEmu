@@ -383,7 +383,7 @@ void StrandOfTheAncient::OnCreate()
         }
 
         // Spawn door for Chamber of Ancient Relics
-        //m_endgate = m_mapMgr->CreateAndSpawnGameObject(GateGOIds[i], sotaChamberGate[0], sotaChamberGate[1], sotaChamberGate[2], sotaChamberGate[3], 1.0f);
+        m_endgate = m_mapMgr->CreateAndSpawnGameObject(GateGOIds[5], sotaChamberGate[0], sotaChamberGate[1], sotaChamberGate[2], sotaChamberGate[3], 1.0f);
     }
 
     PrepareRound();
@@ -518,7 +518,6 @@ void StrandOfTheAncient::PrepareRound()
         std::swap(Attackers, Defenders);
     }
 
-    /* Zyres 01/17/2016 Setting the faction at this position ends with server crash
     for (uint8 i = 0; i < GATE_COUNT; i++)
     {
         //m_gates[i]->Rebuild();
@@ -532,7 +531,6 @@ void StrandOfTheAncient::PrepareRound()
 
     for (uint8 i = 0; i < GATE_COUNT; i++)
         m_gateTransporters[i]->SetFaction(TeamFactions[Defenders]);
-    */
 
     for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
     {
