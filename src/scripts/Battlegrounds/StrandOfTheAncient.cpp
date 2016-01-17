@@ -518,6 +518,7 @@ void StrandOfTheAncient::PrepareRound()
         std::swap(Attackers, Defenders);
     }
 
+    /* Zyres 01/17/2016 Setting the faction at this position ends with server crash
     for (uint8 i = 0; i < GATE_COUNT; i++)
     {
         //m_gates[i]->Rebuild();
@@ -531,6 +532,7 @@ void StrandOfTheAncient::PrepareRound()
 
     for (uint8 i = 0; i < GATE_COUNT; i++)
         m_gateTransporters[i]->SetFaction(TeamFactions[Defenders]);
+    */
 
     for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
     {
