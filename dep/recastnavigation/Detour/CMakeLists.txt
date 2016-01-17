@@ -19,3 +19,4 @@ add_library(Detour STATIC ${Detour_SRCS})
 
 #Set it to the project name.
 set(DETOUR_LIBRARIES Detour CACHE INTERNAL "Detour Libraries")
+unset(Detour_SRCS)

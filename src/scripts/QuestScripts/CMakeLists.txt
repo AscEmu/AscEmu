@@ -3,12 +3,10 @@
 if(NOT BUILD_QUESTSCRIPTS )
   message("\tQuestScripts was skipped because BUILD_QUESTSCRIPTS is unchecked.")
   return()
-endif(NOT BUILD_QUESTSCRIPTS)
+endif()
 
 # set up our project name
 project(QuestScripts)
-
-set(prefix ${SCRIPTS_PATH}/${PROJECT_NAME})
 
 SET(sources
    Setup.cpp 
@@ -77,21 +75,25 @@ set(headers
    ../Common/Instance_Base.h
    )
 
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-foreach(src IN ITEMS ${headers})
-   set(HEADERS ${HEADERS} ${prefix}/${src})
-endforeach(src)
+include_directories(
+   ${OPENSSL_INCLUDE_DIR}
+   ${PCRE_INCLUDE_DIR}
+   ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+   ${CMAKE_SOURCE_DIR}/dep/vmaplib/include
+   ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+   ${CMAKE_SOURCE_DIR}/src/shared
+   ${CMAKE_SOURCE_DIR}/src/world
+   ${ZLIB_INCLUDE_DIRS}
+)
+add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
+#add_dependencies(${PROJECT_NAME} ${script_dependencies})
+target_link_libraries(${PROJECT_NAME} world)
 
-include_directories( ${include_dirs} ${prefix} ${DEPENDENCY_ROOT}/zlib)
-add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
-add_dependencies(${PROJECT_NAME} ${script_dependencies})
-target_link_libraries(${PROJECT_NAME} ${script_linkages})
-
-include(PCHSupport)
-if(CMAKE_GENERATOR MATCHES Visual*)
-   ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
+if(MSVC)
+    include(PCHSupport)
+    ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h Setup.cpp)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+unset(sources)
+unset(headers)

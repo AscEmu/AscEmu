@@ -3,8 +3,6 @@
 # set up project name
 project(vmap_extractor CXX)
 
-set(prefix ${ROOT_PATH}/src/tools/vmap_tools/vmap_extractor)
-
 set(sources
    adtfile.cpp
    dbcfile.cpp
@@ -23,26 +21,23 @@ set(headers
    vmapexport.h
    wdtfile.h
    wmo.h
-   )
+)
 
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-foreach(src IN ITEMS ${headers})
-   set(HEADERS ${HEADERS} ${prefix}/${src})
-endforeach(src)
-
-if(NOT WIN32 AND NOT IS_64BIT)
+if(UNIX AND NOT IS_64BIT)
 	add_definitions(-D_FILE_OFFSET_BITS=64)
 endif()
 
 include_directories(
-   ${DEPENDENCY_ROOT}/libmpq/libmpq
-   ${LOADLIB_PATH}
-   ${DEPENDENCY_INCLUDE_ROOT}/zlib
-   ${DEPENDENCY_INCLUDE_ROOT}/bzip2
+   ${ZLIB_INCLUDE_DIRS}
+   ${BZIP2_INCLUDE_DIRS}
+   ${CMAKE_SOURCE_DIR}/dep/loadlib
+   ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
+   ${CMAKE_CURRENT_SOURCE_DIR}
    )
 
-add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} libmpq ${ZLIB_LIBRARIES} bzip2)
+add_executable(${PROJECT_NAME} ${sources} ${headers})
+target_link_libraries(${PROJECT_NAME} loadlib ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
+
+unset(sources)
+unset(headers)

@@ -3,8 +3,6 @@
 # set up our project name
 project(bzip2)
 
-set(prefix ${DEPENDENCY_ROOT}/${PROJECT_NAME})
-
 set(sources
    blocksort.c
    bzlib.c
@@ -13,12 +11,12 @@ set(sources
    decompress.c
    huffman.c
    randtable.c
-   )
-
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
+)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-add_library(${PROJECT_NAME} STATIC ${SRCS})
+add_library(${PROJECT_NAME} STATIC ${sources})
 target_link_libraries(${PROJECT_NAME})
+set(BZIP2_LIBRARIES ${PROJECT_NAME} CACHE INTERNAL "Bzip2 libraries." FORCE)
+set(BZIP2_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Bzip2 include dirs." FORCE)
+
+unset(sources)

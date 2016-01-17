@@ -3,15 +3,14 @@
 # set up our project name
 project(world)
 
-set(prefix ${ROOT_PATH}/src/world)
 set(sources
-   Commands/AccountCommands.cpp
-   DBC/DBCStores.cpp
-   DBC/DBCLoader.cpp
-   DBC/DBCRecord.cpp
-   DBC/DBCSQL.cpp
-   AchievementMgr.cpp 
-   CollideInterface.cpp 
+    Commands/AccountCommands.cpp
+    DBC/DBCStores.cpp
+    DBC/DBCLoader.cpp
+    DBC/DBCRecord.cpp
+    DBC/DBCSQL.cpp
+    AchievementMgr.cpp 
+    CollideInterface.cpp 
 	VoiceChatHandler.cpp 
 	DayWatcherThread.cpp 
 	CommonScheduleThread.cpp 
@@ -29,14 +28,14 @@ set(sources
 	BattlegroundCommands.cpp 
 	BattlegroundHandler.cpp 
 	BattlegroundMgr.cpp 
-   CalendarHandler.cpp
-   CalendarMgr.cpp
+    CalendarHandler.cpp
+    CalendarMgr.cpp
 	Channel.cpp 
 	ChannelHandler.cpp 
 	CharacterHandler.cpp 
 	Chat.cpp 
 	ChatHandler.cpp
-   CObjectFactory.cpp
+    CObjectFactory.cpp
 	CombatHandler.cpp 
 	Container.cpp 
 	Corpse.cpp 
@@ -54,9 +53,9 @@ set(sources
 	EventableObject.cpp 
 	EventMgr.cpp 
 	Faction.cpp
-   GameEvent.cpp
-   GameEventMgr.cpp
-   GameEventMgrCommands.cpp
+    GameEvent.cpp
+    GameEventMgr.cpp
+    GameEventMgrCommands.cpp
 	GameObject.cpp 
 	GMTicket.cpp 
 	GMTicketCommands.cpp
@@ -75,9 +74,9 @@ set(sources
 	Level1.cpp 
 	Level2.cpp 
 	Level3.cpp 
-   Lfg.cpp
-   LfgGroupData.cpp
-   LfgPlayerData.cpp
+    Lfg.cpp
+    LfgGroupData.cpp
+    LfgPlayerData.cpp
 	LfgHandler.cpp 
 	LfgMgr.cpp 
 	LootMgr.cpp 
@@ -85,8 +84,8 @@ set(sources
 	LogonCommClient.cpp 
 	LogonCommHandler.cpp 
 	MailHandler.cpp
-   MailMgr.cpp   
-   MapManagement/AreaManagement/AreaStorage.cpp
+    MailMgr.cpp   
+    MapManagement/AreaManagement/AreaStorage.cpp
 	MapCell.cpp 
 	Map.cpp 
 	MapScriptInterface.cpp 
@@ -100,7 +99,7 @@ set(sources
 	Pet.cpp 
 	PetHandler.cpp 
 	Player.cpp
-		PlayerCache.cpp
+	PlayerCache.cpp
 	PlayerPacketWrapper.cpp
 	QueryHandler.cpp 
 	Quest.cpp 
@@ -179,7 +178,11 @@ set(sources
 	Shaman.cpp
 	Warlock.cpp
 	Warrior.cpp
-   )
+)
+
+if(WIN32)
+    set(sources ${sources} resources.rc)
+endif()
 
 set(headers
 	AchievementMgr.h
@@ -194,14 +197,14 @@ set(headers
 	BaseConsole.h
 	Battleground.h
 	BattlegroundMgr.h
-   CalendarMgr.h
+    CalendarMgr.h
 	CConsole.h
 	CellHandler.h
     CellHandlerDefines.hpp
 	Channel.h
 	ChannelMgr.h
 	Chat.h
-   CObjectFactory.h
+    CObjectFactory.h
 	CollideInterface.h
 	CommonScheduleThread.h
 	Entities/Summons/CompanionSummon.h
@@ -229,10 +232,10 @@ set(headers
 	EventMgr.h
 	Faction.h
     GameEvent.h
-   GameEventMgr.h
+    GameEventMgr.h
 	GameObject.h
 	CRitual.h
-   Gossip/GossipDefines.hpp
+    Gossip/GossipDefines.hpp
 	Gossip.h
 	Group.h
 	Entities/Summons/GuardianSummon.h
@@ -243,9 +246,9 @@ set(headers
 	ItemInterface.h
 	ItemPrototype.h
 	IUpdatable.h
-   Lfg.h
-   LfgGroupData.h
-   LfgPlayerData.h
+    Lfg.h
+    LfgGroupData.h
+    LfgPlayerData.h
 	LfgMgr.h
 	LocalizationMgr.h
 	LogonCommClient.h
@@ -321,39 +324,30 @@ set(headers
 	WorldSocket.h
 	WorldStatesHandler.h
 	WorldStates.h
-   WorldStrings.h
+    WorldStrings.h
 	WUtil.h
-   )
-	
-foreach(src IN ITEMS ${sources})
-  set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-foreach(src IN ITEMS ${headers})
-   set(HEADERS ${HEADERS} ${prefix}/${src})
-endforeach(src)
+)
 
-include(PCHSupport)
 include_directories(
+   ${OPENSSL_INCLUDE_DIR}
+   ${PCRE_INCLUDE_DIR}
+   ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+   ${CMAKE_SOURCE_DIR}/dep/vmaplib/include
+   ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+   ${CMAKE_SOURCE_DIR}/src/shared
+   ${ZLIB_INCLUDE_DIRS}
    ${CMAKE_CURRENT_SOURCE_DIR}
-   ${ROOT_PATH}/src/shared
-   ${DEPENDENCY_ROOT}/zlib
-   ${DEPENDENCY_ROOT}/openssl
-   ${DEPENDENCY_ROOT}/pcre/include
-   ${RECASTNAVIGATION}/Detour/Include
-   ${DEPENDENCY_ROOT}/vmaplib/include
-   ${DEPENDENCY_ROOT}/g3dlite/include
-   )
-link_directories( ${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
+)
 
-set(WIN_RESOURCE_FILE ${ROOT_PATH}/src/world/resources.rc)
+add_executable(${PROJECT_NAME} ${sources} ${headers})
 
-add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE})
-
-if(CMAKE_GENERATOR MATCHES Visual*)
-	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h ${prefix}/StdAfx.cpp)
+if(MSVC)
+    include(PCHSupport)
+	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h StdAfx.cpp)
 endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
 
 add_dependencies( ${PROJECT_NAME} shared g3dlite vmaplib Detour Recast)
-target_link_libraries( ${PROJECT_NAME} shared  g3dlite vmaplib Detour Recast ${PCRE_LIBRARIES})
+target_link_libraries( ${PROJECT_NAME} shared g3dlite vmaplib Detour Recast ${PCRE_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

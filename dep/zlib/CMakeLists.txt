@@ -2,9 +2,6 @@
 
 # set up our project name
 project(zlib C)
-
-set(prefix ${DEPENDENCY_ROOT}/${PROJECT_NAME})
-
 set(sources
    adler32.c
    compress.c
@@ -19,12 +16,10 @@ set(sources
    zutil.c
    )
 
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-add_library(${PROJECT_NAME} STATIC ${SRCS} )
+add_library(${PROJECT_NAME} STATIC ${sources} )
 
 #set it to the project name.
 set(ZLIB_LIBRARIES ${PROJECT_NAME} CACHE INTERNAL "Zlib Libraries")
+set(ZLIB_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "Zlib include dir" FORCE)
+unset(sources)
