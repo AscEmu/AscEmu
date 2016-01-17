@@ -3,9 +3,6 @@
 # set up project name
 project(lualib C)
 
-# set our prefix (used to link files/project)
-set(prefix ${DEPENDENCY_ROOT}/${PROJECT_NAME})
-
 set(sources
    lapi.c
    lauxlib.c
@@ -70,27 +67,17 @@ set(headers
    lundump.h
    lvm.h
    lzio.h
-   )
-
-foreach(src IN ITEMS ${sources})
-  set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-foreach(src IN ITEMS ${headers})
-  set(HEADERS ${HEADERS} ${prefix}/${src})
-endforeach(src)
-
-add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
 	add_definitions( -DLUA_USE_APICHECK )
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${SRCS} ${HEADERS})
-
-remove_definitions(-std=c++0x)
+add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
 
 if(IS_64BIT AND NOT MSVC)
    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY COMPILE_FLAGS "-fPIC")
 endif()
 
-target_link_libraries(${PROJECT_NAME})
+unset(sources)
+unset(headers)

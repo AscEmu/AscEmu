@@ -3,39 +3,45 @@
 if(NOT BUILD_LUAENGINE)
   message("\tLuaEngine was skipped because BUILD_LUAENGINE is unchecked.")
   return()
-endif(NOT BUILD_LUAENGINE)
+endif()
 
 # set up our project name
 project(LuaEngine)
 
-set(prefix ${SCRIPTS_PATH}/${PROJECT_NAME})
-
 #SRCS - contains the source files that compose this project.
 set(SRCS
-   ${prefix}/LUAEngine.cpp 
-   )
+   LUAEngine.cpp 
+)
 
 set(HEADERS
-   ${prefix}/AuraFunctions.h
-   ${prefix}/FunctionTables.h
-   ${prefix}/GameobjectFunctions.h
-   ${prefix}/GlobalFunctions.h
-   ${prefix}/ItemFunctions.h
-   ${prefix}/LUAEngine.h
-   ${prefix}/LUAFunctions.h
-   ${prefix}/LuaSqlApi.h
-   ${prefix}/PacketFunctions.h
-   ${prefix}/SpellFunctions.h
-   ${prefix}/TaxiFunctions.h
-   ${prefix}/UnitFunctions.h
-   )
+   AuraFunctions.h
+   FunctionTables.h
+   GameobjectFunctions.h
+   GlobalFunctions.h
+   ItemFunctions.h
+   LUAEngine.h
+   LUAFunctions.h
+   LuaSqlApi.h
+   PacketFunctions.h
+   SpellFunctions.h
+   TaxiFunctions.h
+   UnitFunctions.h
+)
 
-include_directories(${include_dirs} ${prefix} ${DEPENDENCY_ROOT}/zlib)
-IF(IS_LINUX)
-	add_definitions(-Wno-deprecated)
-ENDIF()
+include_directories(
+   ${OPENSSL_INCLUDE_DIR}
+   ${PCRE_INCLUDE_DIR}
+   ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+   ${CMAKE_SOURCE_DIR}/dep/vmaplib/include
+   ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+   ${CMAKE_SOURCE_DIR}/src/shared
+   ${CMAKE_SOURCE_DIR}/src/world
+   ${CMAKE_SOURCE_DIR}/dep/lualib
+   ${ZLIB_INCLUDE_DIRS}
+)
 
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
-add_dependencies(${PROJECT_NAME} ${script_dependencies} lualib)
-target_link_libraries(${PROJECT_NAME} ${script_linkages} lualib)
+target_link_libraries(${PROJECT_NAME} world lualib)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+unset(sources)
+unset(headers)

@@ -3,7 +3,6 @@
 # set up our project name
 project(logon CXX)
 
-set(prefix ${ROOT_PATH}/src/logonserver)
 set(sources
    AccountCache.cpp
    AuthSocket.cpp
@@ -23,44 +22,40 @@ set(headers
 	LogonCommServer.h
 	LogonConsole.h
 	LogonStdAfx.h
-   Master.hpp
-   LogonServerDefines.hpp
+    Master.hpp
+    LogonServerDefines.hpp
 	PeriodicFunctionCall_Thread.h
-   Opcodes/LogonRealmOpcodes.hpp
-   )
-
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-foreach(src IN ITEMS ${headers})
-   set(HEADERS ${HEADERS} ${prefix}/${src})
-endforeach(src)
+    Opcodes/LogonRealmOpcodes.hpp
+)
 
 include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}/Opcodes
-   ${ROOT_PATH}/src/shared
-   ${DEPENDENCY_ROOT}/zlib
-   ${DEPENDENCY_ROOT}/openssl
-   ${DEPENDENCY_ROOT}/pcre/include
-   )
+   ${CMAKE_SOURCE_DIR}/src/shared
+   ${ZLIB_INCLUDE_DIRS}
+   ${OPENSSL_INCLUDE_DIR}
+   ${PCRE_INCLUDE_DIR}
+   ${MYSQL_INCLUDE_DIR}
+   ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 link_directories(${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS})
 
-if(IS_64BIT)
-   link_directories(${DEPENDENCY_DLLS64})
+if(WIN32)
+    set(sources ${sources} resources.rc)
 endif()
 
-include(PCHSupport)
+add_executable(${PROJECT_NAME} ${sources} ${headers})
 
-set(WIN_RESOURCE_FILE ${ROOT_PATH}/src/logonserver/resources.rc)
-add_executable(${PROJECT_NAME} ${SRCS} ${HEADERS} ${WIN_RESOURCE_FILE})
-
-if(CMAKE_GENERATOR MATCHES Visual*)
-   ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${prefix}/LogonStdAfx.cpp)
+if(MSVC)
+    include(PCHSupport)
+    ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h LogonStdAfx.cpp)
 endif()
 
 #Link our shared lib.
-target_link_libraries(${PROJECT_NAME} shared ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${MYSQL_LIBRARIES} shared ${MYSQL_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES})
 
 #Provide make install rules.
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+
+unset(sources)
+unset(headers)
