@@ -21,12 +21,7 @@
 #define _MYSQLDATABASE_H
 
 #include <string>
-
-#if PLATFORM == PLATFORM_APPLE
 #include <mysql.h>
-#else
-#include <mysql.h>
-#endif
 
 
 struct MySQLDatabaseConnection : public DatabaseConnection

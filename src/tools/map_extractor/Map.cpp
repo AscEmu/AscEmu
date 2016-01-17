@@ -17,9 +17,6 @@
 */
 
 //// Moved file System.cpp -> Map.cpp
-
-#define _CRT_SECURE_NO_DEPRECATE
-
 #include "Map.h"
 #include <stdio.h>
 #include <deque>

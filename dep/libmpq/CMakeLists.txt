@@ -1,29 +1,30 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-file(GLOB libmpq_sources libmpq/*.c libmpq/*.h)
 project(libmpq)
+file(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.c ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.h)
 
-set(sources
-   ${PROJECT_NAME}/common.c
-   ${PROJECT_NAME}/explode.c
-   ${PROJECT_NAME}/extract.c
-   ${PROJECT_NAME}/huffman.c
-   ${PROJECT_NAME}/mpq.c
-   ${PROJECT_NAME}/mpq_libmpq.cpp
-   ${PROJECT_NAME}/wave.c
-   )
+if(WIN32)
+    set(sources
+    ${sources}
+    win/winvs_config.h
+    win/winvs_dirent.h
+    win/winvs_stdint.h
+    )
+endif()
 
-if(NOT WIN32 AND NOT IS_64BIT)
+if(UNIX AND NOT IS_64BIT)
 	add_definitions(-D_FILE_OFFSET_BITS=64)
-endif(NOT WIN32 AND NOT IS_64BIT)
+endif()
 
 include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/libmpq
    ${CMAKE_CURRENT_SOURCE_DIR}/win
-   ${DEPENDENCY_ROOT}/zlib
-   ${DEPENDENCY_ROOT}/bzip2
-   ${LOADLIB_PATH}
-   )
+   ${CMAKE_CURRENT_SOURCE_DIR}/libmpq
+   ${CMAKE_SOURCE_DIR}/dep/loadlib
+   ${ZLIB_INCLUDE_DIRS}
+   ${BZIP2_INCLUDE_DIRS}
+)
 
-add_library(${PROJECT_NAME} STATIC ${sources} ${LOADLIB_PATH})
-target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} bzip2)
+add_library(${PROJECT_NAME} STATIC ${sources})
+target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} loadlib ${BZIP2_LIBRARIES})
+
+unset(sources)

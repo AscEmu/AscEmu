@@ -3,9 +3,6 @@
 # set up our project name
 project(Battlegrounds)
 
-set(prefix ${ROOT_PATH}/src/scripts/${PROJECT_NAME})
-
-#sources -contains source files for our library.
 set(sources
     AlteracValley.cpp
     ArathiBasin.cpp
@@ -19,7 +16,7 @@ set(sources
     Setup.cpp
     StrandOfTheAncient.cpp
     WarsongGulch.cpp
-    )
+)
 
 set(headers
     AlteracValley.h
@@ -34,27 +31,29 @@ set(headers
     Setup.h
     StrandOfTheAncient.h
     WarsongGulch.h
-    )
- 
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-foreach(src IN ITEMS ${headers})
-   set(HEADERS ${HEADERS} ${prefix}/${src})
-endforeach(src)
+)
 
 include_directories(
-   ${GLOBAL_INCLUDE_DIRS}
-   ${DEPENDENCY_ROOT}/zlib
-   )
-add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
-add_dependencies(${PROJECT_NAME} ${script_dependencies})
-add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
-target_link_libraries(${PROJECT_NAME} ${script_linkages})
+   ${OPENSSL_INCLUDE_DIR}
+   ${PCRE_INCLUDE_DIR}
+   ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+   ${CMAKE_SOURCE_DIR}/dep/vmaplib/include
+   ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+   ${CMAKE_SOURCE_DIR}/src/shared
+   ${CMAKE_SOURCE_DIR}/src/world
+   ${ZLIB_INCLUDE_DIRS}
+)
 
-include(PCHSupport)
-if(CMAKE_GENERATOR MATCHES Visual*)
-   ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
+add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
+#add_dependencies(${PROJECT_NAME} ${script_dependencies})
+add_definitions(-DSCRIPTLIB -DSKIP_ALLOCATOR_SHARING)
+target_link_libraries(${PROJECT_NAME} world)
+
+if(MSVC)
+    include(PCHSupport)
+    ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h Setup.cpp)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+unset(sources)
+unset(headers)
