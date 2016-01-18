@@ -3,22 +3,17 @@
 # set up our project name
 project(dbcfile)
 
-set(prefix ${DEPENDENCY_ROOT}/${PROJECT_NAME})
-
 set(sources
    dbcfile.cpp
-   )
-
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
+)
 
 include_directories(
+   ${CMAKE_SOURCE_DIR}/dep/loadlib
+   ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
    ${CMAKE_CURRENT_SOURCE_DIR}
-   ${LOADLIB_PATH}
-   ${DEPENDENCY_ROOT}/libmpq/libmpq
-   )
+)
 
-link_directories(${DEPENDENCY_LIBS} ${EXTRA_LIBS_PATH})
-add_library(${PROJECT_NAME} STATIC ${SRCS})
-target_link_libraries( ${PROJECT_NAME} libmpq)
+add_library(${PROJECT_NAME} STATIC ${sources})
+target_link_libraries( ${PROJECT_NAME} loadlib libmpq)
+
+unset(sources)
