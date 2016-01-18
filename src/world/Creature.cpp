@@ -2919,8 +2919,9 @@ void Creature::RemoveVehicleComponent()
 
 void Creature::TeleportFar(uint32 mapId, float x, float y, float z, float o)
 {
-    RemoveFromWorld(false);
+    RemoveFromWorld(true);
     SetMapId(mapId);
     SetPosition(x, y, z, o, false);
     AddToWorld();
+    this->SetGUID(this->GetMapMgr()->GenerateCreatureGUID(this->GetEntry()));
 }

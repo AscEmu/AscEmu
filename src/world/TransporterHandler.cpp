@@ -216,7 +216,7 @@ void ObjectMgr::LoadTransports()
     }
 }
 
-Transporter::Transporter(uint64 guid) : GameObject(guid)
+Transporter::Transporter(uint64 guid) : GameObject(guid), currenttguid(0)
 {
     m_pathTime = 0;
     m_timer = 0;
@@ -561,7 +561,9 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
     }
 
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
-            (*itr)->TeleportFar(newMapid, x, y, z, (*itr)->GetOrientation());
+    {
+        (*itr)->TeleportFar(newMapid, x, y, z, (*itr)->GetOrientation());
+    }
 
     // Set our position
     RemoveFromWorld(false);
