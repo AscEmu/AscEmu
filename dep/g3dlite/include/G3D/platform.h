@@ -107,8 +107,8 @@ These control the version of Winsock used by G3D.
 #       ifndef(__clang__)
 #           error G3D only supports the gcc and clang compilers on Linux.
 #       endif
-#   	define G3D_NO_FFMPEG
 #   endif
+#   define G3D_NO_FFMPEG
 #endif
 
 #ifdef G3D_OSX
