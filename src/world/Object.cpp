@@ -1543,9 +1543,15 @@ void Object::_setFaction()
     }
     else if (IsGameObject())
     {
-        faction_template = sFactionTemplateStore.LookupEntry(static_cast<GameObject*>(this)->GetFaction());
-        if (faction_template == nullptr)
-            LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), GetEntry());
+        uint32 go_faction_id = static_cast<GameObject*>(this)->GetFaction();
+        faction_template = sFactionTemplateStore.LookupEntry(go_faction_id);
+        if (go_faction_id != 0)         // faction = 0 means it has no faction.
+        {
+            if (faction_template == nullptr)
+            {
+                LOG_ERROR("GameObject does not have a valid faction. Faction: %u set to Entry: %u", static_cast<GameObject*>(this)->GetFaction(), GetEntry());
+            }
+        }
     }
 
     //this solution looks a bit off, but our db is not perfect and this prevents some crashes.

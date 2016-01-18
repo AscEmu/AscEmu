@@ -13,6 +13,8 @@ find_package(BZip2 REQUIRED)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     include(${CMAKE_SOURCE_DIR}/cmake/Compilers/gcc.cmake)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    include(${CMAKE_SOURCE_DIR}/cmake/Compilers/clang.cmake)
 else()
     message(FATAL_ERROR "Compiler is not supported")
 endif()
