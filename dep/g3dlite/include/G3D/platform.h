@@ -104,14 +104,18 @@ These control the version of Winsock used by G3D.
 
 #ifdef G3D_LINUX
 #   ifndef __GNUC__
-#       error G3D only supports the gcc compiler on Linux.
+#       ifndef(__clang__)
+#           error G3D only supports the gcc and clang compilers on Linux.
+#       endif
 #   endif
 #   define G3D_NO_FFMPEG
 #endif
 
 #ifdef G3D_OSX
 #    ifndef __GNUC__
-#        error G3D only supports the gcc compiler on OS X.
+#        ifndef __clang__
+#           error G3D only supports the gcc and clang compilers on OS X.
+#        endif
 #    endif
     
 #    if defined(__i386__)
@@ -250,7 +254,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw) {\
 
 #endif  // win32
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 
 #    include <stdint.h>
 
@@ -337,7 +341,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw) {\
 
 
     See G3D::Color3uint8 for an example.*/
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #    define G3D_BEGIN_PACKED_CLASS(byteAlign)  class __attribute((__packed__))
 #elif defined(_MSC_VER)
 #    define G3D_BEGIN_PACKED_CLASS(byteAlign)  PRAGMA( pack(push, byteAlign) ) class
@@ -349,7 +353,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw) {\
     End switch to tight alignment
  
     See G3D::Color3uint8 for an example.*/
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #    define G3D_END_PACKED_CLASS(byteAlign)  __attribute((aligned(byteAlign))) ;
 #elif defined(_MSC_VER)
 #    define G3D_END_PACKED_CLASS(byteAlign)  ; PRAGMA( pack(pop) )
@@ -359,7 +363,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw) {\
 
 
 // Bring in shared_ptr and weak_ptr
-#if (defined(__GNUC__) && defined(__APPLE__)) || defined(__linux__)
+#if ((defined(__GNUC__) || defined(__clang__)) && defined(__APPLE__)) || defined(__linux__)
 #include <ciso646> // Defines _LIBCC_VERSION if linking against libc++ or does nothing
 #endif
 #if (!defined(_LIBCPP_VERSION) && defined(__APPLE__)) || (!defined(_LIBCPP_VERSION) && defined(__linux__))
