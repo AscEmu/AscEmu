@@ -7,6 +7,7 @@ branches:
 only:
  - master
  - coverity_scan
+ - clang_support
 
 # define complier for build
 compiler:
@@ -22,9 +23,9 @@ env:
 before_install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
-  - sudo apt-get -qq install zlib1g-dev libssl-dev libpcre3-dev libbz2-dev libmysqlclient-dev libmysql++-dev gcc-4.8 g++-4.8
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90
+  - sudo apt-get -qq install zlib1g-dev libssl-dev libpcre3-dev libbz2-dev libmysqlclient-dev libmysql++-dev
+#  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+#  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90
 
 addons:
  coverity_scan:
@@ -41,10 +42,11 @@ install:
  - cd bin
  - cmake ../
 
-script:
- - cd ..
- - cd bin
- - gcc --version
- - g++ --version
+before_script:
+ - clang --version
+ - clang++ --version
  - cmake --version
- - make -j 2
+
+script:
+- if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then cd ..; cd bin; make -j 2; fi
+
