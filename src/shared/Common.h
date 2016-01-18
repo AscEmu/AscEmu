@@ -27,10 +27,10 @@
 #define REPACK_WEBSITE "www.google.com"*/
 
 #ifdef WIN32
-#pragma warning(disable:4996)
-#define _CRT_SECURE_NO_DEPRECATE 1
-#define _CRT_SECURE_COPP_OVERLOAD_STANDARD_NAMES 1
-#pragma warning(disable:4251)        // dll-interface bullshit
+    #pragma warning(disable:4996)
+    #define _CRT_SECURE_NO_DEPRECATE 1
+    #define _CRT_SECURE_COPP_OVERLOAD_STANDARD_NAMES 1
+    #pragma warning(disable:4251)        // dll-interface bullshit
 #endif
 
 enum TimeVariables
@@ -53,13 +53,13 @@ enum MsTimeVariables
 };
 
 #ifdef WIN32
-#define ARCEMU_FORCEINLINE __forceinline
+    #define ARCEMU_FORCEINLINE __forceinline
 #else
-#define ARCEMU_FORCEINLINE inline
+    #define ARCEMU_FORCEINLINE inline
 #endif
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+    #include <config.h>
 #endif
 
 #include "AscemuServerDefines.hpp"
@@ -119,30 +119,33 @@ enum MsTimeVariables
 #define COMPILER_MICROSOFT 0
 #define COMPILER_GNU       1
 #define COMPILER_BORLAND   2
+#define COMPILER_CLANG     3
 
 #ifdef _MSC_VER
 #  define COMPILER COMPILER_MICROSOFT
 #elif defined( __BORLANDC__ )
 #  define COMPILER COMPILER_BORLAND
-#elif defined( __GNUC__ )
+#elif defined(__GNUC__)
 #  define COMPILER COMPILER_GNU
+#elif defined(__clang__)
+#  define COMPILER COMPILER_CLANG
 #else
 #  pragma error "FATAL ERROR: Unknown compiler."
 #endif
 
 #if PLATFORM == PLATFORM_UNIX || PLATFORM == PLATFORM_APPLE
-#ifdef HAVE_DARWIN
-#define PLATFORM_TEXT "MacOSX"
-#define UNIX_FLAVOUR UNIX_FLAVOUR_OSX
-#else
-#ifdef USE_KQUEUE
-#define PLATFORM_TEXT "FreeBSD"
-#define UNIX_FLAVOUR UNIX_FLAVOUR_BSD
-#else
-#define PLATFORM_TEXT "Linux"
-#define UNIX_FLAVOUR UNIX_FLAVOUR_LINUX
-#endif
-#endif
+    #ifdef HAVE_DARWIN
+        #define PLATFORM_TEXT "MacOSX"
+        #define UNIX_FLAVOUR UNIX_FLAVOUR_OSX
+    #else
+        #ifdef USE_KQUEUE
+            #define PLATFORM_TEXT "FreeBSD"
+            #define UNIX_FLAVOUR UNIX_FLAVOUR_BSD
+        #else
+            #define PLATFORM_TEXT "Linux"
+            #define UNIX_FLAVOUR UNIX_FLAVOUR_LINUX
+        #endif
+    #endif
 #endif
 
 #if PLATFORM == PLATFORM_WIN32
@@ -210,34 +213,6 @@ enum MsTimeVariables
 
 #include "CommonHelpers.hpp"
 
-#if defined (__GNUC__)
-#  define GCC_VERSION (__GNUC__ * 10000 \
-                       + __GNUC_MINOR__ * 100 \
-                       + __GNUC_PATCHLEVEL__)
-#endif
-
-
-#ifndef WIN32
-#ifndef X64
-#  if defined (__GNUC__)
-#    if GCC_VERSION >= 30400
-#         ifdef HAVE_DARWIN
-#          define __fastcall
-#         else
-#              define __fastcall __attribute__((__fastcall__))
-#         endif
-#    else
-#      define __fastcall __attribute__((__regparm__(3)))
-#    endif
-#  else
-#    define __fastcall __attribute__((__fastcall__))
-#  endif
-#else
-#define __fastcall
-#endif
-#endif
-
-
 // TEST SUPPORT FOR TR1
 
 #ifdef HAS_CXX0X
@@ -248,7 +223,7 @@ enum MsTimeVariables
 #define hash_multimap unordered_multimap
 #define hash_set unordered_set
 #define hash_multiset tr1::unordered_multiset
-#elif COMPILER == COMPILER_GNU && __GNUC__ >= 3
+#elif COMPILER == COMPILER_GNU && __GNUC__ >= 3  || (COMPILER == COMPILER_CLANG && __clang_major__ >= 3)
 #include <ext/hash_map>
 #include <ext/hash_set>
 #define HM_NAMESPACE __gnu_cxx
