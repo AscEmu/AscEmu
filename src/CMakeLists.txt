@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # add crashreport tool if we are not on windows
-if(NOT WIN32)
+if(UNIX)
    add_subdirectory(crashreport)
 endif()
 

@@ -3,7 +3,6 @@
 # set up our project name
 project(shared)
 
-set(prefix ${ROOT_PATH}/src/shared)
 set(sources
     CThreads.cpp
     CrashHandler.cpp
@@ -34,25 +33,25 @@ set(sources
     Auth/WowCrypt.cpp
     Config/Config.cpp
     Database/Database.cpp
-		Database/Field.cpp
+	Database/Field.cpp
     Database/MySQLDatabase.cpp
     Database/CreateInterface.cpp
     Network/CircularBuffer.cpp
     Network/Socket.cpp
-	)
+)
 
 set(headers
 	ascemu_getopt.h
-   AscemuServerDefines.hpp
+    AscemuServerDefines.hpp
 	Array.h
 	AuthCodes.h
 	ByteBuffer.h
 	CallBack.h
 	CircularQueue.h
 	Common.h
-  CommonTypes.hpp
-  CommonHelpers.hpp
-  CommonDefines.hpp
+    CommonTypes.hpp
+    CommonHelpers.hpp
+    CommonDefines.hpp
 	CrashHandler.h
 	crc32.h
 	CRefcounter.h
@@ -119,33 +118,25 @@ set(headers
 	Threading/Threading.h
 	Threading/ThreadPool.h
 	Threading/ThreadStarter.h
-	)
+)
 
 if(WIN32)
    set(sources ${sources} Network/SocketMgrWin32.cpp Network/SocketOpsWin32.cpp Network/SocketWin32.cpp StackWalker.cpp StackTrace.cpp)
-elseif(IS_FREEBSD OR APPLE)
+elseif((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CMAKE_SYSTEM_NAME STREQUAL "kFreeBSD") OR APPLE)
    set(sources ${sources} Network/SocketMgrFreeBSD.cpp Network/SocketFreeBSD.cpp Network/SocketOpsFreeBSD.cpp)
-else(WIN32)
+else()
    set(sources ${sources} Network/SocketMgrLinux.cpp Network/SocketLinux.cpp Network/SocketOpsLinux.cpp)
-endif(WIN32)
-
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-foreach(src IN ITEMS ${headers})
-   set(HEADERS ${HEADERS} ${prefix}/${src})
-endforeach(src)
+endif()
 
 include_directories(
-   ${GLOBAL_INCLUDE_DIRS}
-   ${DEPENDENCY_ROOT}/zlib
-   )
-if(IS_64BIT)
-   link_directories(${DEPENDENCY_DLLS64})
-else()
-	link_directories(${DEPENDENCY_DLLS})
-endif()
-link_directories(${DEPENDENCY_LIBS})
+    ${OPENSSL_INCLUDE_DIR}
+    ${ZLIB_INCLUDE_DIRS}
+    ${MYSQL_INCLUDE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-add_library(${PROJECT_NAME} STATIC ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${MYSQL_LIBRARY} ${OPENSSL_LIBRARIES} ${EXTRA_LIBS})
+add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
+target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}  ${MYSQL_LIBRARIES} ${OPENSSL_LIBRARIES} ${EXTRA_LIBS})
+
+unset(sources)
+unset(headers)
