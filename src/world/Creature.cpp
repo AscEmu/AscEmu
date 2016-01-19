@@ -2461,6 +2461,14 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     GetAIInterface()->OnDeath(pAttacker);
 
+    // Add Kills if Player is in Vehicle
+    if (pAttacker->IsVehicle())
+    {
+        Player* plr = static_cast<Player*>(m_mapMgr->GetUnit(pAttacker->GetCharmedByGUID()));
+        if (plr)
+            sQuestMgr.OnPlayerKill(plr, this, true);
+     }
+
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD);
 
     if ((GetCreatedByGUID() == 0) && (GetTaggerGUID() != 0))
