@@ -2921,7 +2921,7 @@ void Creature::TeleportFar(uint32 mapId, float x, float y, float z, float o)
 {
     RemoveFromWorld(true);
     SetMapId(mapId);
-    SetPosition(x, y, z, o, false);
     AddToWorld();
+    SetPosition(x, y, z, o, false);
     this->SetGUID(this->GetMapMgr()->GenerateCreatureGUID(this->GetEntry()));
 }
