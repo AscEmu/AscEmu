@@ -9,13 +9,8 @@ message(STATUS "Applying settings for \"Microsoft Visual Studio\" compiler")
 add_definitions(-D_CRT_SECURE_NO_WARNINGS -DHAS_CXX0X)
 
 #set defines for msvc
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHa /MP")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHa /MP")
-
-if(IS_64BIT)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /bigobj")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-endif()
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHa /MP /bigobj")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHa /MP /bigobj")
 
 # apply flags for debug build
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /W3")
