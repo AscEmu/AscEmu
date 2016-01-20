@@ -727,6 +727,42 @@ class NexusScript : public MoonInstanceScript
                 pKeristraszaAI->Release();
             };
         };
+
+		void OnPlayerEnter(Player* player)
+		{
+			if (player->GetDungeonDifficulty() == MODE_NORMAL)
+			{
+				switch (player->GetTeam())
+				{
+				case TEAM_ALLIANCE:
+					for (uint8 i = 0; i < 18; i++)
+						PushCreature(TrashHordeSpawns[i].entry, TrashHordeSpawns[i].x, TrashHordeSpawns[i].y, TrashHordeSpawns[i].z, TrashHordeSpawns[i].o, TrashHordeSpawns[i].faction);
+					    PushCreature(CN_HORDE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
+					break;
+				case TEAM_HORDE:
+					for (uint8 i = 0; i < 18; i++)
+						PushCreature(TrashAllySpawns[i].entry, TrashAllySpawns[i].x, TrashAllySpawns[i].y, TrashAllySpawns[i].z, TrashAllySpawns[i].o, TrashAllySpawns[i].faction);
+					    PushCreature(CN_ALLIANCE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
+					break;
+				}
+			}
+			if (player->GetDungeonDifficulty() == MODE_HEROIC)
+			{
+				switch (player->GetTeam())
+				{
+				case TEAM_ALLIANCE:
+					for (uint8 i = 0; i < 18; i++)
+						PushCreature(TrashHordeSpawns[i].entry, TrashHordeSpawns[i].x, TrashHordeSpawns[i].y, TrashHordeSpawns[i].z, TrashHordeSpawns[i].o, TrashHordeSpawns[i].faction);
+					    PushCreature(H_CN_HORDE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
+					break;
+				case TEAM_HORDE:
+					for (uint8 i = 0; i < 18; i++)
+						PushCreature(TrashAllySpawns[i].entry, TrashAllySpawns[i].x, TrashAllySpawns[i].y, TrashAllySpawns[i].z, TrashAllySpawns[i].o, TrashAllySpawns[i].faction);
+					    PushCreature(H_CN_ALLIANCE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
+					break;
+				}
+			}
+		};
 };
 
 void SetupNexus(ScriptMgr* mgr)
