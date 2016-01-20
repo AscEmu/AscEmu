@@ -3066,6 +3066,25 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
 
 void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 {
+    switch (m_spellProto->Id)
+    {
+        case 23493:
+        case 24379:
+        {
+            Unit* caster = m_target;
+            if (caster != nullptr)
+            {
+                sEventMgr.AddEvent(this, &Aura::EventPeriodicHealPct, 10.0f , EVENT_AURA_PERIODIC_HEALPERC, 1000, 10, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+                if (caster->GetMaxPower(POWER_TYPE_MANA))
+                {
+                    sEventMgr.AddEvent(this, &Aura::EventPeriodicManaPct, 10.0f, EVENT_AURA_PERIOCIC_MANA, 1000, 10, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                }
+            }
+            return;
+        }
+    }
+
     if (m_spellProto->EffectTriggerSpell[mod->i] == 0)
         return;
 
