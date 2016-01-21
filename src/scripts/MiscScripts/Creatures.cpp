@@ -19,6 +19,26 @@
 
 #include "Setup.h"
 
+//Explosive Sheep (Summoned by ItemID: 4384)
+class ExplosiveSheep : public CreatureAIScript
+{
+    public:
+        ADD_CREATURE_FACTORY_FUNCTION(ExplosiveSheep);
+        ExplosiveSheep(Creature* pCreature) : CreatureAIScript(pCreature) {}
+
+    void OnLoad()
+    {
+        _unit->Despawn(180000, 0); // "Lasts for 3 minutes or until it explodes."
+    }
+
+    void OnCombatStart(Unit* mTarget) // Summons an Explosive Sheep which will charge at a nearby enemy and explode for 135 - 165 damage.
+    {
+        _unit->GetAIInterface()->MoveCharge(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ());
+        _unit->CastSpell(_unit, 4050, true);
+        _unit->Despawn(1000, 0); //Despawn since we "exploded"
+    }
+};
+
 //Crimson Hammersmith
 class CrimsonHammersmith : public CreatureAIScript
 {
@@ -461,4 +481,6 @@ void SetupMiscCreatures(ScriptMgr* mgr)
 
     mgr->register_creature_script(16483, &DraeneiSurvivor::Create);
     mgr->register_creature_script(12423, &GuardRoberts::Create);
+
+    mgr->register_creature_script(2675, &ExplosiveSheep::Create);
 }
