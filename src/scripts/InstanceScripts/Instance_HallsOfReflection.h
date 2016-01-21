@@ -32,12 +32,11 @@ enum CreatureEntry
     //Falric
     CN_FALRIC   = 38112,
 
-	//Alliance Spawns
-	CN_JAINA_PROUDMOORE = 37221,
-	CN_ARCHMAGE_KORELN = 37582,
-	//Horde Spawns
-	CN_SYLVANAS_WINDRUNNER = 37223
-
+    //Alliance Spawns
+    CN_JAINA_PROUDMOORE = 37221,
+    CN_ARCHMAGE_KORELN = 37582,
+    //Horde Spawns
+    CN_SYLVANAS_WINDRUNNER = 37223
 };
 
 enum CreatureSpells

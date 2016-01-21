@@ -23,7 +23,7 @@ set(sources
     Instance_Deadmines.cpp 
     Instance_DireMaul.cpp 
     Instance_DrakTharonKeep.cpp 
-	Instance_ForgeOfSouls.cpp 
+    Instance_ForgeOfSouls.cpp 
     Instance_Gundrak.cpp 
     Instance_HallsOfLightning.cpp 
     Instance_HallsOfReflection.cpp 
@@ -34,7 +34,7 @@ set(sources
     Instance_Maraudon.cpp 
     Instance_Nexus.cpp 
     Instance_OldHillsbradFoothills.cpp 
-	Instance_PitOfSaron.cpp
+    Instance_PitOfSaron.cpp
     Instance_RagefireChasm.cpp 
     Instance_RazorfenDowns.cpp 
     Instance_ScarletMonastery.cpp 
@@ -91,7 +91,7 @@ set(headers
     Instance_Deadmines.h 
     Instance_DireMaul.h 
     Instance_DrakTharonKeep.h 
-	Instance_ForgeOfSouls.h
+    Instance_ForgeOfSouls.h
     Instance_Gundrak.h 
     Instance_HallsOfLightning.h 
     Instance_HallsOfReflection.h 
@@ -102,7 +102,7 @@ set(headers
     Instance_Maraudon.h 
     Instance_Nexus.h 
     Instance_OldHillsbradFoothills.h 
-	Instance_PitOfSaron.h
+    Instance_PitOfSaron.h
     Instance_RagefireChasm.h 
     Instance_RazorfenDowns.h 
     Instance_ScarletMonastery.h 
@@ -133,10 +133,10 @@ set(headers
     Raid_Naxxramas.h 
     Raid_OnyxiasLair.h 
     Raid_SerpentshrineCavern.h
-    Raid_SunwellPlateau.h  
-    Raid_TheEye.h 
-    Raid_TheObsidianSanctum.h 
-    Raid_Ulduar.h 
+    Raid_SunwellPlateau.h
+    Raid_TheEye.h
+    Raid_TheObsidianSanctum.h
+    Raid_Ulduar.h
     Raid_ZulGurub.h 
     Raid_WorldBosses.h 
     Raid_ZulAman.h

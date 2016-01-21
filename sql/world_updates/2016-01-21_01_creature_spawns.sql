@@ -1,6 +1,7 @@
--- Delete existing spawns for FoS,PoS,HoR.
-DELETE FROM 'creature_spawns' WHERE 'id' in
-(134010, 134007, 134112, 134148, 141019, 141018, 134101, 141020, 141021, 133779, 141022, 134102, 134149, 141023);
+--
+-- Delete existing spawns for instances FoS,PoS,HoR.
+--
+DELETE FROM `creature_spawns` WHERE `id` IN(134010, 134007, 134112, 134148, 141019, 141018, 134101, 141020, 141021, 133779, 141022, 134102, 134149, 141023);
 
 --
 -- Update world db version
