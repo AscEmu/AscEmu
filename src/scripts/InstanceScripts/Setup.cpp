@@ -41,6 +41,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupDrakTharonKeep(mgr);
     SetupDeadmines(mgr);
     SetupDireMaul(mgr);
+    SetupForgeOfSouls(mgr);
     SetupGundrak(mgr);
     SetupHellfireRamparts(mgr);
     SetupHallsOfStone(mgr);
@@ -50,6 +51,7 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupMaraudon(mgr);
     SetupNexus(mgr);
     SetupOldHillsbradFoothills(mgr);
+    SetupPitOfSaron(mgr);
     SetupRagefireChasm(mgr);
     SetupRazorfenDowns(mgr);
     SetupScarletMonastery(mgr);

@@ -22,7 +22,7 @@
 #include "Instance_HallsOfReflection.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-//Azjol-Nerub
+//Halls of Reflection
 class HallsOfReflectionScript : public MoonInstanceScript
 {
     public:
@@ -81,9 +81,17 @@ class HallsOfReflectionScript : public MoonInstanceScript
 
         void OnPlayerEnter(Player* pPlayer)
         {
-            pPlayer->CastSpell(pPlayer, pPlayer->GetTeam() == TEAM_ALLIANCE ? 55774 : 55773, true);
             // Fixes a bug where you enter the instance and you run so far and teleports you out, changed DB coords still not working so this is a solution.
             pPlayer->SafeTeleport(MAP_HALLSOFREFLECTION, pPlayer->GetInstanceID(), 5260.970f, 1956.850f, 707.692f, 1.08f);
+            if (pPlayer->GetTeam() == TEAM_ALLIANCE)
+            {
+                PushCreature(CN_JAINA_PROUDMOORE, 5266.77f, 1953.52f, 707.69f, 0.74f, 35);
+                PushCreature(CN_ARCHMAGE_KORELN, 5264.26f, 1953.36f, 707.69f, 0.74f, 35);
+            }
+            else // TEAM_HORDE
+            {
+                PushCreature(CN_SYLVANAS_WINDRUNNER, 5266.77f, 1953.52f, 707.69f, 0.74f, 35);
+            }
         }
 };
 

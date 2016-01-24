@@ -40,6 +40,8 @@
 #endif
 
 
+#define GM_TICKET_MY_MASTER_COMPATIBLE
+
 /// Enable/Disable achievement mgr
 /// Default: Enabled
 /// To disable add // before #define below
