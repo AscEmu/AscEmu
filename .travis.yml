@@ -5,51 +5,56 @@ dist: trusty
 # only run travis on the master branch
 branches:
 only:
- - master
- - coverity_scan
+  - master
+  - coverity_scan
 
-# define complier for build
+# clang is default compiler for pull requests and default branches (except coverity scan)
 compiler:
-- clang
-#- gcc
+  - clang
+
+git:
+  depth: 1
 
 env:
- global:
+  global:
   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
   #   via the "travis encrypt" command using the project repo's public key
   - secure: "Zk3bAxnp4OHPMMZYOSoM2chuMZXomp7BFcT54/Ag6C8RCqtpqQ+E6yHRp861xdWSVo9uZ/uGmD1pwPiIUK8Vs80+OwhFVvtor2MGXyQKX1oFYBg0mo5Z3Xzy+OPa3e0YBbe6SSqdUzDE1hIa7OrU8GWciIMobWQS7XIBbWg3TFU="
 
-# experimental config
 before_install:
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
   - sudo apt-get -qq install zlib1g-dev libssl-dev libpcre3-dev libbz2-dev libmysqlclient-dev libmysql++-dev
-#  - sudo sudo apt-get -qq install g++-4.8 gcc-4.8
-#  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-#  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90
+  # use GNU gcc compiler for coverity tests
+  - if [ "${COVERITY_SCAN_BRANCH}" = 1 ];
+    then sudo sudo apt-get -qq install g++ gcc;
+    export CXX=g++;
+    export CC=gcc;
+    fi
 
 addons:
- coverity_scan:
-   project:
-     name: "AscEmu/AscEmu"
-     description: "3.3.5 World of Warcraft game server"
-   notification_email: autokaori@gmail.com
-   build_command_prepend: "make clean"
-   build_command:   "make -j 2" # use limited workers to avoid running out of memory
-   branch_pattern: coverity_scan
+  coverity_scan:
+    project:
+      name: "AscEmu/AscEmu"
+      description: "3.3.5 World of Warcraft game server"
+    notification_email: autokaori@gmail.com
+    build_command_prepend: "make clean"
+    build_command:   "make -j 2" # use limited workers to avoid running out of memory
+    branch_pattern: coverity_scan
 
 install:
- - mkdir bin
- - cd bin
- - cmake ../
+  - mkdir bin
+  - cd bin
+  - cmake ../
 
 before_script:
-# - gcc --version
-# - g++ --version
- - clang --version
- - clang++ --version
- - cmake --version
+  - ${CXX} --version
+  - ${CC} --version
+  - cmake --version
 
 script:
-- if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then cd ..; cd bin; make -j 2; fi
+  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ];
+    then cd ..;
+    cd bin;
+    make -j 2; 
+    fi
 
