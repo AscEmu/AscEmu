@@ -449,6 +449,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Ticket
         bool HandleTicketListCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleTicketListAllCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleTicketGetCommand(const char* args, WorldSession* m_session);
 
         // Ban
         bool HandleBanCharacterCommand(const char* args, WorldSession* m_session);

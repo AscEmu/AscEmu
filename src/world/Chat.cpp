@@ -386,6 +386,7 @@ void CommandTableStorage::Init()
     {
         { "list",         'c', &ChatHandler::HandleTicketListCommand,       "Shows all active tickets",                 NULL, 0, 0, 0 },
         { "listall",      'c', &ChatHandler::HandleTicketListAllCommand,    "Shows all tickets in the database",        NULL, 0, 0, 0 },
+        { "get",          'c', &ChatHandler::HandleTicketGetCommand,        "Returns the content of the specified ID",  NULL, 0, 0, 0 },
         { NULL,           '0', NULL,                                        "",                                         NULL, 0, 0, 0 }
     };
     dupe_command_table(TicketCommandTable, _TicketCommandTable);

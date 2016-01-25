@@ -73,3 +73,34 @@ bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession*
 
     return true;
 }
+
+bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_session)
+{
+    if (!*args)
+    {
+        RedSystemMessage(m_session, "You need to specify a ticket ID!");
+        return false;
+    }
+
+    Player* player = m_session->GetPlayer();
+
+    uint32 tickeID = atol(args);
+
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u", tickeID);
+
+    if (!result)
+        return false;
+
+    std::stringstream sstext;
+    Field* fields = result->Fetch();
+
+    sstext << "Ticket ID: " << tickeID << " | Player: " << fields[2].GetString() << '\n'
+            << "======= Content =======" << '\n'
+            << fields[8].GetString() << '\n';
+
+    delete result;
+
+    SendMultilineMessage(m_session, sstext.str().c_str());
+
+    return true;
+}
