@@ -35,10 +35,41 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
         Field* fields = result->Fetch();
         sstext << "TicketID: " << fields[0].GetUInt16()
             << " | Player: " << fields[2].GetString()
+            << " | Opened: " << ConvertTimeStampToString((uint32)UNIXTIME - fields[9].GetUInt32())
             << '\n';
     } while (result->NextRow());
 
     delete result;
 
     SendMultilineMessage(m_session, sstext.str().c_str());
+
+    return true;
+}
+
+bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Player* player = m_session->GetPlayer();
+
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets");
+
+    if (!result)
+        return false;
+
+    std::stringstream sstext;
+    sstext << "List of active tickets: " << '\n';
+
+    do
+    {
+        Field* fields = result->Fetch();
+        sstext << "TicketID: " << fields[0].GetUInt16()
+            << " | Player: " << fields[2].GetString()
+            << " | Opened: " << ConvertTimeStampToString((uint32)UNIXTIME - fields[9].GetUInt32())
+            << '\n';
+    } while (result->NextRow());
+
+    delete result;
+
+    SendMultilineMessage(m_session, sstext.str().c_str());
+
+    return true;
 }
