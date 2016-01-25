@@ -1434,6 +1434,18 @@ void ObjectMgr::RemoveGMTicket(uint64 ticketGuid)
     }
 }
 
+void ObjectMgr::CloseTicket(uint64 ticketGuid)
+{
+    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
+    {
+        if ((*i)->guid == ticketGuid && !(*i)->deleted)
+        {
+            (*i)->deleted = true;
+        }
+        ++i;
+    }
+}
+
 GM_Ticket* ObjectMgr::GetGMTicketByPlayer(uint64 playerGuid)
 {
     for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
