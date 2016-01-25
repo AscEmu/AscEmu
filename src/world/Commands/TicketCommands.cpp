@@ -76,7 +76,7 @@ bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession*
 
 bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_session)
 {
-    if (!*args)
+    if (!args)
     {
         RedSystemMessage(m_session, "You need to specify a ticket ID!");
         return false;
@@ -84,9 +84,9 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
 
     Player* player = m_session->GetPlayer();
 
-    uint32 tickeID = atol(args);
+    uint32 ticketID = atol(args);
 
-    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u", tickeID);
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u", ticketID);
 
     if (!result)
         return false;
@@ -94,13 +94,39 @@ bool ChatHandler::HandleTicketGetCommand(const char* args, WorldSession* m_sessi
     std::stringstream sstext;
     Field* fields = result->Fetch();
 
-    sstext << "Ticket ID: " << tickeID << " | Player: " << fields[2].GetString() << '\n'
+    sstext << "Ticket ID: " << ticketID << " | Player: " << fields[2].GetString() << '\n'
             << "======= Content =======" << '\n'
             << fields[8].GetString() << '\n';
 
     delete result;
 
     SendMultilineMessage(m_session, sstext.str().c_str());
+
+    return true;
+}
+
+bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_session)
+{
+    if (!args)
+    {
+        RedSystemMessage(m_session, "You need to specify a ticket ID");
+        return false;
+    }
+
+    Player* player = m_session->GetPlayer();
+
+    uint32 ticketID = atol(args);
+
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 0", ticketID);
+
+    if (!result)
+    {
+        RedSystemMessage(m_session, "Ticket %u is already closed!", ticketID);
+        return false;
+    }
+
+    CharacterDatabase.Execute("UPDATE gm_tickets SET deleted = 1, comment = 'Ticket clodes by %s', assignedto = %u WHERE ticketid = %u", player->GetName(), player->GetGUID(), ticketID);
+    GreenSystemMessage(m_session, "Ticket %u is now closed and assigned to you.", ticketID);
 
     return true;
 }
