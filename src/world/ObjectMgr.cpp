@@ -1410,51 +1410,51 @@ void ObjectMgr::DeleteAllRemovedGMTickets()
 
 void ObjectMgr::RemoveGMTicketByPlayer(uint64 playerGuid)
 {
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
+    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
     {
         if ((*i)->playerGuid == playerGuid && !(*i)->deleted)
         {
             (*i)->deleted = true;
             SaveGMTicket((*i), NULL);
+            break;
         }
-        ++i;
     }
 }
 
 void ObjectMgr::RemoveGMTicket(uint64 ticketGuid)
 {
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
+    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
     {
         if ((*i)->guid == ticketGuid && !(*i)->deleted)
         {
             (*i)->deleted = true;
             SaveGMTicket((*i), NULL);
+            break;
         }
-        ++i;
     }
 }
 
 void ObjectMgr::CloseTicket(uint64 ticketGuid)
 {
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
+    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
     {
         if ((*i)->guid == ticketGuid && !(*i)->deleted)
         {
             (*i)->deleted = true;
+            break;
         }
-        ++i;
     }
 }
 
 GM_Ticket* ObjectMgr::GetGMTicketByPlayer(uint64 playerGuid)
 {
-    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end();)
+    for (GmTicketList::iterator i = GM_TicketList.begin(); i != GM_TicketList.end(); ++i)
     {
         if ((*i)->playerGuid == playerGuid && !(*i)->deleted)
         {
             return (*i);
+            break;
         }
-        ++i;
     }
     return NULL;
 }
