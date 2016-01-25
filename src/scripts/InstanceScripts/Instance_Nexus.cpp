@@ -731,42 +731,46 @@ class NexusScript : public MoonInstanceScript
 
         void OnPlayerEnter(Player* player)
         {
-            // team spawns
-            if (player->GetTeam() == TEAM_ALLIANCE)
+            if (!mSpawnsCreated)
             {
-                for (uint8 i = 0; i < 18; i++)
-                    PushCreature(TrashHordeSpawns[i].entry, TrashHordeSpawns[i].x, TrashHordeSpawns[i].y, TrashHordeSpawns[i].z, TrashHordeSpawns[i].o, TrashHordeSpawns[i].faction);
-            }
-            else
-            {
-                for (uint8 i = 0; i < 18; i++)
-                    PushCreature(TrashAllySpawns[i].entry, TrashAllySpawns[i].x, TrashAllySpawns[i].y, TrashAllySpawns[i].z, TrashAllySpawns[i].o, TrashAllySpawns[i].faction);
-            }
+                // team spawns
+                if (player->GetTeam() == TEAM_ALLIANCE)
+                {
+                    for (uint8 i = 0; i < 18; i++)
+                        PushCreature(TrashHordeSpawns[i].entry, TrashHordeSpawns[i].x, TrashHordeSpawns[i].y, TrashHordeSpawns[i].z, TrashHordeSpawns[i].o, TrashHordeSpawns[i].faction);
+                }
+                else
+                {
+                    for (uint8 i = 0; i < 18; i++)
+                        PushCreature(TrashAllySpawns[i].entry, TrashAllySpawns[i].x, TrashAllySpawns[i].y, TrashAllySpawns[i].z, TrashAllySpawns[i].o, TrashAllySpawns[i].faction);
+                }
 
-            // difficulty spawns
-            if (player->GetDungeonDifficulty() == MODE_NORMAL)
-            {
-                switch (player->GetTeam())
+                // difficulty spawns
+                if (player->GetDungeonDifficulty() == MODE_NORMAL)
                 {
-                    case TEAM_ALLIANCE:
-                        PushCreature(CN_HORDE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
-                        break;
-                    case TEAM_HORDE:
-                        PushCreature(CN_ALLIANCE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
-                        break;
+                    switch (player->GetTeam())
+                    {
+                        case TEAM_ALLIANCE:
+                            PushCreature(CN_HORDE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
+                            break;
+                        case TEAM_HORDE:
+                            PushCreature(CN_ALLIANCE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
+                            break;
+                    }
                 }
-            }
-            else    // MODE_HEROIC
-            {
-                switch (player->GetTeam())
+                else    // MODE_HEROIC
                 {
-                    case TEAM_ALLIANCE:
-                        PushCreature(H_CN_HORDE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
-                        break;
-                    case TEAM_HORDE:
-                        PushCreature(H_CN_ALLIANCE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
-                        break;
+                    switch (player->GetTeam())
+                    {
+                        case TEAM_ALLIANCE:
+                            PushCreature(H_CN_HORDE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
+                            break;
+                        case TEAM_HORDE:
+                            PushCreature(H_CN_ALLIANCE_COMMANDER, 425.39f, 185.82f, -35.01f, -1.57f, 14);
+                            break;
+                    }
                 }
+                mSpawnsCreated = true;
             }
         };
 };

@@ -148,17 +148,22 @@ class IceCrownCitadelScript : public MoonInstanceScript
 
         void OnPlayerEnter(Player* player)
         {
-            // setup only the npcs with the correct team...
-            switch (player->GetTeam())
+            if (!mSpawnsCreated)
             {
-                case TEAM_ALLIANCE:
-                    for (uint8 i = 0; i < 13; i++)
-                        PushCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
-                    break;
-                case TEAM_HORDE:
-                    for (uint8 i = 0; i < 13; i++)
-                        PushCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
-                    break;
+                // setup only the npcs with the correct team...
+                switch (player->GetTeam())
+                {
+                    case TEAM_ALLIANCE:
+                        for (uint8 i = 0; i < 13; i++)
+                            PushCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
+                        break;
+                    case TEAM_HORDE:
+                        for (uint8 i = 0; i < 13; i++)
+                            PushCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
+                        break;
+                }
+
+                mSpawnsCreated = true;
             }
         }
 

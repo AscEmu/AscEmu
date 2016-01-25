@@ -212,6 +212,7 @@ class MoonInstanceScript : public InstanceScript
         uint32 mUpdateFrequency;
         TimerArray mTimers;
         int32 mTimerIdCounter;
+        bool mSpawnsCreated;
 };
 
 #endif      // _INSTANCE_BASE_H
