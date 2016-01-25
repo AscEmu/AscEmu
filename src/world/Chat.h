@@ -166,6 +166,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _eventCommandTable;
     ChatCommand* _waypointCommandTable;
     ChatCommand* _GMTicketCommandTable;
+    ChatCommand* _TicketCommandTable;
     ChatCommand* _GuildCommandTable;
     ChatCommand* _GameObjectCommandTable;
     ChatCommand* _BattlegroundCommandTable;
@@ -444,6 +445,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNPCOnGOCommand(const char* args, WorldSession* m_session);
         bool HandleNPCLootCommand(const char* args, WorldSession* m_session);
         bool HandleNPCCastCommand(const char* args, WorldSession* m_session);
+
+        // Ticket
+        bool HandleTicketListCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleTicketListAllCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleTicketGetCommand(const char* args, WorldSession* m_session);
+        bool HandleTicketCloseCommand(const char* args, WorldSession* m_session);
+        bool HandleTicketDeleteCommand(const char* args, WorldSession* m_session);
 
         // Ban
         bool HandleBanCharacterCommand(const char* args, WorldSession* m_session);

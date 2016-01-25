@@ -611,11 +611,11 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void UpdateGMTicket(GM_Ticket* ticket);
         void RemoveGMTicketByPlayer(uint64 playerGuid);
         void RemoveGMTicket(uint64 ticketGuid);
+        void CloseTicket(uint64 ticketGuid);
         void DeleteGMTicketPermanently(uint64 ticketGuid);
         void DeleteAllRemovedGMTickets();
         GM_Ticket* GetGMTicket(uint64 ticketGuid);
         GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
-        //std::list<GM_Ticket*>* GetGMTicketsByPlayer(uint64 playerGuid);
 
         DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
         SpellEntry* GetNextSpellRank(SpellEntry* sp, uint32 level);
