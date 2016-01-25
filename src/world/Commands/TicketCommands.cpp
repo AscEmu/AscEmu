@@ -127,6 +127,36 @@ bool ChatHandler::HandleTicketCloseCommand(const char* args, WorldSession* m_ses
 
     CharacterDatabase.Execute("UPDATE gm_tickets SET deleted = 1, comment = 'Ticket clodes by %s', assignedto = %u WHERE ticketid = %u", player->GetName(), player->GetGUID(), ticketID);
     GreenSystemMessage(m_session, "Ticket %u is now closed and assigned to you.", ticketID);
+    sGMLog.writefromsession(m_session, "closed ticket %u ", ticketID);
+    delete result;
+    return true;
+}
+
+bool ChatHandler::HandleTicketDeleteCommand(const char* args, WorldSession* m_session)
+{
+    if (!args)
+    {
+        RedSystemMessage(m_session, "You need to specify a ticket ID");
+        return false;
+    }
+
+    Player* player = m_session->GetPlayer();
+
+    uint32 ticketID = atol(args);
+
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE ticketid = %u AND deleted = 1", ticketID);
+
+    if (!result)
+    {
+        RedSystemMessage(m_session, "Ticket %u is not available in gm_tickets table or not closed!", ticketID);
+        return false;
+    }
+
+    delete result;
+
+    CharacterDatabase.Execute("DELETE FROM gm_tickets WHERE ticketid = %u", ticketID);
+    GreenSystemMessage(m_session, "Ticket %u is deleted", ticketID);
+    sGMLog.writefromsession(m_session, "deleted ticket %u ", ticketID);
 
     return true;
 }
