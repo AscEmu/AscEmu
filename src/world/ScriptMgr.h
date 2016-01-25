@@ -311,31 +311,31 @@ class SERVER_DECL CreatureAIScript
         CreatureAIScript(Creature* creature);
         virtual ~CreatureAIScript();
 
-        virtual void OnCombatStart(Unit* mTarget) {}
-        virtual void OnCombatStop(Unit* mTarget) {}
-        virtual void OnDamageTaken(Unit* mAttacker, uint32 fAmount) {}
-        virtual void OnCastSpell(uint32 iSpellId) {}
-        virtual void OnTargetParried(Unit* mTarget) {}
-        virtual void OnTargetDodged(Unit* mTarget) {}
-        virtual void OnTargetBlocked(Unit* mTarget, int32 iAmount) {}
-        virtual void OnTargetCritHit(Unit* mTarget, int32 fAmount) {}
-        virtual void OnTargetDied(Unit* mTarget) {}
-        virtual void OnParried(Unit* mTarget) {}
-        virtual void OnDodged(Unit* mTarget) {}
-        virtual void OnBlocked(Unit* mTarget, int32 iAmount) {}
-        virtual void OnCritHit(Unit* mTarget, int32 fAmount) {}
-        virtual void OnHit(Unit* mTarget, float fAmount) {}
-        virtual void OnDied(Unit* mKiller) {}
-        virtual void OnAssistTargetDied(Unit* mAssistTarget) {}
-        virtual void OnFear(Unit* mFeared, uint32 iSpellId) {}
-        virtual void OnFlee(Unit* mFlee) {}
+        virtual void OnCombatStart(Unit* /*mTarget*/) {}
+        virtual void OnCombatStop(Unit* /*mTarget*/) {}
+        virtual void OnDamageTaken(Unit* /*mAttacker*/, uint32 /*fAmount*/) {}
+        virtual void OnCastSpell(uint32 /*iSpellId*/) {}
+        virtual void OnTargetParried(Unit* /*mTarget*/) {}
+        virtual void OnTargetDodged(Unit* /*mTarget*/) {}
+        virtual void OnTargetBlocked(Unit* /*mTarget*/, int32 /*iAmount*/) {}
+        virtual void OnTargetCritHit(Unit* /*mTarget*/, int32 /*fAmount*/) {}
+        virtual void OnTargetDied(Unit* /*mTarget*/) {}
+        virtual void OnParried(Unit* /*mTarget*/) {}
+        virtual void OnDodged(Unit* /*mTarget*/) {}
+        virtual void OnBlocked(Unit* /*mTarget*/, int32 /*iAmount*/) {}
+        virtual void OnCritHit(Unit* /*mTarget*/, int32 /*fAmount*/) {}
+        virtual void OnHit(Unit* /*mTarget*/, float /*fAmount*/) {}
+        virtual void OnDied(Unit* /*mKiller*/) {}
+        virtual void OnAssistTargetDied(Unit* /*mAssistTarget*/) {}
+        virtual void OnFear(Unit* /*mFeared*/, uint32 /*iSpellId*/) {}
+        virtual void OnFlee(Unit* /*mFlee*/) {}
         virtual void OnCallForHelp() {}
         virtual void OnLoad() {}
         virtual void OnDespawn() {}
-        virtual void OnReachWP(uint32 iWaypointId, bool bForwards) {}
-        virtual void OnLootTaken(Player* pPlayer, ItemPrototype* pItemPrototype) {}
+        virtual void OnReachWP(uint32 /*iWaypointId*/, bool /*bForwards*/) {}
+        virtual void OnLootTaken(Player* /*pPlayer*/, ItemPrototype* /*pItemPrototype*/) {}
         virtual void AIUpdate() {}
-        virtual void OnEmote(Player* pPlayer, EmoteType Emote) {}
+        virtual void OnEmote(Player* /*pPlayer*/, EmoteType /*Emote*/) {}
         virtual void StringFunctionCall(int) {}
 
         void RegisterAIUpdateEvent(uint32 frequency);
@@ -379,21 +379,21 @@ class SERVER_DECL CreatureAIScript
         /// \param Unit* passenger  -  The passenger who entered
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OnFirstPassengerEntered(Unit* passenger){}
+        virtual void OnFirstPassengerEntered(Unit* /*passenger*/) {}
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Called when there are no more free seats
         /// \param none
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OnVehicleFull(){}
+        virtual void OnVehicleFull() {}
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Called when the last passenger leaves
         /// \param Unit* passenger  - The passenger who left
         /// \return none
         //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OnLastPassengerLeft(Unit* passenger){}
+        virtual void OnLastPassengerLeft(Unit* /*passenger*/) {}
 
     protected:
 
@@ -412,22 +412,22 @@ class SERVER_DECL EventScript
         EventScript(){};
         virtual ~EventScript() {};
 
-        virtual bool OnBeforeEventStart(GameEvent* pEvent, GameEventState pOldState) { return true; } // Before an event is about to be flagged as starting
-        virtual void OnAfterEventStart(GameEvent* pEvent, GameEventState pOldState) {} // After an event has spawned all entities
-        virtual bool OnBeforeEventStop(GameEvent* pEvent, GameEventState pOldState) { return true; } // Before an event is about to be flagged as stopping
-        virtual void OnAfterEventStop(GameEvent* pEvent, GameEventState pOldState) { } // After an event has despawned all entities
+        virtual bool OnBeforeEventStart(GameEvent* /*pEvent*/, GameEventState /*pOldState*/) { return true; } // Before an event is about to be flagged as starting
+        virtual void OnAfterEventStart(GameEvent* /*pEvent*/, GameEventState /*pOldState*/) {} // After an event has spawned all entities
+        virtual bool OnBeforeEventStop(GameEvent* /*pEvent*/, GameEventState /*pOldState*/) { return true; } // Before an event is about to be flagged as stopping
+        virtual void OnAfterEventStop(GameEvent* /*pEvent*/, GameEventState /*pOldState*/) { } // After an event has despawned all entities
 
-        virtual GameEventState OnEventStateChange(GameEvent* pEvent, GameEventState pOldState, GameEventState pNewState) { return pNewState; } // When an event changes state
+        virtual GameEventState OnEventStateChange(GameEvent* /*pEvent*/, GameEventState /*pOldState*/, GameEventState /*pNewState*/) { return pNewState; } // When an event changes state
 
-        virtual bool OnCreatureLoad(GameEvent* pEvent, Creature* pCreature) { return true; } // When a creature's data has been loaded, before it is spawned
-        virtual void OnCreaturePushToWorld(GameEvent* pEvent, Creature* pCreature) {} // After a creature has been added to the world
-        virtual void OnBeforeCreatureDespawn(GameEvent* pEvent, Creature* pCreature) {} // Before a creature is about to be despawned
-        virtual void OnAfterCreatureDespawn(GameEvent* pEvent, Creature* pCreature) {} // After a creature has been despawned
+        virtual bool OnCreatureLoad(GameEvent* /*pEvent*/, Creature* /*pCreature*/) { return true; } // When a creature's data has been loaded, before it is spawned
+        virtual void OnCreaturePushToWorld(GameEvent* /*pEvent*/, Creature* /*pCreature*/) {} // After a creature has been added to the world
+        virtual void OnBeforeCreatureDespawn(GameEvent* /*pEvent*/, Creature* /*pCreature*/) {} // Before a creature is about to be despawned
+        virtual void OnAfterCreatureDespawn(GameEvent* /*pEvent*/, Creature* /*pCreature*/) {} // After a creature has been despawned
 
-        virtual bool OnGameObjectLoad(GameEvent* pEvent, GameObject* pGameObject) { return true; } // When a game object's data has been loaded, before it is spawned
-        virtual void OnGameObjectPushToWorld(GameEvent* pEvent, GameObject* pGameObject) {} // After a game object has been added to the world
-        virtual void OnBeforeGameObjectDespawn(GameEvent* pEvent, GameObject* pGameObject) {} // Before a game object is about to be despawned
-        virtual void OnAfterGameObjectDespawn(GameEvent* pEvent, GameObject* pGameObject) {} // After a game object is about to be despawned
+        virtual bool OnGameObjectLoad(GameEvent* /*pEvent*/, GameObject* /*pGameObject*/) { return true; } // When a game object's data has been loaded, before it is spawned
+        virtual void OnGameObjectPushToWorld(GameEvent* /*pEvent*/, GameObject* /*pGameObject*/) {} // After a game object has been added to the world
+        virtual void OnBeforeGameObjectDespawn(GameEvent* /*pEvent*/, GameObject* /*pGameObject*/) {} // Before a game object is about to be despawned
+        virtual void OnAfterGameObjectDespawn(GameEvent* /*pEvent*/, GameObject* /*pGameObject*/) {} // After a game object is about to be despawned
 
         // Standard virtual methods
         virtual void OnLoad() {}
@@ -450,9 +450,9 @@ class SERVER_DECL GameObjectAIScript
         virtual void OnCreate() {}
         virtual void OnSpawn() {}
         virtual void OnDespawn() {}
-        virtual void OnLootTaken(Player* pLooter, ItemPrototype* pItemInfo) {}
-        virtual void OnActivate(Player* pPlayer) {}
-        virtual void OnDamaged(uint32 damage){}
+        virtual void OnLootTaken(Player* /*pLooter*/, ItemPrototype* /*pItemInfo*/) {}
+        virtual void OnActivate(Player* /*pPlayer*/) {}
+        virtual void OnDamaged(uint32 /*damage*/){}
         virtual void OnDestroyed(){}
         virtual void AIUpdate() {}
         virtual void Destroy() { delete this; }
@@ -473,9 +473,9 @@ class SERVER_DECL GossipScript : public Arcemu::Gossip::Script
         GossipScript() {}
         virtual ~GossipScript() {}
 
-        virtual void GossipHello(Object* pObject, Player* plr) {}
-        virtual void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* EnteredCode) {}
-        virtual void GossipEnd(Object* pObject, Player* Plr) {}
+        virtual void GossipHello(Object* /*pObject*/, Player* /*plr*/) {}
+        virtual void GossipSelectOption(Object* /*pObject*/, Player* /*Plr*/, uint32 /*Id*/, uint32 /*IntId*/, const char* /*EnteredCode*/) {}
+        virtual void GossipEnd(Object* /*pObject*/, Player* /*Plr*/) {}
 
         //support for Gossip scripts added before r4106
         virtual void OnHello(Object* pObject, Player* Plr);
@@ -490,13 +490,13 @@ class SERVER_DECL QuestScript
         QuestScript() {};
         virtual ~QuestScript() {};
 
-        virtual void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry) {}
-        virtual void OnQuestComplete(Player* mTarget, QuestLogEntry* qLogEntry) {}
-        virtual void OnQuestCancel(Player* mTarget) {}
-        virtual void OnGameObjectActivate(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry) {}
-        virtual void OnCreatureKill(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry) {}
-        virtual void OnExploreArea(uint32 areaId, Player* mTarget, QuestLogEntry* qLogEntry) {}
-        virtual void OnPlayerItemPickup(uint32 itemId, uint32 totalCount, Player* mTarget, QuestLogEntry* qLogEntry) {}
+        virtual void OnQuestStart(Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnQuestComplete(Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnQuestCancel(Player* /*mTarget*/) {}
+        virtual void OnGameObjectActivate(uint32 /*entry*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnCreatureKill(uint32 /*entry*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnExploreArea(uint32 /*areaId*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
+        virtual void OnPlayerItemPickup(uint32 /*itemId*/, uint32 /*totalCount*/, Player* /*mTarget*/, QuestLogEntry* /*qLogEntry*/) {}
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -510,27 +510,27 @@ class SERVER_DECL InstanceScript
         virtual ~InstanceScript() {};
 
         // Procedures that had been here before
-        virtual GameObject* GetObjectForOpenLock(Player* pCaster, Spell* pSpell, SpellEntry* pSpellEntry) { return NULL; };
-        virtual void SetLockOptions(uint32 pEntryId, GameObject* pGameObject) {};
-        virtual uint32 GetRespawnTimeForCreature(uint32 pEntryId, Creature* pCreature) { return 240000; };
+        virtual GameObject* GetObjectForOpenLock(Player* /*pCaster*/, Spell* /*pSpell*/, SpellEntry* /*pSpellEntry*/) { return NULL; };
+        virtual void SetLockOptions(uint32 /*pEntryId*/, GameObject* /*pGameObject*/) {};
+        virtual uint32 GetRespawnTimeForCreature(uint32 /*pEntryId*/, Creature* /*pCreature*/) { return 240000; };
 
         // Player
-        virtual void OnPlayerDeath(Player* pVictim, Unit* pKiller) {};
+        virtual void OnPlayerDeath(Player* /*pVictim*/, Unit* /*pKiller*/) {};
 
         // Area and AreaTrigger
-        virtual void OnPlayerEnter(Player* pPlayer) {};
-        virtual void OnAreaTrigger(Player* pPlayer, uint32 pAreaId) {};
-        virtual void OnZoneChange(Player* pPlayer, uint32 pNewZone, uint32 pOldZone) {};
+        virtual void OnPlayerEnter(Player* /*pPlayer*/) {};
+        virtual void OnAreaTrigger(Player* /*pPlayer*/, uint32 /*pAreaId*/) {};
+        virtual void OnZoneChange(Player* /*pPlayer*/, uint32 /*pNewZone*/, uint32 /*pOldZone*/) {};
 
         // Data get / set - idea taken from ScriptDev2
-        virtual void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData) {};
-        virtual uint32 GetInstanceData(uint32 pType, uint32 pIndex) { return 0; };
+        virtual void SetInstanceData(uint32 /*pType*/, uint32 /*pIndex*/, uint32 /*pData*/) {};
+        virtual uint32 GetInstanceData(uint32 /*pType*/, uint32 /*pIndex*/) { return 0; };
 
         // Creature / GameObject - part of it is simple reimplementation for easier use Creature / GO < --- > Script
-        virtual void OnCreatureDeath(Creature* pVictim, Unit* pKiller) {};
-        virtual void OnCreaturePushToWorld(Creature* pCreature) {};
-        virtual void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer) {};
-        virtual void OnGameObjectPushToWorld(GameObject* pGameObject) {};
+        virtual void OnCreatureDeath(Creature* /*pVictim*/, Unit* /*pKiller*/) {};
+        virtual void OnCreaturePushToWorld(Creature* /*pCreature*/) {};
+        virtual void OnGameObjectActivate(GameObject* /*pGameObject*/, Player* /*pPlayer*/) {};
+        virtual void OnGameObjectPushToWorld(GameObject* /*pGameObject*/) {};
 
         // Standard virtual methods
         virtual void OnLoad() {};
