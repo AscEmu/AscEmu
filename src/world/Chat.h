@@ -166,6 +166,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _eventCommandTable;
     ChatCommand* _waypointCommandTable;
     ChatCommand* _GMTicketCommandTable;
+    ChatCommand* _TicketCommandTable;
     ChatCommand* _GuildCommandTable;
     ChatCommand* _GameObjectCommandTable;
     ChatCommand* _BattlegroundCommandTable;

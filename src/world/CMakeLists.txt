@@ -5,6 +5,7 @@ project(world)
 
 set(sources
     Commands/AccountCommands.cpp
+    Commands/TicketCommands.cpp
     DBC/DBCStores.cpp
     DBC/DBCLoader.cpp
     DBC/DBCRecord.cpp
