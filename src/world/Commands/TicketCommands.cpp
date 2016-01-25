@@ -17,3 +17,28 @@
  */
 
 #include "StdAfx.h"
+
+bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Player* player = m_session->GetPlayer();
+
+    QueryResult* result = CharacterDatabase.Query("SELECT * FROM gm_tickets WHERE deleted=0");
+
+    if (!result)
+        return false;
+
+    std::stringstream sstext;
+    sstext << "List of active tickets: " << '\n';
+
+    do
+    {
+        Field* fields = result->Fetch();
+        sstext << "TicketID: " << fields[0].GetUInt16()
+            << " | Player: " << fields[2].GetString()
+            << '\n';
+    } while (result->NextRow());
+
+    delete result;
+
+    SendMultilineMessage(m_session, sstext.str().c_str());
+}

@@ -384,7 +384,8 @@ void CommandTableStorage::Init()
 
     static ChatCommand TicketCommandTable[] =
     {
-        { NULL,           '0', NULL,                                         "",                                    NULL, 0, 0, 0 }
+        { "list",         'c', &ChatHandler::HandleTicketListCommand,       "Shows all active tickets",                 NULL, 0, 0, 0 },
+        { NULL,           '0', NULL,                                        "",                                         NULL, 0, 0, 0 }
     };
     dupe_command_table(TicketCommandTable, _TicketCommandTable);
 

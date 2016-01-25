@@ -446,6 +446,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNPCLootCommand(const char* args, WorldSession* m_session);
         bool HandleNPCCastCommand(const char* args, WorldSession* m_session);
 
+        // Ticket
+        bool HandleTicketListCommand(const char* /*args*/, WorldSession* m_session);
+
         // Ban
         bool HandleBanCharacterCommand(const char* args, WorldSession* m_session);
         bool HandleBanAllCommand(const char* args, WorldSession* m_session);
