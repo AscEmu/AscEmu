@@ -25,7 +25,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get -qq install zlib1g-dev libssl-dev libpcre3-dev libbz2-dev libmysqlclient-dev libmysql++-dev
   # use GNU gcc compiler for coverity tests
-  - if [ "${COVERITY_SCAN_BRANCH}" = 1 ];
+  - if [ "${COVERITY_SCAN_BRANCH}" == 1 ];
     then sudo sudo apt-get -qq install g++ gcc;
     export CXX=g++;
     export CC=gcc;
