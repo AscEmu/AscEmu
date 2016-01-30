@@ -913,7 +913,7 @@ void MovementInfo::init(WorldPacket& data)
     if (flags & MOVEFLAG_TRANSPORT)
     {
         data >> transporter_info.transGuid;
-        data >> transporter_info.position.y;
+        data >> transporter_info.position.x;
         data >> transporter_info.position.y;
         data >> transporter_info.position.z;
         data >> transporter_info.position.o;
