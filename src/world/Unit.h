@@ -227,6 +227,7 @@ class SERVER_DECL Unit : public Object
 
         friend class AIInterface;
         friend class Aura;
+        TransportData m_transportData;
 
         void Update(unsigned long time_passed);
         virtual void RemoveFromWorld(bool free_guid);

@@ -279,6 +279,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDeveloperCommand(const char* args, WorldSession* m_session);
 
         // Debug Commands
+        /* Dumps movement data to the chatbox */
+        bool HandleDebugDumpMovementCommand(const char* args, WorldSession* session);
         bool HandleDebugInFrontCommand(const char* args, WorldSession* m_session);
         bool HandleShowReactionCommand(const char* args, WorldSession* m_session);
         bool HandleAIMoveCommand(const char* args, WorldSession* m_session);

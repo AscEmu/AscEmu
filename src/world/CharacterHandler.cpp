@@ -1036,7 +1036,7 @@ void WorldSession::FullLogin(Player* plr)
             }
 
             plr->SetPosition(c_tposx, c_tposy, c_tposz, plr->GetOrientation(), false);
-            plr->m_CurrentTransporter = pTrans;
+            plr->m_transport = pTrans;
             pTrans->AddPlayer(plr);
         }
     }

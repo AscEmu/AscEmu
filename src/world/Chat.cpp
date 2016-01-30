@@ -303,6 +303,7 @@ void CommandTableStorage::Init()
 
     static ChatCommand debugCommandTable[] =
     {
+        { "dumpmovement", 'd', &ChatHandler::HandleDebugDumpMovementCommand, "!dumpmovement - Dumps the player's movement information to chat", nullptr, 0, 0, 0},
         { "infront",             'd', &ChatHandler::HandleDebugInFrontCommand,     "",                                                                                                                  NULL, 0, 0, 0 },
         { "showreact",           'd', &ChatHandler::HandleShowReactionCommand,     "",                                                                                                                  NULL, 0, 0, 0 },
         { "aimove",              'd', &ChatHandler::HandleAIMoveCommand,           "",                                                                                                                  NULL, 0, 0, 0 },

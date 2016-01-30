@@ -29,8 +29,8 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
     LOG_DEBUG("WORLD: Recvd CMSG_REPOP_REQUEST Message");
     if (_player->getDeathState() != JUST_DIED)
         return;
-    if (_player->m_CurrentTransporter)
-        _player->m_CurrentTransporter->RemovePlayer(_player);
+    if (_player->m_transport)
+        _player->m_transport->RemovePlayer(_player);
 
     GetPlayer()->RepopRequestedPlayer();
 }

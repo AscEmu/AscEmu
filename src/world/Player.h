@@ -1322,7 +1322,7 @@ class SERVER_DECL Player : public Unit
         void SoftDisconnect();
         uint32 m_KickDelay;
         uint64 m_CurrentCharm;
-        Transporter* m_CurrentTransporter;
+        Transporter* m_transport;
 
         Object* GetSummonedObject() { return m_SummonedObject; };
         void SetSummonedObject(Object* t_SummonedObject) { m_SummonedObject = t_SummonedObject; };

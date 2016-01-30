@@ -8365,8 +8365,8 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     // 0x00000200
     if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
     {
-        if (IsPlayer() && static_cast<Player*>(this)->m_CurrentTransporter)
-            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
+        if (IsPlayer() && static_cast<Player*>(this)->m_transport)
+            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->GetGUID();
         if (Unit* u = GetVehicleBase())
             obj_movement_info.transporter_info.guid = u->GetGUID();
         *data << obj_movement_info.transporter_info.guid;
@@ -8417,8 +8417,8 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     // 0x00000200
     if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
     {
-        if (IsPlayer() && static_cast<Player*>(this)->m_CurrentTransporter)
-            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
+        if (IsPlayer() && static_cast<Player*>(this)->m_transport)
+            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->GetGUID();
         if (Unit* u = GetVehicleBase())
             obj_movement_info.transporter_info.guid = u->GetGUID();
         *data << obj_movement_info.transporter_info.guid;

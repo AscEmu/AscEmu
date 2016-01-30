@@ -301,8 +301,8 @@ void WorldSession::LogoutPlayer(bool Save)
         // part channels
         _player->CleanupChannels();
 
-        if (_player->m_CurrentTransporter != NULL)
-            _player->m_CurrentTransporter->RemovePlayer(_player);
+        if (_player->m_transport != NULL)
+            _player->m_transport->RemovePlayer(_player);
 
         // cancel current spell
         if (_player->m_currentSpell != NULL)

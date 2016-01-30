@@ -162,7 +162,7 @@ bool DeathGrip(uint32 i, Spell* s)
     {
         Player* playerTarget = static_cast< Player* >(unitTarget);
 
-        if(playerTarget->m_CurrentTransporter) // Blizzard screwed this up, so we won't.
+        if(playerTarget->m_transport) // Blizzard screwed this up, so we won't.
             return false;
 
         s->SpellEffectPlayerPull(i);

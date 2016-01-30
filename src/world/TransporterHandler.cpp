@@ -721,6 +721,13 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     pCreature->obj_movement_info.transporter_info.position.z = z;
     pCreature->obj_movement_info.transporter_info.position.o = o;
     pCreature->obj_movement_info.transporter_info.guid = GetGUID();
+
+    pCreature->m_transportData.transportGuid = this->GetGUID();
+    pCreature->m_transportData.relativePosition.x = x;
+    pCreature->m_transportData.relativePosition.y = y;
+    pCreature->m_transportData.relativePosition.z = z;
+    pCreature->m_transportData.relativePosition.o = o;
+
     if (anim)
         pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);
 
@@ -761,6 +768,12 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     pCreature->obj_movement_info.transporter_info.position.z = z;
     pCreature->obj_movement_info.transporter_info.position.o = o;
     pCreature->obj_movement_info.transporter_info.guid = GetGUID();
+
+    pCreature->m_transportData.transportGuid = this->GetGUID();
+    pCreature->m_transportData.relativePosition.x = x;
+    pCreature->m_transportData.relativePosition.y = y;
+    pCreature->m_transportData.relativePosition.z = z;
+    pCreature->m_transportData.relativePosition.o = o;
 
     pCreature->SetTransport(this);
     m_NPCPassengerSet.insert(pCreature);

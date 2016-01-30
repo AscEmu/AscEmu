@@ -134,7 +134,7 @@ Player::Player(uint32 guid)
     bHasBindDialogOpen(false),
     TrackingSpell(0),
     m_CurrentCharm(0),
-    m_CurrentTransporter(NULL),
+    m_transport(nullptr),
     // gm stuff
     //m_invincible(false),
     CooldownCheat(false),
@@ -2550,7 +2550,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         ss << "0, 0, 0";
     }
 
-    ss << "," << (m_CurrentTransporter ? m_CurrentTransporter->GetEntry() : (uint32)0);
+    ss << "," << (m_transport ? m_transport->GetEntry() : (uint32)0);
     ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "'";
     ss << ",'";
 
@@ -3696,11 +3696,11 @@ void Player::AddToWorld()
     m_setflycheat = false;
 
     // check transporter
-    if (obj_movement_info.transporter_info.guid && m_CurrentTransporter)
+    if (obj_movement_info.transporter_info.guid && m_transport)
     {
-        SetPosition(m_CurrentTransporter->GetPositionX() + GetTransPositionX(),
-                    m_CurrentTransporter->GetPositionY() + GetTransPositionY(),
-                    m_CurrentTransporter->GetPositionZ() + GetTransPositionZ(),
+        SetPosition(m_transport->GetPositionX() + GetTransPositionX(),
+                    m_transport->GetPositionY() + GetTransPositionY(),
+                    m_transport->GetPositionZ() + GetTransPositionZ(),
                     GetOrientation(), false);
     }
 
@@ -3731,11 +3731,11 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     FlyCheat = false;
     m_setflycheat = false;
     // check transporter
-    if (obj_movement_info.transporter_info.guid && m_CurrentTransporter)
+    if (obj_movement_info.transporter_info.guid && m_transport)
     {
-        SetPosition(m_CurrentTransporter->GetPositionX() + GetTransPositionX(),
-                    m_CurrentTransporter->GetPositionY() + GetTransPositionY(),
-                    m_CurrentTransporter->GetPositionZ() + GetTransPositionZ(),
+        SetPosition(m_transport->GetPositionX() + GetTransPositionX(),
+                    m_transport->GetPositionY() + GetTransPositionY(),
+                    m_transport->GetPositionZ() + GetTransPositionZ(),
                     GetOrientation(), false);
     }
 
@@ -4539,10 +4539,10 @@ void Player::RepopRequestedPlayer()
     }
 
 
-    if (m_CurrentTransporter != NULL)
+    if (m_transport != NULL)
     {
-        m_CurrentTransporter->RemovePlayer(this);
-        m_CurrentTransporter = NULL;
+        m_transport->RemovePlayer(this);
+        m_transport = NULL;
         obj_movement_info.transporter_info.guid = 0;
 
         //ResurrectPlayer();
@@ -8505,7 +8505,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         if (pTrans)
         {
             pTrans->RemovePlayer(this);
-            m_CurrentTransporter = NULL;
+            m_transport = NULL;
             obj_movement_info.transporter_info.guid = 0;
         }
     }

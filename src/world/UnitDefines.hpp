@@ -825,4 +825,10 @@ enum School
     SCHOOL_COUNT
 };
 
+struct TransportData
+{
+    uint64 transportGuid;
+    LocationVector relativePosition;
+};
+
 #endif      // _UNIT_DEFINES_H
