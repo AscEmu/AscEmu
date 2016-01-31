@@ -41,6 +41,7 @@ CBattlegroundManager::CBattlegroundManager() : EventableObject()
     avalibleInRandom.push_back(BATTLEGROUND_ARATHI_BASIN);
     avalibleInRandom.push_back(BATTLEGROUND_EYE_OF_THE_STORM);
     avalibleInRandom.push_back(BATTLEGROUND_STRAND_OF_THE_ANCIENT);
+    avalibleInRandom.push_back(BATTLEGROUND_ISLE_OF_CONQUEST);
 }
 
 CBattlegroundManager::~CBattlegroundManager()
@@ -1102,6 +1103,9 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
             break;
         case BATTLEGROUND_STRAND_OF_THE_ANCIENT:
             n = 3;
+            break;
+        case BATTLEGROUND_ISLE_OF_CONQUEST:
+            n = 4;
             break;
         default:
             n = 0;

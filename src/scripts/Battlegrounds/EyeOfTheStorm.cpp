@@ -25,10 +25,10 @@
 
 static float EOTSBuffCoordinates[4][4] =
 {
-    { 2050.542236f, 1372.680176f, 1194.561279f, 1.67552f },
-    { 2047.728271f, 1749.736084f, 1190.198608f, -0.872665f },
-    { 2283.300049f, 1748.891235f, 1189.706787f, 1.76278f },
-    { 2302.68994140625f, 1391.27001953125f, 1197.77001953125f, -1.50098f},
+    { 2050.54f, 1372.66f, 1194.56f, 1.67f },  // BE Tower
+    { 2047.72f, 1749.73f, 1190.19f, 4.76f },  // Fel Reaver Ruins
+    { 2283.39f, 1748.89f, 1189.77f, 4.88f },  // Mage Tower
+    { 2302.68f, 1391.27f, 1197.79f, 2.05f },  // Draenei Ruins
 };
 
 static float EOTSBuffRotations[4][2] =
@@ -39,46 +39,46 @@ static float EOTSBuffRotations[4][2] =
     { 0.743145f, 0.669131f },
 };
 
-uint32 EOTSbuffentrys[4] = { 184964, 184971, 184978, 184973 };
+uint32 EOTSbuffentrys[3] = { 184971, 184978, 184973 };
 
 const float EOTSGraveyardLocations[EOTS_TOWER_COUNT][3] =
 {
-    { 2012.403442f, 1455.412354f, 1172.201782f },            // BE Tower
-    { 2013.061890f, 1677.238037f, 1182.125732f },            // Fel Reaver Ruins
-    { 2355.297852f, 1683.713989f, 1173.153687f },            // Mage Tower
-    { 2351.785400f, 1455.399048f, 1185.333374f },            // Draenei Ruins
+    { 2012.403442f, 1455.412354f, 1172.201782f },      // BE Tower
+    { 2013.061890f, 1677.238037f, 1182.125732f },      // Fel Reaver Ruins
+    { 2355.297852f, 1683.713989f, 1173.153687f },      // Mage Tower
+    { 2351.785400f, 1455.399048f, 1185.333374f },      // Draenei Ruins
 };
 
-const float EOTSCPLocations[EOTS_TOWER_COUNT][3] =
+const float EOTSCPLocations[EOTS_TOWER_COUNT][4] =
 {
-    { 2047.19f, 1349.19f, 1189.0f },            // BE Tower 1
-    { 2057.46f, 1735.07f, 1187.91f },            // Fel Reaver Ruins 1
-    { 2270.84f, 1784.08f, 1186.76f },            // Mage Tower 1
-    { 2276.8f, 1400.41f, 1196.33f },            // Draenei Ruins 1
+    { 2047.19f, 1349.19f, 1189.11f, 1.5f },            // BE Tower 1
+    { 2057.46f, 1735.07f, 1188.51f, 1.5f },            // Fel Reaver Ruins 1
+    { 2270.84f, 1784.08f, 1186.76f, 1.5f },            // Mage Tower 1
+    { 2276.81f, 1400.41f, 1196.74f, 2.8f },            // Draenei Ruins 1
 };
 
-const float EOTSCPLocations2[EOTS_TOWER_COUNT][3] =
+const float EOTSCPLocations2[EOTS_TOWER_COUNT][4] =
 {
-    { 2074.32f, 1385.78f, 1194.72f },            // BE Tower 2
-    { 2032.25f, 1729.53f, 1190.33f },            // Fel Reaver Ruins 2
-    { 2269.13f, 1737.7f, 1186.66f },            // Mage Tower 2
-    { 2305.78f, 1404.56f, 1199.38f },            // Draenei Ruins 2
+    { 2074.07f, 1383.77f, 1195.16f, 0.4f },            // BE Tower 2
+    { 2032.25f, 1729.53f, 1191.48f, 1.5f },            // Fel Reaver Ruins 2
+    { 2269.13f, 1737.71f, 1186.66f, 4.2f },            // Mage Tower 2
+    { 2305.78f, 1404.56f, 1199.73f, 1.5f },            // Draenei Ruins 2
 };
 
-const float EOTSCPLocations3[EOTS_TOWER_COUNT][3] =
+const float EOTSCPLocations3[EOTS_TOWER_COUNT][4] =
 {
-    { 2025.13f, 1386.12f, 1192.74f },            // BE Tower 3
-    { 2092.35f, 1775.46f, 1187.08f },            // Fel Reaver Ruins 3
-    { 2300.86f, 1741.25f, 1187.7f },            // Mage Tower 3
-    { 2245.4f, 1366.41f, 1195.28f },            // Draenei Ruins 3
+    { 2025.13f, 1386.12f, 1192.81f, 2.2f },            // BE Tower 3
+    { 2092.35f, 1775.46f, 1187.71f, 5.8f },            // Fel Reaver Ruins 3
+    { 2300.86f, 1741.25f, 1187.96f, 5.3f },            // Mage Tower 3
+    { 2245.42f, 1366.41f, 1195.49f, 2.8f },            // Draenei Ruins 3
 };
 
 const float EOTSTCLocations[EOTS_TOWER_COUNT][3] =
 {
-    { 2050.493164f, 1372.235962f, 1194.563477f },            // BE Tower
-    { 2024.600708f, 1742.819580f, 1195.157715f },            // Fel Reaver Ruins
-    { 2282.121582f, 1760.006958f, 1189.707153f },            // Mage Tower
-    { 2301.010498f, 1386.931641f, 1197.183472f },            // Draenei Ruins
+    { 2050.49f, 1372.23f, 1194.56f },            // BE Tower
+    { 2024.24f, 1742.48f, 1195.15f },            // Fel Reaver Ruins
+    { 2282.12f, 1755.00f, 1189.70f },            // Mage Tower
+    { 2301.01f, 1386.93f, 1197.18f },            // Draenei Ruins
 };
 
 const float EOTSFlagLocation[3] = { 2174.718750f, 1568.766113f, 1159.958740f };
@@ -110,23 +110,6 @@ static const char* EOTSControlPointNames[EOTS_TOWER_COUNT] =
 
 static uint32 resourcesToGainBH = 330;
 
-//===================================================
-// 184083 - Draenei Tower Cap Pt, 184082 - Human Tower Cap Pt, 184081 - Fel Reaver Cap Pt, 184080 - BE Tower Cap Pt
-#define EOTS_GO_BE_TOWER 184080
-#define EOTS_GO_FELREAVER 184081
-#define EOTS_GO_MAGE_TOWER 184082
-#define EOTS_GO_DRAENEI_TOWER 184083
-
-#define EOTS_TOWER_BE 0
-#define EOTS_TOWER_FELREAVER 1
-#define EOTS_TOWER_MAGE 2
-#define EOTS_TOWER_DRAENEI 3
-
-#define EOTS_BANNER_NEUTRAL 184382
-#define EOTS_BANNER_ALLIANCE 184381
-#define EOTS_BANNER_HORDE 184380
-
-#define EOTS_CAPTURE_DISTANCE 900 /*30*/
 const uint32 EOTSTowerIds[EOTS_TOWER_COUNT] = { EOTS_GO_BE_TOWER, EOTS_GO_FELREAVER, EOTS_GO_MAGE_TOWER, EOTS_GO_DRAENEI_TOWER };
 
 const uint32 m_iconsStates[EOTS_TOWER_COUNT][3] =
@@ -136,8 +119,6 @@ const uint32 m_iconsStates[EOTS_TOWER_COUNT][3] =
     {2728, 2730, 2729},
     {2731, 2732, 2733}
 };
-
-#define EOTS_CAPTURE_RATE 4
 
 EyeOfTheStorm::EyeOfTheStorm(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
@@ -405,7 +386,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
     GivePoints(team, points[towers]);
 
     DropFlag2(plr, id);
-    SetWorldState(2757, 1);
+    SetWorldState(EOTS_NETHERWING_FLAG_READY, 1);
 
     plr->RemoveAura(EOTS_NETHERWING_FLAG_SPELL);
     plr->m_bgScore.MiscData[BG_SCORE_EOTS_FLAGS_CAPTURED]++;
@@ -436,7 +417,7 @@ void EyeOfTheStorm::HookFlagDrop(Player* plr, GameObject* obj)
     m_dropFlag->RemoveFromWorld(false);
     plr->CastSpell(plr->GetGUID(), EOTS_NETHERWING_FLAG_SPELL, true);
 
-    SetWorldState(2757, 0);
+    SetWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
     SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->GetTeam(), plr->GetGUID(), "$N has taken the flag!");
     m_flagHolder = plr->GetLowGUID();
@@ -457,7 +438,7 @@ bool EyeOfTheStorm::HookSlowLockOpen(GameObject* pGo, Player* pPlayer, Spell* pS
     m_standFlag->RemoveFromWorld(false);
     pPlayer->CastSpell(pPlayer->GetGUID(), EOTS_NETHERWING_FLAG_SPELL, true);
 
-    SetWorldState(2757, 0);
+    SetWorldState(EOTS_NETHERWING_FLAG_READY, 0);
     PlaySoundToAll(pPlayer->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
     SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + pPlayer->GetTeam(), pPlayer->GetGUID(), "$N has taken the flag!");
     m_flagHolder = pPlayer->GetLowGUID();
@@ -506,24 +487,24 @@ void EyeOfTheStorm::DropFlag2(Player* plr, uint32 id)
     switch (id)
     {
         case 4476:            // Blood Elf Tower
-            m_dropFlag->SetPosition(LocationVector(2048.83f, 1393.65f, 1194.49f, 0.20944f));
+            m_dropFlag->SetPosition(LocationVector(2048.49f, 1393.64f, 1194.36f, 0.1641f));
             break;
         case 4514:            // Fel Reaver Tower
-            m_dropFlag->SetPosition(LocationVector(2044.28f, 1729.68f, 1189.96f, -0.017453f));
+            m_dropFlag->SetPosition(LocationVector(2044.05f, 1729.86f, 1189.85f, 0.1641f));
             break;
         case 4518:            // Draenei Tower
-            m_dropFlag->SetPosition(LocationVector(2286.56f, 1402.36f, 1197.11f, 3.72381f));
+            m_dropFlag->SetPosition(LocationVector(2286.41f, 1402.44f, 1197.11f, 3.3483f));
             break;
         case 4516:            // Mage Tower
-            m_dropFlag->SetPosition(LocationVector(2284.48f, 1731.23f, 1189.99f, 2.89725f));
+            m_dropFlag->SetPosition(LocationVector(2284.48f, 1731.16f, 1189.87f, 3.3483f));
             break;
         default:
             m_dropFlag->SetPosition(plr->GetPosition());
             break;
     }
 
-    plr->CastSpell(plr, 42792, true);
-
+    plr->CastSpell(plr, EOTS_RECENTLY_DROPPED_FLAG, true);
+    PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_SCORES : SOUND_ALLIANCE_SCORES);
     m_dropFlag->SetFlags(GO_FLAG_NONSELECTABLE);
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
@@ -536,11 +517,12 @@ void EyeOfTheStorm::HookOnFlagDrop(Player* plr)
         return;
 
     plr->RemoveAura(EOTS_NETHERWING_FLAG_SPELL);
+    plr->CastSpell(plr, EOTS_RECENTLY_DROPPED_FLAG, true);
 
     m_dropFlag->SetPosition(plr->GetPosition());
     m_dropFlag->PushToWorld(m_mapMgr);
     m_flagHolder = 0;
-
+    PlaySoundToAll(SOUND_FLAG_RETURNED);
     SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE + plr->GetTeam(), plr->GetGUID(), "$N has dropped the flag!");
 
     sEventMgr.AddEvent(this, &EyeOfTheStorm::EventResetFlag, EVENT_EOTS_RESET_FLAG, 10000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -555,8 +537,8 @@ void EyeOfTheStorm::EventResetFlag()
     m_dropFlag->SetFlags(0);
     m_standFlag->PushToWorld(m_mapMgr);
 
-    SetWorldState(2757, 1);
-    PlaySoundToAll(SOUND_ALLIANCE_RETURNED);
+    SetWorldState(EOTS_NETHERWING_FLAG_READY, 1);
+    PlaySoundToAll(SOUND_FLAG_RESPAWN);
     SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The flag has been reset.");
     m_flagHolder = 0;
 }
@@ -589,15 +571,18 @@ void EyeOfTheStorm::OnCreate()
         }
 
         m_CPBanner[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
-        m_CPBanner[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations[i][0], EOTSCPLocations[i][1], EOTSCPLocations[i][2], 0);
+        m_CPBanner[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations[i][0], EOTSCPLocations[i][1], EOTSCPLocations[i][2], EOTSCPLocations[i][3]);
+        m_CPBanner[i]->SetScale(1.7f);
         m_CPBanner[i]->PushToWorld(m_mapMgr);
 
         m_CPBanner2[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
-        m_CPBanner2[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations2[i][0], EOTSCPLocations2[i][1], EOTSCPLocations2[i][2], 0);
+        m_CPBanner2[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations2[i][0], EOTSCPLocations2[i][1], EOTSCPLocations2[i][2], EOTSCPLocations2[i][3]);
+        m_CPBanner2[i]->SetScale(1.7f);
         m_CPBanner2[i]->PushToWorld(m_mapMgr);
 
         m_CPBanner3[i] = m_mapMgr->CreateGameObject(gameobject_info->entry);
-        m_CPBanner3[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations3[i][0], EOTSCPLocations3[i][1], EOTSCPLocations3[i][2], 0);
+        m_CPBanner3[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSCPLocations3[i][0], EOTSCPLocations3[i][1], EOTSCPLocations3[i][2], EOTSCPLocations3[i][3]);
+        m_CPBanner3[i]->SetScale(1.7f);
         m_CPBanner3[i]->PushToWorld(m_mapMgr);
     }
 
@@ -628,17 +613,13 @@ void EyeOfTheStorm::OnCreate()
 
     // Flag
     m_standFlag = m_mapMgr->CreateGameObject(184141);
-    m_standFlag->CreateFromProto(184141, m_mapMgr->GetMapId(), 2174.782227f, 1569.054688f, 1160.361938f, -1.448624f);
-    m_standFlag->SetParentRotation(2, 0.662620f);
-    m_standFlag->SetParentRotation(3, -0.748956f);
-    m_standFlag->SetScale(2.5f);
+    m_standFlag->CreateFromProto(184141, m_mapMgr->GetMapId(), 2174.284912f, 1569.466919f, 1159.960083f, 4.4892f);
+    m_standFlag->SetScale(2.0f);
     m_standFlag->PushToWorld(m_mapMgr);
 
     m_dropFlag = m_mapMgr->CreateGameObject(184142);
-    m_dropFlag->CreateFromProto(184142, m_mapMgr->GetMapId(), 2174.782227f, 1569.054688f, 1160.361938f, -1.448624f);
-    m_dropFlag->SetParentRotation(2, 0.885448f);
-    m_dropFlag->SetParentRotation(3, -0.464739f);
-    m_dropFlag->SetScale(2.5f);
+    m_dropFlag->CreateFromProto(184142, m_mapMgr->GetMapId(), 2174.284912f, 1569.466919f, 1159.960083f, 0.1641f);
+    m_dropFlag->SetScale(2.0f);
 }
 
 void EyeOfTheStorm::RespawnCPFlag(uint32 i, uint32 id)
@@ -939,9 +920,9 @@ void EyeOfTheStorm::SpawnBuff(uint32 x)
 LocationVector EyeOfTheStorm::GetStartingCoords(uint32 Team)
 {
     return LocationVector(EOTSStartLocations[Team][0],
-        EOTSStartLocations[Team][1],
-        EOTSStartLocations[Team][2],
-        EOTSStartLocations[Team][3]);
+                          EOTSStartLocations[Team][1],
+                          EOTSStartLocations[Team][2],
+                          EOTSStartLocations[Team][3]);
 }
 
 void EyeOfTheStorm::OnStart()
