@@ -489,7 +489,7 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
         {
             Creature *c = demolisher[i];
 
-            if (c == NULL)
+            if (c == nullptr)
                 continue;
 
             if (victim->GetGUID() != c->GetGUID())
@@ -501,14 +501,14 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
 
         for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
         {
-            if (canon[i] == NULL)
+            if (canon[i] == nullptr)
                 continue;
 
             if (victim->GetGUID() != canon[i]->GetGUID())
                 continue;
 
             canon[i]->Despawn(1, 0);
-            canon[i] = NULL;
+            canon[i] = nullptr;
         }
     }
 }
@@ -550,14 +550,10 @@ bool StrandOfTheAncient::HookSlowLockOpen(GameObject* go, Player* player, Spell*
 bool StrandOfTheAncient::HookQuickLockOpen(GameObject* go, Player* player, Spell* spell)
 {
     uint32 entry = go->GetEntry();
-    uint32 team = 0;
 
     if (entry == GO_RELIC)
     {
-        if (true)
-        {
-            PlaySoundToAll( team = Attackers ? SOTA_SOUND_VICTORY_HORDE : SOTA_SOUND_VICTORY_ALLIANCE );
-        }
+        PlaySoundToAll(Attackers == TEAM_ALLIANCE ? SOTA_SOUND_VICTORY_HORDE : SOTA_SOUND_VICTORY_ALLIANCE);
         FinishRound();
     }
 
@@ -633,7 +629,7 @@ void StrandOfTheAncient::PrepareRound()
             boatId = Attackers ? SOTA_BOAT_HORDER_E : SOTA_BOAT_ALLIANCE_E;
             break;
         }
-        if (m_boats[i] != NULL)
+        if (m_boats[i] != nullptr)
             m_boats[i]->Despawn(0, 0);
         m_boats[i] = m_mapMgr->CreateAndSpawnGameObject(boatId, sotaBoats[i][0], sotaBoats[i][1], sotaBoats[i][2], sotaBoats[i][3], 1.0f);
     }
@@ -648,7 +644,7 @@ void StrandOfTheAncient::PrepareRound()
 
     for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
     {
-        if (canon[i] != NULL)
+        if (canon[i] != nullptr)
             canon[i]->Despawn(0, 0);
         canon[i] = SpawnCreature(SOTA_ANTI_PERSONNAL_CANNON, CanonLocations[i], TeamFactions[Defenders]);
     }
@@ -657,34 +653,34 @@ void StrandOfTheAncient::PrepareRound()
     {
         Creature *c = demolisher[i];
         demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
-        if (c != NULL)
+        if (c != nullptr)
             c->Despawn(0, 0);
     }
 
     for (uint8 i = 0; i < SOTA_NPCS; i++)
     {
-        if (npc[i] != NULL)
+        if (npc[i] != nullptr)
         {
             npc[i]->Despawn(0, 0);
-            npc[i] = NULL;
+            npc[i] = nullptr;
         }
     }
 
     for (uint8 i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; i++)
     {
-        if (demolisher[i] != NULL)
+        if (demolisher[i] != nullptr)
         {
             demolisher[i]->Despawn(0, 0);
-            demolisher[i] = NULL;
+            demolisher[i] = nullptr;
         }
     }
 
     for (uint8 i = SOTA_EAST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; i++)
     {
-        if (demolisher[i] != NULL)
+        if (demolisher[i] != nullptr)
         {
             demolisher[i]->Despawn(0, 0);
-            demolisher[i] = NULL;
+            demolisher[i] = nullptr;
         }
     }
 
@@ -940,7 +936,7 @@ void StrandOfTheAncient::SpawnGraveyard(SOTAGraveyards gyid, uint32 team)
 
     gy.faction = team;
 
-    if (gy.spiritguide != NULL)
+    if (gy.spiritguide != nullptr)
         gy.spiritguide->Despawn(0, 0);
 
     gy.spiritguide = SpawnSpiritGuide(GraveyardLocations[gyid], team);
