@@ -232,9 +232,9 @@ enum WorldStates{
     WORLDSTATE_WG_MAX_HORDE_VEHICLES                                     = 3491, // max horde vehicles
     WORLDSTATE_SOTA_CAPTURE_BAR_DISPLAY                                  = 3536, // displays the node capture bar (GY for example)
     WORLDSTATE_SOTA_CAPTURE_BAR_VALUE                                    = 3537, // 0 - horde, 100 alliance
-    WORLDSTATE_SOTA_TIMER_1                                              = 3559, // remaining/bonus time minutes
-    WORLDSTATE_SOTA_TIMER_2                                              = 3560, // remaining/bonus time seconds first digit
-    WORLDSTATE_SOTA_TIMER_3                                              = 3561, // remaining/bonus time seconds second digit
+    WORLDSTATE_SOTA_TIMER_MINS                                           = 3559, // remaining/bonus time minutes
+    WORLDSTATE_SOTA_TIMER_SEC_TENS                                       = 3560, // remaining/bonus time seconds first digit
+    WORLDSTATE_SOTA_TIMER_SEC_DECS                                       = 3561, // remaining/bonus time seconds second digit
     WORLDSTATE_SOTA_ALLIANCE_ATTACKER                                    = 3564, // show remaining time 1
     WORLDSTATE_SOTA_HORDE_ATTACKER                                       = 3565, // show remaining time 2
     WORLDSTATE_SOTA_BONUS_TIME                                           = 3571, // show bonus timer
@@ -354,6 +354,8 @@ enum WorldStates{
     WORLDSTATE_IOC_WORKSHOP_ALLIANCE_ASSAULTED                           = 4228,
     WORLDSTATE_IOC_WORKSHOP_ALLIANCE_CONTROLLED                          = 4229,
     WORLDSTATE_IOC_WORKSHOP_HORDE_CONTROLLED                             = 4230,
+    WORLDSTATE_WSG_TIME_ENABLED                                          = 4247,
+    WORLDSTATE_WSG_TIME_LEFT                                             = 4248,
     WORLDSTATE_IOC_WORKSHOP_HORDE_ASSAULTED                              = 4293,
     WORLDSTATE_IOC_WORKSHOP_NETURAL                                      = 4294,
     WORLDSTATE_IOC_HANGAR_NETURAL                                        = 4296,
