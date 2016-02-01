@@ -1,8 +1,8 @@
 --
 -- Time Warsong Gulch
 --
-INSERT INTO `ascemu_world`.`worldstate_templates` (`map`, `zone`, `field`, `value`) VALUES (489, 3277, 4247, 1);
-INSERT INTO `ascemu_world`.`worldstate_templates` (`map`, `zone`, `field`, `value`) VALUES (489, 3277, 4248, 25);
+REPLACE INTO `worldstate_templates` (`map`, `zone`, `field`, `value`) VALUES (489, 3277, 4247, 1);
+REPLACE INTO `worldstate_templates` (`map`, `zone`, `field`, `value`) VALUES (489, 3277, 4248, 25);
 
 --
 -- Update world db version
