@@ -22,14 +22,7 @@
 #ifndef __STDAFX_H
 #define __STDAFX_H
 
-
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
+#include "world_conf.h"
 
 #include "../shared/CommonDefines.hpp"
 
@@ -44,12 +37,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
-
-#ifdef WIN32
 #include <array>
-#else
-#include <tr1/array>
-#endif
 
 #include "RecastIncludes.hpp"
 

@@ -140,7 +140,6 @@ set(sources
 	WorldStatesHandler.cpp
 	WorldRunnable.cpp 
 	WordFilter.cpp 
-	Main.cpp 
 	Master.cpp 
 	CConsole.cpp 
 	ConsoleCommands.cpp 
@@ -180,10 +179,6 @@ set(sources
 	Warlock.cpp
 	Warrior.cpp
 )
-
-if(WIN32)
-    set(sources ${sources} resources.rc)
-endif()
 
 set(headers
 	AchievementMgr.h
@@ -340,15 +335,12 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(${PROJECT_NAME} ${sources} ${headers})
-
-if(MSVC)
-    include(PCHSupport)
-	ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h StdAfx.cpp)
+add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
+if(USE_PCH AND PCHSupport_FOUND)
+    ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp)
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/world_conf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/world_conf.h)
 
-add_dependencies( ${PROJECT_NAME} shared g3dlite vmaplib Detour Recast)
 target_link_libraries( ${PROJECT_NAME} shared g3dlite vmaplib Detour Recast ${PCRE_LIBRARIES})
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
+

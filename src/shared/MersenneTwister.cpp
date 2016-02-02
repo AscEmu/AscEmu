@@ -21,6 +21,7 @@
 
 #include "MersenneTwister.h"
 #include "Util.h"
+#include <stdexcept>
 
 #define NUMBER_OF_GENERATORS 5
 Mutex* m_locks[NUMBER_OF_GENERATORS];

@@ -3,6 +3,13 @@
 # set up project name
 project(lualib C)
 
+# disable warnings
+if(MSVC)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W0")
+else()
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w")
+endif()
+
 set(sources
    lapi.c
    lauxlib.c
@@ -70,7 +77,7 @@ set(headers
 )
 
 if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
-	add_definitions( -DLUA_USE_APICHECK )
+	add_definitions( -DLUA_USE_APICHECK)
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${sources} ${headers})

@@ -1,0 +1,6 @@
+#ifndef LOGON_CONF_HPP
+#define LOGON_CONF_HPP
+
+#define CONFDIR "@ASCEMU_CONFIGSFILE_PATH@"
+
+#endif // LOGON_CONF_HPP

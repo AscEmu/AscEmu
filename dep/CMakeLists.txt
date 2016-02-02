@@ -15,14 +15,16 @@ if(WIN32)
 endif()
 
 # add our dependecies
-add_subdirectory(dbcfile)
-add_subdirectory(loadlib)
+
 add_subdirectory(vmaplib)
 add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
-add_subdirectory(libmpq)
 
-
+if (BUILD_TOOLS)
+    add_subdirectory(libmpq)
+    add_subdirectory(dbcfile)
+    add_subdirectory(loadlib)
+endif()
 
 # add lualib if we need it for LuaEngin or LuaBridge
 add_subdirectory(lualib)

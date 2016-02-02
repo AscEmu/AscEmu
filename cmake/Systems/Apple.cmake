@@ -1,8 +1,10 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
-message(STATUS "Applying settings for FreeBSD system")
+message(STATUS "Applying settings for \"OS X\" system")
 
-set(CMAKE_MACOSX_RPATH 1)
-add_definitions(-DHAVE_DARWIN)
+set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/lib)
+set(CMAKE_MACOSX_RPATH TRUE)
+
+add_definitions(-DUSE_KQUEUE)
 
 find_package(ZLIB REQUIRED)
 find_package(PCRE REQUIRED)

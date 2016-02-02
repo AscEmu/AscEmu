@@ -19,7 +19,7 @@
 #ifndef _COMMON_HELPERS_HPP
 #define _COMMON_HELPERS_HPP
 
-#if defined ( __GNUC__ )
+#if defined ( __GNUC__ ) || defined(__clang__)
 #    define LIKELY( _x ) \
         __builtin_expect( ( _x ), 1 )
 #    define UNLIKELY( _x ) \
