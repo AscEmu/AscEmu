@@ -48,8 +48,10 @@ target_link_libraries(${PROJECT_NAME} lualib)
 # on some operating systems linking is a bit strange
 # OS X can't link executable, MSVC can't link world library... weird
 if(WIN32)
+    add_dependencies(${PROJECT_NAME} worldserver)
     target_link_libraries(${PROJECT_NAME} worldserver)
 elseif(APPLE)
+    add_dependencies(${PROJECT_NAME} world)
     target_link_libraries(${PROJECT_NAME} world)
 endif()
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
