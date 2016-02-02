@@ -1,8 +1,5 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-# load base requirements
-include(${CMAKE_SOURCE_DIR}/cmake/Requirements.cmake)
-
 #We have our own custom modules that we use. This tells cmakes where to find them.
 set(CMAKE_MODULE_PATH 
 	${CMAKE_MODULE_PATH}
@@ -10,6 +7,11 @@ set(CMAKE_MODULE_PATH
 
 # get git information
 include(${CMAKE_SOURCE_DIR}/cmake/GitRevision.cmake)
+
+# generally load PCH module
+if (USE_PCH)
+    include(PCHSupport)
+endif()
 
 # get architecture type
 if(UNIX)
@@ -33,7 +35,8 @@ if(IS_64BIT)
 endif()
 
 # default definitions
-add_definitions(-DHAVE_CONFIG_H -DCONFDIR=\"${ASCEMU_CONFIGSFILE_PATH}\" -DPREFIX=\"${ASCEMU_SCRIPTLIB_PATH}\" )
+#-DPREFIX=\"${ASCEMU_SCRIPTLIB_PATH}\"
+add_definitions(-DHAVE_CONFIG_H  )
 
 mark_as_advanced(
     ZLIB_LIBRARIES

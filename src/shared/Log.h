@@ -29,7 +29,7 @@ class WorldSession;
 #define TIME_FORMAT "[%H:%M:%S]"
 #define TIME_FORMAT_LENGTH 100
 
-#if PLATFORM == PLATFORM_WIN32
+#ifdef _WIN32
 
 #define TRED FOREGROUND_RED | FOREGROUND_INTENSITY
 #define TGREEN FOREGROUND_GREEN | FOREGROUND_INTENSITY
@@ -111,7 +111,7 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void Time(char* buffer);
         void SetColor(int color);
 
-#if PLATFORM == PLATFORM_WIN32
+#ifdef _WIN32
         HANDLE stdout_handle;
 #endif
 
