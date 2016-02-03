@@ -340,7 +340,7 @@ if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp)
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/world_conf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/world_conf.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
 target_link_libraries( ${PROJECT_NAME} shared g3dlite vmaplib Detour Recast ${PCRE_LIBRARIES})
 

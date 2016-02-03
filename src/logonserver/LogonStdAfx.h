@@ -42,7 +42,7 @@
 #include "../shared/Auth/WowCrypt.h"
 
 #include "../world/Opcodes.h"
-#include "logon_conf.h"
+#include "LogonConf.h"
 #include "AccountCache.h"
 #include "PeriodicFunctionCall_Thread.h"
 #include "AutoPatcher.h"

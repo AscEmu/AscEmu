@@ -18,10 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WARSONG_GULCH_H
-#define WARSONG_GULCH_H
-
-#define BUFF_RESPAWN_TIME 90000
+#ifndef _WARSONG_GULCH_H
+#define _WARSONG_GULCH_H
 
 #define TIME_LEFT              25
 #define TIME_FOCUSED_ASSAULT   10
@@ -98,4 +96,4 @@ class WarsongGulch : public CBattleground
         void DespawnGates(uint32 delay);
 };
 
-#endif // WARSONG_GULCH_H
+#endif // _WARSONG_GULCH_H

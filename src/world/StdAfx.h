@@ -22,7 +22,7 @@
 #ifndef __STDAFX_H
 #define __STDAFX_H
 
-#include "world_conf.h"
+#include "WorldConf.h"
 
 #include "../shared/CommonDefines.hpp"
 

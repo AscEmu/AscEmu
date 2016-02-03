@@ -22,7 +22,7 @@ set(sources
 )
 
 set(headers
-	Setup.h
+    Setup.h
 )
 
 include_directories(

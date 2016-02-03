@@ -49,7 +49,7 @@ add_executable(${PROJECT_NAME} ${sources} ${headers})
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.cpp)
 endif()
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/logon_conf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/logon_conf.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/LogonConf.h)
 
 #Link our shared lib.
 target_link_libraries(${PROJECT_NAME} shared ${MYSQL_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES})
