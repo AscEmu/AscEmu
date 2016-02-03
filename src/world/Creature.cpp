@@ -1387,6 +1387,22 @@ uint8 get_byte(uint32 buffer, uint32 index)
     return (uint8)buffer;
 }
 
+bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
+{
+    if (map == nullptr)
+        return false;
+
+    if (map->GetCreature(this->GetLowGUID()))
+    {
+        this->SetPosition(vec);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 {
     m_spawn = spawn;
@@ -2915,13 +2931,4 @@ void Creature::RemoveVehicleComponent()
 {
     delete vehicle;
     vehicle = NULL;
-}
-
-void Creature::TeleportFar(uint32 mapId, float x, float y, float z, float o)
-{
-    RemoveFromWorld(true);
-    SetMapId(mapId);
-    AddToWorld();
-    SetPosition(x, y, z, o, false);
-    this->SetGUID(this->GetMapMgr()->GenerateCreatureGUID(this->GetEntry()));
 }

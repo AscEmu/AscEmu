@@ -52,6 +52,8 @@ class SERVER_DECL Creature : public Unit
 {
     public:
 
+        bool Teleport(const LocationVector& vec, MapMgr* map) override;
+
         Creature(uint64 guid);
         virtual ~Creature();
 
@@ -230,8 +232,6 @@ class SERVER_DECL Creature : public Unit
         void OnRespawn(MapMgr* m);
 
         void BuildPetSpellList(WorldPacket & data);
-
-        void TeleportFar(uint32 mapId, float x, float y, float z, float o);
 
     protected:
 

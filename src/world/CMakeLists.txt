@@ -303,6 +303,7 @@ set(headers
 	TaxiMgr.h
 	TerrainMgr.h
 	Entities/Summons/TotemSummon.h
+    Transports/TransportSpawn.hpp
 	TransporterHandler.h
 	Unit.h
     UnitDefines.hpp

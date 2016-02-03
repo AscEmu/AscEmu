@@ -204,13 +204,19 @@ void ObjectMgr::LoadTransports()
             {
                 if ((*itr)->GetEntry() == transportEntry)
                 {
-                    (*itr)->AddNPCPassenger(guid, entry, tX, tY, tZ, tO, anim);
+                    TransportSpawn spawn{ guid, entry, transportEntry, tX, tY, tZ, tO, anim };
+                    (*itr)->AddCreature(spawn);
                     break;
                 }
             }
 
             ++count;
         } while (result->NextRow());
+
+        for (auto transport : m_Transporters)
+        {
+            transport->RespawnCreaturePassengers();
+        }
 
         Log.Success("Transport Handler", ">> Loaded %u Transport Npcs in %u ms", count, getMSTime() - oldMSTime);
     }
@@ -237,6 +243,27 @@ Transporter::~Transporter()
     m_NPCPassengerSet.clear();
     m_WayPoints.clear();
     m_passengers.clear();
+}
+
+void Transporter::AddCreature(TransportSpawn creature)
+{
+    this->m_creatureSpawns.push_back(creature);
+}
+
+void Transporter::RespawnCreaturePassengers()
+{
+    // TODO: Respect existing creature positions
+    for (auto existing_passenger : m_NPCPassengerSet)
+    {
+        existing_passenger->DeleteMe();
+    }
+
+    m_NPCPassengerSet.clear();
+
+    for (auto spawn : this->m_creatureSpawns)
+    {
+        this->AddNPCPassenger(spawn.transport_guid, spawn.entry, spawn.x, spawn.y, spawn.z, spawn.o, spawn.animation);
+    }
 }
 
 void Transporter::OnPushToWorld()
@@ -516,78 +543,40 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
 {
     sEventMgr.RemoveEvents(this, EVENT_TRANSPORTER_NEXT_WAYPOINT);
 
-    if(m_passengers.size() > 0)
-    {
-        WorldPacket Pending(SMSG_TRANSFER_PENDING, 12);
-        Pending << newMapid << GetEntry() << oldmap;
-
-        WorldPacket NewWorld;
-        LocationVector v;
-
-        for (PlayerSet::const_iterator itr = m_passengers.begin(); itr != m_passengers.end();)
-        {
-            Player* player = *itr;
-            ++itr;
-
-            v.x = x + player->movement_info.transporter_info.position.x;
-            v.y = y + player->movement_info.transporter_info.position.y;
-            v.z = z + player->movement_info.transporter_info.position.z;
-            v.o = player->GetOrientation();
-
-            if (newMapid == 530 && !player->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
-            {
-                // player does not have BC content, repop at graveyard
-                player->RepopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
-                continue;
-            }
-
-            if (newMapid == 571 && !player->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
-            {
-                player->RepopAtGraveyard(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetMapId());
-                continue;
-            }
-
-            player->GetSession()->SendPacket(&Pending);
-            player->_Relocate(newMapid, v, false, true, 0);
-
-            // Lucky bitch. Do it like on official.
-            if (player->IsDead())
-            {
-                player->ResurrectPlayer();
-                player->SetHealth(player->GetMaxHealth());
-                player->SetPower(POWER_TYPE_MANA, player->GetMaxPower(POWER_TYPE_MANA));
-            }
-        }
-    }
-
-    for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
-    {
-        (*itr)->TeleportFar(newMapid, x, y, z, (*itr)->GetOrientation());
-    }
-
-    // Set our position
     RemoveFromWorld(false);
     SetMapId(newMapid);
     SetPosition(x, y, z, m_position.o, false);
     AddToWorld();
+
+    for(auto passengerGuid : m_passengers)
+    {
+        auto passenger = objmgr.GetPlayer(passengerGuid);
+        bool teleport_successful = passenger->Teleport(LocationVector(x, y, z, passenger->GetOrientation()), this->GetMapMgr());
+        if (!teleport_successful)
+        {
+            passenger->RepopAtGraveyard(passenger->GetPositionX(), passenger->GetPositionY(), passenger->GetPositionZ(), passenger->GetMapId());
+        }
+    }
+
+    this->RespawnCreaturePassengers();
 }
 
 bool Transporter::AddPassenger(Player* passenger)
 {
-    if (m_passengers.insert(passenger).second)
-        Log.Debug("Transporter", "Player %s boarded transport %u.", passenger->GetName(), this->GetInfo()->entry);
+    ARCEMU_ASSERT(passenger != nullptr);
 
-    AddPlayer(static_cast<Player*>(passenger));
+    m_passengers.insert(passenger->GetLowGUID());
+    Log.Debug("Transporter", "Player %s boarded transport %u.", passenger->GetName(), this->GetInfo()->entry);
 
     return true;
 }
 
 bool Transporter::RemovePassenger(Player* passenger)
 {
-    if (m_passengers.erase(passenger))
-        Log.Debug("Transporter", "Player %s removed from transport %u.", passenger->GetName(), this->GetInfo()->entry);
+    ARCEMU_ASSERT(passenger != nullptr);
 
-    RemovePlayer(static_cast<Player*>(passenger));
+    m_passengers.erase(passenger->GetLowGUID());
+    Log.Debug("Transporter", "Player %s removed from transport %u.", passenger->GetName(), this->GetInfo()->entry);
 
     return true;
 }
@@ -792,10 +781,15 @@ void Transporter::UpdateNPCPositions(float x, float y, float z, float o)
 
 void Transporter::UpdatePlayerPositions(float x, float y, float z, float o)
 {
-    for (PlayerSet::iterator itr = m_passengers.begin(); itr != m_passengers.end(); ++itr)
+    for (auto playerGuid : m_passengers)
     {
-        Player* plr = *itr;
-        plr->SetPosition(x + plr->obj_movement_info.transporter_info.position.x, y + plr->obj_movement_info.transporter_info.position.y, z + plr->obj_movement_info.transporter_info.position.z, o + plr->obj_movement_info.transporter_info.position.o, false);
-
+        if (auto player = objmgr.GetPlayer(playerGuid))
+        {
+            player->SetPosition(
+                x + player->obj_movement_info.transporter_info.position.x,
+                y + player->obj_movement_info.transporter_info.position.y,
+                z + player->obj_movement_info.transporter_info.position.z,
+                o + player->obj_movement_info.transporter_info.position.o);
+        }
     }
 }

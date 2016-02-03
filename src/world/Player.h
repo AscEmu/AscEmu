@@ -352,6 +352,8 @@ class SERVER_DECL Player : public Unit
     friend class SkillIterator;
 
     public:
+        
+        bool Teleport(const LocationVector& vec, MapMgr* map) override;
 
         Player(uint32 guid);
         ~Player();
@@ -418,6 +420,7 @@ class SERVER_DECL Player : public Unit
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
 
+        Transporter* GetTransport();
     protected:
 
         void _UpdateSkillFields();

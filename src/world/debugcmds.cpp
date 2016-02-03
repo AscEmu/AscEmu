@@ -28,9 +28,9 @@ bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession*
         auto me = session->GetPlayerOrThrow();
 
         SystemMessage(session, "Position: [%f, %f, %f, %f]", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-        SystemMessage(session, "On transport: %s", me->GetTransport() ? "yes" : "no");
-        SystemMessage(session, "Transport GUID: %lu", me->m_transportData.transportGuid);
-        SystemMessage(session, "Transport relative position: [%f, %f, %f]", me->m_transportData.relativePosition.x, me->m_transportData.relativePosition.y, me->m_transportData.relativePosition.z);
+        SystemMessage(session, "On transport: %s", me->obj_movement_info.transporter_info.guid != 0 ? "yes" : "no");
+        SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.transporter_info.guid);
+        SystemMessage(session, "Transport relative position: [%f, %f, %f]", me->obj_movement_info.transporter_info.position.x, me->obj_movement_info.transporter_info.position.y, me->obj_movement_info.transporter_info.position.z);
 
         return true;
     }

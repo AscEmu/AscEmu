@@ -30,7 +30,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
     if (_player->getDeathState() != JUST_DIED)
         return;
     if (_player->m_transport)
-        _player->m_transport->RemovePlayer(_player);
+        _player->m_transport->RemovePassenger(_player);
 
     GetPlayer()->RepopRequestedPlayer();
 }

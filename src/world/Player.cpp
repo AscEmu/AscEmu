@@ -64,6 +64,33 @@ static const float crit_to_dodge[MAX_PLAYER_CLASSES] = {
     1.7f       // Druid
 };
 
+bool Player::Teleport(const LocationVector& vec, MapMgr* map)
+{
+    if (map == nullptr)
+        return false;
+
+    if (map->GetPlayer(this->GetLowGUID()))
+    {
+        this->SetPosition(vec);
+    }
+    else
+    {
+        if (map->GetMapId() == 530 && !this->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
+        {
+            return false;
+        }
+
+        if (map->GetMapId() == 571 && !this->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        {
+            return false;
+        }
+
+        this->SafeTeleport(map, vec);
+    }
+
+    return true;
+}
+
 Player::Player(uint32 guid)
     :
     disableAppear(false),
@@ -2549,9 +2576,16 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     {
         ss << "0, 0, 0";
     }
-
-    ss << "," << (m_transport ? m_transport->GetEntry() : (uint32)0);
-    ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "'";
+    auto transport = this->GetTransport();
+    if (!transport)
+    {
+        ss << "," << 0 << ",'0','0','0'";
+    }
+    else
+    {
+        ss << "," << transport->GetEntry();
+        ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "'";
+    }
     ss << ",'";
 
     SaveSpells(bNewCharacter, buf);
@@ -3696,12 +3730,20 @@ void Player::AddToWorld()
     m_setflycheat = false;
 
     // check transporter
-    if (obj_movement_info.transporter_info.guid && m_transport)
+    if (obj_movement_info.transporter_info.guid)
     {
-        SetPosition(m_transport->GetPositionX() + GetTransPositionX(),
-                    m_transport->GetPositionY() + GetTransPositionY(),
-                    m_transport->GetPositionZ() + GetTransPositionZ(),
-                    GetOrientation(), false);
+        if(!m_transport)
+        {
+            m_transport = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(this->obj_movement_info.transporter_info.guid));
+        }
+
+        if (m_transport)
+        {
+            SetPosition(m_transport->GetPositionX() + GetTransPositionX(),
+                m_transport->GetPositionY() + GetTransPositionY(),
+                m_transport->GetPositionZ() + GetTransPositionZ(),
+                GetOrientation(), false);
+        }
     }
 
     // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
@@ -4541,7 +4583,7 @@ void Player::RepopRequestedPlayer()
 
     if (m_transport != NULL)
     {
-        m_transport->RemovePlayer(this);
+        m_transport->RemovePassenger(this);
         m_transport = NULL;
         obj_movement_info.transporter_info.guid = 0;
 
@@ -8504,7 +8546,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
         if (pTrans)
         {
-            pTrans->RemovePlayer(this);
+            pTrans->RemovePassenger(this);
             m_transport = NULL;
             obj_movement_info.transporter_info.guid = 0;
         }
@@ -13265,6 +13307,16 @@ void Player::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, P
     WorldPacket* data = sChatHandler.FillMessageData(type, lang, msg, GetGUID());
     plr->SendPacket(data);
     delete data;
+}
+
+Transporter* Player::GetTransport()
+{
+    if(this->obj_movement_info.transporter_info.guid == 0)
+    {
+        return nullptr;
+    }
+
+    return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(this->obj_movement_info.transporter_info.guid));
 }
 
 void Player::AcceptQuest(uint64 guid, uint32 quest_id)

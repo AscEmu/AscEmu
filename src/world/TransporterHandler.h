@@ -22,6 +22,8 @@
 #ifndef __TRANSPORTERHANDLER_H
 #define __TRANSPORTERHANDLER_H
 
+#include "Transports/TransportSpawn.hpp"
+
 class TransportPath
 {
     public:
@@ -112,10 +114,16 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path);
 
 class Transporter : public GameObject
 {
+protected:
+    std::vector<TransportSpawn> m_creatureSpawns;
+
     public:
         Transporter(uint64 guid);
         ~Transporter();
         
+        void AddCreature(TransportSpawn creature);
+        void RespawnCreaturePassengers();
+
         // Creates The Transporter
         bool Create(uint32 entry, int32 Time);
 
@@ -137,8 +145,7 @@ class Transporter : public GameObject
         // Build Update for Player
         uint32  BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
 
-        typedef std::set<Player*> PlayerSet;
-        PlayerSet const& GetPassengers() const { return m_passengers; }
+        std::set<uint32> const& GetPassengers() const { return m_passengers; }
 
         typedef std::set<Creature*> CreatureSet;
         CreatureSet m_NPCPassengerSet;
@@ -167,16 +174,13 @@ class Transporter : public GameObject
         // Transport Gossip
         void TransportGossip(uint32 route);
 
-        inline void AddPlayer(Player* pPlayer) { /*m_passengers.insert(passenger).second; */ }
-        inline void RemovePlayer(Player* pPlayer) {/*m_passengers.erase(passenger);*/ }
-
     void SetPeriod(int32 val);
     int32 GetPeriod();
 
         uint32 m_pathTime;
         uint32 m_timer;
 
-        PlayerSet m_passengers;
+        std::set<uint32> m_passengers;
 
         uint32 currenttguid;
 

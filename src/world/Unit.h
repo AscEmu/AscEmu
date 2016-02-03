@@ -229,6 +229,8 @@ class SERVER_DECL Unit : public Object
         friend class Aura;
         TransportData m_transportData;
 
+        virtual bool Teleport(const LocationVector& vec, MapMgr* map) = 0;
+
         void Update(unsigned long time_passed);
         virtual void RemoveFromWorld(bool free_guid);
         virtual void OnPushToWorld();
