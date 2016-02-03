@@ -37,8 +37,8 @@ namespace VMAP
 
 	class StaticMapTree
 	{
-		typedef std::tr1::unordered_map<G3D::uint32, bool> loadedTileMap;
-		typedef std::tr1::unordered_map<G3D::uint32, G3D::uint32> loadedSpawnMap;
+		typedef std::unordered_map<G3D::uint32, bool> loadedTileMap;
+		typedef std::unordered_map<G3D::uint32, G3D::uint32> loadedSpawnMap;
 
 		private:
 			G3D::uint32 iMapID;

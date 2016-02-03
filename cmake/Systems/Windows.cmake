@@ -2,6 +2,7 @@
 
 message(STATUS "Applying settings for Windows system")
 
+set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 # set default install prefix if it wasn't setted up
 add_definitions(-DWIN32)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

@@ -20,7 +20,7 @@
 
 #include "StdAfx.h"
 
-#ifdef HAVE_DARWIN
+#ifdef __APPLE__
 #undef check
 #endif
 
@@ -32,7 +32,7 @@
 #pragma warning(disable:4244)
 #endif
 
-#if PLATFORM != PLATFORM_WIN32
+#ifndef _WIN32
 #include <dirent.h>
 #endif
 #include <QuestLogEntry.hpp>

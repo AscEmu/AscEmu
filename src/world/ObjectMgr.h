@@ -495,7 +495,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         TimedEmoteList* GetTimedEmoteList(uint32 spawnid);
 
         // other objects
-        typedef std::tr1::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
+        typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
 
         // Set typedef's
         typedef std::unordered_map<uint32, Group*>                        GroupMap;

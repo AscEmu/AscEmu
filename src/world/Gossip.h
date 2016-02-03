@@ -17,15 +17,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef _GOSSIP_H
+#define _GOSSIP_H
+
 #include "Gossip/GossipDefines.hpp"
 #include "WorldPacket.h"
 #include "StackBuffer.h"
 #include <map>
-
-#ifndef _GOSSIP_H
-#define _GOSSIP_H
-
-#pragma once
 
 struct Quest;
 class Creature;
