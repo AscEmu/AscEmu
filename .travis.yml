@@ -14,10 +14,10 @@ compiler:
 #notifications:
 #   email: false
 
-branches:
-  only:
-    - master
-    - coverity_scan
+#branches:
+#  only:
+#    - master
+#    - coverity_scan
 
 git:
   depth: 1
