@@ -2,4 +2,6 @@
 src/logonserver/logon_conf.h
 src/shared/git_version.h
 src/world/world_conf.h
+src/logonserver/LogonConf.h
+src/world/WorldConf.h
 CMakeLists.txt.user
