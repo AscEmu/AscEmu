@@ -1338,7 +1338,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
 
     // not a neutral creature
-    if (!(m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
+    if (!(m_factionDBC != nullptr && m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
     {
         GetAIInterface()->m_canCallForHelp = true;
     }
