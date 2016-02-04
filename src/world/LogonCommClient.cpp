@@ -18,14 +18,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+#include "StdAfx.h"
 #include "CommonTypes.hpp"
 #include "LogonCommClient.h"
 #include "LogonCommHandler.h"
 #include "WorldPacket.h"
 #include "Database/Database.h"
 #include "MainServerDefines.h"
-#include "World.h"
 #include <set>
 #include <map>
 

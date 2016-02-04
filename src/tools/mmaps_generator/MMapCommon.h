@@ -27,6 +27,7 @@
 
 #include <string>
 #include <vector>
+#include <cerrno>
 
 #include "Define.h"
 

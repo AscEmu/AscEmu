@@ -31,7 +31,7 @@ namespace Arcemu
 #ifdef WIN32
             ret = InterlockedExchange(reinterpret_cast< volatile LONG* >(&Value), LONG(NewValue));
 #else
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
             ret = __sync_val_compare_and_swap(&Value, Value, NewValue);
 #else
 #error Your platform (architecture and compiler) is NOT supported. Arcemu requires little endian architecture, and at least GCC 4.1

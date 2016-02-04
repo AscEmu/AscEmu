@@ -37,11 +37,23 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/src/shared
    ${CMAKE_SOURCE_DIR}/src/world
    ${CMAKE_SOURCE_DIR}/dep/lualib
+   ${CMAKE_CURRENT_SOURCE_DIR}
    ${ZLIB_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
-target_link_libraries(${PROJECT_NAME} world lualib)
+target_link_libraries(${PROJECT_NAME} lualib)
+
+# special case for project linking
+# on some operating systems linking is a bit strange
+# OS X can't link executable, MSVC can't link world library... weird
+if(WIN32)
+    add_dependencies(${PROJECT_NAME} worldserver)
+    target_link_libraries(${PROJECT_NAME} worldserver)
+elseif(APPLE)
+    add_dependencies(${PROJECT_NAME} world)
+    target_link_libraries(${PROJECT_NAME} world)
+endif()
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
 unset(sources)
 unset(headers)

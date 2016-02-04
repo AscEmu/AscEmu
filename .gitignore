@@ -1,1 +1,5 @@
 .idea/
+src/logonserver/logon_conf.h
+src/shared/git_version.h
+src/world/world_conf.h
+CMakeLists.txt.user

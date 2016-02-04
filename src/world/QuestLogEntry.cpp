@@ -16,7 +16,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 *
 */
-
+#include "StdAfx.h"
 #include <Log.h>
 #include "QuestLogEntry.hpp"
 #include "WorldSession.h"

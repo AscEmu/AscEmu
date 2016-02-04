@@ -32,7 +32,7 @@ namespace Arcemu
 #ifdef WIN32
             val = InterlockedIncrement(reinterpret_cast< volatile LONG* >(&Value));
 #else
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
             val = __sync_add_and_fetch(&Value, 1);
 #else
 #error Your platform (architecture and compiler) is NOT supported. Arcemu requires little endian architecture, and at least GCC 4.1
@@ -49,7 +49,7 @@ namespace Arcemu
 #ifdef WIN32
             val = InterlockedDecrement(reinterpret_cast< volatile LONG* >(&Value));
 #else
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
             val = __sync_add_and_fetch(&Value, -1);
 #else
 #error Your platform (architecture and compiler) is NOT supported. Arcemu requires little endian architecture, and at least GCC 4.1

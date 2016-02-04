@@ -83,14 +83,6 @@ enum MsTimeVariables
 #  define MAX_PATH 1024
 #endif
 
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
 #ifdef CONFIG_USE_SELECT
 #undef FD_SETSIZE
 #define FD_SETSIZE 2048
@@ -110,7 +102,7 @@ enum MsTimeVariables
 
 #if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
 #  define PLATFORM PLATFORM_WIN32
-#elif defined( __APPLE_CC__ )
+#elif defined(__APPLE__)
 #  define PLATFORM PLATFORM_APPLE
 #else
 #  define PLATFORM PLATFORM_UNIX
@@ -133,23 +125,14 @@ enum MsTimeVariables
 #  pragma error "FATAL ERROR: Unknown compiler."
 #endif
 
-#if PLATFORM == PLATFORM_UNIX || PLATFORM == PLATFORM_APPLE
-    #ifdef HAVE_DARWIN
-        #define PLATFORM_TEXT "MacOSX"
-        #define UNIX_FLAVOUR UNIX_FLAVOUR_OSX
-    #else
-        #ifdef USE_KQUEUE
-            #define PLATFORM_TEXT "FreeBSD"
-            #define UNIX_FLAVOUR UNIX_FLAVOUR_BSD
-        #else
-            #define PLATFORM_TEXT "Linux"
-            #define UNIX_FLAVOUR UNIX_FLAVOUR_LINUX
-        #endif
-    #endif
-#endif
-
-#if PLATFORM == PLATFORM_WIN32
+#if _WIN32
 #define PLATFORM_TEXT "Win32"
+#elif __APPLE__
+    #define PLATFORM_TEXT "OSX"
+#elif defined(BSD)
+    #define PLATFORM_TEXT "BSD"
+#elif defined(__linux__)
+    #define PLATFORM_TEXT "Linux"
 #endif
 
 #ifdef _DEBUG
@@ -165,7 +148,7 @@ enum MsTimeVariables
 #endif
 
 
-#if PLATFORM == PLATFORM_WIN32
+#if _WIN32
 #define STRCASECMP stricmp
 #else
 #define STRCASECMP strcasecmp
@@ -188,14 +171,6 @@ enum MsTimeVariables
 #define CONFIG_USE_POLL
 #endif
 
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
-
 #include <cstdlib>
 #include <set>
 #include <list>
@@ -213,40 +188,13 @@ enum MsTimeVariables
 
 #include "CommonHelpers.hpp"
 
-// TEST SUPPORT FOR TR1
-
-#ifdef HAS_CXX0X
 #include <unordered_map>
 #include <unordered_set>
 #define HM_NAMESPACE ::std
 #define hash_map unordered_map
 #define hash_multimap unordered_multimap
 #define hash_set unordered_set
-#define hash_multiset tr1::unordered_multiset
-#elif COMPILER == COMPILER_GNU && __GNUC__ >= 3  || (COMPILER == COMPILER_CLANG && __clang_major__ >= 3)
-#include <ext/hash_map>
-#include <ext/hash_set>
-#define HM_NAMESPACE __gnu_cxx
-namespace __gnu_cxx
-{
-    template<> struct hash<unsigned long long>
-    {
-        size_t operator()(const unsigned long long & __x) const { return (size_t)__x; }
-    };
-    template<typename T> struct hash<T*>
-    {
-        size_t operator()(T* const & __x) const { return (size_t)__x; }
-    };
-    //support for std::strings as keys to hash maps
-    template<> struct hash< ::std::string>
-    {
-        size_t operator()(const ::std::string & keyval) const
-        {
-            return hash<const char*>()(keyval.c_str());
-        }
-    };
-};
-#endif
+#define hash_multiset unordered_multiset
 
 #include "CommonTypes.hpp"
 
@@ -289,10 +237,8 @@ namespace __gnu_cxx
 // fix buggy MSVC's for variable scoping to be reliable =S
 #define for if (true) for
 
-#if COMPILER == COMPILER_MICROSOFT && _MSC_VER >= 1400
 #pragma float_control(push)
 #pragma float_control(precise, on)
-#endif
 
 // fast int abs
 static inline int int32abs(const int value)
