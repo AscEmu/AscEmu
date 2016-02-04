@@ -21,19 +21,19 @@
 #define SOCKET int
 #define SD_BOTH SHUT_RDWR
 
-#if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
+#if __linux__
 
 // select: epoll
 #include <sys/epoll.h>
 #define CONFIG_USE_EPOLL
 
-#elif UNIX_FLAVOUR == UNIX_FLAVOUR_BSD
+#elif BSD
 
 // select: kqueue
 #include <sys/event.h>
 #define CONFIG_USE_KQUEUE
 
-#elif UNIX_FLAVOUR == UNIX_FLAVOUR_OSX
+#elif __APPLE__
 // select: kqueue
 #include <sys/event.h>
 #define CONFIG_USE_KQUEUE

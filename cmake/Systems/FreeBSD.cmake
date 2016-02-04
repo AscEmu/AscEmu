@@ -1,6 +1,7 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 message(STATUS "Applying settings for Linux system")
 
+set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 add_definitions(-DUSE_KQUEUE)
 
 find_package(ZLIB REQUIRED)

@@ -30,11 +30,7 @@
 #include <limits>
 #include <cmath>
 
-#ifdef WIN32
 #include <unordered_map>
-#else
-#include <tr1/unordered_map>
-#endif
 
 #define MAX_STACK_SIZE 64
 

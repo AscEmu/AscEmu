@@ -23,11 +23,7 @@
 #include <G3D/Vector3.h>
 #include "IVMapManager.h"
 
-#ifdef WIN32
 #include <unordered_map>
-#else
-#include <tr1/unordered_map>
-#endif
 
 //===========================================================
 
@@ -63,8 +59,8 @@ namespace VMAP
 			int iRefCount;
 	};
 
-	typedef std::tr1::unordered_map<G3D::uint32 , StaticMapTree*> InstanceTreeMap;
-	typedef std::tr1::unordered_map<std::string, ManagedModel> ModelFileMap;
+	typedef std::unordered_map<G3D::uint32 , StaticMapTree*> InstanceTreeMap;
+	typedef std::unordered_map<std::string, ManagedModel> ModelFileMap;
 
 	class VMapManager2 : public IVMapManager
 	{

@@ -96,4 +96,4 @@ class WarsongGulch : public CBattleground
         void DespawnGates(uint32 delay);
 };
 
-#endif
+#endif // _WARSONG_GULCH_H
