@@ -419,8 +419,6 @@ class SERVER_DECL Player : public Unit
         // Scripting
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
-
-        Transporter* GetTransport();
     protected:
 
         void _UpdateSkillFields();
@@ -1325,7 +1323,6 @@ class SERVER_DECL Player : public Unit
         void SoftDisconnect();
         uint32 m_KickDelay;
         uint64 m_CurrentCharm;
-        Transporter* m_transport;
 
         Object* GetSummonedObject() { return m_SummonedObject; };
         void SetSummonedObject(Object* t_SummonedObject) { m_SummonedObject = t_SummonedObject; };

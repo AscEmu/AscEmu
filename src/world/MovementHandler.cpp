@@ -80,10 +80,10 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
     }
     LOG_DEBUG("WORLD: got MSG_MOVE_WORLDPORT_ACK.");
 
-    if (_player->m_transport && _player->GetMapId() != _player->m_transport->GetMapId())
+    if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
     {
         /* wow, our pc must really suck. */
-        Transporter* pTrans = _player->m_transport;
+        Transporter* pTrans = _player->GetTransport();
 
         float c_tposx = pTrans->GetPositionX() + _player->GetTransPositionX();
         float c_tposy = pTrans->GetPositionY() + _player->GetTransPositionY();
@@ -726,7 +726,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
     {
 
-        if (_player->m_transport == NULL)
+        if (!_player->GetTransport())
         {
             if (!_player->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o))
             {
@@ -904,7 +904,6 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
     vec.ChangeCoords(target_position_x, target_position_y, target_position_z, target_position_o);
     _player->SafeTeleport(_player->GetMapId(), _player->GetInstanceID(), vec);
 }
-
 
 void MovementInfo::init(WorldPacket& data)
 {

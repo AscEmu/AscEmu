@@ -301,8 +301,11 @@ void WorldSession::LogoutPlayer(bool Save)
         // part channels
         _player->CleanupChannels();
 
-        if (_player->m_transport != NULL)
-            _player->m_transport->RemovePassenger(_player);
+        auto transport = _player->GetTransport();
+        if (transport != nullptr)
+        {
+            transport->RemovePassenger(_player);
+        }
 
         // cancel current spell
         if (_player->m_currentSpell != NULL)

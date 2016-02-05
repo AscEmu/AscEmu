@@ -99,7 +99,6 @@ void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
     {
         if (Creature* npc = *itr)
         {
-            npc->SetTransport(NULL);
             npc->RemoveFromWorld(true);
         }
         ++itr;
@@ -237,7 +236,6 @@ Transporter::~Transporter()
     {
         Creature* passenger = *itr;
         MapMgr* map = passenger->GetMapMgr();
-        passenger->SetTransport(NULL);
     }
 
     m_NPCPassengerSet.clear();
@@ -523,6 +521,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
 
     uint32 timer = t;
 
+
     mCurrentWaypoint = m_WayPoints.begin();
     mNextWaypoint = GetNextWaypoint();
     m_pathTime = timer;
@@ -720,7 +719,6 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     if (anim)
         pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);
 
-    pCreature->SetTransport(this);
     m_NPCPassengerSet.insert(pCreature);
 
     if (tguid == 0)
@@ -764,7 +762,6 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     pCreature->m_transportData.relativePosition.z = z;
     pCreature->m_transportData.relativePosition.o = o;
 
-    pCreature->SetTransport(this);
     m_NPCPassengerSet.insert(pCreature);
 
     return pCreature;

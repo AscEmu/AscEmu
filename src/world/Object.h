@@ -197,7 +197,6 @@ struct MovementInfo
             time2 = 0;
             seat = 0;
         }
-
     }transporter_info;
 
     MovementInfo()
@@ -224,6 +223,7 @@ struct MovementInfo
 
     void init(WorldPacket& data);
     void write(WorldPacket& data);
+    bool IsOnTransport() const { return this->transporter_info.guid != 0; };
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -694,10 +694,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         float m_base_walkSpeed;
 
         MovementInfo obj_movement_info;
-
-        // Transporters (Zyres: Replace this with MovementInfo!!!!)
-        Transporter* GetTransport() const { return obj_movement_info.transporter_info.m_transporter; }
-        void SetTransport(Transporter* t) { obj_movement_info.transporter_info.m_transporter = t; }
+        Transporter* GetTransport() const;
 
         uint32 m_phase;         /// This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 

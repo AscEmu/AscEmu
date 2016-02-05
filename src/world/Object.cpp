@@ -2227,6 +2227,11 @@ uint32 Object::GetTeam()
     return static_cast< uint32 >(-1);
 }
 
+Transporter* Object::GetTransport() const
+{
+    return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Manipulates the phase value, see "enum PHASECOMMANDS" in 
 /// Object.h for a longer explanation!
