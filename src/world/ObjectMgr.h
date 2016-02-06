@@ -525,7 +525,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                              BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                  SpellTargetConstraintMap;
-        typedef std::map<std::pair<uint32, uint8>, CreatureProtoDifficulty*>               CreatureProtoDifficultyMap;
+        typedef std::map<uint32, CreatureDifficulty*>               CreatureDifficultyMap;
 
         // object holders
         GmTicketList GM_TicketList;
@@ -820,8 +820,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         void LoadItemsetLink();
 
-        void LoadCreatureProtoDifficulty();
-        CreatureProtoDifficulty* GetCreatureProtoDifficulty(uint32 creature_entry, uint32 difficulty_type);
+        void LoadCreatureDifficulty();
+        uint32 GetCreatureDifficulty(uint32 creature_entry, uint8 difficulty_type);
 
     private:
 
@@ -902,7 +902,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         PetDefaultSpellMap mDefaultPetSpells;
         PetSpellCooldownMap mPetSpellCooldowns;
         SpellTargetConstraintMap m_spelltargetconstraints;
-        CreatureProtoDifficultyMap m_creatureProtoDifficulty;
+        CreatureDifficultyMap m_creatureDifficulty;
 #ifdef ENABLE_ACHIEVEMENTS
         AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 #endif

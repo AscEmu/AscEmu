@@ -4736,7 +4736,8 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 {
     if (GetDifficultyType() != 0)
     {
-        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(entry, GetDifficultyType());
+        uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(entry, GetDifficultyType());
+        auto proto_difficulty = CreatureProtoStorage.LookupEntry(creature_difficulty_entry);
         Creature* creature = static_cast<Creature*>(m_Unit);
         if (proto_difficulty != nullptr)
         {
@@ -4889,7 +4890,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
                 m_Unit->setAItoUse(false);
             }
 
-            if (proto_difficulty->isRooted)
+            if (proto_difficulty->rooted)
                 m_Unit->Root();
         }
     }

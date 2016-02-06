@@ -298,7 +298,8 @@ void Creature::generateLoot()
 
     if (GetAIInterface()->GetDifficultyType() != 0)
     {
-        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        auto proto_difficulty = CreatureProtoStorage.LookupEntry(creature_difficulty_entry);
         if (proto_difficulty != nullptr)
         {
             if (proto_difficulty->money != proto->money)

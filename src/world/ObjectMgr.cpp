@@ -4105,17 +4105,17 @@ uint32 ObjectMgr::GetGroupedSetBonus(int32 itemset)
         return itr->second;
 }
 
-void ObjectMgr::LoadCreatureProtoDifficulty()
+void ObjectMgr::LoadCreatureDifficulty()
 {
-    Log.Notice("ObjectMgr", "Loading creature_proto_difficulty...");
+    Log.Notice("ObjectMgr", "Loading creature_difficulty...");
 
-    const char* loadCreatureProtoDifficulty = "SELECT * FROM creature_proto_difficulty";
+    const char* loadCreatureDifficulty = "SELECT * FROM creature_difficulty";
     bool success = false;
 
-    QueryResult* result = WorldDatabase.Query(&success, loadCreatureProtoDifficulty);
+    QueryResult* result = WorldDatabase.Query(&success, loadCreatureDifficulty);
     if (!success)
     {
-        Log.Error("ObjectMgr", "Query failed: %s", loadCreatureProtoDifficulty);
+        Log.Error("ObjectMgr", "Query failed: %s", loadCreatureDifficulty);
         return;
     }
 
@@ -4125,91 +4125,57 @@ void ObjectMgr::LoadCreatureProtoDifficulty()
         do
         {
             Field* row = result->Fetch();
-            CreatureProtoDifficulty* creature_proto_difficulty = new CreatureProtoDifficulty;
-            uint32 creature_entry = row[0].GetUInt32();
-            uint32 difficulty_type = row[1].GetUInt32();
+            CreatureDifficulty* creature_difficulty = new CreatureDifficulty;
+            uint32 entry = row[0].GetUInt32();
+            creature_difficulty->Id = entry;
+            creature_difficulty->difficulty_entry_1 = row[1].GetUInt32();
+            creature_difficulty->difficulty_entry_2 = row[2].GetUInt32();
+            creature_difficulty->difficulty_entry_3 = row[3].GetUInt32();
+       
 
-            creature_proto_difficulty->Id = row[0].GetUInt32();
-            creature_proto_difficulty->difficulty_type = row[1].GetUInt8();
-            creature_proto_difficulty->MinLevel = row[2].GetUInt32();
-            creature_proto_difficulty->MaxLevel = row[3].GetUInt32();
-            creature_proto_difficulty->Faction = row[4].GetUInt32();
-            creature_proto_difficulty->MinHealth = row[5].GetUInt32();
-            creature_proto_difficulty->MaxHealth = row[6].GetUInt32();
-            creature_proto_difficulty->Mana = row[7].GetUInt32();
-            creature_proto_difficulty->Scale = row[8].GetUInt32();
-            creature_proto_difficulty->NPCFLags = row[9].GetUInt32();
-            creature_proto_difficulty->AttackTime = row[10].GetUInt32();
-            creature_proto_difficulty->AttackType = row[11].GetUInt32();
-            creature_proto_difficulty->MinDamage = row[12].GetUInt32();
-            creature_proto_difficulty->MaxDamage = row[13].GetUInt32();
-            creature_proto_difficulty->CanRanged = row[14].GetUInt32();
-            creature_proto_difficulty->RangedAttackTime = row[15].GetUInt32();
-            creature_proto_difficulty->RangedMinDamage = row[16].GetUInt32();
-            creature_proto_difficulty->RangedMaxDamage = row[17].GetUInt32();
-            //creature_proto_difficulty->RespawnTime = row[18].GetUInt32();     // unhandled
-            creature_proto_difficulty->Resistances[0] = row[19].GetUInt32();    // Armor
-            creature_proto_difficulty->Resistances[1] = row[20].GetUInt32();
-            creature_proto_difficulty->Resistances[2] = row[21].GetUInt32();
-            creature_proto_difficulty->Resistances[3] = row[22].GetUInt32();
-            creature_proto_difficulty->Resistances[4] = row[23].GetUInt32();
-            creature_proto_difficulty->Resistances[5] = row[24].GetUInt32();
-            creature_proto_difficulty->Resistances[6] = row[25].GetUInt32();
-            creature_proto_difficulty->CombatReach = row[26].GetFloat();
-            creature_proto_difficulty->BoundingRadius = row[27].GetFloat();
-            //creature_proto_difficulty->aura_string = row[28].GetString();     // unhandled
-            //creature_proto_difficulty->isBoss = row[29].GetBool();            // unhandled
-            creature_proto_difficulty->money = row[30].GetUInt32();
-            creature_proto_difficulty->invisibility_type = row[31].GetUInt32();
-            creature_proto_difficulty->walk_speed = row[32].GetFloat();
-            creature_proto_difficulty->run_speed = row[33].GetFloat();
-            creature_proto_difficulty->fly_speed = row[34].GetFloat();
-            //creature_proto_difficulty->extra_a9_flags = row[35].GetUInt32();
-            //creature_proto_difficulty->AISpells[0] = row[36].GetUInt32();
-            //creature_proto_difficulty->AISpells[1] = row[37].GetUInt32();
-            //creature_proto_difficulty->AISpells[2] = row[38].GetUInt32();
-            //creature_proto_difficulty->AISpells[3] = row[39].GetUInt32();
-            //creature_proto_difficulty->AISpells[4] = row[40].GetUInt32();
-            //creature_proto_difficulty->AISpells[5] = row[41].GetUInt32();
-            //creature_proto_difficulty->AISpells[6] = row[42].GetUInt32();
-            //creature_proto_difficulty->AISpells[7] = row[43].GetUInt32();
-            //creature_proto_difficulty->AISpellsFlags = row[44].GetUInt32();
-            creature_proto_difficulty->modImmunities = row[45].GetUInt32();
-            creature_proto_difficulty->isTrainingDummy = row[46].GetBool();
-            creature_proto_difficulty->guardtype = row[47].GetUInt32();
-            //creature_proto_difficulty->summonguard = row[48].GetUInt32();     // unhandled
-            //creature_proto_difficulty->spelldataid = row[49].GetUInt32();
-            creature_proto_difficulty->vehicleid = row[50].GetUInt32();
-            creature_proto_difficulty->isRooted = row[51].GetBool();
+            Log.Debug("ObjectMgr", "loaded creature difficulty for creature %u", entry);
 
-            std::pair<uint32, uint8> proto_identifier;
-            proto_identifier.first = creature_entry;
-            proto_identifier.second = difficulty_type;
-
-            Log.Debug("ObjectMgr", "loaded creature proto difficulty for creature %u", creature_entry);
-
-            m_creatureProtoDifficulty.insert(CreatureProtoDifficultyMap::value_type(proto_identifier, creature_proto_difficulty));
+            m_creatureDifficulty.insert(CreatureDifficultyMap::value_type(entry, creature_difficulty));
 
             ++count;
 
         } while (result->NextRow());
         delete result;
 
-        Log.Success("ObjectMgr", "Loaded  %u creature proto difficulties", count);
+        Log.Success("ObjectMgr", "Loaded  %u creature difficulties", count);
     }
     else
     {
-        Log.Error("ObjectMgr", "Failed to load from creature_proto_difficulty.");
+        Log.Error("ObjectMgr", "Failed to load from creature_difficulty.");
     }
 }
 
-CreatureProtoDifficulty* ObjectMgr::GetCreatureProtoDifficulty(uint32 creature_entry, uint32 difficulty_type)
+uint32 ObjectMgr::GetCreatureDifficulty(uint32 creature_entry, uint8 difficulty_type)
 {
-    for (auto itr = m_creatureProtoDifficulty.begin(); itr != m_creatureProtoDifficulty.end(); ++itr)
+    for (auto itr = m_creatureDifficulty.begin(); itr != m_creatureDifficulty.end(); ++itr)
     {
-        if (itr->first.first == creature_entry && itr->first.second == difficulty_type)
-            return itr->second;
+        switch (difficulty_type)
+        {
+            case 1:
+            {
+                if (itr->first == creature_entry && itr->second->difficulty_entry_1 != 0)
+                    return itr->second->difficulty_entry_1;
+            }
+            break;
+            case 2:
+            {
+                if (itr->first == creature_entry && itr->second->difficulty_entry_2 != 0)
+                    return itr->second->difficulty_entry_2;
+            }
+            break;
+            case 3:
+            {
+                if (itr->first == creature_entry && itr->second->difficulty_entry_3 != 0)
+                    return itr->second->difficulty_entry_3;
+            }
+            break;
+            default:
+                return 0;
+        }
     }
-
-    return nullptr;
 }
