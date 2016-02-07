@@ -788,21 +788,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill)
     // Extra credit (yay we wont have to script this anymore) - Shauren
     for (uint8 i = 0; i < 2; ++i)
     {
-        uint32 extracredit = 0;
-
-        if (victim->GetAIInterface()->GetDifficultyType() != 0)
-        {
-            uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(entry, victim->GetAIInterface()->GetDifficultyType());
-            auto creature_info_difficulty = CreatureNameStorage.LookupEntry(creature_difficulty_entry);
-            if (creature_info_difficulty != nullptr)
-            {
-                extracredit = creature_info_difficulty->killcredit[i];
-            }
-        }
-        else
-        {
-            extracredit = victim->GetCreatureInfo()->killcredit[i];
-        }
+        uint32 extracredit = victim->GetCreatureInfo()->killcredit[i];
 
         if (extracredit != 0)
         {

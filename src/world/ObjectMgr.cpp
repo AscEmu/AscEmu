@@ -4178,4 +4178,5 @@ uint32 ObjectMgr::GetCreatureDifficulty(uint32 creature_entry, uint8 difficulty_
                 return 0;
         }
     }
+    return 0;
 }
