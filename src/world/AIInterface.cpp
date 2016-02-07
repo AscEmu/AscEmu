@@ -4782,15 +4782,11 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->SetMaxRangedDamage(proto_difficulty->RangedMaxDamage);
 
 
+            m_Unit->SetFaction(proto_difficulty->Faction);
 
-            if (proto_difficulty->Faction != 0)
+            if (!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->HostileMask == 0 && m_Unit->m_faction->FriendlyMask == 0))
             {
-                m_Unit->SetFaction(proto_difficulty->Faction);
-
-                if (!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->HostileMask == 0 && m_Unit->m_faction->FriendlyMask == 0))
-                {
-                    m_Unit->GetAIInterface()->m_canCallForHelp = true;
-                }
+                m_Unit->GetAIInterface()->m_canCallForHelp = true;
             }
 
             if (proto_difficulty->CanRanged == 1)
@@ -4798,10 +4794,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             else
                 m_Unit->m_aiInterface->m_canRangedAttack = false;
 
-            if (proto_difficulty->BoundingRadius != 0)
-            {
-                m_Unit->SetBoundingRadius(proto_difficulty->BoundingRadius);
-            }
+            m_Unit->SetBoundingRadius(proto_difficulty->BoundingRadius);
 
             m_Unit->SetCombatReach(proto_difficulty->CombatReach);
 
