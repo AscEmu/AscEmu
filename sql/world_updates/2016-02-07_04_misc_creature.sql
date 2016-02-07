@@ -442,4 +442,4 @@ REPLACE INTO `creature_difficulty` VALUES (37025, 14648, 14649, 14650);
 --
 -- Update world db version
 --
-UPDATE `world_db_version` SET `LastUpdate` = '2016-01-07_04_misc_creature' WHERE `LastUpdate` = '2016-01-07_04_misc_creature';
+UPDATE `world_db_version` SET `LastUpdate` = '2016-01-07_04_misc_creature' WHERE `LastUpdate` = '2016-01-07_03_misc_creature';
