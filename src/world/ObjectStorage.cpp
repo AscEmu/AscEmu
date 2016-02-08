@@ -23,7 +23,6 @@
 
  // Table formats converted to strings
 const char* gItemPrototypeFormat = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuiuuuuuuuuuuuuuuuuuu";
-const char* gItemNameFormat = "usu";
 const char* gCreatureNameFormat = "usssuuuuuuuuuuuffcuuuuuuu";
 const char* gGameObjectNameFormat = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
 const char* gCreatureProtoFormat = "uuuuuuufuuuffuuffuuuuuuuuffsbuufffuuuuuuuuuuubuuuub";
@@ -52,7 +51,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 // SQLStorage symbols
 SERVER_DECL SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >                    ItemPrototypeStorage;
-SERVER_DECL SQLStorage<ItemName, ArrayStorageContainer<ItemName> >                              ItemNameStorage;
 SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                    CreatureNameStorage;
 SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                GameObjectNameStorage;
 SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                  CreatureProtoStorage;
@@ -574,7 +572,6 @@ void ObjectMgr::LoadExtraGameObjectStuff()
 void Storage_FillTaskList(TaskList & tl)
 {
     make_task(ItemPrototypeStorage, ItemPrototype, ArrayStorageContainer, "items", gItemPrototypeFormat);
-    make_task(ItemNameStorage, ItemName, ArrayStorageContainer, "itemnames", gItemNameFormat);
     make_task(CreatureNameStorage, CreatureInfo, HashMapStorageContainer, "creature_names", gCreatureNameFormat);
     make_task(GameObjectNameStorage, GameObjectInfo, HashMapStorageContainer, "gameobject_names", gGameObjectNameFormat);
     make_task(CreatureProtoStorage, CreatureProto, HashMapStorageContainer, "creature_proto", gCreatureProtoFormat);
@@ -623,7 +620,6 @@ void Storage_Cleanup()
         itr->Destruct();
     }
     ItemPrototypeStorage.Cleanup();
-    ItemNameStorage.Cleanup();
     CreatureNameStorage.Cleanup();
     GameObjectNameStorage.Cleanup();
     CreatureProtoStorage.Cleanup();
