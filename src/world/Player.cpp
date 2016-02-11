@@ -2357,23 +2357,23 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     m_playedtime[2] += playedt;
 
     // active cheats
-    uint32 active_cheats = 0;
+    uint32 active_cheats = PLAYER_CHEAT_NONE;
     if (CooldownCheat)
-        active_cheats |= 0x01;
+        active_cheats |= PLAYER_CHEAT_COOLDOWN;
     if (CastTimeCheat)
-        active_cheats |= 0x02;
+        active_cheats |= PLAYER_CHEAT_CAST_TIME;
     if (GodModeCheat)
-        active_cheats |= 0x04;
+        active_cheats |= PLAYER_CHEAT_GOD_MODE;
     if (PowerCheat)
-        active_cheats |= 0x08;
+        active_cheats |= PLAYER_CHEAT_POWER;
     if (FlyCheat)
-        active_cheats |= 0x10;
+        active_cheats |= PLAYER_CHEAT_FLY;
     if (AuraStackCheat)
-        active_cheats |= 0x20;
+        active_cheats |= PLAYER_CHEAT_AURA_STACK;
     if (ItemStackCheat)
-        active_cheats |= 0x40;
+        active_cheats |= PLAYER_CHEAT_ITEM_STACK;
     if (TriggerpassCheat)
-        active_cheats |= 0x80;
+        active_cheats |= PLAYER_CHEAT_TRIGGERPASS;
 
     std::stringstream ss;
 
