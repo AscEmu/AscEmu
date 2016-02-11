@@ -2594,10 +2594,12 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     DailyMutex.Release();
     ss << "', ";
     ss << m_honorRolloverTime << ", ";
-    ss << m_killsToday << ", " << m_killsYesterday << ", " << m_killsLifetime << ", ";
-    ss << m_honorToday << ", " << m_honorYesterday << ", ";
+    ss << m_killsToday << ", ";
+    ss << m_killsYesterday << ", ";
+    ss << m_killsLifetime << ", ";
+    ss << m_honorToday << ", ";
+    ss << m_honorYesterday << ", ";
     ss << m_honorPoints << ", ";
-    ss << uint32(iInstanceType) << ", ";
 
     ss << (m_uint32Values[PLAYER_BYTES_3] & 0xFFFE) << ", ";
 
@@ -2643,7 +2645,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << "', ";
 
     ss << uint32(this->HasWonRbgToday());
-
+    ss << ", ";
+    ss << uint32(iInstanceType) << ", ";
+    ss << uint32(m_RaidDifficulty);
     ss << ")";
 
     if (bNewCharacter)
@@ -2820,7 +2824,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    const uint32 fieldcount = 92;
+    const uint32 fieldcount = 93;
 
     if (result->GetFieldCount() != fieldcount)
     {
@@ -3309,7 +3313,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
     RolloverHonor();
-    iInstanceType = get_next_field.GetUInt32();
 
     // Load drunk value and calculate sobering. after 15 minutes logged out, the player will be sober again
     uint32 timediff = (uint32)UNIXTIME - m_timeLogoff;
@@ -3393,6 +3396,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_bgIsRbgWon = true;
     else
         m_bgIsRbgWon = false;
+
+    iInstanceType = get_next_field.GetUInt8();
+    m_RaidDifficulty = get_next_field.GetUInt8();
 
     HonorHandler::RecalculateHonorFields(this);
 

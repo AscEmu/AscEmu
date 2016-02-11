@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 02/09/2016
+Last update: 02/11/2016
 *********************************************************************
 */
 
@@ -221,7 +221,6 @@ CREATE TABLE IF NOT EXISTS `characters` (
   `honorToday` int(10) NOT NULL DEFAULT '0',
   `honorYesterday` int(10) NOT NULL DEFAULT '0',
   `honorPoints` int(10) NOT NULL DEFAULT '0',
-  `difficulty` int(4) NOT NULL DEFAULT '0',
   `drunkValue` int(30) NOT NULL DEFAULT '0',
   `glyphs1` longtext NOT NULL,
   `talents1` longtext NOT NULL,
@@ -235,6 +234,8 @@ CREATE TABLE IF NOT EXISTS `characters` (
   `data` longtext,
   `resettalents` int(10) unsigned NOT NULL DEFAULT '0',
   `rbg_daily` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Boolean already done a daily rbg?',
+  `dungeon_difficulty` SMALLINT(1) unsigned NOT NULL DEFAULT '0',
+  `raid_difficulty` SMALLINT(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`guid`),
   KEY `acct` (`acct`),
   KEY `name` (`name`),
