@@ -1616,6 +1616,9 @@ void ObjectMgr::LoadSpellProcs()
                         sp->EffectTriggerSpell[1] = f[8].GetUInt32();
                     if (f[9].GetInt32() >= 0)
                         sp->EffectTriggerSpell[2] = f[9].GetUInt32();
+
+                    if (sp->EffectTriggerSpell[0] > 0)
+                        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
                 }
             }
         }
