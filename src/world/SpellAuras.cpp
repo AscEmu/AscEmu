@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -1933,7 +1933,7 @@ void Aura::SpellAuraDummy(bool apply)
     if (sScriptMgr.CallScriptedDummyAura(GetSpellId(), mod->i, this, apply))
         return;
 
-    LOG_ERROR("Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
+    Log.Debug("Aura::SpellAuraDummy", "Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
 }
 
 void Aura::SpellAuraModConfuse(bool apply)
@@ -3066,6 +3066,25 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
 
 void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 {
+    switch (m_spellProto->Id)
+    {
+        case 23493:
+        case 24379:
+        {
+            Unit* caster = m_target;
+            if (caster != nullptr)
+            {
+                sEventMgr.AddEvent(this, &Aura::EventPeriodicHealPct, 10.0f , EVENT_AURA_PERIODIC_HEALPERC, 1000, 10, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+                if (caster->GetMaxPower(POWER_TYPE_MANA))
+                {
+                    sEventMgr.AddEvent(this, &Aura::EventPeriodicManaPct, 10.0f, EVENT_AURA_PERIOCIC_MANA, 1000, 10, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                }
+            }
+            return;
+        }
+    }
+
     if (m_spellProto->EffectTriggerSpell[mod->i] == 0)
         return;
 
@@ -6118,9 +6137,7 @@ void Aura::SpellAuraAddPctMod(bool apply)
             break;
 
         default://Unknown modifier type
-            LOG_ERROR(
-                "Unknown spell modifier type %u in spell %u.<<--report this line to the developer",
-                mod->m_miscValue, GetSpellId());
+            LOG_ERROR("Unknown spell modifier type %u in spell %u.<<--report this line to the developer", mod->m_miscValue, GetSpellId());
             break;
     }
 }
@@ -7303,9 +7320,7 @@ void Aura::SpellAuraIncreaseHealingByAttribute(bool apply)
         stat = mod->m_miscValue;
     else
     {
-        LOG_ERROR(
-            "Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type %u in spell %u.\n",
-            mod->m_miscValue, GetSpellId());
+        LOG_ERROR("Aura::SpellAuraIncreaseHealingByAttribute::Unknown spell attribute type %u in spell %u.\n", mod->m_miscValue, GetSpellId());
         return;
     }
 
@@ -7470,10 +7485,8 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
             SendModifierLog(&m_target->SM_FRezist_dispell, val, AffectedGroups, static_cast<uint8>(mod->m_miscValue));
             break;
 
-        default://Unknown modifier type
-            LOG_ERROR(
-                "Unknown spell modifier type %u in spell %u.<<--report this line to the developer\n",
-                mod->m_miscValue, GetSpellId());
+        default: //Unknown modifier type
+            LOG_ERROR( "Unknown spell modifier type %u in spell %u.<<--report this line to the developer\n", mod->m_miscValue, GetSpellId());
             break;
     }
 

@@ -1254,7 +1254,7 @@ Unit* AIInterface::FindTarget()
                 continue;
             if (tmpPlr->m_invisible)
                 continue;
-            if (!tmpPlr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_UNKNOWN2))    //PvP Guard Attackable.
+            if (!tmpPlr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP))    //PvP Guard Attackable.
                 continue;
             if (!(tmpPlr->m_phase & m_Unit->m_phase))   //Not in the same phase, skip this target
                 continue;
@@ -3670,13 +3670,22 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
     m_currentSplineFinalOrientation = o;
 
     //Add new points
-#ifdef TEST_PATHFINDING
-    if (!Flying())
+    if (sWorld.Pathfinding)
     {
-        if (!CreatePath(x, y, z))
+        //Log.Debug("AIInterface::Move", "Pathfinding is enabled");
+
+        if (!Flying())
         {
-            StopMovement(0); //old spline is probly still active on client, need to keep in sync
-            return false;
+            if (!CreatePath(x, y, z))
+            {
+                StopMovement(0); //old spline is probly still active on client, need to keep in sync
+                return false;
+            }
+        }
+        else
+        {
+            AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+            AddSpline(x, y, z);
         }
     }
     else
@@ -3684,10 +3693,6 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
         AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
         AddSpline(x, y, z);
     }
-#else
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-#endif
 
 
     SendMoveToPacket();
@@ -3757,16 +3762,19 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     if (nav == NULL)
         return false;
 
-    float start[3] = { m_Unit->GetPositionY(), m_Unit->GetPositionZ(), m_Unit->GetPositionX() };
-    float end[3] = { y, z, x };
-    float extents[3] = { 3, 5, 3 };
+    float start[VERTEX_SIZE] = { m_Unit->GetPositionY(), m_Unit->GetPositionZ(), m_Unit->GetPositionX() };
+    float end[VERTEX_SIZE] = { y, z, x };
+    float extents[VERTEX_SIZE] = { 3.0f, 5.0f, 3.0f };
+    float closest_point[VERTEX_SIZE] = { 0.0f, 0.0f, 0.0f };
 
     dtQueryFilter filter;
     filter.setIncludeFlags(NAV_GROUND | NAV_WATER | NAV_SLIME | NAV_MAGMA);
 
     dtPolyRef startref, endref;
-    nav->query->findNearestPoly(start, extents, &filter, &startref, NULL);
-    nav->query->findNearestPoly(end, extents, &filter, &endref, NULL);
+    if (dtStatusFailed(nav->query->findNearestPoly(start, extents, &filter, &startref, closest_point)))
+        return false;
+    if (dtStatusFailed(nav->query->findNearestPoly(end, extents, &filter, &endref, closest_point)))
+        return false;
 
 
     if (startref == 0 || endref == 0)
@@ -3892,7 +3900,7 @@ dtStatus AIInterface::findSmoothPath(const float* startPos, const float* endPos,
 
             // Handle the connection.
             float startPos[VERTEX_SIZE], endPos[VERTEX_SIZE];
-            if (dtStatusFailed(mesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos)))
+            if (!dtStatusFailed(mesh->getOffMeshConnectionPolyEndPoints(prevRef, polyRef, startPos, endPos)))
             {
                 if (nsmoothPath < maxSmoothPathSize)
                 {
@@ -4654,13 +4662,22 @@ bool AIInterface::MoveCharge(float x, float y, float z)
 
     m_runSpeed *= 3.5f;
 
-#ifdef TEST_PATHFINDING
-    if (!Flying())
+    if (sWorld.Pathfinding)
     {
-        if (!CreatePath(x, y, z))
+        //Log.Debug("AIInterface::MoveCharge", "Pathfinding is enabled");
+
+        if (!Flying())
         {
-            StopMovement(0); //old spline is probly still active on client, need to keep in sync
-            return false;
+            if (!CreatePath(x, y, z))
+            {
+                StopMovement(0); //old spline is probly still active on client, need to keep in sync
+                return false;
+            }
+        }
+        else
+        {
+            AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
+            AddSpline(x, y, z);
         }
     }
     else
@@ -4668,10 +4685,6 @@ bool AIInterface::MoveCharge(float x, float y, float z)
         AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
         AddSpline(x, y, z);
     }
-#else
-    AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-    AddSpline(x, y, z);
-#endif
 
     UpdateSpeeds(); //reset run speed
 
@@ -4723,7 +4736,8 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 {
     if (GetDifficultyType() != 0)
     {
-        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(entry, GetDifficultyType());
+        uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(entry, GetDifficultyType());
+        auto proto_difficulty = CreatureProtoStorage.LookupEntry(creature_difficulty_entry);
         Creature* creature = static_cast<Creature*>(m_Unit);
         if (proto_difficulty != nullptr)
         {
@@ -4737,72 +4751,42 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
                 m_Unit->GetAIInterface()->SetAIType(AITYPE_PASSIVE);
             }
 
-            if (proto_difficulty->walk_speed != 0)
-                m_walkSpeed = m_Unit->m_base_walkSpeed = proto_difficulty->walk_speed;
+            m_walkSpeed = m_Unit->m_base_walkSpeed = proto_difficulty->walk_speed;
+            m_runSpeed = m_Unit->m_base_runSpeed = proto_difficulty->run_speed;
+            m_flySpeed = proto_difficulty->fly_speed;
+            
+            m_Unit->SetScale(proto_difficulty->Scale);
 
-            if (proto_difficulty->run_speed != 0)
-                m_runSpeed = m_Unit->m_base_runSpeed = proto_difficulty->run_speed;
+            uint32 health = proto_difficulty->MinHealth + RandomUInt(proto_difficulty->MaxHealth - proto_difficulty->MinHealth);
 
-            if (proto_difficulty->fly_speed != 0)
-                m_flySpeed = proto_difficulty->fly_speed;
+            m_Unit->SetHealth(health);
+            m_Unit->SetMaxHealth(health);
+            m_Unit->SetBaseHealth(health);
 
-            if (proto_difficulty->Scale != 0)
-                m_Unit->SetScale(proto_difficulty->Scale);
+            m_Unit->SetMaxPower(POWER_TYPE_MANA, proto_difficulty->Mana);
+            m_Unit->SetBaseMana(proto_difficulty->Mana);
+            m_Unit->SetPower(POWER_TYPE_MANA, proto_difficulty->Mana);
 
-            if (proto_difficulty->MinHealth != 0 && proto_difficulty->MaxHealth != 0)
-            {
-                uint32 health = proto_difficulty->MinHealth + RandomUInt(proto_difficulty->MaxHealth - proto_difficulty->MinHealth);
-
-                m_Unit->SetHealth(health);
-                m_Unit->SetMaxHealth(health);
-                m_Unit->SetBaseHealth(health);
-            }
-
-            if (proto_difficulty->Mana != 0)
-            {
-                m_Unit->SetMaxPower(POWER_TYPE_MANA, proto_difficulty->Mana);
-                m_Unit->SetBaseMana(proto_difficulty->Mana);
-                m_Unit->SetPower(POWER_TYPE_MANA, proto_difficulty->Mana);
-            }
-
-            if (proto_difficulty->MinLevel != 0 && proto_difficulty->MaxLevel != 0)
-            {
-                m_Unit->setLevel(proto_difficulty->MinLevel + (RandomUInt(proto_difficulty->MaxLevel - proto_difficulty->MinLevel)));
-            }
+            m_Unit->setLevel(proto_difficulty->MinLevel + (RandomUInt(proto_difficulty->MaxLevel - proto_difficulty->MinLevel)));
 
             for (uint8 i = 0; i < 7; ++i)
                 m_Unit->SetResistance(i, proto_difficulty->Resistances[i]);
 
-            if (proto_difficulty->MinDamage != 0 && proto_difficulty->MaxDamage != 0)
-            {
-                m_Unit->SetMinDamage(proto_difficulty->MinDamage);
-                m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
-            }
+            m_Unit->SetBaseAttackTime(MELEE, proto_difficulty->AttackTime);
 
-            if (proto_difficulty->RangedMinDamage != 0 && proto_difficulty->RangedMaxDamage != 0)
-            {
-                m_Unit->SetMinRangedDamage(proto_difficulty->RangedMinDamage);
-                m_Unit->SetMaxRangedDamage(proto_difficulty->RangedMaxDamage);
-            }
+            m_Unit->SetMinDamage(proto_difficulty->MinDamage);
+            m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
 
-            if (proto_difficulty->RangedAttackTime != 0)
-            {
-                m_Unit->SetBaseAttackTime(RANGED, proto_difficulty->RangedAttackTime);
-            }
+            m_Unit->SetBaseAttackTime(RANGED, proto_difficulty->RangedAttackTime);
+            m_Unit->SetMinRangedDamage(proto_difficulty->RangedMinDamage);
+            m_Unit->SetMaxRangedDamage(proto_difficulty->RangedMaxDamage);
 
-            if (proto_difficulty->AttackTime != 0)
-            {
-                m_Unit->SetBaseAttackTime(MELEE, proto_difficulty->AttackTime);
-            }
 
-            if (proto_difficulty->Faction != 0)
-            {
-                m_Unit->SetFaction(proto_difficulty->Faction);
+            m_Unit->SetFaction(proto_difficulty->Faction);
 
-                if (!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->HostileMask == 0 && m_Unit->m_faction->FriendlyMask == 0))
-                {
-                    m_Unit->GetAIInterface()->m_canCallForHelp = true;
-                }
+            if (!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->HostileMask == 0 && m_Unit->m_faction->FriendlyMask == 0))
+            {
+                m_Unit->GetAIInterface()->m_canCallForHelp = true;
             }
 
             if (proto_difficulty->CanRanged == 1)
@@ -4810,26 +4794,11 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             else
                 m_Unit->m_aiInterface->m_canRangedAttack = false;
 
-            if (proto_difficulty->BoundingRadius != 0)
-            {
-                m_Unit->SetBoundingRadius(proto_difficulty->BoundingRadius);
-            }
+            m_Unit->SetBoundingRadius(proto_difficulty->BoundingRadius);
 
-            if (proto_difficulty->CombatReach != 0)
-            {
-                m_Unit->SetCombatReach(proto_difficulty->CombatReach);
-            }
+            m_Unit->SetCombatReach(proto_difficulty->CombatReach);
 
-            if (proto_difficulty->MinDamage != 0 && proto_difficulty->MaxDamage != 0)
-            {
-                m_Unit->SetMinDamage(proto_difficulty->MinDamage);
-                m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
-            }
-
-            if (proto_difficulty->NPCFLags != 0)
-            {
-                m_Unit->SetUInt32Value(UNIT_NPC_FLAGS, proto_difficulty->NPCFLags);
-            }
+            m_Unit->SetUInt32Value(UNIT_NPC_FLAGS, proto_difficulty->NPCFLags);
 
             // resistances
             for (uint32 j = 0; j < 7; j++)
@@ -4844,10 +4813,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->BaseRangedDamage[0] = m_Unit->GetMinRangedDamage();
             m_Unit->BaseRangedDamage[1] = m_Unit->GetMaxRangedDamage();
 
-            if (proto_difficulty->AttackType != 0)
-            {
-                creature->BaseAttackType = proto_difficulty->AttackType;
-            }
+            creature->BaseAttackType = proto_difficulty->AttackType;
 
             //guard
             if (proto_difficulty->guardtype == GUARDTYPE_CITY)
@@ -4876,7 +4842,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
                 m_Unit->setAItoUse(false);
             }
 
-            if (proto_difficulty->isRooted)
+            if (proto_difficulty->rooted)
                 m_Unit->Root();
         }
     }

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -326,26 +326,23 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
     reply << itemid;
 
     ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(itemid);
-    ItemName* MetaName = ItemNameStorage.LookupEntry(itemid);
-    if (!proto && !MetaName)
+    if (!proto)
+    {
         reply << "Unknown Item";
+    }
     else
     {
-        if (proto)
+        LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
+        if (li)
         {
-            LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
-            if (li)
-                reply << li->Name;
-            else
-                reply << proto->Name1;
-
-            reply << proto->InventoryType;
+            reply << li->Name;
         }
         else
         {
-            reply << MetaName->name;
-            reply << MetaName->slot;
+            reply << proto->Name1;
         }
+
+        reply << proto->InventoryType;
     }
 
     SendPacket(&reply);

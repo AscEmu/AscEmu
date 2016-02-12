@@ -64,7 +64,7 @@ class SERVER_DECL ThreadController
 };
 
 #else
-#ifndef HAVE_DARWIN
+#ifndef __APPLE__
 #include <semaphore.h>
 int GenerateThreadId();
 

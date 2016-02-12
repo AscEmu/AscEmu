@@ -495,7 +495,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         TimedEmoteList* GetTimedEmoteList(uint32 spawnid);
 
         // other objects
-        typedef std::tr1::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
+        typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
 
         // Set typedef's
         typedef std::unordered_map<uint32, Group*>                      GroupMap;
@@ -527,7 +527,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::multimap <uint32, uint32>                              BCEntryStorage;
         typedef std::map<uint32, TransporterSet>                            TransporterMap;
         typedef std::map<uint32, SpellTargetConstraint*>                  SpellTargetConstraintMap;
-        typedef std::map<std::pair<uint32, uint8>, CreatureProtoDifficulty*>               CreatureProtoDifficultyMap;
+        typedef std::map<uint32, CreatureDifficulty*>               CreatureDifficultyMap;
 
         // object holders
         GmTicketList GM_TicketList;
@@ -613,11 +613,11 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void UpdateGMTicket(GM_Ticket* ticket);
         void RemoveGMTicketByPlayer(uint64 playerGuid);
         void RemoveGMTicket(uint64 ticketGuid);
+        void CloseTicket(uint64 ticketGuid);
         void DeleteGMTicketPermanently(uint64 ticketGuid);
         void DeleteAllRemovedGMTickets();
         GM_Ticket* GetGMTicket(uint64 ticketGuid);
         GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
-        //std::list<GM_Ticket*>* GetGMTicketsByPlayer(uint64 playerGuid);
 
         DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
         SpellEntry* GetNextSpellRank(SpellEntry* sp, uint32 level);
@@ -843,8 +843,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         void LoadItemsetLink();
 
-        void LoadCreatureProtoDifficulty();
-        CreatureProtoDifficulty* GetCreatureProtoDifficulty(uint32 creature_entry, uint32 difficulty_type);
+        void LoadCreatureDifficulty();
+        uint32 GetCreatureDifficulty(uint32 creature_entry, uint8 difficulty_type);
 
     private:
 
@@ -923,7 +923,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         PetDefaultSpellMap mDefaultPetSpells;
         PetSpellCooldownMap mPetSpellCooldowns;
         SpellTargetConstraintMap m_spelltargetconstraints;
-        CreatureProtoDifficultyMap m_creatureProtoDifficulty;
+        CreatureDifficultyMap m_creatureDifficulty;
 #ifdef ENABLE_ACHIEVEMENTS
         AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 #endif

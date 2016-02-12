@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -23,138 +23,6 @@
 #include "Quest.h"
 #include "StdAfx.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Returns the HP coefficient that is suited for the map, mode, and creature
-/// \param  MapInfo *mi        -        pointer to the mapinfo structure
-/// \param  uint32  mode    -        numeric representation of the version of the map (normal, heroic, 10-25 men, etc)
-/// \param  bool    boss    -        true if the creature is a boss, false if not
-/// \returns the hp coefficient in a float
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float CalcHPCoefficient(MapInfo* mi, uint32 mode, bool boss)
-{
-    float coeff = 1.0f;
-
-    if (mi == NULL)
-        return 1.0f;
-
-    /// \brief This calculation is purely speculation as we have no way of finding out how Blizzard generates these values
-    /// These cases are based on simple observation of trash/boss hp values for different modes
-    /// If you know they are wrong AND you know a better calculation formula then DO change it.
-
-    // raid
-    if (mi->type == INSTANCE_RAID)
-    {
-        bool hasheroic = false;
-
-        // check if we have heroic mode avaiable
-        if (mi->HasFlag(WMI_INSTANCE_HAS_HEROIC_10MEN) && mi->HasFlag(WMI_INSTANCE_HAS_HEROIC_25MEN))
-            hasheroic = true;
-
-        // boss hp coeff calculations
-        if (boss == true)
-        {
-
-            switch (mode)
-            {
-                case MODE_NORMAL_10MEN:
-                    coeff = 1.0f;
-                    break;
-
-                case MODE_HEROIC_10MEN:
-                    coeff = 1.25f;
-                    break;
-
-                case MODE_NORMAL_25MEN:
-                    if (hasheroic)
-                        coeff = 5.0f;
-                    else
-                        coeff = 3.0f;
-                    break;
-
-                case MODE_HEROIC_25MEN:
-                    coeff = 5.0f * 1.25f;
-            }
-
-            // trash hp coeff calculation
-        }
-        else
-        {
-            switch (mode)
-            {
-                case MODE_NORMAL_10MEN:
-                    coeff = 1.0f;
-                    break;
-
-                case MODE_HEROIC_10MEN:
-                    coeff = 1.5f;
-                    break;
-
-                case MODE_NORMAL_25MEN:
-                    coeff = 2.0f;
-                    break;
-
-                case MODE_HEROIC_25MEN:
-                    coeff = 2.5f;
-                    break;
-            }
-        }
-    }
-
-    // heroic dungeon
-    if (mi->type == INSTANCE_MULTIMODE)
-    {
-
-        if (mode > 0)
-            coeff = 1.5f;
-        else
-            coeff = 1.0f;
-    }
-
-    return coeff;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Calculates the creature damage coefficient that is suitable for the map type and difficulty
-/// \param  MapInfo *mi - pointer to the MapInfo structure
-/// \param  uint32 mode - numeric representation of the version of the map (normal, heroic, 10-25 men, etc)
-/// \returns the suitable damage coefficient in a float
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float CalcDMGCoefficient(MapInfo* mi, uint32 mode)
-{
-
-    /// \brief This calculation is purely speculation as we have no way of finding out how Blizzard generates these values
-    /// These cases are based on simple observation of trash/boss damage values for different modes
-    /// If you know they are wrong AND you know a better calculation formula then DO change it.
-
-    if (mi == NULL)
-        return 1.0f;
-
-    switch (mode)
-    {
-        case MODE_NORMAL_10MEN:
-            return 1.0f;
-            break;
-
-        case MODE_NORMAL_25MEN:
-            if (mi->type == INSTANCE_MULTIMODE)
-                return 1.5f;
-            else
-                return 2.0;
-
-            break;
-
-        case MODE_HEROIC_10MEN:
-            return 1.5f;
-            break;
-
-        case MODE_HEROIC_25MEN:
-            return 2.5f;
-            break;
-    }
-
-    return 1.0f;
-}
 
 Creature::Creature(uint64 guid)
 {
@@ -430,7 +298,8 @@ void Creature::generateLoot()
 
     if (GetAIInterface()->GetDifficultyType() != 0)
     {
-        CreatureProtoDifficulty* proto_difficulty = objmgr.GetCreatureProtoDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        auto proto_difficulty = CreatureProtoStorage.LookupEntry(creature_difficulty_entry);
         if (proto_difficulty != nullptr)
         {
             if (proto_difficulty->money != proto->money)
@@ -1435,16 +1304,6 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 
     uint32 health = proto->MinHealth + RandomUInt(proto->MaxHealth - proto->MinHealth);
 
-    // difficutly coefficient
-    float diff_coeff = 1.0f;
-
-    if (creature_info->Rank == ELITE_WORLDBOSS)
-        diff_coeff = CalcHPCoefficient(info, mode, true);
-    else if (creature_info->Type != UNIT_TYPE_CRITTER)
-        diff_coeff = CalcHPCoefficient(info, mode, false);
-
-    health = static_cast<uint32>(health * diff_coeff);
-
     SetHealth(health);
     SetMaxHealth(health);
     SetBaseHealth(health);
@@ -1470,10 +1329,8 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 
     SetBaseAttackTime(MELEE, proto->AttackTime);
 
-    float dmg_coeff = CalcDMGCoefficient(info, mode);
-
-    SetMinDamage((mode ? proto->MinDamage * dmg_coeff : proto->MinDamage));
-    SetMaxDamage((mode ? proto->MaxDamage * dmg_coeff : proto->MaxDamage));
+    SetMinDamage((proto->MinDamage));
+    SetMaxDamage((proto->MaxDamage));
 
     SetBaseAttackTime(RANGED, proto->RangedAttackTime);
     SetMinRangedDamage(proto->RangedMinDamage);
@@ -1498,7 +1355,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
 
     // not a neutral creature
-    if (!(m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
+    if (!(m_factionDBC != nullptr && m_factionDBC->RepListId == -1 && m_faction->HostileMask == 0 && m_faction->FriendlyMask == 0))
     {
         GetAIInterface()->m_canCallForHelp = true;
     }
@@ -2620,6 +2477,17 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     pAttacker->addStateFlag(UF_TARGET_DIED);
 
     GetAIInterface()->OnDeath(pAttacker);
+
+    // Add Kills if Player is in Vehicle
+    if (pAttacker->IsVehicle())
+    {
+        Unit* vehicle_owner = GetMapMgr()->GetUnit(pAttacker->GetCharmedByGUID());
+
+        if (vehicle_owner != nullptr && vehicle_owner->IsPlayer())
+        {
+            sQuestMgr.OnPlayerKill(static_cast<Player*>(vehicle_owner), this, true);
+        }
+     }
 
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DEAD);
 

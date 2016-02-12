@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -69,6 +69,7 @@ World::World()
     NameinWAnnounce = false;
     announce_output = true;
     map_unload_time = 0;
+    map_cell_number = 0;
     antiMasterLootNinja = false;
 
     SocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
@@ -509,7 +510,7 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
     MAKE_TASK(ObjectMgr, LoadItemsetLink);
-    MAKE_TASK(ObjectMgr, LoadCreatureProtoDifficulty);
+    MAKE_TASK(ObjectMgr, LoadCreatureDifficulty);
 
 
 #ifdef ENABLE_ACHIEVEMENTS
@@ -1329,7 +1330,11 @@ void World::Rehash(bool load)
     channelmgr.seperatechannels = Config.MainConfig.GetBoolDefault("Server", "SeperateChatChannels", false);
     MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
     vMapPath = Config.MainConfig.GetStringDefault("Terrain", "vMapPath", "vmaps");
+    mMapPath = Config.MainConfig.GetStringDefault("Terrain", "mMapPath", "mmaps");
     UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
+    Collision = Config.MainConfig.GetBoolDefault("Terrain", "Collision", false);
+    Pathfinding = Config.MainConfig.GetBoolDefault("Terrain", "Pathfinding", false);
+
     BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
     SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
     compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
@@ -1372,7 +1377,7 @@ void World::Rehash(bool load)
     SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
     sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
     gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
-    Collision = Config.MainConfig.GetBoolDefault("Server", "Collision", 0);
+
     DisableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
     SocketRecvBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "RecvBufSize", WORLDSOCKET_RECVBUF_SIZE);
     SocketSendBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "SendBufSize", WORLDSOCKET_SENDBUF_SIZE);
@@ -1467,10 +1472,12 @@ void World::Rehash(bool load)
     interfaction_friend = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionFriends", false);
     interfaction_misc = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionMisc", false);
     crossover_chars = Config.OptionalConfig.GetBoolDefault("Interfaction", "CrossOverCharacters", false);
+
+    gamemaster_startonGMIsland = Config.OptionalConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", false);
+    gamemaster_disableachievements = Config.OptionalConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
     gamemaster_listOnlyActiveGMs = Config.OptionalConfig.GetBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
     gamemaster_hidePermissions = Config.OptionalConfig.GetBoolDefault("GameMaster", "HidePermissions", false);
-    gamemaster_startonGMIsland = Config.MainConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", true);
-    gamemaster_disableachievements = Config.MainConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
+    gamemaster_announceKick = Config.OptionalConfig.GetBoolDefault("GameMaster", "AnnounceKick", true);
 
     m_levelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", PLAYER_LEVEL_CAP);
     m_genLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", PLAYER_LEVEL_CAP);
@@ -1548,6 +1555,13 @@ void World::Rehash(bool load)
     {
         LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
         map_unload_time = MAP_CELL_DEFAULT_UNLOAD_TIME;
+    }
+
+    map_cell_number = Config.MainConfig.GetIntDefault("Server", "MapCellNumber", 1);
+    if (map_cell_number == 0)
+    {
+        LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
+        map_cell_number = 1;
     }
 
     antihack_teleport = Config.MainConfig.GetBoolDefault("AntiHack", "Teleport", true);

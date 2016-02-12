@@ -3,8 +3,6 @@
 # set up our project name
 project(g3dlite)
 
-set(prefix ${DEPENDENCY_ROOT}/${PROJECT_NAME})
-
 set(sources
   AABox.cpp
   Any.cpp
@@ -49,15 +47,17 @@ set(sources
   Vector2.cpp
   Vector3.cpp
   Vector4.cpp
-   )
-
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
+)
 
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/include
-   ${DEPENDENCY_ROOT}/zlib
-   )
+   ${ZLIB_INCLUDE_DIRS}
+)
 
-add_library(${PROJECT_NAME} STATIC ${SRCS})
+add_library(${PROJECT_NAME} STATIC ${sources})
+
+target_link_libraries(${PROJECT_NAME} 
+  ${CMAKE_THREAD_LIBS_INIT}
+)
+
+unset(sources)

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -22,18 +22,51 @@
 #define _STRAND_OF_THE_ANCIENT_H
 
 #define BUFF_COUNT                      3
-
+#define SOTA_NPCS                       3
+#define SOTA_NUM_BOMBS                  66
+#define SOTA_NORTH_BOMBS                22
+#define SOTA_EAST_BOMBS_INDEX           22
+#define SOTA_WEST_BOMBS_INDEX           31
+#define SOTA_BOAT_ALLIANCE_W            193182
+#define SOTA_BOAT_ALLIANCE_E            193185
+#define SOTA_BOAT_HORDER_W              193184
+#define SOTA_BOAT_HORDER_E              193183
+#define SOTA_DEMOLISHER                 28781
+#define SOTA_ANTI_PERSONNAL_CANNON      27894
+#define SOTA_RIGGER_SPARKLIGHT          29260
+#define SOTA_GORGRIL_RIGSPARK           29262
+#define SOTA_BOMBS                      190753
+#define SOTA_KANRETHAD                  29
 #define SOTA_NUM_CANONS                 10
-#define SOTA_NUM_DEMOLISHERS            6
-#define SOTA_NUM_DOCK_DEMOLISHERS       4
-#define SOTA_EAST_WS_DEMOLISHER_INDEX   5
+#define SOTA_NUM_DEMOLISHERS            8
+#define SOTA_NORTH_DEMOLISHERS          4
+#define SOTA_EAST_WS_DEMOLISHER_INDEX   6
 #define SOTA_WEST_WS_DEMOLISHER_INDEX   4
 
+#define SOTA_SPELL_TELEPORT_DEFENDER             52364
+#define SOTA_SPELL_TELEPORT_ATTACKERS            60178
+#define SOTA_SPELL_END_OF_ROUND                  52459
+#define SOTA_SPELL_REMOVE_SEAFORIUM              59077
+#define SOTA_SPELL_ALLIANCE_CONTROL_PHASE_SHIFT  60027
+#define SOTA_SPELL_HORDE_CONTROL_PHASE_SHIFT     60028
+
+#define SOTA_SOUND_DEFEAT_HORDE                   15905
+#define SOTA_SOUND_VICTORY_HORDE                  15906
+#define SOTA_SOUND_VICTORY_ALLIANCE               15907
+#define SOTA_SOUND_DEFEAT_ALLIANCE                15908
+#define SOTA_SOUND_WALL_DESTROYED_ALLIANCE        15909
+#define SOTA_SOUND_WALL_DESTROYED_HORDE           15910
+#define SOTA_SOUND_WALL_ATTACKED_HORDE            15911
+#define SOTA_SOUND_WALL_ATTACKED_ALLIANCE         15912
+
+#define SOTA_BOAT_WEST      0
+#define SOTA_BOAT_EAST      1
 #define TEAM_DEFENDER       0
 #define TEAM_ATTACKER       1
 #define GUN_LEFT            0
 #define GUN_RIGHT           1
 
+#define GO_RELIC            192834
 #define ROUND_LENGTH        600 //in secs
 
 enum SOTAControlPoints
@@ -135,11 +168,13 @@ class StrandOfTheAncient : public CBattleground
         GameObject* m_buffs[BUFF_COUNT];
         GameObject* m_relic;
         GameObject* m_endgate;
+        GameObject* m_bomb[SOTA_BOMBS];
         GameObject* m_gates[GATE_COUNT];
         GameObject* m_gateSigils[GATE_COUNT];
         GameObject* m_gateTransporters[GATE_COUNT];
         //PassengerMap boat1Crew;
         //PassengerMap boat2Crew;
+        Creature* npc[SOTA_NPCS];
         Creature* canon[SOTA_NUM_CANONS];
         Creature* demolisher[SOTA_NUM_DEMOLISHERS];
 

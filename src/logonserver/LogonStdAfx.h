@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -42,14 +42,15 @@
 #include "../shared/Auth/WowCrypt.h"
 
 #include "../world/Opcodes.h"
+#include "LogonConf.h"
 #include "AccountCache.h"
 #include "PeriodicFunctionCall_Thread.h"
-#include "../logonserver/AutoPatcher.h"
-#include "../logonserver/AuthSocket.h"
-#include "../logonserver/AuthStructs.h"
-#include "../logonserver/LogonCommServer.h"
-#include "../logonserver/LogonConsole.h"
-#include "../shared/WorldPacket.h"
+#include "AutoPatcher.h"
+#include "AuthSocket.h"
+#include "AuthStructs.h"
+#include "LogonCommServer.h"
+#include "LogonConsole.h"
+#include "WorldPacket.h"
 #include "Master.hpp"
 
 // database decl

@@ -1,6 +1,6 @@
 /*
 * AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+* Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,6 @@
 */
 
 //// Moved file System.cpp -> Map.cpp
-
-#define _CRT_SECURE_NO_DEPRECATE
-
 #include "Map.h"
 #include <stdio.h>
 #include <deque>
@@ -110,11 +107,19 @@ static const char* const langs[] = { "enGB", "enUS", "deDE", "esES", "frFR", "ko
 
 void CreateDir(const std::string& Path)
 {
+    #ifdef _WIN32
     if (_chdir(Path.c_str()) == 0)
     {
         _chdir("../");
         return;
     }
+    #else
+    if (chdir(Path.c_str()) == 0)
+    {
+        chdir("../");
+        return;
+    }
+    #endif
 
     int ret;
 #ifdef _WIN32

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -2383,23 +2383,23 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     m_playedtime[2] += playedt;
 
     // active cheats
-    uint32 active_cheats = 0;
+    uint32 active_cheats = PLAYER_CHEAT_NONE;
     if (CooldownCheat)
-        active_cheats |= 0x01;
+        active_cheats |= PLAYER_CHEAT_COOLDOWN;
     if (CastTimeCheat)
-        active_cheats |= 0x02;
+        active_cheats |= PLAYER_CHEAT_CAST_TIME;
     if (GodModeCheat)
-        active_cheats |= 0x04;
+        active_cheats |= PLAYER_CHEAT_GOD_MODE;
     if (PowerCheat)
-        active_cheats |= 0x08;
+        active_cheats |= PLAYER_CHEAT_POWER;
     if (FlyCheat)
-        active_cheats |= 0x10;
+        active_cheats |= PLAYER_CHEAT_FLY;
     if (AuraStackCheat)
-        active_cheats |= 0x20;
+        active_cheats |= PLAYER_CHEAT_AURA_STACK;
     if (ItemStackCheat)
-        active_cheats |= 0x40;
+        active_cheats |= PLAYER_CHEAT_ITEM_STACK;
     if (TriggerpassCheat)
-        active_cheats |= 0x80;
+        active_cheats |= PLAYER_CHEAT_TRIGGERPASS;
 
     std::stringstream ss;
 
@@ -2627,10 +2627,12 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     DailyMutex.Release();
     ss << "', ";
     ss << m_honorRolloverTime << ", ";
-    ss << m_killsToday << ", " << m_killsYesterday << ", " << m_killsLifetime << ", ";
-    ss << m_honorToday << ", " << m_honorYesterday << ", ";
+    ss << m_killsToday << ", ";
+    ss << m_killsYesterday << ", ";
+    ss << m_killsLifetime << ", ";
+    ss << m_honorToday << ", ";
+    ss << m_honorYesterday << ", ";
     ss << m_honorPoints << ", ";
-    ss << uint32(iInstanceType) << ", ";
 
     ss << (m_uint32Values[PLAYER_BYTES_3] & 0xFFFE) << ", ";
 
@@ -2676,7 +2678,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << "', ";
 
     ss << uint32(this->HasWonRbgToday());
-
+    ss << ", ";
+    ss << uint32(iInstanceType) << ", ";
+    ss << uint32(m_RaidDifficulty);
     ss << ")";
 
     if (bNewCharacter)
@@ -2853,7 +2857,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    const uint32 fieldcount = 92;
+    const uint32 fieldcount = 93;
 
     if (result->GetFieldCount() != fieldcount)
     {
@@ -3342,7 +3346,6 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     }
 
     RolloverHonor();
-    iInstanceType = get_next_field.GetUInt32();
 
     // Load drunk value and calculate sobering. after 15 minutes logged out, the player will be sober again
     uint32 timediff = (uint32)UNIXTIME - m_timeLogoff;
@@ -3426,6 +3429,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_bgIsRbgWon = true;
     else
         m_bgIsRbgWon = false;
+
+    iInstanceType = get_next_field.GetUInt8();
+    m_RaidDifficulty = get_next_field.GetUInt8();
 
     HonorHandler::RecalculateHonorFields(this);
 

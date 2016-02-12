@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,12 +20,7 @@
 #ifndef AUTHSTRUCTS_H
 #define AUTHSTRUCTS_H
 
-#if __GNUC__ && (GCC_MAJOR < 4 || GCC_MAJOR == 4 && GCC_MINOR < 1)
-#pragma pack(1)
-#else
 #pragma pack(push,1)
-#endif
-
 typedef struct
 {
     uint8   cmd;
@@ -89,11 +84,6 @@ typedef struct
     uint16  unk203;
 } sAuthLogonProof_S;
 
-
-#if __GNUC__ && (GCC_MAJOR < 4 || GCC_MAJOR == 4 && GCC_MINOR < 1)
-#pragma pack()
-#else
 #pragma pack(pop)
-#endif
 
 #endif  //AUTHSTRUCTS_H

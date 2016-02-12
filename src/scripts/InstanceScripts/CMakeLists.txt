@@ -3,12 +3,10 @@
 if(NOT BUILD_INSTANCESCRIPTS )
   message("\tInstanceScripts was skipped because BUILD_INSTANCESCRIPTS is unchecked.")
   return()
-endif(NOT BUILD_INSTANCESCRIPTS)
+endif()
 
 # set up our project name
 project(InstanceScripts)
-
-set(prefix ${SCRIPTS_PATH}/InstanceScripts)
 
 #sources -contains source files for our library.
 set(sources
@@ -25,6 +23,7 @@ set(sources
     Instance_Deadmines.cpp 
     Instance_DireMaul.cpp 
     Instance_DrakTharonKeep.cpp 
+    Instance_ForgeOfSouls.cpp 
     Instance_Gundrak.cpp 
     Instance_HallsOfLightning.cpp 
     Instance_HallsOfReflection.cpp 
@@ -35,6 +34,7 @@ set(sources
     Instance_Maraudon.cpp 
     Instance_Nexus.cpp 
     Instance_OldHillsbradFoothills.cpp 
+    Instance_PitOfSaron.cpp
     Instance_RagefireChasm.cpp 
     Instance_RazorfenDowns.cpp 
     Instance_ScarletMonastery.cpp 
@@ -91,6 +91,7 @@ set(headers
     Instance_Deadmines.h 
     Instance_DireMaul.h 
     Instance_DrakTharonKeep.h 
+    Instance_ForgeOfSouls.h
     Instance_Gundrak.h 
     Instance_HallsOfLightning.h 
     Instance_HallsOfReflection.h 
@@ -101,6 +102,7 @@ set(headers
     Instance_Maraudon.h 
     Instance_Nexus.h 
     Instance_OldHillsbradFoothills.h 
+    Instance_PitOfSaron.h
     Instance_RagefireChasm.h 
     Instance_RazorfenDowns.h 
     Instance_ScarletMonastery.h 
@@ -131,10 +133,10 @@ set(headers
     Raid_Naxxramas.h 
     Raid_OnyxiasLair.h 
     Raid_SerpentshrineCavern.h
-    Raid_SunwellPlateau.h  
-    Raid_TheEye.h 
-    Raid_TheObsidianSanctum.h 
-    Raid_Ulduar.h 
+    Raid_SunwellPlateau.h
+    Raid_TheEye.h
+    Raid_TheObsidianSanctum.h
+    Raid_Ulduar.h
     Raid_ZulGurub.h 
     Raid_WorldBosses.h 
     Raid_ZulAman.h
@@ -142,23 +144,36 @@ set(headers
     ../Common/Base.h
     ../Common/EasyFunctions.h
     ../Common/Instance_Base.h
-    )
+)
 
-foreach(src IN ITEMS ${sources})
-   set(SRCS ${SRCS} ${prefix}/${src})
-endforeach(src)
-foreach(src IN ITEMS ${headers})
-   set(HEADERS ${HEADERS} ${prefix}/${src})
-endforeach(src)
+include_directories(
+   ${OPENSSL_INCLUDE_DIR}
+   ${PCRE_INCLUDE_DIR}
+   ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour/Include
+   ${CMAKE_SOURCE_DIR}/dep/vmaplib/include
+   ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+   ${CMAKE_SOURCE_DIR}/src/shared
+   ${CMAKE_SOURCE_DIR}/src/world
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${ZLIB_INCLUDE_DIRS}
+)
 
-include_directories(${include_dirs} ${prefix} ${DEPENDENCY_ROOT}/zlib)
-add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
-add_dependencies(${PROJECT_NAME} ${script_dependencies})
-target_link_libraries(${PROJECT_NAME} ${script_linkages})
+add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
 
-include(PCHSupport)
-if(CMAKE_GENERATOR MATCHES Visual*)
-   ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${prefix}/Setup.cpp)
+# special case for project linking
+# on some operating systems linking is a bit strange
+# OS X can't link executable, MSVC can't link world library... weird
+if(WIN32)
+    add_dependencies(${PROJECT_NAME} worldserver)
+    target_link_libraries(${PROJECT_NAME} worldserver)
+elseif(APPLE)
+    add_dependencies(${PROJECT_NAME} world)
+    target_link_libraries(${PROJECT_NAME} world)
+endif()
+if(USE_PCH AND PCHSupport_FOUND)
+    ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_SCRIPTLIB_PATH} LIBRARY DESTINATION ${ASCEMU_SCRIPTLIB_PATH})
+unset(sources)
+unset(headers)

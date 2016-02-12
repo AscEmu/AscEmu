@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ SERVER_DECL tm g_localTime;
 
 void oLog::SetColor(int color)
 {
-#if PLATFORM != PLATFORM_WIN32
+#ifndef _WIN32
     static const char* colorstrings[TBLUE+1] = {
    "",
     "\033[22;31m",
@@ -449,7 +449,7 @@ void oLog::LargeErrorMessage(const char* source, ...)
 
 void oLog::Init(int32 fileLogLevel, LogType logType)
 {
-#if PLATFORM == PLATFORM_WIN32
+#ifdef _WIN32
     stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 #endif
 

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -43,6 +43,8 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
         return _debugCommandTable;
     else if (!stricmp(name, "gmTicket"))
         return _GMTicketCommandTable;
+    else if (!stricmp(name, "ticket"))
+        return _TicketCommandTable;
     else if (!stricmp(name, "gobject"))
         return _GameObjectCommandTable;
     else if (!stricmp(name, "battleground"))
@@ -207,6 +209,7 @@ void CommandTableStorage::Dealloc()
     free(_eventCommandTable);
     free(_waypointCommandTable);
     free(_GMTicketCommandTable);
+    free(_TicketCommandTable);
     free(_GuildCommandTable);
     free(_GameObjectCommandTable);
     free(_BattlegroundCommandTable);
@@ -395,6 +398,17 @@ void CommandTableStorage::Init()
         { NULL,              '0', NULL,                                                        "",                                                              NULL, 0, 0, 0 }
     };
     dupe_command_table(GMTicketCommandTable, _GMTicketCommandTable);
+
+    static ChatCommand TicketCommandTable[] =
+    {
+        { "list",         'c', &ChatHandler::HandleTicketListCommand,       "Shows all active tickets",                 NULL, 0, 0, 0 },
+        { "listall",      'c', &ChatHandler::HandleTicketListAllCommand,    "Shows all tickets in the database",        NULL, 0, 0, 0 },
+        { "get",          'c', &ChatHandler::HandleTicketGetCommand,        "Returns the content of the specified ID",  NULL, 0, 0, 0 },
+        { "close",        'c', &ChatHandler::HandleTicketCloseCommand,      "Close ticket with specified ID",           NULL, 0, 0, 0 },
+        { "delete",       'a', &ChatHandler::HandleTicketDeleteCommand,     "Delete ticket by specified ID",            NULL, 0, 0, 0 },
+        { NULL,           '0', NULL,                                        "",                                         NULL, 0, 0, 0 }
+    };
+    dupe_command_table(TicketCommandTable, _TicketCommandTable);
 
     static ChatCommand GuildCommandTable[] =
     {
@@ -773,6 +787,7 @@ void CommandTableStorage::Init()
         { "debug",           '0', NULL,                                                     "",                                                                                                                                        debugCommandTable,        0, 0, 0 },
         { "gm",              '0', NULL,                                                     "",                                                                                                                                        gmCommandTable,           0, 0, 0 },
         { "gmTicket",        '0', NULL,                                                     "",                                                                                                                                        GMTicketCommandTable,     0, 0, 0 },
+        { "ticket",          '0', NULL,                                                     "",                                                                                                                                        TicketCommandTable,       0, 0, 0 },
         { "gobject",         '0', NULL,                                                     "",                                                                                                                                        GameObjectCommandTable,   0, 0, 0 },
         { "battleground",    '0', NULL,                                                     "",                                                                                                                                        BattlegroundCommandTable, 0, 0, 0 },
         { "npc",             '0', NULL,                                                     "",                                                                                                                                        NPCCommandTable,          0, 0, 0 },

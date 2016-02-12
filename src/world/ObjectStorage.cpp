@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -22,8 +22,7 @@
 #include "StdAfx.h"
 
  // Table formats converted to strings
-const char* gItemPrototypeFormat = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuiuuuuuuuuuuuuuuuuuu";
-const char* gItemNameFormat = "usu";
+const char* gItemPrototypeFormat = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuiuuuuuuuuuuuuuuuuuuu";
 const char* gCreatureNameFormat = "usssuuuuuuuuuuuffcuuuuuuu";
 const char* gGameObjectNameFormat = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
 const char* gCreatureProtoFormat = "uuuuuuufuuuffuuffuuuuuuuuffsbuufffuuuuuuuuuuubuuuub";
@@ -52,7 +51,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 // SQLStorage symbols
 SERVER_DECL SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >                    ItemPrototypeStorage;
-SERVER_DECL SQLStorage<ItemName, ArrayStorageContainer<ItemName> >                              ItemNameStorage;
 SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                    CreatureNameStorage;
 SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                GameObjectNameStorage;
 SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                  CreatureProtoStorage;
@@ -197,6 +195,33 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
                 break;
         }
         itr->Destruct();
+    }
+    // Load creature_initiale_equip
+    Log.Notice("ObjectStorage", "Loading creature_initial_equip...");
+    {
+        QueryResult* result = WorldDatabase.Query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
+
+        if (result)
+        {
+            do
+            {
+                Field* fields = result->Fetch();
+                uint32 entry = fields[0].GetUInt32();
+                CreatureProto* creature_proto = CreatureProtoStorage.LookupEntry(entry);
+                if (creature_proto == nullptr)
+                {
+                    Log.Error("ObjectStorage", "Invalid creature_entry %u in table creature_initial_equip!", entry);
+                    continue;
+                }
+
+                creature_proto->itemslot_1 = fields[1].GetUInt32();
+                creature_proto->itemslot_2 = fields[2].GetUInt32();
+                creature_proto->itemslot_3 = fields[3].GetUInt32();
+
+            } while (result->NextRow());
+
+            delete result;
+        }
     }
 
     // Load AI Agents
@@ -349,18 +374,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void ObjectMgr::LoadExtraItemStuff()
 {
-    std::map<uint32, uint32> foodItems;
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM itempetfood ORDER BY entry");
-    if (result)
-    {
-        Field* f = result->Fetch();
-        do
-        {
-            foodItems.insert(std::make_pair(f[0].GetUInt32(), f[1].GetUInt32()));
-        } while (result->NextRow());
-        delete result;
-    }
-
     StorageContainerIterator<ItemPrototype> * itr = ItemPrototypeStorage.MakeIterator();
     ItemPrototype* pItemPrototype;
     while (!itr->AtEnd())
@@ -390,12 +403,6 @@ void ObjectMgr::LoadExtraItemStuff()
         for (uint32 j = 0; j < pItemPrototype->lowercase_name.length(); ++j)
             pItemPrototype->lowercase_name[j] = static_cast<char>(tolower(pItemPrototype->lowercase_name[j]));
 
-        //load item_pet_food_type from extra table
-        uint32 ft = 0;
-        std::map<uint32, uint32>::iterator iter = foodItems.find(pItemPrototype->ItemId);
-        if (iter != foodItems.end())
-            ft = iter->second;
-        pItemPrototype->FoodType = ft;
 
         // forced pet entries
         switch (pItemPrototype->ItemId)
@@ -523,7 +530,6 @@ void ObjectMgr::LoadExtraItemStuff()
     }
 
     itr->Destruct();
-    foodItems.clear();
 }
 
 void ObjectMgr::LoadExtraGameObjectStuff()
@@ -547,7 +553,6 @@ void ObjectMgr::LoadExtraGameObjectStuff()
 void Storage_FillTaskList(TaskList & tl)
 {
     make_task(ItemPrototypeStorage, ItemPrototype, ArrayStorageContainer, "items", gItemPrototypeFormat);
-    make_task(ItemNameStorage, ItemName, ArrayStorageContainer, "itemnames", gItemNameFormat);
     make_task(CreatureNameStorage, CreatureInfo, HashMapStorageContainer, "creature_names", gCreatureNameFormat);
     make_task(GameObjectNameStorage, GameObjectInfo, HashMapStorageContainer, "gameobject_names", gGameObjectNameFormat);
     make_task(CreatureProtoStorage, CreatureProto, HashMapStorageContainer, "creature_proto", gCreatureProtoFormat);
@@ -596,7 +601,6 @@ void Storage_Cleanup()
         itr->Destruct();
     }
     ItemPrototypeStorage.Cleanup();
-    ItemNameStorage.Cleanup();
     CreatureNameStorage.Cleanup();
     GameObjectNameStorage.Cleanup();
     CreatureProtoStorage.Cleanup();

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ namespace Arcemu
 #ifdef WIN32
             ret = InterlockedExchange(reinterpret_cast< volatile LONG* >(&Value), LONG(NewValue));
 #else
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
             ret = __sync_val_compare_and_swap(&Value, Value, NewValue);
 #else
 #error Your platform (architecture and compiler) is NOT supported. Arcemu requires little endian architecture, and at least GCC 4.1

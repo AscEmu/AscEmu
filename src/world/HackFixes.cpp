@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -100,15 +100,14 @@ void ApplyNormalFixes()
 
         sp->ai_target_type = GetAiTargetType(sp);
         // NEW SCHOOLS AS OF 2.4.0:
-        /* (bitwise)
-        SCHOOL_NORMAL = 1,
-        SCHOOL_HOLY   = 2,
-        SCHOOL_FIRE   = 4,
-        SCHOOL_NATURE = 8,
-        SCHOOL_FROST  = 16,
-        SCHOOL_SHADOW = 32,
-        SCHOOL_ARCANE = 64
-        */
+        // (bitwise)
+        //SCHOOL_NORMAL = 1,
+        //SCHOOL_HOLY   = 2,
+        //SCHOOL_FIRE   = 4,
+        //SCHOOL_NATURE = 8,
+        //SCHOOL_FROST  = 16,
+        //SCHOOL_SHADOW = 32,
+        //SCHOOL_ARCANE = 64
 
         // Save School as SchoolMask, and set School as an index
         sp->SchoolMask = sp->School;
@@ -200,7 +199,7 @@ void ApplyNormalFixes()
         {
             if (sp->EffectTriggerSpell[b] != 0 && dbcSpell.LookupEntryForced(sp->EffectTriggerSpell[b]) == NULL)
             {
-                /* proc spell referencing non-existent spell. create a dummy spell for use w/ it. */
+                // proc spell referencing non-existent spell. create a dummy spell for use w/ it.
                 CreateDummySpell(sp->EffectTriggerSpell[b]);
             }
 
@@ -380,10 +379,6 @@ void ApplyNormalFixes()
                 }
             }
         }
-
-        /*FILE * f = fopen("C:\\spells.txt", "a");
-        fprintf(f, "case 0x%08X:        // %s\n", namehash, sp->Name);
-        fclose(f);*/
 
         // find diminishing status
         sp->DiminishStatus = GetDiminishingGroup(namehash);
@@ -901,7 +896,7 @@ void ApplyNormalFixes()
             sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
         }
 
-        /* Decapitate */
+        // Decapitate
         if (sp->NameHash == SPELL_HASH_DECAPITATE)
             sp->procChance = 30;
 
@@ -912,7 +907,7 @@ void ApplyNormalFixes()
         if (sp->NameHash == SPELL_HASH_DIVINE_SHIELD || sp->NameHash == SPELL_HASH_DIVINE_PROTECTION || sp->NameHash == SPELL_HASH_BLESSING_OF_PROTECTION)
             sp->MechanicsType = MECHANIC_INVULNARABLE;
 
-        /* hackfix for this - FIX ME LATER - Burlex */
+        // hackfix for this - FIX ME LATER - Burlex
         if (namehash == SPELL_HASH_SEAL_FATE)
             sp->procFlags = 0;
 
@@ -1150,8 +1145,8 @@ void ApplyNormalFixes()
         // CLASS-SPECIFIC SPELL FIXES                        //
         //////////////////////////////////////////////////////
 
-        /* Note: when applying spell hackfixes, please follow a template */
-        /* Please don't put fixes like "sp = CheckAndReturnSpellEntry(15270);" inside the loop */
+        // Note: when applying spell hackfixes, please follow a template
+        // Please don't put fixes like "sp = CheckAndReturnSpellEntry(15270);" inside the loop
 
         //////////////////////////////////////////
         // WARRIOR                                //
@@ -1441,9 +1436,8 @@ void ApplyNormalFixes()
     //SPELL COEFFICIENT SETTINGS END
     /////////////////////////////////////////////////////////////////
 
-    /**********************************************************
-     * thrown - add a 1.6 second cooldown
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // thrown - add a 1.6 second cooldown
     const static uint32 thrown_spells[] = { SPELL_RANGED_GENERAL, SPELL_RANGED_THROW, SPELL_RANGED_WAND, 26679, 29436, 37074, 41182, 41346, 0 };
     for (uint32 i = 0; thrown_spells[i] != 0; ++i)
     {
@@ -1455,16 +1449,14 @@ void ApplyNormalFixes()
         }
     }
 
-    /**********************************************************
-     * Wands
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Wands
     sp = CheckAndReturnSpellEntry(SPELL_RANGED_WAND);
     if (sp != NULL)
         sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
 
-    /**********************************************************
-     * Misc stuff (questfixes etc)
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Misc stuff (questfixes etc)
 
     // list of guardians that should inherit casters level
     //fire elemental
@@ -1477,54 +1469,12 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
 
-    /**********************************************************
-     * Scaled Mounts
-     **********************************************************/
-    //Big Blizzard Bear
-    /*sp = CheckAndReturnSpellEntry(58983);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_NULL;
-    //Winged Steed of Ebon Blade
-    sp = CheckAndReturnSpellEntry(54729);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_NULL;
-    //Headless Horsemen Mount
-    sp = CheckAndReturnSpellEntry(48025);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_NULL;
-    //Magic Broom
-    sp = CheckAndReturnSpellEntry(47977);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_NULL;
-    //Magic Rooster
-    sp = CheckAndReturnSpellEntry(65917);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_NULL;
-    //Big Love Rocket
-	sp = CheckAndReturnSpellEntry(71342);
-	if (sp != NULL)
-	    sp->Effect[0] = SPELL_EFFECT_NULL;
-    //Invincible
-    sp = CheckAndReturnSpellEntry(72286);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_NULL;
-	//Blazing Hippogryph
-	sp = CheckAndReturnSpellEntry(74856);
-	if (sp != NULL)
-	    sp->Effect[0] = SPELL_EFFECT_NULL;
-	//Celestial Steed
-	sp = CheckAndReturnSpellEntry(75614);
-	if (sp != NULL)
-	    sp->Effect[0] = SPELL_EFFECT_NULL;
-    //Touring Rocket
-	sp = CheckAndReturnSpellEntry(75973);
-	if (sp != NULL)
-	    sp->Effect[0] = SPELL_EFFECT_NULL;*/
+    
     //////////////////////////////////////////////////////
     // CLASS-SPECIFIC SPELL FIXES                        //
     //////////////////////////////////////////////////////
 
-    /* Note: when applying spell hackfixes, please follow a template */
+    // Note: when applying spell hackfixes, please follow a template
 
     //////////////////////////////////////////
     // WARRIOR                                //
@@ -1538,9 +1488,8 @@ void ApplyNormalFixes()
         sp->c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
         sp->procChance = 100;
     }
-    /**********************************************************
-     *    Arms
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Arms
 
     // Juggernaut
     sp = CheckAndReturnSpellEntry(65156);
@@ -1763,9 +1712,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->MechanicsType = MECHANIC_BLEEDING;
 
-    /**********************************************************
-     *    Fury
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Fury
 
     // Warrior - Slam
     sp = CheckAndReturnSpellEntry(1464);
@@ -1851,7 +1799,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
 
-    /* Remove the charges only on melee attacks */
+    // Remove the charges only on melee attacks
     sp = CheckAndReturnSpellEntry(12880);
     if (sp != NULL)
         sp->procFlags = PROC_ON_MELEE_ATTACK;
@@ -1958,9 +1906,8 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_DUMMY;
     }
 
-    /**********************************************************
-     *    Protection
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Protection
 
     // Sword and Board Rank 1
     sp = CheckAndReturnSpellEntry(46951);
@@ -2239,40 +2186,6 @@ void ApplyNormalFixes()
         sp->procChance = 30;
         sp->procFlags = PROC_ON_MELEE_ATTACK;
     }
-
-    /**********************************************************
-     *    Blessing of Light
-     **********************************************************
-     sp = CheckAndReturnSpellEntry(19977);
-     if (sp != NULL)
-     {
-     sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
-     sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
-     }
-     sp = CheckAndReturnSpellEntry(19978);
-     if (sp != NULL)
-     {
-     sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
-     sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
-     }
-     sp = CheckAndReturnSpellEntry(19979);
-     if (sp != NULL)
-     {
-     sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
-     sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
-     }
-     sp = CheckAndReturnSpellEntry(27144);
-     if (sp != NULL)
-     {
-     sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
-     sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
-     }
-     sp = CheckAndReturnSpellEntry(32770);
-     if (sp != NULL)
-     {
-     sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
-     sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
-     }*/
 
     //Paladin - Reckoning
     sp = CheckAndReturnSpellEntry(20177);
@@ -2943,12 +2856,12 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->procFlags = PROC_ON_TRAP_TRIGGER;
 
-    /* aspect of the pack - change to AA */
+    // aspect of the pack - change to AA
     sp = CheckAndReturnSpellEntry(13159);
     if (sp != NULL)
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM;
 
-    /* aspect of the cheetah - add proc flags */
+    // aspect of the cheetah - add proc flags
     sp = CheckAndReturnSpellEntry(5118);
     if (sp != NULL)
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM;
@@ -2959,21 +2872,7 @@ void ApplyNormalFixes()
     {
         sp->EffectImplicitTargetA[0] = 0;
     }
-    /*    // !!! not sure this is good !!! have to test
-        // Hunter's mark r1
-        sp = CheckAndReturnSpellEntry(1130);
-        if (sp != NULL)
-        sp->maxstack = (sp->EffectBasePoints[1]*3) / (sp->EffectBasePoints[1]/10);
-        sp = CheckAndReturnSpellEntry(14323);
-        if (sp != NULL)
-        sp->maxstack = (sp->EffectBasePoints[1]*3) / (sp->EffectBasePoints[1]/10);
-        sp = CheckAndReturnSpellEntry(14324);
-        if (sp != NULL)
-        sp->maxstack = (sp->EffectBasePoints[1]*3) / (sp->EffectBasePoints[1]/10);
-        sp = CheckAndReturnSpellEntry(14325);
-        if (sp != NULL)
-        sp->maxstack = (sp->EffectBasePoints[1]*3) / (sp->EffectBasePoints[1]/10);
-        */
+
     // MesoX: Serendipity http://www.wowhead.com/?spell=63730
     sp = CheckAndReturnSpellEntry(63730);   // Rank 1
     if (sp != NULL)
@@ -3022,9 +2921,7 @@ void ApplyNormalFixes()
         sp->procChance = 10;
     }
 
-    /**********************************************************
-     *    Garrote - this is used?
-     **********************************************************/
+    // Garrote - this is used?
     sp = CheckAndReturnSpellEntry(37066);
     if (sp != NULL)
     {
@@ -3176,11 +3073,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
 
-    /* Rogue - Improved Expose Armor (rank 1)
-    sp = CheckAndReturnSpellEntry(14168);
-    if (sp != NULL)
-    {
-    sp->EffectApplyAuraName[0] = */
 
     //////////////////////////////////////////
     // PRIEST                                //
@@ -3271,65 +3163,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(27792);   // This is casted by Apply Aura: Spirit of Redemption
     if (sp != NULL)
         sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
-
-    /**********************************************************
-     *    Holy Nova
-     **********************************************************/
-    /* Works fine without these Hacks....
-    sp = CheckAndReturnSpellEntry(15237);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 23455;
-    }
-    sp = CheckAndReturnSpellEntry(15430);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 23458;
-    }
-    sp = CheckAndReturnSpellEntry(15431);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 23459;
-    }
-    sp = CheckAndReturnSpellEntry(27799);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 27803;
-    }
-    sp = CheckAndReturnSpellEntry(27800);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 27804;
-    }
-    sp = CheckAndReturnSpellEntry(27801);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 27805;
-    }
-    sp = CheckAndReturnSpellEntry(25331);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 25329;
-    }
-    sp = CheckAndReturnSpellEntry(48077);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 48075;
-    }
-    sp = CheckAndReturnSpellEntry(48078);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 48076;
-    }*/
 
     //Priest: Blessed Recovery
     sp = CheckAndReturnSpellEntry(27811);
@@ -3552,10 +3385,7 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
     }
 
-
-    /**********************************************************
-     *    Elemental Mastery
-     **********************************************************/
+    // Elemental Mastery
     sp = CheckAndReturnSpellEntry(16166);
     if (sp != NULL)
     {
@@ -3564,9 +3394,8 @@ void ApplyNormalFixes()
         // sp->AuraInterruptFlags = AURA_INTERRUPT_ON_AFTER_CAST_SPELL;
     }
 
-    /**********************************************************
-     *    Shamanistic Rage
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Shamanistic Rage
     SpellEntry*  parentsp = CheckAndReturnSpellEntry(30823);
     SpellEntry* triggersp = CheckAndReturnSpellEntry(30824);
     if (parentsp != NULL && triggersp != NULL)
@@ -3582,25 +3411,20 @@ void ApplyNormalFixes()
     if (sp != NULL && sp->Id == 2062)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_TOTEM_EARTH; //remove this targeting. it is enough to get 1 target
 
-    /**********************************************************
-     *    Elemental Focus
-     **********************************************************/
+    // Elemental Focus
     sp = CheckAndReturnSpellEntry(16164);
     if (sp != NULL && sp->Id == 16164)
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
 
-    /**********************************************************
-     *    Stormstrike
-     **********************************************************/
+    // Stormstrike
     sp = CheckAndReturnSpellEntry(17364);
     if (sp != NULL && sp->Id == 17364)
     {
         sp->procFlags = PROC_ON_SPELL_HIT_VICTIM;
     }
 
-    /**********************************************************
-     *    Bloodlust
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Bloodlust
     //Bloodlust
     sp = CheckAndReturnSpellEntry(2825);
     if (sp != NULL)
@@ -3614,9 +3438,8 @@ void ApplyNormalFixes()
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
-    /**********************************************************
-     *    Heroism
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Heroism
     //Heroism
     sp = CheckAndReturnSpellEntry(32182);
     if (sp != NULL)
@@ -3630,9 +3453,8 @@ void ApplyNormalFixes()
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
-    /**********************************************************
-     *    Lightning Overload
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Lightning Overload
     sp = CheckAndReturnSpellEntry(30675);
     if (sp != NULL)
     {
@@ -3654,9 +3476,8 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 39805;//proc something (we will override this)
         sp->procFlags = PROC_ON_SPELL_HIT;
     }
-    /**********************************************************
-     *    Purge
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Purge
     sp = CheckAndReturnSpellEntry(370);
     if (sp != NULL)
         sp->DispelType = DISPEL_MAGIC;
@@ -3670,9 +3491,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->DispelType = DISPEL_MAGIC;
 
-    /**********************************************************
-     *    Eye of the Storm
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Eye of the Storm
     sp = CheckAndReturnSpellEntry(29062);
     if (sp != NULL)
         sp->procFlags = PROC_ON_CRIT_HIT_VICTIM;
@@ -3904,39 +3724,37 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->procCharges = 0;
 
-    /**********************************************************
-     *    Healing Way
-     **********************************************************/
-    /*
-    Zack : disabled this to not create confusion that it is working. Burlex deleted code so it needs to be reverted in order to work
-    sp = CheckAndReturnSpellEntry(29202);
-    if (sp != NULL)
-    {
-    sp->procFlags = PROC_ON_CAST_SPELL;
-    sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-    sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-    sp->procChance = sp->EffectBasePoints[0] + 1;
-    }
-    sp = CheckAndReturnSpellEntry(29205);
-    if (sp != NULL)
-    {
-    sp->procFlags = PROC_ON_CAST_SPELL;
-    sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-    sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-    sp->procChance = sp->EffectBasePoints[0] + 1;
-    }
-    sp = CheckAndReturnSpellEntry(29206);
-    if (sp != NULL)
-    {
-    sp->procFlags = PROC_ON_CAST_SPELL;
-    sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-    sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-    sp->procChance = sp->EffectBasePoints[0] + 1;
-    }
-    */
-    /*********************************************************
-     * Unleashed Rage - LordLeeCH
-     *********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Healing Way
+
+    //Zack : disabled this to not create confusion that it is working. Burlex deleted code so it needs to be reverted in order to work
+    //sp = CheckAndReturnSpellEntry(29202);
+    //if (sp != NULL)
+    //{
+    //sp->procFlags = PROC_ON_CAST_SPELL;
+    //sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+    //sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
+    //sp->procChance = sp->EffectBasePoints[0] + 1;
+    //}
+    //sp = CheckAndReturnSpellEntry(29205);
+    //if (sp != NULL)
+    //{
+    //sp->procFlags = PROC_ON_CAST_SPELL;
+    //sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+    //sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
+    //sp->procChance = sp->EffectBasePoints[0] + 1;
+    //}
+    //sp = CheckAndReturnSpellEntry(29206);
+    //if (sp != NULL)
+    //{
+    //sp->procFlags = PROC_ON_CAST_SPELL;
+    //sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+    //sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
+    //sp->procChance = sp->EffectBasePoints[0] + 1;
+    //}
+
+    ////////////////////////////////////////////////////////////
+    //  Unleashed Rage - LordLeeCH
     sp = CheckAndReturnSpellEntry(30802);
     if (sp != NULL)
     {
@@ -3956,9 +3774,8 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_APPLY_GROUP_AREA_AURA;
     }
 
-    /**********************************************************
-     *    Elemental Devastation
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Elemental Devastation
     sp = CheckAndReturnSpellEntry(29179);
     if (sp != NULL)
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
@@ -3969,9 +3786,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
 
-    /**********************************************************
-     *    Ancestral healing
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Ancestral healing
     sp = CheckAndReturnSpellEntry(16176);
     if (sp != NULL)
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
@@ -3982,9 +3798,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
 
-    /**********************************************************
-     *    Ancestral healing proc spell
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Ancestral healing proc spell
     sp = CheckAndReturnSpellEntry(16177);
     if (sp != NULL)
         sp->rangeIndex = 4;
@@ -4091,9 +3906,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
 
-    /**********************************************************
-    *    Improved Blink by Alice
-    **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Improved Blink by Alice
 
     //Improved Blink - *Rank 1*
     sp = CheckAndReturnSpellEntry(31569);
@@ -4107,9 +3921,8 @@ void ApplyNormalFixes()
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
     }
-    /**********************************************************
-     *    Arcane Concentration
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Arcane Concentration
 
     sp = CheckAndReturnSpellEntry(11213);
     if (sp != NULL)
@@ -4616,9 +4429,8 @@ void ApplyNormalFixes()
         sp->procCharges = -1;
     }
 
-    /**********************************************************
-     *    Nether Protection
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Nether Protection
     sp = CheckAndReturnSpellEntry(30299);
     if (sp != NULL)
     {
@@ -4637,9 +4449,8 @@ void ApplyNormalFixes()
         sp->procChance = 30;
         sp->proc_interval = 13000;
     }
-    /**********************************************************
-     *    Backlash
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Backlash
     sp = CheckAndReturnSpellEntry(34935);
     if (sp != NULL)
     {
@@ -4664,9 +4475,8 @@ void ApplyNormalFixes()
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
     }
 
-    /**********************************************************
-     *    Demonic Knowledge
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Demonic Knowledge
     sp = CheckAndReturnSpellEntry(35691);
     if (sp != NULL)
     {
@@ -5337,9 +5147,9 @@ void ApplyNormalFixes()
 
     // Insert druid spell fixes here
 
-    /**********************************************************
-     *    Balance
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Balance
+    ////////////////////////////////////////////////////////////
 
     // Druid - Nature's Grace
     sp = CheckAndReturnSpellEntry(16880);
@@ -5409,9 +5219,9 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[1] = EFF_TARGET_NONE;
     }
 
-    /**********************************************************
-     *    Feral Combat
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    //    Feral Combat
+    ////////////////////////////////////////////////////////////
 
     // Druid - Natural Reaction
     sp = CheckAndReturnSpellEntry(57878);
@@ -5578,9 +5388,9 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->RequiredShapeShift = mm;
 
-    /**********************************************************
-     *    Restoration
-     **********************************************************/
+    ////////////////////////////////////////////////////////////
+    // Restoration
+    ////////////////////////////////////////////////////////////
 
     // Druid - Tree Form Aura
     sp = CheckAndReturnSpellEntry(34123);
@@ -6518,14 +6328,14 @@ void ApplyNormalFixes()
     }
 
     //Lightweave Embroidery - this will work in 3.1
-    /*sp = CheckAndReturnSpellEntry(55640);
-    if (sp != NULL)
-    {
-    sp->EffectTriggerSpell[0] = 55637;
-    sp->procFlags = PROC_ON_CAST_SPELL;
-    sp->procChance = 50;
-    sp->proc_interval = 45000;
-    }*/
+    //sp = CheckAndReturnSpellEntry(55640);
+    //if (sp != NULL)
+    //{
+    //sp->EffectTriggerSpell[0] = 55637;
+    //sp->procFlags = PROC_ON_CAST_SPELL;
+    //sp->procChance = 50;
+    //sp->proc_interval = 45000;
+    //}
 
     //Darkglow Embroidery
     sp = CheckAndReturnSpellEntry(55768);
@@ -6536,9 +6346,9 @@ void ApplyNormalFixes()
         sp->procChance = 35;
         sp->proc_interval = 60000;
     }
-    /**************************************************************
-    * Trinket Fixes        Please keep nice and clean :)                                          *
-    **************************************************************/
+    ///////////////////////////////////////////////////////////////
+    // Trinket Fixes        Please keep nice and clean :)
+    ///////////////////////////////////////////////////////////////
 
     // Citrine Pendant of Golden Healing
     sp = CheckAndReturnSpellEntry(25608);        //    http://www.wowhead.com/?item=20976
@@ -6821,9 +6631,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
 
-    /*
-    cebernic 's fixes
-    */
+
     //resurrection sickness
     sp = CheckAndReturnSpellEntry(15007);
     if (sp != NULL)
@@ -6899,9 +6707,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK | PROC_ON_SPELL_HIT;
 
-    /**********************************************************
-     *    Unholy Aura - Ranks 1 & 2
-     **********************************************************/
+    // Unholy Aura - Ranks 1
     sp = CheckAndReturnSpellEntry(50391);
     if (sp != NULL)
     {
@@ -6912,6 +6718,7 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_APPLY_GROUP_AREA_AURA;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
+    // Unholy Aura - Ranks 2
     sp = CheckAndReturnSpellEntry(50392);
     if (sp != NULL)
     {
@@ -6923,27 +6730,21 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
 
-    /**********************************************************
-    * MIND FREEZE
-    **********************************************************/
+    // MIND FREEZE
     sp = dbcSpell.LookupEntryForced(47528);
     if (sp != NULL)
     {
         sp->Effect[0] = SPELL_EFFECT_INTERRUPT_CAST;
     }
 
-    /**********************************************************
-    *    Blood Presence
-    **********************************************************/
+    //   Blood Presence
     sp = CheckAndReturnSpellEntry(48266);
     if (sp != NULL)
     {
         sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
-    /**********************************************************
-     *    Empower Rune Weapon
-     **********************************************************/
+    //    Empower Rune Weapon
     sp = CheckAndReturnSpellEntry(47568);
     if (sp != NULL)
     {
@@ -6952,9 +6753,7 @@ void ApplyNormalFixes()
         sp->EffectMiscValue[2] = RUNE_UNHOLY;
     }
 
-    /**********************************************************
-     *    Frost Presence
-     **********************************************************/
+    // Frost Presence
     sp = CheckAndReturnSpellEntry(48263);
     if (sp != NULL)
     {
@@ -6965,9 +6764,7 @@ void ApplyNormalFixes()
         sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
-    /**********************************************************
-     *    Unholy Presence
-     **********************************************************/
+    //    Unholy Presence
     sp = CheckAndReturnSpellEntry(48265);
     if (sp != NULL)
     {
@@ -6978,9 +6775,7 @@ void ApplyNormalFixes()
         sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
-    /**********************************************************
-    * DEATH AND DECAY
-    **********************************************************/
+    // DEATH AND DECAY
     sp = dbcSpell.LookupEntryForced(49937);
     if (sp != NULL)
     {
@@ -7009,9 +6804,7 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    /**********************************************************
-    *    Death Grip
-    **********************************************************/
+    // Death Grip
     sp = CheckAndReturnSpellEntry(49576);
     if (sp != NULL)
     {
@@ -7040,9 +6833,9 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 76691;
     }
 
-    /**********************************************************
-     *    Acherus Deatcharger
-     **********************************************************/
+    ///////////////////////////////////////////////////////////
+    //    Acherus Deatcharger
+    ///////////////////////////////////////////////////////////
     sp = CheckAndReturnSpellEntry(48778);
     if (sp != NULL)
     {
@@ -7051,9 +6844,9 @@ void ApplyNormalFixes()
         sp->EffectBasePoints[1] = 99;
     }
 
-    /**********************************************************
-     *    Path of Frost
-     **********************************************************/
+    ///////////////////////////////////////////////////////////
+    //    Path of Frost
+    ///////////////////////////////////////////////////////////
     sp = CheckAndReturnSpellEntry(3714);
     if (sp != NULL)
     {
@@ -7109,9 +6902,9 @@ void ApplyNormalFixes()
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
 
-    /**********************************************************
-    *      Bloodworms - handled in dummy code
-    **********************************************************/
+    ///////////////////////////////////////////////////////////
+    //      Bloodworms - handled in dummy code
+    ///////////////////////////////////////////////////////////
 
     // Bloodworms Rank 1
     sp = CheckAndReturnSpellEntry(49027);
@@ -7342,10 +7135,9 @@ void ApplyNormalFixes()
         sp->c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
     }
 
-    /* Ritual of Summoning summons a GameObject that triggers an inexistant spell.
-     * This will copy an existant Summon Player spell used for another Ritual Of Summoning
-     * to the one taught by Warlock trainers.
-     */
+    // Ritual of Summoning summons a GameObject that triggers an inexistant spell.
+    // This will copy an existant Summon Player spell used for another Ritual Of Summoning
+    // to the one taught by Warlock trainers.
     sp = CheckAndReturnSpellEntry(7720);
     if (sp)
     {
@@ -7385,7 +7177,7 @@ void ApplyNormalFixes()
 		sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
 		sp->Attributes |= ATTRIBUTES_NEGATIVE;
 	}
-    /* War Stomp */
+    // War Stomp
     sp = CheckAndReturnSpellEntry(20549);
     if (sp)
     {
@@ -7403,17 +7195,5 @@ void ApplyNormalFixes()
         sp->EffectMechanic[0] = MECHANIC_SHACKLED;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
         sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
-    }
-
-    // Windfury (Enhancement)
-    sp = dbcSpell.LookupEntryForced(33757);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->EffectTriggerSpell[0] = 33750;
-        sp->procChance = 20;
-        sp->proc_interval = 3000;
-        sp->maxstack = 1;
     }
 }

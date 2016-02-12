@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -24,6 +24,11 @@
 
 WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {
+
+    m_zoneid = 3277;
+    m_scores[0] = m_scores[1] = 0;
+    m_time_left = TIME_LEFT;
+
     for (uint8 i = 0; i < 2; i++)
     {
         m_players[i].clear();
@@ -67,10 +72,6 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
         m_dropFlags[i]->Activate();
         m_dropFlags[i]->SetScale(2.5f);
     }
-
-    m_scores[0] = m_scores[1] = 0;
-
-    m_zoneid = 3277;
 
 }
 
@@ -246,8 +247,8 @@ void WarsongGulch::EventReturnFlags()
         if (m_homeFlags[x] != NULL)
             m_homeFlags[x]->PushToWorld(m_mapMgr);
     }
-    SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance's flag is now placed at her base.");
-    SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Horde's flag is now placed at her base.");
+    PlaySoundToAll(SOUND_FLAG_RESPAWN);
+    SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The flags are now placed at their bases.");
 }
 
 void WarsongGulch::HookOnFlagDrop(Player* plr)
@@ -271,6 +272,8 @@ void WarsongGulch::HookOnFlagDrop(Player* plr)
 
     sEventMgr.AddEvent(this, &WarsongGulch::ReturnFlag, plr->GetTeamReal(), EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + plr->GetTeam(), 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
+    PlaySoundToAll(SOUND_FLAG_RETURNED);
+
     if (plr->IsTeamHorde())
         SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Alliance flag was dropped by %s!", plr->GetName());
     else
@@ -283,10 +286,9 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
     if (m_dropFlags[plr->GetTeam()] != obj)
     {
         // are we returning it?
-        if ((obj->GetEntry() == 179785 && plr->IsTeamAlliance()) ||
-            (obj->GetEntry() == 179786 && plr->IsTeamHorde()))
+        if ((obj->GetEntry() == SILVERWING_FLAG && plr->IsTeamAlliance()) || (obj->GetEntry() == WARSONG_FLAG && plr->IsTeamHorde()))
         {
-            uint32 x = plr->GetTeam() ? 0 : 1;
+            uint32 x = plr->GetTeam() ? TEAM_ALLIANCE : TEAM_HORDE;
             sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_WSG_AUTO_RETURN_FLAG + (plr->IsTeamHorde() ? TEAM_ALLIANCE : TEAM_HORDE));
 
             if (m_dropFlags[x]->IsInWorld())
@@ -298,13 +300,14 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
             plr->m_bgScore.MiscData[BG_SCORE_WSG_FLAGS_RETURNED]++;
             UpdatePvPData();
 
+            PlaySoundToAll(SOUND_FLAG_RETURNED);
+
             if (plr->IsTeamHorde())
                 SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Horde flag was returned to its base by %s!", plr->GetName());
             else
                 SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Alliance flag was returned to its base by %s!", plr->GetName());
 
             SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 1);
-            PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_RETURNED : SOUND_ALLIANCE_RETURNED);
         }
         return;
     }
@@ -338,6 +341,8 @@ void WarsongGulch::HookFlagDrop(Player* plr, GameObject* obj)
     SpellCastTargets targets(plr->GetGUID());
     sp->prepare(&targets);
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
+    PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
+
     if (plr->IsTeamHorde())
         SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Alliance's flag has been taken by %s !", plr->GetName());
     else
@@ -351,6 +356,8 @@ void WarsongGulch::ReturnFlag(PlayerTeam team)
 
     if (!m_homeFlags[team]->IsInWorld())
         m_homeFlags[team]->PushToWorld(m_mapMgr);
+
+    PlaySoundToAll(SOUND_FLAG_RESPAWN);
 
     if (team)
         SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance flag was returned to its base!");
@@ -397,6 +404,10 @@ void WarsongGulch::HookFlagStand(Player* plr, GameObject* obj)
 
     PlaySoundToAll(plr->IsTeamHorde() ? SOUND_HORDE_CAPTURE : SOUND_ALLIANCE_CAPTURE);
     SetWorldState(plr->IsTeamHorde() ? WORLDSTATE_WSG_ALLIANCE_FLAG_DISPLAY : WORLDSTATE_WSG_HORDE_FLAG_DISPLAY, 2);
+    if (plr->IsTeamHorde())
+        SendChatMessage(CHAT_MSG_BG_EVENT_HORDE, plr->GetGUID(), "The Alliance's flag has been taken by %s !", plr->GetName());
+    else
+        SendChatMessage(CHAT_MSG_BG_EVENT_ALLIANCE, plr->GetGUID(), "The Horde's flag has been taken by %s !", plr->GetName());
 }
 
 void WarsongGulch::HookOnPlayerKill(Player* plr, Player* pVictim)
@@ -601,12 +612,18 @@ void WarsongGulch::OnStart()
             m_homeFlags[i]->PushToWorld(m_mapMgr);
     }
 
-    SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Alliance's flag is now placed at her base.");
-    SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The Horde's flag is now placed at her base.");
-
     PlaySoundToAll(SOUND_BATTLEGROUND_BEGIN);
+    SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The flags are now placed at their bases.");
+
+    sEventMgr.AddEvent(this, &WarsongGulch::TimeLeft, EVENT_UNK, 60000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     m_started = true;
+}
+
+void WarsongGulch::TimeLeft()
+{
+    --m_time_left;
+    SetWorldState(WORLDSTATE_WSG_TIME_LEFT, m_time_left);
 }
 
 void WarsongGulch::HookOnShadowSight()

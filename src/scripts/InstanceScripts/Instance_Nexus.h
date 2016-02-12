@@ -1,5 +1,6 @@
 /*
- * AscScripts for AscEmu Framework
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2015 Sun++ Team <http://www.sunplusplus.info/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,10 +19,6 @@
 
 #ifndef _INSTANCE_NEXUS_H
 #define _INSTANCE_NEXUS_H
-
-#define ANOMALUS_CS        188527
-#define TELESTRA_CS        188526
-#define ORMOROK_CS        188528
 
 enum NexusEncounterList
 {
@@ -52,6 +49,12 @@ enum CreatureEntry
 
     // Keristrasza
     CN_KERISTRASZA          = 26723,
+
+    // Hall of Statis
+    CN_ALLIANCE_COMMANDER   = 27949,
+    H_CN_ALLIANCE_COMMANDER = 26796,
+    CN_HORDE_COMMANDER      = 27947,
+    H_CN_HORDE_COMMANDER    = 26798,
 };
 
 enum CreatureSpells
@@ -116,6 +119,68 @@ enum CreatureSpells
     CRYSTALFIRE_BREATH      = 48096,
     CRYSTALFIRE_BREATH_HC   = 57091
 };
+
+enum GameObject_Entry
+{
+    ANOMALUS_CS             = 188527,
+    TELESTRA_CS             = 188526,
+    ORMOROK_CS              = 188528
+};
+
+struct NexusSpawns
+{
+    uint32 entry;
+    float x;
+    float y;
+    float z;
+    float o;
+    uint32 faction;
+};
+
+const NexusSpawns TrashAllySpawns[18] = {
+    // Hall of Stasis
+    { 26805, 388.61f, 149.039f, -35.01f, 1.55f, 14 },
+    { 26802, 388.61f, 149.039f, -35.01f, 1.55f, 14 },
+    { 26800, 388.61f, 149.039f, -35.01f, 1.55f, 14 },
+    { 26805, 389.67f, 168.528f, -35.01f, -2.2f, 14 },
+    { 26802, 389.67f, 168.528f, -35.01f, -2.2f, 14 },
+    { 26800, 389.67f, 168.528f, -35.01f, -2.2f, 14 },
+    { 26805, 402.82f, 184.085f, -35.01f, -1.64f, 14 },
+    { 26802, 402.82f, 184.085f, -35.01f, -1.64f, 14 },
+    { 26800, 402.82f, 184.085f, -35.01f, -1.64f, 14 },
+    { 26805, 442.156f, 175.61f, -35.01f, 2.1f, 14 },
+    { 26802, 442.156f, 175.61f, -35.01f, 2.1f, 14 },
+    { 26800, 442.156f, 175.61f, -35.01f, 2.1f, 14 },
+    { 26805, 460.63f, 164.358f, -35.01f, -0.14f, 14 },
+    { 26802, 460.63f, 164.358f, -35.01f, -0.14f, 14 },
+    { 26800, 460.63f, 164.358f, -35.01f, -0.14f, 14 },
+    { 26805, 462.00f, 146.856f, -35.01f, -1.25f, 14 },
+    { 26802, 460.63f, 164.358f, -35.01f, -0.14f, 14 },
+    { 26800, 460.63f, 164.358f, -35.01f, -0.14f, 14 }
+};
+
+const NexusSpawns TrashHordeSpawns[18] = {
+    // Hall of Stasis
+    { 26803, 388.61f, 149.039f, -35.01f, 1.55f, 14 },
+    { 26801, 388.61f, 149.039f, -35.01f, 1.55f, 14 },
+    { 26799, 388.61f, 149.039f, -35.01f, 1.55f, 14 },
+    { 26803, 389.67f, 168.528f, -35.01f, -2.2f, 14 },
+    { 26801, 389.67f, 168.528f, -35.01f, -2.2f, 14 },
+    { 26799, 389.67f, 168.528f, -35.01f, -2.2f, 14 },
+    { 26803, 402.82f, 184.085f, -35.01f, -1.64f, 14 },
+    { 26801, 402.82f, 184.085f, -35.01f, -1.64f, 14 },
+    { 26799, 402.82f, 184.085f, -35.01f, -1.64f, 14 },
+    { 26803, 442.156f, 175.61f, -35.01f, 2.1f, 14 },
+    { 26801, 442.156f, 175.61f, -35.01f, 2.1f, 14 },
+    { 26799, 442.156f, 175.61f, -35.01f, 2.1f, 14 },
+    { 26803, 460.63f, 164.358f, -35.01f, -0.14f, 14 },
+    { 26801, 460.63f, 164.358f, -35.01f, -0.14f, 14 },
+    { 26799, 460.63f, 164.358f, -35.01f, -0.14f, 14 },
+    { 26803, 462.00f, 146.856f, -35.01f, -1.25f, 14 },
+    { 26801, 460.63f, 164.358f, -35.01f, -0.14f, 14 },
+    { 26799, 460.63f, 164.358f, -35.01f, -0.14f, 14 }
+};
+
 
 enum CreatureSay
 {

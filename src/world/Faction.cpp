@@ -47,9 +47,9 @@ bool isHostile(Object* objA, Object* objB)
     if ((objA->m_phase & objB->m_phase) == 0)     //What you can't see, can't be hostile!
         return false;
 
-    if (objA->IsPlayer() && objA->HasFlag(PLAYER_FLAGS, 0x100) && objB->IsCreature() && static_cast< Unit* >(objB)->GetAIInterface()->m_isNeutralGuard)
+    if (objA->IsPlayer() && objA->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP) && objB->IsCreature() && static_cast< Unit* >(objB)->GetAIInterface()->m_isNeutralGuard)
         return true;
-    if (objB->IsPlayer() && objB->HasFlag(PLAYER_FLAGS, 0x100) && objA->IsCreature() && static_cast< Unit* >(objA)->GetAIInterface()->m_isNeutralGuard)
+    if (objB->IsPlayer() && objB->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP) && objA->IsCreature() && static_cast< Unit* >(objA)->GetAIInterface()->m_isNeutralGuard)
         return true;
 
     if (objB->IsUnit() && objB->HasFlag(UNIT_FIELD_FLAGS, 2 | 128 | 256 | 65536))

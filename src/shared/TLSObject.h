@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,9 +29,9 @@ namespace Arcemu
         class TLSObject
         {
                 FastMutex createlock_;    //Lock held during creation and destruction.
-#if PLATFORM == PLATFORM_WIN32
+#ifdef _WIN32
                 DWORD key_;
-#elif PLATFORM == PLATFORM_APPLE || PLATFORM == PLATFORM_UNIX
+#elif defined(__APPLE__) || defined(__unix__)
                 pthread_key_t key_;
 #else
 #error Your platform does not support Thread Local Storage mechanism!
@@ -47,9 +47,9 @@ namespace Arcemu
                 void create()
                 {
                     createlock_.Acquire();
-#if PLATFORM == PLATFORM_APPLE || PLATFORM == PLATFORM_UNIX
+#if defined(__APPLE__) || defined(__unix__)
                     pthread_key_create(&key_, NULL);
-#elif PLATFORM == PLATFORM_WIN32
+#elif defined(_WIN32)
                     key_ = TlsAlloc();
 #endif
                     createlock_.Release();
@@ -62,9 +62,9 @@ namespace Arcemu
                 //************************************
                 inline void set(T val)
                 {
-#if PLATFORM == PLATFORM_APPLE || PLATFORM == PLATFORM_UNIX
+#if defined(__APPLE__) || defined(__unix__)
                     pthread_setspecific(key_, static_cast<const void*>(val));
-#elif PLATFORM == PLATFORM_WIN32
+#elif _WIN32
                     TlsSetValue(key_, static_cast<LPVOID>(val));
 #endif
                 }
@@ -75,9 +75,9 @@ namespace Arcemu
                 //************************************
                 inline T get() const
                 {
-#if PLATFORM == PLATFORM_APPLE || PLATFORM == PLATFORM_UNIX
+#if defined(__APPLE__) || defined(__unix__)
                     return static_cast<T>(pthread_getspecific(key_));
-#elif PLATFORM == PLATFORM_WIN32
+#elif _WIN32
                     return static_cast<T>(TlsGetValue(key_));
 #else
                     return static_cast<T>(NULL);
@@ -91,9 +91,9 @@ namespace Arcemu
                 void destroy()
                 {
                     createlock_.Acquire();
-#if PLATFORM == PLATFORM_APPLE || PLATFORM == PLATFORM_UNIX
+#if defined(__APPLE__) || defined(__unix__)
                     pthread_key_delete(key_);
-#elif PLATFORM == PLATFORM_WIN32
+#elif _WIN32
                     TlsFree(key_);
 #endif
                     createlock_.Release();

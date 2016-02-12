@@ -38,6 +38,7 @@ void SetupCullingOfStratholme(ScriptMgr* mgr);
 void SetupDrakTharonKeep(ScriptMgr* pScriptMgr);
 void SetupDeadmines(ScriptMgr* mgr);
 void SetupDireMaul(ScriptMgr* mgr);
+void SetupForgeOfSouls(ScriptMgr* mgr);
 void SetupGundrak(ScriptMgr* mgr);
 void SetupHellfireRamparts(ScriptMgr* mgr);
 void SetupHallsOfStone(ScriptMgr* mgr);
@@ -47,6 +48,7 @@ void SetupManaTombs(ScriptMgr* mgr);
 void SetupMaraudon(ScriptMgr* mgr);
 void SetupNexus(ScriptMgr* mgr);
 void SetupOldHillsbradFoothills(ScriptMgr* mgr);
+void SetupPitOfSaron(ScriptMgr* mgr);
 void SetupRagefireChasm(ScriptMgr* mgr);
 void SetupRazorfenDowns(ScriptMgr* mgr);
 void SetupScarletMonastery(ScriptMgr* mgr);
@@ -208,6 +210,8 @@ enum InstanceMaps
     MAP_VIOLET_HOLD         = 608,  //The Violet Hold
     MAP_OBSIDIAN_SANCTUM    = 615,  //ObsidianSanctum
     MAP_ICECROWNCITADEL     = 631,  //Icecrown Citadel
+    MAP_FORGE_OF_SOULS      = 632,  //Forge of Souls
+    MAP_PIT_OF_SARON        = 658,  //Pit of Saron.
     MAP_HALLSOFREFLECTION   = 668,  //Halls of Reflection
 
     /*
@@ -257,10 +261,8 @@ enum InstanceMaps
     619	Ahn'kahet: The Old Kingdom
     624	Vault of Archavon
     628	Isle of Conquest
-    632	The Forge of Souls
     649	Trial of the Crusader
     650	Trial of the Champion
-    658	Pit of Saron
     724	The Ruby Sanctum*/
 
 };

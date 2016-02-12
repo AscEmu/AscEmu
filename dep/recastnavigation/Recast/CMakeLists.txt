@@ -6,6 +6,7 @@ set(Recast_SRCS
    Source/RecastArea.cpp
    Source/RecastContour.cpp
    Source/RecastFilter.cpp
+   Source/RecastLayers.cpp
    Source/RecastMesh.cpp
    Source/RecastMeshDetail.cpp
    Source/RecastRasterization.cpp
@@ -21,3 +22,4 @@ add_library(Recast STATIC ${Recast_SRCS})
 
 #Set it to the project name.
 set(RECAST_LIBRARIES Recast CACHE INTERNAL "recast Libraries")
+unset(Recast_SRCS)

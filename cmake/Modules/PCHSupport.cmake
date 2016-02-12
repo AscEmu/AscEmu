@@ -8,34 +8,26 @@
 #   ADD_PRECOMPILED_HEADER_TO_TARGET _targetName _input _pch_output_to_use
 #   ADD_NATIVE_PRECOMPILED_HEADER _targetName _inputh _inputcpp
 
+# check for PCH support
 IF(CMAKE_COMPILER_IS_GNUCXX)
-
-	EXEC_PROGRAM(
-		${CMAKE_CXX_COMPILER}
-		ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpversion
-		OUTPUT_VARIABLE gcc_compiler_version)
-
-	IF(gcc_compiler_version MATCHES "4\\.[0-9]\\.[0-9]")
-		SET(PCHSupport_FOUND TRUE)
-	ELSE(gcc_compiler_version MATCHES "4\\.[0-9]\\.[0-9]")
-		IF(gcc_compiler_version MATCHES "3\\.4\\.[0-9]")
-			SET(PCHSupport_FOUND TRUE)
-		ENDIF(gcc_compiler_version MATCHES "3\\.4\\.[0-9]")
-	ENDIF(gcc_compiler_version MATCHES "4\\.[0-9]\\.[0-9]")
-
+    # to reenable pch, set it to true
+    SET(PCHSupport_FOUND FALSE)
+    message(STATUS "PCH support is disabled for gcc by reason: no support")
 	SET(_PCH_include_prefix "-I")
-
-ELSE(CMAKE_COMPILER_IS_GNUCXX)
-
-	IF(WIN32)
-		SET(PCHSupport_FOUND TRUE) # for experimental msvc support
-		SET(_PCH_include_prefix "/I")
-	ELSE(WIN32)
-		SET(PCHSupport_FOUND FALSE)
-	ENDIF(WIN32)
-
+ELSEIF(MSVC)
+	SET(PCHSupport_FOUND TRUE) # for experimental msvc support
+	SET(_PCH_include_prefix "/I")
+ELSE(WIN32)
+	SET(PCHSupport_FOUND FALSE)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
+if(NOT PCHSupport_FOUND)
+message(STATUS "PCH support was not found")
+else()
+message(STATUS "PCH support was found")
+endif()
+
+# gets compile flags
 MACRO(_PCH_GET_COMPILE_FLAGS _out_compile_flags)
 	STRING(TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _flags_var_name)
 	SET(${_out_compile_flags} ${${_flags_var_name}} )
@@ -52,8 +44,8 @@ MACRO(_PCH_GET_COMPILE_FLAGS _out_compile_flags)
 		LIST(APPEND ${_out_compile_flags} " ${_PCH_include_prefix}\"${item}\"")
 	ENDFOREACH(item)
 
-	GET_DIRECTORY_PROPERTY(_directory_flags DEFINITIONS)
-	GET_DIRECTORY_PROPERTY(_global_definitions DIRECTORY ${CMAKE_SOURCE_DIR} DEFINITIONS)
+	GET_DIRECTORY_PROPERTY(_directory_flags COMPILE_DEFINITIONS)
+	GET_DIRECTORY_PROPERTY(_global_definitions DIRECTORY ${CMAKE_SOURCE_DIR} COMPILE_DEFINITIONS)
 	LIST(APPEND ${_out_compile_flags} ${_directory_flags})
 	LIST(APPEND ${_out_compile_flags} ${_global_definitions})
 	LIST(APPEND ${_out_compile_flags} ${CMAKE_CXX_FLAGS})
@@ -61,6 +53,7 @@ MACRO(_PCH_GET_COMPILE_FLAGS _out_compile_flags)
 	SEPARATE_ARGUMENTS(${_out_compile_flags})
 ENDMACRO(_PCH_GET_COMPILE_FLAGS)
 
+# gets PDB file (only MSVC build)
 MACRO(_PCH_GET_PDB_FILENAME out_filename _target)
 	# determine output directory based on target type
 	GET_TARGET_PROPERTY(_targetType ${_target} TYPE)
@@ -82,6 +75,7 @@ MACRO(_PCH_GET_PDB_FILENAME out_filename _target)
 	SET(${out_filename} "${_targetOutput}/${_target}${_targetPostfix}.pdb")
 ENDMACRO(_PCH_GET_PDB_FILENAME)
 
+# sets compile command
 MACRO(_PCH_GET_COMPILE_COMMAND out_command _input _inputcpp _output)
 	IF(CMAKE_CXX_COMPILER_ARG1)
 		# remove leading space in compiler argument
@@ -102,6 +96,7 @@ MACRO(_PCH_GET_COMPILE_COMMAND out_command _input _inputcpp _output)
 	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 ENDMACRO(_PCH_GET_COMPILE_COMMAND )
 
+# sets base header output
 MACRO(GET_PRECOMPILED_HEADER_OUTPUT _targetName _input _output)
 	IF(MSVC)
 		GET_FILENAME_COMPONENT(_name ${_input} NAME_WE)
@@ -112,6 +107,8 @@ MACRO(GET_PRECOMPILED_HEADER_OUTPUT _targetName _input _output)
 	ENDIF(MSVC)
 ENDMACRO(GET_PRECOMPILED_HEADER_OUTPUT _targetName _input)
 
+# sets precompiled header for targetted library/executable
+# this macro will called by ADD_PRECOMPILED_HEADER macro
 MACRO(ADD_PRECOMPILED_HEADER_TO_TARGET _targetName _input _pch_output_to_use )
 	GET_TARGET_PROPERTY(oldProps ${_targetName} COMPILE_FLAGS)
 	IF(${oldProps} MATCHES NOTFOUND)
@@ -139,6 +136,7 @@ MACRO(ADD_PRECOMPILED_HEADER_TO_TARGET _targetName _input _pch_output_to_use )
 	ADD_DEPENDENCIES(${_targetName} pch_Generate_${_targetName})
 ENDMACRO(ADD_PRECOMPILED_HEADER_TO_TARGET)
 
+# calls other macros to set precompiled header
 MACRO(ADD_PRECOMPILED_HEADER _targetName _inputh _inputcpp)
 
 	SET(_PCH_current_target ${_targetName})
@@ -173,7 +171,7 @@ MACRO(ADD_PRECOMPILED_HEADER _targetName _inputh _inputcpp)
 ENDMACRO(ADD_PRECOMPILED_HEADER)
 
 MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _inputh _inputcpp)
-	IF(CMAKE_GENERATOR MATCHES Visual*)
+	IF(MSVC)
 		# Auto include the precompile (useful for moc processing, since the use of
 		# precompiled is specified at the target level
 		# and I don't want to specifiy /F- for each moc/res/ui generated files (using Qt)
@@ -188,26 +186,10 @@ MACRO(ADD_NATIVE_PRECOMPILED_HEADER _targetName _inputh _inputcpp)
 
 		#also inlude ${oldProps} to have the same compile options
 		SET_SOURCE_FILES_PROPERTIES(${_inputcpp} PROPERTIES COMPILE_FLAGS "${oldProps} /Yc\"${_inputh}\"")
-	ELSE(CMAKE_GENERATOR MATCHES Visual*)
-		IF(CMAKE_GENERATOR MATCHES Xcode)
-			# For Xcode, cmake needs my patch to process
-			# GCC_PREFIX_HEADER and GCC_PRECOMPILE_PREFIX_HEADER as target properties
-
-			GET_TARGET_PROPERTY(oldProps ${_targetName} COMPILE_FLAGS)
-			IF(${oldProps} MATCHES NOTFOUND)
-				SET(oldProps "")
-			ENDIF(${oldProps} MATCHES NOTFOUND)
-
-			# When buiding out of the tree, precompiled may not be located
-			# Use full path instead.
-			GET_FILENAME_COMPONENT(fullPath ${_inputh} ABSOLUTE)
-
-			SET_TARGET_PROPERTIES(${_targetName} PROPERTIES XCODE_ATTRIBUTE_GCC_PREFIX_HEADER "${fullPath}")
-			SET_TARGET_PROPERTIES(${_targetName} PROPERTIES XCODE_ATTRIBUTE_GCC_PRECOMPILE_PREFIX_HEADER "YES")
-		ELSE(CMAKE_GENERATOR MATCHES Xcode)
-			#Fallback to the "old" precompiled suppport
-			ADD_PRECOMPILED_HEADER(${_targetName} ${_inputh} ${_inputcpp})
-		ENDIF(CMAKE_GENERATOR MATCHES Xcode)
-	ENDIF(CMAKE_GENERATOR MATCHES Visual*)
-
+	ELSE()
+		ADD_PRECOMPILED_HEADER(${_targetName} ${_inputh} ${_inputcpp})
+	ENDIF()
 ENDMACRO(ADD_NATIVE_PRECOMPILED_HEADER)
+
+message(STATUS "PCH module is loaded")
+

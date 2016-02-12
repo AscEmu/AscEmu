@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -789,6 +789,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill)
     for (uint8 i = 0; i < 2; ++i)
     {
         uint32 extracredit = victim->GetCreatureInfo()->killcredit[i];
+
         if (extracredit != 0)
         {
             if (CreatureNameStorage.LookupEntry(extracredit))

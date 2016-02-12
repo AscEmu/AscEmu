@@ -1,20 +1,20 @@
 /*
-  * AscEmu Framework based on ArcEmu MMORPG Server
-  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
-  *
-  * This program is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * any later version.
-  *
-  * This program is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with this program. If not, see <http://www.gnu.org/licenses/>.
-  */
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 #include "Setup.h"
@@ -148,17 +148,22 @@ class IceCrownCitadelScript : public MoonInstanceScript
 
         void OnPlayerEnter(Player* player)
         {
-            // setup only the npcs with the correct team...
-            switch (player->GetTeam())
+            if (!mSpawnsCreated)
             {
-                case TEAM_ALLIANCE:
-                    for (uint8 i = 0; i < 13; i++)
-                        PushCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
-                    break;
-                case TEAM_HORDE:
-                    for (uint8 i = 0; i < 13; i++)
-                        PushCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
-                    break;
+                // setup only the npcs with the correct team...
+                switch (player->GetTeam())
+                {
+                    case TEAM_ALLIANCE:
+                        for (uint8 i = 0; i < 13; i++)
+                            PushCreature(AllySpawns[i].entry, AllySpawns[i].x, AllySpawns[i].y, AllySpawns[i].z, AllySpawns[i].o, AllySpawns[i].faction);
+                        break;
+                    case TEAM_HORDE:
+                        for (uint8 i = 0; i < 13; i++)
+                            PushCreature(HordeSpawns[i].entry, HordeSpawns[i].x, HordeSpawns[i].y, HordeSpawns[i].z, HordeSpawns[i].o, HordeSpawns[i].faction);
+                        break;
+                }
+
+                mSpawnsCreated = true;
             }
         }
 

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -543,7 +543,11 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         std::string MapPath;
         std::string vMapPath;
+        std::string mMapPath;
         bool UnloadMapFiles;
+        bool Collision;
+        bool Pathfinding;
+
         bool BreathingEnabled;
         bool SpeedhackProtection;
         uint32 mAcceptedConnections;
@@ -559,7 +563,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 ArenaQueueDiff;
         bool SendStatsOnJoin;
         SessionSet gmList;
-        bool Collision;
         bool DisableFearMovement;
 
         void ShutdownClasses();
@@ -579,6 +582,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         bool show_gm_in_who_list;
         uint32 map_unload_time;
+        uint8 map_cell_number;
 
         bool interfaction_chat;
         bool interfaction_group;
@@ -592,6 +596,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         bool gamemaster_hidePermissions;
         bool gamemaster_startonGMIsland;
         bool gamemaster_disableachievements;
+        bool gamemaster_announceKick;
 
         //Arena Settings
         int Arena_Season;

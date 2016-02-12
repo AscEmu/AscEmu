@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -22,15 +22,7 @@
 #ifndef __STDAFX_H
 #define __STDAFX_H
 
-//#define TEST_PATHFINDING 1
-
-#ifdef min
-#undef min
-#endif
-
-#ifdef max
-#undef max
-#endif
+#include "WorldConf.h"
 
 #include "../shared/CommonDefines.hpp"
 
@@ -45,12 +37,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
-
-#ifdef WIN32
 #include <array>
-#else
-#include <tr1/array>
-#endif
 
 #include "RecastIncludes.hpp"
 

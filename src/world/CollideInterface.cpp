@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -252,14 +252,14 @@ void CCollideInterface::ActivateMap(uint32 mapid)
         ++itr->second->refs;
     else
     {
-
         //load params
         char filename[1024];
-        sprintf(filename, "mmaps/%03i.mmap", mapid);
+        sprintf(filename, "%s/%03i.mmap", sWorld.mMapPath.c_str(), mapid);
         FILE* f = fopen(filename, "rb");
 
-        if (f == NULL)
+        if (f == nullptr)
         {
+            sLog.Debug("CCollideInterface::ActivateMap", "File: %s was not found!", filename);
             m_navmaplock.Release();
             return;
         }
@@ -302,19 +302,23 @@ void CCollideInterface::DeactiveMap(uint32 mapid)
 
 NavMeshData* CCollideInterface::GetNavMesh(uint32 mapId)
 {
-#ifndef TEST_PATHFINDING
-    return NULL;
-#else
-    NavMeshData* retval = NULL;
-    m_navmaplock.Acquire();
-    std::map<uint32, NavMeshData*>::iterator itr = m_navdata.find(mapId);
+    if (sWorld.Pathfinding)
+    {
+        //Log.Debug("CCollideInterface::GetNavMesh", "Loading NavMeshData for map %u", mapId);
+        NavMeshData* retval = NULL;
+        m_navmaplock.Acquire();
+        std::map<uint32, NavMeshData*>::iterator itr = m_navdata.find(mapId);
 
-    if (itr != m_navdata.end())
-        retval = itr->second;
+        if (itr != m_navdata.end())
+            retval = itr->second;
 
-    m_navmaplock.Release();
-    return retval;
-#endif
+        m_navmaplock.Release();
+        return retval;
+    }
+    else
+    {
+        return NULL;
+    }
 }
 
 void CCollideInterface::LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY)
@@ -325,11 +329,14 @@ void CCollideInterface::LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY
         return;
 
     char filename[1024];
-    sprintf(filename, "mmaps/%03i%02i%02i.mmtile", mapId, tileX, tileY);
+    sprintf(filename, "%s/%03i%02i%02i.mmtile", sWorld.mMapPath.c_str(), mapId, tileX, tileY);
     FILE* f = fopen(filename, "rb");
 
-    if (f == NULL)
+    if (f == nullptr)
+    {
+        sLog.Debug("CCollideInterface::LoadNavMeshTile", "File: %s was not found!", filename);
         return;
+    }
 
     MmapTileHeader header;
 

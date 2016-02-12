@@ -194,14 +194,15 @@ dtNavMesh::dtNavMesh() :
 	m_posLookup(0),
 	m_nextFree(0),
 	m_tiles(0),
+    m_saltBits(0),
     m_tileBits(0),
     m_polyBits(0)
 {
-#ifndef DT_POLYREF64
+/*#ifndef DT_POLYREF64
 	m_saltBits = 0;
 	m_tileBits = 0;
 	m_polyBits = 0;
-#endif
+#endif*/
 	memset(&m_params, 0, sizeof(dtNavMeshParams));
 	m_orig[0] = 0;
 	m_orig[1] = 0;
@@ -1238,11 +1239,11 @@ dtStatus dtNavMesh::removeTile(dtTileRef ref, unsigned char** data, int* dataSiz
 	tile->offMeshCons = 0;
 
 	// Update salt, salt should never be zero.
-#ifdef DT_POLYREF64
+/*#ifdef DT_POLYREF64
 	tile->salt = (tile->salt+1) & ((1<<DT_SALT_BITS)-1);
-#else
+#else*/
 	tile->salt = (tile->salt+1) & ((1<<m_saltBits)-1);
-#endif
+//#endif
 	if (tile->salt == 0)
 		tile->salt++;
 

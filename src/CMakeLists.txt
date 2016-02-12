@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # add crashreport tool if we are not on windows
-if(NOT WIN32)
+if(UNIX)
    add_subdirectory(crashreport)
 endif()
 
@@ -9,6 +9,7 @@ endif()
 add_subdirectory(shared)
 add_subdirectory(logonserver)
 add_subdirectory(world)
+add_subdirectory(worldserver)
 
 # if build tools is set, add the subdirectory
 if(BUILD_TOOLS)

@@ -675,9 +675,9 @@ struct ItemPrototype
     uint32 ExistingDuration;
     uint32 ItemLimitCategory;
     uint32 HolidayId;
+    uint32 FoodType;
 
     std::string lowercase_name;      /// used in auctions
-    uint32 FoodType;            /// pet food type
     int32 ForcedPetId;
 
     bool HasFlag(uint32 flag)
@@ -695,13 +695,6 @@ struct ItemPrototype
         else
             return false;
     }
-};
-
-struct ItemName
-{
-    uint32 entry;
-    char* name;
-    uint32 slot;
 };
 
 struct ItemsLinkedItemSet

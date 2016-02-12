@@ -1,6 +1,6 @@
 /**
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,10 +23,16 @@
 #include <sys/types.h>
 
 // Need to be cleaned up
+#ifdef _WIN32
 #include <windows.h>
-#include <minwinbase.h>
-#include <fileapi.h>
-#include <handleapi.h>
 
+#include <minwinbase.h>
+
+#include <fileapi.h>
+
+#include <handleapi.h>
+#else
+#include "limits.h"
+#endif
 
 #endif // MMAPS_DEFINE_H

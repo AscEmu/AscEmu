@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  * Copyright (C) 2005-2007 Ascent Team
  *
@@ -18,7 +18,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define BUFF_RESPAWN_TIME 90000
+#ifndef _WARSONG_GULCH_H
+#define _WARSONG_GULCH_H
+
+#define TIME_LEFT              25
+#define TIME_FOCUSED_ASSAULT   10
+#define TIME_BRUTAL_ASSAULT    15
+#define BUFF_RESPAWN_TIME      90000
+#define SILVERWING_FLAG        179785
+#define WARSONG_FLAG           179786
+#define SPELL_FOCUSED_ASSAULT  46392
+#define SPELL_BRUTAL_ASSAULT   46393
 
 enum WarsongGulchAreaTriggers
 {
@@ -45,6 +55,9 @@ class WarsongGulch : public CBattleground
     std::list<GameObject*> m_gates;
     uint32 m_scores[2];
     uint32 m_lgroup;
+    uint8 m_time_left;
+
+    void TimeLeft();
 
     public:
 
@@ -82,3 +95,5 @@ class WarsongGulch : public CBattleground
         void SetIsWeekend(bool isweekend);
         void DespawnGates(uint32 delay);
 };
+
+#endif // _WARSONG_GULCH_H
