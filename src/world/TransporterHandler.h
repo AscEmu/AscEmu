@@ -193,6 +193,10 @@ protected:
         void TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z);
         WaypointIterator GetNextWaypoint();
         int32 m_period;
+
+    protected:
+
+        Mutex m_creatureSetMutex;
 };
 
 #endif

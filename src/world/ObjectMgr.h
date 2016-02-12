@@ -547,6 +547,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         CorpseMap m_corpses;
         Mutex _corpseslock;
         Mutex _TransportLock;
+        Mutex m_creatureSetMutex;
 
         Item* CreateItem(uint32 entry, Player* owner);
         Item* LoadItem(uint32 lowguid);

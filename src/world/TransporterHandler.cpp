@@ -95,6 +95,7 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
 
 void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
 {
+    m_creatureSetMutex.Acquire();
     for (Transporter::CreatureSet::iterator itr = t->m_NPCPassengerSet.begin(); itr != t->m_NPCPassengerSet.end();)
     {
         if (Creature* npc = *itr)
@@ -105,6 +106,7 @@ void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
     }
 
     t->m_NPCPassengerSet.clear();
+    m_creatureSetMutex.Release();
     m_TransportersByInstanceIdMap[t->GetInstanceID()].erase(t);
     m_Transporters.erase(t);
     t->m_WayPoints.clear();
@@ -232,6 +234,7 @@ Transporter::~Transporter()
 {
     sEventMgr.RemoveEvents(this);
 
+    m_creatureSetMutex.Acquire();
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* passenger = *itr;
@@ -239,6 +242,7 @@ Transporter::~Transporter()
     }
 
     m_NPCPassengerSet.clear();
+    m_creatureSetMutex.Release();
     m_WayPoints.clear();
     m_passengers.clear();
 }
@@ -251,13 +255,14 @@ void Transporter::AddCreature(TransportSpawn creature)
 void Transporter::RespawnCreaturePassengers()
 {
     // TODO: Respect existing creature positions
+    m_creatureSetMutex.Acquire();
     for (auto existing_passenger : m_NPCPassengerSet)
     {
         existing_passenger->DeleteMe();
     }
 
     m_NPCPassengerSet.clear();
-
+    m_creatureSetMutex.Release();
     for (auto spawn : this->m_creatureSpawns)
     {
         this->AddNPCPassenger(spawn.transport_guid, spawn.entry, spawn.x, spawn.y, spawn.z, spawn.o, spawn.animation);
@@ -585,17 +590,14 @@ uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
     uint32 cnt = Object::BuildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs to the packet
+    m_creatureSetMutex.Acquire();
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
-        MapMgr* map = npc->GetMapMgr();
-        npc->AddToWorld(map);
-
         cnt += npc->BuildCreateUpdateBlockForPlayer(data, target);
     }
-
+    m_creatureSetMutex.Release();
     return cnt;
-    return 0;
 }
 
 uint32 TimeStamp();
@@ -721,9 +723,9 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
 
     if (anim)
         pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);
-
+    m_creatureSetMutex.Acquire();
     m_NPCPassengerSet.insert(pCreature);
-
+    m_creatureSetMutex.Release();
     if (tguid == 0)
     {
         ++currenttguid;
@@ -764,19 +766,21 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     pCreature->m_transportData.relativePosition.y = y;
     pCreature->m_transportData.relativePosition.z = z;
     pCreature->m_transportData.relativePosition.o = o;
-
+    m_creatureSetMutex.Acquire();
     m_NPCPassengerSet.insert(pCreature);
-
+    m_creatureSetMutex.Release();
     return pCreature;
 }
 
 void Transporter::UpdateNPCPositions(float x, float y, float z, float o)
 {
+    m_creatureSetMutex.Acquire();
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
         npc->SetPosition(x + npc->obj_movement_info.transporter_info.position.x, y + npc->obj_movement_info.transporter_info.position.y, z + npc->obj_movement_info.transporter_info.position.z, o + npc->obj_movement_info.transporter_info.position.o, false);
     }
+    m_creatureSetMutex.Release();
 }
 
 void Transporter::UpdatePlayerPositions(float x, float y, float z, float o)
