@@ -588,6 +588,9 @@ uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
+        MapMgr* map = npc->GetMapMgr();
+        npc->AddToWorld(map);
+
         cnt += npc->BuildCreateUpdateBlockForPlayer(data, target);
     }
 
