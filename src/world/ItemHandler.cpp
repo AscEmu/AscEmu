@@ -1466,17 +1466,28 @@ void WorldSession::SendInventoryList(Creature* unit)
         {
             if ((curItem = ItemPrototypeStorage.LookupEntry(itr->itemid)) != 0)
             {
-                if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass) && !_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM)) // looking up everything for active gms
-                    continue;
-                if (curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace) && !_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
-                    continue;
+                if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM)) // looking up everything for active gms
+                {
+                    if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
+                        continue;
 
-                if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !GetPlayer()->IsTeamHorde() && !_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
-                    continue;
+                    if (curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
+                        continue;
 
-                if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !GetPlayer()->IsTeamAlliance() && !_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
-                    continue;
+                    if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !GetPlayer()->IsTeamHorde())
+                        continue;
 
+                    if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !GetPlayer()->IsTeamAlliance())
+                        continue;
+
+                    int8 Slot = _player->GetItemInterface()->GetItemSlotByType(curItem->InventoryType);
+                    if (Slot == ITEM_NO_SLOT_AVAILABLE)
+                        continue;
+
+                    if (_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, curItem, true, true))
+                        continue;
+                }
+                
                 uint32 av_am = (itr->max_amount > 0) ? itr->available_amount : 0xFFFFFFFF;
                 uint32 price = 0;
                 if ((itr->extended_cost == NULL) || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
