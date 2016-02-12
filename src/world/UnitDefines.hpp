@@ -18,6 +18,10 @@
 
 #ifndef _UNIT_DEFINES_H
 #define _UNIT_DEFINES_H
+
+#include "CommonTypes.hpp"
+#include "LocationVector.h"
+
 enum DeathState
 {
     ALIVE = 0,  // Unit is alive and well
