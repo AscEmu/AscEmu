@@ -326,7 +326,7 @@ void MapMgr::PushObject(Object* obj)
     if (plObj != NULL)
     {
         m_PlayerStorage[plObj->GetLowGUID()] = plObj;
-        UpdateCellActivity(x, y, cellNumber);
+        UpdateCellActivity(x, y, 2 + cellNumber);
     }
     else
     {
@@ -547,7 +547,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         {
             uint32 x = GetPosX(obj->GetPositionX());
             uint32 y = GetPosY(obj->GetPositionY());
-            UpdateCellActivity(x, y, cellNumber);
+            UpdateCellActivity(x, y, 2 + cellNumber);
         }
         m_PlayerStorage.erase(static_cast< Player* >(obj)->GetLowGUID());
     }
@@ -718,7 +718,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
         if (obj->IsPlayer())
         {
             // have to unlock/lock here to avoid a deadlock situation.
-            UpdateCellActivity(cellX, cellY, cellNumber);
+            UpdateCellActivity(cellX, cellY, 2 + cellNumber);
             if (pOldCell != NULL)
             {
                 // only do the second check if there's -/+ 2 difference
