@@ -1088,8 +1088,11 @@ void ApplyNormalFixes()
         if (sp->ChannelInterruptFlags != 0)
         {
             float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->DurationIndex)));
-            if (Duration < 1500) Duration = 1500;
-            else if (Duration > 7000) Duration = 7000;
+            if (Duration < 1500)
+                Duration = 1500;
+            else if (Duration > 7000)
+                Duration = 7000;
+
             sp->fixed_hotdotcoef = (Duration / 3500.0f);
 
             if (sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
@@ -1446,8 +1449,10 @@ void ApplyNormalFixes()
         sp = CheckAndReturnSpellEntry(thrown_spells[i]);
         if (sp != NULL && sp->RecoveryTime == 0 && sp->StartRecoveryTime == 0)
         {
-            if (sp->Id == SPELL_RANGED_GENERAL) sp->RecoveryTime = 500;    // cebernic: hunter general with 0.5s
-            else sp->RecoveryTime = 1500; // 1.5cd
+            if (sp->Id == SPELL_RANGED_GENERAL)
+                sp->RecoveryTime = 500;    // cebernic: hunter general with 0.5s
+            else
+                sp->RecoveryTime = 1500; // 1.5cd
         }
     }
 
@@ -1745,17 +1750,17 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(46913);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // original just PROC_ON_CAST_SPELL
+        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // DankoDJ: original just PROC_ON_CAST_SPELL
     }
     sp = CheckAndReturnSpellEntry(46914);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // original just PROC_ON_CAST_SPELL
+        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // DankoDJ: original just PROC_ON_CAST_SPELL
     }
     sp = CheckAndReturnSpellEntry(46915);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // original just PROC_ON_CAST_SPELL
+        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // DankoDJ: original just PROC_ON_CAST_SPELL
     }
 
     // Warrior - Furious Attacks
@@ -3996,6 +4001,7 @@ void ApplyNormalFixes()
 
     //mage - Arcane Blast Proc
     sp = CheckAndReturnSpellEntry(36032);
+    if (sp != NULL)
     {
         sp->procFlags = 0;
         sp->procCharges = 0;
@@ -5569,8 +5575,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 43740;
     }
 
     //Lunar Grace - Idol of the Unseen Moon proc
@@ -5586,9 +5590,6 @@ void ApplyNormalFixes()
     {
         sp->proc_interval = 10001; //block proc when is already active.. (Primal Instinct duration = 10 sec)
         sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 43738;
-        sp->procChance = 85;
     }
 
     //Primal Instinct - Idol of Terror proc
@@ -5605,17 +5606,12 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 37198;
-        sp->procChance = 15;
     }
 
     //Thunderfury
     sp = CheckAndReturnSpellEntry(21992);
     if (sp != NULL)
     {
-        sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[2] = 27648;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER; // cebernic: for enemies not self
     }
 
@@ -5642,7 +5638,6 @@ void ApplyNormalFixes()
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
         sp->ProcOnNameHash[0] = SPELL_HASH_ICY_TOUCH;
-        sp->procChance = 100;
         sp->proc_interval = 45000;
     }
 
@@ -5685,7 +5680,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
         sp->ProcOnNameHash[0] = SPELL_HASH_BLOOD_STRIKE;
         sp->ProcOnNameHash[1] = SPELL_HASH_HEART_STRIKE;
-        sp->procChance = 15;
         sp->proc_interval = 45000;
     }
 
@@ -5833,12 +5827,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->Effect[0] = SPELL_EFFECT_NULL;
 
-
-    //Spell Focus Trigger (Mystical Skyfire Diamond)
-    sp = CheckAndReturnSpellEntry(32837);
-    if (sp != NULL)
-        sp->procChance = 15;
-
     // Band of the Eternal Sage
     sp = CheckAndReturnSpellEntry(35083);
     if (sp != NULL)
@@ -5869,7 +5857,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 10;
     }
 
     // Ashtongue Talisman of Insight
@@ -5878,6 +5865,7 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
 
     //Ashtongue Talisman of Equilibrium
+    // DankoDJ: To set the same value several times makes no sense!
     sp = CheckAndReturnSpellEntry(40442);
     if (sp != NULL)
     {
@@ -5902,6 +5890,7 @@ void ApplyNormalFixes()
     }
 
     //Ashtongue Talisman of Acumen
+    // DankoDJ: To set the same value several times makes no sense!
     sp = CheckAndReturnSpellEntry(40438);
     if (sp != NULL)
     {
@@ -5990,7 +5979,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(37447);
     if (sp != NULL)
     {
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procChance = 100;
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -6031,14 +6019,12 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(37306);
     if (sp != NULL)
     {
-        sp->procChance = 4;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // // DankoDJ: original 20
     }
     sp = CheckAndReturnSpellEntry(37311);
     if (sp != NULL)
     {
-        sp->procChance = 4;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
     }
 
     //Item Set: Deathmantle
@@ -6046,14 +6032,13 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procChance = 4;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
     }
 
     //Item Set: Netherblade
     sp = CheckAndReturnSpellEntry(37168);
     if (sp != NULL)
     {
-        sp->procChance = 15;
         //sp->procFlags = PROC_ON_CAST_SPELL; Need new flag - PROC_ON_FINISH_MOVE;
     }
 
@@ -6069,7 +6054,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 6;
     }
 
     //Item Set: Incarnate Raiment
@@ -6083,9 +6067,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(37377);
     if (sp != NULL)
     {
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procChance = 5;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->proc_interval = 20;
         sp->EffectTriggerSpell[0] = 37379;
@@ -6093,9 +6075,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(39437);
     if (sp != NULL)
     {
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procChance = 5;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->proc_interval = 20;
         sp->EffectTriggerSpell[0] = 37378;
@@ -6106,7 +6086,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->proc_interval = 60000;
-        sp->procChance = 100;
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
     }
 
@@ -6114,13 +6093,11 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(37228);
     if (sp != NULL)
     {
-        sp->procChance = 7;
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
     sp = CheckAndReturnSpellEntry(37237);
     if (sp != NULL)
     {
-        sp->procChance = 25;
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
     }
 
@@ -6128,15 +6105,13 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(37239);
     if (sp != NULL)
     {
-        sp->procChance = 2;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
     }
 
     //Item Set: Cyclone Regalia
     sp = CheckAndReturnSpellEntry(37213);
     if (sp != NULL)
     {
-        sp->procChance = 11;
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
     }
 
@@ -6144,8 +6119,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(38427);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 20;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
     }
 
     //Item Set: Crystalforge Battlegear
@@ -6153,7 +6127,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 6;
     }
 
     //Item Set: Crystalforge Raiment
@@ -6174,22 +6147,12 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM;
-        sp->procChance = 7;
-    }
-
-    //Item Set: Destroyer Battlegear
-    sp = CheckAndReturnSpellEntry(37528);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 100;
     }
 
     //Item Set: Warbringer Armor
     sp = CheckAndReturnSpellEntry(37516);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_CAST_SPELL;
         sp->procChance = 100;
     }
 
@@ -6205,7 +6168,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60172);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 61082;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->procChance = 100;
     }
@@ -6241,18 +6203,6 @@ void ApplyNormalFixes()
     {
         sp->Reagent[1] = 0;
         sp->ReagentCount[1] = 0;
-    }
-
-    // - Warrior - Warbringer Armor
-    // 2 pieces: You have a chance each time you parry to gain Blade Turning, absorbing 200 damage for 15 sec.
-    // SPELL ID = 37514 (http://www.wowhead.com/?spell=37514)
-
-    sp = CheckAndReturnSpellEntry(37514);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 37515;
-        sp->procChance = 25;
     }
 
     //Thorium Grenade
@@ -6294,29 +6244,15 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(55776);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 55775;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 25;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
         sp->proc_interval = 60000;
     }
-
-    //Lightweave Embroidery - this will work in 3.1
-    //sp = CheckAndReturnSpellEntry(55640);
-    //if (sp != NULL)
-    //{
-    //sp->EffectTriggerSpell[0] = 55637;
-    //sp->procFlags = PROC_ON_CAST_SPELL;
-    //sp->procChance = 50;
-    //sp->proc_interval = 45000;
-    //}
 
     //Darkglow Embroidery
     sp = CheckAndReturnSpellEntry(55768);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 55767;
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 35;
         sp->proc_interval = 60000;
     }
     ///////////////////////////////////////////////////////////////
@@ -6346,26 +6282,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
 
-    // Band of the Eternal Champion: reduced proc rate
-    sp = CheckAndReturnSpellEntry(35080);
-    if (sp != NULL)
-        sp->procChance = 5;
-
-    // Band of the Eternal Sage: reduced proc rate
-    sp = CheckAndReturnSpellEntry(35083);
-    if (sp != NULL)
-        sp->procChance = 5;
-
-    // Band of the Eternal Defender: reduced proc rate
-    sp = CheckAndReturnSpellEntry(35077);
-    if (sp != NULL)
-        sp->procChance = 5;
-
-    // Band of the Eternal Restorer: reduced proc rate
-    sp = CheckAndReturnSpellEntry(35086);
-    if (sp != NULL)
-        sp->procChance = 5;
-
     // Deadly Throw Interrupt
     sp = CheckAndReturnSpellEntry(32748);
     if (sp != NULL)
@@ -6377,9 +6293,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60063);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 60064;
+        sp->EffectTriggerSpell[1] = 60064;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 60064 in spell.dbc !?
         sp->procFlags = PROC_ON_SPELL_HIT;
-        sp->procChance = 10;
         sp->proc_interval = 45000;
     }
 
@@ -6387,9 +6302,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(49622);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 49623;
+        sp->EffectTriggerSpell[1] = 49623;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 49623 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 10;
         sp->proc_interval = 45000;
     }
 
@@ -6397,9 +6311,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(58901);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 58904;
+        sp->EffectTriggerSpell[1] = 58904;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 58904 in spell.dbc !?
         sp->procFlags = PROC_ON_RANGED_CRIT_ATTACK | PROC_ON_CRIT_ATTACK;
-        sp->procChance = 10;
         sp->proc_interval = 60000;
     }
 
@@ -6407,9 +6320,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60490);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 60492;
+        sp->EffectTriggerSpell[1] = 60492;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 60492 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 10;
         sp->proc_interval = 30000;
     }
 
@@ -6417,9 +6329,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60493);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 60494;
+        sp->EffectTriggerSpell[1] = 60494;       // DankoDJ: sp->EffectTriggerSpell[0] is alread 60494 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 15;
         sp->proc_interval = 45000;
     }
 
@@ -6427,9 +6338,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60313);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 60314;
+        sp->EffectTriggerSpell[1] = 60314;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 60314 in spell.dbc !?
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-        sp->procChance = 100;
         sp->maxstack = 20;
     }
 
@@ -6443,9 +6353,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 35095;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(35095);
     if (sp != NULL)
@@ -6466,17 +6373,14 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_BLOCK_VICTIM;
-        sp->procChance = 100;
-        sp->EffectTriggerSpell[0] = 32643;
     }
 
     //Flow of Knowledge
     sp = CheckAndReturnSpellEntry(62114);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 60064;
+        sp->EffectTriggerSpell[1] = 60064;      // DankoDJ: EffectTriggerSpell[0] is 60064 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 10;
         sp->proc_interval = 45000;
     }
 
@@ -6560,22 +6464,19 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(40484);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 100;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;   // DankoDJ: original 20
     }
 
     //Inject Poison
     sp = CheckAndReturnSpellEntry(44599);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 100;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;   // DankoDJ: original 20
     }
     sp = CheckAndReturnSpellEntry(46046);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 100;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;   // DankoDJ: original 20
     }
 
     //Doom
@@ -6778,7 +6679,7 @@ void ApplyNormalFixes()
     }
 
     // Runic Empowerment
-    sp = dbcSpell.LookupEntryForced(81229);
+    /*sp = dbcSpell.LookupEntryForced(81229);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -6788,7 +6689,7 @@ void ApplyNormalFixes()
         sp->ProcOnNameHash[1] = SPELL_HASH_FROST_STRIKE;
         sp->ProcOnNameHash[2] = SPELL_HASH_DEATH_COIL;
         sp->procChance = 45;
-    }
+    }*/
 
     // Vengeance
     sp = dbcSpell.LookupEntryForced(93099);
@@ -6950,9 +6851,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 34263;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(34263);
     if (sp != NULL)
@@ -6967,9 +6865,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 34260;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(34260);
     if (sp != NULL)
@@ -6984,9 +6879,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 43742;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(43742);
     if (sp != NULL)
@@ -7001,9 +6893,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 43747;
-        sp->procChance = 40;
     }
     sp = CheckAndReturnSpellEntry(43747);
     if (sp != NULL)
@@ -7017,9 +6906,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 43749;
-        sp->procChance = 50;
     }
     sp = CheckAndReturnSpellEntry(43749);
     if (sp != NULL)
