@@ -97,16 +97,6 @@ void World::InitPriestSpells()
         sp->EffectMiscValue[1] = 127;
     }
 
-    if (sp = dbcSpell.LookupEntryForced(33150))
-    {
-        sp->procCharges = 0;
-    }
-
-    if (sp = dbcSpell.LookupEntryForced(33154))
-    {
-        sp->procCharges = 0;
-    }
-
     if (sp = dbcSpell.LookupEntryForced(33151))
     {
         sp->procCharges = 0;

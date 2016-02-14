@@ -2435,11 +2435,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(53486);
     if (sp != NULL)
     {
-        sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_DONE;
-        sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->EffectTriggerSpell[1] = 53489;
     }
     sp = CheckAndReturnSpellEntry(53489);
     if (sp != NULL)
@@ -2448,11 +2445,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(53488);
     if (sp != NULL)
     {
-        sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_DONE;
-        sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->EffectTriggerSpell[1] = 59578;
     }
     sp = CheckAndReturnSpellEntry(59578);
     if (sp != NULL)
@@ -2520,25 +2514,16 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_RANGED_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 53254;
-        sp->procChance = 4;
     }
     sp = CheckAndReturnSpellEntry(53216);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_RANGED_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 53254;
-        sp->procChance = 7;
     }
     sp = CheckAndReturnSpellEntry(53217);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_RANGED_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 53254;
-        sp->procChance = 10;
     }
 
     // Insert hunter spell fixes here
@@ -2886,18 +2871,15 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(31124);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 31125;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 10;
+        sp->EffectTriggerSpell[1] = 31125;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 31125 in spell.dbc !?
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
     }
 
     //Rogue - Blade Twisting Rank 2
     sp = CheckAndReturnSpellEntry(31126);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 51585;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 10;
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
     }
 
     // Garrote - this is used?
@@ -2954,49 +2936,32 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(36554);
     if (sp != NULL)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
-    sp = CheckAndReturnSpellEntry(36554);
-    if (sp != NULL)
 
-        //rogue - Seal Fate
-        sp = CheckAndReturnSpellEntry(14186);
+    //rogue - Seal Fate
+    sp = CheckAndReturnSpellEntry(14186);
     if (sp != NULL)
     {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 14189;
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->procChance = 20;
     }
     sp = CheckAndReturnSpellEntry(14190);
     if (sp != NULL)
     {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 14189;
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->procChance = 40;
     }
     sp = CheckAndReturnSpellEntry(14193);
     if (sp != NULL)
     {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 14189;
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->procChance = 60;
     }
     sp = CheckAndReturnSpellEntry(14194);
     if (sp != NULL)
     {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 14189;
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->procChance = 80;
     }
     sp = CheckAndReturnSpellEntry(14195);
     if (sp != NULL)
     {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 14189;
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->procChance = 100;
     }
     //garrot
     sp = CheckAndReturnSpellEntry(703);
@@ -3144,6 +3109,7 @@ void ApplyNormalFixes()
         sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
 
     //Priest: Blessed Recovery
+    // DankoDJ: Trigger the current EffectTrigger* defines through the originall EffectTriggerSpell from spell.dbc
     sp = CheckAndReturnSpellEntry(27811);
     if (sp != NULL)
     {
@@ -3167,19 +3133,16 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
-        sp->procChance = 20;
     }
     sp = CheckAndReturnSpellEntry(33145);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
-        sp->procChance = 40;
     }
     sp = CheckAndReturnSpellEntry(33146);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
-        sp->procChance = 60;
     }
 
     //priest- Focused Will
@@ -3349,19 +3312,19 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;     // DankoDJ: No triggered Spell! We override SPELL_AURA_ADD_PCT_MODIFIER with this crap?
     }
     sp = CheckAndReturnSpellEntry(29205);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;     // DankoDJ: No triggered Spell! We override SPELL_AURA_ADD_PCT_MODIFIER with this crap?
     }
     sp = CheckAndReturnSpellEntry(29206);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;     // DankoDJ: No triggered Spell! We override SPELL_AURA_ADD_PCT_MODIFIER with this crap?
     }
 
     // Elemental Mastery
@@ -3382,22 +3345,22 @@ void ApplyNormalFixes()
 
     //summon only 1 elemental totem
     sp = CheckAndReturnSpellEntry(2894);
-    if (sp != NULL && sp->Id == 2894)
+    if (sp != NULL)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_TOTEM_FIRE; //remove this targeting. it is enough to get 1 target
 
     //summon only 1 elemental totem
     sp = CheckAndReturnSpellEntry(2062);
-    if (sp != NULL && sp->Id == 2062)
+    if (sp != NULL)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_TOTEM_EARTH; //remove this targeting. it is enough to get 1 target
 
     // Elemental Focus
     sp = CheckAndReturnSpellEntry(16164);
-    if (sp != NULL && sp->Id == 16164)
+    if (sp != NULL)
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
 
     // Stormstrike
     sp = CheckAndReturnSpellEntry(17364);
-    if (sp != NULL && sp->Id == 17364)
+    if (sp != NULL)
     {
         sp->procFlags = PROC_ON_SPELL_HIT_VICTIM;
     }
@@ -3603,31 +3566,26 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 20;
     }
     sp = CheckAndReturnSpellEntry(51563);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 20;
     }
     sp = CheckAndReturnSpellEntry(51564);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 20;
     }
     sp = CheckAndReturnSpellEntry(51565);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 20;
     }
     sp = CheckAndReturnSpellEntry(51566);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 20;
     }
 
     //Earthliving Weapon
@@ -3702,35 +3660,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(53817);
     if (sp != NULL)
         sp->procCharges = 0;
-
-    ////////////////////////////////////////////////////////////
-    // Healing Way
-
-    //Zack : disabled this to not create confusion that it is working. Burlex deleted code so it needs to be reverted in order to work
-    //sp = CheckAndReturnSpellEntry(29202);
-    //if (sp != NULL)
-    //{
-    //sp->procFlags = PROC_ON_CAST_SPELL;
-    //sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-    //sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-    //sp->procChance = sp->EffectBasePoints[0] + 1;
-    //}
-    //sp = CheckAndReturnSpellEntry(29205);
-    //if (sp != NULL)
-    //{
-    //sp->procFlags = PROC_ON_CAST_SPELL;
-    //sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-    //sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-    //sp->procChance = sp->EffectBasePoints[0] + 1;
-    //}
-    //sp = CheckAndReturnSpellEntry(29206);
-    //if (sp != NULL)
-    //{
-    //sp->procFlags = PROC_ON_CAST_SPELL;
-    //sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-    //sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-    //sp->procChance = sp->EffectBasePoints[0] + 1;
-    //}
 
     ////////////////////////////////////////////////////////////
     //  Unleashed Rage - LordLeeCH
@@ -3832,31 +3761,26 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 4;
     }
     sp = CheckAndReturnSpellEntry(54486);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 8;
     }
     sp = CheckAndReturnSpellEntry(54488);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 12;
     }
     sp = CheckAndReturnSpellEntry(54489);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 16;
     }
     sp = CheckAndReturnSpellEntry(54490);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 20;
     }
 
     // Brain Freeze rank 1
@@ -3967,18 +3891,15 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 36032;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
         sp->ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
     }
 
-    // Updated ranks by Joker
     // Arcane Blast
     sp = CheckAndReturnSpellEntry(42894);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 36032;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
         sp->ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
     }
@@ -3987,7 +3908,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 36032;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
     }
 
@@ -3995,7 +3915,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 36032;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
     }
 
@@ -4109,7 +4028,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = 0;
-        sp->procCharges = 1;
         sp->RankNumber = 100;
         sp->AuraInterruptFlags = 0;
     }
@@ -4118,7 +4036,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = 0;
-        sp->procCharges = 1;
         sp->RankNumber = 101;
         sp->AuraInterruptFlags = 0;
     }
@@ -4173,7 +4090,6 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 29077;
         sp->procFlags = uint32(PROC_ON_SPELL_CRIT_HIT | PROC_TARGET_SELF);
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(29075);
     if (sp != NULL)
@@ -4181,7 +4097,6 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 29077;
         sp->procFlags = uint32(PROC_ON_SPELL_CRIT_HIT | PROC_TARGET_SELF);
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(29076);
     if (sp != NULL)
@@ -4189,7 +4104,6 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 29077;
         sp->procFlags = uint32(PROC_ON_SPELL_CRIT_HIT | PROC_TARGET_SELF);
-        sp->procChance = 100;
     }
 
     //mage: Blazing Speed
@@ -4204,22 +4118,16 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(11095);
     if (sp != NULL)
     {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procChance = 33;
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
     sp = CheckAndReturnSpellEntry(12872);
     if (sp != NULL)
     {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procChance = 66;
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
     sp = CheckAndReturnSpellEntry(12873);
     if (sp != NULL)
     {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procChance = 100;
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
     // mage - Frost Warding
@@ -4274,8 +4182,6 @@ void ApplyNormalFixes()
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
         sp->ProcOnNameHash[0] = SPELL_HASH_COUNTERSPELL;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 18469;
     }
 
     //Improved Counterspell rank 2
@@ -4284,8 +4190,6 @@ void ApplyNormalFixes()
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
         sp->ProcOnNameHash[0] = SPELL_HASH_COUNTERSPELL;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 55021;
     }
     //////////////////////////////////////////
     // WARLOCK                                //
@@ -4322,7 +4226,6 @@ void ApplyNormalFixes()
         sp->EffectSpellClassMask[1][0] = 0x111;
         sp->EffectSpellClassMask[1][1] = 0;
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     sp = CheckAndReturnSpellEntry(47204);
@@ -4331,7 +4234,6 @@ void ApplyNormalFixes()
         sp->EffectSpellClassMask[1][0] = 0x111;
         sp->EffectSpellClassMask[1][1] = 0;
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     sp = CheckAndReturnSpellEntry(47203);
@@ -4340,7 +4242,6 @@ void ApplyNormalFixes()
         sp->EffectSpellClassMask[1][0] = 0x111;
         sp->EffectSpellClassMask[1][1] = 0;
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     sp = CheckAndReturnSpellEntry(47202);
@@ -4349,7 +4250,6 @@ void ApplyNormalFixes()
         sp->EffectSpellClassMask[1][0] = 0x111;
         sp->EffectSpellClassMask[1][1] = 0;
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     sp = CheckAndReturnSpellEntry(47201);
@@ -4369,21 +4269,18 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     sp = CheckAndReturnSpellEntry(47196);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     sp = CheckAndReturnSpellEntry(47197);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     //Warlock Molten Core
@@ -4391,21 +4288,18 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     sp = CheckAndReturnSpellEntry(47246);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     sp = CheckAndReturnSpellEntry(47247);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procCharges = -1;
     }
 
     ////////////////////////////////////////////////////////////
@@ -4413,19 +4307,16 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(30299);
     if (sp != NULL)
     {
-        sp->procChance = 10;
         sp->proc_interval = 13000;
     }
     sp = CheckAndReturnSpellEntry(30301);
     if (sp != NULL)
     {
-        sp->procChance = 20;
         sp->proc_interval = 13000;
     }
     sp = CheckAndReturnSpellEntry(30302);
     if (sp != NULL)
     {
-        sp->procChance = 30;
         sp->proc_interval = 13000;
     }
     ////////////////////////////////////////////////////////////
@@ -4513,7 +4404,6 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 27285;
         sp->procFlags = PROC_ON_SPELL_HIT_VICTIM | PROC_ON_DIE;
-        sp->procChance = 100;
     }
 
     //warlock: Nightfall
@@ -4523,7 +4413,6 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 17941;
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->procChance = 2;
     }
     sp = CheckAndReturnSpellEntry(18095);
     if (sp != NULL)
@@ -4531,7 +4420,6 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 17941;
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->procChance = 4;
     }
     //Shadow Trance should be removed on the first SB
     sp = CheckAndReturnSpellEntry(17941);
@@ -5101,7 +4989,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = uint32(PROC_TARGET_SELF | PROC_ON_ANY_HOSTILE_ACTION);
-        sp->procChance = 100;
     }
 
     //Backdraft Rank 2
@@ -5109,7 +4996,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = uint32(PROC_TARGET_SELF | PROC_ON_ANY_HOSTILE_ACTION);
-        sp->procChance = 100;
     }
 
     //Backdraft Rank 3
@@ -5117,7 +5003,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = uint32(PROC_TARGET_SELF | PROC_ON_ANY_HOSTILE_ACTION);
-        sp->procChance = 100;
     }
 
     //////////////////////////////////////////
@@ -6019,7 +5904,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(37306);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;       // // DankoDJ: original 20
+        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
     }
     sp = CheckAndReturnSpellEntry(37311);
     if (sp != NULL)
