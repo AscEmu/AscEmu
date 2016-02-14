@@ -383,39 +383,96 @@ void ApplyNormalFixes()
         // find diminishing status
         sp->DiminishStatus = GetDiminishingGroup(namehash);
 
-        //another grouping rule
-
-        //Quivers, Ammo Pouches and Thori'dal the Star's Fury
-        if ((namehash == SPELL_HASH_HASTE && sp->Attributes & 0x10000) || sp->Id == 44972)
+        switch (sp->Id)
         {
-            sp->Attributes &= ~ATTRIBUTES_PASSIVE;//Otherwise we couldn't remove them
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_QUIVER_HASTE;
-        }
+            // SPELL_HASH_HASTE
+            // old: if ((namehash == SPELL_HASH_HASTE && sp->Attributes & 0x10000) || sp->Id == 44972)
+            case 28507:     // Haste
+            case 44972:     // Legendary Bow Haste
+            {
+                //Quivers, Ammo Pouches and Thori'dal the Star's Fury
+                sp->Attributes &= ~ATTRIBUTES_PASSIVE;      //Otherwise we couldn't remove them
+                sp->BGR_one_buff_on_target |= SPELL_TYPE_QUIVER_HASTE;
+            } break;
 
-        switch (namehash)
-        {
-            //case SPELL_HASH_SANCTITY_AURA:
-            case SPELL_HASH_DEVOTION_AURA:
-            case SPELL_HASH_RETRIBUTION_AURA:
-            case SPELL_HASH_CONCENTRATION_AURA:
-            case SPELL_HASH_SHADOW_RESISTANCE_AURA:
-            case SPELL_HASH_FIRE_RESISTANCE_AURA:
-            case SPELL_HASH_FROST_RESISTANCE_AURA:
-            case SPELL_HASH_CRUSADER_AURA:
+            // SPELL_HASH_CRUSADER_AURA
+            case 32223:
+            // SPELL_HASH_FROST_RESISTANCE_AURA
+            case 19888:     // Frost Resistance Aura Rank 1
+            case 19897:     // Frost Resistance Aura Rank 2
+            case 19898:     // Frost Resistance Aura Rank 3
+            case 27152:     // Frost Resistance Aura Rank 4
+            case 48945:     // Frost Resistance Aura Rank 5
+            // SPELL_HASH_FIRE_RESISTANCE_AURA
+            case 19891:     // Fire Resistance Aura Rank 1
+            case 19899:     // Fire Resistance Aura Rank 2
+            case 19900:     // Fire Resistance Aura Rank 3
+            case 27153:     // Fire Resistance Aura Rank 4
+            case 48947:     // Fire Resistance Aura Rank 5
+            // SPELL_HASH_SHADOW_RESISTANCE_AURA
+            case 19876:     // Shadow Resistance Aura Rank 1
+            case 19895:     // Shadow Resistance Aura Rank 2
+            case 19896:     // Shadow Resistance Aura Rank 3
+            case 27151:     // Shadow Resistance Aura Rank 4
+            case 48943:     // Shadow Resistance Aura Rank 5
+            // SPELL_HASH_CONCENTRATION_AURA
+            case 19746:
+            // SPELL_HASH_RETRIBUTION_AURA
+            case 7294:      // Retribution Aura Rank 1
+            case 8990:      // Retribution Aura Rank 1
+            case 10298:     // Retribution Aura Rank 2
+            case 10299:     // Retribution Aura Rank 3
+            case 10300:     // Retribution Aura Rank 4
+            case 10301:     // Retribution Aura Rank 5
+            case 13008:
+            case 27150:     // Retribution Aura Rank 6
+            case 54043:     // Retribution Aura Rank 7
+            // SPELL_HASH_DEVOTION_AURA
+            case 465:       // Devotion Aura Rank 1
+            case 643:       // Devotion Aura Rank 3
+            case 1032:      // Devotion Aura Rank 5
+            case 8258:
+            case 10290:     // Devotion Aura Rank 2
+            case 10291:     // Devotion Aura Rank 4
+            case 10292:     // Devotion Aura Rank 6
+            case 10293:     // Devotion Aura Rank 7
+            case 17232:
+            case 27149:     // Devotion Aura Rank 8
+            case 41452:
+            case 48941:     // Devotion Aura Rank 9
+            case 48942:     // Devotion Aura Rank 10
+            case 52442:
+            case 57740:
+            case 58944:
+            {
                 sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE2_PALADIN_AURA;
-                break;
-        }
+            } break;
 
-        switch (namehash)
-        {
-            case SPELL_HASH_BLOOD_PRESENCE:
-            case SPELL_HASH_FROST_PRESENCE:
-            case SPELL_HASH_UNHOLY_PRESENCE:
+            // SPELL_HASH_BLOOD_PRESENCE
+            case 48266:
+            case 50475:
+            case 50689:
+            case 54476:
+            case 55212:
+            // SPELL_HASH_FROST_PRESENCE
+            case 48263:
+            case 61261:
+            // SPELL_HASH_UNHOLY_PRESENCE
+            case 48265:
+            case 49772:
+            case 55222:
+            {
                 sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
-                break;
-            case SPELL_HASH_BEACON_OF_LIGHT:
+            } break;
+
+            // SPELL_HASH_BEACON_OF_LIGHT
+            case 53563:
+            case 53652:
+            case 53653:
+            case 53654:
+            {
                 sp->BGR_one_buff_on_target = SPELL_TYPE2_PALADIN_AURA;
-                break;
+            } break;
         }
 
         // HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
@@ -855,9 +912,6 @@ void ApplyNormalFixes()
             sp->c_is_flags |= SPELL_FLAG_IS_POISON;
         }
 
-        if (sp->NameHash == SPELL_HASH_ILLUMINATION)
-            sp->procFlags |= PROC_TARGET_SELF;
-
         // Set default mechanics if we don't already have one
         if (!sp->MechanicsType)
         {
@@ -889,29 +943,166 @@ void ApplyNormalFixes()
         if (sp->proc_interval != 0)
             sp->procFlags |= PROC_REMOVEONUSE;
 
-        // Seal of Command - Proc Chance
-        if (sp->NameHash == SPELL_HASH_SEAL_OF_COMMAND)
-        {
-            sp->procChance = 25;
-            sp->School = SCHOOL_HOLY; //the procspells of the original seal of command have physical school instead of holy
-            sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
-        }
-
-        // Decapitate
-        if (sp->NameHash == SPELL_HASH_DECAPITATE)
-            sp->procChance = 30;
-
         //shaman - shock, has no spellgroup.very dangerous move !
 
         //mage - fireball. Only some of the spell has the flags
 
-        if (sp->NameHash == SPELL_HASH_DIVINE_SHIELD || sp->NameHash == SPELL_HASH_DIVINE_PROTECTION || sp->NameHash == SPELL_HASH_BLESSING_OF_PROTECTION)
-            sp->MechanicsType = MECHANIC_INVULNARABLE;
-
-        // hackfix for this - FIX ME LATER - Burlex
-        // DankoDJ: Seems Burlex won't fix this in the near future ;)
-        if (namehash == SPELL_HASH_SEAL_FATE)
-            sp->procFlags = 0;
+        switch (sp->Id)
+        {
+            // SPELL_HASH_ILLUMINATION
+            case 20210:     // Illumination Rank 1
+            case 20212:     // Illumination Rank 2
+            case 20213:     // Illumination Rank 3
+            case 20214:     // Illumination Rank 4
+            case 20215:     // Illumination Rank 5
+            case 20272:
+            {
+                sp->procFlags |= PROC_TARGET_SELF;
+            } break;
+            // SPELL_HASH_SEAL_OF_COMMAND
+            case 20375:     // Seal of Command - Proc Chance
+            case 20424:
+            case 29385:
+            case 33127:
+            case 41469:
+            case 42058:
+            case 57769:
+            case 57770:
+            case 66004:
+            case 68020:
+            case 68021:
+            case 68022:
+            case 69403:
+            {
+                sp->procChance = 25;
+                sp->School = SCHOOL_HOLY; //the procspells of the original seal of command have physical school instead of holy
+                sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
+            } break;
+            // SPELL_HASH_DECAPITATE
+            case 24241:
+            case 25669:
+            case 54670:
+            {
+                sp->procChance = 30;
+            } break;
+            // SPELL_HASH_BLESSING_OF_PROTECTION
+            case 41450:
+            // SPELL_HASH_DIVINE_PROTECTION
+            case 498:
+            case 13007:
+            case 27778:
+            case 27779:
+            // SPELL_HASH_DIVINE_SHIELD
+            case 642:
+            case 13874:
+            case 29382:
+            case 33581:
+            case 40733:
+            case 41367:
+            case 54322:
+            case 63148:
+            case 66010:
+            case 67251:
+            case 71550:
+            {
+                sp->MechanicsType = MECHANIC_INVULNARABLE;
+            } break;
+            // SPELL_HASH_SHRED
+            case 3252:
+            case 5221:      // Shred Rank 1
+            case 6800:      // Shred Rank 2
+            case 8992:      // Shred Rank 3
+            case 9829:      // Shred Rank 4
+            case 9830:      // Shred Rank 5
+            case 27001:     // Shred Rank 6
+            case 27002:     // Shred Rank 7
+            case 27555:
+            case 48571:     // Shred Rank 8
+            case 48572:     // Shred Rank 9
+            case 49121:
+            case 49165:
+            case 61548:
+            case 61549:
+            // SPELL_HASH_BACKSTAB
+            case 53:        // Backstab Rank 1
+            case 2589:      // Backstab Rank 2
+            case 2590:      // Backstab Rank 3
+            case 2591:      // Backstab Rank 4
+            case 7159:
+            case 8721:      // Backstab Rank 5
+            case 11279:     // Backstab Rank 6
+            case 11280:     // Backstab Rank 7
+            case 11281:     // Backstab Rank 8
+            case 15582:
+            case 15657:
+            case 22416:
+            case 25300:     // Backstab Rank 9
+            case 26863:     // Backstab Rank 10
+            case 30992:
+            case 34614:
+            case 37685:
+            case 48656:     // Backstab Rank 11
+            case 48657:     // Backstab Rank 12
+            case 52540:
+            case 58471:
+            case 63754:
+            case 71410:
+            case 72427:
+            // SPELL_HASH_AMBUSH
+            case 8676:      // Ambush Rank 1
+            case 8724:      // Ambush Rank 2
+            case 8725:      // Ambush Rank 3
+            case 11267:     // Ambush Rank 4
+            case 11268:     // Ambush Rank 5
+            case 11269:     // Ambush Rank 6
+            case 24337:
+            case 27441:     // Ambush Rank 7
+            case 39668:
+            case 39669:
+            case 41390:
+            case 48689:     // Ambush Rank 8
+            case 48690:     // Ambush Rank 9
+            case 48691:     // Ambush Rank 10
+            case 56239:
+            // SPELL_HASH_GARROTE
+            case 703:       // Garrote Rank 1
+            case 8631:      // Garrote Rank 2
+            case 8632:      // Garrote Rank 3
+            case 8633:      // Garrote Rank 4
+            case 8818:      // Garrote Rank 4
+            case 11289:     // Garrote Rank 5
+            case 11290:     // Garrote Rank 6
+            case 26839:     // Garrote Rank 7
+            case 26884:     // Garrote Rank 8
+            case 37066:
+            case 48675:     // Garrote Rank 9
+            case 48676:     // Garrote Rank 10
+            // SPELL_HASH_RAVAGE
+            case 3242:
+            case 3446:
+            case 6785:      // Ravage Rank 1
+            case 6787:      // Ravage Rank 2
+            case 8391:
+            case 9866:      // Ravage Rank 3
+            case 9867:      // Ravage Rank 4
+            case 24213:
+            case 24333:
+            case 27005:     // Ravage Rank 5
+            case 29906:
+            case 33781:
+            case 48578:     // Ravage Rank 6
+            case 48579:     // Ravage Rank 7
+            case 50518:     // Ravage Rank 1
+            case 53558:     // Ravage Rank 2
+            case 53559:     // Ravage Rank 3
+            case 53560:     // Ravage Rank 4
+            case 53561:     // Ravage Rank 5
+            case 53562:     // Ravage Rank 6
+            {
+                // FIX ME: needs different flag check
+                sp->FacingCasterFlags = SPELL_INFRONT_STATUS_REQUIRE_INBACK;
+            } break;
+        }
 
         if (
             ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)) //rogue cold blood
@@ -921,11 +1112,6 @@ void ApplyNormalFixes()
             sp->c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
         }
 
-        if (namehash == SPELL_HASH_SHRED || namehash == SPELL_HASH_BACKSTAB || namehash == SPELL_HASH_AMBUSH || namehash == SPELL_HASH_GARROTE || namehash == SPELL_HASH_RAVAGE)
-        {
-            // FIX ME: needs different flag check
-            sp->FacingCasterFlags = SPELL_INFRONT_STATUS_REQUIRE_INBACK;
-        }
     }
 
     /////////////////////////////////////////////////////////////////
@@ -968,16 +1154,10 @@ void ApplyNormalFixes()
             if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL && sp->EffectTriggerSpell[i])
             {
                 spz = dbcSpell.LookupEntryForced(sp->EffectTriggerSpell[i]);
-                if (spz &&
-                    (spz->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE ||
-                    spz->Effect[i] == SPELL_EFFECT_HEAL)
-                   )
+                if (spz && (spz->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE || spz->Effect[i] == SPELL_EFFECT_HEAL))
                     spcheck = true;
             }
-            if (sp->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE ||
-                sp->Effect[i] == SPELL_EFFECT_HEAL ||
-                spcheck
-               )
+            if (sp->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE || sp->Effect[i] == SPELL_EFFECT_HEAL || spcheck)
             {
                 sp->spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
                 break;
@@ -1038,10 +1218,70 @@ void ApplyNormalFixes()
 
         //Special Cases
         //Holy Light & Flash of Light
-        if (sp->NameHash == SPELL_HASH_HOLY_LIGHT ||
-            sp->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
-            sp->spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
-
+        switch (sp->Id)
+        {
+            // SPELL_HASH_HOLY_LIGHT
+            case 635:
+            case 639:
+            case 647:
+            case 1026:
+            case 1042:
+            case 3472:
+            case 10328:
+            case 10329:
+            case 13952:
+            case 15493:
+            case 25263:
+            case 25292:
+            case 27135:
+            case 27136:
+            case 29383:
+            case 29427:
+            case 29562:
+            case 31713:
+            case 32769:
+            case 37979:
+            case 43451:
+            case 44479:
+            case 46029:
+            case 48781:
+            case 48782:
+            case 52444:
+            case 56539:
+            case 58053:
+            case 66112:
+            case 68011:
+            case 68012:
+            case 68013:
+            // SPELL_HASH_FLASH_OF_LIGHT
+            case 19750:
+            case 19939:
+            case 19940:
+            case 19941:
+            case 19942:
+            case 19943:
+            case 25514:
+            case 27137:
+            case 33641:
+            case 37249:
+            case 37254:
+            case 37257:
+            case 48784:
+            case 48785:
+            case 57766:
+            case 59997:
+            case 66113:
+            case 66922:
+            case 68008:
+            case 68009:
+            case 68010:
+            case 71930:
+            {
+                sp->spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
+            } break;
+            default:
+                break;
+        }
 
         //Additional Effect (not healing or damaging)
         for (uint8 i = 0; i < 3; i++)
@@ -1146,224 +1386,380 @@ void ApplyNormalFixes()
             }
         }
 
-        //////////////////////////////////////////////////////
-        // CLASS-SPECIFIC SPELL FIXES                        //
-        //////////////////////////////////////////////////////
-
-        // Note: when applying spell hackfixes, please follow a template
-        // Please don't put fixes like "sp = CheckAndReturnSpellEntry(15270);" inside the loop
-
-        //////////////////////////////////////////
-        // WARRIOR                                //
-        //////////////////////////////////////////
-
-
-
-        //////////////////////////////////////////
-        // PALADIN                                //
-        //////////////////////////////////////////
-
-        // Insert paladin spell fixes here
-
-        // Shield of Righteousness
-        if (sp->NameHash == SPELL_HASH_SHIELD_OF_RIGHTEOUSNESS)
+        // DankoDJ: This switch replaces the old NameHash overwrites
+        switch (sp->Id)
         {
-            sp->School = SCHOOL_HOLY;
-            sp->Effect[0] = SPELL_EFFECT_DUMMY;
-            sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, handling it in Spell::SpellEffectSchoolDMG(uint32 i)
-            sp->Effect[2] = SPELL_EFFECT_SCHOOL_DAMAGE; //hack
-        }
-
-        // Paladin - Consecration
-        if (sp->NameHash == SPELL_HASH_CONSECRATION)
-        {
-            sp->School = SCHOOL_HOLY; //Consecration is a holy redirected spell.
-            sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //Speaks for itself.
-        }
-
-        if (sp->NameHash == SPELL_HASH_SEALS_OF_THE_PURE)
-        {
-            sp->EffectSpellClassMask[0][0] = 0x08000400;
-            sp->EffectSpellClassMask[0][1] = 0x20000000;
-            sp->EffectSpellClassMask[1][1] = 0x800;
-        }
-
-        //////////////////////////////////////////
-        // HUNTER                                //
-        //////////////////////////////////////////
-
-        // THESE FIXES ARE GROUPED FOR CODE CLEANLINESS.
-        //Mend Pet
-        if (sp->NameHash == SPELL_HASH_MEND_PET)
-            sp->ChannelInterruptFlags = 0;
-
-
-        // Disengage
-        // Only works in combat
-        if (sp->Id == 781)
-            sp->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
-
-        //////////////////////////////////////////
-        // ROGUE                                //
-        //////////////////////////////////////////
-
-        // Insert rogue spell fixes here
-
-        //////////////////////////////////////////
-        // PRIEST                                //
-        //////////////////////////////////////////
-
-        //Borrowed Time
-        if (sp->NameHash == SPELL_HASH_BORROWED_TIME)
-        {
-            sp->procFlags = PROC_ON_CAST_SPELL;
-        }
-
-        //megai2: Grace http://www.wowhead.com/?spell=47516
-        if (sp->NameHash == SPELL_HASH_GRACE)
-        {
-            switch (sp->Id)
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // Misc
+            case 781:       // Disengage
             {
-                case 47516:    // Rank 1
-                case 47517:    // Rank 2
-                    sp->procFlags = PROC_ON_CAST_SPELL;
-                    break;
+                sp->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
+            } break;
 
-                case 47930:
-                    sp->rangeIndex = 4;
-                    break;
-            }
-        }
-
-        //////////////////////////////////////////
-        // SHAMAN                                //
-        //////////////////////////////////////////
-
-        // Insert shaman spell fixes here
-        // Fire Nova Ranks (Linked spells)
-        if (sp->NameHash == SPELL_HASH_FIRE_NOVA)
-        {
-            switch (sp->Id)
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_SHIELD_OF_RIGHTEOUSNESS
+            case 53600:     // Shield of Righteousness Rank 1
+            case 61411:     // Shield of Righteousness Rank 2
             {
-                case 1535:
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 8349;
-                } break;
-                case 8498:      //Rank 2
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 8502;
-                } break;
-                case 8499:      //Rank 3
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 8503;
-                } break;
-                case 11314:     //Rank 4
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 11306;
-                } break;
-                case 11315:     //Rank 5
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 11307;
-                } break;
-                case 25546:     //Rank 6
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 25535;
-                } break;
-                case 25547:     //Rank 7
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 25537;
-                } break;
-                case 61649:     //Rank 8
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 61650;
-                } break;
-                case 61657:     //Rank 9
-                {
-                    sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-                    sp->EffectTriggerSpell[1] = 61654;
-                } break;
-                default:
-                    break;
+                sp->School = SCHOOL_HOLY;
+                sp->Effect[0] = SPELL_EFFECT_DUMMY;
+                sp->Effect[1] = SPELL_EFFECT_NULL;          //hacks, handling it in Spell::SpellEffectSchoolDMG(uint32 i)
+                sp->Effect[2] = SPELL_EFFECT_SCHOOL_DAMAGE; //hack
+            } break;
 
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_CONSECRATION
+            case 20116:     // Consecration Rank 2
+            case 20922:     // Consecration Rank 3
+            case 20923:     // Consecration Rank 4
+            case 20924:     // Consecration Rank 5
+            case 26573:     // Consecration Rank 1
+            case 27173:     // Consecration Rank 6
+            case 32773:
+            case 33559:
+            case 36946:
+            case 37553:
+            case 38385:
+            case 41541:
+            case 43429:
+            case 48818:     // Consecration Rank 7
+            case 48819:     // Consecration Rank 8
+            case 57798:
+            case 59998:
+            case 69930:
+            case 71122:
+            {
+                sp->School = SCHOOL_HOLY; //Consecration is a holy redirected spell.
+                sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //Speaks for itself.
+            } break;
+            
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_SEALS_OF_THE_PURE
+            case 20224:     // Seals of the Pure Rank 1
+            case 20225:     // Seals of the Pure Rank 2
+            case 20330:     // Seals of the Pure Rank 3
+            case 20331:     // Seals of the Pure Rank 4
+            case 20332:     // Seals of the Pure Rank 5
+            {
+                sp->EffectSpellClassMask[0][0] = 0x08000400;
+                sp->EffectSpellClassMask[0][1] = 0x20000000;
+                sp->EffectSpellClassMask[1][1] = 0x800;
             }
-        }
 
-        if (sp->NameHash == SPELL_HASH_FLAMETONGUE_ATTACK)
-        {
-            //sp->Effect[1] = SPELL_EFFECT_DUMMY;
-            sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
-        }
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_MEND_PET
+            case 136:       // Mend Pet Rank 1
+            case 3111:      // Mend Pet Rank 2
+            case 3661:      // Mend Pet Rank 3
+            case 3662:      // Mend Pet Rank 4
+            case 13542:     // Mend Pet Rank 5
+            case 13543:     // Mend Pet Rank 6
+            case 13544:     // Mend Pet Rank 7
+            case 27046:     // Mend Pet Rank 8
+            case 33976:     // Mend Pet
+            case 48989:     // Mend Pet Rank 9
+            case 48990:     // Mend Pet Rank 10
+            {
+                sp->ChannelInterruptFlags = 0;
+            } break;
 
-        if (sp->NameHash == SPELL_HASH_FROSTBRAND_ATTACK)
-        {
-            //sp->Effect[1] = SPELL_EFFECT_DUMMY;
-            sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
-        }
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_BORROWED_TIME
+            case 52795:     // Borrowed Time Rank 1
+            case 52797:     // Borrowed Time Rank 2
+            case 52798:     // Borrowed Time Rank 3
+            case 52799:     // Borrowed Time Rank 4
+            case 52800:     // Borrowed Time Rank 5
+            case 59887:     // Borrowed Time
+            case 59888:     // Borrowed Time
+            case 59889:     // Borrowed Time
+            case 59890:     // Borrowed Time
+            case 59891:     // Borrowed Time
+            {
+                sp->procFlags = PROC_ON_CAST_SPELL;
+            } break;
 
-        // Flametongue Totem passive target fix
-        if (sp->NameHash == SPELL_HASH_FLAMETONGUE_TOTEM && sp->Attributes & ATTRIBUTES_PASSIVE)
-        {
-            sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF;
-            sp->EffectImplicitTargetB[0] = 0;
-            sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
-            sp->EffectImplicitTargetB[1] = 0;
-        }
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_GRACE
+            case 47516:    // Grace Rank 1
+            case 47517:    // Grace Rank 2
+            {
+                sp->procFlags = PROC_ON_CAST_SPELL;
+            } break;
+            case 47930:     // Grace
+            {
+                sp->rangeIndex = 4;
+            } break;
 
-        // Frostbrand Weapon - 10% spd coefficient
-        if (sp->NameHash == SPELL_HASH_FROSTBRAND_ATTACK)
-            sp->fixed_dddhcoef = 0.1f;
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_FLAMETONGUE_ATTACK
+            case 10444:     // Flametongue Attack
+            case 65978:
+            case 68109:
+            case 68110:
+            case 68111:
+            {
+                //sp->Effect[1] = SPELL_EFFECT_DUMMY;
+                sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+            } break;
 
-        // Fire Nova - 0% spd coefficient
-        if (sp->NameHash == SPELL_HASH_FIRE_NOVA)
-            sp->fixed_dddhcoef = 0.0f;
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_FLAMETONGUE_TOTEM
+            case 8227:      // Flametongue Totem
+            case 8249:
+            case 10526:
+            case 16387:
+            case 25557:
+            case 52109:
+            case 52110:
+            case 52111:
+            case 52112:
+            case 52113:
+            case 58649:
+            case 58651:
+            case 58652:
+            case 58654:
+            case 58655:
+            case 58656:
+            {
+                // Flametongue Totem passive target fix
+                sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF;
+                sp->EffectImplicitTargetB[0] = 0;
+                sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
+                sp->EffectImplicitTargetB[1] = 0;
+            } break;
 
-        // Searing Totem - 8% spd coefficient
-        if (sp->NameHash == SPELL_HASH_ATTACK)
-            sp->fixed_dddhcoef = 0.08f;
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_FROSTBRAND_ATTACK
+            case 8034:      // Frostbrand Attack
+            case 8037:
+            case 10458:
+            case 16352:
+            case 16353:
+            case 25501:
+            case 38617:
+            case 54609:
+            case 58797:
+            case 58798:
+            case 58799:
+            case 64186:
+            {
+                // Frostbrand Weapon - 10% spd coefficient
+                sp->fixed_dddhcoef = 0.1f;
+                // Attributes addition
+                sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+            } break;
 
-        // Healing Stream Totem - 8% healing coefficient
-        if (sp->NameHash == SPELL_HASH_HEALING_STREAM)
-            sp->OTspell_coef_override = 0.08f;
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_FIRE_NOVA
+            case 8349:      // Fire Nova
+            case 8502:
+            case 8503:
+            case 11306:
+            case 11307:
+            case 11969:
+            case 11970:
+            case 12470:
+            case 16079:
+            case 16635:
+            case 17366:
+            case 18432:
+            case 20203:
+            case 20602:
+            case 23462:
+            case 25535:
+            case 25537:
+            case 26073:
+            case 30941:
+            case 32167:
+            case 33132:
+            case 33775:
+            case 37371:
+            case 38728:
+            case 43464:
+            case 46551:
+            case 61163:
+            case 61650:
+            case 61654:
+            case 61655:
+            case 68969:
+            case 69667:
+            case 78723:
+            case 78724:
+            {
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
 
-        // Nature's Guardian
-        if (sp->NameHash == SPELL_HASH_NATURE_S_GUARDIAN)
-        {
-            sp->procFlags = PROC_ON_SPELL_HIT_VICTIM | PROC_ON_MELEE_ATTACK_VICTIM |
-                PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_ANY_DAMAGE_VICTIM;
-            sp->proc_interval = 5000;
-            sp->EffectTriggerSpell[0] = 31616;
-        }
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_FIRE_NOVA (ranks)
+            case 1535:      //Fire Nova Rank 1
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 8349;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
+            case 8498:      //Fire Nova Rank 2
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 8502;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
+            case 8499:      //Fire Nova Rank 3
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 8503;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
+            case 11314:     //Fire Nova Rank 4
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 11306;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
+            case 11315:     //Fire Nova Rank 5
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 11307;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
+            case 25546:     //Fire Nova Rank 6
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 25535;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
+            case 25547:     //Fire Nova Rank 7
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 25537;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
+            case 61649:     //Fire Nova Rank 8
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 61650;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
+            case 61657:     //Fire Nova Rank 9
+            {
+                sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
+                sp->EffectTriggerSpell[1] = 61654;
+                // Fire Nova - 0% spd coefficient
+                sp->fixed_dddhcoef = 0.0f;
+            } break;
 
-        if (sp->NameHash == SPELL_HASH_HEX)
-        {
-            sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_UNUSED2;
-        }
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_ATTACK
+            case 3606:      // Attack
+            case 6350:
+            case 6351:
+            case 6352:
+            case 7389:
+            case 10435:
+            case 10436:
+            case 15037:
+            case 22048:
+            case 25530:
+            case 31992:
+            case 32969:
+            case 38296:
+            case 38584:
+            case 39592:
+            case 39593:
+            case 58700:
+            case 58701:
+            case 58702:
+            case 65998:
+            case 68106:
+            case 68107:
+            case 68108:
+            case 68866:
+            case 74413:
+            case 75100:
+            {
+                // Searing Totem - 8% spd coefficient
+                sp->fixed_dddhcoef = 0.08f;
+            } break;
 
-        //////////////////////////////////////////
-        // MAGE                                    //
-        //////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_HEALING_STREAM
+            case 5672:      // Healing Stream
+            case 6371:      // Healing Stream
+            case 6372:      // Healing Stream
+            case 10460:     // Healing Stream
+            case 10461:     // Healing Stream
+            case 25566:     // Healing Stream
+            case 58763:     // Healing Stream
+            case 58764:     // Healing Stream
+            case 58765:     // Healing Stream
+            case 65994:     // Healing Stream
+            case 68882:     // Healing Stream
+            {
+                // 8% healing coefficient
+                sp->OTspell_coef_override = 0.08f;
+            } break;
 
-        //////////////////////////////////////////
-        // WARLOCK                                //
-        //////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_NATURE_S_GUARDIAN
+            case 30881:     // Nature's Guardian
+            case 30883:     // Nature's Guardian
+            case 30884:     // Nature's Guardian
+            case 30885:     // Nature's Guardian
+            case 30886:     // Nature's Guardian
+            case 31616:     // Nature's Guardian
+            {
+                sp->procFlags = PROC_ON_SPELL_HIT_VICTIM | PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_ANY_DAMAGE_VICTIM;
+                sp->proc_interval = 5000;
+                sp->EffectTriggerSpell[0] = 31616;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 18350 in spell.dbc !?
+            } break;
 
-        //////////////////////////////////////////
-        // DRUID                                //
-        //////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_HEX
+            case 11641:     // Hex
+            case 16097:     // Hex
+            case 16707:     // Hex
+            case 16708:     // Hex
+            case 16709:     // Hex
+            case 17172:     // Hex
+            case 18503:     // Hex
+            case 22566:     // Hex
+            case 24053:     // Hex
+            case 29044:     // Hex
+            case 36700:     // Hex
+            case 40400:     // Hex
+            case 46295:     // Hex
+            case 51514:     // Hex
+            case 53439:     // Hex
+            case 66054:     // Hex
+            {
+                sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_UNUSED2;
+            } break;
 
-        // Dash
-        if (sp->NameHash == SPELL_HASH_DASH)
-        {
-            // mask for FORM_CAT(1) = 1 << (1 - 1), which is 1
-            sp->RequiredShapeShift = 1;
+            //////////////////////////////////////////////////////////////////////////////////////////
+            // SPELL_HASH_DASH
+            case 1850:      // Dash
+            case 9821:      // Dash
+            case 33357:     // Dash
+            case 36589:     // Dash
+            case 43317:     // Dash
+            case 44029:     // Dash
+            case 44531:     // Dash
+            case 61684:     // Dash
+            {
+                // mask for FORM_CAT(1) = 1 << (1 - 1), which is 1
+                sp->RequiredShapeShift = 1;
+            } break;
+            default:
+                break;
         }
     }
     // END OF LOOP
@@ -1566,19 +1962,19 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(12834);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 12721;
+        sp->EffectTriggerSpell[0] = 12721;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 12162 in spell.dbc !?
         sp->procFlags |= PROC_ON_SPELL_CRIT_HIT;
     }
     sp = CheckAndReturnSpellEntry(12849);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 12721;
+        sp->EffectTriggerSpell[0] = 12721;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 12850 in spell.dbc !?
         sp->procFlags |= PROC_ON_SPELL_CRIT_HIT;
     }
     sp = CheckAndReturnSpellEntry(12867);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 12721;
+        sp->EffectTriggerSpell[0] = 12721;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 12868 in spell.dbc !?
         sp->procFlags |= PROC_ON_SPELL_CRIT_HIT;
     }
 
@@ -1586,21 +1982,21 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(12289);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 23694;
+        sp->EffectTriggerSpell[1] = 23694;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 23694 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
     }
     // Warrior - Improved Hamstring Rank 2
     sp = CheckAndReturnSpellEntry(12668);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 23694;
+        sp->EffectTriggerSpell[1] = 23694;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 23694 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
     }
     // Warrior - Improved Hamstring Rank 3
     sp = CheckAndReturnSpellEntry(23695);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 23694;
+        sp->EffectTriggerSpell[1] = 23694;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 23694 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
     }
 
@@ -1608,7 +2004,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(20230);
     if (sp != NULL)
     {
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA; //aura
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 22858; //evil , but this is good for us :D
         sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM; //add procflag here since this was not processed with the others !
@@ -1627,7 +2022,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(29723);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 52437;
         sp->procFlags = PROC_ON_MELEE_ATTACK;
     }
 
@@ -1635,7 +2029,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(29725);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 52437;
         sp->procFlags = PROC_ON_MELEE_ATTACK;
     }
 
@@ -1643,7 +2036,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(29724);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 52437;
         sp->procFlags = PROC_ON_MELEE_ATTACK;
     }
 
@@ -1833,31 +2225,31 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 23886; //evil , but this is good for us :D
+        sp->EffectTriggerSpell[1] = 23886; //evil , but this is good for us :D  // DankoDJ: Is there a reason to trigger an non existing spell?
     }
     sp = CheckAndReturnSpellEntry(23893);
     if (sp != NULL)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //
-        sp->EffectTriggerSpell[1] = 23887; //evil , but this is good for us :D
+        sp->EffectTriggerSpell[1] = 23887; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
     }
     sp = CheckAndReturnSpellEntry(23894);
     if (sp != NULL)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //
-        sp->EffectTriggerSpell[1] = 23888; //evil , but this is good for us :D
+        sp->EffectTriggerSpell[1] = 23888; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
     }
     sp = CheckAndReturnSpellEntry(25251);
     if (sp != NULL)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //aura
-        sp->EffectTriggerSpell[1] = 25252; //evil , but this is good for us :D
+        sp->EffectTriggerSpell[1] = 25252; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
     }
     sp = CheckAndReturnSpellEntry(30335);
     if (sp != NULL)
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //aura
-        sp->EffectTriggerSpell[1] = 30339; //evil , but this is good for us :D
+        sp->EffectTriggerSpell[1] = 30339; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
     }
 
     // Warrior - Berserker Rage
@@ -1966,7 +2358,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(12311);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 18498;
+        sp->EffectTriggerSpell[1] = 18498;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 18498 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
 
@@ -1974,16 +2366,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(12958);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 18498;
+        sp->EffectTriggerSpell[1] = 18498;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 18498 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    // Shockwave Damage - useless?
-    sp = CheckAndReturnSpellEntry(46968);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_SCHOOL_DAMAGE;
-        sp->Effect[2] = SPELL_EFFECT_DUMMY;
     }
 
     //////////////////////////////////////////
@@ -2065,16 +2449,12 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(20056);   //Rank 2
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 20052;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT;
     }
 
     sp = CheckAndReturnSpellEntry(20057);   //Rank 3
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[0] = 20053;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT;
     }
 
@@ -2191,7 +2571,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(20178);
     if (sp != NULL)
     {
-        sp->procChance = 100;
         sp->procFlags = PROC_ON_MELEE_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);
     }
 
@@ -2223,7 +2602,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 54180;
-        sp->procChance = 33;
     }
     sp = CheckAndReturnSpellEntry(31877);
     if (sp != NULL)
@@ -2231,7 +2609,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 54180;
-        sp->procChance = 66;
     }
     sp = CheckAndReturnSpellEntry(31878);
     if (sp != NULL)
@@ -2239,7 +2616,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 54180;
-        sp->procChance = 100;
     }
 
     //Paladin - Blessed Life ranks 1-3
@@ -2344,13 +2720,11 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(53576);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-        sp->procChance = 100;
     }
 
     //Paladin - Sacred Cleansing
@@ -2358,19 +2732,16 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 10;
     }
     sp = CheckAndReturnSpellEntry(53552);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 20;
     }
     sp = CheckAndReturnSpellEntry(53553);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 30;
     }
 
     //Paladin - Judgements of the Pure
@@ -2378,31 +2749,26 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(53673);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(54151);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(54154);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 100;
     }
     sp = CheckAndReturnSpellEntry(54155);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 100;
     }
 
     //Paladin -  Heart of the Crusader
