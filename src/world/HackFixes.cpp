@@ -799,6 +799,7 @@ void ApplyNormalFixes()
                 sp->procFlags = uint32(PROC_ON_MELEE_ATTACK_VICTIM);
             }
         }
+        /* DankoCJ: Surprise surprise "Firestone Passive" didn't exist
         else if (strstr(sp->Name, "Firestone Passive"))
         {
             //Enchants the main hand weapon with fire, granting each attack a chance to deal $17809s1 additional fire damage.
@@ -812,7 +813,7 @@ void ApplyNormalFixes()
                 sp->procFlags = PROC_ON_MELEE_ATTACK;
                 sp->procChance = 50;
             }
-        }
+        }*/
         //some procs trigger at intervals
         else if (strstr(sp->Name, "Water Shield"))
         {
@@ -908,6 +909,7 @@ void ApplyNormalFixes()
             sp->MechanicsType = MECHANIC_INVULNARABLE;
 
         // hackfix for this - FIX ME LATER - Burlex
+        // DankoDJ: Seems Burlex won't fix this in the near future ;)
         if (namehash == SPELL_HASH_SEAL_FATE)
             sp->procFlags = 0;
 
@@ -1500,7 +1502,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(56636);
     if (sp != NULL)
     {
-        //sp->procChance = 33;
         sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
         sp->proc_interval = 6000;
     }
@@ -1509,7 +1510,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(56637);
     if (sp != NULL)
     {
-        //sp->procChance = 66;
         sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
         sp->proc_interval = 6000;
     }
@@ -1518,7 +1518,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(56638);
     if (sp != NULL)
     {
-        //sp->procChance = 100;
         sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
         sp->proc_interval = 6000;
     }
@@ -1584,7 +1583,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 23694;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->procChance = 5;
     }
     // Warrior - Improved Hamstring Rank 2
     sp = CheckAndReturnSpellEntry(12668);
@@ -1592,7 +1590,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 23694;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->procChance = 10;
     }
     // Warrior - Improved Hamstring Rank 3
     sp = CheckAndReturnSpellEntry(23695);
@@ -1600,7 +1597,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 23694;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->procChance = 15;
     }
 
     // Warrior - Retaliation
@@ -1628,7 +1624,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[0] = 52437;
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 3;
     }
 
     // Warrior - Sudden Death Rank 2
@@ -1637,7 +1632,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[0] = 52437;
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 6;
     }
 
     // Warrior - Sudden Death Rank 3
@@ -1646,7 +1640,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[0] = 52437;
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->procChance = 9;
     }
 
     // Warrior - Overpower Rank 1
@@ -1752,20 +1745,17 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(46913);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;
-        sp->procChance = 7;
+        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // original just PROC_ON_CAST_SPELL
     }
     sp = CheckAndReturnSpellEntry(46914);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;
-        sp->procChance = 13;
+        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // original just PROC_ON_CAST_SPELL
     }
     sp = CheckAndReturnSpellEntry(46915);
     if (sp != NULL)
     {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;
-        sp->procChance = 20;
+        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // original just PROC_ON_CAST_SPELL
     }
 
     // Warrior - Furious Attacks
@@ -1950,7 +1940,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 12798;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->procChance = 25;
     }
 
     // Improved Revenge Rank 2
@@ -1959,7 +1948,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 12798;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->procChance = 50;
     }
 
     // Intervene  Ranger: stop attack
@@ -1975,7 +1963,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 18498;
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 50;
     }
 
     // Gag Order Rank 2
@@ -1984,7 +1971,6 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 18498;
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 100;
     }
 
     // Shockwave Damage - useless?
@@ -2071,11 +2057,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->proc_interval = 3000;
 
-    // Paladin - Vengeance
-    sp = CheckAndReturnSpellEntry(20050);   // Rank 1 proc
-    if (sp != NULL)
-        sp->maxstack = 3;
-
     sp = CheckAndReturnSpellEntry(20056);   //Rank 2
     if (sp != NULL)
     {
@@ -2084,10 +2065,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT;
     }
 
-    sp = CheckAndReturnSpellEntry(20052);   // Rank 2 proc
-    if (sp != NULL)
-        sp->maxstack = 3;
-
     sp = CheckAndReturnSpellEntry(20057);   //Rank 3
     if (sp != NULL)
     {
@@ -2095,9 +2072,6 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT;
     }
-    sp = CheckAndReturnSpellEntry(20053);   // Rank 3 proc
-    if (sp != NULL)
-        sp->maxstack = 3;
 
     //Paladin - Seal of Command - Holy damage, but melee mechanics (crit damage, chance, etc)
     sp = CheckAndReturnSpellEntry(20424);
@@ -4024,7 +3998,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(36032);
     {
         sp->procFlags = 0;
-        sp->maxstack = 4;
         sp->procCharges = 0;
         sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
@@ -6605,13 +6578,6 @@ void ApplyNormalFixes()
         sp->procChance = 100;
     }
 
-    //Anthropy
-    sp = CheckAndReturnSpellEntry(40327);
-    if (sp != NULL)
-    {
-        sp->maxstack = 10;
-    }
-
     //Doom
     sp = CheckAndReturnSpellEntry(31347);
     if (sp != NULL)
@@ -7087,7 +7053,6 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 24590;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procChance = 100;
     }
 
     //Tempfix for Stone Statues
