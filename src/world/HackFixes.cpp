@@ -796,120 +796,574 @@ void ApplyNormalFixes()
         }//end "for each effect"
         sp->procFlags = pr;
 
-        if (strstr(sp->Description, "Must remain seated"))
+        // Description includes
+        switch (sp->Id)
         {
-            sp->RecoveryTime = 1000;
-            sp->CategoryRecoveryTime = 1000;
+            // "Must remain seated" 154 rows o.O
+            case 430:
+            case 431:
+            case 432:
+            case 433:
+            case 434:
+            case 435:
+            case 833:
+            case 1127:
+            case 1129:
+            case 1131:
+            case 1133:
+            case 1135:
+            case 1137:
+            case 2639:
+            case 5004:
+            case 5005:
+            case 5006:
+            case 5007:
+            case 7737:
+            case 9177:
+            case 10250:
+            case 10256:
+            case 10257:
+            case 18071:
+            case 18124:
+            case 18140:
+            case 18229:
+            case 18230:
+            case 18231:
+            case 18232:
+            case 18233:
+            case 18234:
+            case 21149:
+            case 22731:
+            case 22734:
+            case 23540:
+            case 23541:
+            case 23542:
+            case 23692:
+            case 23698:
+            case 24005:
+            case 24355:
+            case 24384:
+            case 24409:
+            case 24410:
+            case 24411:
+            case 24707:
+            case 24800:
+            case 24869:
+            case 25660:
+            case 25690:
+            case 25691:
+            case 25692:
+            case 25693:
+            case 25697:
+            case 25700:
+            case 25701:
+            case 25886:
+            case 25887:
+            case 25990:
+            case 26030:
+            case 26263:
+            case 27089:
+            case 27094:
+            case 28616:
+            case 29007:
+            case 29008:
+            case 29029:
+            case 29055:
+            case 29073:
+            case 30024:
+            case 32112:
+            case 33253:
+            case 33255:
+            case 33258:
+            case 33260:
+            case 33262:
+            case 33264:
+            case 33266:
+            case 33269:
+            case 33725:
+            case 33772:
+            case 34291:
+            case 35270:
+            case 35271:
+            case 40543:
+            case 40745:
+            case 40768:
+            case 41030:
+            case 41031:
+            case 42207:
+            case 42308:
+            case 42309:
+            case 42311:
+            case 42312:
+            case 43154:
+            case 43180:
+            case 43182:
+            case 43183:
+            case 43706:
+            case 43763:
+            case 44107:
+            case 44109:
+            case 44110:
+            case 44111:
+            case 44112:
+            case 44113:
+            case 44114:
+            case 44115:
+            case 44116:
+            case 44166:
+            case 45019:
+            case 45020:
+            case 45548:
+            case 45618:
+            case 46683:
+            case 46755:
+            case 46812:
+            case 46898:
+            case 49472:
+            case 52911:
+            case 53283:
+            case 53373:
+            case 56439:
+            case 57069:
+            case 57070:
+            case 57073:
+            case 57084:
+            case 57649:
+            case 58645:
+            case 58648:
+            case 58886:
+            case 61827:
+            case 61828:
+            case 61829:
+            case 61830:
+            case 61874:
+            case 64056:
+            case 64354:
+            case 64355:
+            case 64356:
+            case 65363:
+            case 65418:
+            case 65419:
+            case 65420:
+            case 65421:
+            case 65422:
+            case 69560:
+            case 69561:
+            case 71068:
+            case 71071:
+            case 71073:
+            case 71074:
+            case 72623:
+            {
+                sp->RecoveryTime = 1000;
+                sp->CategoryRecoveryTime = 1000;
+            } break;
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        // procintervals
-        //////////////////////////////////////////////////////////////////////////////////////////////////////
-        //omg lightning shield trigger spell id's are all wrong ?
-        //if you are bored you could make these by hand but i guess we might find other spells with this problem..and this way it's safe
-        if (strstr(sp->Name, "Lightning Shield") && sp->EffectTriggerSpell[0])
+        //Name includes "" overwrites
+        switch (sp->Id)
         {
-            //check if we can find in the description
-            const char* startofid = strstr(sp->Description, "for $");
-            if (startofid)
+            // Name includes "Lightning Shield", EffectTriggerSpell[0] != 0 (and "for $" in description)
+            case 324:       // Lightning Shield Rank 1
             {
-                startofid += strlen("for $");
-                sp->EffectTriggerSpell[0] = atoi(startofid);   //get new lightning shield trigger id
-            }
-            sp->proc_interval = 3000; //few seconds
-        }
-        //mage ignite talent should proc only on some chances
-        else if (strstr(sp->Name, "Ignite") && sp->Id >= 11119 && sp->Id <= 12848 && sp->EffectApplyAuraName[0] == SPELL_AURA_DUMMY)
-        {
-            //check if we can find in the description
-            const char* startofid = strstr(sp->Description, "an additional ");
-            if (startofid)
+                sp->EffectTriggerSpell[0] = 26364;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 325:       // Lightning Shield Rank 2
             {
-                startofid += strlen("an additional ");
-                sp->EffectBasePoints[0] = atoi(startofid); //get new value. This is actually level*8 ;)
-            }
-            sp->Effect[0] = SPELL_EFFECT_APPLY_AURA; //aura
-            sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL; //force him to use procspell effect
-            sp->EffectTriggerSpell[0] = 12654; //evil , but this is good for us :D
-            sp->procFlags = PROC_ON_SPELL_CRIT_HIT; //add procflag here since this was not processed with the others !
-        }
-        // Winter's Chill handled by frost school
-        else if (strstr(sp->Name, "Winter's Chill"))
-        {
-            sp->School = SCHOOL_FROST;
-        }
-        //more triggered spell ids are wrong. I think blizz is trying to outsmart us :S
-        //Chain Heal all ranks %50 heal value (49 + 1)
-        else if (strstr(sp->Name, "Chain Heal"))
-        {
-            sp->EffectDieSides[0] = 49;
-        }
-        else if (strstr(sp->Name, "Touch of Weakness"))
-        {
-            //check if we can find in the description
-            const char* startofid = strstr(sp->Description, "cause $");
-            if (startofid)
+                sp->EffectTriggerSpell[0] = 26365;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 905:       // Lightning Shield Rank 3
             {
-                startofid += strlen("cause $");
-                sp->EffectTriggerSpell[0] = atoi(startofid);
-                sp->EffectTriggerSpell[1] = sp->EffectTriggerSpell[0]; //later versions of this spell changed to eff[1] the aura
-                sp->procFlags = uint32(PROC_ON_MELEE_ATTACK_VICTIM);
-            }
-        }
-        /* DankoCJ: Surprise surprise "Firestone Passive" didn't exist
-        else if (strstr(sp->Name, "Firestone Passive"))
-        {
-            //Enchants the main hand weapon with fire, granting each attack a chance to deal $17809s1 additional fire damage.
-            //check if we can find in the description
-            char* startofid = strstr(sp->Description, "to deal $");
-            if (startofid)
+                sp->EffectTriggerSpell[0] = 26366;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 945:       // Lightning Shield Rank 4
             {
-                startofid += strlen("to deal $");
-                sp->EffectTriggerSpell[0] = atoi(startofid);
-                sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-                sp->procFlags = PROC_ON_MELEE_ATTACK;
-                sp->procChance = 50;
-            }
-        }*/
-        //some procs trigger at intervals
-        else if (strstr(sp->Name, "Water Shield"))
-        {
-            sp->proc_interval = 3000; //few seconds
-            sp->procFlags |= PROC_TARGET_SELF;
+                sp->EffectTriggerSpell[0] = 26367;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 8134:      // Lightning Shield Rank 5
+            {
+                sp->EffectTriggerSpell[0] = 26369;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 10431:     // Lightning Shield Rank 6
+            {
+                sp->EffectTriggerSpell[0] = 26370;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 10432:     // Lightning Shield Rank 7
+            {
+                sp->EffectTriggerSpell[0] = 26363;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 25469:     // Lightning Shield Rank 8
+            {
+                sp->EffectTriggerSpell[0] = 26371;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 25472:     // Lightning Shield Rank 9
+            {
+                sp->EffectTriggerSpell[0] = 26372;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 49280:     // Lightning Shield Rank 10
+            {
+                sp->EffectTriggerSpell[0] = 26378;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+            case 49281:     // Lightning Shield Rank 11
+            {
+                sp->EffectTriggerSpell[0] = 26379;
+                sp->proc_interval = 3000;       // 3 seconds
+            } break;
+
+            // Name includes "Ignite" (and "an additional" % in description)
+            // mage ignite talent should proc only on some chances
+            case 11119:     // Ignite Rank 1
+            case 11120:     // Ignite Rank 2
+            case 12846:     // Ignite Rank 3
+            case 12847:     // Ignite Rank 4
+            case 12848:     // Ignite Rank 5
+            {
+                // Set the diff. EffectBasePoint from description.
+                if (sp->Id == 11119)     // Ignite Rank 1
+                    sp->EffectBasePoints[0] = 8;
+                if (sp->Id == 11120)     // Ignite Rank 2
+                    sp->EffectBasePoints[0] = 16;
+                if (sp->Id == 12846)     // Ignite Rank 3
+                    sp->EffectBasePoints[0] = 24;
+                if (sp->Id == 12847)     // Ignite Rank 4
+                    sp->EffectBasePoints[0] = 32;
+                if (sp->Id == 12848)     // Ignite Rank 5
+                    sp->EffectBasePoints[0] = 40;
+
+                sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL; //force him to use procspell effect
+                sp->EffectTriggerSpell[0] = 12654;          //evil , but this is good for us :D
+                sp->procFlags = PROC_ON_SPELL_CRIT_HIT;     //add procflag here since this was not processed with the others !
+            } break;
+            // Name includes "Winter's Chill"
+            // Winter's Chill handled by frost school
+            case 11180:     // Winter's Chill Rank 1
+            case 12579:
+            case 28592:     // Winter's Chill Rank 2
+            case 28593:     // Winter's Chill Rank 3
+            case 63094:
+            {
+                sp->School = SCHOOL_FROST;
+            } break;
+
+            // Name includes "Chain Heal"
+            // more triggered spell ids are wrong. I think blizz is trying to outsmart us :S
+            // Chain Heal all ranks %50 heal value (49 + 1)
+            case 1064:
+            case 10622:
+            case 10623:
+            case 14900:
+            case 15799:
+            case 16367:
+            case 21899:
+            case 23573:
+            case 25422:
+            case 25423:
+            case 26122:
+            case 30872:
+            case 30873:
+            case 33642:
+            case 38322:
+            case 38434:
+            case 38435:
+            case 41114:
+            case 42027:
+            case 42477:
+            case 43527:
+            case 43752:
+            case 48894:
+            case 54481:
+            case 55437:
+            case 55458:
+            case 55459:
+            case 55537:
+            case 57232:
+            case 59473:
+            case 60167:
+            case 61321:
+            case 67226:
+            case 67389:
+            case 69923:
+            case 70425:
+            case 71120:
+            case 75370:
+            {
+                sp->EffectDieSides[0] = 49;
+            } break;
+
+            //some procs trigger at intervals
+            // Name includes "Water Shield"
+            case 16180:
+            case 16196:
+            case 16198:
+            case 23575:
+            case 24398:
+            case 33736:
+            case 33737:
+            case 34318:
+            case 34827:
+            case 34828:
+            case 36816:
+            case 36817:
+            case 37209:
+            case 37432:
+            case 38105:
+            case 38106:
+            case 52127:
+            case 52128:
+            case 52129:
+            case 52130:
+            case 52131:
+            case 52132:
+            case 52133:
+            case 52134:
+            case 52135:
+            case 52136:
+            case 52137:
+            case 52138:
+            case 55535:
+            case 57960:
+            case 57961:
+            case 58063:
+            case 58266:
+            case 58332:
+            case 60166:
+            {
+                sp->proc_interval = 3000;  //3 seconds
+                sp->procFlags |= PROC_TARGET_SELF;
+            } break;
+
+            // Name includes "Earth Shield"
+            case 379:
+            case 974:
+            case 32593:
+            case 32594:
+            case 32734:
+            case 37204:
+            case 38101:
+            case 38102:
+            case 38590:
+            case 49283:
+            case 49284:
+            case 51560:
+            case 51561:
+            case 54479:
+            case 54480:
+            case 55599:
+            case 55600:
+            case 56451:
+            case 57802:
+            case 57803:
+            case 58981:
+            case 58982:
+            case 59471:
+            case 59472:
+            case 60013:
+            case 60014:
+            case 63279:
+            case 63925:
+            case 64261:
+            case 66063:
+            case 66064:
+            case 67530:
+            case 67537:
+            case 68320:
+            case 68592:
+            case 68593:
+            case 68594:
+            case 69568:
+            case 69569:
+            case 69925:
+            case 69926:
+            {
+                sp->proc_interval = 3000;  //3 seconds
+            } break;
+
+            // Name includes "Poison Shield"
+            case 34355:
+            case 39027:
+            {
+                sp->proc_interval = 3000;  //3 seconds
+            } break;
+
+            // Name includes "Infused Mushroom"
+            case 33743:
+            case 33746:
+            case 33758:
+            case 33759:
+            case 57686:
+            {
+                sp->proc_interval = 10000;  //10 seconds
+            } break;
+
+            // Name includes "Aviana's Purpose"
+            case 41260:
+            {
+                sp->proc_interval = 10000;  //10 seconds
+            } break;
+            default:
+                break;
         }
-        else if (strstr(sp->Name, "Earth Shield"))
-            sp->proc_interval = 3000; //few seconds
-        else if (strstr(sp->Name, "Poison Shield"))
-            sp->proc_interval = 3000; //few seconds
-        else if (strstr(sp->Name, "Infused Mushroom"))
-            sp->proc_interval = 10000; //10 seconds
-        else if (strstr(sp->Name, "Aviana's Purpose"))
-            sp->proc_interval = 10000; //10 seconds
-        //don't change to namehash since we are searching only a portion of the name
-        else if (strstr(sp->Name, "Crippling Poison"))
+
+        // Spellflags poison
+        switch (sp->Id)
         {
-            sp->c_is_flags |= SPELL_FLAG_IS_POISON;
-        }
-        else if (strstr(sp->Name, "Mind-numbing Poison"))
-        {
-            sp->c_is_flags |= SPELL_FLAG_IS_POISON;
-        }
-        else if (strstr(sp->Name, "Instant Poison"))
-        {
-            sp->c_is_flags |= SPELL_FLAG_IS_POISON;
-        }
-        else if (strstr(sp->Name, "Deadly Poison"))
-        {
-            sp->c_is_flags |= SPELL_FLAG_IS_POISON;
-        }
-        else if (strstr(sp->Name, "Wound Poison"))
-        {
-            sp->c_is_flags |= SPELL_FLAG_IS_POISON;
-        }
-        else if (strstr(sp->Name, "Scorpid Poison"))
-        {
-            // groups?
-            sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+            // Name includes "Crippling Poison"
+            case 3408:
+            case 3409:
+            case 25809:
+            case 30981:
+            case 44289:
+            case 56820:     // Glyph of Crippling Poison?!
+            case 57116:     // Glyph of Crippling Poison?!
+            case 57144:     // Glyph of Crippling Poison?!
+            {
+                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+            } break;
+
+            // Name includes "Mind-numbing Poison"
+            case 5760:
+            case 5761:
+            case 25810:
+            case 34615:
+            case 41190:
+            {
+                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+            } break;
+
+            // Name includes "Instant Poison"
+            case 8679:
+            case 8680:
+            case 8685:
+            case 8686:
+            case 8688:
+            case 8689:
+            case 11335:
+            case 11336:
+            case 11337:
+            case 11338:
+            case 11339:
+            case 11340:
+            case 26890:
+            case 26891:
+            case 28428:
+            case 28429:
+            case 41189:
+            case 57964:
+            case 57965:
+            case 57967:
+            case 57968:
+            case 59240:
+            case 59242:
+            {
+                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+            } break;
+
+            // Name includes "Deadly Poison"
+            case 2818:
+            case 2819:
+            case 2823:
+            case 2824:
+            case 3583:
+            case 10022:
+            case 11353:
+            case 11354:
+            case 11355:
+            case 11356:
+            case 13582:
+            case 21787:
+            case 21788:
+            case 25349:
+            case 25351:
+            case 26967:
+            case 26968:
+            case 27186:
+            case 27187:
+            case 32970:
+            case 32971:
+            case 34616:
+            case 34655:
+            case 34657:
+            case 36872:
+            case 38519:
+            case 38520:
+            case 41191:
+            case 41192:
+            case 41485:
+            case 43580:
+            case 43581:
+            case 56145:
+            case 56149:
+            case 57969:
+            case 57970:
+            case 57972:
+            case 57973:
+            case 59479:
+            case 59482:
+            case 63755:
+            case 63756:
+            case 67710:
+            case 67711:
+            case 68315:
+            case 72329:
+            case 72330:
+            {
+                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+            } break;
+
+            // Name includes "Wound Poison"
+            case 13218:
+            case 13219:
+            case 13222:
+            case 13223:
+            case 13224:
+            case 13225:
+            case 13226:
+            case 13227:
+            case 27188:
+            case 27189:
+            case 30984:
+            case 36974:
+            case 39665:
+            case 43461:
+            case 54074:
+            case 57974:
+            case 57975:
+            case 57977:
+            case 57978:
+            case 65962:
+            {
+                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+            } break;
+
+            // Name includes "Scorpid Poison"
+            case 6411:
+            case 24583:
+            case 24584:
+            case 24586:
+            case 24587:
+            case 24588:
+            case 24589:
+            case 24640:
+            case 24641:
+            case 27060:
+            case 27361:
+            case 55728:
+            {
+                // groups?
+                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+            } break;
+            default:
+                break;
         }
 
         // Set default mechanics if we don't already have one
