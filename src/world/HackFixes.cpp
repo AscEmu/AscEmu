@@ -215,8 +215,22 @@ void ApplyNormalFixes()
 			}
         }
 
-        if (!strcmp(sp->Name, "Hearthstone") || !strcmp(sp->Name, "Stuck") || !strcmp(sp->Name, "Astral Recall"))
-            sp->self_cast_only = true;
+        // self_cast_only block (defines if a spell can be only casted on self)
+        switch (sp->Id)
+        {
+            // Heartstone
+            case 8690:
+            case 54318:
+            // Stuck
+            case 7355:
+            // Astral Recall
+            case 556:
+            {
+                sp->self_cast_only = true;
+            } break;
+            default:
+                break;
+        }
 
         sp->proc_interval = 0;//trigger at each event
         sp->c_is_flags = 0;
@@ -235,17 +249,11 @@ void ApplyNormalFixes()
 
         // parse rank text
         if (sscanf(sp->Rank, "Rank %d", (unsigned int*)&rank) != 1)
-            rank = 0;
+            sp->RankNumber = 0;
+        else
+            sp->RankNumber = rank;
 
-        //seal of command
-        else if (namehash == SPELL_HASH_SEAL_OF_COMMAND)
-            sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
-
-        //judgement of command
-        else if (namehash == SPELL_HASH_JUDGEMENT_OF_COMMAND)
-            sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
-
-        else if (namehash == SPELL_HASH_ARCANE_SHOT)
+        if (namehash == SPELL_HASH_ARCANE_SHOT)
             sp->c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
 
         else if (namehash == SPELL_HASH_SERPENT_STING)
@@ -496,10 +504,6 @@ void ApplyNormalFixes()
                 }
             }
         }
-
-        // set extra properties
-        sp->RankNumber = rank;
-
 
         // various flight spells
         // these make vehicles and other charmed stuff fliable
@@ -1435,6 +1439,24 @@ void ApplyNormalFixes()
                 sp->School = SCHOOL_HOLY; //the procspells of the original seal of command have physical school instead of holy
                 sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
             } break;
+
+            // SPELL_HASH_JUDGEMENT_OF_COMMAND
+            case 20425:
+            case 20467:
+            case 29386:
+            case 32778:
+            case 33554:
+            case 41368:
+            case 41470:
+            case 66005:
+            case 68017:
+            case 68018:
+            case 68019:
+            case 71551:
+            {
+                sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
+            } break;
+
             // SPELL_HASH_DECAPITATE
             case 24241:
             case 25669:
@@ -3039,7 +3061,6 @@ void ApplyNormalFixes()
         sp->SpellGroupType[0] = 0;
         sp->SpellGroupType[1] = 0;
         sp->SpellGroupType[2] = 0;
-        sp->RankNumber = 0;
     }
 
     sp = CheckAndReturnSpellEntry(54180);
@@ -3049,7 +3070,6 @@ void ApplyNormalFixes()
         sp->SpellGroupType[0] = 0;
         sp->SpellGroupType[1] = 0;
         sp->SpellGroupType[2] = 0;
-        sp->RankNumber = 0;
         sp->proc_interval = 4000;
     }
 
@@ -4851,7 +4871,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = 0;
-        sp->RankNumber = 100;
+        // sp->RankNumber = 100;            DankoDJ: Why?
         sp->AuraInterruptFlags = 0;
     }
 
@@ -4859,7 +4879,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = 0;
-        sp->RankNumber = 101;
+        // sp->RankNumber = 101;            DankoDJ: Why?
         sp->AuraInterruptFlags = 0;
     }
 
