@@ -958,6 +958,8 @@ void ApplyNormalFixes()
                 sp->RecoveryTime = 1000;
                 sp->CategoryRecoveryTime = 1000;
             } break;
+            default:
+                break;
         }
 
         //Name includes "" overwrites
@@ -1044,6 +1046,7 @@ void ApplyNormalFixes()
                 sp->EffectTriggerSpell[0] = 12654;          //evil , but this is good for us :D
                 sp->procFlags = PROC_ON_SPELL_CRIT_HIT;     //add procflag here since this was not processed with the others !
             } break;
+
             // Name includes "Winter's Chill"
             // Winter's Chill handled by frost school
             case 11180:     // Winter's Chill Rank 1
