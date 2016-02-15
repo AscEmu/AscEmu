@@ -1013,12 +1013,12 @@ void ApplyNormalFixes()
             } break;
             case 49280:     // Lightning Shield Rank 10
             {
-                sp->EffectTriggerSpell[0] = 26378;
+                sp->EffectTriggerSpell[0] = 49278;
                 sp->proc_interval = 3000;       // 3 seconds
             } break;
             case 49281:     // Lightning Shield Rank 11
             {
-                sp->EffectTriggerSpell[0] = 26379;
+                sp->EffectTriggerSpell[0] = 49279;
                 sp->proc_interval = 3000;       // 3 seconds
             } break;
 
@@ -1901,7 +1901,7 @@ void ApplyNormalFixes()
                 sp->EffectSpellClassMask[0][0] = 0x08000400;
                 sp->EffectSpellClassMask[0][1] = 0x20000000;
                 sp->EffectSpellClassMask[1][1] = 0x800;
-            }
+            } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
             // SPELL_HASH_MEND_PET
