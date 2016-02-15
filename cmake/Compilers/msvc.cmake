@@ -9,14 +9,11 @@ message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
 add_definitions(-D_CRT_SECURE_NO_WARNINGS -DHAS_CXX0X)
 
 #set defines for msvc
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHa /MP")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHa /MP")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /EHa /MP /bigobj")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHa /MP /bigobj")
 
 # set build platform specific settings (x86/x64)
-if(IS_64BIT)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /bigobj")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-else()
+if(NOT IS_64BIT)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
 endif()
 
