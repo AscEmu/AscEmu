@@ -138,6 +138,53 @@ void Apply_c_is_flags(SpellEntry* sp)
 
 }
 
+void Set_teachspells(SpellEntry* sp)
+{
+    if (sp == nullptr)
+    {
+        Log.Error("Set_teachspells", "Something tried to call with an invalid spell pointer!");
+        return;
+    }
+
+    //stupid spell ranking problem
+    if (sp->spellLevel == 0)
+    {
+        uint32 new_level = 0;
+
+        if (strstr(sp->Name, "Apprentice "))
+            new_level = 1;
+        else if (strstr(sp->Name, "Journeyman "))
+            new_level = 2;
+        else if (strstr(sp->Name, "Expert "))
+            new_level = 3;
+        else if (strstr(sp->Name, "Artisan "))
+            new_level = 4;
+        else if (strstr(sp->Name, "Master "))
+            new_level = 5;
+        else if (strstr(sp->Name, "Grand Master "))
+            new_level = 6;
+
+        if (new_level != 0)
+        {
+            uint32 teachspell = 0;
+            if (sp->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
+                teachspell = sp->EffectTriggerSpell[0];
+            else if (sp->Effect[1] == SPELL_EFFECT_LEARN_SPELL)
+                teachspell = sp->EffectTriggerSpell[1];
+            else if (sp->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
+                teachspell = sp->EffectTriggerSpell[2];
+
+            if (teachspell)
+            {
+                SpellEntry* spellInfo;
+                spellInfo = CheckAndReturnSpellEntry(teachspell);
+                spellInfo->spellLevel = new_level;
+                sp->spellLevel = new_level;
+            }
+        }
+    }
+}
+
 void ApplyNormalFixes()
 {
     //Updating spell.dbc
@@ -370,44 +417,7 @@ void ApplyNormalFixes()
         Apply_BGR_one_buff_on_target(sp);
         Apply_c_is_flags(sp);
 
-
-        //stupid spell ranking problem
-        if (sp->spellLevel == 0)
-        {
-            uint32 new_level = 0;
-
-            if (strstr(sp->Name, "Apprentice "))
-                new_level = 1;
-            else if (strstr(sp->Name, "Journeyman "))
-                new_level = 2;
-            else if (strstr(sp->Name, "Expert "))
-                new_level = 3;
-            else if (strstr(sp->Name, "Artisan "))
-                new_level = 4;
-            else if (strstr(sp->Name, "Master "))
-                new_level = 5;
-            else if (strstr(sp->Name, "Grand Master "))
-                new_level = 6;
-
-            if (new_level != 0)
-            {
-                uint32 teachspell = 0;
-                if (sp->Effect[0] == SPELL_EFFECT_LEARN_SPELL)
-                    teachspell = sp->EffectTriggerSpell[0];
-                else if (sp->Effect[1] == SPELL_EFFECT_LEARN_SPELL)
-                    teachspell = sp->EffectTriggerSpell[1];
-                else if (sp->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
-                    teachspell = sp->EffectTriggerSpell[2];
-
-                if (teachspell)
-                {
-                    SpellEntry* spellInfo;
-                    spellInfo = CheckAndReturnSpellEntry(teachspell);
-                    spellInfo->spellLevel = new_level;
-                    sp->spellLevel = new_level;
-                }
-            }
-        }
+        Set_teachspells(sp);
 
         // find diminishing status
         sp->DiminishStatus = GetDiminishingGroup(namehash);
