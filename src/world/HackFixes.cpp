@@ -36,7 +36,7 @@ void CreateDummySpell(uint32 id)
     sp->EquippedItemClass = uint32(-1);
     sp->Effect[0] = SPELL_EFFECT_DUMMY;
     sp->EffectImplicitTargetA[0] = 25;
-    sp->NameHash = crc32((const unsigned char*)name, (unsigned int)strlen(name));
+    sp->custom_NameHash = crc32((const unsigned char*)name, (unsigned int)strlen(name));
     sp->dmg_multiplier[0] = 1.0f;
     sp->StanceBarOrder = -1;
     dbcSpell.SetRow(id, sp);
@@ -102,23 +102,23 @@ void Set_Custom_BGR_one_buff_on_target(SpellEntry* sp)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_AURA;
     else if (strstr(sp->Name, "Track") == sp->Name)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_TRACK;
-    else if (sp->NameHash == SPELL_HASH_GIFT_OF_THE_WILD || sp->NameHash == SPELL_HASH_MARK_OF_THE_WILD)
+    else if (sp->custom_NameHash == SPELL_HASH_GIFT_OF_THE_WILD || sp->custom_NameHash == SPELL_HASH_MARK_OF_THE_WILD)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MARK_GIFT;
-    else if (sp->NameHash == SPELL_HASH_IMMOLATION_TRAP || sp->NameHash == SPELL_HASH_FREEZING_TRAP || sp->NameHash == SPELL_HASH_FROST_TRAP || sp->NameHash == SPELL_HASH_EXPLOSIVE_TRAP || sp->NameHash == SPELL_HASH_SNAKE_TRAP)
+    else if (sp->custom_NameHash == SPELL_HASH_IMMOLATION_TRAP || sp->custom_NameHash == SPELL_HASH_FREEZING_TRAP || sp->custom_NameHash == SPELL_HASH_FROST_TRAP || sp->custom_NameHash == SPELL_HASH_EXPLOSIVE_TRAP || sp->custom_NameHash == SPELL_HASH_SNAKE_TRAP)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_TRAP;
-    else if (sp->NameHash == SPELL_HASH_ARCANE_INTELLECT || sp->NameHash == SPELL_HASH_ARCANE_BRILLIANCE)
+    else if (sp->custom_NameHash == SPELL_HASH_ARCANE_INTELLECT || sp->custom_NameHash == SPELL_HASH_ARCANE_BRILLIANCE)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MAGE_INTEL;
-    else if (sp->NameHash == SPELL_HASH_AMPLIFY_MAGIC || sp->NameHash == SPELL_HASH_DAMPEN_MAGIC)
+    else if (sp->custom_NameHash == SPELL_HASH_AMPLIFY_MAGIC || sp->custom_NameHash == SPELL_HASH_DAMPEN_MAGIC)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MAGE_MAGI;
-    else if (sp->NameHash == SPELL_HASH_FIRE_WARD || sp->NameHash == SPELL_HASH_FROST_WARD)
+    else if (sp->custom_NameHash == SPELL_HASH_FIRE_WARD || sp->custom_NameHash == SPELL_HASH_FROST_WARD)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MAGE_WARDS;
-    else if (sp->NameHash == SPELL_HASH_SHADOW_PROTECTION || sp->NameHash == SPELL_HASH_PRAYER_OF_SHADOW_PROTECTION)
+    else if (sp->custom_NameHash == SPELL_HASH_SHADOW_PROTECTION || sp->custom_NameHash == SPELL_HASH_PRAYER_OF_SHADOW_PROTECTION)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_PRIEST_SH_PPROT;
-    else if (sp->NameHash == SPELL_HASH_WATER_SHIELD || sp->NameHash == SPELL_HASH_EARTH_SHIELD || sp->NameHash == SPELL_HASH_LIGHTNING_SHIELD)
+    else if (sp->custom_NameHash == SPELL_HASH_WATER_SHIELD || sp->custom_NameHash == SPELL_HASH_EARTH_SHIELD || sp->custom_NameHash == SPELL_HASH_LIGHTNING_SHIELD)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_SHIELD;
-    else if (sp->NameHash == SPELL_HASH_POWER_WORD__FORTITUDE || sp->NameHash == SPELL_HASH_PRAYER_OF_FORTITUDE)
+    else if (sp->custom_NameHash == SPELL_HASH_POWER_WORD__FORTITUDE || sp->custom_NameHash == SPELL_HASH_PRAYER_OF_FORTITUDE)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_FORTITUDE;
-    else if (sp->NameHash == SPELL_HASH_DIVINE_SPIRIT || sp->NameHash == SPELL_HASH_PRAYER_OF_SPIRIT)
+    else if (sp->custom_NameHash == SPELL_HASH_DIVINE_SPIRIT || sp->custom_NameHash == SPELL_HASH_PRAYER_OF_SPIRIT)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_SPIRIT;
     else if (strstr(sp->Name, "Immolate") || strstr(sp->Name, "Conflagrate"))
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_WARLOCK_IMMOLATE;
@@ -130,9 +130,9 @@ void Set_Custom_BGR_one_buff_on_target(SpellEntry* sp)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_GUARDIAN;
     else if (strstr(sp->Description, "Battle and Guardian elixir"))
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_FLASK;
-    else if (sp->NameHash == SPELL_HASH_HUNTER_S_MARK)        // hunter's mark
+    else if (sp->custom_NameHash == SPELL_HASH_HUNTER_S_MARK)        // hunter's mark
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_MARK;
-    else if (sp->NameHash == SPELL_HASH_COMMANDING_SHOUT || sp->NameHash == SPELL_HASH_BATTLE_SHOUT)
+    else if (sp->custom_NameHash == SPELL_HASH_COMMANDING_SHOUT || sp->custom_NameHash == SPELL_HASH_BATTLE_SHOUT)
         sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_WARRIOR_SHOUT;
 }
 
@@ -144,10 +144,10 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
         return;
     }
 
-    if (sp->NameHash == SPELL_HASH_ARCANE_SHOT)
+    if (sp->custom_NameHash == SPELL_HASH_ARCANE_SHOT)
         sp->custom_c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
 
-    else if (sp->NameHash == SPELL_HASH_SERPENT_STING)
+    else if (sp->custom_NameHash == SPELL_HASH_SERPENT_STING)
         sp->custom_c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
 
     if (strstr(sp->Description, "Finishing move") == sp->Description)
@@ -159,7 +159,7 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
     if (IsTargetingStealthed(sp))
         sp->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
 
-    if (sp->NameHash == SPELL_HASH_HEMORRHAGE)
+    if (sp->custom_NameHash == SPELL_HASH_HEMORRHAGE)
         sp->custom_c_is_flags |= SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF;
 
 }
@@ -220,7 +220,7 @@ void Set_Custom_apply_on_shapeshift_change(SpellEntry* sp)
     }
 
     // apply on shapeshift change
-    if (sp->NameHash == SPELL_HASH_TRACK_HUMANOIDS)
+    if (sp->custom_NameHash == SPELL_HASH_TRACK_HUMANOIDS)
         sp->apply_on_shapeshift_change = true;
 
 }
@@ -233,7 +233,7 @@ void Set_Custom_always_apply(SpellEntry* sp)
         return;
     }
 
-    if (sp->NameHash == SPELL_HASH_BLOOD_FURY || sp->NameHash == SPELL_HASH_SHADOWSTEP || sp->NameHash == SPELL_HASH_PSYCHIC_HORROR)
+    if (sp->custom_NameHash == SPELL_HASH_BLOOD_FURY || sp->custom_NameHash == SPELL_HASH_SHADOWSTEP || sp->custom_NameHash == SPELL_HASH_PSYCHIC_HORROR)
         sp->always_apply = true;
 }
 
@@ -311,7 +311,7 @@ void ApplyNormalFixes()
         // hash the name
         //!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
         namehash = crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name));
-        sp->NameHash = namehash; //need these set before we start processing spells
+        sp->custom_NameHash = namehash; //need these set before we start processing spells
 
         float radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[0])), ::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[1])));
         radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[2])), radius);
@@ -430,7 +430,7 @@ void ApplyNormalFixes()
 
         sp->custom_proc_interval = 0;//trigger at each event
         sp->custom_c_is_flags = 0;
-        sp->spell_coef_flags = 0;
+        sp->custom_spell_coef_flags = 0;
         sp->Dspell_coef_override = -1;
         sp->OTspell_coef_override = -1;
         sp->casttime_coef = 0;
@@ -439,9 +439,9 @@ void ApplyNormalFixes()
 
         talentSpellIterator = talentSpells.find(sp->Id);
         if (talentSpellIterator == talentSpells.end())
-            sp->talent_tree = 0;
+            sp->custom_talent_tree = 0;
         else
-            sp->talent_tree = talentSpellIterator->second;
+            sp->custom_talent_tree = talentSpellIterator->second;
 
         // parse rank text
         if (sscanf(sp->Rank, "Rank %d", (unsigned int*)&rank) != 1)
@@ -1694,7 +1694,7 @@ void ApplyNormalFixes()
                 sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_HEAL ||
                 sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_LEECH)
             {
-                sp->spell_coef_flags |= SPELL_FLAG_IS_DOT_OR_HOT_SPELL;
+                sp->custom_spell_coef_flags |= SPELL_FLAG_IS_DOT_OR_HOT_SPELL;
                 break;
             }
         }
@@ -1710,7 +1710,7 @@ void ApplyNormalFixes()
             }
             if (sp->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE || sp->Effect[i] == SPELL_EFFECT_HEAL || spcheck)
             {
-                sp->spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
+                sp->custom_spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
                 break;
             }
         }
@@ -1735,7 +1735,7 @@ void ApplyNormalFixes()
                 case EFF_TARGET_BEHIND_TARGET_LOCATION:
                 case EFF_TARGET_LOCATION_INFRONT_CASTER_AT_RANGE:
                 {
-                    sp->spell_coef_flags |= SPELL_FLAG_AOE_SPELL;
+                    sp->custom_spell_coef_flags |= SPELL_FLAG_AOE_SPELL;
                     break;
                 }
             }
@@ -1761,7 +1761,7 @@ void ApplyNormalFixes()
                 case EFF_TARGET_BEHIND_TARGET_LOCATION:
                 case EFF_TARGET_LOCATION_INFRONT_CASTER_AT_RANGE:
                 {
-                    sp->spell_coef_flags |= SPELL_FLAG_AOE_SPELL;
+                    sp->custom_spell_coef_flags |= SPELL_FLAG_AOE_SPELL;
                     break;
                 }
             }
@@ -1828,7 +1828,7 @@ void ApplyNormalFixes()
             case 68010:
             case 71930:
             {
-                sp->spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
+                sp->custom_spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
             } break;
             default:
                 break;
@@ -1869,7 +1869,7 @@ void ApplyNormalFixes()
                     continue;
             }
 
-            sp->spell_coef_flags |= SPELL_FLAG_ADITIONAL_EFFECT;
+            sp->custom_spell_coef_flags |= SPELL_FLAG_ADITIONAL_EFFECT;
             break;
 
         }
@@ -1886,37 +1886,37 @@ void ApplyNormalFixes()
 
             sp->fixed_hotdotcoef = (Duration / 3500.0f);
 
-            if (sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
+            if (sp->custom_spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
                 sp->fixed_hotdotcoef *= 0.95f;
-            if (sp->spell_coef_flags & SPELL_FLAG_AOE_SPELL)
+            if (sp->custom_spell_coef_flags & SPELL_FLAG_AOE_SPELL)
                 sp->fixed_hotdotcoef *= 0.5f;
         }
 
         //Standard spells
-        else if ((sp->spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && !(sp->spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL))
+        else if ((sp->custom_spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && !(sp->custom_spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL))
         {
             sp->fixed_dddhcoef = sp->casttime_coef;
-            if (sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
+            if (sp->custom_spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
                 sp->fixed_dddhcoef *= 0.95f;
-            if (sp->spell_coef_flags & SPELL_FLAG_AOE_SPELL)
+            if (sp->custom_spell_coef_flags & SPELL_FLAG_AOE_SPELL)
                 sp->fixed_dddhcoef *= 0.5f;
         }
 
         //Over-time spells
-        else if (!(sp->spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && (sp->spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL))
+        else if (!(sp->custom_spell_coef_flags & SPELL_FLAG_IS_DD_OR_DH_SPELL) && (sp->custom_spell_coef_flags & SPELL_FLAG_IS_DOT_OR_HOT_SPELL))
         {
             float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->DurationIndex)));
             sp->fixed_hotdotcoef = (Duration / 15000.0f);
 
-            if (sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
+            if (sp->custom_spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
                 sp->fixed_hotdotcoef *= 0.95f;
-            if (sp->spell_coef_flags & SPELL_FLAG_AOE_SPELL)
+            if (sp->custom_spell_coef_flags & SPELL_FLAG_AOE_SPELL)
                 sp->fixed_hotdotcoef *= 0.5f;
 
         }
 
         //Combined standard and over-time spells
-        else if (sp->spell_coef_flags & SPELL_FLAG_IS_DD_DH_DOT_SPELL)
+        else if (sp->custom_spell_coef_flags & SPELL_FLAG_IS_DD_DH_DOT_SPELL)
         {
             float Duration = float(GetDuration(sSpellDurationStore.LookupEntry(sp->DurationIndex)));
             float Portion_to_Over_Time = (Duration / 15000.0f) / ((Duration / 15000.0f) + sp->casttime_coef);
@@ -1925,12 +1925,12 @@ void ApplyNormalFixes()
             sp->fixed_dddhcoef = sp->casttime_coef * Portion_to_Standard;
             sp->fixed_hotdotcoef = (Duration / 15000.0f) * Portion_to_Over_Time;
 
-            if (sp->spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
+            if (sp->custom_spell_coef_flags & SPELL_FLAG_ADITIONAL_EFFECT)
             {
                 sp->fixed_dddhcoef *= 0.95f;
                 sp->fixed_hotdotcoef *= 0.95f;
             }
-            if (sp->spell_coef_flags & SPELL_FLAG_AOE_SPELL)
+            if (sp->custom_spell_coef_flags & SPELL_FLAG_AOE_SPELL)
             {
                 sp->fixed_dddhcoef *= 0.5f;
                 sp->fixed_hotdotcoef *= 0.5f;
@@ -3752,22 +3752,22 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
-        sp->ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
     sp = CheckAndReturnSpellEntry(63733);   // Rank 2
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
-        sp->ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
     sp = CheckAndReturnSpellEntry(63737);   // Rank 3
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
-        sp->ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
 
 
@@ -4802,7 +4802,7 @@ void ApplyNormalFixes()
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
     }
 
     // Arcane Blast
@@ -4811,7 +4811,7 @@ void ApplyNormalFixes()
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
     }
 
     sp = CheckAndReturnSpellEntry(42896);
@@ -5091,7 +5091,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_COUNTERSPELL;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_COUNTERSPELL;
     }
 
     //Improved Counterspell rank 2
@@ -5099,7 +5099,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_COUNTERSPELL;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_COUNTERSPELL;
     }
     //////////////////////////////////////////
     // WARLOCK                                //
@@ -6015,27 +6015,27 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_SHRED;
-        sp->ProcOnNameHash[1] = SPELL_HASH_MAUL;
-        sp->ProcOnNameHash[2] = SPELL_HASH_MANGLE;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_SHRED;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MAUL;
+        sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
     sp = CheckAndReturnSpellEntry(48484);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_SHRED;
-        sp->ProcOnNameHash[1] = SPELL_HASH_MAUL;
-        sp->ProcOnNameHash[2] = SPELL_HASH_MANGLE;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_SHRED;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MAUL;
+        sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
     sp = CheckAndReturnSpellEntry(48485);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_SHRED;
-        sp->ProcOnNameHash[1] = SPELL_HASH_MAUL;
-        sp->ProcOnNameHash[2] = SPELL_HASH_MANGLE;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_SHRED;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MAUL;
+        sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
     // Druid - Bash - Interrupt effect
@@ -6169,7 +6169,7 @@ void ApplyNormalFixes()
     // Druid - Tree Form Aura
     sp = CheckAndReturnSpellEntry(34123);
     if (sp != NULL)
-        sp->NameHash = 0;
+        sp->custom_NameHash = 0;
 
     // Druid - Omen of Clarity
     sp = CheckAndReturnSpellEntry(16864);
@@ -6376,7 +6376,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(43740);
     if (sp != NULL)
     {
-        sp->ProcOnNameHash[0] = SPELL_HASH_MOONFIRE;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_MOONFIRE;
     }
 
     //Relic - Idol of Terror
@@ -6392,8 +6392,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->self_cast_only = true;
-        sp->ProcOnNameHash[0] = SPELL_HASH_MANGLE__CAT_;
-        sp->ProcOnNameHash[1] = SPELL_HASH_MANGLE__BEAR_;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_MANGLE__CAT_;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MANGLE__BEAR_;
     }
 
     //Tome of Fiery Redemption
@@ -6432,7 +6432,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_ICY_TOUCH;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_ICY_TOUCH;
         sp->custom_proc_interval = 45000;
     }
 
@@ -6473,8 +6473,8 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->ProcOnNameHash[0] = SPELL_HASH_BLOOD_STRIKE;
-        sp->ProcOnNameHash[1] = SPELL_HASH_HEART_STRIKE;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BLOOD_STRIKE;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_HEART_STRIKE;
         sp->custom_proc_interval = 45000;
     }
 
@@ -7480,9 +7480,9 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 81229;
-        sp->ProcOnNameHash[0] = SPELL_HASH_DEATH_STRIKE;
-        sp->ProcOnNameHash[1] = SPELL_HASH_FROST_STRIKE;
-        sp->ProcOnNameHash[2] = SPELL_HASH_DEATH_COIL;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DEATH_STRIKE;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FROST_STRIKE;
+        sp->custom_ProcOnNameHash[2] = SPELL_HASH_DEATH_COIL;
         sp->procChance = 45;
     }*/
 
@@ -7651,7 +7651,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->self_cast_only = true;
-        sp->ProcOnNameHash[0] = SPELL_HASH_JUDGEMENT;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_JUDGEMENT;
         sp->procChance = 100;
     }
 
@@ -7665,7 +7665,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->self_cast_only = true;
-        sp->ProcOnNameHash[0] = SPELL_HASH_JUDGEMENT;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_JUDGEMENT;
         sp->procChance = 100;
     }
 
@@ -7679,7 +7679,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->self_cast_only = true;
-        sp->ProcOnNameHash[0] = SPELL_HASH_HOLY_LIGHT;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_HOLY_LIGHT;
         sp->procChance = 100;
     }
 

@@ -763,7 +763,7 @@ Aura::Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool
     if (caster->IsUnit())
     {
         if (m_spellProto->custom_BGR_one_buff_from_caster_on_self != 0)
-            static_cast< Unit* >(caster)->RemoveAllAuraFromSelfType2(m_spellProto->custom_BGR_one_buff_from_caster_on_self, m_spellProto->NameHash);
+            static_cast< Unit* >(caster)->RemoveAllAuraFromSelfType2(m_spellProto->custom_BGR_one_buff_from_caster_on_self, m_spellProto->custom_NameHash);
 
         if (isAttackable(caster, target))
         {
@@ -1827,7 +1827,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
             if (!amp)
                 amp = event_GetEventPeriod(EVENT_AURA_PERIODIC_DAMAGE);
 
-            if (GetDuration() && GetSpellProto()->NameHash != SPELL_HASH_IGNITE)    //static damage for Ignite. Need to be reworked when "static DoTs" will be implemented
+            if (GetDuration() && GetSpellProto()->custom_NameHash != SPELL_HASH_IGNITE)    //static damage for Ignite. Need to be reworked when "static DoTs" will be implemented
             {
                 int32 spbon = c->GetSpellDmgBonus(m_target, m_spellProto, amount, true);
                 bonus += (spbon * static_cast<int32>(amp) / GetDuration());
@@ -2166,7 +2166,7 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
         {
             sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal, (uint32)val, EVENT_AURA_PERIODIC_HEAL, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            if (GetSpellProto()->NameHash == SPELL_HASH_REJUVENATION || GetSpellProto()->NameHash == SPELL_HASH_REGROWTH)
+            if (GetSpellProto()->custom_NameHash == SPELL_HASH_REJUVENATION || GetSpellProto()->custom_NameHash == SPELL_HASH_REGROWTH)
             {
                 m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
                 if (!sEventMgr.HasEvent(m_target, EVENT_REJUVENATION_FLAG_EXPIRE))
@@ -2242,7 +2242,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
     int amp = m_spellProto->EffectAmplitude[mod->i];
     if (!amp)
         amp = event_GetEventPeriod(EVENT_AURA_PERIODIC_HEAL);
-    //	if (m_spellProto->NameHash != SPELL_HASH_HEALING_STREAM)// Healing Stream is not a HOT
+    //	if (m_spellProto->custom_NameHash != SPELL_HASH_HEALING_STREAM)// Healing Stream is not a HOT
     {
         int32 dur = GetDuration();
         //example : Citrine Pendant of Golden Healing is in AA aura that does not have duration. In this case he would have full healbonus benefit
@@ -2316,7 +2316,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
     Unit* u_caster = GetUnitCaster();
     if (u_caster != NULL)
     {
-        if (GetSpellProto()->NameHash == SPELL_HASH_HEALTH_FUNNEL && add > 0)
+        if (GetSpellProto()->custom_NameHash == SPELL_HASH_HEALTH_FUNNEL && add > 0)
         {
             dealdamage sdmg;
 
@@ -2442,7 +2442,7 @@ void Aura::SpellAuraModStun(bool apply)
     {
         // Check Mechanic Immunity
         // Stun is a tricky one... it's used for all different kinds of mechanics as a base Aura
-        if (!IsPositive() && m_spellProto->NameHash != SPELL_HASH_ICE_BLOCK)    // ice block stuns you, don't want our own spells to ignore stun effects
+        if (!IsPositive() && m_spellProto->custom_NameHash != SPELL_HASH_ICE_BLOCK)    // ice block stuns you, don't want our own spells to ignore stun effects
         {
             if ((m_spellProto->MechanicsType == MECHANIC_CHARMED &&  m_target->MechanicsDispels[MECHANIC_CHARMED])
                 || (m_spellProto->MechanicsType == MECHANIC_INCAPACIPATED && m_target->MechanicsDispels[MECHANIC_INCAPACIPATED])
@@ -2717,10 +2717,10 @@ void Aura::SpellAuraModStealth(bool apply)
         }
 
         SetPositive();
-        if (m_spellProto->NameHash != SPELL_HASH_VANISH)
+        if (m_spellProto->custom_NameHash != SPELL_HASH_VANISH)
             m_target->SetStealth(GetSpellId());
 
-        if (m_spellProto->NameHash == SPELL_HASH_STEALTH)
+        if (m_spellProto->custom_NameHash == SPELL_HASH_STEALTH)
             m_target->SetFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //sneak anim
 
         m_target->SetFlag(UNIT_FIELD_BYTES_1, 0x020000);
@@ -2731,7 +2731,7 @@ void Aura::SpellAuraModStealth(bool apply)
         m_target->m_stealthLevel += mod->m_amount;
 
         // hack fix for vanish stuff
-        if (m_spellProto->NameHash == SPELL_HASH_VANISH && m_target->IsPlayer())	   // Vanish
+        if (m_spellProto->custom_NameHash == SPELL_HASH_VANISH && m_target->IsPlayer())	   // Vanish
         {
 
             for (Object::InRangeSet::iterator iter = m_target->GetInRangeSetBegin(); iter != m_target->GetInRangeSetEnd(); ++iter)
@@ -2799,7 +2799,7 @@ void Aura::SpellAuraModStealth(bool apply)
     {
         m_target->m_stealthLevel -= mod->m_amount;
 
-        if (m_spellProto->NameHash != SPELL_HASH_VANISH)
+        if (m_spellProto->custom_NameHash != SPELL_HASH_VANISH)
         {
             m_target->SetStealth(0);
             m_target->RemoveFlag(UNIT_FIELD_BYTES_2, 0x1E000000);
@@ -2816,17 +2816,17 @@ void Aura::SpellAuraModStealth(bool apply)
             }
         }
 
-        if ((m_target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY) || m_target->HasAurasWithNameHash(SPELL_HASH_OVERKILL)) && m_spellProto->NameHash == SPELL_HASH_STEALTH)
+        if ((m_target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY) || m_target->HasAurasWithNameHash(SPELL_HASH_OVERKILL)) && m_spellProto->custom_NameHash == SPELL_HASH_STEALTH)
         {
             for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
             {
                 if (m_target->m_auras[x] &&
-                    (m_target->m_auras[x]->GetSpellProto()->NameHash == SPELL_HASH_MASTER_OF_SUBTLETY ||
-                    m_target->m_auras[x]->GetSpellProto()->NameHash == SPELL_HASH_OVERKILL) &&
+                    (m_target->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_MASTER_OF_SUBTLETY ||
+                    m_target->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_OVERKILL) &&
                     m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[0] != SPELL_AURA_DUMMY)
                 {
                     uint32 tmp_duration = MSTIME_6SECONDS;
-                    if (m_target->m_auras[x]->GetSpellProto()->NameHash == SPELL_HASH_OVERKILL)
+                    if (m_target->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_OVERKILL)
                         tmp_duration = MSTIME_SECOND * 20;
 
                     m_target->m_auras[x]->SetDuration(tmp_duration);
@@ -2998,11 +2998,11 @@ void Aura::SpellAuraModResistance(bool apply)
     if (!IsPositive() && caster != NULL && m_target->IsCreature())
         m_target->GetAIInterface()->AttackReaction(caster, 1, GetSpellId());
 
-    if (GetSpellProto()->NameHash == SPELL_HASH_FAERIE_FIRE || GetSpellProto()->NameHash == SPELL_HASH_FAERIE_FIRE__FERAL_)
+    if (GetSpellProto()->custom_NameHash == SPELL_HASH_FAERIE_FIRE || GetSpellProto()->custom_NameHash == SPELL_HASH_FAERIE_FIRE__FERAL_)
         m_target->m_can_stealth = !apply;
 
     Player* plr = GetPlayerCaster();
-    if (plr != NULL && GetSpellProto()->NameHash == SPELL_HASH_DEVOTION_AURA)
+    if (plr != NULL && GetSpellProto()->custom_NameHash == SPELL_HASH_DEVOTION_AURA)
     {
         // Increases the armor bonus of your Devotion Aura by %u - HACKY
         if (plr->HasSpell(20140))     // Improved Devotion Aura Rank 3
@@ -3184,7 +3184,7 @@ void Aura::SpellAuraModPacify(bool apply)
     // Can't Attack
     if (apply)
     {
-        if (m_spellProto->Id == 24937 || m_spellProto->NameHash == SPELL_HASH_BLESSING_OF_PROTECTION)
+        if (m_spellProto->Id == 24937 || m_spellProto->custom_NameHash == SPELL_HASH_BLESSING_OF_PROTECTION)
             SetPositive();
         else
             SetNegative();
@@ -3445,7 +3445,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
             m_flags |= 1 << mod->i;
             return;
         }
-        switch (m_spellProto->NameHash)
+        switch (m_spellProto->custom_NameHash)
         {
             case SPELL_HASH_STEALTH:			// Stealth
                 SetPositive();
@@ -3954,7 +3954,7 @@ void Aura::SpellAuraModStateImmunity(bool apply)
 
 void Aura::SpellAuraModSchoolImmunity(bool apply)
 {
-    if (apply && (m_spellProto->NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellProto->NameHash == SPELL_HASH_ICE_BLOCK))    // Paladin - Divine Shield
+    if (apply && (m_spellProto->custom_NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellProto->custom_NameHash == SPELL_HASH_ICE_BLOCK))    // Paladin - Divine Shield
     {
         if (!m_target->isAlive())
             return;
@@ -3970,7 +3970,7 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
         }
     }
 
-    if (apply && (m_spellProto->NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellProto->NameHash == SPELL_HASH_BLESSING_OF_PROTECTION || m_spellProto->NameHash == SPELL_HASH_ICE_BLOCK))
+    if (apply && (m_spellProto->custom_NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellProto->custom_NameHash == SPELL_HASH_BLESSING_OF_PROTECTION || m_spellProto->custom_NameHash == SPELL_HASH_ICE_BLOCK))
     {
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
     }
@@ -5675,7 +5675,7 @@ void Aura::SpellAuraModDamagePercTaken(bool apply)
         val = -mod->m_amount / 100.0f;
     }
 
-    if (m_spellProto->NameHash == SPELL_HASH_ARDENT_DEFENDER)   // Ardent Defender it only applys on 20% hp :/
+    if (m_spellProto->custom_NameHash == SPELL_HASH_ARDENT_DEFENDER)   // Ardent Defender it only applys on 20% hp :/
     {
         m_target->DamageTakenPctModOnHP35 += val;
         return;
@@ -6688,7 +6688,7 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
         if (p_target != NULL)
         {
             //druid hearth of the wild should add more features based on form
-            if (m_spellProto->NameHash == SPELL_HASH_HEART_OF_THE_WILD)
+            if (m_spellProto->custom_NameHash == SPELL_HASH_HEART_OF_THE_WILD)
             {
                 //we should remove effect first
                 p_target->EventTalentHearthOfWildChange(false);
@@ -6721,7 +6721,7 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
 void Aura::SpellAuraModHaste(bool apply)
 {
     //blade flurry - attack a nearby opponent
-    if (m_spellProto->NameHash == SPELL_HASH_BLADE_FLURRY)
+    if (m_spellProto->custom_NameHash == SPELL_HASH_BLADE_FLURRY)
     {
         if (apply)
             m_target->AddExtraStrikeTarget(GetSpellProto(), 0);
@@ -7496,7 +7496,7 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
         Pet* p = static_cast< Player* >(m_target)->GetSummon();
         if (p)
         {
-            switch (GetSpellProto()->NameHash)
+            switch (GetSpellProto()->custom_NameHash)
             {
                 case SPELL_HASH_UNLEASHED_FURY:
                     p->LoadPetAuras(0);
@@ -7619,7 +7619,7 @@ void Aura::SpellAuraModOffhandDamagePCT(bool apply)
 
 void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell penetration
 {
-    if (m_spellProto->NameHash == SPELL_HASH_SERRATED_BLADES)
+    if (m_spellProto->custom_NameHash == SPELL_HASH_SERRATED_BLADES)
     {
         if (p_target == NULL)
             return;
@@ -8598,7 +8598,7 @@ void Aura::SpellAuraModSpellDamageDOTPct(bool apply)
 {
     int32 val = (apply) ? mod->m_amount : -mod->m_amount;
 
-    if (m_spellProto->NameHash == SPELL_HASH_HAUNT)
+    if (m_spellProto->custom_NameHash == SPELL_HASH_HAUNT)
         m_target->DoTPctIncrease[m_spellProto->School] += val;
     else
         for (uint32 x = 0; x < 7; x++)
@@ -8624,11 +8624,11 @@ void Aura::SpellAuraConsumeNoAmmo(bool apply)
         bool other = false;
 
         // we have Thori'dal too
-        if (m_spellProto->NameHash != SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAurasWithNameHash(SPELL_HASH_REQUIRES_NO_AMMO))
+        if (m_spellProto->custom_NameHash != SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAurasWithNameHash(SPELL_HASH_REQUIRES_NO_AMMO))
             other = true;
 
         // We are unequipping Thori'dal but have an aura with no ammo consumption effect
-        if (m_spellProto->NameHash == SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAuraWithName(SPELL_AURA_CONSUMES_NO_AMMO))
+        if (m_spellProto->custom_NameHash == SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAuraWithName(SPELL_AURA_CONSUMES_NO_AMMO))
             other = true;
 
         // We have more than 1 aura with no ammo consumption effect
@@ -8658,7 +8658,7 @@ void Aura::SpellAuraModIgnoreArmorPct(bool apply)
 {
     if (apply)
     {
-        if (GetSpellProto()->NameHash == SPELL_HASH_MACE_SPECIALIZATION)
+        if (GetSpellProto()->custom_NameHash == SPELL_HASH_MACE_SPECIALIZATION)
         {
             m_target->m_ignoreArmorPctMaceSpec += (mod->m_amount / 100.0f);
         }
@@ -8667,7 +8667,7 @@ void Aura::SpellAuraModIgnoreArmorPct(bool apply)
     }
     else
     {
-        if (GetSpellProto()->NameHash == SPELL_HASH_MACE_SPECIALIZATION)
+        if (GetSpellProto()->custom_NameHash == SPELL_HASH_MACE_SPECIALIZATION)
         {
             m_target->m_ignoreArmorPctMaceSpec -= (mod->m_amount / 100.0f);
         }
@@ -8819,7 +8819,7 @@ bool Aura::DotCanCrit()
             case ROGUE:
 
                 // Rupture can be critical in patch 3.3.3
-                if (sp->NameHash == SPELL_HASH_RUPTURE)
+                if (sp->custom_NameHash == SPELL_HASH_RUPTURE)
                     return true;
 
                 break;

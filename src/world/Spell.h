@@ -1262,7 +1262,7 @@ inline uint32 IsHealingSpell(SpellEntry* sp)
         }
     }
     //flash of light, holy light uses scripted effect which is not neciserally heal spell
-    if (sp->NameHash == SPELL_HASH_HOLY_LIGHT || sp->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
+    if (sp->custom_NameHash == SPELL_HASH_HOLY_LIGHT || sp->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
         return true;
 
     return false;
@@ -1607,7 +1607,7 @@ inline bool IsTargetingStealthed(SpellEntry* sp)
         return 1;
 
     if (
-        sp->NameHash == SPELL_HASH_MAGMA_TOTEM
+        sp->custom_NameHash == SPELL_HASH_MAGMA_TOTEM
    )
         return 1;
 
@@ -2197,7 +2197,7 @@ class SERVER_DECL Spell : public EventableObject
         inline static uint32 GetBaseThreat(uint32 dmg)
         {
             //there should be a formula to determine what spell cause threat and which don't
-            /*        switch(GetProto()->NameHash)
+            /*        switch(GetProto()->custom_NameHash)
                     {
                     //hunter's mark
                     case 4287212498:

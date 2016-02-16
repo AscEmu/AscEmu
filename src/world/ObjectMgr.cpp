@@ -1558,8 +1558,8 @@ void ObjectMgr::LoadAIThreatToSpellId()
         sp = dbcSpell.LookupEntryForced(fields[0].GetUInt32());
         if (sp != NULL)
         {
-            sp->ThreatForSpell = fields[1].GetUInt32();
-            sp->ThreatForSpellCoef = fields[2].GetFloat();
+            sp->custom_ThreatForSpell = fields[1].GetUInt32();
+            sp->custom_ThreatForSpellCoef = fields[2].GetFloat();
         }
         else
             Log.Error("AIThreatSpell", "Cannot apply to spell %u; spell is nonexistent.", fields[0].GetUInt32());
@@ -1589,12 +1589,12 @@ void ObjectMgr::LoadSpellProcs()
                 {
                     int x;
                     for (x = 0; x < 3; ++x)
-                        if (sp->ProcOnNameHash[x] == 0)
+                        if (sp->custom_ProcOnNameHash[x] == 0)
                             break;
 
                     if (x != 3)
                     {
-                        sp->ProcOnNameHash[x] = spe_NameHash;
+                        sp->custom_ProcOnNameHash[x] = spe_NameHash;
                     }
                     else
                         LOG_ERROR("Wrong ProcOnNameHash for Spell: %u!", spe_spellId);

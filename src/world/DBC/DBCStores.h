@@ -572,14 +572,12 @@ struct SpellEntry
     uint32 custom_BGR_one_buff_from_caster_on_self;                /// CUSTOM, these are related to creating a item through a spell
     uint32 custom_c_is_flags;                                      /// CUSTOM, store spell checks in a static way : isdamageind,ishealing
     uint32 custom_RankNumber;                                      /// CUSTOM, this protects players from having >1 rank of a spell
-    uint32 NameHash;                                        /// CUSTOM, related to custom spells, summon spell quest related spells
-    uint32 talent_tree;                                     /// CUSTOM,
-    uint32 in_front_status;                                 /// CUSTOM,
-    uint32 EffectSpellGroupRelation_high[MAX_SPELL_EFFECTS];     /// this is not contained in client dbc but server must have it
-    uint32 ThreatForSpell;
-    float ThreatForSpellCoef;
-    uint32 ProcOnNameHash[MAX_SPELL_EFFECTS];
-    uint32 spell_coef_flags;                                /// CUSTOM, store flags for spell coefficient calculations
+    uint32 custom_NameHash;                                        /// CUSTOM, related to custom spells, summon spell quest related spells
+    uint32 custom_talent_tree;                                     /// CUSTOM,
+    uint32 custom_ThreatForSpell;
+    float custom_ThreatForSpellCoef;
+    uint32 custom_ProcOnNameHash[MAX_SPELL_EFFECTS];
+    uint32 custom_spell_coef_flags;                                /// CUSTOM, store flags for spell coefficient calculations
 
     float base_range_or_radius_sqr;                         /// CUSTOM, needed for aoe spells most of the time
     /// love me or hate me, all "In a cone in front of the caster" spells don't necessarily mean "in front"
@@ -741,12 +739,11 @@ struct SpellEntry
         custom_BGR_one_buff_from_caster_on_self = 0;
         custom_c_is_flags = 0;
         custom_RankNumber = 0;
-        NameHash = 0;
-        talent_tree = 0;
-        in_front_status = 0;
-        ThreatForSpell = 0;
-        ThreatForSpellCoef = 0;
-        spell_coef_flags = 0;
+        custom_NameHash = 0;
+        custom_talent_tree = 0;
+        custom_ThreatForSpell = 0;
+        custom_ThreatForSpellCoef = 0;
+        custom_spell_coef_flags = 0;
         base_range_or_radius_sqr = 0;
         cone_width = 0;
         casttime_coef = 0;

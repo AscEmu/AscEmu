@@ -26,7 +26,7 @@ void World::InitDruidSpells()
     SpellEntry* sp = NULL;
 
     if (sp = dbcSpell.LookupEntryForced(34123))
-        sp->NameHash = 1;
+        sp->custom_NameHash = 1;
 
     if (sp = dbcSpell.LookupEntryForced(34297))
     {
@@ -49,7 +49,7 @@ void World::InitDruidSpells()
     }
 
     if (sp = dbcSpell.LookupEntryForced(34299))
-        sp->NameHash += 1;
+        sp->custom_NameHash += 1;
 
     if (sp = dbcSpell.LookupEntryForced(48483))
     {
@@ -98,12 +98,12 @@ void World::InitDruidSpells()
 
     if (sp = dbcSpell.LookupEntryForced(48517))
     {
-        sp->NameHash += 1;
+        sp->custom_NameHash += 1;
     }
 
     if (sp = dbcSpell.LookupEntryForced(48518))
     {
-        sp->NameHash += 2;
+        sp->custom_NameHash += 2;
     }
 
     if (sp = dbcSpell.LookupEntryForced(48506))
@@ -148,7 +148,7 @@ void World::InitDruidSpells()
     }
     if (sp = dbcSpell.LookupEntryForced(51178))
     {
-        sp->NameHash += 1;
+        sp->custom_NameHash += 1;
     }
     if (sp = dbcSpell.LookupEntryForced(50334))
     {

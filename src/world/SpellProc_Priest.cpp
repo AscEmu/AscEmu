@@ -36,10 +36,10 @@ class ImprovedSpiritTapSpellProc : public SpellProc
         if (CastingSpell == NULL)
             return 0;
 
-        if (CastingSpell->NameHash == SPELL_HASH_MIND_FLAY)
+        if (CastingSpell->custom_NameHash == SPELL_HASH_MIND_FLAY)
             return 50;
 
-        if (CastingSpell->NameHash == SPELL_HASH_MIND_BLAST || CastingSpell->NameHash == SPELL_HASH_SHADOW_WORD__DEATH)
+        if (CastingSpell->custom_NameHash == SPELL_HASH_MIND_BLAST || CastingSpell->custom_NameHash == SPELL_HASH_SHADOW_WORD__DEATH)
             return 100;
 
         return 0;
@@ -138,7 +138,7 @@ class VampiricTouchEnergizeSpellProc : public SpellProc
     bool DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // Check for Mind Blast hit from this proc caster
-        if (CastingSpell == NULL || CastingSpell->NameHash != SPELL_HASH_MIND_BLAST || mCaster != victim->GetGUID())
+        if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_MIND_BLAST || mCaster != victim->GetGUID())
             return true;
 
         // Cast Replenishment
@@ -165,7 +165,7 @@ class VampiricTouchDispelDamageSpellProc : public SpellProc
         // For PROC_ON_PRE_DISPELL_AURA_VICTIM, parameter dmg has aur->GetSpellId()
         SpellEntry* sp = dbcSpell.LookupEntryForced(dmg);
 
-        if (CastingSpell == NULL || sp == NULL || sp->NameHash != SPELL_HASH_VAMPIRIC_TOUCH)
+        if (CastingSpell == NULL || sp == NULL || sp->custom_NameHash != SPELL_HASH_VAMPIRIC_TOUCH)
             return true;
 
         dmg_overwrite[0] = mDispelDmg;
@@ -274,7 +274,7 @@ class PrayerOfMendingProc : public SpellProc
         Unit* caster = static_cast<Player*>(aura->GetCaster());
         if (caster == NULL)
         {
-            mTarget->RemoveAuraByNameHash(mSpell->NameHash);
+            mTarget->RemoveAuraByNameHash(mSpell->custom_NameHash);
             return true;
         }
 
@@ -295,7 +295,7 @@ class PrayerOfMendingProc : public SpellProc
 
         Player* new_plr = grp->GetRandomPlayerInRangeButSkip(plr, 40.0f, plr);
 
-        mTarget->RemoveAllAuraByNameHash(mSpell->NameHash);
+        mTarget->RemoveAllAuraByNameHash(mSpell->custom_NameHash);
 
         if (new_plr != NULL)
             caster->CastSpell(new_plr, mSpell, value, count - 1, true);

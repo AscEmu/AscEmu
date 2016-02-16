@@ -1979,7 +1979,7 @@ void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
         for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end();)
         {
             it3 = it2++;
-            if (dbcSpell.LookupEntry(*it3)->NameHash == sp->NameHash)
+            if (dbcSpell.LookupEntry(*it3)->custom_NameHash == sp->custom_NameHash)
                 itr->second.erase(it3);
         }
         itr->second.insert(SpellID);
@@ -6319,7 +6319,7 @@ bool Player::HasSpellwithNameHash(uint32 hash)
         it = iter++;
         uint32 SpellID = *it;
         SpellEntry* e = dbcSpell.LookupEntry(SpellID);
-        if (e->NameHash == hash)
+        if (e->custom_NameHash == hash)
             return true;
     }
     return false;
@@ -6339,7 +6339,7 @@ void Player::removeSpellByHashName(uint32 hash)
         it = iter++;
         uint32 SpellID = *it;
         SpellEntry* e = dbcSpell.LookupEntry(SpellID);
-        if (e->NameHash == hash)
+        if (e->custom_NameHash == hash)
         {
             if (info->spell_list.find(e->Id) != info->spell_list.end())
                 continue;
@@ -6357,7 +6357,7 @@ void Player::removeSpellByHashName(uint32 hash)
         it = iter++;
         uint32 SpellID = *it;
         SpellEntry* e = dbcSpell.LookupEntry(SpellID);
-        if (e->NameHash == hash)
+        if (e->custom_NameHash == hash)
         {
             if (info->spell_list.find(e->Id) != info->spell_list.end())
                 continue;
@@ -6549,12 +6549,12 @@ void Player::Reset_Talents()
                             spellInfo2 = dbcSpell.LookupEntryForced(spellInfo->EffectTriggerSpell[k]);
                             if (spellInfo2 != NULL)
                             {
-                                removeSpellByHashName(spellInfo2->NameHash);
+                                removeSpellByHashName(spellInfo2->custom_NameHash);
                             }
                         }
                     }
                     // remove them all in 1 shot
-                    removeSpellByHashName(spellInfo->NameHash);
+                    removeSpellByHashName(spellInfo->custom_NameHash);
                 }
             }
             else
@@ -10276,7 +10276,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                 for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                 {
                     se = dbcSpell.LookupEntry(*itr);
-                    if ((se->NameHash == sp->NameHash) && (se->custom_RankNumber >= sp->custom_RankNumber))
+                    if ((se->custom_NameHash == sp->custom_NameHash) && (se->custom_RankNumber >= sp->custom_RankNumber))
                     {
                         // Stupid profession related spells for "skinning" having the same namehash and not ranked
                         if (sp->Id != 32605 && sp->Id != 32606 && sp->Id != 49383)

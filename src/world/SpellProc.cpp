@@ -116,7 +116,7 @@ SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellEntry* spell, SpellEntr
     spell_proc_factory_function ptr = NULL;
 
     // Search for SpellProc in hash_map
-    itr = mSpellProcNameHash.find(spell->NameHash);
+    itr = mSpellProcNameHash.find(spell->custom_NameHash);
     if (itr != mSpellProcNameHash.end())
         ptr = itr->second;
     else

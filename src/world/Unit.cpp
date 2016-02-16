@@ -1073,11 +1073,11 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
         uint32 proc_Chance = spell_proc->CalcProcChance(victim, CastingSpell);
 
         //Custom procchance modifications based on equipped weapon speed.
-        if (this->IsPlayer() && (spe->NameHash == SPELL_HASH_MAGTHERIDON_MELEE_TRINKET || spe->NameHash == SPELL_HASH_ROMULO_S_POISON ||
-            spe->NameHash == SPELL_HASH_BLACK_TEMPLE_MELEE_TRINKET || spe->NameHash == SPELL_HASH_FROSTBRAND_ATTACK || spellId == 16870))
+        if (this->IsPlayer() && (spe->custom_NameHash == SPELL_HASH_MAGTHERIDON_MELEE_TRINKET || spe->custom_NameHash == SPELL_HASH_ROMULO_S_POISON ||
+            spe->custom_NameHash == SPELL_HASH_BLACK_TEMPLE_MELEE_TRINKET || spe->custom_NameHash == SPELL_HASH_FROSTBRAND_ATTACK || spellId == 16870))
         {
             float ppm = 1.0f;
-            switch (spe->NameHash)
+            switch (spe->custom_NameHash)
             {
                 case SPELL_HASH_MAGTHERIDON_MELEE_TRINKET:
                     ppm = 1.5f;
@@ -1165,12 +1165,12 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
         //these are player talents. Fuckem they pull the emu speed down
         if (IsPlayer())
         {
-            if (ospinfo->ProcOnNameHash[0] != 0)
+            if (ospinfo->custom_ProcOnNameHash[0] != 0)
             {
                 if (CastingSpell == NULL)
                     continue;
 
-                if (CastingSpell->NameHash != ospinfo->ProcOnNameHash[0] && CastingSpell->NameHash != ospinfo->ProcOnNameHash[1] && CastingSpell->NameHash != ospinfo->ProcOnNameHash[2])
+                if (CastingSpell->custom_NameHash != ospinfo->custom_ProcOnNameHash[0] && CastingSpell->custom_NameHash != ospinfo->custom_ProcOnNameHash[1] && CastingSpell->custom_NameHash != ospinfo->custom_ProcOnNameHash[2])
                     continue;
             }
 
@@ -1218,7 +1218,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_DEADLY_THROW)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_DEADLY_THROW)
                         continue;
                 }
                 break;
@@ -1236,8 +1236,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (!IsPlayer() || !CastingSpell)
                         continue;
                     Player* p = static_cast<Player*>(this);
-                    if (p->GetShapeShift() != FORM_CAT || (CastingSpell->NameHash != SPELL_HASH_CLAW && CastingSpell->NameHash != SPELL_HASH_RAKE &&
-                        CastingSpell->NameHash != SPELL_HASH_RAVAGE && CastingSpell->NameHash != SPELL_HASH_SHRED))
+                    if (p->GetShapeShift() != FORM_CAT || (CastingSpell->custom_NameHash != SPELL_HASH_CLAW && CastingSpell->custom_NameHash != SPELL_HASH_RAKE &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_RAVAGE && CastingSpell->custom_NameHash != SPELL_HASH_SHRED))
                         continue;
                 }
                 break;
@@ -1246,7 +1246,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (!this->IsPlayer() || !CastingSpell || CastingSpell->Id == 14189 || CastingSpell->Id == 16953 || CastingSpell->Id == 16959)
                         continue;
                     if (CastingSpell->Effect[0] != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->Effect[1] != SPELL_EFFECT_ADD_COMBO_POINTS &&
-                        CastingSpell->Effect[2] != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->NameHash != SPELL_HASH_MANGLE__CAT_)
+                        CastingSpell->Effect[2] != SPELL_EFFECT_ADD_COMBO_POINTS && CastingSpell->custom_NameHash != SPELL_HASH_MANGLE__CAT_)
                         continue;
                 }
                 break;
@@ -1317,7 +1317,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->NameHash != SPELL_HASH_DEVASTATE && CastingSpell->NameHash != SPELL_HASH_REVENGE)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_DEVASTATE && CastingSpell->custom_NameHash != SPELL_HASH_REVENGE)
                         continue;
                 }
                 break;
@@ -1328,7 +1328,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->NameHash != SPELL_HASH_INTERVENE)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_INTERVENE)
                         continue;
                 }
                 break;
@@ -1338,7 +1338,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->NameHash != SPELL_HASH_REND)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_REND)
                         continue;
                 }
                 break;
@@ -1363,8 +1363,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->NameHash != SPELL_HASH_SHIELD_BASH &&
-                        CastingSpell->NameHash != SPELL_HASH_HEROIC_THROW)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_SHIELD_BASH &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_HEROIC_THROW)
                         continue;
                 }
                 break;
@@ -1374,9 +1374,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->NameHash != SPELL_HASH_HEROIC_STRIKE &&
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_HEROIC_STRIKE &&
                         CastingSpell->Id != 23881 &&
-                        CastingSpell->NameHash != SPELL_HASH_WHIRLWIND)
+                        CastingSpell->custom_NameHash != SPELL_HASH_WHIRLWIND)
                         continue;
                 }
                 break;
@@ -1414,10 +1414,10 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (CastingSpell->NameHash != SPELL_HASH_BACKSTAB &&  //backstab
-                        CastingSpell->NameHash != SPELL_HASH_SINISTER_STRIKE && //sinister strike
-                        CastingSpell->NameHash != SPELL_HASH_SHIV && //shiv
-                        CastingSpell->NameHash != SPELL_HASH_GOUGE)  //gouge
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_BACKSTAB &&  //backstab
+                        CastingSpell->custom_NameHash != SPELL_HASH_SINISTER_STRIKE && //sinister strike
+                        CastingSpell->custom_NameHash != SPELL_HASH_SHIV && //shiv
+                        CastingSpell->custom_NameHash != SPELL_HASH_GOUGE)  //gouge
                         continue;
                 }
                 break;
@@ -1426,9 +1426,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_PENANCE &&
-                        CastingSpell->NameHash != SPELL_HASH_FLASH_HEAL &&
-                        CastingSpell->NameHash != SPELL_HASH_GREATER_HEAL)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_PENANCE &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_FLASH_HEAL &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_GREATER_HEAL)
                         continue;
                 }
                 break;
@@ -1442,7 +1442,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (CastingSpell->NameHash != SPELL_HASH_SHADOW_BOLT) //shadow bolt
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_SHADOW_BOLT) //shadow bolt
                         continue;
                 }
                 break;
@@ -1456,7 +1456,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         if (!CastingSpell)
                             continue;
                         //only trigger effect for specified spells
-                        if (CastingSpell->NameHash != SPELL_HASH_SEED_OF_CORRUPTION)
+                        if (CastingSpell->custom_NameHash != SPELL_HASH_SEED_OF_CORRUPTION)
                             continue;
                         //this spell builds up n time
                         spell_proc->mProcCharges += dmg;
@@ -1488,7 +1488,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (!CastingSpell)
                         continue;
                     //only trigger effect for specified spells
-                    if (CastingSpell->NameHash != SPELL_HASH_DRAIN_SOUL)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_DRAIN_SOUL)
                         continue;
                     //null check was made before like 2 times already :P
                     dmg_overwrite[0] = (ospinfo->EffectBasePoints[2] + 1) * GetMaxPower(POWER_TYPE_MANA) / 100;
@@ -1508,8 +1508,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (CastingSpell->NameHash != SPELL_HASH_CORRUPTION &&  //Corruption
-                        CastingSpell->NameHash != SPELL_HASH_DRAIN_LIFE) //Drain Life
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_CORRUPTION &&  //Corruption
+                        CastingSpell->custom_NameHash != SPELL_HASH_DRAIN_LIFE) //Drain Life
                         continue;
                 }
                 break;
@@ -1524,10 +1524,10 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         continue;
                     else
                     {
-                        if (CastingSpell->NameHash != SPELL_HASH_FIRE_SHIELD_II &&  // Corruption
-                            CastingSpell->NameHash != SPELL_HASH_CURSE_OF_AGONY && //CoA
-                            CastingSpell->NameHash != SPELL_HASH_SIPHON_LIFE && //Siphon Life
-                            CastingSpell->NameHash != SPELL_HASH_SEED_OF_CORRUPTION)  //SoC
+                        if (CastingSpell->custom_NameHash != SPELL_HASH_FIRE_SHIELD_II &&  // Corruption
+                            CastingSpell->custom_NameHash != SPELL_HASH_CURSE_OF_AGONY && //CoA
+                            CastingSpell->custom_NameHash != SPELL_HASH_SIPHON_LIFE && //Siphon Life
+                            CastingSpell->custom_NameHash != SPELL_HASH_SEED_OF_CORRUPTION)  //SoC
                             continue;
                     }
                 }
@@ -1565,7 +1565,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
                     uint32 amount;
-                    switch (CastingSpell->NameHash)
+                    switch (CastingSpell->custom_NameHash)
                     {
                         case SPELL_HASH_SHADOW_BOLT: //Shadow Bolt
                         case SPELL_HASH_SOUL_FIRE: //Soul Fire
@@ -1602,9 +1602,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (CastingSpell->NameHash != SPELL_HASH_RAIN_OF_FIRE &&  //Rain of Fire
-                        CastingSpell->NameHash != SPELL_HASH_HELLFIRE_EFFECT && //Hellfire
-                        CastingSpell->NameHash != SPELL_HASH_SOUL_FIRE)  //Soul Fire
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_RAIN_OF_FIRE &&  //Rain of Fire
+                        CastingSpell->custom_NameHash != SPELL_HASH_HELLFIRE_EFFECT && //Hellfire
+                        CastingSpell->custom_NameHash != SPELL_HASH_SOUL_FIRE)  //Soul Fire
                         continue;
                 }
                 break;
@@ -1615,7 +1615,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->NameHash != SPELL_HASH_CONFLAGRATE)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_CONFLAGRATE)
                         continue;
                 }
                 break;
@@ -1625,11 +1625,11 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
 
-                    if (CastingSpell->NameHash != SPELL_HASH_ARCANE_BLAST &&
-                        CastingSpell->NameHash != SPELL_HASH_ARCANE_BARRAGE &&
-                        CastingSpell->NameHash != SPELL_HASH_FIREBALL &&
-                        CastingSpell->NameHash != SPELL_HASH_FROSTBOLT &&
-                        CastingSpell->NameHash != SPELL_HASH_FROSTFIRE_BOLT)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_ARCANE_BLAST &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_ARCANE_BARRAGE &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_FIREBALL &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_FROSTBOLT &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_FROSTFIRE_BOLT)
                         continue;
                 }
                 break;
@@ -1639,7 +1639,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (CastingSpell->NameHash != SPELL_HASH_SCORCH)   //Scorch
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_SCORCH)   //Scorch
                         continue;
                 }
                 break;
@@ -1688,7 +1688,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_POWER_WORD__SHIELD)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_POWER_WORD__SHIELD)
                         continue;
                 }
                 break;
@@ -1731,7 +1731,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (CastingSpell->NameHash != SPELL_HASH_HEALING_WAVE)   //healing wave
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_HEALING_WAVE)   //healing wave
                         continue;
                 }
                 break;
@@ -1754,7 +1754,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash == SPELL_HASH_EARTH_SHIELD)   //Do not proc on Earth Shield crits
+                    if (CastingSpell->custom_NameHash == SPELL_HASH_EARTH_SHIELD)   //Do not proc on Earth Shield crits
                         continue;
                 }
                 //Shaman - Earthliving Weapon
@@ -1780,7 +1780,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (!(CastingSpell->NameHash == SPELL_HASH_CHAIN_HEAL || CastingSpell->NameHash == SPELL_HASH_RIPTIDE))
+                    if (!(CastingSpell->custom_NameHash == SPELL_HASH_CHAIN_HEAL || CastingSpell->custom_NameHash == SPELL_HASH_RIPTIDE))
                         continue;
                 }
                 break;
@@ -1792,7 +1792,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_LESSER_HEALING_WAVE)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_LESSER_HEALING_WAVE)
                         continue;
                 }
                 break;
@@ -1801,7 +1801,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_EARTH_SHOCK && CastingSpell->NameHash != SPELL_HASH_FROST_SHOCK && CastingSpell->NameHash != SPELL_HASH_FLAME_SHOCK)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_EARTH_SHOCK && CastingSpell->custom_NameHash != SPELL_HASH_FROST_SHOCK && CastingSpell->custom_NameHash != SPELL_HASH_FLAME_SHOCK)
                         continue;
                 }
                 break;
@@ -1813,7 +1813,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT)
                         continue;
                 }
                 break;
@@ -1822,7 +1822,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_COMMAND && CastingSpell->NameHash != SPELL_HASH_JUDGEMENT)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_COMMAND && CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT)
                         continue;
                 }
                 break;
@@ -1830,8 +1830,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (origId == 39805)
                         continue; // Lightning Overload Proc is already free
-                    if (CastingSpell->NameHash != SPELL_HASH_LIGHTNING_BOLT && CastingSpell->NameHash != SPELL_HASH_CHAIN_LIGHTNING &&
-                        CastingSpell->NameHash != SPELL_HASH_EARTH_SHOCK && CastingSpell->NameHash != SPELL_HASH_FLAME_SHOCK && CastingSpell->NameHash != SPELL_HASH_FROST_SHOCK)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_LIGHTNING_BOLT && CastingSpell->custom_NameHash != SPELL_HASH_CHAIN_LIGHTNING &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_EARTH_SHOCK && CastingSpell->custom_NameHash != SPELL_HASH_FLAME_SHOCK && CastingSpell->custom_NameHash != SPELL_HASH_FROST_SHOCK)
                         continue;
                 }
                 break;
@@ -1883,7 +1883,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 23690:
                 case 23691:
                 {
-                    if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_BERSERKER_RAGE)
+                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_BERSERKER_RAGE)
                         continue;
                 }
                 break;
@@ -1904,7 +1904,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_BLIZZARD || victim == this)   //Blizzard
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_BLIZZARD || victim == this)   //Blizzard
                         continue;
                 }
                 break;
@@ -1973,7 +1973,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_LAY_ON_HANDS)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_LAY_ON_HANDS)
                         continue;
                 }
                 break;
@@ -1983,7 +1983,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_HOLY_SHOCK)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_HOLY_SHOCK)
                         continue;
                 }
                 break;
@@ -1992,7 +1992,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_CLEANSE)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_CLEANSE)
                         continue;
                 }
                 break;
@@ -2023,7 +2023,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->custom_NameHash != SPELL_HASH_HOLY_LIGHT)
                         continue;
                     SpellEntry* spellInfo = dbcSpell.LookupEntry(54203);
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
@@ -2037,7 +2037,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
                     if (CastingSpell->Id != 53408 && CastingSpell->Id != 53407 && CastingSpell->Id != 20271 &&
-                        CastingSpell->NameHash != SPELL_HASH_DIVINE_STORM && CastingSpell->NameHash != SPELL_HASH_CRUSADER_STRIKE)
+                        CastingSpell->custom_NameHash != SPELL_HASH_DIVINE_STORM && CastingSpell->custom_NameHash != SPELL_HASH_CRUSADER_STRIKE)
                         continue;
                 }
                 break;
@@ -2049,7 +2049,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 // Warrior - Improved Revenge
                 case 12798:
                 {
-                    if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_REVENGE)
+                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_REVENGE)
                         continue;
                 }
                 break;
@@ -2071,7 +2071,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
-                    if (CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_HOLY_LIGHT)
                         continue;
                 }
                 break;
@@ -2098,7 +2098,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_DIVINE_STORM)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_DIVINE_STORM)
                         continue;
                 }
                 break;
@@ -2107,7 +2107,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_LIGHTNING_BOLT)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_LIGHTNING_BOLT)
                         continue;
                 }
                 break;
@@ -2149,7 +2149,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (!CastingSpell)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_CHAIN_HEAL && CastingSpell->NameHash != SPELL_HASH_RIPTIDE)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_CHAIN_HEAL && CastingSpell->custom_NameHash != SPELL_HASH_RIPTIDE)
                         continue;
                 }
                 break;
@@ -2173,7 +2173,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;                   //this should not occur unless we made a fuckup somewhere
                     //trigger on lightning and chain lightning. Spell should be identical , well maybe next time :P
-                    if (CastingSpell->NameHash == SPELL_HASH_LIGHTNING_BOLT || CastingSpell->NameHash == SPELL_HASH_CHAIN_LIGHTNING)
+                    if (CastingSpell->custom_NameHash == SPELL_HASH_LIGHTNING_BOLT || CastingSpell->custom_NameHash == SPELL_HASH_CHAIN_LIGHTNING)
                     {
                         CastSpell(this, 39805, true);
                         spellId = CastingSpell->Id;
@@ -2198,7 +2198,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_WRATH && CastingSpell->NameHash != SPELL_HASH_STARFIRE)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_WRATH && CastingSpell->custom_NameHash != SPELL_HASH_STARFIRE)
                         continue;
                 }
                 break;
@@ -2207,13 +2207,13 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_STARFIRE)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_STARFIRE)
                         continue;
                 }
                 break;
                 case 37565: //setbonus
                 {
-                    if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_FLASH_HEAL)
+                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_FLASH_HEAL)
                         continue;
                 }
                 break;
@@ -2247,7 +2247,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 break;
                 case 37237:
                 {
-                    if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_LIGHTNING_BOLT)
+                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_LIGHTNING_BOLT)
                         continue;
                 }
                 break;
@@ -2256,7 +2256,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_LIFE_TAP)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_LIFE_TAP)
                         continue;
                 }
                 break;
@@ -2266,29 +2266,29 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (!CastingSpell)
                         continue;
-                    //CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER &&
-                    if (CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_JUSTICE && CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_LIGHT &&
-                        CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_WISDOM && CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS &&
-                        CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_BLOOD && CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_VENGEANCE &&
-                        CastingSpell->NameHash != SPELL_HASH_JUDGEMENT_OF_COMMAND)
+                    //CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_THE_CRUSADER &&
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_JUSTICE && CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_LIGHT &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_WISDOM && CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_RIGHTEOUSNESS &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_BLOOD && CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_VENGEANCE &&
+                        CastingSpell->custom_NameHash != SPELL_HASH_JUDGEMENT_OF_COMMAND)
                         continue;
                 }
                 break;
                 case 43837:
                 {
-                    if (!CastingSpell || (CastingSpell->NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->NameHash != SPELL_HASH_HOLY_LIGHT))
+                    if (!CastingSpell || (CastingSpell->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->custom_NameHash != SPELL_HASH_HOLY_LIGHT))
                         continue;
                 }
                 break;
                 case 37529:
                 {
-                    if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_OVERPOWER)
+                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_OVERPOWER)
                         continue;
                 }
                 break;
                 case 37517:
                 {
-                    if (!CastingSpell || CastingSpell->Id == 37517 || CastingSpell->NameHash != SPELL_HASH_REVENGE)
+                    if (!CastingSpell || CastingSpell->Id == 37517 || CastingSpell->custom_NameHash != SPELL_HASH_REVENGE)
                         continue;
                 }
                 break;
@@ -2301,7 +2301,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 //http://www.wowhead.com/?item=32493 Ashtongue Talisman of Shadows
                 case 40480:
                 {
-                    if (CastingSpell == NULL || CastingSpell->NameHash != SPELL_HASH_CORRUPTION)
+                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_CORRUPTION)
                         continue;
                 }
                 break;
@@ -2326,7 +2326,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 //http://www.wowhead.com/?item=32487 Ashtongue Talisman of Swiftness
                 case 40487:
                 {
-                    if (CastingSpell == NULL || CastingSpell->NameHash != SPELL_HASH_STEADY_SHOT)
+                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_STEADY_SHOT)
                         continue;
                 }
                 break;
@@ -2334,7 +2334,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 //http://www.wowhead.com/?item=32485 Ashtongue Talisman of Valor
                 case 40459:
                 {
-                    if (CastingSpell == NULL || (CastingSpell->NameHash != SPELL_HASH_MORTAL_STRIKE && CastingSpell->NameHash != SPELL_HASH_BLOODTHIRST && CastingSpell->NameHash != SPELL_HASH_SHIELD_SLAM))
+                    if (CastingSpell == NULL || (CastingSpell->custom_NameHash != SPELL_HASH_MORTAL_STRIKE && CastingSpell->custom_NameHash != SPELL_HASH_BLOODTHIRST && CastingSpell->custom_NameHash != SPELL_HASH_SHIELD_SLAM))
                         continue;
                 }
                 break;
@@ -2360,19 +2360,19 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_MANGLE__BEAR_ && CastingSpell->NameHash != SPELL_HASH_MANGLE__CAT_)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_MANGLE__BEAR_ && CastingSpell->custom_NameHash != SPELL_HASH_MANGLE__CAT_)
                         continue;
                 }
                 break;
                 case 40445: //Starfire has a 25% chance to grant up to 150 spell damage for 8 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->NameHash != SPELL_HASH_STARFIRE)
+                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_STARFIRE)
                         continue;
                 }
                 break;
                 case 40446: //Rejuvenation has a 25% chance to grant up to 210 healing for 8 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->NameHash != SPELL_HASH_REJUVENATION)
+                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_REJUVENATION)
                         continue;
                 }
                 break;
@@ -2380,7 +2380,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 //http://www.wowhead.com/?item=32490 Ashtongue Talisman of Acumen
                 case 40441: //Each time your Shadow Word: Pain deals damage, it has a 10% chance to grant you 220 spell damage for 10 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->NameHash != SPELL_HASH_SHADOW_WORD__PAIN)
+                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_SHADOW_WORD__PAIN)
                         continue;
                 }
                 break;
@@ -2388,7 +2388,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 //http://www.wowhead.com/?item=32490 Ashtongue Talisman of Acumen
                 case 40440: //Each time your Renew heals, it has a 10% chance to grant you 220 healing for 5 sec
                 {
-                    if (CastingSpell == NULL || CastingSpell->NameHash != SPELL_HASH_RENEW)
+                    if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_RENEW)
                         continue;
                 }
                 break;
@@ -2396,7 +2396,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 //http://www.wowhead.com/?item=32492 Ashtongue Talisman of Lethality
                 case 37445: //using a mana gem grants you 225 spell damage for 15 sec
                 {
-                    if (!CastingSpell || CastingSpell->NameHash != SPELL_HASH_REPLENISH_MANA)
+                    if (!CastingSpell || CastingSpell->custom_NameHash != SPELL_HASH_REPLENISH_MANA)
                         continue;
                 }
                 break;
@@ -2410,7 +2410,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (CastingSpell->NameHash != SPELL_HASH_IMMOLATE && CastingSpell->NameHash != SPELL_HASH_CORRUPTION)
+                    if (CastingSpell->custom_NameHash != SPELL_HASH_IMMOLATE && CastingSpell->custom_NameHash != SPELL_HASH_CORRUPTION)
                         continue;
                 }
                 break;
@@ -2460,8 +2460,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     {
                         case 43339: // Shaman - Shamanist Focus
                         {
-                            if (CastingSpell->NameHash != SPELL_HASH_EARTH_SHOCK && CastingSpell->NameHash != SPELL_HASH_FLAME_SHOCK &&
-                                CastingSpell->NameHash != SPELL_HASH_FROST_SHOCK)
+                            if (CastingSpell->custom_NameHash != SPELL_HASH_EARTH_SHOCK && CastingSpell->custom_NameHash != SPELL_HASH_FLAME_SHOCK &&
+                                CastingSpell->custom_NameHash != SPELL_HASH_FROST_SHOCK)
                                 continue;
                         }
                         break;
@@ -2494,25 +2494,25 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         break;
                         case 46916: // Bloodsurge - Slam! effect should dissapear after casting Slam only
                         {
-                            if (CastingSpell->NameHash != SPELL_HASH_SLAM)
+                            if (CastingSpell->custom_NameHash != SPELL_HASH_SLAM)
                                 continue;
                         }
                         break;
                         case 60503: // Taste for Blood should dissapear after casting Overpower
                         {
-                            if (CastingSpell->NameHash != SPELL_HASH_OVERPOWER)
+                            if (CastingSpell->custom_NameHash != SPELL_HASH_OVERPOWER)
                                 continue;
                         }
                         break;
                         case 23694: // Imp. Hamstring
                         {
-                            if (CastingSpell->NameHash != SPELL_HASH_IMPROVED_HAMSTRING)
+                            if (CastingSpell->custom_NameHash != SPELL_HASH_IMPROVED_HAMSTRING)
                                 continue;
                         }
                         break;
                         case 65156: // Juggernaut
                         {
-                            if (CastingSpell->NameHash != SPELL_HASH_MORTAL_STRIKE && CastingSpell->NameHash != SPELL_HASH_SLAM)
+                            if (CastingSpell->custom_NameHash != SPELL_HASH_MORTAL_STRIKE && CastingSpell->custom_NameHash != SPELL_HASH_SLAM)
                                 continue;
                         }
                         break;
@@ -2900,7 +2900,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
 
         // erm. some spells don't use ranged weapon skill but are still a ranged spell and use melee stats instead
         // i.e. hammer of wrath
-        if (ability && ability->NameHash == SPELL_HASH_HAMMER_OF_WRATH)
+        if (ability && ability->custom_NameHash == SPELL_HASH_HAMMER_OF_WRATH)
         {
             it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
             hitmodifier += pr->CalcRating(PLAYER_RATING_MODIFIER_MELEE_HIT);
@@ -3603,9 +3603,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                 if (dmg.school_type != SCHOOL_NORMAL)
                     dmg.full_damage += float2int32(dmg.full_damage * (GetDamageDonePctMod(dmg.school_type) - 1));
 
-                if (ability != NULL && ability->NameHash == SPELL_HASH_SHRED)
+                if (ability != NULL && ability->custom_NameHash == SPELL_HASH_SHRED)
                     dmg.full_damage += float2int32(dmg.full_damage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
-                if (ability != NULL && ability->NameHash == SPELL_HASH_MAUL)
+                if (ability != NULL && ability->custom_NameHash == SPELL_HASH_MAUL)
                     dmg.full_damage += float2int32(dmg.full_damage * pVictim->ModDamageTakenByMechPCT[MECHANIC_BLEEDING]);
 
                 //pet happiness state dmg modifier
@@ -4306,7 +4306,7 @@ void Unit::AddAura(Aura* aur)
             {
                 Unit* prev_target = this->GetMapMgr()->GetUnit(prev_target_guid);
                 if (prev_target != NULL)
-                    prev_target->RemoveAllAuraByNameHash(aur->GetSpellProto()->NameHash);
+                    prev_target->RemoveAllAuraByNameHash(aur->GetSpellProto()->custom_NameHash);
             }
         }
 
@@ -4317,7 +4317,7 @@ void Unit::AddAura(Aura* aur)
         //  3) attacker A cast on target B, and aura is removed from target A
         //  4) attacker B cast on target A, and aura is not removed from target B, because caster A is now the one that casted on target B
         if (prev_target_guid && prev_target_guid != aur->GetTarget()->GetGUID())
-            RemoveAllAuraByNameHash(aur->GetSpellProto()->NameHash);
+            RemoveAllAuraByNameHash(aur->GetSpellProto()->custom_NameHash);
     }
 
     uint16 AuraSlot = 0xFFFF;
@@ -4432,7 +4432,7 @@ void Unit::AddAura(Aura* aur)
                     Player* caster = aur->GetPlayerCaster();
                     if (caster != NULL)
                     {
-                        switch (info->NameHash)
+                        switch (info->custom_NameHash)
                         {
                             case SPELL_HASH_DEADLY_POISON_IX:
                             case SPELL_HASH_DEADLY_POISON_VIII:
@@ -4466,7 +4466,7 @@ void Unit::AddAura(Aura* aur)
                                                 SpellEntry* sp = dbcSpell.LookupEntryForced(Entry->spell[c]);
                                                 if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                                                 {
-                                                    switch (sp->NameHash)
+                                                    switch (sp->custom_NameHash)
                                                     {
                                                         case SPELL_HASH_DEADLY_POISON_IX:
                                                         case SPELL_HASH_DEADLY_POISON_VIII:
@@ -4499,7 +4499,7 @@ void Unit::AddAura(Aura* aur)
                                                     SpellEntry* sp = dbcSpell.LookupEntryForced(Entry->spell[c]);
                                                     if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                                                     {
-                                                        switch (sp->NameHash)
+                                                        switch (sp->custom_NameHash)
                                                         {
                                                             case SPELL_HASH_DEADLY_POISON_IX:
                                                             case SPELL_HASH_DEADLY_POISON_VIII:
@@ -4631,7 +4631,7 @@ void Unit::AddAura(Aura* aur)
             if (IsCreature())
                 m_aiInterface->AttackReaction(pCaster, 1, aur->GetSpellId());
         }
-        /*if (isAlive() && CanAgroHash(aur->m_spellProto->NameHash)) //no threat for hunter's mark
+        /*if (isAlive() && CanAgroHash(aur->m_spellProto->custom_NameHash)) //no threat for hunter's mark
         {
         Unit* pCaster = aur->GetUnitCaster();
         if (!pCaster) return;
@@ -4860,7 +4860,7 @@ bool Unit::RemoveAuraByNameHash(uint32 namehash)
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellProto()->NameHash == namehash)
+            if (m_auras[x]->GetSpellProto()->custom_NameHash == namehash)
             {
                 m_auras[x]->Remove();
                 return true;
@@ -4897,7 +4897,7 @@ uint32 Unit::RemoveAllAuraByNameHash(uint32 namehash)
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellProto()->NameHash == namehash)
+            if (m_auras[x]->GetSpellProto()->custom_NameHash == namehash)
             {
                 m_auras[x]->Remove();
                 res++;
@@ -4972,7 +4972,7 @@ void Unit::RemoveAllAuraFromSelfType2(uint32 auratype, uint32 butskip_hash)
         if (m_auras[x])
         {
             SpellEntry* proto = m_auras[x]->GetSpellProto();
-            if (proto->custom_BGR_one_buff_from_caster_on_self == auratype && proto->NameHash != butskip_hash && m_auras[x]->GetCaster() == this)
+            if (proto->custom_BGR_one_buff_from_caster_on_self == auratype && proto->custom_NameHash != butskip_hash && m_auras[x]->GetCaster() == this)
                 RemoveAura(m_auras[x]->GetSpellId());//remove all morph auras containing to this spell (like wolf morph also gives speed)
         }
 }
@@ -5024,7 +5024,7 @@ Aura* Unit::FindAuraByNameHash(uint32 namehash, uint64 guid)
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
         aura = m_auras[x];
-        if (aura != NULL && aura->GetSpellProto()->NameHash == namehash && aura->m_casterGuid == guid)
+        if (aura != NULL && aura->GetSpellProto()->custom_NameHash == namehash && aura->m_casterGuid == guid)
             return aura;
     }
     return NULL;
@@ -5033,7 +5033,7 @@ Aura* Unit::FindAuraByNameHash(uint32 namehash, uint64 guid)
 Aura* Unit::FindAuraByNameHash(uint32 namehash)
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->GetSpellProto()->NameHash == namehash)
+        if (m_auras[x] && m_auras[x]->GetSpellProto()->custom_NameHash == namehash)
             return m_auras[x];
     return NULL;
 }
@@ -5182,10 +5182,10 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellEntry* spellInfo, int32 base_dm
             {
                 plus_damage = plus_damage * spellInfo->casttime_coef;
                 float td = static_cast<float>(GetDuration(sSpellDurationStore.LookupEntry(spellInfo->DurationIndex)));
-                if (spellInfo->NameHash == SPELL_HASH_MOONFIRE
-                    || spellInfo->NameHash == SPELL_HASH_IMMOLATE
-                    || spellInfo->NameHash == SPELL_HASH_ICE_LANCE
-                    || spellInfo->NameHash == SPELL_HASH_PYROBLAST)
+                if (spellInfo->custom_NameHash == SPELL_HASH_MOONFIRE
+                    || spellInfo->custom_NameHash == SPELL_HASH_IMMOLATE
+                    || spellInfo->custom_NameHash == SPELL_HASH_ICE_LANCE
+                    || spellInfo->custom_NameHash == SPELL_HASH_PYROBLAST)
                     plus_damage = plus_damage * (1.0f - ((td / 15000.0f) / ((td / 15000.0f))));
             }
         }
@@ -5640,7 +5640,7 @@ bool Unit::HasBuff(uint32 spellid, uint64 guid)
 bool Unit::HasVisialPosAurasOfNameHashWithCaster(uint32 namehash, Unit* caster)
 {
     for (uint32 i = MAX_POSITIVE_AURAS_EXTEDED_START; i < MAX_POSITIVE_AURAS_EXTEDED_END; ++i)
-        if (m_auras[i] && m_auras[i]->GetSpellProto()->NameHash == namehash && m_auras[i]->GetCasterGUID() == caster->GetGUID())
+        if (m_auras[i] && m_auras[i]->GetSpellProto()->custom_NameHash == namehash && m_auras[i]->GetCasterGUID() == caster->GetGUID())
             return true;
 
     return false;
@@ -5834,7 +5834,7 @@ uint32 Unit::FindAuraCountByHash(uint32 HashName, uint32 maxcount)
 
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
-        if (m_auras[x] && (m_auras[x]->GetSpellProto()->NameHash == HashName))
+        if (m_auras[x] && (m_auras[x]->GetSpellProto()->custom_NameHash == HashName))
         {
             count++;
             if (count == maxcount)
@@ -5853,7 +5853,7 @@ AuraCheckResponse Unit::AuraCheck(SpellEntry* proto, Object* caster)
     resp.Error = AURA_CHECK_RESULT_NONE;
     resp.Misc = 0;
 
-    uint32 name_hash = proto->NameHash;
+    uint32 name_hash = proto->custom_NameHash;
     uint32 rank = proto->custom_RankNumber;
     Aura* aura;
     SpellEntry* aura_sp;
@@ -5862,7 +5862,7 @@ AuraCheckResponse Unit::AuraCheck(SpellEntry* proto, Object* caster)
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
         aura = m_auras[x];
-        if (aura != NULL && aura->GetSpellProto()->NameHash == name_hash)
+        if (aura != NULL && aura->GetSpellProto()->custom_NameHash == name_hash)
         {
             // we've got an aura with the same name as the one we're trying to apply
             // but first we check if it has the same effects
@@ -5909,7 +5909,7 @@ AuraCheckResponse Unit::AuraCheck(SpellEntry* proto, Aura* aur, Object* caster)
     resp.Misc = 0;
 
     // look for spells with same namehash
-    if (aur->GetSpellProto()->NameHash == proto->NameHash)
+    if (aur->GetSpellProto()->custom_NameHash == proto->custom_NameHash)
     {
         // we've got an aura with the same name as the one we're trying to apply
         // but first we check if it has the same effects
@@ -6032,42 +6032,42 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     case 33151:
                     {
                         //our luck. it got triggered on smite..we do not remove it just yet
-                        if (m_currentSpell && m_currentSpell->GetProto()->NameHash == SPELL_HASH_SMITE)
+                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_SMITE)
                             continue;
 
                         //this spell gets removed only when casting smite
                         SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
-                        if (spi && spi->NameHash != SPELL_HASH_SMITE)
+                        if (spi && spi->custom_NameHash != SPELL_HASH_SMITE)
                             continue;
                     }
                     break;
                     case 34936:	// Backlash
                     {
-                        if (m_currentSpell && m_currentSpell->GetProto()->NameHash == SPELL_HASH_SHADOW_BOLT)
+                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
                             continue;
-                        if (m_currentSpell && m_currentSpell->GetProto()->NameHash == SPELL_HASH_INCINERATE)
+                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_INCINERATE)
                             continue;
                         SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
-                        if (spi && spi->NameHash != SPELL_HASH_SHADOW_BOLT && spi->NameHash != SPELL_HASH_INCINERATE)
+                        if (spi && spi->custom_NameHash != SPELL_HASH_SHADOW_BOLT && spi->custom_NameHash != SPELL_HASH_INCINERATE)
                             continue;
                     }
                     break;
                     case 59578: // Art of War
                     case 53489:
                     {
-                        if (m_currentSpell && m_currentSpell->m_spellInfo->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
+                        if (m_currentSpell && m_currentSpell->m_spellInfo->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
                             continue;
                         SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
-                        if (spi && spi->NameHash != SPELL_HASH_FLASH_OF_LIGHT)
+                        if (spi && spi->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT)
                             continue;
                     }
                     break;
                     case 17941: //Shadow Trance
                     {
-                        if (m_currentSpell && m_currentSpell->GetProto()->NameHash == SPELL_HASH_SHADOW_BOLT)
+                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
                             continue;
                         SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
-                        if (spi && spi->NameHash != SPELL_HASH_SHADOW_BOLT)
+                        if (spi && spi->custom_NameHash != SPELL_HASH_SHADOW_BOLT)
                             continue;
                     }
                     break;
@@ -6080,7 +6080,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 48108: // Hot Streak
                     {
-                        if (m_currentSpell && m_currentSpell->GetProto()->NameHash != SPELL_HASH_PYROBLAST)
+                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash != SPELL_HASH_PYROBLAST)
                             continue;
                     }
                     break;
@@ -6095,7 +6095,7 @@ int Unit::HasAurasWithNameHash(uint32 name_hash)
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
-        if (m_auras[x] && m_auras[x]->GetSpellProto()->NameHash == name_hash)
+        if (m_auras[x] && m_auras[x]->GetSpellProto()->custom_NameHash == name_hash)
             return m_auras[x]->m_spellProto->Id;
     }
 
@@ -7960,7 +7960,7 @@ uint64 Unit::GetCurrentUnitForSingleTargetAura(SpellEntry* spell)
 {
     UniqueAuraTargetMap::iterator itr;
 
-    itr = m_singleTargetAura.find(spell->NameHash);
+    itr = m_singleTargetAura.find(spell->custom_NameHash);
 
     if (itr != m_singleTargetAura.end())
         return itr->second;
@@ -7989,18 +7989,18 @@ uint64 Unit::GetCurrentUnitForSingleTargetAura(uint32* name_hashes, uint32* inde
 void Unit::SetCurrentUnitForSingleTargetAura(SpellEntry* spell, uint64 guid)
 {
     UniqueAuraTargetMap::iterator itr;
-    itr = m_singleTargetAura.find(spell->NameHash);
+    itr = m_singleTargetAura.find(spell->custom_NameHash);
 
     if (itr != m_singleTargetAura.end())
         itr->second = guid;
     else
-        m_singleTargetAura.insert(std::make_pair(spell->NameHash, guid));
+        m_singleTargetAura.insert(std::make_pair(spell->custom_NameHash, guid));
 }
 
 void Unit::RemoveCurrentUnitForSingleTargetAura(SpellEntry* spell)
 {
     UniqueAuraTargetMap::iterator itr;
-    itr = m_singleTargetAura.find(spell->NameHash);
+    itr = m_singleTargetAura.find(spell->custom_NameHash);
 
     if (itr != m_singleTargetAura.end())
         m_singleTargetAura.erase(itr);
@@ -8117,7 +8117,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellEntry* spell)
     // HACK!!!
     Aura* fs = NULL;
     if (victim->IsUnit()
-        && spell->NameHash == SPELL_HASH_LAVA_BURST
+        && spell->custom_NameHash == SPELL_HASH_LAVA_BURST
         && (fs = static_cast<Unit*>(victim)->FindAuraByNameHash(SPELL_HASH_FLAME_SHOCK)) != NULL)
     {
         result = true;
@@ -8175,7 +8175,7 @@ bool Unit::IsCriticalHealForSpell(Object* victim, SpellEntry* spell)
     crit_chance = float2int32(this->spellcritperc + this->SpellCritChanceSchool[spell->School]);
 
     //Sacred Shield
-    if (victim->IsUnit() && static_cast<Unit*>(victim)->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD) && spell->NameHash == SPELL_HASH_FLASH_OF_LIGHT)
+    if (victim->IsUnit() && static_cast<Unit*>(victim)->HasAurasWithNameHash(SPELL_HASH_SACRED_SHIELD) && spell->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
         crit_chance += 50;
 
     SM_FIValue(this->SM_CriticalChance, &crit_chance, spell->SpellGroupType);

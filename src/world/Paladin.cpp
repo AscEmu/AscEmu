@@ -77,12 +77,12 @@ void World::InitPaladinSpells()
 
     if (sp = dbcSpell.LookupEntryForced(53489))
     {
-        sp->NameHash += 1;
+        sp->custom_NameHash += 1;
         sp->custom_RankNumber += 1;
     }
     if (sp = dbcSpell.LookupEntryForced(59578))
     {
-        sp->NameHash += 1;
+        sp->custom_NameHash += 1;
         sp->custom_RankNumber += 2;
     }
 

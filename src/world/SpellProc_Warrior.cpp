@@ -57,7 +57,7 @@ class JuggernautSpellProc : public SpellProc
         if (CastingSpell == NULL)
             return false;
 
-        if (CastingSpell->NameHash == SPELL_HASH_CHARGE)
+        if (CastingSpell->custom_NameHash == SPELL_HASH_CHARGE)
             return true;
         else
             return false;

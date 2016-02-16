@@ -26,7 +26,7 @@ void World::InitWarriorSpells()
     SpellEntry * sp = NULL;
     if (sp = dbcSpell.LookupEntryForced(60503))
     {
-        sp->ProcOnNameHash[0] = SPELL_HASH_REND;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_REND;
         sp->RecoveryTime = 6000;
     }
 
@@ -110,8 +110,8 @@ void World::InitWarriorSpells()
 
     if (sp = dbcSpell.LookupEntryForced(50227))
     {
-        sp->ProcOnNameHash[0] = SPELL_HASH_DEVASTATE;
-        sp->ProcOnNameHash[1] = SPELL_HASH_REVENGE;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DEVASTATE;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_REVENGE;
     }
 
     //if (sp = dbcSpell.LookupEntryForced(676))

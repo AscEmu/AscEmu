@@ -35,7 +35,7 @@
 
 uint32 Pet::GetAutoCastTypeForSpell(SpellEntry* ent)
 {
-    switch (ent->NameHash)
+    switch (ent->custom_NameHash)
     {
         //////////////////////////////////////////////////////////////////////////////////////////
         // Warlock Pet Spells
@@ -1101,7 +1101,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
                     bool addThisSpell = true;
                     for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                     {
-                        if ((itr->first->NameHash == sp->NameHash) && (itr->first->custom_RankNumber >= sp->custom_RankNumber))
+                        if ((itr->first->custom_NameHash == sp->custom_NameHash) && (itr->first->custom_RankNumber >= sp->custom_RankNumber))
                         {
                             // Pet already has this spell, or a higher rank. Don't add it.
                             addThisSpell = false;
@@ -1141,7 +1141,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
         {
             for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
             {
-                if (sp->NameHash == itr->first->NameHash)
+                if (sp->custom_NameHash == itr->first->custom_NameHash)
                 {
                     // replace the action bar
                     for (uint8 i = 0; i < 10; ++i)
@@ -1212,7 +1212,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
                     SetAutoCast(asp, true);
 
                 // Phase shift gets cast on spawn, right?
-                if (asp->autocast_type == AUTOCAST_EVENT_ON_SPAWN || asp->spell->NameHash == SPELL_HASH_PHASE_SHIFT)
+                if (asp->autocast_type == AUTOCAST_EVENT_ON_SPAWN || asp->spell->custom_NameHash == SPELL_HASH_PHASE_SHIFT)
                     CastSpell(this, sp, false);
             }
             else

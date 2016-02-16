@@ -125,7 +125,7 @@ void World::InitHunterSpells()
 
     if (sp = dbcSpell.LookupEntryForced(53220))
     {
-        sp->NameHash += 1;
+        sp->custom_NameHash += 1;
     }
 
     if (sp = dbcSpell.LookupEntryForced(34720))

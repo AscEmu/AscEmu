@@ -44,7 +44,7 @@ void SpellFactoryMgr::AddSpellByNameHash(uint32 name_hash, spell_factory_functio
     {
         sp = dbcSpell.LookupRow(x);
 
-        if (sp->NameHash != name_hash)
+        if (sp->custom_NameHash != name_hash)
             continue;
 
         AddSpellByEntry(sp, spell_func);
@@ -71,7 +71,7 @@ void SpellFactoryMgr::AddAuraByNameHash(uint32 name_hash, aura_factory_function 
     {
         sp = dbcSpell.LookupRow(x);
 
-        if (sp->NameHash != name_hash)
+        if (sp->custom_NameHash != name_hash)
             continue;
 
         AddAuraByEntry(sp, aura_func);

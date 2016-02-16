@@ -573,7 +573,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     uint32 offset;
     Item* it = NULL;
 
-    if (ability && ability->NameHash == SPELL_HASH_FLAMETONGUE_WEAPON)
+    if (ability && ability->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON)
         return 0;
 
     if (pAttacker->disarmed && pAttacker->IsPlayer())
