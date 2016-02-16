@@ -278,67 +278,9 @@ void ApplyNormalFixes()
 
         //these mostly do not mix so we can use else
         // look for seal, etc in name
-        if (strstr(sp->Name, "Seal of"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_SEAL;
-        else if (strstr(sp->Name, "Hand of"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_HAND;
-        else if (strstr(sp->Name, "Blessing"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_BLESSING;
-        else if (strstr(sp->Name, "Curse"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_CURSE;
-        else if (strstr(sp->Name, "Corruption"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_CORRUPTION;
-        else if (strstr(sp->Name, "Aspect"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_ASPECT;
-        else if (strstr(sp->Name, "Sting") || strstr(sp->Name, "sting"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_STING;
-        // don't break armor items!
-        else if (strstr(sp->Name, "Fel Armor") || strstr(sp->Name, "Frost Armor") || strstr(sp->Name, "Ice Armor") || strstr(sp->Name, "Mage Armor") || strstr(sp->Name, "Molten Armor") || strstr(sp->Name, "Demon Skin") || strstr(sp->Name, "Demon Armor"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_ARMOR;
-        else if (strstr(sp->Name, "Aura")
-                 && !strstr(sp->Name, "Trueshot") && !strstr(sp->Name, "Moonkin")
-                 && !strstr(sp->Name, "Crusader") && !strstr(sp->Name, "Sanctity") && !strstr(sp->Name, "Devotion") && !strstr(sp->Name, "Retribution") && !strstr(sp->Name, "Concentration") && !strstr(sp->Name, "Shadow Resistance") && !strstr(sp->Name, "Frost Resistance") && !strstr(sp->Name, "Fire Resistance")
-                )
-                 sp->BGR_one_buff_on_target |= SPELL_TYPE_AURA;
-        else if (strstr(sp->Name, "Track") == sp->Name)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_TRACK;
-        else if (namehash == SPELL_HASH_GIFT_OF_THE_WILD || namehash == SPELL_HASH_MARK_OF_THE_WILD)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_MARK_GIFT;
-        else if (namehash == SPELL_HASH_IMMOLATION_TRAP || namehash == SPELL_HASH_FREEZING_TRAP || namehash == SPELL_HASH_FROST_TRAP || namehash == SPELL_HASH_EXPLOSIVE_TRAP || namehash == SPELL_HASH_SNAKE_TRAP)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_TRAP;
-        else if (namehash == SPELL_HASH_ARCANE_INTELLECT || namehash == SPELL_HASH_ARCANE_BRILLIANCE)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_INTEL;
-        else if (namehash == SPELL_HASH_AMPLIFY_MAGIC || namehash == SPELL_HASH_DAMPEN_MAGIC)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_MAGI;
-        else if (namehash == SPELL_HASH_FIRE_WARD || namehash == SPELL_HASH_FROST_WARD)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_WARDS;
-        else if (namehash == SPELL_HASH_SHADOW_PROTECTION || namehash == SPELL_HASH_PRAYER_OF_SHADOW_PROTECTION)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_PRIEST_SH_PPROT;
-        else if (namehash == SPELL_HASH_WATER_SHIELD || namehash == SPELL_HASH_EARTH_SHIELD || namehash == SPELL_HASH_LIGHTNING_SHIELD)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_SHIELD;
-        else if (namehash == SPELL_HASH_POWER_WORD__FORTITUDE || namehash == SPELL_HASH_PRAYER_OF_FORTITUDE)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_FORTITUDE;
-        else if (namehash == SPELL_HASH_DIVINE_SPIRIT || namehash == SPELL_HASH_PRAYER_OF_SPIRIT)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_SPIRIT;
-        //        else if (strstr(sp->Name, "Curse of Weakness") || strstr(sp->Name, "Curse of Agony") || strstr(sp->Name, "Curse of Recklessness") || strstr(sp->Name, "Curse of Tongues") || strstr(sp->Name, "Curse of the Elements") || strstr(sp->Name, "Curse of Idiocy") || strstr(sp->Name, "Curse of Shadow") || strstr(sp->Name, "Curse of Doom"))
-        //        else if (namehash==4129426293 || namehash==885131426 || namehash==626036062 || namehash==3551228837 || namehash==2784647472 || namehash==776142553 || namehash==3407058720 || namehash==202747424)
-        //        else if (strstr(sp->Name, "Curse of "))
-        //            type |= SPELL_TYPE_WARLOCK_CURSES;
-        else if (strstr(sp->Name, "Immolate") || strstr(sp->Name, "Conflagrate"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_WARLOCK_IMMOLATE;
-        else if (strstr(sp->Name, "Amplify Magic") || strstr(sp->Name, "Dampen Magic"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_AMPL_DUMP;
-        else if (strstr(sp->Description, "Battle Elixir"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_BATTLE;
-        else if (strstr(sp->Description, "Guardian Elixir"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_GUARDIAN;
-        else if (strstr(sp->Description, "Battle and Guardian elixir"))
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_FLASK;
-        else if (namehash == SPELL_HASH_HUNTER_S_MARK)        // hunter's mark
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_MARK;
-        else if (namehash == SPELL_HASH_COMMANDING_SHOUT || namehash == SPELL_HASH_BATTLE_SHOUT)
-            sp->BGR_one_buff_on_target |= SPELL_TYPE_WARRIOR_SHOUT;
-        else if (strstr(sp->Description, "Finishing move") == sp->Description)
+        Apply_BGR_one_buff_on_target(sp);
+        
+        if (strstr(sp->Description, "Finishing move") == sp->Description)
             sp->c_is_flags |= SPELL_FLAG_IS_FINISHING_MOVE;
         if (IsDamagingSpell(sp))
             sp->c_is_flags |= SPELL_FLAG_IS_DAMAGING;
@@ -7775,4 +7717,72 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
         sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
     }
+}
+
+// Apply BGR_one_buff_on_target flags
+void Apply_BGR_one_buff_on_target(SpellEntry* sp)
+{
+    if (sp == nullptr)
+    {
+        Log.Error("Apply_BGR_one_buff_on_target", "Something tried to call with an invalid spell pointer!");
+        return;
+    }
+
+    if (strstr(sp->Name, "Seal of"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_SEAL;
+    else if (strstr(sp->Name, "Hand of"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_HAND;
+    else if (strstr(sp->Name, "Blessing"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_BLESSING;
+    else if (strstr(sp->Name, "Curse"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_CURSE;
+    else if (strstr(sp->Name, "Corruption"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_CORRUPTION;
+    else if (strstr(sp->Name, "Aspect"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_ASPECT;
+    else if (strstr(sp->Name, "Sting") || strstr(sp->Name, "sting"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_STING;
+    // don't break armor items!
+    else if (strstr(sp->Name, "Fel Armor") || strstr(sp->Name, "Frost Armor") || strstr(sp->Name, "Ice Armor") || strstr(sp->Name, "Mage Armor") || strstr(sp->Name, "Molten Armor") || strstr(sp->Name, "Demon Skin") || strstr(sp->Name, "Demon Armor"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_ARMOR;
+    else if (strstr(sp->Name, "Aura")
+        && !strstr(sp->Name, "Trueshot") && !strstr(sp->Name, "Moonkin")
+        && !strstr(sp->Name, "Crusader") && !strstr(sp->Name, "Sanctity") && !strstr(sp->Name, "Devotion") && !strstr(sp->Name, "Retribution") && !strstr(sp->Name, "Concentration") && !strstr(sp->Name, "Shadow Resistance") && !strstr(sp->Name, "Frost Resistance") && !strstr(sp->Name, "Fire Resistance")
+        )
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_AURA;
+    else if (strstr(sp->Name, "Track") == sp->Name)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_TRACK;
+    else if (sp->NameHash == SPELL_HASH_GIFT_OF_THE_WILD || sp->NameHash == SPELL_HASH_MARK_OF_THE_WILD)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_MARK_GIFT;
+    else if (sp->NameHash == SPELL_HASH_IMMOLATION_TRAP || sp->NameHash == SPELL_HASH_FREEZING_TRAP || sp->NameHash == SPELL_HASH_FROST_TRAP || sp->NameHash == SPELL_HASH_EXPLOSIVE_TRAP || sp->NameHash == SPELL_HASH_SNAKE_TRAP)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_TRAP;
+    else if (sp->NameHash == SPELL_HASH_ARCANE_INTELLECT || sp->NameHash == SPELL_HASH_ARCANE_BRILLIANCE)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_INTEL;
+    else if (sp->NameHash == SPELL_HASH_AMPLIFY_MAGIC || sp->NameHash == SPELL_HASH_DAMPEN_MAGIC)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_MAGI;
+    else if (sp->NameHash == SPELL_HASH_FIRE_WARD || sp->NameHash == SPELL_HASH_FROST_WARD)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_WARDS;
+    else if (sp->NameHash == SPELL_HASH_SHADOW_PROTECTION || sp->NameHash == SPELL_HASH_PRAYER_OF_SHADOW_PROTECTION)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_PRIEST_SH_PPROT;
+    else if (sp->NameHash == SPELL_HASH_WATER_SHIELD || sp->NameHash == SPELL_HASH_EARTH_SHIELD || sp->NameHash == SPELL_HASH_LIGHTNING_SHIELD)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_SHIELD;
+    else if (sp->NameHash == SPELL_HASH_POWER_WORD__FORTITUDE || sp->NameHash == SPELL_HASH_PRAYER_OF_FORTITUDE)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_FORTITUDE;
+    else if (sp->NameHash == SPELL_HASH_DIVINE_SPIRIT || sp->NameHash == SPELL_HASH_PRAYER_OF_SPIRIT)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_SPIRIT;
+    else if (strstr(sp->Name, "Immolate") || strstr(sp->Name, "Conflagrate"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_WARLOCK_IMMOLATE;
+    else if (strstr(sp->Name, "Amplify Magic") || strstr(sp->Name, "Dampen Magic"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_AMPL_DUMP;
+    else if (strstr(sp->Description, "Battle Elixir"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_BATTLE;
+    else if (strstr(sp->Description, "Guardian Elixir"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_GUARDIAN;
+    else if (strstr(sp->Description, "Battle and Guardian elixir"))
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_FLASK;
+    else if (sp->NameHash == SPELL_HASH_HUNTER_S_MARK)        // hunter's mark
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_MARK;
+    else if (sp->NameHash == SPELL_HASH_COMMANDING_SHOUT || sp->NameHash == SPELL_HASH_BATTLE_SHOUT)
+        sp->BGR_one_buff_on_target |= SPELL_TYPE_WARRIOR_SHOUT;
+
 }
