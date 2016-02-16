@@ -52,7 +52,7 @@ void World::InitPriestSpells()
     //              sp->EffectTriggerSpell[0] = 47755;
     //              sp->procFlags = PROC_ON_CAST_SPELL;
     //              sp->procChance = 100;
-    //              sp->proc_interval = 1500;
+    //              sp->custom_proc_interval = 1500;
     //      }
     //}
     if (sp = dbcSpell.LookupEntryForced(47755))

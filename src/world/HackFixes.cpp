@@ -79,61 +79,61 @@ void Set_Custom_BGR_one_buff_on_target(SpellEntry* sp)
     }
 
     if (strstr(sp->Name, "Seal of"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_SEAL;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_SEAL;
     else if (strstr(sp->Name, "Hand of"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_HAND;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_HAND;
     else if (strstr(sp->Name, "Blessing"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_BLESSING;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_BLESSING;
     else if (strstr(sp->Name, "Curse"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_CURSE;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_CURSE;
     else if (strstr(sp->Name, "Corruption"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_CORRUPTION;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_CORRUPTION;
     else if (strstr(sp->Name, "Aspect"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_ASPECT;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_ASPECT;
     else if (strstr(sp->Name, "Sting") || strstr(sp->Name, "sting"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_STING;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_STING;
     // don't break armor items!
     else if (strstr(sp->Name, "Fel Armor") || strstr(sp->Name, "Frost Armor") || strstr(sp->Name, "Ice Armor") || strstr(sp->Name, "Mage Armor") || strstr(sp->Name, "Molten Armor") || strstr(sp->Name, "Demon Skin") || strstr(sp->Name, "Demon Armor"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_ARMOR;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_ARMOR;
     else if (strstr(sp->Name, "Aura")
         && !strstr(sp->Name, "Trueshot") && !strstr(sp->Name, "Moonkin")
         && !strstr(sp->Name, "Crusader") && !strstr(sp->Name, "Sanctity") && !strstr(sp->Name, "Devotion") && !strstr(sp->Name, "Retribution") && !strstr(sp->Name, "Concentration") && !strstr(sp->Name, "Shadow Resistance") && !strstr(sp->Name, "Frost Resistance") && !strstr(sp->Name, "Fire Resistance")
         )
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_AURA;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_AURA;
     else if (strstr(sp->Name, "Track") == sp->Name)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_TRACK;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_TRACK;
     else if (sp->NameHash == SPELL_HASH_GIFT_OF_THE_WILD || sp->NameHash == SPELL_HASH_MARK_OF_THE_WILD)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_MARK_GIFT;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MARK_GIFT;
     else if (sp->NameHash == SPELL_HASH_IMMOLATION_TRAP || sp->NameHash == SPELL_HASH_FREEZING_TRAP || sp->NameHash == SPELL_HASH_FROST_TRAP || sp->NameHash == SPELL_HASH_EXPLOSIVE_TRAP || sp->NameHash == SPELL_HASH_SNAKE_TRAP)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_TRAP;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_TRAP;
     else if (sp->NameHash == SPELL_HASH_ARCANE_INTELLECT || sp->NameHash == SPELL_HASH_ARCANE_BRILLIANCE)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_INTEL;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MAGE_INTEL;
     else if (sp->NameHash == SPELL_HASH_AMPLIFY_MAGIC || sp->NameHash == SPELL_HASH_DAMPEN_MAGIC)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_MAGI;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MAGE_MAGI;
     else if (sp->NameHash == SPELL_HASH_FIRE_WARD || sp->NameHash == SPELL_HASH_FROST_WARD)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_WARDS;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MAGE_WARDS;
     else if (sp->NameHash == SPELL_HASH_SHADOW_PROTECTION || sp->NameHash == SPELL_HASH_PRAYER_OF_SHADOW_PROTECTION)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_PRIEST_SH_PPROT;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_PRIEST_SH_PPROT;
     else if (sp->NameHash == SPELL_HASH_WATER_SHIELD || sp->NameHash == SPELL_HASH_EARTH_SHIELD || sp->NameHash == SPELL_HASH_LIGHTNING_SHIELD)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_SHIELD;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_SHIELD;
     else if (sp->NameHash == SPELL_HASH_POWER_WORD__FORTITUDE || sp->NameHash == SPELL_HASH_PRAYER_OF_FORTITUDE)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_FORTITUDE;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_FORTITUDE;
     else if (sp->NameHash == SPELL_HASH_DIVINE_SPIRIT || sp->NameHash == SPELL_HASH_PRAYER_OF_SPIRIT)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_SPIRIT;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_SPIRIT;
     else if (strstr(sp->Name, "Immolate") || strstr(sp->Name, "Conflagrate"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_WARLOCK_IMMOLATE;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_WARLOCK_IMMOLATE;
     else if (strstr(sp->Name, "Amplify Magic") || strstr(sp->Name, "Dampen Magic"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_MAGE_AMPL_DUMP;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_MAGE_AMPL_DUMP;
     else if (strstr(sp->Description, "Battle Elixir"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_BATTLE;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_BATTLE;
     else if (strstr(sp->Description, "Guardian Elixir"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_GUARDIAN;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_GUARDIAN;
     else if (strstr(sp->Description, "Battle and Guardian elixir"))
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_FLASK;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_ELIXIR_FLASK;
     else if (sp->NameHash == SPELL_HASH_HUNTER_S_MARK)        // hunter's mark
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_MARK;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_HUNTER_MARK;
     else if (sp->NameHash == SPELL_HASH_COMMANDING_SHOUT || sp->NameHash == SPELL_HASH_BATTLE_SHOUT)
-        sp->BGR_one_buff_on_target |= SPELL_TYPE_WARRIOR_SHOUT;
+        sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_WARRIOR_SHOUT;
 }
 
 void Set_Custom_c_is_flags(SpellEntry* sp)
@@ -145,22 +145,22 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
     }
 
     if (sp->NameHash == SPELL_HASH_ARCANE_SHOT)
-        sp->c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
 
     else if (sp->NameHash == SPELL_HASH_SERPENT_STING)
-        sp->c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
 
     if (strstr(sp->Description, "Finishing move") == sp->Description)
-        sp->c_is_flags |= SPELL_FLAG_IS_FINISHING_MOVE;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FINISHING_MOVE;
     if (IsDamagingSpell(sp))
-        sp->c_is_flags |= SPELL_FLAG_IS_DAMAGING;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_DAMAGING;
     if (IsHealingSpell(sp))
-        sp->c_is_flags |= SPELL_FLAG_IS_HEALING;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_HEALING;
     if (IsTargetingStealthed(sp))
-        sp->c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
 
     if (sp->NameHash == SPELL_HASH_HEMORRHAGE)
-        sp->c_is_flags |= SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF;
 
 }
 
@@ -428,8 +428,8 @@ void ApplyNormalFixes()
         }
 
 
-        sp->proc_interval = 0;//trigger at each event
-        sp->c_is_flags = 0;
+        sp->custom_proc_interval = 0;//trigger at each event
+        sp->custom_c_is_flags = 0;
         sp->spell_coef_flags = 0;
         sp->Dspell_coef_override = -1;
         sp->OTspell_coef_override = -1;
@@ -445,9 +445,9 @@ void ApplyNormalFixes()
 
         // parse rank text
         if (sscanf(sp->Rank, "Rank %d", (unsigned int*)&rank) != 1)
-            sp->RankNumber = 0;
+            sp->custom_RankNumber = 0;
         else
-            sp->RankNumber = rank;
+            sp->custom_RankNumber = rank;
         
         // DankoDJ: Refactoring session 16/02/2016 new functions
         Modify_EffectBasePoints(sp);
@@ -461,7 +461,7 @@ void ApplyNormalFixes()
         Set_Custom_selfcast_only(sp);
 
         // find diminishing status
-        sp->DiminishStatus = GetDiminishingGroup(namehash);
+        sp->custom_DiminishStatus = GetDiminishingGroup(namehash);
 
         switch (sp->Id)
         {
@@ -472,7 +472,7 @@ void ApplyNormalFixes()
             {
                 //Quivers, Ammo Pouches and Thori'dal the Star's Fury
                 sp->Attributes &= ~ATTRIBUTES_PASSIVE;      //Otherwise we couldn't remove them
-                sp->BGR_one_buff_on_target |= SPELL_TYPE_QUIVER_HASTE;
+                sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_QUIVER_HASTE;
             } break;
 
             // SPELL_HASH_CRUSADER_AURA
@@ -525,7 +525,7 @@ void ApplyNormalFixes()
             case 57740:
             case 58944:
             {
-                sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE2_PALADIN_AURA;
+                sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE2_PALADIN_AURA;
             } break;
 
             // SPELL_HASH_BLOOD_PRESENCE
@@ -542,7 +542,7 @@ void ApplyNormalFixes()
             case 49772:
             case 55222:
             {
-                sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
+                sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
             } break;
 
             // SPELL_HASH_BEACON_OF_LIGHT
@@ -551,7 +551,7 @@ void ApplyNormalFixes()
             case 53653:
             case 53654:
             {
-                sp->BGR_one_buff_on_target = SPELL_TYPE2_PALADIN_AURA;
+                sp->custom_BGR_one_buff_on_target = SPELL_TYPE2_PALADIN_AURA;
             } break;
         }
 
@@ -1045,57 +1045,57 @@ void ApplyNormalFixes()
             case 324:       // Lightning Shield Rank 1
             {
                 sp->EffectTriggerSpell[0] = 26364;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 325:       // Lightning Shield Rank 2
             {
                 sp->EffectTriggerSpell[0] = 26365;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 905:       // Lightning Shield Rank 3
             {
                 sp->EffectTriggerSpell[0] = 26366;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 945:       // Lightning Shield Rank 4
             {
                 sp->EffectTriggerSpell[0] = 26367;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 8134:      // Lightning Shield Rank 5
             {
                 sp->EffectTriggerSpell[0] = 26369;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 10431:     // Lightning Shield Rank 6
             {
                 sp->EffectTriggerSpell[0] = 26370;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 10432:     // Lightning Shield Rank 7
             {
                 sp->EffectTriggerSpell[0] = 26363;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 25469:     // Lightning Shield Rank 8
             {
                 sp->EffectTriggerSpell[0] = 26371;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 25472:     // Lightning Shield Rank 9
             {
                 sp->EffectTriggerSpell[0] = 26372;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 49280:     // Lightning Shield Rank 10
             {
                 sp->EffectTriggerSpell[0] = 49278;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
             case 49281:     // Lightning Shield Rank 11
             {
                 sp->EffectTriggerSpell[0] = 49279;
-                sp->proc_interval = 3000;       // 3 seconds
+                sp->custom_proc_interval = 3000;       // 3 seconds
             } break;
 
             // Name includes "Ignite" (and "an additional" % in description)
@@ -1217,7 +1217,7 @@ void ApplyNormalFixes()
             case 58332:
             case 60166:
             {
-                sp->proc_interval = 3000;  //3 seconds
+                sp->custom_proc_interval = 3000;  //3 seconds
                 sp->procFlags |= PROC_TARGET_SELF;
             } break;
 
@@ -1264,14 +1264,14 @@ void ApplyNormalFixes()
             case 69925:
             case 69926:
             {
-                sp->proc_interval = 3000;  //3 seconds
+                sp->custom_proc_interval = 3000;  //3 seconds
             } break;
 
             // Name includes "Poison Shield"
             case 34355:
             case 39027:
             {
-                sp->proc_interval = 3000;  //3 seconds
+                sp->custom_proc_interval = 3000;  //3 seconds
             } break;
 
             // Name includes "Infused Mushroom"
@@ -1281,13 +1281,13 @@ void ApplyNormalFixes()
             case 33759:
             case 57686:
             {
-                sp->proc_interval = 10000;  //10 seconds
+                sp->custom_proc_interval = 10000;  //10 seconds
             } break;
 
             // Name includes "Aviana's Purpose"
             case 41260:
             {
-                sp->proc_interval = 10000;  //10 seconds
+                sp->custom_proc_interval = 10000;  //10 seconds
             } break;
             default:
                 break;
@@ -1306,7 +1306,7 @@ void ApplyNormalFixes()
             case 57116:     // Glyph of Crippling Poison?!
             case 57144:     // Glyph of Crippling Poison?!
             {
-                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
             } break;
 
             // Name includes "Mind-numbing Poison"
@@ -1316,7 +1316,7 @@ void ApplyNormalFixes()
             case 34615:
             case 41190:
             {
-                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
             } break;
 
             // Name includes "Instant Poison"
@@ -1344,7 +1344,7 @@ void ApplyNormalFixes()
             case 59240:
             case 59242:
             {
-                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
             } break;
 
             // Name includes "Deadly Poison"
@@ -1396,7 +1396,7 @@ void ApplyNormalFixes()
             case 72329:
             case 72330:
             {
-                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
             } break;
 
             // Name includes "Wound Poison"
@@ -1421,7 +1421,7 @@ void ApplyNormalFixes()
             case 57978:
             case 65962:
             {
-                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
             } break;
 
             // Name includes "Scorpid Poison"
@@ -1439,7 +1439,7 @@ void ApplyNormalFixes()
             case 55728:
             {
                 // groups?
-                sp->c_is_flags |= SPELL_FLAG_IS_POISON;
+                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
             } break;
             default:
                 break;
@@ -1473,7 +1473,7 @@ void ApplyNormalFixes()
                 sp->MechanicsType = MECHANIC_INTERRUPTED;
         }
 
-        if (sp->proc_interval != 0)
+        if (sp->custom_proc_interval != 0)
             sp->procFlags |= PROC_REMOVEONUSE;
 
         //shaman - shock, has no spellgroup.very dangerous move !
@@ -1660,7 +1660,7 @@ void ApplyNormalFixes()
             || ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC))
            )
         {
-            sp->c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
         }
 
     }
@@ -2269,7 +2269,7 @@ void ApplyNormalFixes()
             case 31616:     // Nature's Guardian
             {
                 sp->procFlags = PROC_ON_SPELL_HIT_VICTIM | PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_ANY_DAMAGE_VICTIM;
-                sp->proc_interval = 5000;
+                sp->custom_proc_interval = 5000;
                 sp->EffectTriggerSpell[0] = 31616;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 18350 in spell.dbc !?
             } break;
 
@@ -2416,12 +2416,12 @@ void ApplyNormalFixes()
     //fire elemental
     sp = CheckAndReturnSpellEntry(32982);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
 
     //Earth elemental
     sp = CheckAndReturnSpellEntry(33663);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
 
     
     //////////////////////////////////////////////////////
@@ -2439,7 +2439,7 @@ void ApplyNormalFixes()
     sp = dbcSpell.LookupEntryForced(12292);
     if (sp != NULL)
     {
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
         sp->procChance = 100;
     }
     ////////////////////////////////////////////////////////////
@@ -2455,7 +2455,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
-        sp->proc_interval = 6000;
+        sp->custom_proc_interval = 6000;
     }
 
     // Taste for Blood Rank 2
@@ -2463,7 +2463,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
-        sp->proc_interval = 6000;
+        sp->custom_proc_interval = 6000;
     }
 
     // Taste for Blood Rank 3
@@ -2471,7 +2471,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
-        sp->proc_interval = 6000;
+        sp->custom_proc_interval = 6000;
     }
 
     // Wrecking Crew Rank 1
@@ -2711,13 +2711,13 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->proc_interval = 7000;
+        sp->custom_proc_interval = 7000;
     }
     sp = CheckAndReturnSpellEntry(46911);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->proc_interval = 5000;
+        sp->custom_proc_interval = 5000;
     }
 
     // Warrior - Enrage Procflags
@@ -2965,37 +2965,37 @@ void ApplyNormalFixes()
     //Paladin - Seal of Command
     sp = CheckAndReturnSpellEntry(20375);
     if (sp != NULL)
-        sp->proc_interval = 3000;
+        sp->custom_proc_interval = 3000;
 
     //Paladin - Seal of Corruption
     sp = CheckAndReturnSpellEntry(53736);
     if (sp != NULL)
-        sp->proc_interval = 3000;
+        sp->custom_proc_interval = 3000;
 
     //Paladin - Seal of Light
     sp = CheckAndReturnSpellEntry(20165);
     if (sp != NULL)
-        sp->proc_interval = 3000;
+        sp->custom_proc_interval = 3000;
 
     //Paladin - Seal of Justice
     sp = CheckAndReturnSpellEntry(20164);
     if (sp != NULL)
-        sp->proc_interval = 3000;
+        sp->custom_proc_interval = 3000;
 
     //Paladin - Seal of Righteousness
     sp = CheckAndReturnSpellEntry(21084);
     if (sp != NULL)
-        sp->proc_interval = 3000;
+        sp->custom_proc_interval = 3000;
 
     //Paladin - Seal of Vengeance
     sp = CheckAndReturnSpellEntry(31801);
     if (sp != NULL)
-        sp->proc_interval = 3000;
+        sp->custom_proc_interval = 3000;
 
     //Paladin - Seal of Wisdom
     sp = CheckAndReturnSpellEntry(20166);
     if (sp != NULL)
-        sp->proc_interval = 3000;
+        sp->custom_proc_interval = 3000;
 
     sp = CheckAndReturnSpellEntry(20056);   //Rank 2
     if (sp != NULL)
@@ -3078,7 +3078,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->proc_interval = 6000;
+        sp->custom_proc_interval = 6000;
         sp->EffectTriggerSpell[0] = 58597;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
     }
@@ -3142,7 +3142,7 @@ void ApplyNormalFixes()
         sp->SpellGroupType[0] = 0;
         sp->SpellGroupType[1] = 0;
         sp->SpellGroupType[2] = 0;
-        sp->proc_interval = 4000;
+        sp->custom_proc_interval = 4000;
     }
 
     sp = CheckAndReturnSpellEntry(31876);
@@ -3222,7 +3222,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(61987);
     if (sp != NULL)
     {
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -3230,7 +3230,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(25771);
     if (sp != NULL)
     {
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -3443,19 +3443,19 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags |= PROC_ON_TRAP_TRIGGER;
-        sp->proc_interval = 30000;
+        sp->custom_proc_interval = 30000;
     }
     sp = CheckAndReturnSpellEntry(56343);
     if (sp != NULL)
     {
         sp->procFlags |= PROC_ON_TRAP_TRIGGER;
-        sp->proc_interval = 30000;
+        sp->custom_proc_interval = 30000;
     }
     sp = CheckAndReturnSpellEntry(56344);
     if (sp != NULL)
     {
         sp->procFlags |= PROC_ON_TRAP_TRIGGER;
-        sp->proc_interval = 30000;
+        sp->custom_proc_interval = 30000;
     }
 
     //Hunter - Bestial Wrath
@@ -3511,21 +3511,21 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(19578);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 19579;
     }
     sp = CheckAndReturnSpellEntry(20895);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 24529;
     }
     sp = CheckAndReturnSpellEntry(19579);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA; //we should do the same for player too as we did for pet
         sp->EffectApplyAuraName[1] = sp->EffectApplyAuraName[0];
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
@@ -3536,7 +3536,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(24529);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA; //we should do the same for player too as we did for pet
         sp->EffectApplyAuraName[1] = sp->EffectApplyAuraName[0];
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
@@ -3556,7 +3556,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34455);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectTriggerSpell[0] = 34456;
@@ -3566,7 +3566,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34459);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectTriggerSpell[0] = 34456;
@@ -3576,7 +3576,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34460);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectTriggerSpell[0] = 34456;
@@ -3588,23 +3588,23 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(35029);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 35060;
     }
     sp = CheckAndReturnSpellEntry(35030);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 35061;
     }
     sp = CheckAndReturnSpellEntry(35060);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
     sp = CheckAndReturnSpellEntry(35061);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
 
     // Hunter - Thrill of the Hunt
     sp = CheckAndReturnSpellEntry(34497);
@@ -3652,7 +3652,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
     }
     sp = CheckAndReturnSpellEntry(19622);
     if (sp != NULL)
@@ -3662,7 +3662,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
     }
     sp = CheckAndReturnSpellEntry(19623);
     if (sp != NULL)
@@ -3672,7 +3672,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
     }
     sp = CheckAndReturnSpellEntry(19624);
     if (sp != NULL)
@@ -3682,7 +3682,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
     }
     sp = CheckAndReturnSpellEntry(19625);
     if (sp != NULL)
@@ -3692,7 +3692,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
     }
 
     //Hunter : Pathfinding
@@ -4140,7 +4140,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(6788);
     if (sp != NULL)
     {
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -4202,14 +4202,14 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(47516);
     if (sp != NULL)
     {
-        sp->proc_interval = 100;
+        sp->custom_proc_interval = 100;
     }
 
     //Grace Rank 2
     sp = CheckAndReturnSpellEntry(47517);
     if (sp != NULL)
     {
-        sp->proc_interval = 100;
+        sp->custom_proc_interval = 100;
     }
 
     //////////////////////////////////////////
@@ -4286,7 +4286,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(57724);
     if (sp != NULL)
     {
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -4301,7 +4301,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(57723);
     if (sp != NULL)
     {
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -4541,31 +4541,31 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->proc_interval = 24000;
+        sp->custom_proc_interval = 24000;
     }
     sp = CheckAndReturnSpellEntry(51529);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->proc_interval = 12000;
+        sp->custom_proc_interval = 12000;
     }
     sp = CheckAndReturnSpellEntry(51530);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->proc_interval = 8000;
+        sp->custom_proc_interval = 8000;
     }
     sp = CheckAndReturnSpellEntry(51531);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->proc_interval = 6000;
+        sp->custom_proc_interval = 6000;
     }
     sp = CheckAndReturnSpellEntry(51532);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->proc_interval = 5000;
+        sp->custom_proc_interval = 5000;
     }
     sp = CheckAndReturnSpellEntry(53817);
     if (sp != NULL)
@@ -4757,7 +4757,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(12536);
     if (sp != NULL)
     {
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->procCharges = 2;
     }
@@ -4834,7 +4834,7 @@ void ApplyNormalFixes()
     {
         sp->procFlags = 0;
         sp->procCharges = 0;
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
 
     //mage : Empowered Arcane Missiles
@@ -4891,7 +4891,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetB[1] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER;
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
 
     //Mage - Invisibility
@@ -4938,7 +4938,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = 0;
-        // sp->RankNumber = 100;            DankoDJ: Why?
+        // sp->custom_RankNumber = 100;            DankoDJ: Why?
         sp->AuraInterruptFlags = 0;
     }
 
@@ -4946,7 +4946,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = 0;
-        // sp->RankNumber = 101;            DankoDJ: Why?
+        // sp->custom_RankNumber = 101;            DankoDJ: Why?
         sp->AuraInterruptFlags = 0;
     }
 
@@ -4990,7 +4990,7 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[1] = 28682;
         sp->procFlags = PROC_ON_SPELL_HIT | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF);
         sp->procCharges = 0;
-        sp->c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
     }
 
     //mage - Master of Elements
@@ -5061,7 +5061,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(41425);
     if (sp != NULL)
     {
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -5172,7 +5172,7 @@ void ApplyNormalFixes()
     //Unstable Affliction
     sp = CheckAndReturnSpellEntry(31117);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
 
     //warlock: Eradication
     sp = CheckAndReturnSpellEntry(47195);
@@ -5217,36 +5217,36 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(30299);
     if (sp != NULL)
     {
-        sp->proc_interval = 13000;
+        sp->custom_proc_interval = 13000;
     }
     sp = CheckAndReturnSpellEntry(30301);
     if (sp != NULL)
     {
-        sp->proc_interval = 13000;
+        sp->custom_proc_interval = 13000;
     }
     sp = CheckAndReturnSpellEntry(30302);
     if (sp != NULL)
     {
-        sp->proc_interval = 13000;
+        sp->custom_proc_interval = 13000;
     }
     ////////////////////////////////////////////////////////////
     // Backlash
     sp = CheckAndReturnSpellEntry(34935);
     if (sp != NULL)
     {
-        sp->proc_interval = 8000;
+        sp->custom_proc_interval = 8000;
         sp->procFlags |= PROC_ON_MELEE_ATTACK_VICTIM | static_cast<uint32>(PROC_TARGET_SELF);
     }
     sp = CheckAndReturnSpellEntry(34938);
     if (sp != NULL)
     {
-        sp->proc_interval = 8000;
+        sp->custom_proc_interval = 8000;
         sp->procFlags |= PROC_ON_MELEE_ATTACK_VICTIM | static_cast<uint32>(PROC_TARGET_SELF);
     }
     sp = CheckAndReturnSpellEntry(34939);
     if (sp != NULL)
     {
-        sp->proc_interval = 8000;
+        sp->custom_proc_interval = 8000;
         sp->procFlags |= PROC_ON_MELEE_ATTACK_VICTIM | static_cast<uint32>(PROC_TARGET_SELF);
     }
     sp = CheckAndReturnSpellEntry(34936);
@@ -5269,7 +5269,7 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = CheckAndReturnSpellEntry(35692);
     if (sp != NULL)
@@ -5283,7 +5283,7 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = CheckAndReturnSpellEntry(35693);
     if (sp != NULL)
@@ -5297,7 +5297,7 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = CheckAndReturnSpellEntry(35696);
     if (sp != NULL)
@@ -5358,19 +5358,19 @@ void ApplyNormalFixes()
     //warlock - Demonic Sacrifice
     sp = CheckAndReturnSpellEntry(18789);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
     sp = CheckAndReturnSpellEntry(18790);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
     sp = CheckAndReturnSpellEntry(18791);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
     sp = CheckAndReturnSpellEntry(18792);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
     sp = CheckAndReturnSpellEntry(35701);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
 
     //warlock - Demonic Tactics
     sp = CheckAndReturnSpellEntry(30242);
@@ -5380,7 +5380,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectApplyAuraName[2] = SPELL_AURA_MOD_SPELL_CRIT_CHANCE; //lvl 1 has it fucked up :O
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30245);
     if (sp != NULL)
@@ -5388,7 +5388,7 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30246);
     if (sp != NULL)
@@ -5396,7 +5396,7 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30247);
     if (sp != NULL)
@@ -5404,7 +5404,7 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30248);
     if (sp != NULL)
@@ -5412,7 +5412,7 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
 
     //warlock - Demonic Resilience
@@ -5421,40 +5421,40 @@ void ApplyNormalFixes()
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30320);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30321);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
 
     //warlock - Improved Imp
     sp = CheckAndReturnSpellEntry(18694);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18695);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18696);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
 
@@ -5462,19 +5462,19 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18705);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18706);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18707);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
 
@@ -5482,21 +5482,21 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18754);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18755);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18756);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
@@ -5505,7 +5505,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18731);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
         sp->EffectMiscValue[0] = 3;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
@@ -5513,7 +5513,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18743);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
         sp->EffectMiscValue[0] = 3;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
@@ -5521,7 +5521,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18744);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
         sp->EffectMiscValue[0] = 3;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
@@ -5531,7 +5531,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(30242);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5546,7 +5546,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18769);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5559,7 +5559,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18770);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5572,7 +5572,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18771);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5585,7 +5585,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18772);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5598,7 +5598,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18773);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5613,35 +5613,35 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(23785);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23784;
     }
     sp = CheckAndReturnSpellEntry(23822);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23830;
     }
     sp = CheckAndReturnSpellEntry(23823);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23831;
     }
     sp = CheckAndReturnSpellEntry(23824);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23832;
     }
     sp = CheckAndReturnSpellEntry(23825);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 35708;
     }
@@ -5664,49 +5664,49 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(23759);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23760);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23761);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23762);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23826);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23827);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23828);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23829);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     for (uint32 i = 23833; i <= 23844; i++)
@@ -5714,42 +5714,42 @@ void ApplyNormalFixes()
         sp = CheckAndReturnSpellEntry(i);
         if (sp != NULL)
         {
-            sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
             sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         }
     }
     sp = CheckAndReturnSpellEntry(35702);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
     sp = CheckAndReturnSpellEntry(35703);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
     sp = CheckAndReturnSpellEntry(35704);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
     sp = CheckAndReturnSpellEntry(35705);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
     sp = CheckAndReturnSpellEntry(35706);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
@@ -5988,7 +5988,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(33831);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF; //some land under target is used that gathers multiple targets ...
         sp->EffectImplicitTargetA[1] = EFF_TARGET_NONE;
     }
@@ -6116,11 +6116,11 @@ void ApplyNormalFixes()
     // Druid - Improved Leader of the Pack
     sp = CheckAndReturnSpellEntry(34297);
     if (sp != NULL)
-        sp->proc_interval = 6000;//6 secs
+        sp->custom_proc_interval = 6000;//6 secs
 
     sp = CheckAndReturnSpellEntry(34300);
     if (sp != NULL)
-        sp->proc_interval = 6000;//6 secs
+        sp->custom_proc_interval = 6000;//6 secs
 
     // Druid - Primal Fury (talent)
     sp = CheckAndReturnSpellEntry(37116);
@@ -6383,7 +6383,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(43737);
     if (sp != NULL)
     {
-        sp->proc_interval = 10001; //block proc when is already active.. (Primal Instinct duration = 10 sec)
+        sp->custom_proc_interval = 10001; //block proc when is already active.. (Primal Instinct duration = 10 sec)
         sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
     }
 
@@ -6433,7 +6433,7 @@ void ApplyNormalFixes()
     {
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
         sp->ProcOnNameHash[0] = SPELL_HASH_ICY_TOUCH;
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
     }
 
     // Deadly Aggression - triggered by Deadly Gladiator's Relic/Idol/Libram/Totem
@@ -6475,14 +6475,14 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
         sp->ProcOnNameHash[0] = SPELL_HASH_BLOOD_STRIKE;
         sp->ProcOnNameHash[1] = SPELL_HASH_HEART_STRIKE;
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
     }
 
     // Vestige of Haldor
     sp = CheckAndReturnSpellEntry(60306);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
     }
 
@@ -6490,7 +6490,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60473);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
 
@@ -6498,7 +6498,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(33648);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_CRIT_ATTACK;
     }
 
@@ -6513,7 +6513,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(62114);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
 
@@ -6521,7 +6521,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60490);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_CAST_SPELL;
     }
 
@@ -6529,7 +6529,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(62115);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
     }
 
@@ -6537,7 +6537,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60537);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
     }
 
@@ -6552,7 +6552,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60436);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
     }
 
@@ -6567,7 +6567,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60442);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
     }
 
@@ -6575,7 +6575,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60301);
     if (sp != NULL)
     {
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
     }
 
@@ -6583,7 +6583,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(54707);
     if (sp != NULL)
     {
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
         sp->procFlags = PROC_ON_MELEE_ATTACK;
     }
 
@@ -6767,7 +6767,7 @@ void ApplyNormalFixes()
     {
         sp->procChance = 6;
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-        sp->proc_interval = 30000;
+        sp->custom_proc_interval = 30000;
     }
 
     //Serpent-Coil Braid
@@ -6786,28 +6786,28 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
     }
     // Band of the Eternal Sage
     sp = CheckAndReturnSpellEntry(35083);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
     }
     // Band of the Eternal Restorer
     sp = CheckAndReturnSpellEntry(35086);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
     }
     // Band of the Eternal Defender
     sp = CheckAndReturnSpellEntry(35077);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_SPELL_HIT_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
     }
 
     //Item Set: Malorne Harness
@@ -6864,7 +6864,7 @@ void ApplyNormalFixes()
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 20;
+        sp->custom_proc_interval = 20;
         sp->EffectTriggerSpell[0] = 37379;
     }
     sp = CheckAndReturnSpellEntry(39437);
@@ -6872,7 +6872,7 @@ void ApplyNormalFixes()
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 20;
+        sp->custom_proc_interval = 20;
         sp->EffectTriggerSpell[0] = 37378;
     }
 
@@ -6880,7 +6880,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(37227);
     if (sp != NULL)
     {
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
     }
 
@@ -6929,7 +6929,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
     }
     sp = CheckAndReturnSpellEntry(37188);
     if (sp != NULL)
@@ -7040,7 +7040,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
     }
 
     //Darkglow Embroidery
@@ -7048,7 +7048,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
     }
     ///////////////////////////////////////////////////////////////
     // Trinket Fixes        Please keep nice and clean :)
@@ -7090,7 +7090,7 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 60064;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 60064 in spell.dbc !?
         sp->procFlags = PROC_ON_SPELL_HIT;
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
     }
 
     //Je'Tze's Bell
@@ -7099,7 +7099,7 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 49623;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 49623 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
     }
 
     //Tears of Bitter Anguish
@@ -7108,7 +7108,7 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 58904;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 58904 in spell.dbc !?
         sp->procFlags = PROC_ON_RANGED_CRIT_ATTACK | PROC_ON_CRIT_ATTACK;
-        sp->proc_interval = 60000;
+        sp->custom_proc_interval = 60000;
     }
 
     //Embrace of the Spider
@@ -7117,7 +7117,7 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 60492;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 60492 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 30000;
+        sp->custom_proc_interval = 30000;
     }
 
     //Dying Curse
@@ -7126,7 +7126,7 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 60494;       // DankoDJ: sp->EffectTriggerSpell[0] is alread 60494 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
     }
 
     //Fury of the Five Flights
@@ -7176,7 +7176,7 @@ void ApplyNormalFixes()
     {
         sp->EffectTriggerSpell[1] = 60064;      // DankoDJ: EffectTriggerSpell[0] is 60064 in spell.dbc !?
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 45000;
+        sp->custom_proc_interval = 45000;
     }
 
     //Majestic Dragon Figurine
@@ -7184,7 +7184,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 100;
+        sp->custom_proc_interval = 100;
     }
 
     //Illustration of the Dragon Soul
@@ -7192,7 +7192,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->proc_interval = 100;
+        sp->custom_proc_interval = 100;
     }
 
     //////////////////////////////////////////
@@ -7291,26 +7291,26 @@ void ApplyNormalFixes()
     // Recently Dropped Flag
     sp = CheckAndReturnSpellEntry(42792);
     if (sp != NULL)
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
 
 
     //resurrection sickness
     sp = CheckAndReturnSpellEntry(15007);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
     // ghost ,NIGHTELF ghost & sprit
     sp = CheckAndReturnSpellEntry(20584);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
 
     sp = CheckAndReturnSpellEntry(9036);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 20584;
     }
@@ -7318,27 +7318,27 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(8326);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
 
     sp = CheckAndReturnSpellEntry(26013);   //bg deserter
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
 
     sp = CheckAndReturnSpellEntry(24379);   //bg Restoration
     if (sp != NULL)
     {
         sp->EffectTriggerSpell[0] = 23493;
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     sp = CheckAndReturnSpellEntry(23493);   //bg Restoration
     if (sp != NULL)
     {
         sp->EffectTriggerSpell[0] = 24379;
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     sp = CheckAndReturnSpellEntry(5246);    // why self?
@@ -7355,7 +7355,7 @@ void ApplyNormalFixes()
     //Bandage
     sp = CheckAndReturnSpellEntry(11196);
     if (sp != NULL)
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
 
     //////////////////////////////////////////
     // DEATH KNIGHT                            //
@@ -7403,7 +7403,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(48266);
     if (sp != NULL)
     {
-        sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
+        sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
     //    Empower Rune Weapon
@@ -7423,7 +7423,7 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT;
         sp->EffectBasePoints[1] = 9;
         sp->EffectApplyAuraName[2] = SPELL_AURA_MOD_DAMAGE_TAKEN;
-        sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
+        sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
     //    Unholy Presence
@@ -7434,7 +7434,7 @@ void ApplyNormalFixes()
         sp->EffectBasePoints[0] = 14;
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_INCREASE_SPEED;
         sp->EffectBasePoints[1] = 14;
-        sp->BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
+        sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
     // DEATH AND DECAY
@@ -7599,7 +7599,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(23230);
     if (sp != NULL)
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
 
     // Noggenfogger elixir - reduce size effect
@@ -7713,7 +7713,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(11196);
     if (sp != NULL)
     {
-        sp->c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
+        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -7724,7 +7724,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(27997);        //Spellsurge
     if (sp != NULL)
     {
-        sp->proc_interval = 30000; // Wowhead Comment
+        sp->custom_proc_interval = 30000; // Wowhead Comment
         sp->procChance = 3; //Enchantment Text
     }
 
@@ -7762,7 +7762,7 @@ void ApplyNormalFixes()
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     // Blessing of Zim'Abwa
@@ -7770,7 +7770,7 @@ void ApplyNormalFixes()
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     // Blessing of Zim'Rhuk
@@ -7778,7 +7778,7 @@ void ApplyNormalFixes()
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-        sp->c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     // Ritual of Summoning summons a GameObject that triggers an inexistant spell.
@@ -7820,7 +7820,7 @@ void ApplyNormalFixes()
 		sp->targetAuraSpell = 0;
 		sp->casterAuraSpellNot = 0;
 		sp->targetAuraSpellNot = 0;
-		sp->c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
+		sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
 		sp->Attributes |= ATTRIBUTES_NEGATIVE;
 	}
     // War Stomp

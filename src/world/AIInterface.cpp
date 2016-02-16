@@ -3574,7 +3574,7 @@ void AIInterface::_UpdateTotem(uint32 p_time)
             (!m_Unit->GetMapMgr()->GetUnit(nextTarget->GetGUID()) ||
             !nextTarget->isAlive() ||
             !IsInrange(m_Unit, nextTarget, pSpell->GetProto()->base_range_or_radius_sqr) ||
-            !isAttackable(m_Unit, nextTarget, !(pSpell->GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
+            !isAttackable(m_Unit, nextTarget, !(pSpell->GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
            )
            )
         {

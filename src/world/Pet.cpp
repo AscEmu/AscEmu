@@ -1101,7 +1101,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
                     bool addThisSpell = true;
                     for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                     {
-                        if ((itr->first->NameHash == sp->NameHash) && (itr->first->RankNumber >= sp->RankNumber))
+                        if ((itr->first->NameHash == sp->NameHash) && (itr->first->custom_RankNumber >= sp->custom_RankNumber))
                         {
                             // Pet already has this spell, or a higher rank. Don't add it.
                             addThisSpell = false;

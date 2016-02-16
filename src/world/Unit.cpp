@@ -1134,10 +1134,10 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
             continue;
 
         //check if we can trigger due to time limitation
-        if (ospinfo->proc_interval)
+        if (ospinfo->custom_proc_interval)
         {
             uint32 now_in_ms = getMSTime();
-            if (spell_proc->mLastTrigger + ospinfo->proc_interval > now_in_ms)
+            if (spell_proc->mLastTrigger + ospinfo->custom_proc_interval > now_in_ms)
                 continue; //we can't trigger it yet.
             spell_proc->mLastTrigger = now_in_ms; // consider it triggered
         }
@@ -1551,7 +1551,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                     if (CastingSpell->School != SCHOOL_FIRE &&
                         CastingSpell->School != SCHOOL_SHADOW)
@@ -1649,7 +1649,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING) || CastingSpell->School != SCHOOL_FIRE)
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING) || CastingSpell->School != SCHOOL_FIRE)
                         continue;
                     if (flag & PROC_ON_SPELL_CRIT_HIT)
                     {
@@ -1699,7 +1699,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 15357:
                 case 15359:
                 {
-                    if (!CastingSpell || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))
+                    if (!CastingSpell || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))
                         continue;
                 }
                 break;
@@ -1743,7 +1743,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //only trigger effect for specified spells
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))  //healing wave
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))  //healing wave
                         continue;
                 }
                 break;
@@ -1767,7 +1767,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))   //healing spell
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))   //healing spell
                         continue;
                 }
                 break;
@@ -1861,7 +1861,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
                     //we need a finishing move for this
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE) || victim == this)
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE) || victim == this)
                         continue;
                     //should fix issue with combo points
                     if (IsPlayer())
@@ -1875,7 +1875,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 70802:
                 {
                     // The rogue bonus set of T10 requires a finishing move
-                    if (!(CastingSpell && CastingSpell->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE))
+                    if (!(CastingSpell && CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE))
                         continue;
                 }
                 break;
@@ -1893,7 +1893,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     //requires damageing spell
                     if (CastingSpell == NULL)
                         continue;//this should not occur unless we made a fuckup somewhere
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
@@ -2060,7 +2060,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (CastingSpell == NULL)
                         continue;
                     //trigger only on heal spell cast by NOT us
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING) || this == victim)
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING) || this == victim)
                         continue;
                     //this is not counting the bonus effects on heal
                     dmg_overwrite[0] = ((CastingSpell->EffectBasePoints[IsHealingSpell(CastingSpell) - 1] + 1) * (ospinfo->EffectBasePoints[0] + 1) / 100);
@@ -2117,7 +2117,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
@@ -2125,7 +2125,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
@@ -2133,7 +2133,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (!CastingSpell)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))
                         continue;
                 }
                 break;
@@ -2141,7 +2141,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (!CastingSpell)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))
                         continue;
                 }
                 break;
@@ -2163,7 +2163,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (!CastingSpell)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))
                         continue;
                 }
                 break;
@@ -2187,7 +2187,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))     //requires offensive spell. ! might not cover all spells
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))     //requires offensive spell. ! might not cover all spells
                         continue;
                 }
                 break;
@@ -2220,20 +2220,20 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 //SETBONUSES
                 case 37379:
                 {
-                    if (!CastingSpell || CastingSpell->School != SCHOOL_SHADOW || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!CastingSpell || CastingSpell->School != SCHOOL_SHADOW || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
                 case 37378:
                 {
-                    if (!CastingSpell || CastingSpell->School != SCHOOL_FIRE || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!CastingSpell || CastingSpell->School != SCHOOL_FIRE || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
                 case 45062: // Vial of the Sunwell
                 case 39950:	// Wave Trance
                 {
-                    if (!CastingSpell || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))
+                    if (!CastingSpell || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))
                         continue;
                 }
                 break;
@@ -2241,7 +2241,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 37214:
                 case 37601:
                 {
-                    if (!CastingSpell || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!CastingSpell || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
@@ -2294,7 +2294,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 break;
                 case 38333: // Ribbon of Sacrifice
                 {
-                    if (!CastingSpell || !(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING))
+                    if (!CastingSpell || !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING))
                         continue;
                 }
                 //SETBONUSES END
@@ -2318,7 +2318,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
                         continue;
                 }
                 break;
@@ -2350,7 +2350,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 {
                     if (CastingSpell == NULL)
                         continue;
-                    if (!(CastingSpell->c_is_flags & SPELL_FLAG_IS_HEALING)) //requires healing spell.
+                    if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING)) //requires healing spell.
                         continue;
                 }
                 break;
@@ -3390,7 +3390,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
     hitchance += hitmodifier;
 
     //Hackfix for Surprise Attacks
-    if (this->IsPlayer() && ability && static_cast<Player*>(this)->m_finishingmovesdodge && ability->c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE)
+    if (this->IsPlayer() && ability && static_cast<Player*>(this)->m_finishingmovesdodge && ability->custom_c_is_flags & SPELL_FLAG_IS_FINISHING_MOVE)
         dodge = 0.0f;
 
     if (skip_hit_check)
@@ -4371,7 +4371,7 @@ void Unit::AddAura(Aura* aur)
                     {
                         if (!aur->IsPositive()
                             && m_auras[x]->m_casterGuid != aur->m_casterGuid
-                            && (m_auras[x]->GetSpellProto()->c_is_flags & SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF) == 0
+                            && (m_auras[x]->GetSpellProto()->custom_c_is_flags & SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF) == 0
                             )
                         {
                             continue;
@@ -4392,9 +4392,9 @@ void Unit::AddAura(Aura* aur)
                     else if ((aur->pSpellId != m_auras[x]->GetSpellProto()->Id))     // if this is a proc spell then it should not remove it's mother : test with combustion later
                     {
                         // Check for auras by specific type.
-                        if (info->BGR_one_buff_on_target > 0 && m_auras[x]->GetSpellProto()->BGR_one_buff_on_target & info->BGR_one_buff_on_target && maxStack == 0)
+                        if (info->custom_BGR_one_buff_on_target > 0 && m_auras[x]->GetSpellProto()->custom_BGR_one_buff_on_target & info->custom_BGR_one_buff_on_target && maxStack == 0)
                         {
-                            deleteAur = HasAurasOfBuffType(info->BGR_one_buff_on_target, aur->m_casterGuid, 0);
+                            deleteAur = HasAurasOfBuffType(info->custom_BGR_one_buff_on_target, aur->m_casterGuid, 0);
                         }
                         // Check for auras with the same name and a different rank.
                         else
@@ -4427,7 +4427,7 @@ void Unit::AddAura(Aura* aur)
 
                 // Once stacked 5 times, each application of Deadly poison also causes the poison on the Rogue's other weapon to apply
                 // http://www.wowhead.com/?item=43233#comments
-                if (AlreadyApplied >= maxStack && info->c_is_flags & SPELL_FLAG_IS_POISON)
+                if (AlreadyApplied >= maxStack && info->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                 {
                     Player* caster = aur->GetPlayerCaster();
                     if (caster != NULL)
@@ -4464,7 +4464,7 @@ void Unit::AddAura(Aura* aur)
                                             if (Entry->type[c] && Entry->spell[c])
                                             {
                                                 SpellEntry* sp = dbcSpell.LookupEntryForced(Entry->spell[c]);
-                                                if (sp && sp->c_is_flags & SPELL_FLAG_IS_POISON)
+                                                if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                                                 {
                                                     switch (sp->NameHash)
                                                     {
@@ -4497,7 +4497,7 @@ void Unit::AddAura(Aura* aur)
                                                 if (Entry->type[c] && Entry->spell[c])
                                                 {
                                                     SpellEntry* sp = dbcSpell.LookupEntryForced(Entry->spell[c]);
-                                                    if (sp && sp->c_is_flags & SPELL_FLAG_IS_POISON)
+                                                    if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                                                     {
                                                         switch (sp->NameHash)
                                                         {
@@ -4669,7 +4669,7 @@ void Unit::AddAura(Aura* aur)
         flag |= AURASTATE_FLAG_ENRAGED;
     else if (aur->GetSpellProto()->MechanicsType == MECHANIC_BLEEDING && !asc_bleed++)
         flag |= AURASTATE_FLAG_BLEED;
-    if (aur->GetSpellProto()->BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
+    if (aur->GetSpellProto()->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !asc_seal++)
         flag |= AURASTATE_FLAG_JUDGEMENT;
 
     SetFlag(UNIT_FIELD_AURASTATE, flag);
@@ -4972,7 +4972,7 @@ void Unit::RemoveAllAuraFromSelfType2(uint32 auratype, uint32 butskip_hash)
         if (m_auras[x])
         {
             SpellEntry* proto = m_auras[x]->GetSpellProto();
-            if (proto->BGR_one_buff_from_caster_on_self == auratype && proto->NameHash != butskip_hash && m_auras[x]->GetCaster() == this)
+            if (proto->custom_BGR_one_buff_from_caster_on_self == auratype && proto->NameHash != butskip_hash && m_auras[x]->GetCaster() == this)
                 RemoveAura(m_auras[x]->GetSpellId());//remove all morph auras containing to this spell (like wolf morph also gives speed)
         }
 }
@@ -5124,7 +5124,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellEntry* spellInfo, int32 base_dm
     Unit* caster = this;
     uint32 school = spellInfo->School;
 
-    if (spellInfo->c_is_flags & SPELL_FLAG_IS_NOT_USING_DMG_BONUS)
+    if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_NOT_USING_DMG_BONUS)
         return 0;
 
     if (caster->IsPlayer())
@@ -5806,7 +5806,7 @@ void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 s
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
         if (m_auras[x]  //have aura
-            && (m_auras[x]->GetSpellProto()->BGR_one_buff_on_target & buff_type) // aura is in same group
+            && (m_auras[x]->GetSpellProto()->custom_BGR_one_buff_on_target & buff_type) // aura is in same group
             && m_auras[x]->GetSpellId() != skip // make sure to not do self removes in case aura will stack
             && (!sguid || (sguid && m_auras[x]->m_casterGuid == sguid)) // we either remove everything or just buffs from us
             )
@@ -5820,7 +5820,7 @@ bool Unit::HasAurasOfBuffType(uint32 buff_type, const uint64 & guid, uint32 skip
 
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
     {
-        if (m_auras[x] && m_auras[x]->GetSpellProto()->BGR_one_buff_on_target & buff_type && m_auras[x]->GetSpellId() != skip)
+        if (m_auras[x] && m_auras[x]->GetSpellProto()->custom_BGR_one_buff_on_target & buff_type && m_auras[x]->GetSpellId() != skip)
             if (!sguid || (m_auras[x]->m_casterGuid == sguid))
                 return true;
     }
@@ -5854,7 +5854,7 @@ AuraCheckResponse Unit::AuraCheck(SpellEntry* proto, Object* caster)
     resp.Misc = 0;
 
     uint32 name_hash = proto->NameHash;
-    uint32 rank = proto->RankNumber;
+    uint32 rank = proto->custom_RankNumber;
     Aura* aura;
     SpellEntry* aura_sp;
 
@@ -5875,7 +5875,7 @@ AuraCheckResponse Unit::AuraCheck(SpellEntry* proto, Object* caster)
                 resp.Misc = aura->GetSpellProto()->Id;
 
                 // compare the rank to our applying spell
-                if (aura_sp->RankNumber > rank)
+                if (aura_sp->custom_RankNumber > rank)
                 {
                     if (proto->Effect[0] == SPELL_EFFECT_TRIGGER_SPELL ||
                         proto->Effect[1] == SPELL_EFFECT_TRIGGER_SPELL ||
@@ -5920,7 +5920,7 @@ AuraCheckResponse Unit::AuraCheck(SpellEntry* proto, Aura* aur, Object* caster)
             resp.Misc = aur->GetSpellProto()->Id;
 
             // compare the rank to our applying spell
-            if (aur->GetSpellProto()->RankNumber > proto->RankNumber)
+            if (aur->GetSpellProto()->custom_RankNumber > proto->custom_RankNumber)
                 resp.Error = AURA_CHECK_RESULT_HIGHER_BUFF_PRESENT;
             else
                 resp.Error = AURA_CHECK_RESULT_LOWER_BUFF_PRESENT;
@@ -6021,7 +6021,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
             continue;
 
         //some spells do not get removed all the time only at specific intervals
-        if ((a->m_spellProto->AuraInterruptFlags & flag) && (a->m_spellProto->Id != skip) && a->m_spellProto->proc_interval == 0)
+        if ((a->m_spellProto->AuraInterruptFlags & flag) && (a->m_spellProto->Id != skip) && a->m_spellProto->custom_proc_interval == 0)
         {
             //the black sheep's of society
             if (a->m_spellProto->AuraInterruptFlags & AURA_INTERRUPT_ON_CAST_SPELL)
@@ -6142,7 +6142,7 @@ bool Unit::HasAuraWithMechanics(uint32 mechanic)
 bool Unit::IsPoisoned()
 {
     for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-        if (m_auras[x] && m_auras[x]->GetSpellProto()->c_is_flags & SPELL_FLAG_IS_POISON)
+        if (m_auras[x] && m_auras[x]->GetSpellProto()->custom_c_is_flags & SPELL_FLAG_IS_POISON)
             return true;
 
     return false;

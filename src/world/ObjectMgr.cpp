@@ -1608,7 +1608,7 @@ void ObjectMgr::LoadSpellProcs()
                     if (f[5].GetInt32() >= 0)
                         sp->procCharges = f[5].GetInt32();
 
-                    sp->proc_interval = f[6].GetUInt32();
+                    sp->custom_proc_interval = f[6].GetUInt32();
 
                     if (f[7].GetInt32() >= 0)
                         sp->EffectTriggerSpell[0] = f[7].GetUInt32();

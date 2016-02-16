@@ -66,7 +66,7 @@ bool Shiv(uint32 i, Spell* pSpell)
                 SpellEntry* sp = dbcSpell.LookupEntry(Entry->spell[c]);
                 if(!sp) return true;
 
-                if(sp->c_is_flags & SPELL_FLAG_IS_POISON)
+                if(sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                 {
                     pSpell->p_caster->CastSpell(pTarget->GetGUID(), Entry->spell[c], true);
                 }

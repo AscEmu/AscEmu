@@ -431,7 +431,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
         {
             if (u_caster != NULL)
             {
-                if (isAttackable(u_caster, *itr, !(GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                if (isAttackable(u_caster, *itr, !(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                 {
                     did_hit_result = DidHit(i, static_cast<Unit*>(*itr));
                     if (did_hit_result != SPELL_DID_HIT_SUCCESS)
@@ -446,7 +446,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
                 if (g_caster && g_caster->GetUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->m_summoner, *itr, !(GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(g_caster->m_summoner, *itr, !(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                         SafeAddTarget(tmpMap, (*itr)->GetGUID());
                 }
                 else
@@ -512,7 +512,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
 
             if (u_caster != NULL)
             {
-                if (isAttackable(u_caster, *itr, !(GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                if (isAttackable(u_caster, *itr, !(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                 {
                     did_hit_result = DidHit(i, static_cast<Unit*>(*itr));
                     if (did_hit_result == SPELL_DID_HIT_SUCCESS)
@@ -526,7 +526,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
                 if (g_caster != NULL && g_caster->GetUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner != NULL)
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->m_summoner, *itr, !(GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(g_caster->m_summoner, *itr, !(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                         SafeAddTarget(tmpMap, (*itr)->GetGUID());
                 }
                 else
@@ -637,7 +637,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         {
             if (u_caster != NULL)
             {
-                if (isAttackable(u_caster, *itr, !(GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) && DidHit(i, static_cast<Unit*>(*itr)) == SPELL_DID_HIT_SUCCESS)
+                if (isAttackable(u_caster, *itr, !(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) && DidHit(i, static_cast<Unit*>(*itr)) == SPELL_DID_HIT_SUCCESS)
                 {
                     return (*itr)->GetGUID();
                 }
@@ -647,7 +647,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
                 if (g_caster && g_caster->GetUInt32Value(OBJECT_FIELD_CREATED_BY) && g_caster->m_summoner)
                 {
                     //trap, check not to attack owner and friendly
-                    if (isAttackable(g_caster->m_summoner, *itr, !(GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
+                    if (isAttackable(g_caster->m_summoner, *itr, !(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)))
                     {
                         return (*itr)->GetGUID();
                     }
@@ -1288,7 +1288,7 @@ void Spell::cast(bool check)
                 p_caster->RemoveAura(54149);
             }
 
-            if (p_caster->HasAurasWithNameHash(SPELL_HASH_ARCANE_POTENCY) && GetProto()->c_is_flags == SPELL_FLAG_IS_DAMAGING)
+            if (p_caster->HasAurasWithNameHash(SPELL_HASH_ARCANE_POTENCY) && GetProto()->custom_c_is_flags == SPELL_FLAG_IS_DAMAGING)
             {
                 p_caster->RemoveAura(57529);
                 p_caster->RemoveAura(57531);
@@ -2945,9 +2945,9 @@ void Spell::HandleAddAura(uint64 guid)
     }
 
     // remove any auras with same type
-    if (GetProto()->BGR_one_buff_on_target > 0)
+    if (GetProto()->custom_BGR_one_buff_on_target > 0)
     {
-        Target->RemoveAurasByBuffType(GetProto()->BGR_one_buff_on_target, m_caster->GetGUID(), GetProto()->Id);
+        Target->RemoveAurasByBuffType(GetProto()->custom_BGR_one_buff_on_target, m_caster->GetGUID(), GetProto()->Id);
     }
 
     uint32 spellid = 0;
@@ -2981,7 +2981,7 @@ void Spell::HandleAddAura(uint64 guid)
     else if (GetProto()->Id == 62124 && u_caster)
     {
         if (u_caster->HasAurasWithNameHash(SPELL_HASH_VINDICATION))
-            spellid = u_caster->FindAuraByNameHash(SPELL_HASH_VINDICATION)->m_spellProto->RankNumber == 2 ? 26017 : 67;
+            spellid = u_caster->FindAuraByNameHash(SPELL_HASH_VINDICATION)->m_spellProto->custom_RankNumber == 2 ? 26017 : 67;
     }
     else if (GetProto()->Id == 5229 &&
         p_caster && (
@@ -2998,7 +2998,7 @@ void Spell::HandleAddAura(uint64 guid)
         }
 
         Spell* spell = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, NULL);
-        spell->forced_basepoints[0] = p_caster->FindAuraByNameHash(SPELL_HASH_KING_OF_THE_JUNGLE)->m_spellProto->RankNumber * 5;
+        spell->forced_basepoints[0] = p_caster->FindAuraByNameHash(SPELL_HASH_KING_OF_THE_JUNGLE)->m_spellProto->custom_RankNumber * 5;
         SpellCastTargets targets(p_caster->GetGUID());
         spell->prepare(&targets);
     }
@@ -3025,7 +3025,7 @@ void Spell::HandleAddAura(uint64 guid)
         case SPELL_HASH_PRESENCE_OF_MIND:
         {
             if (Target->HasAurasWithNameHash(SPELL_HASH_ARCANE_POTENCY))
-                spellid = Target->FindAuraByNameHash(SPELL_HASH_ARCANE_POTENCY)->m_spellProto->RankNumber == 1 ? 57529 : 57531;
+                spellid = Target->FindAuraByNameHash(SPELL_HASH_ARCANE_POTENCY)->m_spellProto->custom_RankNumber == 1 ? 57529 : 57531;
         }
         break;
     }
@@ -3444,7 +3444,7 @@ uint8 Spell::CanCast(bool tolerate)
                 case FORM_SPIRITOFREDEMPTION:
                 {
                     //Spirit of Redemption (20711) fix
-                    if (!(GetProto()->c_is_flags & SPELL_FLAG_IS_HEALING) && GetProto()->Id != 7355)
+                    if (!(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_HEALING) && GetProto()->Id != 7355)
                         return SPELL_FAILED_CASTER_DEAD;
                     break;
                 }
@@ -4981,7 +4981,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
 
         if (!handled)
         {
-            if (GetProto()->c_is_flags & SPELL_FLAG_IS_POISON && u_caster != NULL)   // poison damage modifier
+            if (GetProto()->custom_c_is_flags & SPELL_FLAG_IS_POISON && u_caster != NULL)   // poison damage modifier
             {
                 switch (GetProto()->NameHash)
                 {
@@ -5581,7 +5581,7 @@ bool Spell::Reflect(Unit* refunit)
 
 void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spell)
 {
-    uint32 status = spell->DiminishStatus;
+    uint32 status = spell->custom_DiminishStatus;
     uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
     uint32 PvE = (status >> 16) & 0xFFFF;
 
@@ -5626,7 +5626,7 @@ void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spe
 
 void UnapplyDiminishingReturnTimer(Unit* Target, SpellEntry* spell)
 {
-    uint32 status = spell->DiminishStatus;
+    uint32 status = spell->custom_DiminishStatus;
     uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
     uint32 PvE = (status >> 16) & 0xFFFF;
     uint32 aura_grp;
@@ -5648,7 +5648,7 @@ void UnapplyDiminishingReturnTimer(Unit* Target, SpellEntry* spell)
     {
         if (Target->m_auras[x])
         {
-            aura_grp = Target->m_auras[x]->GetSpellProto()->DiminishStatus;
+            aura_grp = Target->m_auras[x]->GetSpellProto()->custom_DiminishStatus;
             if (aura_grp == status)
                 Target->m_diminishAuraCount[Grp]++;
         }

@@ -753,17 +753,17 @@ Aura::Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool
     m_dynamicValue = 0;
     m_areaAura = false;
 
-    if (m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
+    if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
         SetNegative(100);
-    if (m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
+    if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
         SetPositive(100);
     if (m_spellProto->Attributes & ATTRIBUTES_NEGATIVE)
         SetNegative(100);
 
     if (caster->IsUnit())
     {
-        if (m_spellProto->BGR_one_buff_from_caster_on_self != 0)
-            static_cast< Unit* >(caster)->RemoveAllAuraFromSelfType2(m_spellProto->BGR_one_buff_from_caster_on_self, m_spellProto->NameHash);
+        if (m_spellProto->custom_BGR_one_buff_from_caster_on_self != 0)
+            static_cast< Unit* >(caster)->RemoveAllAuraFromSelfType2(m_spellProto->custom_BGR_one_buff_from_caster_on_self, m_spellProto->NameHash);
 
         if (isAttackable(caster, target))
         {
@@ -847,7 +847,7 @@ void Aura::Remove()
             ClearAATargets();
     }
 
-    if (m_spellProto->procCharges > 0 && m_spellProto->proc_interval == 0)
+    if (m_spellProto->procCharges > 0 && m_spellProto->custom_proc_interval == 0)
     {
         if (m_target->m_chargeSpellsInUse)
         {
@@ -894,7 +894,7 @@ void Aura::Remove()
     * m_spellProto->Attributes == 0x2040100
     * are handled. Its possible there are more spells like this
     *************************************************************/
-    if (caster != NULL && caster->IsPlayer() && caster->IsInWorld() && m_spellProto->c_is_flags & SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE)
+    if (caster != NULL && caster->IsPlayer() && caster->IsInWorld() && m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE)
     {
         Player* p = static_cast< Player* >(caster);
 
@@ -924,7 +924,7 @@ void Aura::Remove()
         flag |= AURASTATE_FLAG_ENRAGED;
     else if (m_spellProto->MechanicsType == MECHANIC_BLEEDING && !--m_target->asc_bleed)
         flag |= AURASTATE_FLAG_BLEED;
-    if (m_spellProto->BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
+    if (m_spellProto->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
         flag |= AURASTATE_FLAG_JUDGEMENT;
     if (flag != 0)
         m_target->RemoveFlag(UNIT_FIELD_AURASTATE, flag);
@@ -985,9 +985,9 @@ void Aura::ApplyModifiers(bool apply)
             (*this.*SpellAuraHandler[mod->m_type])(apply);
             if (apply)
             {
-                if (m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
+                if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
                     SetNegative(100);
-                if (m_spellProto->c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
+                if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
                     SetPositive(100);
                 if (m_spellProto->Attributes & ATTRIBUTES_NEGATIVE)
                     SetNegative(100);
@@ -1775,22 +1775,22 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
         /*TO< Player* >(c)->GetSession()->SystemMessage("dot will do %u damage every %u seconds (total of %u)", dmg,m_spellProto->EffectAmplitude[mod->i],(GetDuration()/m_spellProto->EffectAmplitude[mod->i])*dmg);
         printf("dot will do %u damage every %u seconds (total of %u)\n", dmg,m_spellProto->EffectAmplitude[mod->i],(GetDuration()/m_spellProto->EffectAmplitude[mod->i])*dmg);*/
         SetNegative();
-        if (m_spellProto->BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
+        if (m_spellProto->custom_BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
         {
             m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
         }
         //maybe poison aurastate should get triggered on other spells too ?
-        else if (m_spellProto->c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
+        else if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
         {
             m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
         }
     }
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
-        if (m_spellProto->BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
+        if (m_spellProto->custom_BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
             m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
         //maybe poison aurastate should get triggered on other spells too ?
-        else if (m_spellProto->c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
+        else if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
         {
             m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
         }
@@ -4068,7 +4068,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 
         m_target->AddProcTriggerSpell(spellId, GetSpellProto()->Id, m_casterGuid, GetSpellProto()->procChance, GetSpellProto()->procFlags, charges, groupRelation, NULL);
 
-        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, spellId, GetSpellProto()->procChance, GetSpellProto()->procFlags & ~PROC_TARGET_SELF, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->proc_interval);
+        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, spellId, GetSpellProto()->procChance, GetSpellProto()->procFlags & ~PROC_TARGET_SELF, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->custom_proc_interval);
     }
     else
     {
@@ -5577,7 +5577,7 @@ void Aura::EventPeriodicHeal1(uint32 amount)
     }
     else
     {
-        if (!(m_spellProto->BGR_one_buff_on_target & SPELL_TYPE_ARMOR))
+        if (!(m_spellProto->custom_BGR_one_buff_on_target & SPELL_TYPE_ARMOR))
             m_target->SendPeriodicHealAuraLog(m_casterGuid, m_target->GetNewGUID(), GetSpellId(), amount, 0, false);
     }
 
@@ -6266,7 +6266,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
 
         m_target->AddProcTriggerSpell(sp->Id, GetSpellProto()->Id, m_casterGuid, GetSpellProto()->EffectBasePoints[mod->i] + 1, PROC_ON_CAST_SPELL, charges, groupRelation, procClassMask);
 
-        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, sp->Id, GetSpellProto()->procChance, PROC_ON_CAST_SPELL, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->proc_interval);
+        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, sp->Id, GetSpellProto()->procChance, PROC_ON_CAST_SPELL, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->custom_proc_interval);
     }
     else
     {

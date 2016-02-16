@@ -60,7 +60,7 @@ class EyeForAnEyeSpellProc : public SpellProc
             return true;
 
         // Prevent proc on healing criticals
-        if (CastingSpell != NULL && !(CastingSpell->c_is_flags & SPELL_FLAG_IS_DAMAGING))
+        if (CastingSpell != NULL && !(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_DAMAGING))
             return true;
 
         dmg_overwrite[0] = dmg * (mOrigSpell->EffectBasePoints[0] + 1) / 100;

@@ -46,7 +46,7 @@ void World::InitShamanSpells()
         sp->EffectTriggerSpell[2] = 5648;
         sp->procChance = 50;
         sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT;
-        //sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_TOTEM;
+        //sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_TOTEM;
     }
     if (sp = dbcSpell.LookupEntryForced(16544))
     {
@@ -54,7 +54,7 @@ void World::InitShamanSpells()
         sp->EffectTriggerSpell[2] = 5648;
         sp->procChance = 100;
         sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT;
-        //sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_TOTEM;
+        //sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_TOTEM;
     }
     if (sp = dbcSpell.LookupEntryForced(16166))
     {

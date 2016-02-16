@@ -33,19 +33,19 @@ void World::InitHunterSpells()
     }
 
     if (sp = dbcSpell.LookupEntryForced(19552))
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
     if (sp = dbcSpell.LookupEntryForced(19553))
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
     if (sp = dbcSpell.LookupEntryForced(19554))
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
     if (sp = dbcSpell.LookupEntryForced(19555))
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
     if (sp = dbcSpell.LookupEntryForced(19556))
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
 
     if (sp = dbcSpell.LookupEntryForced(53252))
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectTriggerSpell[0] = 53398;
@@ -55,7 +55,7 @@ void World::InitHunterSpells()
 
     if (sp = dbcSpell.LookupEntryForced(53253))
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectTriggerSpell[0] = 53398;
@@ -80,7 +80,7 @@ void World::InitHunterSpells()
 
     if (sp = dbcSpell.LookupEntryForced(56314))
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 57447;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -89,7 +89,7 @@ void World::InitHunterSpells()
 
     if (sp = dbcSpell.LookupEntryForced(56315))
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 57452;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -98,7 +98,7 @@ void World::InitHunterSpells()
 
     if (sp = dbcSpell.LookupEntryForced(56316))
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 57453;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -107,7 +107,7 @@ void World::InitHunterSpells()
 
     if (sp = dbcSpell.LookupEntryForced(56317))
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 57457;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -116,7 +116,7 @@ void World::InitHunterSpells()
 
     if (sp = dbcSpell.LookupEntryForced(56318))
     {
-        sp->c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 57458;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;

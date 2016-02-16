@@ -73,7 +73,7 @@ void World::InitRogueSpells()
         if (source_spell != nullptr)
         {
             sp->DurationIndex = source_spell->DurationIndex;
-            sp->RankNumber = 4;
+            sp->custom_RankNumber = 4;
         }
     }
     sp = dbcSpell.LookupEntryForced(31666);
@@ -81,7 +81,7 @@ void World::InitRogueSpells()
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_PERCENT_DONE;
         sp->EffectMiscValue[0] = 127;
-        sp->RankNumber = 4;
+        sp->custom_RankNumber = 4;
     }
 
     if (sp = dbcSpell.LookupEntryForced(14156))

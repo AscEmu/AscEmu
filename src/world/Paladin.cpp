@@ -38,29 +38,29 @@ void World::InitPaladinSpells()
         if (source_spell != nullptr)
         {
             sp->Rank = source_spell->Rank;
-            sp->RankNumber = source_spell->RankNumber;
+            sp->custom_RankNumber = source_spell->custom_RankNumber;
         }
     }
 
     if (sp = dbcSpell.LookupEntryForced(59295))
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
     }
     if (sp = dbcSpell.LookupEntryForced(59296))
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
     }
     if (sp = dbcSpell.LookupEntryForced(59297))
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
     }
     if (sp = dbcSpell.LookupEntryForced(59298))
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
-        sp->BGR_one_buff_on_target = 0;
+        sp->custom_BGR_one_buff_on_target = 0;
     }
     if (sp = dbcSpell.LookupEntryForced(53486))
     {
@@ -78,12 +78,12 @@ void World::InitPaladinSpells()
     if (sp = dbcSpell.LookupEntryForced(53489))
     {
         sp->NameHash += 1;
-        sp->RankNumber += 1;
+        sp->custom_RankNumber += 1;
     }
     if (sp = dbcSpell.LookupEntryForced(59578))
     {
         sp->NameHash += 1;
-        sp->RankNumber += 2;
+        sp->custom_RankNumber += 2;
     }
 
     if (sp = dbcSpell.LookupEntryForced(53720))

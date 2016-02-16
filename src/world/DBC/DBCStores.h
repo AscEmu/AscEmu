@@ -564,14 +564,14 @@ struct SpellEntry
     uint32 SpellDifficultyID;                                 // 233  comment this out
 
     /// CUSTOM: these fields are used for the modifications made in the world.cpp
-    uint32 DiminishStatus;
-    uint32 proc_interval;                                   /// CUSTOM, <Fill description for variable>
+    uint32 custom_DiminishStatus;
+    uint32 custom_proc_interval;                                   /// CUSTOM, <Fill description for variable>
                                                             /// Buff Groupin Rule -> caster can cast this spell only on 1 target. Value represents the group spell is part of. Can be part of only 1 group
                                                             /// target can have only buff of this type on self. Value represents the group spell is part of. Can be part of only 1 group
-    uint32 BGR_one_buff_on_target;                          /// CUSTOM, these are related to creating a item through a spell caster can have only 1 Aura per spell group, ex pal auras
-    uint32 BGR_one_buff_from_caster_on_self;                /// CUSTOM, these are related to creating a item through a spell
-    uint32 c_is_flags;                                      /// CUSTOM, store spell checks in a static way : isdamageind,ishealing
-    uint32 RankNumber;                                      /// CUSTOM, this protects players from having >1 rank of a spell
+    uint32 custom_BGR_one_buff_on_target;                          /// CUSTOM, these are related to creating a item through a spell caster can have only 1 Aura per spell group, ex pal auras
+    uint32 custom_BGR_one_buff_from_caster_on_self;                /// CUSTOM, these are related to creating a item through a spell
+    uint32 custom_c_is_flags;                                      /// CUSTOM, store spell checks in a static way : isdamageind,ishealing
+    uint32 custom_RankNumber;                                      /// CUSTOM, this protects players from having >1 rank of a spell
     uint32 NameHash;                                        /// CUSTOM, related to custom spells, summon spell quest related spells
     uint32 talent_tree;                                     /// CUSTOM,
     uint32 in_front_status;                                 /// CUSTOM,
@@ -736,11 +736,11 @@ struct SpellEntry
 
         SpellFactoryFunc = NULL;
         AuraFactoryFunc = NULL;
-        proc_interval = 0;
-        BGR_one_buff_on_target = 0;
-        BGR_one_buff_from_caster_on_self = 0;
-        c_is_flags = 0;
-        RankNumber = 0;
+        custom_proc_interval = 0;
+        custom_BGR_one_buff_on_target = 0;
+        custom_BGR_one_buff_from_caster_on_self = 0;
+        custom_c_is_flags = 0;
+        custom_RankNumber = 0;
         NameHash = 0;
         talent_tree = 0;
         in_front_status = 0;
@@ -787,7 +787,7 @@ struct SpellEntry
         School = 0;
         RuneCostID = 0;
         SpellDifficultyID = 0;
-        DiminishStatus = 0;
+        custom_DiminishStatus = 0;
         targetAuraSpellNot = 0;
         CastingTimeIndex = 0;
         RecoveryTime = 0;

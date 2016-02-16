@@ -633,7 +633,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE))
                 {
                     // random extra damage
-                    uint32 extra_dmg = 111 + (GetProto()->RankNumber * 11) + RandomUInt(GetProto()->RankNumber * 11);
+                    uint32 extra_dmg = 111 + (GetProto()->custom_RankNumber * 11) + RandomUInt(GetProto()->custom_RankNumber * 11);
                     dmg += extra_dmg;
                 }
             }
@@ -1207,7 +1207,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
         {
             /* try to get a selection */
             unitTarget = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-            if ((!unitTarget) || !isAttackable(p_caster, unitTarget, !(GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) || (unitTarget->CalcDistance(p_caster) > 28.0f))
+            if ((!unitTarget) || !isAttackable(p_caster, unitTarget, !(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) || (unitTarget->CalcDistance(p_caster) > 28.0f))
             {
                 return;
             }

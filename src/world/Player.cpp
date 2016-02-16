@@ -2169,11 +2169,11 @@ void Player::addSpell(uint32 spell_id)
             switch (skill_line->type)
             {
                 case SKILL_TYPE_PROFESSION:
-                    max = 75 * ((spell->RankNumber) + 1);
+                    max = 75 * ((spell->custom_RankNumber) + 1);
                     ModPrimaryProfessionPoints(-1);   // we are learning a profession, so subtract a point.
                     break;
                 case SKILL_TYPE_SECONDARY:
-                    max = 75 * ((spell->RankNumber) + 1);
+                    max = 75 * ((spell->custom_RankNumber) + 1);
                     break;
                 case SKILL_TYPE_WEAPON:
                     max = 5 * getLevel();
@@ -9083,7 +9083,7 @@ void Player::CompleteLoading()
 
         if (info != NULL
             && (info->Attributes & ATTRIBUTES_PASSIVE)  // passive
-            && !(info->c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET))
+            && !(info->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET))
         {
             if (info->RequiredShapeShift)
             {
@@ -9115,7 +9115,7 @@ void Player::CompleteLoading()
                 */
         SpellEntry* sp = dbcSpell.LookupEntry((*i).id);
 
-        if (sp->c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+        if (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
             continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
 
         Aura* aura = sSpellFactoryMgr.NewAura(sp, (*i).dur, this, this, false);
@@ -9140,7 +9140,7 @@ void Player::CompleteLoading()
             if (m_chargeSpells.find(sp->Id) == m_chargeSpells.end() && !(sp->procFlags & PROC_REMOVEONUSE))
             {
                 SpellCharge charge;
-                if (sp->proc_interval == 0)
+                if (sp->custom_proc_interval == 0)
                     charge.count = (*i).charges;
                 else
                     charge.count = sp->procCharges;
@@ -9550,7 +9550,7 @@ void Player::SaveAuras(std::stringstream & ss)
             if (aur->pSpellId)
                 continue; //these auras were gained due to some proc. We do not save these either to avoid exploits of not removing them
 
-            if (aur->m_spellProto->c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+            if (aur->m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
                 continue;
 
             //we are going to cast passive spells anyway on login so no need to save auras for them
@@ -10276,7 +10276,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                 for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                 {
                     se = dbcSpell.LookupEntry(*itr);
-                    if ((se->NameHash == sp->NameHash) && (se->RankNumber >= sp->RankNumber))
+                    if ((se->NameHash == sp->NameHash) && (se->custom_RankNumber >= sp->custom_RankNumber))
                     {
                         // Stupid profession related spells for "skinning" having the same namehash and not ranked
                         if (sp->Id != 32605 && sp->Id != 32606 && sp->Id != 49383)
@@ -10753,14 +10753,14 @@ void Player::EventSummonPet(Pet* new_pet)
         it = iter++;
         uint32 SpellID = *it;
         SpellEntry* spellInfo = dbcSpell.LookupEntry(SpellID);
-        if (spellInfo->c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER)
+        if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER)
         {
             this->RemoveAllAuras(SpellID, this->GetGUID());   //this is required since unit::addaura does not check for talent stacking
             SpellCastTargets targets(this->GetGUID());
             Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);    //we cast it as a proc spell, maybe we should not !
             spell->prepare(&targets);
         }
-        if (spellInfo->c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET)
+        if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET)
         {
             this->RemoveAllAuras(SpellID, this->GetGUID());   //this is required since unit::addaura does not check for talent stacking
             SpellCastTargets targets(new_pet->GetGUID());
@@ -10770,7 +10770,7 @@ void Player::EventSummonPet(Pet* new_pet)
     }
     //there are talents that stop working after you gain pet
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->GetSpellProto()->c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
+        if (m_auras[x] && m_auras[x]->GetSpellProto()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
             m_auras[x]->Remove();
     //pet should inherit some of the talents from caster
     //new_pet->InheritSMMods(); //not required yet. We cast full spell to have visual effect too
@@ -10782,7 +10782,7 @@ void Player::EventDismissPet()
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x])
-            if (m_auras[x]->GetSpellProto()->c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+            if (m_auras[x]->GetSpellProto()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
                 m_auras[x]->Remove();
 }
 
@@ -12386,7 +12386,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             if (spellInfo->Attributes & ATTRIBUTES_PASSIVE || ((spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL ||
                 spellInfo->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
                 spellInfo->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
-                && ((spellInfo->c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0 || ((spellInfo->c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) && GetSummon()))))
+                && ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) == 0 || ((spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET) && GetSummon()))))
             {
                 if (spellInfo->RequiredShapeShift && !((uint32)1 << (GetShapeShift() - 1) & spellInfo->RequiredShapeShift))
                 {

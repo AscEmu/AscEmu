@@ -42,11 +42,11 @@ bool Execute(uint32 i, Spell* pSpell)
 
     if (rage >= 30)
     {
-        toadd = (multiple[pSpell->GetProto()->RankNumber] * 30);
+        toadd = (multiple[pSpell->GetProto()->custom_RankNumber] * 30);
     }
     else
     {
-        toadd = (multiple[pSpell->GetProto()->RankNumber] * rage);
+        toadd = (multiple[pSpell->GetProto()->custom_RankNumber] * rage);
     }
 
     dmg = pSpell->CalculateEffect(i, pSpell->GetUnitTarget());
