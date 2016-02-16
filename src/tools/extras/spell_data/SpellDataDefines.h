@@ -55,7 +55,7 @@ const char sql_translation_table[SPELL_COLUMN_COUNT][3][300] =
     { "uint32", "ChannelInterruptFlags", "0" },     //33
     { "uint32", "procFlags", "0" },     //34
     { "uint32", "procChance", "0" },     //35
-    { "uint32", "procges", "0" },     //36
+    { "uint32", "procCharges", "0" },     //36
     { "uint32", "maxLevel", "0" },     //37
     { "uint32", "baseLevel", "0" },     //38
     { "uint32", "spellLevel", "0" },     //39
