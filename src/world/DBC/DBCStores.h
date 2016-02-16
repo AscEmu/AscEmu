@@ -596,7 +596,7 @@ struct SpellEntry
     bool always_apply;
     bool is_melee_spell;                                    /// CUSTOM,
     bool is_ranged_spell;                                   /// CUSTOM,
-    bool noproc;
+
 	bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
 
     uint32 SchoolMask;                                      /// Custom
@@ -760,7 +760,7 @@ struct SpellEntry
         always_apply = 0;
         is_melee_spell = 0;
         is_ranged_spell = 0;
-        noproc = 0;
+
         SchoolMask = 0;
         SpellVisual = 0;
         field114 = 0;

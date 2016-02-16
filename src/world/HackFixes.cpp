@@ -3218,11 +3218,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->procFlags = PROC_ON_CAST_SPELL;
 
-    //Paladin - Crusader Strike
-    sp = CheckAndReturnSpellEntry(35395);
-    if (sp != NULL)
-        sp->noproc = true;
-
     //Paladin - Avenging Wrath marker - Is forced debuff
     sp = CheckAndReturnSpellEntry(61987);
     if (sp != NULL)

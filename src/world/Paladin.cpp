@@ -75,9 +75,6 @@ void World::InitPaladinSpells()
         sp->procFlags = PROC_ON_RANGED_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT;
     }
 
-    if (sp = dbcSpell.LookupEntryForced(35395))
-        sp->noproc = false;
-
     if (sp = dbcSpell.LookupEntryForced(53489))
     {
         sp->NameHash += 1;

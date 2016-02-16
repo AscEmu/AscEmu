@@ -163,7 +163,6 @@ LuaSpellEntry luaSpellVars[] =
     { "always_apply", 2, offsetof(SpellEntry, always_apply) },
     { "is_melee_spell", 2, offsetof(SpellEntry, is_melee_spell) },
     { "is_ranged_spell", 2, offsetof(SpellEntry, is_ranged_spell) },
-    { "noproc", 2, offsetof(SpellEntry, noproc) },
     { "SchoolMask", 0, offsetof(SpellEntry, SchoolMask) },
     { NULL, 0, 0 },
 };
