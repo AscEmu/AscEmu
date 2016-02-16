@@ -670,6 +670,53 @@ void Overwrite_procFlags(SpellEntry* sp)
 
 }
 
+void Set_Custom_is_melee_spell(SpellEntry* sp, uint32 z)
+{
+    if ((sp->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE
+        && sp->Spell_Dmg_Type == SPELL_DMG_TYPE_MELEE)
+        || sp->Effect[z] == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL
+        || sp->Effect[z] == SPELL_EFFECT_WEAPON_DAMAGE
+        || sp->Effect[z] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
+        || sp->Effect[z] == SPELL_EFFECT_DUMMYMELEE)
+        sp->custom_is_melee_spell = true;
+}
+
+void Set_Custom_is_ranged_spell(SpellEntry* sp, uint32 z)
+{
+    if ((sp->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE && sp->Spell_Dmg_Type == SPELL_DMG_TYPE_RANGED))
+    {
+        //Log.Notice("SpellFixes" , "Ranged Spell: %u [%s]" , sp->Id , sp->Name);
+        sp->custom_is_ranged_spell = true;
+    }
+}
+
+void Modify_AuraInterruptFlags(SpellEntry* sp)
+{
+    if (sp == nullptr)
+    {
+        Log.Error("Modify_AuraInterruptFlags", "Something tried to call with an invalid spell pointer!");
+        return;
+    }
+
+    // HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
+    if (!(sp->AuraInterruptFlags & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
+    {
+        for (uint32 z = 0; z < 3; ++z)
+        {
+            if (sp->EffectApplyAuraName[z] == SPELL_AURA_MOD_FEAR || sp->EffectApplyAuraName[z] == SPELL_AURA_MOD_ROOT)
+            {
+                sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_UNUSED2;
+                break;
+            }
+
+            // DankoDJ: Refactoring session 16/02/2016 set up custom spell fields
+            Set_Custom_is_melee_spell(sp, z);
+            Set_Custom_is_ranged_spell(sp, z);
+
+        }
+    }
+}
+
 void ApplyNormalFixes()
 {
     //Updating spell.dbc
@@ -859,6 +906,7 @@ void ApplyNormalFixes()
         Modify_EffectBasePoints(sp);
         Set_missing_spellLevel(sp);
         Overwrite_procFlags(sp);
+        Modify_AuraInterruptFlags(sp);
 
         // DankoDJ: Refactoring session 16/02/2016 set up custom spell fields
         Set_Custom_BGR_one_buff_on_target(sp);
@@ -870,33 +918,6 @@ void ApplyNormalFixes()
 
         // find diminishing status
         sp->custom_DiminishStatus = GetDiminishingGroup(namehash);
-
-        // HACK FIX: Break roots/fear on damage.. this needs to be fixed properly!
-        if (!(sp->AuraInterruptFlags & AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN))
-        {
-            for (uint32 z = 0; z < 3; ++z)
-            {
-                if (sp->EffectApplyAuraName[z] == SPELL_AURA_MOD_FEAR || sp->EffectApplyAuraName[z] == SPELL_AURA_MOD_ROOT)
-                {
-                    sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_UNUSED2;
-                    break;
-                }
-
-                if ((sp->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE 
-                    && sp->Spell_Dmg_Type == SPELL_DMG_TYPE_MELEE) 
-                    || sp->Effect[z] == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL 
-                    || sp->Effect[z] == SPELL_EFFECT_WEAPON_DAMAGE 
-                    || sp->Effect[z] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE 
-                    || sp->Effect[z] == SPELL_EFFECT_DUMMYMELEE)
-                    sp->is_melee_spell = true;
-
-                if ((sp->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE && sp->Spell_Dmg_Type == SPELL_DMG_TYPE_RANGED))
-                {
-                    //Log.Notice("SpellFixes" , "Ranged Spell: %u [%s]" , sp->Id , sp->Name);
-                    sp->is_ranged_spell = true;
-                }
-            }
-        }
 
         // various flight spells
         // these make vehicles and other charmed stuff fliable
@@ -3043,7 +3064,7 @@ void ApplyNormalFixes()
     //Paladin - Seal of Command - Holy damage, but melee mechanics (crit damage, chance, etc)
     sp = CheckAndReturnSpellEntry(20424);
     if (sp != NULL)
-        sp->is_melee_spell = true;
+        sp->custom_is_melee_spell = true;
 
     //Paladin - Hammer of the Righteous
     sp = CheckAndReturnSpellEntry(53595);
@@ -3858,7 +3879,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
-        sp->is_ranged_spell = true;
+        sp->custom_is_ranged_spell = true;
     }
 
     //rogue - Shadowstep
@@ -6108,13 +6129,13 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_UNUSED2;
-        sp->is_melee_spell = true;
+        sp->custom_is_melee_spell = true;
     }
     sp = CheckAndReturnSpellEntry(49802);
     if (sp != NULL)
     {
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_UNUSED2;
-        sp->is_melee_spell = true;
+        sp->custom_is_melee_spell = true;
     }
 
     sp = CheckAndReturnSpellEntry(20719); //feline grace

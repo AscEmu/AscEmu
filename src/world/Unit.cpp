@@ -8053,7 +8053,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellEntry* spell)
     float CritChance = 0.0f;
     uint32 resilience_type = 0;
 
-    if (spell->is_ranged_spell)
+    if (spell->custom_is_ranged_spell)
     {
         if (IsPlayer())
         {
@@ -8070,7 +8070,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellEntry* spell)
         if (victim->IsPlayer())
             resilience_type = PLAYER_RATING_MODIFIER_RANGED_CRIT_RESILIENCE;
     }
-    else if (spell->is_melee_spell)
+    else if (spell->custom_is_melee_spell)
     {
         // Same shit with the melee spells, such as Judgment/Seal of Command
         if (IsPlayer())
@@ -8137,7 +8137,7 @@ float Unit::GetCriticalDamageBonusForSpell(Object* victim, SpellEntry* spell, fl
     {
         // the bonuses are halved by 50% (funky blizzard math :S)
         float b;
-        if (spell->School == 0 || spell->is_melee_spell || spell->is_ranged_spell)		// physical || hackfix SoCommand/JoCommand
+        if (spell->School == 0 || spell->custom_is_melee_spell || spell->custom_is_ranged_spell)		// physical || hackfix SoCommand/JoCommand
             b = critical_bonus / 100.0f + 1.0f;
         else
             b = critical_bonus / 200.0f + 1.0f;

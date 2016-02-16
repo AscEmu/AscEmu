@@ -159,8 +159,8 @@ LuaSpellEntry luaSpellVars[] =
     { "self_cast_only", 2, offsetof(SpellEntry, self_cast_only) },
     { "apply_on_shapeshift_change", 2, offsetof(SpellEntry, apply_on_shapeshift_change) },
     { "always_apply", 2, offsetof(SpellEntry, always_apply) },
-    { "is_melee_spell", 2, offsetof(SpellEntry, is_melee_spell) },
-    { "is_ranged_spell", 2, offsetof(SpellEntry, is_ranged_spell) },
+    { "is_melee_spell", 2, offsetof(SpellEntry, custom_is_melee_spell) },
+    { "is_ranged_spell", 2, offsetof(SpellEntry, custom_is_ranged_spell) },
     { "SchoolMask", 0, offsetof(SpellEntry, SchoolMask) },
     { NULL, 0, 0 },
 };

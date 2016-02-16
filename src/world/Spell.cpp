@@ -808,7 +808,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /* Check if the spell is a melee attack and if it was missed/parried    */
     /************************************************************************/
     uint32 melee_test_result;
-    if (GetProto()->is_melee_spell || GetProto()->is_ranged_spell)
+    if (GetProto()->custom_is_melee_spell || GetProto()->custom_is_ranged_spell)
     {
         uint32 _type;
         if (GetType() == SPELL_DMG_TYPE_RANGED)
