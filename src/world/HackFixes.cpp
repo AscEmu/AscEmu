@@ -43,8 +43,34 @@ void CreateDummySpell(uint32 id)
     sWorld.dummyspells.push_back(sp);
 }
 
-// Apply BGR_one_buff_on_target flags
-void Apply_BGR_one_buff_on_target(SpellEntry* sp)
+void Modify_EffectBasePoints(SpellEntry* sp)
+{
+    if (sp == nullptr)
+    {
+        Log.Error("Apply_BGR_one_buff_on_target", "Something tried to call with an invalid spell pointer!");
+        return;
+    }
+
+    //Rogue: Poison time fix for 2.3
+    if (strstr(sp->Name, "Crippling Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I, II
+        sp->EffectBasePoints[0] = 3599;
+    if (strstr(sp->Name, "Mind-numbing Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III
+        sp->EffectBasePoints[0] = 3599;
+    if (strstr(sp->Name, "Instant Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V,VI,VII
+        sp->EffectBasePoints[0] = 3599;
+    if (strstr(sp->Name, "Deadly Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V,VI,VII
+        sp->EffectBasePoints[0] = 3599;
+    if (strstr(sp->Name, "Wound Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V
+        sp->EffectBasePoints[0] = 3599;
+    if (strstr(sp->Name, "Anesthetic Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I
+        sp->EffectBasePoints[0] = 3599;
+
+    if (strstr(sp->Name, "Sharpen Blade") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //All BS stones
+        sp->EffectBasePoints[0] = 3599;
+}
+
+
+void Set_Custom_BGR_one_buff_on_target(SpellEntry* sp)
 {
     if (sp == nullptr)
     {
@@ -110,7 +136,7 @@ void Apply_BGR_one_buff_on_target(SpellEntry* sp)
         sp->BGR_one_buff_on_target |= SPELL_TYPE_WARRIOR_SHOUT;
 }
 
-void Apply_c_is_flags(SpellEntry* sp)
+void Set_Custom_c_is_flags(SpellEntry* sp)
 {
     if (sp == nullptr)
     {
@@ -138,11 +164,11 @@ void Apply_c_is_flags(SpellEntry* sp)
 
 }
 
-void Set_teachspells(SpellEntry* sp)
+void Set_missing_spellLevel(SpellEntry* sp)
 {
     if (sp == nullptr)
     {
-        Log.Error("Set_teachspells", "Something tried to call with an invalid spell pointer!");
+        Log.Error("Set_missing_spellLevel", "Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -182,6 +208,58 @@ void Set_teachspells(SpellEntry* sp)
                 sp->spellLevel = new_level;
             }
         }
+    }
+}
+
+void Set_Custom_apply_on_shapeshift_change(SpellEntry* sp)
+{
+    if (sp == nullptr)
+    {
+        Log.Error("Set_apply_on_shapeshift_change", "Something tried to call with an invalid spell pointer!");
+        return;
+    }
+
+    // apply on shapeshift change
+    if (sp->NameHash == SPELL_HASH_TRACK_HUMANOIDS)
+        sp->apply_on_shapeshift_change = true;
+
+}
+
+void Set_Custom_always_apply(SpellEntry* sp)
+{
+    if (sp == nullptr)
+    {
+        Log.Error("Set_always_apply", "Something tried to call with an invalid spell pointer!");
+        return;
+    }
+
+    if (sp->NameHash == SPELL_HASH_BLOOD_FURY || sp->NameHash == SPELL_HASH_SHADOWSTEP || sp->NameHash == SPELL_HASH_PSYCHIC_HORROR)
+        sp->always_apply = true;
+}
+
+void Set_Custom_selfcast_only(SpellEntry* sp)
+{
+    if (sp == nullptr)
+    {
+        Log.Error("Set_selfcast_only", "Something tried to call with an invalid spell pointer!");
+        return;
+    }
+
+    // self_cast_only block (defines if a spell can be only casted on self)
+    switch (sp->Id)
+    {
+        // Heartstone
+        case 8690:
+        case 54318:
+            // Stuck
+        case 7355:
+            // Astral Recall
+        case 556:
+        {
+            sp->self_cast_only = true;
+        } break;
+        default:
+            break;
     }
 }
 
@@ -271,14 +349,6 @@ void ApplyNormalFixes()
         if (sp->TargetAuraState > 1)
             sp->TargetAuraState = 1 << (sp->TargetAuraState - 1);
 
-        // apply on shapeshift change
-        if (sp->NameHash == SPELL_HASH_TRACK_HUMANOIDS)
-            sp->apply_on_shapeshift_change = true;
-
-        if (sp->NameHash == SPELL_HASH_BLOOD_FURY
-            || sp->NameHash == SPELL_HASH_SHADOWSTEP
-            || sp->NameHash == SPELL_HASH_PSYCHIC_HORROR)
-            sp->always_apply = true;
 
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
         //this is a total bullshit so remove it when spell system supports effect overwriting
@@ -357,22 +427,6 @@ void ApplyNormalFixes()
 			}
         }
 
-        // self_cast_only block (defines if a spell can be only casted on self)
-        switch (sp->Id)
-        {
-            // Heartstone
-            case 8690:
-            case 54318:
-            // Stuck
-            case 7355:
-            // Astral Recall
-            case 556:
-            {
-                sp->self_cast_only = true;
-            } break;
-            default:
-                break;
-        }
 
         sp->proc_interval = 0;//trigger at each event
         sp->c_is_flags = 0;
@@ -394,30 +448,17 @@ void ApplyNormalFixes()
             sp->RankNumber = 0;
         else
             sp->RankNumber = rank;
-
-        //Rogue: Poison time fix for 2.3
-        if (strstr(sp->Name, "Crippling Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I, II
-            sp->EffectBasePoints[0] = 3599;
-        if (strstr(sp->Name, "Mind-numbing Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III
-            sp->EffectBasePoints[0] = 3599;
-        if (strstr(sp->Name, "Instant Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V,VI,VII
-            sp->EffectBasePoints[0] = 3599;
-        if (strstr(sp->Name, "Deadly Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V,VI,VII
-            sp->EffectBasePoints[0] = 3599;
-        if (strstr(sp->Name, "Wound Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V
-            sp->EffectBasePoints[0] = 3599;
-        if (strstr(sp->Name, "Anesthetic Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I
-            sp->EffectBasePoints[0] = 3599;
-
-        if (strstr(sp->Name, "Sharpen Blade") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //All BS stones
-            sp->EffectBasePoints[0] = 3599;
-
         
-        // new functions
-        Apply_BGR_one_buff_on_target(sp);
-        Apply_c_is_flags(sp);
+        // DankoDJ: Refactoring session 16/02/2016 new functions
+        Modify_EffectBasePoints(sp);
+        Set_missing_spellLevel(sp);
 
-        Set_teachspells(sp);
+        // DankoDJ: Refactoring session 16/02/2016 set up custom spell fields
+        Set_Custom_BGR_one_buff_on_target(sp);
+        Set_Custom_c_is_flags(sp);
+        Set_Custom_apply_on_shapeshift_change(sp);
+        Set_Custom_always_apply(sp);
+        Set_Custom_selfcast_only(sp);
 
         // find diminishing status
         sp->DiminishStatus = GetDiminishingGroup(namehash);
