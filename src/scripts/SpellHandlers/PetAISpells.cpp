@@ -289,7 +289,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
                     if ((uint32)x <= proc)
                     {
-                        Unit* Vic = mProc->self_cast_only ? _unit : mTarget;
+                        Unit* Vic = mProc->custom_self_cast_only ? _unit : mTarget;
                         _unit->CastSpell(Vic, mProc, true);
                     }
                 }

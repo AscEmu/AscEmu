@@ -30,21 +30,21 @@ void World::InitDruidSpells()
 
     if (sp = dbcSpell.LookupEntryForced(34297))
     {
-        sp->apply_on_shapeshift_change = true;
+        sp->custom_apply_on_shapeshift_change = true;
         sp->RequiredShapeShift = 255;
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
     }
     if (sp = dbcSpell.LookupEntryForced(34300))
     {
-        sp->apply_on_shapeshift_change = true;
+        sp->custom_apply_on_shapeshift_change = true;
         sp->RequiredShapeShift = 255;
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
     }
     if (sp = dbcSpell.LookupEntryForced(17007))
     {
-        sp->apply_on_shapeshift_change = true;
+        sp->custom_apply_on_shapeshift_change = true;
         sp->RequiredShapeShift = 255;
     }
 

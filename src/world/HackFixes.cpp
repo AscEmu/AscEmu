@@ -326,7 +326,7 @@ void Set_Custom_apply_on_shapeshift_change(SpellEntry* sp)
 
     // apply on shapeshift change
     if (sp->custom_NameHash == SPELL_HASH_TRACK_HUMANOIDS)
-        sp->apply_on_shapeshift_change = true;
+        sp->custom_apply_on_shapeshift_change = true;
 
 }
 
@@ -339,7 +339,7 @@ void Set_Custom_always_apply(SpellEntry* sp)
     }
 
     if (sp->custom_NameHash == SPELL_HASH_BLOOD_FURY || sp->custom_NameHash == SPELL_HASH_SHADOWSTEP || sp->custom_NameHash == SPELL_HASH_PSYCHIC_HORROR)
-        sp->always_apply = true;
+        sp->custom_always_apply = true;
 }
 
 void Set_Custom_selfcast_only(SpellEntry* sp)
@@ -350,7 +350,7 @@ void Set_Custom_selfcast_only(SpellEntry* sp)
         return;
     }
 
-    // self_cast_only block (defines if a spell can be only casted on self)
+    // custom_self_cast_only block (defines if a spell can be only casted on self)
     switch (sp->Id)
     {
         // Heartstone
@@ -361,7 +361,7 @@ void Set_Custom_selfcast_only(SpellEntry* sp)
             // Astral Recall
         case 556:
         {
-            sp->self_cast_only = true;
+            sp->custom_self_cast_only = true;
         } break;
         default:
             break;
@@ -932,9 +932,9 @@ void ApplyNormalFixes()
         uint32 rank = 0;
         uint32 namehash = 0;
 
-        sp->self_cast_only = false;
-        sp->apply_on_shapeshift_change = false;
-        sp->always_apply = false;
+        sp->custom_self_cast_only = false;
+        sp->custom_apply_on_shapeshift_change = false;
+        sp->custom_always_apply = false;
 
         // hash the name
         //!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
@@ -944,7 +944,7 @@ void ApplyNormalFixes()
         float radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[0])), ::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[1])));
         radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[2])), radius);
         radius = std::max(GetMaxRange(sSpellRangeStore.LookupEntry(sp->rangeIndex)), radius);
-        sp->base_range_or_radius_sqr = radius * radius;
+        sp->custom_base_range_or_radius_sqr = radius * radius;
 
         sp->ai_target_type = GetAiTargetType(sp);
         // NEW SCHOOLS AS OF 2.4.0:
@@ -957,8 +957,8 @@ void ApplyNormalFixes()
         //SCHOOL_SHADOW = 32,
         //SCHOOL_ARCANE = 64
 
-        // Save School as SchoolMask, and set School as an index
-        sp->SchoolMask = sp->School;
+        // Save School as custom_SchoolMask, and set School as an index
+        sp->custom_SchoolMask = sp->School;
         for (uint8 i = 0; i < SCHOOL_COUNT; i++)
         {
             if (sp->School & (1 << i))
@@ -6454,7 +6454,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(43738);
     if (sp != NULL)
     {
-        sp->self_cast_only = true;
+        sp->custom_self_cast_only = true;
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_MANGLE__CAT_;
         sp->custom_ProcOnNameHash[1] = SPELL_HASH_MANGLE__BEAR_;
     }
@@ -7215,7 +7215,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(35095);
     if (sp != NULL)
     {
-        sp->self_cast_only = true;
+        sp->custom_self_cast_only = true;
         sp->procChance = 100;
     }
 
@@ -7713,7 +7713,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34263);
     if (sp != NULL)
     {
-        sp->self_cast_only = true;
+        sp->custom_self_cast_only = true;
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_JUDGEMENT;
         sp->procChance = 100;
     }
@@ -7727,7 +7727,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34260);
     if (sp != NULL)
     {
-        sp->self_cast_only = true;
+        sp->custom_self_cast_only = true;
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_JUDGEMENT;
         sp->procChance = 100;
     }
@@ -7741,7 +7741,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(43742);
     if (sp != NULL)
     {
-        sp->self_cast_only = true;
+        sp->custom_self_cast_only = true;
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_HOLY_LIGHT;
         sp->procChance = 100;
     }
@@ -7755,7 +7755,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(43747);
     if (sp != NULL)
     {
-        sp->self_cast_only = true;
+        sp->custom_self_cast_only = true;
         sp->procChance = 100;
     }
 
@@ -7768,7 +7768,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(43749);
     if (sp != NULL)
     {
-        sp->self_cast_only = true;
+        sp->custom_self_cast_only = true;
         sp->procChance = 100;
     }
 

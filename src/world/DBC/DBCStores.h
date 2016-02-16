@@ -565,21 +565,21 @@ struct SpellEntry
 
     /// CUSTOM: these fields are used for the modifications made in the world.cpp
     uint32 custom_DiminishStatus;
-    uint32 custom_proc_interval;                                   /// CUSTOM, <Fill description for variable>
-                                                            /// Buff Groupin Rule -> caster can cast this spell only on 1 target. Value represents the group spell is part of. Can be part of only 1 group
-                                                            /// target can have only buff of this type on self. Value represents the group spell is part of. Can be part of only 1 group
-    uint32 custom_BGR_one_buff_on_target;                          /// CUSTOM, these are related to creating a item through a spell caster can have only 1 Aura per spell group, ex pal auras
-    uint32 custom_BGR_one_buff_from_caster_on_self;                /// CUSTOM, these are related to creating a item through a spell
-    uint32 custom_c_is_flags;                                      /// CUSTOM, store spell checks in a static way : isdamageind,ishealing
-    uint32 custom_RankNumber;                                      /// CUSTOM, this protects players from having >1 rank of a spell
-    uint32 custom_NameHash;                                        /// CUSTOM, related to custom spells, summon spell quest related spells
-    uint32 custom_talent_tree;                                     /// CUSTOM,
+    uint32 custom_proc_interval;
+                                                                    /// Buff Groupin Rule -> caster can cast this spell only on 1 target. Value represents the group spell is part of. Can be part of only 1 group
+                                                                    /// target can have only buff of this type on self. Value represents the group spell is part of. Can be part of only 1 group
+    uint32 custom_BGR_one_buff_on_target;                           /// these are related to creating a item through a spell caster can have only 1 Aura per spell group, ex pal auras
+    uint32 custom_BGR_one_buff_from_caster_on_self;                 /// these are related to creating a item through a spell
+    uint32 custom_c_is_flags;                                       /// store spell checks in a static way : isdamageind,ishealing
+    uint32 custom_RankNumber;                                       /// this protects players from having >1 rank of a spell
+    uint32 custom_NameHash;                                         /// related to custom spells, summon spell quest related spells
+    uint32 custom_talent_tree;
     uint32 custom_ThreatForSpell;
     float custom_ThreatForSpellCoef;
     uint32 custom_ProcOnNameHash[MAX_SPELL_EFFECTS];
-    uint32 custom_spell_coef_flags;                                /// CUSTOM, store flags for spell coefficient calculations
+    uint32 custom_spell_coef_flags;                                 /// store flags for spell coefficient calculations
 
-    float base_range_or_radius_sqr;                         /// CUSTOM, needed for aoe spells most of the time
+    float custom_base_range_or_radius_sqr;                                 /// needed for aoe spells most of the time
     /// love me or hate me, all "In a cone in front of the caster" spells don't necessarily mean "in front"
     float cone_width;
     float casttime_coef;                                    /// CUSTOM, faster spell bonus calculation
@@ -589,15 +589,15 @@ struct SpellEntry
     float OTspell_coef_override;                            /// CUSTOM, overrides any spell coefficient calculation and use this value in HOT&DOT
     int ai_target_type;
 
-    bool self_cast_only;
-    bool apply_on_shapeshift_change;
-    bool always_apply;
-    bool custom_is_melee_spell;                                    /// CUSTOM,
-    bool custom_is_ranged_spell;                                   /// CUSTOM,
+    bool custom_self_cast_only;
+    bool custom_apply_on_shapeshift_change;
+    bool custom_always_apply;
+    bool custom_is_melee_spell;
+    bool custom_is_ranged_spell;
 
 	bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
 
-    uint32 SchoolMask;                                      /// Custom
+    uint32 custom_SchoolMask;
     uint32 CustomFlags;                                     /// Custom
     uint32 EffectCustomFlag[MAX_SPELL_EFFECTS];             /// Custom
 
@@ -744,7 +744,7 @@ struct SpellEntry
         custom_ThreatForSpell = 0;
         custom_ThreatForSpellCoef = 0;
         custom_spell_coef_flags = 0;
-        base_range_or_radius_sqr = 0;
+        custom_base_range_or_radius_sqr = 0;
         cone_width = 0;
         casttime_coef = 0;
         fixed_dddhcoef = 0;
@@ -752,13 +752,13 @@ struct SpellEntry
         Dspell_coef_override = 0;
         OTspell_coef_override = 0;
         ai_target_type = 0;
-        self_cast_only = 0;
-        apply_on_shapeshift_change = 0;
-        always_apply = 0;
+        custom_self_cast_only = false;
+        custom_apply_on_shapeshift_change = false;
+        custom_always_apply = false;
         custom_is_melee_spell = false;
         custom_is_ranged_spell = false;
 
-        SchoolMask = 0;
+        custom_SchoolMask = 0;
         SpellVisual = 0;
         field114 = 0;
         spellIconID = 0;

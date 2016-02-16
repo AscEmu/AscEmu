@@ -611,7 +611,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         r = prange;
     else
     {
-        r = GetProto()->base_range_or_radius_sqr;
+        r = GetProto()->custom_base_range_or_radius_sqr;
         if (u_caster != nullptr)
         {
             SM_FFValue(u_caster->SM_FRadius, &r, GetProto()->SpellGroupType);
@@ -665,7 +665,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         r = prange;
     else
     {
-        r = GetProto()->base_range_or_radius_sqr;
+        r = GetProto()->custom_base_range_or_radius_sqr;
         if (u_caster != nullptr)
         {
             SM_FFValue(u_caster->SM_FRadius, &r, GetProto()->SpellGroupType);
@@ -869,12 +869,12 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     }
 
     // school hit resistance: check all schools and take the minimal
-    if (p_victim != NULL && GetProto()->SchoolMask > 0)
+    if (p_victim != NULL && GetProto()->custom_SchoolMask > 0)
     {
         int32 min = 100;
         for (uint8 i = 0; i < SCHOOL_COUNT; i++)
         {
-            if (GetProto()->SchoolMask & (1 << i) && min > p_victim->m_resist_hit_spell[i])
+            if (GetProto()->custom_SchoolMask & (1 << i) && min > p_victim->m_resist_hit_spell[i])
                 min = p_victim->m_resist_hit_spell[i];
         }
         resistchance += min;

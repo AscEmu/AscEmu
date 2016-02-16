@@ -547,8 +547,8 @@ AI_Spell* Pet::CreateAISpell(SpellEntry* info)
     sp->entryId = GetEntry();
     sp->floatMisc1 = 0;
     sp->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(info->rangeIndex));
-    if (sp->maxrange < sqrt(info->base_range_or_radius_sqr))
-        sp->maxrange = sqrt(info->base_range_or_radius_sqr);
+    if (sp->maxrange < sqrt(info->custom_base_range_or_radius_sqr))
+        sp->maxrange = sqrt(info->custom_base_range_or_radius_sqr);
     sp->minrange = GetMinRange(sSpellRangeStore.LookupEntry(info->rangeIndex));
     sp->Misc2 = 0;
     sp->procChance = 0;

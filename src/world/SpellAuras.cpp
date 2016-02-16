@@ -835,7 +835,7 @@ void Aura::Remove()
         if (!m_spellProto->Effect[x])
             continue;
 
-        if (m_spellProto->Effect[x] == SPELL_EFFECT_TRIGGER_SPELL && !m_spellProto->always_apply)
+        if (m_spellProto->Effect[x] == SPELL_EFFECT_TRIGGER_SPELL && !m_spellProto->custom_always_apply)
         {
             // I'm not sure about this! FIX ME!!
             auto spell_entry = dbcSpell.LookupEntryForced(GetSpellProto()->EffectTriggerSpell[x]);

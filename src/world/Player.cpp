@@ -9634,7 +9634,7 @@ void Player::SetShapeShift(uint8 ss)
     for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
         sp = dbcSpell.LookupEntry(*itr);
-        if (sp->apply_on_shapeshift_change || sp->Attributes & 64)        // passive/talent
+        if (sp->custom_apply_on_shapeshift_change || sp->Attributes & 64)        // passive/talent
         {
             if (sp->RequiredShapeShift && ((uint32)1 << (ss - 1)) & sp->RequiredShapeShift)
             {
