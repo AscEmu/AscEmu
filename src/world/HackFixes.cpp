@@ -717,6 +717,181 @@ void Modify_AuraInterruptFlags(SpellEntry* sp)
     }
 }
 
+void Modify_RecoveryTime(SpellEntry* sp)
+{
+    if (sp == nullptr)
+    {
+        Log.Error("Modify_RecoveryTime", "Something tried to call with an invalid spell pointer!");
+        return;
+    }
+
+    // Description includes
+    switch (sp->Id)
+    {
+        // "Must remain seated" 154 rows o.O
+        case 430:
+        case 431:
+        case 432:
+        case 433:
+        case 434:
+        case 435:
+        case 833:
+        case 1127:
+        case 1129:
+        case 1131:
+        case 1133:
+        case 1135:
+        case 1137:
+        case 2639:
+        case 5004:
+        case 5005:
+        case 5006:
+        case 5007:
+        case 7737:
+        case 9177:
+        case 10250:
+        case 10256:
+        case 10257:
+        case 18071:
+        case 18124:
+        case 18140:
+        case 18229:
+        case 18230:
+        case 18231:
+        case 18232:
+        case 18233:
+        case 18234:
+        case 21149:
+        case 22731:
+        case 22734:
+        case 23540:
+        case 23541:
+        case 23542:
+        case 23692:
+        case 23698:
+        case 24005:
+        case 24355:
+        case 24384:
+        case 24409:
+        case 24410:
+        case 24411:
+        case 24707:
+        case 24800:
+        case 24869:
+        case 25660:
+        case 25690:
+        case 25691:
+        case 25692:
+        case 25693:
+        case 25697:
+        case 25700:
+        case 25701:
+        case 25886:
+        case 25887:
+        case 25990:
+        case 26030:
+        case 26263:
+        case 27089:
+        case 27094:
+        case 28616:
+        case 29007:
+        case 29008:
+        case 29029:
+        case 29055:
+        case 29073:
+        case 30024:
+        case 32112:
+        case 33253:
+        case 33255:
+        case 33258:
+        case 33260:
+        case 33262:
+        case 33264:
+        case 33266:
+        case 33269:
+        case 33725:
+        case 33772:
+        case 34291:
+        case 35270:
+        case 35271:
+        case 40543:
+        case 40745:
+        case 40768:
+        case 41030:
+        case 41031:
+        case 42207:
+        case 42308:
+        case 42309:
+        case 42311:
+        case 42312:
+        case 43154:
+        case 43180:
+        case 43182:
+        case 43183:
+        case 43706:
+        case 43763:
+        case 44107:
+        case 44109:
+        case 44110:
+        case 44111:
+        case 44112:
+        case 44113:
+        case 44114:
+        case 44115:
+        case 44116:
+        case 44166:
+        case 45019:
+        case 45020:
+        case 45548:
+        case 45618:
+        case 46683:
+        case 46755:
+        case 46812:
+        case 46898:
+        case 49472:
+        case 52911:
+        case 53283:
+        case 53373:
+        case 56439:
+        case 57069:
+        case 57070:
+        case 57073:
+        case 57084:
+        case 57649:
+        case 58645:
+        case 58648:
+        case 58886:
+        case 61827:
+        case 61828:
+        case 61829:
+        case 61830:
+        case 61874:
+        case 64056:
+        case 64354:
+        case 64355:
+        case 64356:
+        case 65363:
+        case 65418:
+        case 65419:
+        case 65420:
+        case 65421:
+        case 65422:
+        case 69560:
+        case 69561:
+        case 71068:
+        case 71071:
+        case 71073:
+        case 71074:
+        case 72623:
+        {
+            sp->RecoveryTime = 1000;
+            sp->CategoryRecoveryTime = 1000;
+        } break;
+        default:
+            break;
+    }
+}
+
 void ApplyNormalFixes()
 {
     //Updating spell.dbc
@@ -907,6 +1082,7 @@ void ApplyNormalFixes()
         Set_missing_spellLevel(sp);
         Overwrite_procFlags(sp);
         Modify_AuraInterruptFlags(sp);
+        Modify_RecoveryTime(sp);
 
         // DankoDJ: Refactoring session 16/02/2016 set up custom spell fields
         Set_Custom_BGR_one_buff_on_target(sp);
@@ -924,171 +1100,6 @@ void ApplyNormalFixes()
         if (sp->activeIconID == 2158)
             sp->Attributes |= ATTRIBUTES_PASSIVE;
 
-        // Description includes
-        switch (sp->Id)
-        {
-            // "Must remain seated" 154 rows o.O
-            case 430:
-            case 431:
-            case 432:
-            case 433:
-            case 434:
-            case 435:
-            case 833:
-            case 1127:
-            case 1129:
-            case 1131:
-            case 1133:
-            case 1135:
-            case 1137:
-            case 2639:
-            case 5004:
-            case 5005:
-            case 5006:
-            case 5007:
-            case 7737:
-            case 9177:
-            case 10250:
-            case 10256:
-            case 10257:
-            case 18071:
-            case 18124:
-            case 18140:
-            case 18229:
-            case 18230:
-            case 18231:
-            case 18232:
-            case 18233:
-            case 18234:
-            case 21149:
-            case 22731:
-            case 22734:
-            case 23540:
-            case 23541:
-            case 23542:
-            case 23692:
-            case 23698:
-            case 24005:
-            case 24355:
-            case 24384:
-            case 24409:
-            case 24410:
-            case 24411:
-            case 24707:
-            case 24800:
-            case 24869:
-            case 25660:
-            case 25690:
-            case 25691:
-            case 25692:
-            case 25693:
-            case 25697:
-            case 25700:
-            case 25701:
-            case 25886:
-            case 25887:
-            case 25990:
-            case 26030:
-            case 26263:
-            case 27089:
-            case 27094:
-            case 28616:
-            case 29007:
-            case 29008:
-            case 29029:
-            case 29055:
-            case 29073:
-            case 30024:
-            case 32112:
-            case 33253:
-            case 33255:
-            case 33258:
-            case 33260:
-            case 33262:
-            case 33264:
-            case 33266:
-            case 33269:
-            case 33725:
-            case 33772:
-            case 34291:
-            case 35270:
-            case 35271:
-            case 40543:
-            case 40745:
-            case 40768:
-            case 41030:
-            case 41031:
-            case 42207:
-            case 42308:
-            case 42309:
-            case 42311:
-            case 42312:
-            case 43154:
-            case 43180:
-            case 43182:
-            case 43183:
-            case 43706:
-            case 43763:
-            case 44107:
-            case 44109:
-            case 44110:
-            case 44111:
-            case 44112:
-            case 44113:
-            case 44114:
-            case 44115:
-            case 44116:
-            case 44166:
-            case 45019:
-            case 45020:
-            case 45548:
-            case 45618:
-            case 46683:
-            case 46755:
-            case 46812:
-            case 46898:
-            case 49472:
-            case 52911:
-            case 53283:
-            case 53373:
-            case 56439:
-            case 57069:
-            case 57070:
-            case 57073:
-            case 57084:
-            case 57649:
-            case 58645:
-            case 58648:
-            case 58886:
-            case 61827:
-            case 61828:
-            case 61829:
-            case 61830:
-            case 61874:
-            case 64056:
-            case 64354:
-            case 64355:
-            case 64356:
-            case 65363:
-            case 65418:
-            case 65419:
-            case 65420:
-            case 65421:
-            case 65422:
-            case 69560:
-            case 69561:
-            case 71068:
-            case 71071:
-            case 71073:
-            case 71074:
-            case 72623:
-            {
-                sp->RecoveryTime = 1000;
-                sp->CategoryRecoveryTime = 1000;
-            } break;
-            default:
-                break;
-        }
 
         //Name includes "" overwrites
         switch (sp->Id)
