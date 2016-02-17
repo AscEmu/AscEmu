@@ -40,7 +40,23 @@ void SpellCustomizations::StartSpellCustomization()
         auto spellentry = dbcSpell.LookupEntry(spell_row);
         if (spellentry != nullptr)
         {
-            //Load spell specific custom/overwrite functions here!
+            //Load spell overwrite functions
+            //Load spell specific custom functions
+
+            LoadCustomFlags(spellentry);
         }
+    }
+}
+
+void SpellCustomizations::LoadCustomFlags(SpellEntry* spell_entry)
+{
+    // Currently only set for 781 Disengage
+    if (spell_entry->Id != 781)
+    {
+        return;
+    }
+    else
+    {
+        spell_entry->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
     }
 }

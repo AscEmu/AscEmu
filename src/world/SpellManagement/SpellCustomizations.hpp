@@ -31,6 +31,9 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
 
         void StartSpellCustomization();
 
+        // functions for setting up custom vars
+        void LoadCustomFlags(SpellEntry* spell_entry);
+
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()

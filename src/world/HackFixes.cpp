@@ -1982,13 +1982,6 @@ void ApplyNormalFixes()
         switch (sp->Id)
         {
             //////////////////////////////////////////////////////////////////////////////////////////
-            // Misc
-            case 781:       // Disengage
-            {
-                sp->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
             // SPELL_HASH_SHIELD_OF_RIGHTEOUSNESS
             case 53600:     // Shield of Righteousness Rank 1
             case 61411:     // Shield of Righteousness Rank 2
