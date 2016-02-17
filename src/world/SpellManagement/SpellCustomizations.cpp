@@ -33,6 +33,8 @@ void SpellCustomizations::StartSpellCustomization()
 {
     Log.Debug("SpellCustomizations::StartSpellCustomization", "Successfull started");
 
+    LoadSpellRanks();
+
     uint32 spellCount = dbcSpell.GetNumRows();
 
     for (uint32 spell_row = 0; spell_row < spellCount; spell_row++)
@@ -46,6 +48,45 @@ void SpellCustomizations::StartSpellCustomization()
             LoadCustomFlags(spellentry);
         }
     }
+}
+
+void SpellCustomizations::LoadSpellRanks()
+{
+    uint32 spell_rank_count = 0;
+
+    QueryResult* result = WorldDatabase.Query("SELECT spell_id, rank FROM spell_ranks");
+    if (result != NULL)
+    {
+        do
+        {
+            uint32 spell_id = result->Fetch()[0].GetUInt32();
+            uint32 rank = result->Fetch()[1].GetUInt32();
+
+            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            if (spell_entry != nullptr)
+            {
+                spell_entry->custom_RankNumber = rank;
+                ++spell_rank_count;
+            }
+            else
+            {
+                Log.Error("SpellCustomizations::LoadSpellRanks", "your spell_ranks table includes an invalid spell %u.", spell_id);
+                continue;
+            }
+
+        } while (result->NextRow());
+        delete result;
+    }
+
+    if (spell_rank_count > 0)
+    {
+        Log.Success("SpellCustomizations::LoadSpellRanks", "Loaded %u custom_RankNumbers from spell_ranks table", spell_rank_count);
+    }
+    else
+    {
+        Log.Debug("SpellCustomizations::LoadSpellRanks", "Your spell_ranks table is empty!");
+    }
+
 }
 
 void SpellCustomizations::LoadCustomFlags(SpellEntry* spell_entry)

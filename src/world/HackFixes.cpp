@@ -1049,11 +1049,6 @@ void ApplyNormalFixes()
         sp->fixed_dddhcoef = -1;
         sp->fixed_hotdotcoef = -1;
 
-        // parse rank text
-        if (sscanf(sp->Rank, "Rank %d", (unsigned int*)&rank) != 1)
-            sp->custom_RankNumber = 0;
-        else
-            sp->custom_RankNumber = rank;
         
         // DankoDJ: Refactoring session 16/02/2016 new functions
         Modify_EffectBasePoints(sp);

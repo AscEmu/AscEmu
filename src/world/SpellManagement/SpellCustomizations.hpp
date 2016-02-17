@@ -32,6 +32,7 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
         void StartSpellCustomization();
 
         // functions for setting up custom vars
+        void LoadSpellRanks();
         void LoadCustomFlags(SpellEntry* spell_entry);
 
 };
