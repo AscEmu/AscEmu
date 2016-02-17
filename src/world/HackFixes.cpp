@@ -146,98 +146,6 @@ void Set_Custom_BGR_one_buff_on_target(SpellEntry* sp)
             sp->Attributes &= ~ATTRIBUTES_PASSIVE;      //Otherwise we couldn't remove them
             sp->custom_BGR_one_buff_on_target |= SPELL_TYPE_QUIVER_HASTE;
         } break;
-
-        // SPELL_HASH_BEACON_OF_LIGHT
-        case 53563:
-        case 53652:
-        case 53653:
-        case 53654:
-        {
-            sp->custom_BGR_one_buff_on_target = SPELL_TYPE2_PALADIN_AURA;
-        } break;
-    }
-}
-
-void Set_Custom_BGR_one_buff_from_caster_on_self(SpellEntry* sp)
-{
-    if (sp == nullptr)
-    {
-        Log.Error("Set_Custom_BGR_one_buff_from_caster_on_self", "Something tried to call with an invalid spell pointer!");
-        return;
-    }
-
-    switch (sp->Id)
-    {
-        // SPELL_HASH_CRUSADER_AURA
-        case 32223:
-            // SPELL_HASH_FROST_RESISTANCE_AURA
-        case 19888:     // Frost Resistance Aura Rank 1
-        case 19897:     // Frost Resistance Aura Rank 2
-        case 19898:     // Frost Resistance Aura Rank 3
-        case 27152:     // Frost Resistance Aura Rank 4
-        case 48945:     // Frost Resistance Aura Rank 5
-                        // SPELL_HASH_FIRE_RESISTANCE_AURA
-        case 19891:     // Fire Resistance Aura Rank 1
-        case 19899:     // Fire Resistance Aura Rank 2
-        case 19900:     // Fire Resistance Aura Rank 3
-        case 27153:     // Fire Resistance Aura Rank 4
-        case 48947:     // Fire Resistance Aura Rank 5
-                        // SPELL_HASH_SHADOW_RESISTANCE_AURA
-        case 19876:     // Shadow Resistance Aura Rank 1
-        case 19895:     // Shadow Resistance Aura Rank 2
-        case 19896:     // Shadow Resistance Aura Rank 3
-        case 27151:     // Shadow Resistance Aura Rank 4
-        case 48943:     // Shadow Resistance Aura Rank 5
-                        // SPELL_HASH_CONCENTRATION_AURA
-        case 19746:
-            // SPELL_HASH_RETRIBUTION_AURA
-        case 7294:      // Retribution Aura Rank 1
-        case 8990:      // Retribution Aura Rank 1
-        case 10298:     // Retribution Aura Rank 2
-        case 10299:     // Retribution Aura Rank 3
-        case 10300:     // Retribution Aura Rank 4
-        case 10301:     // Retribution Aura Rank 5
-        case 13008:
-        case 27150:     // Retribution Aura Rank 6
-        case 54043:     // Retribution Aura Rank 7
-                        // SPELL_HASH_DEVOTION_AURA
-        case 465:       // Devotion Aura Rank 1
-        case 643:       // Devotion Aura Rank 3
-        case 1032:      // Devotion Aura Rank 5
-        case 8258:
-        case 10290:     // Devotion Aura Rank 2
-        case 10291:     // Devotion Aura Rank 4
-        case 10292:     // Devotion Aura Rank 6
-        case 10293:     // Devotion Aura Rank 7
-        case 17232:
-        case 27149:     // Devotion Aura Rank 8
-        case 41452:
-        case 48941:     // Devotion Aura Rank 9
-        case 48942:     // Devotion Aura Rank 10
-        case 52442:
-        case 57740:
-        case 58944:
-        {
-            sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE2_PALADIN_AURA;
-        } break;
-
-        // SPELL_HASH_BLOOD_PRESENCE
-        case 48266:
-        case 50475:
-        case 50689:
-        case 54476:
-        case 55212:
-            // SPELL_HASH_FROST_PRESENCE
-        case 48263:
-        case 61261:
-            // SPELL_HASH_UNHOLY_PRESENCE
-        case 48265:
-        case 49772:
-        case 55222:
-        {
-            sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
-        } break;
-
     }
 }
 
@@ -1059,7 +967,6 @@ void ApplyNormalFixes()
 
         // DankoDJ: Refactoring session 16/02/2016 set up custom spell fields
         Set_Custom_BGR_one_buff_on_target(sp);
-        Set_Custom_BGR_one_buff_from_caster_on_self(sp);
         Set_Custom_c_is_flags(sp);
         Set_Custom_apply_on_shapeshift_change(sp);
         Set_Custom_always_apply(sp);

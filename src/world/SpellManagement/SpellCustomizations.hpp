@@ -33,8 +33,8 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
 
         // functions for setting up custom vars
         void LoadSpellRanks();
-        void LoadCustomFlags(SpellEntry* spell_entry);
-
+        void SetCustomFlags(SpellEntry* spell_entry);
+        void SetBuffGrouRelation(SpellEntry* spell_entry);
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()
