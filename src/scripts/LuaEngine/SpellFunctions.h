@@ -143,7 +143,6 @@ LuaSpellEntry luaSpellVars[] =
     { "c_is_flags", 0, offsetof(SpellEntry, custom_c_is_flags) },
     { "RankNumber", 0, offsetof(SpellEntry, custom_RankNumber) },
     { "NameHash", 0, offsetof(SpellEntry, custom_NameHash) },
-    { "talent_tree", 0, offsetof(SpellEntry, custom_talent_tree) },
     { "ThreatForSpell", 0, offsetof(SpellEntry, custom_ThreatForSpell) },
     { "ThreatForSpellCoef", 3, offsetof(SpellEntry, custom_ThreatForSpellCoef) },
     { "ProcOnNameHash", 0, offsetof(SpellEntry, custom_ProcOnNameHash[0]) },

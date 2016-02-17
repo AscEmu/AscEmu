@@ -573,7 +573,6 @@ struct SpellEntry
     uint32 custom_c_is_flags;                                       /// store spell checks in a static way : isdamageind,ishealing
     uint32 custom_RankNumber;                                       /// this protects players from having >1 rank of a spell
     uint32 custom_NameHash;                                         /// related to custom spells, summon spell quest related spells
-    uint32 custom_talent_tree;
     uint32 custom_ThreatForSpell;
     float custom_ThreatForSpellCoef;
     uint32 custom_ProcOnNameHash[MAX_SPELL_EFFECTS];
@@ -740,7 +739,6 @@ struct SpellEntry
         custom_c_is_flags = 0;
         custom_RankNumber = 0;
         custom_NameHash = 0;
-        custom_talent_tree = 0;
         custom_ThreatForSpell = 0;
         custom_ThreatForSpellCoef = 0;
         custom_spell_coef_flags = 0;

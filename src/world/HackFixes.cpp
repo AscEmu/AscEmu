@@ -907,24 +907,6 @@ void ApplyNormalFixes()
     }
 
     uint32 cnt = dbcSpell.GetNumRows();
-    
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    // Zyres: Do we need this?
-    std::map<uint32, uint32> talentSpells;
-    std::map<uint32, uint32>::iterator talentSpellIterator;
-
-    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
-    {
-        auto talent = sTalentStore.LookupEntry(i);
-        if (talent == nullptr)
-            continue;
-
-        for (uint32 j = 0; j < 5; ++j)
-            if (talent->RankID[j] != 0)
-                talentSpells.insert(std::make_pair(talent->RankID[j], talent->TalentTree));
-
-    }
-    ////////////////////////////////////////////////////////////////////////////////////////////
 
     for (uint32 x = 0; x < cnt; x++)
     {
@@ -1066,16 +1048,6 @@ void ApplyNormalFixes()
         sp->casttime_coef = 0;
         sp->fixed_dddhcoef = -1;
         sp->fixed_hotdotcoef = -1;
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
-        // Zyres: custom_talent_tree is set, but it is not used in any other script! Delete this, it is unused.
-        talentSpellIterator = talentSpells.find(sp->Id);
-        if (talentSpellIterator == talentSpells.end())
-            sp->custom_talent_tree = 0;
-        else
-            sp->custom_talent_tree = talentSpellIterator->second;
-
-        ////////////////////////////////////////////////////////////////////////////////////////////
 
         // parse rank text
         if (sscanf(sp->Rank, "Rank %d", (unsigned int*)&rank) != 1)
