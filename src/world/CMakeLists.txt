@@ -113,7 +113,8 @@ set(sources
 	ReputationHandler.cpp 
 	ScriptMgr.cpp 
 	SocialHandler.cpp 
-	SpeedDetector.cpp 
+	SpeedDetector.cpp
+   SpellManagement/SpellCustomizations.cpp
 	SpellAuras.cpp 
 	SpellTarget.cpp 
 	Spell.cpp 
@@ -287,6 +288,7 @@ set(headers
 	Skill.h
 	SkillNameMgr.h
 	SpeedDetector.h
+   SpellManagement/SpellCustomizations.hpp
 	Spell.h
 	SpellAuras.h
 	SpellFailure.h

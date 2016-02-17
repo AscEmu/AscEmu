@@ -458,9 +458,12 @@ bool World::SetInitialWorldSettings()
     new CalendarMgr;
     new WorldLog;
     new ChatHandler;
+    new SpellCustomizations;
     new SpellProcMgr;
 
     ApplyNormalFixes();
+
+    sSpellCustomizations.StartSpellCustomization();
 
     new SpellFactoryMgr;
 
