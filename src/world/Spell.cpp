@@ -334,6 +334,8 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     //create rune avail snapshot
     if (p_caster && p_caster->IsDeathKnight())
         m_rune_avail_before = static_cast<DeathKnight*>(p_caster)->GetRuneFlags();
+    else
+        m_rune_avail_before = 0;
 
     m_target_constraint = objmgr.GetSpellTargetConstraintForSpell(info->Id);
 
@@ -344,7 +346,6 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     m_timer = 0;
     m_magnetTarget = 0;
     Dur = 0;
-    m_rune_avail_before = 0;
     m_extraError = SPELL_EXTRA_ERROR_NONE;
 }
 
