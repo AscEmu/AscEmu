@@ -573,25 +573,6 @@ void Overwrite_procFlags(SpellEntry* sp)
         WorldDatabase.Execute("INSERT INTO spell_proc_auto VALUES(%u, %u, %u)", sp->Id, sp->procFlags, target_self);
 }*/
 
-void Set_Custom_is_melee_spell(SpellEntry* sp, uint32 z)
-{
-    if ((sp->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE
-        && sp->Spell_Dmg_Type == SPELL_DMG_TYPE_MELEE)
-        || sp->Effect[z] == SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL
-        || sp->Effect[z] == SPELL_EFFECT_WEAPON_DAMAGE
-        || sp->Effect[z] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE
-        || sp->Effect[z] == SPELL_EFFECT_DUMMYMELEE)
-        sp->custom_is_melee_spell = true;
-}
-
-void Set_Custom_is_ranged_spell(SpellEntry* sp, uint32 z)
-{
-    if ((sp->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE && sp->Spell_Dmg_Type == SPELL_DMG_TYPE_RANGED))
-    {
-        //Log.Notice("SpellFixes" , "Ranged Spell: %u [%s]" , sp->Id , sp->Name);
-        sp->custom_is_ranged_spell = true;
-    }
-}
 
 void Modify_AuraInterruptFlags(SpellEntry* sp)
 {
@@ -611,11 +592,6 @@ void Modify_AuraInterruptFlags(SpellEntry* sp)
                 sp->AuraInterruptFlags |= AURA_INTERRUPT_ON_UNUSED2;
                 break;
             }
-
-            // DankoDJ: Refactoring session 16/02/2016 set up custom spell fields
-            Set_Custom_is_melee_spell(sp, z);
-            Set_Custom_is_ranged_spell(sp, z);
-
         }
     }
 }

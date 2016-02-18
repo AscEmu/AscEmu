@@ -43,10 +43,15 @@ void SpellCustomizations::StartSpellCustomization()
         auto spellentry = dbcSpell.LookupEntry(spell_row);
         if (spellentry != nullptr)
         {
-            //Load spell overwrite functions
-            //Load spell specific custom functions
+            //Set spell overwrites (effect based)
             SetEffectAmplitude(spellentry);
             SetAuraFactoryFunc(spellentry);
+
+            // Set custom values (effect based)
+            SetMeleeSpellBool(spellentry);
+            SetRangedSpellBool(spellentry);
+
+            // Set custom values (spell based)
             SetCustomFlags(spellentry);
             SetBuffGrouRelation(spellentry);
         }
@@ -139,7 +144,7 @@ void SpellCustomizations::LoadSpellProcAuto()
 ///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
 void SpellCustomizations::SetEffectAmplitude(SpellEntry* spell_entry)
 {
-    uint32 spell_effect_amplitude_count = 0;
+    bool spell_effect_amplitude_loaded = false;
 
     for (uint8 y = 0; y < 3; y++)
     {
@@ -159,25 +164,21 @@ void SpellCustomizations::SetEffectAmplitude(SpellEntry* spell_entry)
                 {
                     spell_entry->EffectAmplitude[y] = 1000;
 
-                    ++spell_effect_amplitude_count;
+                    spell_effect_amplitude_loaded = true;
                 }
             }
         }
     }
 
-    if (spell_effect_amplitude_count > 0)
+    if (spell_effect_amplitude_loaded)
     {
-        Log.Debug("SpellCustomizations::SetEffectAmplitude", "%u EffectAmplitude corrections applied", spell_effect_amplitude_count);
-    }
-    else
-    {
-        Log.Debug("SpellCustomizations::SetEffectAmplitude", "No EffectAmplitude corrections applied");
+        Log.Debug("SpellCustomizations::SetEffectAmplitude", "EffectAmplitude applied Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
     }
 }
 
 void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
 {
-    uint32 spell_aura_factory_functions_count = 0;
+    bool spell_aura_factory_functions_loaded = false;
 
     for (uint8 y = 0; y < 3; y++)
     {
@@ -191,18 +192,60 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
             {
                 spell_entry->AuraFactoryFunc = (void * (*)) &AbsorbAura::Create;
 
-                ++spell_aura_factory_functions_count;
+                spell_aura_factory_functions_loaded = true;
             }
         }
     }
 
-    if (spell_aura_factory_functions_count > 0)
+    if (spell_aura_factory_functions_loaded)
     {
-        Log.Debug("SpellCustomizations::SetAuraFactoryFunc", "%u AuraFactoryFunc definitions loaded", spell_aura_factory_functions_count);
+        Log.Debug("SpellCustomizations::SetAuraFactoryFunc", "AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
     }
-    else
+}
+
+void SpellCustomizations::SetMeleeSpellBool(SpellEntry* spell_entry)
+{
+    for (uint8 z = 0; z < 3; z++)
     {
-        Log.Debug("SpellCustomizations::SetAuraFactoryFunc", "No AuraFactoryFunc definitions loaded");
+        if (spell_entry->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->Spell_Dmg_Type == SPELL_DMG_TYPE_MELEE)
+        {
+            spell_entry->custom_is_melee_spell = true;
+            continue;
+        }
+
+        switch (spell_entry->Effect[z])
+        {
+            case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
+            case SPELL_EFFECT_WEAPON_DAMAGE:
+            case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
+            case SPELL_EFFECT_DUMMYMELEE:
+            {
+                spell_entry->custom_is_melee_spell = true;
+            } break;
+            default:
+                continue;
+        }
+    }
+
+    if (spell_entry->custom_is_melee_spell)
+    {
+        Log.Debug("SpellCustomizations::SetMeleeSpellBool", "custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+    }
+}
+
+void SpellCustomizations::SetRangedSpellBool(SpellEntry* spell_entry)
+{
+    for (uint8 z = 0; z < 3; z++)
+    {
+        if (spell_entry->Effect[z] == SPELL_EFFECT_SCHOOL_DAMAGE && spell_entry->Spell_Dmg_Type == SPELL_DMG_TYPE_RANGED)
+        {
+            spell_entry->custom_is_ranged_spell = true;
+        }
+    }
+
+    if (spell_entry->custom_is_ranged_spell)
+    {
+        Log.Debug("SpellCustomizations::SetRangedSpellBool", "custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
     }
 }
 
