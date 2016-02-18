@@ -52,21 +52,34 @@ void Modify_EffectBasePoints(SpellEntry* sp)
     }
 
     //Rogue: Poison time fix for 2.3
-    if (strstr(sp->Name, "Crippling Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I, II
+    if (sp->Id == 3408)                 // Crippling Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (strstr(sp->Name, "Mind-numbing Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III
+    if (sp->Id == 5761)                 // Mind-numbing Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (strstr(sp->Name, "Instant Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V,VI,VII
+    if (sp->Id == 8679)                 // Instant Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (strstr(sp->Name, "Deadly Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V,VI,VII
+    if (sp->Id == 2823)                 // Deadly Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (strstr(sp->Name, "Wound Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I,II,III,IV,V
+    if (sp->Id == 13219)                // Wound Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
-    if (strstr(sp->Name, "Anesthetic Poison") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //I
+    if (sp->Id == 26785)                // Anesthetic Poison && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
 
-    if (strstr(sp->Name, "Sharpen Blade") && sp->Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)    //All BS stones
+    // Zyres: According to the description the weapon damage gets increased from 2 to 12 (depends on the different spell ids)
+    if (sp->Id == 2828 || sp->Id == 29452 || sp->Id == 29453 || sp->Id == 56308) //Sharpen Blade && Effect[0] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY
         sp->EffectBasePoints[0] = 3599;
+
+    // Set the diff. EffectBasePoint from description.
+    if (sp->Id == 11119)     // Ignite Rank 1
+        sp->EffectBasePoints[0] = 8;
+    if (sp->Id == 11120)     // Ignite Rank 2
+        sp->EffectBasePoints[0] = 16;
+    if (sp->Id == 12846)     // Ignite Rank 3
+        sp->EffectBasePoints[0] = 24;
+    if (sp->Id == 12847)     // Ignite Rank 4
+        sp->EffectBasePoints[0] = 32;
+    if (sp->Id == 12848)     // Ignite Rank 5
+        sp->EffectBasePoints[0] = 40;
 }
 
 
@@ -95,6 +108,171 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
 
     if (sp->custom_NameHash == SPELL_HASH_HEMORRHAGE)
         sp->custom_c_is_flags |= SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF;
+
+    // Spellflags poison
+    switch (sp->Id)
+    {
+        // Name includes "Crippling Poison"
+        case 3408:
+        case 3409:
+        case 25809:
+        case 30981:
+        case 44289:
+        case 56820:     // Glyph of Crippling Poison?!
+        case 57116:     // Glyph of Crippling Poison?!
+        case 57144:     // Glyph of Crippling Poison?!
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
+        } break;
+
+        // Name includes "Mind-numbing Poison"
+        case 5760:
+        case 5761:
+        case 25810:
+        case 34615:
+        case 41190:
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
+        } break;
+
+        // Name includes "Instant Poison"
+        case 8679:
+        case 8680:
+        case 8685:
+        case 8686:
+        case 8688:
+        case 8689:
+        case 11335:
+        case 11336:
+        case 11337:
+        case 11338:
+        case 11339:
+        case 11340:
+        case 26890:
+        case 26891:
+        case 28428:
+        case 28429:
+        case 41189:
+        case 57964:
+        case 57965:
+        case 57967:
+        case 57968:
+        case 59240:
+        case 59242:
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
+        } break;
+
+        // Name includes "Deadly Poison"
+        case 2818:
+        case 2819:
+        case 2823:
+        case 2824:
+        case 3583:
+        case 10022:
+        case 11353:
+        case 11354:
+        case 11355:
+        case 11356:
+        case 13582:
+        case 21787:
+        case 21788:
+        case 25349:
+        case 25351:
+        case 26967:
+        case 26968:
+        case 27186:
+        case 27187:
+        case 32970:
+        case 32971:
+        case 34616:
+        case 34655:
+        case 34657:
+        case 36872:
+        case 38519:
+        case 38520:
+        case 41191:
+        case 41192:
+        case 41485:
+        case 43580:
+        case 43581:
+        case 56145:
+        case 56149:
+        case 57969:
+        case 57970:
+        case 57972:
+        case 57973:
+        case 59479:
+        case 59482:
+        case 63755:
+        case 63756:
+        case 67710:
+        case 67711:
+        case 68315:
+        case 72329:
+        case 72330:
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
+        } break;
+
+        // Name includes "Wound Poison"
+        case 13218:
+        case 13219:
+        case 13222:
+        case 13223:
+        case 13224:
+        case 13225:
+        case 13226:
+        case 13227:
+        case 27188:
+        case 27189:
+        case 30984:
+        case 36974:
+        case 39665:
+        case 43461:
+        case 54074:
+        case 57974:
+        case 57975:
+        case 57977:
+        case 57978:
+        case 65962:
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
+        } break;
+
+        // Name includes "Scorpid Poison"
+        case 6411:
+        case 24583:
+        case 24584:
+        case 24586:
+        case 24587:
+        case 24588:
+        case 24589:
+        case 24640:
+        case 24641:
+        case 27060:
+        case 27361:
+        case 55728:
+        {
+            // groups?
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
+        } break;
+
+        // list of guardians that should inherit casters level
+        case 32982:     //Fire elemental
+        case 33663:     //Earth elemental
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
+        }
+        default:
+            break;
+    }
+
+    if ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)     //rogue cold blood
+        || (sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC)))
+    {
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
+    }
 
 }
 
@@ -537,7 +715,7 @@ void ApplyNormalFixes()
         Set_Custom_always_apply(sp);
 
         // find diminishing status
-        sp->custom_DiminishStatus = GetDiminishingGroup(namehash);
+        sp->custom_DiminishStatus = GetDiminishingGroup(sp->custom_NameHash);
 
         // various flight spells
         // these make vehicles and other charmed stuff fliable
@@ -556,18 +734,6 @@ void ApplyNormalFixes()
             case 12847:     // Ignite Rank 4
             case 12848:     // Ignite Rank 5
             {
-                // Set the diff. EffectBasePoint from description.
-                if (sp->Id == 11119)     // Ignite Rank 1
-                    sp->EffectBasePoints[0] = 8;
-                if (sp->Id == 11120)     // Ignite Rank 2
-                    sp->EffectBasePoints[0] = 16;
-                if (sp->Id == 12846)     // Ignite Rank 3
-                    sp->EffectBasePoints[0] = 24;
-                if (sp->Id == 12847)     // Ignite Rank 4
-                    sp->EffectBasePoints[0] = 32;
-                if (sp->Id == 12848)     // Ignite Rank 5
-                    sp->EffectBasePoints[0] = 40;
-
                 sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL; //force him to use procspell effect
                 sp->EffectTriggerSpell[0] = 12654;          //evil , but this is good for us :D
                 sp->procFlags = PROC_ON_SPELL_CRIT_HIT;     //add procflag here since this was not processed with the others !
@@ -702,158 +868,6 @@ void ApplyNormalFixes()
                 sp->custom_proc_interval = 3000;  //3 seconds
             } break;
 
-            default:
-                break;
-        }
-
-        // Spellflags poison
-        switch (sp->Id)
-        {
-            // Name includes "Crippling Poison"
-            case 3408:
-            case 3409:
-            case 25809:
-            case 30981:
-            case 44289:
-            case 56820:     // Glyph of Crippling Poison?!
-            case 57116:     // Glyph of Crippling Poison?!
-            case 57144:     // Glyph of Crippling Poison?!
-            {
-                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
-            } break;
-
-            // Name includes "Mind-numbing Poison"
-            case 5760:
-            case 5761:
-            case 25810:
-            case 34615:
-            case 41190:
-            {
-                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
-            } break;
-
-            // Name includes "Instant Poison"
-            case 8679:
-            case 8680:
-            case 8685:
-            case 8686:
-            case 8688:
-            case 8689:
-            case 11335:
-            case 11336:
-            case 11337:
-            case 11338:
-            case 11339:
-            case 11340:
-            case 26890:
-            case 26891:
-            case 28428:
-            case 28429:
-            case 41189:
-            case 57964:
-            case 57965:
-            case 57967:
-            case 57968:
-            case 59240:
-            case 59242:
-            {
-                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
-            } break;
-
-            // Name includes "Deadly Poison"
-            case 2818:
-            case 2819:
-            case 2823:
-            case 2824:
-            case 3583:
-            case 10022:
-            case 11353:
-            case 11354:
-            case 11355:
-            case 11356:
-            case 13582:
-            case 21787:
-            case 21788:
-            case 25349:
-            case 25351:
-            case 26967:
-            case 26968:
-            case 27186:
-            case 27187:
-            case 32970:
-            case 32971:
-            case 34616:
-            case 34655:
-            case 34657:
-            case 36872:
-            case 38519:
-            case 38520:
-            case 41191:
-            case 41192:
-            case 41485:
-            case 43580:
-            case 43581:
-            case 56145:
-            case 56149:
-            case 57969:
-            case 57970:
-            case 57972:
-            case 57973:
-            case 59479:
-            case 59482:
-            case 63755:
-            case 63756:
-            case 67710:
-            case 67711:
-            case 68315:
-            case 72329:
-            case 72330:
-            {
-                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
-            } break;
-
-            // Name includes "Wound Poison"
-            case 13218:
-            case 13219:
-            case 13222:
-            case 13223:
-            case 13224:
-            case 13225:
-            case 13226:
-            case 13227:
-            case 27188:
-            case 27189:
-            case 30984:
-            case 36974:
-            case 39665:
-            case 43461:
-            case 54074:
-            case 57974:
-            case 57975:
-            case 57977:
-            case 57978:
-            case 65962:
-            {
-                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
-            } break;
-
-            // Name includes "Scorpid Poison"
-            case 6411:
-            case 24583:
-            case 24584:
-            case 24586:
-            case 24587:
-            case 24588:
-            case 24589:
-            case 24640:
-            case 24641:
-            case 27060:
-            case 27361:
-            case 55728:
-            {
-                // groups?
-                sp->custom_c_is_flags |= SPELL_FLAG_IS_POISON;
-            } break;
             default:
                 break;
         }
@@ -1051,15 +1065,6 @@ void ApplyNormalFixes()
                 sp->FacingCasterFlags = SPELL_INFRONT_STATUS_REQUIRE_INBACK;
             } break;
         }
-
-        if (
-            ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)) //rogue cold blood
-            || ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN) && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC))
-           )
-        {
-            sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
-        }
-
     }
 
     /////////////////////////////////////////////////////////////////
@@ -1798,20 +1803,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(SPELL_RANGED_WAND);
     if (sp != NULL)
         sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
-
-    ////////////////////////////////////////////////////////////
-    // Misc stuff (questfixes etc)
-
-    // list of guardians that should inherit casters level
-    //fire elemental
-    sp = CheckAndReturnSpellEntry(32982);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
-
-    //Earth elemental
-    sp = CheckAndReturnSpellEntry(33663);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
 
     
     //////////////////////////////////////////////////////
