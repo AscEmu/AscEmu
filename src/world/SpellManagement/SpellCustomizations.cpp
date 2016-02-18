@@ -45,7 +45,8 @@ void SpellCustomizations::StartSpellCustomization()
         {
             //Load spell overwrite functions
             //Load spell specific custom functions
-
+            SetEffectAmplitude(spellentry);
+            SetAuraFactoryFunc(spellentry);
             SetCustomFlags(spellentry);
             SetBuffGrouRelation(spellentry);
         }
@@ -133,6 +134,76 @@ void SpellCustomizations::LoadSpellProcAuto()
         Log.Debug("SpellCustomizations::LoadSpellProcAuto", "Your spell_proc_auto table is empty!");
     }
 
+}
+
+///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
+void SpellCustomizations::SetEffectAmplitude(SpellEntry* spell_entry)
+{
+    uint32 spell_effect_amplitude_count = 0;
+
+    for (uint8 y = 0; y < 3; y++)
+    {
+        if (!spell_entry->Effect[y] == SPELL_EFFECT_APPLY_AURA)
+        {
+            continue;
+        }
+        else
+        {
+            if (!spell_entry->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL && !spell_entry->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+            {
+                continue;
+            }
+            else
+            {
+                if (spell_entry->EffectAmplitude[y] == 0)
+                {
+                    spell_entry->EffectAmplitude[y] = 1000;
+
+                    ++spell_effect_amplitude_count;
+                }
+            }
+        }
+    }
+
+    if (spell_effect_amplitude_count > 0)
+    {
+        Log.Debug("SpellCustomizations::SetEffectAmplitude", "%u EffectAmplitude corrections applied", spell_effect_amplitude_count);
+    }
+    else
+    {
+        Log.Debug("SpellCustomizations::SetEffectAmplitude", "No EffectAmplitude corrections applied");
+    }
+}
+
+void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
+{
+    uint32 spell_aura_factory_functions_count = 0;
+
+    for (uint8 y = 0; y < 3; y++)
+    {
+        if (!spell_entry->Effect[y] == SPELL_EFFECT_APPLY_AURA)
+        {
+            continue;
+        }
+        else
+        {
+            if (spell_entry->EffectApplyAuraName[y] == SPELL_AURA_SCHOOL_ABSORB && spell_entry->AuraFactoryFunc == NULL)
+            {
+                spell_entry->AuraFactoryFunc = (void * (*)) &AbsorbAura::Create;
+
+                ++spell_aura_factory_functions_count;
+            }
+        }
+    }
+
+    if (spell_aura_factory_functions_count > 0)
+    {
+        Log.Debug("SpellCustomizations::SetAuraFactoryFunc", "%u AuraFactoryFunc definitions loaded", spell_aura_factory_functions_count);
+    }
+    else
+    {
+        Log.Debug("SpellCustomizations::SetAuraFactoryFunc", "No AuraFactoryFunc definitions loaded");
+    }
 }
 
 void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)

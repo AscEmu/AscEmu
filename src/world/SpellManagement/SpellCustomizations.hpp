@@ -35,6 +35,8 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
         void LoadSpellRanks();
         void LoadSpellProcAuto();
 
+        void SetEffectAmplitude(SpellEntry* spell_entry);
+        void SetAuraFactoryFunc(SpellEntry* spell_entry);
         void SetCustomFlags(SpellEntry* spell_entry);
         void SetBuffGrouRelation(SpellEntry* spell_entry);
 };
