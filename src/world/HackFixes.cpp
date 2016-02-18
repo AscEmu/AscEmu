@@ -284,34 +284,18 @@ void Overwrite_procFlags(SpellEntry* sp)
         return;
     }
 
-    uint32 effect;
-    uint32 result;
     uint32 pr = sp->procFlags;
 
     for (uint32 y = 0; y < 3; y++)
     {
-        // get the effect number from the spell
-        effect = sp->Effect[y];
 
         //spell group
 
-        if (effect == SPELL_EFFECT_APPLY_AURA)
+        if (sp->Effect[y] == SPELL_EFFECT_APPLY_AURA)
         {
-            uint32 aura = sp->EffectApplyAuraName[y];
-            if (aura == SPELL_AURA_PROC_TRIGGER_SPELL || aura == SPELL_AURA_PROC_TRIGGER_DAMAGE) //search for spellid in description
+            if (sp->EffectApplyAuraName[y] == SPELL_AURA_PROC_TRIGGER_SPELL || sp->EffectApplyAuraName[y] == SPELL_AURA_PROC_TRIGGER_DAMAGE) //search for spellid in description
             {
-                const char* p = sp->Description;
-                while ((p = strstr(p, "$")) != 0)
-                {
-                    p++;
-                    //got $  -> check if spell
-                    if (*p >= '0' && *p <= '9')
-                    {
-                        //woot this is spell id
-
-                        result = atoi(p);
-                    }
-                }
+                // 18/02/2016 Zyres : Setting all procFlags from dbc to 0 here... wow
                 pr = 0;
 
                 uint32 len = (uint32)strlen(sp->Description);
@@ -565,11 +549,11 @@ void Overwrite_procFlags(SpellEntry* sp)
             }//end "if procspellaura"
 
              // Fix if it's a periodic trigger with amplitude = 0, to avoid division by zero
-            else if ((aura == SPELL_AURA_PERIODIC_TRIGGER_SPELL || aura == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) && sp->EffectAmplitude[y] == 0)
+            else if ((sp->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL || sp->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) && sp->EffectAmplitude[y] == 0)
             {
                 sp->EffectAmplitude[y] = 1000;
             }
-            else if (aura == SPELL_AURA_SCHOOL_ABSORB && sp->AuraFactoryFunc == NULL)
+            else if (sp->EffectApplyAuraName[y] == SPELL_AURA_SCHOOL_ABSORB && sp->AuraFactoryFunc == NULL)
                 sp->AuraFactoryFunc = (void * (*)) &AbsorbAura::Create;
         }//end "if aura"
     }//end "for each effect"
