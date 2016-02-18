@@ -171,33 +171,6 @@ void Set_Custom_always_apply(SpellEntry* sp)
         sp->custom_always_apply = true;
 }
 
-void Set_Custom_selfcast_only(SpellEntry* sp)
-{
-    if (sp == nullptr)
-    {
-        Log.Error("Set_Custom_selfcast_only", "Something tried to call with an invalid spell pointer!");
-        return;
-    }
-
-    // custom_self_cast_only block (defines if a spell can be only casted on self)
-    switch (sp->Id)
-    {
-        // Heartstone
-        case 8690:
-        case 54318:
-            // Stuck
-        case 7355:
-            // Astral Recall
-        case 556:
-        {
-            sp->custom_self_cast_only = true;
-        } break;
-        default:
-            break;
-    }
-}
-
-
 void Modify_AuraInterruptFlags(SpellEntry* sp)
 {
     if (sp == nullptr)
@@ -562,7 +535,6 @@ void ApplyNormalFixes()
         Set_Custom_c_is_flags(sp);
         Set_Custom_apply_on_shapeshift_change(sp);
         Set_Custom_always_apply(sp);
-        Set_Custom_selfcast_only(sp);
 
         // find diminishing status
         sp->custom_DiminishStatus = GetDiminishingGroup(namehash);
@@ -663,8 +635,6 @@ void ApplyNormalFixes()
             case 16196:
             case 16198:
             case 23575:
-            case 24398:
-            case 33736:
             case 33737:
             case 34318:
             case 34827:
@@ -675,20 +645,13 @@ void ApplyNormalFixes()
             case 37432:
             case 38105:
             case 38106:
-            case 52127:
             case 52128:
-            case 52129:
             case 52130:
-            case 52131:
             case 52132:
             case 52133:
-            case 52134:
             case 52135:
-            case 52136:
             case 52137:
-            case 52138:
             case 55535:
-            case 57960:
             case 57961:
             case 58063:
             case 58266:
@@ -700,17 +663,11 @@ void ApplyNormalFixes()
             } break;
 
             // Name includes "Earth Shield"
-            case 379:
-            case 974:
-            case 32593:
-            case 32594:
             case 32734:
             case 37204:
             case 38101:
             case 38102:
             case 38590:
-            case 49283:
-            case 49284:
             case 51560:
             case 51561:
             case 54479:
@@ -745,28 +702,6 @@ void ApplyNormalFixes()
                 sp->custom_proc_interval = 3000;  //3 seconds
             } break;
 
-            // Name includes "Poison Shield"
-            case 34355:
-            case 39027:
-            {
-                sp->custom_proc_interval = 3000;  //3 seconds
-            } break;
-
-            // Name includes "Infused Mushroom"
-            case 33743:
-            case 33746:
-            case 33758:
-            case 33759:
-            case 57686:
-            {
-                sp->custom_proc_interval = 10000;  //10 seconds
-            } break;
-
-            // Name includes "Aviana's Purpose"
-            case 41260:
-            {
-                sp->custom_proc_interval = 10000;  //10 seconds
-            } break;
             default:
                 break;
         }
@@ -960,16 +895,6 @@ void ApplyNormalFixes()
 
         switch (sp->Id)
         {
-            // SPELL_HASH_ILLUMINATION
-            case 20210:     // Illumination Rank 1
-            case 20212:     // Illumination Rank 2
-            case 20213:     // Illumination Rank 3
-            case 20214:     // Illumination Rank 4
-            case 20215:     // Illumination Rank 5
-            case 20272:
-            {
-                sp->procFlags |= PROC_TARGET_SELF;
-            } break;
             // SPELL_HASH_SEAL_OF_COMMAND
             case 20375:     // Seal of Command - Proc Chance
             case 20424:
@@ -1007,13 +932,7 @@ void ApplyNormalFixes()
                 sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
             } break;
 
-            // SPELL_HASH_DECAPITATE
-            case 24241:
-            case 25669:
-            case 54670:
-            {
-                sp->procChance = 30;
-            } break;
+
             // SPELL_HASH_BLESSING_OF_PROTECTION
             case 41450:
             // SPELL_HASH_DIVINE_PROTECTION
