@@ -276,6 +276,7 @@ void Set_Custom_selfcast_only(SpellEntry* sp)
     }
 }
 
+/* Moved to table spell_proc_auto.
 void Overwrite_procFlags(SpellEntry* sp)
 {
     if (sp == nullptr)
@@ -285,6 +286,7 @@ void Overwrite_procFlags(SpellEntry* sp)
     }
 
     uint32 pr = sp->procFlags;
+    uint32 target_self = 0;
 
     for (uint32 y = 0; y < 3; y++)
     {
@@ -455,7 +457,11 @@ void Overwrite_procFlags(SpellEntry* sp)
                 if (strstr(sp->Description, "melee critical strike"))
                     pr |= PROC_ON_CRIT_ATTACK;
                 if (strstr(sp->Name, "Bloodthirst"))
-                    pr |= PROC_ON_MELEE_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);
+                {
+                    pr |= PROC_ON_MELEE_ATTACK;
+                    if (!target_self)
+                        target_self = 1;
+                }
                 if (strstr(sp->Description, "experience or honor"))
                     pr |= PROC_ON_GAIN_EXPIERIENCE;
                 if (strstr(sp->Description, "hit by a melee or ranged attack"))
@@ -494,7 +500,8 @@ void Overwrite_procFlags(SpellEntry* sp)
                 {
                     pr |= PROC_ON_DODGE_VICTIM;
                     if (strstr(sp->Description, "add a combo point"))
-                        pr |= PROC_TARGET_SELF;
+                        if (!target_self)
+                            target_self = 1;
                 }
                 if (strstr(sp->Description, "fully resisting"))
                     pr |= PROC_ON_RESIST_VICTIM;
@@ -538,11 +545,15 @@ void Overwrite_procFlags(SpellEntry* sp)
                 if (strstr(sp->Description, "chance to reflect Fire spells"))
                     pr |= PROC_ON_SPELL_HIT_VICTIM;
                 if (strstr(sp->Description, "hunter takes on the aspects of a hawk"))
-                    pr |= PROC_TARGET_SELF | PROC_ON_RANGED_ATTACK;
+                {
+                    pr |= PROC_ON_RANGED_ATTACK;
+                    if (!target_self)
+                        target_self = 1;
+                }
                 if (strstr(sp->Description, "successful auto shot attacks"))
                     pr |= PROC_ON_AUTO_SHOT_HIT;
                 if (strstr(sp->Description, "after getting a critical effect from your"))
-                    pr = PROC_ON_SPELL_CRIT_HIT;
+                    pr |= PROC_ON_SPELL_CRIT_HIT;
             }//end "if procspellaura"
 
              // Fix if it's a periodic trigger with amplitude = 0, to avoid division by zero
@@ -559,8 +570,8 @@ void Overwrite_procFlags(SpellEntry* sp)
 
     // Zyres: Lets save this in a table I'm sure the result is shocking -.-
     if (sp->procFlags != 0)
-        WorldDatabase.Execute("INSERT INTO spell_proc_auto VALUES(%u, 0, %u, 0, -1, -1, -1, -1, -1, -1)", sp->Id, sp->procFlags);
-}
+        WorldDatabase.Execute("INSERT INTO spell_proc_auto VALUES(%u, %u, %u)", sp->Id, sp->procFlags, target_self);
+}*/
 
 void Set_Custom_is_melee_spell(SpellEntry* sp, uint32 z)
 {
@@ -945,7 +956,7 @@ void ApplyNormalFixes()
         // DankoDJ: Refactoring session 16/02/2016 new functions
         Modify_EffectBasePoints(sp);
         Set_missing_spellLevel(sp);
-        Overwrite_procFlags(sp);
+        //Overwrite_procFlags(sp);
         Modify_AuraInterruptFlags(sp);
         Modify_RecoveryTime(sp);
 

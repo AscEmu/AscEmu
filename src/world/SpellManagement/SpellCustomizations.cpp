@@ -34,6 +34,7 @@ void SpellCustomizations::StartSpellCustomization()
     Log.Debug("SpellCustomizations::StartSpellCustomization", "Successfull started");
 
     LoadSpellRanks();
+    LoadSpellProcAuto();
 
     uint32 spellCount = dbcSpell.GetNumRows();
 
@@ -86,6 +87,50 @@ void SpellCustomizations::LoadSpellRanks()
     else
     {
         Log.Debug("SpellCustomizations::LoadSpellRanks", "Your spell_ranks table is empty!");
+    }
+
+}
+
+void SpellCustomizations::LoadSpellProcAuto()
+{
+    uint32 spell_proc_count = 0;
+
+    QueryResult* result = WorldDatabase.Query("SELECT spellID, ProcFlag, TargetSelf FROM spell_proc_auto");
+    if (result != NULL)
+    {
+        do
+        {
+            uint32 spell_id = result->Fetch()[0].GetUInt32();
+            uint32 proc_flags = result->Fetch()[1].GetUInt32();
+            bool target_self = result->Fetch()[2].GetBool();
+
+            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            if (spell_entry != nullptr)
+            {
+                if (target_self)
+                    proc_flags |= static_cast<uint32>(PROC_TARGET_SELF);
+
+                spell_entry->procFlags = proc_flags;
+
+                ++spell_proc_count;
+            }
+            else
+            {
+                Log.Error("SpellCustomizations::LoadSpellProcAuto", "your spell_proc_auto table includes an invalid spell %u.", spell_id);
+                continue;
+            }
+
+        } while (result->NextRow());
+        delete result;
+    }
+
+    if (spell_proc_count > 0)
+    {
+        Log.Success("SpellCustomizations::LoadSpellProcAuto", "Loaded %u procFlags from spell_proc_auto table", spell_proc_count);
+    }
+    else
+    {
+        Log.Debug("SpellCustomizations::LoadSpellProcAuto", "Your spell_proc_auto table is empty!");
     }
 
 }
