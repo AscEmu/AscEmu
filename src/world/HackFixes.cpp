@@ -288,9 +288,6 @@ void Overwrite_procFlags(SpellEntry* sp)
 
     for (uint32 y = 0; y < 3; y++)
     {
-
-        //spell group
-
         if (sp->Effect[y] == SPELL_EFFECT_APPLY_AURA)
         {
             if (sp->EffectApplyAuraName[y] == SPELL_AURA_PROC_TRIGGER_SPELL || sp->EffectApplyAuraName[y] == SPELL_AURA_PROC_TRIGGER_DAMAGE) //search for spellid in description
@@ -560,6 +557,9 @@ void Overwrite_procFlags(SpellEntry* sp)
 
     sp->procFlags = pr;
 
+    // Zyres: Lets save this in a table I'm sure the result is shocking -.-
+    if (sp->procFlags != 0)
+        WorldDatabase.Execute("INSERT INTO spell_proc_auto VALUES(%u, 0, %u, 0, -1, -1, -1, -1, -1, -1)", sp->Id, sp->procFlags);
 }
 
 void Set_Custom_is_melee_spell(SpellEntry* sp, uint32 z)
