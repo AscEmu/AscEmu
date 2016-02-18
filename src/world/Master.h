@@ -28,7 +28,7 @@
 #include "../shared/AscemuServerDefines.hpp"
 
 static const char* REQUIRED_CHAR_DB_VERSION = "2016-02-11_01_difficulty";
-static const char* REQUIRED_WORLD_DB_VERSION = "2016-02-18_01_spell_proc_auto";
+static const char* REQUIRED_WORLD_DB_VERSION = "2016-02-18_02_spellsystem_update";
 
 class Master : public Singleton<Master>
 {

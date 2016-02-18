@@ -35,6 +35,7 @@ void SpellCustomizations::StartSpellCustomization()
 
     LoadSpellRanks();
     LoadSpellCustomAssign();
+    LoadSpellProcs();
 
     uint32 spellCount = dbcSpell.GetNumRows();
 
@@ -100,7 +101,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
 {
     uint32 spell_custom_assign_count = 0;
 
-    QueryResult* result = WorldDatabase.Query("SELECT spell_id, on_target_flag, from_caster_on_self_flag, proc_flags, proc_flag_target_self FROM spell_custom_assign");
+    QueryResult* result = WorldDatabase.Query("SELECT spell_id, on_target_flag, from_caster_on_self_flag FROM spell_custom_assign");
     if (result != NULL)
     {
         do
@@ -108,19 +109,12 @@ void SpellCustomizations::LoadSpellCustomAssign()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 on_target = result->Fetch()[1].GetUInt32();
             uint32 from_caster_on_self_flag = result->Fetch()[2].GetUInt32();
-            uint32 proc_flags = result->Fetch()[3].GetUInt32();
-            bool target_self = result->Fetch()[4].GetBool();
 
             SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_BGR_one_buff_on_target = on_target;
                 spell_entry->custom_BGR_one_buff_from_caster_on_self = from_caster_on_self_flag;
-
-                if (target_self)
-                    proc_flags |= static_cast<uint32>(PROC_TARGET_SELF);
-
-                spell_entry->procFlags = proc_flags;
 
                 ++spell_custom_assign_count;
             }
@@ -143,6 +137,79 @@ void SpellCustomizations::LoadSpellCustomAssign()
         Log.Debug("SpellCustomizations::LoadSpellCustomAssign", "Your spell_custom_assign table is empty!");
     }
 
+}
+
+void SpellCustomizations::LoadSpellProcs()
+{
+    uint32 spell_procs_count = 0;
+
+    QueryResult* result = WorldDatabase.Query("SELECT spell_id, proc_on_name_hash, proc_flags, target_self, proc_chance, proc_charges, proc_interval, effect_trigger_spell_0, effect_trigger_spell_1, effect_trigger_spell_2, description FROM spell_proc");
+    if (result != nullptr)
+    {
+        do
+        {
+            Field* f = result->Fetch();
+            uint32 spell_id = f[0].GetUInt32();
+            uint32 name_hash = f[1].GetUInt32();
+
+            auto spell_entry = dbcSpell.LookupEntry(spell_id);
+            if (spell_entry != nullptr)
+            {
+                uint8 x;
+                for (x = 0; x < 3; ++x)
+                    if (spell_entry->custom_ProcOnNameHash[x] == 0)
+                        break;
+
+                if (x != 3)
+                {
+                    spell_entry->custom_ProcOnNameHash[x] = name_hash;
+                }
+                else
+                    Log.Error("SpellCustomizations::LoadSpellProcs", "Wrong ProcOnNameHash for Spell: %u!", spell_id);
+
+                spell_entry->procFlags = f[2].GetUInt32();
+
+                if (f[3].GetBool())
+                    spell_entry->procFlags |= PROC_TARGET_SELF;
+                if (f[4].GetInt32() >= 0)
+                    spell_entry->procChance = f[4].GetUInt32();
+                if (f[5].GetInt32() >= 0)
+                    spell_entry->procCharges = f[5].GetInt32();
+
+                spell_entry->custom_proc_interval = f[6].GetUInt32();
+
+                if (f[7].GetInt32() >= 0)
+                    spell_entry->EffectTriggerSpell[0] = f[7].GetUInt32();
+                if (f[8].GetInt32() >= 0)
+                    spell_entry->EffectTriggerSpell[1] = f[8].GetUInt32();
+                if (f[9].GetInt32() >= 0)
+                    spell_entry->EffectTriggerSpell[2] = f[9].GetUInt32();
+
+                if (spell_entry->EffectTriggerSpell[0] > 0)
+                    spell_entry->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
+                if (spell_entry->EffectTriggerSpell[1] > 0)
+                    spell_entry->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
+                if (spell_entry->EffectTriggerSpell[2] > 0)
+                    spell_entry->EffectApplyAuraName[2] = SPELL_AURA_PROC_TRIGGER_SPELL;
+
+                ++spell_procs_count;
+            }
+            else
+            {
+                Log.Error("SpellCustomizations::LoadSpellProcs()", "Invalid spellID %u in table spell_proc", spell_id);
+            }
+        } while (result->NextRow());
+        delete result;
+    }
+
+    if (spell_procs_count > 0)
+    {
+        Log.Success("SpellCustomizations::LoadSpellProcs", "Loaded %u proc definitions from spell_proc table", spell_procs_count);
+    }
+    else
+    {
+        Log.Debug("SpellCustomizations::LoadSpellProcs", "Your spell_proc table is empty!");
+    }
 }
 
 ///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero

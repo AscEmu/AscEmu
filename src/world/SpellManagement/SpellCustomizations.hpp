@@ -34,6 +34,7 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
         // functions for setting up custom vars
         void LoadSpellRanks();
         void LoadSpellCustomAssign();
+        void LoadSpellProcs();
 
         void SetEffectAmplitude(SpellEntry* spell_entry);
         void SetAuraFactoryFunc(SpellEntry* spell_entry);

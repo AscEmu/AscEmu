@@ -463,7 +463,7 @@ bool World::SetInitialWorldSettings()
 
     sSpellCustomizations.StartSpellCustomization();
 
-    //ApplyNormalFixes();
+    ApplyNormalFixes();
 
 
     new SpellFactoryMgr;
@@ -493,7 +493,6 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadSpellOverride);
     MAKE_TASK(ObjectMgr, LoadVendors);
     MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
-    MAKE_TASK(ObjectMgr, LoadSpellProcs);
     MAKE_TASK(ObjectMgr, LoadSpellEffectsOverride);
     MAKE_TASK(ObjectMgr, LoadSpellTargetConstraints);
     MAKE_TASK(ObjectMgr, LoadDefaultPetSpells);

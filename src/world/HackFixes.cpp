@@ -543,7 +543,6 @@ void ApplyNormalFixes()
         }
 
 
-        sp->custom_proc_interval = 0;//trigger at each event
         sp->custom_c_is_flags = 0;
         sp->custom_spell_coef_flags = 0;
         sp->Dspell_coef_override = -1;
@@ -577,63 +576,6 @@ void ApplyNormalFixes()
         //Name includes "" overwrites
         switch (sp->Id)
         {
-            // Name includes "Lightning Shield", EffectTriggerSpell[0] != 0 (and "for $" in description)
-            case 324:       // Lightning Shield Rank 1
-            {
-                sp->EffectTriggerSpell[0] = 26364;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 325:       // Lightning Shield Rank 2
-            {
-                sp->EffectTriggerSpell[0] = 26365;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 905:       // Lightning Shield Rank 3
-            {
-                sp->EffectTriggerSpell[0] = 26366;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 945:       // Lightning Shield Rank 4
-            {
-                sp->EffectTriggerSpell[0] = 26367;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 8134:      // Lightning Shield Rank 5
-            {
-                sp->EffectTriggerSpell[0] = 26369;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 10431:     // Lightning Shield Rank 6
-            {
-                sp->EffectTriggerSpell[0] = 26370;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 10432:     // Lightning Shield Rank 7
-            {
-                sp->EffectTriggerSpell[0] = 26363;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 25469:     // Lightning Shield Rank 8
-            {
-                sp->EffectTriggerSpell[0] = 26371;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 25472:     // Lightning Shield Rank 9
-            {
-                sp->EffectTriggerSpell[0] = 26372;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 49280:     // Lightning Shield Rank 10
-            {
-                sp->EffectTriggerSpell[0] = 49278;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-            case 49281:     // Lightning Shield Rank 11
-            {
-                sp->EffectTriggerSpell[0] = 49279;
-                sp->custom_proc_interval = 3000;       // 3 seconds
-            } break;
-
             // Name includes "Ignite" (and "an additional" % in description)
             // mage ignite talent should proc only on some chances
             case 11119:     // Ignite Rank 1
