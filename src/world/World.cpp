@@ -461,9 +461,10 @@ bool World::SetInitialWorldSettings()
     new SpellCustomizations;
     new SpellProcMgr;
 
-    ApplyNormalFixes();
-
     sSpellCustomizations.StartSpellCustomization();
+
+    //ApplyNormalFixes();
+
 
     new SpellFactoryMgr;
 

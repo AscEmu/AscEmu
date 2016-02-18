@@ -33,7 +33,7 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
 
         // functions for setting up custom vars
         void LoadSpellRanks();
-        void LoadSpellProcAuto();
+        void LoadSpellCustomAssign();
 
         void SetEffectAmplitude(SpellEntry* spell_entry);
         void SetAuraFactoryFunc(SpellEntry* spell_entry);
@@ -42,7 +42,6 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
         void SetRangedSpellBool(SpellEntry* spell_entry);
 
         void SetCustomFlags(SpellEntry* spell_entry);
-        void SetBuffGrouRelation(SpellEntry* spell_entry);
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()

@@ -34,7 +34,7 @@ void SpellCustomizations::StartSpellCustomization()
     Log.Debug("SpellCustomizations::StartSpellCustomization", "Successfull started");
 
     LoadSpellRanks();
-    LoadSpellProcAuto();
+    LoadSpellCustomAssign();
 
     uint32 spellCount = dbcSpell.GetNumRows();
 
@@ -53,7 +53,6 @@ void SpellCustomizations::StartSpellCustomization()
 
             // Set custom values (spell based)
             SetCustomFlags(spellentry);
-            SetBuffGrouRelation(spellentry);
         }
     }
 }
@@ -97,32 +96,37 @@ void SpellCustomizations::LoadSpellRanks()
 
 }
 
-void SpellCustomizations::LoadSpellProcAuto()
+void SpellCustomizations::LoadSpellCustomAssign()
 {
-    uint32 spell_proc_count = 0;
+    uint32 spell_custom_assign_count = 0;
 
-    QueryResult* result = WorldDatabase.Query("SELECT spellID, ProcFlag, TargetSelf FROM spell_proc_auto");
+    QueryResult* result = WorldDatabase.Query("SELECT spell_id, on_target_flag, from_caster_on_self_flag, proc_flags, proc_flag_target_self FROM spell_custom_assign");
     if (result != NULL)
     {
         do
         {
             uint32 spell_id = result->Fetch()[0].GetUInt32();
-            uint32 proc_flags = result->Fetch()[1].GetUInt32();
-            bool target_self = result->Fetch()[2].GetBool();
+            uint32 on_target = result->Fetch()[1].GetUInt32();
+            uint32 from_caster_on_self_flag = result->Fetch()[2].GetUInt32();
+            uint32 proc_flags = result->Fetch()[3].GetUInt32();
+            bool target_self = result->Fetch()[4].GetBool();
 
             SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
             if (spell_entry != nullptr)
             {
+                spell_entry->custom_BGR_one_buff_on_target = on_target;
+                spell_entry->custom_BGR_one_buff_from_caster_on_self = from_caster_on_self_flag;
+
                 if (target_self)
                     proc_flags |= static_cast<uint32>(PROC_TARGET_SELF);
 
                 spell_entry->procFlags = proc_flags;
 
-                ++spell_proc_count;
+                ++spell_custom_assign_count;
             }
             else
             {
-                Log.Error("SpellCustomizations::LoadSpellProcAuto", "your spell_proc_auto table includes an invalid spell %u.", spell_id);
+                Log.Error("SpellCustomizations::LoadSpellCustomAssign", "your spell_custom_assign table includes an invalid spell %u.", spell_id);
                 continue;
             }
 
@@ -130,13 +134,13 @@ void SpellCustomizations::LoadSpellProcAuto()
         delete result;
     }
 
-    if (spell_proc_count > 0)
+    if (spell_custom_assign_count > 0)
     {
-        Log.Success("SpellCustomizations::LoadSpellProcAuto", "Loaded %u procFlags from spell_proc_auto table", spell_proc_count);
+        Log.Success("SpellCustomizations::LoadSpellCustomAssign", "Loaded %u attributes from spell_custom_assign table", spell_custom_assign_count);
     }
     else
     {
-        Log.Debug("SpellCustomizations::LoadSpellProcAuto", "Your spell_proc_auto table is empty!");
+        Log.Debug("SpellCustomizations::LoadSpellCustomAssign", "Your spell_custom_assign table is empty!");
     }
 
 }
@@ -259,100 +263,5 @@ void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
     else
     {
         spell_entry->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
-    }
-}
-
-void SpellCustomizations::SetBuffGrouRelation(SpellEntry* spell_entry)
-{
-    switch (spell_entry->Id)
-    {
-        // SPELL_HASH_CRUSADER_AURA
-        case 32223:
-
-        // SPELL_HASH_FROST_RESISTANCE_AURA
-        case 19888:     // Frost Resistance Aura Rank 1
-        case 19897:     // Frost Resistance Aura Rank 2
-        case 19898:     // Frost Resistance Aura Rank 3
-        case 27152:     // Frost Resistance Aura Rank 4
-        case 48945:     // Frost Resistance Aura Rank 5
-
-        // SPELL_HASH_FIRE_RESISTANCE_AURA
-        case 19891:     // Fire Resistance Aura Rank 1
-        case 19899:     // Fire Resistance Aura Rank 2
-        case 19900:     // Fire Resistance Aura Rank 3
-        case 27153:     // Fire Resistance Aura Rank 4
-        case 48947:     // Fire Resistance Aura Rank 5
-
-        // SPELL_HASH_SHADOW_RESISTANCE_AURA
-        case 19876:     // Shadow Resistance Aura Rank 1
-        case 19895:     // Shadow Resistance Aura Rank 2
-        case 19896:     // Shadow Resistance Aura Rank 3
-        case 27151:     // Shadow Resistance Aura Rank 4
-        case 48943:     // Shadow Resistance Aura Rank 5
-
-        // SPELL_HASH_CONCENTRATION_AURA
-        case 19746:
-
-        // SPELL_HASH_RETRIBUTION_AURA
-        case 7294:      // Retribution Aura Rank 1
-        case 8990:      // Retribution Aura Rank 1
-        case 10298:     // Retribution Aura Rank 2
-        case 10299:     // Retribution Aura Rank 3
-        case 10300:     // Retribution Aura Rank 4
-        case 10301:     // Retribution Aura Rank 5
-        case 13008:
-        case 27150:     // Retribution Aura Rank 6
-        case 54043:     // Retribution Aura Rank 7
-
-        // SPELL_HASH_DEVOTION_AURA
-        case 465:       // Devotion Aura Rank 1
-        case 643:       // Devotion Aura Rank 3
-        case 1032:      // Devotion Aura Rank 5
-        case 8258:
-        case 10290:     // Devotion Aura Rank 2
-        case 10291:     // Devotion Aura Rank 4
-        case 10292:     // Devotion Aura Rank 6
-        case 10293:     // Devotion Aura Rank 7
-        case 17232:
-        case 27149:     // Devotion Aura Rank 8
-        case 41452:
-        case 48941:     // Devotion Aura Rank 9
-        case 48942:     // Devotion Aura Rank 10
-        case 52442:
-        case 57740:
-        case 58944:
-        {
-            spell_entry->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE2_PALADIN_AURA;
-        } break;
-
-        // SPELL_HASH_BLOOD_PRESENCE
-        case 48266:
-        case 50475:
-        case 50689:
-        case 54476:
-        case 55212:
-
-        // SPELL_HASH_FROST_PRESENCE
-        case 48263:
-        case 61261:
-
-        // SPELL_HASH_UNHOLY_PRESENCE
-        case 48265:
-        case 49772:
-        case 55222:
-        {
-            spell_entry->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
-        } break;
-
-        // SPELL_HASH_BEACON_OF_LIGHT
-        case 53563:
-        case 53652:
-        case 53653:
-        case 53654:
-        {
-            spell_entry->custom_BGR_one_buff_on_target = SPELL_TYPE2_PALADIN_AURA;
-        } break;
-        default:
-            break;
     }
 }
