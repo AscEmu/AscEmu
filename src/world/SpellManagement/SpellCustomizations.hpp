@@ -42,6 +42,7 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
         void SetMeleeSpellBool(SpellEntry* spell_entry);
         void SetRangedSpellBool(SpellEntry* spell_entry);
 
+        void SetMissingCIsFlags(SpellEntry* spell_entry);
         void SetCustomFlags(SpellEntry* spell_entry);
 };
 

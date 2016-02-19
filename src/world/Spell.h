@@ -1694,6 +1694,15 @@ inline bool IsTargetingStealthed(SpellEntry* sp)
     return 0;
 }
 
+inline bool IsRequireCooldownSpell(SpellEntry* sp)
+{
+    if ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)     //rogue cold blood
+        || (sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC)))
+        return true;
+
+    return false;
+}
+
 // slow
 struct SpellTargetMod
 {

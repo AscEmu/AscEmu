@@ -82,30 +82,6 @@ void Modify_EffectBasePoints(SpellEntry* sp)
         sp->EffectBasePoints[0] = 40;
 }
 
-
-void Set_Custom_c_is_flags(SpellEntry* sp)
-{
-    if (sp == nullptr)
-    {
-        Log.Error("Apply_c_is_flag", "Something tried to call with an invalid spell pointer!");
-        return;
-    }
-
-    // Zyres: Special cases
-    if (IsDamagingSpell(sp))
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_DAMAGING;
-    if (IsHealingSpell(sp))
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_HEALING;
-    if (IsTargetingStealthed(sp))
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
-
-    if ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)     //rogue cold blood
-        || (sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC)))
-    {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
-    }
-}
-
 void Set_missing_spellLevel(SpellEntry* sp)
 {
     if (sp == nullptr)
@@ -536,7 +512,6 @@ void ApplyNormalFixes()
         Modify_RecoveryTime(sp);
 
         // DankoDJ: Refactoring session 16/02/2016 set up custom spell fields
-        Set_Custom_c_is_flags(sp);
         Set_Custom_apply_on_shapeshift_change(sp);
         Set_Custom_always_apply(sp);
 

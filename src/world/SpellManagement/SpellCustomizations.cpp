@@ -53,6 +53,7 @@ void SpellCustomizations::StartSpellCustomization()
             SetRangedSpellBool(spellentry);
 
             // Set custom values (spell based)
+            SetMissingCIsFlags(spellentry);
             SetCustomFlags(spellentry);
         }
     }
@@ -322,6 +323,19 @@ void SpellCustomizations::SetRangedSpellBool(SpellEntry* spell_entry)
     {
         Log.Debug("SpellCustomizations::SetRangedSpellBool", "custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
     }
+}
+
+void SpellCustomizations::SetMissingCIsFlags(SpellEntry* spell_entry)
+{
+    // Zyres: Special cases, not handled in spell_custom_assign!
+    if (IsDamagingSpell(spell_entry))
+        spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_DAMAGING;
+    if (IsHealingSpell(spell_entry))
+        spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_HEALING;
+    if (IsTargetingStealthed(spell_entry))
+        spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
+    if (IsRequireCooldownSpell(spell_entry))
+        spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
 }
 
 void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
