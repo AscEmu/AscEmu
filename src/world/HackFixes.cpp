@@ -91,27 +91,55 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
         return;
     }
 
-    if (sp->custom_NameHash == SPELL_HASH_ARCANE_SHOT)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
-
-    else if (sp->custom_NameHash == SPELL_HASH_SERPENT_STING)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
-
-    if (strstr(sp->Description, "Finishing move") == sp->Description)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FINISHING_MOVE;
-    if (IsDamagingSpell(sp))
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_DAMAGING;
-    if (IsHealingSpell(sp))
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_HEALING;
-    if (IsTargetingStealthed(sp))
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
-
-    if (sp->custom_NameHash == SPELL_HASH_HEMORRHAGE)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF;
-
     // Spellflags poison
     switch (sp->Id)
     {
+        // NameHash SPELL_HASH_ARCANE_SHOT
+        case 3044:    // Arcane Shot Rank 1
+        case 14281:    // Arcane Shot Rank 2
+        case 14282:    // Arcane Shot Rank 3
+        case 14283:    // Arcane Shot Rank 4
+        case 14284:    // Arcane Shot Rank 5
+        case 14285:    // Arcane Shot Rank 6
+        case 14286:    // Arcane Shot Rank 7
+        case 14287:    // Arcane Shot Rank 8
+        case 27019:    // Arcane Shot Rank 9
+        case 34829:
+        case 35401:
+        case 36293:
+        case 36609:
+        case 36623:
+        case 38807:
+        case 49044:    // Arcane Shot Rank 10
+        case 49045:    // Arcane Shot Rank 11
+        case 51742:
+        case 55624:
+        case 58973:
+        case 69989:
+        case 71116:
+
+        // NameHash SPELL_HASH_SERPENT_STING
+        case 1978:    // Serpent Sting Rank 1
+        case 13549:    // Serpent Sting Rank 2
+        case 13550:    // Serpent Sting Rank 3
+        case 13551:    // Serpent Sting Rank 4
+        case 13552:    // Serpent Sting Rank 5
+        case 13553:    // Serpent Sting Rank 6
+        case 13554:    // Serpent Sting Rank 7
+        case 13555:    // Serpent Sting Rank 8
+        case 25295:    // Serpent Sting Rank 9
+        case 27016:    // Serpent Sting Rank 10
+        case 31975:
+        case 35511:
+        case 36984:
+        case 38859:
+        case 38914:
+        case 39182:
+        case 49000:    // Serpent Sting Rank 11
+        case 49001:    // Serpent Sting Rank 12
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_NOT_USING_DMG_BONUS;
+        } break;
         // Name includes "Crippling Poison"
         case 3408:
         case 3409:
@@ -263,10 +291,34 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
         case 33663:     //Earth elemental
         {
             sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
-        }
+        } break;
+
+        // NameHash SPELL_HASH_HEMORRHAGE
+        case 16511:    // Hemorrhage Rank 1
+        case 17347:    // Hemorrhage Rank 2
+        case 17348:    // Hemorrhage Rank 3
+        case 26864:    // Hemorrhage Rank 4
+        case 30478:
+        case 37331:
+        case 45897:
+        case 48660:    // Hemorrhage Rank 5
+        case 65954:
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF;
+        } break;
         default:
             break;
     }
+
+    if (strstr(sp->Description, "Finishing move") == sp->Description)
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FINISHING_MOVE;
+    if (IsDamagingSpell(sp))
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_DAMAGING;
+    if (IsHealingSpell(sp))
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_HEALING;
+    if (IsTargetingStealthed(sp))
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
+
 
     if ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)     //rogue cold blood
         || (sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC)))
@@ -567,7 +619,6 @@ void ApplyNormalFixes()
         // Read every SpellEntry row
         sp = dbcSpell.LookupRow(x);
 
-        uint32 rank = 0;
         uint32 namehash = 0;
 
         sp->custom_apply_on_shapeshift_change = false;
@@ -3031,8 +3082,8 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 19615;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
     sp = CheckAndReturnSpellEntry(19622);
     if (sp != NULL)
@@ -3041,8 +3092,8 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 19615;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
     sp = CheckAndReturnSpellEntry(19623);
     if (sp != NULL)
@@ -3051,8 +3102,8 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 19615;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
     sp = CheckAndReturnSpellEntry(19624);
     if (sp != NULL)
@@ -3061,8 +3112,8 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 19615;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
     sp = CheckAndReturnSpellEntry(19625);
     if (sp != NULL)
@@ -3071,8 +3122,8 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 19615;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | static_cast<uint32>(PROC_TARGET_SELF);
+        sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
 
     //Hunter : Pathfinding
