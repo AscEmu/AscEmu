@@ -92,6 +92,7 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
     }
 
     // Spellflags poison
+    /* Zyres: Moved to spell_custom_assign
     switch (sp->Id)
     {
         // NameHash SPELL_HASH_ARCANE_SHOT
@@ -459,7 +460,9 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
     }
 
     if (strstr(sp->Description, "Finishing move") == sp->Description)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FINISHING_MOVE;
+        sp->custom_c_is_flags |= SPELL_FLAG_IS_FINISHING_MOVE; */
+    
+    // Zyres: Special cases
     if (IsDamagingSpell(sp))
         sp->custom_c_is_flags |= SPELL_FLAG_IS_DAMAGING;
     if (IsHealingSpell(sp))
@@ -473,6 +476,11 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
     {
         sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
     }
+
+    /*if (sp->custom_c_is_flags != 0)
+    {
+        WorldDatabase.Execute("INSERT INTO spell_c_is_flags VALUES(%u, %u, '%s', '%s')", sp->Id, sp->custom_c_is_flags, sp->Name, sp->Rank);
+    }*/
 
 }
 
@@ -891,8 +899,6 @@ void ApplyNormalFixes()
 			}
         }
 
-
-        sp->custom_c_is_flags = 0;
         sp->custom_spell_coef_flags = 0;
         sp->Dspell_coef_override = -1;
         sp->OTspell_coef_override = -1;
@@ -5462,7 +5468,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(33831);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF; //some land under target is used that gathers multiple targets ...
         sp->EffectImplicitTargetA[1] = EFF_TARGET_NONE;
     }

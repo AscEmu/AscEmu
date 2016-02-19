@@ -101,7 +101,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
 {
     uint32 spell_custom_assign_count = 0;
 
-    QueryResult* result = WorldDatabase.Query("SELECT spell_id, on_target_flag, from_caster_on_self_flag, self_cast_only FROM spell_custom_assign");
+    QueryResult* result = WorldDatabase.Query("SELECT spell_id, on_target_flag, from_caster_on_self_flag, self_cast_only, c_is_flag FROM spell_custom_assign");
     if (result != NULL)
     {
         do
@@ -110,6 +110,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
             uint32 on_target = result->Fetch()[1].GetUInt32();
             uint32 from_caster_on_self_flag = result->Fetch()[2].GetUInt32();
             bool self_cast_only = result->Fetch()[3].GetBool();
+            uint32 c_is_flag = result->Fetch()[4].GetUInt32();
 
             SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
             if (spell_entry != nullptr)
@@ -117,6 +118,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
                 spell_entry->custom_BGR_one_buff_on_target = on_target;
                 spell_entry->custom_BGR_one_buff_from_caster_on_self = from_caster_on_self_flag;
                 spell_entry->custom_self_cast_only = self_cast_only;
+                spell_entry->custom_c_is_flags = c_is_flag;
 
                 ++spell_custom_assign_count;
             }
