@@ -570,7 +570,6 @@ void ApplyNormalFixes()
         uint32 rank = 0;
         uint32 namehash = 0;
 
-        sp->custom_self_cast_only = false;
         sp->custom_apply_on_shapeshift_change = false;
         sp->custom_always_apply = false;
 
