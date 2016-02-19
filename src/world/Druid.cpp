@@ -25,8 +25,9 @@ void World::InitDruidSpells()
 {
     SpellEntry* sp = NULL;
 
+    /* Zyres: Genius... Delete this!
     if (sp = dbcSpell.LookupEntryForced(34123))
-        sp->custom_NameHash = 1;
+        sp->custom_NameHash = 1;*/
 
     if (sp = dbcSpell.LookupEntryForced(34297))
     {
@@ -48,8 +49,9 @@ void World::InitDruidSpells()
         sp->RequiredShapeShift = 255;
     }
 
+    /*Zyres: Delete this!
     if (sp = dbcSpell.LookupEntryForced(34299))
-        sp->custom_NameHash += 1;
+        sp->custom_NameHash += 1;*/
 
     if (sp = dbcSpell.LookupEntryForced(48483))
     {
@@ -96,6 +98,7 @@ void World::InitDruidSpells()
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
     }
 
+    /*Zyres: Delete this!
     if (sp = dbcSpell.LookupEntryForced(48517))
     {
         sp->custom_NameHash += 1;
@@ -104,7 +107,7 @@ void World::InitDruidSpells()
     if (sp = dbcSpell.LookupEntryForced(48518))
     {
         sp->custom_NameHash += 2;
-    }
+    }*/
 
     if (sp = dbcSpell.LookupEntryForced(48506))
     {

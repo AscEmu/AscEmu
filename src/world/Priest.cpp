@@ -172,9 +172,10 @@ void World::InitPriestSpells()
     if (sp = dbcSpell.LookupEntryForced(64044))
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_FEAR;
+        /*Zyres: ... Delete this!
         auto spell_entry = dbcSpell.LookupEntryForced(64058);
         if (spell_entry != nullptr)
-            spell_entry->custom_NameHash += 1;
+            spell_entry->custom_NameHash += 1;*/
         //dbcSpell.LookupEntryForced(64058)->NotRmoveTrigger = true;
     }
 

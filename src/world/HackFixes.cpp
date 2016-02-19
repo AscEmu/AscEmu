@@ -137,10 +137,8 @@ void Set_Custom_apply_on_shapeshift_change(SpellEntry* sp)
         return;
     }
 
-    // apply on shapeshift change
-    if (sp->custom_NameHash == SPELL_HASH_TRACK_HUMANOIDS)
-        sp->custom_apply_on_shapeshift_change = true;
-
+    if (sp->Id == 5225 || sp->Id == 19883)
+        sp->custom_apply_on_shapeshift_change = true;   // apply on shapeshift change
 }
 
 void Set_Custom_always_apply(SpellEntry* sp)
@@ -151,8 +149,45 @@ void Set_Custom_always_apply(SpellEntry* sp)
         return;
     }
 
-    if (sp->custom_NameHash == SPELL_HASH_BLOOD_FURY || sp->custom_NameHash == SPELL_HASH_SHADOWSTEP || sp->custom_NameHash == SPELL_HASH_PSYCHIC_HORROR)
-        sp->custom_always_apply = true;
+    switch (sp->Id)
+    {
+        // SPELL_HASH_BLOOD_FURY
+        case 20572:
+        case 23230:
+        case 24571:
+        case 33697:
+        case 33702:
+        // SPELL_HASH_SHADOWSTEP
+        case 36554:
+        case 36563:
+        case 41176:
+        case 44373:
+        case 45273:
+        case 46463:
+        case 55965:
+        case 55966:
+        case 63790:
+        case 63793:
+        case 66178:
+        case 68759:
+        case 68760:
+        case 68761:
+        case 69087:
+        case 70431:
+        case 72326:
+        case 72327:
+
+        // SPELL_HASH_PSYCHIC_HORROR
+        case 34984:
+        //case 64044:     // Psychic Horror Zyres: People are so amazed about NameHash that they try to stop it by overwriting the hash... See Priest.cpp line 175 to 178.
+        case 64058:
+        case 65545:     // Psychic Horror
+        {
+            sp->custom_always_apply = true;
+        } break;
+        default:
+            break;
+    }
 }
 
 void Modify_AuraInterruptFlags(SpellEntry* sp)
@@ -5243,9 +5278,10 @@ void ApplyNormalFixes()
     ////////////////////////////////////////////////////////////
 
     // Druid - Tree Form Aura
+    /* Zyres: Genius... Delete this! I'm not familiar with this technique, looks awesome. Unfortunately I don't understand the effect of this. SPELL_HASH_TREE_OF_LIFE is not used in any statement...
     sp = CheckAndReturnSpellEntry(34123);
     if (sp != NULL)
-        sp->custom_NameHash = 0;
+        sp->custom_NameHash = 0;*/
 
     // Druid - Omen of Clarity
     sp = CheckAndReturnSpellEntry(16864);

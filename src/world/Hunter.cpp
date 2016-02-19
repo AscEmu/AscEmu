@@ -123,10 +123,11 @@ void World::InitHunterSpells()
         sp->EffectTriggerSpell[1] = 57485;
     }
 
+    /*Zyres: Delete this!
     if (sp = dbcSpell.LookupEntryForced(53220))
     {
         sp->custom_NameHash += 1;
-    }
+    }*/
 
     if (sp = dbcSpell.LookupEntryForced(34720))
         if (sp = dbcSpell.LookupEntryForced(781))
