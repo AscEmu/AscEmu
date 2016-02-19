@@ -44,6 +44,8 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
 
         void SetMissingCIsFlags(SpellEntry* spell_entry);
         void SetCustomFlags(SpellEntry* spell_entry);
+        void SetOnShapeshiftChange(SpellEntry* spell_entry);
+        void SetAlwaysApply(SpellEntry* spell_entry);
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()

@@ -129,65 +129,6 @@ void Set_missing_spellLevel(SpellEntry* sp)
     }
 }
 
-void Set_Custom_apply_on_shapeshift_change(SpellEntry* sp)
-{
-    if (sp == nullptr)
-    {
-        Log.Error("Set_Custom_apply_on_shapeshift_change", "Something tried to call with an invalid spell pointer!");
-        return;
-    }
-
-    if (sp->Id == 5225 || sp->Id == 19883)
-        sp->custom_apply_on_shapeshift_change = true;   // apply on shapeshift change
-}
-
-void Set_Custom_always_apply(SpellEntry* sp)
-{
-    if (sp == nullptr)
-    {
-        Log.Error("Set_Custom_always_apply", "Something tried to call with an invalid spell pointer!");
-        return;
-    }
-
-    switch (sp->Id)
-    {
-        // SPELL_HASH_BLOOD_FURY
-        case 20572:
-        case 23230:
-        case 24571:
-        case 33697:
-        case 33702:
-        // SPELL_HASH_SHADOWSTEP
-        case 36554:
-        case 36563:
-        case 41176:
-        case 44373:
-        case 45273:
-        case 46463:
-        case 55965:
-        case 55966:
-        case 63790:
-        case 63793:
-        case 66178:
-        case 68759:
-        case 68760:
-        case 68761:
-        case 69087:
-        case 70431:
-        case 72326:
-        case 72327:
-
-        // SPELL_HASH_PSYCHIC_HORROR
-        case 34984:
-        case 65545:     // Psychic Horror
-        {
-            sp->custom_always_apply = true;
-        } break;
-        default:
-            break;
-    }
-}
-
 void Modify_AuraInterruptFlags(SpellEntry* sp)
 {
     if (sp == nullptr)
@@ -408,7 +349,6 @@ void ApplyNormalFixes()
 
         uint32 namehash = 0;
 
-        sp->custom_apply_on_shapeshift_change = false;
 
         // hash the name
         //!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
@@ -542,10 +482,6 @@ void ApplyNormalFixes()
         Set_missing_spellLevel(sp);
         Modify_AuraInterruptFlags(sp);
         Modify_RecoveryTime(sp);
-
-        // DankoDJ: Refactoring session 16/02/2016 set up custom spell fields
-        Set_Custom_apply_on_shapeshift_change(sp);
-        Set_Custom_always_apply(sp);
 
         // find diminishing status
         sp->custom_DiminishStatus = GetDiminishingGroup(sp->custom_NameHash);

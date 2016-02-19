@@ -200,16 +200,8 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "CConsole.h"
 #include "SpeedDetector.h"
 #include "WorldStates.h"
-#include "DeathKnight.h"
-#include "Rogue.h"
-#include "Druid.h"
-#include "Priest.h"
-#include "Paladin.h"
-#include "Warrior.h"
-#include "Warlock.h"
-#include "Mage.h"
-#include "Hunter.h"
-#include "Shaman.h"
+
+#include "Player/PlayerClasses.hpp"
 
 #include "MapManagement/MapManagementGlobals.hpp"
 

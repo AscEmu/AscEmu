@@ -55,6 +55,8 @@ void SpellCustomizations::StartSpellCustomization()
             // Set custom values (spell based)
             SetMissingCIsFlags(spellentry);
             SetCustomFlags(spellentry);
+            SetOnShapeshiftChange(spellentry);
+            SetAlwaysApply(spellentry);
         }
     }
 }
@@ -348,5 +350,57 @@ void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
     else
     {
         spell_entry->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
+    }
+}
+
+void SpellCustomizations::SetOnShapeshiftChange(SpellEntry* spell_entry)
+{
+    if (!spell_entry->Id == 5225 && !spell_entry->Id == 19883)
+    {
+        return;
+    }
+    else
+    {
+        spell_entry->custom_apply_on_shapeshift_change = true;
+    }
+}
+
+void SpellCustomizations::SetAlwaysApply(SpellEntry* spell_entry)
+{
+    switch (spell_entry->Id)
+    {
+        // SPELL_HASH_BLOOD_FURY
+        case 20572:
+        case 23230:
+        case 24571:
+        case 33697:
+        case 33702:
+        // SPELL_HASH_SHADOWSTEP
+        case 36554:
+        case 36563:
+        case 41176:
+        case 44373:
+        case 45273:
+        case 46463:
+        case 55965:
+        case 55966:
+        case 63790:
+        case 63793:
+        case 66178:
+        case 68759:
+        case 68760:
+        case 68761:
+        case 69087:
+        case 70431:
+        case 72326:
+        case 72327:
+        // SPELL_HASH_PSYCHIC_HORROR
+        case 34984:
+        case 65545:
+        {
+            spell_entry->custom_always_apply = true;
+        } break;
+        default:
+            break;
     }
 }

@@ -535,21 +535,6 @@ bool World::SetInitialWorldSettings()
     // wait for all loading to complete.
     tl.wait();
 
-#ifdef ENABLE_FIXSPELL_LEISA
-    InitSpellNameHash();
-    InitMiscSpells();
-    InitDruidSpells();
-    InitHunterSpells();
-    InitMageSpells();
-    InitPaladinSpells();
-    InitPriestSpells();
-    InitRogueSpells();
-    InitShamanSpells();
-    //InitWarlockSpells();
-    InitWarriorSpells();
-    InitItemsSpells();
-#endif
-
     sLocalizationMgr.Reload(false);
 
     CommandTableStorage::getSingleton().Load();
