@@ -306,6 +306,154 @@ void Set_Custom_c_is_flags(SpellEntry* sp)
         {
             sp->custom_c_is_flags |= SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF;
         } break;
+
+        // From single id fixes
+        case 61987:     // Avenging Wrath Marker
+        case 25771:     // Forbearance
+        case 12292:     // Death Wish
+        case 6788:      // Weakened Soul
+        case 57724:     // Sated
+        case 57723:     // Sated
+        case 36032:     // Arcane Blast
+        case 12355:     // Impact Rank 1
+        case 41425:     // Hypothermia
+        case 31117:     // Unstable Affliction
+        case 42792:     // Recently Dropped Flag
+        case 15007:     // Resurrection Sickness
+        case 20584:     // Ghost
+        case 9036:      // Ghost
+        case 8326:      // Ghost
+        case 26013:     // Deserter
+        case 24379:     // Restoration
+        case 23493:     // Restoration
+        case 11196:     // Recently Bandaged
+        case 23230:     // Blood Fury Racial
+        case 51729:     // Blessing of Zim'Torga
+        case 51265:     // Blessing of Zim'Abwa
+        case 52051:     // Blessing of Zim'Rhuk
+        case 63024:     // Gravity Bomb
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
+        } break;
+
+        case 19578:     // Spirit Bond Rank 1
+        case 20895:     // Spirit Bond Rank 2
+        case 35029:     // Focused Fire Rank 1
+        case 35030:     // Focused Fire Rank 2
+        case 19621:     // Frenzy Rank 1
+        case 19622:     // Frenzy Rank 2
+        case 19623:     // Frenzy Rank 3
+        case 19624:     // Frenzy Rank 4
+        case 19625:     // Frenzy Rank 5
+        case 35691:     // Demonic Knowledge Rank 1
+        case 35692:     // Demonic Knowledge Rank 2
+        case 35693:     // Demonic Knowledge Rank 3
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        } break;
+
+        //Hunter trigger spells
+        case 19579:     // Spirit Bond Rank 1 (again?!?)
+        case 24529:     // Spirit Bond Rank 2 (again?!?)
+        case 35060:     // Focused Fire Rank 1 (again?!?)
+        case 35061:     // Focused Fire Rank 2 (again?!?)
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        } break;
+
+        //warlock - Demonic Sacrifice
+        case 18789:    // Burning Wish
+        case 18790:    // Fel Stamina
+        case 18791:    // Touch of Shadow
+        case 18792:    // Fel Energy
+        case 35701:    // Touch of Shadow
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
+        } break;
+
+        case 34455:     // Ferocious Inspiration Rank 1
+        case 34459:     // Ferocious Inspiration Rank 2
+        case 34460:     // Ferocious Inspiration Rank 3
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        } break;
+
+        case 11129:     // Combustion
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
+        } break;
+
+        case 23785:       // Master Demonologist
+        case 23822:       // Master Demonologist
+        case 23823:       // Master Demonologist
+        case 23824:       // Master Demonologist
+        case 23825:       // Master Demonologist
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        } break;
+
+        case 23759:       // Master Demonologist
+        case 23760:       // Master Demonologist
+        case 23761:       // Master Demonologist
+        case 23762:       // Master Demonologist
+        case 23826:       // Master Demonologist
+        case 23827:       // Master Demonologist
+        case 23828:       // Master Demonologist
+        case 23829:       // Master Demonologist
+        case 23833:       // Master Demonologist
+        case 23834:       // Master Demonologist
+        case 23835:       // Master Demonologist
+        case 23836:       // Master Demonologist
+        case 23837:       // Master Demonologist
+        case 23838:       // Master Demonologist
+        case 23839:       // Master Demonologist
+        case 23840:       // Master Demonologist
+        case 23841:       // Master Demonologist
+        case 23842:       // Master Demonologist
+        case 23843:       // Master Demonologist
+        case 23844:       // Master Demonologist
+        case 35702:       // Master Demonologist
+        case 35703:       // Master Demonologist
+        case 35704:       // Master Demonologist
+        case 35705:       // Master Demonologist
+        case 35706:       // Master Demonologist
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
+        } break;
+
+        case 30319:       // Demonic Resilience Rank 1
+        case 30320:       // Demonic Resilience Rank 2
+        case 30321:       // Demonic Resilience Rank 3
+        case 18694:       // Improved Imp Rank 1
+        case 18695:       // Improved Imp Rank 2
+        case 18696:       // Improved Imp Rank 3
+        case 18705:       // Demonic Brutality Rank 1
+        case 18706:       // Demonic Brutality Rank 2
+        case 18707:       // Demonic Brutality Rank 3
+        case 18754:       // Improved Succubus Rank 1
+        case 18755:       // Improved Succubus Rank 2
+        case 18756:       // Improved Succubus Rank 3
+        case 18731:       // Fel Vitality Rank 1
+        case 18743:       // Fel Vitality Rank 2
+        case 18744:       // Fel Vitality Rank 3
+        case 30242:       // Demonic Tactics Rank 1
+        case 30245:       // Demonic Tactics Rank 2
+        case 30246:       // Demonic Tactics Rank 3
+        case 30247:       // Demonic Tactics Rank 4
+        case 30248:       // Demonic Tactics Rank 5
+        case 18769:       // Unholy Power Rank 1
+        case 18770:       // Unholy Power Rank 2
+        case 18771:       // Unholy Power Rank 3
+        case 18772:       // Unholy Power Rank 4
+        case 18773:       // Unholy Power Rank 5
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
+        } break;
+
+        case 33831:      // Force of Nature
+        {
+            sp->custom_c_is_flags |= SPELL_FLAG_IS_INHERITING_LEVEL;
+        } break;
         default:
             break;
     }
@@ -1870,7 +2018,6 @@ void ApplyNormalFixes()
     sp = dbcSpell.LookupEntryForced(12292);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
         sp->procChance = 100;
     }
     ////////////////////////////////////////////////////////////
@@ -2653,7 +2800,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(61987);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -2661,7 +2807,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(25771);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -2942,21 +3087,18 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(19578);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 19579;
     }
     sp = CheckAndReturnSpellEntry(20895);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 24529;
     }
     sp = CheckAndReturnSpellEntry(19579);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA; //we should do the same for player too as we did for pet
         sp->EffectApplyAuraName[1] = sp->EffectApplyAuraName[0];
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
@@ -2967,7 +3109,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(24529);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA; //we should do the same for player too as we did for pet
         sp->EffectApplyAuraName[1] = sp->EffectApplyAuraName[0];
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
@@ -2987,7 +3128,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34455);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectTriggerSpell[0] = 34456;
@@ -2997,7 +3137,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34459);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectTriggerSpell[0] = 34456;
@@ -3007,7 +3146,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34460);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectTriggerSpell[0] = 34456;
@@ -3019,23 +3157,15 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(35029);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 35060;
     }
     sp = CheckAndReturnSpellEntry(35030);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 35061;
     }
-    sp = CheckAndReturnSpellEntry(35060);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
-    sp = CheckAndReturnSpellEntry(35061);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
 
     // Hunter - Thrill of the Hunt
     sp = CheckAndReturnSpellEntry(34497);
@@ -3083,7 +3213,6 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
     sp = CheckAndReturnSpellEntry(19622);
     if (sp != NULL)
@@ -3093,7 +3222,6 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
     sp = CheckAndReturnSpellEntry(19623);
     if (sp != NULL)
@@ -3103,7 +3231,6 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
     sp = CheckAndReturnSpellEntry(19624);
     if (sp != NULL)
@@ -3113,7 +3240,6 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
     sp = CheckAndReturnSpellEntry(19625);
     if (sp != NULL)
@@ -3123,7 +3249,6 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET | SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
     }
 
     //Hunter : Pathfinding
@@ -3571,7 +3696,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(6788);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -3717,7 +3841,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(57724);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -3732,7 +3855,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(57723);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -4259,15 +4381,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
     }
 
-    //mage - Arcane Blast Proc
-    sp = CheckAndReturnSpellEntry(36032);
-    if (sp != NULL)
-    {
-        sp->procFlags = 0;
-        sp->procCharges = 0;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
-    }
-
     //mage : Empowered Arcane Missiles
     //heh B thinks he is smart by adding this to description ? If it doesn't work std then it still needs to made by hand
     sp = CheckAndReturnSpellEntry(31579);
@@ -4322,7 +4435,6 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetB[1] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
 
     //Mage - Invisibility
@@ -4421,7 +4533,6 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[1] = 28682;
         sp->procFlags = PROC_ON_SPELL_HIT | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF);
         sp->procCharges = 0;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
     }
 
     //mage - Master of Elements
@@ -4492,7 +4603,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(41425);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -4600,11 +4710,6 @@ void ApplyNormalFixes()
         sp->EffectSpellClassMask[1][1] = 0;
     }
 
-    //Unstable Affliction
-    sp = CheckAndReturnSpellEntry(31117);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
-
     //warlock: Eradication
     sp = CheckAndReturnSpellEntry(47195);
     if (sp != NULL)
@@ -4700,7 +4805,6 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = CheckAndReturnSpellEntry(35692);
     if (sp != NULL)
@@ -4714,7 +4818,6 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = CheckAndReturnSpellEntry(35693);
     if (sp != NULL)
@@ -4728,7 +4831,6 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[2] = 35696;
         sp->EffectImplicitTargetA[2] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER | SPELL_FLAG_IS_EXPIREING_WITH_PET;
     }
     sp = CheckAndReturnSpellEntry(35696);
     if (sp != NULL)
@@ -4786,32 +4888,15 @@ void ApplyNormalFixes()
         sp->EffectBasePoints[0] *= 6;
     }
 
-    //warlock - Demonic Sacrifice
-    sp = CheckAndReturnSpellEntry(18789);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
-    sp = CheckAndReturnSpellEntry(18790);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
-    sp = CheckAndReturnSpellEntry(18791);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
-    sp = CheckAndReturnSpellEntry(18792);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
-    sp = CheckAndReturnSpellEntry(35701);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_ON_PET;
-
     //warlock - Demonic Tactics
     sp = CheckAndReturnSpellEntry(30242);
     if (sp != NULL)
     {
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
-        sp->EffectApplyAuraName[2] = SPELL_AURA_MOD_SPELL_CRIT_CHANCE; //lvl 1 has it fucked up :O
+        //sp->EffectApplyAuraName[2] = SPELL_AURA_MOD_SPELL_CRIT_CHANCE; //lvl 1 has it fucked up :O 
+                                                                        // Zyres: No you fukced it up. This spell was defined few lines below.
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30245);
     if (sp != NULL)
@@ -4819,7 +4904,6 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30246);
     if (sp != NULL)
@@ -4827,7 +4911,6 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30247);
     if (sp != NULL)
@@ -4835,7 +4918,6 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30248);
     if (sp != NULL)
@@ -4843,7 +4925,6 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
 
     //warlock - Demonic Resilience
@@ -4852,60 +4933,51 @@ void ApplyNormalFixes()
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30320);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
     sp = CheckAndReturnSpellEntry(30321);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER;
     }
 
     //warlock - Improved Imp
     sp = CheckAndReturnSpellEntry(18694);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18695);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18696);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
 
-    //warlock - Improved Voidwalker
+    //warlock - Demonic Brutality
     sp = CheckAndReturnSpellEntry(18705);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18706);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18707);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
 
@@ -4913,30 +4985,26 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18754);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18755);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
     sp = CheckAndReturnSpellEntry(18756);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
     }
 
-    //warlock - Fel Intellect
+    //warlock - Fel Vitality
     sp = CheckAndReturnSpellEntry(18731);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
         sp->EffectMiscValue[0] = 3;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
@@ -4944,7 +5012,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18743);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
         sp->EffectMiscValue[0] = 3;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
@@ -4952,17 +5019,16 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18744);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_PERCENT_STAT;
         sp->EffectMiscValue[0] = 3;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
     }
 
     //warlock - Demonic Tactics
+    /* Zyres: Disabled this spell has already some changes few lines above!
     sp = CheckAndReturnSpellEntry(30242);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -4971,13 +5037,12 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[1] = EFF_TARGET_PET;
         sp->EffectMiscValue[1] = SCHOOL_NORMAL;
         sp->EffectBasePoints[1] = sp->EffectBasePoints[0];
-    }
+    }*/
 
     //warlock - Unholy Power
     sp = CheckAndReturnSpellEntry(18769);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -4990,7 +5055,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18770);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5003,7 +5067,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18771);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5016,7 +5079,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18772);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5029,7 +5091,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(18773);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET;
         sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
         //this is required since blizz uses spells for melee attacks while we use fixed functions
@@ -5044,35 +5105,30 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(23785);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23784;
     }
     sp = CheckAndReturnSpellEntry(23822);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23830;
     }
     sp = CheckAndReturnSpellEntry(23823);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23831;
     }
     sp = CheckAndReturnSpellEntry(23824);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 23832;
     }
     sp = CheckAndReturnSpellEntry(23825);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET | SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 35708;
     }
@@ -5095,92 +5151,79 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(23759);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23760);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23761);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23762);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23826);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23827);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23828);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     sp = CheckAndReturnSpellEntry(23829);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
+    // Zyres: eeek
     for (uint32 i = 23833; i <= 23844; i++)
     {
         sp = CheckAndReturnSpellEntry(i);
         if (sp != NULL)
         {
-            sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
             sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         }
     }
     sp = CheckAndReturnSpellEntry(35702);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
     sp = CheckAndReturnSpellEntry(35703);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
     sp = CheckAndReturnSpellEntry(35704);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
     sp = CheckAndReturnSpellEntry(35705);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
     sp = CheckAndReturnSpellEntry(35706);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_EXPIREING_WITH_PET;
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
@@ -6719,57 +6762,23 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 0;
     }
 
-    // Recently Dropped Flag
-    sp = CheckAndReturnSpellEntry(42792);
-    if (sp != NULL)
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
-
-
-    //resurrection sickness
-    sp = CheckAndReturnSpellEntry(15007);
-    if (sp != NULL)
-    {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
-    }
-    // ghost ,NIGHTELF ghost & sprit
-    sp = CheckAndReturnSpellEntry(20584);
-    if (sp != NULL)
-    {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
-    }
-
     sp = CheckAndReturnSpellEntry(9036);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 20584;
-    }
-
-    sp = CheckAndReturnSpellEntry(8326);
-    if (sp != NULL)
-    {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
-    }
-
-    sp = CheckAndReturnSpellEntry(26013);   //bg deserter
-    if (sp != NULL)
-    {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
     }
 
     sp = CheckAndReturnSpellEntry(24379);   //bg Restoration
     if (sp != NULL)
     {
         sp->EffectTriggerSpell[0] = 23493;
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     sp = CheckAndReturnSpellEntry(23493);   //bg Restoration
     if (sp != NULL)
     {
         sp->EffectTriggerSpell[0] = 24379;
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     sp = CheckAndReturnSpellEntry(5246);    // why self?
@@ -6781,12 +6790,6 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 20511; // cebernic: this just real spell
         sp->EffectImplicitTargetA[0] = EFF_TARGET_NONE;
     }
-
-
-    //Bandage
-    sp = CheckAndReturnSpellEntry(11196);
-    if (sp != NULL)
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
 
     //////////////////////////////////////////
     // DEATH KNIGHT                            //
@@ -7026,12 +7029,6 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 50452;
     }
 
-    // Blood Fury Healing Debuff
-    sp = CheckAndReturnSpellEntry(23230);
-    if (sp != NULL)
-    {
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
-    }
 
     // Noggenfogger elixir - reduce size effect
     sp = CheckAndReturnSpellEntry(16595);
@@ -7144,7 +7141,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(11196);
     if (sp != NULL)
     {
-        sp->custom_c_is_flags = SPELL_FLAG_IS_FORCEDDEBUFF;
         sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
     }
 
@@ -7193,7 +7189,6 @@ void ApplyNormalFixes()
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     // Blessing of Zim'Abwa
@@ -7201,7 +7196,6 @@ void ApplyNormalFixes()
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     // Blessing of Zim'Rhuk
@@ -7209,7 +7203,6 @@ void ApplyNormalFixes()
     if (sp)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SCRIPTED_OR_SINGLE_TARGET;
-        sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDBUFF;
     }
 
     // Ritual of Summoning summons a GameObject that triggers an inexistant spell.
@@ -7251,7 +7244,6 @@ void ApplyNormalFixes()
 		sp->targetAuraSpell = 0;
 		sp->casterAuraSpellNot = 0;
 		sp->targetAuraSpellNot = 0;
-		sp->custom_c_is_flags |= SPELL_FLAG_IS_FORCEDDEBUFF;
 		sp->Attributes |= ATTRIBUTES_NEGATIVE;
 	}
     // War Stomp
