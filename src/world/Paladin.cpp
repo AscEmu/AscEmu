@@ -75,18 +75,6 @@ void World::InitPaladinSpells()
         sp->procFlags = PROC_ON_RANGED_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT;
     }
 
-    /* Zyres: Delete this after checking whats going on with custom_RankNumber!
-    if (sp = dbcSpell.LookupEntryForced(53489))
-    {
-        sp->custom_NameHash += 1;
-        sp->custom_RankNumber += 1;
-    }
-    if (sp = dbcSpell.LookupEntryForced(59578))
-    {
-        sp->custom_NameHash += 1;
-        sp->custom_RankNumber += 2;
-    }*/
-
     if (sp = dbcSpell.LookupEntryForced(53720))
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;

@@ -179,8 +179,6 @@ void Set_Custom_always_apply(SpellEntry* sp)
 
         // SPELL_HASH_PSYCHIC_HORROR
         case 34984:
-        //case 64044:     // Psychic Horror Zyres: People are so amazed about NameHash that they try to stop it by overwriting the hash... See Priest.cpp line 175 to 178.
-        case 64058:
         case 65545:     // Psychic Horror
         {
             sp->custom_always_apply = true;
@@ -411,7 +409,6 @@ void ApplyNormalFixes()
         uint32 namehash = 0;
 
         sp->custom_apply_on_shapeshift_change = false;
-        sp->custom_always_apply = false;
 
         // hash the name
         //!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)

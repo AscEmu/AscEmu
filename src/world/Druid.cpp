@@ -49,10 +49,6 @@ void World::InitDruidSpells()
         sp->RequiredShapeShift = 255;
     }
 
-    /*Zyres: Delete this!
-    if (sp = dbcSpell.LookupEntryForced(34299))
-        sp->custom_NameHash += 1;*/
-
     if (sp = dbcSpell.LookupEntryForced(48483))
     {
         sp->procFlags = PROC_ON_MELEE_ATTACK;
@@ -97,17 +93,6 @@ void World::InitDruidSpells()
     {
         sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
     }
-
-    /*Zyres: Delete this!
-    if (sp = dbcSpell.LookupEntryForced(48517))
-    {
-        sp->custom_NameHash += 1;
-    }
-
-    if (sp = dbcSpell.LookupEntryForced(48518))
-    {
-        sp->custom_NameHash += 2;
-    }*/
 
     if (sp = dbcSpell.LookupEntryForced(48506))
     {
@@ -159,8 +144,5 @@ void World::InitDruidSpells()
         sp->EffectSpellClassMask[2][1] = 0;
         sp->EffectSpellClassMask[2][2] = 0;
     }
-    /*if (sp = dbcSpell.LookupEntryForced(17002))
-        sp->RequiredShapeShift = 1 | 16 | 128;
-        if (sp = dbcSpell.LookupEntryForced(24866))
-        sp->RequiredShapeShift = 1 | 16 | 128; */
+
 }
