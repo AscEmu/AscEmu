@@ -174,7 +174,7 @@ void SpellCustomizations::LoadSpellProcs()
                 else
                     Log.Error("SpellCustomizations::LoadSpellProcs", "Wrong ProcOnNameHash for Spell: %u!", spell_id);
 
-                if (f[2].GetUInt32() >= 0)
+                if (f[2].GetInt32() >= 0)
                     spell_entry->procFlags = f[2].GetUInt32();
 
                 if (f[3].GetBool())
