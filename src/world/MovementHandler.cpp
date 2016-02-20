@@ -674,11 +674,13 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 mover->obj_movement_info.transporter_info.position.x = movement_info.transporter_info.position.x;
                 mover->obj_movement_info.transporter_info.position.y = movement_info.transporter_info.position.y;
                 mover->obj_movement_info.transporter_info.position.z = movement_info.transporter_info.position.z;
+                mover->obj_movement_info.transporter_info.position.o = movement_info.transporter_info.position.o;
 
                 mover->m_transportData.transportGuid = movement_info.transporter_info.transGuid;
                 mover->m_transportData.relativePosition.x = movement_info.transporter_info.position.x;
                 mover->m_transportData.relativePosition.y = movement_info.transporter_info.position.y;
                 mover->m_transportData.relativePosition.z = movement_info.transporter_info.position.z;
+                mover->m_transportData.relativePosition.o = movement_info.transporter_info.position.o;
             }
             else
             {
@@ -687,10 +689,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 mover->obj_movement_info.transporter_info.position.x = movement_info.transporter_info.position.x;
                 mover->obj_movement_info.transporter_info.position.y = movement_info.transporter_info.position.y;
                 mover->obj_movement_info.transporter_info.position.z = movement_info.transporter_info.position.z;
+                mover->obj_movement_info.transporter_info.position.o = movement_info.transporter_info.position.o;
 
                 mover->m_transportData.relativePosition.x = movement_info.transporter_info.position.x;
                 mover->m_transportData.relativePosition.y = movement_info.transporter_info.position.y;
                 mover->m_transportData.relativePosition.z = movement_info.transporter_info.position.z;
+                mover->m_transportData.relativePosition.o = movement_info.transporter_info.position.o;
             }
         }
     }
