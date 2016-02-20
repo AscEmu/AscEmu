@@ -441,7 +441,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
 
         // some anticheat stuff
-        if (spellInfo->self_cast_only)
+        if (spellInfo->custom_self_cast_only)
         {
             if (targets.m_unitTarget && targets.m_unitTarget != _player->GetGUID())
             {

@@ -2,7 +2,6 @@
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DEATHKNIGHT_H
-#define _DEATHKNIGHT_H
+#ifndef _PLAYER_CLASSES_HPP
+#define _PLAYER_CLASSES_HPP
 
 #define TOTAL_NORMAL_RUNE_TYPES 3
 #define TOTAL_USED_RUNES (TOTAL_NORMAL_RUNE_TYPES * 2)
@@ -29,14 +28,14 @@
 
 enum SPELL_RUNE_TYPES
 {
-    RUNE_BLOOD        = 0,
-    RUNE_FROST        = 1,
-    RUNE_UNHOLY       = 2,
-    RUNE_DEATH        = 3,
-    RUNE_MAX_TYPES    = 4
+    RUNE_BLOOD = 0,
+    RUNE_FROST = 1,
+    RUNE_UNHOLY = 2,
+    RUNE_DEATH = 3,
+    RUNE_MAX_TYPES = 4
 };
 
-const uint8 base_runes[MAX_RUNES] = {RUNE_BLOOD, RUNE_BLOOD, RUNE_FROST, RUNE_FROST, RUNE_UNHOLY, RUNE_UNHOLY};
+const uint8 base_runes[MAX_RUNES] = { RUNE_BLOOD, RUNE_BLOOD, RUNE_FROST, RUNE_FROST, RUNE_UNHOLY, RUNE_UNHOLY };
 
 struct Rune
 {
@@ -46,10 +45,10 @@ struct Rune
 
 class DeathKnight : public Player
 {
-        Rune m_runes[MAX_RUNES];
+    Rune m_runes[MAX_RUNES];
 
-        /// Holds last slot used
-        uint8 m_last_used_rune_slot;
+    /// Holds last slot used
+    uint8 m_last_used_rune_slot;
 
     protected:
 
@@ -85,4 +84,85 @@ class DeathKnight : public Player
         uint8 GetLastUsedUnitSlot() { return m_last_used_rune_slot; }
 };
 
-#endif // _DEATHKNIGHT_H
+class Druid : public Player
+{
+    public:
+
+        Druid(uint32 guid) : Player(guid) {}
+
+        bool IsDruid() { return true; }
+};
+
+class Rogue : public Player
+{
+    public:
+
+        Rogue(uint32 guid) : Player(guid) {}
+
+        bool IsRogue() { return true; }
+};
+
+class Priest : public Player
+{
+    public:
+
+        Priest(uint32 guid) : Player(guid) {}
+
+        bool IsPriest() { return true; }
+};
+
+class Paladin : public Player
+{
+    public:
+
+        Paladin(uint32 guid) : Player(guid) {}
+
+        bool IsPaladin() { return true; }
+};
+
+class Warrior : public Player
+{
+    public:
+
+        Warrior(uint32 guid) : Player(guid) {}
+
+        bool IsWarrior() { return true; }
+};
+
+class Warlock : public Player
+{
+    public:
+
+        Warlock(uint32 guid) : Player(guid) {}
+
+        bool IsWarlock() { return true; }
+};
+
+class Mage : public Player
+{
+    public:
+
+        Mage(uint32 guid) : Player(guid) {}
+
+        bool IsMage() { return true; }
+};
+
+class Hunter : public Player
+{
+    public:
+
+        Hunter(uint32 guid) : Player(guid) {}
+
+        bool IsHunter() { return true; }
+};
+
+class Shaman : public Player
+{
+    public:
+
+        Shaman(uint32 guid) : Player(guid) {}
+
+        bool IsShaman() { return true; }
+};
+
+#endif  // _PLAYER_CLASSES_HPP

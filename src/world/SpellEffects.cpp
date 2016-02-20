@@ -487,7 +487,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
             }
     }
 
-    switch (GetProto()->NameHash)
+    switch (GetProto()->custom_NameHash)
     {
         case SPELL_HASH_SACRIFICE:
         {
@@ -596,7 +596,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
     else
     {
         dmg = damage;
-        switch (GetProto()->NameHash)
+        switch (GetProto()->custom_NameHash)
         {
             case SPELL_HASH_METEOR_SLASH:
             {
@@ -633,7 +633,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (unitTarget->HasFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE))
                 {
                     // random extra damage
-                    uint32 extra_dmg = 111 + (GetProto()->RankNumber * 11) + RandomUInt(GetProto()->RankNumber * 11);
+                    uint32 extra_dmg = 111 + (GetProto()->custom_RankNumber * 11) + RandomUInt(GetProto()->custom_RankNumber * 11);
                     dmg += extra_dmg;
                 }
             }
@@ -1207,7 +1207,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
         {
             /* try to get a selection */
             unitTarget = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-            if ((!unitTarget) || !isAttackable(p_caster, unitTarget, !(GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) || (unitTarget->CalcDistance(p_caster) > 28.0f))
+            if ((!unitTarget) || !isAttackable(p_caster, unitTarget, !(GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED)) || (unitTarget->CalcDistance(p_caster) > 28.0f))
             {
                 return;
             }
@@ -1418,7 +1418,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
     //if we do not make a check to see if the aura owner is the same as the caster then we will stack the 2 auras and they will not be visible client sided
     if (itr == m_pendingAuras.end())
     {
-        if (GetProto()->NameHash == SPELL_HASH_BLOOD_FRENZY && ProcedOnSpell)  //Warrior's Blood Frenzy
+        if (GetProto()->custom_NameHash == SPELL_HASH_BLOOD_FRENZY && ProcedOnSpell)  //Warrior's Blood Frenzy
             GetProto()->DurationIndex = ProcedOnSpell->DurationIndex;
 
         uint32 Duration = GetDuration();
@@ -2853,7 +2853,7 @@ void Spell::SpellEffectWeaponDmgPerc(uint32 i) // Weapon Percent damage
 
         u_caster->Strike(unitTarget, _type, GetProto(), add_damage, damage, 0, false, true);
 
-        if (GetProto()->NameHash == SPELL_HASH_FAN_OF_KNIVES && p_caster != NULL)   // rogue - fan of knives
+        if (GetProto()->custom_NameHash == SPELL_HASH_FAN_OF_KNIVES && p_caster != NULL)   // rogue - fan of knives
         {
             Item* oit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
             if (oit != NULL)
@@ -3395,7 +3395,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
 
                 if (AuraRemoved)
                 {
-                    if (aursp->NameHash == SPELL_HASH_UNSTABLE_AFFLICTION)
+                    if (aursp->custom_NameHash == SPELL_HASH_UNSTABLE_AFFLICTION)
                     {
                         SpellEntry* spellInfo = dbcSpell.LookupEntry(31117);
                         Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
@@ -3406,7 +3406,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
                         targets.m_unitTarget = u_caster->GetGUID();
                         spell->prepare(&targets);
                     }
-                    /*else if (aur->GetSpellProto()->NameHash == SPELL_HASH_LIFEBLOOM)
+                    /*else if (aur->GetSpellProto()->custom_NameHash == SPELL_HASH_LIFEBLOOM)
                     {
                     Spell* spell= sSpellFactoryMgr.NewSpell(aur->GetCaster(), aur->GetSpellProto(), true, NULL);
                     spell->SetUnitTarget(unitTarget);
@@ -3891,7 +3891,7 @@ void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
         return;
 
     //Hackfix for Mangle
-    if (GetProto()->NameHash == SPELL_HASH_MANGLE__CAT_ && p_caster != NULL)
+    if (GetProto()->custom_NameHash == SPELL_HASH_MANGLE__CAT_ && p_caster != NULL)
         p_caster->AddComboPoints(unitTarget->GetGUID(), 1);
 
     // Hacky fix for druid spells where it would "double attack".
@@ -4071,7 +4071,7 @@ void Spell::SpellEffectHealMaxHealth(uint32 i)   // Heal Max Health
 
     unitTarget->ModHealth(dif);
 
-    if (u_caster != NULL && this->GetProto()->NameHash == SPELL_HASH_LAY_ON_HANDS)
+    if (u_caster != NULL && this->GetProto()->custom_NameHash == SPELL_HASH_LAY_ON_HANDS)
         u_caster->CastSpell(unitTarget, 25771, true);
 }
 
@@ -4454,7 +4454,7 @@ void Spell::SpellEffectEnchantHeldItem(uint32 i)
     uint32 Duration = 1800; // Needs to be found in dbc.. I guess?
 
 
-    if (GetProto()->NameHash == SPELL_HASH_WINDFURY_WEAPON || GetProto()->NameHash == SPELL_HASH_FLAMETONGUE_WEAPON)
+    if (GetProto()->custom_NameHash == SPELL_HASH_WINDFURY_WEAPON || GetProto()->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON)
         Duration = 10;
 
     auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(GetProto()->EffectMiscValue[i]);
@@ -4794,7 +4794,7 @@ void Spell::SpellEffectDispelMechanic(uint32 i)
 
     /*Shady: if it's about Daze spell - dismount should be done by RemoveAllAurasByMechanic.
     We don't need useless code or hackfixes here, so commented.*/
-    //if (playerTarget && GetProto()->NameHash == SPELL_HASH_DAZED && playerTarget->IsMounted())
+    //if (playerTarget && GetProto()->custom_NameHash == SPELL_HASH_DAZED && playerTarget->IsMounted())
     //  playerTarget->RemoveAura(playerTarget->m_MountSpellId);
 }
 
@@ -5033,18 +5033,18 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
     if (!unitTarget || !u_caster)
         return;
 
-    if (GetProto()->NameHash == SPELL_HASH_OVERPOWER && p_caster)   //warrior : overpower - let us clear the event and the combopoint count
+    if (GetProto()->custom_NameHash == SPELL_HASH_OVERPOWER && p_caster)   //warrior : overpower - let us clear the event and the combopoint count
     {
         p_caster->NullComboPoints(); //some say that we should only remove 1 point per dodge. Due to cooldown you can't cast it twice anyway..
         sEventMgr.RemoveEvents(p_caster, EVENT_COMBO_POINT_CLEAR_FOR_TARGET);
     }
-    else if (GetProto()->NameHash == SPELL_HASH_DEVASTATE)
+    else if (GetProto()->custom_NameHash == SPELL_HASH_DEVASTATE)
     {
         //count the number of sunder armors on target
         uint32 sunder_count = 0;
         SpellEntry* spellInfo = dbcSpell.LookupEntry(7386);
         for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-            if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellProto()->NameHash == SPELL_HASH_SUNDER_ARMOR)
+            if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
             {
                 sunder_count++;
                 spellInfo = unitTarget->m_auras[x]->GetSpellProto();
@@ -5062,7 +5062,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
         damage = damage * sunder_count;
     }
     //Hemorrhage
-    if (p_caster && GetProto()->NameHash == SPELL_HASH_HEMORRHAGE)
+    if (p_caster && GetProto()->custom_NameHash == SPELL_HASH_HEMORRHAGE)
         p_caster->AddComboPoints(p_caster->GetSelection(), 1);
 
     switch (GetProto()->Id)
@@ -5170,7 +5170,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
 
     //rogue - mutilate ads dmg if target is poisoned
     uint32 pct_dmg_mod = 100;
-    if (GetProto()->NameHash == SPELL_HASH_MUTILATE && unitTarget->IsPoisoned())
+    if (GetProto()->custom_NameHash == SPELL_HASH_MUTILATE && unitTarget->IsPoisoned())
         pct_dmg_mod = 120;
 
     uint32 _type;
@@ -5309,7 +5309,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
 
                     uint32 aurdur = (aur->GetDuration() > 120000 ? 120000 : aur->GetDuration());
                     Aura* aura = sSpellFactoryMgr.NewAura(aursp, aurdur, u_caster, u_caster);
-                    uint32 aur_removed = unitTarget->RemoveAllAuraByNameHash(aursp->NameHash);
+                    uint32 aur_removed = unitTarget->RemoveAllAuraByNameHash(aursp->custom_NameHash);
                     for (uint8 j = 0; j < 3; j++)
                     {
                         if (aura->GetSpellProto()->Effect[j])

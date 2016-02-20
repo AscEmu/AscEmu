@@ -676,7 +676,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadVendors();
         void ReloadVendors();
         void LoadAIThreatToSpellId();
-        void LoadSpellProcs();
+
         void LoadSpellEffectsOverride();
         void LoadReputationModifierTable(const char* tablename, ReputationModMap* dmap);
         void LoadReputationModifiers();

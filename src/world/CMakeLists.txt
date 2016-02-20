@@ -114,7 +114,8 @@ set(sources
 	ReputationHandler.cpp 
 	ScriptMgr.cpp 
 	SocialHandler.cpp 
-	SpeedDetector.cpp 
+	SpeedDetector.cpp
+   SpellManagement/SpellCustomizations.cpp
 	SpellAuras.cpp 
 	SpellTarget.cpp 
 	Spell.cpp 
@@ -170,15 +171,6 @@ set(sources
 	Spell_Warlock.cpp
 	Spell_Warrior.cpp
 	DeathKnight.cpp
-	Druid.cpp
-	Hunter.cpp
-	Mage.cpp
-	Paladin.cpp
-	Priest.cpp
-	Rogue.cpp
-	Shaman.cpp
-	Warlock.cpp
-	Warrior.cpp
 )
 
 set(headers
@@ -220,9 +212,7 @@ set(headers
     DBC/DBCStorage.hpp
 	DBC/DBCStores.h
     DBC/DBCStructures.hpp
-	DeathKnight.h
 	Definitions.h
-	Druid.h
 	DynamicObject.h
 	EquipmentSetMgr.h
 	EventableObject.h
@@ -238,7 +228,6 @@ set(headers
 	Entities/Summons/GuardianSummon.h
 	Guild.h
 	HonorHandler.h
-	Hunter.h
 	Item.h
 	ItemInterface.h
 	ItemPrototype.h
@@ -251,7 +240,6 @@ set(headers
 	LogonCommClient.h
 	LogonCommHandler.h
 	LootMgr.h
-	Mage.h
 	MailMgr.h
 	MainServerDefines.h
     MapManagement/MapManagementGlobals.hpp
@@ -269,25 +257,23 @@ set(headers
 	ObjectMgr.h
 	ObjectStorage.h
 	Opcodes.h
-	Paladin.h
 	Pet.h
 	Player.h
+   Player/PlayerClasses.hpp
     PlayerDefines.hpp
 	PlayerCache.h
 	Entities/Summons/PossessedSummon.h
-	Priest.h
 	Quest.h
     QuestDefines.hpp
     QuestLogEntry.hpp
 	QuestMgr.h
     RecastIncludes.hpp
-	Rogue.h
 	ScriptMgr.h
 	ScriptSetup.h
-	Shaman.h
 	Skill.h
 	SkillNameMgr.h
 	SpeedDetector.h
+   SpellManagement/SpellCustomizations.hpp
 	Spell.h
 	SpellAuras.h
 	SpellFailure.h
@@ -309,8 +295,6 @@ set(headers
 	UpdateFields.h
 	UpdateMask.h
 	Vehicle.h
-	Warlock.h
-	Warrior.h
 	WeatherMgr.h
 	Entities/Summons/WildSummon.h
 	WordFilter.h

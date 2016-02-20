@@ -1559,8 +1559,8 @@ void ObjectMgr::LoadAIThreatToSpellId()
         sp = dbcSpell.LookupEntryForced(fields[0].GetUInt32());
         if (sp != NULL)
         {
-            sp->ThreatForSpell = fields[1].GetUInt32();
-            sp->ThreatForSpellCoef = fields[2].GetFloat();
+            sp->custom_ThreatForSpell = fields[1].GetUInt32();
+            sp->custom_ThreatForSpellCoef = fields[2].GetFloat();
         }
         else
             Log.Error("AIThreatSpell", "Cannot apply to spell %u; spell is nonexistent.", fields[0].GetUInt32());
@@ -1569,63 +1569,6 @@ void ObjectMgr::LoadAIThreatToSpellId()
     while (result->NextRow());
 
     delete result;
-}
-
-void ObjectMgr::LoadSpellProcs()
-{
-    SpellEntry* sp;
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM spell_proc");
-    if (result)
-    {
-        do
-        {
-            Field* f = result->Fetch();
-            uint32 spe_spellId = f[0].GetUInt32();
-            uint32 spe_NameHash = f[1].GetUInt32();
-
-            if (spe_spellId)
-            {
-                sp = dbcSpell.LookupEntryForced(spe_spellId);
-                if (sp != NULL)
-                {
-                    int x;
-                    for (x = 0; x < 3; ++x)
-                        if (sp->ProcOnNameHash[x] == 0)
-                            break;
-
-                    if (x != 3)
-                    {
-                        sp->ProcOnNameHash[x] = spe_NameHash;
-                    }
-                    else
-                        LOG_ERROR("Wrong ProcOnNameHash for Spell: %u!", spe_spellId);
-
-                    sp->procFlags = f[2].GetUInt32();
-
-                    if (f[3].GetUInt32() == 1)
-                        sp->procFlags |= PROC_TARGET_SELF;
-                    if (f[4].GetInt32() >= 0)
-                        sp->procChance = f[4].GetUInt32();
-                    if (f[5].GetInt32() >= 0)
-                        sp->procCharges = f[5].GetInt32();
-
-                    sp->proc_interval = f[6].GetUInt32();
-
-                    if (f[7].GetInt32() >= 0)
-                        sp->EffectTriggerSpell[0] = f[7].GetUInt32();
-                    if (f[8].GetInt32() >= 0)
-                        sp->EffectTriggerSpell[1] = f[8].GetUInt32();
-                    if (f[9].GetInt32() >= 0)
-                        sp->EffectTriggerSpell[2] = f[9].GetUInt32();
-
-                    if (sp->EffectTriggerSpell[0] > 0)
-                        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-                }
-            }
-        }
-        while (result->NextRow());
-        delete result;
-    }
 }
 
 void ObjectMgr::LoadSpellEffectsOverride()

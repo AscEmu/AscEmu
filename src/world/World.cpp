@@ -458,9 +458,13 @@ bool World::SetInitialWorldSettings()
     new CalendarMgr;
     new WorldLog;
     new ChatHandler;
+    new SpellCustomizations;
     new SpellProcMgr;
 
+    sSpellCustomizations.StartSpellCustomization();
+
     ApplyNormalFixes();
+
 
     new SpellFactoryMgr;
 
@@ -489,7 +493,6 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadSpellOverride);
     MAKE_TASK(ObjectMgr, LoadVendors);
     MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
-    MAKE_TASK(ObjectMgr, LoadSpellProcs);
     MAKE_TASK(ObjectMgr, LoadSpellEffectsOverride);
     MAKE_TASK(ObjectMgr, LoadSpellTargetConstraints);
     MAKE_TASK(ObjectMgr, LoadDefaultPetSpells);
@@ -531,21 +534,6 @@ bool World::SetInitialWorldSettings()
 
     // wait for all loading to complete.
     tl.wait();
-
-#ifdef ENABLE_FIXSPELL_LEISA
-    InitSpellNameHash();
-    InitMiscSpells();
-    InitDruidSpells();
-    InitHunterSpells();
-    InitMageSpells();
-    InitPaladinSpells();
-    InitPriestSpells();
-    InitRogueSpells();
-    InitShamanSpells();
-    //InitWarlockSpells();
-    InitWarriorSpells();
-    InitItemsSpells();
-#endif
 
     sLocalizationMgr.Reload(false);
 

@@ -3368,12 +3368,12 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellEntry* sp, Unit* Attacker)
             return 0;
 
     int32 mod = 0;
-    if (sp != NULL && sp->ThreatForSpell != 0)
+    if (sp != NULL && sp->custom_ThreatForSpell != 0)
     {
-        mod = sp->ThreatForSpell;
+        mod = sp->custom_ThreatForSpell;
     }
-    if (sp != NULL && sp->ThreatForSpellCoef != 0.0f)
-        mod += int32(damage * sp->ThreatForSpellCoef);
+    if (sp != NULL && sp->custom_ThreatForSpellCoef != 0.0f)
+        mod += int32(damage * sp->custom_ThreatForSpellCoef);
     else
         mod += damage;
 
@@ -3573,8 +3573,8 @@ void AIInterface::_UpdateTotem(uint32 p_time)
         if (nextTarget == NULL ||
             (!m_Unit->GetMapMgr()->GetUnit(nextTarget->GetGUID()) ||
             !nextTarget->isAlive() ||
-            !IsInrange(m_Unit, nextTarget, pSpell->GetProto()->base_range_or_radius_sqr) ||
-            !isAttackable(m_Unit, nextTarget, !(pSpell->GetProto()->c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
+            !IsInrange(m_Unit, nextTarget, pSpell->GetProto()->custom_base_range_or_radius_sqr) ||
+            !isAttackable(m_Unit, nextTarget, !(pSpell->GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
            )
            )
         {

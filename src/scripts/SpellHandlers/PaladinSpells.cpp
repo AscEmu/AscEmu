@@ -236,7 +236,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     caster->CastSpell(target, id, true);
 
     // Cast judgement spell
-    switch (pSpell->GetProto()->NameHash)
+    switch (pSpell->GetProto()->custom_NameHash)
     {
     case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
         id = 20184;

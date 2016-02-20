@@ -86,7 +86,7 @@ class FlametongueWeaponSpellProc : public SpellProc
         if (enchant != NULL)
         {
             SpellEntry* sp = dbcSpell.LookupEntryForced(enchant->Enchantment->spell[0]);
-            if (sp != NULL && sp->NameHash == SPELL_HASH_FLAMETONGUE_WEAPON__PASSIVE_)
+            if (sp != NULL && sp->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON__PASSIVE_)
             {
                 wp_speed = item->GetProto()->Delay;
                 damage = (sp->EffectBasePoints[0] + 1) * wp_speed / 100000;
