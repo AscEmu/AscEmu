@@ -389,10 +389,16 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
 
     if (flags & UPDATEFLAG_LIVING)  //0x20
     {
-        if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
+        /*if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
             flags2 |= MOVEFLAG_TRANSPORT; //0x200
         else if (uThis != NULL && obj_movement_info.transporter_info.guid != 0 && uThis->obj_movement_info.transporter_info.guid != 0)
-            flags2 |= MOVEFLAG_TRANSPORT; //0x200
+            flags2 |= MOVEFLAG_TRANSPORT; //0x200*/
+
+        // Zyres: If a unit has this flag, add it to the update packet, otherwise not.
+        if (pThis && pThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            flags2 |= MOVEFLAG_TRANSPORT;
+        else if (uThis && uThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            flags2 |= MOVEFLAG_TRANSPORT;
 
         if ((pThis != NULL) && pThis->isRooted())
             flags2 |= MOVEFLAG_ROOTED;

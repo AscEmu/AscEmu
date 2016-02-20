@@ -560,6 +560,13 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
         {
             passenger->RepopAtGraveyard(passenger->GetPositionX(), passenger->GetPositionY(), passenger->GetPositionZ(), passenger->GetMapId());
         }
+        else
+        {
+            if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            {
+                passenger->AddUnitMovementFlag(MOVEFLAG_TRANSPORT);
+            }
+        }
     }
 
     this->RespawnCreaturePassengers();
@@ -572,6 +579,11 @@ bool Transporter::AddPassenger(Player* passenger)
     m_passengers.insert(passenger->GetLowGUID());
     Log.Debug("Transporter", "Player %s boarded transport %u.", passenger->GetName(), this->GetInfo()->entry);
 
+    if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    {
+        passenger->AddUnitMovementFlag(MOVEFLAG_TRANSPORT);
+    }
+
     return true;
 }
 
@@ -581,6 +593,11 @@ bool Transporter::RemovePassenger(Player* passenger)
 
     m_passengers.erase(passenger->GetLowGUID());
     Log.Debug("Transporter", "Player %s removed from transport %u.", passenger->GetName(), this->GetInfo()->entry);
+
+    if (passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    {
+        passenger->RemoveUnitMovementFlag(MOVEFLAG_TRANSPORT);
+    }
 
     return true;
 }

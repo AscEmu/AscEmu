@@ -1242,11 +1242,18 @@ class SERVER_DECL Unit : public Object
 
         void BuildMovementPacket(ByteBuffer* data);
         void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
-        MovementInfo* GetMovementInfo() { return &movement_info; }
-        uint32 GetUnitMovementFlags() { return movement_info.flags; }   //checked
-        void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
 
-        uint16 GetExtraUnitMovementFlags() { return movement_info.flags2; }
+        MovementInfo* GetMovementInfo() { return &movement_info; }
+
+        uint32 GetUnitMovementFlags() const { return movement_info.flags; }   //checked
+        void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
+        void AddUnitMovementFlag(uint32 f) { movement_info.flags |= f; }
+        void RemoveUnitMovementFlag(uint32 f) { movement_info.flags &= ~f; }
+        bool HasUnitMovementFlag(uint32 f) const { return (movement_info.flags & f) != 0; }
+
+        uint16 GetExtraUnitMovementFlags() const { return movement_info.flags2; }
+        void AddExtraUnitMovementFlag(uint16 f2) { movement_info.flags2 |= f2; }
+        bool HasExtraUnitMovementFlag(uint16 f2) const { return (movement_info.flags2 & f2) != 0; }
 
         MovementInfo movement_info;
 };

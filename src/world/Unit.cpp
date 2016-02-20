@@ -8363,7 +8363,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     *data << GetOrientation();
 
     // 0x00000200
-    if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
+    if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
         if (IsPlayer())
         {
@@ -8421,7 +8421,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     *data << o;
 
     // 0x00000200
-    if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
+    if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
         // Code left commented for reference
         // TODO: Research whether vehicle transport guid is being updated correctly or not (and if not, update it elsewhere and remove this)
