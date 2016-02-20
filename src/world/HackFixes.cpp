@@ -495,19 +495,6 @@ void ApplyNormalFixes()
         //Name includes "" overwrites
         switch (sp->Id)
         {
-            // Name includes "Ignite" (and "an additional" % in description)
-            // mage ignite talent should proc only on some chances
-            case 11119:     // Ignite Rank 1
-            case 11120:     // Ignite Rank 2
-            case 12846:     // Ignite Rank 3
-            case 12847:     // Ignite Rank 4
-            case 12848:     // Ignite Rank 5
-            {
-                sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL; //force him to use procspell effect
-                sp->EffectTriggerSpell[0] = 12654;          //evil , but this is good for us :D
-                sp->procFlags = PROC_ON_SPELL_CRIT_HIT;     //add procflag here since this was not processed with the others !
-            } break;
-
             // Name includes "Winter's Chill"
             // Winter's Chill handled by frost school
             case 11180:     // Winter's Chill Rank 1
@@ -564,79 +551,6 @@ void ApplyNormalFixes()
                 sp->EffectDieSides[0] = 49;
             } break;
 
-            //some procs trigger at intervals
-            // Name includes "Water Shield"
-            case 16180:
-            case 16196:
-            case 16198:
-            case 23575:
-            case 33737:
-            case 34318:
-            case 34827:
-            case 34828:
-            case 36816:
-            case 36817:
-            case 37209:
-            case 37432:
-            case 38105:
-            case 38106:
-            case 52128:
-            case 52130:
-            case 52132:
-            case 52133:
-            case 52135:
-            case 52137:
-            case 55535:
-            case 57961:
-            case 58063:
-            case 58266:
-            case 58332:
-            case 60166:
-            {
-                sp->custom_proc_interval = 3000;  //3 seconds
-                sp->procFlags |= PROC_TARGET_SELF;
-            } break;
-
-            // Name includes "Earth Shield"
-            case 32734:
-            case 37204:
-            case 38101:
-            case 38102:
-            case 38590:
-            case 51560:
-            case 51561:
-            case 54479:
-            case 54480:
-            case 55599:
-            case 55600:
-            case 56451:
-            case 57802:
-            case 57803:
-            case 58981:
-            case 58982:
-            case 59471:
-            case 59472:
-            case 60013:
-            case 60014:
-            case 63279:
-            case 63925:
-            case 64261:
-            case 66063:
-            case 66064:
-            case 67530:
-            case 67537:
-            case 68320:
-            case 68592:
-            case 68593:
-            case 68594:
-            case 69568:
-            case 69569:
-            case 69925:
-            case 69926:
-            {
-                sp->custom_proc_interval = 3000;  //3 seconds
-            } break;
-
             default:
                 break;
         }
@@ -669,7 +583,7 @@ void ApplyNormalFixes()
                 sp->MechanicsType = MECHANIC_INTERRUPTED;
         }
 
-        if (sp->custom_proc_interval != 0)
+        if (sp->custom_proc_interval > 0)      // if (sp->custom_proc_interval != 0)
             sp->procFlags |= PROC_REMOVEONUSE;
 
         //shaman - shock, has no spellgroup.very dangerous move !
@@ -679,7 +593,7 @@ void ApplyNormalFixes()
         switch (sp->Id)
         {
             // SPELL_HASH_SEAL_OF_COMMAND
-            case 20375:     // Seal of Command - Proc Chance
+            case 20375:     // Seal of Command - School/dmg_type
             case 20424:
             case 29385:
             case 33127:
@@ -693,7 +607,6 @@ void ApplyNormalFixes()
             case 68022:
             case 69403:
             {
-                sp->procChance = 25;
                 sp->School = SCHOOL_HOLY; //the procspells of the original seal of command have physical school instead of holy
                 sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //heh, crazy spell uses melee/ranged/magic dmg type for 1 spell. Now which one is correct ?
             } break;
@@ -1179,28 +1092,7 @@ void ApplyNormalFixes()
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_BORROWED_TIME
-            case 52795:     // Borrowed Time Rank 1
-            case 52797:     // Borrowed Time Rank 2
-            case 52798:     // Borrowed Time Rank 3
-            case 52799:     // Borrowed Time Rank 4
-            case 52800:     // Borrowed Time Rank 5
-            case 59887:     // Borrowed Time
-            case 59888:     // Borrowed Time
-            case 59889:     // Borrowed Time
-            case 59890:     // Borrowed Time
-            case 59891:     // Borrowed Time
-            {
-                sp->procFlags = PROC_ON_CAST_SPELL;
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_GRACE
-            case 47516:    // Grace Rank 1
-            case 47517:    // Grace Rank 2
-            {
-                sp->procFlags = PROC_ON_CAST_SPELL;
-            } break;
+            // SPELL_HASH_GRACE (without ranks)
             case 47930:     // Grace
             {
                 sp->rangeIndex = 4;
@@ -1424,20 +1316,6 @@ void ApplyNormalFixes()
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
-            // SPELL_HASH_NATURE_S_GUARDIAN
-            case 30881:     // Nature's Guardian
-            case 30883:     // Nature's Guardian
-            case 30884:     // Nature's Guardian
-            case 30885:     // Nature's Guardian
-            case 30886:     // Nature's Guardian
-            case 31616:     // Nature's Guardian
-            {
-                sp->procFlags = PROC_ON_SPELL_HIT_VICTIM | PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_ANY_DAMAGE_VICTIM;
-                sp->custom_proc_interval = 5000;
-                sp->EffectTriggerSpell[0] = 31616;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 18350 in spell.dbc !?
-            } break;
-
-            //////////////////////////////////////////////////////////////////////////////////////////
             // SPELL_HASH_HEX
             case 11641:     // Hex
             case 16097:     // Hex
@@ -1585,12 +1463,7 @@ void ApplyNormalFixes()
     //////////////////////////////////////////
 
     // Insert warrior spell fixes here
-    //Warrior: Death Wish
-    sp = dbcSpell.LookupEntryForced(12292);
-    if (sp != NULL)
-    {
-        sp->procChance = 100;
-    }
+
     ////////////////////////////////////////////////////////////
     // Arms
 
@@ -1598,146 +1471,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(65156);
     if (sp != NULL)
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
-
-    // Taste for Blood Rank 1
-    sp = CheckAndReturnSpellEntry(56636);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
-        sp->custom_proc_interval = 6000;
-    }
-
-    // Taste for Blood Rank 2
-    sp = CheckAndReturnSpellEntry(56637);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
-        sp->custom_proc_interval = 6000;
-    }
-
-    // Taste for Blood Rank 3
-    sp = CheckAndReturnSpellEntry(56638);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | PROC_ON_ANY_HOSTILE_ACTION;
-        sp->custom_proc_interval = 6000;
-    }
-
-    // Wrecking Crew Rank 1
-    sp = CheckAndReturnSpellEntry(46867);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-    }
-
-    // Wrecking Crew Rank 2
-    sp = CheckAndReturnSpellEntry(56611);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-    }
-
-    // Wrecking Crew Rank 3
-    sp = CheckAndReturnSpellEntry(56612);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-    }
-
-    // Wrecking Crew Rank 4
-    sp = CheckAndReturnSpellEntry(56613);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-    }
-
-    // Wrecking Crew Rank 5
-    sp = CheckAndReturnSpellEntry(56614);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-    }
-
-    // Warrior - Deep Wounds
-    sp = CheckAndReturnSpellEntry(12834);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[0] = 12721;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 12162 in spell.dbc !?
-        sp->procFlags |= PROC_ON_SPELL_CRIT_HIT;
-    }
-    sp = CheckAndReturnSpellEntry(12849);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[0] = 12721;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 12850 in spell.dbc !?
-        sp->procFlags |= PROC_ON_SPELL_CRIT_HIT;
-    }
-    sp = CheckAndReturnSpellEntry(12867);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[0] = 12721;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 12868 in spell.dbc !?
-        sp->procFlags |= PROC_ON_SPELL_CRIT_HIT;
-    }
-
-    // Warrior - Improved Hamstring Rank 1
-    sp = CheckAndReturnSpellEntry(12289);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 23694;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 23694 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-    }
-    // Warrior - Improved Hamstring Rank 2
-    sp = CheckAndReturnSpellEntry(12668);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 23694;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 23694 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-    }
-    // Warrior - Improved Hamstring Rank 3
-    sp = CheckAndReturnSpellEntry(23695);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 23694;          // DankoDJ: sp->EffectTriggerSpell[0] is alread 23694 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-    }
-
-    // Warrior - Retaliation
-    sp = CheckAndReturnSpellEntry(20230);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 22858; //evil , but this is good for us :D
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM; //add procflag here since this was not processed with the others !
-    }
-
-    // Warrior - Second Wind should trigger on self
-    sp = CheckAndReturnSpellEntry(29841);
-    if (sp != NULL)
-        sp->procFlags |= PROC_TARGET_SELF;
-
-    sp = CheckAndReturnSpellEntry(29842);
-    if (sp != NULL)
-        sp->procFlags |= PROC_TARGET_SELF;
-
-    // Warrior - Sudden Death Rank 1
-    sp = CheckAndReturnSpellEntry(29723);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-    }
-
-    // Warrior - Sudden Death Rank 2
-    sp = CheckAndReturnSpellEntry(29725);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-    }
-
-    // Warrior - Sudden Death Rank 3
-    sp = CheckAndReturnSpellEntry(29724);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-    }
 
     // Warrior - Overpower Rank 1
     sp = CheckAndReturnSpellEntry(7384);
@@ -1838,82 +1571,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    // Warrior - Bloodsurge
-    sp = CheckAndReturnSpellEntry(46913);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // DankoDJ: original just PROC_ON_CAST_SPELL
-    }
-    sp = CheckAndReturnSpellEntry(46914);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // DankoDJ: original just PROC_ON_CAST_SPELL
-    }
-    sp = CheckAndReturnSpellEntry(46915);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;  // DankoDJ: original just PROC_ON_CAST_SPELL
-    }
-
-    // Warrior - Furious Attacks
-    sp = CheckAndReturnSpellEntry(46910);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->custom_proc_interval = 7000;
-    }
-    sp = CheckAndReturnSpellEntry(46911);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->custom_proc_interval = 5000;
-    }
-
-    // Warrior - Enrage Procflags
-    sp = CheckAndReturnSpellEntry(12317);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
-    sp = CheckAndReturnSpellEntry(13045);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
-    sp = CheckAndReturnSpellEntry(13046);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
-    sp = CheckAndReturnSpellEntry(13047);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
-    sp = CheckAndReturnSpellEntry(13048);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM | PROC_ON_SPELL_HIT_VICTIM;
-
-    // Remove the charges only on melee attacks
-    sp = CheckAndReturnSpellEntry(12880);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-    sp = CheckAndReturnSpellEntry(14201);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-    sp = CheckAndReturnSpellEntry(14202);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-    sp = CheckAndReturnSpellEntry(14203);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-    sp = CheckAndReturnSpellEntry(14204);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-
-    // Warrior - Blood Craze Procflags
-    sp = CheckAndReturnSpellEntry(16487);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM;
-    sp = CheckAndReturnSpellEntry(16489);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM;
-    sp = CheckAndReturnSpellEntry(16492);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM;
-
     // Warrior - Bloodthirst new version is ok but old version is wrong from now on :(
     sp = CheckAndReturnSpellEntry(23881);
     if (sp != NULL)
@@ -1961,31 +1618,6 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_NULL;
     }
 
-    // Warrior - Improved Berserker Rage
-    sp = CheckAndReturnSpellEntry(20500);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    sp = CheckAndReturnSpellEntry(20501);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-
-    // Warrior - Unbridled Wrath
-    sp = CheckAndReturnSpellEntry(12322);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);
-    sp = CheckAndReturnSpellEntry(12999);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);
-    sp = CheckAndReturnSpellEntry(13000);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);
-    sp = CheckAndReturnSpellEntry(13001);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);
-    sp = CheckAndReturnSpellEntry(13002);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);
-
     // Warrior - Heroic Fury
     sp = CheckAndReturnSpellEntry(60970);
     if (sp != NULL)
@@ -1996,57 +1628,6 @@ void ApplyNormalFixes()
     ////////////////////////////////////////////////////////////
     // Protection
 
-    // Sword and Board Rank 1
-    sp = CheckAndReturnSpellEntry(46951);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Sword and Board Rank 2
-    sp = CheckAndReturnSpellEntry(46952);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Sword and Board Rank 3
-    sp = CheckAndReturnSpellEntry(46953);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Safeguard Rank 1
-    sp = CheckAndReturnSpellEntry(46945);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Safeguard Rank 2
-    sp = CheckAndReturnSpellEntry(46949);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Improved Defensive Stance Rank 1
-    sp = CheckAndReturnSpellEntry(29593);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_DODGE_VICTIM | PROC_ON_BLOCK_VICTIM;
-
-    // Improved Defensive Stance Rank 2
-    sp = CheckAndReturnSpellEntry(29594);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_DODGE_VICTIM | PROC_ON_BLOCK_VICTIM;
-
-    // Improved Revenge Rank 1
-    sp = CheckAndReturnSpellEntry(12797);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 12798;
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-    }
-
-    // Improved Revenge Rank 2
-    sp = CheckAndReturnSpellEntry(12799);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 12798;
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-    }
-
     // Intervene  Ranger: stop attack
     sp = CheckAndReturnSpellEntry(3411);
     if (sp != NULL)
@@ -2054,109 +1635,11 @@ void ApplyNormalFixes()
         sp->Attributes |= ATTRIBUTES_STOP_ATTACK;
     }
 
-    // Gag Order Rank 1
-    sp = CheckAndReturnSpellEntry(12311);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 18498;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 18498 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    // Gag Order Rank 2
-    sp = CheckAndReturnSpellEntry(12958);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 18498;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 18498 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
     //////////////////////////////////////////
     // PALADIN                                //
     //////////////////////////////////////////
 
     // Insert paladin spell fixes here
-
-    //Paladin - Judgement of Command
-    sp = CheckAndReturnSpellEntry(20467);
-    if (sp != NULL)
-        sp->procChance = 50;
-
-    //Paladin - Judgement of Corruption
-    sp = CheckAndReturnSpellEntry(53733);
-    if (sp != NULL)
-        sp->procChance = 50;
-
-    //Paladin - Judgement of Light
-    sp = CheckAndReturnSpellEntry(20185);
-    if (sp != NULL)
-        sp->procChance = 50;
-
-    //Paladin - Judgement of Justice
-    sp = CheckAndReturnSpellEntry(20184);
-    if (sp != NULL)
-        sp->procChance = 50;
-
-    //Paladin - Judgement of Righteousness
-    sp = CheckAndReturnSpellEntry(20187);
-    if (sp != NULL)
-        sp->procChance = 50;
-
-    //Paladin - Judgement of Vengeance
-    sp = CheckAndReturnSpellEntry(31804);
-    if (sp != NULL)
-        sp->procChance = 50;
-
-    //Paladin - Judgement of Wisdom
-    sp = CheckAndReturnSpellEntry(20186);
-    if (sp != NULL)
-        sp->procChance = 50;
-
-    //Paladin - Seal of Command
-    sp = CheckAndReturnSpellEntry(20375);
-    if (sp != NULL)
-        sp->custom_proc_interval = 3000;
-
-    //Paladin - Seal of Corruption
-    sp = CheckAndReturnSpellEntry(53736);
-    if (sp != NULL)
-        sp->custom_proc_interval = 3000;
-
-    //Paladin - Seal of Light
-    sp = CheckAndReturnSpellEntry(20165);
-    if (sp != NULL)
-        sp->custom_proc_interval = 3000;
-
-    //Paladin - Seal of Justice
-    sp = CheckAndReturnSpellEntry(20164);
-    if (sp != NULL)
-        sp->custom_proc_interval = 3000;
-
-    //Paladin - Seal of Righteousness
-    sp = CheckAndReturnSpellEntry(21084);
-    if (sp != NULL)
-        sp->custom_proc_interval = 3000;
-
-    //Paladin - Seal of Vengeance
-    sp = CheckAndReturnSpellEntry(31801);
-    if (sp != NULL)
-        sp->custom_proc_interval = 3000;
-
-    //Paladin - Seal of Wisdom
-    sp = CheckAndReturnSpellEntry(20166);
-    if (sp != NULL)
-        sp->custom_proc_interval = 3000;
-
-    sp = CheckAndReturnSpellEntry(20056);   //Rank 2
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT;
-    }
-
-    sp = CheckAndReturnSpellEntry(20057);   //Rank 3
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT;
-    }
 
     //Paladin - Seal of Command - Holy damage, but melee mechanics (crit damage, chance, etc)
     sp = CheckAndReturnSpellEntry(20424);
