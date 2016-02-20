@@ -3427,49 +3427,6 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
     }
 
-    //warlock - soul leech
-    sp = CheckAndReturnSpellEntry(30293);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA; //aura
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 30294;
-        sp->procFlags = uint32(PROC_ON_CAST_SPELL | PROC_TARGET_SELF);
-    }
-    sp = CheckAndReturnSpellEntry(30295);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA; //aura
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 30294;
-        sp->procFlags = uint32(PROC_ON_CAST_SPELL | PROC_TARGET_SELF);
-    }
-    sp = CheckAndReturnSpellEntry(30296);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA; //aura
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 30294;
-        sp->procFlags = uint32(PROC_ON_CAST_SPELL | PROC_TARGET_SELF);
-    }
-
-    //warlock - Pyroclasm
-    sp = CheckAndReturnSpellEntry(18073);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_NULL; //delete this override effect :P
-        sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
-        sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procChance = 13; //god, save us from fixed values !
-    }
-    sp = CheckAndReturnSpellEntry(18096);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_NULL; //delete this override effect :P
-        sp->EffectTriggerSpell[1] = 18093; //trigger spell was wrong :P
-        sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-        sp->procChance = 26; //god, save us from fixed values !
-    }
     //Warlock Chaos bolt
     sp = CheckAndReturnSpellEntry(50796);
     if (sp != NULL)
@@ -3511,27 +3468,6 @@ void ApplyNormalFixes()
         }
     }
 
-    //Backdraft Rank 1
-    sp = CheckAndReturnSpellEntry(47258);
-    if (sp != NULL)
-    {
-        sp->procFlags = uint32(PROC_TARGET_SELF | PROC_ON_ANY_HOSTILE_ACTION);
-    }
-
-    //Backdraft Rank 2
-    sp = CheckAndReturnSpellEntry(47259);
-    if (sp != NULL)
-    {
-        sp->procFlags = uint32(PROC_TARGET_SELF | PROC_ON_ANY_HOSTILE_ACTION);
-    }
-
-    //Backdraft Rank 3
-    sp = CheckAndReturnSpellEntry(47260);
-    if (sp != NULL)
-    {
-        sp->procFlags = uint32(PROC_TARGET_SELF | PROC_ON_ANY_HOSTILE_ACTION);
-    }
-
     //////////////////////////////////////////
     // DRUID                                //
     //////////////////////////////////////////
@@ -3541,65 +3477,6 @@ void ApplyNormalFixes()
     ////////////////////////////////////////////////////////////
     // Balance
     ////////////////////////////////////////////////////////////
-
-    // Druid - Nature's Grace
-    sp = CheckAndReturnSpellEntry(16880);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-
-    sp = CheckAndReturnSpellEntry(61345);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-
-    sp = CheckAndReturnSpellEntry(61346);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-
-    // Druid - Earth and Moon
-    sp = CheckAndReturnSpellEntry(48506);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    sp = CheckAndReturnSpellEntry(48510);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    sp = CheckAndReturnSpellEntry(48511);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Druid - Nature's Grasp //sp->AuraInterruptFlags = 0; //we remove it on proc or timeout
-    sp = CheckAndReturnSpellEntry(16689);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
-
-    sp = CheckAndReturnSpellEntry(16810);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
-
-    sp = CheckAndReturnSpellEntry(16811);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
-
-    sp = CheckAndReturnSpellEntry(16812);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
-
-    sp = CheckAndReturnSpellEntry(16813);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
-
-    sp = CheckAndReturnSpellEntry(17329);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
-
-    sp = CheckAndReturnSpellEntry(27009);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
-
-    sp = CheckAndReturnSpellEntry(53312);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_REMOVEONUSE;
 
     // Druid - Force of Nature
     sp = CheckAndReturnSpellEntry(33831);
@@ -3612,19 +3489,6 @@ void ApplyNormalFixes()
     ////////////////////////////////////////////////////////////
     //    Feral Combat
     ////////////////////////////////////////////////////////////
-
-    // Druid - Natural Reaction
-    sp = CheckAndReturnSpellEntry(57878);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_DODGE_VICTIM;
-
-    sp = CheckAndReturnSpellEntry(57880);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_DODGE_VICTIM;
-
-    sp = CheckAndReturnSpellEntry(57881);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_DODGE_VICTIM;
 
     // Druid - Infected Wounds
     sp = CheckAndReturnSpellEntry(48483);
@@ -3729,15 +3593,6 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[0] = 22845;
     }
 
-    // Druid - Improved Leader of the Pack
-    sp = CheckAndReturnSpellEntry(34297);
-    if (sp != NULL)
-        sp->custom_proc_interval = 6000;//6 secs
-
-    sp = CheckAndReturnSpellEntry(34300);
-    if (sp != NULL)
-        sp->custom_proc_interval = 6000;//6 secs
-
     // Druid - Primal Fury (talent)
     sp = CheckAndReturnSpellEntry(37116);
     if (sp != NULL)
@@ -3746,24 +3601,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(37117);
     if (sp != NULL)
         sp->RequiredShapeShift = 0;
-
-    // Druid - Blood Frenzy (proc)
-    sp = CheckAndReturnSpellEntry(16954);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-
-    sp = CheckAndReturnSpellEntry(16952);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-
-    // Druid - Primal Fury (proc)
-    sp = CheckAndReturnSpellEntry(16961);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-
-    sp = CheckAndReturnSpellEntry(16958);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
 
     // Druid - Predatory Strikes
     uint32 mm = DecimalToMask(FORM_BEAR) | DecimalToMask(FORM_DIREBEAR) | DecimalToMask(FORM_MOONKIN) | DecimalToMask(FORM_CAT);
@@ -3787,38 +3624,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(34123);
     if (sp != NULL)
         sp->custom_NameHash = 0;*/
-
-    // Druid - Omen of Clarity
-    sp = CheckAndReturnSpellEntry(16864);
-    if (sp != NULL)
-    {
-        sp->procChance = 6; //procchance dynamic. 3ppm
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_CAST_SPELL;
-    }
-
-    // Druid - Natural Perfection
-    sp = CheckAndReturnSpellEntry(33881);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
-    sp = CheckAndReturnSpellEntry(33882);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
-    sp = CheckAndReturnSpellEntry(33883);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CRIT_HIT_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM;
-
-    // Druid - Intensity
-    sp = CheckAndReturnSpellEntry(17106);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    sp = CheckAndReturnSpellEntry(17107);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    sp = CheckAndReturnSpellEntry(17108);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
 
     // Druid - Natural Shapeshifter
     sp = CheckAndReturnSpellEntry(16833);
@@ -3996,14 +3801,6 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_MOONFIRE;
     }
 
-    //Relic - Idol of Terror
-    sp = CheckAndReturnSpellEntry(43737);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 10001; //block proc when is already active.. (Primal Instinct duration = 10 sec)
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
-
     //Primal Instinct - Idol of Terror proc
     sp = CheckAndReturnSpellEntry(43738);
     if (sp != NULL)
@@ -4013,35 +3810,11 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[1] = SPELL_HASH_MANGLE__BEAR_;
     }
 
-    //Tome of Fiery Redemption
-    sp = CheckAndReturnSpellEntry(37197);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
     //Thunderfury
     sp = CheckAndReturnSpellEntry(21992);
     if (sp != NULL)
     {
         sp->EffectImplicitTargetA[2] = EFF_TARGET_ALL_ENEMIES_AROUND_CASTER; // cebernic: for enemies not self
-    }
-
-    //Energized
-    sp = CheckAndReturnSpellEntry(43750);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    //Spell Haste Trinket
-    sp = CheckAndReturnSpellEntry(33297);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-
-    //Enchant Weapon - Deathfrost
-    sp = CheckAndReturnSpellEntry(46662);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
     }
 
     // Sigil of the Unfaltering Knight
@@ -4095,115 +3868,6 @@ void ApplyNormalFixes()
         sp->custom_proc_interval = 45000;
     }
 
-    // Vestige of Haldor
-    sp = CheckAndReturnSpellEntry(60306);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-    }
-
-    // Forge Ember
-    sp = CheckAndReturnSpellEntry(60473);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    // Mirror of Truth
-    sp = CheckAndReturnSpellEntry(33648);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-    }
-
-    // Majestic Dragon Figurine
-    sp = CheckAndReturnSpellEntry(60524);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    // Flow of Knowledge
-    sp = CheckAndReturnSpellEntry(62114);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    // Embrace of the Spider
-    sp = CheckAndReturnSpellEntry(60490);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    // Anvil of Titans
-    sp = CheckAndReturnSpellEntry(62115);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-    }
-
-    // Soul of the Dead
-    sp = CheckAndReturnSpellEntry(60537);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-    }
-
-    // Illustration of the Dragon Soul
-    sp = CheckAndReturnSpellEntry(60485);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    // Grim Toll
-    sp = CheckAndReturnSpellEntry(60436);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-    }
-
-    // Fury of the Five Flights
-    sp = CheckAndReturnSpellEntry(60313);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-    }
-
-    // Bandit's Insignia
-    sp = CheckAndReturnSpellEntry(60442);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-    }
-
-    // Meteorite Whetstone
-    sp = CheckAndReturnSpellEntry(60301);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 45000;
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-    }
-
-    // Sonic Booster
-    sp = CheckAndReturnSpellEntry(54707);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 60000;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-    }
-
     //Totem of the Third Wind - bad range
     SpellEntry* sp_healing_wave = CheckAndReturnSpellEntry(8004);
     sp = CheckAndReturnSpellEntry(34132);
@@ -4227,54 +3891,11 @@ void ApplyNormalFixes()
         sp->rangeIndex = sp_healing_wave->rangeIndex;
     }
 
-    //Moonkin Starfire Bonus
-    sp = CheckAndReturnSpellEntry(46832);
-    if (sp != NULL)
-    {
-        sp->procFlags = uint32(PROC_ON_CAST_SPELL | PROC_TARGET_SELF);
-    }
-
     // Eye of Acherus, our phase shift mode messes up the control :/
     sp = CheckAndReturnSpellEntry(51852);
     if (sp != NULL)
         sp->Effect[0] = SPELL_EFFECT_NULL;
 
-    // Band of the Eternal Sage
-    sp = CheckAndReturnSpellEntry(35083);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Band of the Eternal Restorer
-    sp = CheckAndReturnSpellEntry(35086);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Ashtongue Talisman of Shadows
-    sp = CheckAndReturnSpellEntry(40478);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Ashtongue Talisman of Swiftness
-    sp = CheckAndReturnSpellEntry(40485);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Ashtongue Talisman of Valor
-    sp = CheckAndReturnSpellEntry(40458);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    // Memento of Tyrande
-    sp = CheckAndReturnSpellEntry(37655);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    // Ashtongue Talisman of Insight
-    sp = CheckAndReturnSpellEntry(40482);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
 
     //Ashtongue Talisman of Equilibrium
     // DankoDJ: To set the same value several times makes no sense!
@@ -4378,212 +3999,6 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetB[2] = 0;
     }
 
-    // Dragonspine Trophy
-    sp = CheckAndReturnSpellEntry(34774);
-    if (sp != NULL)
-    {
-        sp->procChance = 6;
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-        sp->custom_proc_interval = 30000;
-    }
-
-    //Serpent-Coil Braid
-    sp = CheckAndReturnSpellEntry(37447);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procChance = 100;
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectTriggerSpell[0] = 37445;
-        sp->maxstack = 1;
-    }
-
-    // Band of the Eternal Champion
-    sp = CheckAndReturnSpellEntry(35080);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
-        sp->custom_proc_interval = 60000;
-    }
-    // Band of the Eternal Sage
-    sp = CheckAndReturnSpellEntry(35083);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 60000;
-    }
-    // Band of the Eternal Restorer
-    sp = CheckAndReturnSpellEntry(35086);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 60000;
-    }
-    // Band of the Eternal Defender
-    sp = CheckAndReturnSpellEntry(35077);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_SPELL_HIT_VICTIM | PROC_ON_RANGED_ATTACK_VICTIM;
-        sp->custom_proc_interval = 60000;
-    }
-
-    //Item Set: Malorne Harness
-    sp = CheckAndReturnSpellEntry(37306);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
-    }
-    sp = CheckAndReturnSpellEntry(37311);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
-    }
-
-    //Item Set: Deathmantle
-    sp = CheckAndReturnSpellEntry(37170);
-    if (sp != NULL)
-    {
-        sp->procChance = 4;
-        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
-    }
-
-    //Item Set: Netherblade
-    sp = CheckAndReturnSpellEntry(37168);
-    if (sp != NULL)
-    {
-        //sp->procFlags = PROC_ON_CAST_SPELL; Need new flag - PROC_ON_FINISH_MOVE;
-    }
-
-    //Item Set: Tirisfal Regalia
-    sp = CheckAndReturnSpellEntry(37443);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-    }
-
-    //Item Set: Avatar Regalia
-    sp = CheckAndReturnSpellEntry(37600);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    //Item Set: Incarnate Raiment
-    sp = CheckAndReturnSpellEntry(37568);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    //Item Set: Voidheart Raiment
-    sp = CheckAndReturnSpellEntry(37377);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 20;
-        sp->EffectTriggerSpell[0] = 37379;
-    }
-    sp = CheckAndReturnSpellEntry(39437);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 20;
-        sp->EffectTriggerSpell[0] = 37378;
-    }
-
-    //Item Set: Cataclysm Raiment
-    sp = CheckAndReturnSpellEntry(37227);
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 60000;
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-    }
-
-    //Item Set: Cataclysm Regalia
-    sp = CheckAndReturnSpellEntry(37228);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-    sp = CheckAndReturnSpellEntry(37237);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-    }
-
-    //Item Set: Cataclysm Harness
-    sp = CheckAndReturnSpellEntry(37239);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
-    }
-
-    //Item Set: Cyclone Regalia
-    sp = CheckAndReturnSpellEntry(37213);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-    }
-
-    //Item Set: Lightbringer Battlegear
-    sp = CheckAndReturnSpellEntry(38427);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
-    }
-
-    //Item Set: Crystalforge Battlegear
-    sp = CheckAndReturnSpellEntry(37195);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    //Item Set: Crystalforge Raiment
-    sp = CheckAndReturnSpellEntry(37189);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_SPELL_CRIT_HIT;
-        sp->custom_proc_interval = 60000;
-    }
-    sp = CheckAndReturnSpellEntry(37188);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-    }
-
-    //Item Set: Destroyer Armor
-    sp = CheckAndReturnSpellEntry(37525);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM;
-    }
-
-    //Item Set: Warbringer Armor
-    sp = CheckAndReturnSpellEntry(37516);
-    if (sp != NULL)
-    {
-        sp->procChance = 100;
-    }
-
-    //Item Set: Shadowcraft Armor & Darkmantle Armor
-    sp = CheckAndReturnSpellEntry(27787);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK_VICTIM;
-        sp->procChance = 7;
-    }
-
-    // Item Set: Warlock Tier 7 Heroes' Plagueheart Garb
-    sp = CheckAndReturnSpellEntry(60172);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 100;
-    }
-
     //all Drums
     sp = CheckAndReturnSpellEntry(35474);
     if (sp != NULL)
@@ -4600,14 +4015,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(35478);
     if (sp != NULL)
         sp->RequiredShapeShift = 0;
-
-    //this an on equip item spell(2824) :  ice arrow(29501)
-    sp = CheckAndReturnSpellEntry(29501);
-    if (sp != NULL)
-    {
-        sp->procChance = 30;//some say it is triggered every now and then
-        sp->procFlags = PROC_ON_RANGED_ATTACK;
-    }
 
     //Purify helboar meat
     sp = CheckAndReturnSpellEntry(29200);
@@ -4652,21 +4059,6 @@ void ApplyNormalFixes()
         sp->InterruptFlags |= ~(CAST_INTERRUPT_ON_MOVEMENT);
     }
 
-    //Swordguard Embroidery
-    sp = CheckAndReturnSpellEntry(55776);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;       // DankoDJ: original 20
-        sp->custom_proc_interval = 60000;
-    }
-
-    //Darkglow Embroidery
-    sp = CheckAndReturnSpellEntry(55768);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 60000;
-    }
     ///////////////////////////////////////////////////////////////
     // Trinket Fixes        Please keep nice and clean :)
     ///////////////////////////////////////////////////////////////
@@ -4679,10 +4071,6 @@ void ApplyNormalFixes()
         sp->Dspell_coef_override = 0;    //DD&DH
         sp->OTspell_coef_override = 0;    //HOT&DOT
     }
-    //Barricade of Eternity
-    sp = CheckAndReturnSpellEntry(40475);        //    http://www.wowhead.com/?item=40475
-    if (sp != NULL)
-        sp->procChance = 50;    // Sets change to proc
 
     //Figurine - Shadowsong Panther
     sp = CheckAndReturnSpellEntry(46784);        //    http://www.wowhead.com/?item=35702
@@ -4694,122 +4082,19 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
 
-    // Deadly Throw Interrupt
-    sp = CheckAndReturnSpellEntry(32748);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_RANGED_ATTACK | PROC_ON_CAST_SPELL;
-    }
-
-    //Sundial of the Exiled
-    sp = CheckAndReturnSpellEntry(60063);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 60064;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 60064 in spell.dbc !?
-        sp->procFlags = PROC_ON_SPELL_HIT;
-        sp->custom_proc_interval = 45000;
-    }
-
-    //Je'Tze's Bell
-    sp = CheckAndReturnSpellEntry(49622);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 49623;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 49623 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 45000;
-    }
-
-    //Tears of Bitter Anguish
-    sp = CheckAndReturnSpellEntry(58901);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 58904;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 58904 in spell.dbc !?
-        sp->procFlags = PROC_ON_RANGED_CRIT_ATTACK | PROC_ON_CRIT_ATTACK;
-        sp->custom_proc_interval = 60000;
-    }
-
-    //Embrace of the Spider
-    sp = CheckAndReturnSpellEntry(60490);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 60492;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 60492 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 30000;
-    }
-
-    //Dying Curse
-    sp = CheckAndReturnSpellEntry(60493);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 60494;       // DankoDJ: sp->EffectTriggerSpell[0] is alread 60494 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 45000;
-    }
 
     //Fury of the Five Flights
     sp = CheckAndReturnSpellEntry(60313);
     if (sp != NULL)
     {
-        sp->EffectTriggerSpell[1] = 60314;      // DankoDJ: sp->EffectTriggerSpell[0] is alread 60314 in spell.dbc !?
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK;
         sp->maxstack = 20;
     }
 
-    //Vial of the Sunwell
-    sp = CheckAndReturnSpellEntry(45059);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
     //Pendant of the Violet Eye
-    sp = CheckAndReturnSpellEntry(29601);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
     sp = CheckAndReturnSpellEntry(35095);
     if (sp != NULL)
     {
         sp->custom_self_cast_only = true;
-        sp->procChance = 100;
-    }
-
-    sp = CheckAndReturnSpellEntry(38332);        // Ribbon of Sacrifice
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    sp = CheckAndReturnSpellEntry(40475);        // Black temple melee trinket
-    if (sp != NULL)
-        sp->procChance = 5;
-
-    sp = CheckAndReturnSpellEntry(32642);        // Sporegarr - Petrified Lichen Guard
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_BLOCK_VICTIM;
-    }
-
-    //Flow of Knowledge
-    sp = CheckAndReturnSpellEntry(62114);
-    if (sp != NULL)
-    {
-        sp->EffectTriggerSpell[1] = 60064;      // DankoDJ: EffectTriggerSpell[0] is 60064 in spell.dbc !?
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 45000;
-    }
-
-    //Majestic Dragon Figurine
-    sp = CheckAndReturnSpellEntry(60524);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 100;
-    }
-
-    //Illustration of the Dragon Soul
-    sp = CheckAndReturnSpellEntry(60485);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_proc_interval = 100;
     }
 
     //////////////////////////////////////////
@@ -4870,25 +4155,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->MaxTargets = 5;
-    }
-
-    //Acidic Wound
-    sp = CheckAndReturnSpellEntry(40484);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;   // DankoDJ: original 20
-    }
-
-    //Inject Poison
-    sp = CheckAndReturnSpellEntry(44599);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;   // DankoDJ: original 20
-    }
-    sp = CheckAndReturnSpellEntry(46046);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;   // DankoDJ: original 20
     }
 
     //Doom
