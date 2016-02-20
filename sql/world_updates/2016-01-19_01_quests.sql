@@ -1,7 +1,7 @@
 --
 -- Update Quest: Massacre At Light's Point
 --
-UPDATE `quests` SET `ReqKillMobOrGOCount1` = 100;
+UPDATE `quests` SET `ReqKillMobOrGOCount1` = 100 WHERE `entry` = 12701;
 
 --
 -- Update world db version
