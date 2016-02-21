@@ -560,6 +560,8 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
     for (auto passengerGuid : m_passengers)
     {
         auto passenger = objmgr.GetPlayer(passengerGuid);
+
+        passenger->GetSession()->SendPacket(&packet);
         bool teleport_successful = passenger->Teleport(LocationVector(x, y, z, passenger->GetOrientation()), this->GetMapMgr());
         if (!teleport_successful)
         {
@@ -571,8 +573,6 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
             {
                 passenger->AddUnitMovementFlag(MOVEFLAG_TRANSPORT);
             }
-
-            passenger->GetSession()->SendPacket(&packet);
         }
     }
 
