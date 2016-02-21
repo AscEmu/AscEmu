@@ -2578,12 +2578,12 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     auto transport = this->GetTransport();
     if (!transport)
     {
-        ss << "," << 0 << ",'0','0','0'";
+        ss << "," << 0 << ",'0','0','0','0'";
     }
     else
     {
         ss << "," << transport->GetEntry();
-        ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "'";
+        ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "','" << GetTransPositionO() << "'";
     }
     ss << ",'";
 
@@ -2857,7 +2857,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    const uint32 fieldcount = 93;
+    const uint32 fieldcount = 94;
 
     if (result->GetFieldCount() != fieldcount)
     {
@@ -3218,6 +3218,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transporter_info.position.x = get_next_field.GetFloat();
     obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
     obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
+    obj_movement_info.transporter_info.position.o = get_next_field.GetFloat();
 
     LoadSpells(results[13].result);
 
