@@ -1481,9 +1481,6 @@ void WorldSession::SendInventoryList(Creature* unit)
                         continue;
 
                     int8 Slot = _player->GetItemInterface()->GetItemSlotByType(curItem->InventoryType);
-                    if (Slot == ITEM_NO_SLOT_AVAILABLE)
-                        continue;
-
                     if (_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, curItem, true, true))
                         continue;
                 }
