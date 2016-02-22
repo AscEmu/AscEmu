@@ -747,6 +747,10 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
 
     if (anim)
         pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);
+
+    if (proto->NPCFLags)
+        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, proto->NPCFLags);
+
     m_creatureSetMutex.Acquire();
     m_NPCPassengerSet.insert(pCreature);
     m_creatureSetMutex.Release();
