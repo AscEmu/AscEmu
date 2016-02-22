@@ -80,10 +80,10 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
     }
     LOG_DEBUG("WORLD: got MSG_MOVE_WORLDPORT_ACK.");
 
-    if (_player->m_CurrentTransporter && _player->GetMapId() != _player->m_CurrentTransporter->GetMapId())
+    if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
     {
         /* wow, our pc must really suck. */
-        Transporter* pTrans = _player->m_CurrentTransporter;
+        Transporter* pTrans = _player->GetTransport();
 
         float c_tposx = pTrans->GetPositionX() + _player->GetTransPositionX();
         float c_tposy = pTrans->GetPositionY() + _player->GetTransPositionY();
@@ -651,7 +651,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
         Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(mover->obj_movement_info.transporter_info.guid));
         if (transporter != NULL)
-            transporter->RemovePassenger(mover);
+            transporter->RemovePassenger(static_cast<Player*>(mover));
 
         mover->obj_movement_info.transporter_info.guid = 0;
         _player->SpeedCheatReset();
@@ -666,7 +666,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
             {
                 Transporter *transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(movement_info.transporter_info.transGuid));
                 if (transporter != NULL)
-                    transporter->AddPassenger(mover);
+                    transporter->AddPassenger(static_cast<Player*>(mover));
 
                 /* set variables */
                 mover->obj_movement_info.transporter_info.guid = movement_info.transporter_info.transGuid;
@@ -674,7 +674,13 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 mover->obj_movement_info.transporter_info.position.x = movement_info.transporter_info.position.x;
                 mover->obj_movement_info.transporter_info.position.y = movement_info.transporter_info.position.y;
                 mover->obj_movement_info.transporter_info.position.z = movement_info.transporter_info.position.z;
+                mover->obj_movement_info.transporter_info.position.o = movement_info.transporter_info.position.o;
 
+                mover->m_transportData.transportGuid = movement_info.transporter_info.transGuid;
+                mover->m_transportData.relativePosition.x = movement_info.transporter_info.position.x;
+                mover->m_transportData.relativePosition.y = movement_info.transporter_info.position.y;
+                mover->m_transportData.relativePosition.z = movement_info.transporter_info.position.z;
+                mover->m_transportData.relativePosition.o = movement_info.transporter_info.position.o;
             }
             else
             {
@@ -683,6 +689,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                 mover->obj_movement_info.transporter_info.position.x = movement_info.transporter_info.position.x;
                 mover->obj_movement_info.transporter_info.position.y = movement_info.transporter_info.position.y;
                 mover->obj_movement_info.transporter_info.position.z = movement_info.transporter_info.position.z;
+                mover->obj_movement_info.transporter_info.position.o = movement_info.transporter_info.position.o;
+
+                mover->m_transportData.relativePosition.x = movement_info.transporter_info.position.x;
+                mover->m_transportData.relativePosition.y = movement_info.transporter_info.position.y;
+                mover->m_transportData.relativePosition.z = movement_info.transporter_info.position.z;
+                mover->m_transportData.relativePosition.o = movement_info.transporter_info.position.o;
             }
         }
     }
@@ -718,7 +730,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
     {
 
-        if (_player->m_CurrentTransporter == NULL)
+        if (!_player->GetTransport())
         {
             if (!_player->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o))
             {
@@ -897,7 +909,6 @@ void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
     _player->SafeTeleport(_player->GetMapId(), _player->GetInstanceID(), vec);
 }
 
-
 void MovementInfo::init(WorldPacket& data)
 {
     transporter_info.transGuid = 0;
@@ -913,7 +924,7 @@ void MovementInfo::init(WorldPacket& data)
     if (flags & MOVEFLAG_TRANSPORT)
     {
         data >> transporter_info.transGuid;
-        data >> transporter_info.position.y;
+        data >> transporter_info.position.x;
         data >> transporter_info.position.y;
         data >> transporter_info.position.z;
         data >> transporter_info.position.o;
@@ -951,10 +962,10 @@ void MovementInfo::write(WorldPacket& data)
     if (flags & MOVEFLAG_TRANSPORT)
     {
         data << transporter_info.transGuid;
-        data >> transporter_info.position.y;
-        data >> transporter_info.position.y;
-        data >> transporter_info.position.z;
-        data >> transporter_info.position.o;
+        data << transporter_info.position.x;
+        data << transporter_info.position.y;
+        data << transporter_info.position.z;
+        data << transporter_info.position.o;
         data << transporter_info.time;
         data << transporter_info.time2;
     }

@@ -498,7 +498,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
 
         // Set typedef's
-        typedef std::unordered_map<uint32, Group*>                        GroupMap;
+        typedef std::unordered_map<uint32, Group*>                      GroupMap;
+        typedef std::set<Transporter*>                                      TransporterSet;
 
         // HashMap typedef's
         typedef std::unordered_map<uint64, Item*>                       ItemMap;
@@ -521,9 +522,10 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::map<int32, std::list<ItemPrototype*>* >               ItemSetContentMap;
         typedef std::map<int32, uint32>               ItemSetDefinedContentMap;
         typedef std::map<uint32, uint32>                                    NpcToGossipTextMap;
-        typedef std::map<uint32, std::set<SpellEntry*> >                         PetDefaultSpellMap;
+        typedef std::map<uint32, std::set<SpellEntry*> >                    PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                              BCEntryStorage;
+        typedef std::map<uint32, TransporterSet>                            TransporterMap;
         typedef std::map<uint32, SpellTargetConstraint*>                  SpellTargetConstraintMap;
         typedef std::map<uint32, CreatureDifficulty*>               CreatureDifficultyMap;
 
@@ -545,6 +547,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         CorpseMap m_corpses;
         Mutex _corpseslock;
         Mutex _TransportLock;
+        Mutex m_creatureSetMutex;
 
         Item* CreateItem(uint32 entry, Player* owner);
         Item* LoadItem(uint32 lowguid);
@@ -686,9 +689,29 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         uint32 GenerateTicketID();
         uint32 GenerateEquipmentSetID();
 
-        void LoadTransporters();
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        /// Transport Handler                                                                     ///
+        /////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Loads Transporters on Continents
+        void LoadTransports();
+
+        // Load Transport in Instance	
+        Transporter*LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period);
+
+        // Unloads Transporter from MapMgr
+        void UnloadTransportFromInstance(Transporter *t);
+
+        // Add Transporter
+        void AddTransport(Transporter* transport);
+ 
+        TransportMap m_Transports;
+
+        TransporterSet m_Transporters;
+        TransporterMap m_TransportersByMap;
+        TransporterMap m_TransportersByInstanceIdMap;
+
         void ProcessGameobjectQuests();
-        void AddTransport(Transporter* pTransporter);
 
         void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
@@ -719,6 +742,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         uint32 GenerateGameObjectSpawnID();
 
         Transporter* GetTransporter(uint32 guid);
+        Transporter* GetTransportOrThrow(uint32 guid);
         Transporter* GetTransporterByEntry(uint32 entry);
 
         Charter* CreateCharter(uint32 LeaderGuid, CharterTypes Type);
@@ -891,8 +915,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         /// Corpse Collector
         CorpseCollectorMap mCorpseCollector;
-
-        TransportMap mTransports;
 
         ItemSetContentMap mItemSets;
         ItemSetDefinedContentMap mDefinedItemSets;

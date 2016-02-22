@@ -21,6 +21,25 @@
 
 #include "StdAfx.h"
 
+bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession* session)
+{
+    try
+    {
+        auto me = session->GetPlayerOrThrow();
+
+        SystemMessage(session, "Position: [%f, %f, %f, %f]", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
+        SystemMessage(session, "On transport: %s", me->obj_movement_info.transporter_info.guid != 0 ? "yes" : "no");
+        SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.transporter_info.guid);
+        SystemMessage(session, "Transport relative position: [%f, %f, %f, %f]", me->obj_movement_info.transporter_info.position.x, me->obj_movement_info.transporter_info.position.y, me->obj_movement_info.transporter_info.position.z, me->obj_movement_info.transporter_info.position.o);
+
+        return true;
+    }
+    catch(...)
+    {
+        return false;
+    }
+}
+
 bool ChatHandler::HandleDebugInFrontCommand(const char* args, WorldSession* m_session)
 {
     Object* obj;

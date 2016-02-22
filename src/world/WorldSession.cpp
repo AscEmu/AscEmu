@@ -22,6 +22,7 @@
 #include "Threading/Mutex.h"
 #include "WorldPacket.h"
 #include "StdAfx.h"
+#include <Exceptions/PlayerExceptions.hpp>
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
@@ -300,8 +301,11 @@ void WorldSession::LogoutPlayer(bool Save)
         // part channels
         _player->CleanupChannels();
 
-        if (_player->m_CurrentTransporter != NULL)
-            _player->m_CurrentTransporter->RemovePlayer(_player);
+        auto transport = _player->GetTransport();
+        if (transport != nullptr)
+        {
+            transport->RemovePassenger(_player);
+        }
 
         // cancel current spell
         if (_player->m_currentSpell != NULL)
@@ -437,6 +441,15 @@ void WorldSession::SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error)
     data << itemid;
     data << error;
     SendPacket(&data);
+}
+
+Player* WorldSession::GetPlayerOrThrow()
+{
+    Player* player = this->GetPlayer();
+    if (player == nullptr)
+        throw AscEmu::Exception::PlayerNotFoundException();
+    
+    return player;
 }
 
 void WorldSession::LoadSecurity(std::string securitystring)

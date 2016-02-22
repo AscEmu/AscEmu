@@ -4,14 +4,15 @@
 project(world)
 
 set(sources
-    Commands/AccountCommands.cpp
-    Commands/TicketCommands.cpp
-    DBC/DBCStores.cpp
-    DBC/DBCLoader.cpp
-    DBC/DBCRecord.cpp
-    DBC/DBCSQL.cpp
-    AchievementMgr.cpp 
-    CollideInterface.cpp 
+   Commands/AccountCommands.cpp
+   Commands/TransporterCommands.cpp
+   Commands/TicketCommands.cpp
+   DBC/DBCStores.cpp
+   DBC/DBCLoader.cpp
+   DBC/DBCRecord.cpp
+   DBC/DBCSQL.cpp
+   AchievementMgr.cpp 
+   CollideInterface.cpp 
 	VoiceChatHandler.cpp 
 	DayWatcherThread.cpp 
 	CommonScheduleThread.cpp 
@@ -287,6 +288,7 @@ set(headers
 	TaxiMgr.h
 	TerrainMgr.h
 	Entities/Summons/TotemSummon.h
+    Transports/TransportSpawn.hpp
 	TransporterHandler.h
 	Unit.h
     UnitDefines.hpp

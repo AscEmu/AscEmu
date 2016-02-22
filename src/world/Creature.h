@@ -52,6 +52,8 @@ class SERVER_DECL Creature : public Unit
 {
     public:
 
+        bool Teleport(const LocationVector& vec, MapMgr* map) override;
+
         Creature(uint64 guid);
         virtual ~Creature();
 

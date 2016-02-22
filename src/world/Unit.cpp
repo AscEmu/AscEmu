@@ -8363,10 +8363,16 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     *data << GetOrientation();
 
     // 0x00000200
-    if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
+    if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
-        if (IsPlayer() && static_cast<Player*>(this)->m_CurrentTransporter)
-            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
+        if (IsPlayer())
+        {
+            auto plr = static_cast<Player*>(this);
+            if (plr->obj_movement_info.IsOnTransport())
+            {
+                obj_movement_info.transporter_info.guid = plr->obj_movement_info.transporter_info.guid;
+            }
+        }
         if (Unit* u = GetVehicleBase())
             obj_movement_info.transporter_info.guid = u->GetGUID();
         *data << obj_movement_info.transporter_info.guid;
@@ -8415,12 +8421,14 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     *data << o;
 
     // 0x00000200
-    if (GetUnitMovementFlags() & MOVEFLAG_TRANSPORT)
+    if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
-        if (IsPlayer() && static_cast<Player*>(this)->m_CurrentTransporter)
-            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_CurrentTransporter->GetGUID();
+        // Code left commented for reference
+        // TODO: Research whether vehicle transport guid is being updated correctly or not (and if not, update it elsewhere and remove this)
+        /*if (IsPlayer() && static_cast<Player*>(this)->m_transport)
+            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->GetGUID();
         if (Unit* u = GetVehicleBase())
-            obj_movement_info.transporter_info.guid = u->GetGUID();
+            obj_movement_info.transporter_info.guid = u->GetGUID();*/
         *data << obj_movement_info.transporter_info.guid;
         *data << GetTransPositionX();
         *data << GetTransPositionY();

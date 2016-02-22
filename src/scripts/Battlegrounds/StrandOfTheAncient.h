@@ -172,8 +172,8 @@ class StrandOfTheAncient : public CBattleground
         GameObject* m_gates[GATE_COUNT];
         GameObject* m_gateSigils[GATE_COUNT];
         GameObject* m_gateTransporters[GATE_COUNT];
-        PassengerMap boat1Crew;
-        PassengerMap boat2Crew;
+        //PassengerMap boat1Crew;
+        //PassengerMap boat2Crew;
         Creature* npc[SOTA_NPCS];
         Creature* canon[SOTA_NUM_CANONS];
         Creature* demolisher[SOTA_NUM_DEMOLISHERS];

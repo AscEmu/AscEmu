@@ -1111,33 +1111,6 @@ bool ChatHandler::HandleResetSpellsCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleGetTransporterTime(const char* args, WorldSession* m_session)
-{
-    //Player* plyr = m_session->GetPlayer();
-    Creature* crt = getSelectedCreature(m_session, false);
-    if (crt == NULL)
-        return false;
-    
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 1000);
-    data << uint32(0x00000102);
-    data << crt->GetNewGUID();
-    data << m_session->GetPlayer()->GetNewGUID();
-    
-    data << uint32(6);
-    data << uint8(1);
-    data << uint32(1);
-    data << uint32(0x40c00000);
-    data << uint32(6);
-    data << uint32(0);
-    data << uint32(0);
-    data << uint32(1);
-    data << uint32(0x000003e8);
-    data << uint32(0);
-    data << uint32(0);
-    m_session->SendPacket(&data);
-    return true;
-}
-
 bool ChatHandler::HandleRemoveAurasCommand(const char* args, WorldSession* m_session)
 {
     Player* plr = getSelectedChar(m_session, true);
@@ -2185,27 +2158,6 @@ bool ChatHandler::HandleNpcReturnCommand(const char* args, WorldSession* m_sessi
 
     sGMLog.writefromsession(m_session, "returned NPC %s, sqlid %u", creature->GetCreatureInfo()->Name, creature->GetSQL_id());
 
-    return true;
-}
-
-bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_session)
-{
-    Transporter* trans = m_session->GetPlayer()->m_CurrentTransporter;
-    if (trans == 0)
-    {
-        RedSystemMessage(m_session, "You must be on a transporter.");
-        return true;
-    }
-
-    uint32 np = args ? atol(args) : 0;
-    if (np == 0)
-    {
-        RedSystemMessage(m_session, "A time in ms must be specified.");
-        return true;
-    }
-
-    trans->SetPeriod(np);
-    BlueSystemMessage(m_session, "Period of %s set to %u.", trans->GetInfo()->name, np);
     return true;
 }
 

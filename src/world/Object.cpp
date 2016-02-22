@@ -199,7 +199,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
             break;
         }
         //The above 3 checks FAIL to identify transports, thus their flags remain 0x58, and this is BAAAAAAD! Later they don't get position x,y,z,o updates, so they appear randomly by a client-calculated path, they always face north, etc... By: VLack
-        if (flags != 0x0352 && IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT && !(static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
+        if (flags != 0x0352 && IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_MO_TRANSPORT && !(static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
             flags = 0x0352;
     }
 
@@ -389,10 +389,16 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2,
 
     if (flags & UPDATEFLAG_LIVING)  //0x20
     {
-        if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
+        /*if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
             flags2 |= MOVEFLAG_TRANSPORT; //0x200
         else if (uThis != NULL && obj_movement_info.transporter_info.guid != 0 && uThis->obj_movement_info.transporter_info.guid != 0)
-            flags2 |= MOVEFLAG_TRANSPORT; //0x200
+            flags2 |= MOVEFLAG_TRANSPORT; //0x200*/
+
+        // Zyres: If a unit has this flag, add it to the update packet, otherwise not.
+        if (pThis && pThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            flags2 |= MOVEFLAG_TRANSPORT;
+        else if (uThis && uThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            flags2 |= MOVEFLAG_TRANSPORT;
 
         if ((pThis != NULL) && pThis->isRooted())
             flags2 |= MOVEFLAG_ROOTED;
@@ -814,7 +820,7 @@ bool Object::SetPosition(float newX, float newY, float newZ, float newOrientatio
     ARCEMU_ASSERT(!isnan(newX) && !isnan(newY) && !isnan(newOrientation));
 
     //It's a good idea to push through EVERY transport position change, no matter how small they are. By: VLack aka. VLsoft
-    if (IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_TRANSPORT)
+    if (IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
         updateMap = true;
 
     //if (m_position.x != newX || m_position.y != newY)
@@ -2231,6 +2237,11 @@ uint32 Object::GetTeam()
     }
 
     return static_cast< uint32 >(-1);
+}
+
+Transporter* Object::GetTransport() const
+{
+    return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

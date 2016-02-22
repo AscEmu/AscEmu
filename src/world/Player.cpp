@@ -64,6 +64,33 @@ static const float crit_to_dodge[MAX_PLAYER_CLASSES] = {
     1.7f       // Druid
 };
 
+bool Player::Teleport(const LocationVector& vec, MapMgr* map)
+{
+    if (map == nullptr)
+        return false;
+
+    if (map->GetPlayer(this->GetLowGUID()))
+    {
+        this->SetPosition(vec);
+    }
+    else
+    {
+        if (map->GetMapId() == 530 && !this->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01))
+        {
+            return false;
+        }
+
+        if (map->GetMapId() == 571 && !this->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_02))
+        {
+            return false;
+        }
+
+        this->SafeTeleport(map, vec);
+    }
+
+    return true;
+}
+
 Player::Player(uint32 guid)
     :
     disableAppear(false),
@@ -134,7 +161,6 @@ Player::Player(uint32 guid)
     bHasBindDialogOpen(false),
     TrackingSpell(0),
     m_CurrentCharm(0),
-    m_CurrentTransporter(NULL),
     // gm stuff
     //m_invincible(false),
     CooldownCheat(false),
@@ -2549,9 +2575,16 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     {
         ss << "0, 0, 0";
     }
-
-    ss << "," << (m_CurrentTransporter ? m_CurrentTransporter->GetEntry() : (uint32)0);
-    ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "'";
+    auto transport = this->GetTransport();
+    if (!transport)
+    {
+        ss << "," << 0 << ",'0','0','0','0'";
+    }
+    else
+    {
+        ss << "," << transport->GetEntry();
+        ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "','" << GetTransPositionO() << "'";
+    }
     ss << ",'";
 
     SaveSpells(bNewCharacter, buf);
@@ -2824,7 +2857,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    const uint32 fieldcount = 93;
+    const uint32 fieldcount = 94;
 
     if (result->GetFieldCount() != fieldcount)
     {
@@ -3185,6 +3218,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transporter_info.position.x = get_next_field.GetFloat();
     obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
     obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
+    obj_movement_info.transporter_info.position.o = get_next_field.GetFloat();
 
     LoadSpells(results[13].result);
 
@@ -3701,13 +3735,13 @@ void Player::AddToWorld()
     FlyCheat = false;
     m_setflycheat = false;
 
-    // check transporter
-    if (obj_movement_info.transporter_info.guid && m_CurrentTransporter)
+    auto transport = this->GetTransport();
+    if (transport)
     {
-        SetPosition(m_CurrentTransporter->GetPositionX() + GetTransPositionX(),
-                    m_CurrentTransporter->GetPositionY() + GetTransPositionY(),
-                    m_CurrentTransporter->GetPositionZ() + GetTransPositionZ(),
-                    GetOrientation(), false);
+        this->SetPosition(transport->GetPositionX() + GetTransPositionX(),
+            transport->GetPositionY() + GetTransPositionY(),
+            transport->GetPositionZ() + GetTransPositionZ(),
+            GetOrientation(), false);
     }
 
     // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
@@ -3737,12 +3771,14 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     FlyCheat = false;
     m_setflycheat = false;
     // check transporter
-    if (obj_movement_info.transporter_info.guid && m_CurrentTransporter)
+    auto transport = this->GetTransport();
+    if (transport != nullptr)
     {
-        SetPosition(m_CurrentTransporter->GetPositionX() + GetTransPositionX(),
-                    m_CurrentTransporter->GetPositionY() + GetTransPositionY(),
-                    m_CurrentTransporter->GetPositionZ() + GetTransPositionZ(),
-                    GetOrientation(), false);
+        auto t_loc = transport->GetPosition();
+        this->SetPosition(t_loc.x + this->GetTransPositionX(),
+            t_loc.y + this->GetTransPositionY(),
+            t_loc.z + this->GetTransPositionZ(),
+            this->GetOrientation(), false);
     }
 
     // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
@@ -4544,12 +4580,11 @@ void Player::RepopRequestedPlayer()
         return;
     }
 
-
-    if (m_CurrentTransporter != NULL)
+    auto transport = this->GetTransport();
+    if (transport != nullptr)
     {
-        m_CurrentTransporter->RemovePlayer(this);
-        m_CurrentTransporter = NULL;
-        obj_movement_info.transporter_info.guid = 0;
+        transport->RemovePassenger(this);
+        this->obj_movement_info.transporter_info.guid = 0;
 
         //ResurrectPlayer();
         RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
@@ -8510,8 +8545,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
         if (pTrans)
         {
-            pTrans->RemovePlayer(this);
-            m_CurrentTransporter = NULL;
+            pTrans->RemovePassenger(this);
             obj_movement_info.transporter_info.guid = 0;
         }
     }

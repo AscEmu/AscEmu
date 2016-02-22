@@ -403,6 +403,7 @@ class SERVER_DECL GameObject : public Object
         uint64 GetRotation() const { return m_rotation; }
 
         void UpdateRotation();
+        void UpdateRotationFields(float rotation2 = 0.0f, float rotation3 = 0.0f);
 
         void SetSummoned(Unit* mob)
         {

@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 02/11/2016
+Last update: 02/21/2016
 *********************************************************************
 */
 
@@ -209,6 +209,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   `transporter_xdiff` float NOT NULL,
   `transporter_ydiff` float NOT NULL,
   `transporter_zdiff` float NOT NULL,
+  `transporter_odiff` float NOT NULL,
   `actions1` longtext NOT NULL,
   `actions2` longtext NOT NULL,
   `auras` longtext NOT NULL,
@@ -379,7 +380,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('2015-12-27_01_lag_reports');
+	('2016-02-21_01_transport_position');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 

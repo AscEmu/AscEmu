@@ -426,6 +426,28 @@ void GameObject::UpdateRotation()
     }
 }
 
+void GameObject::UpdateRotationFields(float rotation2 /*=0.0f*/, float rotation3 /*=0.0f*/)
+{
+    static double const atan_pow = atan(pow(2.0f, -20.0f));
+
+    double f_rot1 = std::sin(GetOrientation() / 2.0f);
+    double f_rot2 = std::cos(GetOrientation() / 2.0f);
+
+    int64 i_rot1 = int64(f_rot1 / atan_pow *(f_rot2 >= 0 ? 1.0f : -1.0f));
+    int64 rotation = (i_rot1 << 43 >> 43) & 0x00000000001FFFFF;
+
+    m_rotation = rotation;
+
+    if (rotation2 == 0.0f && rotation3 == 0.0f)
+    {
+        rotation2 = (float)f_rot1;
+        rotation3 = (float)f_rot2;
+    }
+
+    SetFloatValue(GAMEOBJECT_PARENTROTATION + 2, rotation2);
+    SetFloatValue(GAMEOBJECT_PARENTROTATION + 3, rotation3);
+}
+
 void GameObject::CastSpell(uint64 TargetGUID, SpellEntry* sp)
 {
     Spell* s = new Spell(this, sp, true, NULL);

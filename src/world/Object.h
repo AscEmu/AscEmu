@@ -41,6 +41,7 @@ struct FactionDBC;
 
 class Unit;
 class Group;
+class Transporter;
 class WorldPacket;
 class ByteBuffer;
 class WorldSession;
@@ -57,7 +58,6 @@ class Pet;
 class Spell;
 class UpdateMask;
 class EventableObject;
-
 
 enum HIGHGUID_TYPE
 {
@@ -179,6 +179,7 @@ struct MovementInfo
 
     struct TransporterInfo
     {
+        Transporter* m_transporter;
         WoWGuid transGuid;
         uint64 guid;        // switch to WoWGuid
         LocationVector position;
@@ -188,6 +189,7 @@ struct MovementInfo
 
         void Clear()
         {
+            m_transporter = nullptr;
             transGuid = 0;
             guid = 0;
             position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
@@ -195,7 +197,6 @@ struct MovementInfo
             time2 = 0;
             seat = 0;
         }
-
     }transporter_info;
 
     MovementInfo()
@@ -222,6 +223,7 @@ struct MovementInfo
 
     void init(WorldPacket& data);
     void write(WorldPacket& data);
+    bool IsOnTransport() const { return this->transporter_info.guid != 0; };
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -692,6 +694,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         float m_base_walkSpeed;
 
         MovementInfo obj_movement_info;
+        Transporter* GetTransport() const;
 
         uint32 m_phase;         /// This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 

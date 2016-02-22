@@ -229,6 +229,7 @@ class SERVER_DECL WorldSession
 
         uint32 GetAccountId() const { return _accountId; }
         Player* GetPlayer() { return _player; }
+        Player* GetPlayerOrThrow();
 
         // Acct flags
         void SetAccountFlags(uint32 flags) { _accountFlags = flags; }

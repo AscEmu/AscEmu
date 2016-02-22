@@ -1256,6 +1256,22 @@ uint8 get_byte(uint32 buffer, uint32 index)
     return (uint8)buffer;
 }
 
+bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
+{
+    if (map == nullptr)
+        return false;
+
+    if (map->GetCreature(this->GetLowGUID()))
+    {
+        this->SetPosition(vec);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 {
     m_spawn = spawn;

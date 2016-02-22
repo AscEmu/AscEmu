@@ -18,6 +18,10 @@
 
 #ifndef _UNIT_DEFINES_H
 #define _UNIT_DEFINES_H
+
+#include "CommonTypes.hpp"
+#include "LocationVector.h"
+
 enum DeathState
 {
     ALIVE = 0,  // Unit is alive and well
@@ -823,6 +827,12 @@ enum School
     SCHOOL_SHADOW = 5,
     SCHOOL_ARCANE = 6,
     SCHOOL_COUNT
+};
+
+struct TransportData
+{
+    uint64 transportGuid;
+    LocationVector relativePosition;
 };
 
 #endif      // _UNIT_DEFINES_H

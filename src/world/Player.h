@@ -354,6 +354,8 @@ class SERVER_DECL Player : public Unit
     friend class SkillIterator;
 
     public:
+        
+        bool Teleport(const LocationVector& vec, MapMgr* map) override;
 
         Player(uint32 guid);
         ~Player();
@@ -419,7 +421,6 @@ class SERVER_DECL Player : public Unit
         // Scripting
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
-
     protected:
 
         void _UpdateSkillFields();
@@ -1324,7 +1325,6 @@ class SERVER_DECL Player : public Unit
         void SoftDisconnect();
         uint32 m_KickDelay;
         uint64 m_CurrentCharm;
-        Transporter* m_CurrentTransporter;
 
         Object* GetSummonedObject() { return m_SummonedObject; };
         void SetSummonedObject(Object* t_SummonedObject) { m_SummonedObject = t_SummonedObject; };

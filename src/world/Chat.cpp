@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include <Exceptions/PlayerExceptions.hpp>
 
 initialiseSingleton(ChatHandler);
 initialiseSingleton(CommandTableStorage);
@@ -88,6 +89,8 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
         return _achievementCommandTable;
     else if (!stricmp(name, "vehicle"))
         return _vehicleCommandTable;
+    else if (!stricmp(name, "transport"))
+        return _transportCommandTable;
     return 0;
 }
 
@@ -229,6 +232,7 @@ void CommandTableStorage::Dealloc()
     free(_arenaCommandTable);
     free(_achievementCommandTable);
     free(_vehicleCommandTable);
+    free(_transportCommandTable);
     free(_commandTable);
 }
 
@@ -288,8 +292,21 @@ void CommandTableStorage::Init()
     };
     dupe_command_table(eventCommandTable, _eventCommandTable);
 
+    static ChatCommand transportCommandTable[] =
+    {
+        { "spawn", 'm', &ChatHandler::HandleSpawnInstanceTransport, "spawn <entry:u32> <period:u32 time in ms> - Spawns a transport in the current instance", nullptr, 0, 0, 0 },
+        { "despawn", 'm', &ChatHandler::HandleDespawnInstanceTransport, "despawn - Despawns the transport you are currently on", nullptr, 0, 0, 0 },
+        { "start", 'm', &ChatHandler::HandleStartTransport, "start - Force starts the current transport", nullptr, 0, 0, 0 },
+        { "stop", 'm', &ChatHandler::HandleStopTransport, "stop - Force stops the current transport", nullptr, 0, 0, 0 },
+        { "modperiod", 'm', &ChatHandler::HandleModPeriodCommand, "modperiod <period:i32 time in ms> - Changes the period of the current transport", nullptr, 0, 0, 0 },
+        { "getperiod", 'm', &ChatHandler::HandleGetTransporterTime, "getperiod - Displays the current transport period in ms", nullptr, 0, 0, 0 },
+        { nullptr, '0', nullptr, "", nullptr, 0, 0, 0 },
+    };
+    dupe_command_table(transportCommandTable, _transportCommandTable);
+
     static ChatCommand debugCommandTable[] =
     {
+        { "dumpmovement", 'd', &ChatHandler::HandleDebugDumpMovementCommand, "!dumpmovement - Dumps the player's movement information to chat", nullptr, 0, 0, 0},
         { "infront",             'd', &ChatHandler::HandleDebugInFrontCommand,     "",                                                                                                                  NULL, 0, 0, 0 },
         { "showreact",           'd', &ChatHandler::HandleShowReactionCommand,     "",                                                                                                                  NULL, 0, 0, 0 },
         { "aimove",              'd', &ChatHandler::HandleAIMoveCommand,           "",                                                                                                                  NULL, 0, 0, 0 },
@@ -804,6 +821,7 @@ void CommandTableStorage::Init()
         { "addtrainerspell", 'm', &ChatHandler::HandleAddTrainerSpellCommand,               "",                                                                                                                                        NULL,                     0, 0, 0 },
         { "achieve",         '0', NULL,                                                     "",                                                                                                                                        achievementCommandTable,  0, 0, 0 },
         { "vehicle",         'm', NULL,                                                     "",                                                                                                                                        vehicleCommandTable,      0, 0, 0 },
+        { "transport",       'm', NULL,                                                     "",                                                                                                                                        transportCommandTable,    0, 0, 0 },
         { NULL,              '0', NULL,                                                     "",                                                                                                                                        NULL,                     0, 0, 0 }
     };
     dupe_command_table(commandTable, _commandTable);
@@ -966,9 +984,18 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
 
     text++;
 
-    if (!ExecuteCommandInTable(CommandTableStorage::getSingleton().Get(), text, session))
+    try
     {
-        SystemMessage(session, "There is no such command, or you do not have access to it.");
+        bool success = ExecuteCommandInTable(CommandTableStorage::getSingleton().Get(), text, session);
+        if (!success)
+        {
+            SystemMessage(session, "There is no such command, or you do not have access to it.");
+        }
+    }
+    catch (AscEmu::Exception::PlayerNotFoundException e)
+    {
+        // TODO: Handle this properly (what do we do when we're running commands with no player object?)
+        LOG_ERROR("PlayerNotFoundException occurred when processing command [%s]. Exception: %s", text, e.what());
     }
 
     return 1;
