@@ -1,5 +1,4 @@
 --
--- This sql file should be renamed if we add the new transport system to develop/master branch!
 -- Drop (old) table transport_creatures
 --
 DROP TABLE IF EXISTS `transport_creatures`;
@@ -21,7 +20,7 @@ CREATE TABLE `transport_creatures` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
--- Insert creature_transport data
+-- Insert transport_creatures data
 --
 INSERT INTO `transport_creatures`
 VALUES
@@ -274,5 +273,6 @@ VALUES
    ('1', '192241', '31261', '-24.084', '-22.2178', '24.3778', '1.43738', '0');
 
 --
--- Set world-DB version on merging into develop/master branch!
+-- Update world db version
 --
+UPDATE `world_db_version` SET `LastUpdate` = '2016-02-22_01_new_transport_creatures' WHERE `LastUpdate` = '2016-02-20_03_quests';
