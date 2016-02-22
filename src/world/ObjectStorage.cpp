@@ -170,6 +170,10 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             cn->m_fleeHealth = 0.0f;
             cn->m_fleeDuration = 0;
 
+            cn->itemslot_1 = 0;
+            cn->itemslot_2 = 0;
+            cn->itemslot_3 = 0;
+
             if (!itr->Inc())
                 break;
         }
