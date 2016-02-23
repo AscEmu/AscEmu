@@ -199,6 +199,18 @@ struct GameObjectInfo
         }camera;
         // 14 GAMEOBJECT_TYPE_MAP_OBJECT
         // 15 GAMEOBJECT_TYPE_MO_TRANSPORT
+        struct
+        {
+            uint32 taxi_path_id;                // parameter_0
+            uint32 move_speed;                  // parameter_1
+            uint32 accel_rate;                  // parameter_2
+            uint32 start_event_id;              // parameter_3
+            uint32 stop_event_id;               // parameter_4
+            uint32 transport_physics;           // parameter_5
+            uint32 map_id;                      // parameter_6
+            uint32 world_state;                 // parameter_7
+            uint32 can_be_stopped;              // parameter_8
+        } mo_transport;
         // 16 GAMEOBJECT_TYPE_DUEL_ARBITER
         // 17 GAMEOBJECT_TYPE_FISHINGNODE
         // 18 GAMEOBJECT_TYPE_RITUAL

@@ -277,30 +277,29 @@ void Transporter::OnPushToWorld()
 
 bool Transporter::Create(uint32 entry, int32 Time)
 {
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
+    if (gameobject_info == nullptr)
+    {
+        Log.Error("Transporter::Create", "Failed to create Transporter with go entry %u. Invalid gameobject!", entry);
+        return false;
+    }
+
     // Lookup GameobjectInfo
     if (!CreateFromProto(entry, 0, 0, 0, 0, 0))
         return false;
 
     // Override these flags to avoid mistakes in proto
     SetFlags(40);
-    SetAnimProgress(100);
+    SetAnimProgress(255);
 
-    auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
+    SetType(GAMEOBJECT_TYPE_MO_TRANSPORT);
 
-    pInfo = gameobject_info;
+    m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE;
 
-    if (pInfo)
-        pInfo->type = GAMEOBJECT_TYPE_MO_TRANSPORT;
-    else
-        LOG_ERROR("Transporter id[%i] - can't set GAMEOBJECT_TYPE - it will behave badly!", entry);
-
-    m_overrides = GAMEOBJECT_INFVIS | GAMEOBJECT_ONMOVEWIDE; //Make it forever visible on the same map
-
-    // Set period
     m_period = Time;
 
     // Generate waypoints
-    if (!GenerateWaypoints(pInfo->raw.parameter_0))
+    if (!GenerateWaypoints(gameobject_info->mo_transport.taxi_path_id))
         return false;
 
     // Set position
