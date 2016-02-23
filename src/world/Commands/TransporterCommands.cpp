@@ -19,6 +19,25 @@ bool ChatHandler::HandleGetTransporterTime(const char* /*args*/, WorldSession* m
     return true;
 }
 
+bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m_session)
+{
+    auto transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transporter_info.guid));
+    if (transporter == nullptr)
+    {
+        RedSystemMessage(m_session, "You must be on a transport to use this command.");
+        return true;
+    }
+
+    auto gameobject_info = GameObjectNameStorage.LookupEntry(transporter->GetEntry());
+    if (gameobject_info != nullptr)
+    {
+        SystemMessage(m_session, "Path: %u", gameobject_info->mo_transport.taxi_path_id);
+        SystemMessage(m_session, "Current WP: %u", transporter->mCurrentWaypoint->first);
+    }
+    
+    return true;
+}
+
 bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_session)
 {
     try

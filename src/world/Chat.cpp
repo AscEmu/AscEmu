@@ -294,6 +294,7 @@ void CommandTableStorage::Init()
 
     static ChatCommand transportCommandTable[] =
     {
+        { "info", 'm', &ChatHandler::HandleGetTransporterInfo, "info - Displays the current transport info", nullptr, 0, 0, 0 },
         { "spawn", 'm', &ChatHandler::HandleSpawnInstanceTransport, "spawn <entry:u32> <period:u32 time in ms> - Spawns a transport in the current instance", nullptr, 0, 0, 0 },
         { "despawn", 'm', &ChatHandler::HandleDespawnInstanceTransport, "despawn - Despawns the transport you are currently on", nullptr, 0, 0, 0 },
         { "start", 'm', &ChatHandler::HandleStartTransport, "start - Force starts the current transport", nullptr, 0, 0, 0 },
