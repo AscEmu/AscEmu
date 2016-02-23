@@ -1422,8 +1422,9 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
     VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(unit->GetProto()->Id);
 
     //this is a blizzlike check
-    if (_player->GetDistanceSq(unit) > 100)
-        return; //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
+    if (!_player->obj_movement_info.IsOnTransport())
+        if (_player->GetDistanceSq(unit) > 100)
+            return; //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
 
     if (unit->GetAIInterface())
         unit->GetAIInterface()->StopMovement(180000);
@@ -1481,9 +1482,6 @@ void WorldSession::SendInventoryList(Creature* unit)
                         continue;
 
                     int8 Slot = _player->GetItemInterface()->GetItemSlotByType(curItem->InventoryType);
-                    if (Slot == ITEM_NO_SLOT_AVAILABLE)
-                        continue;
-
                     if (_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, curItem, true, true))
                         continue;
                 }

@@ -2610,7 +2610,7 @@ bool ChatHandler::HandleCreatureSpawnCommand(const char* args, WorldSession* m_s
     sp->z = m_session->GetPlayer()->GetPositionZ();
     sp->o = m_session->GetPlayer()->GetOrientation();
     sp->emote_state = 0;
-    sp->flags = 0;
+    sp->flags = proto->NPCFLags;
     sp->factionid = proto->Faction;
     sp->bytes0 = sp->setbyte(0, 2, gender);
     sp->bytes1 = 0;
