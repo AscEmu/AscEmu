@@ -182,11 +182,15 @@ protected:
 
         uint32 currenttguid;
 
-        typedef std::map<uint32, TWayPoint> WaypointMap;
-        typedef std::map<uint32, TWayPoint> WaypointIterator;
+    private:
 
-        WaypointIterator::const_iterator mCurrentWaypoint;
-        WaypointIterator::const_iterator mNextWaypoint;
+        typedef std::map<uint32, TWayPoint> WaypointMap;
+
+        WaypointMap::const_iterator mCurrentWaypoint;
+        WaypointMap::const_iterator mNextWaypoint;
+
+    public:
+
         WaypointMap m_WayPoints;
 
     private:

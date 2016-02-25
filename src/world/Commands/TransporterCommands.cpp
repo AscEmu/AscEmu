@@ -36,7 +36,7 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
         SystemMessage(m_session, "Path: %u", gameobject_info->mo_transport.taxi_path_id);
         SystemMessage(m_session, "Time on Path: %u", transporter->m_timer);
         SystemMessage(m_session, "Period: %u", transporter->GetPeriod());
-        SystemMessage(m_session, "Current WP: %u", transporter->mCurrentWaypoint->first);
+        //SystemMessage(m_session, "Current WP: %u", transporter->mCurrentWaypoint->first);
     }
     
     return true;
