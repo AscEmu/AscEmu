@@ -107,8 +107,6 @@ struct TWayPoint
     bool delayed;
 };
 
-typedef std::map<uint32, TWayPoint> WaypointMap;
-typedef std::map<uint32, TWayPoint>::iterator WaypointIterator;
 
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path);
 
@@ -184,14 +182,17 @@ protected:
 
         uint32 currenttguid;
 
-        WaypointIterator mCurrentWaypoint;
-        WaypointIterator mNextWaypoint;
+        typedef std::map<uint32, TWayPoint> WaypointMap;
+        typedef std::map<uint32, TWayPoint> WaypointIterator;
+
+        WaypointIterator::const_iterator mCurrentWaypoint;
+        WaypointIterator::const_iterator mNextWaypoint;
         WaypointMap m_WayPoints;
 
     private:
 
         void TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z);
-        WaypointIterator GetNextWaypoint();
+        void GetNextWaypoint();
         int32 m_period;
 
     protected:

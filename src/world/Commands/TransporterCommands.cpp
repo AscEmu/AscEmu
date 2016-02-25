@@ -31,7 +31,11 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
     auto gameobject_info = GameObjectNameStorage.LookupEntry(transporter->GetEntry());
     if (gameobject_info != nullptr)
     {
+        SystemMessage(m_session, "Entry: %u", gameobject_info->entry);
+        SystemMessage(m_session, "Name: %s", gameobject_info->name);
         SystemMessage(m_session, "Path: %u", gameobject_info->mo_transport.taxi_path_id);
+        SystemMessage(m_session, "Time on Path: %u", transporter->m_timer);
+        SystemMessage(m_session, "Period: %u", transporter->GetPeriod());
         SystemMessage(m_session, "Current WP: %u", transporter->mCurrentWaypoint->first);
     }
     

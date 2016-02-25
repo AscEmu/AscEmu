@@ -41,7 +41,7 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
             Path[i].z = pathnode->z;
             Path[i].actionFlag = pathnode->flags;
             Path[i].delay = pathnode->waittime;
-            ++i;
+            i++;
         }
     }
 
@@ -325,7 +325,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
     int mapChange = 0;
     for (int i = 1; i < (int)path.Size() - 1; i++)
     {
-        if (mapChange == 0)
+       if (mapChange == 0)
         {
             if ((path[i].mapid == path[i + 1].mapid))
             {
@@ -339,7 +339,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
         }
         else
         {
-            mapChange--;
+            --mapChange;
         }
     }
 
@@ -526,20 +526,20 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
     uint32 timer = t;
 
 
-    mCurrentWaypoint = m_WayPoints.begin();
-    mNextWaypoint = GetNextWaypoint();
+    mNextWaypoint = m_WayPoints.begin();
+    GetNextWaypoint();
     m_pathTime = timer;
     m_timer = 0;
     return true;
 }
 
-WaypointIterator Transporter::GetNextWaypoint()
+void Transporter::GetNextWaypoint()
 {
-    WaypointIterator iter = mCurrentWaypoint;
-    iter++;
-    if (iter == m_WayPoints.end())
-        iter = m_WayPoints.begin();
-    return iter;
+    mCurrentWaypoint = mNextWaypoint;
+
+    ++mNextWaypoint;
+    if (mNextWaypoint == m_WayPoints.end())
+        mNextWaypoint = m_WayPoints.begin();
 }
 
 void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, float y, float z)
@@ -631,10 +631,9 @@ void Transporter::Update()
 
     m_timer = getMSTime() % m_period;
 
-    while (((m_timer - mCurrentWaypoint->first) % m_pathTime) >= ((mNextWaypoint->first - mCurrentWaypoint->first) % m_pathTime))
+    while (((m_timer - mCurrentWaypoint->first) % m_pathTime) > ((mNextWaypoint->first - mCurrentWaypoint->first) % m_pathTime))
     {
-        mCurrentWaypoint = mNextWaypoint;
-        mNextWaypoint = GetNextWaypoint();
+        GetNextWaypoint();
         
         // first check help in case client-server transport coordinates de-synchronization
         if (mCurrentWaypoint->second.mapid != GetMapId() || mCurrentWaypoint->second.teleport)
