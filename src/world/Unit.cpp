@@ -134,6 +134,9 @@ Unit::Unit()
     m_silenced = 0;
     disarmed = false;
 
+    m_objectType |= TYPE_UNIT;
+    m_objectTypeId = TYPEID_UNIT;
+
     //DK:modifiers
     PctRegenModifier = 0;
     for (i = 0; i < 4; i++)

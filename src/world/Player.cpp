@@ -245,6 +245,7 @@ Player::Player(uint32 guid)
     //These should be set in the object constructor..
     m_runSpeed = playerNormalRunSpeed;
     m_walkSpeed = 2.5f;
+    m_objectType |= TYPE_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
     m_valuesCount = PLAYER_END;
     //////////////////////////////////////////////////////////////////////////

@@ -23,6 +23,7 @@
 
 Corpse::Corpse(uint32 high, uint32 low)
 {
+    m_objectType |= TYPE_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
     m_valuesCount = CORPSE_END;
 

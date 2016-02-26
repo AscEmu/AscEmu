@@ -316,6 +316,8 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         // type
         const uint8 & GetTypeId() const { return m_objectTypeId; }
+        bool IsType(TYPE type_mask) const { return (type_mask & m_objectType); }
+
         bool IsUnit() { return (m_objectTypeId == TYPEID_UNIT || m_objectTypeId == TYPEID_PLAYER); }
         bool IsPlayer() { return m_objectTypeId == TYPEID_PLAYER; }
         bool IsCreature() { return m_objectTypeId == TYPEID_UNIT; }
@@ -771,6 +773,10 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         /// WoWGuid class
         WoWGuid m_wowGuid;
+
+        // Type mask
+        uint16 m_objectType;
+
         /// Type id.
         uint8 m_objectTypeId;
         /// Zone id.

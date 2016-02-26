@@ -23,6 +23,7 @@
 
 Container::Container(uint32 high, uint32 low) : Item()
 {
+    m_objectType |= (TYPE_ITEM | TYPE_CONTAINER);
     m_objectTypeId = TYPEID_CONTAINER;
     m_valuesCount = CONTAINER_END;
 

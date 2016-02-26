@@ -61,6 +61,7 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_inQueue = false;
     m_loadedFromDB = false;
 
+    m_objectType = TYPE_OBJECT;
     m_objectTypeId = TYPEID_OBJECT;
 
     m_objectsInRange.clear();
@@ -116,10 +117,12 @@ void Object::_Create(uint32 mapid, float x, float y, float z, float ang)
 
 uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
-    uint16 flags = 0;
-    uint32 flags2 = 0;
+    if (!target)
+        return 0;
 
     uint8 updatetype = UPDATETYPE_CREATE_OBJECT;
+    uint16 flags = 0;
+
     if (IsCorpse())
     {
         if (static_cast< Corpse* >(this)->GetDisplayId() == 0)
@@ -215,7 +218,8 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 
     *data << m_objectTypeId;
 
-    _BuildMovementUpdate(data, flags, flags2, target);
+    //\todo remove flags (0) from function call.
+    _BuildMovementUpdate(data, flags, 0, target);
 
     // we have dirty data, or are creating for ourself.
     UpdateMask updateMask;

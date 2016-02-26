@@ -26,6 +26,7 @@ GameObject::GameObject()
 
 GameObject::GameObject(uint64 guid)
 {
+    m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
     m_valuesCount = GAMEOBJECT_END;
     m_uint32Values = _fields;

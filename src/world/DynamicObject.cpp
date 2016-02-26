@@ -23,6 +23,7 @@
 
 DynamicObject::DynamicObject(uint32 high, uint32 low)
 {
+    m_objectType |= TYPE_DYNAMICOBJECT;
     m_objectTypeId = TYPEID_DYNAMICOBJECT;
     m_valuesCount = DYNAMICOBJECT_END;
     m_uint32Values = _fields;

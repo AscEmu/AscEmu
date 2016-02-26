@@ -28,6 +28,7 @@ Item::Item()//this is called when constructing as container
     loot = NULL;
     locked = false;
     wrapped_item_id = 0;
+    m_objectType |= TYPE_ITEM;
     m_objectTypeId = TYPEID_ITEM;
     m_valuesCount = ITEM_END;
     m_uint32Values = _fields;
