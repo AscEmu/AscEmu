@@ -137,6 +137,8 @@ Unit::Unit()
     m_objectType |= TYPE_UNIT;
     m_objectTypeId = TYPEID_UNIT;
 
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
+
     //DK:modifiers
     PctRegenModifier = 0;
     for (i = 0; i < 4; i++)

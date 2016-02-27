@@ -25,6 +25,9 @@ Corpse::Corpse(uint32 high, uint32 low)
 {
     m_objectType |= TYPE_CORPSE;
     m_objectTypeId = TYPEID_CORPSE;
+
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION);
+
     m_valuesCount = CORPSE_END;
 
     m_uint32Values = _fields;

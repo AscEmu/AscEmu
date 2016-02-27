@@ -121,116 +121,70 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
         return 0;
 
     uint8 updatetype = UPDATETYPE_CREATE_OBJECT;
-    uint16 flags = 0;
-
-    if (IsCorpse())
-    {
-        if (static_cast< Corpse* >(this)->GetDisplayId() == 0)
-            return 0;
-        updatetype = UPDATETYPE_CREATE_YOURSELF;
-    }
-
-    // any other case
-    switch (m_objectTypeId)
-    {
-        // items + containers: 0x8
-        case TYPEID_ITEM:
-        case TYPEID_CONTAINER:
-            flags = 0x10;
-            break;
-
-            // player/unit: 0x68 (except self)
-        case TYPEID_UNIT:
-            flags = 0x70;
-            break;
-
-        case TYPEID_PLAYER:
-            flags = 0x70;
-            break;
-
-            // gameobject/dynamicobject
-        case TYPEID_GAMEOBJECT:
-            flags = 0x0350;
-            if (static_cast< GameObject* >(this)->GetDisplayId() == 3831) flags = 0x0252; //Deeprun Tram proper flags as of 3.2.0.
-            break;
-
-        case TYPEID_DYNAMICOBJECT:
-            flags = 0x0150;
-            break;
-
-        case TYPEID_CORPSE:
-            flags = 0x0150;
-            break;
-            // anyone else can get fucked and die!
-    }
+    uint16 updateflags = m_updateFlag;
 
     if (target == this)
     {
-        // player creating self
-        flags |= 0x01;
-        updatetype = UPDATETYPE_CREATE_YOURSELF;
+        updateflags |= UPDATEFLAG_SELF;
     }
 
-    // gameobject stuff
-    if (IsGameObject())
+    if (updateflags & UPDATEFLAG_HAS_POSITION)
     {
-        //		switch(GetByte(GAMEOBJECT_BYTES_1,GAMEOBJECT_BYTES_TYPEID))
-        switch (m_uint32Values[GAMEOBJECT_BYTES_1])
+        if (IsType(TYPE_DYNAMICOBJECT) || IsType(TYPE_CORPSE) || IsType(TYPE_PLAYER))
+            updatetype = UPDATETYPE_CREATE_YOURSELF;
+
+        if (target->IsPet() && updateflags & UPDATEFLAG_SELF)
+            updatetype = UPDATETYPE_CREATE_YOURSELF;
+
+        if (IsType(TYPE_GAMEOBJECT))
         {
-            case GAMEOBJECT_TYPE_MO_TRANSPORT:
+            switch (((GameObject*)this)->GetType())
             {
-                if (GetTypeFromGUID() != HIGHGUID_TYPE_TRANSPORTER)
-                    return 0;   // bad transporter
-                else
-                    flags = 0x0352;
+                case GAMEOBJECT_TYPE_TRAP:
+                case GAMEOBJECT_TYPE_DUEL_ARBITER:
+                case GAMEOBJECT_TYPE_FLAGSTAND:
+                case GAMEOBJECT_TYPE_FLAGDROP:
+                    updatetype = UPDATETYPE_CREATE_YOURSELF;
+                    break;
+                case GAMEOBJECT_TYPE_TRANSPORT:
+                    updateflags |= UPDATEFLAG_TRANSPORT;
+                    break;
+                default:
+                    break;
             }
-            break;
-
-            case GAMEOBJECT_TYPE_TRANSPORT:
-            {
-                /* deeprun tram, etc */
-                flags = 0x252;
-            }
-            break;
-
-            case GAMEOBJECT_TYPE_DUEL_ARBITER:
-            {
-                // duel flags have to stay as updatetype 3, otherwise
-                // it won't animate
-                updatetype = UPDATETYPE_CREATE_YOURSELF;
-            }
-            break;
         }
-        //The above 3 checks FAIL to identify transports, thus their flags remain 0x58, and this is BAAAAAAD! Later they don't get position x,y,z,o updates, so they appear randomly by a client-calculated path, they always face north, etc... By: VLack
-        if (flags != 0x0352 && IsGameObject() && static_cast< GameObject* >(this)->GetInfo()->type == GAMEOBJECT_TYPE_MO_TRANSPORT && !(static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
-            flags = 0x0352;
+
+        if (IsType(TYPE_UNIT))
+        {
+            if (((Unit*)this)->GetTargetGUID() != 0)
+                updateflags |= UPDATEFLAG_HAS_TARGET;
+        }
     }
 
     if (IsVehicle())
-        flags |= UPDATEFLAG_VEHICLE;
-
-    // build our actual update
-    *data << updatetype;
+        updateflags |= UPDATEFLAG_VEHICLE;
 
     // we shouldn't be here, under any circumstances, unless we have a wowguid..
     ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
+    // build our actual update
+    *data << uint8(updatetype);
     *data << m_wowGuid;
-
-    *data << m_objectTypeId;
+    *data << uint8(m_objectTypeId);
 
     //\todo remove flags (0) from function call.
-    _BuildMovementUpdate(data, flags, 0, target);
+    _BuildMovementUpdate(data, updateflags, target);
+
 
     // we have dirty data, or are creating for ourself.
     UpdateMask updateMask;
     updateMask.SetCount(m_valuesCount);
     _SetCreateBits(&updateMask, target);
 
-    if (IsGameObject() && (static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
+    /*if (IsGameObject() && (static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
     {
         updateMask.SetBit(GAMEOBJECT_PARENTROTATION_02);
         updateMask.SetBit(GAMEOBJECT_PARENTROTATION_03);
-    }
+    }*/
 
     // this will cache automatically if needed
     _BuildValuesUpdate(data, &updateMask, target);
@@ -343,8 +297,9 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 ///\todo rewrite this stuff, document unknown fields and flags
 uint32 TimeStamp();
 
-void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2, Player* target)
+void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
+    uint32 flags2 = 0;
     ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->GetAndRemoveSplinePacket(GetGUID()) : 0;
 
     if (splinebuf != NULL)

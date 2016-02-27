@@ -768,7 +768,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         virtual void _SetCreateBits(UpdateMask* updateMask, Player* target) const;
 
         /// Create updates that player will see
-        void _BuildMovementUpdate(ByteBuffer* data, uint16 flags, uint32 flags2, Player* target);
+        void _BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target);
         void _BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player* target);
 
         /// WoWGuid class
@@ -779,6 +779,10 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         /// Type id.
         uint8 m_objectTypeId;
+
+        //update flag
+        uint16 m_updateFlag;
+
         /// Zone id.
         uint32 m_zoneId;
         /// Continent/map id.
