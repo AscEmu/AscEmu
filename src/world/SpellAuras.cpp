@@ -3083,6 +3083,11 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
             }
             return;
         }
+        case 57550: //Tirion Aggro
+        {
+            //Zyres: prevent server crash by invalid caster spells/amplitude
+            return;
+        }
     }
 
     if (m_spellProto->EffectTriggerSpell[mod->i] == 0)
