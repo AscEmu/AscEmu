@@ -1,11 +1,8 @@
 ﻿# ![logo](http://ascemu.org/style/img/logo.png)
 ﻿
-`master (3.3.5)`[![master Build Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu)
-
-`coverity check`<a href="https://scan.coverity.com/projects/4747">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/4747/badge.svg"/>
-</a>
+[![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu)
+[![Coverity Snac](https://scan.coverity.com/projects/4747/badge.svg)](https://scan.coverity.com/projects/4747)
+[![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
 
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
