@@ -95,18 +95,314 @@ void Set_missing_spellLevel(SpellEntry* sp)
     {
         uint32 new_level = 0;
 
-        if (strstr(sp->Name, "Apprentice "))
-            new_level = 1;
-        else if (strstr(sp->Name, "Journeyman "))
-            new_level = 2;
-        else if (strstr(sp->Name, "Expert "))
-            new_level = 3;
-        else if (strstr(sp->Name, "Artisan "))
-            new_level = 4;
-        else if (strstr(sp->Name, "Master "))
-            new_level = 5;
-        else if (strstr(sp->Name, "Grand Master "))
-            new_level = 6;
+        // 16/03/08 Zyres: just replaced name assignes with spell ids. \todo remove not teachable spells.
+        switch (sp->Id)
+        {
+            // name "Aprentice "
+            case 2020:
+            case 2155:
+            case 2275:
+            case 2372:
+            case 2551:
+            case 2581:
+            case 3279:
+            case 3911:
+            case 4039:
+            case 7414:
+            case 7733:
+            case 8615:
+            case 25245:
+            case 29535:
+            case 33388:
+            case 33389:
+            case 45375:
+            case 51216:
+            {
+                new_level = 1;
+            } break;
+            // name "Journeyman "
+            case 2021:
+            case 2154:
+            case 2280:
+            case 2373:
+            case 2582:
+            case 3280:
+            case 3412:
+            case 3912:
+            case 4040:
+            case 7415:
+            case 7734:
+            case 8619:
+            case 25246:
+            case 33391:
+            case 33392:
+            case 45376:
+            case 64485:
+            {
+                new_level = 2;
+            } break;
+            // name "Expert "
+            case 2552:
+            case 3465:
+            case 3539:
+            case 3568:
+            case 3571:
+            case 3812:
+            case 3913:
+            case 4041:
+            case 7416:
+            case 7736:
+            case 7925:
+            case 8620:
+            case 19886:
+            case 19889:
+            case 19903:
+            case 28896:
+            case 34090:
+            case 34092:
+            case 45377:
+            case 54083:
+            case 54254:
+            case 54257:
+            {
+                new_level = 3;
+            } break;
+            // name "Artisan "
+            case 9786:
+            case 10249:
+            case 10663:
+            case 10769:
+            case 10847:
+            case 11612:
+            case 11994:
+            case 12181:
+            case 12657:
+            case 13921:
+            case 18249:
+            case 18261:
+            case 19887:
+            case 19890:
+            case 19902:
+            case 28899:
+            case 34091:
+            case 34093:
+            case 45378:
+            {
+                new_level = 4;
+            } break;
+            // name "Master "
+            case 12613:
+            case 13958:
+            case 13970:
+            case 13971:
+            case 14904:
+            case 15024:
+            case 15025:
+            case 15026:
+            case 15027:
+            case 17039:
+            case 17040:
+            case 17041:
+            case 18709:
+            case 18710:
+            case 18767:
+            case 18768:
+            case 19825:
+            case 21935:
+            case 21940:
+            case 23759:
+            case 23760:
+            case 23761:
+            case 23762:
+            case 23784:
+            case 23785:
+            case 23822:
+            case 23823:
+            case 23824:
+            case 23825:
+            case 23826:
+            case 23827:
+            case 23828:
+            case 23829:
+            case 23830:
+            case 23831:
+            case 23832:
+            case 23833:
+            case 23834:
+            case 23835:
+            case 23836:
+            case 23837:
+            case 23838:
+            case 23839:
+            case 23840:
+            case 23841:
+            case 23842:
+            case 23843:
+            case 23844:
+            case 24347:
+            case 24626:
+            case 24627:
+            case 26791:
+            case 27029:
+            case 27235:
+            case 27236:
+            case 27237:
+            case 28030:
+            case 28597:
+            case 28696:
+            case 28901:
+            case 29074:
+            case 29075:
+            case 29076:
+            case 29077:
+            case 29355:
+            case 29460:
+            case 29461:
+            case 29845:
+            case 30351:
+            case 31221:
+            case 31222:
+            case 31223:
+            case 31226:
+            case 31227:
+            case 31665:
+            case 31666:
+            case 32550:
+            case 32679:
+            case 33098:
+            case 33100:
+            case 33360:
+            case 33361:
+            case 33894:
+            case 34130:
+            case 34149:
+            case 34150:
+            case 34485:
+            case 34486:
+            case 34487:
+            case 34488:
+            case 34489:
+            case 34506:
+            case 34507:
+            case 34508:
+            case 34833:
+            case 34834:
+            case 34835:
+            case 34836:
+            case 34837:
+            case 34838:
+            case 34839:
+            case 35702:
+            case 35703:
+            case 35704:
+            case 35705:
+            case 35706:
+            case 35708:
+            case 35874:
+            case 35912:
+            case 36001:
+            case 38734:
+            case 39097:
+            case 39098:
+            case 39099:
+            case 40369:
+            case 40385:
+            case 40388:
+            case 43784:
+            case 44868:
+            case 45379:
+            case 45713:
+            case 46417:
+            case 46418:
+            case 46444:
+            case 47872:
+            case 47873:
+            case 47874:
+            case 47875:
+            case 47876:
+            case 47877:
+            case 48028:
+            case 48411:
+            case 48412:
+            case 48418:
+            case 48420:
+            case 48421:
+            case 48422:
+            case 48729:
+            case 48730:
+            case 49776:
+            case 52143:
+            case 52559:
+            case 53125:
+            case 53662:
+            case 53663:
+            case 53664:
+            case 53665:
+            case 53666:
+            case 54084:
+            case 54255:
+            case 54256:
+            case 54721:
+            case 55188:
+            case 55434:
+            case 55435:
+            case 57853:
+            case 58410:
+            case 62698:
+            case 65022:
+            case 66409:
+            case 66410:
+            case 66417:
+            case 66420:
+            case 66423:
+            case 66457:
+            case 66460:
+            case 66461:
+            case 66677:
+            case 66810:
+            case 66812:
+            case 67551:
+            case 69716:
+            case 70528:
+            {
+                new_level = 5;
+            } break;
+            // name "Grand Master "
+            case 45380:
+            case 50299:
+            case 50301:
+            case 50307:
+            case 50309:
+            case 51293:
+            case 51295:
+            case 51298:
+            case 51301:
+            case 51303:
+            case 51305:
+            case 51308:
+            case 51310:
+            case 51312:
+            case 61464:
+            case 64484:
+            case 65281:
+            case 65282:
+            case 65283:
+            case 65284:
+            case 65285:
+            case 65286:
+            case 65287:
+            case 65288:
+            case 65289:
+            case 65290:
+            case 65291:
+            case 65292:
+            case 65293:
+            {
+                new_level = 6;
+            } break;
+            default:
+                break;
+        }
 
         if (new_level != 0)
         {
@@ -483,6 +779,7 @@ void ApplyNormalFixes()
         Modify_RecoveryTime(sp);
 
         // find diminishing status
+        //\todo 16/03/08 Zyres: sql
         sp->custom_DiminishStatus = GetDiminishingGroup(sp->custom_NameHash);
 
         // various flight spells
@@ -1828,6 +2125,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = 0;
     }
 
+    //\todo 16/03/08 Zyres: sql
     // MesoX: Serendipity http://www.wowhead.com/?spell=63730
     sp = CheckAndReturnSpellEntry(63730);   // Rank 1
     if (sp != NULL)
