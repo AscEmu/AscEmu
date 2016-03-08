@@ -19,8 +19,6 @@
 */
 
 #include "Setup.h"
-#include "../Common/Base.h"
-#include "../Common/EasyFunctions.h"
 
 class GossipScourgeGryphon : public GossipScript
 {
@@ -33,30 +31,6 @@ class GossipScourgeGryphon : public GossipScript
                     plr->TaxiStart(path, 26308, 0);
             }
         }
-};
-
-// QuestID for Praparation for the Battle
-#define QUEST_PREPARATION               12842
-//Spell Rune of Cinderglacier
-#define SPELL_RUNE_I                    53341
-//Spell Rune of Razorice
-#define SPELL_RUNE_II                   53343
-
-bool PreparationForBattleQuestCast(Player* pPlayer, SpellEntry* pSpell, Spell* spell)
-{
-    if (pSpell->Id == SPELL_RUNE_I || pSpell->Id == SPELL_RUNE_II)
-    {
-        QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(QUEST_PREPARATION);
-
-        if (!qle || qle->CanBeFinished())
-            return true;
-
-        sEventMgr.AddEvent(static_cast<Unit*>(pPlayer), &Unit::EventCastSpell, static_cast<Unit*>(pPlayer), dbcSpell.LookupEntry(54586), EVENT_CREATURE_UPDATE, 5000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-        return true;
-    }
-    else
-        return true; // change this to false blocks all spells!
 };
 
 #define CN_INITIATE_1                29519
@@ -107,28 +81,52 @@ class AcherusSoulPrison : GameObjectAIScript
         }
 };
 
-class RuneforgingPreparationForBattle : QuestScripts
-{
-    /*If Player casted Spell 53341 or 53343 set quest as finished*/
-};
-
 class QuestInServiceOfLichKing : public QuestScript
 {
     public:
-        void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
+        void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
         {
+            // Play first sound
             mTarget->PlaySound(14734);
+
+            // Play second sound after 22.5 seconds
             sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14735, EVENT_UNK, 22500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+
+            // Play third sound after 48.5 seconds
             sEventMgr.AddEvent(mTarget, &Player::PlaySound, (uint32)14736, EVENT_UNK, 48500, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 };
+
+// QuestID for Praparation for the Battle
+enum QUEST_12842_ENUM
+{
+    QUEST_PREPARATION                   = 12842,
+
+    SPELL_RUNE_I                        = 53341, // Spell Rune of Cinderglacier
+    SPELL_RUNE_II                       = 53343, // Spell Rune of Razorice
+    SPELL_PREPERATION_FOR_BATTLE_CREDIT = 54586
+};
+
+bool PreparationForBattleEffect(uint32 effectIndex, Spell* pSpell)
+{
+    Player* pCaster = pSpell->p_caster;
+    if (pCaster == nullptr)
+        return false;
+
+    // Apply spell if caster has quest and still heven't completed it yet
+    if (pCaster->HasQuest(QUEST_PREPARATION) && !pCaster->HasFinishedQuest(QUEST_PREPARATION))
+        pCaster->CastSpell(pCaster, SPELL_PREPERATION_FOR_BATTLE_CREDIT, true);
+
+    return true;
+}
 
 void SetupDeathKnight(ScriptMgr* mgr)
 {
     mgr->register_gossip_script(29488, new GossipScourgeGryphon);
     mgr->register_gossip_script(29501, new GossipScourgeGryphon);
 
-    mgr->register_hook(SERVER_HOOK_EVENT_ON_CAST_SPELL, (void*)PreparationForBattleQuestCast);
+    mgr->register_dummy_spell(SPELL_RUNE_I, &PreparationForBattleEffect);
+    mgr->register_dummy_spell(SPELL_RUNE_II, &PreparationForBattleEffect);
     mgr->register_quest_script(12593, new QuestInServiceOfLichKing);
 
     // These gobs had already a script by Type (in gameobject_names Type = 1 = Button).
