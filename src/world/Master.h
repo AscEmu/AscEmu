@@ -28,7 +28,7 @@
 #include "../shared/AscemuServerDefines.hpp"
 
 static const char* REQUIRED_CHAR_DB_VERSION = "2016-02-21_01_transport_position";
-static const char* REQUIRED_WORLD_DB_VERSION = "2016-02-26_01_gameobject_names";
+static const char* REQUIRED_WORLD_DB_VERSION = "2016-03-08_01_spell_coef_flags";
 
 class Master : public Singleton<Master>
 {
