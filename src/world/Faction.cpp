@@ -177,7 +177,7 @@ bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
             return true;
     }
 
-    if (objA->m_faction == nullptr)     // no faction, no kill (added because spell_caster gos should summon a trap instead of casting the spell directly.)
+    if (objA->m_faction == nullptr || objB->m_faction == nullptr)     // no faction, no kill (added because spell_caster gos should summon a trap instead of casting the spell directly.)
         return false;
 
     if (objA->m_faction == objB->m_faction)    // same faction can't kill each other unless in ffa pvp/duel
