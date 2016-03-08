@@ -3502,38 +3502,6 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_NULL; //remove this effect
     }
 
-    //warlock - Shadow Embrace
-    sp = CheckAndReturnSpellEntry(32385);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-    sp = CheckAndReturnSpellEntry(32387);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-    sp = CheckAndReturnSpellEntry(32392);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-    sp = CheckAndReturnSpellEntry(32393);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-    sp = CheckAndReturnSpellEntry(32394);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-
     //Warlock Chaos bolt
     sp = CheckAndReturnSpellEntry(50796);
     if (sp != NULL)
@@ -3976,26 +3944,25 @@ void ApplyNormalFixes()
     }
 
     //Totem of the Third Wind - bad range
-    SpellEntry* sp_healing_wave = CheckAndReturnSpellEntry(8004);
     sp = CheckAndReturnSpellEntry(34132);
     if (sp != NULL)
     {
-        sp->rangeIndex = sp_healing_wave->rangeIndex;
+        sp->rangeIndex = 5;
     }
     sp = CheckAndReturnSpellEntry(42371);
     if (sp != NULL)
     {
-        sp->rangeIndex = sp_healing_wave->rangeIndex;
+        sp->rangeIndex = 5;
     }
     sp = CheckAndReturnSpellEntry(43729);
     if (sp != NULL)
     {
-        sp->rangeIndex = sp_healing_wave->rangeIndex;
+        sp->rangeIndex = 5;
     }
     sp = CheckAndReturnSpellEntry(46099);
     if (sp != NULL)
     {
-        sp->rangeIndex = sp_healing_wave->rangeIndex;
+        sp->rangeIndex = 5;
     }
 
     // Eye of Acherus, our phase shift mode messes up the control :/
@@ -4311,13 +4278,7 @@ void ApplyNormalFixes()
     // DEATH KNIGHT                            //
     //////////////////////////////////////////
 
-    // Insert Death Knight spells here ---- Made by Alice
-
-    // Mark of Blood
-    // Necessary to proper create entry on m_chargeSpells
-    sp = CheckAndReturnSpellEntry(49005);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK | PROC_ON_SPELL_HIT;
+    // Insert Death Knight spells here
 
     // Unholy Aura - Ranks 1
     sp = CheckAndReturnSpellEntry(50391);
@@ -4340,20 +4301,6 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[1] = 50392;
         sp->Effect[1] = SPELL_EFFECT_APPLY_GROUP_AREA_AURA;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
-    }
-
-    // MIND FREEZE
-    sp = dbcSpell.LookupEntryForced(47528);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_INTERRUPT_CAST;
-    }
-
-    //   Blood Presence
-    sp = CheckAndReturnSpellEntry(48266);
-    if (sp != NULL)
-    {
-        sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
     //    Empower Rune Weapon
@@ -4416,13 +4363,6 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    // Death Grip
-    sp = CheckAndReturnSpellEntry(49576);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_DUMMY;
-    }
-
     // Runic Empowerment
     /*sp = dbcSpell.LookupEntryForced(81229);
     if (sp != NULL)
@@ -4443,17 +4383,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 76691;
-    }
-
-    ///////////////////////////////////////////////////////////
-    //    Acherus Deatcharger
-    ///////////////////////////////////////////////////////////
-    sp = CheckAndReturnSpellEntry(48778);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_MOUNTED;
-        sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
-        sp->EffectBasePoints[1] = 99;
     }
 
     ///////////////////////////////////////////////////////////
@@ -4514,38 +4443,6 @@ void ApplyNormalFixes()
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
 
-    ///////////////////////////////////////////////////////////
-    //      Bloodworms - handled in dummy code
-    ///////////////////////////////////////////////////////////
-
-    // Bloodworms Rank 1
-    sp = CheckAndReturnSpellEntry(49027);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 50452;
-    }
-
-    // Bloodworms Rank 2
-    sp = CheckAndReturnSpellEntry(49542);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 50452;
-    }
-
-    // Bloodworms Rank 3
-    sp = CheckAndReturnSpellEntry(49543);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 50452;
-    }
-
-
     // Noggenfogger elixir - reduce size effect
     sp = CheckAndReturnSpellEntry(16595);
     if (sp != NULL)
@@ -4563,34 +4460,8 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_NULL;
     }
 
-    //PvP Librams of Justice
-    //Gladiator's Libram of Justice
-    sp = CheckAndReturnSpellEntry(34139);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    //Merciless Gladiator's Libram of Justice
-    sp = CheckAndReturnSpellEntry(42368);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    //Vengeful Gladiator's Libram of Justice
-    sp = CheckAndReturnSpellEntry(43726);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    //Brutal Gladiator's Libram of Justice
-    sp = CheckAndReturnSpellEntry(46092);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
     //Other Librams
     //Libram of Saints Departed and Libram of Zeal
-    sp = CheckAndReturnSpellEntry(34262);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
     sp = CheckAndReturnSpellEntry(34263);
     if (sp != NULL)
     {
@@ -4600,11 +4471,6 @@ void ApplyNormalFixes()
     }
 
     //Libram of Avengement
-    sp = CheckAndReturnSpellEntry(34258);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
     sp = CheckAndReturnSpellEntry(34260);
     if (sp != NULL)
     {
@@ -4614,42 +4480,11 @@ void ApplyNormalFixes()
     }
 
     //Libram of Mending
-    sp = CheckAndReturnSpellEntry(43741);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
     sp = CheckAndReturnSpellEntry(43742);
     if (sp != NULL)
     {
         sp->custom_self_cast_only = true;
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_HOLY_LIGHT;
-        sp->procChance = 100;
-    }
-
-    //Libram of Divine Judgement
-    sp = CheckAndReturnSpellEntry(43745);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
-    sp = CheckAndReturnSpellEntry(43747);
-    if (sp != NULL)
-    {
-        sp->custom_self_cast_only = true;
-        sp->procChance = 100;
-    }
-
-    //Stonebreaker's Totem
-    sp = CheckAndReturnSpellEntry(43748);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
-    sp = CheckAndReturnSpellEntry(43749);
-    if (sp != NULL)
-    {
-        sp->custom_self_cast_only = true;
         sp->procChance = 100;
     }
 
@@ -4664,12 +4499,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_LEAVE_AREA;
 
-    sp = CheckAndReturnSpellEntry(27997);        //Spellsurge
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 30000; // Wowhead Comment
-        sp->procChance = 3; //Enchantment Text
-    }
 
     sp = CheckAndReturnSpellEntry(24574);        // Zandalarian Hero Badge 24590 24575
     if (sp != NULL)
