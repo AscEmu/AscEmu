@@ -1,0 +1,32 @@
+os: 
+  - Visual Studio 2013
+#  - Visual Studio 2015
+
+clone_depth: 1
+
+branches:
+  except:
+    - coverity_scan
+
+environment:
+  matrix:
+  - VS_VER: Visual Studio 12 2013
+  - VS_VER: Visual Studio 12 2013 Win64
+#  - VS_VER: Visual Studio 14 2015
+#  - VS_VER: Visual Studio 14 2015 Win64
+
+configuration: Release
+
+init:
+  - cmd: cmake --version
+  - cmd: msbuild /version
+
+before_build:
+  - cmd: echo %VS_VER%
+  - cmd: echo %Configuration%
+
+build_script:
+  - cmd: mkdir ascemu_build
+  - cmd: cd ascemu_build
+  - cmd: cmake ../ -G "%VS_VER%" -DBUILD_WITH_WARNINGS=1 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1
+  - cmd: msbuild Ascemu.sln

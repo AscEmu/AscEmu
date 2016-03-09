@@ -6,7 +6,7 @@ if(NOT BUILD_INSTANCESCRIPTS )
 endif()
 
 # set up our project name
-project(InstanceScripts)
+project(InstanceScripts CXX)
 
 #sources -contains source files for our library.
 set(sources

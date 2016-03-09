@@ -1432,7 +1432,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
                 m_Unit->SetTargetGUID(0);
                 return m_Unit;
             }
-            for (AssistTargetSet::iterator i = m_assistTargets.begin(); i != m_assistTargets.end(); i++)
+            for (AssistTargetSet::iterator i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
             {
                 if (!(*i)->isAlive())
                 {
@@ -1467,7 +1467,7 @@ bool AIInterface::FindFriends(float dist)
     std::set<Object*>::iterator itr;
     Unit* pUnit;
 
-    for (itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); itr++)
+    for (itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
     {
         if (!(*itr)->IsUnit())
             continue;
@@ -1560,8 +1560,7 @@ bool AIInterface::FindFriends(float dist)
 
         uint8 spawned = 0;
 
-        std::set< Object* >::iterator hostileItr = m_Unit->GetInRangePlayerSetBegin();
-        for (; hostileItr != m_Unit->GetInRangePlayerSetEnd(); hostileItr++)
+        for (std::set< Object* >::iterator hostileItr = m_Unit->GetInRangePlayerSetBegin(); hostileItr != m_Unit->GetInRangePlayerSetEnd(); ++hostileItr)
         {
 
             Player* p = static_cast< Player* >(*hostileItr);

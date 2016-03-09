@@ -316,7 +316,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         // type
         const uint8 & GetTypeId() const { return m_objectTypeId; }
-        bool IsType(TYPE type_mask) const { return (type_mask & m_objectType); }
+        bool IsType(TYPE type_mask) const { return (type_mask & m_objectType) != 0; }
 
         bool IsUnit() { return (m_objectTypeId == TYPEID_UNIT || m_objectTypeId == TYPEID_PLAYER); }
         bool IsPlayer() { return m_objectTypeId == TYPEID_PLAYER; }

@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-project(crashreport)
+project(crashreport C)
 
 set(SRCS Main.c)
 

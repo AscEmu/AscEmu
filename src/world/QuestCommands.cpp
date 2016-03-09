@@ -376,9 +376,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             if (IsPlrOnQuest)
             {
                 uint32 giver_id = 0;
-                std::string my_query = "";
-
-                my_query = "SELECT id FROM creature_quest_starter WHERE quest = " + MyConvertIntToString(quest_id);
+                std::string my_query = "SELECT id FROM creature_quest_starter WHERE quest = " + MyConvertIntToString(quest_id);
                 QueryResult* creatureResult = WorldDatabase.Query(my_query.c_str());
 
                 if (creatureResult)

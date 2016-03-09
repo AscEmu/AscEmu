@@ -35,6 +35,7 @@ void SpellCustomizations::StartSpellCustomization()
 
     LoadSpellRanks();
     LoadSpellCustomAssign();
+    LoadSpellCustomCoefFlags();
     LoadSpellProcs();
 
     uint32 spellCount = dbcSpell.GetNumRows();
@@ -143,7 +144,44 @@ void SpellCustomizations::LoadSpellCustomAssign()
     {
         Log.Debug("SpellCustomizations::LoadSpellCustomAssign", "Your spell_custom_assign table is empty!");
     }
+}
 
+void SpellCustomizations::LoadSpellCustomCoefFlags()
+{
+    uint32 spell_custom_coef_flags_count = 0;
+
+    QueryResult* result = WorldDatabase.Query("SELECT spell_id, spell_coef_flags FROM spell_coef_flags");
+    if (result != NULL)
+    {
+        do
+        {
+            uint32 spell_id = result->Fetch()[0].GetUInt32();
+            uint32 coef_flags = result->Fetch()[1].GetUInt32();
+
+            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            if (spell_entry != nullptr)
+            {
+                spell_entry->custom_spell_coef_flags = coef_flags;
+                ++spell_custom_coef_flags_count;
+            }
+            else
+            {
+                Log.Error("SpellCustomizations::LoadSpellCustomCoefFlags", "your spell_coef_flags table includes an invalid spell %u.", spell_id);
+                continue;
+            }
+
+        } while (result->NextRow());
+        delete result;
+    }
+
+    if (spell_custom_coef_flags_count > 0)
+    {
+        Log.Success("SpellCustomizations::LoadSpellCustomCoefFlags", "Loaded %u attributes from spell_coef_flags table", spell_custom_coef_flags_count);
+    }
+    else
+    {
+        Log.Debug("SpellCustomizations::LoadSpellCustomCoefFlags", "Your spell_coef_flags table is empty!");
+    }
 }
 
 void SpellCustomizations::LoadSpellProcs()

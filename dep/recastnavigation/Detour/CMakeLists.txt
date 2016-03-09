@@ -1,22 +1,13 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-set(Detour_SRCS
-   Source/DetourAlloc.cpp
-   Source/DetourCommon.cpp
-   Source/DetourNavMesh.cpp
-   Source/DetourNavMeshBuilder.cpp
-   Source/DetourNavMeshQuery.cpp
-   Source/DetourNode.cpp
-   )
-
+file(GLOB Detour_SRCS Source/*.cpp Include/*.h)
 
 include_directories(
-   Include
-   ${ZLIB_LIBRARIES}
-   )
+   ${CMAKE_CURRENT_SOURCE_DIR}/Include
+   ${ZLIB_INCLUDE_DIRS}
+)
 
 add_library(Detour STATIC ${Detour_SRCS})
+target_link_libraries(Detour ${ZLIB_LIBRARIES})
 
-#Set it to the project name.
-set(DETOUR_LIBRARIES Detour CACHE INTERNAL "Detour Libraries")
 unset(Detour_SRCS)

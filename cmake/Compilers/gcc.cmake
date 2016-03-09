@@ -1,10 +1,13 @@
 # Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
 
-if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7)
-    message(FATAL_ERROR "Unsupported gcc version")
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+
+if(NOT COMPILER_SUPPORTS_CXX11)
+    message(FATAL_ERROR "${CMAKE_CXX_COMPILER} does not support C++11 feature")
 endif()
 
-message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER}")
 add_definitions(-DHAS_CXX0X)
 
 # apply base flags

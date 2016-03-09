@@ -475,22 +475,20 @@ class DofNaralexAI : public MoonScriptBossAI
 
         void Moccasin()
         {
-            MoonScriptCreatureAI* Moccasin = NULL;
-            Moccasin = SpawnCreature(5762, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
-            Moccasin = SpawnCreature(5762, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
-            Moccasin = SpawnCreature(5762, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
+            SpawnCreature(5762, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
+            SpawnCreature(5762, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
+            SpawnCreature(5762, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
         }
 
         void Ectoplasm()
         {
-            MoonScriptCreatureAI* Ectoplasm = NULL;
-            Ectoplasm = SpawnCreature(5763, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
-            Ectoplasm = SpawnCreature(5763, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
-            Ectoplasm = SpawnCreature(5763, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
-            Ectoplasm = SpawnCreature(5763, 138.794693f, 228.224976f, -100.174332f, 2.471645f);
-            Ectoplasm = SpawnCreature(5763, 128.170364f, 225.190247f, -99.392830f, 2.411169f);
-            Ectoplasm = SpawnCreature(5763, 136.762009f, 242.685669f, -98.564545f, 3.344223f);
-            Ectoplasm = SpawnCreature(5763, 122.403961f, 259.438354f, -98.153984f, 4.366811f);
+            SpawnCreature(5763, 134.249207f, 242.194839f, -98.375496f, 3.325373f);
+            SpawnCreature(5763, 124.917931f, 255.066635f, -97.796837f, 4.176745f);
+            SpawnCreature(5763, 113.077148f, 258.880157f, -97.190590f, 4.688039f);
+            SpawnCreature(5763, 138.794693f, 228.224976f, -100.174332f, 2.471645f);
+            SpawnCreature(5763, 128.170364f, 225.190247f, -99.392830f, 2.411169f);
+            SpawnCreature(5763, 136.762009f, 242.685669f, -98.564545f, 3.344223f);
+            SpawnCreature(5763, 122.403961f, 259.438354f, -98.153984f, 4.366811f);
         }
 
         void BMutanus()

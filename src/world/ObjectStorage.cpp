@@ -183,10 +183,9 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
     {
         StorageContainerIterator<CreatureInfo> * itr = CreatureNameStorage.MakeIterator();
-        CreatureInfo* ci;
         while (!itr->AtEnd())
         {
-            ci = itr->Get();
+            CreatureInfo* ci = itr->Get();
 
             ci->lowercase_name = std::string(ci->Name);
             for (uint32 j = 0; j < ci->lowercase_name.length(); ++j)
