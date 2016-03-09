@@ -121,7 +121,7 @@ WeatherMgr::WeatherMgr()
 WeatherMgr::~WeatherMgr()
 {
     std::map<uint32, WeatherInfo*>::iterator itr;
-    for (itr = m_zoneWeathers.begin(); itr != m_zoneWeathers.end(); itr++)
+    for (itr = m_zoneWeathers.begin(); itr != m_zoneWeathers.end(); ++itr)
     {
         delete itr->second;
     }

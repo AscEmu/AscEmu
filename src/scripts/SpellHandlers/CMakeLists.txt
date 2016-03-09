@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-project(SpellHandlers)
+project(SpellHandlers CXX)
 
 #sources -contains source files for our library.
 set(sources

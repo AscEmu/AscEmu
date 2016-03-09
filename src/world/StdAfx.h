@@ -24,32 +24,27 @@
 
 #include "WorldConf.h"
 
-#include "../shared/CommonDefines.hpp"
+#include "CommonDefines.hpp"  // shared
 
 #define DEBUG_LOG(...) sLog.Debug("DEBUG_LOG", __VA_ARGS__)
 #include "Definitions.h"
 
-#include <cstring>
-#include <cstdlib>
-#include <list>
 #include <vector>
-#include <map>
-#include <sstream>
-#include <string>
 #include <fstream>
 #include <array>
 
 #include "RecastIncludes.hpp"
 
-#include "../shared/Common.h"
-#include "../shared/MersenneTwister.h"
-#include "../shared/WorldPacket.h"
-#include "../shared/Log.h"
-#include "../shared/ByteBuffer.h"
-#include "../shared/StackBuffer.h"
-#include "../shared/Config/ConfigEnv.h"
-#include "../shared/crc32.h"
-#include "../shared/LocationVector.h"
+// Shared headers
+#include "Common.h"
+#include "MersenneTwister.h"
+#include "WorldPacket.h"
+#include "Log.h"
+#include "ByteBuffer.h"
+#include "StackBuffer.h"
+#include "Config/ConfigEnv.h"
+#include "crc32.h"
+#include "LocationVector.h"
 
 extern SERVER_DECL SessionLogWriter* Anticheat_Log;
 extern SERVER_DECL SessionLogWriter* GMCommand_Log;
@@ -61,20 +56,21 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 
 //#include <zlib.h>
 
-#include "../shared/Database/DatabaseEnv.h"
+#include "Database/DatabaseEnv.h"   // shared
 #include "DBC/DBCStores.h"
 
-#include <Network/Network.h>
+#include "Network/Network.h"    // shared
 
-#include "../shared/Auth/MD5.h"
-#include "../shared/Auth/BigNumber.h"
-#include "../shared/Auth/Sha1.h"
-#include "../shared/Auth/WowCrypt.h"
-#include "../shared/FastQueue.h"
-#include "../shared/CircularQueue.h"
-#include "../shared/Threading/RWLock.h"
-#include "../shared/TLSObject.h"
-#include "../shared/Tokenizer.h"
+// Shared headers
+#include "Auth/MD5.h"
+#include "Auth/BigNumber.h"
+#include "Auth/Sha1.h"
+#include "Auth/WowCrypt.h"
+#include "FastQueue.h"
+#include "CircularQueue.h"
+#include "Threading/RWLock.h"
+#include "TLSObject.h"
+#include "Tokenizer.h"
 
 #ifdef WIN32
 #include "printStackTrace.h"
@@ -86,7 +82,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "UpdateMask.h"
 #include "Opcodes.h"
 #include "AuthCodes.h"
-#include "../shared/CallBack.h"
+#include "CallBack.h"   // shared
 #include "WordFilter.h"
 #include "EventMgr.h"
 #include "EventableObject.h"
@@ -144,8 +140,8 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Container.h"
 #include "AuctionHouse.h"
 #include "AuctionMgr.h"
-#include "LfgMgr.h"
 #include "Lfg.h"
+#include "LfgMgr.h"
 #include "LfgGroupData.h"
 #include "LfgPlayerData.h"
 #include "MailMgr.h"
@@ -188,7 +184,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "LogonCommHandler.h"
 #include "MainServerDefines.h"
 #include "WorldRunnable.h"
-#include "../shared/Storage.h"
+#include "Storage.h"    // shared
 #include "ObjectStorage.h"
 #include "DatabaseCleaner.h"
 #include "DayWatcherThread.h"

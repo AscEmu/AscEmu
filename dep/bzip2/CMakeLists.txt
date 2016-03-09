@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
-project(bzip2)
+project(bzip2 C)
 
 set(sources
    blocksort.c

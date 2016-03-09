@@ -28,12 +28,12 @@ if(UNIX AND NOT IS_64BIT)
 endif()
 
 include_directories(
-   ${ZLIB_INCLUDE_DIRS}
-   ${BZIP2_INCLUDE_DIRS}
    ${CMAKE_SOURCE_DIR}/dep/loadlib
    ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
    ${CMAKE_CURRENT_SOURCE_DIR}
-   )
+   ${BZIP2_INCLUDE_DIRS}
+   ${ZLIB_INCLUDE_DIRS}
+)
 
 add_executable(${PROJECT_NAME} ${sources} ${headers})
 target_link_libraries(${PROJECT_NAME} loadlib ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})

@@ -6,7 +6,7 @@ if(NOT BUILD_QUESTSCRIPTS )
 endif()
 
 # set up our project name
-project(QuestScripts)
+project(QuestScripts CXX)
 
 SET(sources
    Setup.cpp 

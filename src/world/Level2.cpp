@@ -797,7 +797,7 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
             if (GObjs == NULL)
                 bUseNext = true;
 
-            for (;; Itr++)
+            for (;; ++Itr)
             {
                 if (Itr == Itr2 && GObj == NULL && bUseNext)
                     Itr = m_session->GetPlayer()->GetInRangeSetBegin();
@@ -827,7 +827,7 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
     }
     if (!GObj)
     {
-        for (; Itr != Itr2; Itr++)
+        for (; Itr != Itr2; ++Itr)
         {
             if ((*Itr)->IsGameObject())
             {

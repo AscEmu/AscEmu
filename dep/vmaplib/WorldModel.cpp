@@ -228,9 +228,11 @@ namespace VMAP
 		size = liquid->iTilesX * liquid->iTilesY;
 		liquid->iFlags = new G3D::uint8[size];
 		if(result && fread(liquid->iFlags, sizeof(G3D::uint8), size, rf) != size) result = false;
-		if(!result)
-			delete liquid;
-		out = liquid;
+        if(result)
+            out = liquid;
+        else
+            delete liquid;
+
 		return result;
 	}
 
@@ -503,9 +505,8 @@ namespace VMAP
 		if(!wf)
 			return false;
 
-		bool result = true;
 		G3D::uint32 chunkSize, count;
-		result = fwrite(VMAP_MAGIC, 1, 8, wf) == 8;
+		bool result = fwrite(VMAP_MAGIC, 1, 8, wf) == 8;
 		if(result && fwrite("WMOD", 1, 4, wf) != 4) result = false;
 		chunkSize = sizeof(G3D::uint32) + sizeof(G3D::uint32);
 		if(result && fwrite(&chunkSize, sizeof(G3D::uint32), 1, wf) != 1) result = false;

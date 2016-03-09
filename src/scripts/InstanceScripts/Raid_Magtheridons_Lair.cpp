@@ -151,11 +151,9 @@ class MagtheridonTriggerAI : public CreatureAIScript
                 // We clear old "list"
                 ChannelersTable.clear();
                 // In order to recreate channeler "list" we need ot look for them in hardcoded spawn positions
-                Unit* Channeler;
                 for (uint8 i = 0; i < 5; i++)
                 {
-                    Channeler = NULL;
-                    Channeler = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(Channelers[i].x, Channelers[i].y, Channelers[i].z, 17256);
+                    Unit* Channeler = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(Channelers[i].x, Channelers[i].y, Channelers[i].z, 17256);
                     if (!Channeler)
                         continue;
                     // If Channeler was found we push him at the end of our "list"

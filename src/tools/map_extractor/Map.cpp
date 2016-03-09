@@ -37,7 +37,7 @@
 #include "wdt.h"
 #include <fcntl.h>
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) || defined(__clang__)
 #define _open   open
 #define _close close
 #ifndef O_BINARY

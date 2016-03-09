@@ -1002,10 +1002,9 @@ void Creature::RegenerateHealth()
     if (cur >= mh)return;
 
     //though creatures have their stats we use some weird formula for amt
-    float amt = 0.0f;
     uint32 lvl = getLevel();
 
-    amt = lvl * 2.0f;
+    float amt = lvl * 2.0f;
     if (PctRegenModifier)
         amt += (amt * PctRegenModifier) / 100;
 
@@ -2451,7 +2450,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     // Stop players from casting
-    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); itr++)
+    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 

@@ -1,14 +1,13 @@
-sudo: required
-dist: trusty
+sudo: false
 language: cpp
 
 os:
   - linux
-  - osx
+ # - osx
 
 compiler:
-#  - gcc
-  - clang
+  - gcc
+ # - clang
 
 # Do not send any notifications...
 #notifications:
@@ -25,7 +24,6 @@ git:
 env:
   global:
     - secure: "Zk3bAxnp4OHPMMZYOSoM2chuMZXomp7BFcT54/Ag6C8RCqtpqQ+E6yHRp861xdWSVo9uZ/uGmD1pwPiIUK8Vs80+OwhFVvtor2MGXyQKX1oFYBg0mo5Z3Xzy+OPa3e0YBbe6SSqdUzDE1hIa7OrU8GWciIMobWQS7XIBbWg3TFU="
-
 # Don't use Clang for Coverity Scan.
 #matrix:
 #  exlude:
@@ -34,14 +32,12 @@ env:
 
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-    sudo apt-get -qq update;
-    sudo apt-get -qq install zlib1g-dev libssl-dev libpcre3-dev libbz2-dev libmysqlclient-dev libmysql++-dev;
+    export CC=gcc-4.8 CXX=g++-4.8;
     fi
-# don not use gcc, gcc will redirected to llvm anyway
-  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then
-    brew update;
-    brew install mysql openssl pcre lbzip2;
-    fi
+#  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then
+#    brew update;
+#    brew install mysql openssl pcre lbzip2;
+#    fi
 
 install:
   - mkdir ascemu_build
@@ -49,12 +45,25 @@ install:
   - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=1
 
 addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - cmake
+    - zlib1g-dev
+    - libssl-dev
+    - libpcre3-dev
+    - libbz2-dev
+    - libmysqlclient-dev
+    - libmysql++-dev
+    - gcc-4.8
+    - g++-4.8
   coverity_scan:
     project:
-      name: "AscEmu/AscEmu"
+      name: "Lectro/AscEmu"
       description: "3.3.5 World of Warcraft game server"
-    notification_email: autokaori@gmail.com
-    build_command_prepend: "make clean"
+    notification_email:  andrius.peleckas1@gmail.com
+    build_command_prepend: "cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && make clean"
     build_command:   "make -j 2" # use limited workers to avoid running out of memory
     branch_pattern: coverity_scan
 

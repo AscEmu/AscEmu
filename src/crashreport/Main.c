@@ -118,7 +118,10 @@ int main(int argc, char *argv[])
         return 1;
 
     if (fscanf(f, "%ld %lu %lu %lu", &t, &opts.online, &opts.peak, &opts.accepted) != 4)
+    {
+        fclose(f);
         return 1;
+    }
 
     fclose(f);
 

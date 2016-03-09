@@ -614,7 +614,7 @@ Player::~Player()
     delete itr->second;*/
 
     std::map< uint32, PlayerPet* >::iterator itr = m_Pets.begin();
-    for (; itr != m_Pets.end(); itr++)
+    for (; itr != m_Pets.end(); ++itr)
         delete itr->second;
     m_Pets.clear();
 
@@ -935,7 +935,7 @@ bool Player::Create(WorldPacket& data)
     m_StableSlotCount = 0;
     Item* item;
 
-    for (std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); sp++)
+    for (std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); ++sp)
     {
         mSpells.insert((*sp));
     }
@@ -1821,7 +1821,7 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
             PlayerSpec spec = m_specs[s];
             data << uint8(spec.talents.size());
             std::map<uint32, uint8>::iterator itr;
-            for (itr = spec.talents.begin(); itr != spec.talents.end(); itr++)
+            for (itr = spec.talents.begin(); itr != spec.talents.end(); ++itr)
             {
                 data << uint32(itr->first);     // TalentId
                 data << uint8(itr->second);     // TalentRank
@@ -1938,7 +1938,7 @@ void Player::_SavePet(QueryBuffer* buf)
 
     ss.rdbuf()->str("");
 
-    for (std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin(); itr != m_Pets.end(); itr++)
+    for (std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
     {
         ss.rdbuf()->str("");
 
@@ -2120,7 +2120,7 @@ void Player::SpawnActivePet()
         return;
 
     std::map<uint32, PlayerPet* >::iterator itr = m_Pets.begin();
-    for (; itr != m_Pets.end(); itr++)
+    for (; itr != m_Pets.end(); ++itr)
         if (itr->second->stablestate == STABLE_STATE_ACTIVE && itr->second->active)
         {
             if (itr->second->alive)
@@ -2621,7 +2621,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << "', '";
     DailyMutex.Acquire();
     std::set<uint32>::iterator fdq = m_finishedDailies.begin();
-    for (; fdq != m_finishedDailies.end(); fdq++)
+    for (; fdq != m_finishedDailies.end(); ++fdq)
     {
         ss << (*fdq) << ",";
     }
@@ -6495,7 +6495,7 @@ void Player::Reset_Spells()
 
     std::list<uint32> spelllist;
 
-    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); itr++)
+    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
         spelllist.push_back((*itr));
     }
@@ -6505,7 +6505,7 @@ void Player::Reset_Spells()
         removeSpell((*itr), false, false, 0);
     }
 
-    for (std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); sp++)
+    for (std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); ++sp)
     {
         if (*sp)
         {
@@ -8024,7 +8024,7 @@ void Player::UpdateChannels(uint16 AreaID)
     for (i = m_channels.begin(); i != m_channels.end();)
     {
         c = *i;
-        i++;
+        ++i;
 
         if (!c->m_general || c->m_name == "LookingForGroup")//Not an updatable channel.
             continue;
@@ -8823,7 +8823,7 @@ void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
     for (Object::InRangeSet::iterator iter = m_objectsInRange.begin(); iter != m_objectsInRange.end();)
     {
         curObj = *iter;
-        iter++;
+        ++iter;
         if (curObj->IsPlayer())
         {
             Group* pGroup = static_cast< Player* >(curObj)->GetGroup();
@@ -9719,7 +9719,7 @@ void Player::CalcDamage()
     if (IsInFeralForm())
     {
         float tmp = 1; // multiplicative damage modifier
-        for (std::map<uint32, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); i++)
+        for (std::map<uint32, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
         {
             if (i->second.wclass == (uint32)-1)  // applying only "any weapon" modifiers
                 tmp += i->second.value;
@@ -9786,7 +9786,7 @@ void Player::CalcDamage()
     float bonus = ap_bonus * speed;
     float tmp = 1;
     std::map<uint32, WeaponModifier>::iterator i;
-    for (i = damagedone.begin(); i != damagedone.end(); i++)
+    for (i = damagedone.begin(); i != damagedone.end(); ++i)
     {
         if ((i->second.wclass == (uint32)-1) || //any weapon
             (it && ((1 << it->GetProto()->SubClass) & i->second.subclass)))
@@ -9828,7 +9828,7 @@ void Player::CalcDamage()
         bonus = ap_bonus * speed;
         i = damagedone.begin();
         tmp = 1;
-        for (; i != damagedone.end(); i++)
+        for (; i != damagedone.end(); ++i)
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
                 (((1 << it->GetProto()->SubClass) & i->second.subclass))
@@ -9858,7 +9858,7 @@ void Player::CalcDamage()
     {
         i = damagedone.begin();
         tmp = 1;
-        for (; i != damagedone.end(); i++)
+        for (; i != damagedone.end(); ++i)
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
                 (((1 << it->GetProto()->SubClass) & i->second.subclass)))
@@ -13116,7 +13116,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     /* Stop players from casting */
-    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); itr++)
+    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 
@@ -14142,7 +14142,7 @@ uint32 Player::GetUnstabledPetNumber(void)
         return 0;
 
     std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin();
-    for (; itr != m_Pets.end(); itr++)
+    for (; itr != m_Pets.end(); ++itr)
         if (itr->second->stablestate == STABLE_STATE_ACTIVE)
             return itr->first;
     return 0;
