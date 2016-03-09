@@ -195,7 +195,7 @@ void Spell::AddConeTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarge
 {
     TargetsList* list = &m_targetUnits[i];
     ObjectSet::iterator itr;
-    for (itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++)
+    for (itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>((*itr))->isAlive())
             continue;
@@ -257,7 +257,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
         return;
 
     ObjectSet::iterator itr;
-    for (itr = firstTarget->GetInRangeSetBegin(); itr != firstTarget->GetInRangeSetEnd(); itr++)
+    for (itr = firstTarget->GetInRangeSetBegin(); itr != firstTarget->GetInRangeSetEnd(); ++itr)
     {
         if (!(*itr)->IsUnit() || !static_cast<Unit*>((*itr))->isAlive())
             continue;
@@ -294,7 +294,7 @@ void Spell::AddPartyTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     AddTarget(i, TargetType, p);
 
     ObjectSet::iterator itr;
-    for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); itr++)
+    for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         if (!(*itr)->IsUnit() || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -326,7 +326,7 @@ void Spell::AddRaidTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarge
     AddTarget(i, TargetType, p);
 
     ObjectSet::iterator itr;
-    for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); itr++)
+    for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         if (!(*itr)->IsUnit() || !static_cast<Unit*>(*itr)->isAlive())
             continue;

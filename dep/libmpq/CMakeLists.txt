@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-project(libmpq)
+project(libmpq C)
 file(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.c ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.h)
 
 if(WIN32)
@@ -20,8 +20,8 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/win
    ${CMAKE_CURRENT_SOURCE_DIR}/libmpq
    ${CMAKE_SOURCE_DIR}/dep/loadlib
-   ${ZLIB_INCLUDE_DIRS}
    ${BZIP2_INCLUDE_DIRS}
+   ${ZLIB_INCLUDE_DIRS}
 )
 
 add_library(${PROJECT_NAME} STATIC ${sources})

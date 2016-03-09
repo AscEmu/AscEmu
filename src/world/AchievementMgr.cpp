@@ -213,7 +213,7 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
 
         ss << "INSERT INTO character_achievement VALUES ";
         bool first = true;
-        for (CompletedAchievementMap::iterator iter = m_completedAchievements.begin(); iter != m_completedAchievements.end(); iter++)
+        for (CompletedAchievementMap::iterator iter = m_completedAchievements.begin(); iter != m_completedAchievements.end(); ++iter)
         {
             if (ss.str().length() >= 16000)
             {

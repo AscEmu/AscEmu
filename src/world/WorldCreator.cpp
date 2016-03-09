@@ -712,7 +712,6 @@ uint32 InstanceMgr::GenerateInstanceID()
 void BuildStats(MapMgr* mgr, char* m_file, Instance* inst, MapInfo* inf)
 {
     char tmp[200];
-    strcpy(tmp, "");
 #define pushline strcat(m_file, tmp)
 
     snprintf(tmp, 200, "    <instance>\n");

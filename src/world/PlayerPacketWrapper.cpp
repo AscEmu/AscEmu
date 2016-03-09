@@ -352,7 +352,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     uint32 count = 0;
     uint8 slottype = 0;
 
-    for (uint32 x = 0; iter != pLoot->items.end(); iter++, x++)
+    for (uint32 x = 0; iter != pLoot->items.end(); ++iter, x++)
     {
         if (iter->iItemsCount == 0)
             continue;

@@ -6,7 +6,7 @@ if(NOT BUILD_LUAENGINE)
 endif()
 
 # set up our project name
-project(LuaEngine)
+project(LuaEngine CXX)
 
 #SRCS - contains the source files that compose this project.
 set(SRCS

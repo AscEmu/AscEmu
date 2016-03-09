@@ -1026,6 +1026,7 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
     sLuaEventMgr.event_AddEvent(te);
     lua_settop(L, 0);
     lua_pushnumber(L, ref);
+    delete ek;
     return 1;
 }
 

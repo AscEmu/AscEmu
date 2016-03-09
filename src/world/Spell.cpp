@@ -413,7 +413,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
     float r = range * range;
     uint8 did_hit_result;
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++)
+    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         // don't add objects that are not units and that are dead
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
@@ -485,7 +485,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
     {
         itr = itr2;
         //maybe scripts can change list. Should use lock instead of this to prevent multiple changes. This protects to 1 deletion only
-        itr2++;
+        ++itr2;
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())      //|| (TO< Creature* >(*itr)->IsTotem() && !TO< Unit* >(*itr)->IsPlayer())) why shouldn't we fill totems?
             continue;
 
@@ -553,7 +553,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
     for (itr2 = m_caster->GetInRangeSetBegin(); itr2 != m_caster->GetInRangeSetEnd();)
     {
         itr = itr2;
-        itr2++; //maybe scripts can change list. Should use lock instead of this to prevent multiple changes. This protects to 1 deletion only
+        ++itr2; //maybe scripts can change list. Should use lock instead of this to prevent multiple changes. This protects to 1 deletion only
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
 
@@ -621,7 +621,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++)
+    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -675,7 +675,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++)
+    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -3560,7 +3560,7 @@ uint8 Spell::CanCast(bool tolerate)
         {
             bool found = false;
 
-            for (std::set<Object*>::iterator itr = p_caster->GetInRangeSetBegin(); itr != p_caster->GetInRangeSetEnd(); itr++)
+            for (std::set<Object*>::iterator itr = p_caster->GetInRangeSetBegin(); itr != p_caster->GetInRangeSetEnd(); ++itr)
             {
                 if (!(*itr)->IsGameObject())
                     continue;
@@ -5216,7 +5216,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                 for (itr2 = u_caster->GetInRangeSetBegin(); itr2 != u_caster->GetInRangeSetEnd();)
                 {
                     itr = itr2;
-                    itr2++;
+                    ++itr2;
                     if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->isAlive() && IsInrange(u_caster, (*itr), 8) && (u_caster->GetPhase() & (*itr)->GetPhase()))
                     {
                         did_hit_result = DidHit(dbcSpell.LookupEntry(53385)->Effect[0], static_cast<Unit*>(*itr));

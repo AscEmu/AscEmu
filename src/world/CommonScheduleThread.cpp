@@ -116,7 +116,7 @@ void CommonScheduleThread::BroadCastExec()
 
             sWorld.SendBCMessageByID((uint32)itOrderMSGEntry->second);
 
-            itOrderMSGEntry++;
+            ++itOrderMSGEntry;
         }
         break;
         default:

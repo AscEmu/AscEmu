@@ -36,7 +36,7 @@ extern "C" {
 #include <stdint.h>
 #include <sys/types.h>
 
-#if defined(__GNUC__) && (__GNUC__ >= 4)
+#if defined(__GNUC__) || defined(__clang__)
 # define LIBMPQ_API __attribute__((visibility("default")))
 #else
 # define LIBMPQ_API

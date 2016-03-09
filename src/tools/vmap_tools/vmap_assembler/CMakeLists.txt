@@ -10,6 +10,7 @@ set(sources
 include_directories(
    ${CMAKE_SOURCE_DIR}/dep/vmaplib/include
    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+   ${ZLIB_INCLUDE_DIRS}
 )
 
 add_executable(${PROJECT_NAME} ${sources})

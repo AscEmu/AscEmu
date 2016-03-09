@@ -6,7 +6,7 @@ if(NOT BUILD_EXTRASCRIPTS )
 endif(NOT BUILD_EXTRASCRIPTS)
 
 # set up our project name
-project(ExtraScripts)
+project(ExtraScripts CXX)
 
 #sources -contains source files for our library.
 set(sources

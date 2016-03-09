@@ -31,7 +31,6 @@ endif()
 # set default architecture identifier
 if(IS_64BIT)
     message(STATUS "Detected 64 bit system")
-    add_definitions(-DX64)
 endif()
 
 # default definitions
