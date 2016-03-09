@@ -751,7 +751,7 @@ void StrandOfTheAncient::StartRound()
 
     roundprogress = SOTA_ROUND_STARTED;
 
-    for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); itr++)
+    for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
     {
         Player *p = *itr;
 
@@ -911,7 +911,7 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
             {
                 m_bomb[i] = m_mapMgr->CreateAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
             }
-            npc[SOTA_NPCS] = SpawnCreature(SOTA_RIGGER_SPARKLIGHT, sotaNPCSLocations[0], TeamFactions[Attackers]);
+            npc[TEAM_ALLIANCE] = SpawnCreature(SOTA_RIGGER_SPARKLIGHT, sotaNPCSLocations[0], TeamFactions[Attackers]);
             break;
         case SOTA_CONTROL_POINT_WEST_GY:
             for (uint8 i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; i++)
@@ -922,7 +922,7 @@ void StrandOfTheAncient::CaptureControlPoint(SOTAControlPoints point)
             {
                 m_bomb[i] = m_mapMgr->CreateAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
             }
-            npc[SOTA_NPCS] = SpawnCreature(SOTA_GORGRIL_RIGSPARK, sotaNPCSLocations[1], TeamFactions[Attackers]);
+            npc[TEAM_HORDE] = SpawnCreature(SOTA_GORGRIL_RIGSPARK, sotaNPCSLocations[1], TeamFactions[Attackers]);
             break;
     }
 }

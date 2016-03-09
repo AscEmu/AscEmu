@@ -83,7 +83,7 @@ void LogonServer::Run(int argc, char** argv)
             LOG_BASIC("  Encountered one or more errors.");
 
         sLog.Close();
-        delete config_file;
+        free(config_file);
         return;
     }
 

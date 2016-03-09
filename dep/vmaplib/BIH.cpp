@@ -18,10 +18,10 @@
 
 #include "BIH.h"
 
-void BIH::buildHierarchy(std::vector<G3D::uint32> &tempTree, buildData & dat, BuildStats & stats)
+void BIH::buildHierarchy(std::vector<uint32_t> &tempTree, buildData & dat, BuildStats & stats)
 {
 	// create space for the first node
-	tempTree.push_back(G3D::uint32(3 << 30));   // dummy leaf
+	tempTree.push_back(uint32_t(3 << 30));   // dummy leaf
 	tempTree.insert(tempTree.end(), 2, 0);
 	//tempTree.add(0);
 

@@ -12,13 +12,12 @@
 void InitMPQs()
 {
     //COPIED FROM MAP EXTRACTOR
-    FILE * tf;
     const char* localeNames[] = { "enUS", "enGB", "deDE", "frFR", "koKR", "zhCN", "zhTW", "esES", "ruRU", 0 };
     int maxPatches = 3;
     int locale = -1;
     char tmp[100];
 
-    tf = fopen("Data/common-2.MPQ", "r");
+    FILE* tf = fopen("Data/common-2.MPQ", "r");
     if (!tf)
     {
         printf("Could not find Data/common.MPQ-2\n");
@@ -256,6 +255,6 @@ int main()
         float boundradius = header->boundingradius * modelscale;
         fprintf(fo, "insert into `display_bounding_boxes` VALUES (%u, %f, %f, %f, %f, %f, %f, %f);\n", displayid, boundlow[0], boundlow[1], boundlow[2], boundhigh[0], boundhigh[1], boundhigh[2], boundradius);
     }
-
+    fclose(fo);
     return 0;
 }

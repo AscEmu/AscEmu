@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-project(map_extractor)
+project(map_extractor CXX)
 file(GLOB source *.cpp *.h)
 
 set(source

@@ -1,25 +1,13 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-set(Recast_SRCS
-   Source/Recast.cpp
-   Source/RecastAlloc.cpp
-   Source/RecastArea.cpp
-   Source/RecastContour.cpp
-   Source/RecastFilter.cpp
-   Source/RecastLayers.cpp
-   Source/RecastMesh.cpp
-   Source/RecastMeshDetail.cpp
-   Source/RecastRasterization.cpp
-   Source/RecastRegion.cpp
-   )
+file(GLOB Recast_SRCS Source/*.cpp Include/*.h)
 
 include_directories(
-   Include
-   ${ZLIB_LIBRARIES}
-   )
+   ${CMAKE_CURRENT_SOURCE_DIR}/Include
+   ${ZLIB_INCLUDE_DIRS}
+)
 
 add_library(Recast STATIC ${Recast_SRCS})
+target_link_libraries(Recast ${ZLIB_LIBRARIES})
 
-#Set it to the project name.
-set(RECAST_LIBRARIES Recast CACHE INTERNAL "recast Libraries")
 unset(Recast_SRCS)

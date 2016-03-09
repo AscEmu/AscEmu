@@ -80,12 +80,16 @@ int main(int argc, char* argv[])
 	if( in == NULL ){
 		printf("ERROR: Couldn't open %s for reading!\n", Executable );
 		printf("Exiting.\n");
+        fclose(in);
+        flose(out);
 		return -1;
 	}
 
 	if( out == NULL ){
 		printf("ERROR: Couldn't open %s for writing!\n", OutputFile );
 		printf("Exiting.\n");
+        fclose(in);
+        flose(out);
 		return -1;
 	}
 
@@ -95,17 +99,31 @@ int main(int argc, char* argv[])
 
 	char * buffer = (char*)malloc(len);
 	if(!buffer)
+    {
+        fclose(in);
+        flose(out);
+        free(buffer);
 		return 2;
+    }
 
 	if(fread(buffer, 1, len, in) != len)
+    {
+        fclose(in);
+        flose(out);
+        free(buffer);
 		return 3;
+    }
 
 	printf("Searching for `%s`...", SEARCH_TEXT);
 	size_t offset = find_string_in_buffer(SEARCH_TEXT, strlen(SEARCH_TEXT), buffer, len);
 	printf(" at %d.\n", offset);
 	if(offset < 0)
+    {
+        fclose(in);
+        flose(out);
+        free(buffer);
 		return 3;
-
+    }
 	/* dump header */
 
 	fprintf(out, "%s", HDR );
@@ -129,12 +147,12 @@ int main(int argc, char* argv[])
 
 		name = p;
 		fprintf(out, "\t%-60s = %d,\n", name,index);
-		p--;
+		--p;
 		if(p<endp)
 			break;
-		index++;
+		++index;
 		reverse_pointer_back_to_string(&p, "SPELL_FAILED");
-	}while( 1 );
+	}while(true);
 
 	// fprintf(out, "\t%-60s = %d,\n", "SPELL_CANCAST_OK",255);
 	fprintf(out, "};\n");
@@ -152,12 +170,12 @@ int main(int argc, char* argv[])
 	{
 		name = p;
 		fprintf(out, "\t%-60s = %d,\n", name,index);
-		p--;
+		--p;
 		if(p<endp)
 			break;
-		index++;
+		++index;
 		reverse_pointer_back_to_string(&p, "PETTAME");
-	}while( 1 );
+	}while(true);
 	fprintf(out, "};\n");
 
 	fprintf(out, "\n#endif\n\n");

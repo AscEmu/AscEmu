@@ -106,7 +106,11 @@ namespace Arcemu
 
     unsigned long long SysInfo::GetTickCount()
     {
+#ifndef _WIN64
         return ::GetTickCount();
+#else
+        return ::GetTickCount64();
+#endif
     }
 
 #endif

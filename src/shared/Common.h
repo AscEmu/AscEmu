@@ -79,7 +79,6 @@ enum MsTimeVariables
 #  include <windows.h>
 #  undef NOMINMAX
 #else
-#  include <cstring>
 #  define MAX_PATH 1024
 #endif
 
@@ -141,17 +140,10 @@ enum MsTimeVariables
 #define CONFIG "Release"
 #endif
 
-#ifdef X64
+#if defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(_WIN64)
 #define ARCH "X64"
 #else
 #define ARCH "X86"
-#endif
-
-
-#if _WIN32
-#define STRCASECMP stricmp
-#else
-#define STRCASECMP strcasecmp
 #endif
 
 #if PLATFORM == PLATFORM_WIN32
@@ -181,21 +173,12 @@ enum MsTimeVariables
 #include <algorithm>
 #include <cstring>
 #include <climits>
-#include <cstdlib>
+
 //#include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "CommonHelpers.hpp"
-
-#include <unordered_map>
-#include <unordered_set>
-#define HM_NAMESPACE ::std
-#define hash_map unordered_map
-#define hash_multimap unordered_multimap
-#define hash_set unordered_set
-#define hash_multiset unordered_multiset
-
 #include "CommonTypes.hpp"
 
 // Include all threading files
@@ -255,7 +238,7 @@ static inline uint32 int32abs2uint32(const int value)
 /// Fastest Method of float2int32
 static inline int float2int32(const float value)
 {
-#if !defined(X64) && COMPILER == COMPILER_MICROSOFT && !defined(USING_BIG_ENDIAN)
+#if !defined(_WIN64) && COMPILER == COMPILER_MICROSOFT && !defined(USING_BIG_ENDIAN)
     int i;
     __asm
     {
@@ -275,7 +258,7 @@ static inline int float2int32(const float value)
 /// Fastest Method of long2int32
 static inline int long2int32(const double value)
 {
-#if !defined(X64) && COMPILER == COMPILER_MICROSOFT && !defined(USING_BIG_ENDIAN)
+#if !defined(_WIN64) && COMPILER == COMPILER_MICROSOFT && !defined(USING_BIG_ENDIAN)
     int i;
     __asm
     {
@@ -302,7 +285,7 @@ static inline int long2int32(const double value)
 
 inline uint32 now()
 {
-#ifdef WIN32
+#ifdef _WIN32
     return GetTickCount();
 #else
     struct timeval tv;

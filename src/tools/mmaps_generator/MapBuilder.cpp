@@ -546,6 +546,8 @@ namespace MMAP
         if (!pmmerge)
         {
             printf("%s alloc pmmerge FIALED!          \r", tileString);
+            delete[] tiles;
+            delete[] pmmerge;
             return;
         }
 
@@ -553,6 +555,9 @@ namespace MMAP
         if (!dmmerge)
         {
             printf("%s alloc dmmerge FIALED!          \r", tileString);
+            delete[] tiles;
+            delete[] pmmerge;
+            delete[] dmmerge;
             return;
         }
 
@@ -566,7 +571,7 @@ namespace MMAP
                 {
                     pmmerge[nmerge] = tile.pmesh;
                     dmmerge[nmerge] = tile.dmesh;
-                    nmerge++;
+                    ++nmerge;
                 }
             }
         }
@@ -575,6 +580,9 @@ namespace MMAP
         if (!iv.polyMesh)
         {
             printf("%s alloc iv.polyMesh FIALED!          \r", tileString);
+            delete[] tiles;
+            delete[] pmmerge;
+            delete[] dmmerge;
             return;
         }
         rcMergePolyMeshes(m_rcContext, pmmerge, nmerge, *iv.polyMesh);
@@ -583,15 +591,17 @@ namespace MMAP
         if (!iv.polyMeshDetail)
         {
             printf("%s alloc m_dmesh FIALED!          \r", tileString);
+            delete[] tiles;
+            delete[] pmmerge;
+            delete[] dmmerge;
             return;
         }
         rcMergePolyMeshDetails(m_rcContext, dmmerge, nmerge, *iv.polyMeshDetail);
 
         // free things up
-        delete [] pmmerge;
-        delete [] dmmerge;
-
-        delete [] tiles;
+        delete[] tiles;
+        delete[] pmmerge;
+        delete[] dmmerge;
 
         // set polygons as walkable
         ///\todo special flags for DYNAMIC polygons, ie surfaces that can be turned on and off
