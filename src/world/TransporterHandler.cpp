@@ -383,8 +383,8 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
         }
         if (keyFrames[i].actionflag == 2)
         {
-            if (firstStop == -1)
-                firstStop = i;
+            if (firstStop < 0)
+                firstStop = int(i);
 
             lastStop = i;
         }
