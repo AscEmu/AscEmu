@@ -60,9 +60,9 @@ addons:
     - g++-4.8
   coverity_scan:
     project:
-      name: "Lectro/AscEmu"
+      name: "AscEmu/AscEmu"
       description: "3.3.5 World of Warcraft game server"
-    notification_email:  andrius.peleckas1@gmail.com
+    notification_email: autokaori@gmail.com
     build_command_prepend: "cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && make clean"
     build_command:   "make -j 2" # use limited workers to avoid running out of memory
     branch_pattern: coverity_scan
