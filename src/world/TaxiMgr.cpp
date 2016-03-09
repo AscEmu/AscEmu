@@ -63,7 +63,7 @@ void TaxiPath::ComputeLen()
         x = itr->second->x;
         y = itr->second->y;
         z = itr->second->z;
-        itr++;
+        ++itr;
     }
 }
 
@@ -100,8 +100,8 @@ void TaxiPath::SetPosForTime(float & x, float & y, float & z, uint32 time, uint3
     {
         if (itr->second->mapid != mapid)
         {
-            itr++;
-            nodecounter++;
+            ++itr;
+            ++nodecounter;
             continue;
         }
 
@@ -134,8 +134,8 @@ void TaxiPath::SetPosForTime(float & x, float & y, float & z, uint32 time, uint3
         nx = itr->second->x;
         ny = itr->second->y;
         nz = itr->second->z;
-        itr++;
-        nodecounter++;
+        ++itr;
+        ++nodecounter;
     }
 
     x = nx;
@@ -182,8 +182,8 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
     {
         if (itr->second->mapid != mapid)
         {
-            itr++;
-            nodecounter++;
+            ++itr;
+            ++nodecounter;
             continue;
         }
 
@@ -215,7 +215,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
         nx = itr->second->x;
         ny = itr->second->y;
         nz = itr->second->z;
-        itr++;
+        ++itr;
     }
 
     if (itr == m_pathNodes.end())
@@ -330,7 +330,7 @@ TaxiPath* TaxiMgr::GetTaxiPath(uint32 from, uint32 to)
 {
     std::unordered_map<uint32, TaxiPath*>::iterator itr;
 
-    for (itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); itr++)
+    for (itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); ++itr)
         if ((itr->second->to == to) && (itr->second->from == from))
             return itr->second;
 
@@ -357,7 +357,7 @@ uint32 TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid)
 
     std::unordered_map<uint32, TaxiNode*>::iterator itr;
 
-    for (itr = m_taxiNodes.begin(); itr != m_taxiNodes.end(); itr++)
+    for (itr = m_taxiNodes.begin(); itr != m_taxiNodes.end(); ++itr)
     {
         if (itr->second->mapid == mapid)
         {
@@ -380,7 +380,7 @@ bool TaxiMgr::GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask)
     std::unordered_map<uint32, TaxiPath*>::iterator itr;
     uint8 field;
 
-    for (itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); itr++)
+    for (itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); ++itr)
     {
         /*if (itr->second->from == curloc)
         {*/

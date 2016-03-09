@@ -6,7 +6,7 @@ if(NOT BUILD_GOSSIPSCRIPTS )
 endif(NOT BUILD_GOSSIPSCRIPTS)
 
 # set up our project name
-project(GossipScripts)
+project(GossipScripts CXX)
 
 #sources -contains source files for our library.
 set(sources

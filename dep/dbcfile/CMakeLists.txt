@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
-project(dbcfile)
+project(dbcfile CXX)
 
 set(sources
    dbcfile.cpp

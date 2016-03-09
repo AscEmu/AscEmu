@@ -721,7 +721,7 @@ Unit::~Unit()
     m_extraStrikeTargets.clear();
 
     // delete auras which did not get added to unit yet
-    for (std::map<uint32, Aura*>::iterator i = tmpAura.begin(); i != tmpAura.end(); i++)
+    for (std::map<uint32, Aura*>::iterator i = tmpAura.begin(); i != tmpAura.end(); ++i)
         delete i->second;
     tmpAura.clear();
 

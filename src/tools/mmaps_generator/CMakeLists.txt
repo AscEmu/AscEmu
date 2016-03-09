@@ -12,11 +12,12 @@ set(sources
 )
 
 set(headers
-   IntermediateValues.h
-   MoveMapSharedDefines.h
-   MapBuilder.h
-   TerrainBuilder.h
-   Define.h
+    Define.h
+    IntermediateValues.h
+    MapBuilder.h
+    MMapCommon.h
+    MoveMapSharedDefines.h
+    TerrainBuilder.h
 )
 
 include_directories(

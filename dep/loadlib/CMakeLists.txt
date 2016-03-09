@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
-project(loadlib)
+project(loadlib CXX)
 file(GLOB loadlib_source *cpp *.h)
 
 include_directories(

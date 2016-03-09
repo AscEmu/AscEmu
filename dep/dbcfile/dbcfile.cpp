@@ -66,7 +66,10 @@ bool DBCFile::open(const char * fn)
     stringTable = (unsigned char *)malloc(stringSize);
 
     if (!data || !stringTable)
+    {
+        fclose(pf);
         return false;
+    }
 
     fread(data, recordSize*recordCount, 1, pf);
     fread(stringTable, stringSize, 1, pf);

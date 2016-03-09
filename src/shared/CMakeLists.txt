@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
-project(shared)
+project(shared CXX)
 
 set(sources
     CThreads.cpp
@@ -33,7 +33,6 @@ set(sources
     Auth/WowCrypt.cpp
     Config/Config.cpp
     Database/Database.cpp
-	Database/Field.cpp
     Database/MySQLDatabase.cpp
     Database/CreateInterface.cpp
     Network/CircularBuffer.cpp
@@ -41,23 +40,23 @@ set(sources
 )
 
 set(headers
+	Array.h
 	ascemu_getopt.h
     AscemuServerDefines.hpp
-	Array.h
 	AuthCodes.h
 	ByteBuffer.h
 	CallBack.h
 	CircularQueue.h
 	Common.h
-    CommonTypes.hpp
-    CommonHelpers.hpp
     CommonDefines.hpp
+    CommonHelpers.hpp
+    CommonTypes.hpp
+    config.h
 	CrashHandler.h
 	crc32.h
 	CRefcounter.h
 	CThreads.h
-	Database/DatabaseEnv.h
-	DynLib.hpp
+    DynLib.hpp
 	Errors.h
 	FastQueue.h
 	FindFiles.hpp
@@ -70,13 +69,14 @@ set(headers
 	PerformanceCounter.hpp
 	PreallocatedQueue.h
 	printStackTrace.h
+	Database/DatabaseEnv.h
 	RC4Engine.h
 	Singleton.h
-	StackBuffer.h
-	StackWalker.h
-	StackTrace.h
-	Storage.h
 	SysInfo.hpp
+	StackBuffer.h
+	StackTrace.h
+	StackWalker.h
+	Storage.h
 	TextFile.h
 	TLSObject.h
 	Tokenizer.h

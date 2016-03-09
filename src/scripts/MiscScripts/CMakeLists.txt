@@ -6,7 +6,7 @@ if(NOT BUILD_MISCSCRIPTS)
 endif()
 
 # set up our project name
-project(MiscScripts)
+project(MiscScripts CXX)
 
 #sources -contains source files for our library.
 set(sources

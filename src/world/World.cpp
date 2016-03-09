@@ -200,7 +200,7 @@ void CleanupRandomNumberGenerators();
 void World::LogoutPlayers()
 {
     Log.Notice("World", "Logging out players...");
-    for (SessionMap::iterator i = m_sessions.begin(); i != m_sessions.end(); i++)
+    for (SessionMap::iterator i = m_sessions.begin(); i != m_sessions.end(); ++i)
     {
         (i->second)->LogoutPlayer(true);
     }
@@ -591,19 +591,8 @@ bool World::SetInitialWorldSettings()
     sLfgMgr.LoadRewards();
 
     m_queueUpdateTimer = mQueueUpdateInterval;
-    if (Config.MainConfig.GetBoolDefault("Startup", "BackgroundLootLoading", true))
-    {
-        Log.Notice("World", "Backgrounding loot loading...");
-
-        // loot background loading in a lower priority thread.
-        ThreadPool.ExecuteTask(new BasicTaskExecutor(new CallbackP0<LootMgr>(LootMgr::getSingletonPtr(), &LootMgr::LoadLoot),
-            BTE_PRIORITY_LOW));
-    }
-    else
-    {
-        Log.Notice("World", "Loading loot in foreground...");
-        lootmgr.LoadLoot();
-    }
+    Log.Notice("World", "Loading loot data...");
+    lootmgr.LoadLoot();
 
     Channel::LoadConfSettings();
     Log.Success("BattlegroundManager", "Starting...");
@@ -714,7 +703,7 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
     m_sessionlock.AcquireReadLock();
 
     SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
@@ -748,7 +737,7 @@ void World::SendFactionMessage(WorldPacket* packet, uint8 teamId)
     m_sessionlock.AcquireReadLock();
     SessionMap::iterator itr;
     Player* plr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         plr = itr->second->GetPlayer();
         if (!plr || !plr->IsInWorld())
@@ -764,7 +753,7 @@ void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
 {
     m_sessionlock.AcquireReadLock();
     SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
@@ -780,7 +769,7 @@ void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* se
     m_sessionlock.AcquireReadLock();
 
     SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
@@ -797,7 +786,7 @@ void World::SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSes
     m_sessionlock.AcquireReadLock();
 
     SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
         {
@@ -1196,7 +1185,7 @@ void TaskList::spawn()
         // get processor count
 #ifndef WIN32
 #if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
-#ifdef X64
+#if defined(__x86_64__) || defined(__x86_64) || defined(__amd64__)
         threadcount = 2;
 #else
         long affmask;
@@ -2223,7 +2212,7 @@ void World::SendBCMessageByID(uint32 id)
 {
     m_sessionlock.AcquireReadLock();
     SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())
         {
@@ -2253,7 +2242,7 @@ void World::SendLocalizedWorldText(bool wide, const char* format, ...)  // May n
 {
     m_sessionlock.AcquireReadLock();
     SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); itr++)
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() &&
             itr->second->GetPlayer()->IsInWorld())

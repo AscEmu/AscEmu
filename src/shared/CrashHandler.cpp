@@ -62,7 +62,7 @@ void StartCrashHandler()
     // just piss us off. :P
 
     // Check for a debugger.
-#ifndef X64
+#if !(defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(_WIN64))
     DWORD code;
 
     __asm

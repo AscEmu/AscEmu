@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
-project(worldserver)
+project(worldserver CXX)
 
 set(sources
     Main.cpp

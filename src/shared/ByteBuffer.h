@@ -586,7 +586,7 @@ template <typename T> ByteBuffer & operator>>(ByteBuffer & b, std::list<T> &v)
 template <typename K, typename V> ByteBuffer & operator<<(ByteBuffer & b, std::map<K, V> &m)
 {
     b << (uint32)m.size();
-    for (typename std::map<K, V>::iterator i = m.begin(); i != m.end(); i++)
+    for (typename std::map<K, V>::iterator i = m.begin(); i != m.end(); ++i)
     {
         b << i->first << i->second;
     }

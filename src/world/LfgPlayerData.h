@@ -19,8 +19,6 @@
 #ifndef _LFGPLAYERDATA_H
 #define _LFGPLAYERDATA_H
 
-#include "Lfg.h"
-
 /// Stores all lfg data needed about the player.
 class LfgPlayerData
 {
