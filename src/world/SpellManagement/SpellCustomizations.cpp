@@ -285,7 +285,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
 
     for (uint8 y = 0; y < 3; y++)
     {
-        if (!spell_entry->Effect[y] == SPELL_EFFECT_APPLY_AURA)
+        if (spell_entry->Effect[y] != SPELL_EFFECT_APPLY_AURA)
         {
             continue;
         }
@@ -380,7 +380,8 @@ void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
 
 void SpellCustomizations::SetOnShapeshiftChange(SpellEntry* spell_entry)
 {
-    if (!spell_entry->Id == 5225 && !spell_entry->Id == 19883)
+    // Currently only for spell Track Humanoids
+    if (spell_entry->Id != 5225 && spell_entry->Id != 19883)
     {
         return;
     }
