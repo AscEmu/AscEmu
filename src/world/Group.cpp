@@ -376,36 +376,30 @@ void SubGroup::Disband()
     data2 << uint8(0);
     data2 << uint32(m_Parent->m_difficulty);	// you leave the group
 
-    GroupMembersSet::iterator itr = m_GroupMembers.begin();
-    GroupMembersSet::iterator it2;
-    for (; itr != m_GroupMembers.end();)
+    for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
     {
-        if ((*itr) != NULL)
+        if ((*itr) != nullptr)
         {
             if ((*itr)->m_loggedInPlayer)
             {
-                if ((*itr)->m_loggedInPlayer->GetSession() != NULL)
+                if ((*itr)->m_loggedInPlayer->GetSession() != nullptr)
                 {
                     data2.put(5, uint32((*itr)->m_loggedInPlayer->iInstanceType));
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data2);
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
                     (*itr)->m_Group->SendNullUpdate((*itr)->m_loggedInPlayer);   // cebernic: panel refresh.
-
                 }
             }
 
-            (*itr)->m_Group = NULL;
+            (*itr)->m_Group = nullptr;
             (*itr)->subGroup = -1;
         }
 
-        m_Parent->m_MemberCount--;
-        it2 = itr;
-        ++itr;
-
-        m_GroupMembers.erase(it2);
+        --m_Parent->m_MemberCount;
+        itr = m_GroupMembers.erase(itr);
     }
 
-    m_Parent->m_SubGroups[m_Id] = NULL;
+    m_Parent->m_SubGroups[m_Id] = nullptr;
     delete this;
 }
 
