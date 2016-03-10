@@ -690,60 +690,71 @@ void ApplyNormalFixes()
 
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
         //this is a total bullshit so remove it when spell system supports effect overwriting
-        for (uint32 col1_swap = 0; col1_swap < 2; col1_swap++)
-            for (uint32 col2_swap = col1_swap; col2_swap < 3; col2_swap++)
-                if (sp->Effect[col1_swap] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE && sp->Effect[col2_swap] == SPELL_EFFECT_DUMMYMELEE)
-                {
-                    uint32 temp;
-                    float ftemp;
-                    temp = sp->Effect[col1_swap];
-                    sp->Effect[col1_swap] = sp->Effect[col2_swap];
-                    sp->Effect[col2_swap] = temp;
-                    temp = sp->EffectDieSides[col1_swap];
-                    sp->EffectDieSides[col1_swap] = sp->EffectDieSides[col2_swap];
-                    sp->EffectDieSides[col2_swap] = temp;
-                    //temp = sp->EffectBaseDice[col1_swap];    sp->EffectBaseDice[col1_swap] = sp->EffectBaseDice[col2_swap] ;        sp->EffectBaseDice[col2_swap] = temp;
-                    //ftemp = sp->EffectDicePerLevel[col1_swap];            sp->EffectDicePerLevel[col1_swap] = sp->EffectDicePerLevel[col2_swap] ;                sp->EffectDicePerLevel[col2_swap] = ftemp;
-                    ftemp = sp->EffectRealPointsPerLevel[col1_swap];
-                    sp->EffectRealPointsPerLevel[col1_swap] = sp->EffectRealPointsPerLevel[col2_swap];
-                    sp->EffectRealPointsPerLevel[col2_swap] = ftemp;
-                    temp = sp->EffectBasePoints[col1_swap];
-                    sp->EffectBasePoints[col1_swap] = sp->EffectBasePoints[col2_swap];
-                    sp->EffectBasePoints[col2_swap] = temp;
-                    temp = sp->EffectMechanic[col1_swap];
-                    sp->EffectMechanic[col1_swap] = sp->EffectMechanic[col2_swap];
-                    sp->EffectMechanic[col2_swap] = temp;
-                    temp = sp->EffectImplicitTargetA[col1_swap];
-                    sp->EffectImplicitTargetA[col1_swap] = sp->EffectImplicitTargetA[col2_swap];
-                    sp->EffectImplicitTargetA[col2_swap] = temp;
-                    temp = sp->EffectImplicitTargetB[col1_swap];
-                    sp->EffectImplicitTargetB[col1_swap] = sp->EffectImplicitTargetB[col2_swap];
-                    sp->EffectImplicitTargetB[col2_swap] = temp;
-                    temp = sp->EffectRadiusIndex[col1_swap];
-                    sp->EffectRadiusIndex[col1_swap] = sp->EffectRadiusIndex[col2_swap];
-                    sp->EffectRadiusIndex[col2_swap] = temp;
-                    temp = sp->EffectApplyAuraName[col1_swap];
-                    sp->EffectApplyAuraName[col1_swap] = sp->EffectApplyAuraName[col2_swap];
-                    sp->EffectApplyAuraName[col2_swap] = temp;
-                    temp = sp->EffectAmplitude[col1_swap];
-                    sp->EffectAmplitude[col1_swap] = sp->EffectAmplitude[col2_swap];
-                    sp->EffectAmplitude[col2_swap] = temp;
-                    ftemp = sp->EffectMultipleValue[col1_swap];
-                    sp->EffectMultipleValue[col1_swap] = sp->EffectMultipleValue[col2_swap];
-                    sp->EffectMultipleValue[col2_swap] = ftemp;
-                    temp = sp->EffectChainTarget[col1_swap];
-                    sp->EffectChainTarget[col1_swap] = sp->EffectChainTarget[col2_swap];
-                    sp->EffectChainTarget[col2_swap] = temp;
-                    temp = sp->EffectMiscValue[col1_swap];
-                    sp->EffectMiscValue[col1_swap] = sp->EffectMiscValue[col2_swap];
-                    sp->EffectMiscValue[col2_swap] = temp;
-                    temp = sp->EffectTriggerSpell[col1_swap];
-                    sp->EffectTriggerSpell[col1_swap] = sp->EffectTriggerSpell[col2_swap];
-                    sp->EffectTriggerSpell[col2_swap] = temp;
-                    ftemp = sp->EffectPointsPerComboPoint[col1_swap];
-                    sp->EffectPointsPerComboPoint[col1_swap] = sp->EffectPointsPerComboPoint[col2_swap];
-                    sp->EffectPointsPerComboPoint[col2_swap] = ftemp;
-                }
+        switch (sp->Id)
+        {
+            case 20243:     // Devastate Rank 1
+            case 30016:     // Devastate Rank 2
+            case 30022:     // Devastate Rank 3
+            case 47497:     // Devastate Rank 4
+            case 47498:     // Devastate Rank 5
+            case 57795:     // Devastate
+            case 60018:     // Devastate
+            case 62317:     // Devastate
+            case 69902:     // Devastate
+            {
+                uint32 temp;
+                float ftemp;
+                temp = sp->Effect[1];
+                sp->Effect[1] = sp->Effect[2];
+                sp->Effect[2] = temp;
+                temp = sp->EffectDieSides[1];
+                sp->EffectDieSides[1] = sp->EffectDieSides[2];
+                sp->EffectDieSides[2] = temp;
+                //temp = sp->EffectBaseDice[1];    sp->EffectBaseDice[1] = sp->EffectBaseDice[2] ;        sp->EffectBaseDice[2] = temp;
+                //ftemp = sp->EffectDicePerLevel[1];            sp->EffectDicePerLevel[1] = sp->EffectDicePerLevel[2] ;                sp->EffectDicePerLevel[2] = ftemp;
+                ftemp = sp->EffectRealPointsPerLevel[1];
+                sp->EffectRealPointsPerLevel[1] = sp->EffectRealPointsPerLevel[2];
+                sp->EffectRealPointsPerLevel[2] = ftemp;
+                temp = sp->EffectBasePoints[1];
+                sp->EffectBasePoints[1] = sp->EffectBasePoints[2];
+                sp->EffectBasePoints[2] = temp;
+                temp = sp->EffectMechanic[1];
+                sp->EffectMechanic[1] = sp->EffectMechanic[2];
+                sp->EffectMechanic[2] = temp;
+                temp = sp->EffectImplicitTargetA[1];
+                sp->EffectImplicitTargetA[1] = sp->EffectImplicitTargetA[2];
+                sp->EffectImplicitTargetA[2] = temp;
+                temp = sp->EffectImplicitTargetB[1];
+                sp->EffectImplicitTargetB[1] = sp->EffectImplicitTargetB[2];
+                sp->EffectImplicitTargetB[2] = temp;
+                temp = sp->EffectRadiusIndex[1];
+                sp->EffectRadiusIndex[1] = sp->EffectRadiusIndex[2];
+                sp->EffectRadiusIndex[2] = temp;
+                temp = sp->EffectApplyAuraName[1];
+                sp->EffectApplyAuraName[1] = sp->EffectApplyAuraName[2];
+                sp->EffectApplyAuraName[2] = temp;
+                temp = sp->EffectAmplitude[1];
+                sp->EffectAmplitude[1] = sp->EffectAmplitude[2];
+                sp->EffectAmplitude[2] = temp;
+                ftemp = sp->EffectMultipleValue[1];
+                sp->EffectMultipleValue[1] = sp->EffectMultipleValue[2];
+                sp->EffectMultipleValue[2] = ftemp;
+                temp = sp->EffectChainTarget[1];
+                sp->EffectChainTarget[1] = sp->EffectChainTarget[2];
+                sp->EffectChainTarget[2] = temp;
+                temp = sp->EffectMiscValue[1];
+                sp->EffectMiscValue[1] = sp->EffectMiscValue[2];
+                sp->EffectMiscValue[2] = temp;
+                temp = sp->EffectTriggerSpell[1];
+                sp->EffectTriggerSpell[1] = sp->EffectTriggerSpell[2];
+                sp->EffectTriggerSpell[2] = temp;
+                ftemp = sp->EffectPointsPerComboPoint[1];
+                sp->EffectPointsPerComboPoint[1] = sp->EffectPointsPerComboPoint[2];
+                sp->EffectPointsPerComboPoint[2] = ftemp;
+            } break;
+            default:
+                break;
+        }
 
         for (uint32 b = 0; b < 3; ++b)
         {
