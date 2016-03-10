@@ -634,7 +634,7 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
         char cmd[1024];
         char banner[1024];
         snprintf(banner, 1024, BANNER, BUILD_TAG, BUILD_REVISION, CONFIG, PLATFORM_TEXT, ARCH);
-        snprintf(cmd, 1024, "./arcemu-crashreport -r %d -d \'%s\'", BUILD_REVISION, banner);
+        snprintf(cmd, 1024, "./crashreport -r %d -d \'%s\'", BUILD_REVISION, banner);
         system(cmd);
     }
     unlink("worldserver.uptime");
