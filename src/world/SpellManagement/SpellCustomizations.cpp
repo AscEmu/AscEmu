@@ -66,18 +66,17 @@ void SpellCustomizations::LoadSpellRanks()
 {
     uint32 spell_rank_count = 0;
 
-    QueryResult* result = WorldDatabase.Query("SELECT spell_id, rank FROM spell_ranks");
-    if (result != NULL)
+    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, rank FROM spell_ranks"))
     {
         do
         {
             uint32 spell_id = result->Fetch()[0].GetUInt32();
-            uint32 rank = result->Fetch()[1].GetUInt32();
+            uint32 pRank = result->Fetch()[1].GetUInt32();
 
             SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
             if (spell_entry != nullptr)
             {
-                spell_entry->custom_RankNumber = rank;
+                spell_entry->custom_RankNumber = pRank;
                 ++spell_rank_count;
             }
             else
@@ -105,8 +104,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
 {
     uint32 spell_custom_assign_count = 0;
 
-    QueryResult* result = WorldDatabase.Query("SELECT spell_id, on_target_flag, from_caster_on_self_flag, self_cast_only, c_is_flag FROM spell_custom_assign");
-    if (result != NULL)
+    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, on_target_flag, from_caster_on_self_flag, self_cast_only, c_is_flag FROM spell_custom_assign"))
     {
         do
         {
@@ -150,8 +148,7 @@ void SpellCustomizations::LoadSpellCustomCoefFlags()
 {
     uint32 spell_custom_coef_flags_count = 0;
 
-    QueryResult* result = WorldDatabase.Query("SELECT spell_id, spell_coef_flags FROM spell_coef_flags");
-    if (result != NULL)
+    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, spell_coef_flags FROM spell_coef_flags"))
     {
         do
         {
@@ -188,8 +185,7 @@ void SpellCustomizations::LoadSpellProcs()
 {
     uint32 spell_procs_count = 0;
 
-    QueryResult* result = WorldDatabase.Query("SELECT spell_id, proc_on_name_hash, proc_flags, target_self, proc_chance, proc_charges, proc_interval, effect_trigger_spell_0, effect_trigger_spell_1, effect_trigger_spell_2, description FROM spell_proc");
-    if (result != nullptr)
+    if (QueryResult* result = WorldDatabase.Query("SELECT spell_id, proc_on_name_hash, proc_flags, target_self, proc_chance, proc_charges, proc_interval, effect_trigger_spell_0, effect_trigger_spell_1, effect_trigger_spell_2, description FROM spell_proc"))
     {
         do
         {

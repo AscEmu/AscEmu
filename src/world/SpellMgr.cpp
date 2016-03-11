@@ -131,7 +131,7 @@ void SpellFactoryMgr::LoadSpellAreas()
         return;
     }
 
-    uint32 count = 0;
+    uint32 pCount = 0;
     do
     {
         Field* fields = result->Fetch();
@@ -295,10 +295,11 @@ void SpellFactoryMgr::LoadSpellAreas()
         if (spellArea.auraSpell)
             mSpellAreaForAuraMap.insert(SpellAreaForAuraMap::value_type(abs(spellArea.auraSpell), sa));
 
-        ++count;
+        ++pCount;
     } while (result->NextRow());
+    delete result;
 
-    Log.Success("SpellArea", "Loaded %u spell area requirements.", count);
+    Log.Success("SpellArea", "Loaded %u spell area requirements.", pCount);
 }
 
 SpellAreaMapBounds SpellFactoryMgr::GetSpellAreaMapBounds(uint32 spell_id) const

@@ -117,8 +117,6 @@ void ObjectMgr::LoadTransports()
 {
     Log.Success("TransportHandler", "Starting loading transport data...");
     {
-        uint32 oldMSTime = getMSTime();
-
         QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
 
         if (!result)
@@ -127,8 +125,7 @@ void ObjectMgr::LoadTransports()
             return;
         }
 
-        uint32 count = 0;
-
+        uint32 pCount = 0;
         do
         {
             Field* fields = result->Fetch();
@@ -158,6 +155,7 @@ void ObjectMgr::LoadTransports()
             if (!pTransporter->GenerateWaypoints(gameobject_info->mo_transport.taxi_path_id))
             {
                 Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, failed to create waypoints", entry, name.c_str());
+                delete pTransporter;
                 continue;
             }
 
@@ -176,17 +174,15 @@ void ObjectMgr::LoadTransports()
             for (std::set<uint32>::const_iterator i = mapsUsed.begin(); i != mapsUsed.end(); ++i)
                 m_TransportersByMap[*i].insert(pTransporter);
 
-            ++count;
+            ++pCount;
         } while (result->NextRow());
 
         delete result;
 
-        Log.Success("Transporter Handler", ">> Loaded %u transports in %u ms", count, getMSTime() - oldMSTime);
+        Log.Success("Transporter Handler", ">> Loaded %u transports in %u ms", pCount);
     }
     Log.Success("TransportHandler", "Starting loading transport creatures...");
     {
-        uint32 oldMSTime = getMSTime();
-
         QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures");
 
         if (!result)
@@ -195,8 +191,7 @@ void ObjectMgr::LoadTransports()
             return;
         }
 
-        uint32 count = 0;
-
+        uint32 pCount = 0;
         do
         {
             Field* fields = result->Fetch();
@@ -219,15 +214,16 @@ void ObjectMgr::LoadTransports()
                 }
             }
 
-            ++count;
+            ++pCount;
         } while (result->NextRow());
+        delete result;
 
         for (auto transport : m_Transporters)
         {
             transport->RespawnCreaturePassengers();
         }
 
-        Log.Success("Transport Handler", ">> Loaded %u Transport Npcs in %u ms", count, getMSTime() - oldMSTime);
+        Log.Success("Transport Handler", ">> Loaded %u Transport Npcs", pCount);
     }
 }
 
@@ -647,7 +643,7 @@ void Transporter::Update()
     while (((m_timer - mCurrentWaypoint->first) % m_pathTime) > ((mNextWaypoint->first - mCurrentWaypoint->first) % m_pathTime))
     {
         GetNextWaypoint();
-        
+
         // first check help in case client-server transport coordinates de-synchronization
         if (mCurrentWaypoint->second.mapid != GetMapId() || mCurrentWaypoint->second.teleport)
         {
