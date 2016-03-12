@@ -2438,7 +2438,7 @@ class LuaInstance : public InstanceScript
 {
     public:
 
-        LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()) {}
+        LuaInstance(MapMgr* pMapMgr) : InstanceScript(pMapMgr), m_instanceId(pMapMgr->GetInstanceID()), m_binding(nullptr) {}
         ~LuaInstance() {}
 
         // Player
