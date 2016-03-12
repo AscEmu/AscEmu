@@ -4018,7 +4018,7 @@ bool ObjectMgr::HasGroupedSetBonus(int32 itemset)
     if (itr == mDefinedItemSets.end())
         return false;
     else
-        return true; itr->second;
+        return true;
 
 }
 uint32 ObjectMgr::GetGroupedSetBonus(int32 itemset)
