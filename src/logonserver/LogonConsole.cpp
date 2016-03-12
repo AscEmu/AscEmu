@@ -115,6 +115,7 @@ bool LogonConsoleThread::run()
 // Protected methods:
 //------------------------------------------------------------------------------
 // Process one command
+#define MAX_CONSOLE_INPUT 80
 void LogonConsole::ProcessCmd(char* cmd)
 {
     typedef void (LogonConsole::*PTranslater)(char * str);
@@ -141,8 +142,10 @@ void LogonConsole::ProcessCmd(char* cmd)
         { "info", &LogonConsole::Info },
     };
 
-    char cmd2[80];
-    strcpy(cmd2, cmd);
+    char cmd2[MAX_CONSOLE_INPUT];
+    strncpy(cmd2, cmd, MAX_CONSOLE_INPUT);
+    cmd2[MAX_CONSOLE_INPUT - 1] = '\0';
+
     for (size_t i = 0; i < strlen(cmd); ++i)
         cmd2[i] = static_cast<char>(tolower(cmd[i]));
 
