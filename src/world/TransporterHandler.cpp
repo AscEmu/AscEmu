@@ -179,7 +179,7 @@ void ObjectMgr::LoadTransports()
 
         delete result;
 
-        Log.Success("Transporter Handler", ">> Loaded %u transports in %u ms", pCount);
+        Log.Success("Transporter Handler", ">> Loaded %u transports", pCount);
     }
     Log.Success("TransportHandler", "Starting loading transport creatures...");
     {
