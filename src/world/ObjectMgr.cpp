@@ -174,9 +174,11 @@ ObjectMgr::~ObjectMgr()
     }
 
     Log.Notice("ObjectMgr", "Deleting Groups...");
-    for (GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end(); ++itr)
+    for (GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end();)
     {
-        if (Group* pGroup = itr->second)
+        Group* pGroup = itr->second;
+        ++itr;
+        if (pGroup != nullptr)
         {
             for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
             {
