@@ -202,6 +202,7 @@ void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
 #endif
 }
 
+#define MAX_FILENAME_LENGTH 200
 void LuaEngine::LoadScripts()
 {
     LUALoadScripts rtn;
@@ -214,11 +215,12 @@ void LuaEngine::LoadScripts()
     RegisterCoreFunctions();
     Log.Notice("LuaEngine", "Loading Scripts...");
 
-    char filename[200];
+    char filename[MAX_FILENAME_LENGTH];
 
     for (std::set<std::string>::iterator itr = rtn.luaFiles.begin(); itr != rtn.luaFiles.end(); ++itr)
     {
-        strcpy(filename, itr->c_str());
+        strncpy(filename, itr->c_str(), MAX_FILENAME_LENGTH);
+        filename[MAX_FILENAME_LENGTH - 1] = '\0';
         int errorCode = luaL_loadfile(lu, filename);
         if (errorCode)
         {
