@@ -168,7 +168,7 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     {
         bool victorious = (i == winningTeam);
         std::set<Player*>::iterator itr = m_players[i].begin();
-        for (; itr != m_players[i].end(); itr++)
+        for (; itr != m_players[i].end(); ++itr)
         {
             Player* plr = (Player*)(*itr);
             if (plr != NULL)

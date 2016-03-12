@@ -170,7 +170,7 @@ class ZerekethAI : public MoonScriptBossAI
 
             std::vector<Player*> TargetTable;
             std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
-            for (; Itr != _unit->GetInRangePlayerSetEnd(); Itr++)
+            for (; Itr != _unit->GetInRangePlayerSetEnd(); ++Itr)
             {
                 Player* RandomTarget = NULL;
                 if (!(*Itr)->IsPlayer())

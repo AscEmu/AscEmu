@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
-project(g3dlite)
+project(g3dlite CXX)
 
 set(sources
   AABox.cpp
@@ -57,6 +57,7 @@ include_directories(
 add_library(${PROJECT_NAME} STATIC ${sources})
 
 target_link_libraries(${PROJECT_NAME} 
+  ${ZLIB_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
 )
 

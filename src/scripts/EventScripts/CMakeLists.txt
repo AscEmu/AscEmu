@@ -6,7 +6,7 @@ if(NOT BUILD_EVENTSCRIPTS)
 endif()
 
 # set up our project name
-project(EventScripts)
+project(EventScripts CXX)
 
 #sources -contains source files for our library.
 set(sources

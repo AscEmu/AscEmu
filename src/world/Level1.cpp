@@ -307,8 +307,7 @@ bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_sess
     if (it)
     {
         numadded -= chr->GetItemInterface()->GetItemCount(itemid);
-        bool result = false;
-        result = chr->GetItemInterface()->AddItemById(itemid, count, randomprop);
+        bool result = chr->GetItemInterface()->AddItemById(itemid, count, randomprop);
         numadded += chr->GetItemInterface()->GetItemCount(itemid);
         if (result == true)
         {

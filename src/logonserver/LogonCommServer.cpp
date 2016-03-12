@@ -738,7 +738,7 @@ void LogonCommServerSocket::RefreshRealmsPop()
 
     WorldPacket data(LRSMSG_REALM_POPULATION_REQUEST, 4);
     std::set<uint32>::iterator itr = server_ids.begin();
-    for (; itr != server_ids.end(); itr++)
+    for (; itr != server_ids.end(); ++itr)
     {
         data.clear();
         data << (*itr);

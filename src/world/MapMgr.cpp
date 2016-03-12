@@ -183,7 +183,7 @@ uint32 MapMgr::GetTeamPlayersCount(uint32 teamId)
 {
     uint32 result = 0;
     PlayerStorageMap::iterator itr = m_PlayerStorage.begin();
-    for (; itr != m_PlayerStorage.end(); itr++)
+    for (; itr != m_PlayerStorage.end(); ++itr)
     {
         Player* pPlayer = (itr->second);
         if (pPlayer->GetTeam() == teamId)

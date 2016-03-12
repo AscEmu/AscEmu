@@ -18,10 +18,6 @@
  */
 
 #include "StdAfx.h"
-#include "LfgMgr.h"
-#include "LfgGroupData.h"
-#include "LfgPlayerData.h"
-
 
 uint32 LfgDungeonTypes[MAX_DUNGEONS];
 

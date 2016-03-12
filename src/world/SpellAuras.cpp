@@ -4943,7 +4943,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
 
             //now get rid of mobs agro. pTarget->CombatStatus.AttackersForgetHate() - this works only for already attacking mobs
-            for (std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); itr++)
+            for (std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsUnit() && (static_cast< Unit* >(*itr))->isAlive())
                 {
@@ -5372,7 +5372,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
             {
                 std::map< uint32, WeaponModifier >::iterator i = p_target->damagedone.begin();
 
-                for (; i != p_target->damagedone.end(); i++)
+                for (; i != p_target->damagedone.end(); ++i)
                 {
                     if ((*i).first == GetSpellId())
                     {
@@ -6404,7 +6404,8 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
                     }
                     // Check if the loop above got to the end, if so it means the item wasn't found
                     // and the itr wasn't incremented so increment it now.
-                    if (itrSE == itermap->second->end())      itr++;
+                    if (itrSE == itermap->second->end())
+                        ++itr;
                 }
             }
         }

@@ -95,18 +95,314 @@ void Set_missing_spellLevel(SpellEntry* sp)
     {
         uint32 new_level = 0;
 
-        if (strstr(sp->Name, "Apprentice "))
-            new_level = 1;
-        else if (strstr(sp->Name, "Journeyman "))
-            new_level = 2;
-        else if (strstr(sp->Name, "Expert "))
-            new_level = 3;
-        else if (strstr(sp->Name, "Artisan "))
-            new_level = 4;
-        else if (strstr(sp->Name, "Master "))
-            new_level = 5;
-        else if (strstr(sp->Name, "Grand Master "))
-            new_level = 6;
+        // 16/03/08 Zyres: just replaced name assignes with spell ids. \todo remove not teachable spells.
+        switch (sp->Id)
+        {
+            // name "Aprentice "
+            case 2020:
+            case 2155:
+            case 2275:
+            case 2372:
+            case 2551:
+            case 2581:
+            case 3279:
+            case 3911:
+            case 4039:
+            case 7414:
+            case 7733:
+            case 8615:
+            case 25245:
+            case 29535:
+            case 33388:
+            case 33389:
+            case 45375:
+            case 51216:
+            {
+                new_level = 1;
+            } break;
+            // name "Journeyman "
+            case 2021:
+            case 2154:
+            case 2280:
+            case 2373:
+            case 2582:
+            case 3280:
+            case 3412:
+            case 3912:
+            case 4040:
+            case 7415:
+            case 7734:
+            case 8619:
+            case 25246:
+            case 33391:
+            case 33392:
+            case 45376:
+            case 64485:
+            {
+                new_level = 2;
+            } break;
+            // name "Expert "
+            case 2552:
+            case 3465:
+            case 3539:
+            case 3568:
+            case 3571:
+            case 3812:
+            case 3913:
+            case 4041:
+            case 7416:
+            case 7736:
+            case 7925:
+            case 8620:
+            case 19886:
+            case 19889:
+            case 19903:
+            case 28896:
+            case 34090:
+            case 34092:
+            case 45377:
+            case 54083:
+            case 54254:
+            case 54257:
+            {
+                new_level = 3;
+            } break;
+            // name "Artisan "
+            case 9786:
+            case 10249:
+            case 10663:
+            case 10769:
+            case 10847:
+            case 11612:
+            case 11994:
+            case 12181:
+            case 12657:
+            case 13921:
+            case 18249:
+            case 18261:
+            case 19887:
+            case 19890:
+            case 19902:
+            case 28899:
+            case 34091:
+            case 34093:
+            case 45378:
+            {
+                new_level = 4;
+            } break;
+            // name "Master "
+            case 12613:
+            case 13958:
+            case 13970:
+            case 13971:
+            case 14904:
+            case 15024:
+            case 15025:
+            case 15026:
+            case 15027:
+            case 17039:
+            case 17040:
+            case 17041:
+            case 18709:
+            case 18710:
+            case 18767:
+            case 18768:
+            case 19825:
+            case 21935:
+            case 21940:
+            case 23759:
+            case 23760:
+            case 23761:
+            case 23762:
+            case 23784:
+            case 23785:
+            case 23822:
+            case 23823:
+            case 23824:
+            case 23825:
+            case 23826:
+            case 23827:
+            case 23828:
+            case 23829:
+            case 23830:
+            case 23831:
+            case 23832:
+            case 23833:
+            case 23834:
+            case 23835:
+            case 23836:
+            case 23837:
+            case 23838:
+            case 23839:
+            case 23840:
+            case 23841:
+            case 23842:
+            case 23843:
+            case 23844:
+            case 24347:
+            case 24626:
+            case 24627:
+            case 26791:
+            case 27029:
+            case 27235:
+            case 27236:
+            case 27237:
+            case 28030:
+            case 28597:
+            case 28696:
+            case 28901:
+            case 29074:
+            case 29075:
+            case 29076:
+            case 29077:
+            case 29355:
+            case 29460:
+            case 29461:
+            case 29845:
+            case 30351:
+            case 31221:
+            case 31222:
+            case 31223:
+            case 31226:
+            case 31227:
+            case 31665:
+            case 31666:
+            case 32550:
+            case 32679:
+            case 33098:
+            case 33100:
+            case 33360:
+            case 33361:
+            case 33894:
+            case 34130:
+            case 34149:
+            case 34150:
+            case 34485:
+            case 34486:
+            case 34487:
+            case 34488:
+            case 34489:
+            case 34506:
+            case 34507:
+            case 34508:
+            case 34833:
+            case 34834:
+            case 34835:
+            case 34836:
+            case 34837:
+            case 34838:
+            case 34839:
+            case 35702:
+            case 35703:
+            case 35704:
+            case 35705:
+            case 35706:
+            case 35708:
+            case 35874:
+            case 35912:
+            case 36001:
+            case 38734:
+            case 39097:
+            case 39098:
+            case 39099:
+            case 40369:
+            case 40385:
+            case 40388:
+            case 43784:
+            case 44868:
+            case 45379:
+            case 45713:
+            case 46417:
+            case 46418:
+            case 46444:
+            case 47872:
+            case 47873:
+            case 47874:
+            case 47875:
+            case 47876:
+            case 47877:
+            case 48028:
+            case 48411:
+            case 48412:
+            case 48418:
+            case 48420:
+            case 48421:
+            case 48422:
+            case 48729:
+            case 48730:
+            case 49776:
+            case 52143:
+            case 52559:
+            case 53125:
+            case 53662:
+            case 53663:
+            case 53664:
+            case 53665:
+            case 53666:
+            case 54084:
+            case 54255:
+            case 54256:
+            case 54721:
+            case 55188:
+            case 55434:
+            case 55435:
+            case 57853:
+            case 58410:
+            case 62698:
+            case 65022:
+            case 66409:
+            case 66410:
+            case 66417:
+            case 66420:
+            case 66423:
+            case 66457:
+            case 66460:
+            case 66461:
+            case 66677:
+            case 66810:
+            case 66812:
+            case 67551:
+            case 69716:
+            case 70528:
+            {
+                new_level = 5;
+            } break;
+            // name "Grand Master "
+            case 45380:
+            case 50299:
+            case 50301:
+            case 50307:
+            case 50309:
+            case 51293:
+            case 51295:
+            case 51298:
+            case 51301:
+            case 51303:
+            case 51305:
+            case 51308:
+            case 51310:
+            case 51312:
+            case 61464:
+            case 64484:
+            case 65281:
+            case 65282:
+            case 65283:
+            case 65284:
+            case 65285:
+            case 65286:
+            case 65287:
+            case 65288:
+            case 65289:
+            case 65290:
+            case 65291:
+            case 65292:
+            case 65293:
+            {
+                new_level = 6;
+            } break;
+            default:
+                break;
+        }
 
         if (new_level != 0)
         {
@@ -394,60 +690,71 @@ void ApplyNormalFixes()
 
         //there are some spells that change the "damage" value of 1 effect to another : devastate = bonus first then damage
         //this is a total bullshit so remove it when spell system supports effect overwriting
-        for (uint32 col1_swap = 0; col1_swap < 2; col1_swap++)
-            for (uint32 col2_swap = col1_swap; col2_swap < 3; col2_swap++)
-                if (sp->Effect[col1_swap] == SPELL_EFFECT_WEAPON_PERCENT_DAMAGE && sp->Effect[col2_swap] == SPELL_EFFECT_DUMMYMELEE)
-                {
-                    uint32 temp;
-                    float ftemp;
-                    temp = sp->Effect[col1_swap];
-                    sp->Effect[col1_swap] = sp->Effect[col2_swap];
-                    sp->Effect[col2_swap] = temp;
-                    temp = sp->EffectDieSides[col1_swap];
-                    sp->EffectDieSides[col1_swap] = sp->EffectDieSides[col2_swap];
-                    sp->EffectDieSides[col2_swap] = temp;
-                    //temp = sp->EffectBaseDice[col1_swap];    sp->EffectBaseDice[col1_swap] = sp->EffectBaseDice[col2_swap] ;        sp->EffectBaseDice[col2_swap] = temp;
-                    //ftemp = sp->EffectDicePerLevel[col1_swap];            sp->EffectDicePerLevel[col1_swap] = sp->EffectDicePerLevel[col2_swap] ;                sp->EffectDicePerLevel[col2_swap] = ftemp;
-                    ftemp = sp->EffectRealPointsPerLevel[col1_swap];
-                    sp->EffectRealPointsPerLevel[col1_swap] = sp->EffectRealPointsPerLevel[col2_swap];
-                    sp->EffectRealPointsPerLevel[col2_swap] = ftemp;
-                    temp = sp->EffectBasePoints[col1_swap];
-                    sp->EffectBasePoints[col1_swap] = sp->EffectBasePoints[col2_swap];
-                    sp->EffectBasePoints[col2_swap] = temp;
-                    temp = sp->EffectMechanic[col1_swap];
-                    sp->EffectMechanic[col1_swap] = sp->EffectMechanic[col2_swap];
-                    sp->EffectMechanic[col2_swap] = temp;
-                    temp = sp->EffectImplicitTargetA[col1_swap];
-                    sp->EffectImplicitTargetA[col1_swap] = sp->EffectImplicitTargetA[col2_swap];
-                    sp->EffectImplicitTargetA[col2_swap] = temp;
-                    temp = sp->EffectImplicitTargetB[col1_swap];
-                    sp->EffectImplicitTargetB[col1_swap] = sp->EffectImplicitTargetB[col2_swap];
-                    sp->EffectImplicitTargetB[col2_swap] = temp;
-                    temp = sp->EffectRadiusIndex[col1_swap];
-                    sp->EffectRadiusIndex[col1_swap] = sp->EffectRadiusIndex[col2_swap];
-                    sp->EffectRadiusIndex[col2_swap] = temp;
-                    temp = sp->EffectApplyAuraName[col1_swap];
-                    sp->EffectApplyAuraName[col1_swap] = sp->EffectApplyAuraName[col2_swap];
-                    sp->EffectApplyAuraName[col2_swap] = temp;
-                    temp = sp->EffectAmplitude[col1_swap];
-                    sp->EffectAmplitude[col1_swap] = sp->EffectAmplitude[col2_swap];
-                    sp->EffectAmplitude[col2_swap] = temp;
-                    ftemp = sp->EffectMultipleValue[col1_swap];
-                    sp->EffectMultipleValue[col1_swap] = sp->EffectMultipleValue[col2_swap];
-                    sp->EffectMultipleValue[col2_swap] = ftemp;
-                    temp = sp->EffectChainTarget[col1_swap];
-                    sp->EffectChainTarget[col1_swap] = sp->EffectChainTarget[col2_swap];
-                    sp->EffectChainTarget[col2_swap] = temp;
-                    temp = sp->EffectMiscValue[col1_swap];
-                    sp->EffectMiscValue[col1_swap] = sp->EffectMiscValue[col2_swap];
-                    sp->EffectMiscValue[col2_swap] = temp;
-                    temp = sp->EffectTriggerSpell[col1_swap];
-                    sp->EffectTriggerSpell[col1_swap] = sp->EffectTriggerSpell[col2_swap];
-                    sp->EffectTriggerSpell[col2_swap] = temp;
-                    ftemp = sp->EffectPointsPerComboPoint[col1_swap];
-                    sp->EffectPointsPerComboPoint[col1_swap] = sp->EffectPointsPerComboPoint[col2_swap];
-                    sp->EffectPointsPerComboPoint[col2_swap] = ftemp;
-                }
+        switch (sp->Id)
+        {
+            case 20243:     // Devastate Rank 1
+            case 30016:     // Devastate Rank 2
+            case 30022:     // Devastate Rank 3
+            case 47497:     // Devastate Rank 4
+            case 47498:     // Devastate Rank 5
+            case 57795:     // Devastate
+            case 60018:     // Devastate
+            case 62317:     // Devastate
+            case 69902:     // Devastate
+            {
+                uint32 temp;
+                float ftemp;
+                temp = sp->Effect[1];
+                sp->Effect[1] = sp->Effect[2];
+                sp->Effect[2] = temp;
+                temp = sp->EffectDieSides[1];
+                sp->EffectDieSides[1] = sp->EffectDieSides[2];
+                sp->EffectDieSides[2] = temp;
+                //temp = sp->EffectBaseDice[1];    sp->EffectBaseDice[1] = sp->EffectBaseDice[2] ;        sp->EffectBaseDice[2] = temp;
+                //ftemp = sp->EffectDicePerLevel[1];            sp->EffectDicePerLevel[1] = sp->EffectDicePerLevel[2] ;                sp->EffectDicePerLevel[2] = ftemp;
+                ftemp = sp->EffectRealPointsPerLevel[1];
+                sp->EffectRealPointsPerLevel[1] = sp->EffectRealPointsPerLevel[2];
+                sp->EffectRealPointsPerLevel[2] = ftemp;
+                temp = sp->EffectBasePoints[1];
+                sp->EffectBasePoints[1] = sp->EffectBasePoints[2];
+                sp->EffectBasePoints[2] = temp;
+                temp = sp->EffectMechanic[1];
+                sp->EffectMechanic[1] = sp->EffectMechanic[2];
+                sp->EffectMechanic[2] = temp;
+                temp = sp->EffectImplicitTargetA[1];
+                sp->EffectImplicitTargetA[1] = sp->EffectImplicitTargetA[2];
+                sp->EffectImplicitTargetA[2] = temp;
+                temp = sp->EffectImplicitTargetB[1];
+                sp->EffectImplicitTargetB[1] = sp->EffectImplicitTargetB[2];
+                sp->EffectImplicitTargetB[2] = temp;
+                temp = sp->EffectRadiusIndex[1];
+                sp->EffectRadiusIndex[1] = sp->EffectRadiusIndex[2];
+                sp->EffectRadiusIndex[2] = temp;
+                temp = sp->EffectApplyAuraName[1];
+                sp->EffectApplyAuraName[1] = sp->EffectApplyAuraName[2];
+                sp->EffectApplyAuraName[2] = temp;
+                temp = sp->EffectAmplitude[1];
+                sp->EffectAmplitude[1] = sp->EffectAmplitude[2];
+                sp->EffectAmplitude[2] = temp;
+                ftemp = sp->EffectMultipleValue[1];
+                sp->EffectMultipleValue[1] = sp->EffectMultipleValue[2];
+                sp->EffectMultipleValue[2] = ftemp;
+                temp = sp->EffectChainTarget[1];
+                sp->EffectChainTarget[1] = sp->EffectChainTarget[2];
+                sp->EffectChainTarget[2] = temp;
+                temp = sp->EffectMiscValue[1];
+                sp->EffectMiscValue[1] = sp->EffectMiscValue[2];
+                sp->EffectMiscValue[2] = temp;
+                temp = sp->EffectTriggerSpell[1];
+                sp->EffectTriggerSpell[1] = sp->EffectTriggerSpell[2];
+                sp->EffectTriggerSpell[2] = temp;
+                ftemp = sp->EffectPointsPerComboPoint[1];
+                sp->EffectPointsPerComboPoint[1] = sp->EffectPointsPerComboPoint[2];
+                sp->EffectPointsPerComboPoint[2] = ftemp;
+            } break;
+            default:
+                break;
+        }
 
         for (uint32 b = 0; b < 3; ++b)
         {
@@ -469,7 +776,6 @@ void ApplyNormalFixes()
 			}
         }
 
-        sp->custom_spell_coef_flags = 0;
         sp->Dspell_coef_override = -1;
         sp->OTspell_coef_override = -1;
         sp->casttime_coef = 0;
@@ -484,6 +790,7 @@ void ApplyNormalFixes()
         Modify_RecoveryTime(sp);
 
         // find diminishing status
+        //\todo 16/03/08 Zyres: sql
         sp->custom_DiminishStatus = GetDiminishingGroup(sp->custom_NameHash);
 
         // various flight spells
@@ -767,196 +1074,6 @@ void ApplyNormalFixes()
             castaff = 7000;
 
         sp->casttime_coef = castaff / 3500;
-
-        SpellEntry* spz;
-        bool spcheck = false;
-
-        //Flag for DoT and HoT
-        for (uint8 i = 0; i < 3; i++)
-        {
-            if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_DAMAGE ||
-                sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_HEAL ||
-                sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_LEECH)
-            {
-                sp->custom_spell_coef_flags |= SPELL_FLAG_IS_DOT_OR_HOT_SPELL;
-                break;
-            }
-        }
-
-        //Flag for DD or DH
-        for (uint8 i = 0; i < 3; i++)
-        {
-            if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL && sp->EffectTriggerSpell[i])
-            {
-                spz = dbcSpell.LookupEntryForced(sp->EffectTriggerSpell[i]);
-                if (spz && (spz->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE || spz->Effect[i] == SPELL_EFFECT_HEAL))
-                    spcheck = true;
-            }
-            if (sp->Effect[i] == SPELL_EFFECT_SCHOOL_DAMAGE || sp->Effect[i] == SPELL_EFFECT_HEAL || spcheck)
-            {
-                sp->custom_spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
-                break;
-            }
-        }
-
-        for (uint8 i = 0; i < 3; i++)
-        {
-            switch (sp->EffectImplicitTargetA[i])
-            {
-                //AoE
-                case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS:
-                case EFF_TARGET_ALL_ENEMY_IN_AREA:
-                case EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT:
-                case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
-                case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
-                case EFF_TARGET_IN_FRONT_OF_CASTER:
-                case EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED:
-                case EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED:
-                case EFF_TARGET_ALL_FRIENDLY_IN_AREA:
-                case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME:
-                case EFF_TARGET_ALL_PARTY:
-                case EFF_TARGET_LOCATION_INFRONT_CASTER:
-                case EFF_TARGET_BEHIND_TARGET_LOCATION:
-                case EFF_TARGET_LOCATION_INFRONT_CASTER_AT_RANGE:
-                {
-                    sp->custom_spell_coef_flags |= SPELL_FLAG_AOE_SPELL;
-                    break;
-                }
-            }
-        }
-
-        for (uint8 i = 0; i < 3; i++)
-        {
-            switch (sp->EffectImplicitTargetB[i])
-            {
-                //AoE
-                case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS:
-                case EFF_TARGET_ALL_ENEMY_IN_AREA:
-                case EFF_TARGET_ALL_ENEMY_IN_AREA_INSTANT:
-                case EFF_TARGET_ALL_PARTY_AROUND_CASTER:
-                case EFF_TARGET_ALL_ENEMIES_AROUND_CASTER:
-                case EFF_TARGET_IN_FRONT_OF_CASTER:
-                case EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED:
-                case EFF_TARGET_ALL_PARTY_IN_AREA_CHANNELED:
-                case EFF_TARGET_ALL_FRIENDLY_IN_AREA:
-                case EFF_TARGET_ALL_TARGETABLE_AROUND_LOCATION_IN_RADIUS_OVER_TIME:
-                case EFF_TARGET_ALL_PARTY:
-                case EFF_TARGET_LOCATION_INFRONT_CASTER:
-                case EFF_TARGET_BEHIND_TARGET_LOCATION:
-                case EFF_TARGET_LOCATION_INFRONT_CASTER_AT_RANGE:
-                {
-                    sp->custom_spell_coef_flags |= SPELL_FLAG_AOE_SPELL;
-                    break;
-                }
-            }
-        }
-
-        //Special Cases
-        //Holy Light & Flash of Light
-        switch (sp->Id)
-        {
-            // SPELL_HASH_HOLY_LIGHT
-            case 635:
-            case 639:
-            case 647:
-            case 1026:
-            case 1042:
-            case 3472:
-            case 10328:
-            case 10329:
-            case 13952:
-            case 15493:
-            case 25263:
-            case 25292:
-            case 27135:
-            case 27136:
-            case 29383:
-            case 29427:
-            case 29562:
-            case 31713:
-            case 32769:
-            case 37979:
-            case 43451:
-            case 44479:
-            case 46029:
-            case 48781:
-            case 48782:
-            case 52444:
-            case 56539:
-            case 58053:
-            case 66112:
-            case 68011:
-            case 68012:
-            case 68013:
-            // SPELL_HASH_FLASH_OF_LIGHT
-            case 19750:
-            case 19939:
-            case 19940:
-            case 19941:
-            case 19942:
-            case 19943:
-            case 25514:
-            case 27137:
-            case 33641:
-            case 37249:
-            case 37254:
-            case 37257:
-            case 48784:
-            case 48785:
-            case 57766:
-            case 59997:
-            case 66113:
-            case 66922:
-            case 68008:
-            case 68009:
-            case 68010:
-            case 71930:
-            {
-                sp->custom_spell_coef_flags |= SPELL_FLAG_IS_DD_OR_DH_SPELL;
-            } break;
-            default:
-                break;
-        }
-
-        //Additional Effect (not healing or damaging)
-        for (uint8 i = 0; i < 3; i++)
-        {
-            if (sp->Effect[i] == SPELL_EFFECT_NULL)
-                continue;
-
-            switch (sp->Effect[i])
-            {
-                case SPELL_EFFECT_SCHOOL_DAMAGE:
-                case SPELL_EFFECT_ENVIRONMENTAL_DAMAGE:
-                case SPELL_EFFECT_HEALTH_LEECH:
-                case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
-                case SPELL_EFFECT_ADD_EXTRA_ATTACKS:
-                case SPELL_EFFECT_WEAPON_PERCENT_DAMAGE:
-                case SPELL_EFFECT_POWER_BURN:
-                case SPELL_EFFECT_ATTACK:
-                case SPELL_EFFECT_HEAL:
-                case SPELL_EFFECT_HEAL_MAX_HEALTH:
-                case SPELL_EFFECT_DUMMY:
-                    continue;
-            }
-
-            switch (sp->EffectApplyAuraName[i])
-            {
-                case SPELL_AURA_PERIODIC_DAMAGE:
-                case SPELL_AURA_PROC_TRIGGER_DAMAGE:
-                case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
-                case SPELL_AURA_POWER_BURN:
-                case SPELL_AURA_PERIODIC_HEAL:
-                case SPELL_AURA_MOD_INCREASE_HEALTH:
-                case SPELL_AURA_PERIODIC_HEALTH_FUNNEL:
-                case SPELL_AURA_DUMMY:
-                    continue;
-            }
-
-            sp->custom_spell_coef_flags |= SPELL_FLAG_ADITIONAL_EFFECT;
-            break;
-
-        }
 
         //Calculating fixed coeficients
         //Channeled spells
@@ -2019,6 +2136,7 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = 0;
     }
 
+    //\todo 16/03/08 Zyres: sql
     // MesoX: Serendipity http://www.wowhead.com/?spell=63730
     sp = CheckAndReturnSpellEntry(63730);   // Rank 1
     if (sp != NULL)
@@ -3395,38 +3513,6 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_NULL; //remove this effect
     }
 
-    //warlock - Shadow Embrace
-    sp = CheckAndReturnSpellEntry(32385);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-    sp = CheckAndReturnSpellEntry(32387);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-    sp = CheckAndReturnSpellEntry(32392);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-    sp = CheckAndReturnSpellEntry(32393);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-    sp = CheckAndReturnSpellEntry(32394);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this effect ? Maybe remove the other one :P xD
-    }
-
     //Warlock Chaos bolt
     sp = CheckAndReturnSpellEntry(50796);
     if (sp != NULL)
@@ -3869,26 +3955,25 @@ void ApplyNormalFixes()
     }
 
     //Totem of the Third Wind - bad range
-    SpellEntry* sp_healing_wave = CheckAndReturnSpellEntry(8004);
     sp = CheckAndReturnSpellEntry(34132);
     if (sp != NULL)
     {
-        sp->rangeIndex = sp_healing_wave->rangeIndex;
+        sp->rangeIndex = 5;
     }
     sp = CheckAndReturnSpellEntry(42371);
     if (sp != NULL)
     {
-        sp->rangeIndex = sp_healing_wave->rangeIndex;
+        sp->rangeIndex = 5;
     }
     sp = CheckAndReturnSpellEntry(43729);
     if (sp != NULL)
     {
-        sp->rangeIndex = sp_healing_wave->rangeIndex;
+        sp->rangeIndex = 5;
     }
     sp = CheckAndReturnSpellEntry(46099);
     if (sp != NULL)
     {
-        sp->rangeIndex = sp_healing_wave->rangeIndex;
+        sp->rangeIndex = 5;
     }
 
     // Eye of Acherus, our phase shift mode messes up the control :/
@@ -4204,13 +4289,7 @@ void ApplyNormalFixes()
     // DEATH KNIGHT                            //
     //////////////////////////////////////////
 
-    // Insert Death Knight spells here ---- Made by Alice
-
-    // Mark of Blood
-    // Necessary to proper create entry on m_chargeSpells
-    sp = CheckAndReturnSpellEntry(49005);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_MELEE_ATTACK | PROC_ON_RANGED_ATTACK | PROC_ON_SPELL_HIT;
+    // Insert Death Knight spells here
 
     // Unholy Aura - Ranks 1
     sp = CheckAndReturnSpellEntry(50391);
@@ -4233,20 +4312,6 @@ void ApplyNormalFixes()
         sp->EffectTriggerSpell[1] = 50392;
         sp->Effect[1] = SPELL_EFFECT_APPLY_GROUP_AREA_AURA;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
-    }
-
-    // MIND FREEZE
-    sp = dbcSpell.LookupEntryForced(47528);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_INTERRUPT_CAST;
-    }
-
-    //   Blood Presence
-    sp = CheckAndReturnSpellEntry(48266);
-    if (sp != NULL)
-    {
-        sp->custom_BGR_one_buff_from_caster_on_self = SPELL_TYPE3_DEATH_KNIGHT_AURA;
     }
 
     //    Empower Rune Weapon
@@ -4309,13 +4374,6 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    // Death Grip
-    sp = CheckAndReturnSpellEntry(49576);
-    if (sp != NULL)
-    {
-        sp->Effect[0] = SPELL_EFFECT_DUMMY;
-    }
-
     // Runic Empowerment
     /*sp = dbcSpell.LookupEntryForced(81229);
     if (sp != NULL)
@@ -4336,17 +4394,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM;
         sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
         sp->EffectTriggerSpell[0] = 76691;
-    }
-
-    ///////////////////////////////////////////////////////////
-    //    Acherus Deatcharger
-    ///////////////////////////////////////////////////////////
-    sp = CheckAndReturnSpellEntry(48778);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_MOUNTED;
-        sp->EffectApplyAuraName[1] = SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED;
-        sp->EffectBasePoints[1] = 99;
     }
 
     ///////////////////////////////////////////////////////////
@@ -4407,38 +4454,6 @@ void ApplyNormalFixes()
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
 
-    ///////////////////////////////////////////////////////////
-    //      Bloodworms - handled in dummy code
-    ///////////////////////////////////////////////////////////
-
-    // Bloodworms Rank 1
-    sp = CheckAndReturnSpellEntry(49027);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 50452;
-    }
-
-    // Bloodworms Rank 2
-    sp = CheckAndReturnSpellEntry(49542);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 50452;
-    }
-
-    // Bloodworms Rank 3
-    sp = CheckAndReturnSpellEntry(49543);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_MELEE_ATTACK;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 50452;
-    }
-
-
     // Noggenfogger elixir - reduce size effect
     sp = CheckAndReturnSpellEntry(16595);
     if (sp != NULL)
@@ -4456,34 +4471,8 @@ void ApplyNormalFixes()
         sp->Effect[2] = SPELL_EFFECT_NULL;
     }
 
-    //PvP Librams of Justice
-    //Gladiator's Libram of Justice
-    sp = CheckAndReturnSpellEntry(34139);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    //Merciless Gladiator's Libram of Justice
-    sp = CheckAndReturnSpellEntry(42368);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    //Vengeful Gladiator's Libram of Justice
-    sp = CheckAndReturnSpellEntry(43726);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
-    //Brutal Gladiator's Libram of Justice
-    sp = CheckAndReturnSpellEntry(46092);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_CAST_SPELL;
-
     //Other Librams
     //Libram of Saints Departed and Libram of Zeal
-    sp = CheckAndReturnSpellEntry(34262);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
     sp = CheckAndReturnSpellEntry(34263);
     if (sp != NULL)
     {
@@ -4493,11 +4482,6 @@ void ApplyNormalFixes()
     }
 
     //Libram of Avengement
-    sp = CheckAndReturnSpellEntry(34258);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
     sp = CheckAndReturnSpellEntry(34260);
     if (sp != NULL)
     {
@@ -4507,42 +4491,11 @@ void ApplyNormalFixes()
     }
 
     //Libram of Mending
-    sp = CheckAndReturnSpellEntry(43741);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
     sp = CheckAndReturnSpellEntry(43742);
     if (sp != NULL)
     {
         sp->custom_self_cast_only = true;
         sp->custom_ProcOnNameHash[0] = SPELL_HASH_HOLY_LIGHT;
-        sp->procChance = 100;
-    }
-
-    //Libram of Divine Judgement
-    sp = CheckAndReturnSpellEntry(43745);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
-    sp = CheckAndReturnSpellEntry(43747);
-    if (sp != NULL)
-    {
-        sp->custom_self_cast_only = true;
-        sp->procChance = 100;
-    }
-
-    //Stonebreaker's Totem
-    sp = CheckAndReturnSpellEntry(43748);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL | static_cast<uint32>(PROC_TARGET_SELF);
-    }
-    sp = CheckAndReturnSpellEntry(43749);
-    if (sp != NULL)
-    {
-        sp->custom_self_cast_only = true;
         sp->procChance = 100;
     }
 
@@ -4557,12 +4510,6 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_LEAVE_AREA;
 
-    sp = CheckAndReturnSpellEntry(27997);        //Spellsurge
-    if (sp != NULL)
-    {
-        sp->custom_proc_interval = 30000; // Wowhead Comment
-        sp->procChance = 3; //Enchantment Text
-    }
 
     sp = CheckAndReturnSpellEntry(24574);        // Zandalarian Hero Badge 24590 24575
     if (sp != NULL)

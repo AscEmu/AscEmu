@@ -2093,7 +2093,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
             uint32 discovered_recipe = 0;
 
-            for (std::set<ProfessionDiscovery*>::iterator itr = objmgr.ProfessionDiscoveryTable.begin(); itr != objmgr.ProfessionDiscoveryTable.end(); itr++)
+            for (std::set<ProfessionDiscovery*>::iterator itr = objmgr.ProfessionDiscoveryTable.begin(); itr != objmgr.ProfessionDiscoveryTable.end(); ++itr)
             {
                 ProfessionDiscovery* pf = *itr;
                 if (spellid == pf->SpellId && p_caster->_GetSkillLineCurrent(skill_line_ability->skilline) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Rand(pf->Chance))
@@ -2901,7 +2901,7 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
     float spellRadius = GetRadius(i);
 
     ///\todo Following should be / is probably in SpellTarget code
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); itr++)
+    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast< Unit* >((*itr))->isAlive())
             continue;

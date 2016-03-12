@@ -1026,7 +1026,7 @@ void Item::RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry cons
 void Item::RemoveProfessionEnchant()
 {
     EnchantmentMap::iterator itr;
-    for (itr = Enchantments.begin(); itr != Enchantments.end(); itr++)
+    for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
         if (itr->second.Duration != 0)  // not perm
             continue;
@@ -1042,7 +1042,7 @@ void Item::RemoveSocketBonusEnchant()
 {
     EnchantmentMap::iterator itr;
 
-    for (itr = Enchantments.begin(); itr != Enchantments.end(); itr++)
+    for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
         if (itr->second.Enchantment->Id == GetProto()->SocketBonus)
         {

@@ -151,7 +151,10 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         fseek(f, 0, SEEK_END);
 
         if (ftell(f) <= 0)
+        {
+            fclose(f);
             return false;
+        }
         else
             length = ftell(f);
 

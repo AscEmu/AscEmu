@@ -35,6 +35,7 @@ void SpellCustomizations::StartSpellCustomization()
 
     LoadSpellRanks();
     LoadSpellCustomAssign();
+    LoadSpellCustomCoefFlags();
     LoadSpellProcs();
 
     uint32 spellCount = dbcSpell.GetNumRows();
@@ -143,7 +144,44 @@ void SpellCustomizations::LoadSpellCustomAssign()
     {
         Log.Debug("SpellCustomizations::LoadSpellCustomAssign", "Your spell_custom_assign table is empty!");
     }
+}
 
+void SpellCustomizations::LoadSpellCustomCoefFlags()
+{
+    uint32 spell_custom_coef_flags_count = 0;
+
+    QueryResult* result = WorldDatabase.Query("SELECT spell_id, spell_coef_flags FROM spell_coef_flags");
+    if (result != NULL)
+    {
+        do
+        {
+            uint32 spell_id = result->Fetch()[0].GetUInt32();
+            uint32 coef_flags = result->Fetch()[1].GetUInt32();
+
+            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            if (spell_entry != nullptr)
+            {
+                spell_entry->custom_spell_coef_flags = coef_flags;
+                ++spell_custom_coef_flags_count;
+            }
+            else
+            {
+                Log.Error("SpellCustomizations::LoadSpellCustomCoefFlags", "your spell_coef_flags table includes an invalid spell %u.", spell_id);
+                continue;
+            }
+
+        } while (result->NextRow());
+        delete result;
+    }
+
+    if (spell_custom_coef_flags_count > 0)
+    {
+        Log.Success("SpellCustomizations::LoadSpellCustomCoefFlags", "Loaded %u attributes from spell_coef_flags table", spell_custom_coef_flags_count);
+    }
+    else
+    {
+        Log.Debug("SpellCustomizations::LoadSpellCustomCoefFlags", "Your spell_coef_flags table is empty!");
+    }
 }
 
 void SpellCustomizations::LoadSpellProcs()
@@ -223,35 +261,21 @@ void SpellCustomizations::LoadSpellProcs()
 ///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
 void SpellCustomizations::SetEffectAmplitude(SpellEntry* spell_entry)
 {
-    bool spell_effect_amplitude_loaded = false;
-
     for (uint8 y = 0; y < 3; y++)
     {
-        if (!spell_entry->Effect[y] == SPELL_EFFECT_APPLY_AURA)
+        if (spell_entry->Effect[y] != SPELL_EFFECT_APPLY_AURA)
         {
             continue;
         }
         else
         {
-            if (!spell_entry->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL && !spell_entry->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE)
+            if ((spell_entry->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL || spell_entry->EffectApplyAuraName[y] == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) && spell_entry->EffectApplyAuraName[y] == 0)
             {
-                continue;
-            }
-            else
-            {
-                if (spell_entry->EffectAmplitude[y] == 0)
-                {
-                    spell_entry->EffectAmplitude[y] = 1000;
+                spell_entry->EffectAmplitude[y] = 1000;
 
-                    spell_effect_amplitude_loaded = true;
-                }
+                Log.Debug("SpellCustomizations::SetEffectAmplitude", "EffectAmplitude applied Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
             }
         }
-    }
-
-    if (spell_effect_amplitude_loaded)
-    {
-        Log.Debug("SpellCustomizations::SetEffectAmplitude", "EffectAmplitude applied Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
     }
 }
 
@@ -261,7 +285,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
 
     for (uint8 y = 0; y < 3; y++)
     {
-        if (!spell_entry->Effect[y] == SPELL_EFFECT_APPLY_AURA)
+        if (spell_entry->Effect[y] != SPELL_EFFECT_APPLY_AURA)
         {
             continue;
         }
@@ -356,7 +380,8 @@ void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
 
 void SpellCustomizations::SetOnShapeshiftChange(SpellEntry* spell_entry)
 {
-    if (!spell_entry->Id == 5225 && !spell_entry->Id == 19883)
+    // Currently only for spell Track Humanoids
+    if (spell_entry->Id != 5225 && spell_entry->Id != 19883)
     {
         return;
     }

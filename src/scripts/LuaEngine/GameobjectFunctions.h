@@ -473,7 +473,7 @@ class LuaGameObject
             TEST_GO_RET();
             uint32 count = 0;
             lua_newtable(L);
-            for (std::set<Object*>::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); itr++)
+            for (std::set<Object*>::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
             {
                 if ((*itr)->IsUnit())
                 {
@@ -491,7 +491,7 @@ class LuaGameObject
             TEST_GO_RET();
             uint32 count = 0;
             lua_newtable(L);
-            for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); itr++)
+            for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsGameObject())
                 {
@@ -509,7 +509,7 @@ class LuaGameObject
             TEST_GO();
             uint32 count = 0;
             lua_newtable(L);
-            for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); itr++)
+            for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsUnit())
                 {
