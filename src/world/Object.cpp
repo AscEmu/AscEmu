@@ -63,6 +63,7 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 
     m_objectType = TYPE_OBJECT;
     m_objectTypeId = TYPEID_OBJECT;
+    m_updateFlag = UPDATEFLAG_NONE;
 
     m_objectsInRange.clear();
     m_inRangePlayers.clear();
