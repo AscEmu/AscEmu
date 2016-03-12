@@ -184,6 +184,7 @@ uint32 LocalizationMgr::GetLanguageId(uint32 full)
     return 0;
 }
 
+#define MAX_LOCALIZED_CHAR 200
 void LocalizationMgr::Reload(bool first)
 {
     if (first)
@@ -209,9 +210,10 @@ void LocalizationMgr::Reload(bool first)
     std::vector<std::string> tbindings = StrSplit(ls, " ");
     for (std::vector<std::string>::iterator ztr = tbindings.begin(); ztr != tbindings.end(); ++ztr)
     {
-        char lb[200];
+        char lb[MAX_LOCALIZED_CHAR];
         std::string ll1, ll2;
-        strcpy(lb, (*ztr).c_str());
+        strncpy(lb, (*ztr).c_str(), MAX_LOCALIZED_CHAR);
+        lb[MAX_LOCALIZED_CHAR - 1] = '\0';
 
         char* lbp = strchr(lb, '=');
         if (lbp == NULL)
