@@ -572,6 +572,8 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
     for (auto passengerGuid : m_passengers)
     {
         auto passenger = objmgr.GetPlayer(passengerGuid);
+        if (passenger == nullptr)
+            continue;
 
         passenger->GetSession()->SendPacket(&packet);
         bool teleport_successful = passenger->Teleport(LocationVector(x, y, z, passenger->GetOrientation()), this->GetMapMgr());
