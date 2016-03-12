@@ -877,7 +877,10 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                                             m_nextSpell->procCount--;*/
 
                     SpellCastTargets targets = setSpellTargets(spellInfo, getNextTarget());
-                    uint32 targettype = m_nextSpell->spelltargetType;
+                    uint32 targettype = 0;
+                    if (m_nextSpell)
+                        targettype = m_nextSpell->spelltargetType;
+
                     switch (targettype)
                     {
                         case TTYPE_CASTER:
