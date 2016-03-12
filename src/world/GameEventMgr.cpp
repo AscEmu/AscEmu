@@ -79,7 +79,7 @@ void GameEventMgr::LoadFromDB()
             return;
         }
 
-        uint32 count = 0;
+        uint32 pCount = 0;
         do
         {
             Field* field = result->Fetch();
@@ -101,16 +101,15 @@ void GameEventMgr::LoadFromDB()
             //{
                 mGameEvents.insert(std::make_pair(dbResult.entry, new GameEvent(dbResult)));
                 Log.Debug("GameEventMgr", "%s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
-                ++count;
+                ++pCount;
             //}
             //else
             //{
             //    Log.Debug("GameEventMgr", "%s game event Entry: %u isn't a world event and has length = 0, thus it can't be used.", dbResult.description.c_str(), dbResult.entry);
             //}
         } while (result->NextRow());
-
         delete result;
-        Log.Success("GameEventMgr", "%u events loaded from table event_names", count);
+        Log.Success("GameEventMgr", "%u events loaded from table event_names", pCount);
     }
     // Loading event_saves from CharacterDB
     Log.Notice("GameEventMgr", "Start loading event_save");
@@ -125,7 +124,7 @@ void GameEventMgr::LoadFromDB()
             return;
         }
 
-        int count = 0;
+        uint32 pCount = 0;
         if (result)
         {
             do
@@ -143,12 +142,13 @@ void GameEventMgr::LoadFromDB()
                 gameEvent->state = (GameEventState)(field[1].GetUInt8());
                 gameEvent->nextstart = time_t(field[2].GetUInt32());
 
-                ++count;
+                ++pCount;
 
             } while (result->NextRow());
+            delete result;
         }
 
-        Log.Success("GameEventMgr", "Loaded %u saved events loaded from table event_saves", count);
+        Log.Success("GameEventMgr", "Loaded %u saved events loaded from table event_saves", pCount);
     }
     // Loading event_creature from WorldDB
     Log.Notice("GameEventMgr", "Start loading game event creature spawns");
@@ -167,7 +167,7 @@ void GameEventMgr::LoadFromDB()
             return;
         }
 
-        uint32 count = 0;
+        uint32 pCount = 0;
         if (result)
         {
             do
@@ -222,13 +222,14 @@ void GameEventMgr::LoadFromDB()
 
                 gameEvent->npc_data.push_back(dbResult);
 
-                ++count;
+                ++pCount;
 
                 //mNPCGuidList.insert(NPCGuidList::value_type(event_id, id));
 
             } while (result->NextRow());
+            delete result;
         }
-        Log.Success("GameEventMgr", "%u creature spawns for %u events from table event_creature_spawns loaded.", count, mGameEvents.size());
+        Log.Success("GameEventMgr", "%u creature spawns for %u events from table event_creature_spawns loaded.", pCount, mGameEvents.size());
     }
     // Loading event_gameobject from WorldDB
     Log.Notice("GameEventMgr", "Start loading game event gameobject spawns");
@@ -245,7 +246,7 @@ void GameEventMgr::LoadFromDB()
             return;
         }
 
-        uint32 count = 0;
+        uint32 pCount = 0;
         if (result)
         {
             do
@@ -289,14 +290,14 @@ void GameEventMgr::LoadFromDB()
 
                 gameEvent->gameobject_data.push_back(dbResult);
 
-                ++count;
+                ++pCount;
 
                 //mGOBGuidList.insert(GOBGuidList::value_type(event_id, id));
 
             } while (result->NextRow());
             delete result;
         }
-        Log.Success("GameEventMgr", "%u gameobject spawns for %u events from table event_gameobject_spawns loaded.", count, mGameEvents.size());
+        Log.Success("GameEventMgr", "%u gameobject spawns for %u events from table event_gameobject_spawns loaded.", pCount, mGameEvents.size());
     }
 
     StartArenaEvents();
