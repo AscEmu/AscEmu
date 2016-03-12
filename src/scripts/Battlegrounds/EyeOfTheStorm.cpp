@@ -885,7 +885,7 @@ void EyeOfTheStorm::HookOnHK(Player* plr)
 
 void EyeOfTheStorm::SpawnBuff(uint32 x)
 {
-    uint32 chosen_buffid = EOTSbuffentrys[RandomUInt(3)];
+    uint32 chosen_buffid = EOTSbuffentrys[RandomUInt(2)];
     GameObjectInfo* goi = GameObjectNameStorage.LookupEntry(chosen_buffid);
     if (goi == NULL)
         return;
