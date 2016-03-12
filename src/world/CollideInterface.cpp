@@ -340,24 +340,30 @@ void CCollideInterface::LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY
 
     MmapTileHeader header;
 
-    fread(&header, sizeof(MmapTileHeader), 1, f);
+    if (fread(&header, sizeof(MmapTileHeader), 1, f) != 1)
+    {
+        sLog.Debug("CCollideInterface::LoadNavMeshTile", "Reading Error!");
+        fclose(f);
+        return;
+    }
 
     if (header.mmapMagic != MMAP_MAGIC || header.mmapVersion != MMAP_VERSION)
     {
-        sLog.Debug("NavMesh", "Load failed (%u %u %u): tile headers incorrect", mapId, tileX, tileY);
+        sLog.Debug("CCollideInterface::LoadNavMeshTile", "Load failed (%u %u %u): tile headers incorrect", mapId, tileX, tileY);
         fclose(f);
         return;
     }
 
-    uint8* data = (uint8*)dtAlloc(header.size, DT_ALLOC_PERM);
+    unsigned char* data = (unsigned char*)dtAlloc(header.size, DT_ALLOC_PERM);
+    ASSERT(data);
 
-    if (data == NULL)
+    size_t result = fread(data, header.size, 1, f);
+    if (!result)
     {
+        sLog.Debug("CCollideInterface::LoadNavMeshTile", "Bad header or data in mmap %03u%02i%02i.mmtile", mapId, tileX, tileY);
         fclose(f);
         return;
     }
-
-    fread(data, 1, header.size, f);
 
     fclose(f);
 
