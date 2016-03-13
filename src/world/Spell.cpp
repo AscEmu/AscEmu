@@ -6248,7 +6248,8 @@ bool IsDamagingSpell(SpellEntry* sp)
     return false;
 }
 
-void Spell::writeAmmoToPacket(WorldPacket* data)
+// Zyres: Not called.
+/*void Spell::writeAmmoToPacket(WorldPacket* data)
 {
     uint32 ammoInventoryType = 0;
     uint32 ammoDisplayID = 0;
@@ -6258,12 +6259,12 @@ void Spell::writeAmmoToPacket(WorldPacket* data)
         Item* pItem = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
         if (pItem)
         {
-            /*if(pItem->GetDurability() > 0)
-            {
-                pItem->SetDurability(pItem->GetDurability() - 1);
-                if(pItem->GetDurability() == 0)
-                    p_caster->ApplyItemMods(pItem, EQUIPMENT_SLOT_RANGED, false, true);
-            }*/
+           // if(pItem->GetDurability() > 0)
+           // {
+           //     pItem->SetDurability(pItem->GetDurability() - 1);
+           //     if(pItem->GetDurability() == 0)
+           //         p_caster->ApplyItemMods(pItem, EQUIPMENT_SLOT_RANGED, false, true);
+           // }
 
             ammoInventoryType = pItem->GetProto()->InventoryType;
 
@@ -6329,4 +6330,4 @@ void Spell::writeAmmoToPacket(WorldPacket* data)
 
     *data << uint32(ammoDisplayID);
     *data << uint32(ammoInventoryType);
-}
+}*/

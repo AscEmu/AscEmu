@@ -1964,7 +1964,8 @@ class SERVER_DECL Spell : public EventableObject
         void HandleAddAura(uint64 guid);
         void writeSpellGoTargets(WorldPacket* data);
         void writeSpellMissedTargets(WorldPacket* data);
-        void writeAmmoToPacket(WorldPacket* data);
+        // Zyres: Not called.
+        //void writeAmmoToPacket(WorldPacket* data);
         uint32 pSpellId;
         SpellEntry* ProcedOnSpell; //some spells need to know the origins of the proc too
         SpellCastTargets m_targets;
