@@ -102,16 +102,7 @@ class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 
 		void Setup();
 
-		void SetupDeathKnight();
-		void SetupDruid();
-		void SetupHunter();
-		void SetupMage();
-		void SetupPaladin();
-		void SetupPriest();
-		void SetupRogue();
-		void SetupShaman();
-		void SetupWarlock();
-		void SetupWarrior();
+        void SetupSpellClassScripts();
 
 		SpellAreaMap mSpellAreaMap;
 		SpellAreaForQuestMap mSpellAreaForQuestMap;

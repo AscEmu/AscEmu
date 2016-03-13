@@ -412,14 +412,5 @@ bool SpellEntry::CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Pl
 
 void SpellFactoryMgr::Setup()
 {
-    SetupDeathKnight();
-    SetupDruid();
-    SetupHunter();
-    SetupMage();
-    SetupPaladin();
-    SetupPriest();
-    SetupRogue();
-    SetupShaman();
-    SetupWarlock();
-    SetupWarrior();
+    SetupSpellClassScripts();
 }

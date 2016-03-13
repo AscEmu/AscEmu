@@ -135,16 +135,7 @@ class SpellProcMgr : public Singleton < SpellProcMgr >
         void Setup();
 
         void SetupItems();
-        void SetupDeathKnight();
-        void SetupDruid();
-        void SetupHunter();
-        void SetupMage();
-        void SetupPaladin();
-        void SetupPriest();
-        void SetupRogue();
-        void SetupShamman();
-        void SetupWarlock();
-        void SetupWarrior();
+        void SetupSpellProcClassScripts();
 };
 
 #define sSpellProcMgr SpellProcMgr::getSingleton()

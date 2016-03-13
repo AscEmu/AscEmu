@@ -147,28 +147,10 @@ set(sources
 	ConsoleListener.cpp 
 	WUtil.cpp 
 	SpellProc.cpp
-	SpellProc_DeathKnight.cpp
-	SpellProc_Druid.cpp
-	SpellProc_Hunter.cpp
+   SpellProc_ClassScripts.cpp
 	SpellProc_Items.cpp
-	SpellProc_Mage.cpp
-	SpellProc_Paladin.cpp
-	SpellProc_Priest.cpp
-	SpellProc_Rogue.cpp
-	SpellProc_Shaman.cpp
-	SpellProc_Warlock.cpp
-	SpellProc_Warrior.cpp
 	SpellMgr.cpp
-	Spell_DeathKnight.cpp
-	Spell_Druid.cpp
-	Spell_Hunter.cpp
-	Spell_Mage.cpp
-	Spell_Paladin.cpp
-	Spell_Priest.cpp
-	Spell_Rogue.cpp
-	Spell_Shaman.cpp
-	Spell_Warlock.cpp
-	Spell_Warrior.cpp
+   Spell_ClassScripts.cpp
 	DeathKnight.cpp
 )
 

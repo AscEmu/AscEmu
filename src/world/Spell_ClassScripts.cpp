@@ -21,6 +21,165 @@
 
 #include "StdAfx.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Warrior Scripts
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Warlock Scripts
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Shaman Scripts
+class FireNova : public Spell
+{
+    SPELL_FACTORY_FUNCTION(FireNova);
+    bool HasFireTotem = false;
+    uint8 CanCast(bool tolerate)
+    {
+        uint8 result = Spell::CanCast(tolerate);
+
+        if (result == SPELL_CANCAST_OK)
+        {
+            if (u_caster)
+            {
+                // If someone has a better solutionen, your welcome :-)
+                int totem_ids[32] = {
+                    //Searing Totems
+                    2523, 3902, 3903, 3904, 7400, 7402, 15480, 31162, 31164, 31165,
+                    //Magma Totems
+                    8929, 7464, 7435, 7466, 15484, 31166, 31167,
+                    //Fire Elementel
+                    15439,
+                    //Flametongue Totems
+                    5950, 6012, 7423, 10557, 15485, 31132, 31158, 31133,
+                    //Frost Resistance Totems
+                    5926, 7412, 7413, 15486, 31171, 31172
+                };
+                Unit* totem;
+                for (uint8 i = 0; i < 32; i++)
+                {
+                    totem = u_caster->summonhandler.GetSummonWithEntry(totem_ids[i]);   // Get possible firetotem
+                    if (totem != NULL)
+                    {
+                        HasFireTotem = true;
+                        CastSpell(totem);
+                    }
+                }
+                if (!HasFireTotem)
+                {
+                    SetExtraCastResult(SPELL_EXTRA_ERROR_MUST_HAVE_FIRE_TOTEM);
+                    result = SPELL_FAILED_CUSTOM_ERROR;
+                }
+            }
+        }
+        return result;
+    }
+
+    void CastSpell(Unit* totem)
+    {
+        uint32 fireNovaSpells = Spell::GetProto()->Id;
+        //Cast spell. NOTICE All ranks are linked with a extra spell in HackFixes.cpp
+        totem->CastSpellAoF(totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), dbcSpell.LookupEntryForced(fireNovaSpells), true);
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Rogue Scripts
+class CheatDeathAura : public AbsorbAura
+{
+public:
+
+    static Aura* Create(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new CheatDeathAura(proto, duration, caster, target, temporary, i_caster); }
+
+    CheatDeathAura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
+        : AbsorbAura(proto, duration, caster, target, temporary, i_caster)
+    {
+        dSpell = dbcSpell.LookupEntry(31231);
+    }
+
+    uint32 AbsorbDamage(uint32 School, uint32* dmg)
+    {
+        // Checking for 1 min cooldown
+        if (dSpell == NULL || !p_target->Cooldown_CanCast(dSpell))
+            return 0;
+
+        // Check for proc chance
+        if (RandomFloat(100.0f) > GetSpellProto()->EffectBasePoints[0] + 1)
+            return 0;
+
+        // Check if damage will kill player.
+        uint32 cur_hlth = p_target->GetHealth();
+        if ((*dmg) < cur_hlth)
+            return 0;
+
+        uint32 max_hlth = p_target->GetMaxHealth();
+        uint32 min_hlth = max_hlth / 10;
+
+        /*
+        looks like the following lines are not so good, we check and cast on spell id 31231_
+        and adding the cooldown to it, but it looks like this spell is useless(all it's doing is_
+        casting 45182, so we can do all this stuff on 45182 at first place), BUT_
+        as long as proceeding cheat death is not so height (how many rogue at the same time_
+        gonna get to this point?) so it's better to use it because we wont lose anything!!
+        */
+        p_target->CastSpell(p_target->GetGUID(), dSpell, true);
+
+        // set dummy effect,
+        // this spell is used to procced the post effect of cheat death later.
+        // Move next line to SPELL::SpellEffectDummy ?!! well it's better in case of dbc changing!!
+        p_target->CastSpell(p_target->GetGUID(), 45182, true);
+
+        // Better to add custom cooldown procedure then fucking with entry, or not!!
+        dSpell->RecoveryTime = 60000;
+        p_target->Cooldown_Add(dSpell, NULL);
+
+        // Calc abs and applying it
+        uint32 real_dmg = (cur_hlth > min_hlth ? cur_hlth - min_hlth : 0);
+        uint32 absorbed_dmg = *dmg - real_dmg;
+
+        *dmg = real_dmg;
+        return absorbed_dmg;
+    }
+
+private:
+
+    SpellEntry* dSpell;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Priest Scripts
+class DispersionSpell : public Spell
+{
+    SPELL_FACTORY_FUNCTION(DispersionSpell);
+
+    void DoAfterHandleEffect(Unit* target, uint32 i)
+    {
+        if (p_caster != NULL)
+        {
+            // Mana regeneration
+            p_caster->CastSpell(target, 60069, true);
+            // Remove snares and movement impairing effects and make player immune to them
+            p_caster->CastSpell(target, 63230, true);
+        }
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Druid Scripts
+class InnervateSpell : public Spell
+{
+    SPELL_FACTORY_FUNCTION(InnervateSpell);
+
+    int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
+    {
+        if (p_caster != NULL && i == 0 && target != NULL)
+            value = (uint32)(p_caster->GetBaseMana() * 0.225f);
+
+        return value;
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// DeathKnight Scripts
 class BloodPlagueSpell : public Spell
 {
     SPELL_FACTORY_FUNCTION(BloodPlagueSpell);
@@ -277,8 +436,42 @@ class HeartStrikeSpell : public Spell
     }
 };
 
-void SpellFactoryMgr::SetupDeathKnight()
+void SpellFactoryMgr::SetupSpellClassScripts()
 {
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Warrior
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Warlock
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Shaman
+    AddSpellById(1535, FireNova::Create);   //Rank 1
+    AddSpellById(8498, FireNova::Create);   //Rank 2
+    AddSpellById(8499, FireNova::Create);   //Rank 3
+    AddSpellById(11314, FireNova::Create);  //Rank 4
+    AddSpellById(11315, FireNova::Create);  //Rank 5
+    AddSpellById(25546, FireNova::Create);  //Rank 6
+    AddSpellById(25547, FireNova::Create);  //Rank 7
+    AddSpellById(61649, FireNova::Create);  //Rank 8
+    AddSpellById(61657, FireNova::Create);  //Rank 9
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Rogue
+    AddAuraById(31228, &CheatDeathAura::Create);   // Rank 1
+    AddAuraById(31229, &CheatDeathAura::Create);   // Rank 2
+    AddAuraById(31230, &CheatDeathAura::Create);   // Rank 3
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Priest
+    AddSpellById(47585, &DispersionSpell::Create);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Druid
+    AddSpellByNameHash(SPELL_HASH_INNERVATE, &InnervateSpell::Create);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // DeathKnight
     AddSpellById(55078, &BloodPlagueSpell::Create);
     AddSpellById(45477, &IcyTouchSpell::Create);
     AddSpellById(55095, &FrostFeverSpell::Create);

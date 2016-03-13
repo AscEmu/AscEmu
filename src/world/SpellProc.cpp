@@ -174,14 +174,5 @@ SpellProc* SpellProcMgr::NewSpellProc(Unit* target, SpellEntry* spell, SpellEntr
 void SpellProcMgr::Setup()
 {
     SetupItems();
-    SetupDeathKnight();
-    SetupDruid();
-    SetupHunter();
-    SetupMage();
-    SetupPaladin();
-    SetupPriest();
-    SetupRogue();
-    SetupShamman();
-    SetupWarlock();
-    SetupWarrior();
+    SetupSpellProcClassScripts();
 }
