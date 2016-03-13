@@ -8000,6 +8000,7 @@ void Player::UpdateChannels(uint16 AreaID)
     if (!at2)
     {
         assert(false && ">>> REPORT THIS ERROR <<< - Could not find area with ID: " && AreaID);
+        return;     // Zyres: CID 123873
     }
 
     //Check for instances?
