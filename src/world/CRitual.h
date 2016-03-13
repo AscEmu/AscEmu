@@ -36,6 +36,9 @@ class CRitual
         {
             this->MaxMembers = MaxMembers;
             CurrentMembers = 0;
+            CasterGUID = 0;
+            TargetGUID = 0;
+            SpellID = 0;
         }
 
         ~CRitual() {}
