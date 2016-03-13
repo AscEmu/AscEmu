@@ -2752,18 +2752,18 @@ SpellCastTargets AIInterface::setSpellTargets(SpellEntry* spellInfo, Unit* targe
     targets.m_srcY = targets.m_destY = m_Unit->GetPositionY();
     targets.m_srcZ = targets.m_destZ = m_Unit->GetPositionZ();
 
-    if (m_nextSpell->spelltargetType == TTYPE_SINGLETARGET)
+    if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_SINGLETARGET)
     {
         targets.m_targetMask = TARGET_FLAG_UNIT;
     }
-    else if (m_nextSpell->spelltargetType == TTYPE_SOURCE)
+    else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_SOURCE)
     {
         targets.m_targetMask = TARGET_FLAG_SOURCE_LOCATION;
         //        targets.m_srcX = m_Unit->GetPositionX();
         //        targets.m_srcY = m_Unit->GetPositionY();
         //        targets.m_srcZ = m_Unit->GetPositionZ();
     }
-    else if (m_nextSpell->spelltargetType == TTYPE_DESTINATION)
+    else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_DESTINATION)
     {
         targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
         if (target != NULL)
@@ -2779,7 +2779,7 @@ SpellCastTargets AIInterface::setSpellTargets(SpellEntry* spellInfo, Unit* targe
             targets.m_destZ = m_Unit->GetPositionZ();
         }
     }
-    else if (m_nextSpell->spelltargetType == TTYPE_CASTER)
+    else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_CASTER)
     {
         targets.m_targetMask = TARGET_FLAG_UNIT;
         targets.m_unitTarget = m_Unit->GetGUID();
