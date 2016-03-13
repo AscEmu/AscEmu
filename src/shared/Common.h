@@ -220,8 +220,10 @@ enum MsTimeVariables
 // fix buggy MSVC's for variable scoping to be reliable =S
 #define for if (true) for
 
+#if COMPILER == COMPILER_MICROSOFT
 #pragma float_control(push)
 #pragma float_control(precise, on)
+#endif
 
 // fast int abs
 static inline int int32abs(const int value)
