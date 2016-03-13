@@ -1006,10 +1006,10 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_WORLD_TELEPORT].handler = &WorldSession::HandleWorldportOpcode;
 
     // voicechat
-    WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::HandleEnableMicrophoneOpcode;
-    WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::HandleVoiceChatQueryOpcode;
-    WorldPacketHandlers[0x03AF].handler = &WorldSession::HandleChannelVoiceQueryOpcode;
-    // WorldPacketHandlers[CMSG_CHANNEL_VOICE_QUERY].handler = &WorldSession::HandleChannelVoiceQueryOpcode;
+    // Zyres: this feature will be not implemented in the near future!
+    //WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::HandleEnableMicrophoneOpcode;
+    //WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::HandleVoiceChatQueryOpcode;
+    //WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::HandleChannelVoiceQueryOpcode;
 
 
     // Vehicle

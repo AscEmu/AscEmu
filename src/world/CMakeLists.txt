@@ -13,7 +13,6 @@ set(sources
    DBC/DBCSQL.cpp
    AchievementMgr.cpp 
    CollideInterface.cpp 
-	VoiceChatHandler.cpp 
 	DayWatcherThread.cpp 
 	CommonScheduleThread.cpp 
 	ArenaTeam.cpp 

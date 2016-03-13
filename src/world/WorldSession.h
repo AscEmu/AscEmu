@@ -744,9 +744,10 @@ class SERVER_DECL WorldSession
         void HandleWrapItemOpcode(WorldPacket& recv_data);
 
         // VoicChat
-        void HandleEnableMicrophoneOpcode(WorldPacket& recv_data);
-        void HandleVoiceChatQueryOpcode(WorldPacket& recv_data);
-        void HandleChannelVoiceQueryOpcode(WorldPacket& recv_data);
+        // Zyres: this feature will be not implemented in the near future!
+        //void HandleEnableMicrophoneOpcode(WorldPacket& recv_data);
+        //void HandleVoiceChatQueryOpcode(WorldPacket& recv_data);
+        //void HandleChannelVoiceQueryOpcode(WorldPacket& recv_data);
         void HandleSetAutoLootPassOpcode(WorldPacket& recv_data);
 
 
