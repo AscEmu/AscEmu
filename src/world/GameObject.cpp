@@ -21,9 +21,6 @@
 
 #include "StdAfx.h"
 
-GameObject::GameObject()
-{ }
-
 GameObject::GameObject(uint64 guid)
 {
     m_objectType |= TYPE_GAMEOBJECT;
@@ -479,9 +476,6 @@ void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Door
-GameObject_Door::GameObject_Door() : GameObject()
-{ }
-
 GameObject_Door::GameObject_Door(uint64 GUID) : GameObject(GUID)
 { }
 
@@ -526,9 +520,6 @@ void GameObject_Door::Use(uint64 GUID)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Button
-GameObject_Button::GameObject_Button() : GameObject()
-{ }
-
 GameObject_Button::GameObject_Button(uint64 GUID) : GameObject(GUID)
 {
     spell = nullptr;
@@ -586,9 +577,6 @@ void GameObject_Button::Use(uint64 GUID)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_QuestGiver
-GameObject_QuestGiver::GameObject_QuestGiver() : GameObject()
-{ }
-
 GameObject_QuestGiver::GameObject_QuestGiver(uint64 GUID) : GameObject(GUID)
 {
     m_quests = NULL;
@@ -649,9 +637,6 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Chest
-GameObject_Chest::GameObject_Chest() : GameObject_Lootable()
-{ }
-
 GameObject_Chest::GameObject_Chest(uint64 GUID) : GameObject_Lootable(GUID)
 {
     spell = nullptr;
@@ -719,12 +704,6 @@ void GameObject_Chest::Use(uint64 GUID)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Trap
-GameObject_Trap::GameObject_Trap() : GameObject()
-{
-    spell = NULL;
-    targetupdatetimer = 0;
-}
-
 GameObject_Trap::GameObject_Trap(uint64 GUID) : GameObject(GUID)
 {
     spell = NULL;
@@ -850,9 +829,6 @@ void GameObject_Trap::Update(unsigned long time_passed)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellFocus
-GameObject_SpellFocus::GameObject_SpellFocus() : GameObject()
-{ }
-
 GameObject_SpellFocus::GameObject_SpellFocus(uint64 GUID) : GameObject(GUID)
 { }
 
@@ -891,9 +867,6 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Goober
-GameObject_Goober::GameObject_Goober() : GameObject()
-{ }
-
 GameObject_Goober::GameObject_Goober(uint64 GUID) : GameObject(GUID)
 {
     spell = NULL;
@@ -949,11 +922,6 @@ void GameObject_Goober::Use(uint64 GUID)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingNode
-GameObject_FishingNode::GameObject_FishingNode() : GameObject_Lootable()
-{
-    FishHooked = false;
-}
-
 GameObject_FishingNode::GameObject_FishingNode(uint64 GUID) : GameObject_Lootable(GUID)
 {
     FishHooked = false;
@@ -1025,9 +993,6 @@ bool GameObject_FishingNode::HasLoot()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Ritual
-GameObject_Ritual::GameObject_Ritual()
-{ }
-
 GameObject_Ritual::GameObject_Ritual(uint64 GUID) : GameObject(GUID)
 {
     Ritual = NULL;;
@@ -1046,9 +1011,6 @@ void GameObject_Ritual::InitAI()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_SpellCaster
-GameObject_SpellCaster::GameObject_SpellCaster() : GameObject()
-{ }
-
 GameObject_SpellCaster::GameObject_SpellCaster(uint64 GUID) : GameObject(GUID)
 {
     spell = nullptr;
@@ -1079,9 +1041,6 @@ void GameObject_SpellCaster::Use(uint64 GUID)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_FishingHole
-GameObject_FishingHole::GameObject_FishingHole() : GameObject_Lootable()
-{ }
-
 GameObject_FishingHole::GameObject_FishingHole(uint64 GUID) : GameObject_Lootable(GUID)
 {
     usage_remaining = 0;
@@ -1132,9 +1091,6 @@ bool GameObject_FishingHole::HasLoot()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Destructible
-GameObject_Destructible::GameObject_Destructible() : GameObject()
-{ }
-
 GameObject_Destructible::GameObject_Destructible(uint64 GUID) : GameObject(GUID)
 {
     hitpoints = 0;

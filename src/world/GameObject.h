@@ -378,8 +378,6 @@ class SERVER_DECL GameObject : public Object
 {
     public:
 
-        GameObject();
-
         GameObject(uint64 guid);
         ~GameObject();
 
@@ -518,7 +516,6 @@ class GameObject_Lootable : public GameObject
 {
     public:
 
-        GameObject_Lootable() : GameObject() {}
         GameObject_Lootable(uint64 GUID) : GameObject(GUID) {}
         ~GameObject_Lootable() {}
 
@@ -534,7 +531,6 @@ class GameObject_Door : public GameObject
 {
     public:
 
-        GameObject_Door();
         GameObject_Door(uint64 GUID);
         ~GameObject_Door();
 
@@ -556,7 +552,6 @@ class GameObject_Button : public GameObject
 {
     public:
 
-        GameObject_Button();
         GameObject_Button(uint64 GUID);
         ~GameObject_Button();
 
@@ -579,7 +574,6 @@ class GameObject_QuestGiver : public GameObject
 {
     public:
 
-        GameObject_QuestGiver();
         GameObject_QuestGiver(uint64 GUID);
         ~GameObject_QuestGiver();
 
@@ -663,7 +657,6 @@ class GameObject_Chest : public GameObject_Lootable
 {
     public:
 
-        GameObject_Chest();
         GameObject_Chest(uint64 GUID);
         ~GameObject_Chest();
 
@@ -689,7 +682,6 @@ class GameObject_Trap : public GameObject
 {
     public:
 
-        GameObject_Trap();
         GameObject_Trap(uint64 GUID);
         ~GameObject_Trap();
 
@@ -711,7 +703,6 @@ class GameObject_SpellFocus : public GameObject
 {
     public:
 
-        GameObject_SpellFocus();
         GameObject_SpellFocus(uint64 GUID);
         ~GameObject_SpellFocus();
 
@@ -729,7 +720,6 @@ class GameObject_Goober : public GameObject
 {
     public:
 
-        GameObject_Goober();
         GameObject_Goober(uint64 GUID);
         ~GameObject_Goober();
 
@@ -751,7 +741,6 @@ class GameObject_FishingNode : public GameObject_Lootable
 {
     public:
 
-        GameObject_FishingNode();
         GameObject_FishingNode(uint64 GUID);
         ~GameObject_FishingNode();
 
@@ -782,7 +771,6 @@ class GameObject_Ritual : public GameObject
 {
     public:
 
-        GameObject_Ritual();
         GameObject_Ritual(uint64 GUID);
         ~GameObject_Ritual();
 
@@ -804,7 +792,6 @@ class GameObject_SpellCaster : public GameObject
 {
     public:
 
-        GameObject_SpellCaster();
         GameObject_SpellCaster(uint64 GUID);
         ~GameObject_SpellCaster();
 
@@ -824,7 +811,6 @@ class GameObject_FishingHole : public GameObject_Lootable
 {
     public:
 
-        GameObject_FishingHole();
         GameObject_FishingHole(uint64 GUID);
         ~GameObject_FishingHole();
 
@@ -851,7 +837,6 @@ class SERVER_DECL GameObject_Destructible : public GameObject
 {
     public:
 
-        GameObject_Destructible();
         GameObject_Destructible(uint64 GUID);
         ~GameObject_Destructible();
 
