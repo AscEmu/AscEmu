@@ -2937,7 +2937,7 @@ void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefi
 
     auto highlight_length = highlight.length();
     std::string fullname = std::string(full_name);
-    auto offset = lowercase_name.find(highlight);
+    size_t offset = (size_t)lowercase_name.find(highlight);
     auto remaining = fullname.size() - offset - highlight_length;
 
     strcat(message, start);
