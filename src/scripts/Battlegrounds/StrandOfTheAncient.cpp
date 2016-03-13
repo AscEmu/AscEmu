@@ -332,6 +332,8 @@ StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, ui
 
     m_relic = NULL;
     m_endgate = NULL;
+    for (uint8 i = 0; i < SOTA_NORTH_BOMBS; i++)
+        m_bomb[i] = NULL;
 
 }
 
