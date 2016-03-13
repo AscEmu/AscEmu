@@ -193,6 +193,9 @@ World::World()
     BCOrderMode = 0;
 
     realmAllowTBCcharacters = true;
+    Pathfinding = false;
+
+    gamemaster_announceKick = true;
 }
 
 void CleanupRandomNumberGenerators();
