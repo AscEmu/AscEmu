@@ -1670,7 +1670,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                     school->CatchFish();
 
                 }
-                else if (Rand(((plyr->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
+                else if (maxskill != 0 && Rand(((plyr->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
                 {
                     lootmgr.FillFishingLoot(&fn->loot, zone);
                     plyr->SendLoot(fn->GetGUID(), LOOT_FISHING, fn->GetMapId());
