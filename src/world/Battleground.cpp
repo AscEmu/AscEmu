@@ -381,13 +381,17 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, uint32 MapId, float x, 
 
     Arcemu::Util::ArcemuAssert(go != nullptr);
 
-    go->CreateFromProto(entry, MapId, x, y, z, o);
+    //Zyres: CID 104108 coverity ignores the assert so double check this
+    if (go != nullptr)
+    {
+        go->CreateFromProto(entry, MapId, x, y, z, o);
 
-    go->SetFaction(faction);
-    go->SetScale(scale);
-    go->SetFlags(flags);
-    go->SetPosition(x, y, z, o);
-    go->SetInstanceID(m_mapMgr->GetInstanceID());
+        go->SetFaction(faction);
+        go->SetScale(scale);
+        go->SetFlags(flags);
+        go->SetPosition(x, y, z, o);
+        go->SetInstanceID(m_mapMgr->GetInstanceID());
+    }
 
     return go;
 }
