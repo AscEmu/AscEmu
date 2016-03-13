@@ -708,6 +708,8 @@ GameObject_Trap::GameObject_Trap(uint64 GUID) : GameObject(GUID)
 {
     spell = NULL;
     targetupdatetimer = 0;
+    maxdistance = 0.0f;
+    cooldown = 0;
 }
 
 GameObject_Trap::~GameObject_Trap()
