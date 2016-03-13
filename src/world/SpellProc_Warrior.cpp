@@ -66,6 +66,9 @@ class JuggernautSpellProc : public SpellProc
 
 void SpellProcMgr::SetupWarrior()
 {
-    AddByNameHash(SPELL_HASH_DAMAGE_SHIELD, &DamageShieldSpellProc::Create);
+    // Add where spellIconID = 3214
+    AddById(58872, &DamageShieldSpellProc::Create);     // Rank 1
+    AddById(58874, &DamageShieldSpellProc::Create);     // Rank 2
+
     AddById(65156, &JuggernautSpellProc::Create);
 }
