@@ -944,7 +944,7 @@ class SERVER_DECL DBCStorage
         {
             uint32 i;
             uint32 string_length;
-            long pos;
+            int pos;
 
             FILE* f = fopen(filename, "rb");
             if (f == NULL)
