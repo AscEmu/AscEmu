@@ -178,6 +178,8 @@ bool ChatHandler::HandleDeleteCommand(const char* args, WorldSession* m_session)
 
     unit->GetAIInterface()->hideWayPoints(m_session->GetPlayer());
 
+    uint32 spawn_id = unit->GetSQL_id();
+
     unit->DeleteFromDB();
 
     if (unit->IsSummon())
@@ -212,7 +214,7 @@ bool ChatHandler::HandleDeleteCommand(const char* args, WorldSession* m_session)
         unit->RemoveFromWorld(false, true);
     }
 
-    BlueSystemMessage(m_session, "Creature deleted");
+    BlueSystemMessage(m_session, "Creature deleted. SpawnID %u", spawn_id);
 
     return true;
 }
