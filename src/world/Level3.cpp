@@ -841,8 +841,6 @@ bool ChatHandler::HandleNpcInfoCommand(const char* args, WorldSession* m_session
     SystemMessage(m_session, "%d/%d/%d/%d/%d/%d/%d", crt->GetResistance(SCHOOL_NORMAL), crt->GetResistance(SCHOOL_HOLY), crt->GetResistance(SCHOOL_FIRE), crt->GetResistance(SCHOOL_NATURE), crt->GetResistance(SCHOOL_FROST), crt->GetResistance(SCHOOL_SHADOW), crt->GetResistance(SCHOOL_ARCANE));
     SystemMessage(m_session, "Damage (min/max): %f/%f", crt->GetMinDamage(), crt->GetMaxDamage());
 
-    ColorSystemMessage(m_session, MSG_COLOR_RED, "Entry ID: %d", crt->GetEntry());
-    ColorSystemMessage(m_session, MSG_COLOR_RED, "Spawn ID: %d", crt->GetSQL_id());
     // show byte
     std::stringstream sstext;
     uint32 theBytes = crt->GetUInt32Value(UNIT_FIELD_BYTES_0);
@@ -932,6 +930,9 @@ bool ChatHandler::HandleNpcInfoCommand(const char* args, WorldSession* m_session
     for (uint32 i = 0; i < numdynflags; i++)
         if ((dynflags & UnitDynFlagToName[i].Flag) != 0)
             SystemMessage(m_session, "%s", UnitDynFlagToName[i].Name);
+
+    ColorSystemMessage(m_session, MSG_COLOR_RED, "Entry ID: %d", crt->GetEntry());
+    ColorSystemMessage(m_session, MSG_COLOR_RED, "Spawn ID: %d", crt->GetSQL_id());
 
     return true;
 }
