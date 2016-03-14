@@ -576,7 +576,6 @@ Player::~Player()
 
     // delete m_talenttree
 
-    CleanupChannels();
     for (uint8 i = 0; i < 25; ++i)
     {
         if (m_questlog[i] != NULL)
