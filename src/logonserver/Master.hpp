@@ -39,7 +39,7 @@ class LogonServer : public Singleton< LogonServer >
         void Stop();
 
         bool StartDb();
-        bool Rehash();
+        bool LoadLogonConfiguration();
 
         bool IsServerAllowed(unsigned int IP);
         bool IsServerAllowedMod(unsigned int IP);

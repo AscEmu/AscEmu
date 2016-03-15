@@ -81,9 +81,6 @@ struct Addr
     unsigned long unusedB;
 };
 
-static const char* default_config_file = CONFDIR "/world.conf";
-static const char* default_optional_config_file = CONFDIR "/optional.conf";
-static const char* default_realm_config_file = CONFDIR "/realms.conf";
 
 bool bServerShutdown = false;
 bool StartConsoleListener();
@@ -92,9 +89,9 @@ ThreadBase* GetConsoleListener();
 
 bool Master::Run(int argc, char** argv)
 {
-    char* config_file = (char*)default_config_file;
-    char* optional_config_file = (char*)default_optional_config_file;
-    char* realm_config_file = (char*)default_realm_config_file;
+    char* config_file = (char*)CONFDIR "/world.conf";
+    char* optional_config_file = (char*)CONFDIR "/optional.conf";
+    char* realm_config_file = (char*)CONFDIR "/realms.conf";
 
     int file_log_level = DEF_VALUE_NOT_SET;
     int screen_log_level = DEF_VALUE_NOT_SET;
@@ -103,6 +100,8 @@ bool Master::Run(int argc, char** argv)
     int do_cheater_check = 0;
     int do_database_clean = 0;
 
+    // Zyres: The commandline options (especially the config_file value) is leaking our memory (CID 52921). This feature seems to be unfinished.
+#ifdef COMMANDLINE_OPT_ENABLE
     struct arcemu_option longopts[] =
     {
         { "checkconf", arcemu_no_argument, &do_check_conf, 1 },
@@ -140,7 +139,7 @@ bool Master::Run(int argc, char** argv)
                 return true;
         }
     }
-
+#endif
     // Startup banner
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
@@ -149,6 +148,7 @@ bool Master::Run(int argc, char** argv)
 
     PrintBanner();
 
+#ifdef COMMANDLINE_OPT_ENABLE
     if (do_version)
     {
         sLog.Close();
@@ -178,6 +178,7 @@ bool Master::Run(int argc, char** argv)
         sLog.Close();
         return true;
     }
+#endif
 
     sLog.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
 
@@ -244,7 +245,6 @@ bool Master::Run(int argc, char** argv)
     {
         Log.Error("Server", "SetInitialWorldSettings() failed. Something went wrong? Exiting.");
         sLog.Close();
-        delete[] realm_config_file;
         return false;
     }
 

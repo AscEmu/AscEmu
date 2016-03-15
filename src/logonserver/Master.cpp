@@ -29,12 +29,16 @@ void LogonServer::Run(int argc, char** argv)
 {
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
+
     char* config_file = (char*)CONFDIR "/logon.conf";
+
     int file_log_level = DEF_VALUE_NOT_SET;
     int screen_log_level = DEF_VALUE_NOT_SET;
     int do_check_conf = 0;
     int do_version = 0;
 
+    // Zyres: The commandline options (especially the config_file value) is leaking our memory (CID 52921). This feature seems to be unfinished.
+#ifdef COMMANDLINE_OPT_ENABLE
     struct arcemu_option longopts[] =
     {
         { "checkconf",          arcemu_no_argument,              &do_check_conf,         1 },
@@ -63,11 +67,12 @@ void LogonServer::Run(int argc, char** argv)
                 return;
         }
     }
-
+#endif
     sLog.Init(0, LOGON_LOG);
 
     PrintBanner();
 
+#ifdef COMMANDLINE_OPT_ENABLE
     if (do_version)
     {
         sLog.Close();
@@ -76,16 +81,16 @@ void LogonServer::Run(int argc, char** argv)
 
     if (do_check_conf)
     {
-        LOG_BASIC("Checking config file: %s", config_file);
+        LOG_BASIC("Checking config file: %s", config_file.c_str());
         if (Config.MainConfig.SetSource(config_file, true))
             LOG_BASIC("  Passed without errors.");
         else
             LOG_BASIC("  Encountered one or more errors.");
 
         sLog.Close();
-        free(config_file);
         return;
     }
+#endif
 
     // set new log levels
     if (file_log_level != (int)DEF_VALUE_NOT_SET)
@@ -94,7 +99,7 @@ void LogonServer::Run(int argc, char** argv)
     sLog.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
 
     Log.Success("Config", "Loading Config Files...");
-    if (!Rehash())
+    if (!LoadLogonConfiguration())
     {
         sLog.Close();
         return;
@@ -382,7 +387,7 @@ Mutex m_allowedIpLock;
 std::vector<AllowedIP> m_allowedIps;
 std::vector<AllowedIP> m_allowedModIps;
 
-bool LogonServer::Rehash()
+bool LogonServer::LoadLogonConfiguration()
 {
     char* config_file = (char*)CONFDIR "/logon.conf";
     if (!Config.MainConfig.SetSource(config_file))
