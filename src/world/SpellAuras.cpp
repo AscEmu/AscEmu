@@ -6387,6 +6387,8 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
                     {
                         plr->mSpellOverrideMap.insert(SpellOverrideMap::value_type((*itrSE)->Id, lst));
                     }
+
+                    delete lst;
                 }
             }
             else
