@@ -26,7 +26,8 @@ initialiseSingleton(LogonConsole);
 void LogonConsole::TranslateRehash(char* str)
 {
     sLog.outString("rehashing config file...");
-    sLogonServer.Rehash();
+    if (sLogonServer.Rehash())
+        sLog.outString("Rehashing config file finished succesfull!");
 }
 
 void LogonConsole::Kill()
@@ -197,14 +198,15 @@ void LogonConsole::ProcessHelp(char* command)
     {
         printf("Console:--------help--------\n");
         printf("    Help, ?: Prints this help text.\n");
-        printf("    account create: Creates a new account\n");
-        printf("    account delete: Deletes an account\n");
-        printf("    account set gm: Sets gm access to account\n");
-        printf("    account set password: Sets a new password for an account\n");
-        printf("    account change password: Change the current password for an account\n");
-        printf("    Reload: Reloads accounts.\n");
+        printf("    Account create: Creates a new account\n");
+        printf("    Account delete: Deletes an account\n");
+        printf("    Account set gm: Sets gm access to account\n");
+        printf("    Account set password: Sets a new password for an account\n");
+        printf("    Account change password: Change the current password for an account\n");
+        printf("    Info:  shows some information about the server.\n");
         printf("    Netstatus: Shows network status.\n");
-        printf("    info:  shows some information about the server.\n");
+        printf("    Rehash: Rehashing config file.\n");
+        printf("    Reload: Reloads accounts.\n");
         printf("    Shutdown, exit: Closes the logonserver.\n");
     }
 }
@@ -213,8 +215,8 @@ void LogonConsole::Info(char* str)
 {
     std::cout << "LogonServer information" << std::endl;
     std::cout << "-----------------------" << std::endl;
-    std::cout << "CPU Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentCPUUsage() << "%" << std::endl;
-    std::cout << "RAM Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentRAMUsage() << "MB" << std::endl;
+    std::cout << "CPU Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentCPUUsage() << " %" << std::endl;
+    std::cout << "RAM Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentRAMUsage() << " MB" << std::endl;
 }
 
 void LogonConsole::AccountCreate(char* str)
