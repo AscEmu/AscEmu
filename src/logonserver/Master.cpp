@@ -34,11 +34,13 @@ void LogonServer::Run(int argc, char** argv)
 
     int file_log_level = DEF_VALUE_NOT_SET;
     int screen_log_level = DEF_VALUE_NOT_SET;
-    int do_check_conf = 0;
-    int do_version = 0;
 
     // Zyres: The commandline options (especially the config_file value) is leaking our memory (CID 52921). This feature seems to be unfinished.
 #ifdef COMMANDLINE_OPT_ENABLE
+
+    int do_check_conf = 0;
+    int do_version = 0;
+
     struct arcemu_option longopts[] =
     {
         { "checkconf",          arcemu_no_argument,              &do_check_conf,         1 },

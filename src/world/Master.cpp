@@ -95,13 +95,15 @@ bool Master::Run(int argc, char** argv)
 
     int file_log_level = DEF_VALUE_NOT_SET;
     int screen_log_level = DEF_VALUE_NOT_SET;
+
+    // Zyres: The commandline options (especially the config_file value) is leaking our memory (CID 52872 and 52620). This feature seems to be unfinished.
+#ifdef COMMANDLINE_OPT_ENABLE
+
     int do_check_conf = 0;
     int do_version = 0;
     int do_cheater_check = 0;
     int do_database_clean = 0;
 
-    // Zyres: The commandline options (especially the config_file value) is leaking our memory (CID 52921). This feature seems to be unfinished.
-#ifdef COMMANDLINE_OPT_ENABLE
     struct arcemu_option longopts[] =
     {
         { "checkconf", arcemu_no_argument, &do_check_conf, 1 },
@@ -211,7 +213,7 @@ bool Master::Run(int argc, char** argv)
         sLog.Close();
         return false;
     }
-
+#ifdef COMMANDLINE_OPT_ENABLE
     if (do_database_clean)
     {
         sLog.outDebug("Entering database maintenance mode.");
@@ -220,7 +222,7 @@ bool Master::Run(int argc, char** argv)
         delete DatabaseCleaner::getSingletonPtr();
         sLog.outDebug("Maintenance finished.");
     }
-
+#endif
     new EventMgr;
     new World;
 
