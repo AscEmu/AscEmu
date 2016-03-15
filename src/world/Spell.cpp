@@ -1853,7 +1853,10 @@ void Spell::finish(bool successful)
                 i_caster->GetOwner()->UpdatePotionCooldown();
         }
         else
-            i_caster->GetOwner()->Cooldown_AddItem(i_caster->GetProto(), x);
+        {
+            if (x < MAX_ITEM_PROTO_SPELLS)
+                i_caster->GetOwner()->Cooldown_AddItem(i_caster->GetProto(), x);
+        }
     }
 
     // cebernic added it
