@@ -204,7 +204,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
             break;
             case PET_ACTION_STATE:
             {
-                if (misc == PET_STATE_PASSIVE)
+                if (misc == PET_ACTION_STAY)        // PET_STATE_PASSIVE
                 {
                     // stop attacking and run to owner
                     pPet->GetAIInterface()->WipeTargetList();
