@@ -427,12 +427,17 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     sMailSystem.SaveMessageToSQL(message);
     SendPacket(&data);
 
+    // Send message back if cod was set.
     if (message->cod > 0)
     {
         _player->ModGold(-(int32)message->cod);
         std::string subject = "COD Payment: ";
         subject += message->subject;
-        sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, message->player_guid, message->sender_guid, subject, "", message->cod, 0, 0, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_COD_PAYMENT);
+        uint64 answer_sender = message->player_guid;
+        uint64 answer_receiver = message->sender_guid;
+        uint32 answer_cod_money = message->cod;
+
+        sMailSystem.SendAutomatedMessage(MAIL_TYPE_NORMAL, answer_sender, answer_receiver, subject, "", answer_cod_money, 0, 0, MAIL_STATIONERY_TEST1, MAIL_CHECK_MASK_COD_PAYMENT);
 
         message->cod = 0;
         CharacterDatabase.Execute("UPDATE mailbox SET cod = 0 WHERE message_id = %u", message->message_id);
