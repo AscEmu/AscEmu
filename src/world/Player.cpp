@@ -11137,11 +11137,18 @@ void Player::Cooldown_AddItem(ItemPrototype* pProto, uint32 x)
     ItemSpell* isp = &pProto->Spells[x];
     uint32 mstime = getMSTime();
 
-    if (isp->CategoryCooldown > 0)
-        _Cooldown_Add(COOLDOWN_TYPE_CATEGORY, isp->Category, isp->CategoryCooldown + mstime, isp->Id, pProto->ItemId);
+    uint32 item_spell_id = isp->Id;
 
-    if (isp->Cooldown > 0)
-        _Cooldown_Add(COOLDOWN_TYPE_SPELL, isp->Id, isp->Cooldown + mstime, isp->Id, pProto->ItemId);
+    uint32 category_id = isp->Category;
+    int32 category_cooldown_time = isp->CategoryCooldown;
+    if (isp->CategoryCooldown > 0)
+    {
+        _Cooldown_Add(COOLDOWN_TYPE_CATEGORY, category_id, category_cooldown_time + mstime, item_spell_id, pProto->ItemId);
+    }
+
+    int32 cooldown_time = isp->Cooldown;
+    if (cooldown_time > 0)
+        _Cooldown_Add(COOLDOWN_TYPE_SPELL, item_spell_id, cooldown_time + mstime, item_spell_id, pProto->ItemId);
 }
 
 bool Player::Cooldown_CanCast(ItemPrototype* pProto, uint32 x)
