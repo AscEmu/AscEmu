@@ -1030,7 +1030,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     }
     else
     {
-        if (p_caster != NULL && p_caster->IsStealth() && m_spellInfo && !hasAttributeEx(ATTRIBUTESEX_NOT_BREAK_STEALTH) && m_spellInfo->Id != 1)   // <-- baaaad, baaad hackfix - for some reason some spells were triggering Spell ID #1 and stuffing up the spell system.
+        if (p_caster != NULL && p_caster->IsStealth() && !hasAttributeEx(ATTRIBUTESEX_NOT_BREAK_STEALTH) && m_spellInfo->Id != 1)   // <-- baaaad, baaad hackfix - for some reason some spells were triggering Spell ID #1 and stuffing up the spell system.
         {
             /* talents procing - don't remove stealth either */
             if (!hasAttribute(ATTRIBUTES_PASSIVE) &&
