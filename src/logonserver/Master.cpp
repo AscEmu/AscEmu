@@ -230,7 +230,10 @@ void LogonServer::Run(int argc, char** argv)
     ThreadPool.Shutdown();
 
     // delete pid file
-    remove("logonserver.pid");
+    if (remove("logonserver.pid") != 0)
+        LOG_ERROR("Error deleting file logonserver.pid");
+    else
+        LOG_DEBUG("File logonserver.pid successfully deleted");
 
     delete AccountMgr::getSingletonPtr();
     delete InformationCore::getSingletonPtr();
