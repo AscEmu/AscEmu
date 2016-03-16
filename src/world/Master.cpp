@@ -368,7 +368,10 @@ bool Master::Run(int argc, char** argv)
     delete Player_Log;
 
     // remove pid
-    remove("worldserver.pid");
+    if (remove("worldserver.pid") != 0)
+        LOG_ERROR("Error deleting file worldserver.pid");
+    else
+        LOG_DEBUG("File worldserver.pid successfully deleted");
 
     Log.Success("Shutdown", "Shutdown complete.");
     Log.Close();
