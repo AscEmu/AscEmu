@@ -231,9 +231,11 @@ bool Master::Run(int argc, char** argv)
     /* load the config file */
     sWorld.Rehash(false);
 
+#ifdef COMMANDLINE_OPT_ENABLE
     /* set new log levels */
     if (file_log_level != (int)DEF_VALUE_NOT_SET)
         sLog.SetFileLoggingLevel(file_log_level);
+#endif
 
     // Initialize Opcode Table
     WorldSession::InitPacketHandlerTable();

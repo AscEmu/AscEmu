@@ -92,11 +92,11 @@ void LogonServer::Run(int argc, char** argv)
         sLog.Close();
         return;
     }
-#endif
 
     // set new log levels
     if (file_log_level != (int)DEF_VALUE_NOT_SET)
         sLog.SetFileLoggingLevel(file_log_level);
+#endif
 
     sLog.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
 
