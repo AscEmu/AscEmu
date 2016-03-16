@@ -2676,9 +2676,12 @@ bool Spell::TakePower()
                     return false;
                 if (spell_rune_cost->runePowerGain)
                 {
-                    auto caster_runic_power = u_caster->GetPower(POWER_TYPE_RUNIC_POWER);
-                    auto spell_rune_gain = spell_rune_cost->runePowerGain;
-                    u_caster->SetPower(POWER_TYPE_RUNIC_POWER, (spell_rune_gain + caster_runic_power));
+                    if (u_caster != nullptr)
+                    {
+                        auto caster_runic_power = u_caster->GetPower(POWER_TYPE_RUNIC_POWER);
+                        auto spell_rune_gain = spell_rune_cost->runePowerGain;
+                        u_caster->SetPower(POWER_TYPE_RUNIC_POWER, (spell_rune_gain + caster_runic_power));
+                    }
                 }
             }
             return true;
