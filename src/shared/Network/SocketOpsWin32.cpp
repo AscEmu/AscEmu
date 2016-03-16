@@ -79,7 +79,8 @@ namespace SocketOps
     void ReuseAddr(SOCKET fd)
     {
         uint32 option = 1;
-        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&option, 4);
+        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&option, 4) < 0)
+            printf("SO_REUSEADDR setsockopt error\n");
     }
 }
 
