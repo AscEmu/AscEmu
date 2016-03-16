@@ -296,15 +296,15 @@ void MapFile::getModuleMapFilename(char* buffer, int bufferSize)
     // get name of the exe/dll
     len = GetModuleFileName(GetModuleHandle(0), buffer, bufferSize - 1);
     buffer[len] = 0;
-#endif
 
     // remove .exe or .dll extension
-    if(len > 3 &&
-            (!strcmp(buffer + len - 4, ".exe") || !strcmp(buffer + len - 4, ".EXE") ||
-             !strcmp(buffer + len - 4, ".DLL") || !strcmp(buffer + len - 4, ".dll")))
+    if (len > 3 &&
+        (!strcmp(buffer + len - 4, ".exe") || !strcmp(buffer + len - 4, ".EXE") ||
+        !strcmp(buffer + len - 4, ".DLL") || !strcmp(buffer + len - 4, ".dll")))
     {
         buffer[len - 4] = 0;
     }
+#endif
 
     // append .map extension
     if((int)strlen(buffer) + 4 < bufferSize)
