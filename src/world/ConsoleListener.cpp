@@ -505,7 +505,7 @@ void HandleConsoleInput(BaseConsole* pConsole, const char* szInput)
         p = strchr(q, ' ');
     }
 
-    if (q != NULL && *q != '\0')
+    if (*q != '\0')
         tokens.push_back(q);
 
     if (tokens.empty())
