@@ -473,8 +473,13 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
-            data->append(*splinebuf);
-            delete splinebuf;
+            if (splinebuf != NULL)
+            {
+                data->append(*splinebuf);
+                //delete splinebuf;
+            }
+            else
+                *data << float(0.0f);
         }
     }
     else        // No UPDATEFLAG_LIVING
