@@ -617,7 +617,8 @@ bool World::SetInitialWorldSettings()
 #endif
 
     // Preload and compile talent and talent tab data to speed up talent inspect
-
+    // Zyres: It looks like missplaced and should be moved right after dbc loading
+#define MAX_TALENT_CLASS 12
     uint32 talent_max_rank;
     uint32 talent_pos;
     uint32 talent_class;
@@ -662,13 +663,14 @@ bool World::SetInitialWorldSettings()
 
         talent_pos = 0;
 
-        for (talent_class = 0; talent_class < 12; ++talent_class)
+        for (talent_class = 0; talent_class < MAX_TALENT_CLASS; ++talent_class)
         {
             if (talent_tab->ClassMask & (1 << talent_class))
                 break;
         }
-
-        InspectTalentTabPages[talent_class + 1][talent_tab->TabPage] = talent_tab->TalentTabID;
+        // Zyres: prevent Out-of-bounds read
+        if (talent_class < MAX_TALENT_CLASS)
+            InspectTalentTabPages[talent_class + 1][talent_tab->TabPage] = talent_tab->TalentTabID;
 
         for (std::map< uint32, uint32 >::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
         {
