@@ -827,8 +827,7 @@ class SilasDarkmoon_Gossip : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 60013, plr);                    /// \todo find right text
             Menu->AddItem(GOSSIP_ICON_CHAT, plr->GetSession()->LocalizedGossipOption(GI_DF_ASK_PROFIT), 1);    // Silas, why is most everything at the fair free? How do you make a profit?
 
-            if (Menu != nullptr)
-                Menu->SendTo(plr);
+            Menu->SendTo(plr);
 
         }
 
