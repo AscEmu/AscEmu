@@ -23,7 +23,7 @@
 
 #include "Log.h"
 #include "Database/Database.h"
-#include "MainServerDefines.h"
+#include "../world/MainServerDefines.h"
 
 #ifdef WIN32
 #pragma warning(disable:4312)
