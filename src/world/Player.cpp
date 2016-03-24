@@ -11013,6 +11013,33 @@ bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoint
     return false;
 }
 
+void Player::AddCategoryCooldown(uint32 category_id, uint32 time, uint32 SpellId, uint32 ItemId)
+{
+    PlayerCooldownMap::iterator itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].find(category_id);
+    if (itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end())
+    {
+        if (itr->second.ExpireTime < time)
+        {
+            itr->second.ExpireTime = time;
+            itr->second.ItemId = ItemId;
+            itr->second.SpellId = SpellId;
+        }
+    }
+    else
+    {
+        PlayerCooldown cd;
+        cd.ExpireTime = time;
+        cd.ItemId = ItemId;
+        cd.SpellId = SpellId;
+
+        m_cooldownMap[COOLDOWN_TYPE_CATEGORY].insert(std::make_pair(category_id, cd));
+    }
+
+#ifdef _DEBUG
+    Log.Debug("Player::AddCategoryCooldown", "added cooldown for COOLDOWN_TYPE_CATEGORY category_type %u time %u item %u spell %u", category_id, time - getMSTime(), ItemId, SpellId);
+#endif
+}
+
 void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId, uint32 ItemId)
 {
     PlayerCooldownMap::iterator itr = m_cooldownMap[Type].find(Misc);
@@ -11053,7 +11080,7 @@ void Player::Cooldown_Add(SpellEntry* pSpell, Item* pItemCaster)
         SM_FIValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
         SM_PIValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
 
-        _Cooldown_Add(COOLDOWN_TYPE_CATEGORY, category_id, spell_category_recovery_time + mstime, spell_id, pItemCaster ? pItemCaster->GetProto()->ItemId : 0);
+        AddCategoryCooldown(category_id, spell_category_recovery_time + mstime, spell_id, pItemCaster ? pItemCaster->GetProto()->ItemId : 0);
     }
 
     uint32 spell_recovery_t = pSpell->RecoveryTime;
@@ -11086,7 +11113,7 @@ void Player::Cooldown_AddStart(SpellEntry* pSpell)
         return;
 
     if (pSpell->StartRecoveryCategory && pSpell->StartRecoveryCategory != 133)        // if we have a different cool category to the actual spell category - only used by few spells
-        _Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->StartRecoveryCategory, mstime + atime, pSpell->Id, 0);
+        AddCategoryCooldown(pSpell->StartRecoveryCategory, mstime + atime, pSpell->Id, 0);
     //else if (pSpell->Category)                // cooldowns are grouped
     //_Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + pSpell->StartRecoveryTime, pSpell->Id, 0);
     else                                    // no category, so it's a gcd
@@ -11148,7 +11175,7 @@ void Player::Cooldown_AddItem(ItemPrototype* pProto, uint32 x)
     int32 category_cooldown_time = isp->CategoryCooldown;
     if (isp->CategoryCooldown > 0)
     {
-        _Cooldown_Add(COOLDOWN_TYPE_CATEGORY, category_id, category_cooldown_time + mstime, item_spell_id, pProto->ItemId);
+        AddCategoryCooldown(category_id, category_cooldown_time + mstime, item_spell_id, pProto->ItemId);
     }
 
     int32 cooldown_time = isp->Cooldown;

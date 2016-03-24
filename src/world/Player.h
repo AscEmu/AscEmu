@@ -454,6 +454,7 @@ class SERVER_DECL Player : public Unit
 
     protected:
 
+        void AddCategoryCooldown(uint32 category_id, uint32 time, uint32 SpellId, uint32 ItemId);
         void _Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId, uint32 ItemId);
         void _LoadPlayerCooldowns(QueryResult* result);
         void _SavePlayerCooldowns(QueryBuffer* buf);
