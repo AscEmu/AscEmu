@@ -4045,6 +4045,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     // Set
     if (setid != 0)
     {
+        bool is_new_created = false;
         auto item_set_entry = sItemSetStore.LookupEntry(setid);
         if (item_set_entry == nullptr)
         {
@@ -4071,6 +4072,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                     memset(Set, 0, sizeof(ItemSet));
                     Set->itemscount = 1;
                     Set->setid = setid;
+                    is_new_created = true;
                 }
                 else
                     Set->itemscount++;
@@ -4090,10 +4092,10 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                         }
                     }
                 }
+
                 if (i == m_itemsets.end())
                 {
                     m_itemsets.push_back(*Set);
-                    delete Set;
                 }
             }
             else
@@ -4110,7 +4112,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                         m_itemsets.erase(i);
                 }
             }
-            if (Set)
+            if (is_new_created)
                 delete Set;
         }
     }
