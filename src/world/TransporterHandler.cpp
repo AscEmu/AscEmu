@@ -244,7 +244,6 @@ Transporter::~Transporter()
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* passenger = *itr;
-        MapMgr* map = passenger->GetMapMgr();
     }
 
     m_NPCPassengerSet.clear();
