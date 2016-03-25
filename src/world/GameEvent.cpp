@@ -39,6 +39,11 @@ void GameEvent::CreateNPCs()
         c->SetDisplayId(npc.displayid);
         c->SetFaction(npc.faction);
 
+        // Equipment
+        c->SetEquippedItem(MELEE, cp->itemslot_1);
+        c->SetEquippedItem(OFFHAND, cp->itemslot_2);
+        c->SetEquippedItem(RANGED, cp->itemslot_3);
+
         if (npc.mountdisplayid != 0)
             c->SetMount(npc.mountdisplayid);
 
