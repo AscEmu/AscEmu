@@ -266,7 +266,8 @@ void Transporter::RespawnCreaturePassengers()
     m_creatureSetMutex.Release();
     for (auto spawn : this->m_creatureSpawns)
     {
-        this->AddNPCPassenger(spawn.transport_guid, spawn.entry, spawn.x, spawn.y, spawn.z, spawn.o, spawn.animation);
+        if (this->AddNPCPassenger(spawn.transport_guid, spawn.entry, spawn.x, spawn.y, spawn.z, spawn.o, spawn.animation) == 0)
+            Log.Error("Transporter::RespawnCreaturePassengers", "Failed to add npc entry: %u to transport: %u", spawn.entry, spawn.transport_guid);
     }
 }
 
@@ -725,15 +726,15 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
 
     CreatureInfo* inf = CreatureNameStorage.LookupEntry(entry);
     CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
-    if (inf == nullptr || proto == nullptr)
+    if (inf == nullptr || proto == nullptr || map == nullptr)
         return 0;
 
     float transporter_x = obj_movement_info.transporter_info.position.x + x;
     float transporter_y = obj_movement_info.transporter_info.position.y + y;
     float transporter_z = obj_movement_info.transporter_info.position.z + z;
 
-    Creature* pCreature = GetMapMgr()->CreateCreature(entry);
-    pCreature->Create(inf->Name, GetMapMgr()->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    Creature* pCreature = map->CreateCreature(entry);
+    pCreature->Create(inf->Name, map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
@@ -775,15 +776,15 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
 
     CreatureInfo* inf = CreatureNameStorage.LookupEntry(entry);
     CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
-    if (inf == NULL || proto == NULL)
-        return NULL;
+    if (inf == nullptr || proto == nullptr || map == nullptr)
+        return nullptr;
 
     float transporter_x = obj_movement_info.transporter_info.position.x + x;
     float transporter_y = obj_movement_info.transporter_info.position.y + y;
     float transporter_z = obj_movement_info.transporter_info.position.z + z;
 
-    Creature* pCreature = GetMapMgr()->CreateCreature(entry);
-    pCreature->Create(inf->Name, GetMapMgr()->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    Creature* pCreature = map->CreateCreature(entry);
+    pCreature->Create(inf->Name, map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
