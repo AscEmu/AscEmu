@@ -26,8 +26,8 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
     // Store dbc values into current Path array
     Path.Resize(sTaxiPathNodeStore.GetNumRows());
 
-    uint32 i = 1;
-    for (uint32 j = 1; j < sTaxiPathNodeStore.GetNumRows(); ++j)
+    uint32 i = 0;
+    for (uint32 j = 0; j < sTaxiPathNodeStore.GetNumRows(); ++j)
     {
         auto pathnode = sTaxiPathNodeStore.LookupEntry(j);
         if (pathnode == nullptr)
@@ -46,7 +46,7 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
     }
 
     Path.Resize(i);
-    return true;
+    return (i > 0 ? true : false);
 }
 
 Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period)
@@ -241,13 +241,9 @@ Transporter::~Transporter()
     sEventMgr.RemoveEvents(this);
 
     m_creatureSetMutex.Acquire();
-    for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
-    {
-        Creature* passenger = *itr;
-    }
-
     m_NPCPassengerSet.clear();
     m_creatureSetMutex.Release();
+
     m_WayPoints.clear();
     m_passengers.clear();
 }
