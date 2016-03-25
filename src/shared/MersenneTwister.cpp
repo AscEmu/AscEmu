@@ -298,9 +298,11 @@ int CRandomMersenne::IRandom(int min, int max)
     if (max == min)
         return max;
 
+    // Zyres: CID 104914 Uncought exception
     // max < min, so throw an exception instead of assuming intention
-    if(max < min)
-        throw std::domain_error("max < min when calling CRandomMersenne::IRandom");
+    //if (max < min)
+        //throw std::domain_error("max < min when calling CRandomMersenne::IRandom");
+    ASSERT(max > min);
 
     // Multiply interval with random and truncate
     int r = int((max - min + 1) * Random()) + min;
