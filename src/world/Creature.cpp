@@ -2314,7 +2314,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint
         return;
     if (pVictim->bInvincible)
         return;
-    if (pVictim->IsSpiritHealer())
+    if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
         return;
 
     if (pVictim != this)

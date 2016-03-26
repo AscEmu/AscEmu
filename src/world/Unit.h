@@ -837,24 +837,6 @@ class SERVER_DECL Unit : public Object
         void DisableAI() { m_useAI = false; }
         void EnableAI() { m_useAI = true; }
 
-        bool IsSpiritHealer()
-        {
-            switch (GetEntry())
-            {
-                case 6491:  // Spirit Healer
-                case 13116: // Alliance Spirit Guide
-                case 13117: // Horde Spirit Guide
-                case 9299:  // Gaeriyan (Qnpc)
-                case 8888:  // Franclorn Forgewright (Qnpc)
-                case 29259: // Scarlet Enclave
-                {
-                    return true;
-                }
-                break;
-            }
-            return false;
-        }
-
         void Phase(uint8 command = PHASE_SET, uint32 newphase = 1);
 
         bool Tagged;

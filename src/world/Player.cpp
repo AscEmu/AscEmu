@@ -5788,7 +5788,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
         {
             Creature* uObj = static_cast<Creature*>(obj);
 
-            return uObj->IsSpiritHealer(); // we can't see any NPCs except spirit-healers
+            return uObj->isSpiritHealer(); // we can't see any NPCs except spirit-healers
         }
 
         return false;
@@ -5868,7 +5868,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
             Unit* uObj = static_cast< Unit* >(obj);
 
             // can't see spirit-healers when alive
-            if (uObj->IsSpiritHealer())
+            if (uObj->IsCreature() && static_cast<Creature*>(uObj)->isSpiritHealer())
                 return false;
 
             // always see our units
@@ -12734,7 +12734,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
         return;
     if (pVictim->bInvincible)
         return;
-    if (pVictim->IsSpiritHealer())
+    if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->isSpiritHealer())
         return;
 
     if (this != pVictim)
