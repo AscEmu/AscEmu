@@ -35,11 +35,6 @@
 
 #define DEF_VALUE_NOT_SET 0xDEADBEEF
 
-#ifndef _VERSION
-#define _VERSION "3.3.5a"
-#endif
-
-
 #define GM_TICKET_MY_MASTER_COMPATIBLE
 
 /// Enable/Disable achievement mgr
