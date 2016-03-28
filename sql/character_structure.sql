@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 02/21/2016
+Last update: 03/28/2016
 *********************************************************************
 */
 
@@ -499,17 +499,25 @@ CREATE TABLE IF NOT EXISTS `event_save` (
   PRIMARY KEY (`event_entry`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Dumping data for table event_save: ~7 rows (approximately)
-/*!40000 ALTER TABLE `event_save` DISABLE KEYS */;
-INSERT INTO `event_save` (`event_entry`, `state`, `next_start`) VALUES
-	(7, 1, 0),
-	(28, 1, 0),
-	(57, 3, 0),
-	(58, 3, 0),
-	(59, 3, 0),
-	(60, 4, 0),
-	(61, 1, 0);
-/*!40000 ALTER TABLE `event_save` ENABLE KEYS */;
+
+-- Dumping structure for table gm_survey
+CREATE TABLE IF NOT EXISTS `gm_survey` (
+  `survey_id` int(10) unsigned NOT NULL,
+  `guid` int(10) unsigned NOT NULL DEFAULT '0',
+  `main_survey` int(10) unsigned NOT NULL DEFAULT '0',
+  `comment` longtext NOT NULL,
+  `create_time` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`survey_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='GM Survey';
+
+
+-- Dumping structure for table gm_survey_answers
+CREATE TABLE IF NOT EXISTS `gm_survey_answers` (
+  `survey_id` int(10) unsigned NOT NULL,
+  `question_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `answer_id` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`survey_id`,`question_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='GM Survey';
 
 
 -- Dumping structure for table gm_tickets

@@ -246,3 +246,39 @@ void WorldSession::HandleReportLag(WorldPacket& recv_data)
 
     Log.Debug("HandleReportLag", "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->GetName(), lagType, mapId);
 }
+
+void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
+{
+    QueryResult* result = CharacterDatabase.Query("SELECT MAX(survey_id) FROM gm_survey");
+
+    uint32 next_survey_id = result->Fetch()[0].GetUInt32() + 1;
+    uint32 main_survey;
+    recv_data >> main_survey;
+
+    std::unordered_set<uint32> survey_ids;
+    for (uint8 i = 0; i < 10; i++)
+    {
+        uint32 sub_survey_id;
+        recv_data >> sub_survey_id;
+        if (!sub_survey_id)
+            break;
+
+        uint8 answer_id;
+        recv_data >> answer_id;
+
+        std::string comment; // unused empty string
+        recv_data >> comment;
+
+        if (!survey_ids.insert(sub_survey_id).second)
+            continue;
+
+        CharacterDatabase.Execute("INSERT INTO gm_survey_answers VALUES(%u , %u , %u)", next_survey_id, sub_survey_id, answer_id);
+    }
+
+    std::string comment; // receive the player comment for this survey
+    recv_data >> comment;
+
+    CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))", next_survey_id, GetPlayer()->GetLowGUID(), main_survey, CharacterDatabase.EscapeString(comment).c_str());
+
+    Log.Debug("HandleGMSurveySubmitOpcode", "Player %s has submitted the gm suvey %u successfully.", GetPlayer()->GetName(), next_survey_id);
+}
