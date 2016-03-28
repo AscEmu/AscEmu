@@ -380,7 +380,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('2016-02-21_01_transport_position');
+	('2016-03-28_01_gm_survey');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 
