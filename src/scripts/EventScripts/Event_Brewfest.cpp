@@ -106,72 +106,10 @@ void SetupBrewfest(ScriptMgr* mgr)
 /// -> earn achievement "Brew of the Month" (id: 2796) \n
 /// -> can buy brew of the month after finishing the quest. \n
 /// f.e. Larkin Thunderbrew \n
-///\todo create internal event for every month spawn and insert the sql to the db
+///\todo check botm npcs (vendoritems, gossip, ...)
 
 
 
 #define BOTM_GOSSIP_TEXT "Hey there friend!  I see you've got some Brewfest tokens.  As it happens, I still have some Brewfest items for sale." // entry 12864 in npc_text table
 #define BOTM_GOSSIP_ITEM "What do you have for me?"
 
-// January
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27806, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24979', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27806, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24979', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-// February
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//  ('434316', 27810, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24980', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//  ('434317', 27810, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24980', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-// March
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27811, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24981', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//   ('434317', 27811, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24981', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-// April
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27812, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24982', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27812, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24982', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-// May
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//   ('434316', 27813, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24983', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27813, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24983', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-// June
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27814, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24984', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27814, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24984', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-// July
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27815, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24985', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27815, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24985', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-// August
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27816, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24986', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27816, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24986', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-// September
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27817, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24987', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27817, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24987', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-
-// October
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27818, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24988', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27818, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24988', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-
-// November
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27819, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24989', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27819, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24989', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
-
-
-// December
-//INSERT INTO `creature_spawns` (`id`, `entry`, `map`, `position_x`, `position_y`, `position_z`, `orientation`, `movetype`, `displayid`, `faction`, `flags`, `bytes0`, `bytes1`, `bytes2`, `emote_state`, `npc_respawn_link`, `channel_spell`, `channel_target_sqlid`, `channel_target_sqlid_creature`, `standstate`, `death_state`, `mountdisplayid`, `slot1item`, `slot2item`, `slot3item`, `CanFly`, `phase`) VALUES
-//    ('434316', 27820, 0, '-4843.8', '-861.921', '501.914', '4.87919', '0', '24990', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1'),
-//    ('434317', 27820, 1, '1475.8', '-4210.23', '43.1424', '4.11898', '0', '24990', 774, '768', '16843008', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '33161', '0', '0', '0', '1');
