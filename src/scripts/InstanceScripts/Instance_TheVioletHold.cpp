@@ -121,7 +121,7 @@ class TheVioletHoldScript : public MoonInstanceScript
         }
 };
 
-#define SINCLARI_SAY_1 "Prison guards, we are oleaving! These adventurers are taking over! Go go go!"
+#define SINCLARI_SAY_1 "Prison guards, we are leaving! These adventurers are taking over! Go go go!"
 #define SINCLARY_SAY_2 "I'm locking the door. Good luck, and thank you for doing this."
 
 #define GO_TVH_PRISON_SEAL 191723
