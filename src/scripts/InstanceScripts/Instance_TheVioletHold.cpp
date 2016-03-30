@@ -591,16 +591,45 @@ class VHIntroAzureInvader : VHCreatureAI
             m_spells.push_back(spellCleave);
             m_spellsEnabled[0] = true;
 
-            auto spellArcaneExplosion = SP_AI_Spell();
-            spellArcaneExplosion.info = dbcSpell.LookupEntry(SPELL_IMPALE);
-            spellArcaneExplosion.cooldown = 8;
-            spellArcaneExplosion.targettype = TARGET_ATTACKING;
-            spellArcaneExplosion.instant = true;
-            spellArcaneExplosion.perctrigger = 20.0f;
-            spellArcaneExplosion.perctrigger = 50.0f;
-            spellArcaneExplosion.attackstoptimer = 1000;
-            m_spells.push_back(spellArcaneExplosion);
+            auto spellImpale = SP_AI_Spell();
+            spellImpale.info = dbcSpell.LookupEntry(SPELL_IMPALE);
+            spellImpale.cooldown = 8;
+            spellImpale.targettype = TARGET_ATTACKING;
+            spellImpale.instant = true;
+            spellImpale.perctrigger = 20.0f;
+            spellImpale.attackstoptimer = 1000;
+            m_spells.push_back(spellImpale);
             m_spellsEnabled[1] = true;
+        }
+};
+
+class VHIntroAzureMageSlayer : VHCreatureAI
+{
+    private:
+
+        const int SPELL_ARCANE_EMPOWERMENT = 58469;
+
+    public:
+
+        ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureMageSlayer);
+        VHIntroAzureMageSlayer(Creature* pCreature) : VHCreatureAI(pCreature)
+        {
+            m_isIntroMob = true;
+            m_spellCount = 1;
+            for (int i = 0; i < m_spellCount; i++)
+            {
+                m_spellsEnabled.push_back(false);
+            }
+
+            auto spellArcaneEmpowerment = SP_AI_Spell();
+            spellArcaneEmpowerment.info = dbcSpell.LookupEntry(SPELL_ARCANE_EMPOWERMENT);
+            spellArcaneEmpowerment.cooldown = 8;
+            spellArcaneEmpowerment.targettype = TARGET_SELF;
+            spellArcaneEmpowerment.instant = true;
+            spellArcaneEmpowerment.perctrigger = 50.0f;
+            spellArcaneEmpowerment.attackstoptimer = 1000;
+            m_spells.push_back(spellArcaneEmpowerment);
+            m_spellsEnabled[0] = true;
         }
 };
 
