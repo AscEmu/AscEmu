@@ -35,7 +35,8 @@ enum EncounterState
     State_InProgress    = 1,
     State_Finished      = 2,
     State_Performed     = 3,
-    State_PreProgress   = 4         // for example: violet hold
+    State_PreProgress   = 4,        // for example: violet hold
+    State_InvalidState  = 0xff
 };
 
 enum InstanceType

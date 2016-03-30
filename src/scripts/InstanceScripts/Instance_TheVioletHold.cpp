@@ -41,38 +41,55 @@ class TheVioletHoldScript : public MoonInstanceScript
 
     private:
 
-        int32 m_numBarrel;
         uint32 m_phaseData[TVH_END];
-        int32 m_ticker;
+        uint32 m_lastState = State_InvalidState;
+
+        // NotStarted
+        int32 S0_SpawnIntroMobsTimer = 0;   // Spawn mobs every 15s
+
+        // PreProgress
+        int32 S1_GuardFleeTimer = -1;       // Delay guards fleeing room for 2.5s (arbitrary)
 
     public:
 
         MOONSCRIPT_INSTANCE_FACTORY_FUNCTION(TheVioletHoldScript, MoonInstanceScript);
         TheVioletHoldScript(MapMgr* pMapMgr) : MoonInstanceScript(pMapMgr)
         {
-            m_numBarrel = 0;
-
             for (uint8 i = 0; i < TVH_END; ++i)
                 m_phaseData[i] = State_NotStarted;
 
             // Update every 250ms
-            m_ticker = 0;
-            this->SetUpdateEventFreq(250);
+            this->SetUpdateEventFreq(VH_TIMER_UPDATE);
             this->RegisterScriptUpdateEvent();
-        };
+        }
 
         void UpdateEvent()
         {
-            ++m_ticker;
-            switch (mInstance->GetWorldStatesHandler().GetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH))
+            // Call original update function to elapse timers
+            MoonInstanceScript::UpdateEvent();
+
+            auto state = GetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD);
+
+            if (state != m_lastState)
+            {
+                OnStateChange(m_lastState, state);
+                m_lastState = state;
+            }
+
+            switch (state)
             {
                 case State_NotStarted:
-                case State_PreProgress:
                     S0_ReviveGuards();
+                    S0_SpawnIntroMobs();
                     break;
-                case State_InProgress: printf("State: %s\n", "State_InProgress"); break;
+                case State_InProgress:
+                    S2_SpawnPortals();
+                    break;
                 case State_Finished: printf("State: %s\n", "State_Finished"); break;
                 case State_Performed: printf("State: %s\n", "State_Performed"); break;
+                case State_PreProgress:
+                    S1_ActivateCrystalFleeRoom();
+                    break;
             }
         }
 
@@ -84,10 +101,127 @@ class TheVioletHoldScript : public MoonInstanceScript
                 if (guard == nullptr || guard->isAlive())
                     continue;
 
-                guard->Despawn(1500, 500);
+                guard->Despawn(VH_TIMER_GUARD_DESPAWN_TIME, VH_TIMER_GUARD_RESPAWN_TIME);
             }
         }
 
+        void S0_SpawnIntroMobs()
+        {
+            if (S0_SpawnIntroMobsTimer > 0)
+                return;
+
+            // Start another 15s timer
+            S0_SpawnIntroMobsTimer = AddTimer(VH_TIMER_SPAWN_INTRO_MOB);
+
+            // TODO: Spawn mobs
+        }
+
+        void S1_ActivateCrystalFleeRoom()
+        {
+            // TODO: activate crystal
+
+            if (S1_GuardFleeTimer == -1)
+            {
+                S1_GuardFleeTimer = AddTimer(VH_TIMER_GUARD_FLEE_DELAY); // arbitrary time
+
+            }
+
+            if (GetTimer(S1_GuardFleeTimer) > 0)
+            {
+                return; // Wait for timer to finish
+            }
+
+            auto npcs = this->FindCreaturesOnMap(CN_VIOLET_HOLD_GUARD);
+            for (auto guard : npcs)
+            {
+                if (!guard->IsInWorld())
+                    continue;
+
+                guard->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
+            }
+        }
+
+        void S2_SpawnPortals()
+        {
+
+        // TODO: Spawn any portals that are missing
+        }
+
+        void S2_SpawnMobs()
+        {
+            // TODO: Spawn any mobs that are missing
+            // TODO: Move this logic to the portals
+        }
+
+        void S2_UpdateDoorDamage()
+        {
+            // TODO: Update damage done to the door
+            // TODO: Move this logic to the mobs
+        }
+
+        void S3_UnlockDoorAndMoveNPCs()
+        {
+            // TODO: Open door
+            // TODO: Move NPCs into room
+        }
+
+        void S3_SpawnGuards()
+        {
+            // TODO: Respawn guards that are missing
+        }
+
+        void ActivateCrystal()
+        {
+            // get all mobs
+            // play GO anim
+            // kill them after delay
+            // TODO: Move this logic to the gameobjects
+        }
+
+        void DespawnIntroPortals()
+        {
+            auto portals = this->FindCreaturesOnMap(CN_PORTAL_INTRO);
+            for (auto portal : portals)
+            {
+                portal->Despawn(VH_TIMER_INTRO_PORTAL_DESPAWN_TIME, 0);
+            }
+        }
+
+        void OnStateChange(uint32 pLastState, uint32 pNewState)
+        {
+            switch (pNewState)
+            {
+                case State_PreProgress:
+                    DespawnIntroPortals();
+                    break;
+            }
+        }
+
+        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return;
+
+            (*Iter).second.mState = (EncounterState)pData;
+        }
+
+        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
+        {
+            if (pType != Data_EncounterState || pIndex == 0)
+                return 0;
+
+            EncounterMap::iterator Iter = mEncounters.find(pIndex);
+            if (Iter == mEncounters.end())
+                return 0;
+
+            return (*Iter).second.mState;
+        }
+
+        /*
         void SetData(uint32 pIndex, uint32 pData)
         {
             if (pIndex >= TVH_END)
@@ -102,7 +236,7 @@ class TheVioletHoldScript : public MoonInstanceScript
                 mInstance->GetWorldStatesHandler().SetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH, State_InProgress);
 
             m_phaseData[pIndex] = pData;
-        };
+        }
 
         uint32 GetData(uint32 pIndex)
         {
@@ -111,34 +245,13 @@ class TheVioletHoldScript : public MoonInstanceScript
                 return 0;
 
             return m_phaseData[pIndex];
-        };
-
-        void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return;
-
-            (*Iter).second.mState = (EncounterState)pData;
-        };
-
-        uint32 GetInstanceData(uint32 pType, uint32 pIndex)
-        {
-            if (pType != Data_EncounterState || pIndex == 0)
-                return 0;
-
-            EncounterMap::iterator Iter = mEncounters.find(pIndex);
-            if (Iter == mEncounters.end())
-                return 0;
-
-            return (*Iter).second.mState;
-        };
+        }
+        */
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
-        {};
+        {
+
+        }
 
         void OnPlayerEnter(Player* pPlayer)
         {
@@ -197,6 +310,7 @@ class SinclariAI : public MoonScriptCreatureAI
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
             _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
+
         }
 };
 
@@ -260,8 +374,6 @@ class SinclariGossip : public GossipScript
                     menu->AddItem(GOSSIP_ICON_CHAT, pPlayer->GetSession()->LocalizedGossipOption(SINCLARI_GET_SAFETY), 2);
                     menu->SendTo(pPlayer);
 
-                    // New Encounter State included
-                    pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_PreProgress);
                 }break;
 
                 case 2:
@@ -270,6 +382,9 @@ class SinclariGossip : public GossipScript
                     pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_NONE);
                     //pCreature->MoveToWaypoint(1);
                     pCreature->GetAIInterface()->StopMovement(10);
+
+                    // New Encounter State included
+                    pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_PreProgress);
 
                 }break;
 
@@ -296,6 +411,155 @@ class VHGuardsAI : public MoonScriptCreatureAI
 
         //WPs inserted in db.
 
+};
+
+class VHCreatureAI : public MoonScriptCreatureAI
+{
+    protected:
+
+        bool m_isIntroMob = false;
+        int m_spellCount = 0;
+    
+        /* Warning
+         * Using vectors here is theoretically dangerous as they don't guarantee order
+         *   when elements are erased or moved, however it doesn't matter here as we
+         *   aren't modifying the number of elements in each vector
+         * 
+         * TODO: Write a proper spell manager to handle this stuff */
+        std::vector<bool> m_spellsEnabled;
+        std::vector<SP_AI_Spell> m_spells;
+
+    public:
+
+        MOONSCRIPT_FACTORY_FUNCTION(VHCreatureAI, MoonScriptCreatureAI);
+        VHCreatureAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+        {
+        
+        }
+
+        void OnCombatStart(Unit* mTarget)
+        {
+            PutAllSpellsOnCooldown();
+            RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
+        }
+
+        void PutAllSpellsOnCooldown()
+        {
+            for (int i = 0; i < m_spellCount; i++)
+                m_spells[i].casttime = m_spells[i].cooldown;
+        }
+
+        void OnTargetDied(Unit* mTarget)
+        {
+        }
+
+        void OnCombatStop(Unit* mTarget)
+        {
+            PutAllSpellsOnCooldown();
+            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
+            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            RemoveAIUpdateEvent();
+        }
+
+        void OnDied(Unit* mKiller)
+        {
+            PutAllSpellsOnCooldown();
+            RemoveAIUpdateEvent();
+        }
+
+        void AIUpdate()
+        {
+            auto randomValue = RandomFloat(100.0f);
+            SpellCast(randomValue);
+        }
+    
+        void SpellCast(float randomValue)
+        {
+            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
+            {
+                float comulativeperc = 0;
+                Unit* target = NULL;
+                for (int i = 0; i < m_spellCount; i++)
+                {
+                    m_spells[i].casttime--;
+
+                    if (m_spellsEnabled[i])
+                    {
+                        m_spells[i].casttime = m_spells[i].cooldown;
+                        target = _unit->GetAIInterface()->getNextTarget();
+                        switch (m_spells[i].targettype)
+                        {
+                        case TARGET_SELF:
+                        case TARGET_VARIOUS:
+                            _unit->CastSpell(_unit, m_spells[i].info, m_spells[i].instant);
+                            break;
+                        case TARGET_ATTACKING:
+                            _unit->CastSpell(target, m_spells[i].info, m_spells[i].instant);
+                            break;
+                        case TARGET_DESTINATION:
+                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), m_spells[i].info, m_spells[i].instant);
+                            break;
+                        }
+
+                        if (m_spells[i].speech != "")
+                        {
+                            _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, m_spells[i].speech.c_str());
+                            _unit->PlaySoundToSet(m_spells[i].soundid);
+                        }
+
+                        m_spellsEnabled[i] = false;
+                        return;
+                    }
+
+                    if ((randomValue > comulativeperc && randomValue <= (comulativeperc + m_spells[i].perctrigger)) || !m_spells[i].casttime)
+                    {
+                        _unit->setAttackTimer(m_spells[i].attackstoptimer, false);
+                        m_spellsEnabled[i] = true;
+                    }
+                    comulativeperc += m_spells[i].perctrigger;
+                }
+            }
+        }
+};
+
+class VHIntroAzureBinder : VHCreatureAI
+{
+    private:
+
+        const int SPELL_ARCANE_BARRAGE = 58456;
+        const int SPELL_ARCANE_EXPLOSION = 58455;
+    public:
+
+        ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureBinder);
+        VHIntroAzureBinder(Creature* pCreature) : VHCreatureAI(pCreature)
+        {
+            m_isIntroMob = true;
+            m_spellCount = 2;
+            for (int i = 0; i < m_spellCount; i++)
+            {
+                m_spellsEnabled.push_back(false);
+            }
+
+            auto spellArcaneBarrage = SP_AI_Spell();
+            spellArcaneBarrage.info = dbcSpell.LookupEntry(SPELL_ARCANE_BARRAGE);
+            spellArcaneBarrage.cooldown = 6;
+            spellArcaneBarrage.targettype = TARGET_ATTACKING;
+            spellArcaneBarrage.instant = true;
+            spellArcaneBarrage.perctrigger = 50.0f;//RandomFloat(20.0f);
+            spellArcaneBarrage.attackstoptimer = 1000;
+            m_spells.push_back(spellArcaneBarrage);
+            m_spellsEnabled[0] = true;
+
+            auto spellArcaneExplosion = SP_AI_Spell();
+            spellArcaneExplosion.info = dbcSpell.LookupEntry(SPELL_ARCANE_EXPLOSION);
+            spellArcaneExplosion.cooldown = 4;
+            spellArcaneExplosion.targettype = TARGET_VARIOUS;
+            spellArcaneExplosion.instant = true;
+            spellArcaneExplosion.perctrigger = 50.0f;//RandomFloat(20.0f);
+            spellArcaneExplosion.attackstoptimer = 1000;
+            m_spells.push_back(spellArcaneExplosion);
+            m_spellsEnabled[1] = true;
+        }
 };
 
 ///////////////////////////////////////////////////////
@@ -335,6 +599,9 @@ void SetupTheVioletHold(ScriptMgr* mgr)
     //Sinclari and Guards
     mgr->register_creature_script(CN_LIEUTNANT_SINCLARI, &SinclariAI::Create);
     mgr->register_creature_script(CN_VIOLET_HOLD_GUARD, &VHGuardsAI::Create);
+
+    // Intro trash
+    mgr->register_creature_script(CN_INTRO_AZURE_BINDER_ARCANE, &VHIntroAzureBinder::Create);
 
     //Bosses
     //mgr->register_creature_script(CN_EREKEM, &ErekemAI::Create);

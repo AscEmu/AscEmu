@@ -13,6 +13,12 @@ enum CreatureEntry
     CN_VIOLET_HOLD_GUARD = 30659,
     CN_PORTAL_GUARDIAN = 30660,     //enemies
     CN_PORTAL_INTRO = 31011,        //portals, not a go its a creature ;)
+
+    CN_INTRO_AZURE_BINDER_ARCANE = 31007,
+    CN_INTRO_AZURE_INVADER_ARMS = 31008,
+    CN_INTRO_AZURE_MAGE_SLAYER_MELEE = 31010,
+    CN_INTRO_AZURE_SPELLBREAKER_ARCANE = 31009,
+
     CN_CRYSTAL_SYSTEM = 30837,      // NPC with spell arcane spher
 
     //Portal Guardians (Normal)
@@ -33,6 +39,36 @@ enum CreatureEntry
     CN_LAVANTHOR = 29312,
     CN_TURAMAT_THE_OBLITERATOR = 29314,
     CN_CYANIGOSA = 31134
+};
+
+const int VHIntroMobs[] = 
+{ 
+    CN_INTRO_AZURE_BINDER_ARCANE,
+    CN_INTRO_AZURE_INVADER_ARMS,
+    CN_INTRO_AZURE_MAGE_SLAYER_MELEE,
+    CN_INTRO_AZURE_SPELLBREAKER_ARCANE,
+};
+
+const Location VHPortalLocations[] =
+{
+    { 1877.51f, 850.104f, 44.6599f, 4.7822f  },
+    { 1918.37f, 853.437f, 47.1624f, 4.12294f },
+    { 1936.07f, 803.198f, 53.3749f, 3.12414f },
+    { 1927.61f, 758.436f, 51.4533f, 2.20891f },
+    { 1890.64f, 753.471f, 48.7224f, 1.71042f },
+    { 1908.31f, 809.657f, 38.7037f, 3.08701f },
+};
+
+enum VHTimers : uint32
+{
+    VH_TIMER_UPDATE = 100,
+
+    VH_TIMER_GUARD_DESPAWN_TIME = 1500,
+    VH_TIMER_GUARD_RESPAWN_TIME = 500,
+    VH_TIMER_GUARD_FLEE_DELAY = 5750,
+
+    VH_TIMER_SPAWN_INTRO_MOB = 15000,
+    VH_TIMER_INTRO_PORTAL_DESPAWN_TIME = VH_TIMER_GUARD_FLEE_DELAY,
 };
 
 enum CreatureSpells
