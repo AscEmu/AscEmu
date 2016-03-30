@@ -175,8 +175,7 @@ class SinclariAI : public MoonScriptCreatureAI
             {
                 case 2:
                 {
-                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
-                    _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
+                    this->OnRescuePrisonGuards();
                 }break;
                 case 4:
                 {
@@ -192,6 +191,12 @@ class SinclariAI : public MoonScriptCreatureAI
                         pVioletHoldDoor->SetState(GO_STATE_CLOSED);
                 }break;
             }
+        }
+
+        void OnRescuePrisonGuards()
+        {
+            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
+            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
         }
 };
 
