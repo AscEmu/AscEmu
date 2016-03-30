@@ -545,7 +545,7 @@ class VHIntroAzureBinder : VHCreatureAI
             spellArcaneBarrage.cooldown = 6;
             spellArcaneBarrage.targettype = TARGET_ATTACKING;
             spellArcaneBarrage.instant = true;
-            spellArcaneBarrage.perctrigger = 50.0f;//RandomFloat(20.0f);
+            spellArcaneBarrage.perctrigger = 50.0f;
             spellArcaneBarrage.attackstoptimer = 1000;
             m_spells.push_back(spellArcaneBarrage);
             m_spellsEnabled[0] = true;
@@ -555,7 +555,49 @@ class VHIntroAzureBinder : VHCreatureAI
             spellArcaneExplosion.cooldown = 4;
             spellArcaneExplosion.targettype = TARGET_VARIOUS;
             spellArcaneExplosion.instant = true;
-            spellArcaneExplosion.perctrigger = 50.0f;//RandomFloat(20.0f);
+            spellArcaneExplosion.perctrigger = 50.0f;
+            spellArcaneExplosion.attackstoptimer = 1000;
+            m_spells.push_back(spellArcaneExplosion);
+            m_spellsEnabled[1] = true;
+    }
+};
+
+class VHIntroAzureInvader : VHCreatureAI
+{
+    private:
+
+        const int SPELL_CLEAVE = 15496;
+        const int SPELL_IMPALE = 58459;
+
+    public:
+
+        ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureInvader);
+        VHIntroAzureInvader(Creature* pCreature) : VHCreatureAI(pCreature)
+        {
+            m_isIntroMob = true;
+            m_spellCount = 2;
+            for (int i = 0; i < m_spellCount; i++)
+            {
+                m_spellsEnabled.push_back(false);
+            }
+
+            auto spellCleave = SP_AI_Spell();
+            spellCleave.info = dbcSpell.LookupEntry(SPELL_CLEAVE);
+            spellCleave.cooldown = 6;
+            spellCleave.targettype = TARGET_ATTACKING;
+            spellCleave.instant = true;
+            spellCleave.perctrigger = 50.0f;
+            spellCleave.attackstoptimer = 1000;
+            m_spells.push_back(spellCleave);
+            m_spellsEnabled[0] = true;
+
+            auto spellArcaneExplosion = SP_AI_Spell();
+            spellArcaneExplosion.info = dbcSpell.LookupEntry(SPELL_IMPALE);
+            spellArcaneExplosion.cooldown = 8;
+            spellArcaneExplosion.targettype = TARGET_ATTACKING;
+            spellArcaneExplosion.instant = true;
+            spellArcaneExplosion.perctrigger = 20.0f;
+            spellArcaneExplosion.perctrigger = 50.0f;
             spellArcaneExplosion.attackstoptimer = 1000;
             m_spells.push_back(spellArcaneExplosion);
             m_spellsEnabled[1] = true;
@@ -602,6 +644,7 @@ void SetupTheVioletHold(ScriptMgr* mgr)
 
     // Intro trash
     mgr->register_creature_script(CN_INTRO_AZURE_BINDER_ARCANE, &VHIntroAzureBinder::Create);
+    mgr->register_creature_script(CN_INTRO_AZURE_INVADER_ARMS, &VHIntroAzureInvader::Create);
 
     //Bosses
     //mgr->register_creature_script(CN_EREKEM, &ErekemAI::Create);
