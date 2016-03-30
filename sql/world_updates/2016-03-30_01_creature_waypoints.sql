@@ -1,5 +1,5 @@
 --
--- Delete creature_spawns for event controled creatures
+-- Update creature_waypoints for Lieutnant Sinclari
 --
 UPDATE `creature_waypoints` SET `waittime` = 3000, `forwardemoteoneshot` = 1, `forwardemoteid` = 69 WHERE `spawnid` = 125515 AND `waypointid` = 1;
 UPDATE `creature_waypoints` SET `waittime` = 2000 WHERE `spawnid` = 125515 AND `waypointid` = 2;
