@@ -264,7 +264,11 @@ enum InstanceMaps
     649	Trial of the Crusader
     650	Trial of the Champion
     724	The Ruby Sanctum*/
+};
 
+enum InstanceAreas
+{
+    AREA_VIOLET_HOLD = 4415
 };
 
 #endif      // _INSTANCE_SCRIPTS_SETUP_H
