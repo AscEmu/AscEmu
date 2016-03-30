@@ -124,10 +124,6 @@ class TheVioletHoldScript : public MoonInstanceScript
 #define SINCLARI_SAY_1 "Prison guards, we are leaving! These adventurers are taking over! Go go go!"
 #define SINCLARY_SAY_2 "I'm locking the door. Good luck, and thank you for doing this."
 
-#define GO_TVH_PRISON_SEAL 191723
-
-#define SINCLARI_MAX_WP 4
-
 ///////////////////////////////////////////////////////
 //Lieutnant Sinclari StartEvent
 class SinclariAI : public MoonScriptCreatureAI
@@ -158,27 +154,13 @@ class SinclariAI : public MoonScriptCreatureAI
                     TheVioletHoldScript* pInstance = (TheVioletHoldScript*)_unit->GetMapMgr()->GetScript();
                     pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_InProgress);
 
-                    GameObject* pVioletHoldDoor = pInstance->FindClosestGameObjectOnMap(GO_TVH_PRISON_SEAL, 1822.59f, 803.93f, 44.36f);
+                    GameObject* pVioletHoldDoor = pInstance->FindClosestGameObjectOnMap(GO_PRISON_SEAL, 1822.59f, 803.93f, 44.36f);
                     if (pVioletHoldDoor != NULL)
                         pVioletHoldDoor->SetState(GO_STATE_CLOSED);
                 }
                 break;
             }
         }
-};
-
-enum eGossipTexts
-{
-    SINCLARI_ON_HELLO = 13853,
-    SINCLARI_ON_FINISH = 13854,
-    SINCLARI_OUTSIDE = 14271
-};
-
-enum GossipItem
-{
-    SINCLARI_ACTIVATE = 600,
-    SINCLARI_GET_SAFETY = 601,
-    SINCLARI_SEND_ME_IN = 602
 };
 
 

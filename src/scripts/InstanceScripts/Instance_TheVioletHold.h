@@ -62,4 +62,18 @@ enum CreatureSay
 
 };
 
+enum CreatureGossip
+{
+    //Lieutnant Sinclari
+    //text
+    SINCLARI_ON_HELLO = 13853,
+    SINCLARI_ON_FINISH = 13854,
+    SINCLARI_OUTSIDE = 14271,
+
+    //item
+    SINCLARI_ACTIVATE = 600,
+    SINCLARI_GET_SAFETY = 601,
+    SINCLARI_SEND_ME_IN = 602
+};
+
 #endif // _INSTANCE_THE_VIOLET_HOLD_H
