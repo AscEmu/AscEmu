@@ -43,6 +43,7 @@ class TheVioletHoldScript : public MoonInstanceScript
 
         int32 m_numBarrel;
         uint32 m_phaseData[TVH_END];
+        int32 m_ticker;
 
     public:
 
@@ -53,7 +54,25 @@ class TheVioletHoldScript : public MoonInstanceScript
 
             for (uint8 i = 0; i < TVH_END; ++i)
                 m_phaseData[i] = State_NotStarted;
+
+            // Update every 250ms
+            m_ticker = 0;
+            this->SetUpdateEventFreq(250);
+            this->RegisterScriptUpdateEvent();
         };
+
+        void UpdateEvent()
+        {
+            ++m_ticker;
+            switch (mInstance->GetWorldStatesHandler().GetWorldStateForZone(0, AREA_VIOLET_HOLD, WORLDSTATE_VH))
+            {
+                case State_NotStarted: break;
+                case State_InProgress: break;
+                case State_Finished: break;
+                case State_Performed: break;
+                case State_PreProgress: break;
+            }
+        }
 
         void SetData(uint32 pIndex, uint32 pData)
         {
@@ -144,21 +163,20 @@ class SinclariAI : public MoonScriptCreatureAI
                 {
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
                     _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
-                }
-                break;
-
+                }break;
                 case 4:
                 {
                     _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARY_SAY_2);
                     _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                }break;
+                case 5:
+                {
                     TheVioletHoldScript* pInstance = (TheVioletHoldScript*)_unit->GetMapMgr()->GetScript();
                     pInstance->SetInstanceData(Data_EncounterState, MAP_VIOLET_HOLD, State_InProgress);
-
                     GameObject* pVioletHoldDoor = pInstance->FindClosestGameObjectOnMap(GO_PRISON_SEAL, 1822.59f, 803.93f, 44.36f);
                     if (pVioletHoldDoor != NULL)
                         pVioletHoldDoor->SetState(GO_STATE_CLOSED);
-                }
-                break;
+                }break;
             }
         }
 };
@@ -196,7 +214,7 @@ class SinclariGossip : public GossipScript
 
                 menu->SendTo(pPlayer);
             }
-        };
+        }
 
         void GossipSelectOption(Object* pObject, Player* pPlayer, uint32 Id, uint32 IntId, const char* Code)
         {
