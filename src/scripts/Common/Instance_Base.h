@@ -117,6 +117,8 @@ typedef std::set<GameObject*> GameObjectSet;
 
 typedef std::map<uint32, uint32> WorldStateMap;
 
+struct Location;
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //Class MoonInstanceScript
 class MoonInstanceScript : public InstanceScript
@@ -129,10 +131,12 @@ class MoonInstanceScript : public InstanceScript
         Creature* GetCreatureBySqlId(uint32 pSqlId);
         Creature* GetCreatureByGuid(uint32 pGuid);
         Creature* FindClosestCreatureOnMap(uint32 pEntry, float pX, float pY, float pZ);
+        Creature* SpawnCreature(uint32 pEntry, Location pLocation);
         Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
         Creature* SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFactionId);
         Creature* PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction = 0);
         CreatureSet FindCreaturesOnMap(uint32 pEntry);
+        CreatureSet FindCreaturesOnMap(std::vector<uint32> pEntries);
 
         // GameObject
         GameObject* GetGameObjectBySqlId(uint32 pSqlId);

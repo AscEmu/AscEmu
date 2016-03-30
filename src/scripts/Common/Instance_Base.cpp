@@ -71,6 +71,11 @@ Creature* MoonInstanceScript::FindClosestCreatureOnMap(uint32 pEntry, float pX, 
     return NearestCreature;
 };
 
+Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, Location pLocation)
+{
+    return MoonInstanceScript::SpawnCreature(pEntry, pLocation.x, pLocation.y, pLocation.z, pLocation.o);
+}
+
 Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO)
 {
     Creature* NewCreature = mInstance->GetInterface()->SpawnCreature(pEntry, pX, pY, pZ, pO, true, true, 0, 0);
@@ -102,7 +107,7 @@ Creature* MoonInstanceScript::PushCreature(uint32 pEntry, float pX, float pY, fl
     return c;
 }
 
-CreatureSet MoonInstanceScript::FindCreaturesOnMap(uint32 pEntry)
+CreatureSet MoonInstanceScript::FindCreaturesOnMap(std::vector<uint32> pEntries)
 {
     Creature* CurrentCreature = NULL;
     CreatureSet ReturnSet;
@@ -111,13 +116,21 @@ CreatureSet MoonInstanceScript::FindCreaturesOnMap(uint32 pEntry)
         CurrentCreature = (*CreatureIter);
         if (CurrentCreature != NULL)
         {
-            if (CurrentCreature->GetEntry() == pEntry)
-                ReturnSet.insert(CurrentCreature);
-        };
-    };
+            for (auto entry : pEntries)
+            {
+                if (CurrentCreature->GetEntry() == entry)
+                    ReturnSet.insert(CurrentCreature);
+            }
+        }
+    }
 
     return ReturnSet;
-};
+}
+
+CreatureSet MoonInstanceScript::FindCreaturesOnMap(uint32 pEntry)
+{
+    return MoonInstanceScript::FindCreaturesOnMap(std::vector<uint32> { pEntry });
+}
 
 GameObject* MoonInstanceScript::FindClosestGameObjectOnMap(uint32 pEntry, float pX, float pY, float pZ)
 {
