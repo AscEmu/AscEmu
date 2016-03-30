@@ -633,6 +633,48 @@ class VHIntroAzureMageSlayer : VHCreatureAI
         }
 };
 
+class VHIntroAzureSpellBreaker : VHCreatureAI
+{
+    private:
+
+        const int SPELL_ARCANE_BLAST = 58462;
+        const int SPELL_SLOW = 25603;
+
+    public:
+
+        ADD_CREATURE_FACTORY_FUNCTION(VHIntroAzureSpellBreaker);
+        VHIntroAzureSpellBreaker(Creature* pCreature) : VHCreatureAI(pCreature)
+        {
+            m_isIntroMob = true;
+            m_spellCount = 2;
+            for (int i = 0; i < m_spellCount; i++)
+            {
+                m_spellsEnabled.push_back(false);
+            }
+
+            auto spellArcaneBlast = SP_AI_Spell();
+            spellArcaneBlast.info = dbcSpell.LookupEntry(SPELL_ARCANE_BLAST);
+            spellArcaneBlast.cooldown = 3;
+            spellArcaneBlast.targettype = TARGET_ATTACKING;
+            spellArcaneBlast.instant = false;
+            spellArcaneBlast.casttime = 2500;
+            spellArcaneBlast.perctrigger = 60.0f;
+            spellArcaneBlast.attackstoptimer = 1000;
+            m_spells.push_back(spellArcaneBlast);
+            m_spellsEnabled[0] = true;
+
+            auto spellSlow = SP_AI_Spell();
+            spellSlow.info = dbcSpell.LookupEntry(SPELL_SLOW);
+            spellSlow.cooldown = 7;
+            spellSlow.targettype = TARGET_ATTACKING;
+            spellSlow.instant = true;
+            spellSlow.perctrigger = 40.0f;
+            spellSlow.attackstoptimer = 1000;
+            m_spells.push_back(spellSlow);
+            m_spellsEnabled[0] = true;
+        }
+};
+
 ///////////////////////////////////////////////////////
 //Boss: Erekem
 //class ErekemAI : public CreatureAIScript
@@ -674,6 +716,8 @@ void SetupTheVioletHold(ScriptMgr* mgr)
     // Intro trash
     mgr->register_creature_script(CN_INTRO_AZURE_BINDER_ARCANE, &VHIntroAzureBinder::Create);
     mgr->register_creature_script(CN_INTRO_AZURE_INVADER_ARMS, &VHIntroAzureInvader::Create);
+    mgr->register_creature_script(CN_INTRO_AZURE_MAGE_SLAYER_MELEE, &VHIntroAzureMageSlayer::Create);
+    mgr->register_creature_script(CN_INTRO_AZURE_SPELLBREAKER_ARCANE, &VHIntroAzureSpellBreaker::Create);
 
     //Bosses
     //mgr->register_creature_script(CN_EREKEM, &ErekemAI::Create);
