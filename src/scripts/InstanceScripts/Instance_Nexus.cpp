@@ -195,7 +195,7 @@ class CraziedManaWrathAI : public MoonScriptBossAI
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Grand Magus Telestra
-static Location FormSpawns[] =
+static Movement::Location FormSpawns[] =
 {
     { 494.726990f, 89.128799f, -15.941300f, 6.021390f },
     { 495.006012f, 89.328102f, -16.124609f, 0.027486f },

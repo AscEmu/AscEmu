@@ -108,6 +108,10 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"
 
+//Movement
+#include "Movement/Creatures/MovementSpline.hpp"
+#include "Movement/MovementCommon.hpp"
+
 #include "GameEventMgr.h"
 #include "GameEvent.h"
 #include "AddonMgr.h"

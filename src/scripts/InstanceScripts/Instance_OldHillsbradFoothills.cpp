@@ -27,7 +27,7 @@
 #include "Setup.h"
 #include "Instance_OldHillsbradFoothills.h"
 
-static Location Fires[] =
+static Movement::Location Fires[] =
 {
     { 2160.68f, 235.382f, 53.8946f, 3.55550f },
     { 2162.26f, 237.439f, 56.7303f, 5.97846f },
@@ -52,7 +52,7 @@ static Location Fires[] =
     { 2070.20f, 75.6493f, 61.9173f, 2.12293f }
 };
 
-static Location ThrallWP1[] = // pre 2nd boss
+static Movement::Location ThrallWP1[] = // pre 2nd boss
 {
     { 0, 0, 0, 0 },
     { 2230.29f, 115.049f, 82.2946f, 4.22934f },

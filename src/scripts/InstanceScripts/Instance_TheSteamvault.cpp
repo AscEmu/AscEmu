@@ -1828,7 +1828,7 @@ class HydromancerThespiaAI : public CreatureAIScript
 
 //---- Steamrigger encounter ----//
 
-static Location SpawnCoords[] =
+static Movement::Location SpawnCoords[] =
 {
     { -300.037842f, -115.296227f, -7.865229f, 4.197916f },
     { -330.083008f, -121.505997f, -7.985120f, 5.061450f },
@@ -2195,7 +2195,7 @@ class MekgineerSteamriggerAI : public CreatureAIScript
 
 //---- Warlord Kalitresh Encounter ----//
 
-static Location Distiller[] =
+static Movement::Location Distiller[] =
 {
     {  },
     { -113.183952f, -488.599335f, 8.196310f, 6.134734f },
@@ -2204,7 +2204,7 @@ static Location Distiller[] =
     { -116.220764f, -520.139771f, 8.198921f, 5.127069f }
 };
 
-static Location DistillerMoveTo[] =
+static Movement::Location DistillerMoveTo[] =
 {
     {  },
     { -108.092949f, -491.747803f, 8.198845f,  0.621336f },

@@ -43,7 +43,7 @@ enum CreatureSpells
     AOE_FEAR            = 18431     //With Activate Object
 };
 
-static Location coords[] =
+static Movement::Location coords[] =
 {
     { 0, 0, 0, 0 },
     { -75.945f, -219.245f, -83.375f, 0.004947f },
@@ -56,7 +56,7 @@ static Location coords[] =
     { -4.868f, -217.171f, -86.710f, M_PI_FLOAT }
 };
 
-static Location whelpCoords[] =
+static Movement::Location whelpCoords[] =
 {
     { -30.812f, -166.395f, -89.000f, 5.160f },
     { -30.233f, -264.158f, -89.896f, 1.129f },

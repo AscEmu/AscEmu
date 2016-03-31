@@ -182,7 +182,7 @@ class MaexxnaSpiderlingAI : public MoonScriptCreatureAI
 #define MAEXXNA_FRENZY_NORMAL                    54123
 #define MAEXXNA_FRENZY_HEROIC                    54124
 
-static Location WebWrapPos[] =
+static Movement::Location WebWrapPos[] =
 {
     // Left wall
     { 3515.307861f, -3837.076172f, 302.671753f, 4.388477f },
@@ -266,7 +266,7 @@ class NaxxramasFollowerAI : public MoonScriptCreatureAI
 #define GRAND_WIDOW_RAIN_OF_FIRE_NORMAL                    39024
 #define GRAND_WIDOW_RAIN_OF_FIRE_HEROIC                    58936
 
-static Location Worshippers[4] =
+static Movement::Location Worshippers[4] =
 {
     { -3.0f, 0, 0, 0 },
     { -9.0f, 0, 0, 0 },
@@ -274,7 +274,7 @@ static Location Worshippers[4] =
     { 9.0f, 0, 0, 0 }
 };
 
-static Location Followers[2] =
+static Movement::Location Followers[2] =
 {
     { -6.0f, 0, 0, 0 },
     { 6.0f, 0, 0, 0 }
@@ -346,7 +346,7 @@ class CorpseScarabAI : public MoonScriptCreatureAI
 #define ANUBREKHAN_SUMMON_CORPSE_SCARABS_10        28864
 #define ANUBREKHAN_BERSERK                        26662
 
-static Location CryptGuards[] =
+static Movement::Location CryptGuards[] =
 {
     { 3300.486572f, -3449.479492f, 287.077850f, 3.883793f },
     { 3300.568604f, -3503.060059f, 287.077850f, 2.367975f },
@@ -468,14 +468,14 @@ class EyeStalkerAI : public MoonScriptCreatureAI
 #define NOTH_THE_PLAGUEBRINGER_CURSE_OF_THE_PLAGUE_HEROIC    54835    // I must check if it's target-limited spell
 #define NOTH_THE_PLAGUEBRINGER_BERSERK                        47008    // Guessed
 
-static Location SkelPosPhase1[] =
+static Movement::Location SkelPosPhase1[] =
 {
     { 2660.175781f, -3473.315674f, 262.003967f, 5.252077f },
     { 2717.336426f, -3463.309326f, 262.044098f, 3.703270f },
     { 2718.720215f, -3524.452881f, 261.943176f, 2.760789f }
 };
 
-static Location SkelPosPhase2[] =
+static Movement::Location SkelPosPhase2[] =
 {
     { 2660.932129f, -3474.058105f, 262.004730f, 5.765719f },
     { 2706.175537f, -3465.862793f, 262.003510f, 4.488667f },
@@ -637,7 +637,7 @@ class PlagueFissureGO : public GameObjectAIScript
 #define LOATHEB_INEVITABLE_DOOM_HEROIC        55052
 #define LOATHEB_BERSERK                        26662    // Unused
 
-static Location Spores[] =
+static Movement::Location Spores[] =
 {
     { 2880.517334f, -4027.450684f, 273.680695f, 0.848522f },
     { 2938.914307f, -4027.245850f, 273.617340f, 2.419318f },
@@ -2639,13 +2639,13 @@ class ZeliekAI : public CreatureAIScript
 // Additional spells
 #define SAPPHIRONS_WING_BUFFET    29328
 
-struct Location PhaseTwoWP[] =
+struct Movement::Location PhaseTwoWP[] =
 {
     {},
     { 3520.820068f, -5233.799805f, 137.626007f, 4.553010f }
 };
 
-struct Location IceBlocks[] =    // Those are not blizzlike pos, because those blocks are spawned randomly
+struct Movement::Location IceBlocks[] =    // Those are not blizzlike pos, because those blocks are spawned randomly
 {
     {},
     { 3580.986084f, -5241.330078f, 137.627304f, 3.006957f },
@@ -3401,7 +3401,7 @@ class SapphironAI : public CreatureAIScript
 
   */
 
-static Location SFrozenWastes[] =    // Soldier of the Frozen Wastes (no idea about those :|)
+static Movement::Location SFrozenWastes[] =    // Soldier of the Frozen Wastes (no idea about those :|)
 {
     { 3759.149902f, -5074.879883f, 143.175003f, 1.203640f },    // 1
     { 3762.959961f, -5067.399902f, 143.453003f, 0.893413f },
@@ -3475,7 +3475,7 @@ static Location SFrozenWastes[] =    // Soldier of the Frozen Wastes (no idea ab
     { 3646.360107f, -5101.200195f, 143.681000f, 2.909540f }
 };
 
-static Location Abomination[] =    // Unstoppable Abomination
+static Movement::Location Abomination[] =    // Unstoppable Abomination
 {
     { 3776.229980f, -5081.439941f, 143.779999f, 4.043730f },    // 1
     { 3774.419922f, -5071.490234f, 143.423996f, 4.214940f },
@@ -3500,7 +3500,7 @@ static Location Abomination[] =    // Unstoppable Abomination
     { 3658.618408f, -5083.832031f, 143.778641f, 5.951464f }
 };
 
-static Location SoulWeaver[] =    // Soul Weaver
+static Movement::Location SoulWeaver[] =    // Soul Weaver
 {
     { 3768.540039f, -5075.140137f, 143.203995f, 5.096160f },
     { 3728.030029f, -5047.359863f, 143.306000f, 5.230460f },
@@ -3511,7 +3511,7 @@ static Location SoulWeaver[] =    // Soul Weaver
     { 3656.365234f, -5094.724121f, 143.306641f, 6.203571f }
 };
 
-static Location Guardians[] =        // Guardians of Icecrown
+static Movement::Location Guardians[] =        // Guardians of Icecrown
 {
     { 3778.371582f, -5065.141113f, 143.614639f, 3.700061f },
     { 3731.733398f, -5032.681152f, 143.775040f, 4.485459f },
@@ -3519,7 +3519,7 @@ static Location Guardians[] =        // Guardians of Icecrown
     { 3700.936279f, -5183.230469f, 143.858582f, 1.314648f }
 };
 
-static Location Waves[] =            // Spawn positions of units that attack circle
+static Movement::Location Waves[] =            // Spawn positions of units that attack circle
 {
     { 3756.380615f, -5080.560059f, 142.906921f, 3.762599f },
     { 3726.448242f, -5058.546387f, 142.467331f, 4.262112f },

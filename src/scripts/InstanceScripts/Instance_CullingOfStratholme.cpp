@@ -973,7 +973,7 @@ class Quest_Dispelling_Illusions : public QuestScript
 };
 
 
-static Location walk[] =
+static Movement::Location walk[] =
 {
     { 0, 0, 0, 0 },
     { 1811.2177f, 1276.5729f, 141.9048f, 0.098f },
@@ -1072,7 +1072,7 @@ class UtherAI : public CreatureAIScript
         bool check;
 };
 
-static Location ArthasWalk[] =
+static Movement::Location ArthasWalk[] =
 {
     { 0, 0, 0, 0 },
     { 1908.9722f, 1312.8898f, 149.9889f, 0.6858f },

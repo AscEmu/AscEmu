@@ -107,7 +107,7 @@ static float ShieldGeneratorCoords[4][3] =
     { 49.687f, -944.406f, 42.7324f }
 };
 
-static Location fly[] =
+static Movement::Location fly[] =
 {
     { 29.769f, -866.190f, 43 },
     { 1.135f, -874.345f, 43 },

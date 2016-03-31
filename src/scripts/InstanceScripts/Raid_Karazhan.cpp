@@ -780,7 +780,7 @@ class GrandMother : public GossipScript
 
 };
 
-static Location Barnes[] =
+static Movement::Location Barnes[] =
 {
     { },
     { -10873.91f, -1780.177f, 90.50f, 3.3f },
@@ -3578,7 +3578,7 @@ class VoidZoneAI : public CreatureAIScript
 #define FIREBALL_BARRAGE 30282
 #define SUMMON_BONE_SKELETONS 30170
 
-static Location coords[] =
+static Movement::Location coords[] =
 {
     { 0, 0, 0, 0 },
     { -11173.719727f, -1863.993164f, 130.390396f, 5.343079f }, // casting point

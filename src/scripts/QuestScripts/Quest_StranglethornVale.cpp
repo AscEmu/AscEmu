@@ -232,7 +232,7 @@ class VoodooDues : public QuestScript
 #define GO_BREAD 2562
 
 
-static Location MeatSpawnPoints[] =
+static Movement::Location MeatSpawnPoints[] =
 {
     { -14655.1f, 148.229f, 3.01744f, 3.45635f},
     { -14655.6f, 146.111f, 2.29463f, 1.43766f},
@@ -244,7 +244,7 @@ static Location MeatSpawnPoints[] =
     { -14652.2f, 146.926f, 3.63756f, 6.06693f},
     { -14653.0f, 145.274f, 2.76439f, 6.06279f}
 };
-static Location BottleSpawnPoints[] =
+static Movement::Location BottleSpawnPoints[] =
 {
     { -14653.5f, 145.711f, 2.01005f, 1.14750f},
     { -14656.7f, 147.404f, 3.05695f, 1.44181f},
@@ -252,7 +252,7 @@ static Location BottleSpawnPoints[] =
     { -14657.5f, 147.567f, 2.83560f, 2.14234f},
     { -14655.9f, 148.848f, 3.93732f, 2.79728f}
 };
-static Location BreadSpawnPoints[] =
+static Movement::Location BreadSpawnPoints[] =
 {
     { -14654.6f, 146.299f, 2.04134f, 5.47387f},
     { -14656.5f, 148.372f, 3.50805f, 5.76817f},

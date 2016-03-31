@@ -1916,7 +1916,7 @@ class AlarAuxClass: public Object
 // Other spells
 #define REBIRTH 34342
 
-static Location fly[] =
+static Movement::Location fly[] =
 {
     {  },
     { 337.864868f,  65.702301f, 33.171944f, 1.329919f },    // fly 1 to ...
@@ -2984,7 +2984,7 @@ class WeaponsAI : public MoonScriptCreatureAI
 #define REMOVE_STAFF                    39503
 #define REMOVE_SLICER                    39504
 
-const Location Triggers[] =
+const Movement::Location Triggers[] =
 {
     { 789.719543f, 24.627499f, 52.728550f },
     { 791.931152f, -24.925735f, 52.728550f },

@@ -463,7 +463,7 @@ class Volkhan : public MoonScriptCreatureAI
     }
 
     SpellDesc* mStomp;
-    Location m_cVolkhanWP;
+    Movement::Location m_cVolkhanWP;
     bool m_bStomp;
     int32 mStompTimer;
     int32 mPhase;

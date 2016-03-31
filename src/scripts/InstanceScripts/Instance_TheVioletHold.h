@@ -12,8 +12,8 @@ static LocationExtra AttackerWP[] =
     { 1858.077f, 804.8599f, 44.00872f, Flag_Walk }, // Run to middle of entrance platform
     { 1836.152f, 804.7064f, 44.2534f, Flag_Walk } // Run to door to attack it
 };
-const Location VH_DOOR_ATTACK_POSITION = { 1829.585083f, 804.067261f, 44.357708f };
-const Location IntroPortals[] =
+
+const Movement::Location IntroPortals[] =
 {
     { 1878.363770f, 845.572144f, 43.333664f, 4.825092f }, // Left portal
     { 1890.527832f, 758.085510f, 47.666927f, 1.714914f }, // Right portal
@@ -63,7 +63,7 @@ const int VHIntroMobs[] =
     CN_INTRO_AZURE_SPELLBREAKER_ARCANE,
 };
 
-const Location VHPortalLocations[] =
+const Movement::Location VHPortalLocations[] =
 {
     { 1877.51f, 850.104f, 44.6599f, 4.7822f  },
     { 1918.37f, 853.437f, 47.1624f, 4.12294f },

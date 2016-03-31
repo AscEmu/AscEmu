@@ -31,7 +31,7 @@
 #define ACTIVE_CUBES_TO_BANISH    5        // 5 cubes
 
 // Channelers Coords is list of spawn points of all 5 channelers casting spell on Magtheridon
-static Location Channelers[] =
+static Movement::Location Channelers[] =
 {
     { -55.638000f,   1.869050f, 0.630946f },
     { -31.861300f, -35.919399f, 0.630945f },
@@ -41,7 +41,7 @@ static Location Channelers[] =
 };
 
 // Columns coords used for Cave In spell to give "collapse" effect
-static Location Columns[] =
+static Movement::Location Columns[] =
 {
     {  17.7522f,  34.5464f,  0.144816f },
     {  19.0966f, -29.2772f,  0.133036f },
@@ -52,7 +52,7 @@ static Location Columns[] =
 };
 
 // Cave In Target Triggers coords
-static Location CaveInPos[] =
+static Movement::Location CaveInPos[] =
 {
     { -37.183399f, -19.491400f,  0.312451f },
     { -11.374900f, -29.121401f,  0.312463f },
@@ -63,7 +63,7 @@ static Location CaveInPos[] =
 };
 
 // Cube Triggers coords
-static Location CubeTriggers[] =
+static Movement::Location CubeTriggers[] =
 {
     { -54.277199f,   2.343740f, 2.404560f },
     { -31.471001f, -34.155998f, 2.335100f },

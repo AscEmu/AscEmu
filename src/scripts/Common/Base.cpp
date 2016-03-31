@@ -891,7 +891,7 @@ uint32 MoonScriptCreatureAI::GetAIUpdateFreq()
     return mAIUpdateFrequency;
 }
 
-WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Location pCoords)
+WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords)
 {
     WayPoint* wp = _unit->CreateWaypointStruct();
     wp->id = pId;

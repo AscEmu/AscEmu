@@ -1529,7 +1529,7 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
 
 //Grand Warlock Nethekurse Encounter
 
-static Location Darkcasters[] =
+static Movement::Location Darkcasters[] =
 {
     { 160.563004f, 272.989014f, -13.189000f },
     { 176.201004f, 264.669006f, -13.141600f },

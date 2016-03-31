@@ -106,14 +106,6 @@ struct EmoteDesc
     uint32 mSoundId;
 };
 
-struct Location
-{
-    float x;
-    float y;
-    float z;
-    float o;
-};
-
 struct LocationExtra
 {
     float x;
@@ -430,7 +422,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         uint32 GetEventCount() { return mEventCount; }
 
         //Waypoints
-        WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Location pCoords);
+        WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords);
         WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, LocationExtra pCoords);
         void AddWaypoint(WayPoint* pWayPoint);
         void ForceWaypointMove(uint32 pWaypointId);

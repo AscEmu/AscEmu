@@ -90,7 +90,9 @@ set(sources
 	Map.cpp 
 	MapScriptInterface.cpp 
 	MapMgr.cpp 
-	MiscHandler.cpp 
+	MiscHandler.cpp
+   Movement/MovementCommon.cpp
+   Movement/Creatures/MovementSpline.cpp
 	MovementHandler.cpp 
 	NPCHandler.cpp 
 	Object.cpp 
@@ -232,6 +234,8 @@ set(headers
 	MapScriptInterface.h
 	Master.h
 	MiscHandler.h
+   Movement/MovementCommon.hpp
+   Movement/Creatures/MovementSpline.hpp
 	NPCHandler.h
 	Object.h
 	ObjectMgr.h

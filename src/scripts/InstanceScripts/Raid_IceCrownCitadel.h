@@ -104,7 +104,7 @@ enum IceCrownCitadelCNid
    CNID_END
 };
 
-static Location Doors[] =
+static Movement::Location Doors[] =
 {
     { -407.35f, 2147.88f, 42.85f, 0 },       //IceWall1
     { -412.97f, 2285.24f, 42.01f, 0 },       //IceWall2

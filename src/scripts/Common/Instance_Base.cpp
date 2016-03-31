@@ -71,7 +71,7 @@ Creature* MoonInstanceScript::FindClosestCreatureOnMap(uint32 pEntry, float pX, 
     return NearestCreature;
 };
 
-Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, Location pLocation)
+Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, Movement::Location pLocation)
 {
     return MoonInstanceScript::SpawnCreature(pEntry, pLocation.x, pLocation.y, pLocation.z, pLocation.o);
 }

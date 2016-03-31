@@ -294,7 +294,7 @@ class MutanusAI : public MoonScriptCreatureAI
 
 // Wailing Caverns Event
 // Discipline of Naralex Gossip
-static Location ToNaralex[] =
+static Movement::Location ToNaralex[] =
 {
     {  },
     { -132.498077f, 125.888153f, -78.418182f, 0.244260f },

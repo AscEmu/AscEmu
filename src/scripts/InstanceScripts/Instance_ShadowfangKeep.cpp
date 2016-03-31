@@ -160,7 +160,7 @@ class BlindWatcherAI : public MoonScriptBossAI
 };
 
 // Fenrus the Devourer AI
-static Location VWSpawns[] =
+static Movement::Location VWSpawns[] =
 {
     {}, // Spawn Locations for the 4 voidwalkers
     { -154.274368f, 2177.196533f, 128.448517f, 5.760980f },
