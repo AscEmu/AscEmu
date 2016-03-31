@@ -92,7 +92,8 @@ set(sources
 	MapMgr.cpp 
 	MiscHandler.cpp
    Movement/MovementCommon.cpp
-   Movement/Creatures/MovementSpline.cpp
+   Packets/Movement/CreatureMovement.cpp
+   Packets/ManagedPacket.cpp
 	MovementHandler.cpp 
 	NPCHandler.cpp 
 	Object.cpp 
@@ -235,7 +236,11 @@ set(headers
 	Master.h
 	MiscHandler.h
    Movement/MovementCommon.hpp
-   Movement/Creatures/MovementSpline.hpp
+   Movement/Spline/MovementSpline.hpp
+   Movement/Spline/MovementSplineDefines.hpp
+   Packets/Movement/CreatureMovement.hpp
+   Packets/Movement/SmsgMonsterMove.hpp
+   Packets/ManagedPacket.hpp
 	NPCHandler.h
 	Object.h
 	ObjectMgr.h
