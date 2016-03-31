@@ -110,7 +110,7 @@ static float AttackToRageConversionTable[PLAYER_LEVEL_CAP + 1] =
 #endif
 };
 
-Unit::Unit()
+Unit::Unit() : m_movementManager()
 {
     int i;
 

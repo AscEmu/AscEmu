@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _MOVEMENT_COMMON_HPP
 #define _MOVEMENT_COMMON_HPP
 
+#include "StdAfx.h"
+
 namespace Movement
 {
     struct Point

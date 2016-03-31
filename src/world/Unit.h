@@ -21,6 +21,7 @@
 #ifndef _UNIT_H
 #define _UNIT_H
 
+#include "StdAfx.h"
 #include "UnitDefines.hpp"
 
 #include "Object.h"
@@ -1128,6 +1129,7 @@ class SERVER_DECL Unit : public Object
         void UpdateAuraForGroup(uint8 slot);
         void HandleUpdateFieldChange(uint32 Index);
 
+        Movement::UnitMovementManager m_movementManager;
     protected:
 
         Unit();

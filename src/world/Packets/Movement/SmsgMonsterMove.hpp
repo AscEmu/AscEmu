@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _PACKET_SMSG_MONSTER_MOVE_HPP
 #define _PACKET_SMSG_MONSTER_MOVE_HPP
 
+#include "StdAfx.h"
+#include "Opcodes.h"
+
 namespace Packets
 {
     namespace Movement

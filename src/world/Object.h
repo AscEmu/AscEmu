@@ -21,6 +21,7 @@
 #ifndef _OBJECT_H
 #define _OBJECT_H
 
+#include "StdAfx.h"
 #include "UpdateFields.h"
 #include "UpdateMask.h"
 #include "CommonTypes.hpp"

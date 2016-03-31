@@ -6,8 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _MOVEMENT_SPLINE_HPP
 #define _MOVEMENT_SPLINE_HPP
 
-#include "MovementSplineDefines.hpp"
 #include "StdAfx.h"
+#include "MovementSplineDefines.hpp"
+#include "G3D/Vector3.h"
 
 namespace Movement
 {

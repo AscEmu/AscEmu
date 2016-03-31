@@ -76,6 +76,16 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "printStackTrace.h"
 #endif
 
+//Movement
+#include "Movement/UnitMovementManager.hpp"
+#include "Movement/Spline/MovementSpline.hpp"
+#include "Movement/Spline/MovementSplineDefines.hpp"
+#include "Movement/MovementCommon.hpp"
+
+#include "Packets/ManagedPacket.hpp"
+#include "Packets/Movement/CreatureMovement.hpp"
+#include "Packets/Movement/SmsgMonsterMove.hpp"
+
 #include "IUpdatable.h"
 #include "WUtil.h"
 #include "UpdateFields.h"
@@ -108,14 +118,6 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"
 
-//Movement
-#include "Movement/UnitMovementManager.hpp"
-#include "Movement/Spline/MovementSplineDefines.hpp"
-#include "Movement/MovementCommon.hpp"
-
-#include "Packets/ManagedPacket.hpp"
-#include "Packets/Movement/CreatureMovement.hpp"
-#include "Packets/Movement/SmsgMonsterMove.hpp"
 
 #include "GameEventMgr.h"
 #include "GameEvent.h"

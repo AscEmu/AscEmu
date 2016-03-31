@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _PACKET_CREATURE_MOVEMENT_HPP
 #define _PACKET_CREATURE_MOVEMENT_HPP
 
+#include "StdAfx.h"
+#include "Unit.h"
+
 namespace Packets
 {
     namespace Movement

@@ -21,6 +21,7 @@
 #ifndef _EVENTABLEOBJECT_H
 #define _EVENTABLEOBJECT_H
 
+#include "StdAfx.h"
 #include "EventMgr.h"
 #include "../shared/Util.h"
 #include <list>
