@@ -6,7 +6,13 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _INSTANCE_THE_VIOLET_HOLD_H
 #define _INSTANCE_THE_VIOLET_HOLD_H
 
-const Location VH_DOOR_ATTACK_POSITION = { 1829.585083f, 804.067261f, 44.357708f, 0.006668f };
+static LocationExtra AttackerWP[] =
+{
+    {}, // 0
+    { 1858.077f, 804.8599f, 44.00872f, Flag_Walk }, // Run to middle of entrance platform
+    { 1836.152f, 804.7064f, 44.2534f, Flag_Walk } // Run to door to attack it
+};
+const Location VH_DOOR_ATTACK_POSITION = { 1829.585083f, 804.067261f, 44.357708f };
 const Location IntroPortals[] =
 {
     { 1878.363770f, 845.572144f, 43.333664f, 4.825092f }, // Left portal

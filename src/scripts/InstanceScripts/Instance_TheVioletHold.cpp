@@ -453,8 +453,43 @@ class VHCreatureAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(VHCreatureAI, MoonScriptCreatureAI);
         VHCreatureAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-        
+            //this->CreateWaypoint(1, 0, 0, VH_DOOR_ATTACK_POSITION);
+            //_unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
+            //this->SetWaypointToMove(1);
+            //this->MoveTo(VH_DOOR_ATTACK_POSITION.x, VH_DOOR_ATTACK_POSITION.y, VH_DOOR_ATTACK_POSITION.z, true);
+            //_unit->GetAIInterface()->UpdateMove();
+            for (int i = 1; i < 3; ++i)
+            {
+                AddWaypoint(CreateWaypoint(i, 0, AttackerWP[i].addition, AttackerWP[i]));
+            }
+            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
+            _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
+            _unit->GetAIInterface()->UpdateMove();
         }
+
+        void OnReachWP(uint32 iWaypointId, bool bForwards)
+        {
+            switch (iWaypointId)
+            {
+                case 1:
+                    _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 1!");
+                    SetWaypointToMove(2);
+                    break;
+                case 2:
+                {
+                    if (m_isIntroMob)
+                    {
+                        _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Reached wp 2!");
+                        _unit->Despawn(500, 0);
+                    }
+                    else
+                    {
+                        // TODO: Door attack code
+                    }
+                }break;
+            }
+        }
+
 
         void OnCombatStart(Unit* mTarget)
         {
@@ -504,6 +539,11 @@ class VHCreatureAI : public MoonScriptCreatureAI
 
                     if (m_spellsEnabled[i])
                     {
+                        if (!m_spells[i].instant)
+                        {
+                            this->StopMovement();
+                        }
+
                         m_spells[i].casttime = m_spells[i].cooldown;
                         target = _unit->GetAIInterface()->getNextTarget();
                         switch (m_spells[i].targettype)
@@ -578,7 +618,7 @@ class VHIntroAzureBinder : VHCreatureAI
             spellArcaneExplosion.attackstoptimer = 1000;
             m_spells.push_back(spellArcaneExplosion);
             m_spellsEnabled[1] = true;
-    }
+        }
 };
 
 class VHIntroAzureInvader : VHCreatureAI
@@ -690,7 +730,7 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
             spellSlow.perctrigger = 40.0f;
             spellSlow.attackstoptimer = 1000;
             m_spells.push_back(spellSlow);
-            m_spellsEnabled[0] = true;
+            m_spellsEnabled[0] = true;        
         }
 };
 
