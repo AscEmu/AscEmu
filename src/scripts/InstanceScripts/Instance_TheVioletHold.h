@@ -6,6 +6,14 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _INSTANCE_THE_VIOLET_HOLD_H
 #define _INSTANCE_THE_VIOLET_HOLD_H
 
+
+const Location IntroPortals[] =
+{
+    { 1878.363770f, 845.572144f, 43.333664f, 4.825092f }, // Left portal
+    { 1890.527832f, 758.085510f, 47.666927f, 1.714914f }, // Right portal
+    { 1931.233154f, 802.679871f, 52.410446f, 3.112921f }, // Up portal
+};
+
 enum CreatureEntry
 {
     //Main event
@@ -59,7 +67,7 @@ const Location VHPortalLocations[] =
     { 1908.31f, 809.657f, 38.7037f, 3.08701f },
 };
 
-enum VHTimers : uint32
+enum VHTimers : int32
 {
     VH_TIMER_UPDATE = 100,
 

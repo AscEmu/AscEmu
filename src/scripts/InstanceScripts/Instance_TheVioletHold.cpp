@@ -6,20 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Setup.h"
 #include "Instance_TheVioletHold.h"
 
-struct Location EventPreGuardSP[] = //PortalGuard spwns
-{
-    { 1888.046265f, 761.654053f, 47.667f, 2.2332f }, // [0] left
-    { 1928.545532f, 803.849731f, 52.411f, 3.1223f }, // [1] center
-    { 1878.080933f, 844.850281f, 43.334f, 4.2376f }  // [2] right
-};
-
-struct Location EventPreGuardWP[] = //PortalGuard WPs
-{
-    { 1858.386353f, 812.804993f, 42.9995f, 4.2376f }, // [0] left
-    { 1861.916382f, 803.873230f, 43.6728f, 3.1223f }, // [1] center
-    { 1858.678101f, 796.081970f, 43.1944f, 2.2332f }  // [2] right
-};
-
 enum DataIndex
 {
     TVH_PHASE_1 = 0, // main event
@@ -58,8 +44,6 @@ class TheVioletHoldScript : public MoonInstanceScript
             for (uint8 i = 0; i < TVH_END; ++i)
                 m_phaseData[i] = State_NotStarted;
 
-            // Update every 250ms
-            this->SetUpdateEventFreq(VH_TIMER_UPDATE);
             this->RegisterScriptUpdateEvent();
         }
 
@@ -81,6 +65,7 @@ class TheVioletHoldScript : public MoonInstanceScript
                 case State_NotStarted:
                     S0_ReviveGuards();
                     S0_SpawnIntroMobs();
+                    S0_RemoveDeadIntroMobs();
                     break;
                 case State_InProgress:
                     S2_SpawnPortals();
@@ -105,15 +90,35 @@ class TheVioletHoldScript : public MoonInstanceScript
             }
         }
 
+        void S0_RemoveDeadIntroMobs()
+        {
+            auto introMobs = this->FindCreaturesOnMap(std::vector<uint32> { CN_INTRO_AZURE_BINDER_ARCANE, CN_INTRO_AZURE_INVADER_ARMS, CN_INTRO_AZURE_MAGE_SLAYER_MELEE, CN_INTRO_AZURE_SPELLBREAKER_ARCANE });
+            for (auto mob : introMobs)
+            {
+                if (mob == nullptr || mob->isAlive())
+                    continue;
+
+                mob->Despawn(1500, 0);
+            }
+        }
+
+
         void S0_SpawnIntroMobs()
         {
-            if (S0_SpawnIntroMobsTimer > 0)
-                return;
+            if (IsTimerFinished(S0_SpawnIntroMobsTimer))
+            {
+                S0_SpawnIntroMobsTimer = 0; // This forces a new timer to be started below
+            
+                SpawnCreature(GetRandomIntroMob(), IntroPortals[0]);
+                SpawnCreature(GetRandomIntroMob(), IntroPortals[1]);
+                SpawnCreature(GetRandomIntroMob(), IntroPortals[2]);
+            }
 
             // Start another 15s timer
-            S0_SpawnIntroMobsTimer = AddTimer(VH_TIMER_SPAWN_INTRO_MOB);
-
-            // TODO: Spawn mobs
+            if (GetTimer(S0_SpawnIntroMobsTimer) <= 0)
+            {
+                S0_SpawnIntroMobsTimer = AddTimer(VH_TIMER_SPAWN_INTRO_MOB);
+            }
         }
 
         void S1_ActivateCrystalFleeRoom()
@@ -185,6 +190,19 @@ class TheVioletHoldScript : public MoonInstanceScript
             {
                 portal->Despawn(VH_TIMER_INTRO_PORTAL_DESPAWN_TIME, 0);
             }
+        }
+
+        int GetRandomIntroMob()
+        {
+            auto rnd = RandomFloat(100.0f);
+            if (rnd < 25.0f)
+                return CN_INTRO_AZURE_BINDER_ARCANE;
+            if (rnd < 50.f)
+                return CN_INTRO_AZURE_INVADER_ARMS;
+            if (rnd < 75.0f)
+                return CN_INTRO_AZURE_MAGE_SLAYER_MELEE;
+
+            return CN_INTRO_AZURE_SPELLBREAKER_ARCANE;
         }
 
         void OnStateChange(uint32 pLastState, uint32 pNewState)
@@ -413,6 +431,7 @@ class VHGuardsAI : public MoonScriptCreatureAI
 
 };
 
+//\TODO: Replace spell casting logic for all instances, this is temp
 class VHCreatureAI : public MoonScriptCreatureAI
 {
     protected:
