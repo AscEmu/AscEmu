@@ -21,6 +21,7 @@ namespace Movement
             uint32 arrive;      /// mstime the npc reaches the destination
         };
 
+        static SplinePoint InvalidPoint = { { 0.0f, 0.0f, 0.0f }, 0, 0 };
 
         class MoveSpline
         {
@@ -31,14 +32,22 @@ namespace Movement
 
             public:
 
-                void SetSplineFlag(uint32 pFlags) { m_splineFlags = pFlags; }
-                uint32 HasSplineFlag(uint32 pFlags) { return m_splineFlags & pFlags; }
-                void AddSplineFlag(uint32 pFlags) { m_splineFlags |= pFlags; }
-                void RemoveSplineFlag(uint32 pFlags) { m_splineFlags &= ~pFlags; }
+                void SetSplineFlag(uint32 pFlags);
+                uint32 HasSplineFlag(uint32 pFlags);
+                void AddSplineFlag(uint32 pFlags);
+                void RemoveSplineFlag(uint32 pFlags);
+                
+                ::Movement::Spline::SplinePoint GetFirstSplinePoint();
+                std::vector<::Movement::Spline::SplinePoint> GetMidPoints();
+                ::Movement::Spline::SplinePoint GetLastSplinePoint();
+                std::vector<::Movement::Spline::SplinePoint>* GetSplinePoints();
+                
+                void ClearSpline();
+                void AddSplinePoint(::Movement::Spline::SplinePoint pSplinePoint);
 
                 uint32 GetSplineFlags() { return m_splineFlags; }
                 MoveSpline();
-                MoveSpline(uint32 pInitialFlags) { m_splineFlags = pInitialFlags; }
+                MoveSpline(uint32 pInitialFlags);
         };
     }
 }

@@ -42,6 +42,7 @@
 
 AIInterface::AIInterface()
     :
+    m_moveSpline(),
     m_canMove(true),
     m_WayPointsShowing(false),
     m_WayPointsShowBackwards(false),
@@ -1831,7 +1832,7 @@ void AIInterface::SendMoveToPacket()
     data << m_Unit->GetNewGUID();
     data << uint8(0); //vehicle seat index
 
-    if (m_currentMoveSpline.size() == 0)
+    if (m_moveSpline.GetSplinePoints()->size() == 0)
     {
         //We're not moving, if here we've recently stopped, tell clients so
         data << float(m_Unit->GetPositionX());
@@ -1842,7 +1843,7 @@ void AIInterface::SendMoveToPacket()
     }
     else
     {
-        ::Movement::Spline::SplinePoint & splinestart = m_currentMoveSpline[0];
+        ::Movement::Spline::SplinePoint & splinestart = m_moveSpline.GetFirstSplinePoint();
         data << splinestart.pos.x;
         data << splinestart.pos.y;
         data << splinestart.pos.z;
@@ -1865,20 +1866,21 @@ void AIInterface::SendMoveToPacket()
             data << m_splinetrajectoryTime;
         }
 
-        data << uint32(m_currentMoveSpline.size() - 1);
+        data << uint32(m_moveSpline.GetSplinePoints()->size() - 1);
 
-        ::Movement::Spline::SplinePoint & finalpoint = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
+        ::Movement::Spline::SplinePoint & finalpoint = m_moveSpline.GetLastSplinePoint();
         data << finalpoint.pos.x;
         data << finalpoint.pos.y;
         data << finalpoint.pos.z;
 
+        auto midpoints = m_moveSpline.GetMidPoints();
         if (m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING | Movement::Spline::SPLINEFLAG_CATMULLROM))
         {
-            for (uint32 i = 1; i < m_currentMoveSpline.size() - 1; ++i)
+            for (auto point : midpoints)
             {
-                data << m_currentMoveSpline[i].pos.x;
-                data << m_currentMoveSpline[i].pos.y;
-                data << m_currentMoveSpline[i].pos.z;
+                data << point.pos.x;
+                data << point.pos.y;
+                data << point.pos.z;
             }
         }
         else
@@ -1887,11 +1889,11 @@ void AIInterface::SendMoveToPacket()
             float midy = (finalpoint.pos.y + splinestart.pos.y) * 0.5f;
             float midz = (finalpoint.pos.z + splinestart.pos.z) * 0.5f;
 
-            for (uint32 i = 1; i < m_currentMoveSpline.size() - 1; ++i)
+            for (auto point : midpoints)
             {
-                float tmpx = (midx - m_currentMoveSpline[i].pos.x) * 4;
-                float tmpy = (midy - m_currentMoveSpline[i].pos.y) * 4;
-                float tmpz = (midz - m_currentMoveSpline[i].pos.z) * 4;
+                float tmpx = (midx - point.pos.x) * 4;
+                float tmpy = (midy - point.pos.y) * 4;
+                float tmpz = (midz - point.pos.z) * 4;
 
                 //pack it
                 data << uint32(int(tmpx) & 0x7FF | ((int(tmpy) & 0x7FF) << 11) | ((int(tmpz) & 0x3FF) << 22));
@@ -1912,7 +1914,7 @@ bool AIInterface::StopMovement(uint32 time)
     m_moveTimer = time; //set pause after stopping
 
     //Clear current spline
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_currentMoveSplineIndex = 1;
     m_currentSplineUpdateCounter = 0;
     m_currentSplineTotalMoveTime = 0;
@@ -1964,10 +1966,10 @@ void AIInterface::UpdateMove()
 
 void AIInterface::SendCurrentMove(Player* plyr)
 {
-    if (m_currentMoveSplineIndex >= m_currentMoveSpline.size())
+    if (m_currentMoveSplineIndex >= m_moveSpline.GetSplinePoints()->size())
         return;
 
-    ::Movement::Spline::SplinePoint & start = m_currentMoveSpline[0];
+    ::Movement::Spline::SplinePoint & start = m_moveSpline.GetFirstSplinePoint();
     uint32 timepassed = getMSTime() - start.setoff;
 
     ByteBuffer* splineBuf = new ByteBuffer(20 * 4);
@@ -1981,18 +1983,20 @@ void AIInterface::SendCurrentMove(Player* plyr)
     *splineBuf << float(0); //trajectory parabolic soeed
     *splineBuf << uint32(0); //trajectory time
 
-    if (m_currentMoveSpline.size() < 4)  //client requires 4, lets generate shit for it
+    if (m_moveSpline.GetSplinePoints()->size() < 4)  //client requires 4, lets generate shit for it
     {
-        *splineBuf << uint32(m_currentMoveSpline.size() + 1 /* 1 fake start */ + 2 /* 2 fake ends */); //Spline Count
-        ::Movement::Spline::SplinePoint & end = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
+        *splineBuf << uint32(m_moveSpline.GetSplinePoints()->size() + 1 /* 1 fake start */ + 2 /* 2 fake ends */); //Spline Count
+        ::Movement::Spline::SplinePoint & end = m_moveSpline.GetLastSplinePoint();
 
         *splineBuf << start.pos.x << start.pos.y << start.pos.z;
-        for (uint32 i = 0; i < m_currentMoveSpline.size(); ++i)
+        auto splinePoints = *m_moveSpline.GetSplinePoints();
+        for (auto point : splinePoints)
         {
-            *splineBuf << m_currentMoveSpline[i].pos.x;
-            *splineBuf << m_currentMoveSpline[i].pos.y;
-            *splineBuf << m_currentMoveSpline[i].pos.z;
+            *splineBuf << point.pos.x;
+            *splineBuf << point.pos.y;
+            *splineBuf << point.pos.z;
         }
+
         *splineBuf << end.pos.x << end.pos.y << end.pos.z + 0.1f;
         *splineBuf << end.pos.x << end.pos.y << end.pos.z + 0.2f;
         *splineBuf << uint8(0);
@@ -2000,14 +2004,15 @@ void AIInterface::SendCurrentMove(Player* plyr)
     }
     else
     {
-        *splineBuf << uint32(m_currentMoveSpline.size());
-        for (uint32 i = 0; i < m_currentMoveSpline.size(); ++i)
+        *splineBuf << uint32(m_moveSpline.GetSplinePoints()->size());
+        auto splinePoints = *m_moveSpline.GetSplinePoints();
+        for (auto point : splinePoints)
         {
-            *splineBuf << m_currentMoveSpline[i].pos.x;
-            *splineBuf << m_currentMoveSpline[i].pos.y;
-            *splineBuf << m_currentMoveSpline[i].pos.z;
+            *splineBuf << point.pos.x;
+            *splineBuf << point.pos.y;
+            *splineBuf << point.pos.z;
         }
-        ::Movement::Spline::SplinePoint & end = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
+        ::Movement::Spline::SplinePoint & end = m_moveSpline.GetLastSplinePoint();
         *splineBuf << uint8(0);
         *splineBuf << end.pos.x << end.pos.y << end.pos.z;
     }
@@ -3619,10 +3624,10 @@ void AIInterface::_UpdateTotem(uint32 p_time)
 
 void AIInterface::UpdateMovementSpline()
 {
-    if (m_currentMoveSpline.size() == 0 || m_Unit->GetMapMgr()->mLoopCounter == m_currentSplineUpdateCounter)
+    if (m_moveSpline.GetSplinePoints()->size() == 0 || m_Unit->GetMapMgr()->mLoopCounter == m_currentSplineUpdateCounter)
         return;
 
-    if (m_currentMoveSplineIndex >= m_currentMoveSpline.size())
+    if (m_currentMoveSplineIndex >= m_moveSpline.GetSplinePoints()->size())
     {
         m_creatureState = STOPPED;
         return;
@@ -3630,8 +3635,9 @@ void AIInterface::UpdateMovementSpline()
 
     m_currentSplineUpdateCounter = m_Unit->GetMapMgr()->mLoopCounter;
 
-    ::Movement::Spline::SplinePoint & current = m_currentMoveSpline[m_currentMoveSplineIndex];
-    ::Movement::Spline::SplinePoint & prev = m_currentMoveSpline[m_currentMoveSplineIndex - 1];
+    auto splinePoints = *m_moveSpline.GetSplinePoints();
+    ::Movement::Spline::SplinePoint & current = splinePoints[m_currentMoveSplineIndex];
+    ::Movement::Spline::SplinePoint & prev = splinePoints[m_currentMoveSplineIndex - 1];
 
     G3D::Vector3 newpos;
 
@@ -3668,7 +3674,7 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
     UpdateMovementSpline();
 
     //Clear current spline
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_currentMoveSplineIndex = 1;
     m_currentSplineUpdateCounter = 0;
     m_currentSplineTotalMoveTime = 0;
@@ -3709,16 +3715,16 @@ void AIInterface::AddSpline(float x, float y, float z)
     ::Movement::Spline::SplinePoint p;
     p.pos = G3D::Vector3(x, y, z);
 
-    if (m_currentMoveSpline.size() == 0)
+    if (m_moveSpline.GetSplinePoints()->size() == 0)
     {
         //this is first point just insert it, it's always our position for future points
         p.setoff = getMSTime();
         p.arrive = getMSTime(); //now
-        m_currentMoveSpline.push_back(p);
+        m_moveSpline.AddSplinePoint(p);
         return;
     }
 
-    ::Movement::Spline::SplinePoint & prev = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
+    ::Movement::Spline::SplinePoint & prev = m_moveSpline.GetLastSplinePoint();
 
     float dx = x - prev.pos.x;
     float dy = y - prev.pos.y;
@@ -3755,7 +3761,7 @@ void AIInterface::AddSpline(float x, float y, float z)
     p.arrive = prev.arrive + movetime;
     m_currentSplineTotalMoveTime += movetime;
 
-    m_currentMoveSpline.push_back(p);
+    m_moveSpline.AddSplinePoint(p);
 }
 
 bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*/)
@@ -4505,7 +4511,7 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
 
     //Clear current spline
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_currentMoveSplineIndex = 1;
     m_currentSplineUpdateCounter = 0;
     m_currentSplineTotalMoveTime = 0;
@@ -4572,7 +4578,7 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
     m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
 
     //Clear current spline
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_currentMoveSplineIndex = 1;
     m_currentSplineUpdateCounter = 0;
     m_currentSplineTotalMoveTime = 0;
@@ -4603,7 +4609,7 @@ void AIInterface::MoveJumpExt(float x, float y, float z, float o, float speedZ, 
 	m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
 
 	//Clear current spline
-	m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
 	m_currentMoveSplineIndex = 1;
 	m_currentSplineUpdateCounter = 0;
 	m_currentSplineTotalMoveTime = 0;
@@ -4657,7 +4663,7 @@ bool AIInterface::MoveCharge(float x, float y, float z)
     m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
 
     //Clear current spline
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_currentMoveSplineIndex = 1;
     m_currentSplineUpdateCounter = 0;
     m_currentSplineTotalMoveTime = 0;
@@ -4699,7 +4705,7 @@ bool AIInterface::MoveCharge(float x, float y, float z)
 
 void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
 {
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_currentMoveSplineIndex = 1;
     m_currentSplineUpdateCounter = 0;
     m_currentSplineTotalMoveTime = 0;
@@ -4713,13 +4719,13 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
     SendMoveToPacket();
 
     //complete move
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_Unit->SetPosition(x, y, z, o);
 }
 
 void AIInterface::MoveFalling(float x, float y, float z, float o /*= 0*/)
 {
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_currentMoveSplineIndex = 1;
     m_currentSplineUpdateCounter = 0;
     m_currentSplineTotalMoveTime = 0;
@@ -4733,7 +4739,7 @@ void AIInterface::MoveFalling(float x, float y, float z, float o /*= 0*/)
     SendMoveToPacket();
 
     //complete move
-    m_currentMoveSpline.clear();
+    m_moveSpline.ClearSpline();
     m_Unit->SetPosition(x, y, z, o);
 }
 

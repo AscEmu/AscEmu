@@ -92,6 +92,7 @@ set(sources
 	MapMgr.cpp 
 	MiscHandler.cpp
    Movement/MovementCommon.cpp
+   Movement/Spline/MovementSpline.cpp
    Packets/Movement/CreatureMovement.cpp
    Packets/ManagedPacket.cpp
 	MovementHandler.cpp 
