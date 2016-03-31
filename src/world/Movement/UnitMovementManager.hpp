@@ -13,9 +13,19 @@ namespace Movement
 {
     class UnitMovementManager
     {
+        protected:
+            // Used to limit updates to once per MapMgr tick
+            uint32 m_lastUpdateTick;
         public:
 
             Spline::MoveSpline m_spline;
+
+            void ForceUpdate();
+            void Update(uint32 pLastUpdate);
+            
+            bool CanUpdate(uint32 pLastUpdate);
+            
+            bool IsMovementFinished();
 
             UnitMovementManager();
             UnitMovementManager(Spline::MoveSpline pSpline);
