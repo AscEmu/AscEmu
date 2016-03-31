@@ -30,6 +30,7 @@ namespace Movement
 
                 uint32 m_splineFlags;
                 std::vector<::Movement::Spline::SplinePoint> m_splinePoints;
+                uint32 m_currentSplineIndex;
 
             public:
 
@@ -45,6 +46,18 @@ namespace Movement
                 
                 void ClearSpline();
                 void AddSplinePoint(::Movement::Spline::SplinePoint pSplinePoint);
+
+                uint32 GetCurrentSplineIndex();
+                void SetCurrentSplineIndex(uint32 pIndex);
+                void IncrementCurrentSplineIndex();
+                void DecrementCurrentSplineIndex();
+
+                ::Movement::Spline::SplinePoint* GetSplinePoint(uint32 pPointIndex);
+                ::Movement::Spline::SplinePoint* GetNextSplinePoint();
+                ::Movement::Spline::SplinePoint* GetCurrentSplinePoint();
+                ::Movement::Spline::SplinePoint* GetPreviousSplinePoint();
+
+                bool IsSplineMoveDone();
 
                 uint32 GetSplineFlags() { return m_splineFlags; }
                 MoveSpline();
