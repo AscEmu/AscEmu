@@ -19,7 +19,7 @@ namespace Packets
         public:
 
             WorldPacket data;
-            ManagedPacket();
+            ManagedPacket() {};
             ManagedPacket(uint32 pOpcode, uint32 pSize) : m_opcode(pOpcode), data(pOpcode, pSize) {}
     };
 }

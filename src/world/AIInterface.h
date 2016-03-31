@@ -217,14 +217,6 @@ struct AI_Spell
     uint32 autocast_type;
 };
 
-//Assume previous point can be reached through linked list or current creature position.
-struct SplinePoint
-{
-    G3D::Vector3 pos;
-    uint32 setoff;      /// mstime when npc set off of this point
-    uint32 arrive;      /// mstime the npc reaches the destination
-};
-
 
 typedef std::unordered_map<uint64, int32> TargetMap;
 
@@ -542,7 +534,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         Splines
         \note First element in the spline (m_currentMoveSpline[0]) is always the position the creature started moving from. Index is always set to 1 when movement is started, as index 0 is referenced for first move.
         */
-        std::vector<SplinePoint> m_currentMoveSpline;
+        std::vector<::Movement::Spline::SplinePoint> m_currentMoveSpline;
         uint32 m_currentMoveSplineIndex;
         uint32 m_currentSplineUpdateCounter;
         float m_currentSplineFinalOrientation;

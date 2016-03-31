@@ -12,11 +12,11 @@ namespace Packets
     {
         class SmsgMonsterMove : Packets::ManagedPacket
         {
-            protected:
+            public:
 
                 WoWGuid m_Guid;
                 uint8 m_unk0;
-                ::Movement::Location m_point;
+                ::Movement::Point m_point;
                 uint32 m_splineId;
                 ::Movement::Spline::MonsterMoveFaceType m_moveType;
                 uint32 m_splineFlags;
@@ -24,10 +24,9 @@ namespace Packets
                 int32 m_splineDuration;
                 ::Movement::Spline::SplineParabolic m_splineParabolic;
                 uint32 m_pointCount;
-                std::vector<::Movement::Location> m_locations;
+                std::vector<::Movement::Point> m_locations;
 
-            public:
-                SmsgMonsterMove();
+                SmsgMonsterMove() {};
                 SmsgMonsterMove(uint32 pSize) : ManagedPacket(SMSG_MONSTER_MOVE, pSize) {}
         };
     }

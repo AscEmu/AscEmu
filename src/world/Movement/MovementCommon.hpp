@@ -8,6 +8,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Movement
 {
+    struct Point
+    {
+        float x;
+        float y;
+        float z;
+    };
+
     struct Location
     {
         float x;

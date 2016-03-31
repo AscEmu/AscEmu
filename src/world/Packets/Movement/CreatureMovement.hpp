@@ -10,7 +10,7 @@ namespace Packets
 {
     namespace Movement
     {
-
+        void SendMoveToPacket(Unit* pUnit);
     }
 }
 

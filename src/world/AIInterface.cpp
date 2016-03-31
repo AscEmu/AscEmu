@@ -1823,6 +1823,9 @@ waypoint's:
 
 void AIInterface::SendMoveToPacket()
 {
+    //::Packets::Movement::SendMoveToPacket(m_Unit);
+
+    // OLD CODE START
     WorldPacket data(SMSG_MONSTER_MOVE, 100);
 
     data << m_Unit->GetNewGUID();
@@ -1839,7 +1842,7 @@ void AIInterface::SendMoveToPacket()
     }
     else
     {
-        SplinePoint & splinestart = m_currentMoveSpline[0];
+        ::Movement::Spline::SplinePoint & splinestart = m_currentMoveSpline[0];
         data << splinestart.pos.x;
         data << splinestart.pos.y;
         data << splinestart.pos.z;
@@ -1864,7 +1867,7 @@ void AIInterface::SendMoveToPacket()
 
         data << uint32(m_currentMoveSpline.size() - 1);
 
-        SplinePoint & finalpoint = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
+        ::Movement::Spline::SplinePoint & finalpoint = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
         data << finalpoint.pos.x;
         data << finalpoint.pos.y;
         data << finalpoint.pos.z;
@@ -1964,7 +1967,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
     if (m_currentMoveSplineIndex >= m_currentMoveSpline.size())
         return;
 
-    SplinePoint & start = m_currentMoveSpline[0];
+    ::Movement::Spline::SplinePoint & start = m_currentMoveSpline[0];
     uint32 timepassed = getMSTime() - start.setoff;
 
     ByteBuffer* splineBuf = new ByteBuffer(20 * 4);
@@ -1981,7 +1984,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
     if (m_currentMoveSpline.size() < 4)  //client requires 4, lets generate shit for it
     {
         *splineBuf << uint32(m_currentMoveSpline.size() + 1 /* 1 fake start */ + 2 /* 2 fake ends */); //Spline Count
-        SplinePoint & end = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
+        ::Movement::Spline::SplinePoint & end = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
 
         *splineBuf << start.pos.x << start.pos.y << start.pos.z;
         for (uint32 i = 0; i < m_currentMoveSpline.size(); ++i)
@@ -2004,7 +2007,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
             *splineBuf << m_currentMoveSpline[i].pos.y;
             *splineBuf << m_currentMoveSpline[i].pos.z;
         }
-        SplinePoint & end = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
+        ::Movement::Spline::SplinePoint & end = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
         *splineBuf << uint8(0);
         *splineBuf << end.pos.x << end.pos.y << end.pos.z;
     }
@@ -3627,8 +3630,8 @@ void AIInterface::UpdateMovementSpline()
 
     m_currentSplineUpdateCounter = m_Unit->GetMapMgr()->mLoopCounter;
 
-    SplinePoint & current = m_currentMoveSpline[m_currentMoveSplineIndex];
-    SplinePoint & prev = m_currentMoveSpline[m_currentMoveSplineIndex - 1];
+    ::Movement::Spline::SplinePoint & current = m_currentMoveSpline[m_currentMoveSplineIndex];
+    ::Movement::Spline::SplinePoint & prev = m_currentMoveSpline[m_currentMoveSplineIndex - 1];
 
     G3D::Vector3 newpos;
 
@@ -3703,7 +3706,7 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
 
 void AIInterface::AddSpline(float x, float y, float z)
 {
-    SplinePoint p;
+    ::Movement::Spline::SplinePoint p;
     p.pos = G3D::Vector3(x, y, z);
 
     if (m_currentMoveSpline.size() == 0)
@@ -3715,7 +3718,7 @@ void AIInterface::AddSpline(float x, float y, float z)
         return;
     }
 
-    SplinePoint & prev = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
+    ::Movement::Spline::SplinePoint & prev = m_currentMoveSpline[m_currentMoveSpline.size() - 1];
 
     float dx = x - prev.pos.x;
     float dy = y - prev.pos.y;
