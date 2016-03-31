@@ -72,20 +72,20 @@ namespace Movement
                 void SetFlag(uint8 pFlag) { MoveFlag = pFlag; }
 
                 /* MonsterMoveFacingLocation */
-                float GetX() { Validate(MonsterMoveFacingLocation); return TargetPointX; }
-                float GetY() { Validate(MonsterMoveFacingLocation); return TargetPointY; }
-                float GetZ() { Validate(MonsterMoveFacingLocation); return TargetPointZ; }
-                void SetX(float pX) { Validate(MonsterMoveFacingLocation); TargetPointX = pX; }
-                void SetY(float pY) { Validate(MonsterMoveFacingLocation); TargetPointY = pY; }
-                void SetZ(float pZ) { Validate(MonsterMoveFacingLocation); TargetPointZ = pZ; }
+                float GetX() { return TargetPointX; }
+                float GetY() { return TargetPointY; }
+                float GetZ() { return TargetPointZ; }
+                void SetX(float pX) { TargetPointX = pX; }
+                void SetY(float pY) { TargetPointY = pY; }
+                void SetZ(float pZ) { TargetPointZ = pZ; }
 
                 /* MonsterMoveFacingTarget */
-                uint64 GetGuid() { Validate(MonsterMoveFacingTarget); return TargetGuid; }
-                void SetGuid(uint64 pGuid) { Validate(MonsterMoveFacingTarget); TargetGuid = pGuid; }
+                uint64 GetGuid() { return TargetGuid; }
+                void SetGuid(uint64 pGuid) { TargetGuid = pGuid; }
 
                 /* MonsterMoveFacingAngle */
-                float GetAngle() { Validate(MonsterMoveFacingAngle); return TargetAngle; }
-                void SetAngle(float pAngle) { Validate(MonsterMoveFacingAngle); TargetAngle = pAngle; }
+                float GetAngle() { return TargetAngle; }
+                void SetAngle(float pAngle) { TargetAngle = pAngle; }
 
             protected:
 
@@ -105,9 +105,6 @@ namespace Movement
 
                 /* MonsterMoveFacingAngle */
                 float TargetAngle;
-            private:
-
-                void Validate(uint8 pFlag) { assert(MoveFlag == pFlag); }
         };
 
         struct SplineAnimation

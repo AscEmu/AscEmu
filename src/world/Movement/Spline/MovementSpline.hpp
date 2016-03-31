@@ -33,6 +33,7 @@ namespace Movement
                 uint32 m_currentSplineIndex;
 
             public:
+                ::Movement::Spline::MonsterMoveFaceType m_splineFaceType;
 
                 void SetSplineFlag(uint32 pFlags);
                 uint32 HasSplineFlag(uint32 pFlags);

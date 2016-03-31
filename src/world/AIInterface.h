@@ -538,7 +538,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         //::Movement::Spline::MoveSpline m_moveSpline;
         //uint32 m_currentMoveSplineIndex;
         //uint32 m_currentSplineUpdateCounter;
-        float m_currentSplineFinalOrientation;
+        //float m_currentSplineFinalOrientation;
         float m_splinetrajectoryVertical;
         uint32 m_splinetrajectoryTime;
         uint32 m_currentSplineTotalMoveTime;
