@@ -47,6 +47,23 @@ namespace Movement
             SPLINEFLAG_UNKNOWN11 = 0x20000000,
             SPLINEFLAG_UNKNOWN12 = 0x40000000
         };
+
+        class MoveSpline
+        {
+            protected:
+
+                uint32 m_splineFlags;
+            public:
+
+                void SetSplineFlag(uint32 pFlags) { m_splineFlags = pFlags; }
+                uint32 HasSplineFlag(uint32 pFlags) { return m_splineFlags & pFlags; }
+                void AddSplineFlag(uint32 pFlags) { m_splineFlags |= pFlags; }
+                void RemoveSplineFlag(uint32 pFlags) { m_splineFlags &= ~pFlags; }
+
+                uint32 GetSplineFlags() { return m_splineFlags; }
+                MoveSpline();
+                MoveSpline(uint32 pInitialFlags) { m_splineFlags = pInitialFlags; }
+        };
     }
 }
 

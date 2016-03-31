@@ -342,20 +342,16 @@ class SERVER_DECL AIInterface : public IUpdatable
         void UpdateSpeeds();
 
         //Move flag updating
-        void SetSplineFlag(uint32 flags) { m_splineFlags = flags; }
-        uint32 HasSplineFlag(uint32 flags) { return m_splineFlags & flags; }
-        void AddSplineFlag(uint32 flags) { m_splineFlags |= flags; }
-        void RemoveSplineFlag(uint32 flags) { m_splineFlags &= ~flags; }
-        bool Flying() { return HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING) != 0; }
-        void SetFly() { SetSplineFlag(Movement::Spline::SPLINEFLAG_FLYING); }
-        void SetSprint() { if (Flying()) return; SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_SPRINT); UpdateSpeeds(); }
-        void SetRun() { if (Flying()) return; SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_RUN); UpdateSpeeds(); }
-        void SetWalk() { if (Flying()) return; SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_WALK); UpdateSpeeds(); }
+        bool Flying() { return m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING) != 0; }
+        void SetFly() { m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_FLYING); }
+        void SetSprint() { if (Flying()) return; m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_SPRINT); UpdateSpeeds(); }
+        void SetRun() { if (Flying()) return; m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_RUN); UpdateSpeeds(); }
+        void SetWalk() { if (Flying()) return; m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_WALK); UpdateSpeeds(); }
         void SetWalkMode(uint32 mode) { m_walkMode = mode; }
         bool HasWalkMode(uint32 mode) { return m_walkMode == mode; }
-        void StopFlying() { if (Flying()) { SetSplineFlag(0); SetWalk(); } }
+        void StopFlying() { if (Flying()) { m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_NONE); SetWalk(); } }
 
-        uint32 m_splineFlags;
+        Movement::Spline::MoveSpline m_spline;
         uint32 m_walkMode;
 
         void UpdateMove();
