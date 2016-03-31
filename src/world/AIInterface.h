@@ -535,7 +535,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         \note First element in the spline (m_currentMoveSpline[0]) is always the position the creature started moving from. Index is always set to 1 when movement is started, as index 0 is referenced for first move.
         */
         //std::vector<::Movement::Spline::SplinePoint> m_currentMoveSpline;
-        ::Movement::Spline::MoveSpline m_moveSpline;
+        //::Movement::Spline::MoveSpline m_moveSpline;
         uint32 m_currentMoveSplineIndex;
         uint32 m_currentSplineUpdateCounter;
         float m_currentSplineFinalOrientation;
@@ -588,7 +588,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         void WipeCurrentTarget();
 
         void UpdateMovementSpline();
-        bool MoveDone() { return m_currentMoveSplineIndex >= m_moveSpline.GetSplinePoints()->size(); }
+        bool MoveDone() { return m_currentMoveSplineIndex >= m_Unit->m_movementManager.m_spline.GetSplinePoints()->size(); }
         bool CanCreatePath(float x, float y, float z) { return CreatePath(x, y, z, true); }
         void MoveKnockback(float x, float y, float z, float horizontal, float vertical);
         void MoveJump(float x, float y, float z, float o = 0, bool hugearc = false);

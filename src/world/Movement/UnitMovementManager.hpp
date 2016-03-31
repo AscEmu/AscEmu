@@ -13,11 +13,12 @@ namespace Movement
 {
     class UnitMovementManager
     {
-        Spline::MoveSpline m_spline;
-
         public:
 
+            Spline::MoveSpline m_spline;
+
             UnitMovementManager();
+            UnitMovementManager(Spline::MoveSpline pSpline);
     };
 }
 

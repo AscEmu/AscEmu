@@ -7,7 +7,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Movement
 {
-    UnitMovementManager::UnitMovementManager()
+    UnitMovementManager::UnitMovementManager() : m_spline()
+    {
+
+    }
+
+    UnitMovementManager::UnitMovementManager(Spline::MoveSpline pSpline) : m_spline(pSpline)
     {
 
     }
