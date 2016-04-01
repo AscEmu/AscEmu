@@ -21,7 +21,6 @@
 #ifndef WOWSERVER_AIINTERFACE_H
 #define WOWSERVER_AIINTERFACE_H
 
-#include "Unit.h"
 #include "RecastIncludes.hpp"
 #include "IUpdatable.h"
 
