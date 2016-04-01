@@ -30,14 +30,17 @@ namespace Packets
                 MovePacket.data << splineStart.pos.z;
                 MovePacket.data << splineStart.setoff;
 
-                if (pUnit->m_movementManager.m_spline.m_splineFaceType.GetFlag() == ::Movement::Spline::MonsterMoveFacingAngle)
+                switch (pUnit->m_movementManager.m_spline.m_splineFaceType.GetFlag())
                 {
-                    MovePacket.data << uint8(::Movement::Spline::MonsterMoveFacingAngle);
-                    MovePacket.data << pUnit->m_movementManager.m_spline.m_splineFaceType.GetAngle();
-                }
-                else
-                {
-                    MovePacket.data << uint8(0);
+                    case ::Movement::Spline::MonsterMoveFacingAngle:
+                        MovePacket.data << uint8(::Movement::Spline::MonsterMoveFacingAngle);
+                        MovePacket.data << pUnit->m_movementManager.m_spline.m_splineFaceType.GetAngle();
+                        break;
+                    case ::Movement::Spline::MonsterMoveFacingLocation:
+                    case ::Movement::Spline::MonsterMoveFacingTarget:
+                    default:
+                        MovePacket.data << uint8(0);
+                        break;
                 }
 
                 MovePacket.data << pUnit->m_movementManager.m_spline.GetSplineFlags();
