@@ -77,7 +77,27 @@ namespace Packets
 
                 if (splineFlags->m_splineFlagsRaw.catmullrom)
                 {
-
+                    auto finalPoint = spline.GetLastSplinePoint();
+                    auto pointCount = spline.GetSplinePoints()->size() - 1;
+                    if (splineFlags->m_splineFlagsRaw.cyclic)
+                    {
+                        MovePacket.data << uint32(pointCount + 1);
+                        // This is discarded by the client
+                        MovePacket.data << finalPoint.pos.x;
+                        MovePacket.data << finalPoint.pos.y;
+                        MovePacket.data << finalPoint.pos.z;
+                        // This is the real data
+                        MovePacket.data << finalPoint.pos.x;
+                        MovePacket.data << finalPoint.pos.y;
+                        MovePacket.data << finalPoint.pos.z;
+                    }
+                    else
+                    {
+                        MovePacket.data << uint32(pointCount);
+                        MovePacket.data << finalPoint.pos.x;
+                        MovePacket.data << finalPoint.pos.y;
+                        MovePacket.data << finalPoint.pos.z;
+                    }
                 }
                 else
                 {
