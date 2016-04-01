@@ -53,8 +53,6 @@ class ObjectContainer;
 class DynamicObject;
 class Creature;
 class GameObject;
-class Unit;
-class Group;
 class Pet;
 class Spell;
 class UpdateMask;

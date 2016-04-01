@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Unit.h"
 
+class Unit;
+
 namespace Packets
 {
     namespace Movement
