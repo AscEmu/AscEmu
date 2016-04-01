@@ -25,7 +25,6 @@
 #include "Threading/ThreadStarter.h"
 
 class MapMgr;
-class Object;
 class Player;
 class WorldSession;
 class Creature;
