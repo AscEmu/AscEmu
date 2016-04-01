@@ -14,6 +14,7 @@ namespace Movement
 {
     namespace Spline
     {
+#pragma pack(push, 1)
         struct SplineFlagsData
         {
             uint8 animation_id : 8; // 8
@@ -44,6 +45,7 @@ namespace Movement
 
             inline uint32& as_uint32() { return (uint32&)*this; }
         };
+#pragma pack(pop)
 
         struct SplineFlags
         {
