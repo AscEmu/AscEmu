@@ -25,6 +25,7 @@
 #include "Object.h"
 #include "GameObject.h"
 
+class Object;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \brief Factory class that instantiates and destroys all Objects
