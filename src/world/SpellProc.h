@@ -23,6 +23,7 @@
 
 class SpellProc;
 class Object;
+#include "Object.h"
 class Unit;
 
 #define SPELL_PROC_FACTORY_FUNCTION(T) \
