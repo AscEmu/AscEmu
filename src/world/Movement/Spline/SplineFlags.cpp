@@ -9,6 +9,12 @@ namespace Movement
 {
     namespace Spline
     {
+        /* Returns m_splineFlagsRaw with some flags removed */
+        uint32 SplineFlags::GetFlagsForMonsterMove()
+        {
+            return uint32(m_splineFlagsRaw.as_uint32() & uint32(~(SPLINEFLAG_FINALPOINT | SPLINEFLAG_FINALTARGET | SPLINEFLAG_FINALANGLE | 0xff | SPLINEFLAG_DONE)));
+        }
+
         void SplineFlags::UnsetAllFacingFlags()
         {
             m_splineFlagsRaw.finalpoint = false;
