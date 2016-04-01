@@ -129,7 +129,6 @@ AIInterface::AIInterface()
     FollowDistance_backup(0),
     m_AIType(AITYPE_LONER),
     m_walkSpeed(0),
-    m_splinetrajectoryTime(0),
     m_MovementType(MOVEMENTTYPE_NONE),
     m_guardTimer(0)
 {
@@ -1858,7 +1857,7 @@ void AIInterface::SendMoveToPacket()
         if (m_Unit->m_movementManager.m_spline.GetSplineFlags() & Movement::Spline::SPLINEFLAG_TRAJECTORY)
         {
             data << m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical;
-            data << m_splinetrajectoryTime;
+            data << m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime;
         }
 
         data << uint32(m_Unit->m_movementManager.m_spline.GetSplinePoints()->size() - 1);
@@ -4505,7 +4504,7 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
 
-    m_splinetrajectoryTime = 0;
+    m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
     m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = vertical;
 
     SetRun();
@@ -4571,7 +4570,7 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
 
-    m_splinetrajectoryTime = 0;
+    m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
     if (hugearc)
         m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;   // weeee
 	else
@@ -4601,7 +4600,7 @@ void AIInterface::MoveJumpExt(float x, float y, float z, float o, float speedZ, 
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
 
-	m_splinetrajectoryTime = 0;
+    m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
 	if(hugearc)
         m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;   // weeee
 	else
