@@ -21,6 +21,8 @@
 #ifndef _SPELL_PROC_H
 #define _SPELL_PROC_H
 
+#include "Object.h"
+
 class SpellProc;
 class Unit;
 
