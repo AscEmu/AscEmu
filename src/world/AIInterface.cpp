@@ -129,7 +129,6 @@ AIInterface::AIInterface()
     FollowDistance_backup(0),
     m_AIType(AITYPE_LONER),
     m_walkSpeed(0),
-    m_splinetrajectoryVertical(0),
     m_splinetrajectoryTime(0),
     m_MovementType(MOVEMENTTYPE_NONE),
     m_guardTimer(0)
@@ -1858,7 +1857,7 @@ void AIInterface::SendMoveToPacket()
 
         if (m_Unit->m_movementManager.m_spline.GetSplineFlags() & Movement::Spline::SPLINEFLAG_TRAJECTORY)
         {
-            data << m_splinetrajectoryVertical;
+            data << m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical;
             data << m_splinetrajectoryTime;
         }
 
@@ -4507,7 +4506,7 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     m_Unit->m_movementManager.ForceUpdate();
 
     m_splinetrajectoryTime = 0;
-    m_splinetrajectoryVertical = vertical;
+    m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = vertical;
 
     SetRun();
     m_runSpeed *= 3;
@@ -4574,9 +4573,9 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
 
     m_splinetrajectoryTime = 0;
     if (hugearc)
-		m_splinetrajectoryVertical = 250;   // weeee
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;   // weeee
 	else
-		m_splinetrajectoryVertical = 5;
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 5;
 
     SetRun();
     m_runSpeed *= 3;
@@ -4604,9 +4603,9 @@ void AIInterface::MoveJumpExt(float x, float y, float z, float o, float speedZ, 
 
 	m_splinetrajectoryTime = 0;
 	if(hugearc)
-		m_splinetrajectoryVertical = 250;   // weeee
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;   // weeee
 	else
-		m_splinetrajectoryVertical = speedZ;
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = speedZ;
 
 	SetRun();
 	m_runSpeed *= 3;

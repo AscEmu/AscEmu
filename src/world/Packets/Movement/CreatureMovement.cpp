@@ -41,6 +41,12 @@ namespace Packets
                 }
 
                 MovePacket.data << pUnit->m_movementManager.m_spline.GetSplineFlags();
+                MovePacket.data << pUnit->m_movementManager.m_spline.m_currentSplineTotalMoveTime;
+
+                if (pUnit->m_movementManager.m_spline.GetSplineFlags() & ::Movement::Spline::SPLINEFLAG_TRAJECTORY)
+                {
+
+                }
             }
         }
     }
