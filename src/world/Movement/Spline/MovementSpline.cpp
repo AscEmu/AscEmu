@@ -11,7 +11,8 @@ namespace Movement
     {
         MoveSpline::MoveSpline() :
             m_currentSplineIndex(0xFFFFFFFF),
-            m_splineFaceType()
+            m_splineFaceType(),
+            m_currentSplineTotalMoveTime(0)
         {
 
         }
@@ -124,10 +125,16 @@ namespace Movement
             return m_currentSplineIndex >= m_splinePoints.size();
         }
 
+        bool MoveSpline::IsSplineEmpty()
+        {
+            return m_splinePoints.size() == 0;
+        }
+
         void MoveSpline::ClearSpline()
         {
             m_splinePoints.clear();
             m_currentSplineIndex = 1;
+            m_currentSplineTotalMoveTime = 0;
 
             m_splineFaceType.SetFlag(MonsterMoveInvalid);
             m_splineFaceType.SetAngle(0);

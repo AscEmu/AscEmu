@@ -334,16 +334,16 @@ class SERVER_DECL AIInterface : public IUpdatable
         void UpdateSpeeds();
 
         //Move flag updating
-        bool Flying() { return m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING) != 0; }
-        void SetFly() { m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_FLYING); }
-        void SetSprint() { if (Flying()) return; m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_SPRINT); UpdateSpeeds(); }
-        void SetRun() { if (Flying()) return; m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_RUN); UpdateSpeeds(); }
-        void SetWalk() { if (Flying()) return; m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_WALK); UpdateSpeeds(); }
+        bool Flying() { return m_Unit->m_movementManager.m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING) != 0; }
+        void SetFly() { m_Unit->m_movementManager.m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_FLYING); }
+        void SetSprint() { if (Flying()) return; m_Unit->m_movementManager.m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_SPRINT); UpdateSpeeds(); }
+        void SetRun() { if (Flying()) return; m_Unit->m_movementManager.m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_RUN); UpdateSpeeds(); }
+        void SetWalk() { if (Flying()) return; m_Unit->m_movementManager.m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE); SetWalkMode(WALKMODE_WALK); UpdateSpeeds(); }
         void SetWalkMode(uint32 mode) { m_walkMode = mode; }
         bool HasWalkMode(uint32 mode) { return m_walkMode == mode; }
-        void StopFlying() { if (Flying()) { m_spline.SetSplineFlag(Movement::Spline::SPLINEFLAG_NONE); SetWalk(); } }
+        void StopFlying() { if (Flying()) { m_Unit->m_movementManager.m_spline.SetSplineFlag(0); SetWalk(); } }
 
-        Movement::Spline::MoveSpline m_spline;
+        //Movement::Spline::MoveSpline m_spline;
         uint32 m_walkMode;
 
         void UpdateMove();
@@ -541,7 +541,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         //float m_currentSplineFinalOrientation;
         float m_splinetrajectoryVertical;
         uint32 m_splinetrajectoryTime;
-        uint32 m_currentSplineTotalMoveTime;
+        //uint32 m_currentSplineTotalMoveTime;
         uint32 m_splinePriority;
 
         //Return position after attacking a mob

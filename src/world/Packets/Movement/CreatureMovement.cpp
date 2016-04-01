@@ -12,9 +12,36 @@ namespace Packets
         void SendMoveToPacket(Unit* pUnit)
         {
             ::Packets::Movement::SmsgMonsterMove MovePacket;
-            MovePacket.m_Guid = pUnit->GetNewGUID();
-            MovePacket.m_unk0 = uint8(0);
-            MovePacket.m_point = ::Movement::Point{ 0.0f, 0.0f, 0.0f };
+            MovePacket.data << pUnit->GetNewGUID();
+            MovePacket.data << uint8(0);
+            if (pUnit->m_movementManager.m_spline.IsSplineEmpty())
+            {
+                MovePacket.data << float(pUnit->GetPositionX());
+                MovePacket.data << float(pUnit->GetPositionY());
+                MovePacket.data << float(pUnit->GetPositionZ());
+                MovePacket.data << uint32(getMSTime());
+                MovePacket.data << uint8(1);
+            }
+            else
+            {
+                auto splineStart = pUnit->m_movementManager.m_spline.GetFirstSplinePoint();
+                MovePacket.data << splineStart.pos.x;
+                MovePacket.data << splineStart.pos.y;
+                MovePacket.data << splineStart.pos.z;
+                MovePacket.data << splineStart.setoff;
+
+                if (pUnit->m_movementManager.m_spline.m_splineFaceType.GetFlag() == ::Movement::Spline::MonsterMoveFacingAngle)
+                {
+                    MovePacket.data << uint8(::Movement::Spline::MonsterMoveFacingAngle);
+                    MovePacket.data << pUnit->m_movementManager.m_spline.m_splineFaceType.GetAngle();
+                }
+                else
+                {
+                    MovePacket.data << uint8(0);
+                }
+
+                MovePacket.data << pUnit->m_movementManager.m_spline.GetSplineFlags();
+            }
         }
     }
 } 

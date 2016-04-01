@@ -31,7 +31,7 @@ namespace Movement
         return m_lastUpdateTick == 0;
     }
 
-    UnitMovementManager::UnitMovementManager() : m_spline(), m_lastUpdateTick(0)
+    UnitMovementManager::UnitMovementManager() : m_spline(::Movement::Spline::SPLINEFLAG_WALKMODE), m_lastUpdateTick(0)
     {
 
     }

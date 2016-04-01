@@ -101,7 +101,6 @@ AIInterface::AIInterface()
     m_last_target_x(0),
     m_last_target_y(0),
     m_splinePriority(SPLINE_PRIORITY_MOVEMENT),
-    m_spline(Movement::Spline::SPLINEFLAG_WALKMODE),
     m_returnX(0),
     m_returnY(0),
     m_returnZ(0),
@@ -132,7 +131,6 @@ AIInterface::AIInterface()
     m_walkSpeed(0),
     m_splinetrajectoryVertical(0),
     m_splinetrajectoryTime(0),
-    m_currentSplineTotalMoveTime(0),
     m_MovementType(MOVEMENTTYPE_NONE),
     m_guardTimer(0)
 {
@@ -1855,10 +1853,10 @@ void AIInterface::SendMoveToPacket()
             data << uint8(0);
         }
 
-        data << m_spline.GetSplineFlags();
-        data << m_currentSplineTotalMoveTime;
+        data << m_Unit->m_movementManager.m_spline.GetSplineFlags();
+        data << m_Unit->m_movementManager.m_spline.m_currentSplineTotalMoveTime;
 
-        if (m_spline.GetSplineFlags() & Movement::Spline::SPLINEFLAG_TRAJECTORY)
+        if (m_Unit->m_movementManager.m_spline.GetSplineFlags() & Movement::Spline::SPLINEFLAG_TRAJECTORY)
         {
             data << m_splinetrajectoryVertical;
             data << m_splinetrajectoryTime;
@@ -1872,7 +1870,7 @@ void AIInterface::SendMoveToPacket()
         data << finalpoint.pos.z;
 
         auto midpoints = m_Unit->m_movementManager.m_spline.GetMidPoints();
-        if (m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING | Movement::Spline::SPLINEFLAG_CATMULLROM))
+        if (m_Unit->m_movementManager.m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING | Movement::Spline::SPLINEFLAG_CATMULLROM))
         {
             for (auto point : midpoints)
             {
@@ -1914,7 +1912,6 @@ bool AIInterface::StopMovement(uint32 time)
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_currentSplineTotalMoveTime = 0;
 
     if (m_Unit->GetMapMgr() != NULL)
         SendMoveToPacket();
@@ -1971,7 +1968,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
     ByteBuffer* splineBuf = new ByteBuffer(20 * 4);
     *splineBuf << uint32(0); // spline flags
     *splineBuf << uint32(timepassed); //Time Passed (start Position)
-    *splineBuf << uint32(m_currentSplineTotalMoveTime); //Total Time
+    *splineBuf << uint32(m_Unit->m_movementManager.m_spline.m_currentSplineTotalMoveTime); //Total Time
     *splineBuf << uint32(0); //Unknown
     *splineBuf << float(0); //unk
     *splineBuf << float(0); //unk
@@ -3672,7 +3669,6 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_currentSplineTotalMoveTime = 0;
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
 
@@ -3729,9 +3725,9 @@ void AIInterface::AddSpline(float x, float y, float z)
 
     uint32 movetime;
 
-    if (m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING))
+    if (m_Unit->m_movementManager.m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING))
         movetime = (uint32)(dist / m_flySpeed);
-    else if (m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE))
+    else if (m_Unit->m_movementManager.m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE))
     {
         if (HasWalkMode(WALKMODE_SPRINT) || HasWalkMode(WALKMODE_RUN))
             movetime = (uint32)(dist / m_runSpeed);
@@ -3739,7 +3735,7 @@ void AIInterface::AddSpline(float x, float y, float z)
             movetime = (uint32)(dist / m_walkSpeed);
         else
         {
-            LOG_ERROR("Added a spline with unhandled spline flag: %X", m_spline.GetSplineFlags());
+            LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
             //setting movetime to default value of 1 second. Change if to either a return; or something more meaningful
             //but don't leave movetime uninitialized...
             movetime = 1.0f;
@@ -3747,7 +3743,7 @@ void AIInterface::AddSpline(float x, float y, float z)
     }
     else
     {
-        LOG_ERROR("Added a spline with unhandled spline flag: %X", m_spline.GetSplineFlags());
+        LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
         //setting movetime to default value of 1 second. Change if to either a return; or something more meaningful
         //but don't leave movetime uninitialized...
         movetime = 1.0f;
@@ -3755,7 +3751,7 @@ void AIInterface::AddSpline(float x, float y, float z)
 
     p.setoff = prev.arrive;
     p.arrive = prev.arrive + movetime;
-    m_currentSplineTotalMoveTime += movetime;
+    m_Unit->m_movementManager.m_spline.m_currentSplineTotalMoveTime += movetime;
 
     m_Unit->m_movementManager.m_spline.AddSplinePoint(p);
 }
@@ -4509,7 +4505,6 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_currentSplineTotalMoveTime = 0;
 
     m_splinetrajectoryTime = 0;
     m_splinetrajectoryVertical = vertical;
@@ -4526,7 +4521,7 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
     AddSpline(x, y, z);
 
-    m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY | Movement::Spline::SPLINEFLAG_KNOCKBACK);
+    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY | Movement::Spline::SPLINEFLAG_KNOCKBACK);
 
     SendMoveToPacket();
 
@@ -4536,10 +4531,10 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
 
 void AIInterface::OnMoveCompleted()
 {
-    uint32 splineflags = m_spline.GetSplineFlags();
+    uint32 splineflags = m_Unit->m_movementManager.m_spline.GetSplineFlags();
 
     //remove flags that are temporary
-    m_spline.RemoveSplineFlag(Movement::Spline::SPLINEFLAG_DONE | Movement::Spline::SPLINEFLAG_TRAJECTORY | Movement::Spline::SPLINEFLAG_KNOCKBACK);
+    m_Unit->m_movementManager.m_spline.RemoveSplineFlag(Movement::Spline::SPLINEFLAG_DONE | Movement::Spline::SPLINEFLAG_TRAJECTORY | Movement::Spline::SPLINEFLAG_KNOCKBACK);
 
     //reset spline priority so other movements can happen
     m_splinePriority = SPLINE_PRIORITY_MOVEMENT;
@@ -4574,7 +4569,6 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_currentSplineTotalMoveTime = 0;
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
 
@@ -4590,7 +4584,7 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
     AddSpline(x, y, z);
 
-    m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY);
+    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY);
 
     SendMoveToPacket();
 
@@ -4605,7 +4599,6 @@ void AIInterface::MoveJumpExt(float x, float y, float z, float o, float speedZ, 
 	//Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_currentSplineTotalMoveTime = 0;
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
 
@@ -4621,7 +4614,7 @@ void AIInterface::MoveJumpExt(float x, float y, float z, float o, float speedZ, 
 	AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
 	AddSpline(x, y, z);
 
-    m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY);
+    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY);
 
 	SendMoveToPacket();
 
@@ -4659,7 +4652,6 @@ bool AIInterface::MoveCharge(float x, float y, float z)
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_currentSplineTotalMoveTime = 0;
 
     SetRun();
 
@@ -4699,11 +4691,10 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
 {
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_currentSplineTotalMoveTime = 0;
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
 
-    m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_DONE);
+    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_DONE);
 
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
     AddSpline(x, y, z);
@@ -4719,11 +4710,10 @@ void AIInterface::MoveFalling(float x, float y, float z, float o /*= 0*/)
 {
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_currentSplineTotalMoveTime = 0;
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
 
-    m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_FALLING);
+    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_FALLING);
 
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
     AddSpline(x, y, z);
