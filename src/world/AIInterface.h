@@ -21,20 +21,6 @@
 #ifndef WOWSERVER_AIINTERFACE_H
 #define WOWSERVER_AIINTERFACE_H
 
-#include "RecastIncludes.hpp"
-#include "IUpdatable.h"
-
-#include <G3D/Vector3.h>
-
-class Unit;
-class MapMgr;
-class Object;
-class Creature;
-class Unit;
-class Player;
-class WorldSession;
-class SpellCastTargets;
-
 /// ms smoother server/client side moving vs less cpu/ less b/w
 #define UNIT_MOVEMENT_INTERPOLATE_INTERVAL 400/*750*/
 
@@ -78,6 +64,14 @@ inline bool inRangeYZX(const float* v1, const float* v2, const float r, const fl
     const float dz = v2[2] - v1[2];
     return (dx * dx + dz * dz) < r * r && fabsf(dy) < h;
 }
+
+class MapMgr;
+class Object;
+class Creature;
+class Unit;
+class Player;
+class WorldSession;
+class SpellCastTargets;
 
 enum WalkMode
 {

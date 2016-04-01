@@ -18,27 +18,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "AIEvents.h"
-
-#include "Unit.h"
-
-#include "CommonTypes.hpp"
-#include "CommonDefines.hpp"
-#include "Player.h"
+#include "StdAfx.h"
 
 #ifndef UNIX
 #include <cmath>
 #endif
-
-#include <G3D/Vector3.h>
-#include "AIInterface.h"
-
-#include "Pet.h"
-#include "Creature.h"
-#include "MapMgr.h"
-#include "WorldCreatorDefines.hpp"
-#include "World.h"
-#include "SpellMgr.h"
 
 AIInterface::AIInterface()
     :
