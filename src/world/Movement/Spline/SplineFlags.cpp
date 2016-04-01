@@ -11,25 +11,27 @@ namespace Movement
     {
         void SplineFlags::UnsetAllFacingFlags()
         {
-            m_splineFlags = m_splineFlags & ~(SPLINEFLAG_FINALPOINT | SPLINEFLAG_FINALTARGET | SPLINEFLAG_FINALANGLE);
+            m_splineFlagsRaw.finalpoint = false;
+            m_splineFlagsRaw.finaltarget = false;
+            m_splineFlagsRaw.finalangle = false;
         }
 
         void SplineFlags::SetFacingPointFlag()
         {
             UnsetAllFacingFlags();
-            m_splineFlags = m_splineFlags | SPLINEFLAG_FINALPOINT;
+            m_splineFlagsRaw.finalpoint = true;
         }
 
         void SplineFlags::SetFacingTargetFlag()
         {
             UnsetAllFacingFlags();
-            m_splineFlags = m_splineFlags | SPLINEFLAG_FINALTARGET;
+            m_splineFlagsRaw.finaltarget = true;
         }
 
         void SplineFlags::SetFacingAngleFlag()
         {
             UnsetAllFacingFlags();
-            m_splineFlags = m_splineFlags | SPLINEFLAG_FINALANGLE;
+            m_splineFlagsRaw.finalangle = true;
         }
         
     }

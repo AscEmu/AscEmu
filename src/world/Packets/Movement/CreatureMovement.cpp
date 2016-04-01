@@ -37,16 +37,24 @@ namespace Packets
                         MovePacket.data << pUnit->m_movementManager.m_spline.m_splineFaceType.GetAngle();
                         break;
                     case ::Movement::Spline::MonsterMoveFacingLocation:
+                        MovePacket.data << uint8(::Movement::Spline::MonsterMoveFacingLocation);
+                        MovePacket.data << pUnit->m_movementManager.m_spline.m_splineFaceType.GetX();
+                        MovePacket.data << pUnit->m_movementManager.m_spline.m_splineFaceType.GetY();
+                        MovePacket.data << pUnit->m_movementManager.m_spline.m_splineFaceType.GetZ();
+                        break;
                     case ::Movement::Spline::MonsterMoveFacingTarget:
+                        MovePacket.data << uint8(::Movement::Spline::MonsterMoveFacingTarget);
+                        MovePacket.data << pUnit->m_movementManager.m_spline.m_splineFaceType.GetGuid();
+                        break;
                     default:
                         MovePacket.data << uint8(0);
                         break;
                 }
 
-                MovePacket.data << pUnit->m_movementManager.m_spline.GetSplineFlags();
+                MovePacket.data << pUnit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.as_uint32();
                 MovePacket.data << pUnit->m_movementManager.m_spline.m_currentSplineTotalMoveTime;
 
-                if (pUnit->m_movementManager.m_spline.GetSplineFlags() & ::Movement::Spline::SPLINEFLAG_TRAJECTORY)
+                if (pUnit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory)
                 {
                     MovePacket.data << pUnit->m_movementManager.m_spline.m_splineTrajectoryVertical;
                     MovePacket.data << pUnit->m_movementManager.m_spline.m_splineTrajectoryTime;
@@ -60,7 +68,7 @@ namespace Packets
                 MovePacket.data << finalpoint.pos.z;
 
                 auto midpoints = pUnit->m_movementManager.m_spline.GetMidPoints();
-                if (pUnit->m_movementManager.m_spline.HasSplineFlag(::Movement::Spline::SPLINEFLAG_FLYING | ::Movement::Spline::SPLINEFLAG_CATMULLROM))
+                if (pUnit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying && pUnit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.catmullrom)
                 {
                     for (auto point : midpoints)
                     {

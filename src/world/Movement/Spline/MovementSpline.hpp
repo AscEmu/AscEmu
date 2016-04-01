@@ -41,10 +41,10 @@ namespace Movement
                 float m_splineTrajectoryVertical;
                 uint32 m_splineTrajectoryTime;
 
-                void SetSplineFlag(uint32 pFlags);
+                /*void SetSplineFlag(uint32 pFlags);
                 uint32 HasSplineFlag(uint32 pFlags);
                 void AddSplineFlag(uint32 pFlags);
-                void RemoveSplineFlag(uint32 pFlags);
+                void RemoveSplineFlag(uint32 pFlags);*/
                 
                 ::Movement::Spline::SplinePoint GetFirstSplinePoint();
                 std::vector<::Movement::Spline::SplinePoint> GetMidPoints();
@@ -71,7 +71,7 @@ namespace Movement
                 bool IsSplineMoveDone();
                 bool IsSplineEmpty();
 
-                uint32 GetSplineFlags();
+                ::Movement::Spline::SplineFlags* GetSplineFlags();
                 MoveSpline();
                 MoveSpline(uint32 pInitialFlags);
         };

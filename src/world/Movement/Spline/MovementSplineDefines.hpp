@@ -15,15 +15,12 @@ namespace Movement
     {
         enum SplineFlagsEnum
         {
-            SPLINEFLAG_NONE = 0x00000000,
-            SPLINEFLAG_FORWARD = 0x00000001,
-            SPLINEFLAG_BACKWARD = 0x00000002,
-            SPLINEFLAG_STRAFE_LEFT = 0x00000004,
-            SPLINEFLAG_STRAFE_RIGHT = 0x00000008,
-            SPLINEFLAG_LEFT = 0x00000010,
-            SPLINEFLAG_RIGHT = 0x00000020,
-            SPLINEFLAG_PITCH_UP = 0x00000040,
-            SPLINEFLAG_PITCH_DOWN = 0x00000080,
+            /* The first 4 bytes of the SplineFlags are actually an animation id 
+             * So the structure is:
+             * uint8: anim_id
+             * uint24: spline_flags
+             *
+             * ok i guess */
             SPLINEFLAG_DONE = 0x00000100,
             SPLINEFLAG_FALLING = 0x00000200,
             SPLINEFLAG_NO_SPLINE = 0x00000400,

@@ -3632,9 +3632,9 @@ void AIInterface::AddSpline(float x, float y, float z)
 
     uint32 movetime;
 
-    if (m_Unit->m_movementManager.m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_FLYING))
+    if (m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying)
         movetime = (uint32)(dist / m_flySpeed);
-    else if (m_Unit->m_movementManager.m_spline.HasSplineFlag(Movement::Spline::SPLINEFLAG_WALKMODE))
+    else if (m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode)
     {
         if (HasWalkMode(WALKMODE_SPRINT) || HasWalkMode(WALKMODE_RUN))
             movetime = (uint32)(dist / m_runSpeed);
@@ -4428,7 +4428,8 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
     AddSpline(x, y, z);
 
-    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY | Movement::Spline::SPLINEFLAG_KNOCKBACK);
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.knockback = true;
 
     SendMoveToPacket();
 
@@ -4438,10 +4439,12 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
 
 void AIInterface::OnMoveCompleted()
 {
-    uint32 splineflags = m_Unit->m_movementManager.m_spline.GetSplineFlags();
+    auto splineFlags = m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw;
 
     //remove flags that are temporary
-    m_Unit->m_movementManager.m_spline.RemoveSplineFlag(Movement::Spline::SPLINEFLAG_DONE | Movement::Spline::SPLINEFLAG_TRAJECTORY | Movement::Spline::SPLINEFLAG_KNOCKBACK);
+    splineFlags.done = false;
+    splineFlags.trajectory = false;
+    splineFlags.knockback = false;
 
     //reset spline priority so other movements can happen
     m_splinePriority = SPLINE_PRIORITY_MOVEMENT;
@@ -4490,7 +4493,7 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
     AddSpline(x, y, z);
 
-    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY);
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
 
     SendMoveToPacket();
 
@@ -4519,7 +4522,7 @@ void AIInterface::MoveJumpExt(float x, float y, float z, float o, float speedZ, 
 	AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
 	AddSpline(x, y, z);
 
-    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_TRAJECTORY);
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
 
 	SendMoveToPacket();
 
@@ -4598,7 +4601,7 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
     m_Unit->m_movementManager.ForceUpdate();
     m_Unit->m_movementManager.m_spline.SetFacing(o);
 
-    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_DONE);
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.done = true;
 
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
     AddSpline(x, y, z);
@@ -4616,7 +4619,7 @@ void AIInterface::MoveFalling(float x, float y, float z, float o /*= 0*/)
     m_Unit->m_movementManager.ForceUpdate();
     m_Unit->m_movementManager.m_spline.SetFacing(o);
 
-    m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_FALLING);
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.done = true;
 
     AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
     AddSpline(x, y, z);

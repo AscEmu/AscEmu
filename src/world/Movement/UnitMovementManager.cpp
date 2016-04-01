@@ -31,6 +31,11 @@ namespace Movement
         return m_lastUpdateTick == 0;
     }
 
+    bool UnitMovementManager::IsFlying()
+    {
+        return m_spline.GetSplineFlags()->m_splineFlagsRaw.flying;
+    }
+
     UnitMovementManager::UnitMovementManager() : m_spline(::Movement::Spline::SPLINEFLAG_WALKMODE), m_lastUpdateTick(0)
     {
 

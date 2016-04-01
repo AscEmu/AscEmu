@@ -27,6 +27,8 @@ namespace Movement
             
             bool IsMovementFinished();
 
+            bool IsFlying();
+
             UnitMovementManager();
             UnitMovementManager(Spline::MoveSpline pSpline);
     };
