@@ -29,7 +29,7 @@ namespace Packets
                 uint32 m_pointCount;
                 std::vector<::Movement::Point> m_locations;
 
-                SmsgMonsterMove() {};
+                SmsgMonsterMove() : ManagedPacket(SMSG_MONSTER_MOVE, 100) {};
                 SmsgMonsterMove(uint32 pSize) : ManagedPacket(SMSG_MONSTER_MOVE, pSize) {}
         };
     }
