@@ -17,19 +17,19 @@ namespace Movement
         void SplineFlags::SetFacingPointFlag()
         {
             UnsetAllFacingFlags();
-            m_splineFlags = m_splineFlags & SPLINEFLAG_FINALPOINT;
+            m_splineFlags = m_splineFlags | SPLINEFLAG_FINALPOINT;
         }
 
         void SplineFlags::SetFacingTargetFlag()
         {
             UnsetAllFacingFlags();
-            m_splineFlags = m_splineFlags & SPLINEFLAG_FINALTARGET;
+            m_splineFlags = m_splineFlags | SPLINEFLAG_FINALTARGET;
         }
 
         void SplineFlags::SetFacingAngleFlag()
         {
             UnsetAllFacingFlags();
-            m_splineFlags = m_splineFlags & SPLINEFLAG_FINALANGLE;
+            m_splineFlags = m_splineFlags | SPLINEFLAG_FINALANGLE;
         }
         
     }

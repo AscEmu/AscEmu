@@ -3589,8 +3589,7 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
+    m_Unit->m_movementManager.m_spline.SetFacing(o);
     //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingLocation);
     //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetX(x);
     //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetY(y);
@@ -4493,8 +4492,7 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
+    m_Unit->m_movementManager.m_spline.SetFacing(o);
 
     m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
     if (hugearc)
@@ -4523,8 +4521,7 @@ void AIInterface::MoveJumpExt(float x, float y, float z, float o, float speedZ, 
 	//Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
+    m_Unit->m_movementManager.m_spline.SetFacing(o);
 
     m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
 	if(hugearc)
@@ -4615,8 +4612,7 @@ void AIInterface::MoveTeleport(float x, float y, float z, float o /*= 0*/)
 {
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
+    m_Unit->m_movementManager.m_spline.SetFacing(o);
 
     m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_DONE);
 
@@ -4634,8 +4630,7 @@ void AIInterface::MoveFalling(float x, float y, float z, float o /*= 0*/)
 {
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
-    m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
+    m_Unit->m_movementManager.m_spline.SetFacing(o);
 
     m_Unit->m_movementManager.m_spline.AddSplineFlag(Movement::Spline::SPLINEFLAG_FALLING);
 
