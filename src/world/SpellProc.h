@@ -21,9 +21,8 @@
 #ifndef _SPELL_PROC_H
 #define _SPELL_PROC_H
 
-#include "Object.h"
-
 class SpellProc;
+class Object;
 class Unit;
 
 #define SPELL_PROC_FACTORY_FUNCTION(T) \
