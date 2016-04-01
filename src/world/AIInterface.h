@@ -21,6 +21,12 @@
 #ifndef WOWSERVER_AIINTERFACE_H
 #define WOWSERVER_AIINTERFACE_H
 
+#include "Unit.h"
+#include "RecastIncludes.hpp"
+#include "IUpdatable.h"
+
+#include <G3D/Vector3.h>
+
 /// ms smoother server/client side moving vs less cpu/ less b/w
 #define UNIT_MOVEMENT_INTERPOLATE_INTERVAL 400/*750*/
 
