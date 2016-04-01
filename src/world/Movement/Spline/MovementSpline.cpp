@@ -21,27 +21,32 @@ namespace Movement
 
         MoveSpline::MoveSpline(uint32 pInitialFlags)
         {
-            m_splineFlags = pInitialFlags;
+            m_splineFlags.m_splineFlags = pInitialFlags;
         }
 
         void MoveSpline::SetSplineFlag(uint32 pFlags)
         {
-            m_splineFlags = pFlags;
+            m_splineFlags.m_splineFlags = pFlags;
         }
 
         uint32 MoveSpline::HasSplineFlag(uint32 pFlags)
         {
-            return m_splineFlags & pFlags;
+            return m_splineFlags.m_splineFlags & pFlags;
         }
 
         void MoveSpline::AddSplineFlag(uint32 pFlags)
         {
-            m_splineFlags |= pFlags;
+            m_splineFlags.m_splineFlags |= pFlags;
         }
 
         void MoveSpline::RemoveSplineFlag(uint32 pFlags)
         {
-            m_splineFlags &= ~pFlags;
+           m_splineFlags.m_splineFlags &= ~pFlags;
+        }
+
+        uint32 MoveSpline::GetSplineFlags()
+        {
+            return m_splineFlags.m_splineFlags;
         }
 
         ::Movement::Spline::SplinePoint MoveSpline::GetFirstSplinePoint()

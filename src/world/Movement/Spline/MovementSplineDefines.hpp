@@ -13,7 +13,7 @@ namespace Movement
 {
     namespace Spline
     {
-        enum SplineFlags
+        enum SplineFlagsEnum
         {
             SPLINEFLAG_NONE = 0x00000000,
             SPLINEFLAG_FORWARD = 0x00000001,

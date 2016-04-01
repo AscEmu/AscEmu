@@ -93,6 +93,7 @@ set(sources
 	MiscHandler.cpp
    Movement/MovementCommon.cpp
    Movement/Spline/MovementSpline.cpp
+   Movement/Spline/SplineFlags.cpp
    Movement/UnitMovementManager.cpp
    Packets/Movement/CreatureMovement.cpp
    Packets/ManagedPacket.cpp
@@ -241,6 +242,7 @@ set(headers
    Movement/UnitMovementManager.hpp
    Movement/Spline/MovementSpline.hpp
    Movement/Spline/MovementSplineDefines.hpp
+   Movement/Spline/SplineFlags.hpp
    Packets/Movement/CreatureMovement.hpp
    Packets/Movement/SmsgMonsterMove.hpp
    Packets/ManagedPacket.hpp
