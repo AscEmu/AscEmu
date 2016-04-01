@@ -54,7 +54,7 @@ namespace Packets
 
                 MovePacket.data << uint32(pUnit->m_movementManager.m_spline.GetSplinePoints()->size() - 1);
                 
-                ::Movement::Spline::SplinePoint & finalpoint = pUnit->m_movementManager.m_spline.GetLastSplinePoint();
+                auto finalpoint = pUnit->m_movementManager.m_spline.GetLastSplinePoint();
                 MovePacket.data << finalpoint.pos.x;
                 MovePacket.data << finalpoint.pos.y;
                 MovePacket.data << finalpoint.pos.z;

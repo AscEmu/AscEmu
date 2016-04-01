@@ -1882,7 +1882,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
     if (m_Unit->m_movementManager.m_spline.IsSplineMoveDone())
         return;
 
-    ::Movement::Spline::SplinePoint & start = m_Unit->m_movementManager.m_spline.GetFirstSplinePoint();
+    auto start = m_Unit->m_movementManager.m_spline.GetFirstSplinePoint();
     uint32 timepassed = getMSTime() - start.setoff;
 
     ByteBuffer* splineBuf = new ByteBuffer(20 * 4);
@@ -1899,7 +1899,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
     if (m_Unit->m_movementManager.m_spline.GetSplinePoints()->size() < 4)  //client requires 4, lets generate shit for it
     {
         *splineBuf << uint32(m_Unit->m_movementManager.m_spline.GetSplinePoints()->size() + 1 /* 1 fake start */ + 2 /* 2 fake ends */); //Spline Count
-        ::Movement::Spline::SplinePoint & end = m_Unit->m_movementManager.m_spline.GetLastSplinePoint();
+        auto end = m_Unit->m_movementManager.m_spline.GetLastSplinePoint();
 
         *splineBuf << start.pos.x << start.pos.y << start.pos.z;
         auto splinePoints = *m_Unit->m_movementManager.m_spline.GetSplinePoints();
@@ -1925,7 +1925,7 @@ void AIInterface::SendCurrentMove(Player* plyr)
             *splineBuf << point.pos.y;
             *splineBuf << point.pos.z;
         }
-        ::Movement::Spline::SplinePoint & end = m_Unit->m_movementManager.m_spline.GetLastSplinePoint();
+        auto end = m_Unit->m_movementManager.m_spline.GetLastSplinePoint();
         *splineBuf << uint8(0);
         *splineBuf << end.pos.x << end.pos.y << end.pos.z;
     }
@@ -3639,7 +3639,7 @@ void AIInterface::AddSpline(float x, float y, float z)
         return;
     }
 
-    ::Movement::Spline::SplinePoint & prev = m_Unit->m_movementManager.m_spline.GetLastSplinePoint();
+    auto prev = m_Unit->m_movementManager.m_spline.GetLastSplinePoint();
 
     float dx = x - prev.pos.x;
     float dy = y - prev.pos.y;
