@@ -3591,6 +3591,10 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
     m_Unit->m_movementManager.ForceUpdate();
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingAngle);
     m_Unit->m_movementManager.m_spline.m_splineFaceType.SetAngle(o);
+    //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingLocation);
+    //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetX(x);
+    //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetY(y);
+    //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetZ(z);
 
     //Add new points
     if (sWorld.Pathfinding)
