@@ -56,7 +56,7 @@ class GameObject;
 class Pet;
 class Spell;
 class UpdateMask;
-class EventableObject;
+
 
 enum HIGHGUID_TYPE
 {
