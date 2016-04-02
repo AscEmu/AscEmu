@@ -24,8 +24,6 @@
 #include "StdAfx.h"
 #include "UnitDefines.hpp"
 
-class Object;
-
 #include "LootMgr.h"
 
 class SpellProc;

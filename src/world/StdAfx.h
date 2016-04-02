@@ -143,6 +143,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Entities/Summons/WildSummon.h"
 #include "DynamicObject.h"
 #include "GameObject.h"
+#include "CObjectFactory.h"
 #include "CRitual.h"
 #include "Group.h"
 #include "Guild.h"

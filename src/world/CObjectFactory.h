@@ -22,10 +22,8 @@
 #ifndef _COBJECT_FACTORY_H
 #define _COBJECT_FACTORY_H
 
-#include "Object.h"
-#include "GameObject.h"
-
 class Object;
+class GameObject;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \brief Factory class that instantiates and destroys all Objects

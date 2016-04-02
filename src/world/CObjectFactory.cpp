@@ -19,9 +19,7 @@
  *
  */
 
-#include "CObjectFactory.h"
-#include "Object.h"
-#include "ObjectStorage.h"
+#include "StdAfx.h"
 
 GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
 {
