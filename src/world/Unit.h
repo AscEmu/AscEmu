@@ -24,7 +24,6 @@
 #include "StdAfx.h"
 #include "UnitDefines.hpp"
 
-class Object;
 #include "Object.h"
 
 #include "LootMgr.h"
@@ -75,6 +74,8 @@ class Aura;
 class Spell;
 class AIInterface;
 class GameObject;
+class Pet;
+class Group;
 
 struct CreatureInfo;
 struct FactionDBC;
