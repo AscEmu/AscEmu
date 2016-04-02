@@ -24,7 +24,7 @@
 #include "StdAfx.h"
 #include "UnitDefines.hpp"
 
-#include "Object.h"
+class Object;
 
 #include "LootMgr.h"
 
