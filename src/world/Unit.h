@@ -29,11 +29,9 @@
 #include "LootMgr.h"
 
 class SpellProc;
-#include "SpellProc.h"
-
 class AIInterface;
 class DynamicObject;
-class SummonHandler;
+
 #include "SummonHandler.h"
 
 class Vehicle;
