@@ -19,8 +19,9 @@
  *
  */
 
-#include "Creature.h"
 #include "StdAfx.h"
+#include "Creature.h"
+#include "Unit.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994
