@@ -22,6 +22,8 @@
 #include "Unit.h"
 #include "DBC/DBCStores.h"
 #include "QuestLogEntry.hpp"
+#include "EventableObject.h"
+#include "IUpdatable.h"
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {
