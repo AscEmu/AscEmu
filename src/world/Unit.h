@@ -29,6 +29,7 @@
 class SpellProc;
 class AIInterface;
 class DynamicObject;
+class Object;
 
 #include "SummonHandler.h"
 

@@ -17,10 +17,9 @@
  *
  */
 
+#include "StdAfx.h"
 #include "PlayerCache.h"
-#include "Object.h"
 #include "WorldPacket.h"
-#include "Unit.h"
 
 void PlayerCache::SendPacket(WorldPacket & p) {
     WorldPacket* data = new WorldPacket(p);
