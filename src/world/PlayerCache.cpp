@@ -18,6 +18,7 @@
  */
 
 #include "PlayerCache.h"
+#include "Object.h"
 #include "WorldPacket.h"
 #include "Unit.h"
 
