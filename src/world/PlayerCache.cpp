@@ -18,6 +18,7 @@
  */
 
 #include "PlayerCache.h"
+#include "WorldPacket.h"
 
 void PlayerCache::SendPacket(WorldPacket & p) {
     WorldPacket* data = new WorldPacket(p);
