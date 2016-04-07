@@ -5784,12 +5784,8 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
         if (m_deathVision) // if we have arena death-vision we can see everything
             return true;
 
-        if (obj->IsCreature())
-        {
-            Creature* uObj = static_cast<Creature*>(obj);
-
-            return uObj->isSpiritHealer(); // we can't see any NPCs except spirit-healers
-        }
+        if (obj->IsCreature() && static_cast<Creature*>(obj)->isSpiritHealer())
+            return true; // we can see spirit healers
 
         return false;
     }
