@@ -18,10 +18,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "StdAfx.h"
 #include "SummonHandler.h"
 #include "LootMgr.h"
 #include "Vehicle.h"
-#include "StdAfx.h"
+#include "EventableObject.h"
+
 
 static float AttackToRageConversionTable[PLAYER_LEVEL_CAP + 1] =
 {
