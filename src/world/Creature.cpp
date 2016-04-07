@@ -19,9 +19,9 @@
  *
  */
 
+#include "StdAfx.h"
 #include "QuestMgr.h"
 #include "Quest.h"
-#include "StdAfx.h"
 
 
 Creature::Creature(uint64 guid)
