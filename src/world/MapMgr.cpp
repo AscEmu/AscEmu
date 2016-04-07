@@ -19,14 +19,15 @@
  *
  */
 
+#include "StdAfx.h"
+
 #include "TLSObject.h"
 #include "CellHandler.h"
 #include "CThreads.h"
 #include "WorldStatesHandler.h"
 #include "CrashHandler.h"
 #include "Entities/Summons/Summon.h"
-
-#include "StdAfx.h"
+#include "Unit.h"
 
 
 Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
