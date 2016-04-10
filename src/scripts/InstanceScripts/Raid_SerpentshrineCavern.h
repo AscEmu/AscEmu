@@ -67,7 +67,7 @@ enum CreatureSpells
 {
 };
 
-static LocationExtra ElementalSpawnPoints[] =
+static Movement::Location ElementalSpawnPoints[] =
 {
     { 8.3f, -835.3f, 21.9f, 5 },
     { 53.4f, -835.3f, 21.9f, 4.5f },
@@ -79,7 +79,7 @@ static LocationExtra ElementalSpawnPoints[] =
     { -58.9f, -901.6f, 21.5f, 6.0f }
 };
 
-static LocationExtra ElementalSpawnPoints2[] =
+static Movement::Location ElementalSpawnPoints2[] =
 {
     { 16.305f, -867.82f, 41.09f, 0 },
     { 43.853f, -868.338f, 41.097f, 0 },
@@ -91,7 +91,7 @@ static LocationExtra ElementalSpawnPoints2[] =
     { -25.37f, -910.266f, 41.09f, 0 }
 };
 
-static LocationExtra CoilfangEliteSpawnPoints[] =
+static Movement::Location CoilfangEliteSpawnPoints[] =
 {
     { 14.837f, -949.106f, 41.53f, 0 },
     { 14.857f, -897.68f, 41.536f, 0 },
