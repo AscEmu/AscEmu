@@ -11,8 +11,10 @@ submitting issues and all these awsome suggestions. You keep this project alive.
 Thanks go out to the following people for patches/code contributed to AscEmu.
 Not everyone can handle this source (or can invest so much effort) so these
 people are awsome:
-- armm77
+
 - aaron02
+- AriDEV
+- armm77
 - Cronicman
 - DankoDj
 - Evairfairy
