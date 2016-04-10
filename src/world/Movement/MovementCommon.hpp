@@ -10,6 +10,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Movement
 {
+    //Zyres: Change this to: 0 = walk, 1 = run, 3 = fly
+    enum WaypointMoveType
+    {
+        WP_MOVE_TYPE_WALK = 0,
+        WP_MOVE_TYPE_RUN = 256,
+        WP_MOVE_TYPE_FLY = 768
+    };
+
     struct Point
     {
         float x;
@@ -42,7 +50,7 @@ namespace Movement
             z = 0;
             o = 0;
             waittime = 0;
-            flags = 0;
+            flags = WP_MOVE_TYPE_WALK;
             forwardemoteoneshot = false;
             forwardemoteid = 0;
             backwardemoteoneshot = false;

@@ -281,7 +281,7 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
     {
         SetMoveType(Move_DontMoveWP);
         for (uint8 i = 1; i < MAX_THRALLWP1; ++i)
-            AddWaypoint(CreateWaypoint(i, 0, Flag_Walk, ThrallWP1[i]));
+            AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_WALK, ThrallWP1[i]));
 
         m_currentWp = 0;
     }

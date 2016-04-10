@@ -39,14 +39,14 @@ class OnyxiaAI : public CreatureAIScript
             m_aoeFearCooldown = 30;
             m_fCastCount = 5;
             _unit->GetAIInterface()->setMoveType(4);
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 2000, Flag_Run));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 2000, Movement::WP_MOVE_TYPE_RUN));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Movement::WP_MOVE_TYPE_FLY));
 
             infoFear = dbcSpell.LookupEntry(AOE_FEAR);
             infoCleave = dbcSpell.LookupEntry(CLEAVE);

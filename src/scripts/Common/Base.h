@@ -74,6 +74,7 @@ enum BehaviorType
     Behavior_CallForHelp
 };
 
+//Zyres: WaypointMoveScript
 enum MoveType
 {
     Move_None,
@@ -83,13 +84,6 @@ enum MoveType
     Move_DontMoveWP,
     Move_Quest,
     Move_ForwardThenStop
-};
-
-enum MoveFlag
-{
-    Flag_Walk = 0,
-    Flag_Run = 256,
-    Flag_Fly = 768
 };
 
 struct EmoteDesc

@@ -102,6 +102,7 @@ enum AIType
     AITYPE_PASSIVE
 };
 
+//Zyres: WaypointMoveScript
 enum MovementType
 {
     MOVEMENTTYPE_NONE,

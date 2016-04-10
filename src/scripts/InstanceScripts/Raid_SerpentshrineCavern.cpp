@@ -1816,7 +1816,7 @@ class VashjAI : public CreatureAIScript
             wp->z = 42.900517f;
             wp->o = 0.0f;
             wp->waittime = 0;
-            wp->flags = Flag_Run;
+            wp->flags = Movement::WP_MOVE_TYPE_RUN;
             wp->forwardemoteoneshot = false;
             wp->forwardemoteid = 0;
             wp->backwardemoteoneshot = false;
@@ -2004,7 +2004,7 @@ class VashjAI : public CreatureAIScript
                     wp->z = ElementalSpawnPoints2[pos].z;
                     wp->o = ElementalSpawnPoints2[pos].o;
                     wp->waittime = 0;
-                    wp->flags = Flag_Walk;
+                    wp->flags = Movement::WP_MOVE_TYPE_WALK;
                     wp->forwardemoteoneshot = false;
                     wp->forwardemoteid = 0;
                     wp->backwardemoteoneshot = false;
@@ -2020,7 +2020,7 @@ class VashjAI : public CreatureAIScript
                     wp->z = 42.900517f;
                     wp->o = 0.0f;
                     wp->waittime = 0;
-                    wp->flags = Flag_Walk;
+                    wp->flags = Movement::WP_MOVE_TYPE_WALK;
                     wp->forwardemoteoneshot = false;
                     wp->forwardemoteid = 0;
                     wp->backwardemoteoneshot = false;
@@ -2370,18 +2370,18 @@ class ToxicSporeBatAI : public CreatureAIScript
         {
             // Waypoints
             m_entry = pCreature->GetEntry();
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(0, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(9, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, Flag_Fly));
-            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, Flag_Fly));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(0, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(2, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(5, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(6, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(9, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(10, 0, Movement::WP_MOVE_TYPE_FLY));
+            _unit->GetAIInterface()->addWayPoint(CreateWaypoint(11, 0, Movement::WP_MOVE_TYPE_FLY));
 
             // Spells
 

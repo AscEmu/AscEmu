@@ -410,7 +410,7 @@ class DofNaralexAI : public MoonScriptBossAI
             Mutanus = nullptr;
 
             for (uint8 i = 1; i < 39; i++)
-                AddWaypoint(CreateWaypoint(i, 0, Flag_Run, ToNaralex[i]));
+                AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToNaralex[i]));
             SetMoveType(Move_DontMoveWP);
 
             // Awakening Spell

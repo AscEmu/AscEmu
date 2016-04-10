@@ -4338,7 +4338,7 @@ class AkamaAI : public MoonScriptBossAI
 
             for (uint8 i = 1; i < AKAMA_WAYPOINT_SIZE; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, 0, Flag_Run, ToIllidan[i]));
+                AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToIllidan[i]));
             }
 
             _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -5183,7 +5183,7 @@ class MaievAI : public MoonScriptBossAI
                                 pCoords.z = IllidanZ;
                                 pCoords.o = 0.0f;
 
-                                pAkamaAI->AddWaypoint(CreateWaypoint(20, 0, Flag_Run, pCoords));
+                                pAkamaAI->AddWaypoint(CreateWaypoint(20, 0, Movement::WP_MOVE_TYPE_RUN, pCoords));
                                 pAkamaAI->ForceWaypointMove(20);
                             }
                         }
@@ -5334,7 +5334,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
 
             for (uint8 i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, 0, Flag_Fly, ForIllidan[i]));
+                AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY, ForIllidan[i]));
             }
 
             _unit->SetBaseAttackTime(RANGED, 1800);

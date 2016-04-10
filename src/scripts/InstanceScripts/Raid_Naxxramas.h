@@ -2844,7 +2844,7 @@ class SapphironAI : public CreatureAIScript
 
     SapphironAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 3000, Flag_Run));
+        _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 3000, Movement::WP_MOVE_TYPE_RUN));
 
         nrspells = 2;
         for (uint8 i = 0; i < nrspells; i++)

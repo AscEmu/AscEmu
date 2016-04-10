@@ -9,8 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 static Movement::LocationWithFlag AttackerWP[] =
 {
     {}, // 0
-    { 1858.077f, 804.8599f, 44.00872f, 0.0f, Flag_Run }, // Run to middle of entrance platform
-    { 1836.152f, 804.7064f, 44.2534f, 0.0f, Flag_Run } // Run to door to attack it
+    { 1858.077f, 804.8599f, 44.00872f, 0.0f, Movement::WP_MOVE_TYPE_RUN }, // Run to middle of entrance platform
+    { 1836.152f, 804.7064f, 44.2534f, 0.0f, Movement::WP_MOVE_TYPE_RUN } // Run to door to attack it
 };
 
 const Movement::Location IntroPortals[] =

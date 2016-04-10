@@ -346,7 +346,7 @@ class Volkhan : public MoonScriptCreatureAI
         m_cVolkhanWP.o = 2.235341f;
 
         SetMoveType(Move_DontMoveWP);
-        AddWaypoint(CreateWaypoint(1, 0, Flag_Run, m_cVolkhanWP));
+        AddWaypoint(CreateWaypoint(1, 0, Movement::WP_MOVE_TYPE_RUN, m_cVolkhanWP));
         mStompTimer = INVALIDATE_TIMER;
         mPhase = 0;
         m_bStomp = false;

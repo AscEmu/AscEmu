@@ -3642,7 +3642,7 @@ class NightbaneAI : public CreatureAIScript
 
             for (uint8 i = 1; i < 5; i++)
             {
-                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Flag_Fly));
+                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY));
             }
 
             m_phase = 0;

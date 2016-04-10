@@ -1462,9 +1462,9 @@ class SethekkTalonLordAI : public CreatureAIScript
 static Movement::LocationWithFlag LakkaWaypoint[] =
 {
     {},
-    { -157.200f, 159.922f, 0.010f, 0.104f, Flag_Walk },
-    { -128.318f, 172.483f, 0.009f, 0.222f, Flag_Walk },
-    { -73.749f, 173.171f, 0.009f, 6.234f, Flag_Walk },
+    { -157.200f, 159.922f, 0.010f, 0.104f, Movement::WP_MOVE_TYPE_WALK },
+    { -128.318f, 172.483f, 0.009f, 0.222f, Movement::WP_MOVE_TYPE_WALK },
+    { -73.749f, 173.171f, 0.009f, 6.234f, Movement::WP_MOVE_TYPE_WALK },
 };
 
 class LakkaAI : public MoonScriptCreatureAI

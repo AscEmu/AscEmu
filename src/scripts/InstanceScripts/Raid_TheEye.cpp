@@ -1944,7 +1944,7 @@ class AlarAI : public CreatureAIScript
             // Waypoints
             for (uint8 i = 1; i < 12; i++)
             {
-                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Flag_Fly));
+                _unit->GetAIInterface()->addWayPoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_FLY));
             }
 
             // Spells
@@ -3007,9 +3007,9 @@ const LocationExtra Gates[] =
 const Movement::LocationWithFlag Waypoints[] =
 {
     {  },
-    { 794.072998f,  0.214634f, 48.728500f, 0.0f, Flag_Run },
-    { 794.052998f,  0.214634f, 75.728500f, 0.0f, Flag_Fly },
-    { 794.032998f,  0.214634f, 48.728500f, 0.0f, Flag_Fly }
+    { 794.072998f,  0.214634f, 48.728500f, 0.0f, Movement::WP_MOVE_TYPE_RUN },
+    { 794.052998f,  0.214634f, 75.728500f, 0.0f, Movement::WP_MOVE_TYPE_FLY },
+    { 794.032998f,  0.214634f, 48.728500f, 0.0f, Movement::WP_MOVE_TYPE_FLY }
 };
 
 const LocationExtra KaelthasWeapons[] =

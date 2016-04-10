@@ -94,10 +94,10 @@ struct WPWaitTimes
 const WPWaitTimes DeathbringerJovaanWP[] =
 {
     { { }, 0},
-    { { -3310.743896f, 2951.929199f, 171.132538f, 5.054039f, Flag_Walk }, 0 },
-    { { -3308.501221f, 2940.098389f, 171.025772f, 5.061895f, Flag_Walk }, 0 },
-    { { -3306.261203f, 2933.843210f, 170.934145f, 5.474234f, Flag_Walk }, 44000 },
-    { { -3310.743896f, 2951.929199f, 171.132538f, 1.743588f, Flag_Walk }, 0 }
+    { { -3310.743896f, 2951.929199f, 171.132538f, 5.054039f, Movement::WP_MOVE_TYPE_WALK }, 0 },
+    { { -3308.501221f, 2940.098389f, 171.025772f, 5.061895f, Movement::WP_MOVE_TYPE_WALK }, 0 },
+    { { -3306.261203f, 2933.843210f, 170.934145f, 5.474234f, Movement::WP_MOVE_TYPE_WALK }, 44000 },
+    { { -3310.743896f, 2951.929199f, 171.132538f, 1.743588f, Movement::WP_MOVE_TYPE_WALK }, 0 }
 };
 
 class DeathbringerJovaanAI : public MoonScriptCreatureAI
@@ -351,7 +351,7 @@ class EnslavedNetherwingDrakeAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI, MoonScriptCreatureAI);
         EnslavedNetherwingDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Flag_Fly };
+            Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Movement::WP_MOVE_TYPE_FLY };
             SetCanMove(false);
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
             AddWaypoint(CreateWaypoint(1, 0, WayPoint));

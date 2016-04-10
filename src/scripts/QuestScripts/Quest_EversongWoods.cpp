@@ -105,7 +105,7 @@ public:
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             _unit->Despawn(10 * 60 * 1000, 1000); //if failed allow other players to do quest from beggining
             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, ANVILWARD_SAY_2);
-            _unit->GetAIInterface()->setMoveType(Flag_Run);
+            _unit->GetAIInterface()->setMoveType(Movement::WP_MOVE_TYPE_RUN);
             _unit->GetAIInterface()->getNextTarget();
         }
         if (iWaypointId == 10)
