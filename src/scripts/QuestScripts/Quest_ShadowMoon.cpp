@@ -128,7 +128,7 @@ class DeathbringerJovaanAI : public MoonScriptCreatureAI
                             {
                                 pRazuunAI->GetUnit()->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                                 pRazuunAI->SetCanEnterCombat(false);
-                                pRazuunAI->SetMoveType(Move_DontMoveWP);
+                                pRazuunAI->SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                                 pRazuunAI->SetCanMove(false);
                             }
                             _unit->SetStandState(STANDSTATE_KNEEL);

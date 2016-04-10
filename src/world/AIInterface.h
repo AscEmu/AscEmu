@@ -102,18 +102,6 @@ enum AIType
     AITYPE_PASSIVE
 };
 
-//Zyres: WaypointMoveScript
-enum MovementType
-{
-    MOVEMENTTYPE_NONE,
-    MOVEMENTTYPE_RANDOMWP,
-    MOVEMENTTYPE_CIRCLEWP,
-    MOVEMENTTYPE_WANTEDWP,
-    MOVEMENTTYPE_DONTMOVEWP,
-    MOVEMENTTYPE_QUEST = 10,
-    MOVEMENTTYPE_FORWARDTHENSTOP = 11
-};
-
 /*struct AI_Target
 {
     Unit* target;
@@ -231,8 +219,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         virtual ~AIInterface();
 
         // Misc
-        void Init(Unit* un, AIType at, MovementType mt);
-        void Init(Unit* un, AIType at, MovementType mt, Unit* owner);   /// used for pets
+        void Init(Unit* un, AIType at, Movement::WaypointMovementScript mt);
+        void Init(Unit* un, AIType at, Movement::WaypointMovementScript mt, Unit* owner);   /// used for pets
         Unit* GetUnit() { return m_Unit; }
         Unit* GetPetOwner() { return m_PetOwner; }
         void DismissPet();
@@ -567,7 +555,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32 m_FearTimer;
         uint32 m_WanderTimer;
 
-        MovementType m_MovementType;
+        Movement::WaypointMovementScript m_MovementType;
         MovementState m_MovementState;
         uint32 m_guardTimer;
         int32 m_currentHighestThreat;

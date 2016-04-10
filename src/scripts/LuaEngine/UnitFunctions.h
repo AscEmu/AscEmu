@@ -901,7 +901,7 @@ class LuaUnit
             int id = luaL_checkinteger(L, 1);
         if (id)
         {
-            ptr->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
+            ptr->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
             ptr->GetAIInterface()->setWaypointToMove(id);
         }
         return 0;

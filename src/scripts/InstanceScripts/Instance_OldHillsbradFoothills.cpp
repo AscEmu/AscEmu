@@ -279,7 +279,7 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
     MOONSCRIPT_FACTORY_FUNCTION(ThrallAI, MoonScriptCreatureAI);
     ThrallAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
     {
-        SetMoveType(Move_DontMoveWP);
+        SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         for (uint8 i = 1; i < MAX_THRALLWP1; ++i)
             AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_WALK, ThrallWP1[i]));
 
@@ -293,7 +293,7 @@ class ThrallAI : public MoonScriptCreatureAI // this will be replaced with escor
             pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
 
         _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-        SetMoveType(Move_ForwardThenStop);
+        SetMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
     }
 
     void OnCombatStop(Unit* pTarget)

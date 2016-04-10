@@ -75,7 +75,7 @@ enum BehaviorType
 };
 
 //Zyres: WaypointMoveScript
-enum MoveType
+/*enum MoveType
 {
     Move_None,
     Move_RandomWP,
@@ -84,7 +84,7 @@ enum MoveType
     Move_DontMoveWP,
     Move_Quest,
     Move_ForwardThenStop
-};
+};*/
 
 struct EmoteDesc
 {
@@ -422,8 +422,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void ForceWaypointMove(uint32 pWaypointId);
         void SetWaypointToMove(uint32 pWaypointId);
         void StopWaypointMovement();
-        void SetMoveType(MoveType pMoveType);
-        MoveType GetMoveType();
+        void SetMoveType(Movement::WaypointMovementScript pMoveType);
         uint32 GetCurrentWaypoint();
         size_t GetWaypointCount();
         bool HasWaypoints();

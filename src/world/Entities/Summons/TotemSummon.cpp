@@ -80,7 +80,7 @@ void TotemSummon::Load(CreatureProto* proto, Unit* owner, LocationVector & posit
         HealDoneMod[school] = owner->HealDoneMod[school];
     }
 
-    m_aiInterface->Init(this, AITYPE_TOTEM, MOVEMENTTYPE_NONE, owner);
+    m_aiInterface->Init(this, AITYPE_TOTEM, Movement::WP_MOVEMENT_SCRIPT_NONE, owner);
     DisableAI();
 }
 

@@ -805,7 +805,7 @@ void Creature::EnslaveExpire()
             break;
     };
 
-    GetAIInterface()->Init(((Unit*)this), AITYPE_AGRO, MOVEMENTTYPE_NONE);
+    GetAIInterface()->Init(((Unit*)this), AITYPE_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
 
     UpdateOppFactionSet();
     UpdateSameFactionSet();
@@ -848,7 +848,7 @@ void Creature::OnRemoveInRangeObject(Object* pObj)
         // we lost our escorter, return to the spawn.
         m_aiInterface->StopMovement(10000);
         m_escorter = NULL;
-        GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
+        GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         //DestroyCustomWaypointMap(); //function not needed at all, crashing on delete(*int)
         //GetAIInterface()->deleteWaypoints();//this can repleace DestroyCustomWaypointMap, but it's crashing on delete too
         Despawn(1000, 1000);

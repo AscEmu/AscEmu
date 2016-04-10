@@ -18,6 +18,17 @@ namespace Movement
         WP_MOVE_TYPE_FLY = 768
     };
 
+    enum WaypointMovementScript
+    {
+        WP_MOVEMENT_SCRIPT_NONE,
+        WP_MOVEMENT_SCRIPT_RANDOMWP,
+        WP_MOVEMENT_SCRIPT_CIRCLEWP,
+        WP_MOVEMENT_SCRIPT_WANTEDWP,
+        WP_MOVEMENT_SCRIPT_DONTMOVEWP,
+        WP_MOVEMENT_SCRIPT_QUEST,
+        WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP
+    };
+
     struct Point
     {
         float x;

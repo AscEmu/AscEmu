@@ -38,7 +38,7 @@ void GuardianSummon::Load(CreatureProto* proto, Unit* owner, LocationVector & po
     SetHealth(GetMaxHealth());
     SetType(CREATURE_TYPE_GUARDIAN);
 
-    m_aiInterface->Init(this, AITYPE_PET, MOVEMENTTYPE_NONE, owner);
+    m_aiInterface->Init(this, AITYPE_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, owner);
     m_aiInterface->SetUnitToFollow(owner);
     m_aiInterface->SetFollowDistance(3.0f);
 

@@ -943,7 +943,7 @@ void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
 
     StopMovement();
     _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-    SetMoveType(Move_WantedWP);
+    SetMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     SetWaypointToMove(pWaypointId);
 }
 
@@ -956,63 +956,14 @@ void MoonScriptCreatureAI::StopWaypointMovement()
 {
     SetBehavior(Behavior_Default);
     _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
-    SetMoveType(Move_DontMoveWP);
+    SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
     SetWaypointToMove(0);
 }
 
-void MoonScriptCreatureAI::SetMoveType(MoveType pMoveType)
+void MoonScriptCreatureAI::SetMoveType(Movement::WaypointMovementScript pMoveType)
 {
-    switch (pMoveType)
-    {
-        case Move_None:
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_NONE);
-            break;
-        case Move_RandomWP:
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_RANDOMWP);
-            break;
-        case Move_CircleWP:
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_CIRCLEWP);
-            break;
-        case Move_WantedWP:
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_WANTEDWP);
-            break;
-        case Move_DontMoveWP:
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
-            break;
-        case Move_Quest:
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_QUEST);
-            break;
-        case Move_ForwardThenStop:
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
-            break;
-        default:
-            sLog.outDebug("ArcScript: MoonScriptCreatureAI::SetMoveType() : Invalid move type!");
-            break;
-    }
-}
+    _unit->GetAIInterface()->setMoveType(pMoveType);
 
-MoveType MoonScriptCreatureAI::GetMoveType()
-{
-    switch (_unit->GetAIInterface()->getMoveType())
-    {
-        case MOVEMENTTYPE_NONE:
-            return Move_None;
-        case MOVEMENTTYPE_RANDOMWP:
-            return Move_RandomWP;
-        case MOVEMENTTYPE_CIRCLEWP:
-            return Move_CircleWP;
-        case MOVEMENTTYPE_WANTEDWP:
-            return Move_WantedWP;
-        case MOVEMENTTYPE_DONTMOVEWP:
-            return Move_DontMoveWP;
-        case MOVEMENTTYPE_QUEST:
-            return Move_Quest;
-        case MOVEMENTTYPE_FORWARDTHENSTOP:
-            return Move_ForwardThenStop;
-        default:
-            sLog.outDebug("ArcScript: MoonScriptCreatureAI::GetMoveType() : Invalid move type!");
-            return Move_None;
-    }
 }
 
 uint32 MoonScriptCreatureAI::GetCurrentWaypoint()

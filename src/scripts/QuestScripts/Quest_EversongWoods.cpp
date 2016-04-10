@@ -81,7 +81,7 @@ void ProspectorAnvilwardGossip::GossipSelectOption(Object* pObject, Player* Plr,
         {
             pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, ANVILWARD_SAY_1);
             Plr->Gossip_Complete();
-            pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
+            pCreature->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             //Every Gossip NPC has a "StopMovement(30000)" by default.... lets overwrite it.
             pCreature->GetAIInterface()->StopMovement(10);
         }break;
@@ -94,7 +94,7 @@ public:
     ADD_CREATURE_FACTORY_FUNCTION(ProspectorAnvilward);
     ProspectorAnvilward(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
+        pCreature->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
     }
 
     void OnReachWP(uint32 iWaypointId, bool bForwards)
@@ -110,7 +110,7 @@ public:
         }
         if (iWaypointId == 10)
         {
-            _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
+            _unit->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         }
     }
 };

@@ -35,7 +35,7 @@ class ProtectKaya : public QuestScript
             if(creat == NULL)
                 return;
             creat->m_escorter = mTarget;
-            creat->GetAIInterface()->setMoveType(MOVEMENTTYPE_QUEST);
+            creat->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
             creat->GetAIInterface()->StopMovement(10);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Lets go");
             creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
@@ -52,7 +52,7 @@ class KayaFlathoof : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(KayaFlathoof);
         KayaFlathoof(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
+            pCreature->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         }
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)

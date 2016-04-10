@@ -289,7 +289,7 @@ Unit::Unit() : m_movementManager()
     //		CalculateActualArmor();
 
     m_aiInterface = new AIInterface();
-    m_aiInterface->Init(this, AITYPE_AGRO, MOVEMENTTYPE_NONE);
+    m_aiInterface->Init(this, AITYPE_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
 
     m_emoteState = 0;
     m_oldEmote = 0;
