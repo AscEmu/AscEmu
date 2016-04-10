@@ -21,6 +21,22 @@
 
 #include "StdAfx.h"
 
+ //////////////////////////////////////////////////////////////////////////////////////////
+ // Mage Scripts
+
+class MissileBarrage : public Spell
+{
+    SPELL_FACTORY_FUNCTION(MissileBarrage);
+
+    void DoAfterHandleEffect(Unit* target, uint32 i)
+    {
+        if (p_caster != NULL && target != NULL && p_caster->HasAura(44401)) // Player has "Missile Barrage" aura so we remove it AFTER casting arcane missles.
+        {
+            p_caster->RemoveAllAuraById(44401);
+        }
+    }
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior Scripts
 
@@ -438,6 +454,22 @@ class HeartStrikeSpell : public Spell
 
 void SpellFactoryMgr::SetupSpellClassScripts()
 {
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Mage
+    AddSpellById(5143, MissileBarrage::Create);   //Rank 1
+    AddSpellById(5144, MissileBarrage::Create);   //Rank 2
+    AddSpellById(5145, MissileBarrage::Create);   //Rank 3
+    AddSpellById(8416, MissileBarrage::Create);   //Rank 4
+    AddSpellById(8417, MissileBarrage::Create);   //Rank 5
+    AddSpellById(10211, MissileBarrage::Create);   //Rank 6
+    AddSpellById(10212, MissileBarrage::Create);   //Rank 7
+    AddSpellById(25345, MissileBarrage::Create);   //Rank 8
+    AddSpellById(27075, MissileBarrage::Create);   //Rank 9
+    AddSpellById(38699, MissileBarrage::Create);   //Rank 10
+    AddSpellById(38704, MissileBarrage::Create);   //Rank 11
+    AddSpellById(42843, MissileBarrage::Create);   //Rank 12
+    AddSpellById(42846, MissileBarrage::Create);   //Rank 13
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Warrior
 
