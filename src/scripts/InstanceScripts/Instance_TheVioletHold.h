@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _INSTANCE_THE_VIOLET_HOLD_H
 #define _INSTANCE_THE_VIOLET_HOLD_H
 
-static LocationExtra AttackerWP[] =
+static Movement::LocationWithFlag AttackerWP[] =
 {
     {}, // 0
     { 1858.077f, 804.8599f, 44.00872f, 0.0f, Flag_Run }, // Run to middle of entrance platform

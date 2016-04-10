@@ -45,7 +45,7 @@ class ProtectingtheShipment : public QuestScript
 };
 
 // Miran Waypoints
-static LocationExtra WaypointsMiran[] =
+static Movement::LocationWithFlag WaypointsMiran[] =
 {
     {},
     { -5753.780762f, -3433.290039f, 301.628387f, 4.834769f, Flag_Run }, //1
@@ -69,7 +69,7 @@ class Miran : public MoonScriptCreatureAI
 
             for (uint8 i = 1; i <= WPCount; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
+                AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
             }
 
             pCreature->GetAIInterface()->setMoveType(MOVEMENTTYPE_DONTMOVEWP);
@@ -95,7 +95,7 @@ class Miran : public MoonScriptCreatureAI
         }
 
         uint8 WPCount;
-        LocationExtra* WayPoints;
+        Movement::LocationWithFlag* WayPoints;
 };
 
 void SetupLochModan(ScriptMgr* mgr)

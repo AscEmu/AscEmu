@@ -32,7 +32,7 @@ class BlackCat : public MoonScriptCreatureAI
 };
 
 /// HEADLESS HORSEMAN ENCOUNTER
-static LocationExtra WaypointGoldshire[] =
+static Movement::LocationWithFlag WaypointGoldshire[] =
 {
     { -9502.733398f, 31.395960f, 60.433193f, 1.217366f, Flag_Fly }, // 0
     { -9493.925781f, 55.272415f, 60.433193f, 0.781469f, Flag_Fly },
@@ -131,7 +131,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
                     WayPoints = WaypointGoldshire;
                     for (uint8 i = 0; i <= WPCount; ++i)
                     {
-                        AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
+                        AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
                     }
                 } break;
                 default:
@@ -187,7 +187,7 @@ class ShadeOfTheHorsemanAI : public MoonScriptCreatureAI
     }
 
     int8 WPCount;
-    LocationExtra* WayPoints;
+    Movement::LocationWithFlag* WayPoints;
     SpellDesc* mSummon;
 };
 

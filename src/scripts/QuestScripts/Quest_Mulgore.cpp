@@ -28,7 +28,7 @@
 //
 
 // Plain Visions Encounter
-static LocationExtra WaypointPlainVision[] =
+static Movement::LocationWithFlag WaypointPlainVision[] =
 {
     {},
     { -2240.521729f, -407.114532f, -9.424648f, 5.753043f, Flag_Run }, //1
@@ -69,7 +69,7 @@ class The_Plains_Vision : public MoonScriptCreatureAI
 
             for (uint8 i = 1; i < WPCount; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, 0, WayPoints[i].addition, WayPoints[i]));
+                AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
             }
         }
 
@@ -86,7 +86,7 @@ class The_Plains_Vision : public MoonScriptCreatureAI
         }
 
         uint8 WPCount;
-        LocationExtra* WayPoints;
+        Movement::LocationWithFlag* WayPoints;
 };
 
 void SetupMulgore(ScriptMgr* mgr)

@@ -910,16 +910,16 @@ Movement::WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaitti
     return wp;
 }
 
-Movement::WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, LocationExtra pCoords)
+Movement::WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, Movement::LocationWithFlag wp_info)
 {
     Movement::WayPoint* wp = _unit->CreateWaypointStruct();
     wp->id = pId;
-    wp->x = pCoords.x;
-    wp->y = pCoords.y;
-    wp->z = pCoords.z;
-    wp->o = pCoords.o;
+    wp->x = wp_info.wp_location.x;
+    wp->y = wp_info.wp_location.y;
+    wp->z = wp_info.wp_location.z;
+    wp->o = wp_info.wp_location.o;
     wp->waittime = pWaittime;
-    wp->flags = pMoveFlag;
+    wp->flags = wp_info.wp_flag;
     wp->forwardemoteoneshot = false;
     wp->forwardemoteid = 0;
     wp->backwardemoteoneshot = false;

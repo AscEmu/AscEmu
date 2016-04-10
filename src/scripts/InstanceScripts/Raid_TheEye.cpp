@@ -3004,7 +3004,7 @@ const LocationExtra Gates[] =
     { 676.812500f,  43.073757f, 46.781292f, 5.312979f, 184324 }
 };
 
-const LocationExtra Waypoints[] =
+const Movement::LocationWithFlag Waypoints[] =
 {
     {  },
     { 794.072998f,  0.214634f, 48.728500f, 0.0f, Flag_Run },
@@ -3041,7 +3041,7 @@ class KaelThasAI : public MoonScriptBossAI
         {
             for (uint8 i = 1; i < 4; ++i)
             {
-                AddWaypoint(CreateWaypoint(1, 0, Waypoints[i].addition, Waypoints[i]));
+                AddWaypoint(CreateWaypoint(1, 0, Waypoints[i]));
             }
 
             SetCanEnterCombat(true);

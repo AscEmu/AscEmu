@@ -1459,7 +1459,7 @@ class SethekkTalonLordAI : public CreatureAIScript
 
 ////////////////////////////////////////////////////
 // Lakka AI
-static LocationExtra LakkaWaypoint[] =
+static Movement::LocationWithFlag LakkaWaypoint[] =
 {
     {},
     { -157.200f, 159.922f, 0.010f, 0.104f, Flag_Walk },
@@ -1479,7 +1479,7 @@ class LakkaAI : public MoonScriptCreatureAI
             //WPs
             for (uint8 i = 1; i < 4; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, 0, LakkaWaypoint[i].addition, LakkaWaypoint[i]));
+                AddWaypoint(CreateWaypoint(i, 0, LakkaWaypoint[i]));
             }
         }
 

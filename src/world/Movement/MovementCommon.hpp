@@ -25,6 +25,13 @@ namespace Movement
         float o;
     };
 
+    //Zyres: Temp structure to seperate wp related structure from LocationExtra
+    struct LocationWithFlag
+    {
+        Location wp_location;
+        uint32 wp_flag;
+    };
+
     struct WayPoint
     {
         WayPoint()

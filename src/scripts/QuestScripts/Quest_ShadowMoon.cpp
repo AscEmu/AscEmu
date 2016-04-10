@@ -88,7 +88,7 @@ class KneepadsQAI : public CreatureAIScript
 //WP Coords Wait Times
 struct WPWaitTimes
 {
-    LocationExtra mCoords;
+    Movement::LocationWithFlag mCoords;
     uint32 WaitTime;
 };
 const WPWaitTimes DeathbringerJovaanWP[] =
@@ -111,7 +111,7 @@ class DeathbringerJovaanAI : public MoonScriptCreatureAI
 
             for(int i = 1; i < 5; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, DeathbringerJovaanWP[i].mCoords.addition, DeathbringerJovaanWP[i].mCoords));
+                AddWaypoint(CreateWaypoint(i, DeathbringerJovaanWP[i].WaitTime, DeathbringerJovaanWP[i].mCoords));
             }
         }
 
@@ -351,10 +351,10 @@ class EnslavedNetherwingDrakeAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(EnslavedNetherwingDrakeAI, MoonScriptCreatureAI);
         EnslavedNetherwingDrakeAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            LocationExtra WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Flag_Fly };
+            Movement::LocationWithFlag WayPoint = { _unit->GetPositionX(), _unit->GetPositionY() + 30, _unit->GetPositionZ() + 100, _unit->GetOrientation(), Flag_Fly };
             SetCanMove(false);
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH | UNIT_FLAG_NOT_ATTACKABLE_2);
-            AddWaypoint(CreateWaypoint(1, 0, Flag_Fly, WayPoint));
+            AddWaypoint(CreateWaypoint(1, 0, WayPoint));
         }
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)

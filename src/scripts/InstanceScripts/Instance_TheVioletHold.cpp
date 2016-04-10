@@ -460,7 +460,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
             //_unit->GetAIInterface()->UpdateMove();
             for (int i = 1; i < 3; ++i)
             {
-                AddWaypoint(CreateWaypoint(i, 0, AttackerWP[i].addition, AttackerWP[i]));
+                AddWaypoint(CreateWaypoint(i, 0, AttackerWP[i]));
             }
             _unit->GetAIInterface()->setMoveType(MOVEMENTTYPE_FORWARDTHENSTOP);
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
