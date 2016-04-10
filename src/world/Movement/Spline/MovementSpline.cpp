@@ -16,7 +16,11 @@ namespace Movement
             m_splineTrajectoryVertical(0),
             m_splineTrajectoryTime(0)
         {
-
+            m_splineFlags.m_splineFlagsRaw.as_uint32() = 0;
+            m_currentSplineIndex = 0;
+            m_currentSplineTotalMoveTime = 0;
+            m_splineTrajectoryVertical = 0;
+            m_splineTrajectoryTime = 0;
         }
 
         MoveSpline::MoveSpline(uint32 pInitialFlags)
