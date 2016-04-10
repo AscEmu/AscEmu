@@ -63,7 +63,15 @@ namespace Movement
         {
             public:
 
-                MonsterMoveFaceType() { MoveFlag = MonsterMoveInvalid; }
+                MonsterMoveFaceType()
+                { 
+                    MoveFlag = MonsterMoveInvalid;
+                    TargetPointX = 0.0f;
+                    TargetPointY = 0.0f;
+                    TargetPointZ = 0.0f;
+                    TargetGuid = 0;
+                    TargetAngle = 0.0f;
+                }
 
                 uint8 GetFlag() { return MoveFlag; }
                 void SetFlag(uint8 pFlag) { MoveFlag = pFlag; }
