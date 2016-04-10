@@ -110,8 +110,8 @@ bool RaiseDead(uint32 i, Spell* s)
     if(s->p_caster == NULL)
         return false;
 
-    float x = s->p_caster->GetPositionX() + RandomUInt(25);
-    float y = s->p_caster->GetPositionY() + RandomUInt(25);
+    float x = s->p_caster->GetPositionX();
+    float y = s->p_caster->GetPositionY() - 1;
     float z = s->p_caster->GetPositionZ();
 
     SpellEntry* sp = NULL;
