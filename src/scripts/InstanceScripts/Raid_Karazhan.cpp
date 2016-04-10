@@ -1078,9 +1078,9 @@ class BarnesAI : public CreatureAIScript
 
         }
 
-        inline WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
+        inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
         {
-            WayPoint* wp = _unit->CreateWaypointStruct();
+            Movement::WayPoint* wp = _unit->CreateWaypointStruct();
             wp->id = id;
             wp->x = Barnes[id].x;
             wp->y = Barnes[id].y;
@@ -3248,9 +3248,9 @@ class InfernalDummyAI : public CreatureAIScript
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, 0, 768));
         }
 
-        inline WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
+        inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
         {
-            WayPoint* wp = _unit->CreateWaypointStruct();
+            Movement::WayPoint* wp = _unit->CreateWaypointStruct();
             wp->id = id;
             wp->x = -10938.56f;
             wp->y = -2041.26f;
@@ -3833,9 +3833,9 @@ class NightbaneAI : public CreatureAIScript
             SpellCast(val);
         }
 
-        inline WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
+        inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
         {
-            WayPoint* wp = _unit->CreateWaypointStruct();
+            Movement::WayPoint* wp = _unit->CreateWaypointStruct();
             wp->id = id;
             wp->x = coords[id].x;
             wp->y = coords[id].y;

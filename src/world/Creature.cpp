@@ -1226,9 +1226,9 @@ void Creature::ChannelLinkUpCreature(uint32 SqlId)
     }
 }
 
-WayPoint* Creature::CreateWaypointStruct()
+Movement::WayPoint* Creature::CreateWaypointStruct()
 {
-    return new WayPoint();
+    return new Movement::WayPoint();
 }
 //#define SAFE_FACTIONS
 
@@ -1833,7 +1833,7 @@ void Creature::LoadWaypointGroup(uint32 pWaypointGroup)
     do
     {
         Field* fields = result->Fetch();
-        WayPoint* wp = new WayPoint;
+        Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = fields[1].GetUInt32();
         wp->x = fields[2].GetFloat();
         wp->y = fields[3].GetFloat();
@@ -1858,9 +1858,9 @@ void Creature::LoadWaypointGroup(uint32 pWaypointGroup)
 void Creature::LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32 pWaitTime, uint32 pFlags, bool pForwardEmoteOneshot, uint32 pForwardEmoteId, bool pBackwardEmoteOneshot, uint32 pBackwardEmoteId, uint32 pForwardSkinId, uint32 pBackwardSkinId)
 {
     if (!this->m_custom_waypoint_map)
-        this->m_custom_waypoint_map = new WayPointMap;
+        this->m_custom_waypoint_map = new Movement::WayPointMap;
 
-    WayPoint* wp = new WayPoint;
+    Movement::WayPoint* wp = new Movement::WayPoint;
     wp->id = this->m_custom_waypoint_map->size() ? this->m_custom_waypoint_map->size() : 1;
     wp->x = pX;
     wp->y = pY;
@@ -1936,7 +1936,7 @@ void Creature::SetGuardWaypoints()
         while (ran < 1)
             ran = RandomFloat(100.0f) / 10.0f;
 
-        WayPoint* wp = new WayPoint;
+        Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = i;
         wp->flags = 0;
         wp->waittime = 800;  // these guards are antsy :P

@@ -195,7 +195,7 @@ void MapScriptInterface::DeleteGameObject(GameObject* ptr)
     delete ptr;
 }
 
-WayPoint* StructFactory::CreateWaypoint()
+Movement::WayPoint* StructFactory::CreateWaypoint()
 {
-    return new WayPoint;
+    return new Movement::WayPoint;
 }

@@ -104,9 +104,9 @@ ObjectMgr::~ObjectMgr()
     }
 
     Log.Notice("ObjectMgr", "Deleting Waypoint Cache...");
-    for (std::unordered_map<uint32, WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
+    for (std::unordered_map<uint32, Movement::WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
     {
-        for (WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
+        for (Movement::WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
             if ((*i2))
                 delete(*i2);
 
@@ -2527,7 +2527,7 @@ void ObjectMgr::LoadCreatureWaypoints()
     do
     {
         Field* fields = result->Fetch();
-        WayPoint* wp = new WayPoint;
+        Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = fields[1].GetUInt32();
         wp->x = fields[2].GetFloat();
         wp->y = fields[3].GetFloat();
@@ -2541,12 +2541,12 @@ void ObjectMgr::LoadCreatureWaypoints()
         wp->forwardskinid = fields[11].GetUInt32();
         wp->backwardskinid = fields[12].GetUInt32();
 
-        std::unordered_map<uint32, WayPointMap*>::const_iterator i;
+        std::unordered_map<uint32, Movement::WayPointMap*>::const_iterator i;
         uint32 spawnid = fields[0].GetUInt32();
         i = m_waypoints.find(spawnid);
         if (i == m_waypoints.end())
         {
-            WayPointMap* m = new WayPointMap;
+            Movement::WayPointMap* m = new Movement::WayPointMap;
             if (m->size() <= wp->id)
                 m->resize(wp->id + 1);
             (*m)[wp->id] = wp;
@@ -2566,13 +2566,13 @@ void ObjectMgr::LoadCreatureWaypoints()
     delete result;
 }
 
-WayPointMap* ObjectMgr::GetWayPointMap(uint32 spawnid)
+Movement::WayPointMap* ObjectMgr::GetWayPointMap(uint32 spawnid)
 {
-    std::unordered_map<uint32, WayPointMap*>::const_iterator i;
+    std::unordered_map<uint32, Movement::WayPointMap*>::const_iterator i;
     i = m_waypoints.find(spawnid);
     if (i != m_waypoints.end())
     {
-        WayPointMap* m = i->second;
+        Movement::WayPointMap* m = i->second;
         // we don't wanna erase from the map, because some are used more
         // than once (for instances)
 

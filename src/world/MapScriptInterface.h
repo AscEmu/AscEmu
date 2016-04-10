@@ -89,7 +89,7 @@ class SERVER_DECL MapScriptInterface
         GameObject* SpawnGameObject(GameobjectSpawn* gs, bool AddToWorld);
         Creature* SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2, uint32 phase = 0xFFFFFFF);
         Creature* SpawnCreature(CreatureSpawn* sp, bool AddToWorld);
-        WayPoint* CreateWaypoint();
+        Movement::WayPoint* CreateWaypoint();
 
         void DeleteGameObject(GameObject* ptr);
         void DeleteCreature(Creature* ptr);
@@ -115,7 +115,7 @@ class SERVER_DECL StructFactory : public Singleton<StructFactory>
     public:
 
         StructFactory() {}
-        WayPoint* CreateWaypoint();
+        Movement::WayPoint* CreateWaypoint();
 };
 
 #define sStructFactory StructFactory::getSingleton()

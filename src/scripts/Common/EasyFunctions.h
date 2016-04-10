@@ -66,7 +66,7 @@ class SCRIPT_DECL EasyFunctions
             ARCEMU_ASSERT(pCreature != NULL);
 
             if (!pCreature->m_custom_waypoint_map)
-                pCreature->m_custom_waypoint_map = new WayPointMap;
+                pCreature->m_custom_waypoint_map = new Movement::WayPointMap;
 
             if (!modelid)
                 modelid = pCreature->GetUInt32Value(UNIT_FIELD_DISPLAYID);
@@ -91,7 +91,7 @@ class SCRIPT_DECL EasyFunctions
             if (creat->m_custom_waypoint_map == NULL)
                 return;
 
-            WayPointMap::iterator i = creat->m_custom_waypoint_map->begin();
+            Movement::WayPointMap::iterator i = creat->m_custom_waypoint_map->begin();
 
             for (; i != creat->m_custom_waypoint_map->end(); ++i)
             {
@@ -209,7 +209,7 @@ class SCRIPT_DECL EasyFunctions
 
             if (creat->m_custom_waypoint_map == NULL)
             {
-                creat->m_custom_waypoint_map = new WayPointMap;
+                creat->m_custom_waypoint_map = new Movement::WayPointMap;
             }
             else
             {

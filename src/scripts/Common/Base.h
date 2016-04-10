@@ -422,9 +422,9 @@ class MoonScriptCreatureAI : public CreatureAIScript
         uint32 GetEventCount() { return mEventCount; }
 
         //Waypoints
-        WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords);
-        WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, LocationExtra pCoords);
-        void AddWaypoint(WayPoint* pWayPoint);
+        Movement::WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords);
+        Movement::WayPoint* CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, LocationExtra pCoords);
+        void AddWaypoint(Movement::WayPoint* pWayPoint);
         void ForceWaypointMove(uint32 pWaypointId);
         void SetWaypointToMove(uint32 pWaypointId);
         void StopWaypointMovement();

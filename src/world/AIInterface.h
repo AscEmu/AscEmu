@@ -351,13 +351,13 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32 getCurrentWaypoint() { return m_currentWaypoint; }
         void changeWayPointID(uint32 oldwpid, uint32 newwpid);
         /// \note Adds a WayPoint, handling possible errors occurred when adding it. Pay attention: wp may point to free'd memory after calling this, use bool addWayPoint(WayPoint* wp) instead to manually handle possible errors.
-        void addWayPoint(WayPoint* wp);
+        void addWayPoint(Movement::WayPoint* wp);
         /// returns true if the WayPoint was added, false otherwise. The caller MUST delete wp if it wasn't added.
-        bool addWayPointUnsafe(WayPoint* wp);
+        bool addWayPointUnsafe(Movement::WayPoint* wp);
         bool saveWayPoints();
         bool showWayPoints(Player* pPlayer, bool Backwards);
         bool hideWayPoints(Player* pPlayer);
-        WayPoint* getWayPoint(uint32 wpid);
+        Movement::WayPoint* getWayPoint(uint32 wpid);
         void deleteWayPoint(uint32 wpid);
         void deleteWaypoints();
         inline bool hasWaypoints() { return m_waypoints != NULL; }
@@ -454,8 +454,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         void ResetProcCounts();
 
         /// deletes the old waypoint map as default. In case m_custom_waypoint_map is used, just call SetWaypointMap(NULL): this will delete m_custom_waypoint_map too.
-        void SetWaypointMap(WayPointMap* m, bool delete_old_map = true);
-        inline WayPointMap* GetWaypointMap() { return m_waypoints; }
+        void SetWaypointMap(Movement::WayPointMap* m, bool delete_old_map = true);
+        inline Movement::WayPointMap* GetWaypointMap() { return m_waypoints; }
         void LoadWaypointMapFromDB(uint32 spawnid);
         bool m_isGuard;
         bool m_isNeutralGuard;
@@ -577,7 +577,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         /// specifies if m_waypoints was loaded from DB, so shared between other AIInterface instances.
         bool m_waypointsLoadedFromDB;
-        WayPointMap* m_waypoints;
+        Movement::WayPointMap* m_waypoints;
 
     public:
 

@@ -302,39 +302,6 @@ inline uint32 now()
 #endif
 
 #include "Util.h"
-struct WayPoint
-{
-    WayPoint()
-    {
-        id = 0;
-        x = 0;
-        y = 0;
-        z = 0;
-        o = 0;
-        waittime = 0;
-        flags = 0;
-        forwardemoteoneshot = false;
-        forwardemoteid = 0;
-        backwardemoteoneshot = false;
-        backwardemoteid = 0;
-        forwardskinid = 0;
-        backwardskinid = 0;
-    }
-    uint32 id;
-    float x;
-    float y;
-    float z;
-    float o;
-    uint32 waittime; //ms
-    uint32 flags;
-    bool forwardemoteoneshot;
-    uint32 forwardemoteid;
-    bool backwardemoteoneshot;
-    uint32 backwardemoteid;
-    uint32 forwardskinid;
-    uint32 backwardskinid;
-
-};
 
 struct spawn_timed_emotes
 {
@@ -356,8 +323,6 @@ inline void reverse_array(uint8* pointer, size_t count)
         pointer[x] = temp[count - x - 1];
     free(temp);
 }
-
-typedef std::vector<WayPoint*> WayPointMap;
 
 int32 GetTimePeriodFromString(const char* str);
 std::string ConvertTimeStampToString(uint32 timestamp);

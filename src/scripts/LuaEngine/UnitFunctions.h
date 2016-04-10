@@ -812,7 +812,7 @@ class LuaUnit
             pCreature->GetAIInterface()->SetWaypointMap(NULL);
         }
 
-        pCreature->m_custom_waypoint_map = new WayPointMap;
+        pCreature->m_custom_waypoint_map = new Movement::WayPointMap;
         pCreature->GetAIInterface()->SetWaypointMap(pCreature->m_custom_waypoint_map);
         return 0;
     }
@@ -831,14 +831,14 @@ class LuaUnit
         Creature* pCreature = static_cast<Creature*>(ptr);
         if (!pCreature->m_custom_waypoint_map)
         {
-            pCreature->m_custom_waypoint_map = new WayPointMap;
+            pCreature->m_custom_waypoint_map = new Movement::WayPointMap;
             pCreature->GetAIInterface()->SetWaypointMap(pCreature->m_custom_waypoint_map);
         }
 
         if (!modelid)
             modelid = pCreature->GetDisplayId();
 
-        WayPoint* wp = new WayPoint;
+        Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = (uint32)pCreature->m_custom_waypoint_map->size() + 1;
         wp->x = x;
         wp->y = y;
@@ -874,7 +874,7 @@ class LuaUnit
             uint32 waitime = CHECK_ULONG(L, 6);
             uint32 flags = CHECK_ULONG(L, 7);
             uint32 model = luaL_optinteger(L, 8, 0);
-            WayPoint* wp = new WayPoint;
+            Movement::WayPoint* wp = new Movement::WayPoint;
             wp->id = id;
             wp->x = x;
             wp->y = y;

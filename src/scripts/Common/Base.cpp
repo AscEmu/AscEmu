@@ -891,9 +891,9 @@ uint32 MoonScriptCreatureAI::GetAIUpdateFreq()
     return mAIUpdateFrequency;
 }
 
-WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords)
+Movement::WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, Movement::Location pCoords)
 {
-    WayPoint* wp = _unit->CreateWaypointStruct();
+    Movement::WayPoint* wp = _unit->CreateWaypointStruct();
     wp->id = pId;
     wp->x = pCoords.x;
     wp->y = pCoords.y;
@@ -910,9 +910,9 @@ WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32
     return wp;
 }
 
-WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, LocationExtra pCoords)
+Movement::WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32 pMoveFlag, LocationExtra pCoords)
 {
-    WayPoint* wp = _unit->CreateWaypointStruct();
+    Movement::WayPoint* wp = _unit->CreateWaypointStruct();
     wp->id = pId;
     wp->x = pCoords.x;
     wp->y = pCoords.y;
@@ -929,7 +929,7 @@ WayPoint* MoonScriptCreatureAI::CreateWaypoint(int pId, uint32 pWaittime, uint32
     return wp;
 }
 
-void MoonScriptCreatureAI::AddWaypoint(WayPoint* pWayPoint)
+void MoonScriptCreatureAI::AddWaypoint(Movement::WayPoint* pWayPoint)
 {
     _unit->GetAIInterface()->addWayPoint(pWayPoint);
 }

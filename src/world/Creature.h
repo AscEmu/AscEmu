@@ -296,7 +296,7 @@ class SERVER_DECL Creature : public Unit
         void ChannelLinkUpGO(uint32 SqlId);
         void ChannelLinkUpCreature(uint32 SqlId);
         bool haslinkupevent;
-        WayPoint* CreateWaypointStruct();
+        Movement::WayPoint* CreateWaypointStruct();
         uint32 spawnid;
         uint32 original_emotestate;
 
@@ -314,7 +314,7 @@ class SERVER_DECL Creature : public Unit
         // scriptdev2
         uint32 GetNpcTextId();
 
-        WayPointMap* m_custom_waypoint_map;
+        Movement::WayPointMap* m_custom_waypoint_map;
         void LoadWaypointGroup(uint32 pWaypointGroup);
         void LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32 pWaitTime, uint32 pFlags, bool pForwardEmoteOneshot, uint32 pForwardEmoteId, bool pBackwardEmoteOneshot, uint32 pBackwardEmoteId, uint32 pForwardSkinId, uint32 pBackwardSkinId);
         void SwitchToCustomWaypoints();

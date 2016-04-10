@@ -367,12 +367,12 @@ class OnyxiaAI : public CreatureAIScript
             }
         }
 
-        inline WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
+        inline Movement::WayPoint* CreateWaypoint(int id, uint32 waittime, uint32 flags)
         {
             //WayPoint* wp = new WayPoint;
             //WayPoint * wp = _unit->GetMapMgr()->GetInterface()->CreateWaypoint();
             //WayPoint * wp = sStructFactory.CreateWaypoint();
-            WayPoint* wp = _unit->CreateWaypointStruct();
+            Movement::WayPoint* wp = _unit->CreateWaypointStruct();
             wp->id = id;
             wp->x = coords[id].x;
             wp->y = coords[id].y;
