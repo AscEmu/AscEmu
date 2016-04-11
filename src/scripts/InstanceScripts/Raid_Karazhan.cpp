@@ -734,7 +734,7 @@ class BarnesGS : public GossipScript
                         pCreature->CastSpell(pCreature, 32616, false);
                         pCreature->GetAIInterface()->StopMovement(0);
                         pCreature->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                        pCreature->GetAIInterface()->setMoveType(11);
+                        pCreature->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
                         pCreature->GetAIInterface()->setWaypointToMove(0);
                         pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                         pCreature->PlaySoundToSet(9357);
@@ -801,7 +801,7 @@ class BarnesAI : public CreatureAIScript
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(3, 0, 0));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(4, 0, 0));
 
-            _unit->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -3638,7 +3638,7 @@ class NightbaneAI : public CreatureAIScript
             spells[4].perctrigger = 0.0f;
             spells[4].attackstoptimer = 1000;
 
-            _unit->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
 
             for (uint8 i = 1; i < 5; i++)
             {
@@ -3664,7 +3664,7 @@ class NightbaneAI : public CreatureAIScript
 
         void OnCombatStop(Unit* mTarget)
         {
-            _unit->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
@@ -3719,7 +3719,7 @@ class NightbaneAI : public CreatureAIScript
                 default:
                     {
                         //move to the next waypoint
-                        _unit->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                         _unit->GetAIInterface()->setWaypointToMove(iWaypointId + 1);
                     }
                     break;
@@ -3741,7 +3741,7 @@ class NightbaneAI : public CreatureAIScript
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
                 _unit->GetAIInterface()->StopMovement(0);
                 _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                _unit->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 _unit->GetAIInterface()->setWaypointToMove(2);
                 m_phase++;
                 return;
@@ -3802,7 +3802,7 @@ class NightbaneAI : public CreatureAIScript
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
                 _unit->GetAIInterface()->StopMovement(0);
                 _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                _unit->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 _unit->GetAIInterface()->setWaypointToMove(1);
                 Fly();
                 m_FlyPhaseTimer = 17;

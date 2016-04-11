@@ -35,7 +35,7 @@ class SunkenTreasure : public QuestScript
                 return;
 
             creat->m_escorter = mTarget;
-            creat->GetAIInterface()->setMoveType(11);
+            creat->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Defens Me!");
             creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);

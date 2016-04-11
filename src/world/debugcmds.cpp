@@ -138,7 +138,7 @@ bool ChatHandler::HandleMoveInfoCommand(const char* args, WorldSession* m_sessio
     float dist = m_session->GetPlayer()->CalcDistance(obj);
     bool minfront = obj->isInFront(m_session->GetPlayer());
     bool pinfront = m_session->GetPlayer()->isInFront(obj);
-    uint32 movetype = static_cast< Creature* >(obj)->GetAIInterface()->getMoveType();
+    uint32 movetype = static_cast< Creature* >(obj)->GetAIInterface()->GetWaypointScriptType();
     bool run = static_cast< Creature* >(obj)->GetAIInterface()->HasWalkMode(WALKMODE_RUN) || static_cast< Creature* >(obj)->GetAIInterface()->HasWalkMode(WALKMODE_SPRINT);
     uint32 attackerscount = (uint32)static_cast< Creature* >(obj)->GetAIInterface()->getAITargetsCount();
     uint32 creatureState = static_cast< Creature* >(obj)->GetAIInterface()->m_creatureState;

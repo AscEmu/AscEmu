@@ -382,7 +382,7 @@ void Creature::SaveToDB()
         m_spawn->entry = GetEntry();
         m_spawn->form = 0;
         m_spawn->id = spawnid = objmgr.GenerateCreatureSpawnID();
-        m_spawn->movetype = m_aiInterface->getMoveType();
+        m_spawn->movetype = (uint8)m_aiInterface->GetWaypointScriptType();
         m_spawn->displayid = m_uint32Values[UNIT_FIELD_DISPLAYID];
         m_spawn->x = m_position.x;
         m_spawn->y = m_position.y;
@@ -436,7 +436,7 @@ void Creature::SaveToDB()
         << m_position.y << ","
         << m_position.z << ","
         << m_position.o << ","
-        << m_aiInterface->getMoveType() << ","
+        << uint32(m_aiInterface->GetWaypointScriptType()) << ","
         << m_uint32Values[UNIT_FIELD_DISPLAYID] << ","
         << GetFaction() << ","
         << m_uint32Values[UNIT_FIELD_FLAGS] << ","
@@ -848,7 +848,7 @@ void Creature::OnRemoveInRangeObject(Object* pObj)
         // we lost our escorter, return to the spawn.
         m_aiInterface->StopMovement(10000);
         m_escorter = NULL;
-        GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         //DestroyCustomWaypointMap(); //function not needed at all, crashing on delete(*int)
         //GetAIInterface()->deleteWaypoints();//this can repleace DestroyCustomWaypointMap, but it's crashing on delete too
         Despawn(1000, 1000);
@@ -1348,7 +1348,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     // set position
     m_position.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
     m_spawnLocation.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
-    m_aiInterface->setMoveType(spawn->movetype);
+    m_aiInterface->SetWaypointScriptType((Movement::WaypointMovementScript)spawn->movetype);
     m_aiInterface->LoadWaypointMapFromDB(spawn->id);
 
     m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
@@ -1637,7 +1637,7 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
     m_aiInterface->m_FleeHealth = proto->m_fleeHealth;
     m_aiInterface->m_FleeDuration = proto->m_fleeDuration;
 
-    GetAIInterface()->setMoveType(0);
+    GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     GetAIInterface()->SetWalk();
 
     // load formation data
@@ -1928,7 +1928,7 @@ void Creature::SetGuardWaypoints()
     if (!GetMapMgr())
         return;
 
-    GetAIInterface()->setMoveType(1);
+    GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
     for (uint8 i = 1; i <= 4; i++)
     {
         float ang = RandomFloat(100.0f) / 100.0f;

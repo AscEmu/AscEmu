@@ -35,7 +35,7 @@ class TotemofCoo : public QuestScript
                 return;
 
             pAkida->m_escorter = pPlayer;
-            pAkida->GetAIInterface()->setMoveType(RUN);
+            pAkida->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
             pAkida->GetAIInterface()->StopMovement(1000);
             pAkida->GetAIInterface()->SetAllowedToEnterCombat(false);
             pAkida->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me I shall result you on a place!");
@@ -43,14 +43,14 @@ class TotemofCoo : public QuestScript
             pAkida->CastSpell(pAkida, 25035, true);   // Apparition Effect
 
             sEAS.CreateCustomWaypointMap(pAkida);
-            sEAS.WaypointCreate(pAkida, -4174.025879f, -12512.800781f, 44.361458f, 2.827430f, 0, 256, 16995);
-            sEAS.WaypointCreate(pAkida, -4078.135986f, -12535.500977f, 43.066765f, 5.949394f, 0, 256, 16995);
-            sEAS.WaypointCreate(pAkida, -4040.495361f, -12565.537109f, 43.698250f, 5.592041f, 0, 256, 16995);
-            sEAS.WaypointCreate(pAkida, -4009.526367f, -12598.929688f, 53.168480f, 5.434962f, 0, 256, 16995);
-            sEAS.WaypointCreate(pAkida, -3981.581543f, -12635.541602f, 63.896046f, 5.332861f, 0, 256, 16995);
-            sEAS.WaypointCreate(pAkida, -3953.170410f, -12680.391602f, 75.433006f, 5.218981f, 0, 256, 16995);
-            sEAS.WaypointCreate(pAkida, -3924.324951f, -12741.846680f, 95.187035f, 5.124734f, 0, 256, 16995);
-            sEAS.WaypointCreate(pAkida, -3920.791260f, -12746.218750f, 96.887978f, 3.271200f, 0, 256, 16995);
+            sEAS.WaypointCreate(pAkida, -4174.025879f, -12512.800781f, 44.361458f, 2.827430f, 0, Movement::WP_MOVE_TYPE_RUN, 16995);
+            sEAS.WaypointCreate(pAkida, -4078.135986f, -12535.500977f, 43.066765f, 5.949394f, 0, Movement::WP_MOVE_TYPE_RUN, 16995);
+            sEAS.WaypointCreate(pAkida, -4040.495361f, -12565.537109f, 43.698250f, 5.592041f, 0, Movement::WP_MOVE_TYPE_RUN, 16995);
+            sEAS.WaypointCreate(pAkida, -4009.526367f, -12598.929688f, 53.168480f, 5.434962f, 0, Movement::WP_MOVE_TYPE_RUN, 16995);
+            sEAS.WaypointCreate(pAkida, -3981.581543f, -12635.541602f, 63.896046f, 5.332861f, 0, Movement::WP_MOVE_TYPE_RUN, 16995);
+            sEAS.WaypointCreate(pAkida, -3953.170410f, -12680.391602f, 75.433006f, 5.218981f, 0, Movement::WP_MOVE_TYPE_RUN, 16995);
+            sEAS.WaypointCreate(pAkida, -3924.324951f, -12741.846680f, 95.187035f, 5.124734f, 0, Movement::WP_MOVE_TYPE_RUN, 16995);
+            sEAS.WaypointCreate(pAkida, -3920.791260f, -12746.218750f, 96.887978f, 3.271200f, 0, Movement::WP_MOVE_TYPE_RUN, 16995);
             sEAS.EnableWaypoints(pAkida);
             mAkidas.push_back(std::make_pair(pPlayer->GetGUID(), pAkida));
         }
@@ -112,14 +112,14 @@ class TotemofTikti : public QuestScript
             Coo->CastSpell(Coo, 25035, true);  // Apparition Effect
 
             Coo->m_escorter = mTarget;
-            Coo->GetAIInterface()->setMoveType(11);
+            Coo->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
             Coo->GetAIInterface()->StopMovement(3000);
             Coo->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me!");
             Coo->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(Coo);
-            sEAS.WaypointCreate(Coo, -3926.076660f, -12755.158203f, 99.080429f, 5.031188f, 0, 256, 16993);
-            sEAS.WaypointCreate(Coo, -3924.019043f, -12763.895508f, 101.547874f, 5.212689f, 0, 256, 16993);
+            sEAS.WaypointCreate(Coo, -3926.076660f, -12755.158203f, 99.080429f, 5.031188f, 0, Movement::WP_MOVE_TYPE_RUN, 16993);
+            sEAS.WaypointCreate(Coo, -3924.019043f, -12763.895508f, 101.547874f, 5.212689f, 0, Movement::WP_MOVE_TYPE_RUN, 16993);
             sEAS.EnableWaypoints(Coo);
 
 
@@ -160,14 +160,14 @@ class TotemofYor : public QuestScript
             mTarget->CastSpell(Tikti, 25035, true);  // Apparition Effect
 
             Tikti->m_escorter = mTarget;
-            Tikti->GetAIInterface()->setMoveType(WALK);
+            Tikti->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
             Tikti->GetAIInterface()->StopMovement(3000);
             Tikti->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me!");
             Tikti->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(Tikti);
-            sEAS.WaypointCreate(Tikti, -3881.700928f, -13111.898438f, 5.814010f, 1.855801f, 0, 256, 16999);
-            sEAS.WaypointCreate(Tikti, -3886.341553f, -13098.914063f, 3.964841f, 1.855801f, 0, 256, 16999);
+            sEAS.WaypointCreate(Tikti, -3881.700928f, -13111.898438f, 5.814010f, 1.855801f, 0, Movement::WP_MOVE_TYPE_RUN, 16999);
+            sEAS.WaypointCreate(Tikti, -3886.341553f, -13098.914063f, 3.964841f, 1.855801f, 0, Movement::WP_MOVE_TYPE_RUN, 16999);
             sEAS.EnableWaypoints(Tikti);
 
             Unit* Totem = static_cast<Unit*>(Tikti);

@@ -35,7 +35,7 @@ class ProtectingtheShipment : public QuestScript
             if(creat == NULL)
                 return;
             creat->m_escorter = mTarget;
-            creat->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+            creat->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
             creat->GetAIInterface()->StopMovement(3000);
             creat->GetAIInterface()->SetAllowedToEnterCombat(false);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Okay let's do!");
@@ -72,7 +72,7 @@ class Miran : public MoonScriptCreatureAI
                 AddWaypoint(CreateWaypoint(i, 0, WayPoints[i]));
             }
 
-            pCreature->GetAIInterface()->setMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            pCreature->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         }
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)

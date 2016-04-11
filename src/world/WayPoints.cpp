@@ -156,7 +156,7 @@ bool ChatHandler::HandleWPMoveTypeCommand(const char* args, WorldSession* m_sess
     snprintf(sql, 512, "UPDATE creature_spawns SET movetype = '%u' WHERE id = '%u'", (unsigned int)option, (unsigned int)Arcemu::Util::GUID_LOPART(guid));
     WorldDatabase.Execute(sql);
 
-    pCreature->GetAIInterface()->setMoveType(option);
+    pCreature->GetAIInterface()->SetWaypointScriptType((Movement::WaypointMovementScript)option);
 
     SystemMessage(m_session, "Value saved to database.");
     return true;
@@ -781,7 +781,7 @@ bool ChatHandler::HandleGenerateWaypoints(const char* args, WorldSession* m_sess
     if (cr->m_spawn && cr->m_spawn->movetype != 1)        /* move random */
     {
         cr->m_spawn->movetype = 1;
-        cr->GetAIInterface()->m_moveType = 1;
+        cr->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
         WorldDatabase.Execute("UPDATE creature_spawns SET movetype = 1 WHERE id = %u", cr->GetSQL_id());
     }
     m_session->GetPlayer()->waypointunit = cr->GetAIInterface();

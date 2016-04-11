@@ -74,18 +74,6 @@ enum BehaviorType
     Behavior_CallForHelp
 };
 
-//Zyres: WaypointMoveScript
-/*enum MoveType
-{
-    Move_None,
-    Move_RandomWP,
-    Move_CircleWP,
-    Move_WantedWP,
-    Move_DontMoveWP,
-    Move_Quest,
-    Move_ForwardThenStop
-};*/
-
 struct EmoteDesc
 {
     EmoteDesc(const char* pText, TextType pType, uint32 pSoundId)

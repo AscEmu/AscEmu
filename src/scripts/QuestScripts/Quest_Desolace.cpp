@@ -35,25 +35,25 @@ class ProtectingtheShipment : public QuestScript
             if(creat == NULL)
                 return;
             creat->m_escorter = mTarget;
-            creat->GetAIInterface()->setMoveType(11);
+            creat->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
             creat->GetAIInterface()->StopMovement(3000);
             creat->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Ts...... I must be removed from this lair");
             creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
-            sEAS.WaypointCreate(creat, -336.599213f, 1764.957275f, 139.517746f, 4.461932f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -338.992798f, 1750.499023f, 139.414673f, 5.318010f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -327.872040f, 1734.572388f, 139.331665f, 3.382010f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -350.114044f, 1728.984741f, 139.337723f, 2.514144f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -372.413940f, 1745.675293f, 139.382660f, 3.872884f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -386.453796f, 1736.851685f, 137.771500f, 3.790415f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -400.639496f, 1728.250488f, 131.174881f, 3.511599f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -431.880005f, 1713.812378f, 127.584572f, 3.704021f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -453.655090f, 1700.086670f, 120.951744f, 4.261652f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -465.082306f, 1677.391113f, 111.065910f, 4.866406f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -462.129944f, 1665.744507f, 108.106010f, 4.257726f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -477.037445f, 1630.453857f, 99.003723f, 4.787863f, 1, 256, 3791);
-            sEAS.WaypointCreate(creat, -474.509247f, 1590.814453f, 94.546768f, 5.197841f, 1, 256, 3791);
+            sEAS.WaypointCreate(creat, -336.599213f, 1764.957275f, 139.517746f, 4.461932f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -338.992798f, 1750.499023f, 139.414673f, 5.318010f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -327.872040f, 1734.572388f, 139.331665f, 3.382010f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -350.114044f, 1728.984741f, 139.337723f, 2.514144f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -372.413940f, 1745.675293f, 139.382660f, 3.872884f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -386.453796f, 1736.851685f, 137.771500f, 3.790415f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -400.639496f, 1728.250488f, 131.174881f, 3.511599f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -431.880005f, 1713.812378f, 127.584572f, 3.704021f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -453.655090f, 1700.086670f, 120.951744f, 4.261652f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -465.082306f, 1677.391113f, 111.065910f, 4.866406f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -462.129944f, 1665.744507f, 108.106010f, 4.257726f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -477.037445f, 1630.453857f, 99.003723f, 4.787863f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
+            sEAS.WaypointCreate(creat, -474.509247f, 1590.814453f, 94.546768f, 5.197841f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
             sEAS.EnableWaypoints(creat);
         }
 };

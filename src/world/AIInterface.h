@@ -350,10 +350,16 @@ class SERVER_DECL AIInterface : public IUpdatable
         void deleteWayPoint(uint32 wpid);
         void deleteWaypoints();
         inline bool hasWaypoints() { return m_waypoints != NULL; }
-        inline void setMoveType(uint32 movetype) { m_moveType = movetype; }
-        inline uint32 getMoveType() { return m_moveType; }
+        //inline void setMoveType(uint32 movetype) { m_moveType = movetype; }
+
+        //inline uint32 getMoveType() { return m_moveType; }
         void setWaypointToMove(uint32 id) { m_currentWaypoint = id; }
         bool IsFlying();
+
+        //Zyres: New functions
+        void SetWaypointScriptType(Movement::WaypointMovementScript wp_script) { m_wpScriptType = wp_script; }
+        Movement::WaypointMovementScript GetWaypointScriptType() { return m_wpScriptType; }
+
 
         // Calculation
         float _CalcAggroRange(Unit* target);
@@ -374,7 +380,10 @@ class SERVER_DECL AIInterface : public IUpdatable
         bool m_WayPointsShowBackwards;
         uint32 m_currentWaypoint;
         bool m_moveBackward;
-        uint32 m_moveType;
+
+        //uint32 m_moveType;
+        Movement::WaypointMovementScript m_wpScriptType;
+
         bool onGameobject;
         CreatureState m_creatureState;
         size_t GetWayPointsCount()
@@ -555,13 +564,12 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32 m_FearTimer;
         uint32 m_WanderTimer;
 
-        Movement::WaypointMovementScript m_MovementType;
+        //Movement::WaypointMovementScript m_MovementType;
         MovementState m_MovementState;
         uint32 m_guardTimer;
         int32 m_currentHighestThreat;
         std::list<spawn_timed_emotes*>::iterator next_timed_emote;
         uint32 timed_emote_expire;
-
     private:
 
         /// specifies if m_waypoints was loaded from DB, so shared between other AIInterface instances.

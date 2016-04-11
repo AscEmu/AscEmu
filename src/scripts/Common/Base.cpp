@@ -962,7 +962,7 @@ void MoonScriptCreatureAI::StopWaypointMovement()
 
 void MoonScriptCreatureAI::SetMoveType(Movement::WaypointMovementScript pMoveType)
 {
-    _unit->GetAIInterface()->setMoveType(pMoveType);
+    _unit->GetAIInterface()->SetWaypointScriptType(pMoveType);
 
 }
 

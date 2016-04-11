@@ -34,11 +34,11 @@ public:
         {
             windwatcher->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Follow me");
             sEAS.CreateCustomWaypointMap(windwatcher);
-            sEAS.WaypointCreate(windwatcher, 269.29f, -1433.32f, 50.31f, 0.19f, 0, 0, 0);
-            sEAS.WaypointCreate(windwatcher, 328.52f, -1442.03f, 40.5f, 5.65f, 0, 0, 0);
-            sEAS.WaypointCreate(windwatcher, 333.31f, -1453.69f, 42.01f, 4.68f, 0, 0, 0);
+            sEAS.WaypointCreate(windwatcher, 269.29f, -1433.32f, 50.31f, 0.19f, 0, Movement::WP_MOVE_TYPE_WALK, 0);
+            sEAS.WaypointCreate(windwatcher, 328.52f, -1442.03f, 40.5f, 5.65f, 0, Movement::WP_MOVE_TYPE_WALK, 0);
+            sEAS.WaypointCreate(windwatcher, 333.31f, -1453.69f, 42.01f, 4.68f, 0, Movement::WP_MOVE_TYPE_WALK, 0);
             sEAS.EnableWaypoints(windwatcher);
-            windwatcher->GetAIInterface()->setMoveType(11);
+            windwatcher->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
         }
         windwatcher->Despawn(15*60*1000, 0);
 
