@@ -4621,5 +4621,23 @@ void ApplyNormalFixes()
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
         sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
     }
+
+    //Mage - firestarter talent ranks 1 & 2
+    // overwrite procs, should only proc on these 2 spellgroups.
+    sp = CheckAndReturnSpellEntry(44442);
+    if (sp != NULL)
+    {
+        sp->procFlags = PROC_ON_CAST_SPELL;
+        sp->procChance = 50;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DRAGON_S_BREATH;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_BLAST_WAVE;
+    }
+    sp = CheckAndReturnSpellEntry(44443);
+    if (sp != NULL)
+    {
+        sp->procFlags = PROC_ON_CAST_SPELL;
+        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DRAGON_S_BREATH;
+        sp->custom_ProcOnNameHash[1] = SPELL_HASH_BLAST_WAVE;
+    }
 }
 

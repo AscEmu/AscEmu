@@ -23,6 +23,18 @@
 
  //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts
+class FirestarterTalent : public Spell
+{
+    SPELL_FACTORY_FUNCTION(FirestarterTalent);
+
+    void DoAfterHandleEffect(Unit* target, uint32 i)
+    {
+        if (p_caster != NULL && target != NULL && p_caster->HasAura(54741)) // Cronicman: Player has "Firestarter" aura so we remove it AFTER casting Flamestrike.
+        {
+            p_caster->RemoveAllAuraById(54741);
+        }
+    }
+};
 
 class MissileBarrage : public Spell
 {
@@ -456,6 +468,16 @@ void SpellFactoryMgr::SetupSpellClassScripts()
 {
     //////////////////////////////////////////////////////////////////////////////////////////
     // Mage
+    AddSpellById(2120, FirestarterTalent::Create);   //Rank 1
+    AddSpellById(2121, FirestarterTalent::Create);   //Rank 2
+    AddSpellById(8422, FirestarterTalent::Create);   //Rank 3
+    AddSpellById(8423, FirestarterTalent::Create);   //Rank 4
+    AddSpellById(10215, FirestarterTalent::Create);   //Rank 5
+    AddSpellById(10216, FirestarterTalent::Create);   //Rank 6
+    AddSpellById(27086, FirestarterTalent::Create);   //Rank 7
+    AddSpellById(42925, FirestarterTalent::Create);   //Rank 8
+    AddSpellById(42926, FirestarterTalent::Create);   //Rank 9
+
     AddSpellById(5143, MissileBarrage::Create);   //Rank 1
     AddSpellById(5144, MissileBarrage::Create);   //Rank 2
     AddSpellById(5145, MissileBarrage::Create);   //Rank 3
