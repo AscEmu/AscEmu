@@ -162,7 +162,13 @@ class SERVER_DECL Pet : public Creature
         inline uint32 GetPetState(void) { return m_State; }
 
         inline void SetPetDiet(uint32 diet) { m_Diet = diet; }
-        inline void SetPetDiet() { m_Diet = myFamily->petdietflags; }
+        inline void SetPetDiet()
+        { 
+            if (myFamily)
+                m_Diet = myFamily->petdietflags;
+            else
+                m_Diet = 0;
+        }
         inline uint32 GetPetDiet(void) { return m_Diet; }
 
         inline AI_Spell* GetAISpellForSpellId(uint32 spellid)
