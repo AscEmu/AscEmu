@@ -1474,7 +1474,7 @@ class LakkaAI : public MoonScriptCreatureAI
         ADD_CREATURE_FACTORY_FUNCTION(LakkaAI);
         LakkaAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
 
             //WPs
             for (uint8 i = 1; i < 4; ++i)
@@ -1489,7 +1489,7 @@ class LakkaAI : public MoonScriptCreatureAI
             {
                 case 1:
                 {
-                    SetMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     SetWaypointToMove(2);
                     Player* pPlayer = NULL;
                     QuestLogEntry* pQuest = NULL;
@@ -1519,7 +1519,7 @@ class LakkaAI : public MoonScriptCreatureAI
                 break;
                 default:
                 {
-                    SetMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     SetWaypointToMove(1);
                 }
             }
@@ -1679,7 +1679,7 @@ class DarkweaverSythAI : public CreatureAIScript
             {
                 MoonScriptCreatureAI* pLakkaAI = static_cast< MoonScriptCreatureAI* >(mLakka->GetScript());
                 mLakka->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                pLakkaAI->SetMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                pLakkaAI->SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 pLakkaAI->SetWaypointToMove(1);
                 pLakkaAI->SetBehavior(Behavior_Default);
             }

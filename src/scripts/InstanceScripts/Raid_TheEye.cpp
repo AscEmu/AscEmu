@@ -3045,7 +3045,7 @@ class KaelThasAI : public MoonScriptBossAI
             }
 
             SetCanEnterCombat(true);
-            SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             SetCanMove(true);
 
             // Other spells

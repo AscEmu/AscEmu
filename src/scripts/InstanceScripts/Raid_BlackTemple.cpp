@@ -4332,7 +4332,7 @@ class AkamaAI : public MoonScriptBossAI
             AddEmote(Event_OnTargetDied, "One step closer!", Text_Yell, 11382);
             AddEmote(Event_OnDied, "Fight on friends! Kill him and end the curse on my people!", Text_Yell, 11391);
 
-            SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             SetCanEnterCombat(false);
             SetPhase(1);
 
@@ -4606,7 +4606,7 @@ class AkamaAI : public MoonScriptBossAI
                     SetCanMove(true);
                     SetCanEnterCombat(true);
                     SetBehavior(Behavior_Default);
-                    SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                    SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                     SetWaypointToMove(0);
                     RemoveAIUpdateEvent();
                     _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -4908,7 +4908,7 @@ class MaievAI : public MoonScriptBossAI
             _unit->SetHealth(1000000);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
-            SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             SetPhase(1);
 
             mYellTimer = mScenePart = mTrapTimer = 0;
@@ -5329,7 +5329,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             SetWieldWeapon(false);
             SetCanMove(false);
             SetFlyMode(false);
-            SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             SetPhase(1);
 
             for (uint8 i = 1; i < ILLIDAN_WAYPOINT_SIZE; ++i)
@@ -5386,7 +5386,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
         {
             // General
             _unit->SetEmoteState(0);
-            SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             SetTargetToChannel(NULL, 0);
             SetCanEnterCombat(true);
             SetWieldWeapon(true);

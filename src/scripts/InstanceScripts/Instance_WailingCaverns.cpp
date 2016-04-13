@@ -411,7 +411,7 @@ class DofNaralexAI : public MoonScriptBossAI
 
             for (uint8 i = 1; i < 39; i++)
                 AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToNaralex[i]));
-            SetMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
 
             // Awakening Spell
             Awakening = AddSpell(6271, Target_Self, 0, 0, 0, 0, 0, false, "Step back and be ready!, I'll try to Awake Naralex", Text_Say);

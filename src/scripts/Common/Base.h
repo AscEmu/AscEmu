@@ -410,7 +410,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
         void ForceWaypointMove(uint32 pWaypointId);
         void SetWaypointToMove(uint32 pWaypointId);
         void StopWaypointMovement();
-        void SetMoveType(Movement::WaypointMovementScript pMoveType);
+        void SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type);
         uint32 GetCurrentWaypoint();
         size_t GetWaypointCount();
         bool HasWaypoints();
