@@ -1846,9 +1846,9 @@ bool AIInterface::IsFlying()
 
 void AIInterface::UpdateSpeeds()
 {
-    if (HasWalkMode(WALKMODE_SPRINT))
+    if (GetWalkMode() == WALKMODE_SPRINT)
         m_runSpeed = (m_Unit->m_runSpeed + 5.0f) * 0.001f;
-    if (HasWalkMode(WALKMODE_RUN))
+    if (GetWalkMode() == WALKMODE_RUN)
         m_runSpeed = m_Unit->m_runSpeed * 0.001f;
 
     m_walkSpeed = m_Unit->m_walkSpeed * 0.001f;
@@ -3634,17 +3634,21 @@ void AIInterface::AddSpline(float x, float y, float z)
         movetime = (uint32)(dist / m_flySpeed);
     else if (m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode)
     {
-        if (HasWalkMode(WALKMODE_SPRINT) || HasWalkMode(WALKMODE_RUN))
-            movetime = (uint32)(dist / m_runSpeed);
-        else if (HasWalkMode(WALKMODE_WALK))
-            movetime = (uint32)(dist / m_walkSpeed);
-        else
+        switch (GetWalkMode())
         {
-            LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
-            //setting movetime to default value of 1 second. Change if to either a return; or something more meaningful
-            //but don't leave movetime uninitialized...
-            movetime = 1.0f;
+            case WALKMODE_SPRINT:
+            case WALKMODE_RUN:
+                movetime = (uint32)(dist / m_runSpeed);
+                break;
+            case WALKMODE_WALK:
+                movetime = (uint32)(dist / m_walkSpeed);
+                break;
+            default:
+                LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
+                movetime = 1.0f;
+                break;
         }
+
     }
     else
     {

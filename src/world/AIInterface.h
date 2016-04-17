@@ -327,8 +327,11 @@ class SERVER_DECL AIInterface : public IUpdatable
         void SetSprint() { if (Flying()) return; m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true; SetWalkMode(WALKMODE_SPRINT); UpdateSpeeds(); }
         void SetRun() { if (Flying()) return; m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true; SetWalkMode(WALKMODE_RUN); UpdateSpeeds(); }
         void SetWalk() { if (Flying()) return; m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true; SetWalkMode(WALKMODE_WALK); UpdateSpeeds(); }
+
         void SetWalkMode(uint32 mode) { m_walkMode = mode; }
         bool HasWalkMode(uint32 mode) { return m_walkMode == mode; }
+        uint32 GetWalkMode() { return m_walkMode; }
+
         void StopFlying() { if (Flying()) { m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying = false; SetWalk(); } }
 
         //Movement::Spline::MoveSpline m_spline;

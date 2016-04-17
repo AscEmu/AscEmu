@@ -24,7 +24,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     uint32 current_wp = creature->GetAIInterface()->getCurrentWaypoint();
     uint32 wp_script_type = creature->GetAIInterface()->GetWaypointScriptType();
 
-    //bool run = creature->GetAIInterface()->HasWalkMode(WALKMODE_RUN) || creature->GetAIInterface()->HasWalkMode(WALKMODE_SPRINT);
+    uint32 walk_mode = creature->GetAIInterface()->GetWalkMode();
 
     uint32 attackerscount = creature->GetAIInterface()->getAITargetsCount();
 
@@ -37,6 +37,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     SystemMessage(m_session, "Current state: %u", creature_state);
     SystemMessage(m_session, "Current AI state: %u | AIType: %u | AIAgent: ", ai_state, ai_type, ai_agent);
     SystemMessage(m_session, "Current waypoint id: %u | wp script type: %u", current_wp, wp_script_type);
+    SystemMessage(m_session, "Walkmode: %u", walk_mode);
     SystemMessage(m_session, "=== Misc ===");
     SystemMessage(m_session, "Attackers count: %u", attackerscount);
 
