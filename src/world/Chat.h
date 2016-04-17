@@ -631,7 +631,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         uint8 GetArenaTeamInternalType(uint32 type, WorldSession* m_session);
         bool HandleArenaCreateTeam(const char* args, WorldSession* m_session);
         bool HandleArenaSetTeamLeader(const char* args, WorldSession* m_session);
-        bool HandleArenaResetAllRatingsCommand(const char* args, WorldSession* m_session);
+        bool HandleArenaTeamResetAllRatings(const char* /*args*/, WorldSession* /*m_session*/);
 
         bool HandleNpcSelectCommand(const char* args, WorldSession* m_session);
         bool HandleWaypointAddFlyCommand(const char* args, WorldSession* m_session);

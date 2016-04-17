@@ -731,7 +731,7 @@ void CommandTableStorage::Init()
     {
         { "createteam",      'e', &ChatHandler::HandleArenaCreateTeam,      "Creates arena team with <type> <name>",                            NULL, 0, 0, 0 },
         { "setteamleader",   'e', &ChatHandler::HandleArenaSetTeamLeader,   "Sets the arena team leader for <type>",                    NULL, 0, 0, 0 },
-        { "resetallratings", 'z', &ChatHandler::HandleArenaResetAllRatingsCommand, "Resets all arena teams to their default rating", NULL, 0, 0, 0 },
+        { "resetallratings", 'z', &ChatHandler::HandleArenaTeamResetAllRatings, "Resets all arena teams to their default rating", NULL, 0, 0, 0 },
         { NULL,              '0', NULL,                                            "",                                              NULL, 0, 0, 0 }
     };
     dupe_command_table(arenaCommandTable, _arenaCommandTable);

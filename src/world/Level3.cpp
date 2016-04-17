@@ -3695,12 +3695,6 @@ bool ChatHandler::HandleGuildMembersCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::HandleArenaResetAllRatingsCommand(const char* args, WorldSession* m_session)
-{
-    objmgr.ResetArenaTeamRatings();
-    return true;
-}
-
 bool ChatHandler::HandleWhisperBlockCommand(const char* args, WorldSession* m_session)
 {
     if (m_session->GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))

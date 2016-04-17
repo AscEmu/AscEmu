@@ -108,3 +108,10 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
 
     return true;
 }
+
+bool ChatHandler::HandleArenaTeamResetAllRatings(const char* /*args*/, WorldSession* /*m_session*/)
+{
+    objmgr.ResetArenaTeamRatings();
+
+    return true;
+}
