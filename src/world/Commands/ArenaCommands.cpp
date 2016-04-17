@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
-uint8 GetArenaTeamInternalType(uint8 type)
+uint8 ChatHandler::GetArenaTeamInternalType(uint32 type, WorldSession* m_session)
 {
     uint8 internal_type;
     switch (type)
@@ -20,8 +20,10 @@ uint8 GetArenaTeamInternalType(uint8 type)
             internal_type = 2;
             break;
         default:
+        {
             internal_type = 10;
-            break;
+            RedSystemMessage(m_session, "Invalid arena team type specified! Valid types: 2, 3 and 5.");
+        }break;
     }
 
     return internal_type;
@@ -29,7 +31,7 @@ uint8 GetArenaTeamInternalType(uint8 type)
 
 bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_session)
 {
-    uint8 team_type;
+    uint32 team_type;
     char team_name[1000];
 
     auto player = getSelectedChar(m_session, true);
@@ -39,12 +41,9 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    uint8 internal_type = GetArenaTeamInternalType(team_type);
-    if (internal_type > 2)
-    {
-        SystemMessage(m_session, "Invalid arena team type specified! Valid types: 2, 3 and 5.");
+    uint8 internal_type = GetArenaTeamInternalType(team_type, m_session);
+    if (internal_type == 10)
         return true;
-    }
 
     if (player == nullptr)
     {
@@ -54,11 +53,11 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
 
     if (player->m_arenaTeams[internal_type] != NULL)
     {
-        SystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->GetName());
+        RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->GetName());
         return true;
     }
 
-    auto arena_team = new ArenaTeam(internal_type, objmgr.GenerateArenaTeamId());
+    auto arena_team = new ArenaTeam(uint32(internal_type), objmgr.GenerateArenaTeamId());
     arena_team->m_emblemStyle = 22;
     arena_team->m_emblemColour = 4292133532UL;
     arena_team->m_borderColour = 4294931722UL;
@@ -70,7 +69,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
 
     objmgr.AddArenaTeam(arena_team);
 
-    SystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->GetName(), team_type);
+    GreenSystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->GetName(), team_type);
 
     return true;
 }
@@ -86,12 +85,9 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
         return true;
     }
 
-    uint8 internal_type = GetArenaTeamInternalType(team_type);
-    if (internal_type > 2)
-    {
-        SystemMessage(m_session, "Invalid arena team type specified! Valid types: 2, 3 and 5.");
+    uint8 internal_type = GetArenaTeamInternalType(team_type, m_session);
+    if (internal_type == 10)
         return true;
-    }
 
     if (player == nullptr)
     {
@@ -101,14 +97,14 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
 
     if (player->m_arenaTeams[internal_type] == NULL)
     {
-        SystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->GetName());
+        RedSystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->GetName());
         return true;
     }
 
     auto arena_team = player->m_arenaTeams[internal_type];
     arena_team->SetLeader(player->getPlayerInfo());
 
-    SystemMessage(m_session, "Player: %s is now arena team leader for type: %u", player->GetName(), team_type);
+    GreenSystemMessage(m_session, "Player: %s is now arena team leader for type: %u", player->GetName(), team_type);
 
     return true;
 }

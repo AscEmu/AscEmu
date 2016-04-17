@@ -628,6 +628,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAIAgentDebugSkip(const char* args, WorldSession* m_session);
 
         // Arena commands
+        uint8 GetArenaTeamInternalType(uint32 type, WorldSession* m_session);
         bool HandleArenaCreateTeam(const char* args, WorldSession* m_session);
         bool HandleArenaSetTeamLeader(const char* args, WorldSession* m_session);
         bool HandleArenaResetAllRatingsCommand(const char* args, WorldSession* m_session);
