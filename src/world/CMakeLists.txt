@@ -5,6 +5,8 @@ project(world CXX)
 
 set(sources
    Commands/AccountCommands.cpp
+   Commands/ArenaCommands.cpp
+   Commands/DebugCommands.cpp
    Commands/TransporterCommands.cpp
    Commands/TicketCommands.cpp
    DBC/DBCStores.cpp

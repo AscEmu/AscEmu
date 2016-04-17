@@ -627,7 +627,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAIAgentDebugContinue(const char* args, WorldSession* m_session);
         bool HandleAIAgentDebugSkip(const char* args, WorldSession* m_session);
 
-        bool HandleArenaCreateTeamCommand(const char* args, WorldSession* m_session);
+        // Arena commands
+        bool HandleArenaCreateTeam(const char* args, WorldSession* m_session);
         bool HandleArenaSetTeamLeaderCommand(const char* args, WorldSession* m_session);
         bool HandleArenaResetAllRatingsCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSelectCommand(const char* args, WorldSession* m_session);

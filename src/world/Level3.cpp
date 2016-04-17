@@ -3695,57 +3695,6 @@ bool ChatHandler::HandleGuildMembersCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::HandleArenaCreateTeamCommand(const char* args, WorldSession* m_session)
-{
-    uint32 arena_team_type;
-    char name[1000];
-    uint32 real_type;
-    Player* plr = getSelectedChar(m_session, true);
-    if (sscanf(args, "%u %[^\n]", &arena_team_type, name) != 2)
-    {
-        SystemMessage(m_session, "Invalid syntax.");
-        return true;
-    }
-
-    switch (arena_team_type)
-    {
-        case 2:
-            real_type = 0;
-            break;
-        case 3:
-            real_type = 1;
-            break;
-        case 5:
-            real_type = 2;
-            break;
-        default:
-            SystemMessage(m_session, "Invalid arena team type specified.");
-            return true;
-    }
-
-    if (!plr)
-        return true;
-
-    if (plr->m_arenaTeams[real_type] != NULL)
-    {
-        SystemMessage(m_session, "Already in an arena team of that type.");
-        return true;
-    }
-
-    ArenaTeam* t = new ArenaTeam(real_type, objmgr.GenerateArenaTeamId());
-    t->m_emblemStyle = 22;
-    t->m_emblemColour = 4292133532UL;
-    t->m_borderColour = 4294931722UL;
-    t->m_borderStyle = 1;
-    t->m_backgroundColour = 4284906803UL;
-    t->m_leader = plr->GetLowGUID();
-    t->m_name = std::string(name);
-    t->AddMember(plr->getPlayerInfo());
-    objmgr.AddArenaTeam(t);
-    SystemMessage(m_session, "created arena team.");
-    return true;
-}
-
 bool ChatHandler::HandleArenaSetTeamLeaderCommand(const char* args, WorldSession* m_session)
 {
     uint32 arena_team_type;
