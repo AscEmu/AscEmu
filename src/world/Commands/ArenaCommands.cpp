@@ -5,20 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
-bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_session)
+uint8 GetArenaTeamInternalType(uint8 type)
 {
-    uint8 team_type;
     uint8 internal_type;
-    char team_name[1000];
-
-    auto player = getSelectedChar(m_session, true);
-    if (sscanf(args, "%u %[^\n]", &team_type, team_name) != 2)
-    {
-        SystemMessage(m_session, "Invalid syntax. Usage: .arena createteam <type> <name>");
-        return true;
-    }
-
-    switch (team_type)
+    switch (type)
     {
         case 2:
             internal_type = 0;
@@ -30,8 +20,30 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
             internal_type = 2;
             break;
         default:
-            SystemMessage(m_session, "Invalid arena team type specified! Valid types: 2, 3 and 5.");
-            return true;
+            internal_type = 10;
+            break;
+    }
+
+    return internal_type;
+}
+
+bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_session)
+{
+    uint8 team_type;
+    char team_name[1000];
+
+    auto player = getSelectedChar(m_session, true);
+    if (sscanf(args, "%u %[^\n]", &team_type, team_name) != 2)
+    {
+        SystemMessage(m_session, "Invalid syntax. Usage: .arena createteam <type> <name>");
+        return true;
+    }
+
+    uint8 internal_type = GetArenaTeamInternalType(team_type);
+    if (internal_type > 2)
+    {
+        SystemMessage(m_session, "Invalid arena team type specified! Valid types: 2, 3 and 5.");
+        return true;
     }
 
     if (player == nullptr)
