@@ -313,7 +313,7 @@ void CommandTableStorage::Init()
         { "aimove",              'd', &ChatHandler::HandleAIMoveCommand,           "",                                                                                                                  NULL, 0, 0, 0 },
         { "dist",                'd', &ChatHandler::HandleDistanceCommand,         "",                                                                                                                  NULL, 0, 0, 0 },
         { "face",                'd', &ChatHandler::HandleFaceCommand,             "",                                                                                                                  NULL, 0, 0, 0 },
-        { "moveinfo",            'd', &ChatHandler::HandleMoveInfoCommand,         "",                                                                                                                  NULL, 0, 0, 0 },
+        { "moveinfo",            'd', &ChatHandler::HandleDebugMoveInfo,         "",                                                                                                                  NULL, 0, 0, 0 },
         { "setbytes",            'd', &ChatHandler::HandleSetBytesCommand,         "",                                                                                                                  NULL, 0, 0, 0 },
         { "getbytes",            'd', &ChatHandler::HandleGetBytesCommand,         "",                                                                                                                  NULL, 0, 0, 0 },
         { "unroot",              'd', &ChatHandler::HandleDebugUnroot,             "",                                                                                                                  NULL, 0, 0, 0 },

@@ -124,44 +124,6 @@ bool ChatHandler::HandleDistanceCommand(const char* args, WorldSession* m_sessio
     return true;
 }
 
-bool ChatHandler::HandleMoveInfoCommand(const char* args, WorldSession* m_session)
-{
-    Object* obj;
-
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if ((obj = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid))) == 0)
-    {
-        SystemMessage(m_session, "You should select a character or a creature.");
-        return true;
-    }
-
-    float dist = m_session->GetPlayer()->CalcDistance(obj);
-    bool minfront = obj->isInFront(m_session->GetPlayer());
-    bool pinfront = m_session->GetPlayer()->isInFront(obj);
-    uint32 movetype = static_cast< Creature* >(obj)->GetAIInterface()->GetWaypointScriptType();
-    bool run = static_cast< Creature* >(obj)->GetAIInterface()->HasWalkMode(WALKMODE_RUN) || static_cast< Creature* >(obj)->GetAIInterface()->HasWalkMode(WALKMODE_SPRINT);
-    uint32 attackerscount = (uint32)static_cast< Creature* >(obj)->GetAIInterface()->getAITargetsCount();
-    uint32 creatureState = static_cast< Creature* >(obj)->GetAIInterface()->m_creatureState;
-    uint32 curwp = static_cast< Creature* >(obj)->GetAIInterface()->getCurrentWaypoint();
-    uint32 aistate = static_cast< Creature* >(obj)->GetAIInterface()->getAIState();
-    uint32 aitype = static_cast< Creature* >(obj)->GetAIInterface()->getAIType();
-    uint32 aiagent = static_cast< Creature* >(obj)->GetAIInterface()->getCurrentAgent();
-    uint32 lowfollow = 0;
-    uint32 highfollow = 0;
-
-    std::stringstream sstext;
-    sstext << "Following Unit: Low: " << lowfollow << " High: " << highfollow << "\n";
-    sstext << "Distance is: " << dist << "\n";
-    sstext << "Mob Facing Player: " << minfront << " Player Facing Mob: " << pinfront << "\n";
-    sstext << "Attackers Count: " << attackerscount << "\n";
-    sstext << "Creature State: " << creatureState << " Run: " << run << "\n";
-    sstext << "AIState: " << aistate << " AIType: " << aitype << " AIAgent: " << aiagent << "\n";
-    sstext << "MoveType: " << movetype << " Current Waypoint: " << curwp << "\n";
-
-    SendMultilineMessage(m_session, sstext.str().c_str());
-
-    return true;
-}
 
 bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
 {

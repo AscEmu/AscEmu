@@ -280,12 +280,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDeveloperCommand(const char* args, WorldSession* m_session);
 
         // Debug Commands
+        bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
+
         /* Dumps movement data to the chatbox */
         bool HandleDebugDumpMovementCommand(const char* args, WorldSession* session);
         bool HandleDebugInFrontCommand(const char* args, WorldSession* m_session);
         bool HandleShowReactionCommand(const char* args, WorldSession* m_session);
         bool HandleAIMoveCommand(const char* args, WorldSession* m_session);
-        bool HandleMoveInfoCommand(const char* args, WorldSession* m_session);
         bool HandleDistanceCommand(const char* args, WorldSession* m_session);
         bool HandleFaceCommand(const char* args, WorldSession* m_session);
         bool HandleSetBytesCommand(const char* args, WorldSession* m_session);

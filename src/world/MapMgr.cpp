@@ -1825,7 +1825,7 @@ Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, floa
 Creature* MapMgr::GetCreature(uint32 guid)
 {
     if (guid > m_CreatureHighGuid)
-        return NULL;
+        return nullptr;
     return CreatureStorage[guid];
 }
 
@@ -1974,7 +1974,7 @@ Pet* MapMgr::GetPet(uint32 guid)
 Player* MapMgr::GetPlayer(uint32 guid)
 {
     PlayerStorageMap::iterator itr = m_PlayerStorage.find(guid);
-    return (itr != m_PlayerStorage.end()) ? itr->second : NULL;
+    return (itr != m_PlayerStorage.end()) ? itr->second : nullptr;
 }
 
 void MapMgr::AddCombatInProgress(uint64 guid)
