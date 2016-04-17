@@ -3695,48 +3695,6 @@ bool ChatHandler::HandleGuildMembersCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::HandleArenaSetTeamLeaderCommand(const char* args, WorldSession* m_session)
-{
-    uint32 arena_team_type;
-    uint32 real_type;
-    Player* plr = getSelectedChar(m_session, true);
-    if (sscanf(args, "%u", &arena_team_type) != 1)
-    {
-        SystemMessage(m_session, "Invalid syntax.");
-        return true;
-    }
-
-    switch (arena_team_type)
-    {
-        case 2:
-            real_type = 0;
-            break;
-        case 3:
-            real_type = 1;
-            break;
-        case 5:
-            real_type = 2;
-            break;
-        default:
-            SystemMessage(m_session, "Invalid arena team type specified.");
-            return true;
-    }
-
-    if (!plr)
-        return true;
-
-    if (plr->m_arenaTeams[real_type] == NULL)
-    {
-        SystemMessage(m_session, "Not in an arena team of that type.");
-        return true;
-    }
-
-    ArenaTeam* t = plr->m_arenaTeams[real_type];
-    t->SetLeader(plr->getPlayerInfo());
-    SystemMessage(m_session, "player is now arena team leader.");
-    return true;
-}
-
 bool ChatHandler::HandleArenaResetAllRatingsCommand(const char* args, WorldSession* m_session)
 {
     objmgr.ResetArenaTeamRatings();

@@ -52,7 +52,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    if ( player->m_arenaTeams[internal_type] != NULL)
+    if (player->m_arenaTeams[internal_type] != NULL)
     {
         SystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->GetName());
         return true;
@@ -71,6 +71,44 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
     objmgr.AddArenaTeam(arena_team);
 
     SystemMessage(m_session, "Arena team created for Player: %s Type: %u", player->GetName(), team_type);
+
+    return true;
+}
+
+bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_session)
+{
+    uint32 team_type;
+
+    auto player = getSelectedChar(m_session, true);
+    if (sscanf(args, "%u", &team_type) != 1)
+    {
+        SystemMessage(m_session, "Invalid syntax. Usage: .arena setteamleader <type>");
+        return true;
+    }
+
+    uint8 internal_type = GetArenaTeamInternalType(team_type);
+    if (internal_type > 2)
+    {
+        SystemMessage(m_session, "Invalid arena team type specified! Valid types: 2, 3 and 5.");
+        return true;
+    }
+
+    if (player == nullptr)
+    {
+        SystemMessage(m_session, "Selected player not found!");
+        return true;
+    }
+
+    if (player->m_arenaTeams[internal_type] == NULL)
+    {
+        SystemMessage(m_session, "Player: %s is already in an arena team of that type!", player->GetName());
+        return true;
+    }
+
+    auto arena_team = player->m_arenaTeams[internal_type];
+    arena_team->SetLeader(player->getPlayerInfo());
+
+    SystemMessage(m_session, "Player: %s is now arena team leader for type: %u", player->GetName(), team_type);
 
     return true;
 }
