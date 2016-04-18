@@ -23,6 +23,7 @@
 class GossipScourgeGryphon : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             if (plr->HasQuest(12670) || plr->HasFinishedQuest(12670))
@@ -41,6 +42,7 @@ class GossipScourgeGryphon : public GossipScript
 class AcherusSoulPrison : GameObjectAIScript
 {
     public:
+
         AcherusSoulPrison(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO)
         {
@@ -50,7 +52,7 @@ class AcherusSoulPrison : GameObjectAIScript
         void OnActivate(Player* pPlayer)
         {
             QuestLogEntry* en = pPlayer->GetQuestLogForEntry(12848);
-            if(!en)
+            if (!en)
                 return;
 
             float SSX = pPlayer->GetPositionX();
@@ -59,10 +61,10 @@ class AcherusSoulPrison : GameObjectAIScript
 
             Creature* pCreature = pPlayer->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(SSX, SSY, SSZ);
 
-            if(!pCreature || !pCreature->isAlive())
+            if (!pCreature || !pCreature->isAlive())
                 return;
 
-            if(pCreature->GetEntry() == CN_INITIATE_1 || pCreature->GetEntry() == CN_INITIATE_2 || pCreature->GetEntry() == CN_INITIATE_3 || pCreature->GetEntry() == CN_INITIATE_4)
+            if (pCreature->GetEntry() == CN_INITIATE_1 || pCreature->GetEntry() == CN_INITIATE_2 || pCreature->GetEntry() == CN_INITIATE_3 || pCreature->GetEntry() == CN_INITIATE_4)
             {
                 pPlayer->SendChatMessage(CHAT_MSG_SAY, LANG_UNIVERSAL, "I give you the key to your salvation");
                 pCreature->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
@@ -70,7 +72,7 @@ class AcherusSoulPrison : GameObjectAIScript
                 pCreature->GetAIInterface()->AttackReaction(pPlayer, 1, 0);
                 pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "You have committed a big mistake, demon");
 
-                if(en->GetMobCount(0) != 0)
+                if (en->GetMobCount(0) != 0)
                     return;
 
                 en->SetMobCount(0, 1);
@@ -84,6 +86,7 @@ class AcherusSoulPrison : GameObjectAIScript
 class QuestInServiceOfLichKing : public QuestScript
 {
     public:
+
         void OnQuestStart(Player* mTarget, QuestLogEntry* /*qLogEntry*/)
         {
             // Play first sound
@@ -100,10 +103,10 @@ class QuestInServiceOfLichKing : public QuestScript
 // QuestID for Praparation for the Battle
 enum QUEST_12842_ENUM
 {
-    QUEST_PREPARATION                   = 12842,
+    QUEST_PREPARATION = 12842,
 
-    SPELL_RUNE_I                        = 53341, // Spell Rune of Cinderglacier
-    SPELL_RUNE_II                       = 53343, // Spell Rune of Razorice
+    SPELL_RUNE_I = 53341, // Spell Rune of Cinderglacier
+    SPELL_RUNE_II = 53343, // Spell Rune of Razorice
     SPELL_PREPERATION_FOR_BATTLE_CREDIT = 54586
 };
 
@@ -129,7 +132,6 @@ void SetupDeathKnight(ScriptMgr* mgr)
     mgr->register_dummy_spell(SPELL_RUNE_II, &PreparationForBattleEffect);
     mgr->register_quest_script(12593, new QuestInServiceOfLichKing);
 
-    // These gobs had already a script by Type (in gameobject_names Type = 1 = Button).
     mgr->register_gameobject_script(191588, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191577, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191580, &AcherusSoulPrison::Create);
@@ -142,5 +144,4 @@ void SetupDeathKnight(ScriptMgr* mgr)
     mgr->register_gameobject_script(191587, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191589, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191590, &AcherusSoulPrison::Create);
-
 }
