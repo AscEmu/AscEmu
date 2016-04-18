@@ -43,7 +43,6 @@ void SetupBlastedLands(ScriptMgr* mgr);
 void SetupBloodmystIsle(ScriptMgr* mgr);
 void SetupBurningSteppes(ScriptMgr* mgr);
 //void SetupDarkshore(ScriptMgr * mgr)
-void SetupDeathKnight(ScriptMgr* mgr);
 void SetupDesolace(ScriptMgr* mgr);
 void SetupDragonblight(ScriptMgr* mgr);
 void SetupDuskwood(ScriptMgr* mgr);

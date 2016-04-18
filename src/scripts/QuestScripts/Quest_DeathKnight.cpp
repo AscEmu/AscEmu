@@ -130,7 +130,7 @@ void SetupDeathKnight(ScriptMgr* mgr)
     mgr->register_quest_script(12593, new QuestInServiceOfLichKing);
 
     // These gobs had already a script by Type (in gameobject_names Type = 1 = Button).
-    /*mgr->register_gameobject_script(191588, &AcherusSoulPrison::Create);
+    mgr->register_gameobject_script(191588, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191577, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191580, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191581, &AcherusSoulPrison::Create);
@@ -141,6 +141,6 @@ void SetupDeathKnight(ScriptMgr* mgr)
     mgr->register_gameobject_script(191586, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191587, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191589, &AcherusSoulPrison::Create);
-    mgr->register_gameobject_script(191590, &AcherusSoulPrison::Create);*/
+    mgr->register_gameobject_script(191590, &AcherusSoulPrison::Create);
 
 }
