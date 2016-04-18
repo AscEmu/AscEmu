@@ -332,13 +332,13 @@ class Stasis_Chamber_Alpha : public GameObjectAIScript
 
 //////////////////////////////////////////////////////////////////////////
 /////// Bladespire Brute/Shaman/Cook
-#define CN_BLADESPIRE_OGRE_1                19995
-#define CN_BLADESPIRE_OGRE_2                19998
-#define CN_BLADESPIRE_OGRE_3                20756
+#define CN_BLADESPIRE_OGRE_1 19995
+#define CN_BLADESPIRE_OGRE_2 19998
+#define CN_BLADESPIRE_OGRE_3 20756
 
 //////////////////////////////////////////////////////////////////////////
 /////// Bloodmaul Brutebane Stout Trigger
-#define CN_BLOODMAUL_BRUTEBANE_STOUT_TRIGGER    21241
+#define CN_BLOODMAUL_BRUTEBANE_STOUT_TRIGGER 21241
 
 class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
 {

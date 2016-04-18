@@ -92,8 +92,6 @@ extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment a
     SetupSunwellPlateau(mgr);
     SetupWorldBosses(mgr);
     SetupZulAman(mgr);
-    //Other
-    //SetupGenericAI(mgr);
 }
 
 #ifdef WIN32
@@ -103,7 +101,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
     return TRUE;
 }
 
-#endif
+#endif  //Win32
 
 SP_AI_Spell::SP_AI_Spell()
 {

@@ -21,8 +21,8 @@
 
 #include "Setup.h"
 
-typedef std::pair< uint64, Creature* > QuestDefinition;
-typedef std::vector< QuestDefinition > QuestCreature;
+typedef std::pair<uint64, Creature*> QuestDefinition;
+typedef std::vector<QuestDefinition> QuestCreature;
 
 class TotemofCoo : public QuestScript
 {
@@ -215,9 +215,9 @@ class TotemofVark : public QuestScript
             Yor->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg);
 
             sEAS.CreateCustomWaypointMap(Yor);
-            sEAS.WaypointCreate(Yor, -4650.081055f, -13016.692383f, 1.776296f, 2.021601f, 0, 256, 16393);
-            sEAS.WaypointCreate(Yor, -3886.341553f, -13098.914063f, 3.964841f, 1.855801f, 1000, 256, 16393);
-            sEAS.WaypointCreate(Yor, -4677.421387f, -12983.874023f, 0.833827f, 2.335760f, 0, 256, 16393);   // Should look player
+            sEAS.WaypointCreate(Yor, -4650.081055f, -13016.692383f, 1.776296f, 2.021601f, 0, Movement::WP_MOVE_TYPE_RUN, 16393);
+            sEAS.WaypointCreate(Yor, -3886.341553f, -13098.914063f, 3.964841f, 1.855801f, 1000, Movement::WP_MOVE_TYPE_RUN, 16393);
+            sEAS.WaypointCreate(Yor, -4677.421387f, -12983.874023f, 0.833827f, 2.335760f, 0, Movement::WP_MOVE_TYPE_RUN, 16393);   // Should look player
             sEAS.EnableWaypoints(Yor);
 
             //We have to set up these pointers first to resolve ambiguity in the event manager template

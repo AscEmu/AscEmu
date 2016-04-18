@@ -41,21 +41,21 @@ class SunkenTreasure : public QuestScript
             creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
             sEAS.CreateCustomWaypointMap(creat);
-            sEAS.WaypointCreate(creat, -2078.054443f, -2091.207764f, 9.526212f, 4.770276f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2076.626465f, -2109.960449f, 14.320494f, 4.821321f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2072.851074f, -2123.574219f, 18.482662f, 5.623996f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2063.878906f, -2132.617920f, 21.430487f, 5.512474f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2051.495117f, -2145.205811f, 20.500065f, 5.481060f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2051.495117f, -2145.205811f, 20.500065f, 5.481060f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2063.878906f, -2132.617920f, 21.430487f, 5.512474f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2072.851074f, -2123.574219f, 18.482662f, 5.623996f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2076.626465f, -2109.960449f, 14.320494f, 4.821321f, 0, 256, 4049);
-            sEAS.WaypointCreate(creat, -2078.054443f, -2091.207764f, 9.526212f, 4.770276f, 0, 256, 4049);
+            sEAS.WaypointCreate(creat, -2078.054443f, -2091.207764f, 9.526212f, 4.770276f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2076.626465f, -2109.960449f, 14.320494f, 4.821321f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2072.851074f, -2123.574219f, 18.482662f, 5.623996f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2063.878906f, -2132.617920f, 21.430487f, 5.512474f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2051.495117f, -2145.205811f, 20.500065f, 5.481060f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2044.748291f, -2152.411377f, 20.158432f, 5.437863f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2051.495117f, -2145.205811f, 20.500065f, 5.481060f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2063.878906f, -2132.617920f, 21.430487f, 5.512474f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2072.851074f, -2123.574219f, 18.482662f, 5.623996f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2076.626465f, -2109.960449f, 14.320494f, 4.821321f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
+            sEAS.WaypointCreate(creat, -2078.054443f, -2091.207764f, 9.526212f, 4.770276f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
             sEAS.EnableWaypoints(creat);
         }
 };

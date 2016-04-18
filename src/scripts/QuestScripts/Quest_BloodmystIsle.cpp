@@ -74,7 +74,6 @@ class TheKesselRun1 : public GossipScript
                 case 0:
                     GossipHello(pObject, plr);
                     break;
-
                 case 1:
                 {
                     QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
@@ -197,9 +196,7 @@ class TheKesselRun3 : public GossipScript
         }
 };
 
-//-----------------------------------------------------------------------------------------------------------------------
 
-int fulborgskilled = 0;
 
 class SavingPrincessStillpine : public GameObjectAIScript
 {
@@ -236,7 +233,10 @@ class HighChiefBristlelimb : public CreatureAIScript
     public:
 
         ADD_CREATURE_FACTORY_FUNCTION(HighChiefBristlelimb);
-        HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature) {}
+        HighChiefBristlelimb(Creature* pCreature) : CreatureAIScript(pCreature)
+        {
+            fulborgskilled = 0;
+        }
 
         void OnDied(Unit* mKiller)
         {
@@ -253,6 +253,10 @@ class HighChiefBristlelimb : public CreatureAIScript
                 }
             }
         }
+
+        private:
+
+            int fulborgskilled;
 };
 
 
