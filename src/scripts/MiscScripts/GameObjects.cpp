@@ -1146,20 +1146,6 @@ class SacredFireofLife : public GameObjectAIScript
         }
 };
 
-///\todo Take Control over the Eye of Acherus. Update trigger/target from player to the eye
-class EyeofAcherusControl : public GameObjectAIScript
-{
-    public:
-        EyeofAcherusControl(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObject* GO) { return new EyeofAcherusControl(GO); }
-
-        void OnActivate(Player* pPlayer)
-        {
-            if (!pPlayer->HasQuest(12641))
-                return;
-            pPlayer->CastSpell(pPlayer, 51888, true);
-        }
-};
 
 void SetupGoHandlers(ScriptMgr* mgr)
 {
@@ -1210,6 +1196,4 @@ void SetupGoHandlers(ScriptMgr* mgr)
     mgr->register_gameobject_script(310033, &AndorhalTower4::Create);
 
     mgr->register_gameobject_script(184588, &TyraliusPrison::Create);
-    // Eye of Acherus Quest "death comes from high.."
-    mgr->register_gameobject_script(191609, &EyeofAcherusControl::Create);
 }
