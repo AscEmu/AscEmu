@@ -1972,10 +1972,12 @@ void Spell::SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellE
 {
     uint32 spellInfo = GetProto()->Id;
 
-    WorldPacket data(SMSG_CAST_FAILED, 1 + 4 + 1);
-    WriteCastResult(data, caster, spellInfo, castCount, result, extraError);
-
-    caster->GetSession()->SendPacket(&data);
+    if (caster != nullptr)
+    {
+        WorldPacket data(SMSG_CAST_FAILED, 1 + 4 + 1);
+        WriteCastResult(data, caster, spellInfo, castCount, result, extraError);
+        caster->GetSession()->SendPacket(&data);
+    }
 }
 
 void Spell::SetExtraCastResult(SpellExtraError result)
