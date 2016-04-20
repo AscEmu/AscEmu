@@ -894,11 +894,23 @@ bool X53Mount(uint32 i, Aura *a, bool apply)
     return true;
 }
 
+bool SchoolsOfArcaneMagicMastery(uint32 i, Spell* s)
+{
+    if (auto player = s->GetPlayerTarget())
+    {
+        auto spell = player->GetAreaID() == 4637 ? 59316 : 59314;
+        player->CastSpell(player, spell, true);
+    }
+
+    return true;
+}
+
 // ADD NEW FUNCTIONS ABOVE THIS LINE
 // *****************************************************************************
 
 void SetupItemSpells_1(ScriptMgr* mgr)
 {
+    mgr->register_dummy_spell(59317, &SchoolsOfArcaneMagicMastery); // The Schools of Arcane Magic - Mastery
     mgr->register_dummy_spell(29403, &BreathOfFire);            // Fiery Festival Brew
     mgr->register_dummy_spell(23453, &GnomishTransporter);      // Gnomish Transporter
     mgr->register_dummy_spell(16589, &NoggenFoggerElixr);       // Noggenfogger
