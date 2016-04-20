@@ -802,6 +802,9 @@ void ApplyNormalFixes()
         //Name includes "" overwrites
         switch (sp->Id)
         {
+        case 70908:
+            sp->EffectImplicitTargetA[0] = EFF_TARGET_DYNAMIC_OBJECT;
+            break;
             // Name includes "Winter's Chill"
             // Winter's Chill handled by frost school
             case 11180:     // Winter's Chill Rank 1
