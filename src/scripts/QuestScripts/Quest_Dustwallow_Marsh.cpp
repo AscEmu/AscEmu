@@ -86,7 +86,7 @@ class BalosJackenQAI : public CreatureAIScript
         short friendlyTimer;
 };
 
-class Cleansing_of_the_Orb_of_Orahil : public QuestScript
+/*class Cleansing_of_the_Orb_of_Orahil : public QuestScript
 {
     public:
 
@@ -123,7 +123,7 @@ class Cleansing_of_the_Orb_of_Orahil : public QuestScript
             sEAS.WaypointCreate(creat, -4032.5759f, -3393.6271f, 38.9960f, 1.8883f, 0, Movement::WP_MOVE_TYPE_RUN, 5375);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class OverlordMokMorokk : public CreatureAIScript
 {

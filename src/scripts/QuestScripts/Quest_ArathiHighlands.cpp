@@ -20,7 +20,7 @@
 
 #include "Setup.h"
 
-class SunkenTreasure : public QuestScript
+/*class SunkenTreasure : public QuestScript
 {
     public:
 
@@ -58,7 +58,7 @@ class SunkenTreasure : public QuestScript
             sEAS.WaypointCreate(creat, -2078.054443f, -2091.207764f, 9.526212f, 4.770276f, 0, Movement::WP_MOVE_TYPE_RUN, 4049);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class Professor_Phizzlethorpe : public CreatureAIScript
 {
@@ -92,5 +92,5 @@ class Professor_Phizzlethorpe : public CreatureAIScript
 void SetupArathiHighlands(ScriptMgr* mgr)
 {
     mgr->register_creature_script(2768, &Professor_Phizzlethorpe::Create);
-    /*mgr->register_quest_script(665, new SunkenTreasure());*/
+    //mgr->register_quest_script(665, new SunkenTreasure());
 }

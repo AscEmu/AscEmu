@@ -20,7 +20,7 @@
 
 #include "Setup.h"
 
-class TheDefiasBrotherhood : public QuestScript
+/*class TheDefiasBrotherhood : public QuestScript
 {
     public:
 
@@ -63,7 +63,7 @@ class TheDefiasBrotherhood : public QuestScript
             sEAS.WaypointCreate(creat, -11065.412109f, 1526.429321f, 43.328102f, 3.068554f, 0, Movement::WP_MOVE_TYPE_RUN, 0);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class The_Defias_Traitor : public CreatureAIScript
 {
@@ -73,19 +73,22 @@ class The_Defias_Traitor : public CreatureAIScript
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)
         {
-            if(iWaypointId == 19)
+            if (iWaypointId == 19)
             {
                 _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Tell your master that this is where Van Cleef is hiding. I'm outta here!");
                 _unit->Despawn(5000, 1000);
                 sEAS.DeleteWaypoints(_unit);
-                if(_unit->m_escorter == NULL)
+
+                if (_unit->m_escorter == nullptr)
                     return;
+
                 Player* plr = _unit->m_escorter;
-                _unit->m_escorter = NULL;
+                _unit->m_escorter = nullptr;
 
                 auto quest_entry = plr->GetQuestLogForEntry(155);
                 if (quest_entry == nullptr)
                     return;
+
                 quest_entry->SendQuestComplete();
             }
         }

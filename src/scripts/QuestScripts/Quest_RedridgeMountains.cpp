@@ -20,7 +20,7 @@
 
 #include "Setup.h"
 
-class MissingInAction : public QuestScript
+/*class MissingInAction : public QuestScript
 {
     public:
 
@@ -60,7 +60,7 @@ class MissingInAction : public QuestScript
             sEAS.WaypointCreate(creat, -9278.547852f, -2296.741699f, 68.041824f, 2.861743f, 0, Movement::WP_MOVE_TYPE_RUN, 1826);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class Corporal_Keeshan : public CreatureAIScript
 {

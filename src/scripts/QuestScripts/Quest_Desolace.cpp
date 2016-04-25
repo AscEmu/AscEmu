@@ -20,7 +20,7 @@
 
 #include "Setup.h"
 
-class ProtectingtheShipment : public QuestScript
+/*class ProtectingtheShipment : public QuestScript
 {
     public:
 
@@ -56,7 +56,7 @@ class ProtectingtheShipment : public QuestScript
             sEAS.WaypointCreate(creat, -474.509247f, 1590.814453f, 94.546768f, 5.197841f, 1, Movement::WP_MOVE_TYPE_RUN, 3791);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class Dalinda_Malem  : public CreatureAIScript
 {

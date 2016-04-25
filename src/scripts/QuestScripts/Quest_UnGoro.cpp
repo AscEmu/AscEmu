@@ -136,7 +136,7 @@ class WesternPylon : public GameObjectAIScript
 
 /*--------------------------------------------------------------------------------------------------------*/
 
-class ChasingAMe01 : public QuestScript
+/*class ChasingAMe01 : public QuestScript
 {
     public:
 
@@ -188,7 +188,7 @@ class ChasingAMe01 : public QuestScript
             sEAS.WaypointCreate(creat, -6298.290039f, -1182.650024f, -269.101013f, 3.211410f, 0, Movement::WP_MOVE_TYPE_RUN, 8841);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class A_Me01  : public CreatureAIScript
 {

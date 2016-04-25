@@ -65,7 +65,7 @@ class BeatenCorpse : public GossipScript
 
 };
 
-class TheEscape : public QuestScript
+/*class TheEscape : public QuestScript
 {
     public:
 
@@ -287,7 +287,7 @@ class TheEscape : public QuestScript
             sEAS.EnableWaypoints(creat);
 
         }
-};
+};*/
 
 class Wizzlecranks_Shredder : public CreatureAIScript
 {
@@ -315,7 +315,7 @@ class Wizzlecranks_Shredder : public CreatureAIScript
         }
 };
 
-class FreeFromtheHold : public QuestScript
+/*class FreeFromtheHold : public QuestScript
 {
     public:
 
@@ -439,7 +439,7 @@ class FreeFromtheHold : public QuestScript
             sEAS.WaypointCreate(creat, -951.746f, -3678.91f, 8.21153f, 3.098398f, 0, Movement::WP_MOVE_TYPE_RUN, 19805);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class Gilthares_Firebough : public CreatureAIScript
 {

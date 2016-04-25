@@ -97,7 +97,7 @@ class ARoguesDeal  : public QuestScript
         }
 };
 
-class FieldsofGrief : public QuestScript
+/*class FieldsofGrief : public QuestScript
 {
     public:
 
@@ -130,7 +130,7 @@ class FieldsofGrief : public QuestScript
 
             sEAS.EnableWaypoints(Zealot);
         }
-};
+};*/
 
 class Zealot : public CreatureAIScript
 {

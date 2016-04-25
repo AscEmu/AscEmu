@@ -24,7 +24,7 @@
 typedef std::pair<uint64, Creature*> QuestDefinition;
 typedef std::vector<QuestDefinition> QuestCreature;
 
-class TotemofCoo : public QuestScript
+/*class TotemofCoo : public QuestScript
 {
     public:
 
@@ -242,7 +242,7 @@ class TotemofVark : public QuestScript
     private:
 
         Creature* Yor;
-};
+};*/
 
 // Chieftain Oomooroo
 class ChieftainOomoorooQAI : public CreatureAIScript

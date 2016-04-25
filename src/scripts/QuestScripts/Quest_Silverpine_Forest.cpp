@@ -21,7 +21,7 @@
 
 #include "Setup.h"
 
-class EscortingErland : public QuestScript
+/*class EscortingErland : public QuestScript
 {
     public:
 
@@ -52,7 +52,7 @@ class EscortingErland : public QuestScript
             sEAS.WaypointCreate(creat, 1289.469727f, 1200.744995f, 52.651005f, 1.488066f, 0, Movement::WP_MOVE_TYPE_RUN, 2684);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class Deathstalker_Erland : public CreatureAIScript
 {

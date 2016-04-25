@@ -20,7 +20,7 @@
 
 #include "Setup.h"
 
-class HomewardBound : public QuestScript
+/*class HomewardBound : public QuestScript
 {
     public:
 
@@ -115,7 +115,7 @@ class HomewardBound : public QuestScript
             sEAS.WaypointCreate(creat, -4910.54f, -1378.76f, -52.6119f, 3.098398f, 0, Movement::WP_MOVE_TYPE_RUN, 9900);
             sEAS.EnableWaypoints(creat);
         }
-};
+};*/
 
 class Paoka_Swiftmountain : public CreatureAIScript
 {
