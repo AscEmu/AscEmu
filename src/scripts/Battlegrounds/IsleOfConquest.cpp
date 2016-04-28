@@ -497,7 +497,8 @@ void IsleOfConquest::OpenGates()
         }
     }
 
-    sEventMgr.AddEvent(this, &IsleOfConquest::CloseGates, 0, 20 * 1000, 1, 0);
+    //Zyres: Senseless, why should the gates be despawn after 20 seconds?
+    //sEventMgr.AddEvent(this, &IsleOfConquest::CloseGates, 0, 20 * 1000, 1, 0);
 }
 
 
