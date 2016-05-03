@@ -123,6 +123,22 @@ bool PreparationForBattleEffect(uint32 effectIndex, Spell* pSpell)
     return true;
 }
 
+//Quest Death Comes From On High
+class EyeofAcherusControl : public GameObjectAIScript
+{
+    public:
+        EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
+        static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
+
+        void OnActivate(Player* pPlayer)
+        {
+            if (!pPlayer->HasQuest(12641))
+                return;
+
+            pPlayer->CastSpell(pPlayer, 51888, true);
+        }
+};
+
 void SetupDeathKnight(ScriptMgr* mgr)
 {
     mgr->register_gossip_script(29488, new GossipScourgeGryphon);
@@ -144,4 +160,6 @@ void SetupDeathKnight(ScriptMgr* mgr)
     mgr->register_gameobject_script(191587, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191589, &AcherusSoulPrison::Create);
     mgr->register_gameobject_script(191590, &AcherusSoulPrison::Create);
+
+    mgr->register_gameobject_script(191609, &EyeofAcherusControl::Create);
 }
