@@ -130,12 +130,17 @@ class EyeofAcherusControl : public GameObjectAIScript
         EyeofAcherusControl(GameObject* gameobject) : GameObjectAIScript(gameobject) {}
         static GameObjectAIScript* Create(GameObject* gameobject_ai) { return new EyeofAcherusControl(gameobject_ai); }
 
-        void OnActivate(Player* pPlayer)
+        void OnActivate(Player* player)
         {
-            if (!pPlayer->HasQuest(12641))
+            if (!player->HasQuest(12641))
                 return;
 
-            pPlayer->CastSpell(pPlayer, 51888, true);
+            if (player->HasAura(51852))
+                return;
+
+            player->CastSpell(player, 51888, true);
+
+            _gameobject->SetState(GO_STATE_CLOSED);
         }
 };
 

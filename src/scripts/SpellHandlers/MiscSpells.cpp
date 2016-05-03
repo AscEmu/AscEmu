@@ -602,6 +602,29 @@ bool SOTATeleporter(uint32 i, Spell* s)
     return true;
 }
 
+// 51892 - Eye of Acherus Visual
+bool EyeOfAcherusVisual(uint32 i, Spell* spell)
+{
+    Player* player = spell->GetPlayerTarget();
+    if (player == nullptr)
+        return true;
+
+    if (player->HasAura(51892))
+        player->RemoveAllAuraById(51892);
+    return true;
+}
+
+// 52694 - Recall Eye of Acherus
+bool RecallEyeOfAcherus(uint32 i, Spell* spell)
+{
+    Player* player = spell->GetPlayerTarget();
+    if (player == nullptr)
+        return true;
+
+    player->RemoveAllAuraById(51852);
+    return true;
+}
+
 bool GeneralDummyAura(uint32 i, Aura* pAura, bool apply)
 {
     // This handler is being used to apply visual effect.
@@ -616,6 +639,9 @@ bool GeneralDummyEffect(uint32 i, Spell* pSpell)
 
 void SetupMiscSpellhandlers(ScriptMgr* mgr)
 {
+    mgr->register_dummy_spell(51892, &EyeOfAcherusVisual);
+    mgr->register_script_effect(52694, &RecallEyeOfAcherus);
+
     mgr->register_dummy_spell(54640, &SOTATeleporter);
 
     mgr->register_dummy_spell(66550, &IOCTeleporterOut);
