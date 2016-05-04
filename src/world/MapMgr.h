@@ -209,7 +209,6 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
         virtual int32 event_GetInstanceID() override;
 
-        void LoadAllCells();
         uint32 GetPlayerCount();
 
 		void _PerformObjectDuties();
