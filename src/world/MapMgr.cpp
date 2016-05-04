@@ -196,7 +196,7 @@ uint32 MapMgr::GetTeamPlayersCount(uint32 teamId)
 void MapMgr::PushObject(Object* obj)
 {
     // Assertions
-    ARCEMU_ASSERT(obj != NULL);
+    ARCEMU_ASSERT(obj != nullptr);
 
     ///\todo That object types are not map objects. TODO: add AI groups here?
     if (obj->IsItem() || obj->IsContainer())
@@ -215,30 +215,11 @@ void MapMgr::PushObject(Object* obj)
     ARCEMU_ASSERT(obj->GetMapId() == _mapId);
     if (!(obj->GetPositionX() < _maxX && obj->GetPositionX() > _minX) || !(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY))
     {
-        if (obj->IsPlayer())
-        {
-            Player* plr = static_cast< Player* >(obj);
-            if (plr->GetBindMapId() != GetMapId())
-            {
-                plr->SafeTeleport(plr->GetBindMapId(), 0, plr->GetBindPositionX(), plr->GetBindPositionY(), plr->GetBindPositionZ(), 0);
-                plr->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
-                return;
-            }
-            else
-            {
-                obj->GetPositionV()->ChangeCoords(plr->GetBindPositionX(), plr->GetBindPositionY(), plr->GetBindPositionZ(), 0);
-                plr->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
-                plr->SendTeleportAckPacket(plr->GetBindPositionX(), plr->GetBindPositionY(), plr->GetBindPositionZ(), 0);
-            }
-        }
-        else
-        {
-            obj->GetPositionV()->ChangeCoords(0, 0, 0, 0);
-        }
+        OutOfMapBoundariesTeleport(obj);
     }
 
     ARCEMU_ASSERT(obj->GetPositionY() < _maxY && obj->GetPositionY() > _minY);
-    ARCEMU_ASSERT(_cells != NULL);
+    ARCEMU_ASSERT(_cells != nullptr);
 
     // Get cell coordinates
     uint32 x = GetPosX(obj->GetPositionX());
@@ -246,38 +227,19 @@ void MapMgr::PushObject(Object* obj)
 
     if (x >= _sizeX || y >= _sizeY)
     {
-        if (obj->IsPlayer())
-        {
-            Player* plr = static_cast< Player* >(obj);
-            if (plr->GetBindMapId() != GetMapId())
-            {
-                plr->SafeTeleport(plr->GetBindMapId(), 0, plr->GetBindPositionX(), plr->GetBindPositionY(), plr->GetBindPositionZ(), 0);
-                plr->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
-                return;
-            }
-            else
-            {
-                obj->GetPositionV()->ChangeCoords(plr->GetBindPositionX(), plr->GetBindPositionY(), plr->GetBindPositionZ(), 0);
-                plr->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
-                plr->SendTeleportAckPacket(plr->GetBindPositionX(), plr->GetBindPositionY(), plr->GetBindPositionZ(), 0);
-            }
-        }
-        else
-        {
-            obj->GetPositionV()->ChangeCoords(0, 0, 0, 0);
-        }
+        OutOfMapBoundariesTeleport(obj);
 
         x = GetPosX(obj->GetPositionX());
         y = GetPosY(obj->GetPositionY());
     }
 
     MapCell* objCell = GetCell(x, y);
-    if (objCell == NULL)
+    if (objCell == nullptr)
     {
         objCell = Create(x, y);
         objCell->Init(x, y, this);
     }
-    ARCEMU_ASSERT(objCell != NULL);
+    ARCEMU_ASSERT(objCell != nullptr);
 
     uint8 cellNumber = sWorld.map_cell_number;
 
@@ -294,11 +256,11 @@ void MapMgr::PushObject(Object* obj)
     Player* plObj;
 
     if (obj->IsPlayer())
-        plObj = static_cast< Player* >(obj);
+        plObj = static_cast<Player*>(obj);
     else
-        plObj = NULL;
+        plObj = nullptr;
 
-    if (plObj != NULL)
+    if (plObj != nullptr)
     {
         LOG_DETAIL("Creating player " I64FMT " for himself.", obj->GetGUID());
         ByteBuffer pbuf(10000);
@@ -324,7 +286,7 @@ void MapMgr::PushObject(Object* obj)
 
     obj->SetMapCell(objCell);
     //Add to the mapmanager's object list
-    if (plObj != NULL)
+    if (plObj != nullptr)
     {
         m_PlayerStorage[plObj->GetLowGUID()] = plObj;
         UpdateCellActivity(x, y, 2 + cellNumber);
@@ -370,7 +332,7 @@ void MapMgr::PushObject(Object* obj)
         obj->Activate(this);
 
     // Add the session to our set if it is a player.
-    if (plObj != NULL)
+    if (plObj != nullptr)
     {
         Sessions.insert(plObj->GetSession());
 
@@ -399,7 +361,7 @@ void MapMgr::PushObject(Object* obj)
     if (buf)
         delete buf;
 
-    if (plObj != NULL && InactiveMoveTime && !forced_expire)
+    if (plObj != nullptr && InactiveMoveTime && !forced_expire)
         InactiveMoveTime = 0;
 }
 
@@ -584,7 +546,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
 void MapMgr::ChangeObjectLocation(Object* obj)
 {
     // if (!obj) return; // crashfix
-    ARCEMU_ASSERT(obj != NULL);
+    ARCEMU_ASSERT(obj != nullptr);
 
     // Items and containers are of no interest for us
     if (obj->IsItem() || obj->IsContainer() || obj->GetMapMgr() != this)
@@ -592,12 +554,12 @@ void MapMgr::ChangeObjectLocation(Object* obj)
         return;
     }
 
-    Player* plObj = NULL;
+    Player* plObj = nullptr;
     ByteBuffer* buf = 0;
 
     if (obj->IsPlayer())
     {
-        plObj = static_cast< Player* >(obj);
+        plObj = static_cast<Player*>(obj);
     }
 
     Object* curObj;
@@ -611,26 +573,11 @@ void MapMgr::ChangeObjectLocation(Object* obj)
             curObj = *iter;
             ++iter;
 
-            if (curObj->IsPlayer() && plObj != NULL && plObj->obj_movement_info.transporter_info.guid && plObj->obj_movement_info.transporter_info.guid == static_cast< Player* >(curObj)->obj_movement_info.transporter_info.guid)
-                fRange = 0.0f;                      // unlimited distance for people on same boat
-            else if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
-                fRange = 0.0f;                      // unlimited distance for transporters (only up to 2 cells +/- anyway.)
-            //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack
-            else if (obj->IsGameObject() && (static_cast< GameObject* >(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
-                fRange = 0.0f;
-            //If the object we're checking for possible removal is a transport or other special object, and we are players on the same map, don't remove it...
-            else if (plObj && curObj->IsGameObject() && (static_cast< GameObject* >(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
-                fRange = 0.0f;
-            else if (curObj->IsPlayer() && static_cast< Player* >(curObj)->GetFarsightTarget() == obj->GetGUID())
-                fRange = 0.0f;                      //Mind Vision, Eye of Kilrogg
-            else if(plObj != NULL && plObj->camControle)
-				fRange = 0.0f;
-            else
-                fRange = m_UpdateDistance; // normal distance
+            fRange = GetUpdateDistance(curObj, obj, plObj);
 
             if (fRange > 0.0f && (curObj->GetDistance2dSq(obj) > fRange))
             {
-                if (plObj != NULL)
+                if (plObj != nullptr)
                     plObj->RemoveIfVisible(curObj->GetGUID());
 
                 if (curObj->IsPlayer())
@@ -655,25 +602,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
     if (obj->GetPositionX() >= _maxX || obj->GetPositionX() <= _minX || obj->GetPositionY() >= _maxY || obj->GetPositionY() <= _minY)
     {
-        if (plObj != NULL)
-        {
-            if (plObj->GetBindMapId() != GetMapId())
-            {
-                plObj->SafeTeleport(plObj->GetBindMapId(), 0, plObj->GetBindPositionX(), plObj->GetBindPositionY(), plObj->GetBindPositionZ(), 0);
-                plObj->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
-                return;
-            }
-            else
-            {
-                obj->GetPositionV()->ChangeCoords(plObj->GetBindPositionX(), plObj->GetBindPositionY(), plObj->GetBindPositionZ(), 0);
-                plObj->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
-                plObj->SendTeleportAckPacket(plObj->GetBindPositionX(), plObj->GetBindPositionY(), plObj->GetBindPositionZ(), 0);
-            }
-        }
-        else
-        {
-            obj->GetPositionV()->ChangeCoords(0, 0, 0, 0);
-        }
+        OutOfMapBoundariesTeleport(obj);
     }
 
     uint32 cellX = GetPosX(obj->GetPositionX());
@@ -686,13 +615,13 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
     MapCell* objCell = GetCell(cellX, cellY);
     MapCell* pOldCell = obj->GetMapCell();
-    if (objCell == NULL)
+    if (objCell == nullptr)
     {
         objCell = Create(cellX, cellY);
         objCell->Init(cellX, cellY, this);
     }
 
-    ARCEMU_ASSERT(objCell != NULL);
+    ARCEMU_ASSERT(objCell != nullptr);
 
     uint8 cellNumber = sWorld.map_cell_number;
 
@@ -763,11 +692,36 @@ void MapMgr::ChangeObjectLocation(Object* obj)
         delete buf;
 }
 
+void MapMgr::OutOfMapBoundariesTeleport(Object* object)
+{
+    if (object->IsPlayer())
+    {
+        Player* player = static_cast<Player*>(object);
+
+        if (player->GetBindMapId() != GetMapId())
+        {
+            player->SafeTeleport(player->GetBindMapId(), 0, player->GetBindPositionX(), player->GetBindPositionY(), player->GetBindPositionZ(), 0);
+            player->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
+            return;
+        }
+        else
+        {
+            object->GetPositionV()->ChangeCoords(player->GetBindPositionX(), player->GetBindPositionY(), player->GetBindPositionZ(), 0);
+            player->GetSession()->SystemMessage("Teleported you to your hearthstone location as you were out of the map boundaries.");
+            player->SendTeleportAckPacket(player->GetBindPositionX(), player->GetBindPositionY(), player->GetBindPositionZ(), 0);
+        }
+    }
+    else
+    {
+        object->GetPositionV()->ChangeCoords(0, 0, 0, 0);
+    }
+}
+
 void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf)
 {
 #define CHECK_BUF if (!*buf) *buf = new ByteBuffer(2500)
 
-    if (cell == NULL)
+    if (cell == nullptr)
         return;
 
     Object* curObj;
@@ -782,24 +736,10 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
         curObj = *iter;
         ++iter;
 
-        if (curObj == NULL)
+        if (curObj == nullptr)
             continue;
 
-        if (curObj->IsPlayer() && obj->IsPlayer() && plObj != NULL && plObj->obj_movement_info.transporter_info.guid && plObj->obj_movement_info.transporter_info.guid == static_cast< Player* >(curObj)->obj_movement_info.transporter_info.guid)
-            fRange = 0.0f;                              // unlimited distance for people on same boat
-        else if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
-            fRange = 0.0f;                              // unlimited distance for transporters (only up to 2 cells +/- anyway.)
-
-        //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack
-        else if (obj->IsGameObject() && (static_cast< GameObject* >(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
-            fRange = 0.0f;
-        //If the object we're checking for possible removal is a transport or other special object, and we are players on the same map, don't remove it, and add it whenever possible...
-        else if (plObj && curObj->IsGameObject() && (static_cast< GameObject* >(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
-            fRange = 0.0f;
-        else if(plObj != NULL && plObj->camControle)
-			fRange = 0.0f;
-        else
-            fRange = m_UpdateDistance;                  // normal distance
+        fRange = GetUpdateDistance(curObj, obj, plObj);
 
         if (curObj != obj && (curObj->GetDistance2dSq(obj) <= fRange || fRange == 0.0f))
         {
@@ -810,7 +750,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
 
                 if (curObj->IsPlayer())
                 {
-                    plObj2 = static_cast< Player* >(curObj);
+                    plObj2 = static_cast<Player*>(curObj);
 
                     if (plObj2->CanSee(obj) && !plObj2->IsVisible(obj->GetGUID()))
                     {
@@ -822,7 +762,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                     }
                 }
 
-                if (plObj != NULL)
+                if (plObj != nullptr)
                 {
                     if (plObj->CanSee(curObj) && !plObj->IsVisible(curObj->GetGUID()))
                     {
@@ -839,7 +779,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                 // Check visibility
                 if (curObj->IsPlayer())
                 {
-                    plObj2 = static_cast< Player* >(curObj);
+                    plObj2 = static_cast<Player*>(curObj);
                     cansee = plObj2->CanSee(obj);
                     isvisible = plObj2->IsVisible(obj->GetGUID());
                     if (!cansee && isvisible)
@@ -857,7 +797,7 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
                     }
                 }
 
-                if (plObj != NULL)
+                if (plObj != nullptr)
                 {
                     cansee = plObj->CanSee(curObj);
                     isvisible = plObj->IsVisible(curObj->GetGUID());
@@ -878,6 +818,28 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
             }
         }
     }
+}
+
+float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
+{
+    static float no_distance = 0.0f;
+
+    // unlimited distance for people on same boat
+    if (curObj->IsPlayer() && obj->IsPlayer() && plObj != nullptr && plObj->obj_movement_info.transporter_info.guid && plObj->obj_movement_info.transporter_info.guid == static_cast< Player* >(curObj)->obj_movement_info.transporter_info.guid)
+        return no_distance;
+    // unlimited distance for transporters (only up to 2 cells +/- anyway.)
+    else if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
+        return no_distance;
+    //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack
+    else if (obj->IsGameObject() && (static_cast<GameObject*>(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
+        return no_distance;
+    //If the object we're checking for possible removal is a transport or other special object, and we are players on the same map, don't remove it, and add it whenever possible...
+    else if (plObj && curObj->IsGameObject() && (static_cast<GameObject*>(curObj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())
+        return no_distance;
+    else if (plObj != nullptr && plObj->camControle)
+        return no_distance;
+    else
+        return m_UpdateDistance;                  // normal distance
 }
 
 void MapMgr::_UpdateObjects()

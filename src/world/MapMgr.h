@@ -263,6 +263,10 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		bool _CellActive(uint32 x, uint32 y);
 		void UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf);
 
+        //Zyres: Refactoring 05/04/2016
+        float GetUpdateDistance(Object* curObj, Object* obj, Player* plObj);
+        void OutOfMapBoundariesTeleport(Object* object);
+
 	public:
 
 		/// Distance a Player can "see" other objects and receive updates from them (!! ALREADY dist*dist !!)
