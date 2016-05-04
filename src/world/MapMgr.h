@@ -211,7 +211,6 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
         void LoadAllCells();
         uint32 GetPlayerCount();
-        uint32 GetTeamPlayersCount(uint32 teamId);
 
 		void _PerformObjectDuties();
 		uint32 mLoopCounter;

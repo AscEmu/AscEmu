@@ -180,19 +180,6 @@ MapMgr::~MapMgr()
     Log.Notice("MapMgr", "Instance %u shut down. (%s)", m_instanceID, GetBaseMap()->GetName());
 }
 
-uint32 MapMgr::GetTeamPlayersCount(uint32 teamId)
-{
-    uint32 result = 0;
-    PlayerStorageMap::iterator itr = m_PlayerStorage.begin();
-    for (; itr != m_PlayerStorage.end(); ++itr)
-    {
-        Player* pPlayer = (itr->second);
-        if (pPlayer->GetTeam() == teamId)
-            result++;
-    }
-    return result;
-}
-
 void MapMgr::PushObject(Object* obj)
 {
     // Assertions
