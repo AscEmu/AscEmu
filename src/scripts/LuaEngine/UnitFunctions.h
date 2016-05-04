@@ -4800,7 +4800,7 @@ class LuaUnit
             bool Switch = CHECK_BOOL(L, 1);
         if (Switch)
         {
-            WorldPacket fly(835, 13);
+            WorldPacket fly(SMSG_MOVE_SET_CAN_FLY, 13);
             ptr->EnableFlight();
             fly << ptr->GetNewGUID();
             fly << uint32(2);
@@ -4808,7 +4808,7 @@ class LuaUnit
         }
         else
         {
-            WorldPacket fly(836, 13);
+            WorldPacket fly(SMSG_MOVE_UNSET_CAN_FLY, 13);
             ptr->DisableFlight();
             fly << ptr->GetNewGUID();
             fly << uint32(5);

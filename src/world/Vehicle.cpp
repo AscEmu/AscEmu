@@ -154,7 +154,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     // root passenger
     passenger->Root();
 
-    WorldPacket ack(0x049D);
+    WorldPacket ack(SMSG_CONTROL_VEHICLE);
     passenger->SendPacket(&ack);
 
     passenger->SendHopOnVehicle(owner, seatid);

@@ -1448,7 +1448,7 @@ bool ChatHandler::HandleFlyCommand(const char* args, WorldSession* m_session)
 
     if (stricmp(args, "on") == 0)
     {
-        WorldPacket fly(835, 13);
+        WorldPacket fly(SMSG_MOVE_SET_CAN_FLY, 13);
         chr->m_setflycheat = true;
         fly << chr->GetNewGUID();
         fly << uint32(2);
@@ -1459,7 +1459,7 @@ bool ChatHandler::HandleFlyCommand(const char* args, WorldSession* m_session)
     }
     else if (stricmp(args, "off") == 0)
     {
-        WorldPacket fly(836, 13);
+        WorldPacket fly(SMSG_MOVE_UNSET_CAN_FLY, 13);
         chr->m_setflycheat = false;
         fly << chr->GetNewGUID();
         fly << uint32(5);
