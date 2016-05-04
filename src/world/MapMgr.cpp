@@ -372,7 +372,7 @@ void MapMgr::PushStaticObject(Object* obj)
             break;
 
         default:
-            LOG_ERROR("MapMgr::PushStaticObject called for invalid type.");
+            Log.Debug("MapMgr::PushStaticObject", "called for invalid type %u.", obj->GetTypeFromGUID());
             break;
     }
 }
@@ -439,9 +439,13 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
 
             break;
         }
+        case HIGHGUID_TYPE_TRANSPORTER:
+        {
+            break;
+        }
         default:
         {
-            LOG_ERROR("MapMgr::RemoveObject called for invalid type.");
+            Log.Debug("MapMgr::RemoveObject", "called for invalid type %u.", obj->GetTypeFromGUID());
             break;
         }
     }
@@ -553,9 +557,10 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     // Update in-range data for old objects
     if (obj->HasInRangeObjects())
     {
-        for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(); iter != obj->GetInRangeSetEnd(); ++iter)
+        for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(); iter != obj->GetInRangeSetEnd();)
         {
             curObj = *iter;
+            ++iter;
 
             fRange = GetUpdateDistance(curObj, obj, plObj);
 
