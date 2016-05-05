@@ -101,7 +101,7 @@ WorldSession::~WorldSession()
     deleteMutex.Release();
 }
 
-int WorldSession::Update(uint32 InstanceID)
+uint8 WorldSession::Update(uint32 InstanceID)
 {
     m_currMsTime = getMSTime();
 

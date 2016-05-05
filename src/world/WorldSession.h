@@ -295,7 +295,7 @@ class SERVER_DECL WorldSession
 
         void Disconnect();
 
-        int  Update(uint32 InstanceID);
+        uint8 Update(uint32 InstanceID);
 
         void SendBuyFailed(uint64 guid, uint32 itemid, uint8 error);
         void SendSellItem(uint64 vendorguid, uint64 itemid, uint8 error);

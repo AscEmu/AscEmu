@@ -1336,7 +1336,7 @@ void MapMgr::AddObject(Object* obj)
 Unit* MapMgr::GetUnit(const uint64 & guid)
 {
     if (guid == 0)
-        return NULL;
+        return nullptr;
 
     switch (GET_TYPE_FROM_GUID(guid))
     {
@@ -1354,27 +1354,27 @@ Unit* MapMgr::GetUnit(const uint64 & guid)
             break;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 Object* MapMgr::_GetObject(const uint64 & guid)
 {
     if (!guid)
-        return NULL;
+        return nullptr;
 
     switch (GET_TYPE_FROM_GUID(guid))
     {
-        case	HIGHGUID_TYPE_GAMEOBJECT:
+        case HIGHGUID_TYPE_GAMEOBJECT:
             return GetGameObject(GET_LOWGUID_PART(guid));
             break;
         case HIGHGUID_TYPE_UNIT:
         case HIGHGUID_TYPE_VEHICLE:
             return GetCreature(GET_LOWGUID_PART(guid));
             break;
-        case	HIGHGUID_TYPE_DYNAMICOBJECT:
+        case HIGHGUID_TYPE_DYNAMICOBJECT:
             return GetDynamicObject((uint32)guid);
             break;
-        case	HIGHGUID_TYPE_TRANSPORTER:
+        case HIGHGUID_TYPE_TRANSPORTER:
             return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(guid));
             break;
         default:
@@ -1386,8 +1386,10 @@ Object* MapMgr::_GetObject(const uint64 & guid)
 void MapMgr::_PerformObjectDuties()
 {
     ++mLoopCounter;
+
     uint32 mstime = getMSTime();
     uint32 difftime = mstime - lastUnitUpdate;
+
     if (difftime > 500)
         difftime = 500;
 
@@ -1462,15 +1464,11 @@ void MapMgr::_PerformObjectDuties()
 
     // Sessions are updated every loop.
     {
-        int result;
-        WorldSession* session;
-        SessionSet::iterator itr = Sessions.begin();
-        SessionSet::iterator it2;
-
-        for (; itr != Sessions.end();)
+        for (SessionSet::iterator itr = Sessions.begin(); itr != Sessions.end();)
         {
-            session = (*itr);
-            it2 = itr;
+            WorldSession* session = (*itr);
+            SessionSet::iterator it2 = itr;
+
             ++itr;
 
             if (session->GetInstance() != m_instanceID)
@@ -1486,6 +1484,8 @@ void MapMgr::_PerformObjectDuties()
             {
                 continue;
             }
+
+            uint8 result;
 
             if ((result = session->Update(m_instanceID)) != 0)
             {
@@ -1506,7 +1506,7 @@ void MapMgr::_PerformObjectDuties()
 void MapMgr::EventCorpseDespawn(uint64 guid)
 {
     Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
-    if (pCorpse == NULL)	// Already Deleted
+    if (pCorpse == nullptr)     // Already Deleted
         return;
 
     if (pCorpse->GetMapMgr() != this)
@@ -1518,22 +1518,17 @@ void MapMgr::EventCorpseDespawn(uint64 guid)
 
 void MapMgr::TeleportPlayers()
 {
-    PlayerStorageMap::iterator itr = m_PlayerStorage.begin();
-    if (!bServerShutdown)
+    for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
     {
-        for (; itr != m_PlayerStorage.end();)
+        Player* p = itr->second;
+        ++itr;
+
+        if (!bServerShutdown)
         {
-            Player* p = itr->second;
-            ++itr;
             p->EjectFromInstance();
         }
-    }
-    else
-    {
-        for (; itr != m_PlayerStorage.end();)
+        else
         {
-            Player* p = itr->second;
-            ++itr;
             if (p->GetSession())
                 p->GetSession()->LogoutPlayer(false);
             else
@@ -1565,11 +1560,10 @@ int32 MapMgr::event_GetInstanceID()
 void MapMgr::UnloadCell(uint32 x, uint32 y)
 {
     MapCell* c = GetCell(x, y);
-    if (c == NULL || c->HasPlayers() || _CellActive(x, y) || !c->IsUnloadPending())
+    if (c == nullptr || c->HasPlayers() || _CellActive(x, y) || !c->IsUnloadPending())
         return;
 
-    LOG_DETAIL("Unloading Cell [%u][%u] on map %u (instance %u)...",
-               x, y, _mapId, m_instanceID);
+    LOG_DETAIL("Unloading Cell [%u][%u] on map %u (instance %u)...", x, y, _mapId, m_instanceID);
 
     c->Unload();
 }
@@ -1577,8 +1571,7 @@ void MapMgr::UnloadCell(uint32 x, uint32 y)
 void MapMgr::EventRespawnCreature(Creature* c, uint16 x, uint16 y)
 {
     MapCell* cell = GetCell(x, y);
-    //cell got deleted while waiting for respawn.
-    if (cell == NULL)
+    if (cell == nullptr)    //cell got deleted while waiting for respawn.
         return;
 
     ObjectSet::iterator itr = cell->_respawnObjects.find(c);
@@ -1593,8 +1586,7 @@ void MapMgr::EventRespawnCreature(Creature* c, uint16 x, uint16 y)
 void MapMgr::EventRespawnGameObject(GameObject* o, uint16 x, uint16 y)
 {
     MapCell* cell = GetCell(x, y);
-    //cell got deleted while waiting for respawn.
-    if (cell == NULL)
+    if (cell == nullptr)   //cell got deleted while waiting for respawn.
         return;
 
     ObjectSet::iterator itr = cell->_respawnObjects.find(o);
@@ -1616,13 +1608,13 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
     uint32 startY = cellY > cell_radius ? cellY - cell_radius : 0;
 
     uint32 posX, posY;
-    MapCell* cell;
+
     MapCell::ObjectSet::iterator iter, iend;
     for (posX = startX; posX <= endX; ++posX)
     {
         for (posY = startY; posY <= endY; ++posY)
         {
-            cell = GetCell(posX, posY);
+            MapCell* cell = GetCell(posX, posY);
             if (cell && cell->HasPlayers())
             {
                 iter = cell->Begin();
@@ -1644,21 +1636,21 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
 Creature* MapMgr::GetSqlIdCreature(uint32 sqlid)
 {
     CreatureSqlIdMap::iterator itr = _sqlids_creatures.find(sqlid);
-    return (itr == _sqlids_creatures.end()) ? NULL : itr->second;
+    return (itr == _sqlids_creatures.end()) ? nullptr : itr->second;
 }
 
 GameObject* MapMgr::GetSqlIdGameObject(uint32 sqlid)
 {
     GameObjectSqlIdMap::iterator itr = _sqlids_gameobjects.find(sqlid);
-    return (itr == _sqlids_gameobjects.end()) ? NULL : itr->second;
+    return (itr == _sqlids_gameobjects.end()) ? nullptr : itr->second;
 }
 
 uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
 {
     uint64 newguid = 0;
 
-    CreatureProto *proto = CreatureProtoStorage.LookupEntry(entry);
-    if ((proto == NULL) || (proto->vehicleid == 0))
+    CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
+    if ((proto == nullptr) || (proto->vehicleid == 0))
         newguid = static_cast<uint64>(HIGHGUID_TYPE_UNIT) << 32;
     else
         newguid = static_cast<uint64>(HIGHGUID_TYPE_VEHICLE) << 32;
@@ -1757,10 +1749,10 @@ Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
 GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale)
 {
     auto gameobject_info = GameObjectNameStorage.LookupEntry(entryID);
-    if (!gameobject_info)
+    if (gameobject_info == nullptr)
     {
         LOG_DEBUG("Error looking up entry in CreateAndSpawnGameObject");
-        return NULL;
+        return nullptr;
     }
 
     LOG_DEBUG("CreateAndSpawnGameObject: By Entry '%u'", entryID);
@@ -1804,7 +1796,7 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
 
     MapCell* mCell = GetCell(cx, cy);
 
-    if (mCell != NULL)
+    if (mCell != nullptr)
         mCell->SetLoaded();
 
     return go;
@@ -1855,13 +1847,13 @@ DynamicObject* MapMgr::CreateDynamicObject()
 DynamicObject* MapMgr::GetDynamicObject(uint32 guid)
 {
     DynamicObjectStorageMap::iterator itr = m_DynamicObjectStorage.find(guid);
-    return (itr != m_DynamicObjectStorage.end()) ? itr->second : NULL;
+    return (itr != m_DynamicObjectStorage.end()) ? itr->second : nullptr;
 }
 
 Pet* MapMgr::GetPet(uint32 guid)
 {
     PetStorageMap::iterator itr = m_PetStorage.find(guid);
-    return (itr != m_PetStorage.end()) ? itr->second : NULL;
+    return (itr != m_PetStorage.end()) ? itr->second : nullptr;
 }
 
 Player* MapMgr::GetPlayer(uint32 guid)
@@ -2012,7 +2004,10 @@ void MapMgr::CallScriptUpdate()
 const uint16 MapMgr::GetAreaFlag(float x, float y, float z, bool *is_outdoors /* = nullptr */)
 {
     uint32 mogp_flags;
-    int32 adt_id, root_id, group_id;
+    int32 adt_id;
+    int32 root_id;
+    int32 group_id;
+
     bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
     auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
     return MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, _mapId, x, y, z, nullptr);
