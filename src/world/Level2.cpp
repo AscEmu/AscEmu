@@ -356,36 +356,6 @@ bool ChatHandler::HandleItemRemoveCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleNPCFlagCommand(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-        return false;
-
-    uint32 npcFlags = (uint32)atoi((char*)args);
-
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    Creature* pCreature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature)
-    {
-        SystemMessage(m_session, "You should select a creature.");
-        return true;
-    }
-
-    pCreature->SetUInt32Value(UNIT_NPC_FLAGS, npcFlags);
-    WorldDatabase.Execute("UPDATE creature_proto SET npcflags = '%lu' WHERE entry = %lu", npcFlags, pCreature->GetProto()->Id);
-    SystemMessage(m_session, "Value saved, you may need to rejoin or clean your client cache.");
-
-    sGMLog.writefromsession(m_session, "changed npc flags of creature %u [%s] to %u", pCreature->GetEntry(), pCreature->GetCreatureInfo()->Name, npcFlags);
-
-    return true;
-}
-
 bool ChatHandler::HandleSaveAllCommand(const char* args, WorldSession* m_session)
 {
     PlayerStorageMap::const_iterator itr;
@@ -1560,18 +1530,6 @@ bool ChatHandler::HandleGOExport(const char* args, WorldSession* m_session)
         while (qr->NextRow());
         delete qr;
     }
-    return true;
-}
-
-bool ChatHandler::HandleNpcComeCommand(const char* args, WorldSession* m_session)
-{
-    // moves npc to players location
-    Player* plr = m_session->GetPlayer();
-    Creature* crt = getSelectedCreature(m_session, true);
-    if (!crt) return true;
-
-    crt->GetAIInterface()->MoveTo(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation());
-    sGMLog.writefromsession(m_session, "used npc come command on %s, sqlid %u", crt->GetCreatureInfo()->Name, crt->GetSQL_id());
     return true;
 }
 

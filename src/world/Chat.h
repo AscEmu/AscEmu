@@ -171,6 +171,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _GameObjectCommandTable;
     ChatCommand* _BattlegroundCommandTable;
     ChatCommand* _NPCAddCommandTable;
+    ChatCommand* _NPCSetCommandTable;
     ChatCommand* _NPCCommandTable;
     ChatCommand* _CheatCommandTable;
     ChatCommand* _accountCommandTable;
@@ -194,6 +195,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _commandTable;
 
     ChatCommand* GetSubCommandTable(const char* name);
+    ChatCommand* GetNPCSubCommandTable(const char* name);
 
     public:
 
@@ -348,7 +350,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDeMorphCommand(const char* args, WorldSession* m_session);
         bool HandleItemCommand(const char* args, WorldSession* m_session);
         bool HandleItemRemoveCommand(const char* args, WorldSession* m_session);
-        bool HandleNPCFlagCommand(const char* args, WorldSession* m_session);
+
         bool HandleSaveAllCommand(const char* args, WorldSession* m_session);
         bool HandleStartBGCommand(const char* args, WorldSession* m_session);
         bool HandlePauseBGCommand(const char* args, WorldSession* m_session);
@@ -421,7 +423,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleModifyGoldCommand(const char* args, WorldSession* m_session);
         bool HandleMonsterSayCommand(const char* args, WorldSession* m_session);
         bool HandleMonsterYellCommand(const char* args, WorldSession* m_session);
-        bool HandleNpcComeCommand(const char* args, WorldSession* m_session);
         bool HandleClearCooldownsCommand(const char* args, WorldSession* m_session);
         bool HandleBattlegroundCommand(const char* args, WorldSession* m_session);
         bool HandleSetWorldStateCommand(const char* args, WorldSession* m_session);
@@ -600,11 +601,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleRehashCommand(const char* args, WorldSession* m_session);
 
         // NPC Commands
+        bool HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session);
         bool HandlePossessCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session);
 
-        //NPC add commands
-        bool HandleAddEquipCommand(const char* args, WorldSession* m_session);
+        //NPC set commands
+        bool HandleNpcSetEquipCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session);
 
         // Quest commands
         bool HandleQuestAddBothCommand(const char* args, WorldSession* m_session);

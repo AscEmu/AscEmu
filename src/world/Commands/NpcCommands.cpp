@@ -5,6 +5,21 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
+bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = getSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+    {
+        RedSystemMessage(m_session, "You must select a Creature.");
+        return false;
+    }
+
+    auto player = m_session->GetPlayer();
+    creature_target->GetAIInterface()->MoveTo(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
+    sGMLog.writefromsession(m_session, "used .npc come on %s spawn ID: %u", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+    return true;
+}
+
 // Zyres: not only for npc!
 bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_session)
 {
@@ -81,8 +96,8 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// .npc add commands
-bool ChatHandler::HandleAddEquipCommand(const char* args, WorldSession* m_session)
+// .npc set commands
+bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_session)
 {
     uint32 equipment_slot;
     uint32 item_id;
@@ -94,12 +109,9 @@ bool ChatHandler::HandleAddEquipCommand(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    Creature* creature_target = getSelectedCreature(m_session, false);
+    Creature* creature_target = getSelectedCreature(m_session, true);
     if (creature_target == nullptr)
-    {
-        RedSystemMessage(m_session, "Select a Creature to modify the slot item");
         return true;
-    }
 
     auto item_entry = sItemStore.LookupEntry(item_id);
     if (item_entry == nullptr)
@@ -137,5 +149,29 @@ bool ChatHandler::HandleAddEquipCommand(const char* args, WorldSession* m_sessio
 
     creature_target->SetEquippedItem(equipment_slot, item_id);
     creature_target->SaveToDB();
+    return true;
+}
+
+bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session)
+{
+    if (!args)
+    {
+        RedSystemMessage(m_session, "You need to define the flag value!");
+        return false;
+    }
+
+    auto creature_target = getSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return false;
+
+    uint32 npc_flags = atol(args);
+    uint32 old_npc_flags = creature_target->GetUInt32Value(UNIT_NPC_FLAGS);
+
+    creature_target->SetUInt32Value(UNIT_NPC_FLAGS, npc_flags);
+    WorldDatabase.Execute("UPDATE creature_spawns SET flags = '%lu' WHERE id = %lu", npc_flags, creature_target->spawnid);
+
+    GreenSystemMessage(m_session, "Flags set from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
+    sGMLog.writefromsession(m_session, "changed npc flags of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureInfo()->Name, old_npc_flags, npc_flags);
+
     return true;
 }

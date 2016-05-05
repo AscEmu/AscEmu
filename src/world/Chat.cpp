@@ -49,9 +49,7 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
         return _GameObjectCommandTable;
     else if (!stricmp(name, "battleground"))
         return _BattlegroundCommandTable;
-    else if (!stricmp(name, "npc add"))
-        return _NPCAddCommandTable;
-    else if (!stricmp(name, "npc"))
+    else if (0 == stricmp(name, "npc"))
         return _NPCCommandTable;
     else if (!stricmp(name, "cheat"))
         return _CheatCommandTable;
@@ -93,6 +91,15 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
         return _vehicleCommandTable;
     else if (!stricmp(name, "transport"))
         return _transportCommandTable;
+    return 0;
+}
+
+ChatCommand* CommandTableStorage::GetNPCSubCommandTable(const char* name)
+{
+    if (0 == stricmp(name, "add"))
+        return _NPCAddCommandTable;
+    else if (0 == stricmp(name, "set"))
+        return _NPCSetCommandTable;
     return 0;
 }
 
@@ -217,6 +224,7 @@ void CommandTableStorage::Dealloc()
     free(_BattlegroundCommandTable);
     free(_NPCCommandTable);
     free(_NPCAddCommandTable);
+    free(_NPCSetCommandTable);
     free(_CheatCommandTable);
     free(_accountCommandTable);
     free(_honorCommandTable);
@@ -471,21 +479,27 @@ void CommandTableStorage::Init()
 
     static ChatCommand NPCAddCommandTable[] =
     {
-        { "agent",         'n', &ChatHandler::HandleAddAIAgentCommand,     ".npc addAgent <agent> <procEvent> <procChance> <procCount> <spellId> <spellType> <spelltargetType> <spellCooldown> <floatMisc1> <Misc2>", NULL, 0, 0, 0 },
-        { "equip",         'm', &ChatHandler::HandleAddEquipCommand,       "Use: .npc equip1 <itemid> - use .npc equip1 0 to remove the item",                                                                        NULL, 0, 0, 0 },
+        { "agent",         'n', &ChatHandler::HandleAddAIAgentCommand,     ".npc add agent <agent> <procEvent> <procChance> <procCount> <spellId> <spellType> <spelltargetType> <spellCooldown> <floatMisc1> <Misc2>", NULL, 0, 0, 0 },
         { NULL,            '0', NULL,                                      "",                                                                                                                                        NULL, 0, 0, 0 }
     };
     dupe_command_table(NPCAddCommandTable, _NPCAddCommandTable);
 
+    static ChatCommand NPCSetCommandTable[] =
+    {
+        { "equip",         'm', &ChatHandler::HandleNpcSetEquipCommand,    ".npc set equip <slot> <itemid>",                                                                                                          NULL, 0, 0, 0 },
+        { "flags",         'n', &ChatHandler::HandleNpcSetFlagsCommand,    "Changes NPC flags",                                                                                                                       NULL, 0, 0, 0 },
+        { NULL,            '0', NULL,                                      "",                                                                                                                                        NULL, 0, 0, 0 }
+    };
+    dupe_command_table(NPCSetCommandTable, _NPCSetCommandTable);
+
     static ChatCommand NPCCommandTable[] =
     {
-        { "add",              '0', NULL,                                      ".npc add commands",                                                                                                         NPCAddCommandTable, 0, 0, 0 },
+        { "add",              '0', NULL,                                      "",                                                                                                         NPCAddCommandTable, 0, 0, 0 },
         { "canfly",           'n', &ChatHandler::HandleNPCCanFlyCommand,      ".npc canfly <save> - Toggles CanFly state",                                                                                               NULL, 0, 0, 0 },
         { "cast",             'n', &ChatHandler::HandleNPCCastCommand,        ".npc cast < spellid > - Makes the NPC cast this spell.",                                                                                  NULL, 0, 0, 0 },
         { "come",             'n', &ChatHandler::HandleNpcComeCommand,        ".npc come - Makes npc move to your position",                                                                                             NULL, 0, 0, 0 },
         { "delete",           'n', &ChatHandler::HandleDeleteCommand,         "Deletes mob from db and world.",                                                                                                          NULL, 0, 0, 0 },
         { "emote",            'n', &ChatHandler::HandleEmoteCommand,          ".emote - Sets emote state",                                                                                                               NULL, 0, 0, 0 },
-        { "flags",            'n', &ChatHandler::HandleNPCFlagCommand,        "Changes NPC flags",                                                                                                                       NULL, 0, 0, 0 },
         { "formationlink1",   'm', &ChatHandler::HandleFormationLink1Command, "Sets formation master.",                                                                                                                  NULL, 0, 0, 0 },
         { "formationlink2",   'm', &ChatHandler::HandleFormationLink2Command, "Sets formation slave with distance and angle",                                                                                            NULL, 0, 0, 0 },
         { "formationclear",   'm', &ChatHandler::HandleFormationClearCommand, "Removes formation from creature",                                                                                                         NULL, 0, 0, 0 },
@@ -503,6 +517,7 @@ void CommandTableStorage::Init()
         { "respawn",          'n', &ChatHandler::HandleCreatureRespawnCommand, ".respawn - Respawns a dead npc from its corpse.",                                                                                         NULL, 0, 0, 0 },
         { "say",              'n', &ChatHandler::HandleMonsterSayCommand,     ".npc say <text> - Makes selected mob say text <text>.",                                                                                   NULL, 0, 0, 0 },
         { "select",           'n', &ChatHandler::HandleNpcSelectCommand,      ".npc select - selects npc closest",                                                                                                       NULL, 0, 0, 0 },
+        { "set",              '0', NULL,                                      "",                                                                                                         NPCSetCommandTable, 0, 0, 0 },
         { "spawn",            'n', &ChatHandler::HandleCreatureSpawnCommand,  ".npc spawn - Spawns npc of entry <id>",                                                                                                   NULL, 0, 0, 0 },
         { "spawnlink",        'n', &ChatHandler::HandleNpcSpawnLinkCommand,   ".spawnlink sqlentry",                                                                                                                     NULL, 0, 0, 0 },
         { "vendoradditem",    'n', &ChatHandler::HandleItemCommand,           "Adds to vendor",                                                                                                                          NULL, 0, 0, 0 },
@@ -848,6 +863,20 @@ void CommandTableStorage::Init()
         }
         ++p;
     }
+
+    // set subcommand for .npc command table
+    ChatCommand* p_npc = &_NPCCommandTable[0];
+    while (p_npc->Name != 0)
+    {
+        if (p_npc->ChildCommands != 0)
+        {
+            // Set the correct pointer.
+            ChatCommand* np_npc = GetNPCSubCommandTable(p_npc->Name);
+            ARCEMU_ASSERT(np_npc != NULL);
+            p_npc->ChildCommands = np_npc;
+        }
+        ++p_npc;
+    }
 }
 
 ChatHandler::ChatHandler()
@@ -932,7 +961,9 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, Wo
                     for (uint32 k = 0; table[i].ChildCommands[k].Name; k++)
                     {
                         if (table[i].ChildCommands[k].CommandGroup == '0' || (table[i].ChildCommands[k].CommandGroup != '0' && m_session->CanUseCommand(table[i].ChildCommands[k].CommandGroup)))
+                        {
                             BlueSystemMessage(m_session, " %s - %s", table[i].ChildCommands[k].Name, table[i].ChildCommands[k].Help.size() ? table[i].ChildCommands[k].Help.c_str() : "No Help Available");
+                        }
                     }
                 }
             }
