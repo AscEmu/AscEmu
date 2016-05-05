@@ -3389,33 +3389,6 @@ bool ChatHandler::HandleGOMove(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleNpcUnPossessCommand(const char* args, WorldSession* m_session)
-{
-    Creature* creature = getSelectedCreature(m_session);
-    m_session->GetPlayer()->UnPossess();
-
-    if (creature)
-    {
-        // restart movement
-        creature->GetAIInterface()->SetAIState(STATE_IDLE);
-        creature->GetAIInterface()->WipeHateList();
-        creature->GetAIInterface()->WipeTargetList();
-
-        if (creature->m_spawn)
-        {
-            // return to respawn coords
-            float x = creature->m_spawn->x;
-            float y = creature->m_spawn->y;
-            float z = creature->m_spawn->z;
-            float o = creature->m_spawn->o;
-            creature->GetAIInterface()->MoveTo(x, y, z, o);
-        }
-    }
-    GreenSystemMessage(m_session, "Removed any possessed targets.");
-    sGMLog.writefromsession(m_session, "used unpossess command");
-    return true;
-}
-
 bool ChatHandler::HandleRehashCommand(const char* args, WorldSession* m_session)
 {
     /*

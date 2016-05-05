@@ -599,11 +599,11 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Deprecated GMScript reload.
         //bool HandleReloadScriptsCommand(const char * args, WorldSession*  m_session);
 
-        bool HandleNpcUnPossessCommand(const char* args, WorldSession* m_session);
         bool HandleRehashCommand(const char* args, WorldSession* m_session);
 
         // NPC Commands
-        bool HandlePossessCommand(const char* args, WorldSession* m_session);
+        bool HandlePossessCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session);
 
         // Quest commands
         bool HandleQuestAddBothCommand(const char* args, WorldSession* m_session);
