@@ -719,17 +719,6 @@ bool ChatHandler::HandleRemoveSkillCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleEmoteCommand(const char* args, WorldSession* m_session)
-{
-    uint32 emote = atoi((char*)args);
-    Unit* target = this->getSelectedCreature(m_session);
-    if (!target)
-        return false;
-    if (target)
-        target->SetEmoteState(emote);
-    return true;
-}
-
 bool ChatHandler::HandleModifyGoldCommand(const char* args, WorldSession* m_session)
 {
     // WorldPacket data;

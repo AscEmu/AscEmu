@@ -175,3 +175,38 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
 
     return true;
 }
+
+bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session)
+{
+    uint32 emote;
+    uint32 save = 0;
+
+    if (sscanf(args, "%u %u", (unsigned int*)&emote, (unsigned int*)&save) != 2)
+    {
+        if (sscanf(args, "%u", (unsigned int*)&emote) != 1)
+        {
+            RedSystemMessage(m_session, "Command must be at least in format: .npc set emote <emote>.");
+            RedSystemMessage(m_session, "Use the following format to save the emote: .npc set emote <emote> 1.");
+            return true;
+        }
+    }
+
+    auto creature_target = getSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    uint32 old_emote = creature_target->GetEmoteState();
+    creature_target->SetEmoteState(emote);
+    if (save == 0)
+    {
+        GreenSystemMessage(m_session, "Emote temporarily set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
+    }
+    else if (save == 1)
+    {
+        WorldDatabase.Execute("UPDATE creature_spawns SET emote_state = '%lu' WHERE id = %lu", emote, creature_target->spawnid);
+        GreenSystemMessage(m_session, "Emote permanent set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
+        sGMLog.writefromsession(m_session, "changed npc emote of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureInfo()->Name, old_emote, emote);
+    }
+
+    return true;
+}

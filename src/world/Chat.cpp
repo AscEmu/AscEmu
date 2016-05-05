@@ -486,6 +486,7 @@ void CommandTableStorage::Init()
 
     static ChatCommand NPCSetCommandTable[] =
     {
+        { "emote",         'n', &ChatHandler::HandleNpcSetEmoteCommand,    ".npc set emote <emote> <save> - Sets emote state",                                                                                        NULL, 0, 0, 0 },
         { "equip",         'm', &ChatHandler::HandleNpcSetEquipCommand,    ".npc set equip <slot> <itemid>",                                                                                                          NULL, 0, 0, 0 },
         { "flags",         'n', &ChatHandler::HandleNpcSetFlagsCommand,    "Changes NPC flags",                                                                                                                       NULL, 0, 0, 0 },
         { NULL,            '0', NULL,                                      "",                                                                                                                                        NULL, 0, 0, 0 }
@@ -499,7 +500,6 @@ void CommandTableStorage::Init()
         { "cast",             'n', &ChatHandler::HandleNPCCastCommand,        ".npc cast < spellid > - Makes the NPC cast this spell.",                                                                                  NULL, 0, 0, 0 },
         { "come",             'n', &ChatHandler::HandleNpcComeCommand,        ".npc come - Makes npc move to your position",                                                                                             NULL, 0, 0, 0 },
         { "delete",           'n', &ChatHandler::HandleDeleteCommand,         "Deletes mob from db and world.",                                                                                                          NULL, 0, 0, 0 },
-        { "emote",            'n', &ChatHandler::HandleEmoteCommand,          ".emote - Sets emote state",                                                                                                               NULL, 0, 0, 0 },
         { "formationlink1",   'm', &ChatHandler::HandleFormationLink1Command, "Sets formation master.",                                                                                                                  NULL, 0, 0, 0 },
         { "formationlink2",   'm', &ChatHandler::HandleFormationLink2Command, "Sets formation slave with distance and angle",                                                                                            NULL, 0, 0, 0 },
         { "formationclear",   'm', &ChatHandler::HandleFormationClearCommand, "Removes formation from creature",                                                                                                         NULL, 0, 0, 0 },
