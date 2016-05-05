@@ -569,6 +569,10 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_REALM_SPLIT].handler = &WorldSession::HandleRealmSplitOpcode;
     WorldPacketHandlers[CMSG_REALM_SPLIT].status = STATUS_AUTHED;
 
+    WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
+    WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
+    WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
+
     // Queries
     WorldPacketHandlers[MSG_CORPSE_QUERY].handler = &WorldSession::HandleCorpseQueryOpcode;
     WorldPacketHandlers[CMSG_NAME_QUERY].handler = &WorldSession::HandleNameQueryOpcode;
@@ -741,6 +745,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_LFD_PLAYER_LOCK_INFO_REQUEST].handler = &WorldSession::HandleLfgPlayerLockInfoRequestOpcode;
     WorldPacketHandlers[CMSG_LFG_TELEPORT].handler = &WorldSession::HandleLfgTeleportOpcode;
     WorldPacketHandlers[CMSG_LFD_PARTY_LOCK_INFO_REQUEST].handler = &WorldSession::HandleLfgPartyLockInfoRequestOpcode;
+    WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
 
     // Taxi / NPC Interaction
     WorldPacketHandlers[CMSG_ENABLETAXI].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
@@ -1007,13 +1012,6 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[MSG_MOVE_TELEPORT_CHEAT].handler = &WorldSession::HandleTeleportCheatOpcode;
     WorldPacketHandlers[CMSG_TELEPORT_TO_UNIT].handler = &WorldSession::HandleTeleportToUnitOpcode;
     WorldPacketHandlers[CMSG_WORLD_TELEPORT].handler = &WorldSession::HandleWorldportOpcode;
-
-    // voicechat
-    // Zyres: this feature will be not implemented in the near future!
-    //WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::HandleEnableMicrophoneOpcode;
-    //WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::HandleVoiceChatQueryOpcode;
-    //WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::HandleChannelVoiceQueryOpcode;
-
 
     // Vehicle
     WorldPacketHandlers[CMSG_DISMISS_CONTROLLED_VEHICLE].handler = &WorldSession::HandleDismissVehicle;
@@ -1750,6 +1748,9 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 
     LOG_DEBUG("Sent: SMSG_MIRRORIMAGE_DATA");
 }
+
+void WorldSession::Unhandled(WorldPacket& recv_data)
+{}
 
 void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 {

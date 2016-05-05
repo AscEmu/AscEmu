@@ -950,16 +950,14 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                     objCell = Create(posX, posY);
                     objCell->Init(posX, posY, this);
 
-                    LOG_DETAIL("Cell [%u,%u] on map %u (instance %u) is now active.",
-                               posX, posY, this->_mapId, m_instanceID);
+                    Log.Map("MapMgr::UpdateCellActivity", "Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
                     objCell->SetActivity(true);
                     _map->CellGoneActive(posX, posY);
                     _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
 
                     ARCEMU_ASSERT(!objCell->IsLoaded());
 
-                    LOG_DETAIL("Loading objects for Cell [%u][%u] on map %u (instance %u)...",
-                               posX, posY, this->_mapId, m_instanceID);
+                    Log.Map("MapMgr::UpdateCellActivity", "Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
 
                     sp = _map->GetSpawnsList(posX, posY);
                     if (sp) objCell->LoadObjects(sp);

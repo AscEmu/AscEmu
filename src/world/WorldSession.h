@@ -779,6 +779,8 @@ class SERVER_DECL WorldSession
         void HandleCalendarEventStatus(WorldPacket& recv_data);
         void HandleCalendarEventModeratorStatus(WorldPacket& recv_data);
 
+        void Unhandled(WorldPacket& recv_data);
+
     public:
 
         void SendInventoryList(Creature* pCreature);

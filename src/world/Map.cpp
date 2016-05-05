@@ -384,7 +384,7 @@ void Map::LoadSpawns(bool reload)
         }
     }
 
-    Log.Notice("MapSpawns", "%u creatures / %u gameobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
+    Log.Map("Map::LoadSpawns", "%u creatures / %u gameobjects on map %u cached.", CreatureSpawnCount, GameObjectSpawnCount, _mapId);
 }
 
 void Map::CellGoneActive(uint32 x, uint32 y)

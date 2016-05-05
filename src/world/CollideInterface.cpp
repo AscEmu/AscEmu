@@ -259,7 +259,7 @@ void CCollideInterface::ActivateMap(uint32 mapid)
 
         if (f == nullptr)
         {
-            sLog.Debug("CCollideInterface::ActivateMap", "File: %s was not found!", filename);
+            Log.Debug("CCollideInterface::ActivateMap", "File: %s/%u.mmap was not found!", sWorld.mMapPath.c_str(), mapid);
             m_navmaplock.Release();
             return;
         }
