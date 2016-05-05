@@ -484,7 +484,7 @@ void CommandTableStorage::Init()
         { "spawn",            'n', &ChatHandler::HandleCreatureSpawnCommand,  ".npc spawn - Spawns npc of entry <id>",                                                                                                   NULL, 0, 0, 0 },
         { "respawn",          'n', &ChatHandler::HandleCreatureRespawnCommand, ".respawn - Respawns a dead npc from its corpse.",                                                                                         NULL, 0, 0, 0 },
         { "spawnlink",        'n', &ChatHandler::HandleNpcSpawnLinkCommand,   ".spawnlink sqlentry",                                                                                                                     NULL, 0, 0, 0 },
-        { "possess",          'n', &ChatHandler::HandleNpcPossessCommand,     ".npc possess - Possess an npc (mind control)",                                                                                            NULL, 0, 0, 0 },
+        { "possess",          'n', &ChatHandler::HandlePossessCommand,        ".npc possess - Possess an npc (mind control)",                                                                                            NULL, 0, 0, 0 },
         { "unpossess",        'n', &ChatHandler::HandleNpcUnPossessCommand,   ".npc unpossess - Unpossess any currently possessed npc.",                                                                                 NULL, 0, 0, 0 },
         { "select",           'n', &ChatHandler::HandleNpcSelectCommand,      ".npc select - selects npc closest",                                                                                                       NULL, 0, 0, 0 },
         { "npcfollow",        'm', &ChatHandler::HandleNpcFollowCommand,      "Sets npc to follow you",                                                                                                                  NULL, 0, 0, 0 },
@@ -1111,6 +1111,16 @@ Creature* ChatHandler::getSelectedCreature(WorldSession* m_session, bool showerr
             RedSystemMessage(m_session, "This command requires that you select a creature.");
         return NULL;
     }
+}
+
+Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session)
+{
+    if (m_session == nullptr || m_session->GetPlayer() == nullptr)
+        return nullptr;
+
+    uint64 guid = m_session->GetPlayer()->GetSelection();
+    
+    return m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
 }
 
 void ChatHandler::SystemMessage(WorldSession* m_session, const char* message, ...)

@@ -3389,36 +3389,6 @@ bool ChatHandler::HandleGOMove(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleNpcPossessCommand(const char* args, WorldSession* m_session)
-{
-    Unit* pTarget = getSelectedChar(m_session, false);
-    if (!pTarget)
-    {
-        pTarget = getSelectedCreature(m_session, false);
-        if (pTarget && (pTarget->IsPet() || pTarget->GetCreatedByGUID() != 0))
-            return false;
-    }
-
-    if (!pTarget)
-    {
-        RedSystemMessage(m_session, "You must select a player/creature.");
-        return true;
-    }
-
-    m_session->GetPlayer()->Possess(pTarget);
-    BlueSystemMessage(m_session, "Possessed " I64FMT, pTarget->GetGUID());
-    switch (pTarget->GetTypeId())
-    {
-        case TYPEID_PLAYER:
-            sGMLog.writefromsession(m_session, "used possess command on PLAYER %s", static_cast< Player* >(pTarget)->GetName());
-            break;
-        case TYPEID_UNIT:
-            sGMLog.writefromsession(m_session, "used possess command on CREATURE %s, sqlid %u", static_cast< Creature* >(pTarget)->GetCreatureInfo()->Name, static_cast< Creature* >(pTarget)->GetSQL_id());
-            break;
-    }
-    return true;
-}
-
 bool ChatHandler::HandleNpcUnPossessCommand(const char* args, WorldSession* m_session)
 {
     Creature* creature = getSelectedCreature(m_session);

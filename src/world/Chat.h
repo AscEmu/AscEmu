@@ -486,6 +486,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Unsorted?
         Player* getSelectedChar(WorldSession* m_session, bool showerror = true);
         Creature* getSelectedCreature(WorldSession* m_session, bool showerror = true);
+        Unit* GetSelectedUnit(WorldSession* m_session);
         bool HandleGOScale(const char* args, WorldSession* m_session);
         bool HandleReviveStringcommand(const char* args, WorldSession* m_session);
         bool HandleMountCommand(const char* args, WorldSession* m_session);
@@ -597,9 +598,12 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 #endif
         // Deprecated GMScript reload.
         //bool HandleReloadScriptsCommand(const char * args, WorldSession*  m_session);
-        bool HandleNpcPossessCommand(const char* args, WorldSession* m_session);
+
         bool HandleNpcUnPossessCommand(const char* args, WorldSession* m_session);
         bool HandleRehashCommand(const char* args, WorldSession* m_session);
+
+        // NPC Commands
+        bool HandlePossessCommand(const char* args, WorldSession* m_session);
 
         // Quest commands
         bool HandleQuestAddBothCommand(const char* args, WorldSession* m_session);
