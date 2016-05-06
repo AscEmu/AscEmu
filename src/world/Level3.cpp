@@ -2162,51 +2162,6 @@ bool ChatHandler::HandleNpcReturnCommand(const char* args, WorldSession* m_sessi
     return true;
 }
 
-bool ChatHandler::HandleFormationLink1Command(const char* args, WorldSession* m_session)
-{
-    // set formation "master"
-    Creature* pCreature = getSelectedCreature(m_session, true);
-    if (pCreature == 0) return true;
-
-    m_session->GetPlayer()->linkTarget = pCreature;
-    BlueSystemMessage(m_session, "Linkup \"master\" set to %s.", pCreature->GetCreatureInfo()->Name);
-    return true;
-}
-
-bool ChatHandler::HandleFormationLink2Command(const char* args, WorldSession* m_session)
-{
-    // set formation "slave" with distance and angle
-    float ang, dist;
-    if (*args == 0 || sscanf(args, "%f %f", &dist, &ang) != 2)
-    {
-        RedSystemMessage(m_session, "You must specify a distance and angle.");
-        return true;
-    }
-
-    if (m_session->GetPlayer()->linkTarget == NULL || m_session->GetPlayer()->linkTarget->IsPet())
-    {
-        RedSystemMessage(m_session, "Master not selected. select the master, and use formationlink1.");
-        return true;
-    }
-
-    Creature* slave = getSelectedCreature(m_session, true);
-    if (slave == 0) return true;
-
-    slave->GetAIInterface()->m_formationFollowDistance = dist;
-    slave->GetAIInterface()->m_formationFollowAngle = ang;
-    slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->linkTarget->GetGUID();
-    slave->GetAIInterface()->m_formationLinkSqlId = m_session->GetPlayer()->linkTarget->GetSQL_id();
-    slave->GetAIInterface()->SetUnitToFollowAngle(ang);
-
-    // add to db
-    WorldDatabase.Execute("INSERT INTO creature_formations VALUES(%u, %u, '%f', '%f')",
-                          slave->GetSQL_id(), slave->GetAIInterface()->m_formationLinkSqlId, ang, dist);
-
-    BlueSystemMessage(m_session, "%s linked up to %s with a distance of %f at %f radians.", slave->GetCreatureInfo()->Name,
-                      m_session->GetPlayer()->linkTarget->GetCreatureInfo()->Name, dist, ang);
-
-    return true;
-}
 
 bool ChatHandler::HandleNpcFollowCommand(const char* args, WorldSession* m_session)
 {
@@ -2216,21 +2171,6 @@ bool ChatHandler::HandleNpcFollowCommand(const char* args, WorldSession* m_sessi
     creature->GetAIInterface()->SetUnitToFollow(m_session->GetPlayer());
 
     sGMLog.writefromsession(m_session, "used npc follow command on %s, sqlid %u", creature->GetCreatureInfo()->Name, creature->GetSQL_id());
-    return true;
-}
-
-bool ChatHandler::HandleFormationClearCommand(const char* args, WorldSession* m_session)
-{
-    Creature* c = getSelectedCreature(m_session, true);
-    if (!c) return true;
-
-    c->GetAIInterface()->m_formationLinkSqlId = 0;
-    c->GetAIInterface()->m_formationLinkTarget = 0;
-    c->GetAIInterface()->m_formationFollowAngle = 0.0f;
-    c->GetAIInterface()->m_formationFollowDistance = 0.0f;
-    c->GetAIInterface()->ResetUnitToFollow();
-
-    WorldDatabase.Execute("DELETE FROM creature_formations WHERE spawn_id=%u", c->GetSQL_id());
     return true;
 }
 

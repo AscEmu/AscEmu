@@ -435,10 +435,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleResetTalentsCommand(const char* args, WorldSession* m_session);
         bool HandleResetSpellsCommand(const char* args, WorldSession* m_session);
         bool HandleNpcFollowCommand(const char* args, WorldSession* m_session);
-        bool HandleFormationLink1Command(const char* args, WorldSession* m_session);
-        bool HandleFormationLink2Command(const char* args, WorldSession* m_session);
+        
         bool HandleNullFollowCommand(const char* args, WorldSession* m_session);
-        bool HandleFormationClearCommand(const char* args, WorldSession* m_session);
         bool HandleResetSkillsCommand(const char* args, WorldSession* m_session);
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
         bool HandleGetSkillsInfoCommand(const char* args, WorldSession* m_session);
@@ -608,8 +606,12 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         //NPC set commands
         bool HandleNpcSetEquipCommand(const char* args, WorldSession* m_session);
-        bool HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session);
+
+        bool HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleNpcSetFormationSlaveCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session);
 
         // Quest commands
         bool HandleQuestAddBothCommand(const char* args, WorldSession* m_session);

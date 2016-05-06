@@ -152,30 +152,6 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session)
-{
-    if (!args)
-    {
-        RedSystemMessage(m_session, "You need to define the flag value!");
-        return false;
-    }
-
-    auto creature_target = getSelectedCreature(m_session, true);
-    if (creature_target == nullptr)
-        return false;
-
-    uint32 npc_flags = atol(args);
-    uint32 old_npc_flags = creature_target->GetUInt32Value(UNIT_NPC_FLAGS);
-
-    creature_target->SetUInt32Value(UNIT_NPC_FLAGS, npc_flags);
-    WorldDatabase.Execute("UPDATE creature_spawns SET flags = '%lu' WHERE id = %lu", npc_flags, creature_target->spawnid);
-
-    GreenSystemMessage(m_session, "Flags set from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
-    sGMLog.writefromsession(m_session, "changed npc flags of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureInfo()->Name, old_npc_flags, npc_flags);
-
-    return true;
-}
-
 bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session)
 {
     uint32 emote;
@@ -207,6 +183,112 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
         GreenSystemMessage(m_session, "Emote permanent set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
         sGMLog.writefromsession(m_session, "changed npc emote of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureInfo()->Name, old_emote, emote);
     }
+
+    return true;
+}
+
+bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = getSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    m_session->GetPlayer()->linkTarget = creature_target;
+    BlueSystemMessage(m_session, "Formation Master set to %s spawn ID: %u.", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+    return true;
+}
+
+bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSession* m_session)
+{
+    // set formation "slave" with distance and angle
+    float angle;
+    float distance;
+    uint32 save = 0;
+
+    if (sscanf(args, "%f %f %u", &angle, &distance, &save) < 2)
+    {
+        RedSystemMessage(m_session, "You must specify angle and distance.");
+        RedSystemMessage(m_session, ".npc set formationslave <angle> <distance>");
+        return true;
+    }
+
+    if (m_session->GetPlayer()->linkTarget == nullptr)
+    {
+        RedSystemMessage(m_session, "Master not set! Use .npc set formationmaster first.");
+        return true;
+    }
+
+    if (m_session->GetPlayer()->linkTarget->IsPet())
+    {
+        RedSystemMessage(m_session, "A pet can not be a master of a formation!");
+        return true;
+    }
+
+    auto creature_slave = getSelectedCreature(m_session, true);
+    if (creature_slave == nullptr)
+        return true;
+
+    creature_slave->GetAIInterface()->m_formationFollowDistance = distance;
+    creature_slave->GetAIInterface()->m_formationFollowAngle = angle;
+    creature_slave->GetAIInterface()->m_formationLinkTarget = m_session->GetPlayer()->linkTarget->GetGUID();
+    creature_slave->GetAIInterface()->m_formationLinkSqlId = m_session->GetPlayer()->linkTarget->GetSQL_id();
+    creature_slave->GetAIInterface()->SetUnitToFollowAngle(angle);
+
+    BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureInfo()->Name,
+        m_session->GetPlayer()->linkTarget->GetCreatureInfo()->Name, distance, angle);
+
+    if (save == 1)
+    {
+        WorldDatabase.Execute("REPLACE INTO creature_formations VALUES(%u, %u, '%f', '%f')",
+            creature_slave->GetSQL_id(), creature_slave->GetAIInterface()->m_formationLinkSqlId, angle, distance);
+        sGMLog.writefromsession(m_session, "changed npc formation of creature_spawn ID: %u [%s]", creature_slave->spawnid, creature_slave->GetCreatureInfo()->Name);
+    }
+
+    return true;
+}
+
+bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session)
+{
+    uint32 save = atol(args);
+
+    auto creature_target = getSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    creature_target->GetAIInterface()->m_formationLinkSqlId = 0;
+    creature_target->GetAIInterface()->m_formationLinkTarget = 0;
+    creature_target->GetAIInterface()->m_formationFollowAngle = 0.0f;
+    creature_target->GetAIInterface()->m_formationFollowDistance = 0.0f;
+    creature_target->GetAIInterface()->ResetUnitToFollow();
+
+    if (save == 1)
+    {
+        WorldDatabase.Execute("DELETE FROM creature_formations WHERE spawn_id=%u", creature_target->GetSQL_id());
+        sGMLog.writefromsession(m_session, "removed npc formation for creature_spawn ID: %u [%s]", creature_target->spawnid, creature_target->GetCreatureInfo()->Name);
+        return true;
+    }
+}
+
+bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session)
+{
+    if (!args)
+    {
+        RedSystemMessage(m_session, "You need to define the flag value!");
+        return false;
+    }
+
+    auto creature_target = getSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return false;
+
+    uint32 npc_flags = atol(args);
+    uint32 old_npc_flags = creature_target->GetUInt32Value(UNIT_NPC_FLAGS);
+
+    creature_target->SetUInt32Value(UNIT_NPC_FLAGS, npc_flags);
+    WorldDatabase.Execute("UPDATE creature_spawns SET flags = '%lu' WHERE id = %lu", npc_flags, creature_target->spawnid);
+
+    GreenSystemMessage(m_session, "Flags set from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
+    sGMLog.writefromsession(m_session, "changed npc flags of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureInfo()->Name, old_npc_flags, npc_flags);
 
     return true;
 }
