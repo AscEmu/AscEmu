@@ -304,7 +304,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleThreatModCommand(const char* args, WorldSession* m_session);
         bool HandleCalcThreatCommand(const char* args, WorldSession* m_session);
         bool HandleThreatListCommand(const char* args, WorldSession* m_session);
-        bool HandleNpcSpawnLinkCommand(const char* args, WorldSession* m_session);
+        // Zyres: creature_spawns.npc_respawn_link seems to be unused
+        //bool HandleNpcSpawnLinkCommand(const char* args, WorldSession* m_session);
         bool HandleDebugDumpCoordsCommmand(const char* args, WorldSession* m_session);
         bool HandleSendpacket(const char* args, WorldSession* m_session);
         bool HandleSQLQueryCommand(const char* args, WorldSession* m_session);

@@ -835,7 +835,7 @@ bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session
     return true;
 }
 
-bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession* m_session)
+/*bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession* m_session)
 {
     uint32 id;
     char sql[512];
@@ -854,7 +854,7 @@ bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession* m_se
         RedSystemMessage(m_session, "Sql entry invalid %u", id);
     }
     return true;
-}
+}*/
 
 bool ChatHandler::HandleModifyTPsCommand(const char* args, WorldSession* m_session)
 {
