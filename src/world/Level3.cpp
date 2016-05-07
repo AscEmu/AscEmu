@@ -393,25 +393,6 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
-{
-    Player* SelectedPlayer = getSelectedChar(m_session, true);
-    if (!SelectedPlayer)
-        return true;
-
-    SelectedPlayer->SetMovement(MOVE_UNROOT, 1);
-    SelectedPlayer->ResurrectPlayer();
-    SelectedPlayer->SetHealth(SelectedPlayer->GetMaxHealth());
-    SelectedPlayer->SetPower(POWER_TYPE_MANA, SelectedPlayer->GetMaxPower(POWER_TYPE_MANA));
-    SelectedPlayer->SetPower(POWER_TYPE_ENERGY, SelectedPlayer->GetMaxPower(POWER_TYPE_ENERGY));
-
-
-    if (SelectedPlayer != m_session->GetPlayer())
-        sGMLog.writefromsession(m_session, "revived player %s", SelectedPlayer->GetName());
-
-    return true;
-}
-
 bool ChatHandler::HandleExploreCheatCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)

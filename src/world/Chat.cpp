@@ -795,8 +795,7 @@ void CommandTableStorage::Init()
         { "appear",          'v', &ChatHandler::HandleAppearCommand,                        "Teleports to x's position.",                                                                                                              NULL,                     0, 0, 0 },
         { "summon",          'v', &ChatHandler::HandleSummonCommand,                        "Summons x to your position.",                                                                                                              NULL,                     0, 0, 0 },
         { "kill",            'r', &ChatHandler::HandleKillCommand,                          ".kill - Kills selected unit .kill <playername> kills player with <playername>",                                                                                                            NULL,                     0, 0, 0 },
-        { "revive",          'r', &ChatHandler::HandleReviveCommand,                        "Revives you.",                                                                                                                            NULL,                     0, 0, 0 },
-        { "reviveplr",       'r', &ChatHandler::HandleReviveStringcommand,                  "Revives player specified.",                                                                                                               NULL,                     0, 0, 0 },
+        { "revive",          'r', &ChatHandler::HandleReviveCommand,                        ".revive - revives you or a selected target .revive <player_name> revives player with <playername>",                                                                                                                            NULL,                     0, 0, 0 },
         { "demorph",         'm', &ChatHandler::HandleDeMorphCommand,                       "Demorphs from morphed model.",                                                                                                            NULL,                     0, 0, 0 },
         { "mount",           'm', &ChatHandler::HandleMountCommand,                         "Mounts into modelid x.",                                                                                                                  NULL,                     0, 0, 0 },
         { "dismount",        'h', &ChatHandler::HandleDismountCommand,                      "Dismounts.",                                                                                                                              NULL,                     0, 0, 0 },
@@ -1100,7 +1099,8 @@ Player* ChatHandler::getSelectedChar(WorldSession* m_session, bool showerror)
     uint64 guid;
     Player* chr;
 
-    if (m_session == NULL || m_session->GetPlayer() == NULL) return NULL;
+    if (m_session == nullptr)
+        return nullptr;
 
     guid = m_session->GetPlayer()->GetSelection();
 

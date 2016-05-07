@@ -85,3 +85,76 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
+//.revive - revives selfe or player with <name>
+bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
+{
+    bool is_name_set = false;
+
+    if (*args)
+        is_name_set = true;
+
+    if (is_name_set)
+    {
+        auto named_player = objmgr.GetPlayer(args, false);
+        if (named_player != nullptr)
+        {
+            if (named_player->IsDead())
+            {
+                named_player->RemoteRevive();
+                GreenSystemMessage(m_session, "Player %s revived.", args);
+                sGMLog.writefromsession(m_session, "revived player %s.", args);
+            }
+            else
+            {
+                SystemMessage(m_session, "Player %s is not dead.", args);
+                return true;
+            }
+        }
+        else
+        {
+            RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);
+            return true;
+        }
+    }
+    else
+    {
+        auto player_target = getSelectedChar(m_session, false);
+        if (player_target == nullptr)
+        {
+            RedSystemMessage(m_session, "Something went wrong while reviving a player with this command!");
+            return true;
+        }
+
+        if (player_target->IsDead())
+        {
+            player_target->SetMovement(MOVE_UNROOT, 1);
+            player_target->ResurrectPlayer();
+            player_target->SetHealth(player_target->GetMaxHealth());
+            player_target->SetPower(POWER_TYPE_MANA, player_target->GetMaxPower(POWER_TYPE_MANA));
+            player_target->SetPower(POWER_TYPE_ENERGY, player_target->GetMaxPower(POWER_TYPE_ENERGY));
+
+            if (player_target == m_session->GetPlayer())
+            {
+                GreenSystemMessage(m_session, "No player selected. Auto select self.");
+                sGMLog.writefromsession(m_session, "revived player %s", player_target->GetName());
+            }
+            else
+            {
+                GreenSystemMessage(m_session, "Player %s revived.", player_target->GetName());
+                sGMLog.writefromsession(m_session, "revived player %s", player_target->GetName());
+            }
+        }
+        else
+        {
+            if (player_target == m_session->GetPlayer())
+                RedSystemMessage(m_session, "You are not dead!");
+            else
+                RedSystemMessage(m_session, "Player %s is not dead!", player_target->GetName());
+
+            return true;
+        }
+    }
+
+    return true;
+}
+

@@ -1145,31 +1145,6 @@ bool ChatHandler::HandleGOScale(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleReviveStringcommand(const char* args, WorldSession* m_session)
-{
-    Player* plr = objmgr.GetPlayer(args, false);
-    if (!plr)
-    {
-        RedSystemMessage(m_session, "Could not find player %s.", args);
-        return true;
-    }
-
-    if (plr->IsDead())
-    {
-        if (plr->GetInstanceID() == m_session->GetPlayer()->GetInstanceID())
-            plr->RemoteRevive();
-        else
-            sEventMgr.AddEvent(plr, &Player::RemoteRevive, EVENT_PLAYER_REST, 1, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-
-        GreenSystemMessage(m_session, "Revived player %s.", args);
-        sGMLog.writefromsession(m_session, "revived player %s", args);
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "Player %s is not dead.", args);
-    }
-    return true;
-}
 
 bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
 {

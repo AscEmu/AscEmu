@@ -362,6 +362,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         // MiscCommands
         bool HandleKillCommand(const char* args, WorldSession* m_session);
+        bool HandleReviveCommand(const char* args, WorldSession* m_session);
 
         // Gameobject commands
         bool HandleGOSelect(const char* args, WorldSession* m_session);
@@ -393,7 +394,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandlePortToGameObjectSpawnCommand(const char* args, WorldSession* m_session);
         bool HandleMoveCommand(const char* args, WorldSession* m_session);
         bool HandleLearnCommand(const char* args, WorldSession* m_session);
-        bool HandleReviveCommand(const char* args, WorldSession* m_session);
         bool HandleGenderChanger(const char* args, WorldSession* m_session);
         bool HandleAddGraveCommand(const char* args, WorldSession* m_session);
         bool HandleExploreCheatCommand(const char* args, WorldSession* m_session);
@@ -486,7 +486,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         Creature* getSelectedCreature(WorldSession* m_session, bool showerror = true);
         Unit* GetSelectedUnit(WorldSession* m_session);
         bool HandleGOScale(const char* args, WorldSession* m_session);
-        bool HandleReviveStringcommand(const char* args, WorldSession* m_session);
+
         bool HandleMountCommand(const char* args, WorldSession* m_session);
         bool HandleGetPosCommand(const char* args, WorldSession* m_session);
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
