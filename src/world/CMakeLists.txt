@@ -8,6 +8,7 @@ set(sources
    Commands/ArenaCommands.cpp
    Commands/DebugCommands.cpp
    Commands/GameObjectCommands.cpp
+   Commands/MiscCommands.cpp
    Commands/NpcCommands.cpp
    Commands/TransporterCommands.cpp
    Commands/TicketCommands.cpp
