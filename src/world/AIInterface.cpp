@@ -4054,7 +4054,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
         if (creature->original_emotestate)
             m_Unit->SetEmoteState(creature->original_emotestate);
         else
-            m_Unit->SetEmoteState(0);
+            m_Unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
         if (creature->m_spawn && (creature->m_spawn->channel_target_go || creature->m_spawn->channel_target_creature))
         {

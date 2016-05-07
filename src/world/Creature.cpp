@@ -1917,7 +1917,7 @@ void Creature::RemoveLimboState(Unit* healer)
         return;
 
     m_limbostate = false;
-    SetEmoteState(m_spawn ? m_spawn->emote_state : 0);
+    SetEmoteState(m_spawn ? m_spawn->emote_state : EMOTE_ONESHOT_NONE);
     SetHealth(GetMaxHealth());
     bInvincible = false;
 }

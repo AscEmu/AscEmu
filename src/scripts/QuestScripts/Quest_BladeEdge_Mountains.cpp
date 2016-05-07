@@ -173,7 +173,7 @@ class FunnyDragon : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetEmoteState(0);
+            _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
             _unit->GetAIInterface()->m_canMove = false;
             i = 1;
         }
@@ -378,7 +378,7 @@ class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
             if (GetRange(Ogre) <= 5)
             {
                 Ogre->SetDisplayWeaponIds(28562, 0);
-                Ogre->GetUnit()->SetEmoteState(92);
+                Ogre->GetUnit()->SetEmoteState(EMOTE_ONESHOT_EAT_NOSHEATHE);
                 Ogre->GetUnit()->SetFaction(35);
                 Ogre->GetUnit()->SetStandState(STANDSTATE_SIT);
 

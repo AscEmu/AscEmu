@@ -4726,13 +4726,13 @@ class AkamaAI : public MoonScriptBossAI
                         break;
                     case 3:
                         Emote("I will deal with these mongrels! Strike now, friends! Strike at the Betrayer!", Text_Yell, 11390);
-                        _unit->SetEmoteState(0);
+                        _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
                         break;
                     case 4:
                         _unit->SetEmoteState(EMOTE_ONESHOT_READY1H);
                         break;
                     case 5:
-                        _unit->SetEmoteState(0);
+                        _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
                         break;
                     case 6:
                         SetWieldWeapon(false);
@@ -4746,7 +4746,7 @@ class AkamaAI : public MoonScriptBossAI
                         SetCanMove(true);
                         ForceWaypointMove(18);
                         RemoveAIUpdateEvent();
-                        //_unit->SetEmoteState(0);
+                        //_unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
                         mScenePart = 0;
                         return;
@@ -5127,7 +5127,7 @@ class MaievAI : public MoonScriptBossAI
                         break;
                     case 3:
                         mIllidanAI->Emote("You have won... Maiev. But the huntress... is nothing without the hunt. You... are nothing... without me.", Text_Yell, 11478);
-                        _unit->SetEmoteState(0);
+                        _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
                         SetWieldWeapon(false);
                         break;
                     case 4:
@@ -5143,7 +5143,7 @@ class MaievAI : public MoonScriptBossAI
                                 pLeftGate->SetState(GO_STATE_OPEN);
                             }
 
-                            mIllidanAI->GetUnit()->SetEmoteState(0);
+                            mIllidanAI->GetUnit()->SetEmoteState(EMOTE_ONESHOT_NONE);
                             mIllidanAI->GetUnit()->SetHealth(0);
                             mIllidanAI->GetUnit()->setDeathState(JUST_DIED);
                         }
@@ -5338,7 +5338,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
             }
 
             _unit->SetBaseAttackTime(RANGED, 1800);
-            _unit->SetEmoteState(0);
+            _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
             _unit->SetDualWield(true);
 
             mFoA1 = mFoA2 = NULL;
@@ -5385,7 +5385,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
         void OnCombatStop(Unit* pTarget)
         {
             // General
-            _unit->SetEmoteState(0);
+            _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             SetTargetToChannel(NULL, 0);
             SetCanEnterCombat(true);
@@ -5622,7 +5622,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 SetAllowMelee(false);
                 SetFlyMode(true);
 
-                _unit->SetEmoteState(0);
+                _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
                 _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
 
                 mFireWallTimer = 30000;
@@ -6181,7 +6181,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 SetAllowMelee(false);
                 SetCanMove(false);
 
-                _unit->SetEmoteState(0);
+                _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
                 mTimeLeft = MaievTimers[0];
                 mScenePart = 1;
@@ -6198,7 +6198,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     SetBehavior(Behavior_Spell);
                     SetAIUpdateFreq(250);
 
-                    _unit->SetEmoteState(0);
+                    _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
                     mMiscEventPart = 1;
                     mTimeLeft = Ascend[0].mTimer;
@@ -6255,7 +6255,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 SetBehavior(Behavior_Spell);
                 SetAIUpdateFreq(250);
 
-                _unit->SetEmoteState(0);
+                _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
                 mMiscEventPart = 1;
                 mTimeLeft = Descend[0].mTimer;
@@ -6339,7 +6339,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     SetBehavior(Behavior_Spell);
                     SetAIUpdateFreq(250);
 
-                    _unit->SetEmoteState(0);
+                    _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
                     mMiscEventPart = 1;
                     mTimeLeft = Ascend[0].mTimer;
@@ -6618,7 +6618,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
                         pAI->StopMovement();
                         pAI->SetBehavior(Behavior_Spell);
 
-                        pIllidan->SetEmoteState(0);
+                        pIllidan->SetEmoteState(EMOTE_ONESHOT_NONE);
 
                         pAI->SetAIUpdateFreq(250);
                         pAI->mMiscEventPart = 1;

@@ -1144,7 +1144,7 @@ void StoneskinGargoyleAI::AIUpdate()
     if (IsCasting() || HasAura)
         return;
     else if (_unit->GetEmoteState() == EMOTE_STATE_SUBMERGED)
-        _unit->SetEmoteState(0);
+        _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
 
     if (!IsCasting() && GetHealthPercent() <= 30)
     {

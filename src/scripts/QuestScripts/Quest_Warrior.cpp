@@ -66,7 +66,7 @@ class Bartleby : public CreatureAIScript
         void OnLoad()
         {
             _unit->SetFaction(11);
-            _unit->setEmoteState(7);
+            _unit->setEmoteState(EMOTE_ONESHOT_EAT);
         }
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)

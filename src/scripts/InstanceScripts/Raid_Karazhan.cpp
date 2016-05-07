@@ -1642,7 +1642,7 @@ class ShadeofAranAI : public CreatureAIScript
                     {
                         _unit->setAttackTimer(3000, false);
                         _unit->CastSpell(_unit, info_conjure, false);
-                        _unit->SetStandState(1);
+                        _unit->SetStandState(STANDSTATE_SIT);
                         _unit->setEmoteState(EMOTE_ONESHOT_EAT);
                     }
                     else
@@ -1656,8 +1656,8 @@ class ShadeofAranAI : public CreatureAIScript
                 m_time_pyroblast--;
                 if (!m_time_pyroblast)
                 {
-                    _unit->SetStandState(0);
-                    _unit->setEmoteState(0);
+                    _unit->SetStandState(STANDSTATE_STAND);
+                    _unit->setEmoteState(EMOTE_ONESHOT_NONE);
                     _unit->CastSpell(_unit, info_pyroblast, false);
                     drinking = false;
                 }

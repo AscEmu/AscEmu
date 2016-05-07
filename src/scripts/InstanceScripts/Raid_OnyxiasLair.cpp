@@ -75,7 +75,7 @@ class OnyxiaAI : public CreatureAIScript
             m_eFlamesCooldown = 1;
             m_whelpCooldown = 7;
             _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
-            _unit->SetStandState(0);
+            _unit->SetStandState(STANDSTATE_STAND);
             _unit->SendScriptTextChatMessage(1725);     //How fortuitous, usually I must leave my lair to feed!
             if (m_useSpell)
                 RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));

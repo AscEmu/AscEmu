@@ -4231,7 +4231,7 @@ void Unit::smsg_AttackStart(Unit* pVictim)
         if (pThis->cannibalize)
         {
             sEventMgr.RemoveEvents(pThis, EVENT_CANNIBALIZE);
-            pThis->SetEmoteState(0);
+            pThis->SetEmoteState(EMOTE_ONESHOT_NONE);
             pThis->cannibalize = false;
         }
     }

@@ -1734,7 +1734,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
             if (!Started)
             {
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-                _unit->SetEmoteState(0);
+                _unit->SetEmoteState(EMOTE_ONESHOT_NONE);
                 _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
 
                 _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);

@@ -70,7 +70,7 @@ class Prisoner12 : public GossipScript
 
                         Prisoner12->Despawn(5000, 6 * 60 * 1000);
                         Prisoner12->SetStandState(STANDSTATE_STAND);
-                        Prisoner12->SetEmoteState(7);
+                        Prisoner12->SetEmoteState(EMOTE_ONESHOT_EAT);
                         return;
                     }
                     break;
@@ -128,7 +128,7 @@ class Prisoner22 : public GossipScript
 
                         Prisoner22->Despawn(5000, 6 * 60 * 1000);
                         Prisoner22->SetStandState(STANDSTATE_STAND);
-                        Prisoner22->SetEmoteState(7);
+                        Prisoner22->SetEmoteState(EMOTE_ONESHOT_EAT);
                         return;
                     }
                     break;
@@ -185,7 +185,7 @@ class Prisoner32 : public GossipScript
 
                         Prisoner32->Despawn(5000, 6 * 60 * 1000);
                         Prisoner32->SetStandState(STANDSTATE_STAND);
-                        Prisoner32->SetEmoteState(7);
+                        Prisoner32->SetEmoteState(EMOTE_ONESHOT_EAT);
                         return;
                     }
                     break;

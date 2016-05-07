@@ -717,7 +717,7 @@ class WardenMellicharAI : public MoonScriptBossAI
             SetCanMove(true);
             SetAllowMelee(true);
             SetAllowSpell(true);
-            _unit->SetEmoteState(8); // to be replaced for the standstate
+            _unit->SetStandState(STANDSTATE_KNEEL);
 
             if (shield)
                 shield->SetState(GO_STATE_OPEN);

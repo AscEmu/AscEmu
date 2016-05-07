@@ -968,7 +968,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         if (p_caster->cannibalize)
         {
             sEventMgr.RemoveEvents(p_caster, EVENT_CANNIBALIZE);
-            p_caster->SetEmoteState(0);
+            p_caster->SetEmoteState(EMOTE_ONESHOT_NONE);
             p_caster->cannibalize = false;
         }
     }
