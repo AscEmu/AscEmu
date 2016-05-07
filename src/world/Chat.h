@@ -359,8 +359,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleBGInfoCommnad(const char* args, WorldSession* m_session);
         bool HandleInvincibleCommand(const char* args, WorldSession* m_session);
         bool HandleInvisibleCommand(const char* args, WorldSession* m_session);
+
+        // MiscCommands
         bool HandleKillCommand(const char* args, WorldSession* m_session);
-        bool HandleKillByPlrCommand(const char* args , WorldSession* m_session);
 
         // Gameobject commands
         bool HandleGOSelect(const char* args, WorldSession* m_session);
