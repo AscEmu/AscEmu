@@ -414,7 +414,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleModifySkillCommand(const char* args, WorldSession* m_session);
         bool HandleRemoveSkillCommand(const char* args, WorldSession* m_session);
         bool HandleNpcInfoCommand(const char* args, WorldSession* m_session);
-        bool HandleCreaturePhaseCommand(const char* args, WorldSession* m_session);
 
         bool HandleIncreaseWeaponSkill(const char* args, WorldSession* m_session);
         bool HandleCastSpellCommand(const char* args, WorldSession* m_session);
@@ -612,6 +611,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcSetFormationSlaveCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetStandstateCommand(const char* arg, WorldSession* m_session);
 
         // Quest commands

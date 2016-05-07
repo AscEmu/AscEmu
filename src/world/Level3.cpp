@@ -937,40 +937,6 @@ bool ChatHandler::HandleNpcInfoCommand(const char* args, WorldSession* m_session
     return true;
 }
 
-bool ChatHandler::HandleCreaturePhaseCommand(const char* args, WorldSession* m_session)
-{
-    char* sPhase = strtok((char*)args, " ");
-    if (!sPhase)
-        return false;
-
-    uint32 newphase = atoi(sPhase);
-
-    bool Save = false;
-    char* pSave = strtok(NULL, " ");
-    if (pSave)
-        Save = (atoi(pSave) > 0 ? true : false);
-
-    Creature* crt = getSelectedCreature(m_session);
-    if (!crt) return false;
-
-    crt->Phase(PHASE_SET, newphase);
-    if (crt->m_spawn)
-        crt->m_spawn->phase = newphase;
-    //VLack: at this point we don't care if it has a spawn or not, as it gets one for sure in SaveToDB, that's why we don't return here from within an else statement.
-    //I made this comment in case someone compares this code with the HandleGOPhaseCommand code where we have to have a spawn to be able to save it.
-
-    // Save it to the database.
-    if (Save)
-    {
-        crt->SaveToDB();
-        crt->m_loadedFromDB = true;
-    }
-
-    sGMLog.writefromsession(m_session, "phased creature with entry %u to %u", crt->GetEntry(), newphase);
-
-    return true;
-}
-
 bool ChatHandler::HandleIncreaseWeaponSkill(const char* args, WorldSession* m_session)
 {
     char* pMin = strtok((char*)args, " ");

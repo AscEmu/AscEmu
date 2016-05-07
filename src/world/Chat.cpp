@@ -492,6 +492,8 @@ void CommandTableStorage::Init()
         { "formationmaster",   'm', &ChatHandler::HandleNpcSetFormationMasterCommand, "Sets formation master.",                                                                                                                  NULL, 0, 0, 0 },
         { "formationslave",    'm', &ChatHandler::HandleNpcSetFormationSlaveCommand, "Sets formation slave with distance and angle",                                                                                            NULL, 0, 0, 0 },
         { "formationclear",   'm', &ChatHandler::HandleNpcSetFormationClearCommand, "Removes formation from creature",                                                                                                         NULL, 0, 0, 0 },
+        { "phase",            'n', &ChatHandler::HandleNpcSetPhaseCommand,  "Sets phase for selected creature",                                                                                             NULL, 0, 0, 0 },
+
         { "standstate",   'm', &ChatHandler::HandleNpcSetStandstateCommand, "Sets standstate for selected creature",                                                                                                         NULL, 0, 0, 0 },
 
         { NULL,            '0', NULL,                                      "",                                                                                                                                        NULL, 0, 0, 0 }
@@ -511,7 +513,6 @@ void CommandTableStorage::Init()
         { "npcfollow",        'm', &ChatHandler::HandleNpcFollowCommand,      "Sets npc to follow you",                                                                                                                  NULL, 0, 0, 0 },
         { "nullfollow",       'm', &ChatHandler::HandleNullFollowCommand,     "Sets npc to not follow anything",                                                                                                         NULL, 0, 0, 0 },
         { "ongameobject",     'n', &ChatHandler::HandleNPCOnGOCommand,        ".npc ongameobject <save> - Toggles onGameobject state. Required when spawning a NPC on a Gameobject",                                            NULL, 0, 0, 0 },
-        { "phase",            'n', &ChatHandler::HandleCreaturePhaseCommand,  "<phase> <save> - Sets phase of selected mob",                                                                                             NULL, 0, 0, 0 },
         { "portto",           'v', &ChatHandler::HandlePortToCreatureSpawnCommand, "Teleports you to the creature with spawn id x.",                                                                                     NULL, 0, 0, 0 },
         { "possess",          'n', &ChatHandler::HandlePossessCommand,        ".npc possess - Possess an npc (mind control)",                                                                                            NULL, 0, 0, 0 },
         { "unpossess",        'n', &ChatHandler::HandleUnPossessCommand,      ".npc unpossess - Unpossess any currently possessed npc.",                                                                                 NULL, 0, 0, 0 },

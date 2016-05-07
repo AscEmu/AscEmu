@@ -311,6 +311,39 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session)
+{
+    uint32 npc_phase;
+    uint32 save = 0;
+
+    if (sscanf(args, "%u %u", &npc_phase, &save) < 1)
+    {
+        RedSystemMessage(m_session, "You need to define the phase!");
+        RedSystemMessage(m_session, ".npc set phase <npc_phase>");
+        return true;
+    }
+
+    auto creature_target = getSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return false;
+
+    uint32 old_npc_phase = creature_target->m_spawn->phase;
+    creature_target->Phase(PHASE_SET, npc_phase);
+
+    if (save == 1)
+    {
+        GreenSystemMessage(m_session, "Phase changed in spawns table from %u to %u for spawn ID: %u.", old_npc_phase, npc_phase, creature_target->spawnid);
+        WorldDatabase.Execute("UPDATE creature_spawns SET phase = '%lu' WHERE id = %lu", npc_phase, creature_target->spawnid);
+        sGMLog.writefromsession(m_session, "changed npc phase of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureInfo()->Name, old_npc_phase, npc_phase);
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Phase temporarily set from %u to %u for spawn ID: %u.", old_npc_phase, npc_phase, creature_target->spawnid);
+    }
+
+    return true;
+}
+
 bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* m_session)
 {
     uint32 standstate;
