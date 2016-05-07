@@ -24,7 +24,7 @@
 
 bool ChatHandler::HandleResetReputationCommand(const char* args, WorldSession* m_session)
 {
-    Player* plr = getSelectedChar(m_session);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr)
     {
         SystemMessage(m_session, "Select a player or yourself first.");
@@ -39,7 +39,7 @@ bool ChatHandler::HandleResetReputationCommand(const char* args, WorldSession* m
 
 bool ChatHandler::HandleInvincibleCommand(const char* args, WorldSession* m_session)
 {
-    Player* chr = getSelectedChar(m_session);
+    Player* chr = GetSelectedPlayer(m_session, true, true);
     char msg[100];
     if (chr)
     {
@@ -100,7 +100,7 @@ bool ChatHandler::CreateGuildCommand(const char* args, WorldSession* m_session)
     if (!*args)
         return false;
 
-    Player* ptarget = getSelectedChar(m_session);
+    Player* ptarget = GetSelectedPlayer(m_session, true, true);
     if (!ptarget) return false;
 
     if (ptarget->IsInGuild())
@@ -221,7 +221,7 @@ bool ChatHandler::HandleDeleteCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleDeMorphCommand(const char* args, WorldSession* m_session)
 {
-    Player* target = getSelectedChar(m_session);
+    Player* target = GetSelectedPlayer(m_session, true, true);
     if (!target)
         target = m_session->GetPlayer();
 
@@ -383,9 +383,9 @@ bool ChatHandler::HandleSaveAllCommand(const char* args, WorldSession* m_session
 bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_session)
 {
     Unit* caster = m_session->GetPlayer();
-    Unit* target = getSelectedChar(m_session, false);
+    Unit* target = GetSelectedPlayer(m_session, true, true);
     if (!target)
-        target = getSelectedCreature(m_session, false);
+        target = GetSelectedCreature(m_session, false);
     if (!target)
     {
         RedSystemMessage(m_session, "Must select a char or creature.");
@@ -424,9 +424,9 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
 bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_session)
 {
     Unit* caster = m_session->GetPlayer();
-    Unit* target = getSelectedChar(m_session, false);
+    Unit* target = GetSelectedPlayer(m_session, true, true);
     if (!target)
-        target = getSelectedCreature(m_session, false);
+        target = GetSelectedCreature(m_session, false);
     if (!target)
     {
         RedSystemMessage(m_session, "Must select a char or creature.");
@@ -484,9 +484,9 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_session)
 {
-    Unit* target = getSelectedChar(m_session, false);
+    Unit* target = GetSelectedPlayer(m_session, true, true);
     if (!target)
-        target = getSelectedCreature(m_session, false);
+        target = GetSelectedCreature(m_session, false);
     if (!target)
     {
         RedSystemMessage(m_session, "Must select a char or creature.");
@@ -524,9 +524,9 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleMonsterSayCommand(const char* args, WorldSession* m_session)
 {
-    Unit* crt = getSelectedCreature(m_session, false);
+    Unit* crt = GetSelectedCreature(m_session, false);
     if (!crt)
-        crt = getSelectedChar(m_session, false);
+        crt = GetSelectedPlayer(m_session, false, true);
 
     if (!crt)
     {
@@ -549,9 +549,9 @@ bool ChatHandler::HandleMonsterSayCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleMonsterYellCommand(const char* args, WorldSession* m_session)
 {
-    Unit* crt = getSelectedCreature(m_session, false);
+    Unit* crt = GetSelectedCreature(m_session, false);
     if (!crt)
-        crt = getSelectedChar(m_session, false);
+        crt = GetSelectedPlayer(m_session, false, true);
 
     if (!crt)
     {
@@ -1161,12 +1161,12 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
     }
 
     Unit* m_target = NULL;
-    Player* m_plyr = getSelectedChar(m_session, false);
+    Player* m_plyr = GetSelectedPlayer(m_session, false, true);
     if (m_plyr)
         m_target = m_plyr;
     else
     {
-        Creature* m_crt = getSelectedCreature(m_session, false);
+        Creature* m_crt = GetSelectedCreature(m_session, false);
         if (m_crt)
             m_target = m_crt;
     }
@@ -1411,7 +1411,7 @@ bool ChatHandler::HandleGOExport(const char* args, WorldSession* m_session)
 
         BlueSystemMessage(m_session, "Go saved to: %s", name.str().c_str());*/
 
-    Creature* pCreature = getSelectedCreature(m_session, true);
+    Creature* pCreature = GetSelectedCreature(m_session, true);
     if (!pCreature) return true;
     WorldDatabase.WaitExecute("INSERT INTO creature_names_export SELECT * FROM creature_names WHERE entry = %u", pCreature->GetEntry());
     WorldDatabase.WaitExecute("INSERT INTO creature_proto_export SELECT * FROM creature_proto WHERE entry = %u", pCreature->GetEntry());
@@ -1442,7 +1442,7 @@ bool ChatHandler::HandleRepairItemsCommand(const char* args, WorldSession* m_ses
     Player* plr;
     uint32 j, i;
 
-    plr = getSelectedChar(m_session, false);
+    plr = GetSelectedPlayer(m_session, false, true);
     if (plr == NULL) return false;
 
     for (i = 0; i < MAX_INVENTORY_SLOT; i++)

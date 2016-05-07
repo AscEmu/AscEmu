@@ -34,7 +34,7 @@ bool ChatHandler::HandleArenaCreateTeam(const char* args, WorldSession* m_sessio
     uint32 team_type;
     char team_name[1000];
 
-    auto player = getSelectedChar(m_session, true);
+    auto player = GetSelectedPlayer(m_session, true, true);
     if (sscanf(args, "%u %[^\n]", &team_type, team_name) != 2)
     {
         SystemMessage(m_session, "Invalid syntax. Usage: .arena createteam <type> <name>");
@@ -78,7 +78,7 @@ bool ChatHandler::HandleArenaSetTeamLeader(const char* args, WorldSession* m_ses
 {
     uint32 team_type;
 
-    auto player = getSelectedChar(m_session, true);
+    auto player = GetSelectedPlayer(m_session, true, true);
     if (sscanf(args, "%u", &team_type) != 1)
     {
         SystemMessage(m_session, "Invalid syntax. Usage: .arena setteamleader <type>");

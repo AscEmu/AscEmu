@@ -118,7 +118,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
     }
     else
     {
-        auto player_target = getSelectedChar(m_session, false);
+        auto player_target = GetSelectedPlayer(m_session, false, true);
         if (player_target == nullptr)
         {
             RedSystemMessage(m_session, "Something went wrong while reviving a player with this command!");
@@ -135,8 +135,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
 
             if (player_target == m_session->GetPlayer())
             {
-                GreenSystemMessage(m_session, "No player selected. Auto select self.");
-                sGMLog.writefromsession(m_session, "revived player %s", player_target->GetName());
+                sGMLog.writefromsession(m_session, "revived himself");
             }
             else
             {

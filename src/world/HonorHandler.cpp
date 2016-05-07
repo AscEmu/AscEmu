@@ -249,7 +249,7 @@ void HonorHandler::RecalculateHonorFields(Player* pPlayer)
 bool ChatHandler::HandleAddKillCommand(const char* args, WorldSession* m_session)
 {
     uint32 KillAmount = args ? atol(args) : 1;
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (plr == NULL)
         return true;
 
@@ -267,8 +267,8 @@ bool ChatHandler::HandleAddKillCommand(const char* args, WorldSession* m_session
 bool ChatHandler::HandleAddHonorCommand(const char* args, WorldSession* m_session)
 {
     uint32 HonorAmount = args ? atol(args) : 1;
-    Player* plr = getSelectedChar(m_session, true);
-    if (plr == 0)
+    Player* plr = GetSelectedPlayer(m_session, true, true);
+    if (plr == nullptr)
         return true;
 
     BlueSystemMessage(m_session, "Adding %u honor to player %s.", HonorAmount, plr->GetName());

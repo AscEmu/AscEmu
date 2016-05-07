@@ -299,7 +299,7 @@ bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_sess
             return false; // these may be empty
     }
 
-    Player* chr = getSelectedChar(m_session, false);
+    Player* chr = GetSelectedPlayer(m_session, false, true);
     if (chr == NULL)
         chr = m_session->GetPlayer();
 
@@ -514,7 +514,7 @@ bool ChatHandler::HandleTaxiCheatCommand(const char* args, WorldSession* m_sessi
 {
     if (!*args)
         return false;
-    Player* chr = getSelectedChar(m_session);
+    Player* chr = GetSelectedPlayer(m_session, true, true);
     if (chr == NULL)
         return true;
     if (stricmp(args, "on") == 0)
@@ -554,7 +554,7 @@ bool ChatHandler::HandleModifySpeedCommand(const char* args, WorldSession* m_ses
         RedSystemMessage(m_session, "Incorrect value. Range is 1..255");
         return true;
     }
-    Player* chr = getSelectedChar(m_session);
+    Player* chr = GetSelectedPlayer(m_session, true, true);
     if (chr == NULL)
         return true;
     if (chr != m_session->GetPlayer())
@@ -594,7 +594,7 @@ bool ChatHandler::HandleLearnSkillCommand(const char* args, WorldSession* m_sess
     {
         return false;
     }
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr) return false;
     if (!plr->IsPlayer()) return false;
     sGMLog.writefromsession(m_session, "used add skill of %u %u %u on %s", skill, min, max, plr->GetName());
@@ -619,7 +619,7 @@ bool ChatHandler::HandleModifySkillCommand(const char* args, WorldSession* m_ses
         cnt = atol(pMin);
     skill = atol(pSkill);
     BlueSystemMessage(m_session, "Modifying skill line %d. Advancing %d times.", skill, cnt);
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr) plr = m_session->GetPlayer();
     if (!plr) return false;
     sGMLog.writefromsession(m_session, "used modify skill of %u %u on %s", skill, cnt, plr->GetName());
@@ -644,7 +644,7 @@ bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_s
         return false;
     else
         skill = atol(pSkill);
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr) return false;
     if (skill > SkillNameManager->maxskill)
     {
@@ -671,7 +671,7 @@ bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_s
 
 bool ChatHandler::HandleGetSkillsInfoCommand(const char* args, WorldSession* m_session)
 {
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr) return false;
     uint32 nobonus = 0;
     int32 bonus = 0;
@@ -705,7 +705,7 @@ bool ChatHandler::HandleRemoveSkillCommand(const char* args, WorldSession* m_ses
     else
         skill = atol(pSkill);
     BlueSystemMessage(m_session, "Removing skill line %d", skill);
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (plr && plr->_HasSkillLine(skill)) //fix bug; removing skill twice will mess up skills
     {
         plr->_RemoveSkillLine(skill);
@@ -724,7 +724,7 @@ bool ChatHandler::HandleModifyGoldCommand(const char* args, WorldSession* m_sess
     // WorldPacket data;
     if (*args == 0)
         return false;
-    Player* chr = getSelectedChar(m_session, true);
+    Player* chr = GetSelectedPlayer(m_session, true, true);
     if (chr == NULL)
         return true;
     int32 total = atoi((char*)args);
@@ -808,7 +808,7 @@ bool ChatHandler::HandleTriggerCommand(const char* args, WorldSession* m_session
 
 bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session)
 {
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (plr == 0)
         return true;
     uint32 SpellId = atol(args);
@@ -860,7 +860,7 @@ bool ChatHandler::HandleModifyTPsCommand(const char* args, WorldSession* m_sessi
 {
     if (!args)
         return false;
-    Player* Pl = getSelectedChar(m_session, false);
+    Player* Pl = GetSelectedPlayer(m_session, true, true);
     if (!Pl)
     {
         SystemMessage(m_session, "Invalid or no target provided, please target a player to modify its talentpoints.");
@@ -886,7 +886,7 @@ bool ChatHandler::HandleAchievementCompleteCommand(const char* args, WorldSessio
 {
     if (!*args)
         return false;
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr)
     {
         plr = m_session->GetPlayer();
@@ -924,7 +924,7 @@ bool ChatHandler::HandleAchievementCriteriaCommand(const char* args, WorldSessio
 {
     if (!*args)
         return false;
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr)
     {
         plr = m_session->GetPlayer();
@@ -960,7 +960,7 @@ bool ChatHandler::HandleAchievementResetCommand(const char* args, WorldSession* 
 {
     if (!*args)
         return false;
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr)
     {
         plr = m_session->GetPlayer();

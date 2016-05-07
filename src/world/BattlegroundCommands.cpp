@@ -70,7 +70,7 @@ bool ChatHandler::HandleBattlegroundCommand(const char* args, WorldSession* m_se
     if (type >= BATTLEGROUND_NUM_TYPES)
         return false;
 
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (plr == NULL)
         return true;
     BattlegroundManager.HandleBattlegroundListPacket(plr->GetSession(), type);

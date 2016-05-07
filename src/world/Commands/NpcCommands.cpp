@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session)
 {
-    auto creature_target = getSelectedCreature(m_session, true);
+    auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
     {
         RedSystemMessage(m_session, "You must select a Creature.");
@@ -109,7 +109,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    Creature* creature_target = getSelectedCreature(m_session, true);
+    Creature* creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
 
@@ -167,21 +167,21 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
         }
     }
 
-    auto creature_target = getSelectedCreature(m_session, true);
+    auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
 
     uint32 old_emote = creature_target->GetEmoteState();
     creature_target->SetEmoteState(emote);
-    if (save == 0)
-    {
-        GreenSystemMessage(m_session, "Emote temporarily set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
-    }
-    else if (save == 1)
+    if (save == 1)
     {
         WorldDatabase.Execute("UPDATE creature_spawns SET emote_state = '%lu' WHERE id = %lu", emote, creature_target->spawnid);
         GreenSystemMessage(m_session, "Emote permanent set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
         sGMLog.writefromsession(m_session, "changed npc emote of creature_spawn ID: %u [%s] from %u to %u", creature_target->spawnid, creature_target->GetCreatureInfo()->Name, old_emote, emote);
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Emote temporarily set from %u to %u for spawn ID: %u.", old_emote, emote, creature_target->spawnid);
     }
 
     return true;
@@ -189,7 +189,7 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
 
 bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session)
 {
-    auto creature_target = getSelectedCreature(m_session, true);
+    auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
 
@@ -224,7 +224,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
         return true;
     }
 
-    auto creature_slave = getSelectedCreature(m_session, true);
+    auto creature_slave = GetSelectedCreature(m_session, true);
     if (creature_slave == nullptr)
         return true;
 
@@ -254,7 +254,7 @@ bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSessi
 {
     uint32 save = atol(args);
 
-    auto creature_target = getSelectedCreature(m_session, true);
+    auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
 
@@ -290,7 +290,7 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    auto creature_target = getSelectedCreature(m_session, true);
+    auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return false;
 
@@ -323,7 +323,7 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    auto creature_target = getSelectedCreature(m_session, true);
+    auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return false;
 
@@ -356,7 +356,7 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
         return true;
     }
 
-    auto creature_target = getSelectedCreature(m_session, true);
+    auto creature_target = GetSelectedCreature(m_session, true);
     if (creature_target == nullptr)
         return true;
 

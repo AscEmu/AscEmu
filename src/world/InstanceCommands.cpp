@@ -72,24 +72,33 @@ const char* GetMapTypeString(uint8 type)
 
 bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession* m_session)
 {
+    bool is_name_set = false;
+    Player* player;
 
-    Player* plr;
-    if (strlen(args) == 0)
-        plr = getSelectedChar(m_session, true);
-    else
-        plr = objmgr.GetPlayer(args, false);
+    if (*args)
+        bool is_name_set = true;
 
-    if (!plr)
+    if (is_name_set)
     {
-        RedSystemMessage(m_session, "Player not found");
-        return true;
+        player = objmgr.GetPlayer(args, false);
+        if (player == nullptr)
+        {
+            RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);
+            return true;
+        }
+    }
+    else
+    {
+        player = GetSelectedPlayer(m_session, true);
+        if (player == nullptr)
+            return true;
     }
 
-    SystemMessage(m_session, "Trying to reset all instances of player %s...", plr->GetName());
-    sInstanceMgr.ResetSavedInstances(plr);
+    SystemMessage(m_session, "Trying to reset all instances of player %s...", player->GetName());
+    sInstanceMgr.ResetSavedInstances(player);
     SystemMessage(m_session, "...done");
 
-    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", plr->GetName());
+    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->GetName());
     return true;
 }
 
@@ -121,7 +130,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     Player* plr;
 
     if (argc == 1)
-        plr = getSelectedChar(m_session, true);
+        plr = GetSelectedPlayer(m_session, true, true);
     else
         plr = objmgr.GetPlayer((const char*)playername, false);
 
@@ -315,7 +324,7 @@ bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m
 
 bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)
 {
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     float x, y, z;
     uint32 mapid;
     if (sscanf(args, "%u %f %f %f", (unsigned int*)&mapid, &x, &y, &z) != 4)
@@ -361,7 +370,7 @@ bool ChatHandler::HandleExitInstanceCommand(const char* args, WorldSession* m_se
 
 bool ChatHandler::HandleShowInstancesCommand(const char* args, WorldSession* m_session)
 {
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (!plr)
         return true;
 

@@ -360,14 +360,12 @@ bool ChatHandler::HandleGetBytesCommand(const char* args, WorldSession* m_sessio
 }
 bool ChatHandler::HandleDebugLandWalk(const char* args, WorldSession* m_session)
 {
-    Player* chr = getSelectedChar(m_session);
+    Player* chr = GetSelectedPlayer(m_session, true, true);
+    if (chr == nullptr)
+        return true;
+
     char buf[256];
 
-    if (chr == NULL)
-    {
-        SystemMessage(m_session, "No character selected.");
-        return false;
-    }
     chr->SetMovement(MOVE_LAND_WALK, 8);
     snprintf((char*)buf, 256, "Land Walk Test Ran.");
     SystemMessage(m_session, buf);
@@ -377,14 +375,12 @@ bool ChatHandler::HandleDebugLandWalk(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleDebugWaterWalk(const char* args, WorldSession* m_session)
 {
-    Player* chr = getSelectedChar(m_session);
+    Player* chr = GetSelectedPlayer(m_session, true, true);
+    if (chr == nullptr)
+        return true;
+
     char buf[256];
 
-    if (chr == NULL)
-    {
-        SystemMessage(m_session, "No character selected.");
-        return false;
-    }
     chr->SetMovement(MOVE_WATER_WALK, 4);
     snprintf((char*)buf, 256, "Water Walk Test Ran.");
     SystemMessage(m_session, buf);
@@ -394,18 +390,9 @@ bool ChatHandler::HandleDebugWaterWalk(const char* args, WorldSession* m_session
 
 bool ChatHandler::HandleDebugUnroot(const char* args, WorldSession* m_session)
 {
-    if (m_session->GetPlayer()->GetTargetGUID() == 0)
-    {
-        RedSystemMessage(m_session, "You need to select a unit!");
+    Unit* u = GetSelectedUnit(m_session, true);
+    if (u == nullptr)
         return true;
-    }
-
-    Unit* u = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetTargetGUID());
-    if (u == NULL)
-    {
-        RedSystemMessage(m_session, "You need to select a unit!");
-        return true;
-    }
 
     u->Unroot();
 
@@ -416,18 +403,9 @@ bool ChatHandler::HandleDebugUnroot(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleDebugRoot(const char* args, WorldSession* m_session)
 {
-    if (m_session->GetPlayer()->GetTargetGUID() == 0)
-    {
-        RedSystemMessage(m_session, "You need to select a unit!");
+    Unit* u = GetSelectedUnit(m_session, true);
+    if (u == nullptr)
         return true;
-    }
-
-    Unit* u = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetTargetGUID());
-    if (u == NULL)
-    {
-        RedSystemMessage(m_session, "You need to select a unit!");
-        return true;
-    }
 
     u->Root();
 
@@ -438,28 +416,13 @@ bool ChatHandler::HandleDebugRoot(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleAggroRangeCommand(const char* args, WorldSession* m_session)
 {
-    Unit* obj = NULL;
-
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid != 0)
-    {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
-        {
-            SystemMessage(m_session, "You should select a character or a creature.");
-            return true;
-        }
-    }
-    else
-    {
-        SystemMessage(m_session, "You should select a character or a creature.");
+    Unit* unit = GetSelectedUnit(m_session, true);
+    if (unit == nullptr)
         return true;
-    }
 
-    float aggroRange = obj->GetAIInterface()->_CalcAggroRange(m_session->GetPlayer());
-    std::stringstream sstext;
-    sstext << "Aggrorange is: " << sqrtf(aggroRange) << '\0';
+    float aggroRange = unit->GetAIInterface()->_CalcAggroRange(m_session->GetPlayer());
 
-    SystemMessage(m_session, sstext.str().c_str());
+    GreenSystemMessage(m_session, "Aggrorange is %f", aggroRange);
 
     return true;
 }

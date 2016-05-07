@@ -148,7 +148,7 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
 bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
 {
     std::string race;
-    Player* m_plyr = getSelectedChar(m_session, false);
+    Player* m_plyr = GetSelectedPlayer(m_session, false, true);
     if (m_plyr == NULL)
         return false;
 
@@ -267,13 +267,13 @@ bool ChatHandler::HandleDismountCommand(const char* args, WorldSession* m_sessio
 {
     Unit* m_target = NULL;
 
-    Player* p_target = getSelectedChar(m_session, false);
+    Player* p_target = GetSelectedPlayer(m_session, false, true);
 
     if (p_target)
         m_target = p_target;
     else
     {
-        Creature* m_crt = getSelectedCreature(m_session, false);
+        Creature* m_crt = GetSelectedCreature(m_session, false);
         if (m_crt)
             m_target = m_crt;
     }
@@ -303,7 +303,7 @@ bool ChatHandler::HandleDismountCommand(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleSaveCommand(const char* args, WorldSession* m_session)
 {
-    Player* p_target = getSelectedChar(m_session, false);
+    Player* p_target = GetSelectedPlayer(m_session, false, true);
     if (p_target == NULL)
         return false;
 
@@ -412,7 +412,7 @@ bool ChatHandler::HandleGmLogCommentCommand(const char* args, WorldSession* m_se
 bool ChatHandler::HandleRatingsCommand(const char* args, WorldSession* m_session)
 {
     m_session->SystemMessage("Ratings!!!");
-    Player* m_plyr = getSelectedChar(m_session, false);
+    Player* m_plyr = GetSelectedPlayer(m_session, false, true);
 
     if (m_plyr == NULL)
         return false;
@@ -455,7 +455,7 @@ bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_
 
 bool ChatHandler::HandleSendFailed(const char* args, WorldSession* m_session)
 {
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (plr == NULL)
         return false;
 
@@ -471,7 +471,7 @@ bool ChatHandler::HandleSendFailed(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
 {
-    Player* plr = getSelectedChar(m_session, true);
+    Player* plr = GetSelectedPlayer(m_session, true, true);
     if (plr == NULL)
         return false;
 
@@ -542,7 +542,7 @@ bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandlePhaseCommand(const char* args, WorldSession* m_session)
 {
-    Player* p_target = getSelectedChar(m_session, false);
+    Player* p_target = GetSelectedPlayer(m_session, false, true);
     if (p_target == NULL)
         return false;
 

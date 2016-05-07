@@ -171,12 +171,9 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
 {
     if (!*args) return false;
 
-    Player* plr = getSelectedChar(m_session, true);
-    if (!plr)
-    {
-        plr = m_session->GetPlayer();
-        SystemMessage(m_session, "Auto-targeting self.");
-    }
+    Player* plr = GetSelectedPlayer(m_session, true, true);
+    if (plr == nullptr)
+        return true;
 
     uint32 quest_id = atol(args);
     if (quest_id == 0)
@@ -219,12 +216,9 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
 {
     if (!*args) return false;
 
-    Player* plr = getSelectedChar(m_session, true);
-    if (!plr)
-    {
-        plr = m_session->GetPlayer();
-        SystemMessage(m_session, "Auto-targeting self.");
-    }
+    Player* plr = GetSelectedPlayer(m_session, true, true);
+    if (plr == nullptr)
+        return true;
 
     uint32 quest_id = atol(args);
     if (quest_id == 0)
@@ -323,12 +317,9 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
 {
     if (!*args) return false;
 
-    Player* plr = getSelectedChar(m_session, true);
-    if (!plr)
-    {
-        plr = m_session->GetPlayer();
-        SystemMessage(m_session, "Auto-targeting self.");
-    }
+    Player* plr = GetSelectedPlayer(m_session, true, true);
+    if (plr == nullptr)
+        return true;
 
     uint32 quest_id = atol(args);
     // reward_slot is for when quest has choice of rewards (0 is the first choice, 1 is the second choice, ...)
@@ -1534,12 +1525,9 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
     if (!*args)
         return false;
 
-    Player* plr = getSelectedChar(m_session, true);
-    if (!plr)
-    {
-        plr = m_session->GetPlayer();
-        SystemMessage(m_session, "Auto-targeting self.");
-    }
+    Player* plr = GetSelectedPlayer(m_session, true, true);
+    if (plr == nullptr)
+        return true;
 
     std::string recout = "";
     uint32 quest_id = atol(args);

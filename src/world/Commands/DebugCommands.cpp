@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session)
 {
     uint32 guid = Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection());
-    Creature* creature = getSelectedCreature(m_session);
+    Creature* creature = GetSelectedCreature(m_session);
     if (creature == nullptr)
         return true;
 

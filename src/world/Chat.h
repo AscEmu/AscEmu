@@ -239,6 +239,11 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         ChatCommand* getCommandTable();
 
+        //helper
+        Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);
+        Creature* GetSelectedCreature(WorldSession* m_session, bool showerror = true);
+        Unit* GetSelectedUnit(WorldSession* m_session, bool showerror = true);
+
         // AccountCommands
         bool HandleAccountCreate(const char* args, WorldSession* m_session);
         bool HandleAccountChangePassword(const char* args, WorldSession* m_session);
@@ -482,9 +487,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleShowInstancesCommand(const char* args, WorldSession* m_session);
 
         // Unsorted?
-        Player* getSelectedChar(WorldSession* m_session, bool showerror = true);
-        Creature* getSelectedCreature(WorldSession* m_session, bool showerror = true);
-        Unit* GetSelectedUnit(WorldSession* m_session);
         bool HandleGOScale(const char* args, WorldSession* m_session);
 
         bool HandleMountCommand(const char* args, WorldSession* m_session);

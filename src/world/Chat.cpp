@@ -1094,43 +1094,46 @@ WorldPacket* ChatHandler::FillSystemMessageData(const char* message) const
     return data;
 }
 
-Player* ChatHandler::getSelectedChar(WorldSession* m_session, bool showerror)
+Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, bool auto_self)
 {
-    uint64 guid;
-    Player* chr;
-
     if (m_session == nullptr)
         return nullptr;
 
-    guid = m_session->GetPlayer()->GetSelection();
-
+    Player* player_target;
+    uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid == 0)
     {
-        if (showerror)
+        if (auto_self)
+        {
             GreenSystemMessage(m_session, "Auto-targeting self.");
-        chr = m_session->GetPlayer(); // autoselect
+            player_target = m_session->GetPlayer();
+        }
     }
     else
-        chr = m_session->GetPlayer()->GetMapMgr()->GetPlayer((uint32)guid);
-
-    if (chr == NULL)
     {
-        if (showerror)
-            RedSystemMessage(m_session, "This command requires that you select a player.");
-        return NULL;
+        player_target = m_session->GetPlayer()->GetMapMgr()->GetPlayer((uint32)guid);
     }
 
-    return chr;
+
+    if (player_target == nullptr)
+    {
+        if (showerror)
+            RedSystemMessage(m_session, "This command requires a selected player.");
+
+        return nullptr;
+    }
+
+    return player_target;
 }
 
-Creature* ChatHandler::getSelectedCreature(WorldSession* m_session, bool showerror)
+Creature* ChatHandler::GetSelectedCreature(WorldSession* m_session, bool showerror)
 {
-    uint64 guid;
-    Creature* creature = NULL;
+    if (m_session == nullptr)
+        return nullptr;
 
-    if (m_session == NULL || m_session->GetPlayer() == NULL) return NULL;
-
-    guid = m_session->GetPlayer()->GetSelection();
+    Creature* creature = nullptr;
+    bool is_invalid_type = false;
+    uint64 guid = m_session->GetPlayer()->GetSelection();
 
     switch(GET_TYPE_FROM_GUID(guid))
     {
@@ -1142,26 +1145,38 @@ Creature* ChatHandler::getSelectedCreature(WorldSession* m_session, bool showerr
         case HIGHGUID_TYPE_VEHICLE:
             creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
             break;
+        default:
+            is_invalid_type = true;
+            break;
     }
 
-    if (creature != NULL)
-        return creature;
-    else
+    if (creature == nullptr || is_invalid_type)
     {
         if (showerror)
-            RedSystemMessage(m_session, "This command requires that you select a creature.");
-        return NULL;
+            RedSystemMessage(m_session, "This command requires a selected a creature.");
+
+        return nullptr;
     }
+
+    return creature;
 }
 
-Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session)
+Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
 {
     if (m_session == nullptr || m_session->GetPlayer() == nullptr)
         return nullptr;
 
     uint64 guid = m_session->GetPlayer()->GetSelection();
     
-    return m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
+    Unit* unit = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
+    if (unit == nullptr)
+    {
+        if (showerror)
+            RedSystemMessage(m_session, "You need to select a unit!");
+        return nullptr;
+    }
+
+    return unit;
 }
 
 void ChatHandler::SystemMessage(WorldSession* m_session, const char* message, ...)
@@ -1357,7 +1372,7 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint32 field, uint32
         }
     }
 
-    Player* plr = getSelectedChar(m_session, false);
+    Player* plr = GetSelectedPlayer(m_session, false, true);
     if (plr)
     {
         sGMLog.writefromsession(m_session, "used modify field value: %s, %u on %s", fieldname, av, plr->GetName());
@@ -1387,7 +1402,7 @@ bool ChatHandler::CmdSetValueField(WorldSession* m_session, uint32 field, uint32
     }
     else
     {
-        Creature* cr = getSelectedCreature(m_session, false);
+        Creature* cr = GetSelectedCreature(m_session, false);
         if (cr)
         {
             if (!(field < UNIT_END && fieldmax < UNIT_END)) return false;
@@ -1478,7 +1493,7 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32
         }
     }
 
-    Player* plr = getSelectedChar(m_session, false);
+    Player* plr = GetSelectedPlayer(m_session, false, true);
     if (plr)
     {
         sGMLog.writefromsession(m_session, "used modify field value: %s, %f on %s", fieldname, av, plr->GetName());
@@ -1497,7 +1512,7 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32
     }
     else
     {
-        Creature* cr = getSelectedCreature(m_session, false);
+        Creature* cr = GetSelectedCreature(m_session, false);
         if (cr)
         {
             if (!(field < UNIT_END && fieldmax < UNIT_END)) return false;
