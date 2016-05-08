@@ -644,9 +644,10 @@ void CommandTableStorage::Init()
 
     static ChatCommand gmCommandTable[] =
     {
-        { "active",        't', &ChatHandler::HandleGMActiveCommand,        "Avtivate/Deactivate GM tag",                          NULL, 0, 0, 0 },
+        { "active",        't', &ChatHandler::HandleGMActiveCommand,        "Avtivate/Deactivate <GM> tag",                        NULL, 0, 0, 0 },
         { "allowwhispers", 'c', &ChatHandler::HandleGMAllowWhispersCommand, "Allows whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
         { "blockwhispers", 'c', &ChatHandler::HandleGMBlockWhispersCommand, "Blocks whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
+        { "devtag",        '1', &ChatHandler::HandleGMDevTagCommand,        "Avtivate/Deactivate <DEV> tag",                       NULL, 0, 0, 0 },
         { "list",          '0', &ChatHandler::HandleGMListCommand,          "Shows active GM's",                                   NULL, 0, 0, 0 },
         { "status",        't', &ChatHandler::HandleGMStatusCommand,      "Shows status of your gm flags",                          NULL, 0, 0, 0 },
         { NULL,            '0', NULL,                                     "",                                                    NULL, 0, 0, 0 }
@@ -800,7 +801,6 @@ void CommandTableStorage::Init()
         { "gps",             '0', &ChatHandler::HandleGPSCommand,                           "Shows Position",                                                                                                                          NULL,                     0, 0, 0 },
         { "worldport",       'v', &ChatHandler::HandleWorldPortCommand,                     "Teleports you to a location with mapid x y z",                                                                                                                                        NULL,                     0, 0, 0 },
         { "start",           'm', &ChatHandler::HandleStartCommand,                         "Teleports you to a starting location",                                                                                                   NULL,                     0, 0, 0 },
-        { "devtag",             '1', &ChatHandler::HandleDeveloperCommand,                        "toggles <dev> tag",                                                                                                                       NULL,                    0, 0, 0 },
         { "invincible",      'j', &ChatHandler::HandleInvincibleCommand,                    ".invincible - Toggles INVINCIBILITY (mobs won't attack you)",                                                                             NULL,                     0, 0, 0 },
         { "invisible",       'i', &ChatHandler::HandleInvisibleCommand,                     ".invisible - Toggles INVINCIBILITY and INVISIBILITY (mobs won't attack you and nobody can see you, but they can see your chat messages)", NULL,                     0, 0, 0 },
         { "playerinfo",      'm', &ChatHandler::HandlePlayerInfo,                           ".playerinfo - Displays information about the selected character (account...)",                                                           NULL,                     0, 0, 0 },

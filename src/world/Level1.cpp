@@ -125,17 +125,6 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
     return true;
 }
 
-bool ChatHandler::HandleDeveloperCommand(const char* args, WorldSession* m_session)
-{
-    Player* _player = m_session->GetPlayer();
-    if (_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER))
-        _player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER);
-    else
-        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER);
-    BlueSystemMessage(m_session, "Developer flag toggled.");
-    return true;
-}
-
 bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
 {
     Object* obj;

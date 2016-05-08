@@ -5,6 +5,38 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
+//.gm active
+bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_session)
+{
+    auto player = m_session->GetPlayer();
+    bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
+    if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+    {
+        if (!toggle_no_notice)
+        {
+            SystemMessage(m_session, "GM Flag removed.");
+            BlueSystemMessage(m_session, "<GM> Will no longer show in chat messages or above your name until you use this command again.");
+        }
+        player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+        player->SetFaction(player->GetInitialFactionId());
+        player->UpdatePvPArea();
+        player->UpdateVisibility();
+    }
+    else
+    {
+        if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER))
+            HandleGMDevTagCommand("no_notice", m_session);
+
+        SystemMessage(m_session, "GM Flag set.");
+        BlueSystemMessage(m_session, "<GM> will now appear above your name and in chat messages until you use this command again.");
+        player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+        player->SetFaction(35);
+        player->RemovePvPFlag();
+        player->UpdateVisibility();
+    }
+    return true;
+}
+
 //.gm allowwhispers
 bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m_session)
 {
@@ -53,6 +85,34 @@ bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m
     player_cache->GetStringValue(CACHE_PLAYER_NAME, name);
     BlueSystemMessage(m_session, "Now blocking whispers from %s.", name.c_str());
     player_cache->DecRef();
+
+    return true;
+}
+
+//.gm devtag
+bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_session)
+{
+    auto player = m_session->GetPlayer();
+    bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
+
+    if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER))
+    {
+        if (!toggle_no_notice)
+        {
+            SystemMessage(m_session, "DEV Flag removed.");
+            BlueSystemMessage(m_session, "<DEV> Will no longer show in chat messages or above your name until you use this command again.");
+        }
+        player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER);
+    }
+    else
+    {
+        if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+            HandleGMActiveCommand("no_notice", m_session);
+
+        SystemMessage(m_session, "DEV Flag set.");
+        BlueSystemMessage(m_session, "<DEV> will now appear above your name and in chat messages until you use this command again.");
+        player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEVELOPER);
+    }
 
     return true;
 }
@@ -117,27 +177,3 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
     return true;
 }
 
-//.gm active
-bool ChatHandler::HandleGMActiveCommand(const char* /*args*/, WorldSession* m_session)
-{
-    auto player = m_session->GetPlayer();
-    if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
-    {
-        SystemMessage(m_session, "GM Flag removed.");
-        BlueSystemMessage(m_session, "<GM> Will no longer show in chat messages or above your name until you use this command again.");
-        player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
-        player->SetFaction(player->GetInitialFactionId());
-        player->UpdatePvPArea();
-        player->UpdateVisibility();
-    }
-    else
-    {
-        SystemMessage(m_session, "GM Flag set.");
-        BlueSystemMessage(m_session, "<GM> will now appear above your name and in chat messages until you use this command again.");
-        player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
-        player->SetFaction(35);
-        player->RemovePvPFlag();
-        player->UpdateVisibility();
-    }
-    return true;
-}
