@@ -252,6 +252,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         //GameMasterCommands
         bool HandleGMActiveCommand(const char* args, WorldSession* m_session);
         bool HandleGMAllowWhispersCommand(const char* args, WorldSession* m_session);
+        bool HandleGMAnnounceCommand(const char* args, WorldSession* m_session);
         bool HandleGMBlockWhispersCommand(const char* args, WorldSession* m_session);
         bool HandleGMDevTagCommand(const char* args, WorldSession* m_session);
         bool HandleGMListCommand(const char* /*args*/, WorldSession* m_session);
@@ -278,7 +279,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleSummonCommand(const char* args, WorldSession* m_session);
         bool HandleAppearCommand(const char* args, WorldSession* m_session);
         bool HandleAnnounceCommand(const char* args, WorldSession* m_session);
-        bool HandleGMAnnounceCommand(const char* args, WorldSession* m_session);
+
         bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
         
         bool HandleGPSCommand(const char* args, WorldSession* m_session);

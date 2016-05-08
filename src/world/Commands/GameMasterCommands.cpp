@@ -63,6 +63,25 @@ bool ChatHandler::HandleGMAllowWhispersCommand(const char* args, WorldSession* m
     return true;
 }
 
+//.gm announce
+bool ChatHandler::HandleGMAnnounceCommand(const char* args, WorldSession* m_session)
+{
+    if (!*args)
+    {
+        RedSystemMessage(m_session, "No announce set.");
+        RedSystemMessage(m_session, "Use .gm announce <your text>");
+        return true;
+    }
+
+    char TeamAnnounce[1024];
+    snprintf(TeamAnnounce, 1024, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " %s", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName(), args);
+    sWorld.SendGMWorldText(TeamAnnounce);
+
+    sGMLog.writefromsession(m_session, "used .gm annouince command: [%s]", args);
+
+    return true;
+}
+
 //.gm blockwhispers
 bool ChatHandler::HandleGMBlockWhispersCommand(const char* args, WorldSession* m_session)
 {
@@ -177,6 +196,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
     return true;
 }
 
+//.gm logcomment
 bool ChatHandler::HandleGMLogCommentCommand(const char* args, WorldSession* m_session)
 {
     if (!args)

@@ -646,6 +646,7 @@ void CommandTableStorage::Init()
     {
         { "active",        't', &ChatHandler::HandleGMActiveCommand,        "Avtivate/Deactivate <GM> tag",                        NULL, 0, 0, 0 },
         { "allowwhispers", 'c', &ChatHandler::HandleGMAllowWhispersCommand, "Allows whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
+        { "announce",      'u', &ChatHandler::HandleGMAnnounceCommand,      "Sends announce to all online GMs",                    NULL, 0, 0, 0 },
         { "blockwhispers", 'c', &ChatHandler::HandleGMBlockWhispersCommand, "Blocks whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
         { "devtag",        '1', &ChatHandler::HandleGMDevTagCommand,        "Avtivate/Deactivate <DEV> tag",                       NULL, 0, 0, 0 },
         { "list",          '0', &ChatHandler::HandleGMListCommand,          "Shows active GM's",                                   NULL, 0, 0, 0 },
@@ -832,7 +833,6 @@ void CommandTableStorage::Init()
         { "instance",        '0', NULL,                                                     "",                                                                                                                                        instanceCommandTable,     0, 0, 0 },
         { "arena",           '0', NULL,                                                     "",                                                                                                                                        arenaCommandTable,        0, 0, 0 },
         { "kickplayer",      'b', &ChatHandler::HandleKickCommand,                          "Kicks player from server",                                                                                                                NULL,                     0, 0, 0 },
-        { "gmannounce",      'u', &ChatHandler::HandleGMAnnounceCommand,                    "Sends Msg to all online GMs",                                                                                                             NULL,                     0, 0, 0 },
         { "clearcooldowns",  'm', &ChatHandler::HandleClearCooldownsCommand,                "Clears all cooldowns for your class.",                                                                                                    NULL,                     0, 0, 0 },
         { "removeauras",     'm', &ChatHandler::HandleRemoveAurasCommand,                   "Removes all auras from target",                                                                                                           NULL,                     0, 0, 0 },
         { "unroot",          'b', &ChatHandler::HandleUnrootCommand,                        "Unroots selected target.",                                                                                                                NULL, 0, 0, 0 },
