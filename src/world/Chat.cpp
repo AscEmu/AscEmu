@@ -96,9 +96,7 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
 
 ChatCommand* CommandTableStorage::GetNPCSubCommandTable(const char* name)
 {
-    if (0 == stricmp(name, "add"))
-        return _NPCAddCommandTable;
-    else if (0 == stricmp(name, "set"))
+    if (0 == stricmp(name, "set"))
         return _NPCSetCommandTable;
     return 0;
 }
@@ -223,7 +221,6 @@ void CommandTableStorage::Dealloc()
     free(_GameObjectCommandTable);
     free(_BattlegroundCommandTable);
     free(_NPCCommandTable);
-    free(_NPCAddCommandTable);
     free(_NPCSetCommandTable);
     free(_CheatCommandTable);
     free(_accountCommandTable);
@@ -475,17 +472,9 @@ void CommandTableStorage::Init()
     };
     dupe_command_table(BattlegroundCommandTable, _BattlegroundCommandTable);
 
-    static ChatCommand NPCAddCommandTable[] =
-    {
-        { "agent",         'n', &ChatHandler::HandleNpcAddAgentCommand,         "Add ai agents to npc.",                                                        NULL, 0, 0, 0 },
-        { "trainerspell",  'm', &ChatHandler::HandleNpcAddTrainerSpellCommand,  "Add spells to trainer learn list.",                                            NULL, 0, 0, 0 },
-
-        { NULL,            '0', NULL,                                      "",                                                                                  NULL, 0, 0, 0 }
-    };
-    dupe_command_table(NPCAddCommandTable, _NPCAddCommandTable);
-
     static ChatCommand NPCSetCommandTable[] =
     {
+        { "canfly",           'n', &ChatHandler::HandleNPCCanFlyCommand,      ".npc canfly <save> - Toggles CanFly state",                                                                                               NULL, 0, 0, 0 },
         { "emote",         'n', &ChatHandler::HandleNpcSetEmoteCommand,    ".npc set emote <emote> <save> - Sets emote state",                                                                                        NULL, 0, 0, 0 },
         { "equip",         'm', &ChatHandler::HandleNpcSetEquipCommand,    ".npc set equip <slot> <itemid>",                                                                                                          NULL, 0, 0, 0 },
         { "flags",         'n', &ChatHandler::HandleNpcSetFlagsCommand,    "Changes NPC flags",                                                                                                                       NULL, 0, 0, 0 },
@@ -502,8 +491,8 @@ void CommandTableStorage::Init()
 
     static ChatCommand NPCCommandTable[] =
     {
-        { "add",              '0', NULL,                                      "",                                                                                                         NPCAddCommandTable, 0, 0, 0 },
-        { "canfly",           'n', &ChatHandler::HandleNPCCanFlyCommand,      ".npc canfly <save> - Toggles CanFly state",                                                                                               NULL, 0, 0, 0 },
+        { "addagent",         'n', &ChatHandler::HandleNpcAddAgentCommand,         "Add ai agents to npc.",                                                        NULL, 0, 0, 0 },
+        { "addtrainerspell",  'm', &ChatHandler::HandleNpcAddTrainerSpellCommand,  "Add spells to trainer learn list.",                                            NULL, 0, 0, 0 },
         { "cast",             'n', &ChatHandler::HandleNPCCastCommand,        ".npc cast < spellid > - Makes the NPC cast this spell.",                                                                                  NULL, 0, 0, 0 },
         { "come",             'n', &ChatHandler::HandleNpcComeCommand,        ".npc come - Makes npc move to your position",                                                                                             NULL, 0, 0, 0 },
         { "delete",           'n', &ChatHandler::HandleDeleteCommand,         "Deletes mob from db and world.",                                                                                                          NULL, 0, 0, 0 },

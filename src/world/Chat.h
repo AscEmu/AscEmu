@@ -388,6 +388,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGODamageCommand(const char* args, WorldSession* session);
         bool HandleGORebuildCommand(const char* args, WorldSession* session);
 
+        bool HandleGOScale(const char* args, WorldSession* m_session);
+        bool HandleGOAnimProgress(const char* args, WorldSession* m_session);
+        bool HandleGOExport(const char* args, WorldSession* m_session);
+
         // AI commands
         bool HandleListAIAgentCommand(const char* args, WorldSession* m_session);
         bool HandleRepairItemsCommand(const char* args, WorldSession* m_session);
@@ -488,13 +492,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleShowInstancesCommand(const char* args, WorldSession* m_session);
 
         // Unsorted?
-        bool HandleGOScale(const char* args, WorldSession* m_session);
 
         bool HandleMountCommand(const char* args, WorldSession* m_session);
         bool HandleGetPosCommand(const char* args, WorldSession* m_session);
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
-        bool HandleGOAnimProgress(const char* args, WorldSession* m_session);
-        bool HandleGOExport(const char* args, WorldSession* m_session);
         bool HandleRemoveAurasCommand(const char* args, WorldSession* m_session);
 
         bool HandleSetMotdCommand(const char* args, WorldSession* m_session);

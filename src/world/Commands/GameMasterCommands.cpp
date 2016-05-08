@@ -200,7 +200,11 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 bool ChatHandler::HandleGMLogCommentCommand(const char* args, WorldSession* m_session)
 {
     if (!args)
-        return false;
+    {
+        RedSystemMessage(m_session, "No logcomment set.");
+        RedSystemMessage(m_session, "Use .gm logcomment <your comment message>");
+        return true;
+    }
 
     BlueSystemMessage(m_session, "Added Logcomment: %s", args);
     sGMLog.writefromsession(m_session, "Comment: %s", args);

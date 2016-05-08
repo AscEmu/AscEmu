@@ -5,86 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
-bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session)
-{
-    auto creature_target = GetSelectedCreature(m_session, true);
-    if (creature_target == nullptr)
-    {
-        RedSystemMessage(m_session, "You must select a Creature.");
-        return false;
-    }
-
-    auto player = m_session->GetPlayer();
-    creature_target->GetAIInterface()->MoveTo(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
-    sGMLog.writefromsession(m_session, "used .npc come on %s spawn ID: %u", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
-    return true;
-}
-
-// Zyres: not only for npc!
-bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_session)
-{
-    auto unit_target = GetSelectedUnit(m_session);
-    if (unit_target != nullptr)
-    {
-        if (unit_target->IsPet() || unit_target->GetCreatedByGUID() != 0)
-        {
-            RedSystemMessage(m_session, "You can not possess a pet!");
-            return false;
-        }
-        else if (unit_target->IsPlayer())
-        {
-            auto player = static_cast<Player*>(unit_target);
-            BlueSystemMessage(m_session, "Player %s selected.", player->GetName());
-            sGMLog.writefromsession(m_session, "used possess command on PLAYER %s", player->GetName());
-        }
-        else if (unit_target->IsCreature())
-        {
-            auto creature = static_cast<Creature*>(unit_target);
-            BlueSystemMessage(m_session, "Creature %s selected.", creature->GetCreatureInfo()->Name);
-            sGMLog.writefromsession(m_session, "used possess command on Creature spawn_id %u", creature->GetCreatureInfo()->Name, creature->GetSQL_id());
-        }
-    }
-    else
-    {
-        RedSystemMessage(m_session, "You must select a Player/Creature.");
-        return false;
-    }
-
-    m_session->GetPlayer()->Possess(unit_target);
-
-    return true;
-}
-
-bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session)
-{
-    auto unit_target = GetSelectedUnit(m_session);
-
-    if (unit_target != nullptr)
-    {
-        if (unit_target->IsPlayer())
-        {
-            auto player = static_cast<Player*>(unit_target);
-            BlueSystemMessage(m_session, "Player %s is no longer possessed by you.", player->GetName());
-        }
-        else if (unit_target->IsCreature())
-        {
-            auto creature = static_cast<Creature*>(unit_target);
-            BlueSystemMessage(m_session, "Creature %s is no longer possessed by you.", creature->GetCreatureInfo()->Name);
-        }
-    }
-    else
-    {
-        RedSystemMessage(m_session, "You must select a Player/Creature.");
-        return false;
-    }
-
-    m_session->GetPlayer()->UnPossess();
-
-    return true;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// .npc add commands
+//.npc addagent
 bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)
 {
     //new
@@ -118,7 +39,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
 
     SystemMessage(m_session, "Added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
     sGMLog.writefromsession(m_session, "added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
-    WorldDatabase.Execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u", 
+    WorldDatabase.Execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u",
         creature_target->GetEntry(), ai_type, procEvent, procChance, maxcount, spellId, spellType, spelltargetType, spellCooldown, floatMisc1, Misc2);
 
 
@@ -167,6 +88,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+//.npc addtrainerspell
 bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
@@ -226,8 +148,87 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     return true;
 }
 
+//.npc come
+bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    auto player = m_session->GetPlayer();
+    creature_target->GetAIInterface()->MoveTo(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
+    sGMLog.writefromsession(m_session, "used .npc come on %s spawn ID: %u", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+    return true;
+}
+
+// Zyres: not only for npc!
+//.npc possess
+bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto unit_target = GetSelectedUnit(m_session);
+    if (unit_target != nullptr)
+    {
+        if (unit_target->IsPet() || unit_target->GetCreatedByGUID() != 0)
+        {
+            RedSystemMessage(m_session, "You can not possess a pet!");
+            return false;
+        }
+        else if (unit_target->IsPlayer())
+        {
+            auto player = static_cast<Player*>(unit_target);
+            BlueSystemMessage(m_session, "Player %s selected.", player->GetName());
+            sGMLog.writefromsession(m_session, "used possess command on PLAYER %s", player->GetName());
+        }
+        else if (unit_target->IsCreature())
+        {
+            auto creature = static_cast<Creature*>(unit_target);
+            BlueSystemMessage(m_session, "Creature %s selected.", creature->GetCreatureInfo()->Name);
+            sGMLog.writefromsession(m_session, "used possess command on Creature spawn_id %u", creature->GetCreatureInfo()->Name, creature->GetSQL_id());
+        }
+    }
+    else
+    {
+        RedSystemMessage(m_session, "You must select a Player/Creature.");
+        return false;
+    }
+
+    m_session->GetPlayer()->Possess(unit_target);
+
+    return true;
+}
+
+//.npc unpossess
+bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto unit_target = GetSelectedUnit(m_session);
+
+    if (unit_target != nullptr)
+    {
+        if (unit_target->IsPlayer())
+        {
+            auto player = static_cast<Player*>(unit_target);
+            BlueSystemMessage(m_session, "Player %s is no longer possessed by you.", player->GetName());
+        }
+        else if (unit_target->IsCreature())
+        {
+            auto creature = static_cast<Creature*>(unit_target);
+            BlueSystemMessage(m_session, "Creature %s is no longer possessed by you.", creature->GetCreatureInfo()->Name);
+        }
+    }
+    else
+    {
+        RedSystemMessage(m_session, "You must select a Player/Creature.");
+        return false;
+    }
+
+    m_session->GetPlayer()->UnPossess();
+
+    return true;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // .npc set commands
+//.npc set equip
 bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_session)
 {
     uint32 equipment_slot;
@@ -283,6 +284,7 @@ bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+//.npc set emote
 bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session)
 {
     uint32 emote;
@@ -318,6 +320,7 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+//.npc set formationmaster
 bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto creature_target = GetSelectedCreature(m_session, true);
@@ -329,6 +332,7 @@ bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, World
     return true;
 }
 
+//.npc set formationslave
 bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSession* m_session)
 {
     float angle;
@@ -380,6 +384,7 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
     return true;
 }
 
+//.npc set formationclear
 bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session)
 {
     uint32 save = atol(args);
@@ -408,6 +413,7 @@ bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSessi
     return true;
 }
 
+//.npc set flags
 bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session)
 {
     uint32 npc_flags;
@@ -441,6 +447,7 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+//.npc set phase
 bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session)
 {
     uint32 npc_phase;
@@ -474,6 +481,7 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+//.npc set standstate
 bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* m_session)
 {
     uint32 standstate;
