@@ -898,9 +898,9 @@ void Object::AddToWorld()
                 if (mapMgr->pInstance->m_creatorGroup != 0 && mapMgr->pInstance->m_creatorGroup != group->GetID())
                 {
                     // Player not in group or another group is already playing this instance.
-                    sChatHandler.SystemMessageToPlr(plr, "Another group is already inside this instance of the dungeon.");
+                    sChatHandler.SystemMessage(plr->GetSession(), "Another group is already inside this instance of the dungeon.");
                     if (plr->GetSession()->GetPermissionCount() > 0)
-                        sChatHandler.BlueSystemMessageToPlr(plr, "Enable your GameMaster flag to ignore this rule.");
+                        sChatHandler.BlueSystemMessage(plr->GetSession(), "Enable your GameMaster flag to ignore this rule.");
                     return;
                 }
                 else if (mapMgr->pInstance->m_creatorGroup == 0)

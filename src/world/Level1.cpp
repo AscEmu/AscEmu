@@ -269,7 +269,7 @@ bool ChatHandler::HandleKickCommand(const char* args, WorldSession* m_session)
         }
 
         //sWorld.SendIRCMessage(msg);
-        SystemMessageToPlr(chr, "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->GetName(), kickreason.c_str());
+        SystemMessage(chr->GetSession(), "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->GetName(), kickreason.c_str());
         chr->Kick(6000);
         return true;
     }
@@ -319,16 +319,13 @@ bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_sess
             {
                 sGMLog.writefromsession(m_session, "used add item command, item id %u [%s], quantity %u (only %lu added due to full inventory), to %s", it->ItemId, it->Name1, numadded, numadded, chr->GetName());
             }
-            char messagetext[512];
-            snprintf(messagetext, 512, "Added item %s (id: %d), quantity %u, to %s's inventory.", GetItemLinkByProto(it, m_session->language).c_str(), (unsigned int)it->ItemId, numadded, chr->GetName());
-            SystemMessage(m_session, messagetext);
-            //snprintf(messagetext, 128, "%s added item %d (%s) to your inventory.", m_session->GetPlayer()->GetName(), (unsigned int)itemid, it->Name1);
-            snprintf(messagetext, 512, "%s added item %s, quantity %u, to your inventory.", m_session->GetPlayer()->GetName(), GetItemLinkByProto(it, chr->GetSession()->language).c_str(), numadded);
-            SystemMessageToPlr(chr, messagetext);
+
+            SystemMessage(m_session, "Added item %s (id: %d), quantity %u, to %s's inventory.", GetItemLinkByProto(it, m_session->language).c_str(), (unsigned int)it->ItemId, numadded, chr->GetName());
+            SystemMessage(chr->GetSession(), "%s added item %s, quantity %u, to your inventory.", m_session->GetPlayer()->GetName(), GetItemLinkByProto(it, chr->GetSession()->language).c_str(), numadded);
         }
         else
         {
-            SystemMessageToPlr(chr, "Failed to add item.");
+            SystemMessage(chr->GetSession(), "Failed to add item.");
         }
         return true;
     }
@@ -399,9 +396,7 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
             chr->ResurrectPlayer();
         if (!m_session->GetPlayer()->m_isGmInvisible)
         {
-            // send message to player
-            snprintf((char*)buf0, 256, "You are being summoned by %s.", m_session->GetPlayer()->GetName());
-            SystemMessageToPlr(chr, buf0);
+            SystemMessage(chr->GetSession(), "You are being summoned by %s.", m_session->GetPlayer()->GetName());
         }
         Player* plr = m_session->GetPlayer();
         if (plr->GetMapMgr() == chr->GetMapMgr())
@@ -472,26 +467,20 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
     Player* chr = objmgr.GetPlayer(args, false);
     if (chr)
     {
-        char buf[256];
         if (!m_session->CanUseCommand('z') && chr->IsAppearDisabled())
         {
-            snprintf((char*)buf, 256, "%s has blocked other GMs from appearing to them.", chr->GetName());
-            SystemMessage(m_session, buf);
+            SystemMessage(m_session, "%s has blocked other GMs from appearing to them.", chr->GetName());
             return true;
         }
         if (chr->GetMapMgr() == NULL)
         {
-            snprintf((char*)buf, 256, "%s is already being teleported.", chr->GetName());
-            SystemMessage(m_session, buf);
+            SystemMessage(m_session, "%s is already being teleported.", chr->GetName());
             return true;
         }
-        snprintf((char*)buf, 256, "Appearing at %s's location.", chr->GetName()); // -- europa
-        SystemMessage(m_session, buf);
+        SystemMessage(m_session, "Appearing at %s's location.", chr->GetName());
         if (!m_session->GetPlayer()->m_isGmInvisible)
         {
-            char buf0[256];
-            snprintf((char*)buf0, 256, "%s is appearing to your location.", m_session->GetPlayer()->GetName());
-            SystemMessageToPlr(chr, buf0);
+            SystemMessage(chr->GetSession(), "%s is appearing to your location.", m_session->GetPlayer()->GetName());
         }
         //m_session->GetPlayer()->SafeTeleport(chr->GetMapId(), chr->GetInstanceID(), chr->GetPosition());
         //If the GM is on the same map as the player, use the normal safeteleport method
@@ -503,9 +492,7 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
     }
     else
     {
-        char buf[256];
-        snprintf((char*)buf, 256, "Player (%s) does not exist or is not logged in.", args);
-        SystemMessage(m_session, buf);
+        SystemMessage(m_session, "Player (%s) does not exist or is not logged in.", args);
     }
     return true;
 }
@@ -710,7 +697,7 @@ bool ChatHandler::HandleRemoveSkillCommand(const char* args, WorldSession* m_ses
     {
         plr->_RemoveSkillLine(skill);
         sGMLog.writefromsession(m_session, "used remove skill of %u on %s", skill, plr->GetName());
-        SystemMessageToPlr(plr, "%s removed skill line %d from you. ", m_session->GetPlayer()->GetName(), skill);
+        SystemMessage(plr->GetSession(), "%s removed skill line %d from you. ", m_session->GetPlayer()->GetName(), skill);
     }
     else
     {
@@ -739,30 +726,20 @@ bool ChatHandler::HandleModifyGoldCommand(const char* args, WorldSession* m_sess
     if (newgold < 0)
     {
         BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", chr->GetName());
-        GreenSystemMessageToPlr(chr, "%s took the all gold from your backpack.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(chr->GetSession(), "%s took the all gold from your backpack.", m_session->GetPlayer()->GetName());
         newgold = 0;
     }
     else
     {
         if (total >= 0)
         {
-            BlueSystemMessage(m_session,
-                              "Adding %u gold, %u silver, %u copper to %s's backpack...",
-                              gold, silver, copper,
-                              chr->GetName());
-            GreenSystemMessageToPlr(chr, "%s added %u gold, %u silver, %u copper to your backpack.",
-                                    m_session->GetPlayer()->GetName(),
-                                    gold, silver, copper);
+            BlueSystemMessage(m_session, "Adding %u gold, %u silver, %u copper to %s's backpack...", gold, silver, copper, chr->GetName());
+            GreenSystemMessage(chr->GetSession(), "%s added %u gold, %u silver, %u copper to your backpack.", m_session->GetPlayer()->GetName(), gold, silver, copper);
         }
         else
         {
-            BlueSystemMessage(m_session,
-                              "Taking %u gold, %u silver, %u copper from %s's backpack...",
-                              gold, silver, copper,
-                              chr->GetName());
-            GreenSystemMessageToPlr(chr, "%s took %u gold, %u silver, %u copper from your backpack.",
-                                    m_session->GetPlayer()->GetName(),
-                                    gold, silver, copper);
+            BlueSystemMessage(m_session, "Taking %u gold, %u silver, %u copper from %s's backpack...", gold, silver, copper, chr->GetName());
+            GreenSystemMessage(chr->GetSession(), "%s took %u gold, %u silver, %u copper from your backpack.", m_session->GetPlayer()->GetName(), gold, silver, copper);
         }
     }
     // Check they don't have more than the max gold
@@ -799,10 +776,8 @@ bool ChatHandler::HandleTriggerCommand(const char* args, WorldSession* m_session
         RedSystemMessage(m_session, "Could not find trigger %s", args);
         return true;
     }
-    m_session->GetPlayer()->SafeTeleport(area_trigger_entry->mapid, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y,
-        area_trigger_entry->z, area_trigger_entry->o));
-    BlueSystemMessage(m_session, "Teleported to trigger %u on [%u][%.2f][%.2f][%.2f]", area_trigger_entry->id,
-        area_trigger_entry->mapid, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
+    m_session->GetPlayer()->SafeTeleport(area_trigger_entry->mapid, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z, area_trigger_entry->o));
+    BlueSystemMessage(m_session, "Teleported to trigger %u on [%u][%.2f][%.2f][%.2f]", area_trigger_entry->id, area_trigger_entry->mapid, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
     return true;
 }
 
@@ -824,7 +799,7 @@ bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session
     sGMLog.writefromsession(m_session, "removed spell %u from %s", SpellId, plr->GetName());
     if (plr->HasSpell(SpellId))
     {
-        GreenSystemMessageToPlr(plr, "Removed spell %u.", SpellId);
+        GreenSystemMessage(plr->GetSession(), "Removed spell %u.", SpellId);
         GreenSystemMessage(m_session, "Removed spell %u from %s.", SpellId, plr->GetName());
         plr->removeSpell(SpellId, false, false, 0);
     }

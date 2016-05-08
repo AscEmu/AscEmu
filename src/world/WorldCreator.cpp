@@ -308,7 +308,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
                 {
                     // Another group is already playing in this instance of the dungeon...
                     m_mapLock.Release();
-                    sChatHandler.SystemMessageToPlr(plr, "Another group is already inside this instance of the dungeon.");
+                    sChatHandler.SystemMessage(plr->GetSession(), "Another group is already inside this instance of the dungeon.");
                     return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
                 }
 
@@ -424,7 +424,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
                 if (!CHECK_INSTANCE_GROUP(in, pGroup))
                 {
                     // Another group is already playing in this instance of the dungeon...
-                    sChatHandler.SystemMessageToPlr(plr, "Another group is already inside this instance of the dungeon.");
+                    sChatHandler.SystemMessage(plr->GetSession(), "Another group is already inside this instance of the dungeon.");
                     return INSTANCE_ABORT_NOT_IN_RAID_GROUP;
                 }
 

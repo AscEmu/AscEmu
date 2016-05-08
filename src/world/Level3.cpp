@@ -387,7 +387,7 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
 
     plr->addSpell(spell);
     sGMLog.writefromsession(m_session, "Taught %s spell %u", plr->GetName(), spell);
-    BlueSystemMessageToPlr(plr, "%s taught you Spell %u", m_session->GetPlayer()->GetName(), spell);
+    BlueSystemMessage(plr->GetSession(), "%s taught you Spell %u", m_session->GetPlayer()->GetName(), spell);
     GreenSystemMessage(m_session, "Taught %s Spell %u", plr->GetName(), spell);
 
     return true;
@@ -1040,7 +1040,7 @@ bool ChatHandler::HandleResetTalentsCommand(const char* args, WorldSession* m_se
     plr->Reset_Talents();
 
     SystemMessage(m_session, "Reset talents of %s.", plr->GetName());
-    BlueSystemMessageToPlr(plr, "%s reset all your talents.", m_session->GetPlayer()->GetName());
+    BlueSystemMessage(plr->GetSession(), "%s reset all your talents.", m_session->GetPlayer()->GetName());
     sGMLog.writefromsession(m_session, "reset talents of %s", plr->GetName());
     return true;
 }
@@ -1054,7 +1054,7 @@ bool ChatHandler::HandleResetSpellsCommand(const char* args, WorldSession* m_ses
     plr->Reset_Spells();
 
     SystemMessage(m_session, "Reset spells of %s to level 1.", plr->GetName());
-    BlueSystemMessageToPlr(plr, "%s reset all your spells to starting values.", m_session->GetPlayer()->GetName());
+    BlueSystemMessage(plr->GetSession(), "%s reset all your spells to starting values.", m_session->GetPlayer()->GetName());
     sGMLog.writefromsession(m_session, "reset spells of %s", plr->GetName());
     return true;
 }
@@ -1088,47 +1088,52 @@ bool ChatHandler::HandleRemoveRessurectionSickessAuraCommand(const char* args, W
 
 bool ChatHandler::HandleParalyzeCommand(const char* args, WorldSession* m_session)
 {
-    //Player* plr = GetSelectedPlayer(m_session, true, true);
-    //if (!plr) return false;
-    Unit* plr = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
-    if (!plr || !plr->IsPlayer())
-    {
-        RedSystemMessage(m_session, "Invalid target.");
+    Unit* unit = GetSelectedUnit(m_session, true);
+    if (unit == nullptr)
         return true;
-    }
 
     BlueSystemMessage(m_session, "Rooting target.");
-    BlueSystemMessageToPlr(static_cast< Player* >(plr), "You have been rooted by %s.", m_session->GetPlayer()->GetName());
-    sGMLog.writefromsession(m_session, "rooted player %s", static_cast< Player* >(plr)->GetName());
+    if (unit->IsPlayer())
+    {
+        BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been rooted by %s.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "rooted player %s", static_cast<Player*>(unit)->GetName());
+    }
+    else
+    {
+        sGMLog.writefromsession(m_session, "rooted creature %s", static_cast<Creature*>(unit)->GetCreatureInfo()->Name);
+    }
+
     WorldPacket data;
     data.Initialize(SMSG_FORCE_MOVE_ROOT);
-    data << plr->GetNewGUID();
+    data << unit->GetNewGUID();
     data << uint32(1);
 
-    plr->SendMessageToSet(&data, true);
+    unit->SendMessageToSet(&data, true);
     return true;
 }
 
 bool ChatHandler::HandleUnParalyzeCommand(const char* args, WorldSession* m_session)
 {
-    //Player* plr = getSelectedChar(m_session, true);
-    //if (!plr) return false;
-    Unit* plr = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
-    if (!plr || !plr->IsPlayer())
-    {
-        RedSystemMessage(m_session, "Invalid target.");
+    Unit* unit = GetSelectedUnit(m_session, true);
+    if (unit == nullptr)
         return true;
-    }
 
     BlueSystemMessage(m_session, "Unrooting target.");
-    BlueSystemMessageToPlr(static_cast< Player* >(plr), "You have been unrooted by %s.", m_session->GetPlayer()->GetName());
-    sGMLog.writefromsession(m_session, "unrooted player %s", static_cast< Player* >(plr)->GetName());
+    if (unit->IsPlayer())
+    {
+        BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been unrooted by %s.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "unrooted player %s", static_cast<Player*>(unit)->GetName());
+    }
+    else
+    {
+        sGMLog.writefromsession(m_session, "unrooted creature %s", static_cast<Creature*>(unit)->GetCreatureInfo()->Name);
+    }
     WorldPacket data;
     data.Initialize(SMSG_FORCE_MOVE_UNROOT);
-    data << plr->GetNewGUID();
+    data << unit->GetNewGUID();
     data << uint32(5);
 
-    plr->SendMessageToSet(&data, true);
+    unit->SendMessageToSet(&data, true);
     return true;
 }
 
@@ -1221,13 +1226,13 @@ bool ChatHandler::HandleCastTimeCheatCommand(const char* args, WorldSession* m_s
     {
         plyr->CastTimeCheat = true;
         BlueSystemMessage(m_session, "activated the cast time cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "activated the cast time cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "activated the cast time cheat on you.", m_session->GetPlayer()->GetName());
     }
     else if (stricmp(args, "off") == 0)
     {
         plyr->CastTimeCheat = false;
         BlueSystemMessage(m_session, "deactivated the cast time cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "deactivated the cast time cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "deactivated the cast time cheat on you.", m_session->GetPlayer()->GetName());
 
         if (plyr != m_session->GetPlayer())
             sGMLog.writefromsession(m_session, "god cast time on %s set to %s", plyr->GetName(), args);
@@ -1259,13 +1264,13 @@ bool ChatHandler::HandleCooldownCheatCommand(const char* args, WorldSession* m_s
         for (; itr != plyr->mSpells.end(); ++itr)
             plyr->ClearCooldownForSpell((*itr));
         BlueSystemMessage(m_session, "activated the cooldown cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "activated the cooldown cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "activated the cooldown cheat on you.", m_session->GetPlayer()->GetName());
     }
     else if (stricmp(args, "off") == 0)
     {
         plyr->CooldownCheat = false;
         BlueSystemMessage(m_session, "deactivated the cooldown cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "deactivated the cooldown cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "deactivated the cooldown cheat on you.", m_session->GetPlayer()->GetName());
 
         if (plyr != m_session->GetPlayer())
             sGMLog.writefromsession(m_session, "cooldown cheat on %s set to %s", plyr->GetName(), args);
@@ -1293,13 +1298,13 @@ bool ChatHandler::HandleGodModeCommand(const char* args, WorldSession* m_session
     {
         plyr->GodModeCheat = true;
         BlueSystemMessage(m_session, "Activating the god mode cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "%s activated the god mode cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "%s activated the god mode cheat on you.", m_session->GetPlayer()->GetName());
     }
     else if (stricmp(args, "off") == 0)
     {
         plyr->GodModeCheat = false;
         BlueSystemMessage(m_session, "Deactivating the god mode cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "%s deactivated the god mode cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "%s deactivated the god mode cheat on you.", m_session->GetPlayer()->GetName());
 
         if (plyr != m_session->GetPlayer())
             sGMLog.writefromsession(m_session, "god mode cheat on %s set to %s", plyr->GetName(), args);
@@ -1327,13 +1332,13 @@ bool ChatHandler::HandlePowerCheatCommand(const char* args, WorldSession* m_sess
     {
         plyr->PowerCheat = true;
         BlueSystemMessage(m_session, "activated the power cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "activated the power cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "activated the power cheat on you.", m_session->GetPlayer()->GetName());
     }
     else if (stricmp(args, "off") == 0)
     {
         plyr->PowerCheat = false;
         BlueSystemMessage(m_session, "deactivated the power cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "deactivated the power cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "deactivated the power cheat on you.", m_session->GetPlayer()->GetName());
 
         if (plyr != m_session->GetPlayer())
             sGMLog.writefromsession(m_session, "power cheat on %s set to %s", plyr->GetName(), args);
@@ -1482,7 +1487,7 @@ bool ChatHandler::HandleModifyLevelCommand(const char* args, WorldSession* m_ses
 
     // Set level message
     BlueSystemMessage(m_session, "Setting the level of %s to %u.", plr->GetName(), Level);
-    GreenSystemMessageToPlr(plr, "%s set your level to %u.", m_session->GetPlayer()->GetName(), Level);
+    GreenSystemMessage(plr->GetSession(), "%s set your level to %u.", m_session->GetPlayer()->GetName(), Level);
 
     sGMLog.writefromsession(m_session, "used modify level on %s, level %u", plr->GetName(), Level);
 
@@ -1942,7 +1947,7 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
 
 
     plr->_AdvanceAllSkills(amt);
-    GreenSystemMessageToPlr(plr, "Advanced all your skill lines by %u points.", amt);
+    GreenSystemMessage(plr->GetSession(), "Advanced all your skill lines by %u points.", amt);
     sGMLog.writefromsession(m_session, "advanced all skills by %u on %s", amt, plr->GetName());
     return true;
 }
@@ -2152,7 +2157,7 @@ bool ChatHandler::HandleItemStackCheatCommand(const char* args, WorldSession* m_
 
     p->ItemStackCheat = turnCheatOn;
     BlueSystemMessage(m_session, "%s the item stack cheat on %s.", (turnCheatOn) ? "activated" : "deactivated", p->GetName());
-    GreenSystemMessageToPlr(p, "%s %s the item stack cheat on you.%s", m_session->GetPlayer()->GetName(), (turnCheatOn) ? "activated" : "deactivated", (turnCheatOn) ? "" : "  WARNING!!! Make sure all your item stacks are normal (if possible) before logging off, or else you may lose some items!");
+    GreenSystemMessage(p->GetSession(), "%s %s the item stack cheat on you.%s", m_session->GetPlayer()->GetName(), (turnCheatOn) ? "activated" : "deactivated", (turnCheatOn) ? "" : "  WARNING!!! Make sure all your item stacks are normal (if possible) before logging off, or else you may lose some items!");
     if (p != m_session->GetPlayer())
     {
         sGMLog.writefromsession(m_session, "item stack cheat on %s set to %s", p->GetName(), (turnCheatOn) ? "on" : "off");
@@ -2179,13 +2184,13 @@ bool ChatHandler::HandleAuraStackCheatCommand(const char* args, WorldSession* m_
     {
         plyr->AuraStackCheat = true;
         BlueSystemMessage(m_session, "activated the aura stack cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "activated the aura stack cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "activated the aura stack cheat on you.", m_session->GetPlayer()->GetName());
     }
     else if (stricmp(args, "off") == 0)
     {
         plyr->AuraStackCheat = false;
         BlueSystemMessage(m_session, "deactivated the aura stack cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "deactivated the aura stack cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "deactivated the aura stack cheat on you.", m_session->GetPlayer()->GetName());
 
         if (plyr != m_session->GetPlayer())
             sGMLog.writefromsession(m_session, "aura stack cheat on %s set to %s", plyr->GetName(), args);
@@ -2213,13 +2218,13 @@ bool ChatHandler::HandleTriggerpassCheatCommand(const char* args, WorldSession* 
     {
         plyr->TriggerpassCheat = true;
         BlueSystemMessage(m_session, "activated the triggerpass cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "activated the triggerpass cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "activated the triggerpass cheat on you.", m_session->GetPlayer()->GetName());
     }
     else if (stricmp(args, "off") == 0)
     {
         plyr->TriggerpassCheat = false;
         BlueSystemMessage(m_session, "deactivated the triggerpass cheat on %s.", plyr->GetName());
-        GreenSystemMessageToPlr(plyr, "deactivated the triggerpass cheat on you.", m_session->GetPlayer()->GetName());
+        GreenSystemMessage(plyr->GetSession(), "deactivated the triggerpass cheat on you.", m_session->GetPlayer()->GetName());
 
         if (plyr != m_session->GetPlayer())
             sGMLog.writefromsession(m_session, "triggerpass cheat on %s set to %s", plyr->GetName(), args);
@@ -2681,7 +2686,7 @@ bool ChatHandler::HandleForceRenameCommand(const char* args, WorldSession* m_ses
     {
         plr->login_flags = LOGIN_FORCED_RENAME;
         plr->SaveToDB(false);
-        BlueSystemMessageToPlr(plr, "%s forced your character to be renamed next logon.", m_session->GetPlayer()->GetName());
+        BlueSystemMessage(plr->GetSession(), "%s forced your character to be renamed next logon.", m_session->GetPlayer()->GetName());
     }
 
     CharacterDatabase.Execute("INSERT INTO banned_names VALUES('%s')", CharacterDatabase.EscapeString(std::string(pi->name)).c_str());
@@ -2713,7 +2718,7 @@ bool ChatHandler::HandleCustomizeCommand(const char* args, WorldSession* m_sessi
     {
         plr->login_flags = LOGIN_CUSTOMIZE_LOOKS;
         plr->SaveToDB(false);
-        BlueSystemMessageToPlr(plr, "%s flagged your character for customization at next login.", m_session->GetPlayer()->GetName());
+        BlueSystemMessage(plr->GetSession(), "%s flagged your character for customization at next login.", m_session->GetPlayer()->GetName());
     }
 
     GreenSystemMessage(m_session, "%s flagged to customize his character next logon.", args);
@@ -2744,7 +2749,7 @@ bool ChatHandler::HandleFactionChange(const char* args, WorldSession* m_session)
     {
         plr->login_flags = LOGIN_CUSTOMIZE_FACTION;
         plr->SaveToDB(false);
-        BlueSystemMessageToPlr(plr, "%s flagged your character for a faction change at next login.", m_session->GetPlayer()->GetName());
+        BlueSystemMessage(plr->GetSession(), "%s flagged your character for a faction change at next login.", m_session->GetPlayer()->GetName());
     }
 
     GreenSystemMessage(m_session, "%s flagged for a faction change next logon.", args);
@@ -2775,7 +2780,7 @@ bool ChatHandler::HandleRaceChange(const char* args, WorldSession* m_session)
     {
         plr->login_flags = LOGIN_CUSTOMIZE_RACE;
         plr->SaveToDB(false);
-        BlueSystemMessageToPlr(plr, "%s flagged your character for a race change at next login.", m_session->GetPlayer()->GetName());
+        BlueSystemMessage(plr->GetSession(), "%s flagged your character for a race change at next login.", m_session->GetPlayer()->GetName());
     }
 
     GreenSystemMessage(m_session, "%s flagged for a race change next logon.", args);
@@ -2809,7 +2814,7 @@ bool ChatHandler::HandleSetStandingCommand(const char* args, WorldSession* m_ses
 
     BlueSystemMessage(m_session, "Setting standing of %u to %d on %s.", faction, standing, plr->GetName());
     plr->SetStanding(faction, standing);
-    GreenSystemMessageToPlr(plr, "%s set your standing of faction %u to %d.", m_session->GetPlayer()->GetName(), faction, standing);
+    GreenSystemMessage(plr->GetSession(), "%s set your standing of faction %u to %d.", m_session->GetPlayer()->GetName(), faction, standing);
     sGMLog.writefromsession(m_session, "set standing of faction %u to %u for %s", faction, standing, plr->GetName());
     return true;
 }

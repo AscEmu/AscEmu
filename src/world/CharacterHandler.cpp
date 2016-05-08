@@ -1189,7 +1189,7 @@ bool ChatHandler::HandleRenameCommand(const char* args, WorldSession* m_session)
     if (plr != 0)
     {
         plr->SetName(new_name);
-        BlueSystemMessageToPlr(plr, "%s changed your name to '%s'.", m_session->GetPlayer()->GetName(), new_name.c_str());
+        BlueSystemMessage(plr->GetSession(), "%s changed your name to '%s'.", m_session->GetPlayer()->GetName(), new_name.c_str());
         plr->SaveToDB(false);
     }
     else

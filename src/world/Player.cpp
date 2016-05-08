@@ -7381,7 +7381,7 @@ void Player::_Kick()
         {
             m_KickDelay -= 1000;
         }
-        sChatHandler.BlueSystemMessageToPlr(this, "You will be removed from the server in %u seconds.", (uint32)(m_KickDelay / 1000));
+        sChatHandler.BlueSystemMessage(GetSession(), "You will be removed from the server in %u seconds.", (uint32)(m_KickDelay / 1000));
     }
 }
 

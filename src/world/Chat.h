@@ -225,10 +225,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         void RedSystemMessage(WorldSession* m_session, const char* message, ...);
         void GreenSystemMessage(WorldSession* m_session, const char* message, ...);
         void BlueSystemMessage(WorldSession* m_session, const char* message, ...);
-        void RedSystemMessageToPlr(Player* plr, const char* message, ...);
-        void GreenSystemMessageToPlr(Player* plr, const char* message, ...);
-        void BlueSystemMessageToPlr(Player* plr, const char* message, ...);
-        void SystemMessageToPlr(Player* plr, const char* message, ...);
         bool hasStringAbbr(const char* s1, const char* s2);
         void SendMultilineMessage(WorldSession* m_session, const char* str);
 

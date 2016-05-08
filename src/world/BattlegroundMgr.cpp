@@ -1167,7 +1167,7 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
 
             if (plr && plr->m_bgQueueInstanceId == bg->GetId())
             {
-                sChatHandler.SystemMessageToPlr(plr, plr->GetSession()->LocalizedWorldSrv(54), bg->GetId());
+                sChatHandler.SystemMessage(plr->GetSession(), plr->GetSession()->LocalizedWorldSrv(54), bg->GetId());
                 SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
                 plr->m_bgIsQueued = false;
                 m_queuedPlayers[i][j].erase(it2);
