@@ -644,11 +644,10 @@ void CommandTableStorage::Init()
 
     static ChatCommand gmCommandTable[] =
     {
+        { "active",        't', &ChatHandler::HandleGMActiveCommand,        "Avtivate/Deactivate GM tag",                          NULL, 0, 0, 0 },
         { "allowwhispers", 'c', &ChatHandler::HandleGMAllowWhispersCommand, "Allows whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
         { "blockwhispers", 'c', &ChatHandler::HandleGMBlockWhispersCommand, "Blocks whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
-        { "list",          '0', &ChatHandler::HandleGMListCommand,        "Shows active GM's",                                   NULL, 0, 0, 0 },
-        { "off",           't', &ChatHandler::HandleGMOffCommand,         "Sets GM tag off",                                     NULL, 0, 0, 0 },
-        { "on",            't', &ChatHandler::HandleGMOnCommand,          "Sets GM tag on",                                      NULL, 0, 0, 0 },
+        { "list",          '0', &ChatHandler::HandleGMListCommand,          "Shows active GM's",                                   NULL, 0, 0, 0 },
         { "status",        't', &ChatHandler::HandleGMStatusCommand,      "Shows status of your gm flags",                          NULL, 0, 0, 0 },
         { NULL,            '0', NULL,                                     "",                                                    NULL, 0, 0, 0 }
     };
