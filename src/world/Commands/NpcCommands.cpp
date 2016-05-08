@@ -84,6 +84,149 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// .npc add commands
+bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)
+{
+    //new
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    uint32 ai_type;
+    uint32 procEvent;
+    uint32 procChance;
+    uint32 maxcount;
+    uint32 spellId;
+    uint32 spellType;
+    uint32 spelltargetType;
+    uint32 spellCooldown;
+    float floatMisc1;
+    uint32 Misc2;
+
+    if (sscanf(args, "%u %u %u %u %u %u %u %u %f %u", &ai_type, &procEvent, &procChance, &maxcount, &spellId, &spellType, &spelltargetType, &spellCooldown, &floatMisc1, &Misc2) != 10)
+    {
+        RedSystemMessage(m_session, "Command must be in format: .npc add trainerspell <ai_type> <procEvent> <procChance> <maxcount> <spellId> <spellType> <spelltarget_overwrite> <spellCooldown> <floatMisc1> <Misc2>.");
+        return true;
+    }
+
+    auto spell_entry = dbcSpell.LookupEntry(spellId);
+    if (spell_entry == nullptr)
+    {
+        RedSystemMessage(m_session, "Spell %u is not invalid!", spellId);
+        return true;
+    }
+
+    SystemMessage(m_session, "Added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+    sGMLog.writefromsession(m_session, "added agent_type %u for spell %u to creature %s (%u).", ai_type, spellId, creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+    WorldDatabase.Execute("INSERT INTO ai_agents VALUES(%u, 4, %u, %u, %u, %u, %u, %u, %u, %u, %f, %u", 
+        creature_target->GetEntry(), ai_type, procEvent, procChance, maxcount, spellId, spellType, spelltargetType, spellCooldown, floatMisc1, Misc2);
+
+
+    AI_Spell* ai_spell = new AI_Spell;
+    ai_spell->agent = static_cast<uint16>(ai_type);
+    ai_spell->procChance = procChance;
+    ai_spell->procCount = maxcount;
+    ai_spell->spell = spell_entry;
+    ai_spell->spellType = static_cast<uint8>(spellType);
+    ai_spell->spelltargetType = spelltargetType;
+    ai_spell->floatMisc1 = floatMisc1;
+    ai_spell->Misc2 = Misc2;
+    ai_spell->cooldown = spellCooldown;
+    ai_spell->procCount = 0;
+    ai_spell->procCounter = 0;
+    ai_spell->cooldowntime = 0;
+    ai_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(spell_entry->rangeIndex));
+    ai_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(spell_entry->rangeIndex));
+
+    creature_target->GetProto()->spells.push_back(ai_spell);
+
+    switch (ai_type)
+    {
+        case AGENT_MELEE:
+            creature_target->GetAIInterface()->disable_melee = false;
+            break;
+        case AGENT_RANGED:
+            creature_target->GetAIInterface()->m_canRangedAttack = true;
+            break;
+        case AGENT_FLEE:
+            creature_target->GetAIInterface()->m_canFlee = true;
+            break;
+        case AGENT_SPELL:
+            creature_target->GetAIInterface()->addSpellToList(ai_spell);
+            break;
+        case AGENT_CALLFORHELP:
+            creature_target->GetAIInterface()->m_canCallForHelp = true;
+            break;
+        default:
+        {
+            RedSystemMessage(m_session, "Invalid ai_type %u", ai_type);
+            break;
+        }
+    }
+
+    return true;
+}
+
+bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    uint32 spellid;
+    uint32 cost;
+    uint32 reqspell;
+    uint32 reqlevel;
+    uint32 delspell;
+
+    if (sscanf(args, "%u %u %u %u %u", &spellid, &cost, &reqspell, &reqlevel, &delspell) != 5)
+    {
+        RedSystemMessage(m_session, "Command must be in format: .npc add trainerspell <spell_id> <cost> <required_spell> <required_player_level> <delete_spell_id>.");
+        return true;
+    }
+
+    auto creature_trainer = creature_target->GetTrainer();
+    if (creature_trainer == nullptr)
+    {
+        RedSystemMessage(m_session, "%s (%u) is not a trainer!", creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+        return true;
+    }
+
+    auto learn_spell = dbcSpell.LookupEntryForced(spellid);
+    if (learn_spell == nullptr)
+    {
+        RedSystemMessage(m_session, "Invalid spell %u.", spellid);
+        return true;
+    }
+
+    if (learn_spell->Effect[0] == SPELL_EFFECT_INSTANT_KILL || learn_spell->Effect[1] == SPELL_EFFECT_INSTANT_KILL || learn_spell->Effect[2] == SPELL_EFFECT_INSTANT_KILL)
+    {
+        RedSystemMessage(m_session, "You are not allowed to learn spells with instant kill effect!");
+        return true;
+    }
+
+    TrainerSpell sp;
+    sp.Cost = cost;
+    sp.IsProfession = false;
+    sp.pLearnSpell = learn_spell;
+    sp.pCastRealSpell = nullptr;
+    sp.pCastSpell = nullptr;
+    sp.RequiredLevel = reqlevel;
+    sp.RequiredSpell = reqspell;
+    sp.DeleteSpell = delspell;
+
+    creature_trainer->Spells.push_back(sp);
+    creature_trainer->SpellCount++;
+
+    SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->Name, learn_spell->Id, creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+    sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->Name, learn_spell->Id, creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+    WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
+        creature_target->GetEntry(), (int)0, learn_spell->Id, cost, reqspell, (int)0, (int)0, reqlevel, delspell, (int)0);
+
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // .npc set commands
 bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_session)
 {
@@ -188,7 +331,6 @@ bool ChatHandler::HandleNpcSetFormationMasterCommand(const char* /*args*/, World
 
 bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSession* m_session)
 {
-    // set formation "slave" with distance and angle
     float angle;
     float distance;
     uint32 save = 0;

@@ -477,8 +477,10 @@ void CommandTableStorage::Init()
 
     static ChatCommand NPCAddCommandTable[] =
     {
-        { "agent",         'n', &ChatHandler::HandleAddAIAgentCommand,     ".npc add agent <agent> <procEvent> <procChance> <procCount> <spellId> <spellType> <spelltargetType> <spellCooldown> <floatMisc1> <Misc2>", NULL, 0, 0, 0 },
-        { NULL,            '0', NULL,                                      "",                                                                                                                                        NULL, 0, 0, 0 }
+        { "agent",         'n', &ChatHandler::HandleNpcAddAgentCommand,         "Add ai agents to npc.",                                                        NULL, 0, 0, 0 },
+        { "trainerspell",  'm', &ChatHandler::HandleNpcAddTrainerSpellCommand,  "Add spells to trainer learn list.",                                            NULL, 0, 0, 0 },
+
+        { NULL,            '0', NULL,                                      "",                                                                                  NULL, 0, 0, 0 }
     };
     dupe_command_table(NPCAddCommandTable, _NPCAddCommandTable);
 
@@ -841,7 +843,6 @@ void CommandTableStorage::Init()
         { "logcomment",      '1', &ChatHandler::HandleGmLogCommentCommand,                  "Adds a comment to the GM log for the admins to read.",                                                                                    NULL,                     0, 0, 0 },
         { "removesickness",  'm', &ChatHandler::HandleRemoveRessurectionSickessAuraCommand, "Removes ressurrection sickness from the target",                                                                                          NULL,                     0, 0, 0 },
         { "fixscale",        'm', &ChatHandler::HandleFixScaleCommand,                      "",                                                                                                                                        NULL,                     0, 0, 0 },
-        { "addtrainerspell", 'm', &ChatHandler::HandleAddTrainerSpellCommand,               "",                                                                                                                                        NULL,                     0, 0, 0 },
         { "achieve",         '0', NULL,                                                     "",                                                                                                                                        achievementCommandTable,  0, 0, 0 },
         { "vehicle",         'm', NULL,                                                     "",                                                                                                                                        vehicleCommandTable,      0, 0, 0 },
         { "transport",       'm', NULL,                                                     "",                                                                                                                                        transportCommandTable,    0, 0, 0 },

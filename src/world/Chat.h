@@ -384,7 +384,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGORebuildCommand(const char* args, WorldSession* session);
 
         // AI commands
-        bool HandleAddAIAgentCommand(const char* args, WorldSession* m_session);
         bool HandleListAIAgentCommand(const char* args, WorldSession* m_session);
         bool HandleRepairItemsCommand(const char* args, WorldSession* m_session);
         bool HandleSetTitle(const char* args, WorldSession* m_session);
@@ -613,6 +612,11 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetStandstateCommand(const char* arg, WorldSession* m_session);
 
+        //NPC add commands
+        bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session);
+
+
         // Quest commands
         bool HandleQuestAddBothCommand(const char* args, WorldSession* m_session);
         bool HandleQuestAddFinishCommand(const char* args, WorldSession* m_session);
@@ -662,7 +666,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         SkillNameMgr* SkillNameManager;
 
         bool HandleFixScaleCommand(const char* args, WorldSession* m_session);
-        bool HandleAddTrainerSpellCommand(const char* args, WorldSession* m_session);
 #ifdef ENABLE_ACHIEVEMENTS
         bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);

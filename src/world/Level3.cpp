@@ -3776,57 +3776,6 @@ bool ChatHandler::HandleFixScaleCommand(const char* args, WorldSession* m_sessio
     return true;
 }
 
-bool ChatHandler::HandleAddTrainerSpellCommand(const char* args, WorldSession* m_session)
-{
-    Creature* pCreature = GetSelectedCreature(m_session, true);
-    if (pCreature == NULL)
-        return true;
-
-    uint32 spellid, cost, reqspell, reqlevel, delspell;
-    if (sscanf(args, "%u %u %u %u %u", &spellid, &cost, &reqspell, &reqlevel, &delspell) != 5)
-        return false;
-
-    Trainer* pTrainer = pCreature->GetTrainer();
-    if (pTrainer == NULL)
-    {
-        RedSystemMessage(m_session, "Target is not a trainer.");
-        return true;
-    }
-
-    SpellEntry* pSpell = dbcSpell.LookupEntryForced(spellid);
-    if (pSpell == NULL)
-    {
-        RedSystemMessage(m_session, "Invalid spell.");
-        return true;
-    }
-
-    if (pSpell->Effect[0] == SPELL_EFFECT_INSTANT_KILL || pSpell->Effect[1] == SPELL_EFFECT_INSTANT_KILL || pSpell->Effect[2] == SPELL_EFFECT_INSTANT_KILL)
-    {
-        RedSystemMessage(m_session, "No. You're not doing that.");
-        return true;
-    }
-
-    TrainerSpell sp;
-    sp.Cost = cost;
-    sp.IsProfession = false;
-    sp.pLearnSpell = pSpell;
-    sp.pCastRealSpell = NULL;
-    sp.pCastSpell = NULL;
-    sp.RequiredLevel = reqlevel;
-    sp.RequiredSpell = reqspell;
-    sp.DeleteSpell = delspell;
-
-    pTrainer->Spells.push_back(sp);
-    pTrainer->SpellCount++;
-
-    SystemMessage(m_session, "Added spell %u (%s) to trainer.", pSpell->Id, pSpell->Name);
-    sGMLog.writefromsession(m_session, "added spell %u to trainer %u", spellid, pCreature->GetEntry());
-    WorldDatabase.Execute("INSERT INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
-                          pCreature->GetEntry(), (int)0, pSpell->Id, cost, reqspell, (int)0, (int)0, reqlevel, delspell, (int)0);
-
-    return true;
-}
-
 bool ChatHandler::HandleSetTitle(const char* args, WorldSession* m_session)
 {
     Player* plr = GetSelectedPlayer(m_session, true, true);
