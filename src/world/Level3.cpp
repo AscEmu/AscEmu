@@ -1086,57 +1086,6 @@ bool ChatHandler::HandleRemoveRessurectionSickessAuraCommand(const char* args, W
     return true;
 }
 
-bool ChatHandler::HandleParalyzeCommand(const char* args, WorldSession* m_session)
-{
-    Unit* unit = GetSelectedUnit(m_session, true);
-    if (unit == nullptr)
-        return true;
-
-    BlueSystemMessage(m_session, "Rooting target.");
-    if (unit->IsPlayer())
-    {
-        BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been rooted by %s.", m_session->GetPlayer()->GetName());
-        sGMLog.writefromsession(m_session, "rooted player %s", static_cast<Player*>(unit)->GetName());
-    }
-    else
-    {
-        sGMLog.writefromsession(m_session, "rooted creature %s", static_cast<Creature*>(unit)->GetCreatureInfo()->Name);
-    }
-
-    WorldPacket data;
-    data.Initialize(SMSG_FORCE_MOVE_ROOT);
-    data << unit->GetNewGUID();
-    data << uint32(1);
-
-    unit->SendMessageToSet(&data, true);
-    return true;
-}
-
-bool ChatHandler::HandleUnParalyzeCommand(const char* args, WorldSession* m_session)
-{
-    Unit* unit = GetSelectedUnit(m_session, true);
-    if (unit == nullptr)
-        return true;
-
-    BlueSystemMessage(m_session, "Unrooting target.");
-    if (unit->IsPlayer())
-    {
-        BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been unrooted by %s.", m_session->GetPlayer()->GetName());
-        sGMLog.writefromsession(m_session, "unrooted player %s", static_cast<Player*>(unit)->GetName());
-    }
-    else
-    {
-        sGMLog.writefromsession(m_session, "unrooted creature %s", static_cast<Creature*>(unit)->GetCreatureInfo()->Name);
-    }
-    WorldPacket data;
-    data.Initialize(SMSG_FORCE_MOVE_UNROOT);
-    data << unit->GetNewGUID();
-    data << uint32(5);
-
-    unit->SendMessageToSet(&data, true);
-    return true;
-}
-
 bool ChatHandler::HandleSetMotdCommand(const char* args, WorldSession* m_session)
 {
     if (!args || strlen(args) < 2)

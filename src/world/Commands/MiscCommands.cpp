@@ -157,3 +157,50 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
+//.root
+bool ChatHandler::HandleRootCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Unit* unit = GetSelectedUnit(m_session, true);
+    if (unit == nullptr)
+        return true;
+
+    unit->Root();
+
+    if (unit->IsPlayer())
+    {
+        SystemMessage(m_session, "Rooting Player %s.", static_cast<Player*>(unit)->GetName());
+        BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been rooted by %s.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "rooted player %s", static_cast<Player*>(unit)->GetName());
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "Rooting Creature %s.", static_cast<Creature*>(unit)->GetCreatureInfo()->Name);
+        sGMLog.writefromsession(m_session, "rooted creature %s", static_cast<Creature*>(unit)->GetCreatureInfo()->Name);
+    }
+
+    return true;
+}
+
+//.unroot
+bool ChatHandler::HandleUnrootCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto unit = GetSelectedUnit(m_session, true);
+    if (unit == nullptr)
+        return true;
+
+    unit->Unroot();
+
+    if (unit->IsPlayer())
+    {
+        SystemMessage(m_session, "Unrooting Player %s.", static_cast<Player*>(unit)->GetName());
+        BlueSystemMessage(static_cast<Player*>(unit)->GetSession(), "You have been unrooted by %s.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "unrooted player %s", static_cast<Player*>(unit)->GetName());
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "Unrooting Creature %s.", static_cast<Creature*>(unit)->GetCreatureInfo()->Name);
+        sGMLog.writefromsession(m_session, "unrooted creature %s", static_cast<Creature*>(unit)->GetCreatureInfo()->Name);
+    }
+
+    return true;
+}

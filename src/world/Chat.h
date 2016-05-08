@@ -296,8 +296,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleSetBytesCommand(const char* args, WorldSession* m_session);
         bool HandleGetBytesCommand(const char* args, WorldSession* m_session);
         bool HandleDebugLandWalk(const char* args, WorldSession* m_session);
-        bool HandleDebugUnroot(const char* args, WorldSession* m_session);
-        bool HandleDebugRoot(const char* args, WorldSession* m_session);
+        
         bool HandleDebugWaterWalk(const char* args, WorldSession* m_session);
         bool HandleAggroRangeCommand(const char* args, WorldSession* m_session);
         bool HandleKnockBackCommand(const char* args, WorldSession* m_session);
@@ -364,6 +363,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // MiscCommands
         bool HandleKillCommand(const char* args, WorldSession* m_session);
         bool HandleReviveCommand(const char* args, WorldSession* m_session);
+        bool HandleUnrootCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleRootCommand(const char* /*args*/, WorldSession* m_session);
 
         // Gameobject commands
         bool HandleGOSelect(const char* args, WorldSession* m_session);
@@ -491,8 +492,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGOAnimProgress(const char* args, WorldSession* m_session);
         bool HandleGOExport(const char* args, WorldSession* m_session);
         bool HandleRemoveAurasCommand(const char* args, WorldSession* m_session);
-        bool HandleParalyzeCommand(const char* args, WorldSession* m_session);
-        bool HandleUnParalyzeCommand(const char* args, WorldSession* m_session);
+
         bool HandleSetMotdCommand(const char* args, WorldSession* m_session);
         bool HandleAddItemSetCommand(const char* args, WorldSession* m_session);
         bool HandleTriggerCommand(const char* args, WorldSession* m_session);

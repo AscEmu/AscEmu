@@ -388,32 +388,6 @@ bool ChatHandler::HandleDebugWaterWalk(const char* args, WorldSession* m_session
     return true;
 }
 
-bool ChatHandler::HandleDebugUnroot(const char* args, WorldSession* m_session)
-{
-    Unit* u = GetSelectedUnit(m_session, true);
-    if (u == nullptr)
-        return true;
-
-    u->Unroot();
-
-    SystemMessage(m_session, "Unit unrooted!");
-
-    return true;
-}
-
-bool ChatHandler::HandleDebugRoot(const char* args, WorldSession* m_session)
-{
-    Unit* u = GetSelectedUnit(m_session, true);
-    if (u == nullptr)
-        return true;
-
-    u->Root();
-
-    SystemMessage(m_session, "Unit rooted!");
-
-    return true;
-}
-
 bool ChatHandler::HandleAggroRangeCommand(const char* args, WorldSession* m_session)
 {
     Unit* unit = GetSelectedUnit(m_session, true);
