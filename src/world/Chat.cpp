@@ -649,7 +649,6 @@ void CommandTableStorage::Init()
         { "blockwhispers", 'c', &ChatHandler::HandleGMBlockWhispersCommand, "Blocks whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
         { "devtag",        '1', &ChatHandler::HandleGMDevTagCommand,        "Avtivate/Deactivate <DEV> tag",                       NULL, 0, 0, 0 },
         { "list",          '0', &ChatHandler::HandleGMListCommand,          "Shows active GM's",                                   NULL, 0, 0, 0 },
-        { "status",        't', &ChatHandler::HandleGMStatusCommand,      "Shows status of your gm flags",                          NULL, 0, 0, 0 },
         { NULL,            '0', NULL,                                     "",                                                    NULL, 0, 0, 0 }
     };
     dupe_command_table(gmCommandTable, _gmCommandTable);
