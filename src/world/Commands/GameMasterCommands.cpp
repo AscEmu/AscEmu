@@ -177,3 +177,12 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
     return true;
 }
 
+bool ChatHandler::HandleGMLogCommentCommand(const char* args, WorldSession* m_session)
+{
+    if (!args)
+        return false;
+
+    BlueSystemMessage(m_session, "Added Logcomment: %s", args);
+    sGMLog.writefromsession(m_session, "Comment: %s", args);
+    return true;
+}

@@ -346,14 +346,6 @@ bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleGmLogCommentCommand(const char* args, WorldSession* m_session)
-{
-    if (!args || !strlen(args)) return false;
-    BlueSystemMessage(m_session, "Added Logcomment: %s", args);
-    sGMLog.writefromsession(m_session, "Logcomment: %s", args);
-    return true;
-}
-
 bool ChatHandler::HandleRatingsCommand(const char* args, WorldSession* m_session)
 {
     m_session->SystemMessage("Ratings!!!");
