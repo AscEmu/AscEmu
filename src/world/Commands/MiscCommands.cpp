@@ -5,6 +5,88 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
+//.gocreature
+bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session)
+{
+    uint32 spawn_id;
+    if (sscanf(args, "%u", (unsigned int*)&spawn_id) != 1)
+    {
+        RedSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
+        return true;
+    }
+
+    QueryResult* query_result = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id=%u", spawn_id);
+    if (!query_result)
+    {
+        RedSystemMessage(m_session, "No creature found in creature_spawns table with id %u.", spawn_id);
+        return true;
+    }
+
+    uint32 spawn_map = query_result->Fetch()[2].GetUInt32();
+    float spawn_x = query_result->Fetch()[3].GetFloat();
+    float spawn_y = query_result->Fetch()[4].GetFloat();
+    float spawn_z = query_result->Fetch()[5].GetFloat();
+
+    LocationVector vec(spawn_x, spawn_y, spawn_z, 0);
+    m_session->GetPlayer()->SafeTeleport(spawn_map, 0, vec);
+
+    delete query_result;
+    return true;
+}
+
+//.gogameobject
+bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session)
+{
+    uint32 spawn_id;
+    if (sscanf(args, "%u", (unsigned int*)&spawn_id) != 1)
+    {
+        RedSystemMessage(m_session, "Command must be in format: .gocreature <creature_spawnid>.");
+        return true;
+    }
+
+    QueryResult* query_result = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE id=%u", spawn_id);
+    if (!query_result)
+    {
+        RedSystemMessage(m_session, "No gameobject found in gameobject_spawns table with id %u.", spawn_id);
+        return true;
+    }
+
+    uint32 spawn_map = query_result->Fetch()[2].GetUInt32();
+    float spawn_x = query_result->Fetch()[3].GetFloat();
+    float spawn_y = query_result->Fetch()[4].GetFloat();
+    float spawn_z = query_result->Fetch()[5].GetFloat();
+
+    LocationVector vec(spawn_x, spawn_y, spawn_z, 0);
+    m_session->GetPlayer()->SafeTeleport(spawn_map, 0, vec);
+
+    delete query_result;
+    return true;
+}
+
+//.gotrig
+bool ChatHandler::HandleGoTriggerCommand(const char* args, WorldSession* m_session)
+{
+    uint32 trigger_id;
+    int32 instance_id = 0;
+
+    if (sscanf(args, "%u %d", (unsigned int*)&trigger_id, (int*)&instance_id) < 1)
+    {
+        RedSystemMessage(m_session, "Command must be at least in format: .gotrig <trigger_id>.");
+        RedSystemMessage(m_session, "You can use: .gotrig <trigger_id> <instance_id>");
+        return true;
+    }
+
+    auto area_trigger_entry = sAreaTriggerStore.LookupEntry(trigger_id);
+    if (area_trigger_entry == nullptr)
+    {
+        RedSystemMessage(m_session, "Could not find trigger %s", args);
+        return true;
+    }
+
+    m_session->GetPlayer()->SafeTeleport(area_trigger_entry->mapid, instance_id, LocationVector(area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z, area_trigger_entry->o));
+    BlueSystemMessage(m_session, "Teleported to trigger %u on [%u][%.2f][%.2f][%.2f]", area_trigger_entry->id, area_trigger_entry->mapid, area_trigger_entry->x, area_trigger_entry->y, area_trigger_entry->z);
+    return true;
+}
 
 //.kill - kills target or player with <name>
 bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)

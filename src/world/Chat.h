@@ -400,8 +400,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Level 3 commands
         bool HandleMassSummonCommand(const char* args, WorldSession* m_session);
         bool HandleWorldPortCommand(const char* args, WorldSession* m_session);
-        bool HandlePortToCreatureSpawnCommand(const char* args, WorldSession* m_session);
-        bool HandlePortToGameObjectSpawnCommand(const char* args, WorldSession* m_session);
+        
         bool HandleMoveCommand(const char* args, WorldSession* m_session);
         bool HandleLearnCommand(const char* args, WorldSession* m_session);
         bool HandleGenderChanger(const char* args, WorldSession* m_session);
@@ -491,8 +490,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session);
         bool HandleShowInstancesCommand(const char* args, WorldSession* m_session);
 
-        // Unsorted?
+        //go* commands
+        bool HandleGoTriggerCommand(const char* args, WorldSession* m_session);
+        bool HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session);
+        bool HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session);
 
+        // Unsorted?
+        bool HandleGlobalPlaySoundCommand(const char* args, WorldSession* m_session);
         bool HandleMountCommand(const char* args, WorldSession* m_session);
         bool HandleGetPosCommand(const char* args, WorldSession* m_session);
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
@@ -500,7 +504,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         bool HandleSetMotdCommand(const char* args, WorldSession* m_session);
         bool HandleAddItemSetCommand(const char* args, WorldSession* m_session);
-        bool HandleTriggerCommand(const char* args, WorldSession* m_session);
         bool HandleModifyValueCommand(const char* args, WorldSession* m_session);
         bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
         bool HandleBattlegroundExitCommand(const char* args, WorldSession* m_session);
@@ -559,7 +562,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleRecallGoCommand(const char* args, WorldSession* m_session);
         bool HandleRecallAddCommand(const char* args, WorldSession* m_session);
         bool HandleRecallDelCommand(const char* args, WorldSession* m_session);
-        bool HandleGlobalPlaySoundCommand(const char* args, WorldSession* m_session);
         bool HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session);
         bool HandleRecallPortUsCommand(const char* args, WorldSession* m_session);
 

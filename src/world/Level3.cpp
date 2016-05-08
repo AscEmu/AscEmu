@@ -82,66 +82,6 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_sessi
     return true;
 }
 
-bool ChatHandler::HandlePortToCreatureSpawnCommand(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-    {
-        return false;
-    }
-
-    uint32 spawn_id, spawn_map;
-    float spawn_x, spawn_y, spawn_z;
-
-    if (sscanf(args, "%u", (unsigned int*)&spawn_id) != 1)
-    {
-        return false;
-    }
-    QueryResult* QR = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id=%u", spawn_id);
-    if (!QR)
-    {
-        RedSystemMessage(m_session, "No spawn found with id %u.", spawn_id);
-        return true;
-    }
-    spawn_map = QR->Fetch()[2].GetUInt32();
-    spawn_x = QR->Fetch()[3].GetFloat();
-    spawn_y = QR->Fetch()[4].GetFloat();
-    spawn_z = QR->Fetch()[5].GetFloat();
-    LocationVector vec(spawn_x, spawn_y, spawn_z);
-    m_session->GetPlayer()->SafeTeleport(spawn_map, 0, vec);
-    delete QR;
-    return true;
-}
-
-bool ChatHandler::HandlePortToGameObjectSpawnCommand(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-    {
-        return false;
-    }
-
-    uint32 spawn_id, spawn_map;
-    float spawn_x, spawn_y, spawn_z;
-
-    if (sscanf(args, "%u", (unsigned int*)&spawn_id) != 1)
-    {
-        return false;
-    }
-    QueryResult* QR = WorldDatabase.Query("SELECT * FROM gameobject_spawns WHERE id=%u", spawn_id);
-    if (!QR)
-    {
-        RedSystemMessage(m_session, "No spawn found with id %u.", spawn_id);
-        return true;
-    }
-    spawn_map = QR->Fetch()[2].GetUInt32();
-    spawn_x = QR->Fetch()[3].GetFloat();
-    spawn_y = QR->Fetch()[4].GetFloat();
-    spawn_z = QR->Fetch()[5].GetFloat();
-    LocationVector vec(spawn_x, spawn_y, spawn_z);
-    m_session->GetPlayer()->SafeTeleport(spawn_map, 0, vec);
-    delete QR;
-    return true;
-}
-
 bool ChatHandler::HandleClearCooldownsCommand(const char* args, WorldSession* m_session)
 {
     uint32 guid = (uint32)m_session->GetPlayer()->GetSelection();
