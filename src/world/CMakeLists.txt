@@ -7,6 +7,7 @@ set(sources
    Commands/AccountCommands.cpp
    Commands/ArenaCommands.cpp
    Commands/DebugCommands.cpp
+   Commands/GameMasterCommands.cpp
    Commands/GameObjectCommands.cpp
    Commands/MiscCommands.cpp
    Commands/NpcCommands.cpp
