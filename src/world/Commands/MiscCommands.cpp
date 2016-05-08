@@ -56,8 +56,6 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                 case TYPEID_PLAYER:
                 {
                     auto player = static_cast<Player*>(unit_target);
-                    if (player == nullptr)
-                        return true;
 
                     player->SetHealth(0);
                     player->KillPlayer();

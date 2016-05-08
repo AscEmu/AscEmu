@@ -238,13 +238,10 @@ void MapMgr::PushObject(Object* obj)
     {
         plObj = static_cast<Player*>(obj);
 
-        if (plObj != nullptr)
-        {
-            LOG_DETAIL("Creating player " I64FMT " for himself.", obj->GetGUID());
-            ByteBuffer pbuf(10000);
-            count = plObj->BuildCreateUpdateBlockForPlayer(&pbuf, plObj);
-            plObj->PushCreationData(&pbuf, count);
-        }
+        LOG_DETAIL("Creating player " I64FMT " for himself.", obj->GetGUID());
+        ByteBuffer pbuf(10000);
+        count = plObj->BuildCreateUpdateBlockForPlayer(&pbuf, plObj);
+        plObj->PushCreationData(&pbuf, count);
     }
 
     // Build in-range data

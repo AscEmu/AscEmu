@@ -1097,7 +1097,7 @@ Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, 
     if (m_session == nullptr)
         return nullptr;
 
-    Player* player_target;
+    Player* player_target = nullptr;
     uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid == 0)
     {

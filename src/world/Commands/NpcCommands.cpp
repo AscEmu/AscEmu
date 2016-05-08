@@ -34,18 +34,12 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
         else if (unit_target->IsPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
-            if (player == nullptr)
-                return false;
-
             BlueSystemMessage(m_session, "Player %s selected.", player->GetName());
             sGMLog.writefromsession(m_session, "used possess command on PLAYER %s", player->GetName());
         }
         else if (unit_target->IsCreature())
         {
             auto creature = static_cast<Creature*>(unit_target);
-            if (creature == nullptr)
-                return false;
-
             BlueSystemMessage(m_session, "Creature %s selected.", creature->GetCreatureInfo()->Name);
             sGMLog.writefromsession(m_session, "used possess command on Creature spawn_id %u", creature->GetCreatureInfo()->Name, creature->GetSQL_id());
         }
@@ -70,17 +64,11 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
         if (unit_target->IsPlayer())
         {
             auto player = static_cast<Player*>(unit_target);
-            if (player == nullptr)
-                return false;
-
             BlueSystemMessage(m_session, "Player %s is no longer possessed by you.", player->GetName());
         }
         else if (unit_target->IsCreature())
         {
             auto creature = static_cast<Creature*>(unit_target);
-            if (creature == nullptr)
-                return false;
-
             BlueSystemMessage(m_session, "Creature %s is no longer possessed by you.", creature->GetCreatureInfo()->Name);
         }
     }
