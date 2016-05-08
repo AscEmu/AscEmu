@@ -249,6 +249,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAccountMuteCommand(const char* args, WorldSession* m_session);
         bool HandleAccountUnmuteCommand(const char* args, WorldSession* m_session);
 
+        //GameMasterCommands
+        bool HandleGMAllowWhispersCommand(const char* args, WorldSession* m_session);
+        bool HandleGMBlockWhispersCommand(const char* args, WorldSession* m_session);
+
         // Level 0 commands
         bool HandleHelpCommand(const char* args, WorldSession* m_session);
         bool HandleCommandsCommand(const char* args, WorldSession* m_session);
@@ -536,10 +540,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleShutdownCommand(const char* args, WorldSession* m_session);
         bool HandleShutdownRestartCommand(const char* args, WorldSession* m_session);
         bool HandleCancelShutdownCommand(const char* args, WorldSession* m_session);
-
-        // Whispers
-        bool HandleAllowWhispersCommand(const char* args, WorldSession* m_session);
-        bool HandleBlockWhispersCommand(const char* args, WorldSession* m_session);
 
         // Skills
         bool HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session);

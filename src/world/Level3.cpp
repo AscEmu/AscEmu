@@ -1845,42 +1845,6 @@ bool ChatHandler::HandleCancelShutdownCommand(const char* args, WorldSession* m_
 
 }
 
-bool ChatHandler::HandleAllowWhispersCommand(const char* args, WorldSession* m_session)
-{
-    if (args == 0 || strlen(args) < 2) return false;
-    PlayerCache* playercache = objmgr.GetPlayerCache(args, false);
-    if (playercache == NULL)
-    {
-        RedSystemMessage(m_session, "Player not found.");
-        return true;
-    }
-
-    m_session->GetPlayer()->m_cache->InsertValue64(CACHE_GM_TARGETS, playercache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
-    std::string name;
-    playercache->GetStringValue(CACHE_PLAYER_NAME, name);
-    BlueSystemMessage(m_session, "Now accepting whispers from %s.", name.c_str());
-    playercache->DecRef();
-    return true;
-}
-
-bool ChatHandler::HandleBlockWhispersCommand(const char* args, WorldSession* m_session)
-{
-    if (args == 0 || strlen(args) < 2) return false;
-    PlayerCache* playercache = objmgr.GetPlayerCache(args, false);
-    if (playercache == NULL)
-    {
-        RedSystemMessage(m_session, "Player not found.");
-        return true;
-    }
-
-    m_session->GetPlayer()->m_cache->RemoveValue64(CACHE_GM_TARGETS, playercache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
-    std::string name;
-    playercache->GetStringValue(CACHE_PLAYER_NAME, name);
-    BlueSystemMessage(m_session, "Now blocking whispers from %s.", name.c_str());
-    playercache->DecRef();
-    return true;
-}
-
 bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session)
 {
     uint32 amt = args ? atol(args) : 0;
