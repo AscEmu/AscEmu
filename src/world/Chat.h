@@ -652,7 +652,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         bool HandleNpcSelectCommand(const char* args, WorldSession* m_session);
         bool HandleWaypointAddFlyCommand(const char* args, WorldSession* m_session);
-        bool HandleWhisperBlockCommand(const char* args, WorldSession* m_session);
+
         bool HandleDispelAllCommand(const char* args, WorldSession* m_session);
         bool HandleShowItems(const char* args, WorldSession* m_session);
         bool HandleShowSkills(const char* args, WorldSession* m_session);

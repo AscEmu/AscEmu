@@ -3479,15 +3479,6 @@ bool ChatHandler::HandleGuildMembersCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::HandleWhisperBlockCommand(const char* args, WorldSession* m_session)
-{
-    if (m_session->GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
-        return false;
-
-    m_session->GetPlayer()->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
-    return true;
-}
-
 bool ChatHandler::HandleGenderChanger(const char* args, WorldSession* m_session)
 {
     uint8 gender;

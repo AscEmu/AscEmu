@@ -644,13 +644,12 @@ void CommandTableStorage::Init()
 
     static ChatCommand gmCommandTable[] =
     {
-        { "list",          '0', &ChatHandler::HandleGMListCommand,        "Shows active GM's",                                   NULL, 0, 0, 0 },
-        { "status",        't', &ChatHandler::HandleGMStatusCommand,      "Shows status of your gm flags",                          NULL, 0, 0, 0 },
-        { "off",           't', &ChatHandler::HandleGMOffCommand,         "Sets GM tag off",                                     NULL, 0, 0, 0 },
-        { "on",            't', &ChatHandler::HandleGMOnCommand,          "Sets GM tag on",                                      NULL, 0, 0, 0 },
-        { "whisperblock",  'g', &ChatHandler::HandleWhisperBlockCommand,  "Blocks like .gmon except without the <GM> tag",       NULL, 0, 0, 0 },
         { "allowwhispers", 'c', &ChatHandler::HandleAllowWhispersCommand, "Allows whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
         { "blockwhispers", 'c', &ChatHandler::HandleBlockWhispersCommand, "Blocks whispers from player <s> while in gmon mode.", NULL, 0, 0, 0 },
+        { "list",          '0', &ChatHandler::HandleGMListCommand,        "Shows active GM's",                                   NULL, 0, 0, 0 },
+        { "off",           't', &ChatHandler::HandleGMOffCommand,         "Sets GM tag off",                                     NULL, 0, 0, 0 },
+        { "on",            't', &ChatHandler::HandleGMOnCommand,          "Sets GM tag on",                                      NULL, 0, 0, 0 },
+        { "status",        't', &ChatHandler::HandleGMStatusCommand,      "Shows status of your gm flags",                          NULL, 0, 0, 0 },
         { NULL,            '0', NULL,                                     "",                                                    NULL, 0, 0, 0 }
     };
     dupe_command_table(gmCommandTable, _gmCommandTable);
