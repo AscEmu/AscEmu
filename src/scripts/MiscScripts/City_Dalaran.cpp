@@ -114,8 +114,38 @@ class SunreaversMageGuard : public MoonScriptCreatureAI
         }
 };
 
+class FactionInvisible : public MoonScriptCreatureAI
+{
+public:
+
+    MOONSCRIPT_FACTORY_FUNCTION(FactionInvisible, MoonScriptCreatureAI);
+    FactionInvisible(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    {
+        // 0 = all (default), 1 = horde, 2 = alliance
+        switch (_unit->spawnid)
+        {
+            case 128959:
+            case 129859:
+            case 129346:
+                _unit->GetAIInterface()->faction_visibility = 2;
+                break;
+            case 128960:
+            case 129860:
+            case 129347:
+                _unit->GetAIInterface()->faction_visibility = 1;
+                break;
+            default:
+                break;
+        }
+    }
+};
+
 void SetupCityDalaran(ScriptMgr* mgr)
 {
     mgr->register_creature_script(29254, &SilverCovenantMageGuard::Create);
     mgr->register_creature_script(29255, &SunreaversMageGuard::Create);
+
+    // Neutral Masters
+    uint32 FactionVisibleIds[] = { 31852, 31851, 32335, 32336, 32206, 32207,  0 };
+    mgr->register_creature_script(FactionVisibleIds, &FactionInvisible::Create);
 }

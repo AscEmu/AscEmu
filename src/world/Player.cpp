@@ -5882,6 +5882,19 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
                     return false;
             }
 
+            if (uObj->GetAIInterface()->faction_visibility == 1)
+                if (IsTeamHorde())
+                    return true;
+                else
+                    return false;
+
+            if (uObj->GetAIInterface()->faction_visibility == 2)
+                if (IsTeamHorde())
+                    return false;
+                else
+                    return true;
+
+
             /*if (uObj->m_invisible  // Invisibility - Detection of Units
                 && m_invisDetect[uObj->m_invisFlag] < 1) // can't see invisible without proper detection
                 return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see invisible units

@@ -109,6 +109,8 @@ AIInterface::AIInterface()
     m_is_in_instance(false),
     skip_reset_hp(false),
 
+    faction_visibility(0),
+
     m_walkMode(0),
     FollowDistance_backup(0),
     m_AIType(AITYPE_LONER),

@@ -384,6 +384,9 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint32 m_currentWaypoint;
         bool m_moveBackward;
 
+        //visibility
+        uint32 faction_visibility;
+
         //uint32 m_moveType;
         Movement::WaypointMovementScript m_wpScriptType;
 
