@@ -453,7 +453,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandlePlayerInfo(const char* args, WorldSession* m_session);
         bool HandleCreatureSpawnCommand(const char* args, WorldSession* m_session);
         bool HandleCreatureRespawnCommand(const char* args, WorldSession* m_session);
-        bool HandleNPCCanFlyCommand(const char* args, WorldSession* m_session);
+        
         bool HandleNPCOnGOCommand(const char* args, WorldSession* m_session);
         bool HandleNPCLootCommand(const char* args, WorldSession* m_session);
         bool HandleNPCCastCommand(const char* args, WorldSession* m_session);
@@ -604,6 +604,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session);
 
         //NPC set commands
+        bool HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetEquipCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetEmoteCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetFlagsCommand(const char* args, WorldSession* m_session);

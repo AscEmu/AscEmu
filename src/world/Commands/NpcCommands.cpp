@@ -228,6 +228,47 @@ bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_s
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // .npc set commands
+//.npc set canfly
+bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    bool save_to_db = atoi(args) == 1 ? true : false;
+
+    if (creature_target->GetAIInterface()->Flying())
+    {
+        creature_target->GetAIInterface()->StopFlying();
+        if (save_to_db)
+        {
+            WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 1 WHERE id = %lu", creature_target->spawnid);
+            GreenSystemMessage(m_session, "CanFly permanent set from 0 to 1 for Creature %s (%u).", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+            sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawn ID: %u [%s] from 0 to 1", creature_target->spawnid, creature_target->GetCreatureInfo()->Name);
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "CanFly temporarily set from 0 to 1 for Creature %s (%u).", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+        }
+    }
+    else
+    {
+        creature_target->GetAIInterface()->SetFly();
+        if (save_to_db)
+        {
+            WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 0 WHERE id = %lu", creature_target->spawnid);
+            GreenSystemMessage(m_session, "CanFly permanent set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+            sGMLog.writefromsession(m_session, "changed npc CanFly for creature_spawn ID: %u [%s] from 1 to 0", creature_target->spawnid, creature_target->GetCreatureInfo()->Name);
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "CanFly temporarily set from 1 to 0 for Creature %s (%u).", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+        }
+    }
+
+    return true;
+}
+
 //.npc set equip
 bool ChatHandler::HandleNpcSetEquipCommand(const char* args, WorldSession* m_session)
 {

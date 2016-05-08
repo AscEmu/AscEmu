@@ -474,18 +474,16 @@ void CommandTableStorage::Init()
 
     static ChatCommand NPCSetCommandTable[] =
     {
-        { "canfly",           'n', &ChatHandler::HandleNPCCanFlyCommand,      ".npc canfly <save> - Toggles CanFly state",                                                                                               NULL, 0, 0, 0 },
-        { "emote",         'n', &ChatHandler::HandleNpcSetEmoteCommand,    ".npc set emote <emote> <save> - Sets emote state",                                                                                        NULL, 0, 0, 0 },
-        { "equip",         'm', &ChatHandler::HandleNpcSetEquipCommand,    ".npc set equip <slot> <itemid>",                                                                                                          NULL, 0, 0, 0 },
-        { "flags",         'n', &ChatHandler::HandleNpcSetFlagsCommand,    "Changes NPC flags",                                                                                                                       NULL, 0, 0, 0 },
-        { "formationmaster",   'm', &ChatHandler::HandleNpcSetFormationMasterCommand, "Sets formation master.",                                                                                                                  NULL, 0, 0, 0 },
-        { "formationslave",    'm', &ChatHandler::HandleNpcSetFormationSlaveCommand, "Sets formation slave with distance and angle",                                                                                            NULL, 0, 0, 0 },
-        { "formationclear",   'm', &ChatHandler::HandleNpcSetFormationClearCommand, "Removes formation from creature",                                                                                                         NULL, 0, 0, 0 },
-        { "phase",            'n', &ChatHandler::HandleNpcSetPhaseCommand,  "Sets phase for selected creature",                                                                                             NULL, 0, 0, 0 },
-
-        { "standstate",   'm', &ChatHandler::HandleNpcSetStandstateCommand, "Sets standstate for selected creature",                                                                                                         NULL, 0, 0, 0 },
-
-        { NULL,            '0', NULL,                                      "",                                                                                                                                        NULL, 0, 0, 0 }
+        { "canfly",             'n', &ChatHandler::HandleNpcSetCanFlyCommand,           ".npc set canfly <save> - Toggles CanFly state",    NULL, 0, 0, 0 },
+        { "emote",              'n', &ChatHandler::HandleNpcSetEmoteCommand,            ".npc set emote <emote> <save> - Sets emote state", NULL, 0, 0, 0 },
+        { "equip",              'm', &ChatHandler::HandleNpcSetEquipCommand,            ".npc set equip <slot> <itemid>",                   NULL, 0, 0, 0 },
+        { "flags",              'n', &ChatHandler::HandleNpcSetFlagsCommand,            "Changes NPC flags",                                NULL, 0, 0, 0 },
+        { "formationmaster",    'm', &ChatHandler::HandleNpcSetFormationMasterCommand,  "Sets formation master.",                           NULL, 0, 0, 0 },
+        { "formationslave",     'm', &ChatHandler::HandleNpcSetFormationSlaveCommand,   "Sets formation slave with distance and angle",     NULL, 0, 0, 0 },
+        { "formationclear",     'm', &ChatHandler::HandleNpcSetFormationClearCommand,   "Removes formation from creature",                  NULL, 0, 0, 0 },
+        { "phase",              'n', &ChatHandler::HandleNpcSetPhaseCommand,            "Sets phase for selected creature",                 NULL, 0, 0, 0 },
+        { "standstate",         'm', &ChatHandler::HandleNpcSetStandstateCommand,       "Sets standstate for selected creature",            NULL, 0, 0, 0 },
+        { NULL,                 '0', NULL,                                              "",                                                 NULL, 0, 0, 0 }
     };
     dupe_command_table(NPCSetCommandTable, _NPCSetCommandTable);
 
