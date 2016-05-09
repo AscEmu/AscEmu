@@ -161,6 +161,70 @@ bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_ses
     return true;
 }
 
+//.npc delete
+bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    if (creature_target->IsPet())
+    {
+        SystemMessage(m_session, "You can't delete a pet.");
+        return true;
+    }
+
+    bool save_to_db = atoi(args) == 1 ? true : false;
+    if (creature_target->IsSummon())
+    {
+        creature_target->Delete();
+    }
+    else
+    {
+        creature_target->GetAIInterface()->hideWayPoints(m_session->GetPlayer());
+
+        uint32 spawn_id = creature_target->spawnid;
+
+        if (save_to_db && spawn_id != 0)
+        {
+            BlueSystemMessage(m_session, "Creature %s (%u) deleted from creature_spawn table.", creature_target->GetCreatureInfo()->Name, spawn_id);
+            sGMLog.writefromsession(m_session, "used npc delete on creature %s (%u), pos %f %f %f", creature_target->GetCreatureInfo()->Name, spawn_id, creature_target->GetPositionX(), creature_target->GetPositionY(), creature_target->GetPositionZ());
+            creature_target->DeleteFromDB();
+        }
+
+        if (!save_to_db)
+        {
+            BlueSystemMessage(m_session, "Creature %s temporarily deleted from world.", creature_target->GetCreatureInfo()->Name);
+        }
+
+        if (creature_target->m_spawn)
+        {
+            uint32 cellx = uint32(((_maxX - creature_target->m_spawn->x) / _cellSize));
+            uint32 celly = uint32(((_maxY - creature_target->m_spawn->y) / _cellSize));
+
+            if (cellx <= _sizeX && celly <= _sizeY)
+            {
+                CellSpawns* sp = creature_target->GetMapMgr()->GetBaseMap()->GetSpawnsList(cellx, celly);
+                if (sp != nullptr)
+                {
+                    for (CreatureSpawnList::iterator itr = sp->CreatureSpawns.begin(); itr != sp->CreatureSpawns.end(); ++itr)
+                        if ((*itr) == creature_target->m_spawn)
+                        {
+                            sp->CreatureSpawns.erase(itr);
+                            break;
+                        }
+                }
+                delete creature_target->m_spawn;
+                creature_target->m_spawn = NULL;
+            }
+        }
+
+        creature_target->RemoveFromWorld(false, true);
+    }
+
+    return true;
+}
+
 //.npc follow
 bool ChatHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session)
 {

@@ -349,7 +349,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Level 2 commands
         bool HandleNameCommand(const char* args, WorldSession* m_session);
         bool HandleSubNameCommand(const char* args, WorldSession* m_session);
-        bool HandleDeleteCommand(const char* args, WorldSession* m_session);
         bool HandleDeMorphCommand(const char* args, WorldSession* m_session);
         bool HandleItemCommand(const char* args, WorldSession* m_session);
         bool HandleItemRemoveCommand(const char* args, WorldSession* m_session);
@@ -591,6 +590,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);
         bool HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session);
         bool HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleNpcDeleteCommand(const char* args, WorldSession* m_session);
         bool HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session);
