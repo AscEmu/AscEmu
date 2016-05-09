@@ -495,8 +495,7 @@ void CommandTableStorage::Init()
         { "delete",           'n', &ChatHandler::HandleNpcDeleteCommand,            "Deletes mob from world optional from DB",                                      NULL, 0, 0, 0 },
         { "info",             'n', &ChatHandler::HandleNpcInfoCommand,              "Displays NPC information",                                                     NULL, 0, 0, 0 },
         { "listAgent",        'n', &ChatHandler::HandleNpcListAIAgentCommand,       "List AIAgents of selected target.",                                            NULL, 0, 0, 0 },
-        //rewrite
-        { "loot",             'm', &ChatHandler::HandleNPCLootCommand,              "Displays possible loot for the selected NPC.",                                 NULL, 0, 0, 0 },
+        { "listloot",         'm', &ChatHandler::HandleNpcListLootCommand,          "Displays possible loot for the selected NPC.",                                 NULL, 0, 0, 0 },
         { "follow",           'm', &ChatHandler::HandleNpcFollowCommand,            "Sets npc to follow you",                                                       NULL, 0, 0, 0 },
         { "stopfollow",       'm', &ChatHandler::HandleNpcStopFollowCommand,        "Sets npc to not follow anything",                                              NULL, 0, 0, 0 },
         //rewrite - used?

@@ -483,6 +483,56 @@ bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession
     return true;
 }
 
+//.npc listloot
+bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    QueryResult* loot_result = WorldDatabase.Query("SELECT itemid, normal10percentchance, heroic10percentchance, normal25percentchance, heroic25percentchance, mincount, maxcount FROM loot_creatures WHERE entryid=%u;", creature_target->GetEntry());
+    if (loot_result != nullptr)
+    {
+        std::stringstream ss;
+        std::string color;
+        uint8 numFound = 0;
+
+        uint32 minQuality = 0;
+        if (*args)
+            minQuality = atol(args);
+
+        SystemMessage(m_session, "Listing loot for Creature %s (%u)", creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+
+        do
+        {
+            Field* field = loot_result->Fetch();
+
+            auto item_proto = ItemPrototypeStorage.LookupEntry(field[0].GetUInt32());
+            if (item_proto == nullptr || item_proto->Quality < minQuality)
+                continue;
+
+            RedSystemMessage(m_session, "ItemID: %u %s", item_proto->ItemId, GetItemLinkByProto(item_proto, m_session->language).c_str());
+            SystemMessage(m_session, "-- N10 (%3.2lf) N25 (%3.2lf) H10 (%3.2lf) H25 (%3.2lf) min/max (%u/%u)", field[1].GetFloat(), field[3].GetFloat(), field[2].GetFloat(), field[4].GetFloat(), field[5].GetUInt32(), field[6].GetUInt32());
+        
+            ++numFound;
+        } while (loot_result->NextRow() && (numFound <= 25));
+        delete loot_result;
+        if (numFound > 25)
+        {
+            RedSystemMessage(m_session, "More than 25 results found. Use .npc listloot <min quality> to increase the results.");
+        }
+        else
+        {
+            SystemMessage(m_session, "%lu results found.", numFound);
+        }
+    }
+    else
+    {
+        RedSystemMessage(m_session, "No loot in loot_creatures table for %s (%u).", creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+    }
+    return true;
+}
+
 //.npc stopfollow
 bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session)
 {
