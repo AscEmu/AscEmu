@@ -438,7 +438,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         bool HandleNPCOnGOCommand(const char* args, WorldSession* m_session);
         bool HandleNPCLootCommand(const char* args, WorldSession* m_session);
-        bool HandleNPCCastCommand(const char* args, WorldSession* m_session);
 
         // Ticket
         bool HandleTicketListCommand(const char* /*args*/, WorldSession* m_session);
@@ -589,6 +588,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // NPC Commands
         bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);
         bool HandleNpcAddTrainerSpellCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcCastCommand(const char* args, WorldSession* m_session);
         bool HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcDeleteCommand(const char* args, WorldSession* m_session);
         bool HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session);

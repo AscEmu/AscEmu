@@ -488,30 +488,35 @@ void CommandTableStorage::Init()
 
     static ChatCommand NPCCommandTable[] =
     {
-        { "addagent",         'n', &ChatHandler::HandleNpcAddAgentCommand,         "Add ai agents to npc.",                                                        NULL, 0, 0, 0 },
-        { "addtrainerspell",  'm', &ChatHandler::HandleNpcAddTrainerSpellCommand,  "Add spells to trainer learn list.",                                            NULL, 0, 0, 0 },
-        { "cast",             'n', &ChatHandler::HandleNPCCastCommand,        ".npc cast < spellid > - Makes the NPC cast this spell.",                                                                                  NULL, 0, 0, 0 },
-        { "come",             'n', &ChatHandler::HandleNpcComeCommand,        ".npc come - Makes npc move to your position",                                                                                             NULL, 0, 0, 0 },
-        { "delete",           'n', &ChatHandler::HandleNpcDeleteCommand,         "Deletes mob from db and world.",                                                                                                          NULL, 0, 0, 0 },
-        { "info",             'n', &ChatHandler::HandleNpcInfoCommand,        "Displays NPC information",                                                                                                                NULL, 0, 0, 0 },
-        { "listAgent",        'n', &ChatHandler::HandleListAIAgentCommand,    ".npc listAgent",                                                                                                                          NULL, 0, 0, 0 },
-        { "loot",             'm', &ChatHandler::HandleNPCLootCommand,        ".npc loot <quality> - displays possible loot for the selected NPC.",                                                                      NULL, 0, 0, 0 },
-        { "follow",           'm', &ChatHandler::HandleNpcFollowCommand,      "Sets npc to follow you",                                                                                                                  NULL, 0, 0, 0 },
-        { "stopfollow",       'm', &ChatHandler::HandleNpcStopFollowCommand,  "Sets npc to not follow anything",                                                                                                         NULL, 0, 0, 0 },
-        { "ongameobject",     'n', &ChatHandler::HandleNPCOnGOCommand,        ".npc ongameobject <save> - Toggles onGameobject state. Required when spawning a NPC on a Gameobject",                                            NULL, 0, 0, 0 },
-        { "possess",          'n', &ChatHandler::HandlePossessCommand,        ".npc possess - Possess an npc (mind control)",                                                                                            NULL, 0, 0, 0 },
-        { "unpossess",        'n', &ChatHandler::HandleUnPossessCommand,      ".npc unpossess - Unpossess any currently possessed npc.",                                                                                 NULL, 0, 0, 0 },
-        { "return",           'n', &ChatHandler::HandleNpcReturnCommand,      ".npc return - Returns ncp to spawnpoint.",                                                                                                NULL, 0, 0, 0 },
-        { "respawn",          'n', &ChatHandler::HandleNpcRespawnCommand,     ".npc respawn - Respawns a dead npc from its corpse.",                                                                                         NULL, 0, 0, 0 },
-        { "say",              'n', &ChatHandler::HandleNpcSayCommand,         ".npc say <text> - Makes selected npc say <text>.",                                                                                   NULL, 0, 0, 0 },
-        { "select",           'n', &ChatHandler::HandleNpcSelectCommand,      ".npc select - selects npc closest",                                                                                                       NULL, 0, 0, 0 },
-        { "set",              '0', NULL,                                      "",                                                                                                         NPCSetCommandTable, 0, 0, 0 },
-        { "spawn",            'n', &ChatHandler::HandleNpcSpawnCommand,       ".npc spawn - Spawns npc of entry <id>",                                                                                                   NULL, 0, 0, 0 },
-        //{ "spawnlink",        'n', &ChatHandler::HandleNpcSpawnLinkCommand,   ".spawnlink sqlentry",                                                                                                                     NULL, 0, 0, 0 },
-        { "vendoradditem",    'n', &ChatHandler::HandleItemCommand,           "Adds item to vendor",                                                                                                                          NULL, 0, 0, 0 },
-        { "vendorremoveitem", 'n', &ChatHandler::HandleItemRemoveCommand,     "Removes item from vendor.",                                                                                                                    NULL, 0, 0, 0 },
-        { "yell",             'n', &ChatHandler::HandleNpcYellCommand,        ".npc yell <text> - Makes selected npc yell <text>.",                                                                                 NULL, 0, 0, 0 },
-        { NULL,               '0', NULL,                                      "",                                                                                                                                        NULL, 0, 0, 0 }
+        { "addagent",         'n', &ChatHandler::HandleNpcAddAgentCommand,          "Add ai agents to npc.",                                                        NULL, 0, 0, 0 },
+        { "addtrainerspell",  'm', &ChatHandler::HandleNpcAddTrainerSpellCommand,   "Add spells to trainer learn list.",                                            NULL, 0, 0, 0 },
+        { "cast",             'n', &ChatHandler::HandleNpcCastCommand,              "Makes Npc cast <spellid>.",                                                    NULL, 0, 0, 0 },
+        { "come",             'n', &ChatHandler::HandleNpcComeCommand,              "Makes npc move to your position",                                              NULL, 0, 0, 0 },
+        { "delete",           'n', &ChatHandler::HandleNpcDeleteCommand,            "Deletes mob from world optional from DB",                                      NULL, 0, 0, 0 },
+        //rewrite
+        { "info",             'n', &ChatHandler::HandleNpcInfoCommand,              "Displays NPC information",                                                     NULL, 0, 0, 0 },
+        //rewrite
+        { "listAgent",        'n', &ChatHandler::HandleListAIAgentCommand,          "List AIAgents of selected target.",                                            NULL, 0, 0, 0 },
+        //rewrite
+        { "loot",             'm', &ChatHandler::HandleNPCLootCommand,              "Displays possible loot for the selected NPC.",                                 NULL, 0, 0, 0 },
+        { "follow",           'm', &ChatHandler::HandleNpcFollowCommand,            "Sets npc to follow you",                                                       NULL, 0, 0, 0 },
+        { "stopfollow",       'm', &ChatHandler::HandleNpcStopFollowCommand,        "Sets npc to not follow anything",                                              NULL, 0, 0, 0 },
+        //rewrite - used?
+        { "ongameobject",     'n', &ChatHandler::HandleNPCOnGOCommand,              "Toggles onGameobject state. Required when spawning a NPC on a Gameobject",     NULL, 0, 0, 0 },
+        { "possess",          'n', &ChatHandler::HandlePossessCommand,              "Possess targeted npc (mind control)",                                          NULL, 0, 0, 0 },
+        { "unpossess",        'n', &ChatHandler::HandleUnPossessCommand,            "Unpossess any currently possessed npc.",                                       NULL, 0, 0, 0 },
+        { "return",           'n', &ChatHandler::HandleNpcReturnCommand,            "Returns ncp to spawnpoint.",                                                   NULL, 0, 0, 0 },
+        { "respawn",          'n', &ChatHandler::HandleNpcRespawnCommand,           "Respawns a dead npc from its corpse.",                                         NULL, 0, 0, 0 },
+        { "say",              'n', &ChatHandler::HandleNpcSayCommand,               "Makes selected npc say <text>.",                                               NULL, 0, 0, 0 },
+        // rewrite - really needed?
+        { "select",           'n', &ChatHandler::HandleNpcSelectCommand,            "Slects npc closest",                                                           NULL, 0, 0, 0 },
+        { "set",              '0', NULL,                                            "",                                                               NPCSetCommandTable, 0, 0, 0 },
+        { "spawn",            'n', &ChatHandler::HandleNpcSpawnCommand,             "Spawns npc of entry <id>",                                                     NULL, 0, 0, 0 },
+      //{ "spawnlink",        'n', &ChatHandler::HandleNpcSpawnLinkCommand,         ".spawnlink sqlentry",                                                          NULL, 0, 0, 0 },
+        { "vendoradditem",    'n', &ChatHandler::HandleItemCommand,                 "Adds item to vendor",                                                          NULL, 0, 0, 0 },
+        { "vendorremoveitem", 'n', &ChatHandler::HandleItemRemoveCommand,           "Removes item from vendor.",                                                    NULL, 0, 0, 0 },
+        { "yell",             'n', &ChatHandler::HandleNpcYellCommand,              "Makes selected npc yell <text>.",                                              NULL, 0, 0, 0 },
+        { NULL,               '0', NULL,                                            "",                                                                                                                                        NULL, 0, 0, 0 }
     };
     dupe_command_table(NPCCommandTable, _NPCCommandTable);
 

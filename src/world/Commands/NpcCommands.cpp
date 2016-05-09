@@ -148,6 +148,33 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     return true;
 }
 
+//.npc cast
+bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    uint32 spell_id;
+    if (sscanf(args, "%u", &spell_id) != 1)
+    {
+        RedSystemMessage(m_session, "Command must be in format: .npc cast <spellid>.");
+        return true;
+    }
+
+    auto spell_entry = dbcSpell.LookupEntry(spell_id);
+    if (spell_entry == nullptr)
+    {
+        RedSystemMessage(m_session, "Invalid Spell ID: %u !", spell_id);
+        return true;
+    }
+
+    auto unit_target = static_cast<Unit*>(creature_target);
+    unit_target->CastSpell(unit_target, spell_entry, false);
+
+    return true;
+}
+
 //.npc come
 bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session)
 {
