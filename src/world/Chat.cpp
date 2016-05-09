@@ -849,8 +849,6 @@ void CommandTableStorage::Init()
         { "gocreature",      'v', &ChatHandler::HandleGoCreatureSpawnCommand,               "Teleports you to the creature with <spwn_id>.",                                                                                           NULL,                     0, 0, 0 },
         { "gogameobject",    'v', &ChatHandler::HandleGoGameObjectSpawnCommand,             "Teleports you to the gameobject with <spawn_id>.",                                                                                        NULL,                     0, 0, 0 },
         { "gotrig",          'v', &ChatHandler::HandleGoTriggerCommand,                     "Teleports you to the areatrigger with <id>.",                                                                                             NULL,                     0, 0, 0 },
-        //transport
-        { "modperiod",       'm', &ChatHandler::HandleModPeriodCommand,                     "Changes period of current transporter.",                                                                                                  NULL,                     0, 0, 0 },
         //char
         { "removesickness",  'm', &ChatHandler::HandleRemoveRessurectionSickessAuraCommand, "Removes ressurrection sickness from the target",                                                                                          NULL,                     0, 0, 0 },
         //npc
