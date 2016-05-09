@@ -424,8 +424,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCastSelfCommand(const char* args, WorldSession* m_session);
         bool HandleLevelUpCommand(const char* args, WorldSession* m_session);
         bool HandleModifyGoldCommand(const char* args, WorldSession* m_session);
-        bool HandleMonsterSayCommand(const char* args, WorldSession* m_session);
-        bool HandleMonsterYellCommand(const char* args, WorldSession* m_session);
         bool HandleClearCooldownsCommand(const char* args, WorldSession* m_session);
         bool HandleBattlegroundCommand(const char* args, WorldSession* m_session);
         bool HandleSetWorldStateCommand(const char* args, WorldSession* m_session);
@@ -438,7 +436,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
         bool HandleGetSkillsInfoCommand(const char* args, WorldSession* m_session);
         bool HandlePlayerInfo(const char* args, WorldSession* m_session);
-        bool HandleCreatureSpawnCommand(const char* args, WorldSession* m_session);
         
         bool HandleNPCOnGOCommand(const char* args, WorldSession* m_session);
         bool HandleNPCLootCommand(const char* args, WorldSession* m_session);
@@ -598,6 +595,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleNpcSayCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcSpawnCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcYellCommand(const char* args, WorldSession* m_session);
+
         bool HandlePossessCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session);
 

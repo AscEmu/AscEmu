@@ -522,56 +522,6 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     return true;
 }
 
-bool ChatHandler::HandleMonsterSayCommand(const char* args, WorldSession* m_session)
-{
-    Unit* crt = GetSelectedCreature(m_session, false);
-    if (!crt)
-        crt = GetSelectedPlayer(m_session, false, true);
-
-    if (!crt)
-    {
-        RedSystemMessage(m_session, "Please select a creature or player before using this command.");
-        return true;
-    }
-    if (crt->IsPlayer())
-    {
-        WorldPacket* data = this->FillMessageData(CHAT_MSG_SAY, LANG_UNIVERSAL, args, crt->GetGUID(), 0);
-        crt->SendMessageToSet(data, true);
-        delete data;
-    }
-    else
-    {
-        crt->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, args);
-    }
-
-    return true;
-}
-
-bool ChatHandler::HandleMonsterYellCommand(const char* args, WorldSession* m_session)
-{
-    Unit* crt = GetSelectedCreature(m_session, false);
-    if (!crt)
-        crt = GetSelectedPlayer(m_session, false, true);
-
-    if (!crt)
-    {
-        RedSystemMessage(m_session, "Please select a creature or player before using this command.");
-        return true;
-    }
-    if (crt->IsPlayer())
-    {
-        WorldPacket* data = this->FillMessageData(CHAT_MSG_YELL, LANG_UNIVERSAL, args, crt->GetGUID(), 0);
-        crt->SendMessageToSet(data, true);
-        delete data;
-    }
-    else
-    {
-        crt->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, args);
-    }
-
-    return true;
-}
-
 bool ChatHandler::HandleGOFaction(const char* args, WorldSession* m_session)
 {
     if (args == nullptr)

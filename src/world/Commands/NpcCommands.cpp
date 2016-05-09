@@ -236,7 +236,108 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
     return true;
 }
 
-// Zyres: not only for npc!
+//.npc say
+bool ChatHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    if (!args)
+    {
+        RedSystemMessage(m_session, "No text set. Use .npc say <text>!");
+        return true;
+    }
+
+    creature_target->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, args);
+
+    return true;
+}
+
+//.npc spawn
+bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_session)
+{
+    uint32 entry = atol(args);
+    if (entry == 0)
+        return false;
+
+    auto creature_proto = CreatureProtoStorage.LookupEntry(entry);
+    auto creature_info = CreatureNameStorage.LookupEntry(entry);
+    if (creature_proto == nullptr || creature_info == nullptr)
+    {
+        RedSystemMessage(m_session, "Creature with entry %u is not a valid entry (no proto/name information in database)", entry);
+        return true;
+    }
+
+    auto creature_spawn = new CreatureSpawn;
+    uint8 gender = creature_info->GenerateModelId(&creature_spawn->displayid);
+    creature_spawn->entry = entry;
+    creature_spawn->form = 0;
+    creature_spawn->id = objmgr.GenerateCreatureSpawnID();
+    creature_spawn->movetype = 0;
+    creature_spawn->x = m_session->GetPlayer()->GetPositionX();
+    creature_spawn->y = m_session->GetPlayer()->GetPositionY();
+    creature_spawn->z = m_session->GetPlayer()->GetPositionZ();
+    creature_spawn->o = m_session->GetPlayer()->GetOrientation();
+    creature_spawn->emote_state = 0;
+    creature_spawn->flags = creature_proto->NPCFLags;
+    creature_spawn->factionid = creature_proto->Faction;
+    creature_spawn->bytes0 = creature_spawn->setbyte(0, 2, gender);
+    creature_spawn->bytes1 = 0;
+    creature_spawn->bytes2 = 0;
+    creature_spawn->stand_state = 0;
+    creature_spawn->death_state = 0;
+    creature_spawn->channel_target_creature = creature_spawn->channel_target_go = creature_spawn->channel_spell = 0;
+    creature_spawn->MountedDisplayID = 0;
+    creature_spawn->Item1SlotDisplay = creature_proto->itemslot_1;
+    creature_spawn->Item2SlotDisplay = creature_proto->itemslot_2;
+    creature_spawn->Item3SlotDisplay = creature_proto->itemslot_3;
+    creature_spawn->CanFly = 0;
+    creature_spawn->phase = m_session->GetPlayer()->GetPhase();
+
+    auto creature = m_session->GetPlayer()->GetMapMgr()->CreateCreature(entry);
+    ARCEMU_ASSERT(creature != nullptr);
+    creature->Load(creature_spawn, 0, nullptr);
+    creature->m_loadedFromDB = true;
+    creature->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+
+    // Add to map
+    uint32 x = m_session->GetPlayer()->GetMapMgr()->GetPosX(m_session->GetPlayer()->GetPositionX());
+    uint32 y = m_session->GetPlayer()->GetMapMgr()->GetPosY(m_session->GetPlayer()->GetPositionY());
+    m_session->GetPlayer()->GetMapMgr()->GetBaseMap()->GetSpawnsListAndCreate(x, y)->CreatureSpawns.push_back(creature_spawn);
+    MapCell* map_cell = m_session->GetPlayer()->GetMapMgr()->GetCell(x, y);
+    if (map_cell != nullptr)
+        map_cell->SetLoaded();
+
+    creature->SaveToDB();
+
+    BlueSystemMessage(m_session, "Spawned a creature `%s` with entry %u at %f %f %f on map %u", creature_info->Name,
+        entry, creature_spawn->x, creature_spawn->y, creature_spawn->z, m_session->GetPlayer()->GetMapId());
+    sGMLog.writefromsession(m_session, "spawned a %s at %u %f %f %f", creature_info->Name, m_session->GetPlayer()->GetMapId(),
+        creature_spawn->x, creature_spawn->y, creature_spawn->z);
+
+    return true;
+}
+
+//.npc yell
+bool ChatHandler::HandleNpcYellCommand(const char* args, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    if (!args)
+    {
+        RedSystemMessage(m_session, "No text set. Use .npc say <text>!");
+        return true;
+    }
+
+    creature_target->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, args);
+
+    return true;
+}
+
+// Zyres: following commands are for units
 //.npc possess
 bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_session)
 {
