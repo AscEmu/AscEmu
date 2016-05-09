@@ -835,4 +835,138 @@ struct TransportData
     LocationVector relativePosition;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// values used in .npc info command
+struct UnitFlagNames
+{
+    uint32 Flag;
+    const char* Name;
+};
+
+struct UnitDynFlagNames
+{
+    uint32 Flag;
+    const char* Name;
+};
+
+static const char* POWERTYPE[] =
+{
+    "Mana",
+    "Rage",
+    "Focus",
+    "Energy",
+    "Happiness",
+    "Runes",
+    "Runic Power"
+};
+
+static const UnitFlagNames UnitFlagToName[] =
+{
+    { UNIT_FLAG_SERVER_CONTROLLED, "UNIT_FLAG_SERVER_CONTROLLED" },
+    { UNIT_FLAG_NOT_ATTACKABLE_2, "UNIT_FLAG_NOT_ATTACKABLE_2" },
+    { UNIT_FLAG_LOCK_PLAYER, "UNIT_FLAG_LOCK_PLAYER" },
+    { UNIT_FLAG_PVP_ATTACKABLE, "UNIT_FLAG_PVP_ATTACKABLE" },
+    { UNIT_FLAG_UNKNOWN_5, "UNIT_FLAG_UNKNOWN_5" },
+    { UNIT_FLAG_NO_REAGANT_COST, "UNIT_FLAG_NO_REAGANT_COST" },
+    { UNIT_FLAG_PLUS_MOB, "UNIT_FLAG_PLUS_MOB" },
+    { UNIT_FLAG_UNKNOWN_8, "UNIT_FLAG_UNKNOWN_8" },
+    { UNIT_FLAG_NOT_ATTACKABLE_9, "UNIT_FLAG_NOT_ATTACKABLE_9" },
+    { UNIT_FLAG_UNKNOWN_10, "UNIT_FLAG_UNKNOWN_10" },
+    { UNIT_FLAG_LOOTING, "UNIT_FLAG_LOOTING" },
+    { UNIT_FLAG_SELF_RES, "UNIT_FLAG_SELF_RES" },
+    { UNIT_FLAG_PVP, "UNIT_FLAG_PVP" },
+    { UNIT_FLAG_SILENCED, "UNIT_FLAG_SILENCED" },
+    { UNIT_FLAG_DEAD, "UNIT_FLAG_DEAD" },
+    { UNIT_FLAG_UNKNOWN_16, "UNIT_FLAG_UNKNOWN_16" },
+    { UNIT_FLAG_ALIVE, "UNIT_FLAG_ALIVE" },
+    { UNIT_FLAG_PACIFIED, "UNIT_FLAG_PACIFIED" },
+    { UNIT_FLAG_STUNNED, "UNIT_FLAG_STUNNED" },
+    { UNIT_FLAG_COMBAT, "UNIT_FLAG_COMBAT" },
+    { UNIT_FLAG_MOUNTED_TAXI, "UNIT_FLAG_MOUNTED_TAXI" },
+    { UNIT_FLAG_DISARMED, "UNIT_FLAG_DISARMED" },
+    { UNIT_FLAG_CONFUSED, "UNIT_FLAG_CONFUSED" },
+    { UNIT_FLAG_FLEEING, "UNIT_FLAG_FLEEING" },
+    { UNIT_FLAG_PLAYER_CONTROLLED_CREATURE, "UNIT_FLAG_PLAYER_CONTROLLED_CREATURE" },
+    { UNIT_FLAG_NOT_SELECTABLE, "UNIT_FLAG_NOT_SELECTABLE" },
+    { UNIT_FLAG_SKINNABLE, "UNIT_FLAG_SKINNABLE" },
+    { UNIT_FLAG_MOUNT, "UNIT_FLAG_MOUNT" },
+    { UNIT_FLAG_UNKNOWN_29, "UNIT_FLAG_UNKNOWN_29" },
+    { UNIT_FLAG_FEIGN_DEATH, "UNIT_FLAG_FEIGN_DEATH" },
+    { UNIT_FLAG_UNKNOWN_31, "UNIT_FLAG_UNKNOWN_31" },
+    { UNIT_FLAG_UNKNOWN_32, "UNIT_FLAG_UNKNOWN_32" }
+};
+
+static uint32 numflags = sizeof(UnitFlagToName) / sizeof(UnitFlagNames);
+
+static const UnitDynFlagNames UnitDynFlagToName[] =
+{
+    { U_DYN_FLAG_LOOTABLE, "U_DYN_FLAG_LOOTABLE" },
+    { U_DYN_FLAG_UNIT_TRACKABLE, "U_DYN_FLAG_UNIT_TRACKABLE" },
+    { U_DYN_FLAG_TAGGED_BY_OTHER, "U_DYN_FLAG_TAGGED_BY_OTHER" },
+    { U_DYN_FLAG_TAPPED_BY_PLAYER, "U_DYN_FLAG_TAPPED_BY_PLAYER" },
+    { U_DYN_FLAG_PLAYER_INFO, "U_DYN_FLAG_PLAYER_INFO" },
+    { U_DYN_FLAG_DEAD, "U_DYN_FLAG_DEAD" }
+};
+
+static uint32 numdynflags = sizeof(UnitDynFlagToName) / sizeof(UnitDynFlagNames);
+
+static const char* GENDER[] =
+{
+    "male",
+    "female",
+    "neutral"
+};
+
+static const char* CLASS[] =
+{
+    "invalid 0",
+    "warrior",
+    "paladin",
+    "hunter",
+    "rogue",
+    "priest",
+    "deathknight",
+    "shaman",
+    "mage",
+    "warlock",
+    "invalid 10",
+    "druid"
+};
+
+static const char* SHEATSTATE[] =
+{
+    "none",
+    "melee",
+    "ranged"
+};
+
+struct UnitPvPFlagNames
+{
+    uint32 Flag;
+    const char* Name;
+};
+
+static const UnitPvPFlagNames UnitPvPFlagToName[] =
+{
+    { U_FIELD_BYTES_FLAG_PVP, "U_FIELD_BYTES_FLAG_PVP" },
+    { U_FIELD_BYTES_FLAG_FFA_PVP, "U_FIELD_BYTES_FLAG_FFA_PVP" },
+    { U_FIELD_BYTES_FLAG_SANCTUARY, "U_FIELD_BYTES_FLAG_SANCTUARY" }
+};
+
+static const uint32 numpvpflags = sizeof(UnitPvPFlagToName) / sizeof(UnitPvPFlagNames);
+
+struct PetFlagNames
+{
+    uint32 Flag;
+    const char* Name;
+};
+
+static const PetFlagNames PetFlagToName[] =
+{
+    { UNIT_CAN_BE_RENAMED, "UNIT_CAN_BE_RENAMED" },
+    { UNIT_CAN_BE_ABANDONED, "UNIT_CAN_BE_ABANDONED" }
+};
+
+static const uint32 numpetflags = sizeof(PetFlagToName) / sizeof(PetFlagNames);
+
 #endif      // _UNIT_DEFINES_H

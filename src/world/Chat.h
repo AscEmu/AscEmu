@@ -239,6 +239,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);
         Creature* GetSelectedCreature(WorldSession* m_session, bool showerror = true);
         Unit* GetSelectedUnit(WorldSession* m_session, bool showerror = true);
+        std::string GetNpcFlagString(Creature* creature);
 
         // AccountCommands
         bool HandleAccountCreate(const char* args, WorldSession* m_session);
@@ -416,7 +417,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleLearnSkillCommand(const char* args, WorldSession* m_session);
         bool HandleModifySkillCommand(const char* args, WorldSession* m_session);
         bool HandleRemoveSkillCommand(const char* args, WorldSession* m_session);
-        bool HandleNpcInfoCommand(const char* args, WorldSession* m_session);
+        
         bool HandleIncreaseWeaponSkill(const char* args, WorldSession* m_session);
         bool HandleCastSpellCommand(const char* args, WorldSession* m_session);
         bool HandleCastSpellNECommand(const char* args, WorldSession* m_session);
@@ -592,6 +593,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcDeleteCommand(const char* args, WorldSession* m_session);
         bool HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session);

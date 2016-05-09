@@ -493,7 +493,6 @@ void CommandTableStorage::Init()
         { "cast",             'n', &ChatHandler::HandleNpcCastCommand,              "Makes Npc cast <spellid>.",                                                    NULL, 0, 0, 0 },
         { "come",             'n', &ChatHandler::HandleNpcComeCommand,              "Makes npc move to your position",                                              NULL, 0, 0, 0 },
         { "delete",           'n', &ChatHandler::HandleNpcDeleteCommand,            "Deletes mob from world optional from DB",                                      NULL, 0, 0, 0 },
-        //rewrite
         { "info",             'n', &ChatHandler::HandleNpcInfoCommand,              "Displays NPC information",                                                     NULL, 0, 0, 0 },
         //rewrite
         { "listAgent",        'n', &ChatHandler::HandleListAIAgentCommand,          "List AIAgents of selected target.",                                            NULL, 0, 0, 0 },
@@ -1511,4 +1510,39 @@ bool ChatHandler::HandleGetPosCommand(const char* args, WorldSession* m_session)
     if (se)
         BlueSystemMessage(m_session, "SpellIcon for %d is %d", se->Id, se->field114);
     return true;
+}
+
+std::string ChatHandler::GetNpcFlagString(Creature* creature)
+{
+    std::string s = "";
+    if (creature->isBattleMaster())
+        s.append(" (Battlemaster)");
+    if (creature->isTrainer())
+        s.append(" (Trainer)");
+    if (creature->isProf())
+        s.append(" (Profession Trainer)");
+    if (creature->isQuestGiver())
+        s.append(" (Quests)");
+    if (creature->isGossip())
+        s.append(" (Gossip)");
+    if (creature->isTaxi())
+        s.append(" (Taxi)");
+    if (creature->isCharterGiver())
+        s.append(" (Charter)");
+    if (creature->isGuildBank())
+        s.append(" (Guild Bank)");
+    if (creature->isSpiritHealer())
+        s.append(" (Spirit Healer)");
+    if (creature->isInnkeeper())
+        s.append(" (Innkeeper)");
+    if (creature->isTabardDesigner())
+        s.append(" (Tabard Designer)");
+    if (creature->isAuctioner())
+        s.append(" (Auctioneer)");
+    if (creature->isStableMaster())
+        s.append(" (Stablemaster)");
+    if (creature->isArmorer())
+        s.append(" (Armorer)");
+
+    return s;
 }

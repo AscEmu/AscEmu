@@ -264,6 +264,197 @@ bool ChatHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_s
     return true;
 }
 
+//.npc info
+bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    uint32 guid = Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection());
+
+    SystemMessage(m_session, "Showing Creature info of %s =============", creature_target->GetCreatureInfo()->Name);
+    RedSystemMessage(m_session, "EntryID: %d", creature_target->GetEntry());
+    RedSystemMessage(m_session, "SpawnID: %d", creature_target->GetSQL_id());
+    SystemMessage(m_session, "GUID: %u", guid);
+    SystemMessage(m_session, "Faction: %u", creature_target->GetFaction());
+    SystemMessage(m_session, "Phase: %u", creature_target->GetPhase());
+
+    SystemMessage(m_session, "DisplayID: %u", creature_target->GetDisplayId());
+
+    uint8 creature_gender = creature_target->getGender();
+    if (creature_gender <= 2)
+        SystemMessage(m_session, "Gender: %s", GENDER[creature_gender]);
+    else
+        SystemMessage(m_session, "Gender: invalid %u", creature_gender);
+
+    uint8 creature_class = creature_target->getClass();
+    if (creature_class <= 11)
+        SystemMessage(m_session, "Class: %s", CLASS[creature_class]);
+    else
+        SystemMessage(m_session, "Class: invalid %u", creature_class);
+
+    SystemMessage(m_session, "Health (cur / max): %u / %u", creature_target->GetHealth(), creature_target->GetMaxHealth());
+
+    uint32 powertype = creature_target->GetPowerType();
+    if (powertype <= 6)
+    {
+        SystemMessage(m_session, "Powertype: %s", POWERTYPE[powertype]);
+        SystemMessage(m_session, "Power (cur / max): %u / %u", creature_target->GetPower(powertype), creature_target->GetMaxPower(powertype));
+    }
+
+    SystemMessage(m_session, "Damage (min / max): %f / %f", creature_target->GetMinDamage(), creature_target->GetMaxDamage());
+
+    if (creature_target->GetByte(UNIT_FIELD_BYTES_1, 1) != 0)
+        SystemMessage(m_session, "Free pet talent points: %u", creature_target->GetByte(UNIT_FIELD_BYTES_1, 1));
+
+    if (creature_target->GetProto()->vehicleid > 0)
+        SystemMessage(m_session, "VehicleID: %u", creature_target->GetProto()->vehicleid);
+
+    if (creature_target->m_faction)
+        SystemMessage(m_session, "Combat Support: 0x%.3X", creature_target->m_faction->FriendlyMask);
+
+    if (creature_target->CombatStatus.IsInCombat())
+        SystemMessage(m_session, "Is in combat!");
+    else
+        SystemMessage(m_session, "Not in combat!");
+
+    uint8 sheat = creature_target->GetByte(UNIT_FIELD_BYTES_2, 0);
+    if (sheat <= 2)
+        SystemMessage(m_session, "Sheat state: %s", SHEATSTATE[sheat]);
+
+    SystemMessage(m_session, "=================================");
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // resistance
+    if (creature_target->GetResistance(SCHOOL_NORMAL) || creature_target->GetResistance(SCHOOL_HOLY) ||
+        creature_target->GetResistance(SCHOOL_FIRE) || creature_target->GetResistance(SCHOOL_NATURE) ||
+        creature_target->GetResistance(SCHOOL_FROST) || creature_target->GetResistance(SCHOOL_SHADOW) ||
+        creature_target->GetResistance(SCHOOL_ARCANE))
+    {
+        GreenSystemMessage(m_session, "Resistance =======================");
+        if (creature_target->GetResistance(SCHOOL_NORMAL))
+            GreenSystemMessage(m_session, "-- Armor: %u", creature_target->GetResistance(SCHOOL_NORMAL));
+        if (creature_target->GetResistance(SCHOOL_HOLY))
+            GreenSystemMessage(m_session, "-- Holy: %u", creature_target->GetResistance(SCHOOL_HOLY));
+        if (creature_target->GetResistance(SCHOOL_FIRE))
+            GreenSystemMessage(m_session, "-- Fire: %u", creature_target->GetResistance(SCHOOL_FIRE));
+        if (creature_target->GetResistance(SCHOOL_NATURE))
+            GreenSystemMessage(m_session, "-- Nature: %u", creature_target->GetResistance(SCHOOL_NATURE));
+        if (creature_target->GetResistance(SCHOOL_FROST))
+            GreenSystemMessage(m_session, "-- Frost: %u", creature_target->GetResistance(SCHOOL_FROST));
+        if (creature_target->GetResistance(SCHOOL_SHADOW))
+            GreenSystemMessage(m_session, "-- Shadow: %u", creature_target->GetResistance(SCHOOL_SHADOW));
+        if (creature_target->GetResistance(SCHOOL_ARCANE))
+            GreenSystemMessage(m_session, "-- Arcane: %u", creature_target->GetResistance(SCHOOL_ARCANE));
+        GreenSystemMessage(m_session, "=================================");
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // show byte
+    std::stringstream sstext;
+    uint32 theBytes = creature_target->GetUInt32Value(UNIT_FIELD_BYTES_0);
+    sstext << "UNIT_FIELD_BYTES_0 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
+    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
+
+
+    theBytes = creature_target->GetUInt32Value(UNIT_FIELD_BYTES_1);
+    sstext << "UNIT_FIELD_BYTES_1 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
+    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\n';
+
+    theBytes = creature_target->GetUInt32Value(UNIT_FIELD_BYTES_2);
+    sstext << "UNIT_FIELD_BYTES_2 are " << uint16((uint8)theBytes & 0xFF) << " " << uint16((uint8)(theBytes >> 8) & 0xFF) << " ";
+    sstext << uint16((uint8)(theBytes >> 16) & 0xFF) << " " << uint16((uint8)(theBytes >> 24) & 0xFF) << '\0';
+
+    SystemMessage(m_session, "UNIT_FIELD_BYTES =================");
+    SendMultilineMessage(m_session, sstext.str().c_str());
+    SystemMessage(m_session, "=================================");
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // flags
+    GreenSystemMessage(m_session, "Flags ============================");
+    std::string s = GetNpcFlagString(creature_target);
+    GreenSystemMessage(m_session, "NpcFlags: %u%s", creature_target->GetUInt32Value(UNIT_NPC_FLAGS), s.c_str());
+
+    uint8 pvp_flags = creature_target->GetByte(UNIT_FIELD_BYTES_2, 1);
+    GreenSystemMessage(m_session, "PvPFlags: %u", pvp_flags);
+
+    for (uint32 i = 0; i < numpvpflags; i++)
+        if ((pvp_flags & UnitPvPFlagToName[i].Flag) != 0)
+            GreenSystemMessage(m_session, "%s", UnitPvPFlagToName[i].Name);
+
+    uint8 pet_flags = creature_target->GetByte(UNIT_FIELD_BYTES_2, 2);
+    if (pet_flags != 0)
+    {
+        GreenSystemMessage(m_session, "PetFlags: %u", pet_flags);
+        for (uint32 i = 0; i < numpetflags; i++)
+            if ((pet_flags & PetFlagToName[i].Flag) != 0)
+                GreenSystemMessage(m_session, "%s", PetFlagToName[i].Name);
+    }
+
+    uint32 unit_flags = creature_target->GetUInt32Value(UNIT_FIELD_FLAGS);
+    GreenSystemMessage(m_session, "UnitFlags: %u", unit_flags);
+
+    for (uint32 i = 0; i < numflags; i++)
+        if ((unit_flags & UnitFlagToName[i].Flag) != 0)
+            GreenSystemMessage(m_session, "-- %s", UnitFlagToName[i].Name);
+
+    uint32 dyn_flags = creature_target->GetUInt32Value(UNIT_DYNAMIC_FLAGS);
+    GreenSystemMessage(m_session, "UnitDynamicFlags: %u", dyn_flags);
+
+    for (uint32 i = 0; i < numdynflags; i++)
+        if ((dyn_flags & UnitDynFlagToName[i].Flag) != 0)
+            GreenSystemMessage(m_session, "%s", UnitDynFlagToName[i].Name);
+
+    GreenSystemMessage(m_session, "=================================");
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // owner/summoner
+    Unit* unit_owner = nullptr;
+    bool owner_header_set = false;
+    if (creature_target->IsSummon())
+        unit_owner = static_cast<Summon*>(creature_target)->GetOwner();
+
+    if (unit_owner != nullptr)
+    {
+        SystemMessage(m_session, "Owner/Summoner ===================");
+        
+        if (unit_owner->IsPlayer())
+            SystemMessage(m_session, "Owner is Player: %s", static_cast<Player*>(unit_owner)->GetName());
+        if (unit_owner->IsPet())
+            SystemMessage(m_session, "Owner is Pet: %s", static_cast<Creature*>(unit_owner)->GetCreatureInfo()->Name);
+        if (unit_owner->IsCreature())
+            SystemMessage(m_session, "Owner is Creature: %s", static_cast<Creature*>(unit_owner)->GetCreatureInfo()->Name);
+
+        owner_header_set = true;
+    }
+
+    if (creature_target->GetCreatedByGUID() || creature_target->GetSummonedByGUID() ||
+        creature_target->GetCharmedByGUID() || creature_target->GetCreatedBySpell())
+    {
+        if (!owner_header_set)
+        {
+            SystemMessage(m_session, "Owner/Summoner ===================");
+            owner_header_set = true;
+        }
+
+        if (creature_target->GetCreatedByGUID())
+            SystemMessage(m_session, "Creator GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->GetCreatedByGUID()));
+        if (creature_target->GetSummonedByGUID())
+            SystemMessage(m_session, "Summoner GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->GetSummonedByGUID()));
+        if (creature_target->GetCharmedByGUID())
+            SystemMessage(m_session, "Charmer GUID: %u", Arcemu::Util::GUID_LOPART(creature_target->GetCharmedByGUID()));
+        if (creature_target->GetCreatedBySpell())
+            SystemMessage(m_session, "Creator Spell: %u", Arcemu::Util::GUID_LOPART(creature_target->GetCreatedBySpell()));
+    }
+
+    if (owner_header_set)
+        SystemMessage(m_session, "=================================");
+
+
+    return true;
+}
+
 //.npc stopfollow
 bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session)
 {
