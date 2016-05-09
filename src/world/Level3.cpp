@@ -1945,28 +1945,6 @@ bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session
     return true;
 }
 
-bool ChatHandler::HandleNpcReturnCommand(const char* args, WorldSession* m_session)
-{
-    Creature* creature = GetSelectedCreature(m_session);
-    if (!creature || !creature->m_spawn) return true;
-
-    // return to respawn coords
-    float x = creature->m_spawn->x;
-    float y = creature->m_spawn->y;
-    float z = creature->m_spawn->z;
-    float o = creature->m_spawn->o;
-
-    // restart movement
-    creature->GetAIInterface()->SetAIState(STATE_IDLE);
-    creature->GetAIInterface()->WipeHateList();
-    creature->GetAIInterface()->WipeTargetList();
-    creature->GetAIInterface()->MoveTo(x, y, z, o);
-
-    sGMLog.writefromsession(m_session, "returned NPC %s, sqlid %u", creature->GetCreatureInfo()->Name, creature->GetSQL_id());
-
-    return true;
-}
-
 bool ChatHandler::HandleItemStackCheatCommand(const char* args, WorldSession* m_session)
 {
     Player* p = GetSelectedPlayer(m_session, true, true);
@@ -2376,28 +2354,6 @@ bool ChatHandler::HandleCreatureSpawnCommand(const char* args, WorldSession* m_s
     sGMLog.writefromsession(m_session, "spawned a %s at %u %f %f %f", info->Name, m_session->GetPlayer()->GetMapId(), sp->x, sp->y, sp->z);
 
     return true;
-}
-
-bool ChatHandler::HandleCreatureRespawnCommand(const char* args, WorldSession* m_session)
-{
-    Creature* cCorpse = GetSelectedCreature(m_session, false);
-
-    if (cCorpse != NULL && cCorpse->IsCreature() && cCorpse->getDeathState() == CORPSE && cCorpse->GetSQL_id() != 0)
-    {
-        sEventMgr.RemoveEvents(cCorpse, EVENT_CREATURE_RESPAWN);
-
-        BlueSystemMessage(m_session, "Respawning a Creature: `%s` with entry: %u on map: %u sqlid: %u", cCorpse->GetCreatureInfo()->Name,
-                          cCorpse->GetEntry(), cCorpse->GetMapMgr()->GetMapId(), cCorpse->GetSQL_id());
-
-        sGMLog.writefromsession(m_session, "Respawned a Creature: `%s` with entry: %u on map: %u sqlid: %u", cCorpse->GetCreatureInfo()->Name,
-                                cCorpse->GetEntry(), cCorpse->GetMapMgr()->GetMapId(), cCorpse->GetSQL_id());
-
-        cCorpse->Despawn(0, 1000);
-        return true;
-    }
-
-    RedSystemMessage(m_session, "You must select a creature's corpse with a valid CreatureSpawn point.");
-    return false;
 }
 
 bool ChatHandler::HandleNPCOnGOCommand(const char* args, WorldSession* m_session)

@@ -187,6 +187,55 @@ bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession*
     return true;
 }
 
+//.npc respawn
+bool ChatHandler::HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    if (creature_target->IsCreature() && creature_target->getDeathState() == CORPSE && creature_target->spawnid != 0)
+    {
+        sEventMgr.RemoveEvents(creature_target, EVENT_CREATURE_RESPAWN);
+
+        BlueSystemMessage(m_session, "Respawning Creature: `%s` with entry: %u on map: %u spawnid: %u", creature_target->GetCreatureInfo()->Name,
+            creature_target->GetEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
+        sGMLog.writefromsession(m_session, "respawned Creature: `%s` with entry: %u on map: %u sqlid: %u", creature_target->GetCreatureInfo()->Name,
+            creature_target->GetEntry(), creature_target->GetMapMgr()->GetMapId(), creature_target->spawnid);
+
+        creature_target->Despawn(0, 1000);
+    }
+    else
+    {
+        RedSystemMessage(m_session, "You must select a creature's corpse with a valid spawnid.");
+        return true;
+    }
+
+    return true;
+}
+
+//.npc return
+bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    float x = creature_target->m_spawn->x;
+    float y = creature_target->m_spawn->y;
+    float z = creature_target->m_spawn->z;
+    float o = creature_target->m_spawn->o;
+
+    creature_target->GetAIInterface()->SetAIState(STATE_IDLE);
+    creature_target->GetAIInterface()->WipeHateList();
+    creature_target->GetAIInterface()->WipeTargetList();
+    creature_target->GetAIInterface()->MoveTo(x, y, z, o);
+
+    sGMLog.writefromsession(m_session, "returned NPC %s (%u)", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+
+    return true;
+}
+
 // Zyres: not only for npc!
 //.npc possess
 bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_session)

@@ -432,7 +432,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleSetWorldStatesCommand(const char* args, WorldSession* m_session);
         bool HandlePlaySoundCommand(const char* args, WorldSession* m_session);
         bool HandleSetBattlefieldStatusCommand(const char* args, WorldSession* m_session);
-        bool HandleNpcReturnCommand(const char* args, WorldSession* m_session);
         bool HandleResetTalentsCommand(const char* args, WorldSession* m_session);
         bool HandleResetSpellsCommand(const char* args, WorldSession* m_session);
         bool HandleResetSkillsCommand(const char* args, WorldSession* m_session);
@@ -440,7 +439,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGetSkillsInfoCommand(const char* args, WorldSession* m_session);
         bool HandlePlayerInfo(const char* args, WorldSession* m_session);
         bool HandleCreatureSpawnCommand(const char* args, WorldSession* m_session);
-        bool HandleCreatureRespawnCommand(const char* args, WorldSession* m_session);
         
         bool HandleNPCOnGOCommand(const char* args, WorldSession* m_session);
         bool HandleNPCLootCommand(const char* args, WorldSession* m_session);
@@ -598,6 +596,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcComeCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session);
         bool HandlePossessCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session);
 
