@@ -1069,43 +1069,6 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleListAIAgentCommand(const char* args, WorldSession* m_session)
-{
-    Unit* target = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(m_session->GetPlayer()->GetSelection()));
-    if (!target)
-    {
-        RedSystemMessage(m_session, "You have to select a Creature!");
-        return false;
-    }
-
-    std::stringstream sstext;
-    sstext << "agentlist of creature: " << target->GetGUID() << '\n';
-
-    std::stringstream ss;
-    ss << "SELECT * FROM ai_agents where entry=" << target->GetEntry();
-    QueryResult* result = WorldDatabase.Query(ss.str().c_str());
-
-    if (!result)
-        return false;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        sstext << "agent: " << fields[1].GetUInt16()
-            << " | spellId: " << fields[5].GetUInt32()
-            << " | Event: " << fields[2].GetUInt32()
-            << " | chance: " << fields[3].GetUInt32()
-            << " | count: " << fields[4].GetUInt32() << '\n';
-    }
-    while (result->NextRow());
-
-    delete result;
-
-    SendMultilineMessage(m_session, sstext.str().c_str());
-
-    return true;
-}
-
 bool ChatHandler::HandleGOAnimProgress(const char* args, WorldSession* m_session)
 {
     GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();

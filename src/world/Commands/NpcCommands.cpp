@@ -455,6 +455,34 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     return true;
 }
 
+//.npc listagent
+bool ChatHandler::HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents where entry=%u", creature_target->GetEntry());
+    if (result == nullptr)
+    {
+        RedSystemMessage(m_session, "Selected Creature %s (%u) has no entries in ai_agents table!", creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+        return true;
+    }
+    else
+    {
+        SystemMessage(m_session, "Agent list for Creature %s (%u)", creature_target->GetCreatureInfo()->Name, creature_target->GetEntry());
+        do
+        {
+            Field* fields = result->Fetch();
+            SystemMessage(m_session, "-- agent: %u | spellId: %u | event: %u | chance: %u | maxcount: %u", fields[1].GetUInt32(), fields[5].GetUInt32(), fields[2].GetUInt32(), fields[3].GetUInt32(), fields[4].GetUInt32());
+        } while (result->NextRow());
+
+        delete result;
+    }
+
+    return true;
+}
+
 //.npc stopfollow
 bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session)
 {

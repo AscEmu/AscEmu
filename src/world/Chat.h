@@ -388,8 +388,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGOAnimProgress(const char* args, WorldSession* m_session);
         bool HandleGOExport(const char* args, WorldSession* m_session);
 
-        // AI commands
-        bool HandleListAIAgentCommand(const char* args, WorldSession* m_session);
+        
         bool HandleRepairItemsCommand(const char* args, WorldSession* m_session);
         bool HandleSetTitle(const char* args, WorldSession* m_session);
 
@@ -594,6 +593,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcDeleteCommand(const char* args, WorldSession* m_session);
         bool HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleNpcListAIAgentCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session);
