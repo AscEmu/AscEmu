@@ -1967,31 +1967,6 @@ bool ChatHandler::HandleNpcReturnCommand(const char* args, WorldSession* m_sessi
     return true;
 }
 
-
-bool ChatHandler::HandleNpcFollowCommand(const char* args, WorldSession* m_session)
-{
-    Creature* creature = GetSelectedCreature(m_session, true);
-    if (!creature) return true;
-
-    creature->GetAIInterface()->SetUnitToFollow(m_session->GetPlayer());
-
-    sGMLog.writefromsession(m_session, "used npc follow command on %s, sqlid %u", creature->GetCreatureInfo()->Name, creature->GetSQL_id());
-    return true;
-}
-
-bool ChatHandler::HandleNullFollowCommand(const char* args, WorldSession* m_session)
-{
-    Creature* c = GetSelectedCreature(m_session, true);
-    if (!c) return true;
-
-    // restart movement
-    c->GetAIInterface()->SetAIState(STATE_IDLE);
-    c->GetAIInterface()->ResetUnitToFollow();
-
-    sGMLog.writefromsession(m_session, "cancelled npc follow command on %s, sqlid %u", c->GetCreatureInfo()->Name, c->GetSQL_id());
-    return true;
-}
-
 bool ChatHandler::HandleItemStackCheatCommand(const char* args, WorldSession* m_session)
 {
     Player* p = GetSelectedPlayer(m_session, true, true);

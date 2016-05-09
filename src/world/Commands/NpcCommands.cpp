@@ -161,6 +161,32 @@ bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_ses
     return true;
 }
 
+//.npc follow
+bool ChatHandler::HandleNpcFollowCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    creature_target->GetAIInterface()->SetUnitToFollow(m_session->GetPlayer());
+    sGMLog.writefromsession(m_session, "used npc follow command on %s, sqlid %u", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+    return true;
+}
+
+//.npc stopfollow
+bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    creature_target->GetAIInterface()->SetAIState(STATE_IDLE);
+    creature_target->GetAIInterface()->ResetUnitToFollow();
+
+    sGMLog.writefromsession(m_session, "cancelled npc follow command on %s, sqlid %u", creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+    return true;
+}
+
 // Zyres: not only for npc!
 //.npc possess
 bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_session)
