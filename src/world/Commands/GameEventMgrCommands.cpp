@@ -1,23 +1,11 @@
 /*
-* AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+Copyright (c) 2014-2016 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
 */
 
 #include "StdAfx.h"
 
+//.event list
 bool ChatHandler::HandleEventListEvents(const char* args, WorldSession* m_session)
 {
     SystemMessage(m_session, "--- Current Active Events ---");
@@ -33,12 +21,12 @@ bool ChatHandler::HandleEventListEvents(const char* args, WorldSession* m_sessio
         {
             SystemMessage(m_session, "[Force Activated] %u - %s", gameEvent->event_id, gameEvent->description.c_str());
         }
-        //SystemMessage(m_session, "[%u] %u - %s", gameEvent->GetState(), gameEvent->event_id, gameEvent->description.c_str());
     }
     SystemMessage(m_session, "--- End List ---");
     return true;
 }
 
+//.event start
 bool ChatHandler::HandleEventStartEvent(const char* args, WorldSession* m_session)
 {
     uint32 eventid = atoi(args);
@@ -63,6 +51,7 @@ bool ChatHandler::HandleEventStartEvent(const char* args, WorldSession* m_sessio
     return false;
 }
 
+//.event stop
 bool ChatHandler::HandleEventStopEvent(const char* args, WorldSession* m_session)
 {
     uint32 eventid = atoi(args);
@@ -87,6 +76,7 @@ bool ChatHandler::HandleEventStopEvent(const char* args, WorldSession* m_session
     return false;
 }
 
+//.event reset
 bool ChatHandler::HandleEventResetEvent(const char* args, WorldSession* m_session)
 {
     uint32 eventid = atoi(args);
@@ -114,6 +104,7 @@ bool ChatHandler::HandleEventResetEvent(const char* args, WorldSession* m_sessio
     return false;
 }
 
+//.event reload
 bool ChatHandler::HandleEventReloadAllEvents(const char* args, WorldSession* m_session)
 {
     SystemMessage(m_session, "Beginning reload of all game events");

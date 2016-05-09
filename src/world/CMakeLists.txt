@@ -7,6 +7,7 @@ set(sources
    Commands/AccountCommands.cpp
    Commands/ArenaCommands.cpp
    Commands/DebugCommands.cpp
+   Commands/GameEventMgrCommands.cpp
    Commands/GameMasterCommands.cpp
    Commands/GameObjectCommands.cpp
    Commands/MiscCommands.cpp
@@ -62,7 +63,6 @@ set(sources
 	Faction.cpp
     GameEvent.cpp
     GameEventMgr.cpp
-    GameEventMgrCommands.cpp
 	GameObject.cpp 
 	GMTicket.cpp 
 	GMTicketCommands.cpp
