@@ -163,6 +163,7 @@ Player::Player(uint32 guid)
     m_CurrentCharm(0),
     // gm stuff
     //m_invincible(false),
+    TaxiCheat(false),
     CooldownCheat(false),
     CastTimeCheat(false),
     GodModeCheat(false),
@@ -2400,6 +2401,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         active_cheats |= PLAYER_CHEAT_ITEM_STACK;
     if (TriggerpassCheat)
         active_cheats |= PLAYER_CHEAT_TRIGGERPASS;
+    if (TaxiCheat)
+        active_cheats |= PLAYER_CHEAT_TAXI;
 
     std::stringstream ss;
 
@@ -2972,6 +2975,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         ItemStackCheat = true;
     if (active_cheats & PLAYER_CHEAT_TRIGGERPASS)
         TriggerpassCheat = true;
+    if (active_cheats & PLAYER_CHEAT_TAXI)
+        TaxiCheat = true;
 
     // Process exploration data.
     LoadFieldsFromString(get_next_field.GetString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_LENGTH);

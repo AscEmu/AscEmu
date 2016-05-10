@@ -87,7 +87,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     submask = 1 << ((curloc - 1) % 32);
 
     // Check for known nodes
-    if (!(GetPlayer()->GetTaximask(field) & submask))
+    if (!(GetPlayer()->GetTaximask(field) & submask) && !GetPlayer()->TaxiCheat)
     {
         GetPlayer()->SetTaximask(field, (submask | GetPlayer()->GetTaximask(field)));
 
@@ -105,9 +105,12 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     TaxiMask[field] |= 1 << ((curloc - 1) % 32);
 
     //Remove nodes unknown to player
-    for (uint8 i = 0; i < 12; i++)
+    if (!GetPlayer()->TaxiCheat)
     {
-        TaxiMask[i] &= GetPlayer()->GetTaximask(i);
+        for (uint8 i = 0; i < 12; i++)
+        {
+            TaxiMask[i] &= GetPlayer()->GetTaximask(i);
+        }
     }
 
     WorldPacket data(64);

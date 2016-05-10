@@ -39,6 +39,8 @@ bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_s
             SystemMessage(m_session, "-- ItemStack is active.", player_name);
         if (player_target->TriggerpassCheat)
             SystemMessage(m_session, "-- TriggerPass is active.", player_name);
+        if (player_target->TaxiCheat)
+            SystemMessage(m_session, "-- TaxiCheat is active.", player_name);
         if (player_target->m_isGmInvisible)
             SystemMessage(m_session, "-- Invisibility is active.", player_name);
         if (player_target->bInvincible)
@@ -46,7 +48,52 @@ bool ChatHandler::HandleCheatListCommand(const char* /*args*/, WorldSession* m_s
     }
     else
     {
-        SystemMessage(m_session, "Player %s has no active cheats!", player_target->GetName());
+        if (player_target == m_session->GetPlayer())
+            SystemMessage(m_session, "You have no active cheats!", player_target->GetName());
+        else
+            SystemMessage(m_session, "Player %s has no active cheats!", player_target->GetName());
+    }
+
+    return true;
+}
+
+//.cheat taxi
+bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    if (!player_target->TaxiCheat)
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "You can now use all taxi nodes.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "%s can now use all taxi nodes", player_target->GetName());
+            SystemMessage(m_session, "%s has activated taxi cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has activated TaxiCheat on Player: %s", player_target->GetName());
+
+        }
+
+        player_target->TaxiCheat = true;
+    }
+    else
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "You can just use discovered taxi nodes from now.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "%s can just use discovered taxi nodes from now.", player_target->GetName());
+            SystemMessage(player_target->GetSession(), "%s has deactivated taxi cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has deactivated TaxiCheat on Player: %s", player_target->GetName());
+        }
+
+        player_target->TaxiCheat = false;
     }
 
     return true;

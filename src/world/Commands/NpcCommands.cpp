@@ -1070,6 +1070,7 @@ bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_sess
     {
         creature_target->SaveToDB();
         GreenSystemMessage(m_session, "onGameObject permanent set from %u to %u for Creature %s (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+        sGMLog.writefromsession(m_session, "changed onGameObject permanent from %u to %u for Creature %s SpawnID: (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
     }
     else
     {

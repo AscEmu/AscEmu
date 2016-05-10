@@ -283,7 +283,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
         bool HandleGPSCommand(const char* args, WorldSession* m_session);
         bool HandleKickCommand(const char* args, WorldSession* m_session);
-        bool HandleTaxiCheatCommand(const char* args, WorldSession* m_session);
+        
         bool HandleModifySpeedCommand(const char* args, WorldSession* m_session);
         bool HandleModifyTPsCommand(const char* args, WorldSession* m_session);
 
@@ -500,6 +500,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         // Cheat
         bool HandleCheatListCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_session);
 
         // Honor
         bool HandleAddHonorCommand(const char* args, WorldSession* m_session);

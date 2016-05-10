@@ -1358,6 +1358,7 @@ class SERVER_DECL Player : public Unit
         void SpeedCheatDelay(uint32 ms_delay);
         void SpeedCheatReset();
 
+        bool TaxiCheat;
         bool CooldownCheat;
         bool CastTimeCheat;
         bool GodModeCheat;

@@ -440,39 +440,6 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleTaxiCheatCommand(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-        return false;
-    Player* chr = GetSelectedPlayer(m_session, true, true);
-    if (chr == NULL)
-        return true;
-    if (stricmp(args, "on") == 0)
-    {
-        GreenSystemMessage(m_session, "%s has all taxi nodes now.", chr->GetName());
-        SystemMessage(m_session, "%s has given you all taxi nodes.", m_session->GetPlayer()->GetName());
-    }
-    else if (stricmp(args, "off") == 0)
-    {
-        GreenSystemMessage(m_session, "%s has no more taxi nodes now.", chr->GetName());
-        SystemMessage(chr->GetSession(), "%s has deleted all your taxi nodes.", m_session->GetPlayer()->GetName());
-    }
-    else
-        return false;
-    for (uint8 i = 0; i < 12; i++)
-    {
-        if (stricmp(args, "on") == 0)
-        {
-            chr->SetTaximask(i, 0xFFFFFFFF);
-        }
-        else if (stricmp(args, "off") == 0)
-        {
-            chr->SetTaximask(i, 0);
-        }
-    }
-    return true;
-}
-
 bool ChatHandler::HandleModifySpeedCommand(const char* args, WorldSession* m_session)
 {
     WorldPacket data;

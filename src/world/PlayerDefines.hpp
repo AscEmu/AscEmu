@@ -582,15 +582,16 @@ const time_t forcedResurrectInterval = 360000;  // 1000*60*6= 6 minutes
 
 enum PlayerCheats
 {
-    PLAYER_CHEAT_NONE           = 0x00,
-    PLAYER_CHEAT_COOLDOWN       = 0x01,
-    PLAYER_CHEAT_CAST_TIME      = 0x02,
-    PLAYER_CHEAT_GOD_MODE       = 0x04,
-    PLAYER_CHEAT_POWER          = 0x08,
-    PLAYER_CHEAT_FLY            = 0x10,
-    PLAYER_CHEAT_AURA_STACK     = 0x20,
-    PLAYER_CHEAT_ITEM_STACK     = 0x40,
-    PLAYER_CHEAT_TRIGGERPASS    = 0x80
+    PLAYER_CHEAT_NONE           = 0x000,
+    PLAYER_CHEAT_COOLDOWN       = 0x001,
+    PLAYER_CHEAT_CAST_TIME      = 0x002,
+    PLAYER_CHEAT_GOD_MODE       = 0x004,
+    PLAYER_CHEAT_POWER          = 0x008,
+    PLAYER_CHEAT_FLY            = 0x010,
+    PLAYER_CHEAT_AURA_STACK     = 0x020,
+    PLAYER_CHEAT_ITEM_STACK     = 0x040,
+    PLAYER_CHEAT_TRIGGERPASS    = 0x080,
+    PLAYER_CHEAT_TAXI           = 0x100,
 };
 
 #endif // _PLAYER_DEFINES_H
