@@ -487,14 +487,14 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleBattlegroundExitCommand(const char* args, WorldSession* m_session);
         bool HandleExitInstanceCommand(const char* args, WorldSession* m_session);
         
-        bool HandleCastTimeCheatCommand(const char* args, WorldSession* m_session);
-        bool HandlePowerCheatCommand(const char* args, WorldSession* m_session);
-        bool HandleGodModeCommand(const char* args, WorldSession* m_session);
+        
+        
+        
         
         bool HandleAuraStackCheatCommand(const char* args, WorldSession* m_session);
         bool HandleItemStackCheatCommand(const char* args, WorldSession* m_session);
         bool HandleTriggerpassCheatCommand(const char* args, WorldSession* m_session);
-        bool HandleFlyCommand(const char* args, WorldSession* m_session);
+        
         bool HandleRemoveRessurectionSickessAuraCommand(const char* args, WorldSession* m_session);
         bool HandleDBReloadCommand(const char* args, WorldSession* m_session);
 
@@ -502,6 +502,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCheatListCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCheatCooldownCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCheatCastTimeCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCheatGodCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_session);
 
         // Honor
         bool HandleAddHonorCommand(const char* args, WorldSession* m_session);
