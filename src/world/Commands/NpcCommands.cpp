@@ -614,6 +614,35 @@ bool ChatHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
+//.npc select
+bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Creature* near_creature = nullptr;
+    float dist = 999999.0f;
+    float dist2;
+
+    auto player = m_session->GetPlayer();
+    std::set<Object*>::iterator itr;
+    for (itr = player->GetInRangeSetBegin(); itr != player->GetInRangeSetEnd(); ++itr)
+    {
+        if ((dist2 = player->GetDistance2dSq(*itr)) < dist && (*itr)->IsCreature())
+        {
+            near_creature = static_cast<Creature*>(*itr);
+            dist = dist2;
+        }
+    }
+
+    if (near_creature == nullptr)
+    {
+        RedSystemMessage(m_session, "No inrange creatures found.");
+        return true;
+    }
+
+    player->SetSelection(near_creature->GetGUID());
+    SystemMessage(m_session, "Nearest Creature %s spawnID: %u GUID: " I64FMT " selected", near_creature->GetCreatureInfo()->Name, near_creature->spawnid, near_creature->GetGUID());
+    return true;
+}
+
 //.npc spawn
 bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_session)
 {
@@ -1021,6 +1050,33 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
         GreenSystemMessage(m_session, "Flags temporarily set from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
     }
 
+    return true;
+}
+
+//.npc set ongameobject
+bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_session)
+{
+    auto creature_target = GetSelectedCreature(m_session, true);
+    if (creature_target == nullptr)
+        return true;
+
+    creature_target->GetAIInterface()->StopFlying();
+
+    bool old_ongo = creature_target->GetAIInterface()->onGameobject;
+    creature_target->GetAIInterface()->onGameobject = !creature_target->GetAIInterface()->onGameobject;
+
+    bool save = (atoi(args) == 1 ? true : false);
+    if (save)
+    {
+        creature_target->SaveToDB();
+        GreenSystemMessage(m_session, "onGameObject permanent set from %u to %u for Creature %s (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "onGameObject temporarily set from %u to %u for Creature %s (%u)", uint32(old_ongo), uint32(creature_target->GetAIInterface()->onGameobject), creature_target->GetCreatureInfo()->Name, creature_target->spawnid);
+    }
+
+    SystemMessage(m_session, "You may have to leave and re-enter this zone for changes to take effect.");
     return true;
 }
 

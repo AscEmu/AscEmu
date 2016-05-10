@@ -435,8 +435,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
         bool HandleGetSkillsInfoCommand(const char* args, WorldSession* m_session);
         bool HandlePlayerInfo(const char* args, WorldSession* m_session);
-        
-        bool HandleNPCOnGOCommand(const char* args, WorldSession* m_session);
 
         // Ticket
         bool HandleTicketListCommand(const char* /*args*/, WorldSession* m_session);
@@ -598,6 +596,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcRespawnCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcSayCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcSpawnCommand(const char* args, WorldSession* m_session);
         bool HandleNpcYellCommand(const char* args, WorldSession* m_session);
 
@@ -612,6 +611,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcSetFormationMasterCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcSetFormationSlaveCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetFormationClearCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcSetOnGOCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetStandstateCommand(const char* arg, WorldSession* m_session);
 
@@ -648,10 +648,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleArenaSetTeamLeader(const char* args, WorldSession* m_session);
         bool HandleArenaTeamResetAllRatings(const char* /*args*/, WorldSession* /*m_session*/);
 
-        bool HandleNpcSelectCommand(const char* args, WorldSession* m_session);
         bool HandleWaypointAddFlyCommand(const char* args, WorldSession* m_session);
 
-        
         bool HandleShowItems(const char* args, WorldSession* m_session);
         bool HandleShowSkills(const char* args, WorldSession* m_session);
         bool HandleCollisionTestIndoor(const char* args, WorldSession* m_session);

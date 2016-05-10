@@ -480,6 +480,7 @@ void CommandTableStorage::Init()
         { "formationmaster",    'm', &ChatHandler::HandleNpcSetFormationMasterCommand,  "Sets formation master.",                           NULL, 0, 0, 0 },
         { "formationslave",     'm', &ChatHandler::HandleNpcSetFormationSlaveCommand,   "Sets formation slave with distance and angle",     NULL, 0, 0, 0 },
         { "formationclear",     'm', &ChatHandler::HandleNpcSetFormationClearCommand,   "Removes formation from creature",                  NULL, 0, 0, 0 },
+        { "ongameobject",       'n', &ChatHandler::HandleNpcSetOnGOCommand,                "Toggles onGameobject state.",                      NULL, 0, 0, 0 },
         { "phase",              'n', &ChatHandler::HandleNpcSetPhaseCommand,            "Sets phase for selected creature",                 NULL, 0, 0, 0 },
         { "standstate",         'm', &ChatHandler::HandleNpcSetStandstateCommand,       "Sets standstate for selected creature",            NULL, 0, 0, 0 },
         { NULL,                 '0', NULL,                                              "",                                                 NULL, 0, 0, 0 }
@@ -499,13 +500,11 @@ void CommandTableStorage::Init()
         { "follow",           'm', &ChatHandler::HandleNpcFollowCommand,            "Sets npc to follow you",                                                       NULL, 0, 0, 0 },
         { "stopfollow",       'm', &ChatHandler::HandleNpcStopFollowCommand,        "Sets npc to not follow anything",                                              NULL, 0, 0, 0 },
         //rewrite - used?
-        { "ongameobject",     'n', &ChatHandler::HandleNPCOnGOCommand,              "Toggles onGameobject state. Required when spawning a NPC on a Gameobject",     NULL, 0, 0, 0 },
         { "possess",          'n', &ChatHandler::HandlePossessCommand,              "Possess targeted npc (mind control)",                                          NULL, 0, 0, 0 },
         { "unpossess",        'n', &ChatHandler::HandleUnPossessCommand,            "Unpossess any currently possessed npc.",                                       NULL, 0, 0, 0 },
         { "return",           'n', &ChatHandler::HandleNpcReturnCommand,            "Returns ncp to spawnpoint.",                                                   NULL, 0, 0, 0 },
         { "respawn",          'n', &ChatHandler::HandleNpcRespawnCommand,           "Respawns a dead npc from its corpse.",                                         NULL, 0, 0, 0 },
         { "say",              'n', &ChatHandler::HandleNpcSayCommand,               "Makes selected npc say <text>.",                                               NULL, 0, 0, 0 },
-        // rewrite - really needed?
         { "select",           'n', &ChatHandler::HandleNpcSelectCommand,            "Slects npc closest",                                                           NULL, 0, 0, 0 },
         { "set",              '0', NULL,                                            "",                                                               NPCSetCommandTable, 0, 0, 0 },
         { "spawn",            'n', &ChatHandler::HandleNpcSpawnCommand,             "Spawns npc of entry <id>",                                                     NULL, 0, 0, 0 },
