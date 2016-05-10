@@ -486,7 +486,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
         bool HandleBattlegroundExitCommand(const char* args, WorldSession* m_session);
         bool HandleExitInstanceCommand(const char* args, WorldSession* m_session);
-        bool HandleCooldownCheatCommand(const char* args, WorldSession* m_session);
+        
         bool HandleCastTimeCheatCommand(const char* args, WorldSession* m_session);
         bool HandlePowerCheatCommand(const char* args, WorldSession* m_session);
         bool HandleGodModeCommand(const char* args, WorldSession* m_session);
@@ -501,6 +501,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Cheat
         bool HandleCheatListCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCheatCooldownCommand(const char* /*args*/, WorldSession* m_session);
 
         // Honor
         bool HandleAddHonorCommand(const char* args, WorldSession* m_session);

@@ -98,3 +98,47 @@ bool ChatHandler::HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_s
 
     return true;
 }
+
+bool ChatHandler::HandleCheatCooldownCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    if (!player_target->CooldownCheat)
+    {
+        for (SpellSet::const_iterator itr = player_target->mSpells.begin(); itr != player_target->mSpells.end(); ++itr)
+            player_target->ClearCooldownForSpell((*itr));
+
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "Cooldown cheat activated.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Activated the cooldown cheat on %s.", player_target->GetName());
+            SystemMessage(m_session, "%s has activated cooldown cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has activated CooldownCheat on Player: %s", player_target->GetName());
+
+        }
+
+        player_target->CooldownCheat = true;
+    }
+    else
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "Cooldown cheat deactivated.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Deactivated the cooldown cheat on %s.", player_target->GetName());
+            SystemMessage(m_session, "%s has deactivated cooldown cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has deactivated CooldownCheat on Player: %s", player_target->GetName());
+        }
+
+        player_target->CooldownCheat = false;
+    }
+
+    return true;
+}

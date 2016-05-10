@@ -518,8 +518,8 @@ void CommandTableStorage::Init()
     static ChatCommand CheatCommandTable[] =
     {
         { "list",        'm', &ChatHandler::HandleCheatListCommand,        "Shows active cheats.",                            NULL, 0, 0, 0 },
-        { "taxi",        'm', &ChatHandler::HandleCheatTaxiCommand,        "Enables all taxi nodes.",                         NULL, 0, 0, 0 },
-        { "cooldown",    'm', &ChatHandler::HandleCooldownCheatCommand,    "Enables no cooldown cheat.",                      NULL, 0, 0, 0 },
+        { "taxi",        'm', &ChatHandler::HandleCheatTaxiCommand,        "Toggles TaxiCheat.",                              NULL, 0, 0, 0 },
+        { "cooldown",    'm', &ChatHandler::HandleCheatCooldownCommand,    "Toggles CooldownCheat.",                          NULL, 0, 0, 0 },
         { "casttime",    'm', &ChatHandler::HandleCastTimeCheatCommand,    "Enables no cast time cheat.",                     NULL, 0, 0, 0 },
         { "power",       'm', &ChatHandler::HandlePowerCheatCommand,       "Disables mana consumption etc.",                  NULL, 0, 0, 0 },
         { "god",         'm', &ChatHandler::HandleGodModeCommand,          "Sets god mode, prevents you from taking damage.", NULL, 0, 0, 0 },

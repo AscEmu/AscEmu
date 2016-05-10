@@ -841,44 +841,6 @@ bool ChatHandler::HandleCastTimeCheatCommand(const char* args, WorldSession* m_s
     return true;
 }
 
-bool ChatHandler::HandleCooldownCheatCommand(const char* args, WorldSession* m_session)
-{
-    Player* plyr = GetSelectedPlayer(m_session, true, true);
-    if (!plyr)
-        return true;
-
-    if (!*args)
-    {
-        if (plyr->CooldownCheat)
-            args = "off";
-        else
-            args = "on";
-    }
-
-    if (stricmp(args, "on") == 0)
-    {
-        plyr->CooldownCheat = true;
-        //best case we could simply iterate through cooldowns or create a special function ...
-        SpellSet::const_iterator itr = plyr->mSpells.begin();
-        for (; itr != plyr->mSpells.end(); ++itr)
-            plyr->ClearCooldownForSpell((*itr));
-        BlueSystemMessage(m_session, "activated the cooldown cheat on %s.", plyr->GetName());
-        GreenSystemMessage(plyr->GetSession(), "activated the cooldown cheat on you.", m_session->GetPlayer()->GetName());
-    }
-    else if (stricmp(args, "off") == 0)
-    {
-        plyr->CooldownCheat = false;
-        BlueSystemMessage(m_session, "deactivated the cooldown cheat on %s.", plyr->GetName());
-        GreenSystemMessage(plyr->GetSession(), "deactivated the cooldown cheat on you.", m_session->GetPlayer()->GetName());
-
-        if (plyr != m_session->GetPlayer())
-            sGMLog.writefromsession(m_session, "cooldown cheat on %s set to %s", plyr->GetName(), args);
-    }
-    else
-        return false;
-    return true;
-}
-
 bool ChatHandler::HandleGodModeCommand(const char* args, WorldSession* m_session)
 {
     Player* plyr = GetSelectedPlayer(m_session, true, true);
