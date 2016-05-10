@@ -491,7 +491,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         
         
-        bool HandleAuraStackCheatCommand(const char* args, WorldSession* m_session);
+        
         bool HandleItemStackCheatCommand(const char* args, WorldSession* m_session);
         bool HandleTriggerpassCheatCommand(const char* args, WorldSession* m_session);
         
@@ -506,6 +506,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCheatGodCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCheatAuraStackCommand(const char* /*args*/, WorldSession* m_session);
 
         // Honor
         bool HandleAddHonorCommand(const char* args, WorldSession* m_session);

@@ -526,7 +526,7 @@ void CommandTableStorage::Init()
         { "fly",         'm', &ChatHandler::HandleCheatFlyCommand,         "Toggles FlyCheat.",                               NULL, 0, 0, 0 },
         // sets all areas as explored.... no cheat.
         { "explore",     'm', &ChatHandler::HandleExploreCheatCommand,     "Reveals the unexplored parts of the map.",        NULL, 0, 0, 0 },
-        { "stack",       'm', &ChatHandler::HandleAuraStackCheatCommand,   "Enables aura stacking cheat.",                    NULL, 0, 0, 0 },
+        { "aurastack",   'm', &ChatHandler::HandleCheatAuraStackCommand,   "Toggles AuraStackCheat.",                         NULL, 0, 0, 0 },
         { "itemstack",   'm', &ChatHandler::HandleItemStackCheatCommand,   "Enables item stacking cheat.",                    NULL, 0, 0, 0 },
         { "triggerpass", 'm', &ChatHandler::HandleTriggerpassCheatCommand, "Ignores area trigger prerequisites.",             NULL, 0, 0, 0 },
         { NULL,          '0', NULL,                                        "",                                                NULL, 0, 0, 0 }

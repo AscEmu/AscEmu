@@ -308,3 +308,44 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
 
     return true;
 }
+
+//.cheat aurastack
+bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    if (!player_target->AuraStackCheat)
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "AuraStack cheat activated.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Activated the aurastack cheat on %s.", player_target->GetName());
+            SystemMessage(m_session, "%s has activated aurastack cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has activated AuraStack on Player: %s", player_target->GetName());
+        }
+
+        player_target->AuraStackCheat = true;
+    }
+    else
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "AuraStack cheat deactivated.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Deactivated the aurastack cheat on %s.", player_target->GetName());
+            SystemMessage(m_session, "%s has deactivated aurastack cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has deactivated AuraStack on Player: %s", player_target->GetName());
+        }
+
+        player_target->AuraStackCheat = false;
+    }
+
+    return true;
+}

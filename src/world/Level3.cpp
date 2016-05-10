@@ -1464,41 +1464,6 @@ bool ChatHandler::HandleItemStackCheatCommand(const char* args, WorldSession* m_
     return true;
 }
 
-
-bool ChatHandler::HandleAuraStackCheatCommand(const char* args, WorldSession* m_session)
-{
-    Player* plyr = GetSelectedPlayer(m_session, true, true);
-    if (!plyr)
-        return true;
-
-    if (!*args)
-    {
-        if (plyr->AuraStackCheat)
-            args = "off";
-        else
-            args = "on";
-    }
-
-    if (stricmp(args, "on") == 0)
-    {
-        plyr->AuraStackCheat = true;
-        BlueSystemMessage(m_session, "activated the aura stack cheat on %s.", plyr->GetName());
-        GreenSystemMessage(plyr->GetSession(), "activated the aura stack cheat on you.", m_session->GetPlayer()->GetName());
-    }
-    else if (stricmp(args, "off") == 0)
-    {
-        plyr->AuraStackCheat = false;
-        BlueSystemMessage(m_session, "deactivated the aura stack cheat on %s.", plyr->GetName());
-        GreenSystemMessage(plyr->GetSession(), "deactivated the aura stack cheat on you.", m_session->GetPlayer()->GetName());
-
-        if (plyr != m_session->GetPlayer())
-            sGMLog.writefromsession(m_session, "aura stack cheat on %s set to %s", plyr->GetName(), args);
-    }
-    else
-        return false;
-    return true;
-}
-
 bool ChatHandler::HandleTriggerpassCheatCommand(const char* args, WorldSession* m_session)
 {
     Player* plyr = GetSelectedPlayer(m_session, true, true);
