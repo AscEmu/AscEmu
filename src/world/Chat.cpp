@@ -1108,28 +1108,40 @@ Player* ChatHandler::GetSelectedPlayer(WorldSession* m_session, bool showerror, 
     if (m_session == nullptr)
         return nullptr;
 
+    bool is_creature = false;
     Player* player_target = nullptr;
     uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
+    switch (GET_TYPE_FROM_GUID(guid))
+    {
+        case HIGHGUID_TYPE_PET:
+        case HIGHGUID_TYPE_UNIT:
+        case HIGHGUID_TYPE_VEHICLE:
+        {
+            is_creature = true;
+            break;
+        }
+        default:
+            break;
+    }
+
+    if (guid == 0 || is_creature)
     {
         if (auto_self)
         {
             GreenSystemMessage(m_session, "Auto-targeting self.");
             player_target = m_session->GetPlayer();
         }
+        else
+        {
+            if (showerror)
+                RedSystemMessage(m_session, "This command requires a selected player.");
+
+            return nullptr;
+        }
     }
     else
     {
         player_target = m_session->GetPlayer()->GetMapMgr()->GetPlayer((uint32)guid);
-    }
-
-
-    if (player_target == nullptr)
-    {
-        if (showerror)
-            RedSystemMessage(m_session, "This command requires a selected player.");
-
-        return nullptr;
     }
 
     return player_target;
