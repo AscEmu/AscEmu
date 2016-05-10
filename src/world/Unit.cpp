@@ -6306,12 +6306,17 @@ void Unit::EnableFlight()
     }
     else
     {
+        WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
+        data << GetNewGUID();
+        data << uint32(2);
+        SendMessageToSet(&data, true);
+
+        /* Zyres: Why?
         WorldPacket* data = new WorldPacket(SMSG_MOVE_SET_CAN_FLY, 13);
         *data << GetNewGUID();
         *data << uint32(2);
         SendMessageToSet(data, false);
-        static_cast<Player*>(this)->delayedPackets.add(data);
-        static_cast<Player*>(this)->m_setflycheat = true;
+        static_cast<Player*>(this)->delayedPackets.add(data);*/
     }
 }
 
@@ -6328,12 +6333,17 @@ void Unit::DisableFlight()
     }
     else
     {
+        WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
+        data << GetNewGUID();
+        data << uint32(5);
+        SendMessageToSet(&data, true);
+
+        /*Zyres: Why?
         WorldPacket* data = new WorldPacket(SMSG_MOVE_UNSET_CAN_FLY, 13);
         *data << GetNewGUID();
         *data << uint32(5);
         SendMessageToSet(data, false);
-        static_cast<Player*>(this)->delayedPackets.add(data);
-        static_cast<Player*>(this)->m_setflycheat = false;
+        static_cast<Player*>(this)->delayedPackets.add(data);*/
     }
 }
 

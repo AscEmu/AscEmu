@@ -1737,7 +1737,6 @@ class SERVER_DECL Player : public Unit
         Mailbox m_mailBox;
         bool m_waterwalk;
         bool m_setwaterwalk;
-        bool m_setflycheat;
         uint64 m_areaSpiritHealer_guid;
         bool m_finishingmovesdodge;
 

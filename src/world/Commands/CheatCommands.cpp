@@ -287,7 +287,7 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
         }
 
         player_target->EnableFlight();
-        player_target->m_setflycheat = true;
+        player_target->FlyCheat = true;
     }
     else
     {
@@ -303,7 +303,7 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
         }
 
         player_target->DisableFlight();
-        player_target->m_setflycheat = false;
+        player_target->FlyCheat = false;
     }
 
     return true;

@@ -2209,9 +2209,9 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
             _player->m_waterwalk = _player->m_setwaterwalk;
             break;
 
-        case CMSG_MOVE_SET_CAN_FLY_ACK:
+        /*case CMSG_MOVE_SET_CAN_FLY_ACK:
             _player->FlyCheat = _player->m_setflycheat;
-            break;
+            break;*/
     }
 }
 

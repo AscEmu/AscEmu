@@ -444,7 +444,7 @@ Player::Player(uint32 guid)
     m_setwaterwalk = false;
     m_areaSpiritHealer_guid = 0;
     m_CurrentTaxiPath = NULL;
-    m_setflycheat = false;
+
     m_fallDisabledUntil = 0;
     m_lfgMatch = NULL;
     m_lfgInviterGuid = 0;
@@ -3737,9 +3737,6 @@ void Player::SetQuestLogSlot(QuestLogEntry* entry, uint32 slot)
 
 void Player::AddToWorld()
 {
-    FlyCheat = false;
-    m_setflycheat = false;
-
     auto transport = this->GetTransport();
     if (transport)
     {
@@ -3773,8 +3770,6 @@ void Player::AddToWorld()
 
 void Player::AddToWorld(MapMgr* pMapMgr)
 {
-    FlyCheat = false;
-    m_setflycheat = false;
     // check transporter
     auto transport = this->GetTransport();
     if (transport != nullptr)
@@ -3835,6 +3830,12 @@ void Player::OnPushToWorld()
     WorldPacket* data = new WorldPacket(SMSG_TIME_SYNC_REQ, 4);
     *data << uint32(0);
     delayedPackets.add(data);
+
+    // set fly if cheat is active
+    if (FlyCheat)
+        EnableFlight();
+    else
+        DisableFlight();
 
     // Update PVP Situation
     LoginPvPSetup();

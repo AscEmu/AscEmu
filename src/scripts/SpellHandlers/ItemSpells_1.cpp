@@ -260,9 +260,10 @@ bool ReindeerTransformation(uint32 i, Spell* pSpell)
 
     if (pSpell->p_caster->GetMount() != 0)
     {
+        /*Zyres: This is not correct!
         if (pSpell->p_caster->m_setflycheat)
             pSpell->p_caster->SetMount(22724);
-        else
+        else*/
             pSpell->p_caster->SetMount(15902);
     }
     return true;
