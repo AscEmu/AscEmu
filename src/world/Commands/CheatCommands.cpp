@@ -191,7 +191,7 @@ bool ChatHandler::HandleCheatPowerCommand(const char* /*args*/, WorldSession* m_
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->CastTimeCheat)
+    if (!player_target->PowerCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -232,7 +232,7 @@ bool ChatHandler::HandleCheatGodCommand(const char* /*args*/, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    if (!player_target->CastTimeCheat)
+    if (!player_target->GodModeCheat)
     {
         if (player_target == m_session->GetPlayer())
         {
@@ -345,6 +345,88 @@ bool ChatHandler::HandleCheatAuraStackCommand(const char* /*args*/, WorldSession
         }
 
         player_target->AuraStackCheat = false;
+    }
+
+    return true;
+}
+
+//.cheat itemstack
+bool ChatHandler::HandleCheatItemStackCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    if (!player_target->ItemStackCheat)
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "ItemStack cheat activated.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Activated the itemstack cheat on %s.", player_target->GetName());
+            SystemMessage(m_session, "%s has activated itemstack cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has activated ItemStack on Player: %s", player_target->GetName());
+        }
+
+        player_target->ItemStackCheat = true;
+    }
+    else
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "ItemStack cheat deactivated.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Deactivated the itemstack cheat on %s.", player_target->GetName());
+            SystemMessage(m_session, "%s has deactivated itemstack cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has deactivated ItemStack on Player: %s", player_target->GetName());
+        }
+
+        player_target->ItemStackCheat = false;
+    }
+
+    return true;
+}
+
+//.cheat triggerpass
+bool ChatHandler::HandleCheatTriggerpassCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    if (!player_target->TriggerpassCheat)
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "Triggerpass cheat activated.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Activated the triggerpass cheat on %s.", player_target->GetName());
+            SystemMessage(m_session, "%s has activated triggerpass cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has activated TriggerpassCheat on Player: %s", player_target->GetName());
+        }
+
+        player_target->TriggerpassCheat = true;
+    }
+    else
+    {
+        if (player_target == m_session->GetPlayer())
+        {
+            GreenSystemMessage(m_session, "Triggerpas cheat deactivated.", player_target->GetName());
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Deactivated the triggerpass cheat on %s.", player_target->GetName());
+            SystemMessage(m_session, "%s has deactivated triggerpass cheat on you.", m_session->GetPlayer()->GetName());
+            sGMLog.writefromsession(m_session, "has deactivated TriggerpassCheat on Player: %s", player_target->GetName());
+        }
+
+        player_target->TriggerpassCheat = false;
     }
 
     return true;

@@ -1438,66 +1438,6 @@ bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session
     return true;
 }
 
-bool ChatHandler::HandleItemStackCheatCommand(const char* args, WorldSession* m_session)
-{
-    Player* p = GetSelectedPlayer(m_session, true, true);
-    if (!p)
-        return true;
-
-    bool turnCheatOn;
-    if (!*args)
-        turnCheatOn = (p->ItemStackCheat) ? false : true;
-    else if (stricmp(args, "on") == 0)
-        turnCheatOn = true;
-    else if (stricmp(args, "off") == 0)
-        turnCheatOn = false;
-    else
-        return false;
-
-    p->ItemStackCheat = turnCheatOn;
-    BlueSystemMessage(m_session, "%s the item stack cheat on %s.", (turnCheatOn) ? "activated" : "deactivated", p->GetName());
-    GreenSystemMessage(p->GetSession(), "%s %s the item stack cheat on you.%s", m_session->GetPlayer()->GetName(), (turnCheatOn) ? "activated" : "deactivated", (turnCheatOn) ? "" : "  WARNING!!! Make sure all your item stacks are normal (if possible) before logging off, or else you may lose some items!");
-    if (p != m_session->GetPlayer())
-    {
-        sGMLog.writefromsession(m_session, "item stack cheat on %s set to %s", p->GetName(), (turnCheatOn) ? "on" : "off");
-    }
-    return true;
-}
-
-bool ChatHandler::HandleTriggerpassCheatCommand(const char* args, WorldSession* m_session)
-{
-    Player* plyr = GetSelectedPlayer(m_session, true, true);
-    if (!plyr)
-        return true;
-
-    if (!*args)
-    {
-        if (plyr->TriggerpassCheat)
-            args = "off";
-        else
-            args = "on";
-    }
-
-    if (stricmp(args, "on") == 0)
-    {
-        plyr->TriggerpassCheat = true;
-        BlueSystemMessage(m_session, "activated the triggerpass cheat on %s.", plyr->GetName());
-        GreenSystemMessage(plyr->GetSession(), "activated the triggerpass cheat on you.", m_session->GetPlayer()->GetName());
-    }
-    else if (stricmp(args, "off") == 0)
-    {
-        plyr->TriggerpassCheat = false;
-        BlueSystemMessage(m_session, "deactivated the triggerpass cheat on %s.", plyr->GetName());
-        GreenSystemMessage(plyr->GetSession(), "deactivated the triggerpass cheat on you.", m_session->GetPlayer()->GetName());
-
-        if (plyr != m_session->GetPlayer())
-            sGMLog.writefromsession(m_session, "triggerpass cheat on %s set to %s", plyr->GetName(), args);
-    }
-    else
-        return false;
-    return true;
-}
-
 bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession* m_session)
 {
     Player* plr = GetSelectedPlayer(m_session, true, true);

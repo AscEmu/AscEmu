@@ -169,6 +169,9 @@ Player::Player(uint32 guid)
     GodModeCheat(false),
     PowerCheat(false),
     FlyCheat(false),
+    AuraStackCheat(false),
+    ItemStackCheat(false),
+    TriggerpassCheat(false),
     m_Autojoin(false),
     m_AutoAddMem(false),
     m_UnderwaterMaxTime(180000),
@@ -351,9 +354,6 @@ Player::Player(uint32 guid)
     blinked = false;
     m_explorationTimer = getMSTime();
     linkTarget = NULL;
-    AuraStackCheat = false;
-    ItemStackCheat = false;
-    TriggerpassCheat = false;
     m_pvpTimer = 0;
     m_globalCooldown = 0;
     m_unstuckCooldown = 0;
