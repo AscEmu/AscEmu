@@ -524,8 +524,8 @@ void CommandTableStorage::Init()
         { "power",       'm', &ChatHandler::HandleCheatPowerCommand,       "Toggles PowerCheat. Disables mana consumption etc.",                  NULL, 0, 0, 0 },
         { "god",         'm', &ChatHandler::HandleCheatGodCommand,         "Toggles GodCheat. Prevents you from taking damage.", NULL, 0, 0, 0 },
         { "fly",         'm', &ChatHandler::HandleCheatFlyCommand,         "Toggles FlyCheat.",                               NULL, 0, 0, 0 },
+        // sets all areas as explored.... no cheat.
         { "explore",     'm', &ChatHandler::HandleExploreCheatCommand,     "Reveals the unexplored parts of the map.",        NULL, 0, 0, 0 },
-        { "flyspeed",    'm', &ChatHandler::HandleModifySpeedCommand,      "Does the same thing as .modify speed",            NULL, 0, 0, 0 },
         { "stack",       'm', &ChatHandler::HandleAuraStackCheatCommand,   "Enables aura stacking cheat.",                    NULL, 0, 0, 0 },
         { "itemstack",   'm', &ChatHandler::HandleItemStackCheatCommand,   "Enables item stacking cheat.",                    NULL, 0, 0, 0 },
         { "triggerpass", 'm', &ChatHandler::HandleTriggerpassCheatCommand, "Ignores area trigger prerequisites.",             NULL, 0, 0, 0 },
