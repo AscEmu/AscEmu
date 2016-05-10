@@ -499,7 +499,6 @@ void CommandTableStorage::Init()
         { "listloot",         'm', &ChatHandler::HandleNpcListLootCommand,          "Displays possible loot for the selected NPC.",                                 NULL, 0, 0, 0 },
         { "follow",           'm', &ChatHandler::HandleNpcFollowCommand,            "Sets npc to follow you",                                                       NULL, 0, 0, 0 },
         { "stopfollow",       'm', &ChatHandler::HandleNpcStopFollowCommand,        "Sets npc to not follow anything",                                              NULL, 0, 0, 0 },
-        //rewrite - used?
         { "possess",          'n', &ChatHandler::HandlePossessCommand,              "Possess targeted npc (mind control)",                                          NULL, 0, 0, 0 },
         { "unpossess",        'n', &ChatHandler::HandleUnPossessCommand,            "Unpossess any currently possessed npc.",                                       NULL, 0, 0, 0 },
         { "return",           'n', &ChatHandler::HandleNpcReturnCommand,            "Returns ncp to spawnpoint.",                                                   NULL, 0, 0, 0 },
@@ -518,7 +517,7 @@ void CommandTableStorage::Init()
 
     static ChatCommand CheatCommandTable[] =
     {
-        { "status",      'm', &ChatHandler::HandleShowCheatsCommand,       "Shows active cheats.",                            NULL, 0, 0, 0 },
+        { "list",        'm', &ChatHandler::HandleCheatListCommand,        "Shows active cheats.",                            NULL, 0, 0, 0 },
         { "taxi",        'm', &ChatHandler::HandleTaxiCheatCommand,        "Enables all taxi nodes.",                         NULL, 0, 0, 0 },
         { "cooldown",    'm', &ChatHandler::HandleCooldownCheatCommand,    "Enables no cooldown cheat.",                      NULL, 0, 0, 0 },
         { "casttime",    'm', &ChatHandler::HandleCastTimeCheatCommand,    "Enables no cast time cheat.",                     NULL, 0, 0, 0 },

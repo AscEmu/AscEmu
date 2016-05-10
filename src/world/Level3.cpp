@@ -947,40 +947,7 @@ bool ChatHandler::HandlePowerCheatCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleShowCheatsCommand(const char* args, WorldSession* m_session)
-{
-    Player* plyr = GetSelectedPlayer(m_session, true, true);
-    if (!plyr)
-        return true;
 
-    uint32 active = 0, inactive = 0;
-#define print_cheat_status(CheatName, CheatVariable) SystemMessage(m_session, "%s%s: %s%s", MSG_COLOR_LIGHTBLUE, CheatName, \
-        CheatVariable ? MSG_COLOR_LIGHTRED : MSG_COLOR_GREEN, CheatVariable ? "Active" : "Inactive");  \
-        if (CheatVariable) \
-        active++; \
-            else \
-        inactive++;
-
-    GreenSystemMessage(m_session, "Showing cheat status for: %s", plyr->GetName());
-    print_cheat_status("Cooldown", plyr->CooldownCheat);
-    print_cheat_status("CastTime", plyr->CastTimeCheat);
-    print_cheat_status("GodMode", plyr->GodModeCheat);
-    print_cheat_status("Power", plyr->PowerCheat);
-    print_cheat_status("Fly", plyr->FlyCheat);
-    print_cheat_status("AuraStack", plyr->AuraStackCheat);
-    print_cheat_status("ItemStack", plyr->ItemStackCheat);
-    print_cheat_status("TriggerPass", plyr->TriggerpassCheat);
-    if (plyr->GetSession() && plyr->GetSession()->CanUseCommand('a'))
-    {
-        print_cheat_status("GM Invisibility", plyr->m_isGmInvisible);
-        print_cheat_status("GM Invincibility", plyr->bInvincible);
-    }
-    SystemMessage(m_session, "%u cheats active, %u inactive.", active, inactive);
-
-#undef print_cheat_status
-
-    return true;
-}
 
 bool ChatHandler::HandleFlyCommand(const char* args, WorldSession* m_session)
 {
