@@ -517,19 +517,19 @@ void CommandTableStorage::Init()
 
     static ChatCommand CheatCommandTable[] =
     {
-        { "list",        'm', &ChatHandler::HandleCheatListCommand,        "Shows active cheats.",                            NULL, 0, 0, 0 },
-        { "taxi",        'm', &ChatHandler::HandleCheatTaxiCommand,        "Toggles TaxiCheat.",                              NULL, 0, 0, 0 },
-        { "cooldown",    'm', &ChatHandler::HandleCheatCooldownCommand,    "Toggles CooldownCheat.",                          NULL, 0, 0, 0 },
-        { "casttime",    'm', &ChatHandler::HandleCheatCastTimeCommand,    "Toggles CastTimeCheat.",                          NULL, 0, 0, 0 },
-        { "power",       'm', &ChatHandler::HandleCheatPowerCommand,       "Toggles PowerCheat. Disables mana consumption etc.",                  NULL, 0, 0, 0 },
-        { "god",         'm', &ChatHandler::HandleCheatGodCommand,         "Toggles GodCheat. Prevents you from taking damage.", NULL, 0, 0, 0 },
-        { "fly",         'm', &ChatHandler::HandleCheatFlyCommand,         "Toggles FlyCheat.",                               NULL, 0, 0, 0 },
+        { "list",        'm', &ChatHandler::HandleCheatListCommand,        "Shows active cheats.",                              NULL, 0, 0, 0 },
+        { "taxi",        'm', &ChatHandler::HandleCheatTaxiCommand,        "Toggles TaxiCheat.",                                NULL, 0, 0, 0 },
+        { "cooldown",    'm', &ChatHandler::HandleCheatCooldownCommand,    "Toggles CooldownCheat.",                            NULL, 0, 0, 0 },
+        { "casttime",    'm', &ChatHandler::HandleCheatCastTimeCommand,    "Toggles CastTimeCheat.",                            NULL, 0, 0, 0 },
+        { "power",       'm', &ChatHandler::HandleCheatPowerCommand,       "Toggles PowerCheat. Disables mana consumption..",   NULL, 0, 0, 0 },
+        { "god",         'm', &ChatHandler::HandleCheatGodCommand,         "Toggles GodCheat.",                                 NULL, 0, 0, 0 },
+        { "fly",         'm', &ChatHandler::HandleCheatFlyCommand,         "Toggles FlyCheat.",                                 NULL, 0, 0, 0 },
         // sets all areas as explored.... no cheat.
-        { "explore",     'm', &ChatHandler::HandleExploreCheatCommand,     "Reveals the unexplored parts of the map.",        NULL, 0, 0, 0 },
-        { "aurastack",   'm', &ChatHandler::HandleCheatAuraStackCommand,   "Toggles AuraStackCheat.",                         NULL, 0, 0, 0 },
-        { "itemstack",   'm', &ChatHandler::HandleCheatItemStackCommand,   "Toggles ItemStackCheat.",                         NULL, 0, 0, 0 },
-        { "triggerpass", 'm', &ChatHandler::HandleCheatTriggerpassCommand, "Ignores area trigger prerequisites.",             NULL, 0, 0, 0 },
-        { NULL,          '0', NULL,                                        "",                                                NULL, 0, 0, 0 }
+        { "explore",     'm', &ChatHandler::HandleExploreCheatCommand,     "Reveals the unexplored parts of the map.",          NULL, 0, 0, 0 },
+        { "aurastack",   'm', &ChatHandler::HandleCheatAuraStackCommand,   "Toggles AuraStackCheat.",                           NULL, 0, 0, 0 },
+        { "itemstack",   'm', &ChatHandler::HandleCheatItemStackCommand,   "Toggles ItemStackCheat.",                           NULL, 0, 0, 0 },
+        { "triggerpass", 'm', &ChatHandler::HandleCheatTriggerpassCommand, "Ignores area trigger prerequisites.",               NULL, 0, 0, 0 },
+        { NULL,          '0', NULL,                                        "",                                                  NULL, 0, 0, 0 }
     };
     dupe_command_table(CheatCommandTable, _CheatCommandTable);
 
