@@ -689,55 +689,7 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
 
 bool Storage_ReloadTable(const char* TableName)
 {
-    // bur: mah god this is ugly :P
-    /*if (!stricmp(TableName, "items"))                    // Items
-        ItemPrototypeStorage.Reload();
-    else if (!stricmp(TableName, "creature_proto"))        // Creature Proto
-        CreatureProtoStorage.Reload();
-    else if (!stricmp(TableName, "creature_names"))        // Creature Names
-        CreatureNameStorage.Reload();
-    else if (!stricmp(TableName, "gameobject_names"))    // GO Names
-        GameObjectNameStorage.Reload();*/
-    if (!stricmp(TableName, "areatriggers"))        // Areatriggers
-        AreaTriggerStorage.Reload();
-    else if (!stricmp(TableName, "itempages"))            // Item Pages
-        ItemPageStorage.Reload();
-    else if (!stricmp(TableName, "npc_script_text"))            // Creature Text
-        CreatureTextStorage.Reload();
-    else if (!stricmp(TableName, "gossip_menu_option"))            // Gossip Menu Option
-        GossipMenuOptionStorage.Reload();
-    else if (!stricmp(TableName, "worldstring_tables"))            // wst
-        WorldStringTableStorage.Reload();
-    else if (!stricmp(TableName, "worldbroadcast"))            // wb
-        WorldBroadCastStorage.Reload();
-    /*else if (!stricmp(TableName, "quests"))                // Quests
-        QuestStorage.Reload();*/
-    else if (!stricmp(TableName, "npc_text"))            // NPC Text Storage
-        NpcTextStorage.Reload();
-    else if (!stricmp(TableName, "fishing"))                // Fishing Zones
-        FishingZoneStorage.Reload();
-    else if (!stricmp(TableName, "teleport_coords"))        // Teleport coords
-        TeleportCoordStorage.Reload();
-    else if (!stricmp(TableName, "graveyards"))            // Graveyards
-        GraveyardStorage.Reload();
-    else if (!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
-        WorldMapInfoStorage.Reload();
-    else if (!stricmp(TableName, "zoneguards"))
-        ZoneGuardStorage.Reload();
-    else if (!stricmp(TableName, "unit_display_sizes"))
-        UnitModelSizeStorage.Reload();
-    else if (!stricmp(TableName, "command_overrides"))    // Command Overrides
-    {
-        CommandTableStorage::getSingleton().Dealloc();
-        CommandTableStorage::getSingleton().Init();
-        CommandTableStorage::getSingleton().Load();
-    }
-    else if (!stricmp(TableName, "points_of_interest"))
-        PointOfInterestStorage.Reload();
-    else if (!stricmp(TableName, "player_xp_for_level"))
-        objmgr.LoadXpToLevelTable();
-    else
-        return false;
+    return false;
 
     uint32 len = (uint32)strlen(TableName);
     uint32 len2;

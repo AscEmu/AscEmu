@@ -180,6 +180,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _recallCommandTable;
     ChatCommand* _questCommandTable;
     ChatCommand* _serverCommandTable;
+    ChatCommand* _reloadTableCommandTable;
     ChatCommand* _gmCommandTable;
     ChatCommand* _characterCommandTable;
     ChatCommand* _lookupCommandTable;
@@ -196,6 +197,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
 
     ChatCommand* GetSubCommandTable(const char* name);
     ChatCommand* GetNPCSubCommandTable(const char* name);
+    ChatCommand* GetReloadCommandTable(const char* name);
 
     public:
 
@@ -334,6 +336,28 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcSetOnGOCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetStandstateCommand(const char* arg, WorldSession* m_session);
+
+        // ReloadTable
+        bool HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadCreaturesCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadCommandOverridesCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadFishingCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadGossipMenuOptionCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadGraveyardsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadItemsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadItempagesCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadNpcTextCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadPlayerXpForLevelCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadPointsOfInterestCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadQuestsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadUnitDisplaySizesCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadWorldstringTablesCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadZoneguardsCommand(const char* /*args*/, WorldSession* m_session);
 
         // Server
         bool HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session);
@@ -618,5 +642,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 };
 
 #define sChatHandler ChatHandler::getSingleton()
+#define sCommandTableStorag CommandTableStorage::getSingleton()
 
 #endif // _WOWSERVER_CHAT_H

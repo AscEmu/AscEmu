@@ -794,21 +794,26 @@ class SERVER_DECL SQLStorage : public Storage<T, StorageType>
         void Reload()
         {
             Log.Notice("Storage", "Reloading database cache from `%s`...", Storage<T, StorageType>::_indexName);
-            QueryResult* result = WorldDatabase.Query("SELECT MAX(entry) FROM %s", Storage<T, StorageType>::_indexName);
-            if(result == 0)
-                return;
+            QueryResult* result = nullptr;
 
-            uint32 Max = result->Fetch()[0].GetUInt32();
-            delete result;
-            if(!Max)
-                return;
-
-            if(Storage<T, StorageType>::_storage.NeedsMax())
+            if (Storage<T, StorageType>::_storage.NeedsMax())
             {
-                if(Max > STORAGE_ARRAY_MAX)
-                    Max = STORAGE_ARRAY_MAX;
+                result = WorldDatabase.Query("SELECT MAX(entry) FROM %s", Storage<T, StorageType>::_indexName);
+                uint32 Max = STORAGE_ARRAY_MAX;
+                if (result)
+                {
+                    Max = result->Fetch()[0].GetUInt32() + 1;
+                    if (Max > STORAGE_ARRAY_MAX)
+                    {
+                        Log.Error("Storage", "The table, '%s', has a maximum entry of %u, which is less %u. Any items higher than %u will not be loaded.",
+                            Storage<T, StorageType>::_indexName, Max, STORAGE_ARRAY_MAX, STORAGE_ARRAY_MAX);
 
-                Storage<T, StorageType>::_storage.Resetup(Max + 1);
+                        Max = STORAGE_ARRAY_MAX;
+                    }
+                    delete result;
+                }
+
+                Storage<T, StorageType>::_storage.Resetup(Max);
             }
 
             size_t cols = strlen(Storage<T, StorageType>::_formatString);

@@ -101,6 +101,13 @@ ChatCommand* CommandTableStorage::GetNPCSubCommandTable(const char* name)
     return 0;
 }
 
+ChatCommand* CommandTableStorage::GetReloadCommandTable(const char* name)
+{
+    if (0 == stricmp(name, "reload"))
+        return _reloadTableCommandTable;
+    return 0;
+}
+
 #define dupe_command_table(ct, dt) this->dt = (ChatCommand*)allocate_and_copy(sizeof(ct)/* / sizeof(ct[0])*/, ct)
 inline void* allocate_and_copy(uint32 len, void* pointer)
 {
@@ -229,6 +236,7 @@ void CommandTableStorage::Dealloc()
     free(_recallCommandTable);
     free(_questCommandTable);
     free(_serverCommandTable);
+    free(_reloadTableCommandTable);
     free(_gmCommandTable);
     free(_characterCommandTable);
     free(_lookupCommandTable);
@@ -626,6 +634,32 @@ void CommandTableStorage::Init()
     };
     dupe_command_table(questCommandTable, _questCommandTable);
 
+    static ChatCommand reloadTableCommandTable[] =
+    {
+        { "gameobjects",            'z', &ChatHandler::HandleReloadGameobjectsCommand,          "Reload gameobjets",                    NULL, 0, 0, 0 },
+        { "creatures",              'z', &ChatHandler::HandleReloadCreaturesCommand,            "Reload creatures",                     NULL, 0, 0, 0 },
+        { "areatriggers",           'z', &ChatHandler::HandleReloadAreaTriggersCommand,         "Reload areatriggers table",            NULL, 0, 0, 0 },
+        { "command_overrides",      'z', &ChatHandler::HandleReloadCommandOverridesCommand,     "Reload command_overrides table",       NULL, 0, 0, 0 },
+        { "fishing",                'z', &ChatHandler::HandleReloadFishingCommand,              "Reload fishing table",                 NULL, 0, 0, 0 },
+        { "gossip_menu_option",     'z', &ChatHandler::HandleReloadGossipMenuOptionCommand,     "Reload gossip_menu_option table",      NULL, 0, 0, 0 },
+        { "graveyards",             'z', &ChatHandler::HandleReloadGraveyardsCommand,           "Reload graveyards table",              NULL, 0, 0, 0 },
+        { "items",                  'z', &ChatHandler::HandleReloadItemsCommand,                "Reload items table",                   NULL, 0, 0, 0 },
+        { "itempages",              'z', &ChatHandler::HandleReloadItempagesCommand,            "Reload itempages table",               NULL, 0, 0, 0 },
+        { "npc_script_text",        'z', &ChatHandler::HandleReloadNpcScriptTextCommand,        "Reload npc_script_text table",         NULL, 0, 0, 0 },
+        { "npc_text",               'z', &ChatHandler::HandleReloadNpcTextCommand,              "Reload npc_text table",                NULL, 0, 0, 0 },
+        { "player_xp_for_level",    'z', &ChatHandler::HandleReloadPlayerXpForLevelCommand,     "Reload player_xp_for_level table",     NULL, 0, 0, 0 },
+        { "points_of_interest",     'z', &ChatHandler::HandleReloadPointsOfInterestCommand,     "Reload points_of_interest table",      NULL, 0, 0, 0 },
+        { "quests",                 'z', &ChatHandler::HandleReloadQuestsCommand,               "Reload quests table",                  NULL, 0, 0, 0 },
+        { "teleport_coords",        'z', &ChatHandler::HandleReloadTeleportCoordsCommand,       "Reload teleport_coords table",         NULL, 0, 0, 0 },
+        { "unit_display_sizes",     'z', &ChatHandler::HandleReloadUnitDisplaySizesCommand,     "Reload unit_display_sizes table",      NULL, 0, 0, 0 },
+        { "worldbroadcast",         'z', &ChatHandler::HandleReloadWorldbroadcastCommand,       "Reload worldbroadcast table",          NULL, 0, 0, 0 },
+        { "worldmap_info",          'z', &ChatHandler::HandleReloadWorldmapInfoCommand,         "Reload worldmap_info table",           NULL, 0, 0, 0 },
+        { "worldstring_tables",     'z', &ChatHandler::HandleReloadWorldstringTablesCommand,    "Reload worldstring_tables table",      NULL, 0, 0, 0 },
+        { "zoneguards",             'z', &ChatHandler::HandleReloadZoneguardsCommand,           "Reload zoneguards table",              NULL, 0, 0, 0 },
+        { NULL,                     '0', NULL,                                                  "",                                     NULL, 0, 0, 0 }
+    };
+    dupe_command_table(reloadTableCommandTable, _reloadTableCommandTable);
+
     static ChatCommand serverCommandTable[] =
     {
         { "info",          '0', &ChatHandler::HandleServerInfoCommand,      "Shows detailed Server info.",                          NULL, 0, 0, 0 },
@@ -637,7 +671,7 @@ void CommandTableStorage::Init()
         { "cancelshutdown",'z', &ChatHandler::HandleServerCancelShutdownCommand,  "Cancels a Server Restart/Shutdown.",             NULL, 0, 0, 0 },
         { "restart",       'z', &ChatHandler::HandleServerRestartCommand,   "Initiates server restart in <x> seconds.",             NULL, 0, 0, 0 },
         //Rewrite
-        //{ "reloadtable",   'm', &ChatHandler::HandleServerDBReloadCommand,  "Reload table <x>",                                     NULL, 0, 0, 0 },
+        { "reloadtable",   'm', NULL,  "",                                     reloadTableCommandTable, 0, 0, 0 },
         { NULL,            '0', NULL,                                       "",                                                     NULL, 0, 0, 0 }
     };
     dupe_command_table(serverCommandTable, _serverCommandTable);
@@ -884,6 +918,20 @@ void CommandTableStorage::Init()
             p_npc->ChildCommands = np_npc;
         }
         ++p_npc;
+    }
+
+    // set subcommand for .npc command table
+    ChatCommand* p_reloadtable = &_reloadTableCommandTable[0];
+    while (p_reloadtable->Name != 0)
+    {
+        if (p_reloadtable->ChildCommands != 0)
+        {
+            // Set the correct pointer.
+            ChatCommand* np_reloadtable = GetReloadCommandTable(p_reloadtable->Name);
+            ARCEMU_ASSERT(np_reloadtable != NULL);
+            p_reloadtable->ChildCommands = np_reloadtable;
+        }
+        ++p_reloadtable;
     }
 }
 
