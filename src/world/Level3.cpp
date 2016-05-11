@@ -736,20 +736,6 @@ bool ChatHandler::HandleRemoveRessurectionSickessAuraCommand(const char* args, W
     return true;
 }
 
-bool ChatHandler::HandleSetMotdCommand(const char* args, WorldSession* m_session)
-{
-    if (!args || strlen(args) < 2)
-    {
-        RedSystemMessage(m_session, "You must specify a message.");
-        return true;
-    }
-
-    GreenSystemMessage(m_session, "Motd has been set to: %s", args);
-    World::getSingleton().SetMotd(args);
-    sGMLog.writefromsession(m_session, "Set MOTD to %s", args);
-    return true;
-}
-
 bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_session)
 {
     int32 setid = (args ? atoi(args) : 0);
@@ -1219,63 +1205,6 @@ bool ChatHandler::HandlePetLevelCommand(const char* args, WorldSession* m_sessio
     GreenSystemMessage(m_session, "Set %s's pet to level %lu.", plr->GetName(), newLevel);
     plr->GetSession()->SystemMessage("%s set your pet to level %lu.", m_session->GetPlayer()->GetName(), newLevel);
     return true;
-}
-
-bool ChatHandler::HandleShutdownCommand(const char* args, WorldSession* m_session)
-{
-    uint32 shutdowntime;
-    if (!args)
-        shutdowntime = 5;
-    else
-        shutdowntime = atol(args);
-
-    char msg[500];
-    snprintf(msg, 500, "%sServer shutdown initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
-             m_session->GetPlayer()->GetName(), (unsigned int)shutdowntime);
-
-    sWorld.SendWorldText(msg);
-    sGMLog.writefromsession(m_session, "initiated server shutdown timer %u sec", shutdowntime);
-    shutdowntime *= 1000;
-    sMaster.m_ShutdownTimer = shutdowntime;
-    sMaster.m_ShutdownEvent = true;
-    sMaster.m_restartEvent = false;
-    return true;
-}
-
-bool ChatHandler::HandleShutdownRestartCommand(const char* args, WorldSession* m_session)
-{
-    uint32 shutdowntime;
-    if (!args)
-        shutdowntime = 5;
-    else
-        shutdowntime = atol(args);
-
-    char msg[500];
-    snprintf(msg, 500, "%sServer restart initiated by %s, shutting down in %u seconds.", MSG_COLOR_LIGHTBLUE,
-             m_session->GetPlayer()->GetName(), (unsigned int)shutdowntime);
-
-    sGMLog.writefromsession(m_session, "initiated server restart timer %u sec", shutdowntime);
-    sWorld.SendWorldText(msg);
-    shutdowntime *= 1000;
-    sMaster.m_ShutdownTimer = shutdowntime;
-    sMaster.m_ShutdownEvent = true;
-    sMaster.m_restartEvent = true;
-    return true;
-}
-
-bool ChatHandler::HandleCancelShutdownCommand(const char* args, WorldSession* m_session)
-{
-    if (sMaster.m_ShutdownEvent == false)
-        return false;
-    char msg[500];
-    snprintf(msg, 500, "%sServer %s cancelled by %s.", MSG_COLOR_LIGHTBLUE, (sMaster.m_restartEvent ? "Restart" : "Shutdown"), m_session->GetPlayer()->GetName());
-    sWorld.SendWorldText(msg);
-
-    sMaster.m_ShutdownTimer = 5000;
-    sMaster.m_ShutdownEvent = false;
-    sMaster.m_restartEvent = false;
-    return true;
-
 }
 
 bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session)
@@ -2337,19 +2266,6 @@ bool ChatHandler::HandleGOMove(const char* args, WorldSession* m_session)
     go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
     go->SaveToDB();
     m_session->GetPlayer()->m_GM_SelectedGO = NewGuid;
-    return true;
-}
-
-bool ChatHandler::HandleRehashCommand(const char* args, WorldSession* m_session)
-{
-    /*
-    rehashes
-    */
-    char msg[250];
-    snprintf(msg, 250, "%s is rehashing config file.", m_session->GetPlayer()->GetName());
-    sWorld.SendWorldWideScreenText(msg, 0);
-    sWorld.SendWorldText(msg, 0);
-    sWorld.Rehash(true);
     return true;
 }
 

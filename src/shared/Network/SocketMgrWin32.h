@@ -24,6 +24,7 @@ class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
         void SpawnWorkerThreads();
         void CloseAll();
         void ShowStatus();
+        uint32 GetSocketCount() { return socket_count.GetVal(); }
         void AddSocket(Socket* s)
         {
             socketLock.Acquire();

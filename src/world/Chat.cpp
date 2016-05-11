@@ -628,17 +628,16 @@ void CommandTableStorage::Init()
 
     static ChatCommand serverCommandTable[] =
     {
-        { "setmotd",       'm', &ChatHandler::HandleSetMotdCommand,         "Sets MOTD",                                                NULL, 0, 0, 0 },
-        { "rehash",        'z', &ChatHandler::HandleRehashCommand,          "Reloads config file.",                                     NULL, 0, 0, 0 },
-        //{ "reloadscripts", 'w', &ChatHandler::HandleReloadScriptsCommand,   "Reloads GM Scripts",                                       NULL, 0, 0, 0 },
+        { "info",          '0', &ChatHandler::HandleServerInfoCommand,      "Shows detailed Server info.",                          NULL, 0, 0, 0 },
+        { "rehash",        'z', &ChatHandler::HandleServerRehashCommand,    "Reloads config file.",                                 NULL, 0, 0, 0 },
+        { "save",          's', &ChatHandler::HandleServerSaveCommand,      "Save targeted or named player.",                       NULL, 0, 0, 0 },
+        { "saveall",       's', &ChatHandler::HandleServerSaveAllCommand,   "Save all online player.",                              NULL, 0, 0, 0 },
+        { "setmotd",       'm', &ChatHandler::HandleServerSetMotdCommand,   "Sets server MessageOfTheDay.",                         NULL, 0, 0, 0 },
+        { "shutdown",      'z', &ChatHandler::HandleServerShutdownCommand,  "Initiates server shutdown in <x> seconds.",            NULL, 0, 0, 0 },
+        { "cancelshutdown",'z', &ChatHandler::HandleServerCancelShutdownCommand,  "Cancels a Server Restart/Shutdown.",             NULL, 0, 0, 0 },
+        { "restart",       'z', &ChatHandler::HandleServerRestartCommand,   "Initiates server restart in <x> seconds.",             NULL, 0, 0, 0 },
+        //{ "reloadscripts", 'w', &ChatHandler::HandleReloadScriptsCommand,   "Reloads GM Scripts",                                 NULL, 0, 0, 0 },
         { "reloadtable",   'm', &ChatHandler::HandleDBReloadCommand,        "",                      NULL, 0, 0, 0 },
-        { "shutdown",      'z', &ChatHandler::HandleShutdownCommand,        "Initiates server shutdown in <x> seconds (5 by default).", NULL, 0, 0, 0 },
-        { "restart",       'z', &ChatHandler::HandleShutdownRestartCommand, "Initiates server restart in <x> seconds (5 by default).",  NULL, 0, 0, 0 },
-        { "cancelshutdown", 'z', &ChatHandler::HandleCancelShutdownCommand,  "Cancels a Server Restart/Shutdown.",                        NULL, 0, 0, 0 },
-        { "save",          's', &ChatHandler::HandleSaveCommand,            "Save's target character",                                    NULL, 0, 0, 0 },
-        { "saveall",       's', &ChatHandler::HandleSaveAllCommand,         "Save's all playing characters",                            NULL, 0, 0, 0 },
-        { "info",          '0', &ChatHandler::HandleInfoCommand,            "Server info",                                              NULL, 0, 0, 0 },
-        { "netstatus",     '0', &ChatHandler::HandleNetworkStatusCommand,   "Shows network status.", NULL, 0, 0, 0 },
         { NULL,            '0', NULL,                                       "",                                                         NULL, 0, 0, 0 }
     };
     dupe_command_table(serverCommandTable, _serverCommandTable);

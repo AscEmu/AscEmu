@@ -143,9 +143,8 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 
     bool is_gamemaster = m_session->GetPermissionCount() != 0;
 
-    PlayerStorageMap::const_iterator itr;
     objmgr._playerslock.AcquireReadLock();
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    for (PlayerStorageMap::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {
         if (itr->second->GetSession()->GetPermissionCount())
         {

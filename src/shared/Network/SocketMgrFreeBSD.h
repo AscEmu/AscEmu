@@ -82,6 +82,8 @@ class SocketMgr : public Singleton<SocketMgr>
         /// closes all sockets
         void CloseAll();
 
+        uint32 GetSocketCount() { return socket_count.GetVal(); }
+
         /// spawns worker threads
         void SpawnWorkerThreads();
 };

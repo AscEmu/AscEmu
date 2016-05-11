@@ -213,50 +213,6 @@ bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-
-bool ChatHandler::HandleInfoCommand(const char* args, WorldSession* m_session)
-{
-    //uint32 clientsNum = (uint32)sWorld.GetSessionCount();
-
-    uint16 gm = 0;
-    uint16 count = 0;
-    float avg = 0;
-
-    PlayerStorageMap::const_iterator itr;
-    objmgr._playerslock.AcquireReadLock();
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
-    {
-        if (itr->second->GetSession())
-        {
-            count++;
-            avg += itr->second->GetSession()->GetLatency();
-            if (itr->second->GetSession()->GetPermissionCount())
-                gm++;
-        }
-    }
-    objmgr._playerslock.ReleaseReadLock();
-
-    GreenSystemMessage(m_session, "Server Revision: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
-    GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
-    GreenSystemMessage(m_session, "Current GMs: |r%u GMs", gm);
-    GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", gm > 0 ? (count - gm) : count, sWorld.PeakSessionCount);
-    GreenSystemMessage(m_session, "Active Thread Count: |r%u", ThreadPool.GetActiveThreadCount());
-    GreenSystemMessage(m_session, "Free Thread Count: |r%u", ThreadPool.GetFreeThreadCount());
-    GreenSystemMessage(m_session, "Average Latency: |r%.3fms", count > 0 ? (avg / count) : avg);
-    GreenSystemMessage(m_session, "CPU Usage: %3.2f %%", sWorld.GetCPUUsage());
-    GreenSystemMessage(m_session, "RAM Usage: %4.2f MB", sWorld.GetRAMUsage());
-    GreenSystemMessage(m_session, "SQL Query Cache Size (World): |r%u queries delayed", WorldDatabase.GetQueueSize());
-    GreenSystemMessage(m_session, "SQL Query Cache Size (Character): |r%u queries delayed", CharacterDatabase.GetQueueSize());
-
-    return true;
-}
-
-bool ChatHandler::HandleNetworkStatusCommand(const char* args, WorldSession* m_session)
-{
-    //sSocketMgr.ShowStatus();
-    return true;
-}
-
 bool ChatHandler::HandleNYICommand(const char* args, WorldSession* m_session)
 {
     RedSystemMessage(m_session, "Not yet implemented.");
@@ -297,25 +253,6 @@ bool ChatHandler::HandleDismountCommand(const char* args, WorldSession* m_sessio
     //m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 
     BlueSystemMessage(m_session, "Now unmounted.");
-    return true;
-}
-
-
-bool ChatHandler::HandleSaveCommand(const char* args, WorldSession* m_session)
-{
-    Player* p_target = GetSelectedPlayer(m_session, false, true);
-    if (p_target == NULL)
-        return false;
-
-    if (p_target->m_nextSave < 300000)  //5min out of 10 left so 5 min since last save
-    {
-        p_target->SaveToDB(false);
-        GreenSystemMessage(m_session, "Player %s saved to DB", p_target->GetName());
-    }
-    else
-    {
-        RedSystemMessage(m_session, "You can only save once every 5 minutes.");
-    }
     return true;
 }
 

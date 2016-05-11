@@ -265,10 +265,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNYICommand(const char* args, WorldSession* m_session);
         bool HandleAcctCommand(const char* args, WorldSession* m_session);
         bool HandleStartCommand(const char* args, WorldSession* m_session);
-        bool HandleInfoCommand(const char* args, WorldSession* m_session);
-        bool HandleNetworkStatusCommand(const char* args, WorldSession* m_session);
         bool HandleDismountCommand(const char* args, WorldSession* m_session);
-        bool HandleSaveCommand(const char* args, WorldSession* m_session);
 
         bool HandleRatingsCommand(const char* args , WorldSession* m_session);
         bool HandleSimpleDistanceCommand(const char* args , WorldSession* m_session);
@@ -353,8 +350,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDeMorphCommand(const char* args, WorldSession* m_session);
         bool HandleItemCommand(const char* args, WorldSession* m_session);
         bool HandleItemRemoveCommand(const char* args, WorldSession* m_session);
-
-        bool HandleSaveAllCommand(const char* args, WorldSession* m_session);
         bool HandleStartBGCommand(const char* args, WorldSession* m_session);
         bool HandlePauseBGCommand(const char* args, WorldSession* m_session);
         bool HandleResetScoreCommand(const char* args, WorldSession* m_session);
@@ -480,7 +475,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
         bool HandleRemoveAurasCommand(const char* args, WorldSession* m_session);
 
-        bool HandleSetMotdCommand(const char* args, WorldSession* m_session);
         bool HandleAddItemSetCommand(const char* args, WorldSession* m_session);
         bool HandleModifyValueCommand(const char* args, WorldSession* m_session);
         bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
@@ -489,6 +483,17 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         bool HandleRemoveRessurectionSickessAuraCommand(const char* args, WorldSession* m_session);
         bool HandleDBReloadCommand(const char* args, WorldSession* m_session);
+
+        // Server
+        bool HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerNetStatusCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerRehashCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerSaveCommand(const char* args, WorldSession* m_session);
+        bool HandleServerSaveAllCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerSetMotdCommand(const char* args, WorldSession* m_session);
+        bool HandleServerShutdownCommand(const char* args, WorldSession* m_session);
+        bool HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerRestartCommand(const char* args, WorldSession* m_session);
 
         // Cheat
         bool HandleCheatListCommand(const char* /*args*/, WorldSession* m_session);
@@ -522,11 +527,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 #ifdef USE_SPECIFIC_AIAGENTS
         bool HandlePetSpawnAIBot(const char* args, WorldSession* m_session);
 #endif
-
-        // Shutdown
-        bool HandleShutdownCommand(const char* args, WorldSession* m_session);
-        bool HandleShutdownRestartCommand(const char* args, WorldSession* m_session);
-        bool HandleCancelShutdownCommand(const char* args, WorldSession* m_session);
 
         // Skills
         bool HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session);
@@ -583,8 +583,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 #endif
         // Deprecated GMScript reload.
         //bool HandleReloadScriptsCommand(const char * args, WorldSession*  m_session);
-
-        bool HandleRehashCommand(const char* args, WorldSession* m_session);
 
         // NPC Commands
         bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);
