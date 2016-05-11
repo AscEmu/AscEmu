@@ -239,13 +239,6 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
     return true;
 }
 
-//bool ChatHandler::HandleDeleteInstanceCommand(const char* args, WorldSession* m_session)
-//{
-//    RedSystemMessage(m_session, "Command not implemented yet.");
-//    return true;
-//    //sGMLog.writefromsession(m_session, "used delete instance command on instance %u,", 0);
-//}
-
 bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session)
 {
     Player* plr = m_session->GetPlayer();

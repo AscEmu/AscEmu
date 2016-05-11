@@ -235,3 +235,49 @@ bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_s
 
     return true;
 }
+
+/*bool ChatHandler::HandleServerDBReloadCommand(const char* args, WorldSession* m_session)
+{
+    sWorld.SendWorldText("Support for reloading tables on the fly is currently disabled!", 0);
+    return true;
+
+    //
+
+    char str[200];
+    int ret = 0;
+
+    if (!*args || strlen(args) < 3)
+    return false;
+
+
+    uint32 mstime = getMSTime();
+    snprintf(str, 200, "%s%s initiated server-side reload of table `%s`. The server may experience some lag while this occurs.",
+    MSG_COLOR_LIGHTRED, m_session->GetPlayer()->GetName(), args);
+    sWorld.SendWorldText(str, 0);
+
+    if (0 == stricmp(args, "spell_disable"))
+    {
+    objmgr.ReloadDisabledSpells();
+    ret = 1;
+    } else
+    if (0 == stricmp(args, "vendors"))
+    {
+    objmgr.ReloadVendors();
+    ret = 1;
+    }
+    else
+    {
+    ret = Storage_ReloadTable(args);
+    }
+
+    if (ret == 0)
+    snprintf(str, 200, "%sDatabase reload failed.", MSG_COLOR_LIGHTRED);
+    else
+    snprintf(str, 200, "%sDatabase reload completed in %u ms.", MSG_COLOR_LIGHTBLUE, getMSTime() - mstime);
+    sWorld.SendWorldText(str, 0);
+    sGMLog.writefromsession(m_session, "reloaded table %s", args);
+    return true;
+
+    //
+
+}*/

@@ -636,9 +636,9 @@ void CommandTableStorage::Init()
         { "shutdown",      'z', &ChatHandler::HandleServerShutdownCommand,  "Initiates server shutdown in <x> seconds.",            NULL, 0, 0, 0 },
         { "cancelshutdown",'z', &ChatHandler::HandleServerCancelShutdownCommand,  "Cancels a Server Restart/Shutdown.",             NULL, 0, 0, 0 },
         { "restart",       'z', &ChatHandler::HandleServerRestartCommand,   "Initiates server restart in <x> seconds.",             NULL, 0, 0, 0 },
-        //{ "reloadscripts", 'w', &ChatHandler::HandleReloadScriptsCommand,   "Reloads GM Scripts",                                 NULL, 0, 0, 0 },
-        { "reloadtable",   'm', &ChatHandler::HandleDBReloadCommand,        "",                      NULL, 0, 0, 0 },
-        { NULL,            '0', NULL,                                       "",                                                         NULL, 0, 0, 0 }
+        //Rewrite
+        //{ "reloadtable",   'm', &ChatHandler::HandleServerDBReloadCommand,  "Reload table <x>",                                     NULL, 0, 0, 0 },
+        { NULL,            '0', NULL,                                       "",                                                     NULL, 0, 0, 0 }
     };
     dupe_command_table(serverCommandTable, _serverCommandTable);
 
@@ -747,7 +747,6 @@ void CommandTableStorage::Init()
         { "reset",    'z', &ChatHandler::HandleResetInstanceCommand,     "Removes instance ID x from target player.",                         NULL, 0, 0, 0 },
         { "resetall", 'm', &ChatHandler::HandleResetAllInstancesCommand, "Removes all instance IDs from target player.",                      NULL, 0, 0, 0 },
         { "shutdown", 'z', &ChatHandler::HandleShutdownInstanceCommand,  "Shutdown instance with ID x (default is current instance).",        NULL, 0, 0, 0 },
-        //{ "delete",   'z', &ChatHandler::HandleDeleteInstanceCommand,    "Deletes instance with ID x (default is current instance).",         NULL, 0, 0, 0 },
         { "info",     'm', &ChatHandler::HandleGetInstanceInfoCommand,   "Gets info about instance with ID x (default is current instance).", NULL, 0, 0, 0 },
         { "exit",     'm', &ChatHandler::HandleExitInstanceCommand,      "Exits current instance, return to entry point.",                    NULL, 0, 0, 0 },
         { NULL,       '0', NULL,                                         "",                                                                  NULL, 0, 0, 0 }
