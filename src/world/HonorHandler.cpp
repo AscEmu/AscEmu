@@ -303,13 +303,3 @@ bool ChatHandler::HandlePVPCreditCommand(const char* args, WorldSession* m_sessi
     m_session->SendPacket(&data);
     return true;
 }
-
-bool ChatHandler::HandleGlobalHonorDailyMaintenanceCommand(const char* args, WorldSession* m_session)
-{
-    return false;
-}
-
-bool ChatHandler::HandleNextDayCommand(const char* args, WorldSession* m_session)
-{
-    return false;
-}

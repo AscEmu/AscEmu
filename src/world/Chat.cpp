@@ -577,10 +577,6 @@ void CommandTableStorage::Init()
         { "addpoints",         'm', &ChatHandler::HandleAddHonorCommand,                    "Adds x amount of honor points/currency",                  NULL, 0, 0, 0 },
         //char
         { "addkills",          'm', &ChatHandler::HandleAddKillCommand,                     "Adds x amount of honor kills",                            NULL, 0, 0, 0 },
-        //unused
-        { "globaldailyupdate", 'm', &ChatHandler::HandleGlobalHonorDailyMaintenanceCommand, "Daily honor field moves",                                 NULL, 0, 0, 0 },
-        //unused
-        { "singledailyupdate", 'm', &ChatHandler::HandleNextDayCommand,                     "Daily honor field moves for selected player only",        NULL, 0, 0, 0 },
         //char debug
         { "pvpcredit",         'm', &ChatHandler::HandlePVPCreditCommand,                   "Sends PVP credit packet, with specified rank and points", NULL, 0, 0, 0 },
         { NULL,                '0', NULL,                                                   "",                                                        NULL, 0, 0, 0 }
