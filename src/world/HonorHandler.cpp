@@ -245,36 +245,3 @@ void HonorHandler::RecalculateHonorFields(Player* pPlayer)
     if (pPlayer != nullptr)
         pPlayer->UpdatePvPCurrencies();
 }
-
-bool ChatHandler::HandleAddKillCommand(const char* args, WorldSession* m_session)
-{
-    uint32 KillAmount = args ? atol(args) : 1;
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (plr == NULL)
-        return true;
-
-    BlueSystemMessage(m_session, "Adding %u kills to player %s.", KillAmount, plr->GetName());
-    GreenSystemMessage(plr->GetSession(), "You have had %u honor kills added to your character.", KillAmount);
-
-    plr->m_killsToday += KillAmount;
-    plr->m_killsLifetime += KillAmount;
-    plr->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(plr->m_killsToday) | (plr->m_killsYesterday << 16));
-    plr->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, plr->m_killsLifetime);
-
-    return true;
-}
-
-bool ChatHandler::HandleAddHonorCommand(const char* args, WorldSession* m_session)
-{
-    uint32 HonorAmount = args ? atol(args) : 1;
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (plr == nullptr)
-        return true;
-
-    BlueSystemMessage(m_session, "Adding %u honor to player %s.", HonorAmount, plr->GetName());
-    GreenSystemMessage(plr->GetSession(), "You have had %u honor points added to your character.", HonorAmount);
-
-    HonorHandler::AddHonorPointsToPlayer(plr, HonorAmount);
-    return true;
-}
-

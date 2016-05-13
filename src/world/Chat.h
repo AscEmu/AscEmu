@@ -175,7 +175,6 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _NPCCommandTable;
     ChatCommand* _CheatCommandTable;
     ChatCommand* _accountCommandTable;
-    ChatCommand* _honorCommandTable;
     ChatCommand* _petCommandTable;
     ChatCommand* _recallCommandTable;
     ChatCommand* _questCommandTable;
@@ -272,6 +271,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCheatAuraStackCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCheatItemStackCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCheatTriggerpassCommand(const char* /*args*/, WorldSession* m_session);
+
+        //Character
+        bool HandleCharAddHonorPointsCommand(const char* args, WorldSession* m_session);
+        bool HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session);
 
         // Debug
         bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
@@ -537,8 +540,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleFactionChange(const char* args, WorldSession* m_session);
         bool HandleGetStandingCommand(const char* args, WorldSession* m_session);
         bool HandleSetStandingCommand(const char* args, WorldSession* m_session);
-        bool HandleAddHonorCommand(const char* args, WorldSession* m_session);
-        bool HandleAddKillCommand(const char* args, WorldSession* m_session);
+        
+        
         
         bool HandleUnlearnCommand(const char* args, WorldSession* m_session);
         bool HandleModifyLevelCommand(const char* args, WorldSession* m_session);

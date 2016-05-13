@@ -55,8 +55,6 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
         return _CheatCommandTable;
     else if (!stricmp(name, "account"))
         return _accountCommandTable;
-    else if (!stricmp(name, "honor"))
-        return _honorCommandTable;
     else if (!stricmp(name, "quest"))
         return _questCommandTable;
     else if (!stricmp(name, "pet"))
@@ -239,7 +237,6 @@ void CommandTableStorage::Dealloc()
     free(_NPCSetCommandTable);
     free(_CheatCommandTable);
     free(_accountCommandTable);
-    free(_honorCommandTable);
     free(_petCommandTable);
     free(_recallCommandTable);
     free(_questCommandTable);
@@ -572,16 +569,6 @@ void CommandTableStorage::Init()
     };
     dupe_command_table(accountCommandTable, _accountCommandTable);
 
-    static ChatCommand honorCommandTable[] =
-    {
-        //char
-        { "addpoints",         'm', &ChatHandler::HandleAddHonorCommand,                    "Adds x amount of honor points/currency",                  NULL, 0, 0, 0 },
-        //char
-        { "addkills",          'm', &ChatHandler::HandleAddKillCommand,                     "Adds x amount of honor kills",                            NULL, 0, 0, 0 },
-        { NULL,                '0', NULL,                                                   "",                                                        NULL, 0, 0, 0 }
-    };
-    dupe_command_table(honorCommandTable, _honorCommandTable);
-
     static ChatCommand petCommandTable[] =
     {
         { "createpet",   'm', &ChatHandler::HandleCreatePetCommand,      "Creates a pet with <entry>.",                            NULL, 0, 0, 0 },
@@ -704,6 +691,9 @@ void CommandTableStorage::Init()
 
     static ChatCommand characterCommandTable[] =
     {
+        { "addhonorpoints",      'm', &ChatHandler::HandleCharAddHonorPointsCommand,    "Adds x amount of honor points/currency",                   NULL, 0, 0, 0 },
+        { "addhonorkills",       'm', &ChatHandler::HandleCharAddHonorKillCommand,      "Adds x amount of honor kills",                             NULL, 0, 0, 0 },
+
         { "learn",               'm', &ChatHandler::HandleLearnCommand,            "Learns spell",                                                                                                      NULL, 0, 0, 0 },
         { "unlearn",             'm', &ChatHandler::HandleUnlearnCommand,          "Unlearns spell",                                                                                                    NULL, 0, 0, 0 },
         { "getskillinfo",        'm', &ChatHandler::HandleGetSkillsInfoCommand,    "Gets all the skills from a player",                                                                                 NULL, 0, 0, 0 },
@@ -872,7 +862,6 @@ void CommandTableStorage::Init()
         { "npc",             '0', NULL,                                                     "",                                                                                                                                        NPCCommandTable,          0, 0, 0 },
         { "cheat",           '0', NULL,                                                     "",                                                                                                                                        CheatCommandTable,        0, 0, 0 },
         { "account",         '0', NULL,                                                     "",                                                                                                                                        accountCommandTable,      0, 0, 0 },
-        { "honor",           '0', NULL,                                                     "",                                                                                                                                        honorCommandTable,        0, 0, 0 },
         { "quest",           '0', NULL,                                                     "",                                                                                                                                        questCommandTable,        0, 0, 0 },
         { "pet",             '0', NULL,                                                     "",                                                                                                                                        petCommandTable,          0, 0, 0 },
         { "recall",          '0', NULL,                                                     "",                                                                                                                                        recallCommandTable,       0, 0, 0 },
