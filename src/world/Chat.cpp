@@ -376,6 +376,7 @@ void CommandTableStorage::Init()
         { "updateworldstate",    'd', &ChatHandler::HandleUpdateWorldStateCommand, "Sets the specified worldstate field to the specified value",                                                        NULL, 0, 0, 0 },
         { "initworldstates",     'd', &ChatHandler::HandleInitWorldStatesCommand,  "(re)initializes the worldstates.",                                                                                  NULL, 0, 0, 0 },
         { "clearworldstates",    'd', &ChatHandler::HandleClearWorldStatesCommand, "Clears the worldstates",                                                                                            NULL, 0, 0, 0 },
+        { "pvpcredit",         'm', &ChatHandler::HandleDebugPVPCreditCommand,      "Sends PVP credit packet, with specified rank and points", NULL, 0, 0, 0 },
         { NULL,                  '0', NULL,                                        "",                                                                                                                  NULL, 0, 0, 0 }
     };
     dupe_command_table(debugCommandTable, _debugCommandTable);
@@ -577,8 +578,6 @@ void CommandTableStorage::Init()
         { "addpoints",         'm', &ChatHandler::HandleAddHonorCommand,                    "Adds x amount of honor points/currency",                  NULL, 0, 0, 0 },
         //char
         { "addkills",          'm', &ChatHandler::HandleAddKillCommand,                     "Adds x amount of honor kills",                            NULL, 0, 0, 0 },
-        //char debug
-        { "pvpcredit",         'm', &ChatHandler::HandlePVPCreditCommand,                   "Sends PVP credit packet, with specified rank and points", NULL, 0, 0, 0 },
         { NULL,                '0', NULL,                                                   "",                                                        NULL, 0, 0, 0 }
     };
     dupe_command_table(honorCommandTable, _honorCommandTable);

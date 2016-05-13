@@ -275,6 +275,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         // Debug
         bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
+        bool HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session);
 
         // GameEventMgr
         bool HandleEventListEvents(const char* args, WorldSession* m_session);
@@ -538,9 +539,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleSetStandingCommand(const char* args, WorldSession* m_session);
         bool HandleAddHonorCommand(const char* args, WorldSession* m_session);
         bool HandleAddKillCommand(const char* args, WorldSession* m_session);
-        bool HandleGlobalHonorDailyMaintenanceCommand(const char* args, WorldSession* m_session);
-        bool HandleNextDayCommand(const char* args, WorldSession* m_session);
-        bool HandlePVPCreditCommand(const char* args, WorldSession* m_session);
+        
         bool HandleUnlearnCommand(const char* args, WorldSession* m_session);
         bool HandleModifyLevelCommand(const char* args, WorldSession* m_session);
         bool HandleCreatePetCommand(const char* args, WorldSession* m_session);

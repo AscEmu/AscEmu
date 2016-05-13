@@ -43,3 +43,31 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
 
     return true;
 }
+
+//.debug pvpcredit
+bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
+{
+    uint32 rank;
+    uint32 points;
+    if (sscanf(args, "%u %u", &rank, &points) != 2)
+    {
+        RedSystemMessage(m_session, "Command must be in format <rank> <points>.");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    points *= 10;
+
+    GreenSystemMessage(m_session, "Building packet with Rank %u, Points %u, for Player %s.", rank, points, player_target->GetName());
+
+    WorldPacket data(SMSG_PVP_CREDIT, 12);
+    data << points;
+    data << player_target->GetGUID();
+    data << rank;
+    m_session->SendPacket(&data);
+
+    return true;
+}

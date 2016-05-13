@@ -278,28 +278,3 @@ bool ChatHandler::HandleAddHonorCommand(const char* args, WorldSession* m_sessio
     return true;
 }
 
-bool ChatHandler::HandlePVPCreditCommand(const char* args, WorldSession* m_session)
-{
-    uint32 Rank, Points;
-    if (sscanf(args, "%u %u", (unsigned int*)&Rank, (unsigned int*)&Points) != 2)
-    {
-        RedSystemMessage(m_session, "Command must be in format <rank> <points>.");
-        return true;
-    }
-    Points *= 10;
-    uint64 Guid = m_session->GetPlayer()->GetSelection();
-    if (Guid == 0)
-    {
-        RedSystemMessage(m_session, "A selection of a unit or player is required.");
-        return true;
-    }
-
-    BlueSystemMessage(m_session, "Building packet with Rank %u, Points %u, GUID " I64FMT ".", Rank, Points, Guid);
-
-    WorldPacket data(SMSG_PVP_CREDIT, 12);
-    data << Points;
-    data << Guid;
-    data << Rank;
-    m_session->SendPacket(&data);
-    return true;
-}
