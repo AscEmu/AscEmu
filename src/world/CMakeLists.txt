@@ -6,6 +6,7 @@ project(world CXX)
 set(sources
    Commands/AccountCommands.cpp
    Commands/ArenaCommands.cpp
+   Commands/CharacterCommands.cpp
    Commands/CheatCommands.cpp
    Commands/DebugCommands.cpp
    Commands/GameEventMgrCommands.cpp
