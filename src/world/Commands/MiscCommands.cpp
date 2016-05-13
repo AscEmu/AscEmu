@@ -284,3 +284,20 @@ bool ChatHandler::HandleUnrootCommand(const char* /*args*/, WorldSession* m_sess
 
     return true;
 }
+
+//.autosavechanges
+bool ChatHandler::HandleAutoSaveChangesCommand(const char* /*args*/, WorldSession* m_session)
+{
+    if (m_session->GetPlayer()->SaveAllChangesCommand == false)
+    {
+        GreenSystemMessage(m_session, "SaveAllChanges activated! All commands will be executed as 'save to db = true");
+        m_session->GetPlayer()->SaveAllChangesCommand = true;
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "SaveAllChanges deactivated! All commands will be executed as 'save to db = false");
+        m_session->GetPlayer()->SaveAllChangesCommand = false;
+    }
+
+    return true;
+}

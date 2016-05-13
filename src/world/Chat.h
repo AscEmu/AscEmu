@@ -408,6 +408,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleReviveCommand(const char* args, WorldSession* m_session);
         bool HandleUnrootCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleRootCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleAutoSaveChangesCommand(const char* /*args*/, WorldSession* m_session);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Everything under this line is untested/not rewritten.

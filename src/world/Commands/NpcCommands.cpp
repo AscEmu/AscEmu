@@ -212,6 +212,9 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
 
         uint32 spawn_id = creature_target->spawnid;
 
+        if (m_session->GetPlayer()->SaveAllChangesCommand)
+            save_to_db = true;
+
         if (save_to_db && spawn_id != 0)
         {
             BlueSystemMessage(m_session, "Creature %s (%u) deleted from creature_spawn table.", creature_target->GetCreatureInfo()->Name, spawn_id);
@@ -802,9 +805,13 @@ bool ChatHandler::HandleNpcSetCanFlyCommand(const char* args, WorldSession* m_se
 
     bool save_to_db = atoi(args) == 1 ? true : false;
 
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save_to_db = true;
+
     if (creature_target->GetAIInterface()->Flying())
     {
         creature_target->GetAIInterface()->StopFlying();
+
         if (save_to_db)
         {
             WorldDatabase.Execute("UPDATE creature_spawns SET CanFly = 1 WHERE id = %lu", creature_target->spawnid);
@@ -912,6 +919,10 @@ bool ChatHandler::HandleNpcSetEmoteCommand(const char* args, WorldSession* m_ses
 
     uint32 old_emote = creature_target->GetEmoteState();
     creature_target->SetEmoteState(emote);
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
     if (save == 1)
     {
         WorldDatabase.Execute("UPDATE creature_spawns SET emote_state = '%lu' WHERE id = %lu", emote, creature_target->spawnid);
@@ -976,6 +987,9 @@ bool ChatHandler::HandleNpcSetFormationSlaveCommand(const char* args, WorldSessi
 
     BlueSystemMessage(m_session, "%s linked to %s with a distance of %f at %f radians.", creature_slave->GetCreatureInfo()->Name, m_session->GetPlayer()->linkTarget->GetCreatureInfo()->Name, distance, angle);
 
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
     if (save == 1)
     {
         WorldDatabase.Execute("REPLACE INTO creature_formations VALUES(%u, %u, '%f', '%f')", creature_slave->GetSQL_id(), creature_slave->GetAIInterface()->m_formationLinkSqlId, angle, distance);
@@ -1004,6 +1018,9 @@ bool ChatHandler::HandleNpcSetFormationClearCommand(const char* args, WorldSessi
     creature_target->GetAIInterface()->m_formationFollowAngle = 0.0f;
     creature_target->GetAIInterface()->m_formationFollowDistance = 0.0f;
     creature_target->GetAIInterface()->ResetUnitToFollow();
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
 
     if (save == 1)
     {
@@ -1039,6 +1056,9 @@ bool ChatHandler::HandleNpcSetFlagsCommand(const char* args, WorldSession* m_ses
     uint32 old_npc_flags = creature_target->GetUInt32Value(UNIT_NPC_FLAGS);
     creature_target->SetUInt32Value(UNIT_NPC_FLAGS, npc_flags);
 
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
     if (save == 1)
     {
         GreenSystemMessage(m_session, "Flags changed in spawns table from %u to %u for spawn ID: %u. You may need to clean your client cache.", old_npc_flags, npc_flags, creature_target->spawnid);
@@ -1066,6 +1086,10 @@ bool ChatHandler::HandleNpcSetOnGOCommand(const char* args, WorldSession* m_sess
     creature_target->GetAIInterface()->onGameobject = !creature_target->GetAIInterface()->onGameobject;
 
     bool save = (atoi(args) == 1 ? true : false);
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = true;
+
     if (save)
     {
         creature_target->SaveToDB();
@@ -1101,6 +1125,9 @@ bool ChatHandler::HandleNpcSetPhaseCommand(const char* args, WorldSession* m_ses
     uint32 old_npc_phase = creature_target->m_spawn->phase;
     creature_target->Phase(PHASE_SET, npc_phase);
 
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
     if (save == 1)
     {
         GreenSystemMessage(m_session, "Phase changed in spawns table from %u to %u for spawn ID: %u.", old_npc_phase, npc_phase, creature_target->spawnid);
@@ -1135,6 +1162,9 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
     uint8 old_standstate = creature_target->getStandState();
     creature_target->SetStandState(standstate);
 
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
     if (save == 1)
     {
         GreenSystemMessage(m_session, "Standstate changed in spawns table from %u to %u for spawn ID: %u.", old_standstate, standstate, creature_target->spawnid);
@@ -1147,5 +1177,4 @@ bool ChatHandler::HandleNpcSetStandstateCommand(const char* args, WorldSession* 
     }
 
     return true;
-
 }

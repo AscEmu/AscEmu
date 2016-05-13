@@ -49,7 +49,7 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
         return _GameObjectCommandTable;
     else if (!stricmp(name, "battleground"))
         return _BattlegroundCommandTable;
-    else if (0 == stricmp(name, "npc"))
+    else if (!stricmp(name, "npc"))
         return _NPCCommandTable;
     else if (!stricmp(name, "cheat"))
         return _CheatCommandTable;
@@ -454,6 +454,7 @@ void CommandTableStorage::Init()
         { "scale",        'o', &ChatHandler::HandleGOSetScaleCommand,        "Sets scale of selected GO",                  NULL, 0, 0, 0 },
         { "animprogress", 'o', &ChatHandler::HandleGOSetAnimProgressCommand, "Sets anim progress of selected GO",                         NULL, 0, 0, 0 },
         { "overrides", 'o', &ChatHandler::HandleGOSetOverridesCommand, "Sets override of selected GO",                         NULL, 0, 0, 0 },
+        { NULL,           '0', NULL,                                         "",                                    NULL, 0, 0, 0 }
     };
     dupe_command_table(GameObjectSetCommandTable, _GameObjectSetCommandTable);
 
@@ -838,6 +839,7 @@ void CommandTableStorage::Init()
     {
         { "commands",        '0', &ChatHandler::HandleCommandsCommand,                      "Shows commands",                                                                                                                          NULL,                     0, 0, 0 },
         { "help",            '0', &ChatHandler::HandleHelpCommand,                          "Shows help for command",                                                                                                                  NULL,                     0, 0, 0 },
+        { "autosavechanges",  '1', &ChatHandler::HandleAutoSaveChangesCommand,                "Toggles activated/deactivated auto execute commands to save to the corresponding db table.",                                                                                                                  NULL,                     0, 0, 0 },
         { "event", '0', NULL, "", eventCommandTable, 0, 0, 0 },
         //debug
         { "calcdist",        '0', &ChatHandler::HandleSimpleDistanceCommand,                "Display the distance between your current position and the specified point x y z",                                                           NULL,                     0, 0, 0 },
@@ -943,7 +945,7 @@ void CommandTableStorage::Init()
         if (p_gobject->ChildCommands != 0)
         {
             // Set the correct pointer.
-            ChatCommand* np_gobject = GetNPCSubCommandTable(p_gobject->Name);
+            ChatCommand* np_gobject = GetGOSubCommandTable(p_gobject->Name);
             ARCEMU_ASSERT(np_gobject != NULL);
             p_gobject->ChildCommands = np_gobject;
         }

@@ -172,6 +172,7 @@ Player::Player(uint32 guid)
     AuraStackCheat(false),
     ItemStackCheat(false),
     TriggerpassCheat(false),
+    SaveAllChangesCommand(false),
     m_Autojoin(false),
     m_AutoAddMem(false),
     m_UnderwaterMaxTime(180000),

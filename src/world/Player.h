@@ -1368,6 +1368,8 @@ class SERVER_DECL Player : public Unit
         bool AuraStackCheat;
         bool TriggerpassCheat;
 
+        bool SaveAllChangesCommand;
+
         void ZoneUpdate(uint32 ZoneId);
         void UpdateChannels(uint16 AreaID);
         uint32 GetAreaID() { return m_AreaID; }

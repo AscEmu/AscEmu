@@ -102,6 +102,9 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
     gameobject->SetPosition(position_x, position_y, position_z, position_o);
     auto go_spawn = gameobject->m_spawn;
 
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
     if (save == 1)
     {
         if (go_spawn == nullptr)
@@ -239,6 +242,9 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
     if (mCell != nullptr)
         mCell->SetLoaded();
 
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
     if (save == 1)
     {
         GreenSystemMessage(m_session, "Spawning GameObject by entry '%u'. Added to gameobject_spawns table.", go_spawn->id);
@@ -277,6 +283,9 @@ bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_sess
     gameobject->SetState(static_cast<uint8>(go_state));
 
     auto go_spawn = gameobject->m_spawn;
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
 
     if (save == 1)
     {
@@ -322,6 +331,9 @@ bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_sess
     gameobject->SetFlags(go_flags);
     
     auto go_spawn = gameobject->m_spawn;
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
 
     if (save == 1)
     {
@@ -374,6 +386,9 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
 
     auto go_spawn = gameobject->m_spawn;
 
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
     if (save == 1)
     {
         if (go_spawn == nullptr)
@@ -419,6 +434,9 @@ bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_sess
     uint32 old_phase = gameobject->GetPhase();
     auto go_spawn = gameobject->m_spawn;
     gameobject->Phase(PHASE_SET, phase);
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
 
     if (save == 1)
     {
@@ -469,6 +487,9 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
 
     gameobject->SetScale(scale);
     auto go_spawn = gameobject->m_spawn;
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
 
     if (save == 1)
     {
@@ -544,6 +565,9 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
 
     gameobject->SetOverrides(go_override);
     auto go_spawn = gameobject->m_spawn;
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
 
     if (save == 1)
     {
