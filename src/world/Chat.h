@@ -168,9 +168,9 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _GMTicketCommandTable;
     ChatCommand* _TicketCommandTable;
     ChatCommand* _GuildCommandTable;
+    ChatCommand* _GameObjectSetCommandTable;
     ChatCommand* _GameObjectCommandTable;
     ChatCommand* _BattlegroundCommandTable;
-    ChatCommand* _NPCAddCommandTable;
     ChatCommand* _NPCSetCommandTable;
     ChatCommand* _NPCCommandTable;
     ChatCommand* _CheatCommandTable;
@@ -197,6 +197,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
 
     ChatCommand* GetSubCommandTable(const char* name);
     ChatCommand* GetNPCSubCommandTable(const char* name);
+    ChatCommand* GetGOSubCommandTable(const char* name);
     ChatCommand* GetReloadCommandTable(const char* name);
 
     public:
@@ -295,6 +296,21 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGoTriggerCommand(const char* args, WorldSession* m_session);
         bool HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session);
         bool HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session);
+
+        //GameObjectCommands
+        bool HandleGOSelectGuidCommand(const char* args, WorldSession* m_session);
+        bool HandleGODamageCommand(const char* args, WorldSession* session);
+        bool HandleGORebuildCommand(const char* /*args*/, WorldSession* session);
+        bool HandleGOMoveHereCommand(const char* args, WorldSession* m_session);
+        bool HandleGOOpenCommand(const char* /*args*/, WorldSession* m_session);
+
+        bool HandleGOSetStateCommand(const char* args, WorldSession* m_session);
+        bool HandleGOSetFlagsCommand(const char* args, WorldSession* m_session);
+        bool HandleGOSetFactionCommand(const char* args, WorldSession* m_session);
+        bool HandleGOSetPhaseCommand(const char* args, WorldSession* m_session);
+        bool HandleGOSetScaleCommand(const char* args, WorldSession* m_session);
+        bool HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session);
+        bool HandleGOSetOverridesCommand(const char* args, WorldSession* m_session);
 
         // Lookups
         bool HandleLookupItemCommand(const char* args, WorldSession* m_session);
@@ -572,22 +588,19 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleInitializeAllQueuedBattlegroundsCommand(const char* args, WorldSession* m_session);
         bool HandleGetBattlegroundQueueCommand(const char* args, WorldSession* m_session);
         bool HandleGOSelect(const char* args, WorldSession* m_session);
-        bool HandleGOSelectByGUID(const char* args, WorldSession* m_session);
         bool HandleGODelete(const char* args, WorldSession* m_session);
         bool HandleGOSpawn(const char* args, WorldSession* m_session);
-        bool HandleGOPhaseCommand(const char* args, WorldSession* m_session);
+        
         bool HandleGOInfo(const char* args, WorldSession* m_session);
         bool HandleGOEnable(const char* args, WorldSession* m_session);
-        bool HandleGOOpen(const char* args, WorldSession* m_session);
+        
         bool HandleGORotate(const char* args, WorldSession* m_session);
-        bool HandleGOMove(const char* args, WorldSession* m_session);
-        bool HandleGOState(const char* args, WorldSession* m_session);
-        bool HandleGOFlags(const char* args, WorldSession* m_session);
-        bool HandleGOFaction(const char* args, WorldSession* m_session);
-        bool HandleGODamageCommand(const char* args, WorldSession* session);
-        bool HandleGORebuildCommand(const char* args, WorldSession* session);
-        bool HandleGOScale(const char* args, WorldSession* m_session);
-        bool HandleGOAnimProgress(const char* args, WorldSession* m_session);
+        
+
+        
+        
+        
+        
         bool HandleGOExport(const char* args, WorldSession* m_session);
         bool HandleRepairItemsCommand(const char* args, WorldSession* m_session);
         bool HandleSetTitle(const char* args, WorldSession* m_session);

@@ -2192,36 +2192,6 @@ bool ChatHandler::HandleGORotate(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleGOMove(const char* args, WorldSession* m_session)
-{
-    // move the go to player's coordinates
-    GameObject* go = m_session->GetPlayer()->GetSelectedGo();
-    if (!go)
-    {
-        RedSystemMessage(m_session, "No selected GameObject...");
-        return true;
-    }
-
-    // new GO position (player location)
-    // orientation doesn't change
-    float x = m_session->GetPlayer()->GetPositionX();
-    float y = m_session->GetPlayer()->GetPositionY();
-    float z = m_session->GetPlayer()->GetPositionZ();
-    float o = go->GetOrientation();
-
-    go->RemoveFromWorld(true);
-    go->SetPosition(x, y, z, o);
-    //    go->SetFloatValue(GAMEOBJECT_POS_X, x);
-    //    go->SetFloatValue(GAMEOBJECT_POS_Y, y);
-    //    go->SetFloatValue(GAMEOBJECT_POS_Z, z);
-    uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
-    go->SetNewGuid(NewGuid);
-    go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
-    go->SaveToDB();
-    m_session->GetPlayer()->m_GM_SelectedGO = NewGuid;
-    return true;
-}
-
 struct spell_thingo
 {
     uint32 type;

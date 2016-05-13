@@ -456,6 +456,7 @@ class SERVER_DECL GameObject : public Object
         void SetAnimProgress(uint8 progress) { SetByte(GAMEOBJECT_BYTES_1, 3, progress); }
         uint8 GetAnimProgress() { return GetByte(GAMEOBJECT_BYTES_1, 3); }
 
+        void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
         uint32 GetOverrides() { return m_overrides; }
 
         void Deactivate() { SetUInt32Value(GAMEOBJECT_DYNAMIC, 0); }
