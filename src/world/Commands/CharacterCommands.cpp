@@ -43,6 +43,108 @@ bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* 
     return true;
 }
 
+//.character clearcooldowns
+bool ChatHandler::HandleCharClearCooldownsCommand(const char* args, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+
+    if (player_target == nullptr)
+        return true;
+
+    if (player_target != m_session->GetPlayer())
+    {
+        sGMLog.writefromsession(m_session, "Cleared all cooldowns for player %s", player_target->GetName());
+    }
+
+    uint64 guid = player_target->GetGUID();
+
+    switch (player_target->getClass())
+    {
+        case WARRIOR:
+        {
+            player_target->ClearCooldownsOnLine(26, guid);
+            player_target->ClearCooldownsOnLine(256, guid);
+            player_target->ClearCooldownsOnLine(257, guid);
+            BlueSystemMessage(m_session, "Cleared all Warrior cooldowns.");
+            break;
+        }
+        case PALADIN:
+        {
+            player_target->ClearCooldownsOnLine(594, guid);
+            player_target->ClearCooldownsOnLine(267, guid);
+            player_target->ClearCooldownsOnLine(184, guid);
+            BlueSystemMessage(m_session, "Cleared all Paladin cooldowns.");
+            break;
+        }
+        case HUNTER:
+        {
+            player_target->ClearCooldownsOnLine(50, guid);
+            player_target->ClearCooldownsOnLine(51, guid);
+            player_target->ClearCooldownsOnLine(163, guid);
+            BlueSystemMessage(m_session, "Cleared all Hunter cooldowns.");
+            break;
+        }
+        case ROGUE:
+        {
+            player_target->ClearCooldownsOnLine(253, guid);
+            player_target->ClearCooldownsOnLine(38, guid);
+            player_target->ClearCooldownsOnLine(39, guid);
+            BlueSystemMessage(m_session, "Cleared all Rogue cooldowns.");
+            break;
+        }
+        case PRIEST:
+        {
+            player_target->ClearCooldownsOnLine(56, guid);
+            player_target->ClearCooldownsOnLine(78, guid);
+            player_target->ClearCooldownsOnLine(613, guid);
+            BlueSystemMessage(m_session, "Cleared all Priest cooldowns.");
+            break;
+        }
+        case DEATHKNIGHT:
+        {
+            player_target->ClearCooldownsOnLine(770, guid);
+            player_target->ClearCooldownsOnLine(771, guid);
+            player_target->ClearCooldownsOnLine(772, guid);
+            BlueSystemMessage(m_session, "Cleared all Death Knight cooldowns.");
+            break;
+        }
+        case SHAMAN:
+        {
+            player_target->ClearCooldownsOnLine(373, guid);
+            player_target->ClearCooldownsOnLine(374, guid);
+            player_target->ClearCooldownsOnLine(375, guid);
+            BlueSystemMessage(m_session, "Cleared all Shaman cooldowns.");
+            break;
+        }
+        case MAGE:
+        {
+            player_target->ClearCooldownsOnLine(6, guid);
+            player_target->ClearCooldownsOnLine(8, guid);
+            player_target->ClearCooldownsOnLine(237, guid);
+            BlueSystemMessage(m_session, "Cleared all Mage cooldowns.");
+            break;
+        }
+        case WARLOCK:
+        {
+            player_target->ClearCooldownsOnLine(355, guid);
+            player_target->ClearCooldownsOnLine(354, guid);
+            player_target->ClearCooldownsOnLine(593, guid);
+            BlueSystemMessage(m_session, "Cleared all Warlock cooldowns.");
+            break;
+        }
+        case DRUID:
+        {
+            player_target->ClearCooldownsOnLine(573, guid);
+            player_target->ClearCooldownsOnLine(574, guid);
+            player_target->ClearCooldownsOnLine(134, guid);
+            BlueSystemMessage(m_session, "Cleared all Druid cooldowns.");
+            break;
+        }
+    }
+ 
+    return true;
+}
+
 //.character demorph
 bool ChatHandler::HandleCharDeMorphCommand(const char* /*args*/, WorldSession* m_session)
 {
@@ -114,6 +216,26 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
     }
 
     player_target->Social_TellFriendsOnline();
+
+    return true;
+}
+
+//.character removeauras
+bool ChatHandler::HandleCharRemoveAurasCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    BlueSystemMessage(m_session, "Removing all auras...");
+    for (uint32 i = MAX_REMOVABLE_AURAS_START; i < MAX_REMOVABLE_AURAS_END; ++i)
+    {
+        if (player_target->m_auras[i] != 0)
+            player_target->m_auras[i]->Remove();
+    }
+
+    if (player_target != m_session->GetPlayer())
+        sGMLog.writefromsession(m_session, "Removed all of %s's auras.", player_target->GetName());
 
     return true;
 }

@@ -275,8 +275,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         //Character
         bool HandleCharAddHonorPointsCommand(const char* args, WorldSession* m_session);
         bool HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session);
+        bool HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCharDeMorphCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCharLevelUpCommand(const char* args, WorldSession* m_session);
+        bool HandleCharRemoveAurasCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCharRemoveSickessCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session);
 
@@ -523,7 +525,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleMountCommand(const char* args, WorldSession* m_session);
         bool HandleGetPosCommand(const char* args, WorldSession* m_session);
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
-        bool HandleRemoveAurasCommand(const char* args, WorldSession* m_session);
+        
         bool HandleAddItemSetCommand(const char* args, WorldSession* m_session);
         bool HandleModifyValueCommand(const char* args, WorldSession* m_session);
         bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
@@ -637,7 +639,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCastSelfCommand(const char* args, WorldSession* m_session);
         
         bool HandleModifyGoldCommand(const char* args, WorldSession* m_session);
-        bool HandleClearCooldownsCommand(const char* args, WorldSession* m_session);
+        
         bool HandleBattlegroundCommand(const char* args, WorldSession* m_session);
         bool HandleSetWorldStateCommand(const char* args, WorldSession* m_session);
         bool HandleSetWorldStatesCommand(const char* args, WorldSession* m_session);
