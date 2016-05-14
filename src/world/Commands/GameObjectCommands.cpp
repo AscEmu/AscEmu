@@ -261,98 +261,29 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
     return true;
 }
 
-//.gobject set state
-bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_session)
+//////////////////////////////////////////////////////////////////////////////////////////
+//.gobject set commands
+//.gobject set animprogress
+bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session)
 {
-    uint32 go_state;
-    uint32 save = 0;
+    uint32 animprogress;
 
-    if (sscanf(args, "%u %u", &go_state, &save) < 1)
+    if (sscanf(args, "%u", &animprogress) != 1)
     {
-        RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setstate <state>");
+        RedSystemMessage(m_session, "You need to define the animprogress value!");
+        RedSystemMessage(m_session, ".gobject setanimprogress <animprogress>");
         return true;
     }
 
     auto gameobject = m_session->GetPlayer()->GetSelectedGo();
     if (gameobject == nullptr)
     {
-        RedSystemMessage(m_session, "No GameObject selected!");
+        RedSystemMessage(m_session, "No selected GameObject!");
         return true;
     }
 
-    gameobject->SetState(static_cast<uint8>(go_state));
-
-    auto go_spawn = gameobject->m_spawn;
-
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
-    {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
-        else
-        {
-            GreenSystemMessage(m_session, "State changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-            WorldDatabase.Execute("UPDATE gameobject_spawns SET state = %u WHERE id = %u", go_state, go_spawn->id);
-            sGMLog.writefromsession(m_session, "changed gameobject state of gameobject_spawns ID: %u.", go_spawn->id);
-        }
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "GameObject state temporarily set to %u.", go_state);
-    }
-
-    return true;
-}
-
-//.gobject set flags
-bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_session)
-{
-    uint32 go_flags;
-    uint32 save = 0;
-
-    if (sscanf(args, "%u %u", &go_flags, &save) < 1)
-    {
-        RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setflags <flags>");
-        return true;
-    }
-
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
-    if (gameobject == nullptr)
-    {
-        RedSystemMessage(m_session, "No GameObject selected!");
-        return true;
-    }
-
-    gameobject->SetFlags(go_flags);
-    
-    auto go_spawn = gameobject->m_spawn;
-
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
-        save = 1;
-
-    if (save == 1)
-    {
-        if (go_spawn == nullptr)
-        {
-            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
-            return true;
-        }
-        else
-        {
-            GreenSystemMessage(m_session, "Flags changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
-            WorldDatabase.Execute("UPDATE gameobject_spawns SET flags = %u WHERE id = %u", go_flags, go_spawn->id);
-            sGMLog.writefromsession(m_session, "changed gameobject flags of gameobject_spawns ID: %u.", go_spawn->id);
-        }
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "GameObject flags temporarily set to %u.", go_flags);
-    }
+    gameobject->SetAnimProgress(static_cast<uint8>(animprogress));
+    GreenSystemMessage(m_session, "Gameobject animprogress set to %u", animprogress);
 
     return true;
 }
@@ -410,6 +341,108 @@ bool ChatHandler::HandleGOSetFactionCommand(const char* args, WorldSession* m_se
 
     return true;
 }
+
+//.gobject set flags
+bool ChatHandler::HandleGOSetFlagsCommand(const char* args, WorldSession* m_session)
+{
+    uint32 go_flags;
+    uint32 save = 0;
+
+    if (sscanf(args, "%u %u", &go_flags, &save) < 1)
+    {
+        RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setflags <flags>");
+        return true;
+    }
+
+    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    if (gameobject == nullptr)
+    {
+        RedSystemMessage(m_session, "No GameObject selected!");
+        return true;
+    }
+
+    gameobject->SetFlags(go_flags);
+
+    auto go_spawn = gameobject->m_spawn;
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
+    if (save == 1)
+    {
+        if (go_spawn == nullptr)
+        {
+            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+            return true;
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Flags changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
+            WorldDatabase.Execute("UPDATE gameobject_spawns SET flags = %u WHERE id = %u", go_flags, go_spawn->id);
+            sGMLog.writefromsession(m_session, "changed gameobject flags of gameobject_spawns ID: %u.", go_spawn->id);
+        }
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "GameObject flags temporarily set to %u.", go_flags);
+    }
+
+    return true;
+}
+
+//.gobject set overrides
+bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_session)
+{
+    uint32 go_override;
+    uint32 save = 0;
+    if (sscanf(args, "%u %u", &go_override, &save) < 1)
+    {
+        RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setoverride <value>");
+        return true;
+    }
+
+    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
+    if (gameobject == nullptr)
+    {
+        RedSystemMessage(m_session, "No selected GameObject!");
+        return true;
+    }
+
+    gameobject->SetOverrides(go_override);
+    auto go_spawn = gameobject->m_spawn;
+
+    if (m_session->GetPlayer()->SaveAllChangesCommand)
+        save = 1;
+
+    if (save == 1)
+    {
+        if (go_spawn == nullptr)
+        {
+            RedSystemMessage(m_session, "The GameObject is not a spawn to save the data.");
+            return true;
+        }
+        else
+        {
+            GreenSystemMessage(m_session, "Overrides changed in gameobject_spawns table to %u for spawn ID: %u.", go_override, go_spawn->id);
+            WorldDatabase.Execute("UPDATE gameobject_spawns SET overrides = %u WHERE id = %u", go_override, go_spawn->id);
+            sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %u", go_spawn->id, go_override);
+        }
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Gameobject overrides temporarily set to %u for spawn ID: %u.", go_override, go_spawn->id);
+    }
+
+    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    gameobject->RemoveFromWorld(true);
+    gameobject->SetNewGuid(new_go_guid);
+    gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+
+    m_session->GetPlayer()->m_GM_SelectedGO = new_go_guid;
+
+    return true;
+}
+
 
 //.gobject set phase
 bool ChatHandler::HandleGOSetPhaseCommand(const char* args, WorldSession* m_session)
@@ -520,50 +553,27 @@ bool ChatHandler::HandleGOSetScaleCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-//.gobject set animprogress
-bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session)
+//.gobject set state
+bool ChatHandler::HandleGOSetStateCommand(const char* args, WorldSession* m_session)
 {
-    uint32 animprogress;
-
-    if (sscanf(args, "%u", &animprogress) != 1)
-    {
-        RedSystemMessage(m_session, "You need to define the animprogress value!");
-        RedSystemMessage(m_session, ".gobject setanimprogress <animprogress>");
-        return true;
-    }
-
-    auto gameobject = m_session->GetPlayer()->GetSelectedGo();
-    if (gameobject == nullptr)
-    {
-        RedSystemMessage(m_session, "No selected GameObject!");
-        return true;
-    }
-
-    gameobject->SetAnimProgress(static_cast<uint8>(animprogress));
-    GreenSystemMessage(m_session, "Gameobject animprogress set to %u", animprogress);
-
-    return true;
-}
-
-//.gobject set overrides
-bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_session)
-{
-    uint32 go_override;
+    uint32 go_state;
     uint32 save = 0;
-    if (sscanf(args, "%u %u", &go_override, &save) < 1)
+
+    if (sscanf(args, "%u %u", &go_state, &save) < 1)
     {
-        RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setoverride <value>");
+        RedSystemMessage(m_session, "Wrong Syntax! Use: .gobject setstate <state>");
         return true;
     }
 
     auto gameobject = m_session->GetPlayer()->GetSelectedGo();
     if (gameobject == nullptr)
     {
-        RedSystemMessage(m_session, "No selected GameObject!");
+        RedSystemMessage(m_session, "No GameObject selected!");
         return true;
     }
 
-    gameobject->SetOverrides(go_override);
+    gameobject->SetState(static_cast<uint8>(go_state));
+
     auto go_spawn = gameobject->m_spawn;
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
@@ -578,22 +588,15 @@ bool ChatHandler::HandleGOSetOverridesCommand(const char* args, WorldSession* m_
         }
         else
         {
-            GreenSystemMessage(m_session, "Overrides changed in gameobject_spawns table to %u for spawn ID: %u.", go_override, go_spawn->id);
-            WorldDatabase.Execute("UPDATE gameobject_spawns SET overrides = %u WHERE id = %u", go_override, go_spawn->id);
-            sGMLog.writefromsession(m_session, "changed gameobject scale of gameobject_spawns ID: %u to %u", go_spawn->id, go_override);
+            GreenSystemMessage(m_session, "State changed in gameobject_spawns table for spawn ID: %u.", go_spawn->id);
+            WorldDatabase.Execute("UPDATE gameobject_spawns SET state = %u WHERE id = %u", go_state, go_spawn->id);
+            sGMLog.writefromsession(m_session, "changed gameobject state of gameobject_spawns ID: %u.", go_spawn->id);
         }
     }
     else
     {
-        GreenSystemMessage(m_session, "Gameobject overrides temporarily set to %u for spawn ID: %u.", go_override, go_spawn->id);
+        GreenSystemMessage(m_session, "GameObject state temporarily set to %u.", go_state);
     }
-
-    uint32 new_go_guid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
-    gameobject->RemoveFromWorld(true);
-    gameobject->SetNewGuid(new_go_guid);
-    gameobject->PushToWorld(m_session->GetPlayer()->GetMapMgr());
-
-    m_session->GetPlayer()->m_GM_SelectedGO = new_go_guid;
 
     return true;
 }
