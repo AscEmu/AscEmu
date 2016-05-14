@@ -171,58 +171,6 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleKickCommand(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-        return false;
-    char* pname = strtok((char*)args, " ");
-
-    if (!pname)
-    {
-        RedSystemMessage(m_session, "No name specified.");
-        return true;
-    }
-
-    Player* chr = objmgr.GetPlayer((const char*)pname, false);
-    if (chr)
-    {
-        char* reason = strtok(NULL, "\n");
-        std::string kickreason = "No reason";
-        if (reason)
-            kickreason = reason;
-        BlueSystemMessage(m_session, "Attempting to kick %s from the server for \'%s\'.", chr->GetName(), kickreason.c_str());
-        sGMLog.writefromsession(m_session, "Kicked player %s from the server for %s", chr->GetName(), kickreason.c_str());
-
-        if (!m_session->CanUseCommand('z') && chr->GetSession()->CanUseCommand('z'))
-        {
-            RedSystemMessage(m_session, "You cannot kick %s, a GM whose permissions outrank yours.", chr->GetName());
-            return true;
-        }
-        /*if (m_session->GetSecurity() < chr->GetSession()->GetSecurity())
-        {
-        SystemMessage(m_session, "You cannot kick %s, as he is a higher GM level than you.", chr->GetName());
-        return true;
-        }*/ // we might have to re-work this
-
-        if (sWorld.gamemaster_announceKick)
-        {
-            char msg[200];
-            snprintf(msg, 200, "%sGM: %s was kicked from the server by %s. Reason: %s", MSG_COLOR_RED, chr->GetName(), m_session->GetPlayer()->GetName(), kickreason.c_str());
-            sWorld.SendWorldText(msg, NULL);
-        }
-
-        //sWorld.SendIRCMessage(msg);
-        SystemMessage(chr->GetSession(), "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->GetName(), kickreason.c_str());
-        chr->Kick(6000);
-        return true;
-    }
-    else
-    {
-        RedSystemMessage(m_session, "Player is not online at the moment.");
-        return true;
-    }
-}
-
 bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_session)
 {
     uint32 itemid, count = 1;

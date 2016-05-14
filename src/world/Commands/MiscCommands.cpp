@@ -311,13 +311,45 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
     {
         RedSystemMessage(m_session, "A player name is required!");
         RedSystemMessage(m_session, "Usage: .kick player <player_name>");
+        RedSystemMessage(m_session, "Optional: .kick player <player_name> <reason>");
         return true;
     }
 
-    sWorld.DisconnectUsersWithPlayerName(args, m_session);
-    sGMLog.writefromsession(m_session, "kicked player %s by name.", args);
+    char* player_name = strtok((char*)args, " ");
+    auto player_target = objmgr.GetPlayer((const char*)player_name, false);
+    if (player_target != nullptr)
+    {
+        char* reason = strtok(NULL, "\n");
+        std::string kickreason = "No reason";
 
-    return true;
+        if (reason)
+            kickreason = reason;
+
+        BlueSystemMessage(m_session, "Attempting to kick %s from the server for \'%s\'.", player_target->GetName(), kickreason.c_str());
+        sGMLog.writefromsession(m_session, "Kicked player %s from the server for %s", player_target->GetName(), kickreason.c_str());
+
+        if (!m_session->CanUseCommand('z') && player_target->GetSession()->CanUseCommand('z'))
+        {
+            RedSystemMessage(m_session, "You cannot kick %s, a GM whose permissions outrank yours.", player_target->GetName());
+            return true;
+        }
+
+        if (sWorld.gamemaster_announceKick)
+        {
+            char msg[200];
+            snprintf(msg, 200, "%sGM: %s was kicked from the server by %s. Reason: %s", MSG_COLOR_RED, player_target->GetName(), m_session->GetPlayer()->GetName(), kickreason.c_str());
+            sWorld.SendWorldText(msg, NULL);
+        }
+
+        SystemMessage(player_target->GetSession(), "You are being kicked from the server by %s. Reason: %s", m_session->GetPlayer()->GetName(), kickreason.c_str());
+        player_target->Kick(6000);
+        return true;
+    }
+    else
+    {
+        RedSystemMessage(m_session, "Player is not online at the moment.");
+        return true;
+    }
 }
 
 //.kick account
@@ -330,10 +362,24 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
         return true;
     }
 
-    sWorld.DisconnectUsersWithAccount(args, m_session);
-    sGMLog.writefromsession(m_session, "kicked player with account %s", args);
+    char* player_name = strtok((char*)args, " ");
+    auto player_target = objmgr.GetPlayer((const char*)player_name, false);
+    if (player_target != nullptr)
+    {
+        if (!m_session->CanUseCommand('z') && player_target->GetSession()->CanUseCommand('z'))
+        {
+            RedSystemMessage(m_session, "You cannot kick %s, a GM whose permissions outrank yours.", player_target->GetName());
+            return true;
+        }
 
-    return true;
+        sWorld.DisconnectUsersWithAccount(args, m_session);
+        sGMLog.writefromsession(m_session, "kicked player with account %s", args);
+    }
+    else
+    {
+        RedSystemMessage(m_session, "Player is not online at the moment.");
+        return true;
+    }
 }
 
 //.kick ip

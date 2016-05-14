@@ -510,7 +510,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAnnounceCommand(const char* args, WorldSession* m_session);
         bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
         bool HandleGPSCommand(const char* args, WorldSession* m_session);
-        bool HandleKickCommand(const char* args, WorldSession* m_session);
+
         bool HandleModifySpeedCommand(const char* args, WorldSession* m_session);
         bool HandleModifyTPsCommand(const char* args, WorldSession* m_session);
         bool HandleWaypointAddFlyCommand(const char* args, WorldSession* m_session);
