@@ -680,18 +680,6 @@ bool ChatHandler::HandleRemoveAurasCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleRemoveRessurectionSickessAuraCommand(const char* args, WorldSession* m_session)
-{
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr) return false;
-
-    BlueSystemMessage(m_session, "Removing resurrection sickness...");
-    plr->RemoveAura(15007);
-    if (plr != m_session->GetPlayer())
-        sGMLog.writefromsession(m_session, "Removed resurrection sickness from %s", plr->GetName());
-    return true;
-}
-
 bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_session)
 {
     int32 setid = (args ? atoi(args) : 0);
@@ -2562,58 +2550,6 @@ bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_ses
         SystemMessage(m_session, "Collision is not enabled.");
         return true;
     }
-}
-bool ChatHandler::HandleLevelUpCommand(const char* args, WorldSession* m_session)
-{
-    int levels = 0;
-
-    if (!*args)
-        levels = 1;
-    else
-        levels = atoi(args);
-
-    if (levels <= 0)
-        return false;
-
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-
-    if (!plr) plr = m_session->GetPlayer();
-
-    if (!plr) return false;
-
-    sGMLog.writefromsession(m_session, "used level up command on %s, with %u levels", plr->GetName(), levels);
-
-    levels += plr->getLevel();
-
-    if (levels > PLAYER_LEVEL_CAP)
-        levels = PLAYER_LEVEL_CAP;
-
-    LevelInfo* inf = objmgr.GetLevelInfo(plr->getRace(), plr->getClass(), levels);
-    if (!inf)
-        return false;
-    plr->ApplyLevelInfo(inf, levels);
-    if (plr->getClass() == WARLOCK)
-    {
-        std::list<Pet*> summons = plr->GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        {
-            if ((*itr)->IsInWorld() && (*itr)->isAlive())
-            {
-                (*itr)->setLevel(levels);
-                (*itr)->ApplyStatsForLevel();
-                (*itr)->UpdateSpellList();
-            }
-        }
-    }
-
-    WorldPacket data;
-    std::stringstream sstext;
-    sstext << "You have been leveled up to Level " << levels << '\0';
-    SystemMessage(plr->GetSession(), sstext.str().c_str());
-
-    plr->Social_TellFriendsOnline();
-
-    return true;
 }
 
 bool ChatHandler::HandleFixScaleCommand(const char* args, WorldSession* m_session)

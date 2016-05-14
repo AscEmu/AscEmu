@@ -147,17 +147,6 @@ bool ChatHandler::CreateGuildCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleDeMorphCommand(const char* args, WorldSession* m_session)
-{
-    Player* target = GetSelectedPlayer(m_session, true, true);
-    if (!target)
-        target = m_session->GetPlayer();
-
-    target->DeMorph();
-
-    return true;
-}
-
 bool ChatHandler::HandleItemCommand(const char* args, WorldSession* m_session)
 {
     char* pitem = strtok((char*)args, " ");

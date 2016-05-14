@@ -690,7 +690,10 @@ void CommandTableStorage::Init()
     {
         { "addhonorpoints",      'm', &ChatHandler::HandleCharAddHonorPointsCommand,    "Adds x amount of honor points/currency",           nullptr, 0, 0, 0 },
         { "addhonorkills",       'm', &ChatHandler::HandleCharAddHonorKillCommand,      "Adds x amount of honor kills",                     nullptr, 0, 0, 0 },
-        { "setallexplored",      'm', &ChatHandler::HandleSetAllExploredCommand,        "Reveals the unexplored parts of the map.",         nullptr, 0, 0, 0 },
+        { "demorph",             'm', &ChatHandler::HandleCharDeMorphCommand,           "Demorphs from morphed model.",                     nullptr, 0, 0, 0 },
+        { "levelup",             'm', &ChatHandler::HandleCharLevelUpCommand,           "Player target will be levelup x levels",           nullptr, 0, 0, 0 },
+        { "removesickness",      'm', &ChatHandler::HandleCharRemoveSickessCommand,     "Removes ressurrection sickness from target",       nullptr, 0, 0, 0 },
+        { "setallexplored",      'm', &ChatHandler::HandleCharSetAllExploredCommand,    "Reveals the unexplored parts of the map.",         nullptr, 0, 0, 0 },
         { "learn",               'm', &ChatHandler::HandleLearnCommand,            "Learns spell",                                                                                                      NULL, 0, 0, 0 },
         { "unlearn",             'm', &ChatHandler::HandleUnlearnCommand,          "Unlearns spell",                                                                                                    NULL, 0, 0, 0 },
         { "getskillinfo",        'm', &ChatHandler::HandleGetSkillsInfoCommand,    "Gets all the skills from a player",                                                                                 NULL, 0, 0, 0 },
@@ -832,8 +835,6 @@ void CommandTableStorage::Init()
         { "summon",          'v', &ChatHandler::HandleSummonCommand,                        "Summons x to your position.",                                                                                                              NULL,                     0, 0, 0 },
         { "kill",            'r', &ChatHandler::HandleKillCommand,                          ".kill - Kills selected unit .kill <playername> kills player with <playername>",                                                                                                            NULL,                     0, 0, 0 },
         { "revive",          'r', &ChatHandler::HandleReviveCommand,                        ".revive - revives you or a selected target .revive <player_name> revives player with <playername>",                                                                                                                            NULL,                     0, 0, 0 },
-        //char
-        { "demorph",         'm', &ChatHandler::HandleDeMorphCommand,                       "Demorphs from morphed model.",                                                                                                            NULL,                     0, 0, 0 },
         //misc player/creature
         { "mount",           'm', &ChatHandler::HandleMountCommand,                         "Mounts into modelid x.",                                                                                                                  NULL,                     0, 0, 0 },
         //misc player/creature
@@ -846,8 +847,6 @@ void CommandTableStorage::Init()
         { "invincible",      'j', &ChatHandler::HandleInvincibleCommand,                    ".invincible - Toggles INVINCIBILITY (mobs won't attack you)",                                                                             NULL,                     0, 0, 0 },
         { "invisible",       'i', &ChatHandler::HandleInvisibleCommand,                     ".invisible - Toggles INVINCIBILITY and INVISIBILITY (mobs won't attack you and nobody can see you, but they can see your chat messages)", NULL,                     0, 0, 0 },
         { "playerinfo",      'm', &ChatHandler::HandlePlayerInfo,                           ".playerinfo - Displays information about the selected character (account...)",                                                           NULL,                     0, 0, 0 },
-        //char
-        { "levelup",         'm', &ChatHandler::HandleLevelUpCommand,                       "Levelup x lvls",                                                                                                                          NULL,                     0, 0, 0 },
         { "modify",          '0', NULL,                                                     "",                                                                                                                                        modifyCommandTable,       0, 0, 0 },
         { "waypoint",        '0', NULL,                                                     "",                                                                                                                                        waypointCommandTable,     0, 0, 0 },
         { "debug",           '0', NULL,                                                     "",                                                                                                                                        debugCommandTable,        0, 0, 0 },
@@ -880,8 +879,6 @@ void CommandTableStorage::Init()
         { "gocreature",      'v', &ChatHandler::HandleGoCreatureSpawnCommand,               "Teleports you to the creature with <spwn_id>.",                                                                                           NULL,                     0, 0, 0 },
         { "gogameobject",    'v', &ChatHandler::HandleGoGameObjectSpawnCommand,             "Teleports you to the gameobject with <spawn_id>.",                                                                                        NULL,                     0, 0, 0 },
         { "gotrig",          'v', &ChatHandler::HandleGoTriggerCommand,                     "Teleports you to the areatrigger with <id>.",                                                                                             NULL,                     0, 0, 0 },
-        //char
-        { "removesickness",  'm', &ChatHandler::HandleRemoveRessurectionSickessAuraCommand, "Removes ressurrection sickness from the target",                                                                                          NULL,                     0, 0, 0 },
         //npc
         { "fixscale",        'm', &ChatHandler::HandleFixScaleCommand,                      "",                                                                                                                                        NULL,                     0, 0, 0 },
         { "achieve",         '0', NULL,                                                     "",                                                                                                                                        achievementCommandTable,  0, 0, 0 },
