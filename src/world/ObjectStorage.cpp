@@ -687,21 +687,6 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     return true;
 }
 
-bool Storage_ReloadTable(const char* TableName)
-{
-    return false;
-
-    uint32 len = (uint32)strlen(TableName);
-    uint32 len2;
-    for (std::vector<std::pair<std::string, std::string> >::iterator itr = additionalTables.begin(); itr != additionalTables.end(); ++itr)
-    {
-        len2 = (uint32)itr->second.length();
-        if (!strnicmp(TableName, itr->second.c_str(), std::min(len, len2)))
-            LoadAdditionalTable(TableName, itr->first.c_str());
-    }
-    return true;
-}
-
 void Storage_LoadAdditionalTables()
 {
     ExtraMapCreatureTables.insert(std::string("creature_spawns"));
