@@ -301,3 +301,53 @@ bool ChatHandler::HandleAutoSaveChangesCommand(const char* /*args*/, WorldSessio
 
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// .kick commands
+//.kick player
+bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_session)
+{
+    if (!args)
+    {
+        RedSystemMessage(m_session, "A player name is required!");
+        RedSystemMessage(m_session, "Usage: .kick player <player_name>");
+        return true;
+    }
+
+    sWorld.DisconnectUsersWithPlayerName(args, m_session);
+    sGMLog.writefromsession(m_session, "kicked player %s by name.", args);
+
+    return true;
+}
+
+//.kick account
+bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_session)
+{
+    if (!args)
+    {
+        RedSystemMessage(m_session, "A account name is required!");
+        RedSystemMessage(m_session, "Usage: .kick account <account_name>");
+        return true;
+    }
+
+    sWorld.DisconnectUsersWithAccount(args, m_session);
+    sGMLog.writefromsession(m_session, "kicked player with account %s", args);
+
+    return true;
+}
+
+//.kick ip
+bool ChatHandler::HandleKickByIPCommand(const char* args, WorldSession* m_session)
+{
+    if (!args || strlen(args) < 8)
+    {
+        RedSystemMessage(m_session, "An IP is required!");
+        RedSystemMessage(m_session, "Usage: .kick ip <AN.IP.ADD.RES>");
+        return true;
+    }
+
+    sWorld.DisconnectUsersWithIP(args, m_session);
+    sGMLog.writefromsession(m_session, "kicked players with IP %s", args);
+
+    return true;
+}

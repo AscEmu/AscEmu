@@ -275,6 +275,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         //Character
         bool HandleCharAddHonorPointsCommand(const char* args, WorldSession* m_session);
         bool HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session);
+        bool HandleSetAllExploredCommand(const char* /*args*/, WorldSession* m_session);
 
         // Debug
         bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
@@ -413,6 +414,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleUnrootCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleRootCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleAutoSaveChangesCommand(const char* /*args*/, WorldSession* m_session);
+        //.kick
+        bool HandleKickByNameCommand(const char* args, WorldSession* m_session);
+        bool HandleKKickBySessionCommand(const char* args, WorldSession* m_session);
+        bool HandleKickByIPCommand(const char* args, WorldSession* m_session);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Everything under this line is untested/not rewritten.
@@ -553,9 +558,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandlePetSpawnAIBot(const char* args, WorldSession* m_session);
 #endif
         bool HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session);
-        bool HandleKillBySessionCommand(const char* args, WorldSession* m_session);
-        bool HandleKillByPlayerCommand(const char* args, WorldSession* m_session);
-        bool HandleKillByIPCommand(const char* args, WorldSession* m_session);
         bool HandleQuestAddBothCommand(const char* args, WorldSession* m_session);
         bool HandleQuestAddFinishCommand(const char* args, WorldSession* m_session);
         bool HandleQuestAddStartCommand(const char* args, WorldSession* m_session);
@@ -608,7 +610,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleWorldPortCommand(const char* args, WorldSession* m_session);
         bool HandleLearnCommand(const char* args, WorldSession* m_session);
         bool HandleGenderChanger(const char* args, WorldSession* m_session);
-        bool HandleExploreCheatCommand(const char* args, WorldSession* m_session);
+        
         bool HandleGMTicketListCommand(const char* args, WorldSession* m_session);
         bool HandleGMTicketGetByIdCommand(const char* args, WorldSession* m_session);
         bool HandleGMTicketRemoveByIdCommand(const char* args, WorldSession* m_session);

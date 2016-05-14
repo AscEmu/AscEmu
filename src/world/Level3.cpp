@@ -333,50 +333,6 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleExploreCheatCommand(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-        return false;
-
-    Player* chr = GetSelectedPlayer(m_session, true, true);
-    if (chr == NULL)
-    {
-        chr = m_session->GetPlayer();
-        SystemMessage(m_session, "Auto-targeting self.");
-    }
-
-    if (stricmp(args, "on") == 0)
-    {
-        SystemMessage(m_session, "%s has explored all zones now.", chr->GetName());
-        SystemMessage(m_session, "%s has explored all zones for you.", m_session->GetPlayer()->GetName());
-        sGMLog.writefromsession(m_session, "explored all zones for player %s", chr->GetName());
-    }
-    else if (stricmp(args, "off") == 0)
-    {
-        SystemMessage(m_session, "%s has no more explored zones.", chr->GetName());
-        SystemMessage(m_session, "%s has hidden all zones from you.", m_session->GetPlayer()->GetName());
-        sGMLog.writefromsession(m_session, "hid all zones for player %s", chr->GetName());
-    }
-    else
-        return false;
-
-    for (uint8 i = 0; i < PLAYER_EXPLORED_ZONES_LENGTH; ++i)
-    {
-        if (stricmp(args, "on") == 0)
-        {
-            chr->SetFlag(PLAYER_EXPLORED_ZONES_1 + i, 0xFFFFFFFF);
-        }
-        else if (stricmp(args, "off") == 0)
-        {
-            chr->RemoveFlag(PLAYER_EXPLORED_ZONES_1 + i, 0xFFFFFFFF);
-        }
-    }
-#ifdef ENABLE_ACHIEVEMENTS
-    chr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
-#endif
-    return true;
-}
-
 bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
@@ -1177,44 +1133,6 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
     plr->_AdvanceAllSkills(amt);
     GreenSystemMessage(plr->GetSession(), "Advanced all your skill lines by %u points.", amt);
     sGMLog.writefromsession(m_session, "advanced all skills by %u on %s", amt, plr->GetName());
-    return true;
-}
-
-bool ChatHandler::HandleKillByPlayerCommand(const char* args, WorldSession* m_session)
-{
-    if (!args || strlen(args) < 2)
-    {
-        RedSystemMessage(m_session, "A player's name is required.");
-        return true;
-    }
-
-    sWorld.DisconnectUsersWithPlayerName(args, m_session);
-    sGMLog.writefromsession(m_session, "disconnected player %s", args);
-    return true;
-}
-
-bool ChatHandler::HandleKillBySessionCommand(const char* args, WorldSession* m_session)
-{
-    if (!args || strlen(args) < 2)
-    {
-        RedSystemMessage(m_session, "A player's name is required.");
-        return true;
-    }
-
-    sWorld.DisconnectUsersWithAccount(args, m_session);
-    sGMLog.writefromsession(m_session, "disconnected player with account %s", args);
-    return true;
-}
-bool ChatHandler::HandleKillByIPCommand(const char* args, WorldSession* m_session)
-{
-    if (!args || strlen(args) < 2)
-    {
-        RedSystemMessage(m_session, "An IP is required.");
-        return true;
-    }
-
-    sWorld.DisconnectUsersWithIP(args, m_session);
-    sGMLog.writefromsession(m_session, "disconnected players with IP %s", args);
     return true;
 }
 

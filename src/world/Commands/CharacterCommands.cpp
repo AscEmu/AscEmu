@@ -42,3 +42,25 @@ bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* 
 
     return true;
 }
+
+//.character setallexplored
+bool ChatHandler::HandleSetAllExploredCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    SystemMessage(m_session, "%s has explored all zones now.", player_target->GetName());
+    GreenSystemMessage(player_target->GetSession(), "%s sets all areas as explored for you.", m_session->GetPlayer()->GetName());
+    sGMLog.writefromsession(m_session, "sets all areas as explored for player %s", player_target->GetName());
+
+    for (uint8 i = 0; i < PLAYER_EXPLORED_ZONES_LENGTH; ++i)
+    {
+        player_target->SetFlag(PLAYER_EXPLORED_ZONES_1 + i, 0xFFFFFFFF);
+    }
+
+#ifdef ENABLE_ACHIEVEMENTS
+    player_target->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
+#endif
+    return true;
+}

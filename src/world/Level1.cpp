@@ -694,27 +694,6 @@ bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session
     return true;
 }
 
-/*bool ChatHandler::HandleNpcSpawnLinkCommand(const char* args, WorldSession* m_session)
-{
-    uint32 id;
-    char sql[512];
-    Creature* target = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(m_session->GetPlayer()->GetSelection()));
-    if (!target)
-        return false;
-    int valcount = sscanf(args, "%u", (unsigned int*)&id);
-    if (valcount == 1)
-    {
-        snprintf(sql, 512, "UPDATE creature_spawns SET npc_respawn_link = '%u' WHERE id = '%u'", (unsigned int)id, (unsigned int)target->GetSQL_id());
-        WorldDatabase.Execute(sql);
-        BlueSystemMessage(m_session, "Spawn linking for this NPC has been updated: %u", id);
-    }
-    else
-    {
-        RedSystemMessage(m_session, "Sql entry invalid %u", id);
-    }
-    return true;
-}*/
-
 bool ChatHandler::HandleModifyTPsCommand(const char* args, WorldSession* m_session)
 {
     if (!args)

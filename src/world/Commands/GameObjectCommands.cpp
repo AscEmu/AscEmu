@@ -262,7 +262,7 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-//.gobject set commands
+// .gobject set commands
 //.gobject set animprogress
 bool ChatHandler::HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session)
 {
