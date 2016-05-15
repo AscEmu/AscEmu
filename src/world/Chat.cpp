@@ -92,6 +92,13 @@ ChatCommand* CommandTableStorage::GetSubCommandTable(const char* name)
     return 0;
 }
 
+ChatCommand* CommandTableStorage::GetCharSubCommandTable(const char* name)
+{
+    if (0 == stricmp(name, "add"))
+        return _characterAddCommandTable;
+    return nullptr;
+}
+
 ChatCommand* CommandTableStorage::GetNPCSubCommandTable(const char* name)
 {
     if (0 == stricmp(name, "set"))
@@ -244,6 +251,7 @@ void CommandTableStorage::Dealloc()
     free(_reloadTableCommandTable);
     free(_gmCommandTable);
     free(_characterCommandTable);
+    free(_characterAddCommandTable);
     free(_lookupCommandTable);
     free(_adminCommandTable);
     free(_kickCommandTable);
@@ -686,10 +694,21 @@ void CommandTableStorage::Init()
     };
     dupe_command_table(gmCommandTable, _gmCommandTable);
 
+    static ChatCommand characterAddCommandTable[] =
+    {
+        { "honorpoints",        'm', &ChatHandler::HandleCharAddHonorPointsCommand,     "Adds x amount of honor points/currency",           nullptr, 0, 0, 0 },
+        { "honorkills",         'm', &ChatHandler::HandleCharAddHonorKillCommand,       "Adds x amount of honor kills",                     nullptr, 0, 0, 0 },
+        //rewrite
+        { "item",               'm', &ChatHandler::HandleAddInvItemCommand,             "Adds item x count y",                              nullptr, 0, 0, 0 },
+        //rewrite
+        { "itemset",            'm', &ChatHandler::HandleAddItemSetCommand,             "Adds item set to inv.",                            nullptr, 0, 0, 0 },
+        { nullptr,              '0', nullptr,                                           "",                                                 nullptr, 0, 0, 0 }
+    };
+    dupe_command_table(characterAddCommandTable, _characterAddCommandTable);
+
     static ChatCommand characterCommandTable[] =
     {
-        { "addhonorpoints",      'm', &ChatHandler::HandleCharAddHonorPointsCommand,    "Adds x amount of honor points/currency",           nullptr, 0, 0, 0 },
-        { "addhonorkills",       'm', &ChatHandler::HandleCharAddHonorKillCommand,      "Adds x amount of honor kills",                     nullptr, 0, 0, 0 },
+        { "add",                'm', nullptr,    "",                                                                       characterAddCommandTable, 0, 0, 0 },
         { "clearcooldowns",      'm', &ChatHandler::HandleCharClearCooldownsCommand,    "Clears all cooldowns for your class.",             nullptr, 0, 0, 0 },
         { "demorph",             'm', &ChatHandler::HandleCharDeMorphCommand,           "Demorphs from morphed model.",                     nullptr, 0, 0, 0 },
         { "levelup",             'm', &ChatHandler::HandleCharLevelUpCommand,           "Player target will be levelup x levels",           nullptr, 0, 0, 0 },
@@ -707,9 +726,7 @@ void CommandTableStorage::Init()
         { "resetspells",         'n', &ChatHandler::HandleResetSpellsCommand,      ".resetspells - Resets all spells to starting spells of targeted player. DANGEROUS.",                                NULL, 0, 0, 0 },
         { "resettalents",        'n', &ChatHandler::HandleResetTalentsCommand,     ".resettalents - Resets all talents of targeted player to that of their current level. DANGEROUS.",                  NULL, 0, 0, 0 },
         { "resetskills",         'n', &ChatHandler::HandleResetSkillsCommand,      ".resetskills - Resets all skills.",                                                                                 NULL, 0, 0, 0 },
-        { "additem",             'm', &ChatHandler::HandleAddInvItemCommand,       "Adds item x count y",                                                                                                                  NULL, 0, 0, 0 },
         { "removeitem",          'm', &ChatHandler::HandleRemoveItemCommand,       "Removes item x count y.",                                                                                         NULL, 0, 0, 0 },
-        { "additemset",          'm', &ChatHandler::HandleAddItemSetCommand,       "Adds item set to inv.",                                                                                             NULL, 0, 0, 0 },
         { "advanceallskills",    'm', &ChatHandler::HandleAdvanceAllSkillsCommand, "Advances all skills <x> points.",                                                                                   NULL, 0, 0, 0 },
         { "getstanding",         'm', &ChatHandler::HandleGetStandingCommand,      "Gets standing of faction x.",                                                                                      NULL, 0, 0, 0 },
         { "setstanding",         'm', &ChatHandler::HandleSetStandingCommand,      "Sets standing of faction x.",                                                                                      NULL, 0, 0, 0 },
@@ -899,6 +916,20 @@ void CommandTableStorage::Init()
             p->ChildCommands = np;
         }
         ++p;
+    }
+
+    // set subcommand for .npc command table
+    ChatCommand* p_char = &_characterCommandTable[0];
+    while (p_char->Name != 0)
+    {
+        if (p_char->ChildCommands != 0)
+        {
+            // Set the correct pointer.
+            ChatCommand* np_char = GetCharSubCommandTable(p_char->Name);
+            ARCEMU_ASSERT(np_char != NULL);
+            p_char->ChildCommands = np_char;
+        }
+        ++p_char;
     }
 
     // set subcommand for .npc command table

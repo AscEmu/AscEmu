@@ -181,6 +181,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _serverCommandTable;
     ChatCommand* _reloadTableCommandTable;
     ChatCommand* _gmCommandTable;
+    ChatCommand* _characterAddCommandTable;
     ChatCommand* _characterCommandTable;
     ChatCommand* _lookupCommandTable;
     ChatCommand* _adminCommandTable;
@@ -195,6 +196,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _commandTable;
 
     ChatCommand* GetSubCommandTable(const char* name);
+    ChatCommand* GetCharSubCommandTable(const char* name);
     ChatCommand* GetNPCSubCommandTable(const char* name);
     ChatCommand* GetGOSubCommandTable(const char* name);
     ChatCommand* GetReloadCommandTable(const char* name);
