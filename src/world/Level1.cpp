@@ -171,62 +171,6 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleAddInvItemCommand(const char* args, WorldSession* m_session)
-{
-    uint32 itemid, count = 1;
-    int32 randomprop = 0;
-    int32 numadded = 0;
-    if (strlen(args) < 1)
-    {
-        return false;
-    }
-    if (sscanf(args, "%u %u %d", &itemid, &count, &randomprop) < 1)
-    {
-        // check for item link
-        uint16 ofs = GetItemIDFromLink(args, &itemid);
-        if (itemid == 0)
-            return false;
-        if (sscanf(args + ofs, "%u %d", &count, &randomprop) != 2)
-            return false; // these may be empty
-    }
-
-    Player* chr = GetSelectedPlayer(m_session, false, true);
-    if (chr == NULL)
-        chr = m_session->GetPlayer();
-
-    ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
-    if (it)
-    {
-        numadded -= chr->GetItemInterface()->GetItemCount(itemid);
-        bool result = chr->GetItemInterface()->AddItemById(itemid, count, randomprop);
-        numadded += chr->GetItemInterface()->GetItemCount(itemid);
-        if (result == true)
-        {
-            if (count == 0)
-            {
-                sGMLog.writefromsession(m_session, "used add item command, item id %u [%s], quantity %u, to %s", it->ItemId, it->Name1, numadded, chr->GetName());
-            }
-            else
-            {
-                sGMLog.writefromsession(m_session, "used add item command, item id %u [%s], quantity %u (only %lu added due to full inventory), to %s", it->ItemId, it->Name1, numadded, numadded, chr->GetName());
-            }
-
-            SystemMessage(m_session, "Added item %s (id: %d), quantity %u, to %s's inventory.", GetItemLinkByProto(it, m_session->language).c_str(), (unsigned int)it->ItemId, numadded, chr->GetName());
-            SystemMessage(chr->GetSession(), "%s added item %s, quantity %u, to your inventory.", m_session->GetPlayer()->GetName(), GetItemLinkByProto(it, chr->GetSession()->language).c_str(), numadded);
-        }
-        else
-        {
-            SystemMessage(chr->GetSession(), "Failed to add item.");
-        }
-        return true;
-    }
-    else
-    {
-        RedSystemMessage(m_session, "Item %d is not a valid item!", itemid);
-        return true;
-    }
-}
-
 bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
@@ -561,55 +505,6 @@ bool ChatHandler::HandleRemoveSkillCommand(const char* args, WorldSession* m_ses
     {
         BlueSystemMessage(m_session, "Player doesn't have skill line %d", skill);
     }
-    return true;
-}
-
-bool ChatHandler::HandleModifyGoldCommand(const char* args, WorldSession* m_session)
-{
-    // WorldPacket data;
-    if (*args == 0)
-        return false;
-    Player* chr = GetSelectedPlayer(m_session, true, true);
-    if (chr == NULL)
-        return true;
-    int32 total = atoi((char*)args);
-    // gold = total / 10000;
-    // silver = (total / 100) % 100;
-    // copper = total % 100;
-    uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
-    uint32 silver = (uint32)std::floor(((float)int32abs(total) / 100.0f)) % 100;
-    uint32 copper = int32abs2uint32(total) % 100;
-    sGMLog.writefromsession(m_session, "used modify gold on %s, gold: %d", chr->GetName(), total);
-    int32 newgold = chr->GetGold() + total;
-    if (newgold < 0)
-    {
-        BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", chr->GetName());
-        GreenSystemMessage(chr->GetSession(), "%s took the all gold from your backpack.", m_session->GetPlayer()->GetName());
-        newgold = 0;
-    }
-    else
-    {
-        if (total >= 0)
-        {
-            BlueSystemMessage(m_session, "Adding %u gold, %u silver, %u copper to %s's backpack...", gold, silver, copper, chr->GetName());
-            GreenSystemMessage(chr->GetSession(), "%s added %u gold, %u silver, %u copper to your backpack.", m_session->GetPlayer()->GetName(), gold, silver, copper);
-        }
-        else
-        {
-            BlueSystemMessage(m_session, "Taking %u gold, %u silver, %u copper from %s's backpack...", gold, silver, copper, chr->GetName());
-            GreenSystemMessage(chr->GetSession(), "%s took %u gold, %u silver, %u copper from your backpack.", m_session->GetPlayer()->GetName(), gold, silver, copper);
-        }
-    }
-    // Check they don't have more than the max gold
-    if (sWorld.GoldCapEnabled)
-    {
-        if ((chr->GetGold() + newgold) > sWorld.GoldLimit)
-        {
-            RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (sWorld.GoldLimit / 10000), chr->GetName(), (chr->GetGold() / 10000));
-            return true;
-        }
-    }
-    chr->SetGold(newgold);
     return true;
 }
 

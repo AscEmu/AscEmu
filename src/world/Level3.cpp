@@ -565,63 +565,6 @@ bool ChatHandler::HandleResetSpellsCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleAddItemSetCommand(const char* args, WorldSession* m_session)
-{
-    int32 setid = (args ? atoi(args) : 0);
-    if (!setid)
-    {
-        RedSystemMessage(m_session, "You must specify a setid.");
-        return true;
-    }
-
-    auto player = GetSelectedPlayer(m_session, true, true);
-    if (player == nullptr)
-    {
-        RedSystemMessage(m_session, "Unable to select character.");
-        return true;
-    }
-
-    auto item_set_list = objmgr.GetListForItemSet(setid);
-    if (!item_set_list)
-    {
-        RedSystemMessage(m_session, "Invalid item set.");
-        return true;
-    }
-
-    BlueSystemMessage(m_session, "Searching item set %u...", setid);
-    sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, player->GetName());
-
-    for (std::list<ItemPrototype*>::iterator itr = item_set_list->begin(); itr != item_set_list->end(); ++itr)
-    {
-        auto item = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
-        if (!item)
-            continue;
-
-        if (item->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
-        {
-            if (item->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
-                item->AccountBind();
-            else
-                item->SoulBind();
-        }
-
-        if (!player->GetItemInterface()->AddItemToFreeSlot(item))
-        {
-            m_session->SendNotification("No free slots left!");
-            item->DeleteMe();
-            return true;
-        }
-        else
-        {
-            SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1, (*itr)->ItemId);
-            SlotResult* le = player->GetItemInterface()->LastSearchResult();
-            player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
-        }
-    }
-    GreenSystemMessage(m_session, "Added set to inventory complete.");
-    return true;
-}
-
 bool ChatHandler::HandleModifyLevelCommand(const char* args, WorldSession* m_session)
 {
     Player* plr = GetSelectedPlayer(m_session, true, true);

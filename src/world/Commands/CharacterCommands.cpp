@@ -284,3 +284,278 @@ bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* 
 
     return true;
 }
+
+//.character add item
+bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_session)
+{
+    uint32 itemid = 0;
+    uint32 count = 1;
+    int32 randomprop = 0;
+    int32 numadded = 0;
+
+    if (sscanf(args, "%u %u %d", &itemid, &count, &randomprop) < 1)
+    {
+        RedSystemMessage(m_session, "Command must be at least in format: .character add item <itemID>.");
+        RedSystemMessage(m_session, "Optional: .character add item <itemID> <amount> <randomprop>");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    auto item_proto = ItemPrototypeStorage.LookupEntry(itemid);
+    if (item_proto != nullptr)
+    {
+        numadded -= player_target->GetItemInterface()->GetItemCount(itemid);
+        bool result = player_target->GetItemInterface()->AddItemById(itemid, count, randomprop);
+        numadded += player_target->GetItemInterface()->GetItemCount(itemid);
+        if (result == true)
+        {
+            if (count == 0)
+            {
+                sGMLog.writefromsession(m_session, "used add item command, item id %u [%s], quantity %u, to %s", item_proto->ItemId, item_proto->Name1, numadded, player_target->GetName());
+            }
+            else
+            {
+                sGMLog.writefromsession(m_session, "used add item command, item id %u [%s], quantity %u (only %lu added due to full inventory), to %s", item_proto->ItemId, item_proto->Name1, numadded, numadded, player_target->GetName());
+            }
+
+            SystemMessage(m_session, "Added item %s (id: %u), quantity %u, to %s's inventory.", GetItemLinkByProto(item_proto, m_session->language).c_str(), item_proto->ItemId, numadded, player_target->GetName());
+            SystemMessage(player_target->GetSession(), "%s added item %s, quantity %u, to your inventory.", m_session->GetPlayer()->GetName(), GetItemLinkByProto(item_proto, player_target->GetSession()->language).c_str(), numadded);
+        }
+        else
+        {
+            SystemMessage(player_target->GetSession(), "Failed to add item.");
+        }
+        return true;
+    }
+    else
+    {
+        RedSystemMessage(m_session, "Item %u is not a valid item!", itemid);
+        return true;
+    }
+}
+
+//.character add itemset
+bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_session)
+{
+    int32 setid = atoi(args);
+    if (!setid)
+    {
+        RedSystemMessage(m_session, "You must specify a setid.");
+        return true;
+    }
+
+    auto player = GetSelectedPlayer(m_session, true, true);
+    if (player == nullptr)
+        return true;
+
+    auto item_set_list = objmgr.GetListForItemSet(setid);
+    if (!item_set_list)
+    {
+        RedSystemMessage(m_session, "Invalid item set.");
+        return true;
+    }
+
+    BlueSystemMessage(m_session, "Searching item set %u...", setid);
+    sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, player->GetName());
+
+    for (std::list<ItemPrototype*>::iterator itr = item_set_list->begin(); itr != item_set_list->end(); ++itr)
+    {
+        auto item = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
+        if (!item)
+            continue;
+
+        if (item->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
+        {
+            if (item->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND)
+                item->AccountBind();
+            else
+                item->SoulBind();
+        }
+
+        if (!player->GetItemInterface()->AddItemToFreeSlot(item))
+        {
+            m_session->SendNotification("No free slots left!");
+            item->DeleteMe();
+            return true;
+        }
+        else
+        {
+            SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1, (*itr)->ItemId);
+            SlotResult* le = player->GetItemInterface()->LastSearchResult();
+            player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        }
+    }
+    GreenSystemMessage(m_session, "Added set to inventory complete.");
+    return true;
+}
+
+//.character add copper
+bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_session)
+{
+    if (*args == 0)
+    {
+        RedSystemMessage(m_session, "You must specify how many copper you will add.");
+        RedSystemMessage(m_session, "10000 = 1 gold, 1000 = 1 silver, 1 = 1 copper.");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    int32 total = atoi(args);
+
+    uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
+    uint32 silver = (uint32)std::floor(((float)int32abs(total) / 100.0f)) % 100;
+    uint32 copper = int32abs2uint32(total) % 100;
+
+    int32 newgold = player_target->GetGold() + total;
+    if (newgold < 0)
+    {
+        BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s took all gold from your backpack.", m_session->GetPlayer()->GetName());
+        newgold = 0;
+    }
+    else
+    {
+        if (total >= 0)
+        {
+            if (sWorld.GoldCapEnabled)
+            {
+                if ((player_target->GetGold() + newgold) > sWorld.GoldLimit)
+                {
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (sWorld.GoldLimit / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
+                    return true;
+                }
+            }
+
+            BlueSystemMessage(m_session, "Adding %u gold, %u silver, %u copper to %s's backpack...", gold, silver, copper, player_target->GetName());
+            GreenSystemMessage(player_target->GetSession(), "%s added %u gold, %u silver, %u copper to your backpack.", m_session->GetPlayer()->GetName(), gold, silver, copper);
+            sGMLog.writefromsession(m_session, "added %u gold, %u silver, %u copper to %s's backpack.", gold, silver, copper , player_target->GetName());
+        }
+        else
+        {
+            BlueSystemMessage(m_session, "Taking %u gold, %u silver, %u copper from %s's backpack...", gold, silver, copper, player_target->GetName());
+            GreenSystemMessage(player_target->GetSession(), "%s took %u gold, %u silver, %u copper from your backpack.", m_session->GetPlayer()->GetName(), gold, silver, copper);
+            sGMLog.writefromsession(m_session, "took %u gold, %u silver, %u copper from %s's backpack.", gold, silver, copper, player_target->GetName());
+        }
+    }
+
+    player_target->SetGold(newgold);
+
+    return true;
+}
+
+//.character add silver
+bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_session)
+{
+    if (*args == 0)
+    {
+        RedSystemMessage(m_session, "You must specify how many silver you will add.");
+        RedSystemMessage(m_session, "1000 = 1 gold, 1 = 1 silver");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    int32 total = atoi(args) * 100;
+
+    uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
+    uint32 silver = (uint32)std::floor(((float)int32abs(total) / 100.0f)) % 100;
+
+    int32 newgold = player_target->GetGold() + total;
+    if (newgold < 0)
+    {
+        BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s took all gold from your backpack.", m_session->GetPlayer()->GetName());
+        newgold = 0;
+    }
+    else
+    {
+        if (total >= 0)
+        {
+            if (sWorld.GoldCapEnabled)
+            {
+                if ((player_target->GetGold() + newgold) > sWorld.GoldLimit)
+                {
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (sWorld.GoldLimit / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
+                    return true;
+                }
+            }
+
+            BlueSystemMessage(m_session, "Adding %u gold, %u silver to %s's backpack...", gold, silver, player_target->GetName());
+            GreenSystemMessage(player_target->GetSession(), "%s added %u gold, %u silver to your backpack.", m_session->GetPlayer()->GetName(), gold, silver);
+            sGMLog.writefromsession(m_session, "added %u gold, %u silver to %s's backpack.", gold, silver, player_target->GetName());
+        }
+        else
+        {
+            BlueSystemMessage(m_session, "Taking %u gold, %u silver from %s's backpack...", gold, silver, player_target->GetName());
+            GreenSystemMessage(player_target->GetSession(), "%s took %u gold, %u silver from your backpack.", m_session->GetPlayer()->GetName(), gold, silver);
+            sGMLog.writefromsession(m_session, "took %u gold, %u silver from %s's backpack.", gold, silver, player_target->GetName());
+        }
+    }
+
+    player_target->SetGold(newgold);
+
+    return true;
+}
+
+//.character add gold
+bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_session)
+{
+    if (*args == 0)
+    {
+        RedSystemMessage(m_session, "You must specify how many gold you will add.");
+        RedSystemMessage(m_session, "1 = 1 gold.");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    int32 total = atoi(args) * 10000;
+
+    uint32 gold = (uint32)std::floor((float)int32abs(total) / 10000.0f);
+
+    int32 newgold = player_target->GetGold() + total;
+    if (newgold < 0)
+    {
+        BlueSystemMessage(m_session, "Taking all gold from %s's backpack...", player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s took all gold from your backpack.", m_session->GetPlayer()->GetName());
+        newgold = 0;
+    }
+    else
+    {
+        if (total >= 0)
+        {
+            if (sWorld.GoldCapEnabled)
+            {
+                if ((player_target->GetGold() + newgold) > sWorld.GoldLimit)
+                {
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (sWorld.GoldLimit / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
+                    return true;
+                }
+            }
+
+            BlueSystemMessage(m_session, "Adding %u gold to %s's backpack...", gold, player_target->GetName());
+            GreenSystemMessage(player_target->GetSession(), "%s added %u gold to your backpack.", m_session->GetPlayer()->GetName(), gold);
+            sGMLog.writefromsession(m_session, "added %u gold to %s's backpack.", gold, player_target->GetName());
+        }
+        else
+        {
+            BlueSystemMessage(m_session, "Taking %u gold from %s's backpack...", gold, player_target->GetName());
+            GreenSystemMessage(player_target->GetSession(), "%s took %u gold from your backpack.", m_session->GetPlayer()->GetName(), gold);
+            sGMLog.writefromsession(m_session, "took %u gold from %s's backpack.", gold, player_target->GetName());
+        }
+    }
+
+    player_target->SetGold(newgold);
+
+    return true;
+}

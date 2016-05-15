@@ -291,7 +291,6 @@ void CommandTableStorage::Init()
         { "ap",              'm', NULL,                                   "Modifies the attack power of the selected target.",               NULL, UNIT_FIELD_ATTACK_POWER,           0,                    1 },
         { "rangeap",         'm', NULL,                                   "Modifies the range attack power of the selected target.",         NULL, UNIT_FIELD_RANGED_ATTACK_POWER,    0,                    1 },
         { "scale",           'm', NULL,                                   "Modifies the scale of the selected target.",                      NULL, OBJECT_FIELD_SCALE_X,              0,                    2 },
-        { "gold",            'm', &ChatHandler::HandleModifyGoldCommand,  "Modifies the gold amount of the selected target. Copper value.",  NULL, 0,                                 0,                    0 },
         { "speed",           'm', &ChatHandler::HandleModifySpeedCommand, "Modifies the movement speed of the selected target.",             NULL, 0,                                 0,                    0 },
         { "nativedisplayid", 'm', NULL,                                   "Modifies the native display identifier of the target.",           NULL, UNIT_FIELD_NATIVEDISPLAYID,        0,                    1 },
         { "displayid",       'm', NULL,                                   "Modifies the display identifier (DisplayID) of the target.",      NULL, UNIT_FIELD_DISPLAYID,              0,                    1 },
@@ -696,12 +695,13 @@ void CommandTableStorage::Init()
 
     static ChatCommand characterAddCommandTable[] =
     {
+        { "copper",             'm', &ChatHandler::HandleCharAddCopperCommand,          "Adds x Copper to character.",                      nullptr, 0, 0, 0 },
+        { "silver",             'm', &ChatHandler::HandleCharAddSilverCommand,          "Adds x silver to character.",                      nullptr, 0, 0, 0 },
+        { "gold",               'm', &ChatHandler::HandleCharAddGoldCommand,            "Adds x gold to character.",                        nullptr, 0, 0, 0 },
         { "honorpoints",        'm', &ChatHandler::HandleCharAddHonorPointsCommand,     "Adds x amount of honor points/currency",           nullptr, 0, 0, 0 },
         { "honorkills",         'm', &ChatHandler::HandleCharAddHonorKillCommand,       "Adds x amount of honor kills",                     nullptr, 0, 0, 0 },
-        //rewrite
-        { "item",               'm', &ChatHandler::HandleAddInvItemCommand,             "Adds item x count y",                              nullptr, 0, 0, 0 },
-        //rewrite
-        { "itemset",            'm', &ChatHandler::HandleAddItemSetCommand,             "Adds item set to inv.",                            nullptr, 0, 0, 0 },
+        { "item",               'm', &ChatHandler::HandleCharAddItemCommand,            "Adds item x count y",                              nullptr, 0, 0, 0 },
+        { "itemset",            'm', &ChatHandler::HandleCharAddItemSetCommand,         "Adds item set to inv.",                            nullptr, 0, 0, 0 },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(characterAddCommandTable, _characterAddCommandTable);
