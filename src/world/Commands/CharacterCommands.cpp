@@ -1111,3 +1111,151 @@ bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession*
     sGMLog.writefromsession(m_session, "flagged %s for a race change for charater (%u)", pi->name, pi->guid);
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// .character list commands
+//.character list skills
+bool ChatHandler::HandleCharListSkillsCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    uint32 nobonus = 0;
+    int32 bonus = 0;
+    uint32 max = 0;
+
+    BlueSystemMessage(m_session, "===== %s has skills =====", player_target->GetName());
+
+    for (uint32 SkillId = 0; SkillId <= SkillNameManager->maxskill; SkillId++)
+    {
+        if (player_target->_HasSkillLine(SkillId))
+        {
+            char* SkillName = SkillNameManager->SkillNames[SkillId];
+            if (!SkillName)
+            {
+                RedSystemMessage(m_session, "Invalid skill: %u", SkillId);
+                continue;
+            }
+            nobonus = player_target->_GetSkillLineCurrent(SkillId, false);
+            bonus = player_target->_GetSkillLineCurrent(SkillId, true) - nobonus;
+            max = player_target->_GetSkillLineMax(SkillId);
+            BlueSystemMessage(m_session, " %s: Value: %u, MaxValue: %u. (+ %d bonus)", SkillName, nobonus, max, bonus);
+        }
+    }
+    return true;
+}
+
+//.character list standing
+bool ChatHandler::HandleCharListStandingCommand(const char* args, WorldSession* m_session)
+{
+    uint32 faction = atoi(args);
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    int32 standing = player_target->GetStanding(faction);
+    int32 bstanding = player_target->GetBaseStanding(faction);
+
+    SystemMessage(m_session, "==== %s standing ====", player_target->GetName());
+    SystemMessage(m_session, "Reputation for faction %u:", faction);
+    SystemMessage(m_session, "Base Standing: %d", bstanding);
+    SystemMessage(m_session, "Standing: %d", standing);
+    return true;
+}
+
+//.character list items
+bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession* m_session)
+{
+    std::string q;
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    SystemMessage(m_session, "==== %s has items ====", player_target->GetName());
+    int itemcount = 0;
+    ItemIterator itr(player_target->GetItemInterface());
+    itr.BeginSearch();
+    for (; !itr.End(); itr.Increment())
+    {
+        if (!(*itr))
+            return false;
+        itemcount++;
+        SendItemLinkToPlayer((*itr)->GetProto(), m_session, true, player_target, m_session->language);
+    }
+    itr.EndSearch();
+
+    return true;
+}
+
+//.character list kills
+bool ChatHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target)
+        return true;
+
+    SystemMessage(m_session, "==== %s kills ====", player_target->GetName());
+    SystemMessage(m_session, "All Kills: %u", player_target->m_killsLifetime);
+    SystemMessage(m_session, "Kills today: %u", player_target->m_killsToday);
+    SystemMessage(m_session, "Kills yesterday: %u", player_target->m_killsYesterday);
+
+    return true;
+}
+
+//.character list instances
+bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target)
+        return true;
+
+    uint32 count = 0;
+    std::stringstream ss;
+    ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->GetName() << "|r\n";
+    player_target->getPlayerInfo()->savedInstanceIdsLock.Acquire();
+    for (uint32 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
+    {
+        for (PlayerInstanceMap::iterator itr = player_target->getPlayerInfo()->savedInstanceIds[difficulty].begin(); itr != player_target->getPlayerInfo()->savedInstanceIds[difficulty].end(); ++itr)
+        {
+            count++;
+            ss << " - " << MSG_COLOR_CYAN << (*itr).second << "|r";
+            MapInfo* mapInfo = WorldMapInfoStorage.LookupEntry((*itr).first);
+            if (mapInfo != NULL)
+                ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
+            Instance* pInstance = sInstanceMgr.GetInstanceByIds((*itr).first, (*itr).second);
+            if (pInstance == NULL)
+                ss << " - " << MSG_COLOR_RED << "Expired!|r";
+            else
+            {
+                ss << " [" << GetMapTypeString(static_cast<uint8>(pInstance->m_mapInfo->type)) << "]";
+                if (pInstance->m_mapInfo->type == INSTANCE_MULTIMODE)
+                {
+                    ss << " [" << GetDifficultyString(static_cast<uint8>(pInstance->m_difficulty)) << "]";
+                }
+                ss << " - ";
+                if (pInstance->m_mapMgr == NULL)
+                    ss << MSG_COLOR_LIGHTRED << "Shut Down|r";
+                else
+                {
+                    if (!pInstance->m_mapMgr->HasPlayers())
+                        ss << MSG_COLOR_LIGHTRED << "Idle|r";
+                    else
+                        ss << MSG_COLOR_GREEN << "In use|r";
+                }
+            }
+            ss << "\n";
+        }
+    }
+    player_target->getPlayerInfo()->savedInstanceIdsLock.Release();
+
+    if (count == 0)
+        ss << "Player is not assigned to any persistent instances.\n";
+    else
+        ss << "Player is assigned to " << MSG_COLOR_CYAN << count << "|r persistent instances.\n";
+
+    SendMultilineMessage(m_session, ss.str().c_str());
+    sGMLog.writefromsession(m_session, "used show instances command on %s,", player_target->GetName());
+    return true;
+}

@@ -1292,21 +1292,6 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleGetStandingCommand(const char* args, WorldSession* m_session)
-{
-    uint32 faction = atoi(args);
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr) return true;
-
-    int32 standing = plr->GetStanding(faction);
-    int32 bstanding = plr->GetBaseStanding(faction);
-
-    GreenSystemMessage(m_session, "Reputation for faction %u:", faction);
-    SystemMessage(m_session, "Base Standing: %d", bstanding);
-    BlueSystemMessage(m_session, "Standing: %d", standing);
-    return true;
-}
-
 void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32 id)
 {
     char message[1024];
@@ -2006,52 +1991,6 @@ bool ChatHandler::HandleDispelAllCommand(const char* args, WorldSession* m_sessi
     objmgr._playerslock.ReleaseReadLock();
 
     BlueSystemMessage(m_session, "Dispel action done.");
-    return true;
-}
-
-bool ChatHandler::HandleShowItems(const char* args, WorldSession* m_session)
-{
-    std::string q;
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr) return true;
-    BlueSystemMessage(m_session, "Listing items for player %s", plr->GetName());
-    int itemcount = 0;
-    ItemIterator itr(plr->GetItemInterface());
-    itr.BeginSearch();
-    for (; !itr.End(); itr.Increment())
-    {
-        if (!(*itr))
-            return false;
-        itemcount++;
-        SendItemLinkToPlayer((*itr)->GetProto(), m_session, true, plr, m_session->language);
-    }
-    itr.EndSearch();
-    BlueSystemMessage(m_session, "Listed %d items for player %s", itemcount, plr->GetName());
-
-    sGMLog.writefromsession(m_session, "used show items command on %s,", plr->GetName());
-
-    return true;
-}
-
-bool ChatHandler::HandleShowSkills(const char* args, WorldSession* m_session)
-{
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr)
-        return true;
-
-    BlueSystemMessage(m_session, "Listing items for player %s", plr->GetName());
-    int itemcount = 0;
-    SkillIterator itr2(plr);
-    itr2.BeginSearch();
-    for (; !itr2.End(); itr2.Increment())
-    {
-        itemcount++;
-        SystemMessage(m_session, "Skill %u %s %u/%u", itr2->Skill->id, itr2->Skill->Name, itr2->CurrentValue, itr2->MaximumValue);
-    }
-    itr2.EndSearch();
-    BlueSystemMessage(m_session, "Listed %d skills for player %s", itemcount, plr->GetName());
-    sGMLog.writefromsession(m_session, "used show skills command on %s,", plr->GetName());
-
     return true;
 }
 

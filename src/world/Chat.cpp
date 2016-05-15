@@ -98,6 +98,8 @@ ChatCommand* CommandTableStorage::GetCharSubCommandTable(const char* name)
         return _characterAddCommandTable;
     if (0 == stricmp(name, "set"))
         return _characterSetCommandTable;
+    if (0 == stricmp(name, "list"))
+        return _characterListCommandTable;
     return nullptr;
 }
 
@@ -255,6 +257,7 @@ void CommandTableStorage::Dealloc()
     free(_characterCommandTable);
     free(_characterAddCommandTable);
     free(_characterSetCommandTable);
+    free(_characterListCommandTable);
     free(_lookupCommandTable);
     free(_adminCommandTable);
     free(_kickCommandTable);
@@ -725,10 +728,22 @@ void CommandTableStorage::Init()
     };
     dupe_command_table(characterSetCommandTable, _characterSetCommandTable);
 
+    static ChatCommand characterListCommandTable[] =
+    {
+        { "skills",         'm', &ChatHandler::HandleCharListSkillsCommand,         "Lists all the skills from a player",                   nullptr, 0, 0, 0 },
+        { "standing",       'm', &ChatHandler::HandleCharListStandingCommand,       "Lists standing of faction x.",                         nullptr, 0, 0, 0 },
+        { "items",          'm', &ChatHandler::HandleCharListItemsCommand,          "Lists items of selected Player",                       nullptr, 0, 0, 0 },
+        { "kills",          'm', &ChatHandler::HandleCharListKillsCommand,          "Lists all kills of selected Player",                   nullptr, 0, 0, 0 },
+        { "instances",      'z', &ChatHandler::HandleCharListInstanceCommand,       "Lists persistent instances of selected Player",        nullptr, 0, 0, 0 },
+        { nullptr,          '0', nullptr,                                           "",                                                     nullptr, 0, 0, 0 }
+    };
+    dupe_command_table(characterListCommandTable, _characterListCommandTable);
+
     static ChatCommand characterCommandTable[] =
     {
         { "add",                'm', nullptr,    "",                                                                       characterAddCommandTable, 0, 0, 0 },
         { "set",                'm', nullptr,    "",                                                                       characterSetCommandTable, 0, 0, 0 },
+        { "list",               'm', nullptr,    "",                                                                      characterListCommandTable, 0, 0, 0 },
         { "clearcooldowns",      'm', &ChatHandler::HandleCharClearCooldownsCommand,    "Clears all cooldowns for your class.",             nullptr, 0, 0, 0 },
         { "demorph",             'm', &ChatHandler::HandleCharDeMorphCommand,           "Demorphs from morphed model.",                     nullptr, 0, 0, 0 },
         { "levelup",             'm', &ChatHandler::HandleCharLevelUpCommand,           "Player target will be levelup x levels",           nullptr, 0, 0, 0 },
@@ -736,7 +751,6 @@ void CommandTableStorage::Init()
         { "removesickness",      'm', &ChatHandler::HandleCharRemoveSickessCommand,     "Removes ressurrection sickness from target",       nullptr, 0, 0, 0 },
         { "learn",               'm', &ChatHandler::HandleLearnCommand,            "Learns spell",                                                                                                      NULL, 0, 0, 0 },
         { "unlearn",             'm', &ChatHandler::HandleUnlearnCommand,          "Unlearns spell",                                                                                                    NULL, 0, 0, 0 },
-        { "getskillinfo",        'm', &ChatHandler::HandleGetSkillsInfoCommand,    "Gets all the skills from a player",                                                                                 NULL, 0, 0, 0 },
         { "learnskill",          'm', &ChatHandler::HandleLearnSkillCommand,       ".learnskill <skillid> (optional) <value> <maxvalue> - Learns skill id skillid.",                                    NULL, 0, 0, 0 },
         { "advanceskill",        'm', &ChatHandler::HandleModifySkillCommand,      "advanceskill <skillid> <amount, optional, default = 1> - Advances skill line x times..",                            NULL, 0, 0, 0 },
         { "removeskill",         'm', &ChatHandler::HandleRemoveSkillCommand,      ".removeskill <skillid> - Removes skill",                                                                            NULL, 0, 0, 0 },
@@ -747,10 +761,6 @@ void CommandTableStorage::Init()
         { "resetskills",         'n', &ChatHandler::HandleResetSkillsCommand,      ".resetskills - Resets all skills.",                                                                                 NULL, 0, 0, 0 },
         { "removeitem",          'm', &ChatHandler::HandleRemoveItemCommand,       "Removes item x count y.",                                                                                         NULL, 0, 0, 0 },
         { "advanceallskills",    'm', &ChatHandler::HandleAdvanceAllSkillsCommand, "Advances all skills <x> points.",                                                                                   NULL, 0, 0, 0 },
-        { "getstanding",         'm', &ChatHandler::HandleGetStandingCommand,      "Gets standing of faction x.",                                                                                      NULL, 0, 0, 0 },
-        { "showitems",           'm', &ChatHandler::HandleShowItems,               "Shows items of selected Player",                                                                                    NULL, 0, 0, 0 },
-        { "showskills",          'm', &ChatHandler::HandleShowSkills,              "Shows skills of selected Player",                                                                                   NULL, 0, 0, 0 },
-        { "showinstances",       'z', &ChatHandler::HandleShowInstancesCommand,    "Shows persistent instances of selected Player",                                                                     NULL, 0, 0, 0 },
         { NULL,                  '0', NULL,                                        "",                                                                                                                  NULL, 0, 0, 0 }
     };
     dupe_command_table(characterCommandTable, _characterCommandTable);
@@ -1296,6 +1306,55 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
     }
 
     return unit;
+}
+
+const char* ChatHandler::GetMapTypeString(uint8 type)
+{
+    switch (type)
+    {
+        case INSTANCE_NULL:
+            return "Continent";
+        case INSTANCE_RAID:
+            return "Raid";
+        case INSTANCE_NONRAID:
+            return "Non-Raid";
+        case INSTANCE_BATTLEGROUND:
+            return "PvP";
+        case INSTANCE_MULTIMODE:
+            return "MultiMode";
+        default:
+            return "Unknown";
+    }
+}
+
+const char* ChatHandler::GetDifficultyString(uint8 difficulty)
+{
+    switch (difficulty)
+    {
+        case MODE_NORMAL:
+            return "normal";
+        case MODE_HEROIC:
+            return "heroic";
+        default:
+            return "unknown";
+    }
+}
+
+const char* ChatHandler::GetRaidDifficultyString(uint8 diff)
+{
+    switch (diff)
+    {
+        case MODE_NORMAL_10MEN:
+            return "normal 10men";
+        case MODE_NORMAL_25MEN:
+            return "normal 25men";
+        case MODE_HEROIC_10MEN:
+            return "heroic 10men";
+        case MODE_HEROIC_25MEN:
+            return "heroic 25men";
+        default:
+            return "unknown";
+    }
 }
 
 void ChatHandler::SystemMessage(WorldSession* m_session, const char* message, ...)

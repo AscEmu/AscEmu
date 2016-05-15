@@ -429,33 +429,6 @@ bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_s
     return true;
 }
 
-bool ChatHandler::HandleGetSkillsInfoCommand(const char* args, WorldSession* m_session)
-{
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr) return false;
-    uint32 nobonus = 0;
-    int32 bonus = 0;
-    uint32 max = 0;
-    BlueSystemMessage(m_session, "Player: %s has skills", plr->GetName());
-    for (uint32 SkillId = 0; SkillId <= SkillNameManager->maxskill; SkillId++)
-    {
-        if (plr->_HasSkillLine(SkillId))
-        {
-            char* SkillName = SkillNameManager->SkillNames[SkillId];
-            if (!SkillName)
-            {
-                RedSystemMessage(m_session, "Invalid skill: %u", SkillId);
-                continue;
-            }
-            nobonus = plr->_GetSkillLineCurrent(SkillId, false);
-            bonus = plr->_GetSkillLineCurrent(SkillId, true) - nobonus;
-            max = plr->_GetSkillLineMax(SkillId);
-            BlueSystemMessage(m_session, " %s: Value: %u, MaxValue: %u. (+ %d bonus)", SkillName, nobonus, max, bonus);
-        }
-    }
-    return true;
-}
-
 bool ChatHandler::HandleRemoveSkillCommand(const char* args, WorldSession* m_session)
 {
     uint32 skill = 0;

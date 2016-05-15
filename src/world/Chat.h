@@ -183,6 +183,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _gmCommandTable;
     ChatCommand* _characterAddCommandTable;
     ChatCommand* _characterSetCommandTable;
+    ChatCommand* _characterListCommandTable;
     ChatCommand* _characterCommandTable;
     ChatCommand* _lookupCommandTable;
     ChatCommand* _adminCommandTable;
@@ -245,6 +246,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         Creature* GetSelectedCreature(WorldSession* m_session, bool showerror = true);
         Unit* GetSelectedUnit(WorldSession* m_session, bool showerror = true);
         std::string GetNpcFlagString(Creature* creature);
+        const char* GetMapTypeString(uint8 type);
+        const char* GetDifficultyString(uint8 difficulty);
+        const char* GetRaidDifficultyString(uint8 diff);
         // For skill related GM commands
         SkillNameMgr* SkillNameManager;
 
@@ -307,6 +311,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCharSetCustomizeCommand(const char* args, WorldSession* m_session);
         bool HandleCharSetFactionChangeCommand(const char* args, WorldSession* m_session);
         bool HandleCharSetRaceChangeCommand(const char* args, WorldSession* m_session);
+
+        //Character list commands
+        bool HandleCharListSkillsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCharListStandingCommand(const char* args, WorldSession* m_session);
+        bool HandleCharListItemsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCharListKillsCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session);
 
         // Debug
         bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
@@ -542,8 +553,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         
         bool HandleWaypointAddFlyCommand(const char* args, WorldSession* m_session);
-        bool HandleShowItems(const char* args, WorldSession* m_session);
-        bool HandleShowSkills(const char* args, WorldSession* m_session);
+        
+        
         bool HandleCollisionTestIndoor(const char* args, WorldSession* m_session);
         bool HandleGetDeathState(const char* args, WorldSession* m_session);
         bool HandleCollisionTestLOS(const char* args, WorldSession* m_session);
@@ -569,7 +580,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleRemoveItemCommand(const char* args, WorldSession* m_session);
         
         
-        bool HandleGetStandingCommand(const char* args, WorldSession* m_session);
+        
         
         
         
@@ -610,8 +621,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleResetAllInstancesCommand(const char* args, WorldSession* m_session);
         bool HandleResetInstanceCommand(const char* args, WorldSession* m_session);
         bool HandleShutdownInstanceCommand(const char* args, WorldSession* m_session);
+        
         bool HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session);
-        bool HandleShowInstancesCommand(const char* args, WorldSession* m_session);
         bool HandleBanCharacterCommand(const char* args, WorldSession* m_session);
         bool HandleBanAllCommand(const char* args, WorldSession* m_session);
         bool HandleUnBanCharacterCommand(const char* args, WorldSession* m_session);
@@ -671,7 +682,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleResetSpellsCommand(const char* args, WorldSession* m_session);
         bool HandleResetSkillsCommand(const char* args, WorldSession* m_session);
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
-        bool HandleGetSkillsInfoCommand(const char* args, WorldSession* m_session);
+        
         bool HandlePlayerInfo(const char* args, WorldSession* m_session);
         bool HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session);
         bool HandleVehicleEjectAllPassengersCommand(const char* args, WorldSession* session);
