@@ -222,28 +222,6 @@ bool ChatHandler::HandleCharRemoveSickessCommand(const char* args, WorldSession*
     return true;
 }
 
-//.character setallexplored
-bool ChatHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session)
-{
-    auto player_target = GetSelectedPlayer(m_session, true, true);
-    if (player_target == nullptr)
-        return true;
-
-    SystemMessage(m_session, "%s has explored all zones now.", player_target->GetName());
-    GreenSystemMessage(player_target->GetSession(), "%s sets all areas as explored for you.", m_session->GetPlayer()->GetName());
-    sGMLog.writefromsession(m_session, "sets all areas as explored for player %s", player_target->GetName());
-
-    for (uint8 i = 0; i < PLAYER_EXPLORED_ZONES_LENGTH; ++i)
-    {
-        player_target->SetFlag(PLAYER_EXPLORED_ZONES_1 + i, 0xFFFFFFFF);
-    }
-
-#ifdef ENABLE_ACHIEVEMENTS
-    player_target->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
-#endif
-    return true;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // .character add commands
 //.character add honorpoints
@@ -557,5 +535,579 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
 
     player_target->SetGold(newgold);
 
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// .character set commands
+//.character set allexplored
+bool ChatHandler::HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    SystemMessage(m_session, "%s has explored all zones now.", player_target->GetName());
+    GreenSystemMessage(player_target->GetSession(), "%s sets all areas as explored for you.", m_session->GetPlayer()->GetName());
+    sGMLog.writefromsession(m_session, "sets all areas as explored for player %s", player_target->GetName());
+
+    for (uint8 i = 0; i < PLAYER_EXPLORED_ZONES_LENGTH; ++i)
+    {
+        player_target->SetFlag(PLAYER_EXPLORED_ZONES_1 + i, 0xFFFFFFFF);
+    }
+
+#ifdef ENABLE_ACHIEVEMENTS
+    player_target->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA); // update
+#endif
+    return true;
+}
+
+//.character set gender
+bool ChatHandler::HandleCharSetGenderCommand(const char* args, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    uint32 displayId = player_target->GetNativeDisplayId();
+    uint8 gender;
+    if (*args == 0)
+    {
+        gender = player_target->getGender() == 1 ? 0 : 1;
+    }
+    else
+    {
+        gender = (uint8)atoi((char*)args);
+        if (gender > 1)
+            gender = 1;
+    }
+
+    if (gender == player_target->getGender())
+    {
+        SystemMessage(m_session, "%s's gender is already set to %s(%u).", player_target->GetName(), gender ? "Female" : "Male", gender);
+        return true;
+    }
+    else
+    {
+        player_target->setGender(gender);
+        SystemMessage(m_session, "Set %s's gender to %s(%u).", player_target->GetName(), gender ? "Female" : "Male", gender);
+    }
+
+    if (player_target->getGender() == 0)
+    {
+        player_target->SetDisplayId((player_target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
+        player_target->SetNativeDisplayId(displayId);
+    }
+    else
+    {
+        player_target->SetDisplayId((player_target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
+        player_target->SetNativeDisplayId(displayId);
+    }
+
+    player_target->EventModelChange();
+
+    return true;
+}
+
+//.character set itemsrepaired
+bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* args, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    for (uint8 i = 0; i < MAX_INVENTORY_SLOT; i++)
+    {
+        auto player_item = player_target->GetItemInterface()->GetInventoryItem(static_cast<uint16>(i));
+        if (player_item != nullptr)
+        {
+            if (player_item->IsContainer())
+            {
+                auto item_container = static_cast<Container*>(player_item);
+                for (uint32 j = 0; j < item_container->GetProto()->ContainerSlots; ++j)
+                {
+                    player_item = item_container->GetItem(static_cast<uint16>(j));
+                    if (player_item != nullptr)
+                    {
+                        player_item->SetDurabilityToMax();
+                        player_item->m_isDirty = true;
+                    }
+                }
+            }
+            else
+            {
+                if (player_item->GetProto()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->GetDurability() <= 0)
+                {
+                    player_item->SetDurabilityToMax();
+                    player_item->m_isDirty = true;
+                    player_target->ApplyItemMods(player_item, static_cast<uint16>(i), true);
+                }
+                else
+                {
+                    player_item->SetDurabilityToMax();
+                    player_item->m_isDirty = true;
+                }
+            }
+        }
+    }
+
+    if (player_target != m_session->GetPlayer())
+    {
+        BlueSystemMessage(m_session, "All items has been repaired for Player %s", player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s repaired all your items.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "repaired all items for player %s.", player_target->GetName());
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "You repaired all your items.", player_target->GetName());
+    }
+
+    return true;
+}
+
+//.character set level
+bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    uint32 new_level = args ? atol(args) : 0;
+    if (new_level == 0 || new_level > sWorld.m_levelCap)
+    {
+        RedSystemMessage(m_session, "Level %u is not a valid level! Check out your world.conf!", new_level);
+        return true;
+    }
+
+    auto level_info = objmgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), new_level);
+    if (level_info == nullptr)
+    {
+        RedSystemMessage(m_session, "Level information not found!");
+        return true;
+    }
+
+    if (player_target != m_session->GetPlayer())
+    {
+        BlueSystemMessage(m_session, "Setting the level of %s to %u.", player_target->GetName(), new_level);
+        GreenSystemMessage(player_target->GetSession(), "%s set your level to %u.", m_session->GetPlayer()->GetName(), new_level);
+        sGMLog.writefromsession(m_session, "set level on %s, level %u", player_target->GetName(), new_level);
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "You set your own level to %u.", new_level);
+    }
+
+    player_target->ApplyLevelInfo(level_info, new_level);
+
+    if (player_target->getClass() == WARLOCK)
+    {
+        std::list<Pet*> player_summons = player_target->GetSummons();
+        for (std::list<Pet*>::iterator itr = player_summons.begin(); itr != player_summons.end(); ++itr)
+        {
+            Pet* single_summon = *itr;
+            if (single_summon->IsInWorld() && single_summon->isAlive())
+            {
+                single_summon->setLevel(new_level);
+                single_summon->ApplyStatsForLevel();
+                single_summon->UpdateSpellList();
+            }
+        }
+    }
+
+    return true;
+}
+
+//.character set name
+bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_session)
+{
+    if (strlen(args) > 100)
+        return false;
+
+    char current_name[100];
+    char new_name_cmd[100];
+
+    if (sscanf(args, "%s %s", &current_name, &new_name_cmd) != 2)
+        return false;
+
+    static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
+    static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    size_t nlen = strlen(new_name_cmd);
+
+    for (size_t i = 0; i < nlen; ++i)
+    {
+        const char* p = allowedCharacters;
+        for (; *p != 0; ++p)
+        {
+            if (new_name_cmd[i] == *p)
+                goto cont;
+        }
+        RedSystemMessage(m_session, "That name is invalid or contains invalid characters.");
+        return true;
+    cont:
+        continue;
+    }
+
+    for (size_t i = 0; i < nlen; ++i)
+    {
+        const char* p = bannedCharacters;
+        while (*p != 0 && new_name_cmd[i] != *p && new_name_cmd[i] != 0)
+            ++p;
+
+        if (*p != 0)
+        {
+            RedSystemMessage(m_session, "That name is invalid or contains invalid characters.");
+            return true;
+        }
+    }
+
+    std::string new_name = new_name_cmd;
+    PlayerInfo* pi = objmgr.GetPlayerInfoByName(current_name);
+    if (pi == nullptr)
+    {
+        RedSystemMessage(m_session, "Player not found with this name.");
+        return true;
+    }
+
+    if (objmgr.GetPlayerInfoByName(new_name.c_str()) != nullptr)
+    {
+        RedSystemMessage(m_session, "New name %s is already in use.", new_name.c_str());
+        return true;
+    }
+
+    objmgr.RenamePlayerInfo(pi, pi->name, new_name.c_str());
+
+    free(pi->name);
+    pi->name = strdup(new_name.c_str());
+
+    Player* plr = objmgr.GetPlayer(pi->guid);
+    if (plr != nullptr)
+    {
+        plr->SetName(new_name);
+        BlueSystemMessage(plr->GetSession(), "%s changed your name to '%s'.", m_session->GetPlayer()->GetName(), new_name.c_str());
+        plr->SaveToDB(false);
+    }
+    else
+    {
+        CharacterDatabase.Execute("UPDATE characters SET name = '%s' WHERE guid = %u", CharacterDatabase.EscapeString(new_name).c_str(), (uint32)pi->guid);
+    }
+
+    GreenSystemMessage(m_session, "Changed name of '%s' to '%s'.", current_name, new_name_cmd);
+    sGMLog.writefromsession(m_session, "renamed character %s (GUID: %u) to %s", current_name, pi->guid, new_name_cmd);
+    sPlrLog.writefromsession(m_session, "GM renamed character %s (GUID: %u) to %s", current_name, pi->guid, new_name_cmd);
+    return true;
+}
+
+//.character set phase
+bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_session)
+{
+    uint32 phase = atoi(args);
+    if (phase == 0)
+    {
+        RedSystemMessage(m_session, "No phase set. Use .character set phase <phase>");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    player_target->Phase(PHASE_SET, phase);
+
+    if (player_target->GetSession())
+    {
+        WorldPacket data(SMSG_SET_PHASE_SHIFT, 4);
+        data << phase;
+        player_target->GetSession()->SendPacket(&data);
+    }
+
+    if (player_target != m_session->GetPlayer())
+    {
+        BlueSystemMessage(m_session, "Setting the phase of %s to %u.", player_target->GetName(), phase);
+        GreenSystemMessage(player_target->GetSession(), "%s set your phase to %u.", m_session->GetPlayer()->GetName(), phase);
+        sGMLog.writefromsession(m_session, "set phase on %s, phase %u", player_target->GetName(), phase);
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "You set your own phase to %u.", phase);
+    }
+
+    return true;
+}
+
+//.character set speed
+bool ChatHandler::HandleCharSetSpeedCommand(const char* args, WorldSession* m_session)
+{
+    float speed = atof(args);
+    if (speed == 0.0f || speed > 255.0f || speed < 0.1f)
+    {
+        RedSystemMessage(m_session, "Invalid speed set. Value range 0.1f ... 255.0f Use .character set speed <speed>");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    if (player_target != m_session->GetPlayer())
+    {
+        BlueSystemMessage(m_session, "Setting the speed of %s to %3.2f.", player_target->GetName(), speed);
+        GreenSystemMessage(player_target->GetSession(), "%s set your speed to %3.2f.", m_session->GetPlayer()->GetName(), speed);
+        sGMLog.writefromsession(m_session, "modified speed of %s to %3.2f.", player_target->GetName(), speed);
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "Setting your speed to %3.2f.", speed);
+    }
+
+    player_target->SetSpeeds(RUN, speed);
+    player_target->SetSpeeds(SWIM, speed);
+    player_target->SetSpeeds(RUNBACK, speed / 2);
+    player_target->SetSpeeds(FLY, speed * 2);
+
+    return true;
+}
+
+//.character set standing
+bool ChatHandler::HandleCharSetStandingCommand(const char* args, WorldSession* m_session)
+{
+    uint32 faction;
+    int32 standing;
+
+    if (sscanf(args, "%u %d", (unsigned int*)&faction, (unsigned int*)&standing) != 2)
+    {
+        RedSystemMessage(m_session, "No faction or standing value entered.");
+        RedSystemMessage(m_session, "Use: .character set standstate <factionid> <standing>");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    player_target->SetStanding(faction, standing);
+
+    if (player_target != m_session->GetPlayer())
+    {
+        BlueSystemMessage(m_session, "Setting standing of %u to %d on %s.", faction, standing, player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s set your standing of faction %u to %d.", m_session->GetPlayer()->GetName(), faction, standing);
+        sGMLog.writefromsession(m_session, "set standing of faction %u to %u for %s", faction, standing, player_target->GetName());
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "Setting standing of %u to %d on you.", faction, standing);
+    }
+
+    return true;
+}
+
+//.character set talentpoints
+bool ChatHandler::HandleCharSetTalentpointsCommand(const char* args, WorldSession* m_session)
+{
+    if (!args)
+    {
+        RedSystemMessage(m_session, "No amount of talentpoints entered.");
+        RedSystemMessage(m_session, "Use: .character set talentpoints <primary_amount> <secondary_amount>");
+        return true;
+    }
+
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    uint32 primary_amount = 0;
+    uint32 secondary_amnount = 0;
+
+    std::stringstream ss(args);
+    ss >> primary_amount;
+    ss >> secondary_amnount;
+
+    player_target->m_specs[SPEC_PRIMARY].SetTP(primary_amount);
+    player_target->m_specs[SPEC_SECONDARY].SetTP(secondary_amnount);
+
+    player_target->smsg_TalentsInfo(false);
+
+    if (player_target != m_session->GetPlayer())
+    {
+        BlueSystemMessage(m_session, "Setting talentpoints primary: %u, secondary: %u for player %s.", primary_amount, secondary_amnount, player_target->GetName());
+        GreenSystemMessage(player_target->GetSession(), "%s set your talenpoints to primary: %u, secondary: %u.", m_session->GetPlayer()->GetName(), primary_amount, secondary_amnount);
+        sGMLog.writefromsession(m_session, "set talenpoints primary: %u, secondary: %u for player %s", primary_amount, secondary_amnount, player_target->GetName());
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "Your talenpoints were set - primary: %u, secondary: %u.", primary_amount, secondary_amnount);
+    }
+
+    return true;
+}
+
+//.character set title
+bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    int32 title = atol(args);
+    if (title > int32(PVPTITLE_END) || title < -int32(PVPTITLE_END))
+    {
+        RedSystemMessage(m_session, "Argument %i is out of range!", title);
+        return false;
+    }
+    if (title == 0)
+    {
+        player_target->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, 0);
+        player_target->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES1, 0);
+        player_target->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES2, 0);
+    }
+    else if (title > 0)
+    {
+        player_target->SetKnownTitle(static_cast<RankTitles>(title), true);
+    }
+    else
+    {
+        player_target->SetKnownTitle(static_cast<RankTitles>(-title), false);
+    }
+
+    player_target->SetChosenTitle(0);  // better remove chosen one
+    SystemMessage(m_session, "Title has been %s.", title > 0 ? "set" : "reset");
+
+    std::stringstream logtext;
+    logtext << "has ";
+    if (title > 0)
+        logtext << "set the title field of " << player_target->GetName() << "to " << title << ".";
+    else
+        logtext << "reset the title field of " << player_target->GetName();
+
+    sGMLog.writefromsession(m_session, logtext.str().c_str());
+
+    return true;
+}
+
+//.character set forcerename
+bool ChatHandler::HandleCharSetForceRenameCommand(const char* args, WorldSession* m_session)
+{
+    if (strlen(args) > 100)
+        return false;
+
+    std::string tmp = std::string(args);
+    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
+    if (pi == nullptr)
+    {
+        RedSystemMessage(m_session, "Player with that name not found.");
+        return true;
+    }
+
+    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
+    if (plr == nullptr)
+    {
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_FORCED_RENAME, (uint32)pi->guid);
+    }
+    else
+    {
+        plr->login_flags = LOGIN_FORCED_RENAME;
+        plr->SaveToDB(false);
+        BlueSystemMessage(plr->GetSession(), "%s forced your character to be renamed next logon.", m_session->GetPlayer()->GetName());
+    }
+
+    CharacterDatabase.Execute("INSERT INTO banned_names VALUES('%s')", CharacterDatabase.EscapeString(std::string(pi->name)).c_str());
+    GreenSystemMessage(m_session, "Forcing %s to rename his character next logon.", args);
+    sGMLog.writefromsession(m_session, "forced %s to rename his charater (%u)", pi->name, pi->guid);
+    return true;
+}
+
+//.character set customize
+bool ChatHandler::HandleCharSetCustomizeCommand(const char* args, WorldSession* m_session)
+{
+    // prevent buffer overflow
+    if (strlen(args) > 100)
+        return false;
+
+    std::string tmp = std::string(args);
+    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
+    if (pi == nullptr)
+    {
+        RedSystemMessage(m_session, "Player with that name not found.");
+        return true;
+    }
+
+    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
+    if (plr == nullptr)
+    {
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_LOOKS, (uint32)pi->guid);
+    }
+    else
+    {
+        plr->login_flags = LOGIN_CUSTOMIZE_LOOKS;
+        plr->SaveToDB(false);
+        BlueSystemMessage(plr->GetSession(), "%s flagged your character for customization at next login.", m_session->GetPlayer()->GetName());
+    }
+
+    GreenSystemMessage(m_session, "%s flagged to customize his character next logon.", args);
+    sGMLog.writefromsession(m_session, "flagged %s for customization for charater (%u)", pi->name, pi->guid);
+    return true;
+}
+
+//.character set factionchange
+bool ChatHandler::HandleCharSetFactionChangeCommand(const char* args, WorldSession* m_session)
+{
+    // prevent buffer overflow
+    if (strlen(args) > 100)
+        return false;
+
+    std::string tmp = std::string(args);
+    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
+    if (pi == nullptr)
+    {
+        RedSystemMessage(m_session, "Player with that name not found.");
+        return true;
+    }
+
+    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
+    if (plr == nullptr)
+    {
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_FACTION, (uint32)pi->guid);
+    }
+    else
+    {
+        plr->login_flags = LOGIN_CUSTOMIZE_FACTION;
+        plr->SaveToDB(false);
+        BlueSystemMessage(plr->GetSession(), "%s flagged your character for a faction change at next login.", m_session->GetPlayer()->GetName());
+    }
+
+    GreenSystemMessage(m_session, "%s flagged for a faction change next logon.", args);
+    sGMLog.writefromsession(m_session, "flagged %s for a faction change for charater (%u)", pi->name, pi->guid);
+    return true;
+}
+
+//.character set racechange
+bool ChatHandler::HandleCharSetRaceChangeCommand(const char* args, WorldSession* m_session)
+{
+    // prevent buffer overflow
+    if (strlen(args) > 100)
+        return false;
+
+    std::string tmp = std::string(args);
+    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
+    if (pi == nullptr)
+    {
+        RedSystemMessage(m_session, "Player with that name not found.");
+        return true;
+    }
+
+    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
+    if (plr == nullptr)
+    {
+        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_RACE, (uint32)pi->guid);
+    }
+    else
+    {
+        plr->login_flags = LOGIN_CUSTOMIZE_RACE;
+        plr->SaveToDB(false);
+        BlueSystemMessage(plr->GetSession(), "%s flagged your character for a race change at next login.", m_session->GetPlayer()->GetName());
+    }
+
+    GreenSystemMessage(m_session, "%s flagged for a race change next logon.", args);
+    sGMLog.writefromsession(m_session, "flagged %s for a race change for charater (%u)", pi->name, pi->guid);
     return true;
 }

@@ -96,6 +96,8 @@ ChatCommand* CommandTableStorage::GetCharSubCommandTable(const char* name)
 {
     if (0 == stricmp(name, "add"))
         return _characterAddCommandTable;
+    if (0 == stricmp(name, "set"))
+        return _characterSetCommandTable;
     return nullptr;
 }
 
@@ -252,6 +254,7 @@ void CommandTableStorage::Dealloc()
     free(_gmCommandTable);
     free(_characterCommandTable);
     free(_characterAddCommandTable);
+    free(_characterSetCommandTable);
     free(_lookupCommandTable);
     free(_adminCommandTable);
     free(_kickCommandTable);
@@ -270,12 +273,10 @@ void CommandTableStorage::Init()
     static ChatCommand modifyCommandTable[] =
     {
         { "hp",              'm', NULL,                                   "Modifies health points (HP) of selected target",                  NULL, UNIT_FIELD_HEALTH,                 UNIT_FIELD_MAXHEALTH, 1 },
-        { "gender",          'm', &ChatHandler::HandleGenderChanger,      "Changes gender of selected target. Usage: 0=male, 1=female.",     NULL, 0,                                 0,                    0 },
         { "mana",            'm', NULL,                                   "Modifies mana points (MP) of selected target.",                   NULL, UNIT_FIELD_POWER1,                 UNIT_FIELD_MAXPOWER1, 1 },
         { "rage",            'm', NULL,                                   "Modifies rage points of selected target.",                        NULL, UNIT_FIELD_POWER2,                 UNIT_FIELD_MAXPOWER2, 1 },
         { "energy",          'm', NULL,                                   "Modifies energy points of selected target.",                      NULL, UNIT_FIELD_POWER4,                 UNIT_FIELD_MAXPOWER4, 1 },
         { "runicpower",      'm', NULL,                                   "Modifies runic power points of selected target.",                 NULL, UNIT_FIELD_POWER7,                 UNIT_FIELD_MAXPOWER7, 1 },
-        { "level",           'm', &ChatHandler::HandleModifyLevelCommand, "Modifies the level of selected target.",                          NULL, 0,                                 0,                    0 },
         { "strength",        'm', NULL,                                   "Modifies the strength value of the selected target.",             NULL, UNIT_FIELD_STAT0,                  0,                    1 },
         { "agility",         'm', NULL,                                   "Modifies the agility value of the selected target.",              NULL, UNIT_FIELD_STAT1,                  0,                    1 },
         { "intelligence",    'm', NULL,                                   "Modifies the intelligence value of the selected target.",         NULL, UNIT_FIELD_STAT3,                  0,                    1 },
@@ -291,13 +292,11 @@ void CommandTableStorage::Init()
         { "ap",              'm', NULL,                                   "Modifies the attack power of the selected target.",               NULL, UNIT_FIELD_ATTACK_POWER,           0,                    1 },
         { "rangeap",         'm', NULL,                                   "Modifies the range attack power of the selected target.",         NULL, UNIT_FIELD_RANGED_ATTACK_POWER,    0,                    1 },
         { "scale",           'm', NULL,                                   "Modifies the scale of the selected target.",                      NULL, OBJECT_FIELD_SCALE_X,              0,                    2 },
-        { "speed",           'm', &ChatHandler::HandleModifySpeedCommand, "Modifies the movement speed of the selected target.",             NULL, 0,                                 0,                    0 },
         { "nativedisplayid", 'm', NULL,                                   "Modifies the native display identifier of the target.",           NULL, UNIT_FIELD_NATIVEDISPLAYID,        0,                    1 },
         { "displayid",       'm', NULL,                                   "Modifies the display identifier (DisplayID) of the target.",      NULL, UNIT_FIELD_DISPLAYID,              0,                    1 },
         { "flags",           'm', NULL,                                   "Modifies the flags of the selected target.",                      NULL, UNIT_FIELD_FLAGS,                  0,                    1 },
         { "faction",         'm', NULL,                                   "Modifies the faction template of the selected target.",           NULL, UNIT_FIELD_FACTIONTEMPLATE,        0,                    1 },
         { "dynamicflags",    'm', NULL,                                   "Modifies the dynamic flags of the selected target.",              NULL, UNIT_DYNAMIC_FLAGS,                0,                    1 },
-        { "talentpoints",    'm', &ChatHandler::HandleModifyTPsCommand,      "Modifies the available talent points of the selected target.",    NULL, 0,                                  0,                    0 },
         { "happiness",       'm', NULL,                                   "Modifies the happiness value of the selected target.",            NULL, UNIT_FIELD_POWER5,                 UNIT_FIELD_MAXPOWER5, 1 },
         { "boundingraidius", 'm', NULL,                                   "Modifies the bounding radius of the selected target.",            NULL, UNIT_FIELD_BOUNDINGRADIUS,         0,                    2 },
         { "combatreach",     'm', NULL,                                   "Modifies the combat reach of the selected target.",               NULL, UNIT_FIELD_COMBATREACH,            0,                    2 },
@@ -706,15 +705,35 @@ void CommandTableStorage::Init()
     };
     dupe_command_table(characterAddCommandTable, _characterAddCommandTable);
 
+    static ChatCommand characterSetCommandTable[] =
+    {
+        { "allexplored",    'm', &ChatHandler::HandleCharSetAllExploredCommand,     "Reveals the unexplored parts of the map.",             nullptr, 0, 0, 0 },
+        { "gender",         'm', &ChatHandler::HandleCharSetGenderCommand,          "Changes gender of target. 0=male, 1=female.",          nullptr, 0, 0, 0 },
+        { "itemsrepaired",  'n', &ChatHandler::HandleCharSetItemsRepairedCommand,   "Sets all items repaired for selected player",          nullptr, 0, 0, 0 },
+        { "level",          'm', &ChatHandler::HandleCharSetLevelCommand,           "Sets level of selected target to <x>.",                nullptr, 0, 0, 0 },
+        { "name",           'm', &ChatHandler::HandleCharSetNameCommand,            "Renames character x to y.",                            nullptr, 0, 0, 0 },
+        { "phase",          'm', &ChatHandler::HandleCharSetPhaseCommand,           "Sets phase of selected player",                        nullptr, 0, 0, 0 },
+        { "speed",          'm', &ChatHandler::HandleCharSetSpeedCommand,           "Sets speed of the selected target to <x>.",            nullptr, 0, 0, 0 },
+        { "standing",       'm', &ChatHandler::HandleCharSetStandingCommand,        "Sets standing of faction x to y.",                     nullptr, 0, 0, 0 },
+        { "talentpoints",   'm', &ChatHandler::HandleCharSetTalentpointsCommand,    "Sets available talent points of the target.",          nullptr, 0, 0, 0 },
+        { "title",          'm', &ChatHandler::HandleCharSetTitleCommand,           "Sets pvp title for target",                            nullptr, 0, 0, 0 },
+        { "forcerename",    'm', &ChatHandler::HandleCharSetForceRenameCommand,     "Forces char x to rename on next login",                nullptr, 0, 0, 0 },
+        { "customize",      'm', &ChatHandler::HandleCharSetCustomizeCommand,       "Allows char x to customize on next login",             nullptr, 0, 0, 0 },
+        { "factionchange",  'm', &ChatHandler::HandleCharSetFactionChangeCommand,   "Allows char x to change the faction on next login",    nullptr, 0, 0, 0 },
+        { "racechange",     'm', &ChatHandler::HandleCharSetCustomizeCommand,       "Allows char x to change the race on next login",       nullptr, 0, 0, 0 },
+        { nullptr,          '0', nullptr,                                           "",                                                     nullptr, 0, 0, 0 }
+    };
+    dupe_command_table(characterSetCommandTable, _characterSetCommandTable);
+
     static ChatCommand characterCommandTable[] =
     {
         { "add",                'm', nullptr,    "",                                                                       characterAddCommandTable, 0, 0, 0 },
+        { "set",                'm', nullptr,    "",                                                                       characterSetCommandTable, 0, 0, 0 },
         { "clearcooldowns",      'm', &ChatHandler::HandleCharClearCooldownsCommand,    "Clears all cooldowns for your class.",             nullptr, 0, 0, 0 },
         { "demorph",             'm', &ChatHandler::HandleCharDeMorphCommand,           "Demorphs from morphed model.",                     nullptr, 0, 0, 0 },
         { "levelup",             'm', &ChatHandler::HandleCharLevelUpCommand,           "Player target will be levelup x levels",           nullptr, 0, 0, 0 },
         { "removeauras",         'm', &ChatHandler::HandleCharRemoveAurasCommand,        "Removes all auras from target",                   nullptr, 0, 0, 0 },
         { "removesickness",      'm', &ChatHandler::HandleCharRemoveSickessCommand,     "Removes ressurrection sickness from target",       nullptr, 0, 0, 0 },
-        { "setallexplored",      'm', &ChatHandler::HandleCharSetAllExploredCommand,    "Reveals the unexplored parts of the map.",         nullptr, 0, 0, 0 },
         { "learn",               'm', &ChatHandler::HandleLearnCommand,            "Learns spell",                                                                                                      NULL, 0, 0, 0 },
         { "unlearn",             'm', &ChatHandler::HandleUnlearnCommand,          "Unlearns spell",                                                                                                    NULL, 0, 0, 0 },
         { "getskillinfo",        'm', &ChatHandler::HandleGetSkillsInfoCommand,    "Gets all the skills from a player",                                                                                 NULL, 0, 0, 0 },
@@ -729,16 +748,9 @@ void CommandTableStorage::Init()
         { "removeitem",          'm', &ChatHandler::HandleRemoveItemCommand,       "Removes item x count y.",                                                                                         NULL, 0, 0, 0 },
         { "advanceallskills",    'm', &ChatHandler::HandleAdvanceAllSkillsCommand, "Advances all skills <x> points.",                                                                                   NULL, 0, 0, 0 },
         { "getstanding",         'm', &ChatHandler::HandleGetStandingCommand,      "Gets standing of faction x.",                                                                                      NULL, 0, 0, 0 },
-        { "setstanding",         'm', &ChatHandler::HandleSetStandingCommand,      "Sets standing of faction x.",                                                                                      NULL, 0, 0, 0 },
         { "showitems",           'm', &ChatHandler::HandleShowItems,               "Shows items of selected Player",                                                                                    NULL, 0, 0, 0 },
         { "showskills",          'm', &ChatHandler::HandleShowSkills,              "Shows skills of selected Player",                                                                                   NULL, 0, 0, 0 },
         { "showinstances",       'z', &ChatHandler::HandleShowInstancesCommand,    "Shows persistent instances of selected Player",                                                                     NULL, 0, 0, 0 },
-        { "rename",              'm', &ChatHandler::HandleRenameCommand,           "Renames character x to y.",                                                                                         NULL, 0, 0, 0 },
-        { "forcerename",         'm', &ChatHandler::HandleForceRenameCommand,      "Forces character x to rename his char next login",                                                                  NULL, 0, 0, 0 },
-        { "customize",           'm', &ChatHandler::HandleCustomizeCommand,         "Allows character x to customize his char at next login",                                                           NULL, 0, 0, 0 },
-        { "repairitems",         'n', &ChatHandler::HandleRepairItemsCommand,      ".repairitems - Repair all items from selected player",                                                              NULL, 0, 0, 0 },
-        { "settitle",             'm', &ChatHandler::HandleSetTitle,                   "Adds title to a player",                                                                                    NULL, 0, 0, 0 },
-        { "phase",               'm', &ChatHandler::HandlePhaseCommand,            "<phase> - Sets phase of selected player",                                                                           NULL, 0, 0, 0 },
         { NULL,                  '0', NULL,                                        "",                                                                                                                  NULL, 0, 0, 0 }
     };
     dupe_command_table(characterCommandTable, _characterCommandTable);

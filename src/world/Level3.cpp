@@ -565,52 +565,6 @@ bool ChatHandler::HandleResetSpellsCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
-bool ChatHandler::HandleModifyLevelCommand(const char* args, WorldSession* m_session)
-{
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (plr == 0)
-        return true;
-
-    uint32 Level = args ? atol(args) : 0;
-    if (Level == 0 || Level > sWorld.m_levelCap)
-    {
-        RedSystemMessage(m_session, "A level (numeric) is required to be specified after this command.");
-        return true;
-    }
-
-    // Set level message
-    BlueSystemMessage(m_session, "Setting the level of %s to %u.", plr->GetName(), Level);
-    GreenSystemMessage(plr->GetSession(), "%s set your level to %u.", m_session->GetPlayer()->GetName(), Level);
-
-    sGMLog.writefromsession(m_session, "used modify level on %s, level %u", plr->GetName(), Level);
-
-    // lookup level information
-    LevelInfo* Info = objmgr.GetLevelInfo(plr->getRace(), plr->getClass(), Level);
-    if (Info == NULL)
-    {
-        RedSystemMessage(m_session, "Levelup information not found.");
-        return true;
-    }
-
-    plr->ApplyLevelInfo(Info, Level);
-    if (plr->getClass() == WARLOCK)
-    {
-        std::list<Pet*> summons = plr->GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        {
-            Pet* summon = *itr;
-            if (summon->IsInWorld() && summon->isAlive())
-            {
-                summon->setLevel(Level);
-                summon->ApplyStatsForLevel();
-                summon->UpdateSpellList();
-            }
-        }
-    }
-
-    return true;
-}
-
 bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_session)
 {
     if ((args == NULL) || (strlen(args) < 2))
@@ -1338,131 +1292,6 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleForceRenameCommand(const char* args, WorldSession* m_session)
-{
-    // prevent buffer overflow
-    if (strlen(args) > 100)
-        return false;
-
-    std::string tmp = std::string(args);
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
-    if (pi == 0)
-    {
-        RedSystemMessage(m_session, "Player with that name not found.");
-        return true;
-    }
-
-    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
-    if (plr == 0)
-    {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_FORCED_RENAME, (uint32)pi->guid);
-    }
-    else
-    {
-        plr->login_flags = LOGIN_FORCED_RENAME;
-        plr->SaveToDB(false);
-        BlueSystemMessage(plr->GetSession(), "%s forced your character to be renamed next logon.", m_session->GetPlayer()->GetName());
-    }
-
-    CharacterDatabase.Execute("INSERT INTO banned_names VALUES('%s')", CharacterDatabase.EscapeString(std::string(pi->name)).c_str());
-    GreenSystemMessage(m_session, "Forcing %s to rename his character next logon.", args);
-    sGMLog.writefromsession(m_session, "forced %s to rename his charater (%u)", pi->name, pi->guid);
-    return true;
-}
-
-bool ChatHandler::HandleCustomizeCommand(const char* args, WorldSession* m_session)
-{
-    // prevent buffer overflow
-    if (strlen(args) > 100)
-        return false;
-
-    std::string tmp = std::string(args);
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
-    if (pi == 0)
-    {
-        RedSystemMessage(m_session, "Player with that name not found.");
-        return true;
-    }
-
-    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
-    if (plr == 0)
-    {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_LOOKS, (uint32)pi->guid);
-    }
-    else
-    {
-        plr->login_flags = LOGIN_CUSTOMIZE_LOOKS;
-        plr->SaveToDB(false);
-        BlueSystemMessage(plr->GetSession(), "%s flagged your character for customization at next login.", m_session->GetPlayer()->GetName());
-    }
-
-    GreenSystemMessage(m_session, "%s flagged to customize his character next logon.", args);
-    sGMLog.writefromsession(m_session, "flagged %s for customization for charater (%u)", pi->name, pi->guid);
-    return true;
-}
-
-bool ChatHandler::HandleFactionChange(const char* args, WorldSession* m_session)
-{
-    // prevent buffer overflow
-    if (strlen(args) > 100)
-        return false;
-
-    std::string tmp = std::string(args);
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
-    if (pi == 0)
-    {
-        RedSystemMessage(m_session, "Player with that name not found.");
-        return true;
-    }
-
-    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
-    if (plr == 0)
-    {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_FACTION, (uint32)pi->guid);
-    }
-    else
-    {
-        plr->login_flags = LOGIN_CUSTOMIZE_FACTION;
-        plr->SaveToDB(false);
-        BlueSystemMessage(plr->GetSession(), "%s flagged your character for a faction change at next login.", m_session->GetPlayer()->GetName());
-    }
-
-    GreenSystemMessage(m_session, "%s flagged for a faction change next logon.", args);
-    sGMLog.writefromsession(m_session, "flagged %s for a faction change for charater (%u)", pi->name, pi->guid);
-    return true;
-}
-
-bool ChatHandler::HandleRaceChange(const char* args, WorldSession* m_session)
-{
-    // prevent buffer overflow
-    if (strlen(args) > 100)
-        return false;
-
-    std::string tmp = std::string(args);
-    PlayerInfo* pi = objmgr.GetPlayerInfoByName(tmp.c_str());
-    if (pi == 0)
-    {
-        RedSystemMessage(m_session, "Player with that name not found.");
-        return true;
-    }
-
-    Player* plr = objmgr.GetPlayer((uint32)pi->guid);
-    if (plr == 0)
-    {
-        CharacterDatabase.Execute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_CUSTOMIZE_RACE, (uint32)pi->guid);
-    }
-    else
-    {
-        plr->login_flags = LOGIN_CUSTOMIZE_RACE;
-        plr->SaveToDB(false);
-        BlueSystemMessage(plr->GetSession(), "%s flagged your character for a race change at next login.", m_session->GetPlayer()->GetName());
-    }
-
-    GreenSystemMessage(m_session, "%s flagged for a race change next logon.", args);
-    sGMLog.writefromsession(m_session, "flagged %s for a race change for charater (%u)", pi->name, pi->guid);
-    return true;
-}
-
 bool ChatHandler::HandleGetStandingCommand(const char* args, WorldSession* m_session)
 {
     uint32 faction = atoi(args);
@@ -1475,22 +1304,6 @@ bool ChatHandler::HandleGetStandingCommand(const char* args, WorldSession* m_ses
     GreenSystemMessage(m_session, "Reputation for faction %u:", faction);
     SystemMessage(m_session, "Base Standing: %d", bstanding);
     BlueSystemMessage(m_session, "Standing: %d", standing);
-    return true;
-}
-
-bool ChatHandler::HandleSetStandingCommand(const char* args, WorldSession* m_session)
-{
-    uint32 faction;
-    int32 standing;
-    if (sscanf(args, "%u %d", (unsigned int*)&faction, (unsigned int*)&standing) != 2)
-        return false;
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr) return true;
-
-    BlueSystemMessage(m_session, "Setting standing of %u to %d on %s.", faction, standing, plr->GetName());
-    plr->SetStanding(faction, standing);
-    GreenSystemMessage(plr->GetSession(), "%s set your standing of faction %u to %d.", m_session->GetPlayer()->GetName(), faction, standing);
-    sGMLog.writefromsession(m_session, "set standing of faction %u to %u for %s", faction, standing, plr->GetName());
     return true;
 }
 
@@ -2162,49 +1975,6 @@ bool ChatHandler::HandleGuildMembersCommand(const char* args, WorldSession* m_se
     return true;
 }
 
-bool ChatHandler::HandleGenderChanger(const char* args, WorldSession* m_session)
-{
-    uint8 gender;
-    Player* target = objmgr.GetPlayer((uint32)m_session->GetPlayer()->GetSelection());
-    if (target == NULL)
-    {
-        SystemMessage(m_session, "Select A Player first.");
-        return true;
-    }
-    uint32 displayId = target->GetNativeDisplayId();
-    if (*args == 0)
-        gender = target->getGender() == 1 ? 0 : 1;
-    else
-    {
-        gender = (uint8)atoi((char*)args);
-        if (gender > 1)
-            gender = 1;
-    }
-
-    if (gender == target->getGender())
-    {
-        SystemMessage(m_session, "%s's gender is already set to %s(%u).", target->GetName(), gender ? "Female" : "Male", gender);
-        return true;
-    }
-
-    target->setGender(gender);
-
-    if (target->getGender() == 0)
-    {
-        target->SetDisplayId((target->getRace() == RACE_BLOODELF) ? ++displayId : --displayId);
-        target->SetNativeDisplayId(displayId);
-    }
-    else
-    {
-        target->SetDisplayId((target->getRace() == RACE_BLOODELF) ? --displayId : ++displayId);
-        target->SetNativeDisplayId(displayId);
-    }
-    target->EventModelChange();
-
-    SystemMessage(m_session, "Set %s's gender to %s(%u).", target->GetName(), gender ? "Female" : "Male", gender);
-    return true;
-}
-
 bool ChatHandler::HandleDispelAllCommand(const char* args, WorldSession* m_session)
 {
     uint32 pos = 0;
@@ -2397,41 +2167,3 @@ bool ChatHandler::HandleFixScaleCommand(const char* args, WorldSession* m_sessio
     WorldDatabase.Execute("UPDATE creature_proto SET scale = '%f' WHERE entry = %u", sc, pCreature->GetEntry());
     return true;
 }
-
-bool ChatHandler::HandleSetTitle(const char* args, WorldSession* m_session)
-{
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (plr == NULL)
-        return false;
-
-    int32 title = atol(args);
-    if (title > int32(PVPTITLE_END) || title < -int32(PVPTITLE_END))
-    {
-        RedSystemMessage(m_session, "Argument %i is out of range!", title);
-        return false;
-    }
-    if (title == 0)
-    {
-        plr->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, 0);
-        plr->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES1, 0);
-        plr->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES2, 0);
-    }
-    else if (title > 0)
-        plr->SetKnownTitle(static_cast<RankTitles>(title), true);
-    else
-        plr->SetKnownTitle(static_cast<RankTitles>(-title), false);
-
-    plr->SetChosenTitle(0);  // better remove chosen one
-    SystemMessage(m_session, "Title has been %s.", title > 0 ? "set" : "reset");
-
-    std::stringstream logtext;
-    logtext << "has ";
-    if (title > 0)
-        logtext << "set the title field of " << plr->GetName() << "to " << title << ".";
-    else
-        logtext << "reset the title field of " << plr->GetName();
-
-    sGMLog.writefromsession(m_session, logtext.str().c_str());
-    return true;
-}
-

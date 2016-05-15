@@ -332,35 +332,6 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleModifySpeedCommand(const char* args, WorldSession* m_session)
-{
-    WorldPacket data;
-    if (!*args)
-        return false;
-    float Speed = (float)atof((char*)args);
-    if (Speed > 255 || Speed < 1)
-    {
-        RedSystemMessage(m_session, "Incorrect value. Range is 1..255");
-        return true;
-    }
-    Player* chr = GetSelectedPlayer(m_session, true, true);
-    if (chr == NULL)
-        return true;
-    if (chr != m_session->GetPlayer())
-        sGMLog.writefromsession(m_session, "modified speed of %s to %2.2f.", chr->GetName(), Speed);
-    char buf[256];
-    // send message to user
-    BlueSystemMessage(m_session, "You set the speed of %s to %2.2f.", chr->GetName(), Speed);
-    // send message to player
-    snprintf((char*)buf, 256, "%s set your speed to %2.2f.", m_session->GetPlayer()->GetName(), Speed);
-    SystemMessage(chr->GetSession(), buf);
-    chr->SetSpeeds(RUN, Speed);
-    chr->SetSpeeds(SWIM, Speed);
-    chr->SetSpeeds(RUNBACK, Speed / 2); // Backwards slower, it's more natural :P
-    chr->SetSpeeds(FLY, Speed * 2); // Flying is faster :P
-    return true;
-}
-
 bool ChatHandler::HandleLearnSkillCommand(const char* args, WorldSession* m_session)
 {
     uint32 skill, min, max;
@@ -534,27 +505,6 @@ bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session
     {
         RedSystemMessage(m_session, "That player does not have spell %u learnt.", SpellId);
     }
-    return true;
-}
-
-bool ChatHandler::HandleModifyTPsCommand(const char* args, WorldSession* m_session)
-{
-    if (!args)
-        return false;
-    Player* Pl = GetSelectedPlayer(m_session, true, true);
-    if (!Pl)
-    {
-        SystemMessage(m_session, "Invalid or no target provided, please target a player to modify its talentpoints.");
-        return true;
-    }
-    uint32 TP1 = 0;
-    uint32 TP2 = 0;
-    std::stringstream ss(args);
-    ss >> TP1;
-    ss >> TP2;
-    Pl->m_specs[SPEC_PRIMARY].SetTP(TP1);
-    Pl->m_specs[SPEC_SECONDARY].SetTP(TP2);
-    Pl->smsg_TalentsInfo(false);
     return true;
 }
 

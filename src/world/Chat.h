@@ -182,6 +182,7 @@ class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
     ChatCommand* _reloadTableCommandTable;
     ChatCommand* _gmCommandTable;
     ChatCommand* _characterAddCommandTable;
+    ChatCommand* _characterSetCommandTable;
     ChatCommand* _characterCommandTable;
     ChatCommand* _lookupCommandTable;
     ChatCommand* _adminCommandTable;
@@ -280,7 +281,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCharLevelUpCommand(const char* args, WorldSession* m_session);
         bool HandleCharRemoveAurasCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCharRemoveSickessCommand(const char* /*args*/, WorldSession* m_session);
-        bool HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session);
 
         //Character add commands
         bool HandleCharAddCopperCommand(const char* args, WorldSession* m_session);
@@ -290,6 +290,23 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCharAddHonorKillCommand(const char* args, WorldSession* m_session);
         bool HandleCharAddItemCommand(const char* args, WorldSession* m_session);
         bool HandleCharAddItemSetCommand(const char* args, WorldSession* m_session);
+
+        //Character set commands
+        bool HandleCharSetAllExploredCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleCharSetGenderCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetItemsRepairedCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetLevelCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetNameCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetPhaseCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetSpeedCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetStandingCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetTalentpointsCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetTitleCommand(const char* args, WorldSession* m_session);
+
+        bool HandleCharSetForceRenameCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetCustomizeCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetFactionChangeCommand(const char* args, WorldSession* m_session);
+        bool HandleCharSetRaceChangeCommand(const char* args, WorldSession* m_session);
 
         // Debug
         bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
@@ -513,7 +530,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDismountCommand(const char* args, WorldSession* m_session);
         bool HandleRatingsCommand(const char* args, WorldSession* m_session);
         bool HandleSimpleDistanceCommand(const char* args, WorldSession* m_session);
-        bool HandlePhaseCommand(const char* args, WorldSession* m_session);
+        
         bool CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
         bool CmdSetFloatField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
         bool HandleSummonCommand(const char* args, WorldSession* m_session);
@@ -522,8 +539,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
         bool HandleGPSCommand(const char* args, WorldSession* m_session);
 
-        bool HandleModifySpeedCommand(const char* args, WorldSession* m_session);
-        bool HandleModifyTPsCommand(const char* args, WorldSession* m_session);
+        
+        
         bool HandleWaypointAddFlyCommand(const char* args, WorldSession* m_session);
         bool HandleShowItems(const char* args, WorldSession* m_session);
         bool HandleShowSkills(const char* args, WorldSession* m_session);
@@ -550,18 +567,15 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleIPBanCommand(const char* args, WorldSession* m_session);
         bool HandleIPUnBanCommand(const char* args, WorldSession* m_session);
         bool HandleRemoveItemCommand(const char* args, WorldSession* m_session);
-        bool HandleRenameCommand(const char* args, WorldSession* m_session);
-        bool HandleForceRenameCommand(const char* args, WorldSession* m_session);
-        bool HandleCustomizeCommand(const char* args, WorldSession* m_session);
-        bool HandleRaceChange(const char* args, WorldSession* m_session);
-        bool HandleFactionChange(const char* args, WorldSession* m_session);
+        
+        
         bool HandleGetStandingCommand(const char* args, WorldSession* m_session);
-        bool HandleSetStandingCommand(const char* args, WorldSession* m_session);
+        
         
         
         
         bool HandleUnlearnCommand(const char* args, WorldSession* m_session);
-        bool HandleModifyLevelCommand(const char* args, WorldSession* m_session);
+        
         bool HandleCreatePetCommand(const char* args, WorldSession* m_session);
         bool HandleAddPetSpellCommand(const char* args, WorldSession* m_session);
         bool HandleRemovePetSpellCommand(const char* args, WorldSession* m_session);
@@ -619,11 +633,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         
         bool HandleGOExport(const char* args, WorldSession* m_session);
-        bool HandleRepairItemsCommand(const char* args, WorldSession* m_session);
-        bool HandleSetTitle(const char* args, WorldSession* m_session);
+
         bool HandleWorldPortCommand(const char* args, WorldSession* m_session);
         bool HandleLearnCommand(const char* args, WorldSession* m_session);
-        bool HandleGenderChanger(const char* args, WorldSession* m_session);
+        
         
         bool HandleGMTicketListCommand(const char* args, WorldSession* m_session);
         bool HandleGMTicketGetByIdCommand(const char* args, WorldSession* m_session);
