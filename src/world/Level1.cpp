@@ -332,69 +332,6 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleLearnSkillCommand(const char* args, WorldSession* m_session)
-{
-    uint32 skill, min, max;
-    min = max = 1;
-    char* pSkill = strtok((char*)args, " ");
-    if (!pSkill)
-        return false;
-    else
-        skill = atol(pSkill);
-    BlueSystemMessage(m_session, "Adding skill line %d", skill);
-    char* pMin = strtok(NULL, " ");
-    if (pMin)
-    {
-        min = atol(pMin);
-        char* pMax = strtok(NULL, "\n");
-        if (pMax)
-            max = atol(pMax);
-    }
-    else
-    {
-        return false;
-    }
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr) return false;
-    if (!plr->IsPlayer()) return false;
-    sGMLog.writefromsession(m_session, "used add skill of %u %u %u on %s", skill, min, max, plr->GetName());
-    plr->_AddSkillLine(skill, min, max);
-    return true;
-}
-
-bool ChatHandler::HandleModifySkillCommand(const char* args, WorldSession* m_session)
-{
-    uint32 skill, min, max;
-    min = max = 1;
-    char* pSkill = strtok((char*)args, " ");
-    if (!pSkill)
-        return false;
-    else
-        skill = atol(pSkill);
-    char* pMin = strtok(NULL, " ");
-    uint32 cnt = 0;
-    if (!pMin)
-        cnt = 1;
-    else
-        cnt = atol(pMin);
-    skill = atol(pSkill);
-    BlueSystemMessage(m_session, "Modifying skill line %d. Advancing %d times.", skill, cnt);
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr) plr = m_session->GetPlayer();
-    if (!plr) return false;
-    sGMLog.writefromsession(m_session, "used modify skill of %u %u on %s", skill, cnt, plr->GetName());
-    if (!plr->_HasSkillLine(skill))
-    {
-        SystemMessage(m_session, "Does not have skill line, adding.");
-        plr->_AddSkillLine(skill, 1, 300);
-    }
-    else
-    {
-        plr->_AdvanceSkillLine(skill, cnt);
-    }
-    return true;
-}
-
 /// DGM: Get skill level command for getting information about a skill
 bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_session)
 {
@@ -426,58 +363,6 @@ bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_s
     uint32 bonus = plr->_GetSkillLineCurrent(skill, true) - nobonus;
     uint32 max = plr->_GetSkillLineMax(skill);
     BlueSystemMessage(m_session, "Player's %s skill has level: %u maxlevel: %u. (+ %u bonus)", SkillName, nobonus, max, bonus);
-    return true;
-}
-
-bool ChatHandler::HandleRemoveSkillCommand(const char* args, WorldSession* m_session)
-{
-    uint32 skill = 0;
-    char* pSkill = strtok((char*)args, " ");
-    if (!pSkill)
-        return false;
-    else
-        skill = atol(pSkill);
-    BlueSystemMessage(m_session, "Removing skill line %d", skill);
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (plr && plr->_HasSkillLine(skill)) //fix bug; removing skill twice will mess up skills
-    {
-        plr->_RemoveSkillLine(skill);
-        sGMLog.writefromsession(m_session, "used remove skill of %u on %s", skill, plr->GetName());
-        SystemMessage(plr->GetSession(), "%s removed skill line %d from you. ", m_session->GetPlayer()->GetName(), skill);
-    }
-    else
-    {
-        BlueSystemMessage(m_session, "Player doesn't have skill line %d", skill);
-    }
-    return true;
-}
-
-bool ChatHandler::HandleUnlearnCommand(const char* args, WorldSession* m_session)
-{
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (plr == 0)
-        return true;
-    uint32 SpellId = atol(args);
-    if (SpellId == 0)
-    {
-        SpellId = GetSpellIDFromLink(args);
-        if (SpellId == 0)
-        {
-            RedSystemMessage(m_session, "You must specify a spell id.");
-            return true;
-        }
-    }
-    sGMLog.writefromsession(m_session, "removed spell %u from %s", SpellId, plr->GetName());
-    if (plr->HasSpell(SpellId))
-    {
-        GreenSystemMessage(plr->GetSession(), "Removed spell %u.", SpellId);
-        GreenSystemMessage(m_session, "Removed spell %u from %s.", SpellId, plr->GetName());
-        plr->removeSpell(SpellId, false, false, 0);
-    }
-    else
-    {
-        RedSystemMessage(m_session, "That player does not have spell %u learnt.", SpellId);
-    }
     return true;
 }
 
