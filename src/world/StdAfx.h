@@ -199,6 +199,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "WorldRunnable.h"
 #include "Storage.h"    // shared
 #include "ObjectStorage.h"
+#include "MySQLDataLoads.hpp"
 #include "DatabaseCleaner.h"
 #include "DayWatcherThread.h"
 #include "CommonScheduleThread.h"
