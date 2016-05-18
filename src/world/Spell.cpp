@@ -2064,7 +2064,7 @@ void Spell::SendSpellStart()
 
     if (GetType() == SPELL_DMG_TYPE_RANGED)
     {
-        ItemPrototype* ip = NULL;
+        ItemPrototype const* ip = NULL;
         if (GetProto()->Id == SPELL_RANGED_THROW)   // throw
         {
             if (p_caster != NULL)
@@ -2089,16 +2089,16 @@ void Spell::SendSpellStart()
                 }
                 else
                 {
-                    ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
+                    ip = sMySQLStore.GetItemProto(2512);	/*rough arrow*/
                 }
             }
         }
         else if (hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
         {
             if (p_caster != NULL)
-                ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                ip = sMySQLStore.GetItemProto(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
             else
-                ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
+                ip = sMySQLStore.GetItemProto(2512);	/*rough arrow*/
         }
 
         if (ip != NULL)
@@ -2212,7 +2212,7 @@ void Spell::SendSpellGo()
     // er why handle it being null inside if if you can't get into if if its null
     if (GetType() == SPELL_DMG_TYPE_RANGED)
     {
-        ItemPrototype* ip = NULL;
+        ItemPrototype const* ip = NULL;
         if (GetProto()->Id == SPELL_RANGED_THROW)
         {
             if (p_caster != NULL)
@@ -2222,14 +2222,14 @@ void Spell::SendSpellGo()
                     ip = it->GetProto();
             }
             else
-                ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
+                ip = sMySQLStore.GetItemProto(2512);	/*rough arrow*/
         }
         else
         {
             if (p_caster != NULL)
-                ip = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                ip = sMySQLStore.GetItemProto(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
             else // HACK FIX
-                ip = ItemPrototypeStorage.LookupEntry(2512);	/*rough arrow*/
+                ip = sMySQLStore.GetItemProto(2512);	/*rough arrow*/
         }
         if (ip != NULL)
         {
@@ -3690,7 +3690,7 @@ uint8 Spell::CanCast(bool tolerate)
         if (!i_target || (i_target->GetDurability() == 0 && i_target->GetDurabilityMax() != 0))
             return SPELL_FAILED_BAD_TARGETS;
 
-        ItemPrototype* proto = i_target->GetProto();
+        ItemPrototype const* proto = i_target->GetProto();
 
         // check to make sure the targeted item is acceptable
         switch (GetProto()->Effect[0])

@@ -5644,7 +5644,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                         return;
 
 
-                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(itemid);
+                ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid);
                 if (pCaster->GetItemInterface()->CalculateFreeSlots(proto) > 0)
                 {
                     Item* item = objmgr.CreateItem(itemid, pCaster);

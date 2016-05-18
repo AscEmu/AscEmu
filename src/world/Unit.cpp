@@ -4078,7 +4078,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
         else
         {
             uint32 entry = weapon->GetEntry();
-            ItemPrototype* pProto = ItemPrototypeStorage.LookupEntry(entry);
+            ItemPrototype const* pProto = sMySQLStore.GetItemProto(entry);
             if (pProto != NULL)
             {
                 s = pProto->Delay / 1000.0f;

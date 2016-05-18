@@ -361,7 +361,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         if (iter->has_looted.end() != itr)
             continue;
 
-        ItemPrototype* itemProto = iter->item.itemproto;
+        ItemPrototype const* itemProto = iter->item.itemproto;
         if (!itemProto)
             continue;
 

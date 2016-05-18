@@ -22,7 +22,7 @@
 #include "StdAfx.h"
 
  // Table formats converted to strings
-const char* gItemPrototypeFormat = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuiuuuuuuuuuuuuuuuuuuu";
+//const char* gItemPrototypeFormat = "uuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuffuffuuuuuuuuuufuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuusuuuuuuuuuuiuuuuuuuuuuuuuuuuuuu";
 const char* gCreatureNameFormat = "usssuuuuuuuuuuuffcuuuuuuu";
 const char* gGameObjectNameFormat = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
 const char* gCreatureProtoFormat = "uuuuuuufuuuffuuffuuuuuuuuffsbuufffuuuuuuuuuuubuuuub";
@@ -50,7 +50,7 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >                    ItemPrototypeStorage;
+//SERVER_DECL SQLStorage<ItemPrototype, ArrayStorageContainer<ItemPrototype> >                    ItemPrototypeStorage;
 SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                    CreatureNameStorage;
 SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                GameObjectNameStorage;
 SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                  CreatureProtoStorage;
@@ -377,7 +377,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void ObjectMgr::LoadExtraItemStuff()
 {
-    StorageContainerIterator<ItemPrototype> * itr = ItemPrototypeStorage.MakeIterator();
+    /*StorageContainerIterator<ItemPrototype> * itr = ItemPrototypeStorage.MakeIterator();
     ItemPrototype* pItemPrototype;
     while (!itr->AtEnd())
     {
@@ -399,13 +399,6 @@ void ObjectMgr::LoadExtraItemStuff()
             }
             l->push_back(pItemPrototype);
         }
-
-
-        // lowercase name, used for searches
-        pItemPrototype->lowercase_name = pItemPrototype->Name1;
-        for (uint32 j = 0; j < pItemPrototype->lowercase_name.length(); ++j)
-            pItemPrototype->lowercase_name[j] = static_cast<char>(tolower(pItemPrototype->lowercase_name[j]));
-
 
         // forced pet entries
         switch (pItemPrototype->ItemId)
@@ -532,7 +525,7 @@ void ObjectMgr::LoadExtraItemStuff()
             break;
     }
 
-    itr->Destruct();
+    itr->Destruct();*/
 }
 
 void ObjectMgr::LoadExtraGameObjectStuff()
@@ -555,7 +548,7 @@ void ObjectMgr::LoadExtraGameObjectStuff()
 
 void Storage_FillTaskList(TaskList & tl)
 {
-    make_task(ItemPrototypeStorage, ItemPrototype, ArrayStorageContainer, "items", gItemPrototypeFormat);
+    //make_task(ItemPrototypeStorage, ItemPrototype, ArrayStorageContainer, "items", gItemPrototypeFormat);
     make_task(CreatureNameStorage, CreatureInfo, HashMapStorageContainer, "creature_names", gCreatureNameFormat);
     make_task(GameObjectNameStorage, GameObjectInfo, HashMapStorageContainer, "gameobject_names", gGameObjectNameFormat);
     make_task(CreatureProtoStorage, CreatureProto, HashMapStorageContainer, "creature_proto", gCreatureProtoFormat);
@@ -603,7 +596,7 @@ void Storage_Cleanup()
         }
         itr->Destruct();
     }
-    ItemPrototypeStorage.Cleanup();
+    //ItemPrototypeStorage.Cleanup();
     CreatureNameStorage.Cleanup();
     GameObjectNameStorage.Cleanup();
     CreatureProtoStorage.Cleanup();
@@ -642,8 +635,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
         ExtraMapGameObjectTables.insert(std::string(SecondName));
         return false;
     }
-    else if (firstLoad && !stricmp(TableName, "items"))                // Items
-        ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPrototypeFormat);
+    //else if (firstLoad && !stricmp(TableName, "items"))                // Items
+    //    ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPrototypeFormat);
     else if (firstLoad && !stricmp(TableName, "creature_proto"))        // Creature Proto
         CreatureProtoStorage.LoadAdditionalData(SecondName, gCreatureProtoFormat);
     else if (firstLoad && !stricmp(TableName, "creature_names"))        // Creature Names
@@ -652,8 +645,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
         GameObjectNameStorage.LoadAdditionalData(SecondName, gGameObjectNameFormat);
     else if (!stricmp(TableName, "areatriggers"))        // Areatriggers
         AreaTriggerStorage.LoadAdditionalData(SecondName, gAreaTriggerFormat);
-    else if (!stricmp(TableName, "itempages"))            // Item Pages
-        ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPageFormat);
+    //else if (!stricmp(TableName, "itempages"))            // Item Pages
+    //    ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPageFormat);
     else if (!stricmp(TableName, "npc_script_text"))            // ONLY for scripted text
         CreatureTextStorage.LoadAdditionalData(SecondName, gCreatureTextFormat);
     else if (!stricmp(TableName, "gossip_menu_option"))            // Gossip Menu Option

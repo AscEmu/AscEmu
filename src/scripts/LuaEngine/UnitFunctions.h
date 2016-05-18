@@ -924,7 +924,7 @@ class LuaUnit
         int count = luaL_checkinteger(L, 2);
 
         auto player = static_cast<Player*>(ptr);
-        auto item_proto = ItemPrototypeStorage.LookupEntry(id);
+        ItemPrototype const* item_proto = sMySQLStore.GetItemProto(id);
         if (item_proto == nullptr)
             return 0;
 

@@ -226,7 +226,7 @@ class SCRIPT_DECL EasyFunctions
             Item* ItemStack = pPlayer->GetItemInterface()->FindItemLessMax(pEntry, pCount, false);
             if (ItemStack == NULL)
             {
-                ItemPrototype* ItemProto = ItemPrototypeStorage.LookupEntry(pEntry);
+                ItemPrototype const* ItemProto = sMySQLStore.GetItemProto(pEntry);
                 if (ItemProto == NULL)
                     return false;
 

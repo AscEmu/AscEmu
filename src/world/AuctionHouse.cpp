@@ -688,7 +688,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 
     auctionLock.AcquireReadLock();
     std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    ItemPrototype* proto;
+    ItemPrototype const* proto;
     for (; itr != auctions.end(); ++itr)
     {
         if (itr->second->Deleted) continue;
@@ -709,7 +709,8 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
             continue;
 
         // this is going to hurt. - name
-        if (auctionString.length() > 0 && !FindXinYString(auctionString, proto->lowercase_name))
+        std::string proto_lower = proto->lowercase_name;
+        if (auctionString.length() > 0 && !FindXinYString(auctionString, proto_lower))
             continue;
 
         // rarity

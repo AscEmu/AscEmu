@@ -2013,7 +2013,7 @@ bool Creature::HasLootForPlayer(Player* plr)
 
     for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
-        ItemPrototype* proto = itr->item.itemproto;
+        ItemPrototype const* proto = itr->item.itemproto;
         if (proto != NULL)
         {
             if (proto->Bonding == ITEM_BIND_QUEST || proto->Bonding == ITEM_BIND_QUEST2)

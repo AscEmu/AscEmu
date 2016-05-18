@@ -234,7 +234,7 @@ class WaterBarrel : public GameObjectAIScript
         void OnActivate(Player* pPlayer)
         {
             SlotResult slotresult;
-            ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(32971);
+            ItemPrototype const* proto = sMySQLStore.GetItemProto(32971);
             if (!proto)
                 return;
 

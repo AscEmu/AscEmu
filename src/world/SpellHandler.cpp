@@ -51,7 +51,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         tmpItem = p_User->GetItemInterface()->GetInventoryItem(slot);
     if (!tmpItem)
         return;
-    ItemPrototype* itemProto = tmpItem->GetProto();
+    ItemPrototype const* itemProto = tmpItem->GetProto();
 
     // only some consumable items can be used in arenas
     if ((itemProto->Class == ITEM_CLASS_CONSUMABLE) &&

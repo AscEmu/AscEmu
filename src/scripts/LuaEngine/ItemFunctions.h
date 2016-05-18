@@ -181,7 +181,7 @@ namespace luaItem
     int GetEntryId(lua_State* L, Item* ptr)
     {
         if (!ptr) return 0;
-        ItemPrototype* proto = ptr->GetProto();
+        ItemPrototype const* proto = ptr->GetProto();
         lua_pushnumber(L, proto->ItemId);
         return 1;
     }
@@ -190,8 +190,8 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        ItemPrototype* proto = ptr->GetProto();
-        lua_pushstring(L, proto->Name1);
+        ItemPrototype const* proto = ptr->GetProto();
+        lua_pushstring(L, proto->Name1.c_str());
         return 1;
     }
 
@@ -200,7 +200,7 @@ namespace luaItem
         uint32 index = luaL_checkinteger(L, 1);
         if (!ptr || index >= 5)
             return 0;
-        ItemPrototype* proto = ptr->GetProto();
+        ItemPrototype const* proto = ptr->GetProto();
         lua_pushnumber(L, proto->Spells[index].Id);
         return 1;
     }
@@ -210,7 +210,7 @@ namespace luaItem
         uint32 index = luaL_checkinteger(L, 1);
         if (!ptr || index >= 5)
             return 0;
-        ItemPrototype* proto = ptr->GetProto();
+        ItemPrototype const* proto = ptr->GetProto();
         lua_pushnumber(L, proto->Spells[index].Trigger);
         /*
             USE				= 0,

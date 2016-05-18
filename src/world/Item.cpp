@@ -126,7 +126,7 @@ void Item::Create(uint32 itemid, Player* owner)
 
     SetStackCount(1);
 
-    m_itemProto = ItemPrototypeStorage.LookupEntry(itemid);
+    m_itemProto = sMySQLStore.GetItemProto(itemid);
 
     ARCEMU_ASSERT(m_itemProto != NULL);
 
@@ -152,7 +152,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     uint32 random_prop, random_suffix;
     uint32 count;
 
-    m_itemProto = ItemPrototypeStorage.LookupEntry(itemid);
+    m_itemProto = sMySQLStore.GetItemProto(itemid);
 
     ARCEMU_ASSERT(m_itemProto != NULL);
 
@@ -548,14 +548,14 @@ const ItemProf* GetProficiencyBySkill(uint32 skill)
     }
 }
 
-uint32 GetSellPriceForItem(ItemPrototype* proto, uint32 count)
+uint32 GetSellPriceForItem(ItemPrototype const* proto, uint32 count)
 {
     int32 cost;
     cost = proto->SellPrice * ((count < 1) ? 1 : count);
     return cost;
 }
 
-uint32 GetBuyPriceForItem(ItemPrototype* proto, uint32 count, Player* plr, Creature* vendor)
+uint32 GetBuyPriceForItem(ItemPrototype const* proto, uint32 count, Player* plr, Creature* vendor)
 {
     int32 cost = proto->BuyPrice;
 
@@ -570,7 +570,7 @@ uint32 GetBuyPriceForItem(ItemPrototype* proto, uint32 count, Player* plr, Creat
 
 uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
 {
-    if (ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(itemid))
+    if (ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid))
         return GetSellPriceForItem(proto, count);
     else
         return 1;
@@ -578,7 +578,7 @@ uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
 
 uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, Player* plr, Creature* vendor)
 {
-    if (ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(itemid))
+    if (ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid))
         return GetBuyPriceForItem(proto, count, plr, vendor);
     else
         return 1;
@@ -1084,7 +1084,7 @@ uint32 Item::GetSocketsCount()
     return c;
 }
 
-uint32 Item::GenerateRandomSuffixFactor(ItemPrototype* m_itemProto)
+uint32 Item::GenerateRandomSuffixFactor(ItemPrototype const* m_itemProto)
 {
     double value;
 
@@ -1102,7 +1102,7 @@ std::string Item::GetItemLink(uint32 language = 0)
     return GetItemLinkByProto(GetProto(), language);
 }
 
-std::string GetItemLinkByProto(ItemPrototype* iProto, uint32 language = 0)
+std::string GetItemLinkByProto(ItemPrototype const* iProto, uint32 language = 0)
 {
     const char* ItemLink;
     char buffer[256];
@@ -1152,7 +1152,7 @@ std::string GetItemLinkByProto(ItemPrototype* iProto, uint32 language = 0)
     return ItemLink;
 }
 
-int32 GetStatScalingStatValueColumn(ItemPrototype* proto, uint32 type)
+int32 GetStatScalingStatValueColumn(ItemPrototype const* proto, uint32 type)
 {
     switch (type)
     {
@@ -1221,7 +1221,7 @@ uint32 Item::CountGemsWithLimitId(uint32 LimitId)
             && ei->Enchantment->GemEntry //huh ? Gem without entry ?
            )
         {
-            ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(ei->Enchantment->GemEntry);
+            ItemPrototype const* ip = sMySQLStore.GetItemProto(ei->Enchantment->GemEntry);
             if (ip && ip->ItemLimitCategory == LimitId)
                 result++;
         }
@@ -1264,7 +1264,7 @@ void Item::SendDurationUpdate()
 // charged items that can be purchased with an alternate currency are not eligible. "
 bool Item::IsEligibleForRefund()
 {
-    ItemPrototype* proto = this->GetProto();
+    ItemPrototype const* proto = this->GetProto();
 
     if (!(proto->Flags & ITEM_FLAG_REFUNDABLE))
         return false;

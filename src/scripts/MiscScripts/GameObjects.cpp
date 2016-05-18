@@ -175,7 +175,7 @@ class Blacksmithing_Plans_Use : public GameObjectAIScript
         Blacksmithing_Plans_Use(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new Blacksmithing_Plans_Use(GO); }
 
-        void OnLootTaken(Player* pLooter, ItemPrototype* pItemInfo)
+        void OnLootTaken(Player* pLooter, ItemPrototype const* pItemInfo)
         {
             float SSX = pLooter->GetPositionX();
             float SSY = pLooter->GetPositionY();
@@ -496,7 +496,7 @@ class DustySpellbooks : public GameObjectAIScript
         DustySpellbooks(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new DustySpellbooks(GO); }
 
-        void OnLootTaken(Player* pLooter, ItemPrototype* pItemInfo)
+        void OnLootTaken(Player* pLooter, ItemPrototype const* pItemInfo)
         {
             QuestLogEntry* en = pLooter->GetQuestLogForEntry(422);
             if(!en)

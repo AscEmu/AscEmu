@@ -336,7 +336,7 @@ class SERVER_DECL CreatureAIScript
         virtual void OnLoad() {}
         virtual void OnDespawn() {}
         virtual void OnReachWP(uint32 /*iWaypointId*/, bool /*bForwards*/) {}
-        virtual void OnLootTaken(Player* /*pPlayer*/, ItemPrototype* /*pItemPrototype*/) {}
+        virtual void OnLootTaken(Player* /*pPlayer*/, ItemPrototype const* /*pItemPrototype*/) {}
         virtual void AIUpdate() {}
         virtual void OnEmote(Player* /*pPlayer*/, EmoteType /*Emote*/) {}
         virtual void StringFunctionCall(int) {}
@@ -453,7 +453,7 @@ class SERVER_DECL GameObjectAIScript
         virtual void OnCreate() {}
         virtual void OnSpawn() {}
         virtual void OnDespawn() {}
-        virtual void OnLootTaken(Player* /*pLooter*/, ItemPrototype* /*pItemInfo*/) {}
+        virtual void OnLootTaken(Player* /*pLooter*/, ItemPrototype const* /*pItemInfo*/) {}
         virtual void OnActivate(Player* /*pPlayer*/) {}
         virtual void OnDamaged(uint32 /*damage*/){}
         virtual void OnDestroyed(){}

@@ -1862,7 +1862,7 @@ class LuaCreature : public CreatureAIScript
 
             RELEASE_LOCK
         }
-        void OnLootTaken(Player* pPlayer, ItemPrototype* pItemPrototype)
+        void OnLootTaken(Player* pPlayer, ItemPrototype const* pItemPrototype)
         {
             CHECK_BINDING_ACQUIRELOCK
 
@@ -2054,7 +2054,7 @@ class LuaGameObjectScript : public GameObjectAIScript
             sLuaMgr.ExecuteCall(1);
             RELEASE_LOCK
         }
-        void OnLootTaken(Player* pLooter, ItemPrototype* pItemInfo)
+        void OnLootTaken(Player* pLooter, ItemPrototype const* pItemInfo)
         {
 
             CHECK_BINDING_ACQUIRELOCK

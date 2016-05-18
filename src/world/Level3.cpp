@@ -23,7 +23,6 @@
 #include "ObjectMgr.h"
 #include "Master.h"
 
-
 void ParseBanArgs(char* args, char** BanDuration, char** BanReason)
 {
     char* pBanDuration = strchr(args, ' ');
@@ -439,7 +438,7 @@ bool ChatHandler::HandleIncreaseWeaponSkill(const char* args, WorldSession* m_se
     if (!pr) pr = m_session->GetPlayer();
     if (!pr) return false;
     Item* it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-    ItemPrototype* proto = NULL;
+    ItemPrototype const* proto = NULL;
     if (!it)
         it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
     if (it)
@@ -1279,7 +1278,7 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
         ++loop_count;
     }
 
-    ItemPrototype* iProto = ItemPrototypeStorage.LookupEntry(item_id);
+    ItemPrototype const* iProto = sMySQLStore.GetItemProto(item_id);
 
     if (iProto)
     {
@@ -1317,7 +1316,7 @@ void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefi
     SystemMessage(m_session, message);
 }
 
-void ChatHandler::SendItemLinkToPlayer(ItemPrototype* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language)
+void ChatHandler::SendItemLinkToPlayer(ItemPrototype const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language)
 {
     if (!iProto || !pSession)
         return;
@@ -1366,14 +1365,13 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 
     BlueSystemMessage(m_session, "Starting search of item `%s`...", x.c_str());
     uint32 t = getMSTime();
-    ItemPrototype* it;
+    ItemPrototype const* it;
     uint32 count = 0;
 
-    StorageContainerIterator<ItemPrototype> * itr = ItemPrototypeStorage.MakeIterator();
-
-    while (!itr->AtEnd())
+    MySQLDataStore::ItemPrototypeContainer const* its = sMySQLStore.GetItemPrototypeStore();
+    for (MySQLDataStore::ItemPrototypeContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        it = itr->Get();
+        it = sMySQLStore.GetItemProto(itr->second.ItemId);
         LocalizedItem* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedItem(it->ItemId, m_session->language) : NULL;
 
         std::string litName = std::string(lit ? lit->Name : "");
@@ -1384,7 +1382,8 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
         if (FindXinYString(x, litName))
             localizedFound = true;
 
-        if (FindXinYString(x, it->lowercase_name) || localizedFound)
+        std::string proto_lower = it->lowercase_name;
+        if (FindXinYString(x, proto_lower) || localizedFound)
         {
             // Print out the name in a cool highlighted fashion
             //SendHighlightedName(m_session, it->Name1, it->lowercase_name, x, it->ItemId, true);
@@ -1396,11 +1395,7 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
                 break;
             }
         }
-
-        if (!itr->Inc())
-            break;
     }
-    itr->Destruct();
 
     BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
     return true;

@@ -50,13 +50,6 @@ ObjectMgr::~ObjectMgr()
     Log.Notice("ObjectMgr", "Deleting Corpses...");
     CorpseCollectorUnload();
 
-    Log.Notice("ObjectMgr", "Deleting Itemsets...");
-    for (ItemSetContentMap::iterator i = mItemSets.begin(); i != mItemSets.end(); ++i)
-    {
-        delete i->second;
-    }
-    mItemSets.clear();
-
     Log.Notice("ObjectMgr", "Deleting PlayerCreateInfo...");
     for (PlayerCreateInfoMap::iterator i = mPlayerCreateInfo.begin(); i != mPlayerCreateInfo.end(); ++i)
     {
@@ -1624,8 +1617,9 @@ void ObjectMgr::LoadSpellEffectsOverride()
 
 Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
 {
-    ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(entry);
-    if (proto == NULL) return 0;
+    ItemPrototype const* proto = sMySQLStore.GetItemProto(entry);
+    if (proto ==nullptr)
+        return nullptr;
 
     if (proto->InventoryType == INVTYPE_BAG)
     {
@@ -1658,7 +1652,7 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
 
     if (result)
     {
-        ItemPrototype* pProto = ItemPrototypeStorage.LookupEntry(result->Fetch()[2].GetUInt32());
+        ItemPrototype const* pProto = sMySQLStore.GetItemProto(result->Fetch()[2].GetUInt32());
         if (!pProto)
             return nullptr;
 
@@ -1728,11 +1722,6 @@ void ObjectMgr::LoadAchievementCriteriaList()
     }
 }
 #endif
-
-std::list<ItemPrototype*>* ObjectMgr::GetListForItemSet(int32 setid)
-{
-    return mItemSets[setid];
-}
 
 void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
 {

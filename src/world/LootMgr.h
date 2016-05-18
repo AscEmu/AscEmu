@@ -73,7 +73,7 @@ typedef std::vector<std::pair<DBC::Structures::ItemRandomSuffixEntry const*, flo
 
 struct _LootItem
 {
-    ItemPrototype* itemproto;
+    ItemPrototype const* itemproto;
     uint32 displayid;
 };
 
@@ -237,8 +237,8 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
 
         std::map<uint32, std::set<uint32>> quest_loot_go;
 
-        DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemPrototype* proto);
-        DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemPrototype* proto);
+        DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemPrototype const* proto);
+        DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemPrototype const* proto);
 
         bool is_loading;
 

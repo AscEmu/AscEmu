@@ -135,7 +135,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
 
     itemid = pLoot->items.at(lootSlot).item.itemproto->ItemId;
-    ItemPrototype* it = pLoot->items.at(lootSlot).item.itemproto;
+    ItemPrototype const* it = pLoot->items.at(lootSlot).item.itemproto;
 
     if ((error = _player->GetItemInterface()->CanReceiveItem(it, 1)) != 0)
     {
@@ -476,7 +476,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             for (std::vector<__LootItem>::iterator i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
                 if (i->iItemsCount > 0)
                 {
-                    ItemPrototype* proto = i->item.itemproto;
+                    ItemPrototype const* proto = i->item.itemproto;
                     if (proto->Class != 12)
                         return;
                     if (_player->HasQuestForItem(i->item.itemproto->ItemId))
@@ -1399,7 +1399,7 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
     if (!ammoId)
         return;
 
-    ItemPrototype* xproto = ItemPrototypeStorage.LookupEntry(ammoId);
+    ItemPrototype const* xproto = sMySQLStore.GetItemProto(ammoId);
     if (!xproto)
         return;
 
@@ -2376,7 +2376,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     }
 
     itemid = pLoot->items.at(slotid).item.itemproto->ItemId;
-    ItemPrototype* it = pLoot->items.at(slotid).item.itemproto;
+    ItemPrototype const* it = pLoot->items.at(slotid).item.itemproto;
 
     if ((error = player->GetItemInterface()->CanReceiveItem(it, 1)) != 0)
     {
@@ -2516,7 +2516,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
     // gift wrapping handler
     if (pItem->GetGiftCreatorGUID() && pItem->wrapped_item_id)
     {
-        ItemPrototype* it = ItemPrototypeStorage.LookupEntry(pItem->wrapped_item_id);
+        ItemPrototype const* it = sMySQLStore.GetItemProto(pItem->wrapped_item_id);
         if (it == NULL)
             return;
 

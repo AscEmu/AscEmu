@@ -105,7 +105,7 @@ set(sources
    Movement/Spline/MovementSpline.cpp
    Movement/Spline/SplineFlags.cpp
    Movement/UnitMovementManager.cpp
-   MySQLDataLoads.cpp
+   MySQLDataStore.cpp
    Packets/Movement/CreatureMovement.cpp
    Packets/ManagedPacket.cpp
 	MovementHandler.cpp 
@@ -254,7 +254,7 @@ set(headers
    Movement/Spline/MovementSpline.hpp
    Movement/Spline/MovementSplineDefines.hpp
    Movement/Spline/SplineFlags.hpp
-   MySQLDataLoads.hpp
+   MySQLDataStore.hpp
    Packets/Movement/CreatureMovement.hpp
    Packets/Movement/SmsgMonsterMove.hpp
    Packets/ManagedPacket.hpp

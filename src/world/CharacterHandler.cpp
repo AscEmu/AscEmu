@@ -203,7 +203,6 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     player_item items[23];
     int8 slot;
 
-    ItemPrototype* proto;
     QueryResult* res;
     CreatureInfo* info = NULL;
     uint8 race;
@@ -344,7 +343,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                 do
                 {
                     slot = res->Fetch()[0].GetInt8();
-                    proto = ItemPrototypeStorage.LookupEntry(res->Fetch()[1].GetUInt32());
+                    ItemPrototype const* proto = sMySQLStore.GetItemProto(res->Fetch()[1].GetUInt32());
                     if (proto)
                     {
                         items[slot].displayid = proto->DisplayInfoID;

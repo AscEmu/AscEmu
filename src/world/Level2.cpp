@@ -192,7 +192,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession* m_session)
         return true;
     }
 
-    ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(item);
+    ItemPrototype const* tmpItem = sMySQLStore.GetItemProto(item);
 
     std::stringstream sstext;
     if (tmpItem)
@@ -252,7 +252,7 @@ bool ChatHandler::HandleItemRemoveCommand(const char* args, WorldSession* m_sess
         WorldDatabase.Execute(ss.str().c_str());
 
         pCreature->RemoveVendorItem(itemguid);
-        ItemPrototype* tmpItem = ItemPrototypeStorage.LookupEntry(itemguid);
+        ItemPrototype const* tmpItem = sMySQLStore.GetItemProto(itemguid);
         if (tmpItem)
         {
             sstext << "Item '" << itemguid << "' '" << tmpItem->Name1 << "' Deleted from list" << '\0';

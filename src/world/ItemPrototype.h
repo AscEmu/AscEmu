@@ -611,7 +611,7 @@ struct ItemPrototype
     uint32 Class;
     uint32 SubClass;
     uint32 unknown_bc;
-    char* Name1;
+    std::string Name1;
     uint32 DisplayInfoID;
     uint32 Quality;
     uint32 Flags;
@@ -650,7 +650,7 @@ struct ItemPrototype
     float Range;
     ItemSpell Spells[MAX_ITEM_PROTO_SPELLS];
     uint32 Bonding;
-    char* Description;
+    std::string Description;
     uint32 PageId;
     uint32 PageLanguage;
     uint32 PageMaterial;
@@ -680,7 +680,7 @@ struct ItemPrototype
     std::string lowercase_name;      /// used in auctions
     int32 ForcedPetId;
 
-    bool HasFlag(uint32 flag)
+    bool HasFlag(uint32 flag) const
     {
         if ((Flags & flag) != 0)
             return true;
@@ -688,7 +688,7 @@ struct ItemPrototype
             return false;
     }
     
-    bool HasFlag2(uint32 flag)
+    bool HasFlag2(uint32 flag) const
     {
         if ((Flags2 & flag) != 0)
             return true;

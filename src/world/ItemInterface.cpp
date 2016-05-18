@@ -116,7 +116,7 @@ void ItemInterface::m_DestroyForPlayer()        // 100%
 Item* ItemInterface::SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot)
 {
     Item* pItem;
-    ItemPrototype* pProto = ItemPrototypeStorage.LookupEntry(ItemId);
+    ItemPrototype const* pProto = sMySQLStore.GetItemProto(ItemId);
     if (!pProto) { return NULL; }
 
     if (pProto->InventoryType == INVTYPE_BAG)
@@ -1737,7 +1737,7 @@ AddItemResult ItemInterface::AddItemToFreeSlot(Item* item)
 }
 
 /// Calculates inventory free slots, bag inventory slots not included
-uint32 ItemInterface::CalculateFreeSlots(ItemPrototype* proto)
+uint32 ItemInterface::CalculateFreeSlots(ItemPrototype const* proto)
 {
     uint32 count = 0;
     uint32 i;
@@ -1884,7 +1884,7 @@ int8 ItemInterface::GetInternalBankSlotFromPlayer(int8 islot)
 /// Checks if the item can be equipped on a specific slot this will check unique-equipped gems as well
 int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, bool ignore_combat /* = false */, bool skip_2h_check /* = false */)
 {
-    ItemPrototype* proto = item->GetProto();
+    ItemPrototype const* proto = item->GetProto();
 
     if (int8 ret = CanEquipItemInSlot(DstInvSlot, slot, proto, ignore_combat, skip_2h_check))
         return ret;
@@ -1896,7 +1896,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
             EnchantmentInstance* ei = item->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
             if (ei && ei->Enchantment->GemEntry)       //huh ? Gem without entry ?
             {
-                ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(ei->Enchantment->GemEntry);
+                ItemPrototype const* ip = sMySQLStore.GetItemProto(ei->Enchantment->GemEntry);
 
                 if (ip)             //maybe gem got removed from db due to update ?
                 {
@@ -1929,7 +1929,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
 }
 
 /// Checks if the item can be equipped on a specific slot
-int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype* proto, bool ignore_combat /* = false */, bool skip_2h_check /* = false */)
+int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype const* proto, bool ignore_combat /* = false */, bool skip_2h_check /* = false */)
 {
     if (proto == NULL) return INV_ERR_ITEMS_CANT_BE_SWAPPED;
 
@@ -2404,7 +2404,7 @@ int8 ItemInterface::CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype
 }
 
 /// Checks if player can receive the item
-int8 ItemInterface::CanReceiveItem(ItemPrototype* item, uint32 amount)
+int8 ItemInterface::CanReceiveItem(ItemPrototype const* item, uint32 amount)
 {
     if (!item)
     {
@@ -2434,7 +2434,7 @@ int8 ItemInterface::CanReceiveItem(ItemPrototype* item, uint32 amount)
     return INV_ERR_OK;
 }
 
-void ItemInterface::BuyItem(ItemPrototype* item, uint32 total_amount, Creature* pVendor)
+void ItemInterface::BuyItem(ItemPrototype const* item, uint32 total_amount, Creature* pVendor)
 {
     if (item->BuyPrice)
     {
@@ -2466,7 +2466,7 @@ void ItemInterface::BuyItem(ItemPrototype* item, uint32 total_amount, Creature* 
     }
 }
 
-int8 ItemInterface::CanAffordItem(ItemPrototype* item, uint32 amount, Creature* pVendor)
+int8 ItemInterface::CanAffordItem(ItemPrototype const* item, uint32 amount, Creature* pVendor)
 {
     auto item_extended_cost = pVendor->GetItemExtendedCostByItemId(item->ItemId);
     if (item_extended_cost != nullptr)
@@ -3200,7 +3200,6 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
 {
     int8 containerslot, slot;
     Item* item;
-    ItemPrototype* proto;
 
     if (result)
     {
@@ -3210,7 +3209,7 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
 
             containerslot = fields[13].GetInt8();
             slot = fields[14].GetInt8();
-            proto = ItemPrototypeStorage.LookupEntry(fields[2].GetUInt32());
+            ItemPrototype const* proto = sMySQLStore.GetItemProto(fields[2].GetUInt32());
 
             if (proto != NULL)
             {
@@ -3352,7 +3351,7 @@ int16 ItemInterface::FindFreeCurrencySlot()
     return ITEM_NO_SLOT_AVAILABLE;
 }
 
-SlotResult ItemInterface::FindFreeInventorySlot(ItemPrototype* proto)
+SlotResult ItemInterface::FindFreeInventorySlot(ItemPrototype const* proto)
 {
     //special item
     //special slots will be ignored of item is not set
@@ -3450,7 +3449,7 @@ SlotResult ItemInterface::FindFreeInventorySlot(ItemPrototype* proto)
     return result;
 }
 
-SlotResult ItemInterface::FindFreeBankSlot(ItemPrototype* proto)
+SlotResult ItemInterface::FindFreeBankSlot(ItemPrototype const* proto)
 {
     //special item
     //special slots will be ignored of item is not set
@@ -3578,7 +3577,7 @@ bool ItemInterface::IsEquipped(uint32 itemid)
 
                 if (ei && ei->Enchantment)
                 {
-                    ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(ei->Enchantment->GemEntry);
+                    ItemPrototype const* ip = sMySQLStore.GetItemProto(ei->Enchantment->GemEntry);
 
                     if (ip && ip->ItemId == itemid)
                         return true;
@@ -3628,7 +3627,7 @@ uint32 ItemInterface::GetEquippedCountByItemLimit(uint32 LimitId)
                 EnchantmentInstance* ei = it->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + socketcount);
                 if (ei && ei->Enchantment)
                 {
-                    ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(ei->Enchantment->GemEntry);
+                    ItemPrototype const* ip = sMySQLStore.GetItemProto(ei->Enchantment->GemEntry);
                     if (ip && ip->ItemLimitCategory == LimitId)
                         count++;
                 }
@@ -3874,7 +3873,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
     ARCEMU_ASSERT(chr != NULL);
 
-    ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
+    ItemPrototype const* it = sMySQLStore.GetItemProto(itemid);
     if (it == NULL)
         return false;
 

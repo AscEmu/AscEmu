@@ -316,34 +316,35 @@ void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
 void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
-
     CHECK_PACKET_SIZE(recv_data, 4);
 
-    WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
     uint32 itemid;
 
     recv_data >> itemid;
+    recv_data.read_skip<uint64>();
+
+    WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
     reply << itemid;
 
-    ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(itemid);
-    if (!proto)
-    {
-        reply << "Unknown Item";
-    }
-    else
+    std::string Name = ("Unknown Item");
+
+    ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid);
+    if (proto != nullptr)
     {
         LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
         if (li)
-        {
-            reply << li->Name;
-        }
+            Name = li->Name;
         else
-        {
-            reply << proto->Name1;
-        }
+            Name = proto->Name1;
 
+        reply << Name;
         reply << proto->InventoryType;
     }
+    else
+    {
+        reply << Name;
+    }
+
 
     SendPacket(&reply);
 }

@@ -59,7 +59,7 @@ Container::~Container()
 void Container::LoadFromDB(Field* fields)
 {
     uint32 itemid = fields[2].GetUInt32();
-    m_itemProto = ItemPrototypeStorage.LookupEntry(itemid);
+    m_itemProto = sMySQLStore.GetItemProto(itemid);
 
     ARCEMU_ASSERT(m_itemProto != NULL);
     SetEntry(itemid);
@@ -84,7 +84,7 @@ void Container::LoadFromDB(Field* fields)
 
 void Container::Create(uint32 itemid, Player* owner)
 {
-    m_itemProto = ItemPrototypeStorage.LookupEntry(itemid);
+    m_itemProto = sMySQLStore.GetItemProto(itemid);
     ARCEMU_ASSERT(m_itemProto != NULL);
 
     SetEntry(itemid);

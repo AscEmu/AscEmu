@@ -1029,7 +1029,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (p_caster != NULL)
                 {
                     Item* pItem = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                    ItemPrototype* pItemProto = ItemPrototypeStorage.LookupEntry(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                    ItemPrototype const* pItemProto = sMySQLStore.GetItemProto(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
                     uint32 stundmg;
                     float bowdmg;
                     float ammodmg;
@@ -1914,7 +1914,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
         return;
     }
 
-    ItemPrototype* m_itemProto = ItemPrototypeStorage.LookupEntry(itemid);
+    ItemPrototype const* m_itemProto = sMySQLStore.GetItemProto(itemid);
     if (m_itemProto == NULL)
     {
         LOG_ERROR("Spell %u (%s) has a create item effect but the itemid is invalid!", spellid, m_spellInfo->Name);
@@ -1981,7 +1981,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
         if ((skill_line_ability != nullptr) && (skill_line_ability->skilline == SKILL_ALCHEMY))
         {
             //Potion Master
-            if (strstr(m_itemProto->Name1, "Potion"))
+            if (m_itemProto->Name1.compare("Potion"))
             {
                 if (p_caster->HasSpell(28675))
                     while (Rand(20) && (count < 5))
@@ -1993,7 +1993,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
             }
 
             //Elixir Master
-            if (strstr(m_itemProto->Name1, "Elixir") || strstr(m_itemProto->Name1, "Flask"))
+            if (m_itemProto->Name1.compare("Elixir") || m_itemProto->Name1.compare("Flask"))
             {
                 if (p_caster->HasSpell(28677))
                     while (Rand(20) && (count < 5))
@@ -3693,7 +3693,7 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
         itemTarget->GetEntry() == 43145))
     {
         uint32 itemid = GetProto()->EffectItemType[i];
-        ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
+        ItemPrototype const* it = sMySQLStore.GetItemProto(itemid);
         if (it == NULL)
         {
             p_caster->GetSession()->SystemMessage("Item is missing, report this to devs. Entry: %u", itemid);

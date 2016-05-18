@@ -161,8 +161,8 @@ class SERVER_DECL Item : public Object
         virtual ~Item();
         void Create(uint32 itemid, Player* owner);
 
-        ItemPrototype* GetProto() const { return m_itemProto; }
-        void SetProto(ItemPrototype* pr) { m_itemProto = pr; }
+        ItemPrototype const* GetProto() const { return m_itemProto; }
+        void SetProto(ItemPrototype const* pr) { m_itemProto = pr; }
 
         Player* GetOwner() const { return m_owner; }
         void SetOwner(Player* owner);
@@ -381,7 +381,7 @@ class SERVER_DECL Item : public Object
         EnchantmentInstance* GetEnchantment(uint32 slot);
         bool IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment);
 
-        static uint32 GenerateRandomSuffixFactor(ItemPrototype* m_itemProto);
+        static uint32 GenerateRandomSuffixFactor(ItemPrototype const* m_itemProto);
 
         bool HasEnchantments() { return (Enchantments.size() > 0) ? true : false; }
 
@@ -409,7 +409,7 @@ class SERVER_DECL Item : public Object
 
     protected:
 
-        ItemPrototype* m_itemProto;
+        ItemPrototype const* m_itemProto;
         EnchantmentMap Enchantments;
         uint32 _fields[ITEM_END];   /// this mem is wasted in case of container... but this will be fixed in future
         Player* m_owner;            /// let's not bother the manager with unneeded requests
@@ -425,14 +425,14 @@ class SERVER_DECL Item : public Object
 
 uint32 GetSkillByProto(uint32, uint32);
 
-uint32 GetSellPriceForItem(ItemPrototype* proto, uint32 count);
-uint32 GetBuyPriceForItem(ItemPrototype* proto, uint32 count, Player* plr, Creature* vendor);
+uint32 GetSellPriceForItem(ItemPrototype const* proto, uint32 count);
+uint32 GetBuyPriceForItem(ItemPrototype const* proto, uint32 count, Player* plr, Creature* vendor);
 
 uint32 GetSellPriceForItem(uint32 itemid, uint32 count);
 uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, Player* plr, Creature* vendor);
 
-std::string GetItemLinkByProto(ItemPrototype* iProto, uint32 language);
+std::string GetItemLinkByProto(ItemPrototype const* iProto, uint32 language);
 
-int32 GetStatScalingStatValueColumn(ItemPrototype* proto, uint32 type);
+int32 GetStatScalingStatValueColumn(ItemPrototype const* proto, uint32 type);
 
 #endif // _WOWSERVER_ITEM_H

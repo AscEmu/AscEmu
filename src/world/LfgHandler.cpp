@@ -225,7 +225,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             for (uint8 i = 0; i < 4; ++i)
                 if (qRew->reward_item[i] != 0)
                 {
-                    ItemPrototype* item = ItemPrototypeStorage.LookupEntry(qRew->reward_item[i]);
+                    ItemPrototype const* item = sMySQLStore.GetItemProto(qRew->reward_item[i]);
                     data << uint32(qRew->reward_item[i]);
                     data << uint32(item ? item->DisplayInfoID : 0);
                     data << uint32(qRew->reward_itemcount[i]);
@@ -522,7 +522,7 @@ void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 Dungeon
             if (!qReward->reward_item[i])
                 continue;
 
-            ItemPrototype * iProto = ItemPrototypeStorage.LookupEntry(qReward->reward_item[i]);
+            ItemPrototype const* iProto = sMySQLStore.GetItemProto(qReward->reward_item[i]);
 
             data << uint32(qReward->reward_item[i]);
             data << uint32(iProto ? iProto->DisplayInfoID : 0);

@@ -732,34 +732,31 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
 
     CHECK_PACKET_SIZE(recv_data, 4);
 
-    uint32 itemid = 0;
+    uint32 itemid;
     recv_data >> itemid;
 
-    ItemPrototype* itemProto = ItemPrototypeStorage.LookupEntry(itemid);
+    ItemPrototype const* itemProto = sMySQLStore.GetItemProto(itemid);
     if (!itemProto)
     {
         LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
         return;
     }
 
+    std::string Name = itemProto->Name1;
+    std::string Description = itemProto->Description;
+
     size_t namelens;
 
     LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
     if (li)
-        namelens = strlen(li->Name) + strlen(li->Description) + 602;
-    else
-        namelens = strlen(itemProto->Name1) + strlen(itemProto->Description) + 602;
+        Name = li->Name;
 
-    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, namelens);
+    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
     data << itemProto->ItemId;
     data << itemProto->Class;
     data << itemProto->SubClass;
     data << itemProto->unknown_bc;
-    if (li)
-        data << li->Name;
-    else
-        data << itemProto->Name1;
-
+    data << Name;
     data << uint8(0);           // name 2?
     data << uint8(0);           // name 3?
     data << uint8(0);           // name 4?
@@ -818,10 +815,8 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
         data << itemProto->Spells[i].CategoryCooldown;
     }
     data << itemProto->Bonding;
-    if (li)
-        data << li->Description;
-    else
-        data << itemProto->Description;
+    
+    data << Description;
 
     data << itemProto->PageId;
     data << itemProto->PageLanguage;
@@ -981,7 +976,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
         return; //our player doesn't have this item
     }
 
-    ItemPrototype* it = item->GetProto();
+    ItemPrototype const* it = item->GetProto();
 
     if (item->IsContainer() && static_cast< Container* >(item)->HasItems())
     {
@@ -1096,7 +1091,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
         return;
     }
 
-    ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
+    ItemPrototype const* it = sMySQLStore.GetItemProto(itemid);
 
     if (it == NULL)
         return;
@@ -1292,7 +1287,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
         return;
     }
 
-    ItemPrototype* it = ItemPrototypeStorage.LookupEntry(itemid);
+    ItemPrototype const* it = sMySQLStore.GetItemProto(itemid);
     if (!it)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
@@ -1458,14 +1453,14 @@ void WorldSession::SendInventoryList(Creature* unit)
     data << unit->GetGUID();
     data << uint8(0);   // placeholder for item count
 
-    ItemPrototype* curItem = NULL;
+    ItemPrototype const* curItem = NULL;
     uint32 counter = 0;
 
     for (std::vector<CreatureItem>::iterator itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
     {
         if (itr->itemid && (itr->max_amount == 0 || (itr->max_amount > 0 && itr->available_amount > 0)))
         {
-            if ((curItem = ItemPrototypeStorage.LookupEntry(itr->itemid)) != 0)
+            if ((curItem = sMySQLStore.GetItemProto(itr->itemid)) != 0)
             {
                 if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM)) // looking up everything for active gms
                 {
@@ -1931,7 +1926,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
     if (!TargetItem)
         return;
 
-    ItemPrototype* TargetProto = TargetItem->GetProto();
+    ItemPrototype const* TargetProto = TargetItem->GetProto();
     int slot = itemi->GetInventorySlotByGuid(itemguid);
 
     bool apply = (slot >= 0 && slot < 19);
@@ -1953,7 +1948,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
         if (EI)
         {
             FilledSlots++;
-            ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(EI->Enchantment->GemEntry);
+            ItemPrototype const* ip = sMySQLStore.GetItemProto(EI->Enchantment->GemEntry);
             if (!ip)
                 gem_properties = nullptr;
             else
@@ -1966,7 +1961,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
         if (gemguid[i])  //add or replace gem
         {
             Item* it = NULL;
-            ItemPrototype* ip = NULL;
+            ItemPrototype const* ip = NULL;
 
             // tried to put gem in socket where no socket exists (take care about prismatic sockets)
             if (!TargetProto->Sockets[i].SocketColor)
@@ -2251,7 +2246,7 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     std::pair<time_t, uint32> RefundEntry;
     DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
-    ItemPrototype* item_proto = nullptr;
+    ItemPrototype const* item_proto = nullptr;
 
     recvPacket >> GUID;
 

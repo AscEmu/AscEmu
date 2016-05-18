@@ -1835,7 +1835,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
             if (Rand(loot_ptr->Chance * sWorld.getRate(RATE_DROP0)))
             {
                 __LootItem li;
-                ItemPrototype* pProto = ItemPrototypeStorage.LookupEntry(loot_ptr->ItemId);
+                ItemPrototype const* pProto = sMySQLStore.GetItemProto(loot_ptr->ItemId);
                 if (pProto != NULL)
                 {
                     li.ffa_loot = 0;

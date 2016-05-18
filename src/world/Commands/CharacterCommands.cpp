@@ -425,7 +425,7 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
     if (player_target == nullptr)
         return true;
 
-    auto item_proto = ItemPrototypeStorage.LookupEntry(itemid);
+    auto item_proto = sMySQLStore.GetItemProto(itemid);
     if (item_proto != nullptr)
     {
         numadded -= player_target->GetItemInterface()->GetItemCount(itemid);
@@ -472,44 +472,63 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
     if (player == nullptr)
         return true;
 
-    auto item_set_list = objmgr.GetListForItemSet(setid);
+    /*auto item_set_list = objmgr.GetListForItemSet(setid);
     if (!item_set_list)
     {
         RedSystemMessage(m_session, "Invalid item set.");
         return true;
-    }
+    }*/
 
     BlueSystemMessage(m_session, "Searching item set %u...", setid);
     sGMLog.writefromsession(m_session, "used add item set command, set %u, target %s", setid, player->GetName());
 
-    for (std::list<ItemPrototype*>::iterator itr = item_set_list->begin(); itr != item_set_list->end(); ++itr)
+    uint32 itemset_items_count = 0;
+
+    MySQLDataStore::ItemPrototypeContainer const* its = sMySQLStore.GetItemPrototypeStore();
+    for (MySQLDataStore::ItemPrototypeContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        auto item = objmgr.CreateItem((*itr)->ItemId, m_session->GetPlayer());
-        if (!item)
+        ItemPrototype const* it = sMySQLStore.GetItemProto(itr->second.ItemId);
+
+        if (it->ItemSet != setid)
+        {
             continue;
-
-        if (item->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
-        {
-            if (item->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND)
-                item->AccountBind();
-            else
-                item->SoulBind();
-        }
-
-        if (!player->GetItemInterface()->AddItemToFreeSlot(item))
-        {
-            m_session->SendNotification("No free slots left!");
-            item->DeleteMe();
-            return true;
         }
         else
         {
-            SystemMessage(m_session, "Added item: %s [%u]", (*itr)->Name1, (*itr)->ItemId);
-            SlotResult* le = player->GetItemInterface()->LastSearchResult();
-            player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+            auto item = objmgr.CreateItem(it->ItemId, m_session->GetPlayer());
+            if (item == nullptr)
+                continue;
+
+            if (it->Bonding == ITEM_BIND_ON_PICKUP)
+            {
+                if (it->Flags & ITEM_FLAG_ACCOUNTBOUND)
+                    item->AccountBind();
+                else
+                    item->SoulBind();
+            }
+
+            if (!player->GetItemInterface()->AddItemToFreeSlot(item))
+            {
+                m_session->SendNotification("No free slots left!");
+                item->DeleteMe();
+                return true;
+            }
+            else
+            {
+                SystemMessage(m_session, "Added item: %s [%u]", it->Name1, it->ItemId);
+                SlotResult* le = player->GetItemInterface()->LastSearchResult();
+                player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                ++itemset_items_count;
+            }
+
         }
     }
-    GreenSystemMessage(m_session, "Added set to inventory complete.");
+
+    if (itemset_items_count > 0)
+        GreenSystemMessage(m_session, "Added set to inventory complete.");
+    else
+        RedSystemMessage(m_session, "Itemset ID: %d is not defined in tems table!", setid);
+
     return true;
 }
 

@@ -510,7 +510,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
         {
             Field* field = loot_result->Fetch();
 
-            auto item_proto = ItemPrototypeStorage.LookupEntry(field[0].GetUInt32());
+            auto item_proto = sMySQLStore.GetItemProto(field[0].GetUInt32());
             if (item_proto == nullptr || item_proto->Quality < minQuality)
                 continue;
 

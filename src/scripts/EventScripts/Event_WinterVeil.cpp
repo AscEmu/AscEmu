@@ -61,7 +61,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         {
             case 0:
             {
-                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(21212);
+                ItemPrototype const* proto = sMySQLStore.GetItemProto(21212);
                 if (!proto)
                     return;
 
@@ -71,7 +71,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             break;
             case 1:
             {
-                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(21519);
+                ItemPrototype const* proto = sMySQLStore.GetItemProto(21519);
                 if (!proto)
                     return;
 
@@ -81,7 +81,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             break;
             case 2:
             {
-                ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(34191);
+                ItemPrototype const* proto = sMySQLStore.GetItemProto(34191);
                 if (!proto)
                     return;
 

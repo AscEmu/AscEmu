@@ -519,7 +519,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>                  LevelInfoMap;
-        typedef std::map<int32, std::list<ItemPrototype*>* >               ItemSetContentMap;
         typedef std::map<int32, uint32>               ItemSetDefinedContentMap;
         typedef std::map<uint32, uint32>                                    NpcToGossipTextMap;
         typedef std::map<uint32, std::set<SpellEntry*> >                    PetDefaultSpellMap;
@@ -626,8 +625,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
         void SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_);
-
-        std::list<ItemPrototype*>* GetListForItemSet(int32 setid);
 
         Pet* CreatePet(uint32 entry);
         // This is a cataclysm feature
@@ -916,7 +913,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         /// Corpse Collector
         CorpseCollectorMap mCorpseCollector;
 
-        ItemSetContentMap mItemSets;
         ItemSetDefinedContentMap mDefinedItemSets;
 
         TrainerMap mTrainers;

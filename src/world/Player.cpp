@@ -3576,7 +3576,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
                 if (ei && ei->Enchantment)
                 {
-                    ItemPrototype* ip = ItemPrototypeStorage.LookupEntry(ei->Enchantment->GemEntry);
+                    ItemPrototype const* ip = sMySQLStore.GetItemProto(ei->Enchantment->GemEntry);
 
                     if (ip && ip->Flags & ITEM_FLAG_UNIQUE_EQUIP &&
                         itemi->IsEquipped(ip->ItemId))
@@ -4016,7 +4016,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         return;
 
     ARCEMU_ASSERT(item != NULL);
-    ItemPrototype* proto = item->GetProto();
+    ItemPrototype const* proto = item->GetProto();
 
     //fast check to skip mod applying if the item doesnt meat the requirements.
     if (!item->IsContainer() && item->GetDurability() == 0 && item->GetDurabilityMax() && justdrokedown == false)
@@ -6170,7 +6170,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     // Check ammo
     auto item = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-    auto item_proto = ItemPrototypeStorage.LookupEntry(GetAmmoId());
+    auto item_proto = sMySQLStore.GetItemProto(GetAmmoId());
     if (item == nullptr || disarmed)           //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
         return SPELL_FAILED_NO_AMMO;        //In proper language means "Requires Ranged Weapon to be equipped"
 
@@ -6181,7 +6181,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
             return SPELL_FAILED_LOWLEVEL;
 
         // Check ammo type
-        auto item_proto_ammo = ItemPrototypeStorage.LookupEntry(item->GetEntry());
+        auto item_proto_ammo = sMySQLStore.GetItemProto(item->GetEntry());
         if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
             return SPELL_FAILED_NEED_AMMO;
     }
@@ -8098,7 +8098,7 @@ void Player::SendTradeUpdate()
         if (pItem != 0)
         {
             count++;
-            ItemPrototype* pProto = pItem->GetProto();
+            ItemPrototype const* pProto = pItem->GetProto();
             ARCEMU_ASSERT(pProto != NULL);
 
             data << uint8(Index);
@@ -9896,7 +9896,7 @@ void Player::CalcDamage()
 
             if (GetAmmoId() && !m_requiresNoAmmo)
             {
-                ItemPrototype* xproto = ItemPrototypeStorage.LookupEntry(GetAmmoId());
+                ItemPrototype const* xproto = sMySQLStore.GetItemProto(GetAmmoId());
                 if (xproto)
                 {
                     bonus += ((xproto->Damage[0].Min + xproto->Damage[0].Max) * it->GetProto()->Delay) / 2000.0f;
@@ -10989,7 +10989,7 @@ void Player::UpdatePotionCooldown()
     if (m_lastPotionId == 0 || CombatStatus.IsInCombat())
         return;
 
-    ItemPrototype* proto = ItemPrototypeStorage.LookupEntry(m_lastPotionId);
+    ItemPrototype const* proto = sMySQLStore.GetItemProto(m_lastPotionId);
     if (proto != NULL)
     {
         for (uint8 i = 0; i < 5; ++i)
@@ -11177,12 +11177,12 @@ bool Player::Cooldown_CanCast(SpellEntry* pSpell)
     return true;
 }
 
-void Player::Cooldown_AddItem(ItemPrototype* pProto, uint32 x)
+void Player::Cooldown_AddItem(ItemPrototype const* pProto, uint32 x)
 {
     if (pProto->Spells[x].CategoryCooldown <= 0 && pProto->Spells[x].Cooldown <= 0)
         return;
 
-    ItemSpell* isp = &pProto->Spells[x];
+    ItemSpell const* isp = &pProto->Spells[x];
     uint32 mstime = getMSTime();
 
     uint32 item_spell_id = isp->Id;
@@ -11199,10 +11199,10 @@ void Player::Cooldown_AddItem(ItemPrototype* pProto, uint32 x)
         _Cooldown_Add(COOLDOWN_TYPE_SPELL, item_spell_id, cooldown_time + mstime, item_spell_id, pProto->ItemId);
 }
 
-bool Player::Cooldown_CanCast(ItemPrototype* pProto, uint32 x)
+bool Player::Cooldown_CanCast(ItemPrototype const* pProto, uint32 x)
 {
     PlayerCooldownMap::iterator itr;
-    ItemSpell* isp = &pProto->Spells[x];
+    ItemSpell const* isp = &pProto->Spells[x];
     uint32 mstime = getMSTime();
 
     if (isp->Category)
