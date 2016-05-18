@@ -1282,7 +1282,7 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
 
     if (iProto)
     {
-        sGMLog.writefromsession(m_session, "used remove item %s (id: %u) count %u from %s", iProto->Name1, item_id, ocount, plr->GetName());
+        sGMLog.writefromsession(m_session, "used remove item %s (id: %u) count %u from %s", iProto->Name.c_str(), item_id, ocount, plr->GetName());
         BlueSystemMessage(m_session, "Removing %u copies of item %s (id: %u) from %s's inventory.", ocount, GetItemLinkByProto(iProto, m_session->language).c_str(), item_id, plr->GetName());
         BlueSystemMessage(plr->GetSession(), "%s removed %u copies of item %s from your inventory.", m_session->GetPlayer()->GetName(), ocount, GetItemLinkByProto(iProto, plr->GetSession()->language).c_str());
     }

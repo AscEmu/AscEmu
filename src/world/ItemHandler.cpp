@@ -742,7 +742,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
         return;
     }
 
-    std::string Name = itemProto->Name1;
+    std::string Name = itemProto->Name;
     std::string Description = itemProto->Description;
 
     size_t namelens;

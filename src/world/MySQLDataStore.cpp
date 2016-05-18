@@ -74,7 +74,7 @@ void MySQLDataStore::LoadItemsTable()
         itemProto.Class = fields[1].GetUInt32();
         itemProto.SubClass = fields[2].GetUInt32();
         itemProto.unknown_bc = fields[3].GetUInt32();
-        itemProto.Name1 = fields[4].GetString();
+        itemProto.Name = fields[4].GetString();
         itemProto.DisplayInfoID = fields[5].GetUInt32();
         itemProto.Quality = fields[6].GetUInt32();
         itemProto.Flags = fields[7].GetUInt32();
@@ -171,7 +171,7 @@ void MySQLDataStore::LoadItemsTable()
         itemProto.FoodType = fields[126].GetUInt32();
 
         //extra stuff
-        itemProto.lowercase_name = itemProto.Name1;
+        itemProto.lowercase_name = itemProto.Name;
         for (uint32 j = 0; j < itemProto.lowercase_name.length(); ++j)
             itemProto.lowercase_name[j] = static_cast<char>(tolower(itemProto.lowercase_name[j]));
 

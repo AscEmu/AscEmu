@@ -611,7 +611,7 @@ struct ItemPrototype
     uint32 Class;
     uint32 SubClass;
     uint32 unknown_bc;
-    std::string Name1;
+    std::string Name;
     uint32 DisplayInfoID;
     uint32 Quality;
     uint32 Flags;

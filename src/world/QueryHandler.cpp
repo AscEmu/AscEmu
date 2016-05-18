@@ -335,7 +335,7 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
         if (li)
             Name = li->Name;
         else
-            Name = proto->Name1;
+            Name = proto->Name;
 
         reply << Name;
         reply << proto->InventoryType;

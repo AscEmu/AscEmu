@@ -180,7 +180,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                             MapInfo* pMi = WorldMapInfoStorage.LookupEntry(pAreaTrigger->Mapid);
                             ItemPrototype const* pItem = sMySQLStore.GetItemProto(pMi->required_item);
                             if (pItem)
-                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pItem->Name1);
+                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pItem->Name.c_str());
                             else
                                 snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
 
@@ -216,7 +216,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                             MapInfo* pMi = WorldMapInfoStorage.LookupEntry(pAreaTrigger->Mapid);
                             ItemPrototype const* pItem = sMySQLStore.GetItemProto(pMi->heroic_key_1);
                             if (pItem)
-                                snprintf(msg, 200, "You must have the item, `%s` to pass through here.", pItem->Name1);
+                                snprintf(msg, 200, "You must have the item, `%s` to pass through here.", pItem->Name.c_str());
                             else
                                 snprintf(msg, 200, "You must have the item, UNKNOWN to pass through here.");
 

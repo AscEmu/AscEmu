@@ -204,7 +204,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
 
             // send message to player
             sChatHandler.BlueSystemMessage(m_pOwner->GetSession(), "A duplicated item, `%s` was found in your inventory. We've attempted to add it to a free slot in your inventory, if there is none this will fail. It will be attempted again the next time you log on.",
-                item->GetProto()->Name1);
+                item->GetProto()->Name.c_str());
             if (result.Result == true)
             {
                 // Found a new slot for that item.
@@ -3924,7 +3924,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
             if ((it->RandomPropId != 0) && (it->RandomSuffixId != 0))
             {
-                LOG_ERROR("Item %u (%s) has both RandomPropId and RandomSuffixId.", itemid, it->Name1);
+                LOG_ERROR("Item %u (%s) has both RandomPropId and RandomSuffixId.", itemid, it->Name.c_str());
             }
 
             if (it->RandomPropId != 0)
@@ -3937,7 +3937,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
                 }
                 else
                 {
-                    LOG_ERROR("Item %u (%s) has unknown RandomPropId %u", itemid, it->Name1, it->RandomPropId);
+                    LOG_ERROR("Item %u (%s) has unknown RandomPropId %u", itemid, it->Name.c_str(), it->RandomPropId);
                 }
             }
 
@@ -3951,7 +3951,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
                 }
                 else
                 {
-                    LOG_ERROR("Item %u (%s) has unknown RandomSuffixId %u", itemid, it->Name1, it->RandomSuffixId);
+                    LOG_ERROR("Item %u (%s) has unknown RandomSuffixId %u", itemid, it->Name.c_str(), it->RandomSuffixId);
                 }
             }
         }

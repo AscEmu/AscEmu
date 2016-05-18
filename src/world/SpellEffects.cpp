@@ -1981,7 +1981,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
         if ((skill_line_ability != nullptr) && (skill_line_ability->skilline == SKILL_ALCHEMY))
         {
             //Potion Master
-            if (m_itemProto->Name1.compare("Potion"))
+            if (m_itemProto->Name.compare("Potion"))
             {
                 if (p_caster->HasSpell(28675))
                     while (Rand(20) && (count < 5))
@@ -1993,7 +1993,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
             }
 
             //Elixir Master
-            if (m_itemProto->Name1.compare("Elixir") || m_itemProto->Name1.compare("Flask"))
+            if (m_itemProto->Name.compare("Elixir") || m_itemProto->Name.compare("Flask"))
             {
                 if (p_caster->HasSpell(28677))
                     while (Rand(20) && (count < 5))

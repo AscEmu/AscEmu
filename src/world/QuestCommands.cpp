@@ -629,7 +629,7 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
                 recout += ": ";
                 recout += itemcnt.c_str();
                 recout += " -> ";
-                recout += tmpItem->Name1;
+                recout += tmpItem->Name.c_str();
                 recout += "\n";
             }
             else
@@ -729,7 +729,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         ItemPrototype const* itemResult2 = sMySQLStore.GetItemProto(atol(itemId2.c_str()));
         if (itemResult2)
         {
-            itemName2 = itemResult2->Name1;
+            itemName2 = itemResult2->Name;
 
             my_query2 = "SELECT id FROM gameobject_spawns WHERE entry = " + itemId2;
             QueryResult* spawnResult2 = WorldDatabase.Query(my_query2.c_str());
@@ -1307,7 +1307,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         ItemPrototype const* itemResult2 = sMySQLStore.GetItemProto(atol(itemId2.c_str()));
         if (itemResult2)
         {
-            itemName2 = itemResult2->Name1;
+            itemName2 = itemResult2->Name;
 
             my_query2 = "SELECT id FROM gameobject_spawns WHERE entry = " + itemId2;
             QueryResult* spawnResult2 = WorldDatabase.Query(my_query2.c_str());

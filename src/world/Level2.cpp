@@ -203,7 +203,7 @@ bool ChatHandler::HandleItemCommand(const char* args, WorldSession* m_session)
 
         pCreature->AddVendorItem(item, amount, item_extended_cost);
 
-        sstext << "Item '" << item << "' '" << tmpItem->Name1 << "' Added to list";
+        sstext << "Item '" << item << "' '" << tmpItem->Name.c_str() << "' Added to list";
         if (costid > 0)
             sstext << "with extended cost " << costid;
         sstext << '\0';
@@ -255,7 +255,7 @@ bool ChatHandler::HandleItemRemoveCommand(const char* args, WorldSession* m_sess
         ItemPrototype const* tmpItem = sMySQLStore.GetItemProto(itemguid);
         if (tmpItem)
         {
-            sstext << "Item '" << itemguid << "' '" << tmpItem->Name1 << "' Deleted from list" << '\0';
+            sstext << "Item '" << itemguid << "' '" << tmpItem->Name.c_str() << "' Deleted from list" << '\0';
         }
         else
         {

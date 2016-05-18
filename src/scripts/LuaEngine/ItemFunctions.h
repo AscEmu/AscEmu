@@ -191,7 +191,7 @@ namespace luaItem
         if (!ptr)
             return 0;
         ItemPrototype const* proto = ptr->GetProto();
-        lua_pushstring(L, proto->Name1.c_str());
+        lua_pushstring(L, proto->Name.c_str());
         return 1;
     }
 
