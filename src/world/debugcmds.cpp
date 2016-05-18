@@ -531,9 +531,6 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
     if (uint_args[0] == 0)   // null itemid
         return false;
 
-    // lookup item
-    //    ItemPrototype *proto = ItemPrototypeStorage.LookupEntry(itemid);
-
     WorldPacket data;
     data.SetOpcode(SMSG_ITEM_PUSH_RESULT);
     data << m_session->GetPlayer()->GetGUID();    // recivee_guid
@@ -549,7 +546,6 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
     m_session->SendPacket(&data);
 
     return true;
-    //data << ((proto != NULL) ? proto->Quality : uint32(0)); // quality
 }
 
 bool ChatHandler::HandleModifyBitCommand(const char* args, WorldSession* m_session)

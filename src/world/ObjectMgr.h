@@ -713,7 +713,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
 
-        void LoadExtraItemStuff();
         void LoadExtraCreatureProtoStuff();
         void LoadExtraGameObjectStuff();
         void LoadProfessionDiscoveries();
