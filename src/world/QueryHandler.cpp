@@ -117,7 +117,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         }
         else
         {
-            LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s' (localized to %s)", ci->Name, lcn->Name);
+            LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s' (localized to %s)", ci->Name.c_str(), lcn->Name);
             data << entry;
             data << lcn->Name;
             data << uint8(0);
