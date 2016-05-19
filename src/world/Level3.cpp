@@ -1395,12 +1395,10 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
                 break;
             }
         }
-        else
-        {
-            RedSystemMessage(m_session, "No results returned. aborting.");
-            return true;
-        }
     }
+
+    if (count == 0)
+        RedSystemMessage(m_session, "No results returned. aborting.");
 
     BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
     return true;
@@ -1486,7 +1484,7 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
     for (MySQLDataStore::CreatureInfoContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
         it = sMySQLStore.GetCreatureInfo(itr->second.Id);
-        LocalizedItem* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedItem(it->Id, m_session->language) : NULL;
+        LocalizedCreatureName* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(it->Id, m_session->language) : NULL;
 
         std::string litName = std::string(lit ? lit->Name : "");
 
@@ -1496,22 +1494,22 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
         if (FindXinYString(x, litName))
             localizedFound = true;
 
-        std::string proto_lower = it->lowercase_name;
-        if (FindXinYString(x, proto_lower) || localizedFound)
+        std::string names_lower = it->lowercase_name;
+        if (FindXinYString(x, names_lower) || localizedFound)
         {
             SystemMessage(m_session, "ID: %u |cfffff000%s", it->Id, it->Name.c_str());
+            ++count;
+
             if (count == 25)
             {
                 RedSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }
-        else
-        {
-            RedSystemMessage(m_session, "No results returned. aborting.");
-            return true;
-        }
     }
+
+    if (count == 0)
+        RedSystemMessage(m_session, "No results returned. aborting.");
 
     BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
     return true;

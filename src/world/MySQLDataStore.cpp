@@ -378,7 +378,6 @@ void MySQLDataStore::LoadCreatureNamesTable()
         creatureInfo.waypointid = fields[24].GetUInt32();
 
         //lowercase
-        std::string lowercase_name;
         std::string lower_case_name = creatureInfo.Name;
         std::transform(lower_case_name.begin(), lower_case_name.end(), lower_case_name.begin(), ::tolower);
         creatureInfo.lowercase_name = lower_case_name;
