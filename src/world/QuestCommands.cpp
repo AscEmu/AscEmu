@@ -945,7 +945,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name);
+    sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1030,7 +1030,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name);
+    sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1127,7 +1127,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name);
+    sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1212,7 +1212,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name);
+    sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title, unit->GetEntry(), unit->GetCreatureInfo()->Name.c_str());
 
     delete qstrel;
     return true;

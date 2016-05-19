@@ -1014,7 +1014,7 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
         CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(m_template->m_initialSpawnId);
         CreatureProto* cp = CreatureProtoStorage.LookupEntry(m_template->m_initialSpawnId);
         Creature* sp;
-        Log.Debug("AlteracValley", "spawning guards at bunker %s of %s (%u)", m_template->m_name, ci->Name, ci->Id);
+        Log.Debug("AlteracValley", "spawning guards at bunker %s of %s (%u)", m_template->m_name, ci->Name.c_str(), ci->Id);
 
         while (spi->x != 0.0f)
         {

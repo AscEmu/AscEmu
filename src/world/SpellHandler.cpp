@@ -285,7 +285,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
             {
                 Creature* c = static_cast< Creature* >(target_unit);
 
-                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name);
+                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name.c_str());
                 LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
                 return;
             }
@@ -310,7 +310,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         {
             Creature* c = static_cast< Creature* >(target_unit);
 
-            sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name);
+            sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name.c_str());
             LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
             return;
         }
