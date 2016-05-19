@@ -194,13 +194,13 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     uint32 modelid = 0;
     if (_player->IsTeamHorde())
     {
-        CreatureInfo *ci = CreatureNameStorage.LookupEntry(taxinode->horde_mount);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->horde_mount);
 
         if (ci == NULL)
-            ci = CreatureNameStorage.LookupEntry(taxinode->alliance_mount);
+            ci = sMySQLStore.GetCreatureInfo(taxinode->alliance_mount);
 
         if (ci == NULL)
-            ci = CreatureNameStorage.LookupEntry(541); // Riding Gryphon, in case neither of the above work
+            ci = sMySQLStore.GetCreatureInfo(541); // Riding Gryphon, in case neither of the above work
 
         if (ci != NULL)
             modelid = ci->Male_DisplayID;
@@ -209,13 +209,13 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     }
     else
     {
-        CreatureInfo *ci = CreatureNameStorage.LookupEntry(taxinode->alliance_mount);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->alliance_mount);
 
         if (ci == NULL)
-            ci = CreatureNameStorage.LookupEntry(taxinode->horde_mount);
+            ci = sMySQLStore.GetCreatureInfo(taxinode->horde_mount);
 
         if (ci == NULL)
-            ci = CreatureNameStorage.LookupEntry(541); // Riding Gryphon, in case neither of the above work
+            ci = sMySQLStore.GetCreatureInfo(541); // Riding Gryphon, in case neither of the above work
 
         if (ci != NULL)
             modelid = ci->Male_DisplayID;
@@ -343,14 +343,14 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     uint32 modelid = 0;
     if (_player->IsTeamHorde())
     {
-        CreatureInfo* ci = CreatureNameStorage.LookupEntry(taxinode->horde_mount);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->horde_mount);
         if (!ci) return;
         modelid = ci->Male_DisplayID;
         if (!modelid) return;
     }
     else
     {
-        CreatureInfo* ci = CreatureNameStorage.LookupEntry(taxinode->alliance_mount);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->alliance_mount);
         if (!ci) return;
         modelid = ci->Male_DisplayID;
         if (!modelid) return;

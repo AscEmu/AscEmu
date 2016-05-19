@@ -654,7 +654,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
         return false;
 
     auto creature_proto = CreatureProtoStorage.LookupEntry(entry);
-    auto creature_info = CreatureNameStorage.LookupEntry(entry);
+    auto creature_info = sMySQLStore.GetCreatureInfo(entry);
     if (creature_proto == nullptr || creature_info == nullptr)
     {
         RedSystemMessage(m_session, "Creature with entry %u is not a valid entry (no proto/name information in database)", entry);

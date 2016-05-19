@@ -933,7 +933,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 std::string msg = "%s attempts to run away in fear!";
                 data << uint8(CHAT_MSG_CHANNEL);
                 data << uint32(LANG_UNIVERSAL);
-                data << uint32(strlen(static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name) + 1);
+                data << uint32(static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name.size());
                 data << static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name;
                 data << uint64(0);
                 data << uint32(msg.size() + 1);
@@ -1524,7 +1524,7 @@ bool AIInterface::FindFriends(float dist)
         if (team == 1) guardid = zoneSpawn->HordeEntry;
         if (!guardid) return result;
 
-        CreatureInfo* ci = CreatureNameStorage.LookupEntry(guardid);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(guardid);
         if (!ci)
             return result;
 

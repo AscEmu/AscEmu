@@ -120,7 +120,7 @@ void Pet::SetNameForEntry(uint32 entry)
     }
 }
 
-bool Pet::CreateAsSummon(uint32 entry, CreatureInfo* ci, Creature* created_from_creature, Player* owner, SpellEntry* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
+bool Pet::CreateAsSummon(uint32 entry, CreatureInfo const* ci, Creature* created_from_creature, Player* owner, SpellEntry* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
 {
     if (ci == NULL || owner == NULL)
     {
@@ -154,7 +154,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureInfo* ci, Creature* created_from_
     }
 
     // Create ourself
-    Create(m_name.c_str(), owner->GetMapId(), x, y, z, owner->GetOrientation());
+    Create(owner->GetMapId(), x, y, z, owner->GetOrientation());
 
     // Hunter pet should be max 5 levels below owner
     uint32 level = owner->getLevel();
@@ -587,14 +587,14 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     m_OwnerGuid = m_Owner->GetGUID();
     m_phase = m_Owner->GetPhase();
     mPi = pi;
-    creature_info = CreatureNameStorage.LookupEntry(mPi->entry);
+    creature_info = sMySQLStore.GetCreatureInfo(mPi->entry);
     if (creature_info == nullptr)
         return;
 
     proto = CreatureProtoStorage.LookupEntry(mPi->entry);
     myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
-    Create(pi->name.c_str(), owner->GetMapId(), owner->GetPositionX() + 2, owner->GetPositionY() + 2, owner->GetPositionZ(), owner->GetOrientation());
+    Create(owner->GetMapId(), owner->GetPositionX() + 2, owner->GetPositionY() + 2, owner->GetPositionZ(), owner->GetOrientation());
 
     m_PetNumber = mPi->number;
     m_name = mPi->name;
@@ -736,7 +736,7 @@ void Pet::InitializeMe(bool first)
     GetAIInterface()->SetUnitToFollow(m_Owner);
     GetAIInterface()->SetFollowDistance(3.0f);
 
-    SetCreatureInfo(CreatureNameStorage.LookupEntry(GetEntry()));
+    SetCreatureInfo(sMySQLStore.GetCreatureInfo(GetEntry()));
     proto = CreatureProtoStorage.LookupEntry(GetEntry());
 
     m_Owner->AddSummon(this);

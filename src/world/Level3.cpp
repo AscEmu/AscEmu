@@ -573,7 +573,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
     if (entry == 0)
         return false;
 
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(entry);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(entry);
     CreatureProto* cp = CreatureProtoStorage.LookupEntry(entry);
 
     if ((ci == NULL) || (cp == NULL))
@@ -646,7 +646,7 @@ bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
     }
 
     CreatureProto* pTemplate = CreatureProtoStorage.LookupEntry(Entry);
-    CreatureInfo* pCreatureInfo = CreatureNameStorage.LookupEntry(Entry);
+    CreatureInfo const* pCreatureInfo = sMySQLStore.GetCreatureInfo(Entry);
     if (!pTemplate || !pCreatureInfo)
     {
         RedSystemMessage(m_session, "Invalid creature spawn template: %u", Entry);
@@ -1395,6 +1395,11 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
                 break;
             }
         }
+        else
+        {
+            RedSystemMessage(m_session, "No results returned. aborting.");
+            return true;
+        }
     }
 
     BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
@@ -1454,6 +1459,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
         recout = "|cff00ccffNo matches found.";
         SendMultilineMessage(m_session, recout.c_str());
     }
+
     BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
     return true;
 }
@@ -1471,67 +1477,42 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
         return true;
     }
 
-    StorageContainerIterator<CreatureInfo> * itr = CreatureNameStorage.MakeIterator();
-
-    GreenSystemMessage(m_session, "Starting search of creature `%s`...", x.c_str());
+    BlueSystemMessage(m_session, "Starting search of creature `%s`...", x.c_str());
     uint32 t = getMSTime();
-    CreatureInfo* creature_info;
+    CreatureInfo const* it;
     uint32 count = 0;
-    std::string y;
-    std::string recout;
-    while (!itr->AtEnd())
+
+    MySQLDataStore::CreatureInfoContainer const* its = sMySQLStore.GetCreatureNamesStore();
+    for (MySQLDataStore::CreatureInfoContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        creature_info = itr->Get();
-        y = std::string(creature_info->Name);
-        arcemu_TOLOWER(y);
-        if (FindXinYString(x, y))
+        it = sMySQLStore.GetCreatureInfo(itr->second.Id);
+        LocalizedItem* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedItem(it->Id, m_session->language) : NULL;
+
+        std::string litName = std::string(lit ? lit->Name : "");
+
+        arcemu_TOLOWER(litName);
+
+        bool localizedFound = false;
+        if (FindXinYString(x, litName))
+            localizedFound = true;
+
+        std::string proto_lower = it->lowercase_name;
+        if (FindXinYString(x, proto_lower) || localizedFound)
         {
-            //string objectID=MyConvertIntToString(i->ID);
-            std::string Name;
-            std::stringstream strm;
-            strm << creature_info->Id;
-            strm << ", DisplayIds: ";
-            strm << creature_info->Male_DisplayID;
-            if (creature_info->Female_DisplayID != 0)
-            {
-                strm << ", ";
-                strm << creature_info->Female_DisplayID;
-            }
-            if (creature_info->Male_DisplayID2 != 0)
-            {
-                strm << ", ";
-                strm << creature_info->Male_DisplayID2;
-            }
-            if (creature_info->Female_DisplayID2 != 0)
-            {
-                strm << ", ";
-                strm << creature_info->Female_DisplayID2;
-            }
-
-            //string ObjectID = i.c_str();
-            const char* creature_name = creature_info->Name;
-            recout = "|cfffff000Creature ";
-            recout += strm.str();
-            recout += "|cffFFFFFF: ";
-            recout += creature_name;
-            recout = recout + Name;
-            SendMultilineMessage(m_session, recout.c_str());
-
-            ++count;
-            if (count == 25 || count > 25)
+            SystemMessage(m_session, "ID: %u |cfffff000%s", it->Id, it->Name.c_str());
+            if (count == 25)
             {
                 RedSystemMessage(m_session, "More than 25 results returned. aborting.");
                 break;
             }
         }
-        if (!itr->Inc()) break;
+        else
+        {
+            RedSystemMessage(m_session, "No results returned. aborting.");
+            return true;
+        }
     }
-    itr->Destruct();
-    if (count == 0)
-    {
-        recout = "|cff00ccffNo matches found.";
-        SendMultilineMessage(m_session, recout.c_str());
-    }
+
     BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
     return true;
 }

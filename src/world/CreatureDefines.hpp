@@ -97,9 +97,9 @@ enum MONSTER_SAY_EVENTS
 struct CreatureInfo
 {
     uint32 Id;
-    char* Name;
-    char* SubName;
-    char* info_str;
+    std::string Name;
+    std::string SubName;
+    std::string info_str;
     uint32 Flags1;
     uint32 Type;
     uint32 Family;
@@ -119,7 +119,7 @@ struct CreatureInfo
     std::string lowercase_name;
     NpcMonsterSay* MonsterSay[NUM_MONSTER_SAY_EVENTS];
 
-    uint8 GenerateModelId(uint32* des)
+    uint8 GenerateModelId(uint32* des) const
     {
         uint32 models[] = { Male_DisplayID, Male_DisplayID2, Female_DisplayID, Female_DisplayID2 };
         if (!models[0] && !models[1] && !models[2] && !models[3])

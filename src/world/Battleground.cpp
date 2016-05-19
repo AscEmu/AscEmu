@@ -841,7 +841,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     if (horde > 1)
         horde = 1;
 
-    CreatureInfo* pInfo = CreatureNameStorage.LookupEntry(13116 + horde);
+    CreatureInfo const* pInfo = sMySQLStore.GetCreatureInfo(13116 + horde);
     if (pInfo == nullptr)
     {
         return nullptr;
@@ -849,7 +849,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     Creature* pCreature = m_mapMgr->CreateCreature(pInfo->Id);
 
-    pCreature->Create(pInfo->Name, m_mapMgr->GetMapId(), x, y, z, o);
+    pCreature->Create(m_mapMgr->GetMapId(), x, y, z, o);
 
     pCreature->SetEntry(13116 + horde);
     pCreature->SetScale(1.0f);

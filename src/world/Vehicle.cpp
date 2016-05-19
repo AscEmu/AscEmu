@@ -573,7 +573,7 @@ void Vehicle::InstallAccessories()
         if (seats[accessory->seat]->HasPassenger())
             EjectPassengerFromSeat(accessory->seat);
 
-        CreatureInfo  *ci = CreatureNameStorage.LookupEntry(accessory->accessory_entry);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(accessory->accessory_entry);
         if (ci == NULL)
             continue;
 

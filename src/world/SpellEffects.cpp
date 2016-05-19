@@ -2367,7 +2367,7 @@ void Spell::SpellEffectSummon(uint32 i)
 
     uint32 entry = m_spellInfo->EffectMiscValue[i];
 
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(entry);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(entry);
     CreatureProto* cp = CreatureProtoStorage.LookupEntry(entry);
 
     if ((ci == NULL) || (cp == NULL))
@@ -2477,7 +2477,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 
     uint32 cr_entry = GetProto()->EffectMiscValue[i];
     CreatureProto* proto = CreatureProtoStorage.LookupEntry(cr_entry);
-    CreatureInfo* info = CreatureNameStorage.LookupEntry(cr_entry);
+    CreatureInfo const* info = sMySQLStore.GetCreatureInfo(cr_entry);
     if (!proto || !info)
     {
         sLog.outError("Warning : Missing summon creature template %u used by spell %u!", cr_entry, GetProto()->Id);
@@ -2591,7 +2591,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPrope
         count = damage;
 
     // We know for sure that this will suceed because we checked in Spell::SpellEffectSummon
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(proto->Id);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(proto->Id);
 
     float angle_for_each_spawn = -M_PI_FLOAT * 2 / damage;
 
@@ -3838,7 +3838,7 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
     if (old)
         old->Dismiss();
 
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(GetProto()->EffectMiscValue[i]);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(GetProto()->EffectMiscValue[i]);
     if (ci)
     {
         if (p_caster->getClass() == WARLOCK)
@@ -5208,14 +5208,14 @@ void Spell::SpellEffectStartTaxi(uint32 i)
 
     if (playerTarget->IsTeamHorde())
     {
-        CreatureInfo* ci = CreatureNameStorage.LookupEntry(taxinode->horde_mount);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->horde_mount);
         if (!ci) return;
         modelid = ci->Male_DisplayID;
         if (!modelid) return;
     }
     else
     {
-        CreatureInfo* ci = CreatureNameStorage.LookupEntry(taxinode->alliance_mount);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->alliance_mount);
         if (!ci) return;
         modelid = ci->Male_DisplayID;
         if (!modelid) return;
@@ -5437,7 +5437,7 @@ void Spell::SpellEffectForgetSpecialization(uint32 i)
 
 void Spell::SpellEffectKillCredit(uint32 i)
 {
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(GetProto()->EffectMiscValue[i]);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(GetProto()->EffectMiscValue[i]);
     if (playerTarget != NULL && ci != NULL)
         sQuestMgr._OnPlayerKill(playerTarget, GetProto()->EffectMiscValue[i], false);
 }
@@ -5493,7 +5493,7 @@ void Spell::SpellEffectCreatePet(uint32 i)
 
     if (playerTarget->GetSummon())
         playerTarget->GetSummon()->Remove(true, true);
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(GetProto()->EffectMiscValue[i]);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(GetProto()->EffectMiscValue[i]);
     if (ci)
     {
         Pet* pPet = objmgr.CreatePet(GetProto()->EffectMiscValue[i]);

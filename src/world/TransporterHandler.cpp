@@ -724,7 +724,7 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
 {
     MapMgr* map = GetMapMgr();
 
-    CreatureInfo* inf = CreatureNameStorage.LookupEntry(entry);
+    CreatureInfo const* inf = sMySQLStore.GetCreatureInfo(entry);
     CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
     if (inf == nullptr || proto == nullptr || map == nullptr)
         return 0;
@@ -734,7 +734,7 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     float transporter_z = obj_movement_info.transporter_info.position.z + z;
 
     Creature* pCreature = map->CreateCreature(entry);
-    pCreature->Create(inf->Name, map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
@@ -774,7 +774,7 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
 {
     MapMgr* map = GetMapMgr();
 
-    CreatureInfo* inf = CreatureNameStorage.LookupEntry(entry);
+    CreatureInfo const* inf = sMySQLStore.GetCreatureInfo(entry);
     CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
     if (inf == nullptr || proto == nullptr || map == nullptr)
         return nullptr;
@@ -784,7 +784,7 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     float transporter_z = obj_movement_info.transporter_info.position.z + z;
 
     Creature* pCreature = map->CreateCreature(entry);
-    pCreature->Create(inf->Name, map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);

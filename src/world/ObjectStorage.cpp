@@ -22,7 +22,6 @@
 #include "StdAfx.h"
 
  // Table formats converted to strings
-const char* gCreatureNameFormat = "usssuuuuuuuuuuuffcuuuuuuu";
 const char* gGameObjectNameFormat = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
 const char* gCreatureProtoFormat = "uuuuuuufuuuffuuffuuuuuuuuffsbuufffuuuuuuuuuuubuuuub";
 const char* gDisplayBoundingFormat = "ufffffff";
@@ -49,7 +48,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                    CreatureNameStorage;
 SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                GameObjectNameStorage;
 SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                  CreatureProtoStorage;
 SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >              DisplayBoundingStorage;
@@ -179,24 +177,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
         itr->Destruct();
     }
 
-    {
-        StorageContainerIterator<CreatureInfo> * itr = CreatureNameStorage.MakeIterator();
-        while (!itr->AtEnd())
-        {
-            CreatureInfo* ci = itr->Get();
-
-            ci->lowercase_name = std::string(ci->Name);
-            for (uint32 j = 0; j < ci->lowercase_name.length(); ++j)
-                ci->lowercase_name[j] = static_cast<char>(tolower(ci->lowercase_name[j]));
-
-            for (uint8 i = 0; i < NUM_MONSTER_SAY_EVENTS; i++)
-                ci->MonsterSay[i] = objmgr.HasMonsterSay(ci->Id, MONSTER_SAY_EVENTS(i));
-
-            if (!itr->Inc())
-                break;
-        }
-        itr->Destruct();
-    }
     // Load creature_initiale_equip
     Log.Notice("ObjectStorage", "Loading creature_initial_equip...");
     {
@@ -393,7 +373,6 @@ void ObjectMgr::LoadExtraGameObjectStuff()
 
 void Storage_FillTaskList(TaskList & tl)
 {
-    make_task(CreatureNameStorage, CreatureInfo, HashMapStorageContainer, "creature_names", gCreatureNameFormat);
     make_task(GameObjectNameStorage, GameObjectInfo, HashMapStorageContainer, "gameobject_names", gGameObjectNameFormat);
     make_task(CreatureProtoStorage, CreatureProto, HashMapStorageContainer, "creature_proto", gCreatureProtoFormat);
     make_task(DisplayBoundingStorage, DisplayBounding, HashMapStorageContainer, "display_bounding_boxes", gDisplayBoundingFormat);
@@ -441,7 +420,6 @@ void Storage_Cleanup()
         itr->Destruct();
     }
 
-    CreatureNameStorage.Cleanup();
     GameObjectNameStorage.Cleanup();
     CreatureProtoStorage.Cleanup();
     VendorRestrictionEntryStorage.Cleanup();
@@ -481,8 +459,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     }
     else if (firstLoad && !stricmp(TableName, "creature_proto"))        // Creature Proto
         CreatureProtoStorage.LoadAdditionalData(SecondName, gCreatureProtoFormat);
-    else if (firstLoad && !stricmp(TableName, "creature_names"))        // Creature Names
-        CreatureNameStorage.LoadAdditionalData(SecondName, gCreatureNameFormat);
+    //else if (firstLoad && !stricmp(TableName, "creature_names"))        // Creature Names
+    //    CreatureNameStorage.LoadAdditionalData(SecondName, gCreatureNameFormat);
     else if (firstLoad && !stricmp(TableName, "gameobject_names"))    // GO Names
         GameObjectNameStorage.LoadAdditionalData(SecondName, gGameObjectNameFormat);
     else if (!stricmp(TableName, "areatriggers"))        // Areatriggers

@@ -5257,13 +5257,13 @@ void Unit::Emote(EmoteType emote)
 void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg)
 {
     size_t UnitNameLength = 0, MessageLength = 0;
-    CreatureInfo* ci;
+    CreatureInfo const* ci;
 
-    ci = CreatureNameStorage.LookupEntry(entry);
+    ci = sMySQLStore.GetCreatureInfo(entry);
     if (!ci)
         return;
 
-    UnitNameLength = strlen((char*)ci->Name) + 1;
+    UnitNameLength = ci->Name.size();
     MessageLength = strlen((char*)msg) + 1;
 
     WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);

@@ -114,7 +114,7 @@ GameObject* MapScriptInterface::SpawnGameObject(GameobjectSpawn* gs, bool AddToW
 Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2, uint32 phase)
 {
     CreatureProto* proto = CreatureProtoStorage.LookupEntry(Entry);
-    CreatureInfo* info = CreatureNameStorage.LookupEntry(Entry);
+    CreatureInfo const* info = sMySQLStore.GetCreatureInfo(Entry);
     if (proto == NULL || info == NULL)
     {
         return 0;
@@ -167,7 +167,7 @@ Creature* MapScriptInterface::SpawnCreature(CreatureSpawn* sp, bool AddToWorld)
         return NULL;
 
     CreatureProto* proto = CreatureProtoStorage.LookupEntry(sp->entry);
-    CreatureInfo* info = CreatureNameStorage.LookupEntry(sp->entry);
+    CreatureInfo const* info = sMySQLStore.GetCreatureInfo(sp->entry);
     if (proto == NULL || info == NULL)
     {
         return 0;

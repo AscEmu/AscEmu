@@ -990,7 +990,7 @@ void ObjectMgr::LoadAchievementRewards()
         //check mail data before item for report including wrong item case
         if (reward.sender)
         {
-            if (!CreatureNameStorage.LookupEntry(reward.sender))
+            if (!sMySQLStore.GetCreatureInfo(reward.sender))
             {
                 sLog.Error("ObjectMgr", "achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
                 reward.sender = 0;

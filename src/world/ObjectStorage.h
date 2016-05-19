@@ -24,7 +24,6 @@
 #include "Storage.h"
 #include "ObjectMgr.h"
 
-extern SERVER_DECL SQLStorage<CreatureInfo, HashMapStorageContainer<CreatureInfo> >                     CreatureNameStorage;
 extern SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                 GameObjectNameStorage;
 extern SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                   CreatureProtoStorage;
 extern SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >               DisplayBoundingStorage;

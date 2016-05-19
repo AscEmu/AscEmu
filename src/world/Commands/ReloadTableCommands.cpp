@@ -18,7 +18,7 @@ bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSess
 bool ChatHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    CreatureNameStorage.Reload();
+    sMySQLStore.LoadCreatureNamesTable();
     CreatureProtoStorage.Reload();
     GreenSystemMessage(m_session, "WorldDB creature tables reloaded in %u ms", getMSTime() - start_time);
     return true;

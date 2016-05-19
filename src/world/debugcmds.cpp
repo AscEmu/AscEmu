@@ -821,7 +821,7 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
         return false;
 
     CreatureProto* cp = CreatureProtoStorage.LookupEntry(npcid);
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(npcid);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(npcid);
     if (cp == NULL || ci == NULL)
         return false;
 

@@ -423,7 +423,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -499,7 +499,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -561,7 +561,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -630,7 +630,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -683,7 +683,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }

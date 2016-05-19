@@ -792,7 +792,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill)
 
         if (extracredit != 0)
         {
-            if (CreatureNameStorage.LookupEntry(extracredit))
+            if (sMySQLStore.GetCreatureInfo(extracredit))
                 _OnPlayerKill(plr, extracredit, IsGroupKill);
         }
     }
@@ -2058,7 +2058,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 }
                 else
                 {
-                    CreatureInfo* c_info = CreatureNameStorage.LookupEntry(qst->required_mob[i]);
+                    CreatureInfo const* c_info = sMySQLStore.GetCreatureInfo(qst->required_mob[i]);
                     if (c_info)
                         qst->required_mobtype[i] = QUEST_MOB_TYPE_CREATURE;
                     else

@@ -816,7 +816,7 @@ class MalganisAI : public CreatureAIScript
                         {
                             citizen = _unit->GetMapMgr()->CreatureStorage[i];
                             CreatureProto* cp = CreatureProtoStorage.LookupEntry(27737);//risen zombie
-                            CreatureInfo* ci = CreatureNameStorage.LookupEntry(27737);
+                            CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(27737);
                             Creature* c = NULL;
                             if (cp && ci)
                             {
@@ -1182,7 +1182,7 @@ class ArthasAI : public CreatureAIScript
                     //we need that tricky animation here
                     //spawn Mal'Ganis
                     CreatureProto* cp = CreatureProtoStorage.LookupEntry(26533);
-                    CreatureInfo* ci = CreatureNameStorage.LookupEntry(26533);
+                    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(26533);
                     Creature* c = NULL;
                     if (cp && ci)
                     {

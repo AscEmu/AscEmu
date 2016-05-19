@@ -316,3 +316,91 @@ ItemPrototype const* MySQLDataStore::GetItemProto(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadCreatureNamesTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                 0     1       2         3       4      5      6      7        8          9             10
+    QueryResult* creature_names_result = WorldDatabase.Query("SELECT entry, name, subname, info_str, flags1, type, family, rank, encounter, killcredit1, killcredit2, "
+    //                                                            11                12              13                 14               15              16          17
+                                                            "male_displayid, female_displayid, male_displayid2, female_displayid2, unknown_float1, unknown_float2, leader, "
+    //                                                          18          19         20           21          22          23           24
+                                                            "questitem1, questitem2, questitem3, questitem4, questitem5, questitem6, waypointid FROM creature_names");
+
+    if (creature_names_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `creature_names` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `creature_names` has %u columns", creature_names_result->GetFieldCount());
+
+    _creatureNamesStore.rehash(creature_names_result->GetRowCount());
+
+    uint32 creature_names_count = 0;
+    do
+    {
+        Field* fields = creature_names_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        CreatureInfo& creatureInfo = _creatureNamesStore[entry];
+
+        creatureInfo.Id = entry;
+        creatureInfo.Name = fields[1].GetString();
+        creatureInfo.SubName = fields[2].GetString();
+        creatureInfo.info_str = fields[3].GetString();
+        creatureInfo.Flags1 = fields[4].GetUInt32();
+        creatureInfo.Type = fields[5].GetUInt32();
+        creatureInfo.Family = fields[6].GetUInt32();
+        creatureInfo.Rank = fields[7].GetUInt32();
+        creatureInfo.Encounter = fields[8].GetUInt32();
+
+        for (uint8 i = 0; i < 2; ++i)
+        {
+            creatureInfo.killcredit[i] = fields[9 + i].GetUInt32();
+        }
+
+        creatureInfo.Male_DisplayID = fields[11].GetUInt32();
+        creatureInfo.Female_DisplayID = fields[12].GetUInt32();
+        creatureInfo.Male_DisplayID2 = fields[13].GetUInt32();
+        creatureInfo.Female_DisplayID2 = fields[14].GetUInt32();
+        creatureInfo.unkfloat1 = fields[15].GetFloat();
+        creatureInfo.unkfloat2 = fields[16].GetFloat();
+        creatureInfo.Leader = fields[17].GetUInt8();
+
+        for (uint8 i = 0; i < 6; ++i)
+        {
+            creatureInfo.QuestItems[6] = fields[18 + i].GetUInt32();
+        }
+
+        creatureInfo.waypointid = fields[24].GetUInt32();
+
+        //lowercase
+        std::string lowercase_name;
+        std::string lower_case_name = creatureInfo.Name;
+        std::transform(lower_case_name.begin(), lower_case_name.end(), lower_case_name.begin(), ::tolower);
+        creatureInfo.lowercase_name = lower_case_name;
+
+        //monster say
+        for (uint8 i = 0; i < NUM_MONSTER_SAY_EVENTS; i++)
+            creatureInfo.MonsterSay[i] = objmgr.HasMonsterSay(creatureInfo.Id, MONSTER_SAY_EVENTS(i));
+
+
+        ++creature_names_count;
+    } while (creature_names_result->NextRow());
+
+    delete creature_names_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u items from `items` table in %u ms!", creature_names_count, getMSTime() - start_time);
+}
+
+CreatureInfo const* MySQLDataStore::GetCreatureInfo(uint32 entry)
+{
+    CreatureInfoContainer::const_iterator itr = _creatureNamesStore.find(entry);
+    if (itr != _creatureNamesStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

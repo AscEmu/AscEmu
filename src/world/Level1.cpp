@@ -854,7 +854,7 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char *args, WorldSessio
         RedSystemMessage(session, "That vehicle has no more empty seats.");
         return false;
     }
-    CreatureInfo *ci = CreatureNameStorage.LookupEntry(creature_entry);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(creature_entry);
     CreatureProto *cp = CreatureProtoStorage.LookupEntry(creature_entry);
     if ((ci == NULL) || (cp == NULL))
     {

@@ -204,7 +204,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     int8 slot;
 
     QueryResult* res;
-    CreatureInfo* info = NULL;
+    CreatureInfo const* info = NULL;
     uint8 race;
     has_dk = false;
     _side = -1; // side should be set on every enumeration for safety
@@ -311,7 +311,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                 if (res)
                 {
                     petLevel = res->Fetch()[1].GetUInt32();
-                    info = CreatureNameStorage.LookupEntry(res->Fetch()[0].GetUInt32());
+                    info = sMySQLStore.GetCreatureInfo(res->Fetch()[0].GetUInt32());
                     delete res;
                 }
                 else

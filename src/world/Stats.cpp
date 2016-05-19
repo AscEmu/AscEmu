@@ -81,8 +81,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     if (pVictim->GetCreatedByGUID() != 0)
         return 0;
 
-    CreatureInfo* victimI;
-    victimI = static_cast<Creature*>(pVictim)->GetCreatureInfo();
+    CreatureInfo const* victimI = static_cast<Creature*>(pVictim)->GetCreatureInfo();
 
     if (victimI == nullptr)
         return 0;

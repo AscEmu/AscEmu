@@ -493,7 +493,7 @@ bool MasterDemonologist5(uint32 i, Spell* s)
 bool SummonSuccubusQuest(uint32 i, Spell* s)
 {
 
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(5677);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(5677);
     CreatureProto* cp = CreatureProtoStorage.LookupEntry(5677);
     if(!ci || !cp)
         return false;
@@ -512,7 +512,7 @@ bool SummonVoidWalkerQuest(uint32 i, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(5676);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(5676);
     CreatureProto* cp = CreatureProtoStorage.LookupEntry(5676);
 
     if(!ci || !cp)
@@ -532,7 +532,7 @@ bool SummonFelHunterQuest(uint32 i, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(6268);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(6268);
     CreatureProto* cp = CreatureProtoStorage.LookupEntry(6268);
     if(!ci || !cp)
         return false;

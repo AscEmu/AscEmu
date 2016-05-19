@@ -76,7 +76,7 @@ class SERVER_DECL Creature : public Unit
         void PrepareForRemove();    /// remove auras, guardians, scripts
 
         /// Creation
-        void Create(const char* creature_name, uint32 mapid, float x, float y, float z, float ang);
+        void Create(uint32 mapid, float x, float y, float z, float ang);
         void CreateWayPoint(uint32 WayPointID, uint32 mapid, float x, float y, float z, float ang);
 
         /// Updates
@@ -275,9 +275,9 @@ class SERVER_DECL Creature : public Unit
 
         void CallScriptUpdate();
 
-        CreatureInfo* GetCreatureInfo();
+        CreatureInfo const* GetCreatureInfo();
 
-        void SetCreatureInfo(CreatureInfo* ci);
+        void SetCreatureInfo(CreatureInfo const* ci);
 
         void SetCreatureProto(CreatureProto* cp);
 
@@ -370,7 +370,7 @@ class SERVER_DECL Creature : public Unit
         uint32 _fields[UNIT_END];
         uint32 m_healthfromspell;
 
-        CreatureInfo* creature_info;
+        CreatureInfo const* creature_info;
         CreatureProto* proto;
 
     private:

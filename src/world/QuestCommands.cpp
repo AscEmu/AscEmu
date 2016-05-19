@@ -671,7 +671,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         delete objectResult1;
 
         std::string creatureName1 = "N/A";
-        CreatureInfo* creatureResult1 = CreatureNameStorage.LookupEntry(atol(creatureId1.c_str()));
+        CreatureInfo const* creatureResult1 = sMySQLStore.GetCreatureInfo(atol(creatureId1.c_str()));
         if (creatureResult1)
         {
             creatureName1 = creatureResult1->Name;
@@ -1249,7 +1249,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         delete objectResult1;
 
         std::string creatureName1 = "N/A";
-        CreatureInfo* creatureResult1 = CreatureNameStorage.LookupEntry(atol(creatureId1.c_str()));
+        CreatureInfo const* creatureResult1 = sMySQLStore.GetCreatureInfo(atol(creatureId1.c_str()));
 
         if (creatureResult1)
         {
@@ -1376,7 +1376,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     delete objectResult;
 
     std::string starterName = "N/A";
-    CreatureInfo* creatureResult = CreatureNameStorage.LookupEntry(atol(starterId.c_str()));
+    CreatureInfo const* creatureResult = sMySQLStore.GetCreatureInfo(atol(starterId.c_str()));
 
     if (creatureResult)
     {
@@ -1448,7 +1448,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     delete objectResult;
 
     std::string finisherName = "N/A";
-    CreatureInfo* creatureResult = CreatureNameStorage.LookupEntry(atol(finisherId.c_str()));
+    CreatureInfo const* creatureResult = sMySQLStore.GetCreatureInfo(atol(finisherId.c_str()));
 
     if (creatureResult)
     {

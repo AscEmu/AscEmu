@@ -271,7 +271,7 @@ void Creature::OnRespawn(MapMgr* m)
     PushToWorld(m);
 }
 
-void Creature::Create(const char* name, uint32 mapid, float x, float y, float z, float ang)
+void Creature::Create(uint32 mapid, float x, float y, float z, float ang)
 {
     Object::_Create(mapid, x, y, z, ang);
 }
@@ -715,7 +715,7 @@ void Creature::AddToWorld()
         _setFaction();
 
     if (creature_info == NULL)
-        creature_info = CreatureNameStorage.LookupEntry(GetEntry());
+        creature_info = sMySQLStore.GetCreatureInfo(GetEntry());
 
     if (creature_info == NULL)
         return;
@@ -733,7 +733,7 @@ void Creature::AddToWorld(MapMgr* pMapMgr)
         _setFaction();
 
     if (creature_info == NULL)
-        creature_info = CreatureNameStorage.LookupEntry(GetEntry());
+        creature_info = sMySQLStore.GetCreatureInfo(GetEntry());
 
     if (creature_info == NULL)
         return;
@@ -1106,12 +1106,12 @@ void Creature::CallScriptUpdate()
     _myScriptClass->AIUpdate();
 }
 
-CreatureInfo* Creature::GetCreatureInfo()
+CreatureInfo const* Creature::GetCreatureInfo()
 {
     return creature_info;
 }
 
-void Creature::SetCreatureInfo(CreatureInfo* ci)
+void Creature::SetCreatureInfo(CreatureInfo const* ci)
 {
     creature_info = ci;
 }
@@ -1277,7 +1277,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     proto = CreatureProtoStorage.LookupEntry(spawn->entry);
     if (proto == NULL)
         return false;
-    creature_info = CreatureNameStorage.LookupEntry(spawn->entry);
+    creature_info = sMySQLStore.GetCreatureInfo(spawn->entry);
     if (creature_info == NULL)
         return false;
 
@@ -1518,7 +1518,7 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
 {
     proto = proto_;
 
-    creature_info = CreatureNameStorage.LookupEntry(proto->Id);
+    creature_info = sMySQLStore.GetCreatureInfo(proto->Id);
     if (!creature_info)
         return;
 
@@ -1705,7 +1705,7 @@ void Creature::OnPushToWorld()
 #ifdef _DEBUG
         ARCEMU_ASSERT(false);
 #else
-        SetCreatureInfo(CreatureNameStorage.LookupEntry(GetEntry()));
+        SetCreatureInfo(sMySQLStore.GetCreatureInfo(GetEntry()));
 #endif
     }
 
@@ -2526,7 +2526,7 @@ void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 
         return;
     }
 
-    const char* name = GetCreatureInfo()->Name;
+    const char* name = GetCreatureInfo()->Name.c_str();
     size_t CreatureNameLength = strlen((char*)name) + 1;
     size_t MessageLength = strlen((char*)msg) + 1;
 
@@ -2553,7 +2553,7 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
 {
     CreatureText* ct = CreatureTextStorage.LookupEntry(textid);
 
-    const char* name = GetCreatureInfo()->Name;
+    const char* name = GetCreatureInfo()->Name.c_str();
     size_t CreatureNameLength = strlen((char*)name) + 1;
     size_t MessageLength = strlen((char*)ct->text) + 1;
 
@@ -2594,7 +2594,7 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
     if (ct->emote != 0)
         this->EventAddEmote(ct->emote, ct->duration);
 
-    const char* name = GetCreatureInfo()->Name;
+    const char* name = GetCreatureInfo()->Name.c_str();
     size_t CreatureNameLength = strlen((char*)name) + 1;
     size_t MessageLength = strlen((char*)ct->text) + 1;
 
@@ -2619,7 +2619,7 @@ void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg,
     if (plr == NULL)
         return;
 
-    UnitNameLength = strlen((char*)GetCreatureInfo()->Name) + 1;
+    UnitNameLength = strlen((char*)GetCreatureInfo()->Name.c_str()) + 1;
     MessageLength = strlen((char*)msg) + 1;
 
     WorldPacket data(SMSG_MESSAGECHAT, 35 + UnitNameLength + MessageLength);

@@ -219,7 +219,7 @@ class LuaUnit
         switch (ptr->GetTypeId())
         {
             case TYPEID_UNIT:
-                lua_pushstring(L, static_cast<Creature*>(ptr)->GetCreatureInfo() ? static_cast<Creature*>(ptr)->GetCreatureInfo()->Name : "Unknown");
+                lua_pushstring(L, static_cast<Creature*>(ptr)->GetCreatureInfo() ? static_cast<Creature*>(ptr)->GetCreatureInfo()->Name.c_str() : "Unknown");
                 break;
 
             case TYPEID_PLAYER:
@@ -558,7 +558,7 @@ class LuaUnit
             return 1;
         }
         CreatureProto* p = CreatureProtoStorage.LookupEntry(entry);
-        CreatureInfo* i = CreatureNameStorage.LookupEntry(entry);
+        CreatureInfo const* i = sMySQLStore.GetCreatureInfo(entry);
 
         if (p == NULL || i == NULL)
         {
@@ -3478,13 +3478,6 @@ class LuaUnit
     static int SetCreatureName(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-            //Paroxysm : This method makes alot of sense...
-            /*
-            uint32 id = CHECK_ULONG(L,1);
-            if(!ptr|!id)
-            return 0;
-            TO_PLAYER(ptr)->SetCreatureInfo(CreatureNameStorage.LookupEntry(id));
-            */
             return 0;
     }
 
@@ -6049,7 +6042,7 @@ class LuaUnit
         if ((ptr->GetCurrentVehicle() != NULL) && (!ptr->IsPlayer() || !ptr->IsVehicle()))
             return 0;
 
-        CreatureInfo *ci = CreatureNameStorage.LookupEntry(creature_entry);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(creature_entry);
         if (ci == NULL)
             return 0;
 
@@ -6125,7 +6118,7 @@ class LuaUnit
 
         uint32 creature_entry = luaL_checkinteger(L, 1);
 
-        CreatureInfo  *ci = CreatureNameStorage.LookupEntry(creature_entry);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(creature_entry);
         CreatureProto *cp = CreatureProtoStorage.LookupEntry(creature_entry);
 
         if ((ci == NULL) || (cp == NULL))

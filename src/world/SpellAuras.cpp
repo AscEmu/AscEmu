@@ -4486,7 +4486,7 @@ void Aura::SpellAuraTransform(bool apply)
         return;
 
     uint32 displayId = 0;
-    CreatureInfo* ci = CreatureNameStorage.LookupEntry(mod->m_miscValue);
+    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(mod->m_miscValue);
 
     if (ci)
         displayId = ci->Male_DisplayID;
@@ -5265,7 +5265,7 @@ void Aura::SpellAuraMounted(bool apply)
 
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
 
-        CreatureInfo* ci = CreatureNameStorage.LookupEntry(mod->m_miscValue);
+        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(mod->m_miscValue);
         if (!ci) return;
 
         uint32 displayId = ci->Male_DisplayID;

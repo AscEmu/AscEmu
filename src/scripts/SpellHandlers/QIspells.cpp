@@ -1482,7 +1482,7 @@ bool ArcaneDisruption(uint32 i, Aura* pAura, bool apply)
         {
             //weee, Uther
             CreatureProto* cp = CreatureProtoStorage.LookupEntry(26528);
-            CreatureInfo* ci = CreatureNameStorage.LookupEntry(26528);
+            CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(26528);
             Creature* c = NULL;
             if (cp && ci)
             {
