@@ -5271,7 +5271,7 @@ void Aura::SpellAuraMounted(bool apply)
         uint32 displayId = ci->Male_DisplayID;
         if (!displayId) return;
 
-        CreatureProto *cp = CreatureProtoStorage.LookupEntry(mod->m_miscValue);
+        CreatureProto const* cp = sMySQLStore.GetCreatureProto(mod->m_miscValue);
         if (cp == NULL)
             return;
         p_target->m_MountSpellId = m_spellProto->Id;

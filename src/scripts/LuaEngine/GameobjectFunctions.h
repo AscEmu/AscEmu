@@ -306,7 +306,7 @@ class LuaGameObject
                 lua_pushnil(L);
                 return 1;
             }
-            CreatureProto* p = CreatureProtoStorage.LookupEntry(entry);
+            CreatureProto const* p = sMySQLStore.GetCreatureProto(entry);
             CreatureInfo const* i = sMySQLStore.GetCreatureInfo(entry);
 
             if (p == NULL || i == NULL)

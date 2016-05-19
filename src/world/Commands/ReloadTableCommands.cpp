@@ -19,7 +19,7 @@ bool ChatHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSessio
 {
     uint32 start_time = getMSTime();
     sMySQLStore.LoadCreatureNamesTable();
-    CreatureProtoStorage.Reload();
+    sMySQLStore.LoadCreatureProtoTable();
     GreenSystemMessage(m_session, "WorldDB creature tables reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

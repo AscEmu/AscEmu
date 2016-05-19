@@ -1495,7 +1495,7 @@ bool AIInterface::FindFriends(float dist)
 
     uint32 family = static_cast<Creature*>(m_Unit)->GetCreatureInfo()->Type;
 
-    CreatureProto* pt = static_cast< Creature* >(m_Unit)->GetProto();
+    CreatureProto const* pt = static_cast< Creature* >(m_Unit)->GetProto();
 
     uint32 summonguard = 0;
 
@@ -1536,7 +1536,7 @@ bool AIInterface::FindFriends(float dist)
             z = m_Unit->GetPositionZ();
 
 
-        CreatureProto* cp = CreatureProtoStorage.LookupEntry(guardid);
+        CreatureProto const* cp = sMySQLStore.GetCreatureProto(guardid);
         if (!cp) return result;
 
         uint8 spawned = 0;
@@ -4640,7 +4640,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
     if (GetDifficultyType() != 0)
     {
         uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(entry, GetDifficultyType());
-        auto proto_difficulty = CreatureProtoStorage.LookupEntry(creature_difficulty_entry);
+        auto proto_difficulty = sMySQLStore.GetCreatureProto(creature_difficulty_entry);
         Creature* creature = static_cast<Creature*>(m_Unit);
         if (proto_difficulty != nullptr)
         {

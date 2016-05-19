@@ -55,7 +55,7 @@ namespace luaGlobalFunctions
         {
             if (spawntype == 1)  //Unit
             {
-                CreatureProto* p = CreatureProtoStorage.LookupEntry(entry);
+                CreatureProto const* p = sMySQLStore.GetCreatureProto(entry);
                 CreatureInfo const* i = sMySQLStore.GetCreatureInfo(entry);
                 if (p == NULL || i == NULL)
                     return 0;

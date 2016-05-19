@@ -23,7 +23,6 @@
 
  // Table formats converted to strings
 const char* gGameObjectNameFormat = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
-const char* gCreatureProtoFormat = "uuuuuuufuuuffuuffuuuuuuuuffsbuufffuuuuuuuuuuubuuuub";
 const char* gDisplayBoundingFormat = "ufffffff";
 const char* gVendorRestrictionEntryFormat = "uuuuuuuu";
 const char* gAreaTriggerFormat = "ucuusffffuu";
@@ -49,7 +48,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 // SQLStorage symbols
 SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                GameObjectNameStorage;
-SERVER_DECL SQLStorage<CreatureProto, HashMapStorageContainer<CreatureProto> >                  CreatureProtoStorage;
 SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >              DisplayBoundingStorage;
 SERVER_DECL SQLStorage<VendorRestrictionEntry, ArrayStorageContainer<VendorRestrictionEntry> >  VendorRestrictionEntryStorage;
 SERVER_DECL SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >                      AreaTriggerStorage;
@@ -96,87 +94,6 @@ void ObjectMgr::LoadProfessionDiscoveries()
 
 void ObjectMgr::LoadExtraCreatureProtoStuff()
 {
-    {
-        StorageContainerIterator<CreatureProto> * itr = CreatureProtoStorage.MakeIterator();
-        CreatureProto* cn;
-        while (!itr->AtEnd())
-        {
-            cn = itr->Get();
-
-            // Process spell fields
-            for (uint8 i = 0; i < creatureMaxProtoSpells; i++)
-            {
-                if (cn->AISpells[i] == 0)
-                    continue;
-
-                SpellEntry *sp = dbcSpell.LookupEntryForced(cn->AISpells[i]);
-                if (sp == NULL)
-                    continue;
-
-                if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
-                    cn->castable_spells.push_back(sp->Id);
-                else
-                    cn->start_auras.insert(sp->Id);
-
-            }
-
-            // process creature spells from creaturespelldata.dbc
-            if (cn->spelldataid != 0)
-            {
-                auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(cn->spelldataid);
-                for (uint8 i = 0; i < 3; i++)
-                {
-                    if (creature_spell_data == nullptr)
-                        continue;
-
-                    if (creature_spell_data->Spells[i] == 0)
-                        continue;
-
-                    SpellEntry* sp = dbcSpell.LookupEntryForced(creature_spell_data->Spells[i]);
-                    if (sp == nullptr)
-                        continue;
-
-                    if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
-                        cn->castable_spells.push_back(sp->Id);
-                    else
-                        cn->start_auras.insert(sp->Id);
-                }
-            }
-
-            if (cn->aura_string)
-            {
-                std::string auras = std::string(cn->aura_string);
-                std::vector<std::string> aurs = StrSplit(auras, " ");
-                for (std::vector<std::string>::iterator it = aurs.begin(); it != aurs.end(); ++it)
-                {
-                    uint32 id = atol((*it).c_str());
-                    if (id)
-                        cn->start_auras.insert(id);
-                }
-            }
-
-            if (!cn->MinHealth)
-                cn->MinHealth = 1;
-            if (!cn->MaxHealth)
-                cn->MaxHealth = 1;
-            if (cn->AttackType > SCHOOL_ARCANE)
-                cn->AttackType = SCHOOL_NORMAL;
-
-            cn->m_canFlee = cn->m_canRangedAttack = cn->m_canCallForHelp = false;
-            cn->m_fleeHealth = 0.0f;
-            cn->m_fleeDuration = 0;
-
-            cn->itemslot_1 = 0;
-            cn->itemslot_2 = 0;
-            cn->itemslot_3 = 0;
-
-            if (!itr->Inc())
-                break;
-        }
-
-        itr->Destruct();
-    }
-
     // Load creature_initiale_equip
     Log.Notice("ObjectStorage", "Loading creature_initial_equip...");
     {
@@ -188,16 +105,16 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             {
                 Field* fields = result->Fetch();
                 uint32 entry = fields[0].GetUInt32();
-                CreatureProto* creature_proto = CreatureProtoStorage.LookupEntry(entry);
+                CreatureProto const* creature_proto = sMySQLStore.GetCreatureProto(entry);
                 if (creature_proto == nullptr)
                 {
                     Log.Error("ObjectStorage", "Invalid creature_entry %u in table creature_initial_equip!", entry);
                     continue;
                 }
 
-                creature_proto->itemslot_1 = fields[1].GetUInt32();
-                creature_proto->itemslot_2 = fields[2].GetUInt32();
-                creature_proto->itemslot_3 = fields[3].GetUInt32();
+                const_cast<CreatureProto*>(creature_proto)->itemslot_1 = fields[1].GetUInt32();
+                const_cast<CreatureProto*>(creature_proto)->itemslot_2 = fields[2].GetUInt32();
+                const_cast<CreatureProto*>(creature_proto)->itemslot_3 = fields[3].GetUInt32();
 
             } while (result->NextRow());
 
@@ -209,7 +126,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
     if (Config.MainConfig.GetBoolDefault("Server", "LoadAIAgents", true))
     {
         QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents");
-        CreatureProto* cn;
+        CreatureProto const* cn;
 
         if (result != NULL)
         {
@@ -221,7 +138,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             {
                 Field* fields = result->Fetch();
                 entry = fields[0].GetUInt32();
-                cn = CreatureProtoStorage.LookupEntry(entry);
+                cn = sMySQLStore.GetCreatureProto(entry);
                 spe = dbcSpell.LookupEntryForced(fields[6].GetUInt32());
                 if (spe == NULL)
                 {
@@ -314,38 +231,39 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
                 if (sp->agent == AGENT_RANGED)
                 {
-                    cn->m_canRangedAttack = true;
+                    const_cast<CreatureProto*>(cn)->m_canRangedAttack = true;
                     delete sp;
                     sp = NULL;
                 }
                 else if (sp->agent == AGENT_FLEE)
                 {
-                    cn->m_canFlee = true;
+                    const_cast<CreatureProto*>(cn)->m_canFlee = true;
                     if (sp->floatMisc1)
-                        cn->m_canFlee = (sp->floatMisc1 > 0.0f ? true : false);
+                        const_cast<CreatureProto*>(cn)->m_canFlee = (sp->floatMisc1 > 0.0f ? true : false);
                     else
-                        cn->m_fleeHealth = 0.2f;
+                        const_cast<CreatureProto*>(cn)->m_fleeHealth = 0.2f;
 
                     if (sp->Misc2)
-                        cn->m_fleeDuration = sp->Misc2;
+                        const_cast<CreatureProto*>(cn)->m_fleeDuration = sp->Misc2;
                     else
-                        cn->m_fleeDuration = 10000;
+                        const_cast<CreatureProto*>(cn)->m_fleeDuration = 10000;
 
                     delete sp;
                     sp = NULL;
                 }
                 else if (sp->agent == AGENT_CALLFORHELP)
                 {
-                    cn->m_canCallForHelp = true;
+                    const_cast<CreatureProto*>(cn)->m_canCallForHelp = true;
                     if (sp->floatMisc1)
-                        cn->m_callForHelpHealth = 0.2f;
+                        const_cast<CreatureProto*>(cn)->m_callForHelpHealth = 0.2f;
                     delete sp;
                     sp = NULL;
                 }
                 else
                 {
-                    cn->spells.push_back(sp);
+                    const_cast<CreatureProto*>(cn)->spells.push_back(sp);
                 }
+
             } while (result->NextRow());
 
             delete result;
@@ -374,7 +292,6 @@ void ObjectMgr::LoadExtraGameObjectStuff()
 void Storage_FillTaskList(TaskList & tl)
 {
     make_task(GameObjectNameStorage, GameObjectInfo, HashMapStorageContainer, "gameobject_names", gGameObjectNameFormat);
-    make_task(CreatureProtoStorage, CreatureProto, HashMapStorageContainer, "creature_proto", gCreatureProtoFormat);
     make_task(DisplayBoundingStorage, DisplayBounding, HashMapStorageContainer, "display_bounding_boxes", gDisplayBoundingFormat);
     make_task(VendorRestrictionEntryStorage, VendorRestrictionEntry, ArrayStorageContainer, "vendor_restrictions", gVendorRestrictionEntryFormat);
     make_task(AreaTriggerStorage, AreaTrigger, HashMapStorageContainer, "areatriggers", gAreaTriggerFormat);
@@ -399,29 +316,7 @@ void Storage_FillTaskList(TaskList & tl)
 
 void Storage_Cleanup()
 {
-    {
-        StorageContainerIterator<CreatureProto> * itr = CreatureProtoStorage.MakeIterator();
-        CreatureProto* p;
-        while (!itr->AtEnd())
-        {
-            p = itr->Get();
-            if (p->aura_string)
-            {
-                free(p->aura_string);
-                p->aura_string = NULL;
-            }
-            for (std::list<AI_Spell*>::iterator it = p->spells.begin(); it != p->spells.end(); ++it)
-                delete(*it);
-            p->spells.clear();
-            p->start_auras.clear();
-            if (!itr->Inc())
-                break;
-        }
-        itr->Destruct();
-    }
-
     GameObjectNameStorage.Cleanup();
-    CreatureProtoStorage.Cleanup();
     VendorRestrictionEntryStorage.Cleanup();
     AreaTriggerStorage.Cleanup();
     ItemPageStorage.Cleanup();
@@ -457,8 +352,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
         ExtraMapGameObjectTables.insert(std::string(SecondName));
         return false;
     }
-    else if (firstLoad && !stricmp(TableName, "creature_proto"))        // Creature Proto
-        CreatureProtoStorage.LoadAdditionalData(SecondName, gCreatureProtoFormat);
+    //else if (firstLoad && !stricmp(TableName, "creature_proto"))        // Creature Proto
+    //    CreatureProtoStorage.LoadAdditionalData(SecondName, gCreatureProtoFormat);
     //else if (firstLoad && !stricmp(TableName, "creature_names"))        // Creature Names
     //    CreatureNameStorage.LoadAdditionalData(SecondName, gCreatureNameFormat);
     else if (firstLoad && !stricmp(TableName, "gameobject_names"))    // GO Names

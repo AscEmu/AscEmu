@@ -2368,7 +2368,7 @@ void Spell::SpellEffectSummon(uint32 i)
     uint32 entry = m_spellInfo->EffectMiscValue[i];
 
     CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(entry);
-    CreatureProto* cp = CreatureProtoStorage.LookupEntry(entry);
+    CreatureProto const* cp = sMySQLStore.GetCreatureProto(entry);
 
     if ((ci == NULL) || (cp == NULL))
     {
@@ -2476,7 +2476,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
         return;
 
     uint32 cr_entry = GetProto()->EffectMiscValue[i];
-    CreatureProto* proto = CreatureProtoStorage.LookupEntry(cr_entry);
+    CreatureProto const* proto = sMySQLStore.GetCreatureProto(cr_entry);
     CreatureInfo const* info = sMySQLStore.GetCreatureInfo(cr_entry);
     if (!proto || !info)
     {
@@ -2528,7 +2528,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
     }
 }
 
-void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v)
+void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
 {
 
     if (g_caster != NULL)
@@ -2574,7 +2574,7 @@ void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertie
     }
 }
 
-void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v)
+void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
 {
     if (p_caster == NULL)
         return;
@@ -2618,7 +2618,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPrope
     }
 }
 
-void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v)
+void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
 {
     if (u_caster == NULL)
         return;
@@ -2651,7 +2651,7 @@ void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEn
         sEventMgr.AddEvent(static_cast< Object* >(s), &Object::Delete, EVENT_SUMMON_EXPIRE, 60 * 60 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
-void Spell::SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v)
+void Spell::SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
 {
     if (p_caster == NULL)
         return;
@@ -2673,7 +2673,7 @@ void Spell::SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonProperti
     p_caster->Possess(s, 1000);
 }
 
-void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector & v)
+void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
 {
     if (u_caster == NULL)
         return;
@@ -2708,7 +2708,7 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
     u_caster->SetSummonedCritterGUID(summon->GetGUID());
 }
 
-void Spell::SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto* proto, LocationVector& v)
+void Spell::SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector& v)
 {
     if (u_caster == NULL)
         return;

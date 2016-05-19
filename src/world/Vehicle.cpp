@@ -577,7 +577,7 @@ void Vehicle::InstallAccessories()
         if (ci == NULL)
             continue;
 
-        CreatureProto *cp = CreatureProtoStorage.LookupEntry(accessory->accessory_entry);
+        CreatureProto const* cp = sMySQLStore.GetCreatureProto(accessory->accessory_entry);
         if (cp == NULL)
             continue;
 

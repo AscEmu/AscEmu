@@ -29,7 +29,7 @@ Summon::Summon(uint64 GUID) : Creature(GUID)
 Summon::~Summon()
 {}
 
-void Summon::Load(CreatureProto* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void Summon::Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
 {
     ARCEMU_ASSERT(owner != NULL);
 

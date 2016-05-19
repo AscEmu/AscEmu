@@ -1481,7 +1481,7 @@ bool ArcaneDisruption(uint32 i, Aura* pAura, bool apply)
         if (pQuest->GetMobCount(0) == 5)
         {
             //weee, Uther
-            CreatureProto* cp = CreatureProtoStorage.LookupEntry(26528);
+            CreatureProto const* cp = sMySQLStore.GetCreatureProto(26528);
             CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(26528);
             Creature* c = NULL;
             if (cp && ci)

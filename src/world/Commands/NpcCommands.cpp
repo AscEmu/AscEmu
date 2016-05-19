@@ -59,7 +59,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
     ai_spell->minrange = GetMinRange(sSpellRangeStore.LookupEntry(spell_entry->rangeIndex));
     ai_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(spell_entry->rangeIndex));
 
-    creature_target->GetProto()->spells.push_back(ai_spell);
+    const_cast<CreatureProto*>(creature_target->GetProto())->spells.push_back(ai_spell);
 
     switch (ai_type)
     {
@@ -653,7 +653,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     if (entry == 0)
         return false;
 
-    auto creature_proto = CreatureProtoStorage.LookupEntry(entry);
+    auto creature_proto = sMySQLStore.GetCreatureProto(entry);
     auto creature_info = sMySQLStore.GetCreatureInfo(entry);
     if (creature_proto == nullptr || creature_info == nullptr)
     {

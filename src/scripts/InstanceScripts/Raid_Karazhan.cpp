@@ -2845,7 +2845,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             // Off hand weapon
             _unit->SetEquippedItem(OFFHAND, 0);
 
-            CreatureProto* cp = CreatureProtoStorage.LookupEntry(CN_MALCHEZAAR);
+            CreatureProto const* cp = sMySQLStore.GetCreatureProto(CN_MALCHEZAAR);
             if (!cp)
                 return;
 
@@ -2985,7 +2985,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 //Off Hand
                 _unit->SetEquippedItem(OFFHAND, AXE_ITEM_MODEL);
 
-                CreatureProto* cp = CreatureProtoStorage.LookupEntry(CN_MALCHEZAAR);
+                CreatureProto const* cp = sMySQLStore.GetCreatureProto(CN_MALCHEZAAR);
                 if (!cp)
                     return;
 
@@ -3029,7 +3029,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 //Off Hand
                 _unit->SetEquippedItem(OFFHAND, 0);
 
-                CreatureProto* cp = CreatureProtoStorage.LookupEntry(CN_MALCHEZAAR);
+                CreatureProto const* cp = sMySQLStore.GetCreatureProto(CN_MALCHEZAAR);
                 if (!cp)
                     return;
 

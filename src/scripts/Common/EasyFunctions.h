@@ -108,7 +108,7 @@ class SCRIPT_DECL EasyFunctions
             ARCEMU_ASSERT(pThis != NULL);
             ARCEMU_ASSERT(pThis->IsInWorld());
 
-            CreatureProto* p = CreatureProtoStorage.LookupEntry(entry);
+            CreatureProto const* p = sMySQLStore.GetCreatureProto(entry);
 
             if (p == NULL)
                 return NULL;
@@ -141,7 +141,7 @@ class SCRIPT_DECL EasyFunctions
             if (pThis == NULL)
                 return NULL;
 
-            CreatureProto* p = CreatureProtoStorage.LookupEntry(entry);
+            CreatureProto const* p = sMySQLStore.GetCreatureProto(entry);
             if (p == NULL)
                 return NULL;
 

@@ -372,7 +372,7 @@ void MySQLDataStore::LoadCreatureNamesTable()
 
         for (uint8 i = 0; i < 6; ++i)
         {
-            creatureInfo.QuestItems[6] = fields[18 + i].GetUInt32();
+            creatureInfo.QuestItems[i] = fields[18 + i].GetUInt32();
         }
 
         creatureInfo.waypointid = fields[24].GetUInt32();
@@ -392,13 +392,214 @@ void MySQLDataStore::LoadCreatureNamesTable()
 
     delete creature_names_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u items from `items` table in %u ms!", creature_names_count, getMSTime() - start_time);
+    Log.Success("MySQLDataLoads", "Loaded %u creature info from `creature_names` table in %u ms!", creature_names_count, getMSTime() - start_time);
 }
 
 CreatureInfo const* MySQLDataStore::GetCreatureInfo(uint32 entry)
 {
     CreatureInfoContainer::const_iterator itr = _creatureNamesStore.find(entry);
     if (itr != _creatureNamesStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+void MySQLDataStore::LoadCreatureProtoTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                 0       1          2        3         4          5        6     7       8          9           10
+    QueryResult* creature_proto_result = WorldDatabase.Query("SELECT entry, minlevel, maxlevel, faction, minhealth, maxhealth, mana, scale, npcflags, attacktime, attacktype, "
+    //                                                          11          12         13            14                 15                16            17        18
+                                                            "mindamage, maxdamage, can_ranged, rangedattacktime, rangedmindamage, rangedmaxdamage, respawntime, armor, "
+    //                                                            19           20           21            22          23           24            25             26
+                                                            "resistance1, resistance2, resistance3, resistance4, resistance5, resistance6, combat_reach, bounding_radius, "
+    //                                                         27    28     29         30                 31         32        33          34            35     36      37 
+                                                            "auras, boss, money, invisibility_type, walk_speed, run_speed, fly_speed, extra_a9_flags, spell1, spell2, spell3, "
+    //                                                          38      39      40      41      42        43           44               45            46         47           48
+                                                            "spell4, spell5, spell6, spell7, spell8, spell_flags, modImmunities, isTrainingDummy, guardtype, summonguard, spelldataid, "
+    //                                                          49         50
+                                                            "vehicleid, rooted FROM creature_proto");
+
+    if (creature_proto_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `creature_proto` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `creature_proto` has %u columns", creature_proto_result->GetFieldCount());
+
+    _creatureNamesStore.rehash(creature_proto_result->GetRowCount());
+
+    uint32 creature_proto_count = 0;
+    do
+    {
+        Field* fields = creature_proto_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        if (GetCreatureInfo(entry) == nullptr)
+        {
+            Log.Error("MySQLDataLoads", "Table `creature_proto` includes entry: %u which is not in table `creature_names`! Skipped dataload for this entry.", entry);
+            continue;
+        }
+
+        CreatureProto& creatureProto = _creatureProtoStore[entry];
+
+        creatureProto.Id = entry;
+        creatureProto.MinLevel = fields[1].GetUInt32();
+        creatureProto.MaxLevel = fields[2].GetUInt32();
+        creatureProto.Faction = fields[3].GetUInt32();
+        if (fields[4].GetUInt32() != 0)
+        {
+            creatureProto.MinHealth = fields[4].GetUInt32();
+        }
+        else
+        {
+            Log.Error("MySQLDataLoads", "Table `creature_proto` MinHealth = 0 is not a valid value! Default set to 1 for entry: %u.", entry);
+            creatureProto.MinHealth = 1;
+        }
+
+        if (fields[5].GetUInt32() != 0)
+        {
+            creatureProto.MaxHealth = fields[5].GetUInt32();
+        }
+        else
+        {
+            Log.Error("MySQLDataLoads", "Table `creature_proto` MaxHealth = 0 is not a valid value! Default set to 1 for entry: %u.", entry);
+            creatureProto.MaxHealth = 1;
+        }
+
+        creatureProto.Mana = fields[6].GetUInt32();
+        creatureProto.Scale = fields[7].GetFloat();
+        creatureProto.NPCFLags = fields[8].GetUInt32();
+        creatureProto.AttackTime = fields[9].GetUInt32();
+        creatureProto.AttackType = fields[10].GetUInt32();
+        if (fields[10].GetUInt32() <= SCHOOL_ARCANE)
+        {
+            creatureProto.AttackType = fields[10].GetUInt32();
+        }
+        else
+        {
+            Log.Error("MySQLDataLoads", "Table `creature_proto` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", fields[10].GetUInt32(), entry);
+            creatureProto.AttackType = SCHOOL_NORMAL;
+        }
+
+        creatureProto.MinDamage = fields[11].GetFloat();
+        creatureProto.MaxDamage = fields[12].GetFloat();
+        creatureProto.CanRanged = fields[13].GetUInt32();
+        creatureProto.RangedAttackTime = fields[14].GetUInt32();
+        creatureProto.RangedMinDamage = fields[15].GetFloat();
+        creatureProto.RangedMaxDamage = fields[16].GetFloat();
+        creatureProto.RespawnTime = fields[17].GetUInt32();
+        for (uint8 i = 0; i < SCHOOL_COUNT; ++i)
+        {
+            creatureProto.Resistances[i] = fields[18 + i].GetUInt32();
+        }
+
+        creatureProto.CombatReach = fields[25].GetFloat();
+        creatureProto.BoundingRadius = fields[26].GetFloat();
+        creatureProto.aura_string = fields[27].GetString();
+        creatureProto.isBoss = fields[28].GetBool();
+        creatureProto.money = fields[29].GetUInt32();
+        creatureProto.invisibility_type = fields[30].GetUInt32();
+        creatureProto.walk_speed = fields[31].GetFloat();
+        creatureProto.run_speed = fields[32].GetFloat();
+        creatureProto.fly_speed = fields[33].GetFloat();
+        creatureProto.extra_a9_flags = fields[34].GetUInt32();
+
+        for (uint8 i = 0; i < creatureMaxProtoSpells; ++i)
+        {
+            // Process spell fields
+            creatureProto.AISpells[i] = fields[35 + i].GetUInt32();
+            if (creatureProto.AISpells[i] != 0)
+            {
+                SpellEntry* sp = dbcSpell.LookupEntryForced(creatureProto.AISpells[i]);
+                if (sp == nullptr)
+                {
+                    uint8 spell_number = i;
+                    Log.Error("MySQLDataStore", "your creature_proto table column spell%u spell: %u for creature entry: %u", spell_number + 1, creatureProto.AISpells[i], entry);
+                    continue;
+                }
+                else
+                {
+                    if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
+                        creatureProto.castable_spells.push_back(sp->Id);
+                    else
+                        creatureProto.start_auras.insert(sp->Id);
+                }
+            }
+        }
+
+        creatureProto.AISpellsFlags = fields[43].GetUInt32();
+        creatureProto.modImmunities = fields[44].GetUInt32();
+        creatureProto.isTrainingDummy = fields[45].GetBool();
+        creatureProto.guardtype = fields[46].GetUInt32();
+        creatureProto.summonguard = fields[47].GetUInt32();
+        creatureProto.spelldataid = fields[48].GetUInt32();
+        // process creature spells from creaturespelldata.dbc
+        if (creatureProto.spelldataid != 0)
+        {
+            auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(creatureProto.spelldataid);
+            for (uint8 i = 0; i < 3; i++)
+            {
+                if (creature_spell_data == nullptr)
+                    continue;
+
+                if (creature_spell_data->Spells[i] == 0)
+                    continue;
+
+                SpellEntry* sp = dbcSpell.LookupEntryForced(creature_spell_data->Spells[i]);
+                if (sp == nullptr)
+                    continue;
+
+                if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
+                    creatureProto.castable_spells.push_back(sp->Id);
+                else
+                    creatureProto.start_auras.insert(sp->Id);
+            }
+        }
+
+        creatureProto.vehicleid = fields[49].GetUInt32();
+        creatureProto.rooted = fields[50].GetBool();
+
+        //process aura string
+        if (creatureProto.aura_string.size() != 0)
+        {
+            std::string auras = creatureProto.aura_string;
+            std::vector<std::string> split_auras = StrSplit(auras, " ");
+            for (std::vector<std::string>::iterator it = split_auras.begin(); it != split_auras.end(); ++it)
+            {
+                uint32 id = atol((*it).c_str());
+                if (id)
+                    creatureProto.start_auras.insert(id);
+            }
+        }
+
+        //AI stuff
+        creatureProto.m_canFlee = false;
+        creatureProto.m_canRangedAttack = false;
+        creatureProto.m_canCallForHelp = false;
+        creatureProto.m_fleeHealth = 0.0f;
+        creatureProto.m_fleeDuration = 0;
+
+        //Itemslot
+        creatureProto.itemslot_1 = 0;
+        creatureProto.itemslot_2 = 0;
+        creatureProto.itemslot_3 = 0;
+
+        ++creature_proto_count;
+    } while (creature_proto_result->NextRow());
+
+    delete creature_proto_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u creature proto data from `creature_proto` table in %u ms!", creature_proto_count, getMSTime() - start_time);
+}
+
+CreatureProto const* MySQLDataStore::GetCreatureProto(uint32 entry)
+{
+    CreatureProtoContainer::const_iterator itr = _creatureProtoStore.find(entry);
+    if (itr != _creatureProtoStore.end())
         return &(itr->second);
 
     return nullptr;

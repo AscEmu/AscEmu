@@ -574,7 +574,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
         return false;
 
     CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(entry);
-    CreatureProto* cp = CreatureProtoStorage.LookupEntry(entry);
+    CreatureProto const* cp = sMySQLStore.GetCreatureProto(entry);
 
     if ((ci == NULL) || (cp == NULL))
         return false;
@@ -2076,7 +2076,7 @@ bool ChatHandler::HandleFixScaleCommand(const char* args, WorldSession* m_sessio
     }
 
     pCreature->SetScale(sc);
-    pCreature->GetProto()->Scale = sc;
+    const_cast<CreatureProto*>(pCreature->GetProto())->Scale = sc;
     WorldDatabase.Execute("UPDATE creature_proto SET scale = '%f' WHERE entry = %u", sc, pCreature->GetEntry());
     return true;
 }

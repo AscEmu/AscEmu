@@ -1644,7 +1644,7 @@ uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
 {
     uint64 newguid = 0;
 
-    CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
+    CreatureProto const* proto = sMySQLStore.GetCreatureProto(entry);
     if ((proto == nullptr) || (proto->vehicleid == 0))
         newguid = static_cast<uint64>(HIGHGUID_TYPE_UNIT) << 32;
     else
@@ -1693,7 +1693,7 @@ Creature* MapMgr::CreateCreature(uint32 entry)
 Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO)
 {
     auto creature = CreateCreature(pEntry);
-    auto cp = CreatureProtoStorage.LookupEntry(pEntry);
+    auto cp = sMySQLStore.GetCreatureProto(pEntry);
     if (cp == nullptr)
         return nullptr;
 

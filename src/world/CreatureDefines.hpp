@@ -164,7 +164,7 @@ struct CreatureProto
     uint32 Resistances[SCHOOL_COUNT];
     float CombatReach;
     float BoundingRadius;
-    char* aura_string;
+    std::string aura_string;
     bool isBoss;
     uint32 money;
     uint32 invisibility_type;

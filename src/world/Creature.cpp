@@ -299,7 +299,7 @@ void Creature::generateLoot()
     if (GetAIInterface()->GetDifficultyType() != 0)
     {
         uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
-        auto proto_difficulty = CreatureProtoStorage.LookupEntry(creature_difficulty_entry);
+        auto proto_difficulty = sMySQLStore.GetCreatureProto(creature_difficulty_entry);
         if (proto_difficulty != nullptr)
         {
             if (proto_difficulty->money != proto->money)
@@ -1116,7 +1116,7 @@ void Creature::SetCreatureInfo(CreatureInfo const* ci)
     creature_info = ci;
 }
 
-void Creature::SetCreatureProto(CreatureProto* cp)
+void Creature::SetCreatureProto(CreatureProto const* cp)
 {
     proto = cp;
 }
@@ -1274,7 +1274,7 @@ bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
 bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
 {
     m_spawn = spawn;
-    proto = CreatureProtoStorage.LookupEntry(spawn->entry);
+    proto = sMySQLStore.GetCreatureProto(spawn->entry);
     if (proto == NULL)
         return false;
     creature_info = sMySQLStore.GetCreatureInfo(spawn->entry);
@@ -1292,16 +1292,16 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     SetEntry(proto->Id);
     SetScale(proto->Scale);
 
-    //SetHealth((mode ? long2int32(proto->Health * 1.5)  : proto->Health));
-    //SetBaseHealth((mode ? long2int32(proto->Health * 1.5)  : proto->Health));
-    //SetMaxHealth((mode ? long2int32(proto->Health * 1.5)  : proto->Health));
+    uint32 health;
     if (proto->MinHealth > proto->MaxHealth)
     {
-        proto->MaxHealth = proto->MinHealth + 1;
-        SaveToDB();
+        Log.Error("Creature::Load", "MinHealth is bigger than MaxHealt! Using MaxHealth value. You should fix this in creature_proto table for entry: %u!", proto->Id);
+        health = proto->MaxHealth - RandomUInt(10);
     }
-
-    uint32 health = proto->MinHealth + RandomUInt(proto->MaxHealth - proto->MinHealth);
+    else
+    {
+        health = proto->MinHealth + RandomUInt(proto->MaxHealth - proto->MinHealth);
+    }
 
     SetHealth(health);
     SetMaxHealth(health);
@@ -1402,7 +1402,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     ////////////AI
 
     // kek
-    for (std::list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
+    for (std::list<AI_Spell*>::const_iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
     {
         // Load all spells that are not bound to a specific difficulty, OR mathces this maps' difficulty
         if ((*itr)->instance_mode == mode || (*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
@@ -1514,7 +1514,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
     return true;
 }
 
-void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
+void Creature::Load(CreatureProto const* proto_, float x, float y, float z, float o)
 {
     proto = proto_;
 
@@ -1625,7 +1625,7 @@ void Creature::Load(CreatureProto* proto_, float x, float y, float z, float o)
     ////////////AI
 
     // kek
-    for (std::list<AI_Spell*>::iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
+    for (std::list<AI_Spell*>::const_iterator itr = proto->spells.begin(); itr != proto->spells.end(); ++itr)
     {
         // Load all spell that are not set for a specific difficulty
         if ((*itr)->instance_mode == AISPELL_ANY_DIFFICULTY)
@@ -2055,7 +2055,7 @@ bool Creature::HasItems()
     return ((m_SellItems != NULL) ? true : false);
 }
 
-CreatureProto* Creature::GetProto()
+CreatureProto const* Creature::GetProto()
 {
     return proto;
 }
@@ -2745,7 +2745,7 @@ void Creature::BuildPetSpellList(WorldPacket& data)
     else
         data << uint32(0x8000101);
 
-    std::vector< uint32 >::iterator itr = proto->castable_spells.begin();
+    std::vector< uint32 >::const_iterator itr = proto->castable_spells.begin();
 
     // Send the actionbar
     for (uint8 i = 0; i < 10; ++i)

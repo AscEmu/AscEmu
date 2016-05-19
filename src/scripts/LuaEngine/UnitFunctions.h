@@ -557,7 +557,7 @@ class LuaUnit
             lua_pushnil(L);
             return 1;
         }
-        CreatureProto* p = CreatureProtoStorage.LookupEntry(entry);
+        CreatureProto const* p = sMySQLStore.GetCreatureProto(entry);
         CreatureInfo const* i = sMySQLStore.GetCreatureInfo(entry);
 
         if (p == NULL || i == NULL)
@@ -3018,7 +3018,7 @@ class LuaUnit
         if ((ptr == NULL) || (entry == 0) || (lvl == 0))
             return 0;
 
-        CreatureProto* cp = CreatureProtoStorage.LookupEntry(entry);
+        CreatureProto const* cp = sMySQLStore.GetCreatureProto(entry);
         if (cp == NULL)
             return 0;
 
@@ -4485,7 +4485,7 @@ class LuaUnit
         if (guidtype == HIGHGUID_TYPE_UNIT)
         {
             Unit* pUnit = plr->GetMapMgr()->GetUnit(guid);
-            CreatureProto* proto = static_cast<Creature*>(pUnit)->GetProto();
+            CreatureProto const* proto = static_cast<Creature*>(pUnit)->GetProto();
             switch (loot_type)
             {
                 default:
@@ -6046,7 +6046,7 @@ class LuaUnit
         if (ci == NULL)
             return 0;
 
-        CreatureProto *cp = CreatureProtoStorage.LookupEntry(creature_entry);
+        CreatureProto const* cp = sMySQLStore.GetCreatureProto(creature_entry);
         if (cp == NULL)
             return 0;
 
@@ -6119,7 +6119,7 @@ class LuaUnit
         uint32 creature_entry = luaL_checkinteger(L, 1);
 
         CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(creature_entry);
-        CreatureProto *cp = CreatureProtoStorage.LookupEntry(creature_entry);
+        CreatureProto const* cp = sMySQLStore.GetCreatureProto(creature_entry);
 
         if ((ci == NULL) || (cp == NULL))
             return 0;

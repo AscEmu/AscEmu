@@ -66,7 +66,7 @@ class SERVER_DECL Creature : public Unit
         void RemoveVehicleComponent();
 
         bool Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info);
-        void Load(CreatureProto* proto_, float x, float y, float z, float o = 0);
+        void Load(CreatureProto const* proto_, float x, float y, float z, float o = 0);
 
         void AddToWorld();
         void AddToWorld(MapMgr* pMapMgr);
@@ -92,7 +92,7 @@ class SERVER_DECL Creature : public Unit
             DeleteMe();
         }
 
-        CreatureProto* GetProto();
+        CreatureProto const* GetProto();
 
         bool IsPvPFlagged();
         void SetPvPFlag();
@@ -279,7 +279,7 @@ class SERVER_DECL Creature : public Unit
 
         void SetCreatureInfo(CreatureInfo const* ci);
 
-        void SetCreatureProto(CreatureProto* cp);
+        void SetCreatureProto(CreatureProto const* cp);
 
         Trainer* GetTrainer();
         void RegenerateFocus();
@@ -371,7 +371,7 @@ class SERVER_DECL Creature : public Unit
         uint32 m_healthfromspell;
 
         CreatureInfo const* creature_info;
-        CreatureProto* proto;
+        CreatureProto const* proto;
 
     private:
 

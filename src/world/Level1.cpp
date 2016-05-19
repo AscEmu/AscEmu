@@ -855,7 +855,7 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char *args, WorldSessio
         return false;
     }
     CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(creature_entry);
-    CreatureProto *cp = CreatureProtoStorage.LookupEntry(creature_entry);
+    CreatureProto const* cp = sMySQLStore.GetCreatureProto(creature_entry);
     if ((ci == NULL) || (cp == NULL))
     {
         RedSystemMessage(session, "Creature %u doesn't exist in the database", creature_entry);

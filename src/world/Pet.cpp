@@ -591,7 +591,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     if (creature_info == nullptr)
         return;
 
-    proto = CreatureProtoStorage.LookupEntry(mPi->entry);
+    proto = sMySQLStore.GetCreatureProto(mPi->entry);
     myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
 
     Create(owner->GetMapId(), owner->GetPositionX() + 2, owner->GetPositionY() + 2, owner->GetPositionZ(), owner->GetOrientation());
@@ -737,7 +737,7 @@ void Pet::InitializeMe(bool first)
     GetAIInterface()->SetFollowDistance(3.0f);
 
     SetCreatureInfo(sMySQLStore.GetCreatureInfo(GetEntry()));
-    proto = CreatureProtoStorage.LookupEntry(GetEntry());
+    proto = sMySQLStore.GetCreatureProto(GetEntry());
 
     m_Owner->AddSummon(this);
     m_Owner->SetSummonedUnitGUID(GetGUID());

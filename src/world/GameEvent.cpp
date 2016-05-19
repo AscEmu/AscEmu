@@ -14,7 +14,7 @@ void GameEvent::CreateNPCs()
             continue;
 
         Creature* c = mapmgr->CreateCreature(npc.entry);
-        CreatureProto* cp = CreatureProtoStorage.LookupEntry(npc.entry);
+        CreatureProto const* cp = sMySQLStore.GetCreatureProto(npc.entry);
         c->Load(cp, npc.position_x, npc.position_y, npc.position_z, npc.orientation);
         if (npc.waypoint_group != 0)
         {

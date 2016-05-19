@@ -725,7 +725,7 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     MapMgr* map = GetMapMgr();
 
     CreatureInfo const* inf = sMySQLStore.GetCreatureInfo(entry);
-    CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
+    CreatureProto const* proto = sMySQLStore.GetCreatureProto(entry);
     if (inf == nullptr || proto == nullptr || map == nullptr)
         return 0;
 
@@ -775,7 +775,7 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     MapMgr* map = GetMapMgr();
 
     CreatureInfo const* inf = sMySQLStore.GetCreatureInfo(entry);
-    CreatureProto* proto = CreatureProtoStorage.LookupEntry(entry);
+    CreatureProto const* proto = sMySQLStore.GetCreatureProto(entry);
     if (inf == nullptr || proto == nullptr || map == nullptr)
         return nullptr;
 
