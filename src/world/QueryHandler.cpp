@@ -107,7 +107,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 
         if (lcn == NULL)
         {
-            LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name);
+            LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name.c_str());
             data << entry;
             data << ci->Name;       // name of the creature
             data << uint8(0);       // name2, always seems to be empty
