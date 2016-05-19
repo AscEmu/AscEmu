@@ -2786,7 +2786,7 @@ void Creature::AddVehicleComponent(uint32 creature_entry, uint32 vehicleid)
 {
     if (vehicle != NULL)
     {
-        LOG_ERROR("Creature %u (%s) with GUID %u already has a vehicle component.", proto->Id, creature_info->Name, GetUIdFromGUID());
+        LOG_ERROR("Creature %u (%s) with GUID %u already has a vehicle component.", proto->Id, creature_info->Name.c_str(), GetUIdFromGUID());
         return;
     }
 
