@@ -1480,3 +1480,51 @@ GraveyardTeleport const* MySQLDataStore::GetGraveyard(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadTeleportCoordsTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                0     1         2           3           4
+    QueryResult* teleport_coords_result = WorldDatabase.Query("SELECT id, mapId, position_x, position_y, position_z FROM teleport_coords");
+    if (teleport_coords_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `teleport_coords` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `teleport_coords` has %u columns", teleport_coords_result->GetFieldCount());
+
+    _teleportCoordsStore.rehash(teleport_coords_result->GetRowCount());
+
+    uint32 teleport_coords_count = 0;
+    do
+    {
+        Field* fields = teleport_coords_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        TeleportCoords& teleportCoords = _teleportCoordsStore[entry];
+
+        teleportCoords.id = entry;
+        teleportCoords.mapId = fields[1].GetUInt32();
+        teleportCoords.x = fields[2].GetFloat();
+        teleportCoords.y = fields[3].GetFloat();
+        teleportCoords.z = fields[4].GetFloat();
+
+        ++teleport_coords_count;
+    } while (teleport_coords_result->NextRow());
+
+    delete teleport_coords_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `teleport_coords` table in %u ms!", teleport_coords_count, getMSTime() - start_time);
+}
+
+TeleportCoords const* MySQLDataStore::GetTeleportCoord(uint32 entry)
+{
+    TeleportCoordsContainer::const_iterator itr = _teleportCoordsStore.find(entry);
+    if (itr != _teleportCoordsStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

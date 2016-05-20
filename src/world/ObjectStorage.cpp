@@ -22,7 +22,6 @@
 #include "StdAfx.h"
 
  // Table formats converted to strings
-const char* gTeleportCoordFormat = "uxufffx";
 const char* gPvPAreaFormat = "ush";
 const char* gFishingFormat = "uuu";
 const char* gWorldMapInfoFormat = "uuuuuufffusuuuuuuuufu";
@@ -37,7 +36,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >                TeleportCoordStorage;
 SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >            FishingZoneStorage;
 SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >                                WorldMapInfoStorage;
 SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                ZoneGuardStorage;
@@ -257,7 +255,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void Storage_FillTaskList(TaskList & tl)
 {
-    make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
     make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
     make_task(WorldMapInfoStorage, MapInfo, ArrayStorageContainer, "worldmap_info", gWorldMapInfoFormat);
     make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
@@ -272,7 +269,6 @@ void Storage_FillTaskList(TaskList & tl)
 
 void Storage_Cleanup()
 {
-    TeleportCoordStorage.Cleanup();
     FishingZoneStorage.Cleanup();
     WorldMapInfoStorage.Cleanup();
     ZoneGuardStorage.Cleanup();
@@ -323,8 +319,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     //    NpcTextStorage.LoadAdditionalData(SecondName, gNpcTextFormat);
     else if (!stricmp(TableName, "fishing"))                // Fishing Zones
         FishingZoneStorage.LoadAdditionalData(SecondName, gFishingFormat);
-    else if (!stricmp(TableName, "teleport_coords"))        // Teleport coords
-        TeleportCoordStorage.LoadAdditionalData(SecondName, gTeleportCoordFormat);
+    //else if (!stricmp(TableName, "teleport_coords"))        // Teleport coords
+    //    TeleportCoordStorage.LoadAdditionalData(SecondName, gTeleportCoordFormat);
     //else if (!stricmp(TableName, "graveyards"))            // Graveyards
     //    GraveyardStorage.LoadAdditionalData(SecondName, gGraveyardFormat);
     else if (!stricmp(TableName, "worldmap_info"))        // WorldMapInfo

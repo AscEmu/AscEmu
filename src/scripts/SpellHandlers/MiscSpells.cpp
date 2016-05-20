@@ -468,17 +468,17 @@ bool ListeningToMusicParent(uint32 i, Spell* s)
 ////////////////////////////////////////////////////////////////
 bool TeleportToCoordinates(uint32 i, Spell* s)
 {
-    if (s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return true;
 
-    TeleportCoords* TC = ::TeleportCoordStorage.LookupEntry(s->GetProto()->Id);
-    if (TC == NULL)
+    TeleportCoords const* teleport_coord = sMySQLStore.GetTeleportCoord(s->GetProto()->Id);
+    if (teleport_coord == nullptr)
     {
         sLog.outError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetProto()->Id, s->GetProto()->Name);
         return true;
     }
 
-    s->HandleTeleport(TC->x, TC->y, TC->z, TC->mapId, s->p_caster);
+    s->HandleTeleport(teleport_coord->x, teleport_coord->y, teleport_coord->z, teleport_coord->mapId, s->p_caster);
     return true;
 }
 

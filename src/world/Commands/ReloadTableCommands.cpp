@@ -139,7 +139,7 @@ bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* 
 bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    TeleportCoordStorage.Reload();
+    sMySQLStore.LoadTeleportCoordsTable();
     GreenSystemMessage(m_session, "WorldDB 'teleport_coords' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

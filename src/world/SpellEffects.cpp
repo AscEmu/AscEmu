@@ -1143,30 +1143,17 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
 
     uint32 spellId = GetProto()->Id;
 
-    // [2010-11-7 18:30] <@dfighter> a.) teleport to bindpoint
-    // [2010-11-7 18:30] <@dfighter> b.) teleport to somewhere in world
-    // [2010-11-7 18:30] <@dfighter> c.) teleport behind the target
-    // [2010-11-7 18:34] <@dfighter> d.) teleport to caster's position
-
-    /* Always true @Zyres
-    if (m_spellInfo->EffectCustomFlag == 0)
-    {
-        LOG_ERROR("Spell %u (%s) has a teleport effect, but has no teleport flag.", spellId, m_spellInfo->Name);
-        return;
-    }*/
-
     // Portals
     if (m_spellInfo->HasCustomFlagForEffect(i, TELEPORT_TO_COORDINATES))
     {
-        TeleportCoords* TC = ::TeleportCoordStorage.LookupEntry(spellId);
-
-        if (TC == NULL)
+        TeleportCoords const* teleport_coord = sMySQLStore.GetTeleportCoord(spellId);
+        if (teleport_coord == nullptr)
         {
             LOG_ERROR("Spell %u (%s) has a TELEPORT TO COORDINATES effect, but has no coordinates to teleport to. ", spellId, m_spellInfo->Name);
             return;
         }
 
-        HandleTeleport(TC->x, TC->y, TC->z, TC->mapId, unitTarget);
+        HandleTeleport(teleport_coord->x, teleport_coord->y, teleport_coord->z, teleport_coord->mapId, unitTarget);
         return;
     }
 
