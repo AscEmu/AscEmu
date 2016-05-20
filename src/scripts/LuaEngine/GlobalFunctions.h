@@ -241,8 +241,8 @@ namespace luaGlobalFunctions
                 FishingZoneStorage.Reload();
             else if (!stricmp(TableName, "teleport_coords"))		// Teleport coords
                 TeleportCoordStorage.Reload();
-            else if (!stricmp(TableName, "graveyards"))			// Graveyards
-                GraveyardStorage.Reload();
+            //else if (!stricmp(TableName, "graveyards"))			// Graveyards
+            //    GraveyardStorage.Reload();
             else if (!stricmp(TableName, "worldmap_info"))		// WorldMapInfo
                 WorldMapInfoStorage.Reload();
             else if (!stricmp(TableName, "zoneguards"))

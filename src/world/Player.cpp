@@ -4944,7 +4944,6 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
 
     bool first = true;
     // float closestX = 0, closestY = 0, closestZ = 0, closestO = 0;
-    StorageContainerIterator<GraveyardTeleport> * itr;
 
     LocationVector src(ox, oy, oz);
     LocationVector dest;
@@ -4958,11 +4957,11 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
     }
     else
     {
-        itr = GraveyardStorage.MakeIterator();
-        GraveyardTeleport* pGrave = NULL;
-        while (!itr->AtEnd())
+        GraveyardTeleport const* pGrave = nullptr;
+        MySQLDataStore::GraveyardsContainer const* its = sMySQLStore.GetGraveyardsStore();
+        for (MySQLDataStore::GraveyardsContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
         {
-            pGrave = itr->Get();
+            pGrave = sMySQLStore.GetGraveyard(itr->second.ID);
             if (pGrave->MapId == mapid && (pGrave->FactionID == GetTeam() || pGrave->FactionID == 3))
             {
                 temp.ChangeCoords(pGrave->X, pGrave->Y, pGrave->Z);
@@ -4974,19 +4973,15 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
                     dest = temp;
                 }
             }
-
-            if (!itr->Inc())
-                break;
         }
         /* Fix on 3/13/2010, defaults to last graveyard, if none fit the criteria.
         Keeps the player from hanging out to dry.*/
-        if (first && pGrave != NULL)//crappy Databases with no graveyards.
+        if (first && pGrave != nullptr)//crappy Databases with no graveyards.
         {
             dest.ChangeCoords(pGrave->X, pGrave->Y, pGrave->Z);
             first = false;
         }
 
-        itr->Destruct();
     }
 
     if (sHookInterface.OnRepop(this) && !first)//dest has now always a value != {0,0,0,0}//but there may be DBs with no graveyards

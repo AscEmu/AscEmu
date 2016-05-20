@@ -489,6 +489,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadNpcTextTable();
     sMySQLStore.LoadNpcScriptTextTable();
     sMySQLStore.LoadGossipMenuOptionTable();
+    sMySQLStore.LoadGraveyardsTable();
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.

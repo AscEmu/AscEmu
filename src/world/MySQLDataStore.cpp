@@ -1428,3 +1428,55 @@ GossipMenuOption const* MySQLDataStore::GetGossipMenuOption(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadGraveyardsTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                            0         1         2           3            4         5          6           7       8
+    QueryResult* graveyards_result = WorldDatabase.Query("SELECT id, position_x, position_y, position_z, orientation, zoneid, adjacentzoneid, mapid, faction FROM graveyards");
+    if (graveyards_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `graveyards` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `graveyards` has %u columns", graveyards_result->GetFieldCount());
+
+    _graveyardsStore.rehash(graveyards_result->GetRowCount());
+
+    uint32 graveyards_count = 0;
+    do
+    {
+        Field* fields = graveyards_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        GraveyardTeleport& graveyardTeleport = _graveyardsStore[entry];
+
+        graveyardTeleport.ID = entry;
+        graveyardTeleport.X = fields[1].GetFloat();
+        graveyardTeleport.Y = fields[2].GetFloat();
+        graveyardTeleport.Z = fields[3].GetFloat();
+        graveyardTeleport.O = fields[4].GetFloat();
+        graveyardTeleport.ZoneId = fields[5].GetUInt32();
+        graveyardTeleport.AdjacentZoneId = fields[6].GetUInt32();
+        graveyardTeleport.MapId = fields[7].GetUInt32();
+        graveyardTeleport.FactionID = fields[8].GetUInt32();
+
+        ++graveyards_count;
+    } while (graveyards_result->NextRow());
+
+    delete graveyards_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `graveyards` table in %u ms!", graveyards_count, getMSTime() - start_time);
+}
+
+GraveyardTeleport const* MySQLDataStore::GetGraveyard(uint32 entry)
+{
+    GraveyardsContainer::const_iterator itr = _graveyardsStore.find(entry);
+    if (itr != _graveyardsStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

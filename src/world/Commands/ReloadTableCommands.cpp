@@ -66,7 +66,7 @@ bool ChatHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    GraveyardStorage.Reload();
+    sMySQLStore.LoadGraveyardsTable();
     GreenSystemMessage(m_session, "WorldDB 'graveyards' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

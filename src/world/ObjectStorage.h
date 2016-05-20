@@ -24,7 +24,6 @@
 #include "Storage.h"
 #include "ObjectMgr.h"
 
-extern SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >           GraveyardStorage;
 extern SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >                 TeleportCoordStorage;
 extern SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >             FishingZoneStorage;
 extern SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >                                 WorldMapInfoStorage;

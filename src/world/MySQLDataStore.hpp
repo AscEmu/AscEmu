@@ -29,6 +29,7 @@ public:
     typedef std::unordered_map<uint32, NpcText> NpcTextContainer;
     typedef std::unordered_map<uint32, NpcScriptText> NpcScriptTextContainer;
     typedef std::unordered_map<uint32, GossipMenuOption> GossipMenuOptionContainer;
+    typedef std::unordered_map<uint32, GraveyardTeleport> GraveyardsContainer;
 
 
     //helper
@@ -66,6 +67,9 @@ public:
     GossipMenuOption const* GetGossipMenuOption(uint32 entry);
     GossipMenuOptionContainer const* GetGossipMenuOptionStore() { return &_gossipMenuOptionStore; }
 
+    GraveyardTeleport const* GetGraveyard(uint32 entry);
+    GraveyardsContainer const* GetGraveyardsStore() { return &_graveyardsStore; }
+
     //Loads
     void LoadItemPagesTable();
     void LoadItemsTable();
@@ -85,6 +89,7 @@ public:
     void LoadNpcTextTable();
     void LoadNpcScriptTextTable();
     void LoadGossipMenuOptionTable();
+    void LoadGraveyardsTable();
 
 
     ItemPageContainer _itemPagesStore;
@@ -100,6 +105,7 @@ public:
     NpcTextContainer _npcTextStore;
     NpcScriptTextContainer _npcScriptTextStore;
     GossipMenuOptionContainer _gossipMenuOptionStore;
+    GraveyardsContainer _graveyardsStore;
 
 };
 
