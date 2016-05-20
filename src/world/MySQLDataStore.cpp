@@ -1528,3 +1528,49 @@ TeleportCoords const* MySQLDataStore::GetTeleportCoord(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadFishingTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                          0      1         2
+    QueryResult* fishing_result = WorldDatabase.Query("SELECT zone, MinSkill, MaxSkill FROM fishing");
+    if (fishing_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `fishing` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `fishing` has %u columns", fishing_result->GetFieldCount());
+
+    _fishingZonesStore.rehash(fishing_result->GetRowCount());
+
+    uint32 fishing_count = 0;
+    do
+    {
+        Field* fields = fishing_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        FishingZoneEntry& fishingZone = _fishingZonesStore[entry];
+
+        fishingZone.ZoneID = entry;
+        fishingZone.MinSkill = fields[1].GetUInt32();
+        fishingZone.MaxSkill = fields[2].GetUInt32();
+
+        ++fishing_count;
+    } while (fishing_result->NextRow());
+
+    delete fishing_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `fishing` table in %u ms!", fishing_count, getMSTime() - start_time);
+}
+
+FishingZoneEntry const* MySQLDataStore::GetFishingZone(uint32 entry)
+{
+    FishingZonesContainer::const_iterator itr = _fishingZonesStore.find(entry);
+    if (itr != _fishingZonesStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

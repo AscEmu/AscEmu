@@ -23,7 +23,6 @@
 
  // Table formats converted to strings
 const char* gPvPAreaFormat = "ush";
-const char* gFishingFormat = "uuu";
 const char* gWorldMapInfoFormat = "uuuuuufffusuuuuuuuufu";
 const char* gPointOfInterestFormat = "uffuuus";
 const char* gZoneGuardsFormat = "uuu";
@@ -36,7 +35,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >            FishingZoneStorage;
 SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >                                WorldMapInfoStorage;
 SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                ZoneGuardStorage;
 SERVER_DECL SQLStorage<UnitModelSizeEntry, HashMapStorageContainer<UnitModelSizeEntry> >        UnitModelSizeStorage;
@@ -255,7 +253,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void Storage_FillTaskList(TaskList & tl)
 {
-    make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
     make_task(WorldMapInfoStorage, MapInfo, ArrayStorageContainer, "worldmap_info", gWorldMapInfoFormat);
     make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
     make_task(UnitModelSizeStorage, UnitModelSizeEntry, HashMapStorageContainer, "unit_display_sizes", gUnitModelSizeFormat);
@@ -269,7 +266,6 @@ void Storage_FillTaskList(TaskList & tl)
 
 void Storage_Cleanup()
 {
-    FishingZoneStorage.Cleanup();
     WorldMapInfoStorage.Cleanup();
     ZoneGuardStorage.Cleanup();
     UnitModelSizeStorage.Cleanup();
@@ -317,8 +313,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     //    QuestStorage.LoadAdditionalData(SecondName, gQuestFormat);
     //else if (!stricmp(TableName, "npc_text"))            // NPC Text Storage
     //    NpcTextStorage.LoadAdditionalData(SecondName, gNpcTextFormat);
-    else if (!stricmp(TableName, "fishing"))                // Fishing Zones
-        FishingZoneStorage.LoadAdditionalData(SecondName, gFishingFormat);
+    //else if (!stricmp(TableName, "fishing"))                // Fishing Zones
+    //    FishingZoneStorage.LoadAdditionalData(SecondName, gFishingFormat);
     //else if (!stricmp(TableName, "teleport_coords"))        // Teleport coords
     //    TeleportCoordStorage.LoadAdditionalData(SecondName, gTeleportCoordFormat);
     //else if (!stricmp(TableName, "graveyards"))            // Graveyards

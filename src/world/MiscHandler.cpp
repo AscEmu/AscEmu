@@ -1620,7 +1620,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             bool success = fn->UseNode();
 
             uint32 zone = 0;
-            FishingZoneEntry* entry = nullptr;
+            FishingZoneEntry const* entry = nullptr;
 
             if (success)
             {
@@ -1629,7 +1629,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 if (zone == 0)                  // If the player's area ID is 0, use the zone ID instead
                     zone = plyr->GetZoneId();
 
-                entry = FishingZoneStorage.LookupEntry(zone);
+                entry = sMySQLStore.GetFishingZone(zone);
                 if (entry == nullptr)
                 {
                     sLog.outError("ERROR: Fishing zone information for zone %d not found!", zone);

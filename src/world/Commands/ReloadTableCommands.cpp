@@ -48,7 +48,7 @@ bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    FishingZoneStorage.Reload();
+    sMySQLStore.LoadFishingTable();
     GreenSystemMessage(m_session, "WorldDB 'fishing' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
