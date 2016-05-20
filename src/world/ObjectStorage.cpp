@@ -30,7 +30,6 @@ const char* gWorldMapInfoFormat = "uuuuuufffusuuuuuuuufu";
 const char* gPointOfInterestFormat = "uffuuus";
 const char* gZoneGuardsFormat = "uuu";
 const char* gUnitModelSizeFormat = "ufu";
-const char* gCreatureTextFormat = "usuuuuuuuuu";
 const char* gGossipMenuOptionFormat = "us";
 const char* gWorldStringTableFormat = "us";
 const char* gWorldBroadCastFormat = "usu";
@@ -46,7 +45,6 @@ SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntr
 SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >                                WorldMapInfoStorage;
 SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                ZoneGuardStorage;
 SERVER_DECL SQLStorage<UnitModelSizeEntry, HashMapStorageContainer<UnitModelSizeEntry> >        UnitModelSizeStorage;
-SERVER_DECL SQLStorage<CreatureText, HashMapStorageContainer<CreatureText> >                    CreatureTextStorage;
 SERVER_DECL SQLStorage<GossipMenuOption, HashMapStorageContainer<GossipMenuOption> >            GossipMenuOptionStorage;
 SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >            WorldStringTableStorage;
 SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                WorldBroadCastStorage;
@@ -269,7 +267,6 @@ void Storage_FillTaskList(TaskList & tl)
     make_task(WorldMapInfoStorage, MapInfo, ArrayStorageContainer, "worldmap_info", gWorldMapInfoFormat);
     make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
     make_task(UnitModelSizeStorage, UnitModelSizeEntry, HashMapStorageContainer, "unit_display_sizes", gUnitModelSizeFormat);
-    make_task(CreatureTextStorage, CreatureText, HashMapStorageContainer, "npc_script_text", gCreatureTextFormat);
     make_task(GossipMenuOptionStorage, GossipMenuOption, HashMapStorageContainer, "gossip_menu_option", gGossipMenuOptionFormat);
     make_task(WorldStringTableStorage, WorldStringTable, HashMapStorageContainer, "worldstring_tables", gWorldStringTableFormat);
     make_task(WorldBroadCastStorage, WorldBroadCast, HashMapStorageContainer, "worldbroadcast", gWorldBroadCastFormat);
@@ -287,7 +284,6 @@ void Storage_Cleanup()
     WorldMapInfoStorage.Cleanup();
     ZoneGuardStorage.Cleanup();
     UnitModelSizeStorage.Cleanup();
-    CreatureTextStorage.Cleanup();
     GossipMenuOptionStorage.Cleanup();
     WorldStringTableStorage.Cleanup();
     WorldBroadCastStorage.Cleanup();
@@ -321,8 +317,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     //    AreaTriggerStorage.LoadAdditionalData(SecondName, gAreaTriggerFormat);
     //else if (!stricmp(TableName, "itempages"))            // Item Pages
     //    ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPageFormat);
-    else if (!stricmp(TableName, "npc_script_text"))            // ONLY for scripted text
-        CreatureTextStorage.LoadAdditionalData(SecondName, gCreatureTextFormat);
+    //else if (!stricmp(TableName, "npc_script_text"))            // ONLY for scripted text
+    //    CreatureTextStorage.LoadAdditionalData(SecondName, gCreatureTextFormat);
     else if (!stricmp(TableName, "gossip_menu_option"))            // Gossip Menu Option
         GossipMenuOptionStorage.LoadAdditionalData(SecondName, gGossipMenuOptionFormat);
     else if (!stricmp(TableName, "worldstring_tables"))            // WorldString

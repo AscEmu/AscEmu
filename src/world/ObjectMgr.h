@@ -141,10 +141,10 @@ struct WorldStringTable
     char* text;
 };
 
-struct CreatureText
+struct NpcScriptText
 {
     uint32 id;                  // unique id \todo remove this and use creature_entry + text_id as key
-    char* text;                 
+    std::string text;                 
     uint32 creature_entry;      // creature entry ID
     uint32 text_id;             // text_id started with 0
     ChatMsg type;

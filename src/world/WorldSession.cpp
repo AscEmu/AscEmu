@@ -1155,7 +1155,7 @@ char szError[64];
 // These strings can be found in npc_script_text tables in the database
 const char* WorldSession::LocalizedCreatureTexts(uint32 id)
 {
-    CreatureText* wst = CreatureTextStorage.LookupEntry(id);
+    NpcScriptText const* wst = sMySQLStore.GetNpcScriptText(id);
     if (!wst)
     {
         memset(szError, 0, 64);
@@ -1167,7 +1167,7 @@ const char* WorldSession::LocalizedCreatureTexts(uint32 id)
     if (lpi)
         return lpi->Text;
     else
-        return wst->text;
+        return wst->text.c_str();
 }
 
 

@@ -2551,11 +2551,11 @@ void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 
 // 4. Sending localizations if available... puh
 void Creature::SendScriptTextChatMessage(uint32 textid)
 {
-    CreatureText* ct = CreatureTextStorage.LookupEntry(textid);
+    NpcScriptText const* ct = sMySQLStore.GetNpcScriptText(textid);
 
     const char* name = GetCreatureInfo()->Name.c_str();
     size_t CreatureNameLength = strlen((char*)name) + 1;
-    size_t MessageLength = strlen((char*)ct->text) + 1;
+    size_t MessageLength = strlen((char*)ct->text.c_str()) + 1;
 
     if (ct->emote != 0)
         this->EventAddEmote(ct->emote, ct->duration);
@@ -2581,8 +2581,8 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
 
 void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
 {
-    CreatureText* ct = CreatureTextStorage.LookupEntry(textid);
-    const char* msg = ct->text;
+    NpcScriptText const* ct = sMySQLStore.GetNpcScriptText(textid);
+    const char* msg = ct->text.c_str();
     if (delay)
     {
         sEventMgr.AddEvent(this, &Creature::SendChatMessage, uint8(ct->type), uint32(ct->language), msg, uint32(0), EVENT_UNIT_CHAT_MSG, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
@@ -2596,7 +2596,7 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
 
     const char* name = GetCreatureInfo()->Name.c_str();
     size_t CreatureNameLength = strlen((char*)name) + 1;
-    size_t MessageLength = strlen((char*)ct->text) + 1;
+    size_t MessageLength = strlen((char*)ct->text.c_str()) + 1;
 
     WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
     data << uint8(ct->type);            // f.e. CHAT_MSG_MONSTER_SAY enum ChatMsg (perfect name for this enum XD)

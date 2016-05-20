@@ -1327,3 +1327,58 @@ NpcText const* MySQLDataStore::GetNpcText(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadNpcScriptTextTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                  0      1           2       3     4       5          6         7       8        9         10
+    QueryResult* npc_script_text_result = WorldDatabase.Query("SELECT entry, text, creature_entry, id, type, language, probability, emote, duration, sound, broadcast_id FROM npc_script_text");
+
+    if (npc_script_text_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `npc_script_text` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `npc_script_text` has %u columns", npc_script_text_result->GetFieldCount());
+
+    _npcScriptTextStore.rehash(npc_script_text_result->GetRowCount());
+
+    uint32 npc_script_text_count = 0;
+    do
+    {
+        Field* fields = npc_script_text_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        NpcScriptText& npcScriptText = _npcScriptTextStore[entry];
+
+        npcScriptText.id = entry;
+        npcScriptText.text = fields[1].GetString();
+        npcScriptText.creature_entry = fields[2].GetUInt32();
+        npcScriptText.text_id = fields[3].GetUInt32();
+        npcScriptText.type = ChatMsg(fields[4].GetUInt32());
+        npcScriptText.language = Languages(fields[5].GetUInt32());
+        npcScriptText.probability = fields[6].GetFloat();
+        npcScriptText.emote = EmoteType(fields[7].GetUInt32());
+        npcScriptText.duration = fields[8].GetUInt32();
+        npcScriptText.sound = fields[9].GetUInt32();
+        npcScriptText.broadcast_id = fields[10].GetUInt32();
+
+        ++npc_script_text_count;
+    } while (npc_script_text_result->NextRow());
+
+    delete npc_script_text_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `npc_script_text` table in %u ms!", npc_script_text_count, getMSTime() - start_time);
+}
+
+NpcScriptText const* MySQLDataStore::GetNpcScriptText(uint32 entry)
+{
+    NpcScriptTextContainer::const_iterator itr = _npcScriptTextStore.find(entry);
+    if (itr != _npcScriptTextStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
