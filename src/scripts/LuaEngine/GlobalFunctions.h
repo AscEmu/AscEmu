@@ -227,8 +227,8 @@ namespace luaGlobalFunctions
                 GameObjectNameStorage.Reload();*/
             if (!stricmp(TableName, "areatriggers"))		// Areatriggers
                 AreaTriggerStorage.Reload();
-            else if (!stricmp(TableName, "itempages"))			// Item Pages
-                ItemPageStorage.Reload();
+            //else if (!stricmp(TableName, "itempages"))			// Item Pages
+            //    ItemPageStorage.Reload();
             else if (!stricmp(TableName, "worldstring_tables"))			// wst
                 WorldStringTableStorage.Reload();
             else if (!stricmp(TableName, "worldbroadcast"))			// wb

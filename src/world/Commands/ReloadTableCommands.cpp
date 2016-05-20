@@ -85,7 +85,7 @@ bool ChatHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m
 bool ChatHandler::HandleReloadItempagesCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    ItemPageStorage.Reload();
+    sMySQLStore.LoadItemPagesTable();
     GreenSystemMessage(m_session, "WorldDB 'itempages' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

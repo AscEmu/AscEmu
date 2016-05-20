@@ -125,7 +125,7 @@ struct ProfessionDiscovery
 struct ItemPage
 {
     uint32 id;
-    char* text;
+    std::string text;
     uint32 next_page;
 };
 
@@ -714,7 +714,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         Trainer* GetTrainer(uint32 Entry);
 
         void LoadExtraCreatureProtoStuff();
-        void LoadExtraGameObjectStuff();
+
         void LoadProfessionDiscoveries();
 
         void StoreBroadCastGroupKey();

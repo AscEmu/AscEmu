@@ -474,6 +474,7 @@ bool World::SetInitialWorldSettings()
     //Load tables
     new MySQLDataStore;
 
+    sMySQLStore.LoadItemPagesTable();
     sMySQLStore.LoadItemsTable();
     sMySQLStore.LoadCreatureNamesTable();
     sMySQLStore.LoadCreatureProtoTable();
@@ -518,8 +519,6 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadMonsterSay);
     MAKE_TASK(ObjectMgr, LoadGroups);
     MAKE_TASK(ObjectMgr, LoadExtraCreatureProtoStuff);
-    //MAKE_TASK(ObjectMgr, LoadExtraItemStuff);
-    MAKE_TASK(ObjectMgr, LoadExtraGameObjectStuff);
     MAKE_TASK(ObjectMgr, LoadArenaTeams);
     MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
     MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey);

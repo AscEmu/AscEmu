@@ -25,7 +25,6 @@
 const char* gDisplayBoundingFormat = "ufffffff";
 const char* gVendorRestrictionEntryFormat = "uuuuuuuu";
 const char* gAreaTriggerFormat = "ucuusffffuu";
-const char* gItemPageFormat = "usu";
 const char* gNpcTextFormat = "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
 const char* gGraveyardFormat = "uffffuuuux";
 const char* gTeleportCoordFormat = "uxufffx";
@@ -48,7 +47,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >              DisplayBoundingStorage;
 SERVER_DECL SQLStorage<VendorRestrictionEntry, ArrayStorageContainer<VendorRestrictionEntry> >  VendorRestrictionEntryStorage;
 SERVER_DECL SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >                      AreaTriggerStorage;
-SERVER_DECL SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >                            ItemPageStorage;
 SERVER_DECL SQLStorage<GossipText, HashMapStorageContainer<GossipText> >                        NpcTextStorage;
 SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >          GraveyardStorage;
 SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >                TeleportCoordStorage;
@@ -267,20 +265,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
     }
 }
 
-void ObjectMgr::LoadExtraGameObjectStuff()
-{
-    /*StorageContainerIterator<GameObjectInfo> * itr = GameObjectNameStorage.MakeIterator();
-    GameObjectInfo* gameobject_info;
-    while (!itr->AtEnd())
-    {
-        gameobject_info = itr->Get();
-
-        if (!itr->Inc())
-            break;
-    }
-    itr->Destruct();*/
-}
-
 #define make_task(storage, itype, storagetype, tablename, format) tl.AddTask(new Task(\
     new CallbackP2< SQLStorage< itype, storagetype< itype > >, const char *, const char *> \
     (&storage, &SQLStorage< itype, storagetype< itype > >::Load, tablename, format)))
@@ -290,7 +274,6 @@ void Storage_FillTaskList(TaskList & tl)
     make_task(DisplayBoundingStorage, DisplayBounding, HashMapStorageContainer, "display_bounding_boxes", gDisplayBoundingFormat);
     make_task(VendorRestrictionEntryStorage, VendorRestrictionEntry, ArrayStorageContainer, "vendor_restrictions", gVendorRestrictionEntryFormat);
     make_task(AreaTriggerStorage, AreaTrigger, HashMapStorageContainer, "areatriggers", gAreaTriggerFormat);
-    make_task(ItemPageStorage, ItemPage, HashMapStorageContainer, "itempages", gItemPageFormat);
     make_task(GraveyardStorage, GraveyardTeleport, HashMapStorageContainer, "graveyards", gGraveyardFormat);
     make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
     make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
@@ -312,7 +295,6 @@ void Storage_Cleanup()
 {
     VendorRestrictionEntryStorage.Cleanup();
     AreaTriggerStorage.Cleanup();
-    ItemPageStorage.Cleanup();
     GraveyardStorage.Cleanup();
     TeleportCoordStorage.Cleanup();
     FishingZoneStorage.Cleanup();

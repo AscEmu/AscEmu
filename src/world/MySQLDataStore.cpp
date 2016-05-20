@@ -10,6 +10,52 @@ initialiseSingleton(MySQLDataStore);
 MySQLDataStore::MySQLDataStore() {}
 MySQLDataStore::~MySQLDataStore() {}
 
+void MySQLDataStore::LoadItemPagesTable()
+{
+    uint32 start_time = getMSTime();
+
+    QueryResult* itempages_result = WorldDatabase.Query("SELECT entry, text, next_page FROM itempages");
+    if (itempages_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `itempages` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `itempages` has %u columns", itempages_result->GetFieldCount());
+
+    _itemPagesStore.rehash(itempages_result->GetRowCount());
+
+    uint32 itempages_count = 0;
+    do
+    {
+        Field* fields = itempages_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        ItemPage& itemPage = _itemPagesStore[entry];
+
+        itemPage.id = entry;
+        itemPage.text = fields[1].GetString();
+        itemPage.next_page = fields[2].GetUInt32();
+
+
+        ++itempages_count;
+    } while (itempages_result->NextRow());
+
+    delete itempages_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u pages from `itempages` table in %u ms!", itempages_count, getMSTime() - start_time);
+}
+
+ItemPage const* MySQLDataStore::GetItemPage(uint32 entry)
+{
+    ItemPageContainer::const_iterator itr = _itemPagesStore.find(entry);
+    if (itr != _itemPagesStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
 void MySQLDataStore::LoadItemsTable()
 {
     uint32 start_time = getMSTime();
@@ -138,7 +184,25 @@ void MySQLDataStore::LoadItemsTable()
 
         itemProto.Bonding = fields[95].GetUInt32();
         itemProto.Description = fields[96].GetString();
-        itemProto.PageId = fields[97].GetUInt32();
+        uint32 page_id = fields[97].GetUInt32();
+        if (page_id != 0)
+        {
+            ItemPage const* item_page = GetItemPage(page_id);
+            if (item_page == nullptr)
+            {
+                Log.Error("MySQLDataLoads", "Table `items` entry: %u includes invalid pageId %u! pageId is set to 0.", entry, page_id);
+                itemProto.PageId = 0;
+            }
+            else
+            {
+                itemProto.PageId = page_id;
+            }
+        }
+        else
+        {
+            itemProto.PageId = page_id;
+        }
+
         itemProto.PageLanguage = fields[98].GetUInt32();
         itemProto.PageMaterial = fields[99].GetUInt32();
         itemProto.QuestId = fields[100].GetUInt32();

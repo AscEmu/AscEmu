@@ -16,6 +16,7 @@ public:
     ~MySQLDataStore();
 
     //maps
+    typedef std::unordered_map<uint32, ItemPage> ItemPageContainer;
     typedef std::unordered_map<uint32, ItemPrototype> ItemPrototypeContainer;
     typedef std::unordered_map<uint32, CreatureInfo> CreatureInfoContainer;
     typedef std::unordered_map<uint32, CreatureProto> CreatureProtoContainer;
@@ -23,6 +24,8 @@ public:
     typedef std::unordered_map<uint32, Quest> QuestContainer;
 
     //helper
+    ItemPage const* GetItemPage(uint32 entry);
+    ItemPageContainer const* GetItemPagesStore() { return &_itemPagesStore; }
     ItemPrototype const* GetItemProto(uint32 entry);
     ItemPrototypeContainer const* GetItemPrototypeStore() { return &_itemPrototypeStore; }
 
@@ -38,6 +41,7 @@ public:
     QuestContainer const* GetQuestStore() { return &_questStore; }
 
     //Loads
+    void LoadItemPagesTable();
     void LoadItemsTable();
     void LoadCreatureNamesTable();
     void LoadCreatureProtoTable();
@@ -48,6 +52,7 @@ public:
     void LoadGameObjectQuestPickupBindingTable();
 
 
+    ItemPageContainer _itemPagesStore;
     ItemPrototypeContainer _itemPrototypeStore;
     CreatureInfoContainer _creatureNamesStore;
     CreatureProtoContainer _creatureProtoStore;

@@ -292,7 +292,7 @@ void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
 
     while (pageid)
     {
-        ItemPage* page = ItemPageStorage.LookupEntry(pageid);
+        ItemPage const* page = sMySQLStore.GetItemPage(pageid);
         if (!page)
             return;
 
