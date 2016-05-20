@@ -19,11 +19,13 @@ public:
     typedef std::unordered_map<uint32, ItemPrototype> ItemPrototypeContainer;
     typedef std::unordered_map<uint32, CreatureInfo> CreatureInfoContainer;
     typedef std::unordered_map<uint32, CreatureProto> CreatureProtoContainer;
+    typedef std::unordered_map<uint32, GameObjectInfo> GameObjectNamesContainer;
 
     //Loads
     void LoadItemsTable();
     void LoadCreatureNamesTable();
     void LoadCreatureProtoTable();
+    void LoadGameObjectNamesTable();
 
     //helper
     ItemPrototype const* GetItemProto(uint32 entry);
@@ -34,9 +36,13 @@ public:
     CreatureProto const* GetCreatureProto(uint32 entry);
     CreatureProtoContainer const* GetCreatureProtoStore() { return &_creatureProtoStore; }
 
+    GameObjectInfo const* GetGameObjectInfo(uint32 entry);
+    GameObjectNamesContainer const* GetGameObjectNamesStore() { return &_gameobjectNamesStore; }
+
     ItemPrototypeContainer _itemPrototypeStore;
     CreatureInfoContainer _creatureNamesStore;
     CreatureProtoContainer _creatureProtoStore;
+    GameObjectNamesContainer _gameobjectNamesStore;
 
 };
 

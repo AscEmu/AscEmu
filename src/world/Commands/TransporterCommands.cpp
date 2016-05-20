@@ -28,11 +28,11 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
         return true;
     }
 
-    auto gameobject_info = GameObjectNameStorage.LookupEntry(transporter->GetEntry());
+    auto gameobject_info = sMySQLStore.GetGameObjectInfo(transporter->GetEntry());
     if (gameobject_info != nullptr)
     {
         SystemMessage(m_session, "Entry: %u", gameobject_info->entry);
-        SystemMessage(m_session, "Name: %s", gameobject_info->name);
+        SystemMessage(m_session, "Name: %s", gameobject_info->name.c_str());
         SystemMessage(m_session, "Path: %u", gameobject_info->mo_transport.taxi_path_id);
         SystemMessage(m_session, "Time on Path: %u", transporter->m_timer);
         SystemMessage(m_session, "Period: %u", transporter->GetPeriod());
@@ -52,7 +52,7 @@ bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_sessi
 
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transporter_info.guid));
         transport->SetPeriod(time);
-        BlueSystemMessage(m_session, "Period of %s set to %u.", transport->GetInfo()->name, time);
+        BlueSystemMessage(m_session, "Period of %s set to %u.", transport->GetInfo()->name.c_str(), time);
     }
     catch (AscEmu::Exception::AscemuException e)
     {

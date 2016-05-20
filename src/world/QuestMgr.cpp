@@ -2044,7 +2044,7 @@ void QuestMgr::LoadExtraQuestStuff()
             {
                 if (qst->required_mob[i] < 0)
                 {
-                    auto gameobject_info = GameObjectNameStorage.LookupEntry(qst->required_mob[i] * -1);
+                    auto gameobject_info = sMySQLStore.GetGameObjectInfo(qst->required_mob[i] * -1);
                     if (gameobject_info)
                     {
                         qst->required_mobtype[i] = QUEST_MOB_TYPE_GAMEOBJECT;

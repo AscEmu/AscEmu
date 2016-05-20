@@ -152,7 +152,7 @@ bool ChatHandler::HandleGOSelectGuidCommand(const char* args, WorldSession* m_se
     }
 
     m_session->GetPlayer()->m_GM_SelectedGO = gameobject->GetGUID();
-    GreenSystemMessage(m_session, "GameObject [ %s ] with distance %.3f to your position selected.", gameobject->GetInfo()->name, m_session->GetPlayer()->CalcDistance(gameobject));
+    GreenSystemMessage(m_session, "GameObject [ %s ] with distance %.3f to your position selected.", gameobject->GetInfo()->name.c_str(), m_session->GetPlayer()->CalcDistance(gameobject));
     return true;
 }
 
@@ -192,7 +192,7 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
         return true;
     }
 
-    auto gameobject_info = GameObjectNameStorage.LookupEntry(go_entry);
+    auto gameobject_info = sMySQLStore.GetGameObjectInfo(go_entry);
     if (gameobject_info == nullptr)
     {
         RedSystemMessage(m_session, "GameObject entry %u is a invalid entry!", go_entry);
@@ -249,7 +249,7 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
     {
         GreenSystemMessage(m_session, "Spawning GameObject by entry '%u'. Added to gameobject_spawns table.", go_spawn->id);
         gameobject->SaveToDB();
-        sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", GameObjectNameStorage.LookupEntry(go_spawn->entry)->name, go_spawn->entry, player->GetMapId(), go_spawn->position_x, go_spawn->position_y, go_spawn->position_z, save == 1 ? ", saved in DB" : "");
+        sGMLog.writefromsession(m_session, "spawned gameobject %s, entry %u at %u %f %f %f%s", sMySQLStore.GetGameObjectInfo(go_spawn->entry)->name.c_str(), go_spawn->entry, player->GetMapId(), go_spawn->position_x, go_spawn->position_y, go_spawn->position_z, save == 1 ? ", saved in DB" : "");
     }
     else
     {

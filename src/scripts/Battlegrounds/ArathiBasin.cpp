@@ -155,7 +155,7 @@ static uint32 resourcesToGainBR = 160;
 void ArathiBasin::SpawnBuff(uint32 x)
 {
     uint32 chosen_buffid = buffentries[RandomUInt(2)];
-    auto gameobject_info = GameObjectNameStorage.LookupEntry(chosen_buffid);
+    auto gameobject_info = sMySQLStore.GetGameObjectInfo(chosen_buffid);
     if (gameobject_info == nullptr)
         return;
 
@@ -190,11 +190,11 @@ void ArathiBasin::SpawnBuff(uint32 x)
 
 void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 {
-    auto gameobject_info = GameObjectNameStorage.LookupEntry(ControlPointGoIds[Id][Type]);
+    auto gameobject_info = sMySQLStore.GetGameObjectInfo(ControlPointGoIds[Id][Type]);
     if (gameobject_info == nullptr)
         return;
 
-    auto gi_aura = gameobject_info->raw.parameter_3 ? GameObjectNameStorage.LookupEntry(gameobject_info->raw.parameter_3) : nullptr;
+    auto gi_aura = gameobject_info->raw.parameter_3 ? sMySQLStore.GetGameObjectInfo(gameobject_info->raw.parameter_3) : nullptr;
 
     if (m_controlPoints[Id] == nullptr)
     {

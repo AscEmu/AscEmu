@@ -24,8 +24,6 @@
 #include "Storage.h"
 #include "ObjectMgr.h"
 
-extern SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                 GameObjectNameStorage;
-
 extern SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >               DisplayBoundingStorage;
 extern SERVER_DECL SQLStorage<VendorRestrictionEntry, ArrayStorageContainer<VendorRestrictionEntry> >   VendorRestrictionEntryStorage;
 extern SERVER_DECL SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >                       AreaTriggerStorage;

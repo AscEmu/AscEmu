@@ -3592,7 +3592,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
 
     uint32 entry = GetProto()->EffectMiscValue[i];
 
-    GameObjectInfo* info = GameObjectNameStorage.LookupEntry(entry);
+    GameObjectInfo const* info = sMySQLStore.GetGameObjectInfo(entry);
     if (info == nullptr)
     {
         sLog.outError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name, i, entry);

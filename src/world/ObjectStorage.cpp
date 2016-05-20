@@ -22,7 +22,6 @@
 #include "StdAfx.h"
 
  // Table formats converted to strings
-const char* gGameObjectNameFormat = "uuussssuuuuuuuuuuuuuuuuuuuuuuuufuuuuuu";
 const char* gDisplayBoundingFormat = "ufffffff";
 const char* gVendorRestrictionEntryFormat = "uuuuuuuu";
 const char* gAreaTriggerFormat = "ucuusffffuu";
@@ -47,7 +46,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<GameObjectInfo, HashMapStorageContainer<GameObjectInfo> >                GameObjectNameStorage;
 SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >              DisplayBoundingStorage;
 SERVER_DECL SQLStorage<VendorRestrictionEntry, ArrayStorageContainer<VendorRestrictionEntry> >  VendorRestrictionEntryStorage;
 SERVER_DECL SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >                      AreaTriggerStorage;
@@ -273,7 +271,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void ObjectMgr::LoadExtraGameObjectStuff()
 {
-    StorageContainerIterator<GameObjectInfo> * itr = GameObjectNameStorage.MakeIterator();
+    /*StorageContainerIterator<GameObjectInfo> * itr = GameObjectNameStorage.MakeIterator();
     GameObjectInfo* gameobject_info;
     while (!itr->AtEnd())
     {
@@ -282,7 +280,7 @@ void ObjectMgr::LoadExtraGameObjectStuff()
         if (!itr->Inc())
             break;
     }
-    itr->Destruct();
+    itr->Destruct();*/
 }
 
 #define make_task(storage, itype, storagetype, tablename, format) tl.AddTask(new Task(\
@@ -291,7 +289,6 @@ void ObjectMgr::LoadExtraGameObjectStuff()
 
 void Storage_FillTaskList(TaskList & tl)
 {
-    make_task(GameObjectNameStorage, GameObjectInfo, HashMapStorageContainer, "gameobject_names", gGameObjectNameFormat);
     make_task(DisplayBoundingStorage, DisplayBounding, HashMapStorageContainer, "display_bounding_boxes", gDisplayBoundingFormat);
     make_task(VendorRestrictionEntryStorage, VendorRestrictionEntry, ArrayStorageContainer, "vendor_restrictions", gVendorRestrictionEntryFormat);
     make_task(AreaTriggerStorage, AreaTrigger, HashMapStorageContainer, "areatriggers", gAreaTriggerFormat);
@@ -316,7 +313,6 @@ void Storage_FillTaskList(TaskList & tl)
 
 void Storage_Cleanup()
 {
-    GameObjectNameStorage.Cleanup();
     VendorRestrictionEntryStorage.Cleanup();
     AreaTriggerStorage.Cleanup();
     ItemPageStorage.Cleanup();
@@ -356,8 +352,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     //    CreatureProtoStorage.LoadAdditionalData(SecondName, gCreatureProtoFormat);
     //else if (firstLoad && !stricmp(TableName, "creature_names"))        // Creature Names
     //    CreatureNameStorage.LoadAdditionalData(SecondName, gCreatureNameFormat);
-    else if (firstLoad && !stricmp(TableName, "gameobject_names"))    // GO Names
-        GameObjectNameStorage.LoadAdditionalData(SecondName, gGameObjectNameFormat);
+    //else if (firstLoad && !stricmp(TableName, "gameobject_names"))    // GO Names
+    //    GameObjectNameStorage.LoadAdditionalData(SecondName, gGameObjectNameFormat);
     else if (!stricmp(TableName, "areatriggers"))        // Areatriggers
         AreaTriggerStorage.LoadAdditionalData(SecondName, gAreaTriggerFormat);
     //else if (!stricmp(TableName, "itempages"))            // Item Pages

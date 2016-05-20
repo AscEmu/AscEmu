@@ -617,7 +617,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
         {
             GameObject* go = static_cast<GameObject*>(this);
             QuestLogEntry* qle;
-            GameObjectInfo* gameobject_info;
+            GameObjectInfo const* gameobject_info;
             GameObject_QuestGiver* go_quest_giver = nullptr;
             if (go->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
                 go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
@@ -649,7 +649,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                 gameobject_info = go->GetInfo();
                 if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
                 {
-                    for (GameObjectGOMap::iterator itr = go->GetInfo()->goMap.begin(); itr != go->GetInfo()->goMap.end(); ++itr)
+                    for (GameObjectGOMap::const_iterator itr = gameobject_info->goMap.begin(); itr != gameobject_info->goMap.end(); ++itr)
                     {
                         qle = target->GetQuestLogForEntry(itr->first->id);
                         if (qle != NULL)
@@ -671,11 +671,11 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
 
                     if (!activate_quest_object)
                     {
-                        for (GameObjectItemMap::iterator itr = go->GetInfo()->itemMap.begin();
+                        for (GameObjectItemMap::const_iterator itr = gameobject_info->itemMap.begin();
                              itr != go->GetInfo()->itemMap.end();
                              ++itr)
                         {
-                            for (std::map<uint32, uint32>::iterator it2 = itr->second.begin();
+                            for (std::map<uint32, uint32>::const_iterator it2 = itr->second.begin();
                                  it2 != itr->second.end();
                                  ++it2)
                             {

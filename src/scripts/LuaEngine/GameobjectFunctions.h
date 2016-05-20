@@ -191,7 +191,7 @@ class LuaGameObject
             TEST_GO()
             if (!ptr->GetInfo())
                 return 0;
-            lua_pushstring(L, ptr->GetInfo()->name);
+            lua_pushstring(L, ptr->GetInfo()->name.c_str());
             return 1;
         }
 

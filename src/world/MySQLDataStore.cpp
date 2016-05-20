@@ -604,3 +604,93 @@ CreatureProto const* MySQLDataStore::GetCreatureProto(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadGameObjectNamesTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                  0       1        2        3         4              5          6          7            8             9
+    QueryResult* gameobject_names_result = WorldDatabase.Query("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
+    //                                                                10           11          12           13           14            15           16           17           18
+                                                                "parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10, parameter_11, "
+    //                                                                19            20            21            22           23            24            25            26
+                                                                "parameter_12, parameter_13, parameter_14, parameter_15, parameter_16, parameter_17, parameter_18, parameter_19, "
+    //                                                                27            28            29            30        31        32          33          34         35
+                                                                "parameter_20, parameter_21, parameter_22, parameter_23, size, QuestItem1, QuestItem2, QuestItem3, QuestItem4, "
+    //                                                                36          37 
+                                                                "QuestItem5, QuestItem6 FROM gameobject_names");
+
+    if (gameobject_names_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `creature_proto` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `creature_proto` has %u columns", gameobject_names_result->GetFieldCount());
+
+    _creatureNamesStore.rehash(gameobject_names_result->GetRowCount());
+
+    uint32 gameobject_names_count = 0;
+    do
+    {
+        Field* fields = gameobject_names_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        GameObjectInfo& gameobjecInfo = _gameobjectNamesStore[entry];
+
+        gameobjecInfo.entry = entry;
+        gameobjecInfo.type = fields[1].GetUInt32();
+        gameobjecInfo.display_id = fields[2].GetUInt32();
+        gameobjecInfo.name = fields[3].GetString();
+        gameobjecInfo.category_name = fields[4].GetString();
+        gameobjecInfo.cast_bar_text = fields[5].GetString();
+        gameobjecInfo.Unkstr = fields[6].GetString();
+
+        gameobjecInfo.raw.parameter_0 = fields[7].GetUInt32();
+        gameobjecInfo.raw.parameter_1 = fields[8].GetUInt32();
+        gameobjecInfo.raw.parameter_2 = fields[9].GetUInt32();
+        gameobjecInfo.raw.parameter_3 = fields[10].GetUInt32();
+        gameobjecInfo.raw.parameter_4 = fields[11].GetUInt32();
+        gameobjecInfo.raw.parameter_5 = fields[12].GetUInt32();
+        gameobjecInfo.raw.parameter_6 = fields[13].GetUInt32();
+        gameobjecInfo.raw.parameter_7 = fields[14].GetUInt32();
+        gameobjecInfo.raw.parameter_8 = fields[15].GetUInt32();
+        gameobjecInfo.raw.parameter_9 = fields[16].GetUInt32();
+        gameobjecInfo.raw.parameter_10 = fields[17].GetUInt32();
+        gameobjecInfo.raw.parameter_11 = fields[18].GetUInt32();
+        gameobjecInfo.raw.parameter_12 = fields[19].GetUInt32();
+        gameobjecInfo.raw.parameter_13 = fields[20].GetUInt32();
+        gameobjecInfo.raw.parameter_14 = fields[21].GetUInt32();
+        gameobjecInfo.raw.parameter_15 = fields[22].GetUInt32();
+        gameobjecInfo.raw.parameter_16 = fields[23].GetUInt32();
+        gameobjecInfo.raw.parameter_17 = fields[24].GetUInt32();
+        gameobjecInfo.raw.parameter_18 = fields[25].GetUInt32();
+        gameobjecInfo.raw.parameter_19 = fields[26].GetUInt32();
+        gameobjecInfo.raw.parameter_20 = fields[27].GetUInt32();
+        gameobjecInfo.raw.parameter_21 = fields[28].GetUInt32();
+        gameobjecInfo.raw.parameter_22 = fields[29].GetUInt32();
+        gameobjecInfo.raw.parameter_23 = fields[30].GetUInt32();
+
+        gameobjecInfo.size = fields[31].GetFloat();
+
+        for (uint8 i = 0; i < 6; ++i)
+            gameobjecInfo.QuestItems[i] = fields[32 + i].GetUInt32();
+
+
+        ++gameobject_names_count;
+    } while (gameobject_names_result->NextRow());
+
+    delete gameobject_names_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u gameobject data from `gameobject_names` table in %u ms!", gameobject_names_count, getMSTime() - start_time);
+}
+
+GameObjectInfo const* MySQLDataStore::GetGameObjectInfo(uint32 entry)
+{
+    GameObjectNamesContainer::const_iterator itr = _gameobjectNamesStore.find(entry);
+    if (itr != _gameobjectNamesStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

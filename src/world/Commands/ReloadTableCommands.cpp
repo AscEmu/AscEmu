@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    GameObjectNameStorage.Reload();
+    sMySQLStore.LoadGameObjectNamesTable();
     GreenSystemMessage(m_session, "WorldDB table 'gameobject_names' reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

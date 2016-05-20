@@ -1696,7 +1696,7 @@ void Creature::OnPushToWorld()
 #ifdef _DEBUG
         ARCEMU_ASSERT(false);
 #else
-        SetCreatureProto(CreatureProtoStorage.LookupEntry(GetEntry()));
+        SetCreatureProto(sMySQLData.GetCreatureProto(GetEntry()));
 #endif
     }
     if (creature_info == NULL)

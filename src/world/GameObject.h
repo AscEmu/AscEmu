@@ -73,10 +73,10 @@ struct GameObjectInfo
     uint32 entry;
     uint32 type;
     uint32 display_id;
-    const char* name;
-    char* category_name;
-    char* cast_bar_text;
-    char* Unkstr;
+    std::string name;
+    std::string category_name;
+    std::string cast_bar_text;
+    std::string Unkstr;
 
     // different data fields for GO-types
     /// \todo add different structure for go types.
@@ -383,8 +383,8 @@ class SERVER_DECL GameObject : public Object
 
         GameEvent* mEvent = nullptr;
 
-        GameObjectInfo* GetInfo() { return pInfo; }
-        void SetInfo(GameObjectInfo* goi) { pInfo = goi; }
+        GameObjectInfo const* GetInfo() { return pInfo; }
+        void SetInfo(GameObjectInfo const* goi) { pInfo = goi; }
 
         bool CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0 = 0.0f, float r1 = 0.0f, float r2 = 0.0f, float r3 = 0.0f, uint32 overrides = 0);
 
@@ -501,7 +501,7 @@ class SERVER_DECL GameObject : public Object
 
         bool m_summonedGo;
         bool m_deleted;
-        GameObjectInfo* pInfo;
+        GameObjectInfo const* pInfo;
         GameObjectAIScript* myScript;
         uint32 _fields[GAMEOBJECT_END];
 

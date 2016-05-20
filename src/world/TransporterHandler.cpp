@@ -51,7 +51,7 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
 
 Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period)
 {
-    auto gameobject_info = GameObjectNameStorage.LookupEntry(goEntry);
+    auto gameobject_info = sMySQLStore.GetGameObjectInfo(goEntry);
 
     if (!gameobject_info)
     {
@@ -61,7 +61,7 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
 
     if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
     {
-        Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names type wrong", goEntry, gameobject_info->name);
+        Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names type wrong", goEntry, gameobject_info->name.c_str());
         return NULL;
     }
 
@@ -133,7 +133,7 @@ void ObjectMgr::LoadTransports()
             std::string name = fields[1].GetString();
             uint32 period = fields[2].GetUInt32();
 
-            auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
+            auto gameobject_info = sMySQLStore.GetGameObjectInfo(entry);
 
             if (!gameobject_info)
             {
@@ -279,7 +279,7 @@ void Transporter::OnPushToWorld()
 
 bool Transporter::Create(uint32 entry, int32 Time)
 {
-    auto gameobject_info = GameObjectNameStorage.LookupEntry(entry);
+    auto gameobject_info = sMySQLStore.GetGameObjectInfo(entry);
     if (gameobject_info == nullptr)
     {
         Log.Error("Transporter::Create", "Failed to create Transporter with go entry %u. Invalid gameobject!", entry);

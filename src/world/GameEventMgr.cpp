@@ -252,7 +252,7 @@ void GameEventMgr::LoadFromDB()
                 dbResult.event_entry = field[0].GetUInt32();
                 dbResult.id = field[1].GetUInt32();
                 dbResult.entry = field[2].GetUInt32();
-                auto gameobject_info = GameObjectNameStorage.LookupEntry(dbResult.entry);
+                auto gameobject_info = sMySQLStore.GetGameObjectInfo(dbResult.entry);
                 if (gameobject_info == nullptr)
                 {
                     Log.Error("GameEventMgr", "Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_names)", dbResult.entry);

@@ -1184,10 +1184,11 @@ void ObjectMgr::ProcessGameobjectQuests()
         do
         {
             Field* fields = result->Fetch();
-            GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
+            GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(fields[0].GetUInt32());
             Quest* qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
+
             if (gameobject_info && qst)
-                gameobject_info->itemMap[qst].insert(std::make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
+                const_cast<GameObjectInfo*>(gameobject_info)->itemMap[qst].insert(std::make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
 
         }
         while (result->NextRow());
@@ -1199,10 +1200,10 @@ void ObjectMgr::ProcessGameobjectQuests()
         do
         {
             Field* fields = result2->Fetch();
-            GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(fields[0].GetUInt32());
+            GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(fields[0].GetUInt32());
             Quest* qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
             if (gameobject_info && qst)
-                gameobject_info->goMap.insert(std::make_pair(qst, fields[2].GetUInt32()));
+                const_cast<GameObjectInfo*>(gameobject_info)->goMap.insert(std::make_pair(qst, fields[2].GetUInt32()));
 
         }
         while (result2->NextRow());

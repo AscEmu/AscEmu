@@ -83,8 +83,8 @@ GameObject::~GameObject()
 
 bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32 overrides)
 {
-    pInfo = GameObjectNameStorage.LookupEntry(entry);
-    if (pInfo == NULL)
+    pInfo = sMySQLStore.GetGameObjectInfo(entry);
+    if (pInfo == nullptr)
     {
         LOG_ERROR("Something tried to create a GameObject with invalid entry %u", entry);
         return false;
@@ -537,7 +537,7 @@ void GameObject_Button::InitAI()
 
     if (pInfo->button.linked_trap_id != 0)
     {
-        GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->button.linked_trap_id);
+        GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(pInfo->button.linked_trap_id);
 
         if (gameobject_info != nullptr)
         {
@@ -651,7 +651,7 @@ void GameObject_Chest::InitAI()
 
     if (pInfo->chest.linked_trap_id != 0)
     {
-        GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->chest.linked_trap_id);
+        GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(pInfo->chest.linked_trap_id);
 
         if (gameobject_info != nullptr)
         {
@@ -852,13 +852,13 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
     GameObject* go = m_mapMgr->CreateGameObject(trapid);
     if (go == nullptr)
     {
-        sLog.outError("Failed to create linked trap for GameObject %u ( %s ).", pInfo->entry, pInfo->name);
+        sLog.outError("Failed to create linked trap for GameObject %u ( %s ).", pInfo->entry, pInfo->name.c_str());
         return;
     }
 
     if (!go->CreateFromProto(trapid, m_mapId, m_position.x, m_position.y, m_position.z, m_position.o))
     {
-        sLog.outError("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", pInfo->entry, pInfo->name);
+        sLog.outError("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", pInfo->entry, pInfo->name.c_str());
         return;
     }
 
@@ -883,7 +883,7 @@ void GameObject_Goober::InitAI()
 
     if (pInfo->goober.linked_trap_id != 0)
     {
-        GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(pInfo->goober.linked_trap_id);
+        GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(pInfo->goober.linked_trap_id);
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)
@@ -1027,7 +1027,7 @@ void GameObject_SpellCaster::InitAI()
 
     spell = dbcSpell.LookupEntry(pInfo->spell_caster.spell_id);
     if (spell == nullptr)
-        sLog.outError("GameObject %u ( %s ) has a nonexistant spellID in the database.", pInfo->entry, pInfo->name);
+        sLog.outError("GameObject %u ( %s ) has a nonexistant spellID in the database.", pInfo->entry, pInfo->name.c_str());
 }
 
 void GameObject_SpellCaster::Use(uint64 GUID)

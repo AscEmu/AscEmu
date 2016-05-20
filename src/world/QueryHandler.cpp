@@ -169,7 +169,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
 
     LOG_DETAIL("WORLD: CMSG_GAMEOBJECT_QUERY '%u'", entryID);
 
-    auto gameobject_info = GameObjectNameStorage.LookupEntry(entryID);
+    auto gameobject_info = sMySQLStore.GetGameObjectInfo(entryID);
     if (gameobject_info == nullptr)
         return;
 

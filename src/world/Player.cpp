@@ -6721,7 +6721,7 @@ void Player::UpdateNearbyGameObjects()
             bool deactivate = false;
             if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
             {
-                for (GameObjectGOMap::iterator GOitr = go->GetInfo()->goMap.begin(); GOitr != go->GetInfo()->goMap.end(); ++GOitr)
+                for (GameObjectGOMap::const_iterator GOitr = gameobject_info->goMap.begin(); GOitr != gameobject_info->goMap.end(); ++GOitr)
                 {
                     if ((qle = GetQuestLogForEntry(GOitr->first->id)) != 0)
                     {
@@ -6741,13 +6741,9 @@ void Player::UpdateNearbyGameObjects()
 
                 if (!activate_quest_object)
                 {
-                    for (GameObjectItemMap::iterator GOitr = go->GetInfo()->itemMap.begin();
-                         GOitr != go->GetInfo()->itemMap.end();
-                         ++GOitr)
+                    for (GameObjectItemMap::const_iterator GOitr = gameobject_info->itemMap.begin(); GOitr != gameobject_info->itemMap.end(); ++GOitr)
                     {
-                        for (std::map<uint32, uint32>::iterator it2 = GOitr->second.begin();
-                             it2 != GOitr->second.end();
-                             ++it2)
+                        for (std::map<uint32, uint32>::const_iterator it2 = GOitr->second.begin(); it2 != GOitr->second.end(); ++it2)
                         {
                             if (GetItemInterface()->GetItemCount(it2->first) < it2->second)
                             {
@@ -14215,12 +14211,12 @@ void Player::SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend)
         delete data;
 }
 
-GameObject *Player::GetSelectedGo()
+GameObject* Player::GetSelectedGo()
 {
     if (m_GM_SelectedGO)
         return GetMapMgr()->GetGameObject((uint32)m_GM_SelectedGO);
 
-    return NULL;
+    return nullptr;
 }
 
 void Player::SendMountResult(uint32 result)

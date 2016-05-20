@@ -1412,17 +1412,17 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
     std::string x = std::string(args);
     arcemu_TOLOWER(x);
 
-    StorageContainerIterator<GameObjectInfo> * itr = GameObjectNameStorage.MakeIterator();
-
     GreenSystemMessage(m_session, "Starting search of object `%s`...", x.c_str());
     uint32 t = getMSTime();
-    GameObjectInfo* gameobject_info;
+    GameObjectInfo const* gameobject_info;
     uint32 count = 0;
     std::string y;
     std::string recout;
-    while (!itr->AtEnd())
+
+    MySQLDataStore::GameObjectNamesContainer const* its = sMySQLStore.GetGameObjectNamesStore();
+    for (MySQLDataStore::GameObjectNamesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        gameobject_info = itr->Get();
+        gameobject_info = sMySQLStore.GetGameObjectInfo(itr->second.entry);
         y = std::string(gameobject_info->name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
@@ -1434,7 +1434,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
             strm << ", Display ";
             strm << gameobject_info->display_id;
             //string ObjectID = i.c_str();
-            const char* objectName = gameobject_info->name;
+            const char* objectName = gameobject_info->name.c_str();
             recout = "|cfffff000Object ";
             recout += strm.str();
             recout += "|cffFFFFFF: ";
@@ -1449,9 +1449,8 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
                 break;
             }
         }
-        if (!itr->Inc()) break;
     }
-    itr->Destruct();
+
     if (count == 0)
     {
         recout = "|cff00ccffNo matches found.";

@@ -23,9 +23,9 @@
 
 GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
 {
-    GameObjectInfo* gameobject_info = GameObjectNameStorage.LookupEntry(Id);
-    if (gameobject_info == NULL)
-        return NULL;
+    GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(Id);
+    if (gameobject_info == nullptr)
+        return nullptr;
 
     GameObject* gameobject = nullptr;
 
