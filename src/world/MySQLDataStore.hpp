@@ -20,12 +20,7 @@ public:
     typedef std::unordered_map<uint32, CreatureInfo> CreatureInfoContainer;
     typedef std::unordered_map<uint32, CreatureProto> CreatureProtoContainer;
     typedef std::unordered_map<uint32, GameObjectInfo> GameObjectNamesContainer;
-
-    //Loads
-    void LoadItemsTable();
-    void LoadCreatureNamesTable();
-    void LoadCreatureProtoTable();
-    void LoadGameObjectNamesTable();
+    typedef std::unordered_map<uint32, Quest> QuestContainer;
 
     //helper
     ItemPrototype const* GetItemProto(uint32 entry);
@@ -39,10 +34,25 @@ public:
     GameObjectInfo const* GetGameObjectInfo(uint32 entry);
     GameObjectNamesContainer const* GetGameObjectNamesStore() { return &_gameobjectNamesStore; }
 
+    Quest const* GetQuest(uint32 entry);
+    QuestContainer const* GetQuestStore() { return &_questStore; }
+
+    //Loads
+    void LoadItemsTable();
+    void LoadCreatureNamesTable();
+    void LoadCreatureProtoTable();
+    void LoadGameObjectNamesTable();
+    void LoadQuestsTable();
+
+    void LoadGameObjectQuestItemBindingTable();
+    void LoadGameObjectQuestPickupBindingTable();
+
+
     ItemPrototypeContainer _itemPrototypeStore;
     CreatureInfoContainer _creatureNamesStore;
     CreatureProtoContainer _creatureProtoStore;
     GameObjectNamesContainer _gameobjectNamesStore;
+    QuestContainer _questStore;
 
 };
 

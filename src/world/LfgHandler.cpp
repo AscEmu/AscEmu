@@ -200,16 +200,16 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     {
         data << uint32(*it);                               // Dungeon Entry (id + type)
         LfgReward const* reward = sLfgMgr.GetRandomDungeonReward(*it, level);
-        Quest* qRew = NULL;
+        Quest const* qRew = NULL;
         uint8 done = 0;
         if (reward)
         {
-            qRew = QuestStorage.LookupEntry(reward->reward[0].questId);
+            qRew = sMySQLStore.GetQuest(reward->reward[0].questId);
             if (qRew)
             {
                 done = GetPlayer()->HasFinishedQuest(qRew->id);
                 if (done)
-                    qRew = QuestStorage.LookupEntry(reward->reward[1].questId);
+                    qRew = sMySQLStore.GetQuest(reward->reward[1].questId);
             }
         }
         if (qRew)
@@ -494,7 +494,7 @@ void WorldSession::SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgW
     SendPacket(&data);
 }
 
-void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 DungeonEntry, uint8 done, const LfgReward* reward, Quest* qReward)
+void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 DungeonEntry, uint8 done, const LfgReward* reward, Quest const* qReward)
 {
     if (!RandomDungeonEntry || !DungeonEntry || !qReward)
         return;

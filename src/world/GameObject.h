@@ -64,8 +64,8 @@ enum GameObjectOverrides
     /// Later other types might folow, or the upper bytes might get used for the AREAWIDE option in the overrides variable...
 };
 
-typedef std::unordered_map<Quest*, uint32 > GameObjectGOMap;
-typedef std::unordered_map<Quest*, std::map<uint32, uint32> > GameObjectItemMap;
+typedef std::unordered_map<Quest const*, uint32 > GameObjectGOMap;
+typedef std::unordered_map<Quest const*, std::map<uint32, uint32> > GameObjectItemMap;
 
 #pragma pack(push,1)
 struct GameObjectInfo
@@ -609,7 +609,7 @@ class GameObject_QuestGiver : public GameObject
         /// \param uint32 quest_id  -  Identifier of the Quest
         /// \param uint8 quest_relation  -  QuestRelation type
         /// \return the Quest on success NULL on failure
-        Quest* FindQuest(uint32 quest_id, uint8 quest_relation);
+        Quest const* FindQuest(uint32 quest_id, uint8 quest_relation);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         /// Finds the Quest with quest_id in the GO, and returns it's QuestRelation type

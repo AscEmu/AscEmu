@@ -37,8 +37,8 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		QuestLogEntry();
 		~QuestLogEntry();
 
-		inline Quest* GetQuest() { return m_quest; };
-		void Init(Quest* quest, Player* plr, uint32 slot);
+		inline Quest const* GetQuest() { return m_quest; };
+		void Init(Quest const* quest, Player* plr, uint32 slot);
 
 		bool CanBeFinished();
 		void Complete();
@@ -102,7 +102,7 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		bool mInitialized;
 		bool mDirty;
 
-		Quest* m_quest;
+		Quest const* m_quest;
 		Player* m_plr;
 
 		uint32 m_mobcount[4];

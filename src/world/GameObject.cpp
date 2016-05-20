@@ -606,7 +606,7 @@ void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
     }
 }
 
-Quest* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 quest_relation)
+Quest const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
     for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {

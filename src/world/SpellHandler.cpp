@@ -84,7 +84,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (itemProto->QuestId)
     {
         // Item Starter
-        Quest* qst = QuestStorage.LookupEntry(itemProto->QuestId);
+        Quest const* qst = sMySQLStore.GetQuest(itemProto->QuestId);
         if (!qst)
             return;
 

@@ -3672,7 +3672,7 @@ void Player::RolloverHonor()
 void Player::_LoadQuestLogEntry(QueryResult* result)
 {
     QuestLogEntry* entry;
-    Quest* quest;
+    Quest const* quest;
     Field* fields;
     uint32 questid;
     uint32 baseindex;
@@ -3695,7 +3695,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
         {
             fields = result->Fetch();
             questid = fields[1].GetUInt32();
-            quest = QuestStorage.LookupEntry(questid);
+            quest = sMySQLStore.GetQuest(questid);
             slot = fields[2].GetUInt32();
             ARCEMU_ASSERT(slot != -1);
 
@@ -6096,7 +6096,7 @@ void Player::LoadTaxiMask(const char* data)
 
 bool Player::HasQuestForItem(uint32 itemid)
 {
-    Quest* qst;
+    Quest const* qst;
     for (uint8 i = 0; i < 25; ++i)
     {
         if (m_questlog[i] != NULL)
@@ -6493,7 +6493,7 @@ void Player::EventTimedQuestExpire(uint32 questid)
     if (qle == NULL)
         return;
 
-    Quest *qst = qle->GetQuest();
+    Quest const* qst = qle->GetQuest();
 
     sQuestMgr.SendQuestUpdateFailedTimer(qst, this);
     CALL_QUESTSCRIPT_EVENT(qle, OnQuestCancel)(this);
@@ -13365,7 +13365,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     bool bValid = false;
     bool hasquest = true;
     bool bSkipLevelCheck = false;
-    Quest* qst = NULL;
+    Quest const* qst = NULL;
     Object* qst_giver = NULL;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
@@ -13380,7 +13380,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = QuestStorage.LookupEntry(quest_id);
+            qst = sMySQLStore.GetQuest(quest_id);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -13392,7 +13392,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
 
         bValid = true;
-        qst = QuestStorage.LookupEntry(quest_id);
+        qst = sMySQLStore.GetQuest(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
@@ -13403,7 +13403,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
         bValid = true;
         bSkipLevelCheck = true;
-        qst = QuestStorage.LookupEntry(quest_id);
+        qst = sMySQLStore.GetQuest(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_PLAYER)
     {
@@ -13413,7 +13413,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         else
             return;
         bValid = true;
-        qst = QuestStorage.LookupEntry(quest_id);
+        qst = sMySQLStore.GetQuest(quest_id);
     }
 
     if (!qst_giver)

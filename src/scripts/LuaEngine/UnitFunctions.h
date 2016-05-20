@@ -1630,7 +1630,7 @@ class LuaUnit
         TEST_PLAYER_RET()
             int quest_id = luaL_checkinteger(L, 1);
         Player* plr = static_cast<Player*>(ptr);
-        Quest* qst = QuestStorage.LookupEntry(quest_id);
+        Quest const* qst = sMySQLStore.GetQuest(quest_id);
         if (qst)
         {
             if (plr->HasFinishedQuest(quest_id))
@@ -1668,7 +1668,7 @@ class LuaUnit
             int quest_id = luaL_checkinteger(L, 1);
         Player* plr = static_cast<Player*>(ptr);
 
-        Quest* qst = QuestStorage.LookupEntry(quest_id);
+        Quest const* qst = sMySQLStore.GetQuest(quest_id);
         if (qst)
         {
             if (plr->HasFinishedQuest(quest_id))
@@ -2172,7 +2172,7 @@ class LuaUnit
         if (!quest_id)
             return 0;
 
-        Quest* qst = QuestStorage.LookupEntry(quest_id);
+        Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
         if (!qst)
             return 0;
@@ -2215,7 +2215,7 @@ class LuaUnit
             unit->SetUInt32Value(UNIT_NPC_FLAGS, unit->GetUInt32Value(UNIT_NPC_FLAGS) + UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
             return 0;
-        Quest* qst = QuestStorage.LookupEntry(quest_id);
+        Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
         if (!qst)
             return 0;
@@ -4369,7 +4369,7 @@ class LuaUnit
         TEST_UNIT()
             Creature* ctr = static_cast<Creature*>(ptr);
         uint32 questid = CHECK_ULONG(L, 1);
-        Quest* qst = QuestStorage.LookupEntry(questid);
+        Quest const* qst = sMySQLStore.GetQuest(questid);
         if (ctr->HasQuest(qst->id, qst->type))
             lua_pushboolean(L, 1);
         else

@@ -1404,7 +1404,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
             return true;
         }
 
-        Quest* tamequest = QuestStorage.LookupEntry(triggerspell->EffectMiscValue[1]);
+        Quest const* tamequest = sMySQLStore.GetQuest(triggerspell->EffectMiscValue[1]);
         if (tamequest == NULL)
         {
             sLog.outError("An Aura with spellid %u is calling HunterTamingQuest() with an invalid tamequest id: %u", a->GetSpellId(), triggerspell->EffectMiscValue[1]);

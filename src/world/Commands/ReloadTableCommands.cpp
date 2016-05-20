@@ -130,7 +130,7 @@ bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    QuestStorage.Reload();
+    sMySQLStore.LoadQuestsTable();
     GreenSystemMessage(m_session, "WorldDB 'quests' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

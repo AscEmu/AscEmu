@@ -399,7 +399,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         //check for starting item quests that need questlines.
         if ((itemProto->QuestId && itemProto->Bonding != ITEM_BIND_QUEST && itemProto->Bonding != ITEM_BIND_QUEST2))
         {
-            Quest* pQuest = QuestStorage.LookupEntry(itemProto->QuestId);
+            Quest const* pQuest = sMySQLStore.GetQuest(itemProto->QuestId);
             if (pQuest)
             {
                 uint32 finishedCount = 0;

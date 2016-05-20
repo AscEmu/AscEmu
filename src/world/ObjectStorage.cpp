@@ -27,7 +27,6 @@ const char* gVendorRestrictionEntryFormat = "uuuuuuuu";
 const char* gAreaTriggerFormat = "ucuusffffuu";
 const char* gItemPageFormat = "usu";
 const char* gNpcTextFormat = "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
-const char* gQuestFormat = "uuuuuuuuuuuuuuuuuuussssssssssuuuuuuuuuuuuiiiiuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuiiiiiiuiuuuuuuuuuuuuuuusuuuusuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu";
 const char* gGraveyardFormat = "uffffuuuux";
 const char* gTeleportCoordFormat = "uxufffx";
 const char* gPvPAreaFormat = "ush";
@@ -50,7 +49,6 @@ SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding>
 SERVER_DECL SQLStorage<VendorRestrictionEntry, ArrayStorageContainer<VendorRestrictionEntry> >  VendorRestrictionEntryStorage;
 SERVER_DECL SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >                      AreaTriggerStorage;
 SERVER_DECL SQLStorage<ItemPage, HashMapStorageContainer<ItemPage> >                            ItemPageStorage;
-SERVER_DECL SQLStorage<Quest, HashMapStorageContainer<Quest> >                                  QuestStorage;
 SERVER_DECL SQLStorage<GossipText, HashMapStorageContainer<GossipText> >                        NpcTextStorage;
 SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >          GraveyardStorage;
 SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >                TeleportCoordStorage;
@@ -293,7 +291,6 @@ void Storage_FillTaskList(TaskList & tl)
     make_task(VendorRestrictionEntryStorage, VendorRestrictionEntry, ArrayStorageContainer, "vendor_restrictions", gVendorRestrictionEntryFormat);
     make_task(AreaTriggerStorage, AreaTrigger, HashMapStorageContainer, "areatriggers", gAreaTriggerFormat);
     make_task(ItemPageStorage, ItemPage, HashMapStorageContainer, "itempages", gItemPageFormat);
-    make_task(QuestStorage, Quest, HashMapStorageContainer, "quests", gQuestFormat);
     make_task(GraveyardStorage, GraveyardTeleport, HashMapStorageContainer, "graveyards", gGraveyardFormat);
     make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
     make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
@@ -316,7 +313,6 @@ void Storage_Cleanup()
     VendorRestrictionEntryStorage.Cleanup();
     AreaTriggerStorage.Cleanup();
     ItemPageStorage.Cleanup();
-    QuestStorage.Cleanup();
     GraveyardStorage.Cleanup();
     TeleportCoordStorage.Cleanup();
     FishingZoneStorage.Cleanup();
@@ -366,8 +362,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
         WorldStringTableStorage.LoadAdditionalData(SecondName, gWorldStringTableFormat);
     else if (!stricmp(TableName, "worldbroadcast"))            // Worldbroadcast
         WorldBroadCastStorage.LoadAdditionalData(SecondName, gWorldBroadCastFormat);
-    else if (firstLoad && !stricmp(TableName, "quests"))                // Quests
-        QuestStorage.LoadAdditionalData(SecondName, gQuestFormat);
+    //else if (firstLoad && !stricmp(TableName, "quests"))                // Quests
+    //    QuestStorage.LoadAdditionalData(SecondName, gQuestFormat);
     else if (!stricmp(TableName, "npc_text"))            // NPC Text Storage
         NpcTextStorage.LoadAdditionalData(SecondName, gNpcTextFormat);
     else if (!stricmp(TableName, "fishing"))                // Fishing Zones

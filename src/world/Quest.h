@@ -52,14 +52,14 @@ struct Quest
 	uint32 srcitem;
 	uint32 srcitemcount;
 
-	char* title;
-	char* details;
-	char* objectives;
-	char* completiontext;
-	char* incompletetext;
-	char* endtext;
+	std::string title;
+    std::string details;
+    std::string objectives;
+    std::string completiontext;
+    std::string incompletetext;
+    std::string endtext;
 
-	char* objectivetexts[4];
+    std::string objectivetexts[4];
 
 	uint32 required_item[MAX_REQUIRED_QUEST_ITEM];
 	uint32 required_itemcount[MAX_REQUIRED_QUEST_ITEM];
@@ -95,13 +95,13 @@ struct Quest
 
 	uint32 rew_money_at_max_level;
 	uint32 required_triggers[4];
-	char* x_or_y_quest_string;
+    std::string x_or_y_quest_string;
 	uint32 required_quests[4];
-	char* remove_quests;
+    std::string remove_quests;
 	uint32 receive_items[4];
 	uint32 receive_itemcount[4];
 	int is_repeatable;
-    uint32 GetRewardItemCount();
+    uint32 GetRewardItemCount() const;
 
 	uint32 bonushonor;
 	uint32 bonusarenapoints;
@@ -145,7 +145,7 @@ struct Quest
 	/// \return true if the quest has this flag, false if the quest doesn't have this flag.
 	///
     //////////////////////////////////////////////////////////////////////////////////////////
-	bool HasFlag(uint32 flag)
+	bool HasFlag(uint32 flag) const
 	{
 		if ((quest_flags & flag) != 0)
 			return true;

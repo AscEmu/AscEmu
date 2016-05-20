@@ -28,7 +28,7 @@ uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation
     return CalcQuestStatus(quest_giver, plr, qst->qst, qst->type, false);
 }
 
-bool QuestMgr::isRepeatableQuestFinished(Player* plr, Quest* qst)
+bool QuestMgr::isRepeatableQuestFinished(Player* plr, Quest const* qst)
 {
     for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
@@ -44,7 +44,7 @@ bool QuestMgr::isRepeatableQuestFinished(Player* plr, Quest* qst)
     return true;
 }
 
-uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst, bool skiplevelcheck)
+uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest const* qst, bool skiplevelcheck)
 {
     std::list<uint32>::iterator itr;
     uint32 status;
@@ -94,7 +94,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst, bool skiplevelcheck)
         std::set<uint32>::iterator iter = qst->quest_list.begin();
         for (; iter != qst->quest_list.end(); ++iter)
         {
-            Quest* questcheck = QuestStorage.LookupEntry((*iter));
+            Quest const* questcheck = sMySQLStore.GetQuest((*iter));
             if (questcheck)
             {
                 if (plr->HasFinishedQuest((*iter)))
@@ -123,7 +123,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, Quest* qst, bool skiplevelcheck)
     return status;
 }
 
-uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, Quest* qst, uint8 type, bool skiplevelcheck)
+uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, Quest const* qst, uint8 type, bool skiplevelcheck)
 {
     auto quest_log_entry = plr->GetQuestLogForEntry(qst->id);
 
@@ -235,7 +235,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
     if (quest_giver->IsItem())
     {
-        Quest* pQuest = QuestStorage.LookupEntry(static_cast< Item* >(quest_giver)->GetProto()->QuestId);
+        Quest const* pQuest = sMySQLStore.GetQuest(static_cast< Item* >(quest_giver)->GetProto()->QuestId);
         if (pQuest)
         {
             QuestRelation qr;
@@ -318,7 +318,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
     return questCount;
 }
 
-void QuestMgr::BuildOfferReward(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
+void QuestMgr::BuildOfferReward(WorldPacket* data, Quest const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
 {
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
     ItemPrototype const* it;
@@ -406,7 +406,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, Quest* qst, Object* qst_giver
         *data << uint32(0);
 }
 
-void QuestMgr::BuildQuestDetails(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
+void QuestMgr::BuildQuestDetails(WorldPacket* data, Quest const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
 {
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
     std::map<uint32, uint8>::const_iterator itr;
@@ -488,7 +488,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, Quest* qst, Object* qst_give
     }
 }
 
-void QuestMgr::BuildRequestItems(WorldPacket* data, Quest* qst, Object* qst_giver, uint32 status, uint32 language)
+void QuestMgr::BuildRequestItems(WorldPacket* data, Quest const* qst, Object* qst_giver, uint32 status, uint32 language)
 {
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
     ItemPrototype const* it;
@@ -556,7 +556,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, Quest* qst, Object* qst_give
     *data << uint32(10);
 }
 
-void QuestMgr::BuildQuestComplete(Player* plr, Quest* qst)
+void QuestMgr::BuildQuestComplete(Player* plr, Quest const* qst)
 {
     uint32 xp;
     uint32 currtalentpoints = plr->GetCurrentTalentPoints();
@@ -727,7 +727,7 @@ void QuestMgr::SendQuestUpdateAddKill(Player* plr, uint32 questid, uint32 entry,
     plr->GetSession()->SendPacket(&data);
 }
 
-void QuestMgr::BuildQuestUpdateComplete(WorldPacket* data, Quest* qst)
+void QuestMgr::BuildQuestUpdateComplete(WorldPacket* data, Quest const* qst)
 {
     data->Initialize(SMSG_QUESTUPDATE_COMPLETE);
 
@@ -746,7 +746,7 @@ bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
 {
     QuestLogEntry* qle;
     uint32 entry = go->GetEntry();
-    Quest* qst;
+    Quest const* qst;
 
     for (uint8 i = 0; i < 25; ++i)
     {
@@ -804,7 +804,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
         return;
 
     //QuestLogEntry* qle;
-    Quest* qst;
+    Quest const* qst;
 
     if (plr->HasQuestMob(entry))
     {
@@ -912,7 +912,7 @@ void QuestMgr::OnPlayerCast(Player* plr, uint32 spellid, uint64 & victimguid)
             if (!quest_log_entry->IsCastQuest())
                 continue;
 
-            Quest* quest = quest_log_entry->GetQuest();
+            Quest const* quest = quest_log_entry->GetQuest();
             for (uint8 j = 0; j < 4; ++j)
             {
                 if (quest->required_mob[j])
@@ -1039,7 +1039,7 @@ void QuestMgr::AreaExplored(Player* plr, uint32 QuestID)
     }
 }
 
-void QuestMgr::GiveQuestRewardReputation(Player* plr, Quest* qst, Object* qst_giver)
+void QuestMgr::GiveQuestRewardReputation(Player* plr, Quest const* qst, Object* qst_giver)
 {
     // Reputation reward
     for (uint8 z = 0; z < 6; z++)
@@ -1074,10 +1074,10 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, Quest* qst, Object* qst_gi
     }
 }
 
-void QuestMgr::OnQuestAccepted(Player* plr, Quest* qst, Object* qst_giver)
+void QuestMgr::OnQuestAccepted(Player* plr, Quest const* qst, Object* qst_giver)
 {}
 
-void QuestMgr::OnQuestFinished(Player* plr, Quest* qst, Object* qst_giver, uint32 reward_slot)
+void QuestMgr::OnQuestFinished(Player* plr, Quest const* qst, Object* qst_giver, uint32 reward_slot)
 {
     //Re-Check for Gold Requirement (needed for possible xploit) - reward money < 0 means required money
     if (qst->reward_money < 0 && plr->GetGold() < uint32(-qst->reward_money))
@@ -1463,7 +1463,7 @@ QuestRelationList* QuestMgr::GetCreatureQuestList(uint32 entryid)
     return (itr == olist.end()) ? 0 : itr->second;
 }
 
-template <class T> void QuestMgr::_AddQuest(uint32 entryid, Quest* qst, uint8 type)
+template <class T> void QuestMgr::_AddQuest(uint32 entryid, Quest const* qst, uint8 type)
 {
     std::unordered_map<uint32, std::list<QuestRelation*>* > &olist = _GetList<T>();
     std::list<QuestRelation*>* nlist;
@@ -1526,7 +1526,7 @@ void QuestMgr::_RemoveChar(char* c, std::string* str)
     }
 }
 
-uint32 QuestMgr::GenerateQuestXP(Player* plr, Quest* qst)
+uint32 QuestMgr::GenerateQuestXP(Player* plr, Quest const* qst)
 {
     if (qst->is_repeatable != 0)
         return 0;
@@ -1634,7 +1634,7 @@ uint32 QuestMgr::GenerateQuestXP(Player* plr, Quest* qst)
     }
 }
 
-uint32 QuestMgr::GenerateRewardMoney(Player* plr, Quest* qst)
+uint32 QuestMgr::GenerateRewardMoney(Player* plr, Quest const* qst)
 {
     //	if (plr == NULL || !plr->IsInWorld() || plr->getLevel() >= plr->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL) || (!plr->GetSession()->HasFlag(ACCOUNT_FLAG_XPACK_01) && plr->getLevel() != 60) || plr->getLevel() != 70 || qst->is_repeatable != 0)
     //{
@@ -1688,7 +1688,7 @@ void QuestMgr::SendQuestInvalid(INVALID_REASON reason, Player* plyr)
     LOG_DEBUG("WORLD:Sent SMSG_QUESTGIVER_QUEST_INVALID");
 }
 
-void QuestMgr::SendQuestFailed(FAILED_REASON failed, Quest* qst, Player* plyr)
+void QuestMgr::SendQuestFailed(FAILED_REASON failed, Quest const* qst, Player* plyr)
 {
     if (!plyr)
         return;
@@ -1701,7 +1701,7 @@ void QuestMgr::SendQuestFailed(FAILED_REASON failed, Quest* qst, Player* plyr)
     LOG_DEBUG("WORLD:Sent SMSG_QUESTGIVER_QUEST_FAILED");
 }
 
-void QuestMgr::SendQuestUpdateFailedTimer(Quest* pQuest, Player* plyr)
+void QuestMgr::SendQuestUpdateFailedTimer(Quest const* pQuest, Player* plyr)
 {
     if (!plyr)
         return;
@@ -1710,7 +1710,7 @@ void QuestMgr::SendQuestUpdateFailedTimer(Quest* pQuest, Player* plyr)
     LOG_DEBUG("WORLD:Sent SMSG_QUESTUPDATE_FAILEDTIMER");
 }
 
-void QuestMgr::SendQuestUpdateFailed(Quest* pQuest, Player* plyr)
+void QuestMgr::SendQuestUpdateFailed(Quest const* pQuest, Player* plyr)
 {
     if (!plyr)
         return;
@@ -1743,29 +1743,24 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
         //LOG_ERROR("WARNING: Gameobject %d has more than 1 quest item allocated in it's loot template!", GO_Entry);
     }
 
-    // Find the quest that has that item
     uint32 QuestID = 0;
-    uint32 i;
-    StorageContainerIterator<Quest> * itr = QuestStorage.MakeIterator();
-    while (!itr->AtEnd())
+    MySQLDataStore::QuestContainer const* its = sMySQLStore.GetQuestStore();
+    for (MySQLDataStore::QuestContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        Quest* qst = itr->Get();
-        for (i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+        Quest const* qst = sMySQLStore.GetQuest(itr->second.id);
+        for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
         {
             if (qst->required_item[i] == Item_Entry)
             {
                 QuestID = qst->id;
                 m_ObjectLootQuestList[GO_Entry] = QuestID;
-                itr->Destruct();
                 return;
             }
         }
-        if (!itr->Inc())
-            break;
     }
-    itr->Destruct();
 
-    //LOG_ERROR("WARNING: No coresponding quest was found for quest item %d", Item_Entry);
+    if (QuestID == 0)
+        Log.Error("QuestMgr","No coresponding quest was found for quest item %d", Item_Entry);
 }
 
 void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)
@@ -1953,7 +1948,7 @@ QuestMgr::~QuestMgr()
 }
 
 
-bool QuestMgr::CanStoreReward(Player* plyr, Quest* qst, uint32 reward_slot)
+bool QuestMgr::CanStoreReward(Player* plyr, Quest const* qst, uint32 reward_slot)
 {
     uint32 available_slots = 0;
     uint32 slotsrequired = 0;
@@ -1992,49 +1987,48 @@ bool QuestMgr::CanStoreReward(Player* plyr, Quest* qst, uint32 reward_slot)
 
 void QuestMgr::LoadExtraQuestStuff()
 {
-    StorageContainerIterator<Quest> * it = QuestStorage.MakeIterator();
-    Quest* qst;
-    while (!it->AtEnd())
+    MySQLDataStore::QuestContainer const* its = sMySQLStore.GetQuestStore();
+    for (MySQLDataStore::QuestContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        qst = it->Get();
+        Quest const* qst = sMySQLStore.GetQuest(itr->second.id);
 
         // 0 them out
-        qst->count_required_item = 0;
-        qst->count_required_mob = 0;
-        qst->count_requiredtriggers = 0;
-        qst->count_receiveitems = 0;
-        qst->count_reward_item = 0;
-        qst->count_reward_choiceitem = 0;
+        const_cast<Quest*>(qst)->count_required_item = 0;
+        const_cast<Quest*>(qst)->count_required_mob = 0;
+        const_cast<Quest*>(qst)->count_requiredtriggers = 0;
+        const_cast<Quest*>(qst)->count_receiveitems = 0;
+        const_cast<Quest*>(qst)->count_reward_item = 0;
+        const_cast<Quest*>(qst)->count_reward_choiceitem = 0;
 
-        qst->required_mobtype[0] = 0;
-        qst->required_mobtype[1] = 0;
-        qst->required_mobtype[2] = 0;
-        qst->required_mobtype[3] = 0;
+        const_cast<Quest*>(qst)->required_mobtype[0] = 0;
+        const_cast<Quest*>(qst)->required_mobtype[1] = 0;
+        const_cast<Quest*>(qst)->required_mobtype[2] = 0;
+        const_cast<Quest*>(qst)->required_mobtype[3] = 0;
 
-        qst->count_requiredquests = 0;
+        const_cast<Quest*>(qst)->count_requiredquests = 0;
 
-        if (it->Get()->x_or_y_quest_string)
+        if (qst->x_or_y_quest_string.size())
         {
-            it->Get()->quest_list.clear();
-            std::string quests = std::string(it->Get()->x_or_y_quest_string);
+            const_cast<Quest*>(qst)->quest_list.clear();
+            std::string quests = std::string(qst->x_or_y_quest_string);
             std::vector<std::string> qsts = StrSplit(quests, " ");
             for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
                 uint32 id = atol((*iter).c_str());
                 if (id)
-                    it->Get()->quest_list.insert(id);
+                    const_cast<Quest*>(qst)->quest_list.insert(id);
             }
         }
 
-        if (it->Get()->remove_quests)
+        if (qst->remove_quests.size())
         {
-            std::string quests = std::string(it->Get()->remove_quests);
+            std::string quests = std::string(qst->remove_quests);
             std::vector<std::string> qsts = StrSplit(quests, " ");
             for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
                 uint32 id = atol((*iter).c_str());
                 if (id)
-                    it->Get()->remove_quest_list.insert(id);
+                    const_cast<Quest*>(qst)->remove_quest_list.insert(id);
             }
         }
 
@@ -2047,8 +2041,8 @@ void QuestMgr::LoadExtraQuestStuff()
                     auto gameobject_info = sMySQLStore.GetGameObjectInfo(qst->required_mob[i] * -1);
                     if (gameobject_info)
                     {
-                        qst->required_mobtype[i] = QUEST_MOB_TYPE_GAMEOBJECT;
-                        qst->required_mob[i] *= -1;
+                        const_cast<Quest*>(qst)->required_mobtype[i] = QUEST_MOB_TYPE_GAMEOBJECT;
+                        const_cast<Quest*>(qst)->required_mob[i] *= -1;
                     }
                     else
                     {
@@ -2060,7 +2054,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 {
                     CreatureInfo const* c_info = sMySQLStore.GetCreatureInfo(qst->required_mob[i]);
                     if (c_info)
-                        qst->required_mobtype[i] = QUEST_MOB_TYPE_CREATURE;
+                        const_cast<Quest*>(qst)->required_mobtype[i] = QUEST_MOB_TYPE_CREATURE;
                     else
                     {
                         // if quest has neither valid creature, log it.
@@ -2068,39 +2062,34 @@ void QuestMgr::LoadExtraQuestStuff()
                     }
                 }
 
-                qst->count_required_mob++;
+                const_cast<Quest*>(qst)->count_required_mob++;
             }
 
             if (qst->reward_item[i])
-                qst->count_reward_item++;
+                const_cast<Quest*>(qst)->count_reward_item++;
 
             if (qst->required_triggers[i])
-                qst->count_requiredtriggers++;
+                const_cast<Quest*>(qst)->count_requiredtriggers++;
 
             if (qst->receive_items[i])
-                qst->count_receiveitems++;
+                const_cast<Quest*>(qst)->count_receiveitems++;
 
             if (qst->required_quests[i])
-                qst->count_requiredquests++;
+                const_cast<Quest*>(qst)->count_requiredquests++;
         }
 
         for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; i++)
             if (qst->required_item[i] != 0)
-                qst->count_required_item++;
+                const_cast<Quest*>(qst)->count_required_item++;
 
         for (uint8 i = 0; i < 6; ++i)
         {
             if (qst->reward_choiceitem[i])
-                qst->count_reward_choiceitem++;
+                const_cast<Quest*>(qst)->count_reward_choiceitem++;
         }
 
-        qst->pQuestScript = NULL;
-
-        if (!it->Inc())
-            break;
+        const_cast<Quest*>(qst)->pQuestScript = nullptr;
     }
-
-    it->Destruct();
 
     // load creature starters
     uint32 creature, quest;
@@ -2117,7 +2106,7 @@ void QuestMgr::LoadExtraQuestStuff()
             creature = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            qst = QuestStorage.LookupEntry(quest);
+            auto qst = sMySQLStore.GetQuest(quest);
             if (!qst)
             {
                 Log.Error("ObjectMgr", "Tried to add starter to npc %d for non-existent quest %d.", creature, quest);
@@ -2142,7 +2131,7 @@ void QuestMgr::LoadExtraQuestStuff()
             creature = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            qst = QuestStorage.LookupEntry(quest);
+            auto qst = sMySQLStore.GetQuest(quest);
             if (!qst)
             {
                 Log.Error("ObjectMgr", "Tried to add finisher to npc %d for non-existent quest %d.", creature, quest);
@@ -2167,7 +2156,7 @@ void QuestMgr::LoadExtraQuestStuff()
             creature = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            qst = QuestStorage.LookupEntry(quest);
+            auto qst = sMySQLStore.GetQuest(quest);
             if (!qst)
             {
                 Log.Error("ObjectMgr", "Tried to add starter to go %d for non-existent quest %d.", creature, quest);
@@ -2192,7 +2181,7 @@ void QuestMgr::LoadExtraQuestStuff()
             creature = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            qst = QuestStorage.LookupEntry(quest);
+            auto qst = sMySQLStore.GetQuest(quest);
             if (!qst)
             {
                 Log.Error("ObjectMgr", "Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
@@ -2223,7 +2212,7 @@ void QuestMgr::LoadExtraQuestStuff()
             quest = data[1].GetUInt32();
             item_count = data[2].GetUInt8();
 
-            qst = QuestStorage.LookupEntry(quest);
+            auto qst = sMySQLStore.GetQuest(quest);
             if (!qst)
             {
                 Log.Error("ObjectMgr", "Tried to add association to item %d for non-existent quest %d.", item, quest);
@@ -2315,7 +2304,7 @@ void QuestMgr::LoadExtraQuestStuff()
     }
 }
 
-void QuestMgr::AddItemQuestAssociation(uint32 itemId, Quest* qst, uint8 item_count)
+void QuestMgr::AddItemQuestAssociation(uint32 itemId, Quest const* qst, uint8 item_count)
 {
     std::unordered_map<uint32, std::list<QuestAssociation*>* > &associationList = GetQuestAssociationList();
     std::list<QuestAssociation*>* tempList;
@@ -2399,7 +2388,7 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
                 continue;
             }
 
-            Quest* qst = qle->GetQuest();
+            Quest const* qst = qle->GetQuest();
             for (j = 0; j < 4; ++j)
             {
                 if (qst->required_mob[j])
@@ -2437,7 +2426,7 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
 
 void QuestMgr::BuildQuestPOIResponse(WorldPacket& data, uint32 questid)
 {
-    Quest* q = QuestStorage.LookupEntry(questid);
+    Quest const* q = sMySQLStore.GetQuest(questid);
 
     if (q != NULL)
     {

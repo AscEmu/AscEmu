@@ -52,7 +52,7 @@ inline std::string MyConvertFloatToString(const float arg)
     return out.str();
 }
 
-std::string RemoveQuestFromPlayer(Player* plr, Quest* qst)
+std::string RemoveQuestFromPlayer(Player* plr, Quest const* qst)
 {
     std::string recout = "|cff00ff00";
 
@@ -106,16 +106,14 @@ bool ChatHandler::HandleQuestLookupCommand(const char* args, WorldSession* m_ses
     BlueSystemMessage(m_session, "Starting search of quests `%s`...", x.c_str());
     uint32 t = getMSTime();
 
-    StorageContainerIterator<Quest> * itr = QuestStorage.MakeIterator();
-
-    Quest* i;
     uint32 count = 0;
     std::string y;
     std::string recout;
 
-    while (!itr->AtEnd())
+    MySQLDataStore::QuestContainer const* its = sMySQLStore.GetQuestStore();
+    for (MySQLDataStore::QuestContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        i = itr->Get();
+        Quest const* i = sMySQLStore.GetQuest(itr->second.id);
         y = std::string(i->title);
 
         LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(i->id, m_session->language) : NULL;
@@ -132,7 +130,7 @@ bool ChatHandler::HandleQuestLookupCommand(const char* args, WorldSession* m_ses
         if (FindXinYString(x, y) || localizedFound)
         {
             std::string questid = MyConvertIntToString(i->id);
-            const char* questtitle = localizedFound ? (li ? li->Title : "") : i->title;
+            std::string questtitle = localizedFound ? (li ? li->Title : "") : i->title;
             // send quest link
             recout = questid.c_str();
             recout += ": |cff00ccff|Hquest:";
@@ -151,10 +149,7 @@ bool ChatHandler::HandleQuestLookupCommand(const char* args, WorldSession* m_ses
                 break;
             }
         }
-        if (!itr->Inc())
-            break;
     }
-    itr->Destruct();
 
     if (count == 0)
     {
@@ -184,7 +179,7 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
     }
     std::string recout = "|cff00ff00";
 
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -229,7 +224,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
     }
     std::string recout = "|cff00ff00";
 
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -356,7 +351,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
     }
     std::string recout = "|cff00ff00";
 
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -810,7 +805,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 
     uint32 count = 0;
     uint32 quest_id = 0;
-    Quest* qst;
+    Quest const* qst;
     Field* fields;
 
     if (quest_giver != 0)
@@ -829,12 +824,12 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
             fields = creatureResult->Fetch();
             quest_id = fields[0].GetUInt32();
 
-            qst = QuestStorage.LookupEntry(quest_id);
+            qst = sMySQLStore.GetQuest(quest_id);
             if (qst == NULL)
                 continue;
 
             std::string qid = MyConvertIntToString(quest_id);
-            const char* qname = qst->title;
+            std::string qname = qst->title;
 
             recout = "|cff00ccff";
             recout += qid.c_str();
@@ -898,7 +893,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
         if (quest_id == 0)
             return false;
     }
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
     if (qst == NULL)
     {
@@ -938,7 +933,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
 
     unit->_LoadQuests();
 
-    const char* qname = qst->title;
+    std::string qname = qst->title;
 
     std::string recout = "|cff00ff00Added Quest to NPC as starter: ";
     recout += "|cff00ccff";
@@ -983,7 +978,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
         if (quest_id == 0)
             return false;
     }
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
     if (qst == NULL)
     {
@@ -1023,7 +1018,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
 
     unit->_LoadQuests();
 
-    const char* qname = qst->title;
+    std::string qname = qst->title;
 
     std::string recout = "|cff00ff00Added Quest to NPC as finisher: ";
     recout += "|cff00ccff";
@@ -1081,7 +1076,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
         if (quest_id == 0)
             return false;
     }
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
     if (qst == NULL)
     {
@@ -1120,7 +1115,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     }
     unit->_LoadQuests();
 
-    const char* qname = qst->title;
+    std::string qname = qst->title;
 
     std::string recout = "|cff00ff00Deleted Quest from NPC: ";
     recout += "|cff00ccff";
@@ -1165,7 +1160,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
         if (quest_id == 0)
             return false;
     }
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
     if (qst == NULL)
     {
@@ -1205,7 +1200,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
 
     unit->_LoadQuests();
 
-    const char* qname = qst->title;
+    std::string qname = qst->title;
 
     std::string recout = "|cff00ff00Deleted Quest from NPC: ";
     recout += "|cff00ccff";
@@ -1537,7 +1532,7 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
         if (quest_id == 0)
             return false;
     }
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
     if (qst)
     {
@@ -1565,7 +1560,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
         if (qu_id == 0)
             return false;
     }
-    Quest* q = QuestStorage.LookupEntry(qu_id);
+    Quest const* q = sMySQLStore.GetQuest(qu_id);
     if (q)
     {
         for (uint32 r = 0; r < q->count_reward_item; r++)

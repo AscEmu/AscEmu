@@ -108,13 +108,13 @@ void LfgMgr::LoadRewards()
             maxLevel = 80;
         }
 
-        if (firstQuestId && !QuestStorage.LookupEntry(firstQuestId))
+        if (firstQuestId && !sMySQLStore.GetQuest(firstQuestId))
         {
             Log.Debug("LFGMgr", "First quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", firstQuestId, dungeonId);
             firstQuestId = 0;
         }
 
-        if (otherQuestId && !QuestStorage.LookupEntry(otherQuestId))
+        if (otherQuestId && !sMySQLStore.GetQuest(otherQuestId))
         {
             Log.Debug("LFGMgr", "Other quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", otherQuestId, dungeonId);
             otherQuestId = 0;
@@ -1688,7 +1688,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         return;
 
     uint8 index = 0;
-    Quest* qReward = QuestStorage.LookupEntry(reward->reward[index].questId);
+    Quest const* qReward = sMySQLStore.GetQuest(reward->reward[index].questId);
     if (!qReward)
         return;
 
@@ -1782,7 +1782,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     else
     {
         index = 1;
-        qReward = QuestStorage.LookupEntry(reward->reward[index].questId);
+        qReward = sMySQLStore.GetQuest(reward->reward[index].questId);
         if (!qReward)
             return;
 

@@ -1265,7 +1265,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 std::set<uint32>::iterator qc = GetPlayer()->m_finishedQuests.begin();
                 for (; qc != GetPlayer()->m_finishedQuests.end(); ++qc)
                 {
-                    Quest* qst = QuestStorage.LookupEntry(*qc);
+                    Quest const* qst = sMySQLStore.GetQuest(*qc);
                     if (qst && qst->zone_id == achievementCriteria->complete_quests_in_zone.zoneID)
                     {
                         ++qcinzone;

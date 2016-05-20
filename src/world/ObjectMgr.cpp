@@ -1176,41 +1176,7 @@ uint32 ObjectMgr::GenerateLowGuid(uint32 guidhigh)
 
 void ObjectMgr::ProcessGameobjectQuests()
 {
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM gameobject_quest_item_binding");
-    QueryResult* result2 = WorldDatabase.Query("SELECT * FROM gameobject_quest_pickup_binding");
-
-    if (result)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-            GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(fields[0].GetUInt32());
-            Quest* qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
-
-            if (gameobject_info && qst)
-                const_cast<GameObjectInfo*>(gameobject_info)->itemMap[qst].insert(std::make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
-
-        }
-        while (result->NextRow());
-        delete result;
-    }
-
-    if (result2)
-    {
-        do
-        {
-            Field* fields = result2->Fetch();
-            GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(fields[0].GetUInt32());
-            Quest* qst = QuestStorage.LookupEntry(fields[1].GetUInt32());
-            if (gameobject_info && qst)
-                const_cast<GameObjectInfo*>(gameobject_info)->goMap.insert(std::make_pair(qst, fields[2].GetUInt32()));
-
-        }
-        while (result2->NextRow());
-        delete result2;
-    }
-
-    result = WorldDatabase.Query("SELECT * FROM npc_gossip_textid");
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM npc_gossip_textid");
     if (result)
     {
         do

@@ -630,7 +630,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                     QuestRelation* qr = (*itr);
                     if (qr != NULL)
                     {
-                        Quest* qst = qr->qst;
+                        Quest const* qst = qr->qst;
                         if (qst != NULL)
                         {
                             if ((qr->type & QUESTGIVER_QUEST_START && !target->HasQuest(qst->id))

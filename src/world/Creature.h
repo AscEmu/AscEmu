@@ -135,7 +135,7 @@ class SERVER_DECL Creature : public Unit
         bool HasQuest(uint32 id, uint32 type);
         void AddQuest(QuestRelation* Q);
         void DeleteQuest(QuestRelation* Q);
-        Quest* FindQuest(uint32 quest_id, uint8 quest_relation);
+        Quest const* FindQuest(uint32 quest_id, uint8 quest_relation);
         uint16 GetQuestRelation(uint32 quest_id);
         uint32 NumOfQuests();
         std::list<QuestRelation*>::iterator QuestsBegin();

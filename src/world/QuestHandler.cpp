@@ -125,7 +125,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
     bool bValid = false;
 
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
     if (!qst)
     {
         LOG_DEBUG("WORLD: Invalid quest ID.");
@@ -251,7 +251,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
         LOG_DEBUG("WORLD: No quest in slot %d.", quest_slot);
         return;
     }
-    Quest* qPtr = qEntry->GetQuest();
+    Quest const* qPtr = qEntry->GetQuest();
     CALL_QUESTSCRIPT_EVENT(qEntry, OnQuestCancel)(GetPlayer());
     qEntry->Finish();
 
@@ -292,7 +292,7 @@ void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
     uint32 quest_id;
     recv_data >> quest_id;
 
-    Quest* qst = QuestStorage.LookupEntry(quest_id);
+    Quest const* qst = sMySQLStore.GetQuest(quest_id);
     if (!qst)
     {
         LOG_DEBUG("WORLD: Invalid quest ID.");
@@ -315,7 +315,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
     recv_data >> quest_id;
 
     bool bValid = false;
-    Quest* qst = NULL;
+    Quest const* qst = nullptr;
     Object* qst_giver = NULL;
     uint32 status = 0;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
@@ -398,7 +398,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
     recvPacket >> quest_id;
 
     bool bValid = false;
-    Quest* qst = NULL;
+    Quest const* qst = nullptr;
     Object* qst_giver = NULL;
     uint32 status = 0;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
@@ -490,7 +490,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         return;
 
     bool bValid = false;
-    Quest* qst = NULL;
+    Quest const* qst = NULL;
     Object* qst_giver = NULL;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
@@ -504,7 +504,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = QuestStorage.LookupEntry(quest_id);
+            qst = sMySQLStore.GetQuest(quest_id);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -516,7 +516,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
             return;
 
         bValid = true;
-        qst = QuestStorage.LookupEntry(quest_id);
+        qst = sMySQLStore.GetQuest(quest_id);
     }
 
     if (!qst_giver)
@@ -579,7 +579,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
     uint32 questid;
     recv_data >> questid;
 
-    Quest* pQuest = QuestStorage.LookupEntry(questid);
+    Quest const* pQuest = sMySQLStore.GetQuest(questid);
     if (pQuest)
     {
         Group* pGroup = _player->GetGroup();
