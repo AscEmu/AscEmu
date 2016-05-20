@@ -101,8 +101,8 @@ class TeleportQ_Gossip : public GossipScript
             uint32 Text = objmgr.GetGossipTextForNpc(static_cast<Creature*>(pObject)->GetEntry());
 
             // check if there is a entry in the db
-            if (NpcTextStorage.LookupEntry(Text) == NULL)
-                return;
+            if (sMySQLStore.GetNpcText(Text) == nullptr)
+                Text = DefaultGossipTextId;
 
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);
             sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), plr, menu);

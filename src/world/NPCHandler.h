@@ -59,25 +59,25 @@ enum TrainerType
 #define NUM_TRAINER_TYPES 0x4
 
 #pragma pack(push,1)
-struct GossipEmote
+struct NpcText_Emote
 {
     uint32 Delay;
     uint32 Emote;
 };
 
 #define GOSSIP_EMOTE_COUNT 3
-struct GossipText_Text
+struct NpcText_Texts
 {
     float Prob;
-    char* Text[2];
+    std::string Text[2];
     uint32 Lang;
-    GossipEmote Emotes[GOSSIP_EMOTE_COUNT];
+    NpcText_Emote Emotes[GOSSIP_EMOTE_COUNT];
 };
 
-struct GossipText
+struct NpcText
 {
     uint32 ID;
-    GossipText_Text Texts[8];
+    NpcText_Texts Texts[8];
 };
 #pragma pack(pop)
 

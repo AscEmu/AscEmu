@@ -506,7 +506,6 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     WorldPacket data;
     uint32 textID;
     uint64 targetGuid;
-    GossipText* pGossip;
 
     recv_data >> textID;
     LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", textID);
@@ -514,7 +513,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     recv_data >> targetGuid;
     GetPlayer()->SetTargetGUID(targetGuid);
 
-    pGossip = NpcTextStorage.LookupEntry(textID);
+    NpcText const* pGossip = sMySQLStore.GetNpcText(textID);
     LocalizedNpcText* lnc = (language > 0) ? sLocalizationMgr.GetLocalizedNpcText(textID, language) : NULL;
 
     data.Initialize(SMSG_NPC_TEXT_UPDATE);
@@ -540,12 +539,12 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
             }
             else
             {
-                if (strlen(pGossip->Texts[i].Text[0]) == 0)
+                if (pGossip->Texts[i].Text[0].size() == 0)
                     data << pGossip->Texts[i].Text[1];
                 else
                     data << pGossip->Texts[i].Text[0];
 
-                if (strlen(pGossip->Texts[i].Text[1]) == 0)
+                if (pGossip->Texts[i].Text[1].size() == 0)
                     data << pGossip->Texts[i].Text[0];
                 else
                     data << pGossip->Texts[i].Text[1];

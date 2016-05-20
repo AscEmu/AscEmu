@@ -22,7 +22,6 @@
 #include "StdAfx.h"
 
  // Table formats converted to strings
-const char* gNpcTextFormat = "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
 const char* gGraveyardFormat = "uffffuuuux";
 const char* gTeleportCoordFormat = "uxufffx";
 const char* gPvPAreaFormat = "ush";
@@ -41,7 +40,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<GossipText, HashMapStorageContainer<GossipText> >                        NpcTextStorage;
 SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >          GraveyardStorage;
 SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >                TeleportCoordStorage;
 SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZoneEntry> >            FishingZoneStorage;
@@ -268,7 +266,6 @@ void Storage_FillTaskList(TaskList & tl)
     make_task(GraveyardStorage, GraveyardTeleport, HashMapStorageContainer, "graveyards", gGraveyardFormat);
     make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
     make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
-    make_task(NpcTextStorage, GossipText, HashMapStorageContainer, "npc_text", gNpcTextFormat);
     make_task(WorldMapInfoStorage, MapInfo, ArrayStorageContainer, "worldmap_info", gWorldMapInfoFormat);
     make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
     make_task(UnitModelSizeStorage, UnitModelSizeEntry, HashMapStorageContainer, "unit_display_sizes", gUnitModelSizeFormat);
@@ -287,7 +284,6 @@ void Storage_Cleanup()
     GraveyardStorage.Cleanup();
     TeleportCoordStorage.Cleanup();
     FishingZoneStorage.Cleanup();
-    NpcTextStorage.Cleanup();
     WorldMapInfoStorage.Cleanup();
     ZoneGuardStorage.Cleanup();
     UnitModelSizeStorage.Cleanup();
@@ -335,8 +331,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
         WorldBroadCastStorage.LoadAdditionalData(SecondName, gWorldBroadCastFormat);
     //else if (firstLoad && !stricmp(TableName, "quests"))                // Quests
     //    QuestStorage.LoadAdditionalData(SecondName, gQuestFormat);
-    else if (!stricmp(TableName, "npc_text"))            // NPC Text Storage
-        NpcTextStorage.LoadAdditionalData(SecondName, gNpcTextFormat);
+    //else if (!stricmp(TableName, "npc_text"))            // NPC Text Storage
+    //    NpcTextStorage.LoadAdditionalData(SecondName, gNpcTextFormat);
     else if (!stricmp(TableName, "fishing"))                // Fishing Zones
         FishingZoneStorage.LoadAdditionalData(SecondName, gFishingFormat);
     else if (!stricmp(TableName, "teleport_coords"))        // Teleport coords

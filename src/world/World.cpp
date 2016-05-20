@@ -486,6 +486,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadDisplayBoundingBoxesTable();
     sMySQLStore.LoadVendorRestrictionsTable();
     sMySQLStore.LoadAreaTriggersTable();
+    sMySQLStore.LoadNpcTextTable();
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.

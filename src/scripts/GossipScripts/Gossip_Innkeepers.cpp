@@ -43,8 +43,8 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     uint32 Text = objmgr.GetGossipTextForNpc(pCreature->GetEntry());
     if (Text != 0)
     {
-        GossipText* text = NpcTextStorage.LookupEntry(Text);
-        if (text != 0)
+        NpcText const* text = sMySQLStore.GetNpcText(Text);
+        if (text != nullptr)
             TextID = Text;
     }
     Arcemu::Gossip::Menu menu(pCreature->GetGUID(), TextID, 0);

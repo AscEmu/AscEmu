@@ -103,7 +103,7 @@ bool ChatHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSe
 bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    NpcTextStorage.Reload();
+    sMySQLStore.LoadNpcTextTable();
     GreenSystemMessage(m_session, "WorldDB 'npc_text' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

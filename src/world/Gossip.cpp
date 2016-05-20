@@ -306,7 +306,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
 {
     Creature* creature = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(creature->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
     VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(creature->GetProto()->Id);
@@ -334,7 +334,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
     Creature* trainer = static_cast<Creature*>(pObject);
     ::Trainer* trainerinfo = trainer->GetTrainer();
     uint32 Text = objmgr.GetGossipTextForNpc(trainer->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
     std::string name = trainer->GetCreatureInfo()->Name;
@@ -381,7 +381,7 @@ void Arcemu::Gossip::FlightMaster::OnHello(Object* pObject, Player* Plr)
 {
     Creature* flightmaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(flightmaster->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
@@ -401,7 +401,7 @@ void Arcemu::Gossip::Auctioneer::OnHello(Object* pObject, Player* Plr)
 {
     Creature* auctioneer = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(auctioneer->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
     //auctioneers don't offer quests.
     Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(AUCTIONEER));
@@ -417,8 +417,9 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
 {
     Creature* innkeeper = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(innkeeper->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
+
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
     menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(INNKEEPER), 1);
     //inn keepers can sell stuff
@@ -445,8 +446,9 @@ void Arcemu::Gossip::BattleMaster::OnHello(Object* pObject, Player* Plr)
 {
     Creature* battlemaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(battlemaster->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
+
     Gossip::Menu menu(battlemaster->GetGUID(), Text, Plr->GetSession()->language);
     menu.AddItem(GOSSIP_ICON_BATTLE, Plr->GetSession()->LocalizedGossipOption(BATTLEMASTER), 1);
     sQuestMgr.FillQuestMenu(battlemaster, Plr, menu);
@@ -474,8 +476,9 @@ void Arcemu::Gossip::CharterGiver::OnHello(Object* pObject, Player* Plr)
 {
     Creature* chartergiver = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(chartergiver->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
+
     if (chartergiver->isTabardDesigner())
         Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(FOUND_GUILD));
     else
@@ -492,7 +495,7 @@ void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
 {
     Creature* chartergiver = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(chartergiver->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(chartergiver->GetGUID(), Text, Plr->GetSession()->language);
@@ -531,8 +534,9 @@ void Arcemu::Gossip::StableMaster::OnHello(Object* pObject, Player* Plr)
 {
     Creature* stablemaster = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(stablemaster->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
+
     if (Plr->getClass() == ::HUNTER)
         Gossip::Menu::SendQuickMenu(pObject->GetGUID(), Text, Plr, 1, GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(STABLE_MY_PET));
     else
@@ -550,7 +554,7 @@ void Arcemu::Gossip::PetTrainer::OnHello(Object* pObject, Player* Plr)
 {
     Creature* petrain = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(petrain->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
@@ -581,7 +585,7 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
 {
     Creature* trainer = static_cast<Creature*>(pObject);
     uint32 Text = objmgr.GetGossipTextForNpc(trainer->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
@@ -700,8 +704,9 @@ void Arcemu::Gossip::Generic::OnHello(Object* pObject, Player* Plr)
 {
     //Simply send quests.
     uint32 Text = objmgr.GetGossipTextForNpc(pObject->GetEntry());
-    if (NpcTextStorage.LookupEntry(Text) == NULL)
+    if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
+
     Gossip::Menu menu(pObject->GetGUID(), Text, Plr->GetSession()->language);
     sQuestMgr.FillQuestMenu(static_cast<Creature*>(pObject), Plr, menu);
     menu.StackSend<256>(Plr);

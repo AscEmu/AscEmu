@@ -26,6 +26,7 @@ public:
     typedef std::unordered_map<uint32, DisplayBounding> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32, VendorRestrictionEntry> VendorRestrictionContainer;
     typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
+    typedef std::unordered_map<uint32, NpcText> NpcTextContainer;
 
 
     //helper
@@ -54,6 +55,8 @@ public:
     AreaTrigger const* GetAreaTrigger(uint32 entry);
     AreaTriggerContainer const* GetAreaTriggersStore() { return &_areaTriggersStore; }
 
+    NpcText const* GetNpcText(uint32 entry);
+    NpcTextContainer const* GetNpcTextStore() { return &_npcTextStore; }
 
     //Loads
     void LoadItemPagesTable();
@@ -71,6 +74,7 @@ public:
     void LoadDisplayBoundingBoxesTable();
     void LoadVendorRestrictionsTable();
     void LoadAreaTriggersTable();
+    void LoadNpcTextTable();
 
 
     ItemPageContainer _itemPagesStore;
@@ -83,6 +87,7 @@ public:
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
     VendorRestrictionContainer _vendorRestrictionsStore;
     AreaTriggerContainer _areaTriggersStore;
+    NpcTextContainer _npcTextStore;
 
 };
 

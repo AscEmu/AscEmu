@@ -235,8 +235,8 @@ namespace luaGlobalFunctions
                 WorldBroadCastStorage.Reload();
             /*else if (!stricmp(TableName, "quests"))				// Quests
                 QuestStorage.Reload();*/
-            else if (!stricmp(TableName, "npc_text"))			// NPC Text Storage
-                NpcTextStorage.Reload();
+            //else if (!stricmp(TableName, "npc_text"))			// NPC Text Storage
+            //    NpcTextStorage.Reload();
             else if (!stricmp(TableName, "fishing"))				// Fishing Zones
                 FishingZoneStorage.Reload();
             else if (!stricmp(TableName, "teleport_coords"))		// Teleport coords

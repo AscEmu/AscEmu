@@ -1248,3 +1248,82 @@ AreaTrigger const* MySQLDataStore::GetAreaTrigger(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadNpcTextTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                           0
+    QueryResult* npc_text_result = WorldDatabase.Query("SELECT entry, "
+    //                                                     1       2        3       4          5           6            7           8            9           10
+                                                        "prob0, text0_0, text0_1, lang0, EmoteDelay0_0, Emote0_0, EmoteDelay0_1, Emote0_1, EmoteDelay0_2, Emote0_2, "
+    //                                                     11      12       13      14         15          16           17          18           19          20
+                                                        "prob1, text1_0, text1_1, lang1, EmoteDelay1_0, Emote1_0, EmoteDelay1_1, Emote1_1, EmoteDelay1_2, Emote1_2, "
+    //                                                     21      22       23      24         25          26           27          28           29          30
+                                                        "prob2, text2_0, text2_1, lang2, EmoteDelay2_0, Emote2_0, EmoteDelay2_1, Emote2_1, EmoteDelay2_2, Emote2_2, "
+    //                                                     31      32       33      34         35          36           37          38           39          40
+                                                        "prob3, text3_0, text3_1, lang3, EmoteDelay3_0, Emote3_0, EmoteDelay3_1, Emote3_1, EmoteDelay3_2, Emote3_2, "
+    //                                                     41      42       43      44         45          46           47          48           49          50
+                                                        "prob4, text4_0, text4_1, lang4, EmoteDelay4_0, Emote4_0, EmoteDelay4_1, Emote4_1, EmoteDelay4_2, Emote4_2, "
+    //                                                     51      52       53      54         55          56           57          58           59          60
+                                                        "prob5, text5_0, text5_1, lang5, EmoteDelay5_0, Emote5_0, EmoteDelay5_1, Emote5_1, EmoteDelay5_2, Emote5_2, "
+    //                                                     61      62       63      64         65          66           67          68           69          70
+                                                        "prob6, text6_0, text6_1, lang6, EmoteDelay6_0, Emote6_0, EmoteDelay6_1, Emote6_1, EmoteDelay6_2, Emote6_2, "
+    //                                                     71      72       73      74         75          76           77          78           79          80
+                                                        "prob7, text7_0, text7_1, lang7, EmoteDelay7_0, Emote7_0, EmoteDelay7_1, Emote7_1, EmoteDelay7_2, Emote7_2 FROM npc_text");
+
+    if (npc_text_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `npc_text` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `npc_text` has %u columns", npc_text_result->GetFieldCount());
+
+    _npcTextStore.rehash(npc_text_result->GetRowCount());
+
+    uint32 npc_text_count = 0;
+    do
+    {
+        Field* fields = npc_text_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        NpcText& npcText = _npcTextStore[entry];
+
+        npcText.ID = entry;
+        for (uint8 i = 0; i < 8; ++i)
+        {
+            npcText.Texts[i].Prob = fields[1].GetFloat();
+
+            for (uint8 j = 0; j < 2; ++j)
+            {
+                npcText.Texts[i].Text[j] = fields[2 + j].GetString();
+            }
+
+            npcText.Texts[i].Lang = fields[4].GetUInt32();
+
+            for (uint8 k = 0; k < GOSSIP_EMOTE_COUNT; ++k)
+            {
+                npcText.Texts[i].Emotes[k].Delay = fields[5 + k * 2].GetUInt32();
+                npcText.Texts[i].Emotes[k].Emote = fields[6 + k * 2].GetUInt32();
+            }
+        }
+
+
+        ++npc_text_count;
+    } while (npc_text_result->NextRow());
+
+    delete npc_text_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, getMSTime() - start_time);
+}
+
+NpcText const* MySQLDataStore::GetNpcText(uint32 entry)
+{
+    NpcTextContainer::const_iterator itr = _npcTextStore.find(entry);
+    if (itr != _npcTextStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
