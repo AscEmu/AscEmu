@@ -658,7 +658,6 @@ void CommandTableStorage::Init()
         { "points_of_interest", 'z', &ChatHandler::HandleReloadPointsOfInterestCommand,     "Reload points_of_interest table",              nullptr, 0, 0, 0 },
         { "quests",             'z', &ChatHandler::HandleReloadQuestsCommand,               "Reload quests table",                          nullptr, 0, 0, 0 },
         { "teleport_coords",    'z', &ChatHandler::HandleReloadTeleportCoordsCommand,       "Reload teleport_coords table",                 nullptr, 0, 0, 0 },
-        { "unit_display_sizes", 'z', &ChatHandler::HandleReloadUnitDisplaySizesCommand,     "Reload unit_display_sizes table",              nullptr, 0, 0, 0 },
         { "worldbroadcast",     'z', &ChatHandler::HandleReloadWorldbroadcastCommand,       "Reload worldbroadcast table",                  nullptr, 0, 0, 0 },
         { "worldmap_info",      'z', &ChatHandler::HandleReloadWorldmapInfoCommand,         "Reload worldmap_info table",                   nullptr, 0, 0, 0 },
         { "worldstring_tables", 'z', &ChatHandler::HandleReloadWorldstringTablesCommand,    "Reload worldstring_tables table",              nullptr, 0, 0, 0 },

@@ -144,15 +144,6 @@ bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldS
     return true;
 }
 
-//.server reload unit_display_sizes
-bool ChatHandler::HandleReloadUnitDisplaySizesCommand(const char* /*args*/, WorldSession* m_session)
-{
-    uint32 start_time = getMSTime();
-    UnitModelSizeStorage.Reload();
-    GreenSystemMessage(m_session, "WorldDB 'unit_display_sizes' table reloaded in %u ms", getMSTime() - start_time);
-    return true;
-}
-
 //.server reload worldbroadcast
 bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldSession* m_session)
 {

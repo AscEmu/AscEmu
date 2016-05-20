@@ -25,7 +25,6 @@
 #include "ObjectMgr.h"
 
 extern SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                 ZoneGuardStorage;
-extern SERVER_DECL SQLStorage<UnitModelSizeEntry, HashMapStorageContainer<UnitModelSizeEntry> >         UnitModelSizeStorage;
 extern SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >             WorldStringTableStorage;
 extern SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                 WorldBroadCastStorage;
 extern SERVER_DECL SQLStorage<BGMaster, HashMapStorageContainer<BGMaster> >                             BGMasterStorage;

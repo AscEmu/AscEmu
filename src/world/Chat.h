@@ -420,7 +420,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleReloadPointsOfInterestCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadQuestsCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldSession* m_session);
-        bool HandleReloadUnitDisplaySizesCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadWorldstringTablesCommand(const char* /*args*/, WorldSession* m_session);
