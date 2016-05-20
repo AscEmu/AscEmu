@@ -1574,3 +1574,71 @@ FishingZoneEntry const* MySQLDataStore::GetFishingZone(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadWorldMapInfoTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                0        1       2       3           4             5          6        7      8          9
+    QueryResult* worldmap_info_result = WorldDatabase.Query("SELECT entry, screenid, type, maxplayers, minlevel, minlevel_heroic, repopx, repopy, repopz, repopentry, "
+    //                                                           10       11      12         13           14                15              16
+                                                            "area_name, flags, cooldown, lvl_mod_a, required_quest_A, required_quest_H, required_item, "
+    //                                                              17              18              19                20
+                                                            "heroic_keyid_1, heroic_keyid_2, viewingDistance, required_checkpoint FROM worldmap_info");
+    if (worldmap_info_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `worldmap_info` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `worldmap_info` has %u columns", worldmap_info_result->GetFieldCount());
+
+    _worldMapInfoStore.rehash(worldmap_info_result->GetRowCount());
+
+    uint32 world_map_info_count = 0;
+    do
+    {
+        Field* fields = worldmap_info_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        MapInfo& mapInfo = _worldMapInfoStore[entry];
+
+        mapInfo.mapid = entry;
+        mapInfo.screenid = fields[1].GetUInt32();
+        mapInfo.type = fields[2].GetUInt32();
+        mapInfo.playerlimit = fields[3].GetUInt32();
+        mapInfo.minlevel = fields[4].GetUInt32();
+        mapInfo.minlevel_heroic = fields[5].GetUInt32();
+        mapInfo.repopx = fields[6].GetFloat();
+        mapInfo.repopy = fields[7].GetFloat();
+        mapInfo.repopz = fields[8].GetFloat();
+        mapInfo.repopmapid = fields[9].GetUInt32();
+        mapInfo.name = fields[10].GetString();
+        mapInfo.flags = fields[11].GetUInt32();
+        mapInfo.cooldown = fields[12].GetUInt32();
+        mapInfo.lvl_mod_a = fields[13].GetUInt32();
+        mapInfo.required_quest_A = fields[14].GetUInt32();
+        mapInfo.required_quest_H = fields[15].GetUInt32();
+        mapInfo.required_item = fields[16].GetUInt32();
+        mapInfo.heroic_key_1 = fields[17].GetUInt32();
+        mapInfo.heroic_key_2 = fields[18].GetUInt32();
+        mapInfo.update_distance = fields[19].GetFloat();
+        mapInfo.checkpoint_id = fields[20].GetUInt32();
+
+        ++world_map_info_count;
+    } while (worldmap_info_result->NextRow());
+
+    delete worldmap_info_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `worldmap_info` table in %u ms!", world_map_info_count, getMSTime() - start_time);
+}
+
+MapInfo const* MySQLDataStore::GetWorldMapInfo(uint32 entry)
+{
+    WorldMapInfoContainer::const_iterator itr = _worldMapInfoStore.find(entry);
+    if (itr != _worldMapInfoStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

@@ -741,10 +741,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                     _player->KillPlayer();
                 }
 
-                MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(_player->GetMapId());
-                if (pMapinfo != NULL)
+                MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(_player->GetMapId());
+                if (pMapinfo != nullptr)
                 {
-
                     if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
                     {
                         _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());

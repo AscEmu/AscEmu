@@ -237,12 +237,12 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
 
     Corpse* pCorpse;
     WorldPacket data(MSG_CORPSE_QUERY, 25);
-    MapInfo* pMapinfo;
+    MapInfo const* pMapinfo;
 
     pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
     if (pCorpse)
     {
-        pMapinfo = WorldMapInfoStorage.LookupEntry(pCorpse->GetMapId());
+        pMapinfo = sMySQLStore.GetWorldMapInfo(pCorpse->GetMapId());
         if (pMapinfo)
         {
             if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)

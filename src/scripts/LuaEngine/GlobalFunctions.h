@@ -243,8 +243,8 @@ namespace luaGlobalFunctions
             //    TeleportCoordStorage.Reload();
             //else if (!stricmp(TableName, "graveyards"))			// Graveyards
             //    GraveyardStorage.Reload();
-            else if (!stricmp(TableName, "worldmap_info"))		// WorldMapInfo
-                WorldMapInfoStorage.Reload();
+            //else if (!stricmp(TableName, "worldmap_info"))		// WorldMapInfo
+            //    WorldMapInfoStorage.Reload();
             else if (!stricmp(TableName, "zoneguards"))
                 ZoneGuardStorage.Reload();
             else if (!stricmp(TableName, "unit_display_sizes"))

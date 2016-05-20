@@ -23,7 +23,6 @@
 
  // Table formats converted to strings
 const char* gPvPAreaFormat = "ush";
-const char* gWorldMapInfoFormat = "uuuuuufffusuuuuuuuufu";
 const char* gPointOfInterestFormat = "uffuuus";
 const char* gZoneGuardsFormat = "uuu";
 const char* gUnitModelSizeFormat = "ufu";
@@ -35,7 +34,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >                                WorldMapInfoStorage;
 SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                ZoneGuardStorage;
 SERVER_DECL SQLStorage<UnitModelSizeEntry, HashMapStorageContainer<UnitModelSizeEntry> >        UnitModelSizeStorage;
 SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >            WorldStringTableStorage;
@@ -253,7 +251,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void Storage_FillTaskList(TaskList & tl)
 {
-    make_task(WorldMapInfoStorage, MapInfo, ArrayStorageContainer, "worldmap_info", gWorldMapInfoFormat);
     make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
     make_task(UnitModelSizeStorage, UnitModelSizeEntry, HashMapStorageContainer, "unit_display_sizes", gUnitModelSizeFormat);
     make_task(WorldStringTableStorage, WorldStringTable, HashMapStorageContainer, "worldstring_tables", gWorldStringTableFormat);
@@ -266,7 +263,6 @@ void Storage_FillTaskList(TaskList & tl)
 
 void Storage_Cleanup()
 {
-    WorldMapInfoStorage.Cleanup();
     ZoneGuardStorage.Cleanup();
     UnitModelSizeStorage.Cleanup();
     WorldStringTableStorage.Cleanup();
@@ -319,8 +315,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     //    TeleportCoordStorage.LoadAdditionalData(SecondName, gTeleportCoordFormat);
     //else if (!stricmp(TableName, "graveyards"))            // Graveyards
     //    GraveyardStorage.LoadAdditionalData(SecondName, gGraveyardFormat);
-    else if (!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
-        WorldMapInfoStorage.LoadAdditionalData(SecondName, gWorldMapInfoFormat);
+    //else if (!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
+    //    WorldMapInfoStorage.LoadAdditionalData(SecondName, gWorldMapInfoFormat);
     else if (!stricmp(TableName, "zoneguards"))
         ZoneGuardStorage.LoadAdditionalData(SecondName, gZoneGuardsFormat);
     else if (!stricmp(TableName, "unit_display_sizes"))

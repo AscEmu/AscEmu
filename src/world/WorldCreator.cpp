@@ -56,7 +56,7 @@ void InstanceMgr::Load(TaskList* l)
     {
         do
         {
-            if (WorldMapInfoStorage.LookupEntry(result->Fetch()[0].GetUInt32()) == NULL)
+            if (sMySQLStore.GetWorldMapInfo(result->Fetch()[0].GetUInt32()) == nullptr)
                 continue;
 
             if (result->Fetch()[0].GetUInt32() >= NUM_MAPS)
@@ -75,24 +75,21 @@ void InstanceMgr::Load(TaskList* l)
     l->wait();
 
     // create maps for any we don't have yet.
-    StorageContainerIterator<MapInfo> * itr = WorldMapInfoStorage.MakeIterator();
-    while (!itr->AtEnd())
+    MySQLDataStore::WorldMapInfoContainer const* its = sMySQLStore.GetWorldMapInfoStore();
+    for (MySQLDataStore::WorldMapInfoContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        if (itr->Get()->mapid >= NUM_MAPS)
+        if (itr->second.mapid >= NUM_MAPS)
         {
-            Log.Error("InstanceMgr", "One or more of your worldmap_info rows specifies an invalid map: %u", itr->Get()->mapid);
+            Log.Error("InstanceMgr", "One or more of your worldmap_info rows specifies an invalid map: %u", itr->second.mapid);
             continue;
         }
 
-        if (m_maps[itr->Get()->mapid] == NULL)
+        if (m_maps[itr->second.mapid] == NULL)
         {
-            l->AddTask(new Task(new CallbackP1<InstanceMgr, uint32>(this, &InstanceMgr::_CreateMap, itr->Get()->mapid)));
+            l->AddTask(new Task(new CallbackP1<InstanceMgr, uint32>(this, &InstanceMgr::_CreateMap, itr->second.mapid)));
         }
-        //_CreateMap(itr->Get()->mapid);
-
-        itr->Inc();
     }
-    itr->Destruct();
+
     l->wait();
 
     // load reset times
@@ -162,7 +159,7 @@ void InstanceMgr::Shutdown()
 uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
 {
     // preteleport is where all the magic happens :P instance creation, etc.
-    MapInfo* inf = WorldMapInfoStorage.LookupEntry(mapid);
+    MapInfo const* inf = sMySQLStore.GetWorldMapInfo(mapid);
     Group* pGroup;
     InstanceMap* instancemap;
     Instance* in;
@@ -537,10 +534,10 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
     Instance* in;
     InstanceMap::iterator itr;
     InstanceMap* instancemap;
-    MapInfo* inf = WorldMapInfoStorage.LookupEntry(obj->GetMapId());
+    MapInfo const* inf = sMySQLStore.GetWorldMapInfo(obj->GetMapId());
 
     // we can *never* teleport to maps without a mapinfo.
-    if (inf == NULL || obj->GetMapId() >= NUM_MAPS)
+    if (inf == nullptr || obj->GetMapId() >= NUM_MAPS)
         return NULL;
 
     if (obj->IsPlayer())
@@ -643,9 +640,9 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
 
 MapMgr* InstanceMgr::_CreateInstance(uint32 mapid, uint32 instanceid)
 {
-    MapInfo* inf = WorldMapInfoStorage.LookupEntry(mapid);
+    MapInfo const* inf = sMySQLStore.GetWorldMapInfo(mapid);
 
-    ARCEMU_ASSERT(inf != NULL && inf->type == INSTANCE_NULL);
+    ARCEMU_ASSERT(inf != nullptr && inf->type == INSTANCE_NULL);
     ARCEMU_ASSERT(mapid < NUM_MAPS && m_maps[mapid] != NULL);
 
     Log.Notice("InstanceMgr", "Creating continent %s.", m_maps[mapid]->GetName());
@@ -684,11 +681,10 @@ void InstanceMgr::_CreateMap(uint32 mapid)
     if (mapid >= NUM_MAPS)
         return;
 
-    MapInfo* inf;
-
-    inf = WorldMapInfoStorage.LookupEntry(mapid);
-    if (inf == NULL)
+    MapInfo const* inf = sMySQLStore.GetWorldMapInfo(mapid);
+    if (inf == nullptr)
         return;
+
     if (m_maps[mapid] != NULL)
         return;
 
@@ -709,7 +705,7 @@ uint32 InstanceMgr::GenerateInstanceID()
     return iid;
 }
 
-void BuildStats(MapMgr* mgr, char* m_file, Instance* inst, MapInfo* inf)
+void BuildStats(MapMgr* mgr, char* m_file, Instance* inst, MapInfo const* inf)
 {
     char tmp[200];
 #define pushline strcat(m_file, tmp)
@@ -804,7 +800,7 @@ void InstanceMgr::BuildXMLStats(char* m_file)
 
 void InstanceMgr::_LoadInstances()
 {
-    MapInfo* inf;
+    MapInfo const* inf;
     Instance* in;
     QueryResult* result;
 
@@ -821,7 +817,7 @@ void InstanceMgr::_LoadInstances()
     {
         do
         {
-            inf = WorldMapInfoStorage.LookupEntry(result->Fetch()[1].GetUInt32());
+            inf = sMySQLStore.GetWorldMapInfo(result->Fetch()[1].GetUInt32());
             if (inf == NULL || result->Fetch()[1].GetUInt32() >= NUM_MAPS)
             {
                 CharacterDatabase.Execute("DELETE FROM instances WHERE mapid = %u", result->Fetch()[1].GetUInt32());
@@ -1258,7 +1254,7 @@ MapMgr* InstanceMgr::CreateBattlegroundInstance(uint32 mapid)
     pInstance->m_isBattleground = true;
     pInstance->m_persistent = false;
     pInstance->m_mapId = mapid;
-    pInstance->m_mapInfo = WorldMapInfoStorage.LookupEntry(mapid);
+    pInstance->m_mapInfo = sMySQLStore.GetWorldMapInfo(mapid);
     pInstance->m_mapMgr = ret;
     m_mapLock.Acquire();
     if (m_instances[mapid] == NULL)
@@ -1293,7 +1289,7 @@ MapMgr* InstanceMgr::CreateInstance(uint32 instanceType, uint32 mapid)
     pInstance->m_instanceId = ret->GetInstanceID();
     pInstance->m_persistent = false;
     pInstance->m_mapId = mapid;
-    pInstance->m_mapInfo = WorldMapInfoStorage.LookupEntry(mapid);
+    pInstance->m_mapInfo = sMySQLStore.GetWorldMapInfo(mapid);
     pInstance->m_mapMgr = ret;
     m_mapLock.Acquire();
     if (m_instances[mapid] == NULL)

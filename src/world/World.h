@@ -147,7 +147,7 @@ struct MapInfo
     float repopy;
     float repopz;
     uint32 repopmapid;
-    char* name;
+    std::string name;
     uint32 flags;
     uint32 cooldown;
     uint32 lvl_mod_a;
@@ -164,7 +164,7 @@ struct MapInfo
     /// \param  uint32 flag  -  flag to check
     /// \return true if the map has the flag, otherwise false if the map doesn't have the flag.
     //////////////////////////////////////////////////////////////////////////////////////////
-    bool HasFlag(uint32 flag)
+    bool HasFlag(uint32 flag) const
     {
         if ((flags & flag) != 0)
             return true;
@@ -178,7 +178,7 @@ struct MapInfo
     /// \param    uint32 difficulty  -  difficulty to check
     /// \return   true if the map has this difficulty, otherwise false.
     //////////////////////////////////////////////////////////////////////////////////////////
-    bool HasDifficulty(uint32 difficulty)
+    bool HasDifficulty(uint32 difficulty) const
     {
         if (difficulty > uint32(TOTAL_RAID_MODES))
             return false;

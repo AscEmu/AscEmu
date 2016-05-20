@@ -1211,7 +1211,7 @@ const char* WorldSession::LocalizedWorldSrv(uint32 id)
 
 const char* WorldSession::LocalizedMapName(uint32 id)
 {
-    MapInfo* mi = WorldMapInfoStorage.LookupEntry(id);
+    MapInfo const* mi = sMySQLStore.GetWorldMapInfo(id);
     if (!mi)
     {
         memset(szError, 0, 64);
@@ -1223,7 +1223,7 @@ const char* WorldSession::LocalizedMapName(uint32 id)
     if (lpi)
         return lpi->Text;
     else
-        return mi->name;
+        return mi->name.c_str();
 }
 
 const char* WorldSession::LocalizedBroadCast(uint32 id)

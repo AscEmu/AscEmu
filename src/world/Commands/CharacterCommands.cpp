@@ -1383,7 +1383,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
         {
             count++;
             ss << " - " << MSG_COLOR_CYAN << (*itr).second << "|r";
-            MapInfo* mapInfo = WorldMapInfoStorage.LookupEntry((*itr).first);
+            MapInfo const* mapInfo = sMySQLStore.GetWorldMapInfo((*itr).first);
             if (mapInfo != NULL)
                 ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
             Instance* pInstance = sInstanceMgr.GetInstanceByIds((*itr).first, (*itr).second);

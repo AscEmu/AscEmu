@@ -166,7 +166,7 @@ bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldS
 bool ChatHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    WorldMapInfoStorage.Reload();
+    sMySQLStore.LoadWorldMapInfoTable();
     GreenSystemMessage(m_session, "WorldDB 'worldmap_info' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

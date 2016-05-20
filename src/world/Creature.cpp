@@ -1271,7 +1271,7 @@ bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
     }
 }
 
-bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info)
+bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
 {
     m_spawn = spawn;
     proto = sMySQLStore.GetCreatureProto(spawn->entry);

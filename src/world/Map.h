@@ -115,7 +115,7 @@ class SERVER_DECL Map
 {
     public:
 
-        Map(uint32 mapid, MapInfo* inf);
+        Map(uint32 mapid, MapInfo const* inf);
         ~Map();
 
         inline std::string GetNameString();
@@ -138,7 +138,7 @@ class SERVER_DECL Map
 
     private:
 
-        MapInfo* _mapInfo;
+        MapInfo const* _mapInfo;
         uint32 _mapId;
         std::string name;
 

@@ -2163,9 +2163,9 @@ void Object::PlaySoundToSet(uint32 sound_entry)
 
 bool Object::IsInBg()
 {
-    MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(GetMapId());
+    MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
 
-    if (pMapinfo != NULL)
+    if (pMapinfo != nullptr)
     {
         return (pMapinfo->type == INSTANCE_BATTLEGROUND);
     }

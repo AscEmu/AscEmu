@@ -824,7 +824,7 @@ void ObjectMgr::LoadInstanceBossInfos()
         InstanceBossInfo* bossInfo = new InstanceBossInfo();
         bossInfo->mapid = (uint32)result->Fetch()[0].GetUInt32();
 
-        MapInfo* mapInfo = WorldMapInfoStorage.LookupEntry(bossInfo->mapid);
+        MapInfo const* mapInfo = sMySQLStore.GetWorldMapInfo(bossInfo->mapid);
         if (mapInfo == NULL || mapInfo->type == INSTANCE_NULL)
         {
             LOG_DETAIL("Not loading boss information for map %u! (continent or unknown map)", bossInfo->mapid);

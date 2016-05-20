@@ -45,7 +45,7 @@ MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
     CollideInterface.ActivateMap(mapId);
     _shutdown = false;
     m_instanceID = instanceid;
-    pMapInfo = WorldMapInfoStorage.LookupEntry(mapId);
+    pMapInfo = sMySQLStore.GetWorldMapInfo(mapId);
     m_UpdateDistance = pMapInfo->update_distance * pMapInfo->update_distance;
     iInstanceMode = 0;
 
@@ -1537,7 +1537,7 @@ uint32 MapMgr::GetInstanceID()
     return m_instanceID;
 }
 
-MapInfo* MapMgr::GetMapInfo()
+MapInfo const* MapMgr::GetMapInfo()
 {
     return pMapInfo;
 }

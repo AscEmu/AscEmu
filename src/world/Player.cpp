@@ -4602,7 +4602,7 @@ void Player::RepopRequestedPlayer()
         return;
     }
 
-    MapInfo* pMapinfo = NULL;
+    MapInfo const* pMapinfo = NULL;
 
     // Set death state to corpse, that way players will lose visibility
     setDeathState(CORPSE);
@@ -4625,7 +4625,7 @@ void Player::RepopRequestedPlayer()
     // Cebernic: don't do this.
     if (!m_bg || (m_bg && m_bg->HasStarted()))
     {
-        pMapinfo = WorldMapInfoStorage.LookupEntry(GetMapId());
+        pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
         if (pMapinfo != NULL)
         {
             if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
@@ -7818,7 +7818,7 @@ void Player::SaveEntryPoint(uint32 mapId)
     if (IS_INSTANCE(GetMapId()))
         return; // don't save if we're not on the main continent.
     //otherwise we could end up in an endless loop :P
-    MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(mapId);
+    MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(mapId);
 
     if (pMapinfo)
     {
@@ -8016,7 +8016,7 @@ void Player::UpdateChannels(uint16 AreaID)
     //Check for instances?
     if (!AreaID || AreaID == 0xFFFF)
     {
-        MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(GetMapId());
+        MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
         if (IS_INSTANCE(GetMapId()))
             AreaName = pMapinfo->name;
         else
@@ -8027,7 +8027,7 @@ void Player::UpdateChannels(uint16 AreaID)
         AreaName = at2->area_name[0];
         if (AreaName.length() < 2)
         {
-            MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(GetMapId());
+            MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
             AreaName = pMapinfo->name;
         }
     }
@@ -8563,7 +8563,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     bool instance = false;
-    MapInfo* mi = WorldMapInfoStorage.LookupEntry(MapID);
+    MapInfo const* mi = sMySQLStore.GetWorldMapInfo(MapID);
 
     if (InstanceID && (uint32)m_instanceId != InstanceID)
     {
@@ -9289,7 +9289,7 @@ void Player::CompleteLoading()
 void Player::OnWorldPortAck()
 {
     //only resurrect if player is porting to a instance portal
-    MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(GetMapId());
+    MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
     if (IsDead())
     {
         if (pMapinfo)

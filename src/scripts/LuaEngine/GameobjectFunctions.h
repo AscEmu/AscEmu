@@ -907,7 +907,7 @@ class LuaGameObject
 
         static int GetInstanceOwner(lua_State* L, GameObject* ptr)
         {
-            MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(ptr->GetMapId());
+            MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(ptr->GetMapId());
             if (pMapinfo)  //this block = IsInInstace()
             {
                 if (pMapinfo->type != INSTANCE_NULL)
@@ -953,7 +953,7 @@ class LuaGameObject
 
         static int GetDungeonDifficulty(lua_State* L, GameObject* ptr)
         {
-            MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(ptr->GetMapId());
+            MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(ptr->GetMapId());
             if (pMapinfo)  //this block = IsInInstace()
             {
                 if (pMapinfo->type != INSTANCE_NULL)
@@ -974,7 +974,7 @@ class LuaGameObject
         static int SetDungeonDifficulty(lua_State* L, GameObject* ptr)
         {
             uint8 difficulty = luaL_checkinteger(L, 1);
-            MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(ptr->GetMapId());
+            MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(ptr->GetMapId());
             if (pMapinfo)  //this block = IsInInstace()
             {
                 if (pMapinfo->type != INSTANCE_NULL)

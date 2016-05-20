@@ -2612,7 +2612,7 @@ bool Unit::IsCasting()
 
 bool Unit::IsInInstance()
 {
-    MapInfo* pMapinfo = WorldMapInfoStorage.LookupEntry(this->GetMapId());
+    MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(this->GetMapId());
     if (pMapinfo)
         return (pMapinfo->type != INSTANCE_NULL);
 

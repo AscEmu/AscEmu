@@ -32,6 +32,7 @@ public:
     typedef std::unordered_map<uint32, GraveyardTeleport> GraveyardsContainer;
     typedef std::unordered_map<uint32, TeleportCoords> TeleportCoordsContainer;
     typedef std::unordered_map<uint32, FishingZoneEntry> FishingZonesContainer;
+    typedef std::unordered_map<uint32, MapInfo> WorldMapInfoContainer;
 
 
     //helper
@@ -78,6 +79,9 @@ public:
     FishingZoneEntry const* GetFishingZone(uint32 entry);
     FishingZonesContainer const* GetFischingZonesStore() { return &_fishingZonesStore; }
 
+    MapInfo const* GetWorldMapInfo(uint32 entry);
+    WorldMapInfoContainer const* GetWorldMapInfoStore() { return &_worldMapInfoStore; }
+
     //Loads
     void LoadItemPagesTable();
     void LoadItemsTable();
@@ -100,6 +104,7 @@ public:
     void LoadGraveyardsTable();
     void LoadTeleportCoordsTable();
     void LoadFishingTable();
+    void LoadWorldMapInfoTable();
 
 
     ItemPageContainer _itemPagesStore;
@@ -118,6 +123,7 @@ public:
     GraveyardsContainer _graveyardsStore;
     TeleportCoordsContainer _teleportCoordsStore;
     FishingZonesContainer _fishingZonesStore;
+    WorldMapInfoContainer _worldMapInfoStore;
 
 };
 

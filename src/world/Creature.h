@@ -65,7 +65,7 @@ class SERVER_DECL Creature : public Unit
         void AddVehicleComponent(uint32 creature_entry, uint32 vehicleid);
         void RemoveVehicleComponent();
 
-        bool Load(CreatureSpawn* spawn, uint32 mode, MapInfo* info);
+        bool Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info);
         void Load(CreatureProto const* proto_, float x, float y, float z, float o = 0);
 
         void AddToWorld();
