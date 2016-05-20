@@ -132,7 +132,7 @@ struct ItemPage
 struct GossipMenuOption
 {
     uint32 id;
-    char* text;
+    std::string text;
 };
 
 struct WorldStringTable

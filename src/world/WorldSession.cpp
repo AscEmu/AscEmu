@@ -1175,7 +1175,7 @@ const char* WorldSession::LocalizedCreatureTexts(uint32 id)
 // These strings can be found in gossip_menu_option tables in the database
 const char* WorldSession::LocalizedGossipOption(uint32 id)
 {
-    GossipMenuOption* wst = GossipMenuOptionStorage.LookupEntry(id);
+    GossipMenuOption const* wst = sMySQLStore.GetGossipMenuOption(id);
     if (!wst)
     {
         memset(szError, 0, 64);
@@ -1187,7 +1187,7 @@ const char* WorldSession::LocalizedGossipOption(uint32 id)
     if (lpi)
         return lpi->Text;
     else
-        return wst->text;
+        return wst->text.c_str();
 }
 
 // Returns a worldstring indexed by id

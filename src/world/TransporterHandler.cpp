@@ -259,7 +259,8 @@ void Transporter::RespawnCreaturePassengers()
     m_creatureSetMutex.Acquire();
     for (auto existing_passenger : m_NPCPassengerSet)
     {
-        existing_passenger->DeleteMe();
+        if (existing_passenger->IsInWorld())
+            existing_passenger->DeleteMe();
     }
 
     m_NPCPassengerSet.clear();

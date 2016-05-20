@@ -1382,3 +1382,49 @@ NpcScriptText const* MySQLDataStore::GetNpcScriptText(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadGossipMenuOptionTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                      0         1
+    QueryResult* gossip_menu_optiont_result = WorldDatabase.Query("SELECT entry, option_text FROM gossip_menu_option");
+
+    if (gossip_menu_optiont_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `gossip_menu_option` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `gossip_menu_option` has %u columns", gossip_menu_optiont_result->GetFieldCount());
+
+    _gossipMenuOptionStore.rehash(gossip_menu_optiont_result->GetRowCount());
+
+    uint32 gossip_menu_optiont_count = 0;
+    do
+    {
+        Field* fields = gossip_menu_optiont_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        GossipMenuOption& gossipMenuOptionText = _gossipMenuOptionStore[entry];
+
+        gossipMenuOptionText.id = entry;
+        gossipMenuOptionText.text = fields[1].GetString();
+
+        ++gossip_menu_optiont_count;
+    } while (gossip_menu_optiont_result->NextRow());
+
+    delete gossip_menu_optiont_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `gossip_menu_option` table in %u ms!", gossip_menu_optiont_count, getMSTime() - start_time);
+}
+
+GossipMenuOption const* MySQLDataStore::GetGossipMenuOption(uint32 entry)
+{
+    GossipMenuOptionContainer::const_iterator itr = _gossipMenuOptionStore.find(entry);
+    if (itr != _gossipMenuOptionStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

@@ -28,6 +28,7 @@ public:
     typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
     typedef std::unordered_map<uint32, NpcText> NpcTextContainer;
     typedef std::unordered_map<uint32, NpcScriptText> NpcScriptTextContainer;
+    typedef std::unordered_map<uint32, GossipMenuOption> GossipMenuOptionContainer;
 
 
     //helper
@@ -62,6 +63,9 @@ public:
     NpcScriptText const* GetNpcScriptText(uint32 entry);
     NpcScriptTextContainer const* GetNpcScriptTextStore() { return &_npcScriptTextStore; }
 
+    GossipMenuOption const* GetGossipMenuOption(uint32 entry);
+    GossipMenuOptionContainer const* GetGossipMenuOptionStore() { return &_gossipMenuOptionStore; }
+
     //Loads
     void LoadItemPagesTable();
     void LoadItemsTable();
@@ -80,6 +84,7 @@ public:
     void LoadAreaTriggersTable();
     void LoadNpcTextTable();
     void LoadNpcScriptTextTable();
+    void LoadGossipMenuOptionTable();
 
 
     ItemPageContainer _itemPagesStore;
@@ -94,6 +99,7 @@ public:
     AreaTriggerContainer _areaTriggersStore;
     NpcTextContainer _npcTextStore;
     NpcScriptTextContainer _npcScriptTextStore;
+    GossipMenuOptionContainer _gossipMenuOptionStore;
 
 };
 

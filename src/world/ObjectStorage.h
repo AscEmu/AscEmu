@@ -30,7 +30,6 @@ extern SERVER_DECL SQLStorage<FishingZoneEntry, HashMapStorageContainer<FishingZ
 extern SERVER_DECL SQLStorage<MapInfo, ArrayStorageContainer<MapInfo> >                                 WorldMapInfoStorage;
 extern SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                 ZoneGuardStorage;
 extern SERVER_DECL SQLStorage<UnitModelSizeEntry, HashMapStorageContainer<UnitModelSizeEntry> >         UnitModelSizeStorage;
-extern SERVER_DECL SQLStorage<GossipMenuOption, HashMapStorageContainer<GossipMenuOption> >             GossipMenuOptionStorage;
 extern SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >             WorldStringTableStorage;
 extern SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                 WorldBroadCastStorage;
 extern SERVER_DECL SQLStorage<BGMaster, HashMapStorageContainer<BGMaster> >                             BGMasterStorage;

@@ -57,7 +57,7 @@ bool ChatHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession*
 bool ChatHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    GossipMenuOptionStorage.Reload();
+    sMySQLStore.LoadGossipMenuOptionTable();
     GreenSystemMessage(m_session, "WorldDB 'gossip_menu_option' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
