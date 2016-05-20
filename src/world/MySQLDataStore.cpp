@@ -1083,3 +1083,168 @@ void MySQLDataStore::LoadGameObjectQuestPickupBindingTable()
 
     Log.Success("MySQLDataLoads", "Loaded %u data from `gameobject_quest_pickup_binding` table in %u ms!", gameobject_quest_pickup_count, getMSTime() - start_time);
 }
+
+void MySQLDataStore::LoadDisplayBoundingBoxesTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                            0       1    2     3      4      5      6         7
+    QueryResult* display_bounding_boxes_result = WorldDatabase.Query("SELECT displayid, lowx, lowy, lowz, highx, highy, highz, boundradius FROM display_bounding_boxes");
+
+    if (display_bounding_boxes_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `display_bounding_boxes` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `display_bounding_boxes` has %u columns", display_bounding_boxes_result->GetFieldCount());
+
+    _displayBoundingBoxesStore.rehash(display_bounding_boxes_result->GetRowCount());
+
+    uint32 display_bounding_boxes_count = 0;
+    do
+    {
+        Field* fields = display_bounding_boxes_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        DisplayBounding& displayBounding = _displayBoundingBoxesStore[entry];
+
+        displayBounding.displayid = entry;
+        
+        for (uint8 i = 0; i < 3; i++)
+        {
+            displayBounding.low[i] = fields[1 + i].GetFloat();
+            displayBounding.high[i] = fields[4 + i].GetFloat();
+        }
+        
+        displayBounding.boundradius = fields[7].GetFloat();
+
+
+        ++display_bounding_boxes_count;
+    } while (display_bounding_boxes_result->NextRow());
+
+    delete display_bounding_boxes_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u display bounding info from `display_bounding_boxes` table in %u ms!", display_bounding_boxes_count, getMSTime() - start_time);
+}
+
+DisplayBounding const* MySQLDataStore::GetDisplayBounding(uint32 entry)
+{
+    DisplayBoundingBoxesContainer::const_iterator itr = _displayBoundingBoxesStore.find(entry);
+    if (itr != _displayBoundingBoxesStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+void MySQLDataStore::LoadVendorRestrictionsTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                      0       1          2            3              4
+    QueryResult* vendor_restricitons_result = WorldDatabase.Query("SELECT entry, racemask, classmask, reqrepfaction, reqrepfactionvalue, "
+    //                                                                    5                 6           7
+                                                                  "canbuyattextid, cannotbuyattextid, flags FROM vendor_restrictions");
+
+    if (vendor_restricitons_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `vendor_restrictions` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `vendor_restrictions` has %u columns", vendor_restricitons_result->GetFieldCount());
+
+    _vendorRestrictionsStore.rehash(vendor_restricitons_result->GetRowCount());
+
+    uint32 vendor_restricitons_count = 0;
+    do
+    {
+        Field* fields = vendor_restricitons_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        VendorRestrictionEntry& vendorRestriction = _vendorRestrictionsStore[entry];
+
+        vendorRestriction.entry = entry;
+        vendorRestriction.racemask = fields[1].GetInt32();
+        vendorRestriction.classmask = fields[2].GetInt32();
+        vendorRestriction.reqrepfaction = fields[3].GetUInt32();
+        vendorRestriction.reqrepvalue = fields[4].GetUInt32();
+        vendorRestriction.canbuyattextid = fields[5].GetUInt32();
+        vendorRestriction.cannotbuyattextid = fields[6].GetUInt32();
+        vendorRestriction.flags = fields[7].GetUInt32();
+
+        ++vendor_restricitons_count;
+    } while (vendor_restricitons_result->NextRow());
+
+    delete vendor_restricitons_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u restrictions from `vendor_restrictions` table in %u ms!", vendor_restricitons_count, getMSTime() - start_time);
+}
+
+VendorRestrictionEntry const* MySQLDataStore::GetVendorRestriction(uint32 entry)
+{
+    VendorRestrictionContainer::const_iterator itr = _vendorRestrictionsStore.find(entry);
+    if (itr != _vendorRestrictionsStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+void MySQLDataStore::LoadAreaTriggersTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                0      1    2     3      4        5           6           7
+    QueryResult* area_triggers_result = WorldDatabase.Query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, "
+    //                                                            8                9                  10
+                                                            "orientation, required_honor_rank, required_level FROM areatriggers");
+
+    if (area_triggers_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `areatriggers` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `areatriggers` has %u columns", area_triggers_result->GetFieldCount());
+
+    _areaTriggersStore.rehash(area_triggers_result->GetRowCount());
+
+    uint32 area_triggers_count = 0;
+    do
+    {
+        Field* fields = area_triggers_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        AreaTrigger& areaTrigger = _areaTriggersStore[entry];
+
+        areaTrigger.AreaTriggerID = entry;
+        areaTrigger.Type = fields[1].GetInt8();
+        areaTrigger.Mapid = fields[2].GetInt32();
+        areaTrigger.PendingScreen = fields[3].GetInt32();
+        areaTrigger.Name = fields[4].GetString();
+        areaTrigger.x = fields[5].GetFloat();
+        areaTrigger.y = fields[6].GetFloat();
+        areaTrigger.z = fields[7].GetFloat();
+        areaTrigger.o = fields[8].GetFloat();
+        areaTrigger.required_honor_rank = fields[9].GetInt32();
+        areaTrigger.required_level = fields[10].GetInt32();
+
+        ++area_triggers_count;
+    } while (area_triggers_result->NextRow());
+
+    delete area_triggers_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u areatriggers from `areatriggers` table in %u ms!", area_triggers_count, getMSTime() - start_time);
+}
+
+AreaTrigger const* MySQLDataStore::GetAreaTrigger(uint32 entry)
+{
+    AreaTriggerContainer::const_iterator itr = _areaTriggersStore.find(entry);
+    if (itr != _areaTriggersStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

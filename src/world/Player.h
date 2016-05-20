@@ -2011,7 +2011,7 @@ class SERVER_DECL Player : public Unit
 
         void SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself);
 
-        bool CanBuyAt(VendorRestrictionEntry* vendor);
+        bool CanBuyAt(VendorRestrictionEntry const* vendor);
         bool CanTrainAt(Trainer*);
 
         Object* GetPlayerOwner() { return this; };

@@ -13841,7 +13841,7 @@ void Player::AddQuestKill(uint32 questid, uint8 reqid, uint32 delay)
         quest_entry->SendQuestComplete();
 }
 
-bool Player::CanBuyAt(VendorRestrictionEntry* vendor)
+bool Player::CanBuyAt(VendorRestrictionEntry const* vendor)
 {
     if (vendor == NULL)
         return true;

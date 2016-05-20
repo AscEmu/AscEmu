@@ -28,7 +28,7 @@ bool ChatHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSessio
 bool ChatHandler::HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    AreaTriggerStorage.Reload();
+    sMySQLStore.LoadAreaTriggersTable();
     GreenSystemMessage(m_session, "WorldDB table 'areatriggers' reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

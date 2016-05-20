@@ -39,7 +39,7 @@ typedef struct AreaTrigger
     uint8 Type;
     uint32 Mapid;
     uint32 PendingScreen;
-    char* Name;
+    std::string Name;
     float x;
     float y;
     float z;

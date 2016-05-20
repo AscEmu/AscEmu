@@ -23,6 +23,11 @@ public:
     typedef std::unordered_map<uint32, GameObjectInfo> GameObjectNamesContainer;
     typedef std::unordered_map<uint32, Quest> QuestContainer;
 
+    typedef std::unordered_map<uint32, DisplayBounding> DisplayBoundingBoxesContainer;
+    typedef std::unordered_map<uint32, VendorRestrictionEntry> VendorRestrictionContainer;
+    typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
+
+
     //helper
     ItemPage const* GetItemPage(uint32 entry);
     ItemPageContainer const* GetItemPagesStore() { return &_itemPagesStore; }
@@ -40,16 +45,32 @@ public:
     Quest const* GetQuest(uint32 entry);
     QuestContainer const* GetQuestStore() { return &_questStore; }
 
+    DisplayBounding const* GetDisplayBounding(uint32 entry);
+    DisplayBoundingBoxesContainer const* GetDisplayBoundingBoxesStore() { return &_displayBoundingBoxesStore; }
+
+    VendorRestrictionEntry const* GetVendorRestriction(uint32 entry);
+    VendorRestrictionContainer const* GetVendorRestrictionsStore() { return &_vendorRestrictionsStore; }
+
+    AreaTrigger const* GetAreaTrigger(uint32 entry);
+    AreaTriggerContainer const* GetAreaTriggersStore() { return &_areaTriggersStore; }
+
+
     //Loads
     void LoadItemPagesTable();
     void LoadItemsTable();
+
     void LoadCreatureNamesTable();
     void LoadCreatureProtoTable();
-    void LoadGameObjectNamesTable();
-    void LoadQuestsTable();
 
+    void LoadGameObjectNamesTable();
+
+    void LoadQuestsTable();
     void LoadGameObjectQuestItemBindingTable();
     void LoadGameObjectQuestPickupBindingTable();
+
+    void LoadDisplayBoundingBoxesTable();
+    void LoadVendorRestrictionsTable();
+    void LoadAreaTriggersTable();
 
 
     ItemPageContainer _itemPagesStore;
@@ -58,6 +79,10 @@ public:
     CreatureProtoContainer _creatureProtoStore;
     GameObjectNamesContainer _gameobjectNamesStore;
     QuestContainer _questStore;
+
+    DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
+    VendorRestrictionContainer _vendorRestrictionsStore;
+    AreaTriggerContainer _areaTriggersStore;
 
 };
 

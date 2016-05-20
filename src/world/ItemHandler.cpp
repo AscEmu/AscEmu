@@ -1414,7 +1414,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
     if (unit == NULL)
         return;
 
-    VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(unit->GetProto()->Id);
+    VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(unit->GetProto()->Id);
 
     //this is a blizzlike check
     if (!_player->obj_movement_info.IsOnTransport())

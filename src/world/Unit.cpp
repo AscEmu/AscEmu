@@ -7441,7 +7441,7 @@ void Unit::EventUpdateFlag()
 
 void Unit::EventModelChange()
 {
-    DisplayBounding* entry = DisplayBoundingStorage.LookupEntry(GetUInt32Value(UNIT_FIELD_DISPLAYID));
+    DisplayBounding const* entry = sMySQLStore.GetDisplayBounding(GetUInt32Value(UNIT_FIELD_DISPLAYID));
 
     ///\todo if has mount, grab mount model and add the z value of attachment 0
     if (entry)

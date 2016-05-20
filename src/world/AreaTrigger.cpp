@@ -65,7 +65,7 @@ uint32 AreaTriggerFailureMessages[] =
     31, // 33="You must be level 70 to enter Heroic mode." 31="You must be at least level %u to pass through here."
 };
 
-uint32 CheckTriggerPrerequisites(AreaTrigger* pAreaTrigger, WorldSession* pSession, Player* pPlayer, MapInfo* pMapInfo)
+uint32 CheckTriggerPrerequisites(AreaTrigger const* pAreaTrigger, WorldSession* pSession, Player* pPlayer, MapInfo* pMapInfo)
 {
     if (!pMapInfo || !pMapInfo->HasFlag(WMI_INSTANCE_ENABLED))
         return AREA_TRIGGER_FAILURE_UNAVAILABLE;
@@ -126,8 +126,6 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
     sQuestMgr.OnPlayerExploreArea(GetPlayer(), id);
 
     auto area_trigger_entry = sAreaTriggerStore.LookupEntry(id);
-    AreaTrigger* pAreaTrigger = AreaTriggerStorage.LookupEntry(id);
-
     if (area_trigger_entry == nullptr)
     {
         LOG_DEBUG("Missing AreaTrigger: %u", id);
@@ -150,7 +148,9 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
         return;
     }
 
-    if (pAreaTrigger == NULL) return;
+    AreaTrigger const* pAreaTrigger = sMySQLStore.GetAreaTrigger(id);
+    if (pAreaTrigger == nullptr)
+        return;
 
     switch (pAreaTrigger->Type)
     {

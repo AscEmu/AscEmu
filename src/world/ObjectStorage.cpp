@@ -22,9 +22,6 @@
 #include "StdAfx.h"
 
  // Table formats converted to strings
-const char* gDisplayBoundingFormat = "ufffffff";
-const char* gVendorRestrictionEntryFormat = "uuuuuuuu";
-const char* gAreaTriggerFormat = "ucuusffffuu";
 const char* gNpcTextFormat = "ufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuufssuuuuuuu";
 const char* gGraveyardFormat = "uffffuuuux";
 const char* gTeleportCoordFormat = "uxufffx";
@@ -44,9 +41,6 @@ const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<DisplayBounding, HashMapStorageContainer<DisplayBounding> >              DisplayBoundingStorage;
-SERVER_DECL SQLStorage<VendorRestrictionEntry, ArrayStorageContainer<VendorRestrictionEntry> >  VendorRestrictionEntryStorage;
-SERVER_DECL SQLStorage<AreaTrigger, HashMapStorageContainer<AreaTrigger> >                      AreaTriggerStorage;
 SERVER_DECL SQLStorage<GossipText, HashMapStorageContainer<GossipText> >                        NpcTextStorage;
 SERVER_DECL SQLStorage<GraveyardTeleport, HashMapStorageContainer<GraveyardTeleport> >          GraveyardStorage;
 SERVER_DECL SQLStorage<TeleportCoords, HashMapStorageContainer<TeleportCoords> >                TeleportCoordStorage;
@@ -271,9 +265,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void Storage_FillTaskList(TaskList & tl)
 {
-    make_task(DisplayBoundingStorage, DisplayBounding, HashMapStorageContainer, "display_bounding_boxes", gDisplayBoundingFormat);
-    make_task(VendorRestrictionEntryStorage, VendorRestrictionEntry, ArrayStorageContainer, "vendor_restrictions", gVendorRestrictionEntryFormat);
-    make_task(AreaTriggerStorage, AreaTrigger, HashMapStorageContainer, "areatriggers", gAreaTriggerFormat);
     make_task(GraveyardStorage, GraveyardTeleport, HashMapStorageContainer, "graveyards", gGraveyardFormat);
     make_task(TeleportCoordStorage, TeleportCoords, HashMapStorageContainer, "teleport_coords", gTeleportCoordFormat);
     make_task(FishingZoneStorage, FishingZoneEntry, HashMapStorageContainer, "fishing", gFishingFormat);
@@ -293,8 +284,6 @@ void Storage_FillTaskList(TaskList & tl)
 
 void Storage_Cleanup()
 {
-    VendorRestrictionEntryStorage.Cleanup();
-    AreaTriggerStorage.Cleanup();
     GraveyardStorage.Cleanup();
     TeleportCoordStorage.Cleanup();
     FishingZoneStorage.Cleanup();
@@ -332,8 +321,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     //    CreatureNameStorage.LoadAdditionalData(SecondName, gCreatureNameFormat);
     //else if (firstLoad && !stricmp(TableName, "gameobject_names"))    // GO Names
     //    GameObjectNameStorage.LoadAdditionalData(SecondName, gGameObjectNameFormat);
-    else if (!stricmp(TableName, "areatriggers"))        // Areatriggers
-        AreaTriggerStorage.LoadAdditionalData(SecondName, gAreaTriggerFormat);
+    //else if (!stricmp(TableName, "areatriggers"))        // Areatriggers
+    //    AreaTriggerStorage.LoadAdditionalData(SecondName, gAreaTriggerFormat);
     //else if (!stricmp(TableName, "itempages"))            // Item Pages
     //    ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPageFormat);
     else if (!stricmp(TableName, "npc_script_text"))            // ONLY for scripted text

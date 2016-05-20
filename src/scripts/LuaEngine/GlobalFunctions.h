@@ -225,11 +225,11 @@ namespace luaGlobalFunctions
                 CreatureProtoStorage.Reload();
                 else if (!stricmp(TableName, "gameobject_names"))	// GO Names
                 GameObjectNameStorage.Reload();*/
-            if (!stricmp(TableName, "areatriggers"))		// Areatriggers
-                AreaTriggerStorage.Reload();
+            //if (!stricmp(TableName, "areatriggers"))		// Areatriggers
+            //    AreaTriggerStorage.Reload();
             //else if (!stricmp(TableName, "itempages"))			// Item Pages
             //    ItemPageStorage.Reload();
-            else if (!stricmp(TableName, "worldstring_tables"))			// wst
+            if (!stricmp(TableName, "worldstring_tables"))			// wst
                 WorldStringTableStorage.Reload();
             else if (!stricmp(TableName, "worldbroadcast"))			// wb
                 WorldBroadCastStorage.Reload();

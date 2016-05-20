@@ -309,7 +309,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
     if (NpcTextStorage.LookupEntry(Text) == NULL)
         Text = DefaultGossipTextId;
 
-    VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(creature->GetProto()->Id);
+    VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(creature->GetProto()->Id);
 
     Gossip::Menu menu(creature->GetGUID(), Text, Plr->GetSession()->language);
 
@@ -357,7 +357,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
 
             if (trainer->isVendor())
             {
-                VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(trainer->GetProto()->Id);
+                VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(trainer->GetProto()->Id);
                 if (Plr->CanBuyAt(vendor))
                     menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
             }
@@ -424,7 +424,7 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
     //inn keepers can sell stuff
     if (innkeeper->isVendor())
     {
-        VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(innkeeper->GetProto()->Id);
+        VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(innkeeper->GetProto()->Id);
         if (Plr->CanBuyAt(vendor))
             menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
     }
@@ -502,7 +502,7 @@ void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
 
     if (chartergiver->isVendor())
     {
-        VendorRestrictionEntry* vendor = VendorRestrictionEntryStorage.LookupEntry(chartergiver->GetProto()->Id);
+        VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(chartergiver->GetProto()->Id);
         if (Plr->CanBuyAt(vendor))
             menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 3);
     }
