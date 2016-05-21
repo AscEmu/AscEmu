@@ -1760,7 +1760,7 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
     }
 
     if (QuestID == 0)
-        Log.Error("QuestMgr","No coresponding quest was found for quest item %d", Item_Entry);
+        Log.Error("QuestMgr","No coresponding quest was found for gameobject %u quest item %d", GO_Entry, Item_Entry);
 }
 
 void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)

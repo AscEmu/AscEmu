@@ -153,8 +153,11 @@ void Map::LoadSpawns(bool reload)
     //uint32 st=getMSTime();
     CreatureSpawnCount = 0;
     if (reload)   //perform cleanup
+    { 
         for (uint32 x = 0; x < _sizeX; x++)
+        {
             for (uint32 y = 0; y < _sizeY; y++)
+            {
                 if (spawns[x][y])
                 {
                     CellSpawns* sp = spawns[x][y];
@@ -166,6 +169,9 @@ void Map::LoadSpawns(bool reload)
                     delete sp;
                     spawns[x][y] = NULL;
                 }
+            }
+        }
+    }
 
     QueryResult* result;
     std::set<std::string>::iterator tableiterator;
@@ -182,7 +188,21 @@ void Map::LoadSpawns(bool reload)
                     CreatureSpawn* cspawn = new CreatureSpawn;
                     cspawn->id = fields[0].GetUInt32();
                     cspawn->form = FormationMgr::getSingleton().GetFormation(cspawn->id);
-                    cspawn->entry = fields[1].GetUInt32();
+
+                    uint32 creature_entry = fields[1].GetUInt32();
+                    auto creature_info = sMySQLStore.GetCreatureInfo(creature_entry);
+                    auto creature_proto = sMySQLStore.GetCreatureProto(creature_entry);
+                    if (creature_info == nullptr || creature_proto == nullptr)
+                    {
+                        Log.Error("Map::LoadSpawns", "Creature spawn ID: %u has invalid entry: %u which is not in creature_names/creature_proto table! Skipped loading.", cspawn->id, creature_entry);
+                        delete cspawn;
+                        continue;
+                    }
+                    else
+                    {
+                        cspawn->entry = creature_entry;
+                    }
+
                     cspawn->x = fields[3].GetFloat();
                     cspawn->y = fields[4].GetFloat();
                     cspawn->z = fields[5].GetFloat();
@@ -330,8 +350,20 @@ void Map::LoadSpawns(bool reload)
                 {
                     Field* fields = result->Fetch();
                     GameobjectSpawn* go_spawn = new GameobjectSpawn;
-                    go_spawn->entry = fields[1].GetUInt32();
                     go_spawn->id = fields[0].GetUInt32();
+
+                    uint32 gameobject_entry = fields[1].GetUInt32();
+                    auto gameobject_info = sMySQLStore.GetGameObjectInfo(gameobject_entry);
+                    if (gameobject_info == nullptr)
+                    {
+                        Log.Error("Map::LoadSpawns", "Gameobject spawn ID: %u has invalid entry: %u which is not in gameobject_names table! Skipped loading.", go_spawn->id, gameobject_entry);
+                        delete go_spawn;
+                        continue;
+                    }
+                    else
+                    {
+                        go_spawn->entry = gameobject_entry;
+                    }
                     go_spawn->map = fields[2].GetUInt32();
                     go_spawn->position_x = fields[3].GetFloat();
                     go_spawn->position_y = fields[4].GetFloat();
