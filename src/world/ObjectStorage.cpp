@@ -24,21 +24,15 @@
  // Table formats converted to strings
 const char* gPvPAreaFormat = "ush";
 const char* gPointOfInterestFormat = "uffuuus";
-const char* gZoneGuardsFormat = "uuu";
 const char* gWorldStringTableFormat = "us";
 const char* gWorldBroadCastFormat = "usu";
-const char* gBattleMasterFormat = "uu";
 const char* gSpellClickSpellsFormat = "uu";
-const char* gTotemDisplayIDsFormat = "uuuu";
 
 
 // SQLStorage symbols
-SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                ZoneGuardStorage;
 SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >            WorldStringTableStorage;
 SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                WorldBroadCastStorage;
-SERVER_DECL SQLStorage<BGMaster, HashMapStorageContainer<BGMaster> >                            BGMasterStorage;
 SERVER_DECL SQLStorage< SpellClickSpell, HashMapStorageContainer< SpellClickSpell > >           SpellClickSpellStorage;
-SERVER_DECL SQLStorage< TotemDisplayIdEntry, HashMapStorageContainer< TotemDisplayIdEntry > >   TotemDisplayIdStorage;
 SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest> >              PointOfInterestStorage;
 
 
@@ -249,23 +243,17 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
 void Storage_FillTaskList(TaskList & tl)
 {
-    make_task(ZoneGuardStorage, ZoneGuardEntry, HashMapStorageContainer, "zoneguards", gZoneGuardsFormat);
     make_task(WorldStringTableStorage, WorldStringTable, HashMapStorageContainer, "worldstring_tables", gWorldStringTableFormat);
     make_task(WorldBroadCastStorage, WorldBroadCast, HashMapStorageContainer, "worldbroadcast", gWorldBroadCastFormat);
-    make_task(BGMasterStorage, BGMaster, HashMapStorageContainer, "battlemasters", gBattleMasterFormat);
     make_task(SpellClickSpellStorage, SpellClickSpell, HashMapStorageContainer, "spellclickspells", gSpellClickSpellsFormat);
-    make_task(TotemDisplayIdStorage, TotemDisplayIdEntry, HashMapStorageContainer, "totemdisplayids", gTotemDisplayIDsFormat);
     make_task(PointOfInterestStorage, PointOfInterest, HashMapStorageContainer, "points_of_interest", gPointOfInterestFormat);
 }
 
 void Storage_Cleanup()
 {
-    ZoneGuardStorage.Cleanup();
     WorldStringTableStorage.Cleanup();
     WorldBroadCastStorage.Cleanup();
-    BGMasterStorage.Cleanup();
     SpellClickSpellStorage.Cleanup();
-    TotemDisplayIdStorage.Cleanup();
     PointOfInterestStorage.Cleanup();
 }
 
@@ -313,8 +301,8 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
     //    GraveyardStorage.LoadAdditionalData(SecondName, gGraveyardFormat);
     //else if (!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
     //    WorldMapInfoStorage.LoadAdditionalData(SecondName, gWorldMapInfoFormat);
-    else if (!stricmp(TableName, "zoneguards"))
-        ZoneGuardStorage.LoadAdditionalData(SecondName, gZoneGuardsFormat);
+    //else if (!stricmp(TableName, "zoneguards"))
+    //    ZoneGuardStorage.LoadAdditionalData(SecondName, gZoneGuardsFormat);
     else if (!stricmp(TableName, "points_of_interest"))
         PointOfInterestStorage.LoadAdditionalData(SecondName, gPointOfInterestFormat);
 

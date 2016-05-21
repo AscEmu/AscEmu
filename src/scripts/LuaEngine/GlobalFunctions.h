@@ -245,8 +245,8 @@ namespace luaGlobalFunctions
             //    GraveyardStorage.Reload();
             //else if (!stricmp(TableName, "worldmap_info"))		// WorldMapInfo
             //    WorldMapInfoStorage.Reload();
-            else if (!stricmp(TableName, "zoneguards"))
-                ZoneGuardStorage.Reload();
+            //else if (!stricmp(TableName, "zoneguards"))
+            //    ZoneGuardStorage.Reload();
             else if (!stricmp(TableName, "command_overrides"))	// Command Overrides
             {
                 CommandTableStorage::getSingleton().Dealloc();

@@ -33,6 +33,9 @@ public:
     typedef std::unordered_map<uint32, TeleportCoords> TeleportCoordsContainer;
     typedef std::unordered_map<uint32, FishingZoneEntry> FishingZonesContainer;
     typedef std::unordered_map<uint32, MapInfo> WorldMapInfoContainer;
+    typedef std::unordered_map<uint32, ZoneGuardEntry> ZoneGuardsContainer;
+    typedef std::unordered_map<uint32, BGMaster> BattleMastersContainer;
+    typedef std::unordered_map<uint32, TotemDisplayIdEntry> TotemDisplayIdContainer;
 
 
     //helper
@@ -82,6 +85,15 @@ public:
     MapInfo const* GetWorldMapInfo(uint32 entry);
     WorldMapInfoContainer const* GetWorldMapInfoStore() { return &_worldMapInfoStore; }
 
+    ZoneGuardEntry const* GetZoneGuard(uint32 entry);
+    ZoneGuardsContainer const* GetZoneGuardsStore() { return &_zoneGuardsStore; }
+
+    BGMaster const* GetBattleMaster(uint32 entry);
+    BattleMastersContainer const* GetBattleMastersStore() { return &_battleMastersStore; }
+
+    TotemDisplayIdEntry const* GetTotemDisplayId(uint32 entry);
+    TotemDisplayIdContainer const* GetTotemDisplayIdsStore() { return &_totemDisplayIdsStore; }
+
     //Loads
     void LoadItemPagesTable();
     void LoadItemsTable();
@@ -105,6 +117,9 @@ public:
     void LoadTeleportCoordsTable();
     void LoadFishingTable();
     void LoadWorldMapInfoTable();
+    void LoadZoneGuardsTable();
+    void LoadBattleMastersTable();
+    void LoadTotemDisplayIdsTable();
 
 
     ItemPageContainer _itemPagesStore;
@@ -124,6 +139,9 @@ public:
     TeleportCoordsContainer _teleportCoordsStore;
     FishingZonesContainer _fishingZonesStore;
     WorldMapInfoContainer _worldMapInfoStore;
+    ZoneGuardsContainer _zoneGuardsStore;
+    BattleMastersContainer _battleMastersStore;
+    TotemDisplayIdContainer _totemDisplayIdsStore;
 
 };
 

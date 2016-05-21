@@ -31,7 +31,7 @@ void TotemSummon::Load(CreatureProto* proto, Unit* owner, LocationVector & posit
 {
     Summon::Load(proto, owner, position, spellid, summonslot);
 
-    TotemDisplayIdEntry* totemdisplay = TotemDisplayIdStorage.LookupEntry(creature_info->Male_DisplayID);
+    TotemDisplayIdEntry const* totemdisplay = sMySQLStore.GetTotemDisplayId(creature_info->Male_DisplayID);
     uint32 displayID = 0;
 
     if (totemdisplay != NULL)

@@ -175,7 +175,7 @@ bool ChatHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, Wor
 bool ChatHandler::HandleReloadZoneguardsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    ZoneGuardStorage.Reload();
+    sMySQLStore.LoadZoneGuardsTable();
     GreenSystemMessage(m_session, "WorldDB 'zoneguards' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

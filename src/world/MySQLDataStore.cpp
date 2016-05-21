@@ -1642,3 +1642,141 @@ MapInfo const* MySQLDataStore::GetWorldMapInfo(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadZoneGuardsTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                             0         1              2
+    QueryResult* zone_guards_result = WorldDatabase.Query("SELECT zone, horde_entry, alliance_entry FROM zoneguards");
+    if (zone_guards_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `zoneguards` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `zoneguards` has %u columns", zone_guards_result->GetFieldCount());
+
+    _zoneGuardsStore.rehash(zone_guards_result->GetRowCount());
+
+    uint32 zone_guards_count = 0;
+    do
+    {
+        Field* fields = zone_guards_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        ZoneGuardEntry& zoneGuard = _zoneGuardsStore[entry];
+
+        zoneGuard.ZoneID = entry;
+        zoneGuard.HordeEntry = fields[1].GetUInt32();
+        zoneGuard.AllianceEntry = fields[2].GetUInt32();
+
+        ++zone_guards_count;
+    } while (zone_guards_result->NextRow());
+
+    delete zone_guards_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `zoneguards` table in %u ms!", zone_guards_count, getMSTime() - start_time);
+}
+
+ZoneGuardEntry const* MySQLDataStore::GetZoneGuard(uint32 entry)
+{
+    ZoneGuardsContainer::const_iterator itr = _zoneGuardsStore.find(entry);
+    if (itr != _zoneGuardsStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+void MySQLDataStore::LoadBattleMastersTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                      0                1
+    QueryResult* battlemasters_result = WorldDatabase.Query("SELECT creature_entry, battleground_id FROM battlemasters");
+    if (battlemasters_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `battlemasters` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `battlemasters` has %u columns", battlemasters_result->GetFieldCount());
+
+    _battleMastersStore.rehash(battlemasters_result->GetRowCount());
+
+    uint32 battlemasters_count = 0;
+    do
+    {
+        Field* fields = battlemasters_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        BGMaster& bgMaster = _battleMastersStore[entry];
+
+        bgMaster.entry = entry;
+        bgMaster.bg = fields[1].GetUInt32();
+
+        ++battlemasters_count;
+    } while (battlemasters_result->NextRow());
+
+    delete battlemasters_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `battlemasters` table in %u ms!", battlemasters_count, getMSTime() - start_time);
+}
+
+BGMaster const* MySQLDataStore::GetBattleMaster(uint32 entry)
+{
+    BattleMastersContainer::const_iterator itr = _battleMastersStore.find(entry);
+    if (itr != _battleMastersStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+void MySQLDataStore::LoadTotemDisplayIdsTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                      0         1        2       3
+    QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT displayid, draeneiid, trollid, orcid FROM totemdisplayids");
+    if (totemdisplayids_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `totemdisplayids` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `totemdisplayids` has %u columns", totemdisplayids_result->GetFieldCount());
+
+    _totemDisplayIdsStore.rehash(totemdisplayids_result->GetRowCount());
+
+    uint32 totemdisplayids_count = 0;
+    do
+    {
+        Field* fields = totemdisplayids_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        TotemDisplayIdEntry& totemDisplayId = _totemDisplayIdsStore[entry];
+
+        totemDisplayId.DisplayId = entry;
+        totemDisplayId.DraeneiId = fields[1].GetUInt32();
+        totemDisplayId.TrollId = fields[2].GetUInt32();
+        totemDisplayId.OrcId = fields[3].GetUInt32();
+
+        ++totemdisplayids_count;
+    } while (totemdisplayids_result->NextRow());
+
+    delete totemdisplayids_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `totemdisplayids` table in %u ms!", totemdisplayids_count, getMSTime() - start_time);
+}
+
+TotemDisplayIdEntry const* MySQLDataStore::GetTotemDisplayId(uint32 entry)
+{
+    TotemDisplayIdContainer::const_iterator itr = _totemDisplayIdsStore.find(entry);
+    if (itr != _totemDisplayIdsStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

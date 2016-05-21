@@ -1508,11 +1508,11 @@ bool AIInterface::FindFriends(float dist)
         if (!at)
             return result;
 
-        ZoneGuardEntry* zoneSpawn;
+        ZoneGuardEntry const* zoneSpawn;
         if (at->zone != 0)
-            zoneSpawn = ZoneGuardStorage.LookupEntry(at->zone);
+            zoneSpawn = sMySQLStore.GetZoneGuard(at->zone);
         else
-            zoneSpawn = ZoneGuardStorage.LookupEntry(at->id);
+            zoneSpawn = sMySQLStore.GetZoneGuard(at->id);
 
         if (!zoneSpawn) return result;
 

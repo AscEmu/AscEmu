@@ -24,12 +24,9 @@
 #include "Storage.h"
 #include "ObjectMgr.h"
 
-extern SERVER_DECL SQLStorage<ZoneGuardEntry, HashMapStorageContainer<ZoneGuardEntry> >                 ZoneGuardStorage;
 extern SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >             WorldStringTableStorage;
 extern SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                 WorldBroadCastStorage;
-extern SERVER_DECL SQLStorage<BGMaster, HashMapStorageContainer<BGMaster> >                             BGMasterStorage;
 extern SERVER_DECL SQLStorage<SpellClickSpell, HashMapStorageContainer<SpellClickSpell> >               SpellClickSpellStorage;
-extern SERVER_DECL SQLStorage<TotemDisplayIdEntry, HashMapStorageContainer<TotemDisplayIdEntry> >       TotemDisplayIdStorage;
 extern SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest> >               PointOfInterestStorage;
 
 void Storage_FillTaskList(TaskList & tl);
