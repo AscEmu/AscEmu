@@ -36,6 +36,7 @@ public:
     typedef std::unordered_map<uint32, ZoneGuardEntry> ZoneGuardsContainer;
     typedef std::unordered_map<uint32, BGMaster> BattleMastersContainer;
     typedef std::unordered_map<uint32, TotemDisplayIdEntry> TotemDisplayIdContainer;
+    typedef std::unordered_map<uint32, SpellClickSpell> SpellClickSpellContainer;
 
 
     //helper
@@ -94,6 +95,9 @@ public:
     TotemDisplayIdEntry const* GetTotemDisplayId(uint32 entry);
     TotemDisplayIdContainer const* GetTotemDisplayIdsStore() { return &_totemDisplayIdsStore; }
 
+    SpellClickSpell const* GetSpellClickSpell(uint32 entry);
+    SpellClickSpellContainer const* GetSpellClickSpellsStore() { return &_spellClickSpellsStore; }
+
     //Loads
     void LoadItemPagesTable();
     void LoadItemsTable();
@@ -120,6 +124,7 @@ public:
     void LoadZoneGuardsTable();
     void LoadBattleMastersTable();
     void LoadTotemDisplayIdsTable();
+    void LoadSpellClickSpellsTable();
 
 
     ItemPageContainer _itemPagesStore;
@@ -142,6 +147,7 @@ public:
     ZoneGuardsContainer _zoneGuardsStore;
     BattleMastersContainer _battleMastersStore;
     TotemDisplayIdContainer _totemDisplayIdsStore;
+    SpellClickSpellContainer _spellClickSpellsStore;
 
 };
 

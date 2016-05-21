@@ -278,7 +278,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 
     if (!_player->HasAurasWithNameHash(SPELL_HASH_LIGHTWELL_RENEW) && target_unit->RemoveAura(59907))
     {
-        SpellClickSpell* sp = SpellClickSpellStorage.LookupEntry(creature_id);
+        SpellClickSpell const* sp = sMySQLStore.GetSpellClickSpell(creature_id);
         if (sp == nullptr)
         {
             if (target_unit->IsCreature())
@@ -303,8 +303,8 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         return;
     }
 
-    SpellClickSpell* sp = SpellClickSpellStorage.LookupEntry(creature_id);
-    if (sp == NULL)
+    SpellClickSpell const* sp = sMySQLStore.GetSpellClickSpell(creature_id);
+    if (sp == nullptr)
     {
         if (target_unit->IsCreature())
         {

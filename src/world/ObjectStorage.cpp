@@ -26,13 +26,11 @@ const char* gPvPAreaFormat = "ush";
 const char* gPointOfInterestFormat = "uffuuus";
 const char* gWorldStringTableFormat = "us";
 const char* gWorldBroadCastFormat = "usu";
-const char* gSpellClickSpellsFormat = "uu";
 
 
 // SQLStorage symbols
 SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >            WorldStringTableStorage;
 SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                WorldBroadCastStorage;
-SERVER_DECL SQLStorage< SpellClickSpell, HashMapStorageContainer< SpellClickSpell > >           SpellClickSpellStorage;
 SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest> >              PointOfInterestStorage;
 
 
@@ -245,7 +243,6 @@ void Storage_FillTaskList(TaskList & tl)
 {
     make_task(WorldStringTableStorage, WorldStringTable, HashMapStorageContainer, "worldstring_tables", gWorldStringTableFormat);
     make_task(WorldBroadCastStorage, WorldBroadCast, HashMapStorageContainer, "worldbroadcast", gWorldBroadCastFormat);
-    make_task(SpellClickSpellStorage, SpellClickSpell, HashMapStorageContainer, "spellclickspells", gSpellClickSpellsFormat);
     make_task(PointOfInterestStorage, PointOfInterest, HashMapStorageContainer, "points_of_interest", gPointOfInterestFormat);
 }
 
@@ -253,7 +250,6 @@ void Storage_Cleanup()
 {
     WorldStringTableStorage.Cleanup();
     WorldBroadCastStorage.Cleanup();
-    SpellClickSpellStorage.Cleanup();
     PointOfInterestStorage.Cleanup();
 }
 

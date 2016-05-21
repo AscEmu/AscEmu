@@ -1780,3 +1780,48 @@ TotemDisplayIdEntry const* MySQLDataStore::GetTotemDisplayId(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadSpellClickSpellsTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                      0         1
+    QueryResult* spellclickspells_result = WorldDatabase.Query("SELECT CreatureID, SpellID FROM spellclickspells");
+    if (spellclickspells_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `spellclickspells` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `spellclickspells` has %u columns", spellclickspells_result->GetFieldCount());
+
+    _spellClickSpellsStore.rehash(spellclickspells_result->GetRowCount());
+
+    uint32 spellclickspells_count = 0;
+    do
+    {
+        Field* fields = spellclickspells_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        SpellClickSpell& spellClickSpells = _spellClickSpellsStore[entry];
+
+        spellClickSpells.CreatureID = entry;
+        spellClickSpells.SpellID = fields[1].GetUInt32();
+
+        ++spellclickspells_count;
+    } while (spellclickspells_result->NextRow());
+
+    delete spellclickspells_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, getMSTime() - start_time);
+}
+
+SpellClickSpell const* MySQLDataStore::GetSpellClickSpell(uint32 entry)
+{
+    SpellClickSpellContainer::const_iterator itr = _spellClickSpellsStore.find(entry);
+    if (itr != _spellClickSpellsStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

@@ -496,6 +496,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadZoneGuardsTable();
     sMySQLStore.LoadBattleMastersTable();
     sMySQLStore.LoadTotemDisplayIdsTable();
+    sMySQLStore.LoadSpellClickSpellsTable();
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.

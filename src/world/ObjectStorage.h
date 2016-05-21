@@ -26,7 +26,6 @@
 
 extern SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >             WorldStringTableStorage;
 extern SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                 WorldBroadCastStorage;
-extern SERVER_DECL SQLStorage<SpellClickSpell, HashMapStorageContainer<SpellClickSpell> >               SpellClickSpellStorage;
 extern SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest> >               PointOfInterestStorage;
 
 void Storage_FillTaskList(TaskList & tl);
