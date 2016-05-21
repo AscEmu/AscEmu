@@ -13927,9 +13927,9 @@ void Player::RemoveVehicleComponent()
 
 void Player::Gossip_SendSQLPOI(uint32 id)
 {
-    PointOfInterest *pPOI = PointOfInterestStorage.LookupEntry(id);
+    PointOfInterest const* pPOI = sMySQLStore.GetPointOfInterest(id);
     if (pPOI != NULL)
-        Gossip_SendPOI(pPOI->x, pPOI->y, pPOI->icon, pPOI->flags, pPOI->data, pPOI->icon_name);
+        Gossip_SendPOI(pPOI->x, pPOI->y, pPOI->icon, pPOI->flags, pPOI->data, pPOI->icon_name.c_str());
 }
 
 void Player::ResetTimeSync()

@@ -37,6 +37,9 @@ public:
     typedef std::unordered_map<uint32, BGMaster> BattleMastersContainer;
     typedef std::unordered_map<uint32, TotemDisplayIdEntry> TotemDisplayIdContainer;
     typedef std::unordered_map<uint32, SpellClickSpell> SpellClickSpellContainer;
+    typedef std::unordered_map<uint32, WorldStringTable> WorldStringContainer;
+    typedef std::unordered_map<uint32, WorldBroadCast> WorldBroadCastContainer;
+    typedef std::unordered_map<uint32, PointOfInterest> PointOfInterestContainer;
 
 
     //helper
@@ -98,6 +101,15 @@ public:
     SpellClickSpell const* GetSpellClickSpell(uint32 entry);
     SpellClickSpellContainer const* GetSpellClickSpellsStore() { return &_spellClickSpellsStore; }
 
+    WorldStringTable const* GetWorldString(uint32 entry);
+    WorldStringContainer const* GetWorldStringsStore() { return &_worldStringsStore; }
+
+    WorldBroadCast const* GetWorldBroadcast(uint32 entry);
+    WorldBroadCastContainer const* GetWorldBroadcastStore() { return &_worldBroadcastStore; }
+
+    PointOfInterest const* GetPointOfInterest(uint32 entry);
+    PointOfInterestContainer const* GetPointOfInterestStore() { return &_pointOfInterestStore; }
+
     //Loads
     void LoadItemPagesTable();
     void LoadItemsTable();
@@ -126,6 +138,10 @@ public:
     void LoadTotemDisplayIdsTable();
     void LoadSpellClickSpellsTable();
 
+    void LoadWorldStringsTable();
+    void LoadWorldBroadcastTable();
+    void LoadPointOfInterestTable();
+
 
     ItemPageContainer _itemPagesStore;
     ItemPrototypeContainer _itemPrototypeStore;
@@ -148,6 +164,10 @@ public:
     BattleMastersContainer _battleMastersStore;
     TotemDisplayIdContainer _totemDisplayIdsStore;
     SpellClickSpellContainer _spellClickSpellsStore;
+
+    WorldStringContainer _worldStringsStore;
+    WorldBroadCastContainer _worldBroadcastStore;
+    PointOfInterestContainer _pointOfInterestStore;
 
 };
 

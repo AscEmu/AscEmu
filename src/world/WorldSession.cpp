@@ -1194,7 +1194,7 @@ const char* WorldSession::LocalizedGossipOption(uint32 id)
 // These strings can be found in the worldstring tables in the database
 const char* WorldSession::LocalizedWorldSrv(uint32 id)
 {
-    WorldStringTable* wst = WorldStringTableStorage.LookupEntry(id);
+    WorldStringTable const* wst = sMySQLStore.GetWorldString(id);
     if (!wst)
     {
         memset(szError, 0, 64);
@@ -1206,7 +1206,7 @@ const char* WorldSession::LocalizedWorldSrv(uint32 id)
     if (lpi)
         return lpi->Text;
     else
-        return wst->text;
+        return wst->text.c_str();
 }
 
 const char* WorldSession::LocalizedMapName(uint32 id)
@@ -1228,7 +1228,7 @@ const char* WorldSession::LocalizedMapName(uint32 id)
 
 const char* WorldSession::LocalizedBroadCast(uint32 id)
 {
-    WorldBroadCast* wb = WorldBroadCastStorage.LookupEntry(id);
+    WorldBroadCast const* wb = sMySQLStore.GetWorldBroadcast(id);
     if (!wb)
     {
         memset(szError, 0, 64);
@@ -1240,7 +1240,7 @@ const char* WorldSession::LocalizedBroadCast(uint32 id)
     if (lpi)
         return lpi->Text;
     else
-        return wb->text;
+        return wb->text.c_str();
 }
 
 

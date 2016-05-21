@@ -278,7 +278,6 @@ World::~World()
     //eventholder = 0;
     delete eventholder;
 
-    Storage_Cleanup();
     for (std::list<SpellEntry*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
         delete *itr;
 }
@@ -498,10 +497,13 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadTotemDisplayIdsTable();
     sMySQLStore.LoadSpellClickSpellsTable();
 
+    sMySQLStore.LoadWorldStringsTable();
+    sMySQLStore.LoadWorldBroadcastTable();
+    sMySQLStore.LoadPointOfInterestTable();
+
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.
     TaskList tl;
-    Storage_FillTaskList(tl);
 
     // spawn worker threads (2 * number of cpus)
     tl.spawn();

@@ -131,7 +131,7 @@ struct GossipMenuOption
 struct WorldStringTable
 {
     uint32 id;
-    char* text;
+    std::string text;
 };
 
 struct NpcScriptText
@@ -152,7 +152,7 @@ struct NpcScriptText
 struct WorldBroadCast
 {
     uint32 id;
-    char* text;
+    std::string text;
     uint32 percent;
 };
 
@@ -187,7 +187,7 @@ struct PointOfInterest
     uint32 icon;
     uint32 flags;
     uint32 data;
-    const char* icon_name;
+    std::string icon_name;
 };
 
 struct SpellEntry;

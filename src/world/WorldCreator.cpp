@@ -909,7 +909,7 @@ void InstanceMgr::ResetSavedInstances(Player* plr)
                 {
                     if (in->m_mapMgr && in->m_mapMgr->HasPlayers())
                     {
-                        plr->GetSession()->SystemMessage("Failed to reset instance %u (%s), due to players still inside.", in->m_instanceId, in->m_mapMgr->GetMapInfo()->name);
+                        plr->GetSession()->SystemMessage("Failed to reset instance %u (%s), due to players still inside.", in->m_instanceId, in->m_mapMgr->GetMapInfo()->name.c_str());
                         continue;
                     }
 

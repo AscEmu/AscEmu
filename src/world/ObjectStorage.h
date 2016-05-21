@@ -24,12 +24,6 @@
 #include "Storage.h"
 #include "ObjectMgr.h"
 
-extern SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >             WorldStringTableStorage;
-extern SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                 WorldBroadCastStorage;
-extern SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest> >               PointOfInterestStorage;
-
-void Storage_FillTaskList(TaskList & tl);
-void Storage_Cleanup();
 void Storage_LoadAdditionalTables();
 
 extern SERVER_DECL std::set<std::string> ExtraMapCreatureTables;

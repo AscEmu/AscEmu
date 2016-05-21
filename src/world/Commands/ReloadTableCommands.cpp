@@ -121,7 +121,7 @@ bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    PointOfInterestStorage.Reload();
+    sMySQLStore.LoadPointOfInterestTable();
     GreenSystemMessage(m_session, "WorldDB 'points_of_interest' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -148,7 +148,7 @@ bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldS
 bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    WorldBroadCastStorage.Reload();
+    sMySQLStore.LoadWorldBroadcastTable();
     GreenSystemMessage(m_session, "WorldDB 'worldbroadcast' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -166,7 +166,7 @@ bool ChatHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSes
 bool ChatHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    WorldStringTableStorage.Reload();
+    sMySQLStore.LoadWorldStringsTable();
     GreenSystemMessage(m_session, "WorldDB 'worldstring_tables' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

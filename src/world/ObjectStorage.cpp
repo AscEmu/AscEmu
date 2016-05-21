@@ -21,19 +21,6 @@
 
 #include "StdAfx.h"
 
- // Table formats converted to strings
-const char* gPvPAreaFormat = "ush";
-const char* gPointOfInterestFormat = "uffuuus";
-const char* gWorldStringTableFormat = "us";
-const char* gWorldBroadCastFormat = "usu";
-
-
-// SQLStorage symbols
-SERVER_DECL SQLStorage<WorldStringTable, HashMapStorageContainer<WorldStringTable> >            WorldStringTableStorage;
-SERVER_DECL SQLStorage<WorldBroadCast, HashMapStorageContainer<WorldBroadCast> >                WorldBroadCastStorage;
-SERVER_DECL SQLStorage<PointOfInterest, HashMapStorageContainer<PointOfInterest> >              PointOfInterestStorage;
-
-
 SERVER_DECL std::set<std::string> ExtraMapCreatureTables;
 SERVER_DECL std::set<std::string> ExtraMapGameObjectTables;
 
@@ -239,19 +226,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
     new CallbackP2< SQLStorage< itype, storagetype< itype > >, const char *, const char *> \
     (&storage, &SQLStorage< itype, storagetype< itype > >::Load, tablename, format)))
 
-void Storage_FillTaskList(TaskList & tl)
-{
-    make_task(WorldStringTableStorage, WorldStringTable, HashMapStorageContainer, "worldstring_tables", gWorldStringTableFormat);
-    make_task(WorldBroadCastStorage, WorldBroadCast, HashMapStorageContainer, "worldbroadcast", gWorldBroadCastFormat);
-    make_task(PointOfInterestStorage, PointOfInterest, HashMapStorageContainer, "points_of_interest", gPointOfInterestFormat);
-}
-
-void Storage_Cleanup()
-{
-    WorldStringTableStorage.Cleanup();
-    WorldBroadCastStorage.Cleanup();
-    PointOfInterestStorage.Cleanup();
-}
 
 std::vector<std::pair<std::string, std::string> > additionalTables;
 
@@ -267,41 +241,6 @@ bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool fir
         ExtraMapGameObjectTables.insert(std::string(SecondName));
         return false;
     }
-    //else if (firstLoad && !stricmp(TableName, "creature_proto"))        // Creature Proto
-    //    CreatureProtoStorage.LoadAdditionalData(SecondName, gCreatureProtoFormat);
-    //else if (firstLoad && !stricmp(TableName, "creature_names"))        // Creature Names
-    //    CreatureNameStorage.LoadAdditionalData(SecondName, gCreatureNameFormat);
-    //else if (firstLoad && !stricmp(TableName, "gameobject_names"))    // GO Names
-    //    GameObjectNameStorage.LoadAdditionalData(SecondName, gGameObjectNameFormat);
-    //else if (!stricmp(TableName, "areatriggers"))        // Areatriggers
-    //    AreaTriggerStorage.LoadAdditionalData(SecondName, gAreaTriggerFormat);
-    //else if (!stricmp(TableName, "itempages"))            // Item Pages
-    //    ItemPrototypeStorage.LoadAdditionalData(SecondName, gItemPageFormat);
-    //else if (!stricmp(TableName, "npc_script_text"))            // ONLY for scripted text
-    //    CreatureTextStorage.LoadAdditionalData(SecondName, gCreatureTextFormat);
-    //else if (!stricmp(TableName, "gossip_menu_option"))            // Gossip Menu Option
-    //    GossipMenuOptionStorage.LoadAdditionalData(SecondName, gGossipMenuOptionFormat);
-    else if (!stricmp(TableName, "worldstring_tables"))            // WorldString
-        WorldStringTableStorage.LoadAdditionalData(SecondName, gWorldStringTableFormat);
-    else if (!stricmp(TableName, "worldbroadcast"))            // Worldbroadcast
-        WorldBroadCastStorage.LoadAdditionalData(SecondName, gWorldBroadCastFormat);
-    //else if (firstLoad && !stricmp(TableName, "quests"))                // Quests
-    //    QuestStorage.LoadAdditionalData(SecondName, gQuestFormat);
-    //else if (!stricmp(TableName, "npc_text"))            // NPC Text Storage
-    //    NpcTextStorage.LoadAdditionalData(SecondName, gNpcTextFormat);
-    //else if (!stricmp(TableName, "fishing"))                // Fishing Zones
-    //    FishingZoneStorage.LoadAdditionalData(SecondName, gFishingFormat);
-    //else if (!stricmp(TableName, "teleport_coords"))        // Teleport coords
-    //    TeleportCoordStorage.LoadAdditionalData(SecondName, gTeleportCoordFormat);
-    //else if (!stricmp(TableName, "graveyards"))            // Graveyards
-    //    GraveyardStorage.LoadAdditionalData(SecondName, gGraveyardFormat);
-    //else if (!stricmp(TableName, "worldmap_info"))        // WorldMapInfo
-    //    WorldMapInfoStorage.LoadAdditionalData(SecondName, gWorldMapInfoFormat);
-    //else if (!stricmp(TableName, "zoneguards"))
-    //    ZoneGuardStorage.LoadAdditionalData(SecondName, gZoneGuardsFormat);
-    else if (!stricmp(TableName, "points_of_interest"))
-        PointOfInterestStorage.LoadAdditionalData(SecondName, gPointOfInterestFormat);
-
     else
         return false;
 

@@ -1825,3 +1825,144 @@ SpellClickSpell const* MySQLDataStore::GetSpellClickSpell(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadWorldStringsTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                     0     1
+    QueryResult* worldstring_tables_result = WorldDatabase.Query("SELECT entry, text FROM worldstring_tables");
+    if (worldstring_tables_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `worldstring_tables` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `worldstring_tables` has %u columns", worldstring_tables_result->GetFieldCount());
+
+    _worldStringsStore.rehash(worldstring_tables_result->GetRowCount());
+
+    uint32 worldstring_tables_count = 0;
+    do
+    {
+        Field* fields = worldstring_tables_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        WorldStringTable& worldString = _worldStringsStore[entry];
+
+        worldString.id = entry;
+        worldString.text = fields[1].GetString();
+
+        ++worldstring_tables_count;
+    } while (worldstring_tables_result->NextRow());
+
+    delete worldstring_tables_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `worldstring_tables` table in %u ms!", worldstring_tables_count, getMSTime() - start_time);
+}
+
+WorldStringTable const* MySQLDataStore::GetWorldString(uint32 entry)
+{
+    WorldStringContainer::const_iterator itr = _worldStringsStore.find(entry);
+    if (itr != _worldStringsStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+void MySQLDataStore::LoadWorldBroadcastTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                 0      1       2
+    QueryResult* worldbroadcast_result = WorldDatabase.Query("SELECT entry, text, percent FROM worldbroadcast");
+    if (worldbroadcast_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `worldbroadcast` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `worldbroadcast` has %u columns", worldbroadcast_result->GetFieldCount());
+
+    _worldBroadcastStore.rehash(worldbroadcast_result->GetRowCount());
+
+    uint32 worldbroadcast_count = 0;
+    do
+    {
+        Field* fields = worldbroadcast_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        WorldBroadCast& worldBroadCast = _worldBroadcastStore[entry];
+
+        worldBroadCast.id = entry;
+        worldBroadCast.text = fields[1].GetString();
+        worldBroadCast.percent = fields[2].GetUInt32();
+
+        ++worldbroadcast_count;
+    } while (worldbroadcast_result->NextRow());
+
+    delete worldbroadcast_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `worldbroadcast` table in %u ms!", worldbroadcast_count, getMSTime() - start_time);
+}
+
+WorldBroadCast const* MySQLDataStore::GetWorldBroadcast(uint32 entry)
+{
+    WorldBroadCastContainer::const_iterator itr = _worldBroadcastStore.find(entry);
+    if (itr != _worldBroadcastStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+void MySQLDataStore::LoadPointOfInterestTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                      0   1  2    3     4     5        6
+    QueryResult* points_of_interest_result = WorldDatabase.Query("SELECT entry, x, y, icon, flags, data, icon_name FROM points_of_interest");
+    if (points_of_interest_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `points_of_interest` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `points_of_interest` has %u columns", points_of_interest_result->GetFieldCount());
+
+    _pointOfInterestStore.rehash(points_of_interest_result->GetRowCount());
+
+    uint32 points_of_interest_count = 0;
+    do
+    {
+        Field* fields = points_of_interest_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        PointOfInterest& pointOfInterest = _pointOfInterestStore[entry];
+
+        pointOfInterest.entry = entry;
+        pointOfInterest.x = fields[1].GetFloat();
+        pointOfInterest.y = fields[2].GetFloat();
+        pointOfInterest.icon = fields[3].GetUInt32();
+        pointOfInterest.flags = fields[4].GetUInt32();
+        pointOfInterest.data = fields[5].GetUInt32();
+        pointOfInterest.icon_name = fields[6].GetString();
+
+        ++points_of_interest_count;
+    } while (points_of_interest_result->NextRow());
+
+    delete points_of_interest_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `points_of_interest` table in %u ms!", points_of_interest_count, getMSTime() - start_time);
+}
+
+PointOfInterest const* MySQLDataStore::GetPointOfInterest(uint32 entry)
+{
+    PointOfInterestContainer::const_iterator itr = _pointOfInterestStore.find(entry);
+    if (itr != _pointOfInterestStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
