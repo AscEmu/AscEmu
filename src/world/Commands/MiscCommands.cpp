@@ -379,8 +379,9 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
     else
     {
         RedSystemMessage(m_session, "Player is not online at the moment.");
-        return true;
     }
+
+    return true;
 }
 
 //.kick ip

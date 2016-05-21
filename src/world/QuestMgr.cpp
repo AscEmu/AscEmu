@@ -1748,6 +1748,9 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
     for (MySQLDataStore::QuestContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
         Quest const* qst = sMySQLStore.GetQuest(itr->second.id);
+        if (qst == nullptr)
+            continue;
+
         for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
         {
             if (qst->required_item[i] == Item_Entry)

@@ -488,6 +488,8 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
     for (MySQLDataStore::ItemPrototypeContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
         ItemPrototype const* it = sMySQLStore.GetItemProto(itr->second.ItemId);
+        if (it == nullptr)
+            continue;
 
         if (it->ItemSet != setid)
         {
