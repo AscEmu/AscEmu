@@ -27,7 +27,7 @@ TotemSummon::TotemSummon(uint64 GUID) : Summon(GUID)
 TotemSummon::~TotemSummon()
 {}
 
-void TotemSummon::Load(CreatureProto* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void TotemSummon::Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
 {
     Summon::Load(proto, owner, position, spellid, summonslot);
 

@@ -1991,6 +1991,8 @@ void QuestMgr::LoadExtraQuestStuff()
     for (MySQLDataStore::QuestContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
         Quest const* qst = sMySQLStore.GetQuest(itr->second.id);
+        if (qst == nullptr)
+            continue;
 
         // 0 them out
         const_cast<Quest*>(qst)->count_required_item = 0;

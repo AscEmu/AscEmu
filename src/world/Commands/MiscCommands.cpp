@@ -348,8 +348,9 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
     else
     {
         RedSystemMessage(m_session, "Player is not online at the moment.");
-        return true;
     }
+
+    return true;
 }
 
 //.kick account

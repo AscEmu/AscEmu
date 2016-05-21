@@ -242,10 +242,11 @@ bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
     if (mCell != nullptr)
         mCell->SetLoaded();
 
-    if (m_session->GetPlayer()->SaveAllChangesCommand)
-        save = 1;
+    bool save_to_db = false;
+    if (m_session->GetPlayer()->SaveAllChangesCommand || save > 0)
+        save_to_db = true;
 
-    if (save == 1)
+    if (save_to_db)
     {
         GreenSystemMessage(m_session, "Spawning GameObject by entry '%u'. Added to gameobject_spawns table.", go_spawn->id);
         gameobject->SaveToDB();

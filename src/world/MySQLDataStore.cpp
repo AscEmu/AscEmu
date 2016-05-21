@@ -945,9 +945,6 @@ void MySQLDataStore::LoadQuestsTable()
         }
 
         questInfo.is_repeatable = fields[120].GetInt32();
-
-        questInfo.GetRewardItemCount();
-
         questInfo.bonushonor = fields[121].GetInt32();
         questInfo.bonusarenapoints = fields[122].GetInt32();
         questInfo.rewardtitleid = fields[123].GetInt32();

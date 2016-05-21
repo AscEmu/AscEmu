@@ -1365,13 +1365,16 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 
     BlueSystemMessage(m_session, "Starting search of item `%s`...", x.c_str());
     uint32 t = getMSTime();
-    ItemPrototype const* it;
+
     uint32 count = 0;
 
     MySQLDataStore::ItemPrototypeContainer const* its = sMySQLStore.GetItemPrototypeStore();
     for (MySQLDataStore::ItemPrototypeContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        it = sMySQLStore.GetItemProto(itr->second.ItemId);
+        ItemPrototype const* it = sMySQLStore.GetItemProto(itr->second.ItemId);
+        if (it == nullptr)
+            continue;
+
         LocalizedItem* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedItem(it->ItemId, m_session->language) : NULL;
 
         std::string litName = std::string(lit ? lit->Name : "");
@@ -1476,13 +1479,16 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 
     BlueSystemMessage(m_session, "Starting search of creature `%s`...", x.c_str());
     uint32 t = getMSTime();
-    CreatureInfo const* it;
+
     uint32 count = 0;
 
     MySQLDataStore::CreatureInfoContainer const* its = sMySQLStore.GetCreatureNamesStore();
     for (MySQLDataStore::CreatureInfoContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        it = sMySQLStore.GetCreatureInfo(itr->second.Id);
+        CreatureInfo const* it = sMySQLStore.GetCreatureInfo(itr->second.Id);
+        if (it == nullptr)
+            continue;
+
         LocalizedCreatureName* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(it->Id, m_session->language) : NULL;
 
         std::string litName = std::string(lit ? lit->Name : "");

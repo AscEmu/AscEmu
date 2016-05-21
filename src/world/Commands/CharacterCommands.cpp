@@ -122,10 +122,10 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
 {
     uint32 levels = atoi(args);
 
-    if (levels == 0 || levels < 0)
+    if (levels == 0)
     {
         RedSystemMessage(m_session, "Command must be in format: .character levelup <level>.");
-        RedSystemMessage(m_session, "A negative/0 level is not allowed.");
+        RedSystemMessage(m_session, "A 0 level is not allowed.");
         return true;
     }
 
@@ -1355,7 +1355,7 @@ bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession*
 bool ChatHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
-    if (player_target)
+    if (player_target == nullptr)
         return true;
 
     SystemMessage(m_session, "==== %s kills ====", player_target->GetName());
@@ -1370,7 +1370,7 @@ bool ChatHandler::HandleCharListKillsCommand(const char* /*args*/, WorldSession*
 bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session)
 {
     auto player_target = GetSelectedPlayer(m_session, true, true);
-    if (player_target)
+    if (player_target == nullptr)
         return true;
 
     uint32 count = 0;

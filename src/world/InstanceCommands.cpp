@@ -27,7 +27,7 @@ bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession*
     Player* player;
 
     if (*args)
-        bool is_name_set = true;
+        is_name_set = true;
 
     if (is_name_set)
     {

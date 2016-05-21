@@ -26,7 +26,7 @@ GuardianSummon::GuardianSummon(uint64 GUID) : Summon(GUID)
 GuardianSummon::~GuardianSummon()
 {}
 
-void GuardianSummon::Load(CreatureProto* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void GuardianSummon::Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
 {
     Summon::Load(proto, owner, position, spellid, summonslot);
 

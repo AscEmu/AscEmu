@@ -93,50 +93,52 @@ std::string RemoveQuestFromPlayer(Player* plr, Quest const* qst)
 
 bool ChatHandler::HandleQuestLookupCommand(const char* args, WorldSession* m_session)
 {
-    if (!*args) return false;
+    if (!*args)
+        return false;
 
-    std::string x = std::string(args);
-    arcemu_TOLOWER(x);
-    if (x.length() < 4)
+    std::string search_string = std::string(args);
+    arcemu_TOLOWER(search_string);
+    if (search_string.length() < 4)
     {
         RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
         return true;
     }
 
-    BlueSystemMessage(m_session, "Starting search of quests `%s`...", x.c_str());
+    BlueSystemMessage(m_session, "Starting search of quests `%s`...", search_string.c_str());
     uint32 t = getMSTime();
-
-    uint32 count = 0;
-    std::string y;
     std::string recout;
+    uint32 count = 0;
 
     MySQLDataStore::QuestContainer const* its = sMySQLStore.GetQuestStore();
     for (MySQLDataStore::QuestContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        Quest const* i = sMySQLStore.GetQuest(itr->second.id);
-        y = std::string(i->title);
+        Quest const* quest = sMySQLStore.GetQuest(itr->second.id);
+        if (quest == nullptr)
+            continue;
 
-        LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(i->id, m_session->language) : NULL;
+        std::string lower_quest_title = quest->title;
+
+        LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(quest->id, m_session->language) : NULL;
 
         std::string liName = std::string(li ? li->Title : "");
 
         arcemu_TOLOWER(liName);
-        arcemu_TOLOWER(y);
+        arcemu_TOLOWER(lower_quest_title);
 
         bool localizedFound = false;
-        if (FindXinYString(x, liName))
+        if (FindXinYString(search_string, liName))
             localizedFound = true;
 
-        if (FindXinYString(x, y) || localizedFound)
+        if (FindXinYString(search_string, lower_quest_title) || localizedFound)
         {
-            std::string questid = MyConvertIntToString(i->id);
-            std::string questtitle = localizedFound ? (li ? li->Title : "") : i->title;
+            std::string questid = MyConvertIntToString(quest->id);
+            std::string questtitle = localizedFound ? (li ? li->Title : "") : quest->title;
             // send quest link
             recout = questid.c_str();
             recout += ": |cff00ccff|Hquest:";
             recout += questid.c_str();
             recout += ":";
-            recout += MyConvertIntToString(i->min_level);
+            recout += MyConvertIntToString(quest->min_level);
             recout += "|h[";
             recout += questtitle;
             recout += "]|h|r";

@@ -941,8 +941,6 @@ class LuaUnit
                 player->SendItemPushResult(false, true, false, true, player->GetItemInterface()->LastSearchItemBagSlot(),
                 player->GetItemInterface()->LastSearchItemSlot(), count, item_add->GetEntry(), item_add->GetItemRandomSuffixFactor(),
                 item_add->GetItemRandomPropertyId(), item_add->GetStackCount());
-            else
-                delete item_add;
         }
         else
         {
