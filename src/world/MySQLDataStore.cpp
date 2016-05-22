@@ -708,7 +708,7 @@ void MySQLDataStore::LoadCreatureProtoTable()
                     if (sp == nullptr)
                     {
                         uint8 spell_number = i;
-                        Log.Error("MySQLDataStore", "your %s table column spell%u spell: %u for creature entry: %u", table_name.c_str(), spell_number + 1, creatureProto.AISpells[i], entry);
+                        Log.Error("MySQLDataStore", "spell %u in table %s column spell%u for creature entry: %u is not a valid spell!", creatureProto.AISpells[i], table_name.c_str(), spell_number + 1, entry);
                         continue;
                     }
                     else
