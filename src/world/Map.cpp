@@ -175,7 +175,7 @@ void Map::LoadSpawns(bool reload)
 
     QueryResult* result;
     std::set<std::string>::iterator tableiterator;
-    for (tableiterator = ExtraMapCreatureTables.begin(); tableiterator != ExtraMapCreatureTables.end(); ++tableiterator)
+    for (tableiterator = CreatureSpawnsTables.begin(); tableiterator != CreatureSpawnsTables.end(); ++tableiterator)
     {
         result = WorldDatabase.Query("SELECT * FROM %s WHERE Map = %u", (*tableiterator).c_str(), this->_mapId);
         if (result)
@@ -339,7 +339,7 @@ void Map::LoadSpawns(bool reload)
         delete result;
     }
 
-    for (tableiterator = ExtraMapGameObjectTables.begin(); tableiterator != ExtraMapGameObjectTables.end(); ++tableiterator)
+    for (tableiterator = GameObjectSpawnsTables.begin(); tableiterator != GameObjectSpawnsTables.end(); ++tableiterator)
     {
         result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u", (*tableiterator).c_str(), this->_mapId);
         if (result)

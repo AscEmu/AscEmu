@@ -21,9 +21,6 @@
 
 #include "StdAfx.h"
 
-SERVER_DECL std::set<std::string> ExtraMapCreatureTables;
-SERVER_DECL std::set<std::string> ExtraMapGameObjectTables;
-
 void ObjectMgr::LoadProfessionDiscoveries()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * from professiondiscoveries");
@@ -218,61 +215,6 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             } while (result->NextRow());
 
             delete result;
-        }
-    }
-}
-
-#define make_task(storage, itype, storagetype, tablename, format) tl.AddTask(new Task(\
-    new CallbackP2< SQLStorage< itype, storagetype< itype > >, const char *, const char *> \
-    (&storage, &SQLStorage< itype, storagetype< itype > >::Load, tablename, format)))
-
-
-std::vector<std::pair<std::string, std::string> > additionalTables;
-
-bool LoadAdditionalTable(const char* TableName, const char* SecondName, bool firstLoad = false)
-{
-    if (!stricmp(TableName, "creature_spawns"))
-    {
-        ExtraMapCreatureTables.insert(std::string(SecondName));
-        return false;
-    }
-    else if (!stricmp(TableName, "gameobject_spawns"))
-    {
-        ExtraMapGameObjectTables.insert(std::string(SecondName));
-        return false;
-    }
-    else
-        return false;
-
-    return true;
-}
-
-void Storage_LoadAdditionalTables()
-{
-    ExtraMapCreatureTables.insert(std::string("creature_spawns"));
-    ExtraMapGameObjectTables.insert(std::string("gameobject_spawns"));
-
-    std::string strData = Config.MainConfig.GetStringDefault("Startup", "LoadAdditionalTables", "");
-    if (strData.empty())
-        return;
-
-    std::vector<std::string> strs = StrSplit(strData, ",");
-    if (strs.empty())
-        return;
-
-    for (std::vector<std::string>::iterator itr = strs.begin(); itr != strs.end(); ++itr)
-    {
-        char s1[200];
-        char s2[200];
-        if (sscanf((*itr).c_str(), "%s %s", s1, s2) != 2)
-            continue;
-
-        if (LoadAdditionalTable(s2, s1, true))
-        {
-            std::pair<std::string, std::string> tmppair;
-            tmppair.first = std::string(s1);
-            tmppair.second = std::string(s2);
-            additionalTables.push_back(tmppair);
         }
     }
 }

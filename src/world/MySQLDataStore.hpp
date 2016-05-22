@@ -8,6 +8,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Singleton.h"
 
+extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
+extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
+extern SERVER_DECL std::set<std::string> GameObjectNamesTables;
+extern SERVER_DECL std::set<std::string> CreatureNamesTables;
+extern SERVER_DECL std::set<std::string> CreatureProtoTables;
+extern SERVER_DECL std::set<std::string> ItemsTables;
+extern SERVER_DECL std::set<std::string> QuestsTables;
+
 class SERVER_DECL MySQLDataStore : public Singleton < MySQLDataStore >
 {
 public:
@@ -109,6 +117,9 @@ public:
 
     PointOfInterest const* GetPointOfInterest(uint32 entry);
     PointOfInterestContainer const* GetPointOfInterestStore() { return &_pointOfInterestStore; }
+
+    //Config
+    void LoadAdditionalTableConfig();
 
     //Loads
     void LoadItemPagesTable();

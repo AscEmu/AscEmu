@@ -473,6 +473,8 @@ bool World::SetInitialWorldSettings()
     //Load tables
     new MySQLDataStore;
 
+    sMySQLStore.LoadAdditionalTableConfig();
+
     sMySQLStore.LoadItemPagesTable();
     sMySQLStore.LoadItemsTable();
     sMySQLStore.LoadCreatureNamesTable();
@@ -510,8 +512,6 @@ bool World::SetInitialWorldSettings()
 
     // storage stuff has to be loaded first
     tl.wait();
-
-    Storage_LoadAdditionalTables();
 
     MAKE_TASK(ObjectMgr, LoadPlayerCreateInfo);
     MAKE_TASK(ObjectMgr, LoadPlayersInfo);

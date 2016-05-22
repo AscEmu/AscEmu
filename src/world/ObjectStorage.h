@@ -24,9 +24,4 @@
 #include "Storage.h"
 #include "ObjectMgr.h"
 
-void Storage_LoadAdditionalTables();
-
-extern SERVER_DECL std::set<std::string> ExtraMapCreatureTables;
-extern SERVER_DECL std::set<std::string> ExtraMapGameObjectTables;
-
 #endif // _OBJECTSTORAGE_H
