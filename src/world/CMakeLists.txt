@@ -14,7 +14,6 @@ set(sources
    Commands/GameObjectCommands.cpp
    Commands/MiscCommands.cpp
    Commands/NpcCommands.cpp
-   Commands/ReloadTableCommands.cpp
    Commands/ServerCommands.cpp
    Commands/TransporterCommands.cpp
    Commands/TicketCommands.cpp

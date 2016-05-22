@@ -76,7 +76,7 @@ set(headers
 	StackBuffer.h
 	StackTrace.h
 	StackWalker.h
-	Storage.h
+	# Storage.h unused
 	TextFile.h
 	TLSObject.h
 	Tokenizer.h
