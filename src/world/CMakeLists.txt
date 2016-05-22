@@ -28,7 +28,6 @@ set(sources
 	CommonScheduleThread.cpp 
 	ArenaTeam.cpp 
 	DatabaseCleaner.cpp 
-	ObjectStorage.cpp  
 	AddonMgr.cpp 
 	AIInterface.cpp 
 	AIEvents.cpp
@@ -261,7 +260,6 @@ set(headers
 	NPCHandler.h
 	Object.h
 	ObjectMgr.h
-	ObjectStorage.h
 	Opcodes.h
 	Pet.h
 	Player.h
