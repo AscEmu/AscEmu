@@ -3692,7 +3692,8 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
             return;
 
         p_caster->GetItemInterface()->RemoveItemAmt(itemTarget->GetEntry(), 1);
-        p_caster->GetItemInterface()->AddItemToFreeSlot(pItem);
+        if (!p_caster->GetItemInterface()->AddItemToFreeSlot(pItem))
+            pItem->DeleteMe();
 
         return;
     }
