@@ -149,87 +149,112 @@ void CommandTableStorage::Load()
 
 void CommandTableStorage::Override(const char* command, const char* level)
 {
-    ARCEMU_ASSERT(level[0] != '\0');
-    char* cmd = strdup(command);
+    std::stringstream command_stream(command);
+    std::string main_command;
+    std::string sub_command;
+    std::string sec_sub_command;
 
-    // find the command we're talking about
-    char* sp = strchr(cmd, ' ');
-    const char* command_name = cmd;
-    const char* subcommand_name = NULL;
+    command_stream >> main_command;
+    command_stream >> sub_command;
+    command_stream >> sec_sub_command;
 
-    if (sp != NULL)
+    if (sec_sub_command.empty())
     {
-        // we're dealing with a subcommand.
-        *sp = 0;
-        subcommand_name = sp + 1;
-    }
-
-    size_t len1 = strlen(command_name);
-    size_t len2 = subcommand_name ? strlen(subcommand_name) : 0;
-
-    // look for the command.
-    ChatCommand* p = &_commandTable[0];
-    while(p->Name != 0)
-    {
-        if (!strnicmp(p->Name, command_name, len1))
+        if (sub_command.empty())
         {
-            // this is the one we wanna modify
-            if (!subcommand_name)
+            ChatCommand* p = &_commandTable[0];
+            while (p->Name != 0)
             {
-                // no subcommand, we can change it.
-                p->CommandGroup = level[0];
-                LOG_DETAIL("Changing command level of command `%s` to %c.", p->Name, level[0]);
-            }
-            else
-            {
-                // assume this is a subcommand, loop the second set.
-                ChatCommand* p2 = p->ChildCommands;
-                if (!p2)
+                if (!strncmp(p->Name, main_command.c_str(), main_command.length()))
                 {
-                    LOG_ERROR("Invalid command specified for override: %s", command_name);
+                    p->CommandGroup = level[0];
+                    Log.Debug("Command_Override", "Changing command level of .`%s` to %c.", main_command.c_str(), level[0]);
+                    break;
                 }
-                else
+                ++p;
+            }
+        }
+        else
+        {
+            ChatCommand* p = &_commandTable[0];
+            while (p->Name != 0)
+            {
+                if (!strncmp(p->Name, main_command.c_str(), main_command.length()))
                 {
-                    while(p2->Name != 0)
+                    ChatCommand* p2 = p->ChildCommands;
+                    while (p2->Name != 0)
                     {
-                        if (!strnicmp("*", subcommand_name, 1))
+                        if (!strncmp(p2->Name, sub_command.c_str(), sub_command.length()))
                         {
                             p2->CommandGroup = level[0];
-                            LOG_DETAIL("Changing command level of command (wildcard) `%s`:`%s` to %c.", p->Name, p2->Name, level[0]);
+                            Log.Debug("Command_Override", "Changing command level of .`%s %s` to %c.", main_command.c_str(), sub_command.c_str(), level[0]);
+                            break;
                         }
-                        else
-                        {
-                            if (!strnicmp(p2->Name, subcommand_name, len2))
-                            {
-                                // change the level
-                                p2->CommandGroup = level[0];
-                                LOG_DETAIL("Changing command level of command `%s`:`%s` to %c.", p->Name, p2->Name, level[0]);
-                                break;
-                            }
-                        }
-                        p2++;
-                    }
-                    if (p2->Name == 0)
-                    {
-                        if (strnicmp("*", subcommand_name, 1)) //Hacky.. meh.. -DGM
-                        {
-                            LOG_ERROR("Invalid subcommand referenced: `%s` under `%s`.", subcommand_name, p->Name);
-                        }
-                        break;
+                        ++p2;
                     }
                 }
+                ++p;
             }
-            break;
         }
-        ++p;
     }
-
-    if (p->Name == 0)
+    else
     {
-        LOG_ERROR("Invalid command referenced: `%s`", command_name);
-    }
+        ChatCommand* p = &_commandTable[0];
+        while (p->Name != 0)
+        {
+            if (!strncmp(p->Name, main_command.c_str(), main_command.length()))
+            {
+                ChatCommand* p2 = p->ChildCommands;
+                while (p2->Name != 0)
+                {
+                    if (!strncmp(p2->Name, sub_command.c_str(), sub_command.length()))
+                    {
+                        ChatCommand* p3 = nullptr;
+                        if (0 == stricmp(main_command.c_str(), "character"))
+                        {
+                            if (0 == stricmp(sub_command.c_str(), "add"))
+                                p3 = &_characterAddCommandTable[0];
+                            else if (0 == stricmp(sub_command.c_str(), "set"))
+                                p3 = &_characterSetCommandTable[0];
+                            else if (0 == stricmp(sub_command.c_str(), "list"))
+                                p3 = &_characterListCommandTable[0];
+                        }
+                        else if (0 == stricmp(main_command.c_str(), "npc"))
+                        {
+                            if (0 == stricmp(sub_command.c_str(), "set"))
+                                p3 = &_NPCSetCommandTable[0];
+                        }
+                        else if (0 == stricmp(main_command.c_str(), "gameobject"))
+                        {
+                            if (0 == stricmp(sub_command.c_str(), "set"))
+                                p3 = &_GameObjectSetCommandTable[0];
+                        }
+                        else if (0 == stricmp(main_command.c_str(), "server"))
+                        {
+                            if (0 == stricmp(sub_command.c_str(), "reload"))
+                                p3 = &_reloadTableCommandTable[0];
+                        }
 
-    free(cmd);
+                        if (p3 == nullptr)
+                            break;
+
+                        while (p3->Name != 0)
+                        {
+                            if (!strncmp(p3->Name, sec_sub_command.c_str(), sec_sub_command.length()))
+                            {
+                                p3->CommandGroup = level[0];
+                                Log.Debug("Command_Override", "Changing command level of .`%s %s %s` to %c.", main_command.c_str(), sub_command.c_str(), sec_sub_command.c_str(), level[0]);
+                                break;
+                            }
+                            ++p3;
+                        }
+                    }
+                    ++p2;
+                }
+            }
+            ++p;
+        }
+    }
 }
 
 void CommandTableStorage::Dealloc()
