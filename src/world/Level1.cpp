@@ -208,7 +208,6 @@ bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
     {
         // send message to user
         char buf[256];
-        char buf0[256];
         if (!m_session->CanUseCommand('z') && chr->IsSummonDisabled())
         {
             snprintf((char*)buf, 256, "%s has blocked other GMs from summoning them.", chr->GetName());

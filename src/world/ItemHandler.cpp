@@ -745,8 +745,6 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
     std::string Name = itemProto->Name;
     std::string Description = itemProto->Description;
 
-    size_t namelens;
-
     LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
     if (li)
         Name = li->Name;
