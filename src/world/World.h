@@ -478,9 +478,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::map< uint32, uint32 > InspectTalentTabBit;
         uint32 InspectTalentTabPages[12][3];
 
-        // map text emote to spell prices
-        typedef std::map< uint32, uint32> SpellPricesMap;
-        SpellPricesMap mPrices;
 
         inline uint32 GetTimeOut() {return TimeOut;}
 

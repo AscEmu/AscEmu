@@ -404,42 +404,7 @@ bool World::SetInitialWorldSettings()
     CharacterDatabase.WaitExecute("UPDATE characters SET online = 0 WHERE online = 1");
     CharacterDatabase.WaitExecute("UPDATE characters SET banned= 0,banReason='' WHERE banned > 100 AND banned < %u", UNIXTIME);
 
-    ///\todo clean this
-    // fill in emotes table
-    // it appears not every emote has an animation
-    mPrices[1] = 10;
-    mPrices[4] = 80;
-    mPrices[6] = 150;
-    mPrices[8] = 200;
-    mPrices[10] = 300;
-    mPrices[12] = 800;
-    mPrices[14] = 900;
-    mPrices[16] = 1800;
-    mPrices[18] = 2200;
-    mPrices[20] = 2300;
-    mPrices[22] = 3600;
-    mPrices[24] = 4200;
-    mPrices[26] = 6700;
-    mPrices[28] = 7200;
-    mPrices[30] = 8000;
-    mPrices[32] = 11000;
-    mPrices[34] = 14000;
-    mPrices[36] = 16000;
-    mPrices[38] = 18000;
-    mPrices[40] = 20000;
-    mPrices[42] = 27000;
-    mPrices[44] = 32000;
-    mPrices[46] = 37000;
-    mPrices[48] = 42000;
-    mPrices[50] = 47000;
-    mPrices[52] = 52000;
-    mPrices[54] = 57000;
-    mPrices[56] = 62000;
-    mPrices[58] = 67000;
-    mPrices[60] = 72000;
-
     // Start
-
     uint32 start_time = getMSTime();
 
     Log.Success("World", "Loading DBC files...");
