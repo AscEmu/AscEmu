@@ -165,7 +165,8 @@ void CommandTableStorage::Override(const char* command, const char* level)
             ChatCommand* p = &_commandTable[0];
             while (p->Name != 0)
             {
-                if (!strncmp(p->Name, main_command.c_str(), main_command.length()))
+                std::string curr_table(p->Name);
+                if (!curr_table.compare(main_command))
                 {
                     p->CommandGroup = level[0];
                     Log.Debug("Command_Override", "Changing command level of .`%s` to %c.", main_command.c_str(), level[0]);
@@ -179,12 +180,14 @@ void CommandTableStorage::Override(const char* command, const char* level)
             ChatCommand* p = &_commandTable[0];
             while (p->Name != 0)
             {
-                if (!strncmp(p->Name, main_command.c_str(), main_command.length()))
+                std::string curr_table(p->Name);
+                if (!curr_table.compare(main_command))
                 {
                     ChatCommand* p2 = p->ChildCommands;
                     while (p2->Name != 0)
                     {
-                        if (!strncmp(p2->Name, sub_command.c_str(), sub_command.length()))
+                        std::string curr_subcommand(p2->Name);
+                        if (!curr_subcommand.compare(sub_command))
                         {
                             p2->CommandGroup = level[0];
                             Log.Debug("Command_Override", "Changing command level of .`%s %s` to %c.", main_command.c_str(), sub_command.c_str(), level[0]);
@@ -202,12 +205,14 @@ void CommandTableStorage::Override(const char* command, const char* level)
         ChatCommand* p = &_commandTable[0];
         while (p->Name != 0)
         {
-            if (!strncmp(p->Name, main_command.c_str(), main_command.length()))
+            std::string curr_table(p->Name);
+            if (!curr_table.compare(main_command))
             {
                 ChatCommand* p2 = p->ChildCommands;
                 while (p2->Name != 0)
                 {
-                    if (!strncmp(p2->Name, sub_command.c_str(), sub_command.length()))
+                    std::string curr_subcommand(p2->Name);
+                    if (!curr_subcommand.compare(sub_command))
                     {
                         ChatCommand* p3 = nullptr;
                         if (0 == stricmp(main_command.c_str(), "character"))
@@ -240,7 +245,8 @@ void CommandTableStorage::Override(const char* command, const char* level)
 
                         while (p3->Name != 0)
                         {
-                            if (!strncmp(p3->Name, sec_sub_command.c_str(), sec_sub_command.length()))
+                            std::string curr_sec_subcommand(p3->Name);
+                            if (!curr_sec_subcommand.compare(sec_sub_command))
                             {
                                 p3->CommandGroup = level[0];
                                 Log.Debug("Command_Override", "Changing command level of .`%s %s %s` to %c.", main_command.c_str(), sub_command.c_str(), sec_sub_command.c_str(), level[0]);
