@@ -401,7 +401,17 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcSetPhaseCommand(const char* args, WorldSession* m_session);
         bool HandleNpcSetStandstateCommand(const char* arg, WorldSession* m_session);
 
-        // ReloadTable
+        // Server
+        bool HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerRehashCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerSaveCommand(const char* args, WorldSession* m_session);
+        bool HandleServerSaveAllCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerSetMotdCommand(const char* args, WorldSession* m_session);
+        bool HandleServerShutdownCommand(const char* args, WorldSession* m_session);
+        bool HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleServerRestartCommand(const char* args, WorldSession* m_session);
+
+        //Server reload commands
         bool HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadCreaturesCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadAreaTriggersCommand(const char* /*args*/, WorldSession* m_session);
@@ -421,18 +431,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadWorldstringTablesCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadZoneguardsCommand(const char* /*args*/, WorldSession* m_session);
-
-        // Server
-        bool HandleServerInfoCommand(const char* /*args*/, WorldSession* m_session);
-        bool HandleServerRehashCommand(const char* /*args*/, WorldSession* m_session);
-        bool HandleServerSaveCommand(const char* args, WorldSession* m_session);
-        bool HandleServerSaveAllCommand(const char* /*args*/, WorldSession* m_session);
-        bool HandleServerSetMotdCommand(const char* args, WorldSession* m_session);
-        bool HandleServerShutdownCommand(const char* args, WorldSession* m_session);
-        bool HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session);
-        bool HandleServerRestartCommand(const char* args, WorldSession* m_session);
-        //Remove/Rewrite?
-        //bool HandleServerDBReloadCommand(const char* args, WorldSession* m_session);
 
         // Ticket
         bool HandleTicketListCommand(const char* /*args*/, WorldSession* m_session);
@@ -460,6 +458,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleKickByNameCommand(const char* args, WorldSession* m_session);
         bool HandleKKickBySessionCommand(const char* args, WorldSession* m_session);
         bool HandleKickByIPCommand(const char* args, WorldSession* m_session);
+
+        //Waypoint
+
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Everything under this line is untested/not rewritten.

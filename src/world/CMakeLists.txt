@@ -17,6 +17,7 @@ set(sources
    Commands/ServerCommands.cpp
    Commands/TransporterCommands.cpp
    Commands/TicketCommands.cpp
+   Commands/WaypointCommands.cpp
    DBC/DBCStores.cpp
    DBC/DBCLoader.cpp
    DBC/DBCRecord.cpp
