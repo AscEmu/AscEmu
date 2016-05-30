@@ -213,12 +213,6 @@ bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleNYICommand(const char* args, WorldSession* m_session)
-{
-    RedSystemMessage(m_session, "Not yet implemented.");
-    return true;
-}
-
 bool ChatHandler::HandleDismountCommand(const char* args, WorldSession* m_session)
 {
     Unit* m_target = NULL;

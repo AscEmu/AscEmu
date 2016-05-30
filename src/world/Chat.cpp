@@ -404,7 +404,6 @@ void CommandTableStorage::Init()
         { "testindoor",          'd', &ChatHandler::HandleCollisionTestIndoor,     "tests indoor",                                                                                                      NULL, 0, 0, 0 },
         { "getheight",           'd', &ChatHandler::HandleCollisionGetHeight,      "Gets height",                                                                                                       NULL, 0, 0, 0 },
         { "deathstate",          'd', &ChatHandler::HandleGetDeathState,           "returns current deathstate for target",                                                                             NULL, 0, 0, 0 },
-        { "getpos",              'd', &ChatHandler::HandleGetPosCommand,           "",                                                                                                                  NULL, 0, 0, 0 },
         { "sendfailed",             'd', &ChatHandler::HandleSendFailed,      "",                                                                                                                  NULL, 0, 0, 0 },
         { "playmovie",             'd', &ChatHandler::HandlePlayMovie,               "Triggers a movie for a player",                                    NULL, 0, 0, 0 },
         { "auraupdate",             'd', &ChatHandler::HandleAuraUpdateAdd,               "<SpellID> <Flags> <StackCount> (caster guid = player target)",                                    NULL, 0, 0, 0 },
@@ -1686,24 +1685,6 @@ bool ChatHandler::CmdSetFloatField(WorldSession* m_session, uint32 field, uint32
             RedSystemMessage(m_session, "Invalid Selection.");
         }
     }
-    return true;
-}
-
-bool ChatHandler::HandleGetPosCommand(const char* args, WorldSession* m_session)
-{
-    if (!args || !m_session) return false;
-
-    /*if (m_session->GetPlayer()->GetSelection() == 0) return false;
-    Creature* creature = objmgr.GetCreature(m_session->GetPlayer()->GetSelection());
-
-    if (!creature) return false;
-    BlueSystemMessage(m_session, "Creature Position: \nX: %f\nY: %f\nZ: %f\n", creature->GetPositionX(), creature->GetPositionY(), creature->GetPositionZ());
-    return true;*/
-
-    uint32 spell = atol(args);
-    SpellEntry* se = dbcSpell.LookupEntryForced(spell);
-    if (se)
-        BlueSystemMessage(m_session, "SpellIcon for %d is %d", se->Id, se->field114);
     return true;
 }
 

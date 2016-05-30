@@ -131,9 +131,6 @@ enum Languages
 #define MSG_COLOR_SEXBLUE           "|cff00E5EE"
 #define MSG_COLOR_SEXHOTPINK        "|cffFF6EB4"
 
-#define CHECKSESSION if (m_session == NULL) return NULL;  \
-    if (m_session->GetPlayer() == NULL) return NULL;
-
 int32 GetSpellIDFromLink(const char* spelllink);
 uint16 GetItemIDFromLink(const char* itemlink, uint32* itemid);
 
@@ -539,7 +536,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 #endif
         bool HandleHelpCommand(const char* args, WorldSession* m_session);
         bool HandleCommandsCommand(const char* args, WorldSession* m_session);
-        bool HandleNYICommand(const char* args, WorldSession* m_session);
+
         bool HandleStartCommand(const char* args, WorldSession* m_session);
         bool HandleDismountCommand(const char* args, WorldSession* m_session);
         bool HandleRatingsCommand(const char* args, WorldSession* m_session);
@@ -563,7 +560,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCollisionTestLOS(const char* args, WorldSession* m_session);
         bool HandleCollisionGetHeight(const char* args, WorldSession* m_session);
         bool HandleMountCommand(const char* args, WorldSession* m_session);
-        bool HandleGetPosCommand(const char* args, WorldSession* m_session);
+
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
         
         
