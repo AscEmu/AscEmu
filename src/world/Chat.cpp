@@ -1337,6 +1337,24 @@ Unit* ChatHandler::GetSelectedUnit(WorldSession* m_session, bool showerror)
     return unit;
 }
 
+uint32 ChatHandler::GetSelectedWayPointId(WorldSession* m_session)
+{
+    uint64 guid = m_session->GetPlayer()->GetSelection();
+    if (guid == 0)
+    {
+        SystemMessage(m_session, "No selection.");
+        return 0;
+    }
+
+    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
+    {
+        SystemMessage(m_session, "You should select a Waypoint.");
+        return 0;
+    }
+
+    return Arcemu::Util::GUID_LOPART(guid);
+}
+
 const char* ChatHandler::GetMapTypeString(uint8 type)
 {
     switch (type)

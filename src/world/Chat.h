@@ -242,6 +242,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         Player* GetSelectedPlayer(WorldSession* m_session, bool showerror = true, bool auto_self = false);
         Creature* GetSelectedCreature(WorldSession* m_session, bool showerror = true);
         Unit* GetSelectedUnit(WorldSession* m_session, bool showerror = true);
+        uint32 GetSelectedWayPointId(WorldSession* m_session);
         std::string GetNpcFlagString(Creature* creature);
         const char* GetMapTypeString(uint8 type);
         const char* GetDifficultyString(uint8 difficulty);

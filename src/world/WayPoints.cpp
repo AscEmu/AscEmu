@@ -24,12 +24,6 @@
 
 bool ChatHandler::HandleWPAddCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No Selection");
-        return true;
-    }
     AIInterface* ai = NULL;
     Creature* pCreature = NULL;
     Player* p = m_session->GetPlayer();
@@ -52,12 +46,10 @@ bool ChatHandler::HandleWPAddCommand(const char* args, WorldSession* m_session)
     }
     else
     {
-        pCreature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-        if (!pCreature || pCreature->IsPet())
-        {
-            SystemMessage(m_session, "You should select a creature.");
+        pCreature = GetSelectedCreature(m_session, true);
+        if (pCreature == nullptr)
             return true;
-        }
+
         ai = pCreature->GetAIInterface();
     }
 
@@ -138,22 +130,12 @@ bool ChatHandler::HandleWPMoveTypeCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
+    Creature* pCreature = GetSelectedCreature(m_session, true);
+    if (pCreature == nullptr)
         return true;
-    }
-
-    Creature* pCreature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature)
-    {
-        SystemMessage(m_session, "You should select a creature.");
-        return true;
-    }
 
     char sql[512];
-    snprintf(sql, 512, "UPDATE creature_spawns SET movetype = '%u' WHERE id = '%u'", (unsigned int)option, (unsigned int)Arcemu::Util::GUID_LOPART(guid));
+    snprintf(sql, 512, "UPDATE creature_spawns SET movetype = '%u' WHERE id = '%u'", (unsigned int)option, pCreature->spawnid);
     WorldDatabase.Execute(sql);
 
     pCreature->GetAIInterface()->SetWaypointScriptType((Movement::WaypointMovementScript)option);
@@ -164,19 +146,9 @@ bool ChatHandler::HandleWPMoveTypeCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleWPShowCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
+    Creature* pCreature = GetSelectedCreature(m_session, true);
+    if (pCreature == nullptr)
         return true;
-    }
-
-    Creature* pCreature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature)
-    {
-        SystemMessage(m_session, "You should select a Creature.");
-        return true;
-    }
 
     char* pBackwards = strtok((char*)args, " ");
     bool Backwards = (pBackwards) ? ((atoi(pBackwards) > 0) ? true : false) : false;
@@ -218,18 +190,7 @@ bool ChatHandler::HandleWPShowCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleWPDeleteCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
-    {
-        SystemMessage(m_session, "You should select a Waypoint.");
-        return true;
-    }
+    uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* pPlayer = m_session->GetPlayer();
     AIInterface* ai = pPlayer->waypointunit;
@@ -240,7 +201,6 @@ bool ChatHandler::HandleWPDeleteCommand(const char* args, WorldSession* m_sessio
     }
     std::stringstream ss;
 
-    uint32 wpid = Arcemu::Util::GUID_LOPART(guid);
     if (wpid)
     {
         //Refresh client
@@ -266,18 +226,7 @@ bool ChatHandler::HandleWPDeleteCommand(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleWPChangeNoCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
-    {
-        SystemMessage(m_session, "You should select a Waypoint.");
-        return true;
-    }
+    uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* pPlayer = m_session->GetPlayer();
     AIInterface* ai = pPlayer->waypointunit;
@@ -292,7 +241,6 @@ bool ChatHandler::HandleWPChangeNoCommand(const char* args, WorldSession* m_sess
     char* pNewID = strtok((char*)args, " ");
     uint32 NewID = (pNewID) ? atoi(pNewID) : 0;
 
-    uint32 wpid = Arcemu::Util::GUID_LOPART(guid);
     if (NewID == wpid) return false;
     if (wpid)
     {
@@ -323,18 +271,7 @@ bool ChatHandler::HandleWPChangeNoCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleWPFlagsCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
-    {
-        SystemMessage(m_session, "You should select a Waypoint.");
-        return true;
-    }
+    uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* pPlayer = m_session->GetPlayer();
     AIInterface* ai = pPlayer->waypointunit;
@@ -345,7 +282,6 @@ bool ChatHandler::HandleWPFlagsCommand(const char* args, WorldSession* m_session
     }
     std::stringstream ss;
 
-    uint32 wpid = Arcemu::Util::GUID_LOPART(guid);
     if (wpid)
     {
         Movement::WayPoint* wp = ai->getWayPoint(wpid);
@@ -377,18 +313,7 @@ bool ChatHandler::HandleWPFlagsCommand(const char* args, WorldSession* m_session
 
 bool ChatHandler::HandleWPMoveHereCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
-    {
-        SystemMessage(m_session, "You should select a Waypoint.");
-        return true;
-    }
+    uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* pPlayer = m_session->GetPlayer();
     AIInterface* ai = pPlayer->waypointunit;
@@ -399,7 +324,6 @@ bool ChatHandler::HandleWPMoveHereCommand(const char* args, WorldSession* m_sess
     }
     std::stringstream ss;
 
-    uint32 wpid = Arcemu::Util::GUID_LOPART(guid);
     if (wpid)
     {
         Movement::WayPoint* wp = ai->getWayPoint(wpid);
@@ -432,18 +356,7 @@ bool ChatHandler::HandleWPMoveHereCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleWPWaitCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
-    {
-        SystemMessage(m_session, "You should select a Waypoint.");
-        return true;
-    }
+    uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* pPlayer = m_session->GetPlayer();
     AIInterface* ai = pPlayer->waypointunit;
@@ -456,7 +369,6 @@ bool ChatHandler::HandleWPWaitCommand(const char* args, WorldSession* m_session)
     uint32 Wait = 10000;
     std::stringstream ss;
 
-    uint32 wpid = Arcemu::Util::GUID_LOPART(guid);
     if (wpid)
     {
         Movement::WayPoint* wp = ai->getWayPoint(wpid);
@@ -488,18 +400,7 @@ bool ChatHandler::HandleWPWaitCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleWPEmoteCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
-    {
-        SystemMessage(m_session, "You should select a Waypoint.");
-        return true;
-    }
+    uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* pPlayer = m_session->GetPlayer();
     AIInterface* ai = pPlayer->waypointunit;
@@ -512,7 +413,6 @@ bool ChatHandler::HandleWPEmoteCommand(const char* args, WorldSession* m_session
     bool OneShot = true;
     std::stringstream ss;
 
-    uint32 wpid = Arcemu::Util::GUID_LOPART(guid);
     if (wpid)
     {
         Movement::WayPoint* wp = ai->getWayPoint(wpid);
@@ -552,18 +452,7 @@ bool ChatHandler::HandleWPEmoteCommand(const char* args, WorldSession* m_session
 
 bool ChatHandler::HandleWPSkinCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
-    {
-        SystemMessage(m_session, "You should select a Waypoint.");
-        return true;
-    }
+    uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* pPlayer = m_session->GetPlayer();
     AIInterface* ai = pPlayer->waypointunit;
@@ -575,7 +464,6 @@ bool ChatHandler::HandleWPSkinCommand(const char* args, WorldSession* m_session)
     uint32 SkinId = 0;
     std::stringstream ss;
 
-    uint32 wpid = Arcemu::Util::GUID_LOPART(guid);
     if (wpid)
     {
         Movement::WayPoint* wp = ai->getWayPoint(wpid);
@@ -611,18 +499,7 @@ bool ChatHandler::HandleWPSkinCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleWPInfoCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    if (GET_TYPE_FROM_GUID(guid) != HIGHGUID_TYPE_WAYPOINT)
-    {
-        SystemMessage(m_session, "You should select a Waypoint.");
-        return true;
-    }
+    uint32 wpid = GetSelectedWayPointId(m_session);
 
     Player* pPlayer = m_session->GetPlayer();
     AIInterface* ai = pPlayer->waypointunit;
@@ -633,7 +510,6 @@ bool ChatHandler::HandleWPInfoCommand(const char* args, WorldSession* m_session)
     }
     std::stringstream ss;
 
-    uint32 wpid = Arcemu::Util::GUID_LOPART(guid);
     if ((wpid > 0) && (wpid <= ai->GetWayPointsCount()))
     {
         Movement::WayPoint* wp = ai->getWayPoint(wpid);
@@ -669,23 +545,12 @@ bool ChatHandler::HandleWPInfoCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleWPHideCommand(const char* args, WorldSession* m_session)
 {
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid == 0)
-    {
-        SystemMessage(m_session, "No selection.");
-        return true;
-    }
-
-    Creature* pCreature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    Creature* pCreature = GetSelectedCreature(m_session, true);
     if (!pCreature)
-    {
-        SystemMessage(m_session, "You should select a Creature.");
         return true;
-    }
 
     AIInterface* ai = pCreature->GetAIInterface();
     Player* pPlayer = m_session->GetPlayer();
-
 
     if (pPlayer->waypointunit == ai)
     {
@@ -709,12 +574,10 @@ bool ChatHandler::HandleWPHideCommand(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleGenerateWaypoints(const char* args, WorldSession* m_session)
 {
-    Creature* cr = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(m_session->GetPlayer()->GetSelection()));
-    if (!cr)
-    {
-        SystemMessage(m_session, "You should select a creature.");
+    Creature* cr = GetSelectedCreature(m_session, true);
+    if (cr == nullptr)
         return true;
-    }
+
     if (cr->GetAIInterface()->GetWayPointsCount())//ALREADY HAVE WAYPOINTS
     {
         SystemMessage(m_session, "The creature already has waypoints");
@@ -792,9 +655,9 @@ bool ChatHandler::HandleGenerateWaypoints(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleSaveWaypoints(const char* args, WorldSession* m_session)
 {
-    Creature* cr = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(m_session->GetPlayer()->GetSelection()));
-    if (!cr || !cr->GetSQL_id())
-        return false;
+    Creature* cr = GetSelectedCreature(m_session, true);
+    if (cr == nullptr || !cr->GetSQL_id())
+        return true;
 
     Player* pPlayer = m_session->GetPlayer();
     if (pPlayer->waypointunit == cr->GetAIInterface())
@@ -810,11 +673,9 @@ bool ChatHandler::HandleSaveWaypoints(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleDeleteWaypoints(const char* args, WorldSession* m_session)
 {
-    Creature* cr = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(m_session->GetPlayer()->GetSelection()));
-    if (!cr)
-        return false;
-    if (!cr->GetSQL_id())
-        return false;
+    Creature* cr = GetSelectedCreature(m_session, true);
+    if (cr == nullptr || !cr->GetSQL_id())
+        return true;
 
     if (cr->GetAIInterface()->m_WayPointsShowing)
     {
@@ -859,12 +720,10 @@ bool ChatHandler::HandleWaypointAddFlyCommand(const char* args, WorldSession* m_
     }
     else
     {
-        pCreature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-        if (!pCreature || pCreature->IsPet())
-        {
-            SystemMessage(m_session, "You should select a creature.");
+        pCreature = GetSelectedCreature(m_session, true);
+        if (pCreature == nullptr)
             return true;
-        }
+
         ai = pCreature->GetAIInterface();
     }
 
@@ -923,4 +782,3 @@ bool ChatHandler::HandleWaypointAddFlyCommand(const char* args, WorldSession* m_
 
     return true;
 }
-
