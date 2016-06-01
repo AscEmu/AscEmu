@@ -38,20 +38,6 @@ uint32 GetQuestIDFromLink(const char* questlink)
     return atol(ptr + 8);       // quest id is just past "|Hquest:" (8 bytes)
 }
 
-inline std::string MyConvertIntToString(const int arg)
-{
-    std::stringstream out;
-    out << arg;
-    return out.str();
-}
-
-inline std::string MyConvertFloatToString(const float arg)
-{
-    std::stringstream out;
-    out << arg;
-    return out.str();
-}
-
 std::string RemoveQuestFromPlayer(Player* plr, Quest const* qst)
 {
     std::string recout = "|cff00ff00";
@@ -89,79 +75,6 @@ std::string RemoveQuestFromPlayer(Player* plr, Quest const* qst)
     recout += "\n\n";
 
     return recout;
-}
-
-bool ChatHandler::HandleQuestLookupCommand(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-        return false;
-
-    std::string search_string = std::string(args);
-    arcemu_TOLOWER(search_string);
-    if (search_string.length() < 4)
-    {
-        RedSystemMessage(m_session, "Your search string must be at least 4 characters long.");
-        return true;
-    }
-
-    BlueSystemMessage(m_session, "Starting search of quests `%s`...", search_string.c_str());
-    uint32 t = getMSTime();
-    std::string recout;
-    uint32 count = 0;
-
-    MySQLDataStore::QuestContainer const* its = sMySQLStore.GetQuestStore();
-    for (MySQLDataStore::QuestContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
-    {
-        Quest const* quest = sMySQLStore.GetQuest(itr->second.id);
-        if (quest == nullptr)
-            continue;
-
-        std::string lower_quest_title = quest->title;
-
-        LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(quest->id, m_session->language) : NULL;
-
-        std::string liName = std::string(li ? li->Title : "");
-
-        arcemu_TOLOWER(liName);
-        arcemu_TOLOWER(lower_quest_title);
-
-        bool localizedFound = false;
-        if (FindXinYString(search_string, liName))
-            localizedFound = true;
-
-        if (FindXinYString(search_string, lower_quest_title) || localizedFound)
-        {
-            std::string questid = MyConvertIntToString(quest->id);
-            std::string questtitle = localizedFound ? (li ? li->Title : "") : quest->title;
-            // send quest link
-            recout = questid.c_str();
-            recout += ": |cff00ccff|Hquest:";
-            recout += questid.c_str();
-            recout += ":";
-            recout += MyConvertIntToString(quest->min_level);
-            recout += "|h[";
-            recout += questtitle;
-            recout += "]|h|r";
-            SendMultilineMessage(m_session, recout.c_str());
-
-            ++count;
-            if (count == 25)
-            {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
-                break;
-            }
-        }
-    }
-
-    if (count == 0)
-    {
-        recout = "|cff00ccffNo matches found.\n\n";
-        SendMultilineMessage(m_session, recout.c_str());
-    }
-
-    BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
-
-    return true;
 }
 
 bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_session)
@@ -364,8 +277,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             if (IsPlrOnQuest)
             {
                 uint32 giver_id = 0;
-                std::string my_query = "SELECT id FROM creature_quest_starter WHERE quest = " + MyConvertIntToString(quest_id);
-                QueryResult* creatureResult = WorldDatabase.Query(my_query.c_str());
+                QueryResult* creatureResult = WorldDatabase.Query("SELECT id FROM creature_quest_starter WHERE quest = %u", quest_id);
 
                 if (creatureResult)
                 {
@@ -375,8 +287,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 }
                 else
                 {
-                    my_query = "SELECT id FROM gameobject_quest_starter WHERE quest = " + MyConvertIntToString(quest_id);
-                    QueryResult* objectResult = WorldDatabase.Query(my_query.c_str());
+                    QueryResult* objectResult = WorldDatabase.Query("SELECT id FROM gameobject_quest_starter WHERE quest = %u", quest_id);
                     if (objectResult)
                     {
                         Field* objectFields = objectResult->Fetch();

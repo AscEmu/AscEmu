@@ -593,14 +593,14 @@ void CommandTableStorage::Init()
 
     static ChatCommand accountCommandTable[] =
     {
-        { "create", 'a', &ChatHandler::HandleAccountCreate,         "Creates an account with name and password",                        NULL, 0, 0, 0 },
-        { "setgm",  'z', &ChatHandler::HandleAccountSetGMCommand,   "Sets gm level on account. Pass it username and 0,1,2,3,az, etc.",  NULL, 0, 0, 0 },
-        { "mute",   'a', &ChatHandler::HandleAccountMuteCommand,    "Mutes account for <timeperiod>.",                                  NULL, 0, 0, 0 },
-        { "unmute", 'a', &ChatHandler::HandleAccountUnmuteCommand,  "Unmutes account <x>",                                              NULL, 0, 0, 0 },
-        { "ban",    'a', &ChatHandler::HandleAccountBannedCommand,  "Bans account: .ban account <name> [duration] [reason]",            NULL, 0, 0, 0 },
-        { "unban",  'z', &ChatHandler::HandleAccountUnbanCommand,   "Unbans account x.",                                                NULL, 0, 0, 0 },
-        { "changepw", '0', &ChatHandler::HandleAccountChangePassword,  "Change the password of your account.",                          NULL, 0, 0, 0 },
-        { NULL,     '0', NULL,                                      "",                                                                 NULL, 0, 0, 0 }
+        { "create",     'a', &ChatHandler::HandleAccountCreate,         "Creates an account with name and password",                        nullptr, 0, 0, 0 },
+        { "setgm",      'z', &ChatHandler::HandleAccountSetGMCommand,   "Sets gm level on account. Pass it username and 0,1,2,3,az, etc.",  nullptr, 0, 0, 0 },
+        { "mute",       'a', &ChatHandler::HandleAccountMuteCommand,    "Mutes account for <timeperiod>.",                                  nullptr, 0, 0, 0 },
+        { "unmute",     'a', &ChatHandler::HandleAccountUnmuteCommand,  "Unmutes account <x>",                                              nullptr, 0, 0, 0 },
+        { "ban",        'a', &ChatHandler::HandleAccountBannedCommand,  "Bans account: .ban account <name> [duration] [reason]",            nullptr, 0, 0, 0 },
+        { "unban",      'z', &ChatHandler::HandleAccountUnbanCommand,   "Unbans account x.",                                                nullptr, 0, 0, 0 },
+        { "changepw",   '0', &ChatHandler::HandleAccountChangePassword, "Change the password of your account.",                             nullptr, 0, 0, 0 },
+        { nullptr,      '0', nullptr,                                   "",                                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(accountCommandTable, _accountCommandTable);
 
@@ -796,17 +796,17 @@ void CommandTableStorage::Init()
 
     static ChatCommand lookupCommandTable[] =
     {
-        { "item",     'l', &ChatHandler::HandleLookupItemCommand,     "Looks up item string x.",  NULL, 0, 0, 0 },
-        { "quest",    'l', &ChatHandler::HandleQuestLookupCommand,    "Looks up quest string x.", NULL, 0, 0, 0 },
-        { "creature", 'l', &ChatHandler::HandleLookupCreatureCommand, "Looks up item string x.",  NULL, 0, 0, 0 },
-        { "object",   'l', &ChatHandler::HandleLookupObjectCommand,   "Looks up gameobject string x.", NULL, 0, 0 , 0},
-        { "spell",    'l', &ChatHandler::HandleLookupSpellCommand,    "Looks up spell string x.", NULL, 0, 0, 0 },
-        { "skill",    'l', &ChatHandler::HandleLookupSkillCommand,    "Looks up skill string x.", NULL, 0, 0, 0 },
-        { "faction",  'l', &ChatHandler::HandleLookupFactionCommand,  "Looks up faction string x.", NULL, 0, 0, 0 },
 #ifdef ENABLE_ACHIEVEMENTS
-        { "achievement", 'l', &ChatHandler::HandleLookupAchievementCmd,  "Looks up achievement string x.", NULL, 0, 0, 0 },
+        { "achievement", 'l', &ChatHandler::HandleLookupAchievementCommand,  "Looks up achievement string x.",                              nullptr, 0, 0, 0 },
 #endif
-        { NULL,          '0', NULL,                                      "",                               NULL, 0, 0, 0 }
+        { "creature",       'l', &ChatHandler::HandleLookupCreatureCommand,         "Looks up item string x.",                              nullptr, 0, 0, 0 },
+        { "faction",        'l', &ChatHandler::HandleLookupFactionCommand,          "Looks up faction string x.",                           nullptr, 0, 0, 0 },
+        { "item",           'l', &ChatHandler::HandleLookupItemCommand,             "Looks up item string x.",                              nullptr, 0, 0, 0 },
+        { "object",         'l', &ChatHandler::HandleLookupObjectCommand,           "Looks up gameobject string x.",                        nullptr, 0, 0 , 0},
+        { "quest",          'l', &ChatHandler::HandleLookupQuestCommand,            "Looks up quest string x.",                             nullptr, 0, 0, 0 },
+        { "spell",          'l', &ChatHandler::HandleLookupSpellCommand,            "Looks up spell string x.",                             nullptr, 0, 0, 0 },
+        { "skill",          'l', &ChatHandler::HandleLookupSkillCommand,            "Looks up skill string x.",                             nullptr, 0, 0, 0 },
+        { nullptr,          '0', nullptr,                                           "",                                                     nullptr, 0, 0, 0 }
     };
     dupe_command_table(lookupCommandTable, _lookupCommandTable);
 
@@ -1739,4 +1739,18 @@ std::string ChatHandler::GetNpcFlagString(Creature* creature)
         s.append(" (Armorer)");
 
     return s;
+}
+
+std::string ChatHandler::MyConvertIntToString(const int arg)
+{
+    std::stringstream out;
+    out << arg;
+    return out.str();
+}
+
+std::string ChatHandler::MyConvertFloatToString(const float arg)
+{
+    std::stringstream out;
+    out << arg;
+    return out.str();
 }

@@ -247,6 +247,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         const char* GetMapTypeString(uint8 type);
         const char* GetDifficultyString(uint8 difficulty);
         const char* GetRaidDifficultyString(uint8 diff);
+        std::string MyConvertIntToString(const int arg);
+        std::string MyConvertFloatToString(const float arg);
         // For skill related GM commands
         SkillNameMgr* SkillNameManager;
 
@@ -362,12 +364,16 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGOSetOverridesCommand(const char* args, WorldSession* m_session);
 
         // Lookups
-        bool HandleLookupItemCommand(const char* args, WorldSession* m_session);
+#ifdef ENABLE_ACHIEVEMENTS
+        bool HandleLookupAchievementCommand(const char* args, WorldSession* m_session);
+#endif
         bool HandleLookupCreatureCommand(const char* args, WorldSession* m_session);
+        bool HandleLookupFactionCommand(const char* args, WorldSession* m_session);
+        bool HandleLookupItemCommand(const char* args, WorldSession* m_session);
         bool HandleLookupObjectCommand(const char* args, WorldSession* m_session);
+        bool HandleLookupQuestCommand(const char* args, WorldSession* m_session);
         bool HandleLookupSpellCommand(const char* args, WorldSession* m_session);
         bool HandleLookupSkillCommand(const char* args, WorldSession* m_session);
-        bool HandleLookupFactionCommand(const char* args, WorldSession* m_session);
 
         // NPC Commands
         bool HandleNpcAddAgentCommand(const char* args, WorldSession* m_session);
@@ -535,7 +541,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
-        bool HandleLookupAchievementCmd(const char* args, WorldSession* m_session);
 #endif
         bool HandleHelpCommand(const char* args, WorldSession* m_session);
         bool HandleCommandsCommand(const char* args, WorldSession* m_session);
@@ -599,7 +604,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleQuestItemCommand(const char* args, WorldSession* m_session);
         bool HandleQuestListCommand(const char* args, WorldSession* m_session);
         bool HandleQuestLoadCommand(const char* args, WorldSession* m_session);
-        bool HandleQuestLookupCommand(const char* args, WorldSession* m_session);
+        
         bool HandleQuestRemoveCommand(const char* args, WorldSession* m_session);
         bool HandleQuestRewardCommand(const char* args, WorldSession* m_session);
         bool HandleQuestStarterSpawnCommand(const char* args, WorldSession* m_session);

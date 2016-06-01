@@ -12,6 +12,7 @@ set(sources
    Commands/GameEventMgrCommands.cpp
    Commands/GameMasterCommands.cpp
    Commands/GameObjectCommands.cpp
+   Commands/LookupCommands.cpp
    Commands/MiscCommands.cpp
    Commands/NpcCommands.cpp
    Commands/ServerCommands.cpp
