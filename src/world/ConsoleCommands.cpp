@@ -73,13 +73,8 @@ bool HandleInfoCommand(BaseConsole* pConsole, int argc, const char* argv[])
     pConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.GetRAMUsage());
     pConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetQueueSize());
     pConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.GetQueueSize());
-
-    return true;
-}
-
-bool HandleNetworkStatusCommand(BaseConsole* pConsole, int argc, const char* argv[])
-{
     sSocketMgr.ShowStatus();
+
     return true;
 }
 
@@ -325,8 +320,8 @@ bool HandlePlayerInfoCommand(BaseConsole* pConsole, int argc, const char* argv[]
     }
 
     pConsole->Write("Player: %s\r\n", plr->GetName());
-    pConsole->Write("Race: %s\r\n", plr->myRace->name);
-    pConsole->Write("Class: %s\r\n", plr->myClass->name);
+    pConsole->Write("Race: %s\r\n", plr->myRace->name[0]);
+    pConsole->Write("Class: %s\r\n", plr->myClass->name[0]);
     pConsole->Write("IP: %s\r\n", plr->GetSession()->GetSocket() ? plr->GetSession()->GetSocket()->GetRemoteIP().c_str() : "disconnected");
     pConsole->Write("Level: %u\r\n", plr->getLevel());
     pConsole->Write("Account: %s\r\n", plr->GetSession()->GetAccountNameS());

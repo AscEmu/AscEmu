@@ -386,11 +386,6 @@ void HandleConsoleInput(BaseConsole* pConsole, const char* szInput)
             "Gives server runtime information."
         },
         {
-            &HandleNetworkStatusCommand,
-            "netstatus", "none",
-            "Shows network status."
-        },
-        {
             &HandleGMsCommand,
             "gms", "None",
             "Shows online GMs."
@@ -475,11 +470,21 @@ void HandleConsoleInput(BaseConsole* pConsole, const char* szInput)
             "clear", "None",
             "Clears the console screen."
         },
-        {
-            &HandleScriptEngineReloadCommand, "reloadscripts", "<NULL>", "Reloads all scripting engines currently loaded."
+        { 
+            &HandleScriptEngineReloadCommand,
+            "reloadscripts", "<NULL>",
+            "Reloads all scripting engines currently loaded."
         },
-        { &HandleTimeDateCommand, "datetime", "<NULL>", "Shows time and date according to localtime()" },
-        { NULL, NULL, NULL, NULL },
+        { 
+            &HandleTimeDateCommand,
+            "datetime", "<NULL>",
+            "Shows time and date according to localtime()"
+        },
+        { 
+            NULL, 
+            NULL, NULL, 
+            NULL
+        },
     };
 
     uint32 i;
