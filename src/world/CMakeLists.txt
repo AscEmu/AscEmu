@@ -147,7 +147,6 @@ set(sources
 	Unit.cpp 
 	Vehicle.cpp 
 	VehicleHandler.cpp
-	WayPoints.cpp 
 	WeatherMgr.cpp 
 	World.cpp 
 	WorldCreator.cpp 

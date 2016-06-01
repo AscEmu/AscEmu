@@ -461,8 +461,23 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleKickByIPCommand(const char* args, WorldSession* m_session);
 
         //Waypoint
-
-
+        bool HandleWayPointAddCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointAddFlyCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointChangeNumberCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointDeleteCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleWayPointDeleteAllCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleWayPointEmoteCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointFlagsCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointGenerateCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointHideCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleWayPointInfoCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleWayPpointMoveHereCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleWayPointMoveTypeCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointSaveCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleWayPointShowCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointSkinCommand(const char* args, WorldSession* m_session);
+        bool HandleWayPointWaitCommand(const char* args, WorldSession* m_session);
+        
         //////////////////////////////////////////////////////////////////////////////////////////
         // Everything under this line is untested/not rewritten.
         //\todo Rewrite these commands and move them to a proper file.
@@ -500,21 +515,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleUpdateWorldStateCommand(const char* args, WorldSession* session);
         bool HandleInitWorldStatesCommand(const char* args, WorldSession* session);
         bool HandleClearWorldStatesCommand(const char* args, WorldSession* session);
-        bool HandleWPAddCommand(const char* args, WorldSession* m_session);
-        bool HandleWPShowCommand(const char* args, WorldSession* m_session);
-        bool HandleWPHideCommand(const char* args, WorldSession* m_session);
-        bool HandleWPDeleteCommand(const char* args, WorldSession* m_session);
-        bool HandleWPFlagsCommand(const char* args, WorldSession* m_session);
-        bool HandleWPMoveHereCommand(const char* args, WorldSession* m_session);
-        bool HandleWPWaitCommand(const char* args, WorldSession* m_session);
-        bool HandleWPEmoteCommand(const char* args, WorldSession* m_session);
-        bool HandleWPSkinCommand(const char* args, WorldSession* m_session);
-        bool HandleWPChangeNoCommand(const char* args, WorldSession* m_session);
-        bool HandleWPInfoCommand(const char* args, WorldSession* m_session);
-        bool HandleWPMoveTypeCommand(const char* args, WorldSession* m_session);
-        bool HandleSaveWaypoints(const char* args, WorldSession* m_session);
-        bool HandleGenerateWaypoints(const char* args, WorldSession* m_session);
-        bool HandleDeleteWaypoints(const char* args, WorldSession* m_session);
+        
         bool HandleGuildJoinCommand(const char* args, WorldSession* m_session);
         bool HandleGuildMembersCommand(const char* args, WorldSession* m_session);
         bool CreateGuildCommand(const char* args, WorldSession* m_session);
@@ -551,11 +552,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAnnounceCommand(const char* args, WorldSession* m_session);
         bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
         bool HandleGPSCommand(const char* args, WorldSession* m_session);
-
-        
-        
-        bool HandleWaypointAddFlyCommand(const char* args, WorldSession* m_session);
-        
         
         bool HandleCollisionTestIndoor(const char* args, WorldSession* m_session);
         bool HandleGetDeathState(const char* args, WorldSession* m_session);
@@ -564,7 +560,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleMountCommand(const char* args, WorldSession* m_session);
 
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
-        
         
         bool HandleModifyValueCommand(const char* args, WorldSession* m_session);
         bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
@@ -580,14 +575,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleIPBanCommand(const char* args, WorldSession* m_session);
         bool HandleIPUnBanCommand(const char* args, WorldSession* m_session);
         bool HandleRemoveItemCommand(const char* args, WorldSession* m_session);
-        
-        
-        
-        
-        
-        
-        
-        
         
         bool HandleCreatePetCommand(const char* args, WorldSession* m_session);
         bool HandleAddPetSpellCommand(const char* args, WorldSession* m_session);
@@ -640,16 +627,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         bool HandleGORotate(const char* args, WorldSession* m_session);
         
-
-        
-        
-        
-        
         bool HandleGOExport(const char* args, WorldSession* m_session);
 
         bool HandleWorldPortCommand(const char* args, WorldSession* m_session);
         bool HandleLearnCommand(const char* args, WorldSession* m_session);
-        
         
         bool HandleGMTicketListCommand(const char* args, WorldSession* m_session);
         bool HandleGMTicketGetByIdCommand(const char* args, WorldSession* m_session);
@@ -666,15 +647,11 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         bool HandleResetReputationCommand(const char* args, WorldSession* m_session);
         
-        
-        
         bool HandleIncreaseWeaponSkill(const char* args, WorldSession* m_session);
         bool HandleCastSpellCommand(const char* args, WorldSession* m_session);
         bool HandleCastSpellNECommand(const char* args, WorldSession* m_session);
         bool HandleCastSelfCommand(const char* args, WorldSession* m_session);
-        
-        
-        
+
         bool HandleBattlegroundCommand(const char* args, WorldSession* m_session);
         bool HandleSetWorldStateCommand(const char* args, WorldSession* m_session);
         bool HandleSetWorldStatesCommand(const char* args, WorldSession* m_session);
