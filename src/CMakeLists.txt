@@ -9,7 +9,6 @@ endif()
 add_subdirectory(shared)
 add_subdirectory(logonserver)
 add_subdirectory(world)
-add_subdirectory(worldserver)
 
 # if build tools is set, add the subdirectory
 if(BUILD_TOOLS)

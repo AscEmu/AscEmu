@@ -44,16 +44,8 @@ include_directories(
 )
 add_library(${PROJECT_NAME} SHARED ${sources} ${headers})
 
-# special case for project linking
-# on some operating systems linking is a bit strange
-# OS X can't link executable, MSVC can't link world library... weird
-if(WIN32)
-    add_dependencies(${PROJECT_NAME} worldserver)
-    target_link_libraries(${PROJECT_NAME} worldserver)
-elseif(APPLE)
-    add_dependencies(${PROJECT_NAME} world)
-    target_link_libraries(${PROJECT_NAME} world)
-endif()
+target_link_libraries(${PROJECT_NAME} world)
+
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} Setup.h ${CMAKE_CURRENT_SOURCE_DIR}/Setup.cpp)
 endif()

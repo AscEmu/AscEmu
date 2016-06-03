@@ -94,7 +94,8 @@ set(sources
 	LogonCommClient.cpp 
 	LogonCommHandler.cpp 
 	MailHandler.cpp
-    MailMgr.cpp   
+    MailMgr.cpp
+   Main.cpp
     MapManagement/AreaManagement/AreaStorage.cpp
 	MapCell.cpp 
 	Map.cpp 
@@ -168,6 +169,10 @@ set(sources
    Spell_ClassScripts.cpp
 	DeathKnight.cpp
 )
+
+if(WIN32)
+   set(sources ${sources} resources.rc)
+endif()
 
 set(headers
 	AchievementMgr.h
@@ -326,11 +331,15 @@ include_directories(
    ${ZLIB_INCLUDE_DIRS}
 )
 
-add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
+add_executable(${PROJECT_NAME} ${sources} ${headers})
+
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp)
 endif()
 
+set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
+add_dependencies(${PROJECT_NAME} shared g3dlite vmaplib Detour Recast)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
-target_link_libraries( ${PROJECT_NAME} shared g3dlite vmaplib Detour Recast ${PCRE_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} shared g3dlite vmaplib Detour Recast ${PCRE_LIBRARIES})
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
