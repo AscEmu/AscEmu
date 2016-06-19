@@ -89,8 +89,8 @@ namespace MMAP
             ~TerrainBuilder();
 
             void loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData);
-            bool loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData);
-            void loadOffMeshConnections(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData, const char* offMeshFilePath);
+            bool loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData) const;
+        static void loadOffMeshConnections(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData, const char* offMeshFilePath);
 
             bool usesLiquids() { return !m_skipLiquid; }
 
@@ -106,7 +106,7 @@ namespace MMAP
             bool loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData, Spot portion);
 
             /// Sets loop variables for selecting only certain parts of a map's terrain
-            void getLoopVars(Spot portion, int& loopStart, int& loopEnd, int& loopInc);
+        static void getLoopVars(Spot portion, int& loopStart, int& loopEnd, int& loopInc);
 
             /// Controls whether liquids are loaded
             bool m_skipLiquid;
@@ -115,19 +115,19 @@ namespace MMAP
             bool loadHeightMap(uint32 mapID, uint32 tileX, uint32 tileY, G3D::Array<float>& vertices, G3D::Array<int>& triangles, Spot portion);
 
             /// Get the vector coordinate for a specific position
-            void getHeightCoord(int index, Grid grid, float xOffset, float yOffset, float* coord, float* v);
+        static void getHeightCoord(int index, Grid grid, float xOffset, float yOffset, float* coord, float* v);
 
             /// Get the triangle's vector indices for a specific position
-            void getHeightTriangle(int square, Spot triangle, int* indices, bool liquid = false);
+        static void getHeightTriangle(int square, Spot triangle, int* indices, bool liquid = false);
 
             /// Determines if the specific position's triangles should be rendered
-            bool isHole(int square, const uint16 holes[16][16]);
+        static bool isHole(int square, const uint16 holes[16][16]);
 
             /// Get the liquid vector coordinate for a specific position
-            void getLiquidCoord(int index, int index2, float xOffset, float yOffset, float* coord, float* v);
+        static void getLiquidCoord(int index, int index2, float xOffset, float yOffset, float* coord, float* v);
 
             /// Get the liquid type for a specific position
-            uint8 getLiquidType(int square, const uint8 liquid_type[16][16]);
+        static uint8 getLiquidType(int square, const uint8 liquid_type[16][16]);
 
             // hide parameterless and copy constructor
             TerrainBuilder();

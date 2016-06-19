@@ -93,7 +93,17 @@ namespace VMAP
 		return tilefilename.str();
 	}
 
-	bool StaticMapTree::getAreaInfo(G3D::Vector3 & pos, G3D::uint32 & flags, G3D::int32 & adtId, G3D::int32 & rootId, G3D::int32 & groupId) const
+    G3D::uint32 StaticMapTree::packTileID(G3D::uint32 tileX, G3D::uint32 tileY)
+	{
+	    return tileX << 16 | tileY;
+	}
+
+    void StaticMapTree::unpackTileID(G3D::uint32 ID, G3D::uint32& tileX, G3D::uint32& tileY)
+	{
+	    tileX = ID >> 16; tileY = ID & 0xFF;
+	}
+
+    bool StaticMapTree::getAreaInfo(G3D::Vector3 & pos, G3D::uint32 & flags, G3D::int32 & adtId, G3D::int32 & rootId, G3D::int32 & groupId) const
 	{
 		AreaInfoCallback intersectionCallBack(iTreeValues);
 		iTree.intersectPoint(pos, intersectionCallBack);
@@ -277,54 +287,61 @@ namespace VMAP
 	bool StaticMapTree::InitMap(const std::string & fname, VMapManager2* vm)
 	{
 		printf("Initializing StaticMapTree '%s'\n", fname.c_str());
-		bool success = true;
+		bool success = false;
 		std::string fullname = iBasePath + fname;
 		FILE* rf = fopen(fullname.c_str(), "rb");
 		if(!rf)
-			return false;
-		else
 		{
-			char chunk[8];
-			//general info
-			if(!readChunk(rf, chunk, VMAP_MAGIC, 8)) success = false;
-			char tiled;
-			if(success && fread(&tiled, sizeof(char), 1, rf) != 1) success = false;
-			iIsTiled = (tiled != 0);
-			// Nodes
-			if(success && !readChunk(rf, chunk, "NODE", 4)) success = false;
-			if(success) success = iTree.readFromFile(rf);
-			if(success)
-			{
-				iNTreeValues = iTree.primCount();
-				iTreeValues = new ModelInstance[iNTreeValues];
-			}
-
-			if(success && !readChunk(rf, chunk, "GOBJ", 4)) success = false;
-			// global model spawns
-			// only non-tiled maps have them, and if so exactly one (so far at least...)
-			ModelSpawn spawn;
-#ifdef VMAP_DEBUG
-			DEBUG_LOG("Map isTiled: %u", static_cast<G3D::uint32>(iIsTiled));
-#endif
-			if(!iIsTiled && ModelSpawn::readFromFile(rf, spawn))
-			{
-				WorldModel* model = vm->acquireModelInstance(iBasePath, spawn.name);
-				printf("StaticMapTree::InitMap(): loading %s", spawn.name.c_str());
-				if(model)
-				{
-					// assume that global model always is the first and only tree value (could be improved...)
-					iTreeValues[0] = ModelInstance(spawn, model);
-					iLoadedSpawns[0] = 1;
-				}
-				else
-				{
-					success = false;
-					printf("StaticMapTree::InitMap() could not acquire WorldModel pointer for '%s'!", spawn.name.c_str());
-				}
-			}
-
-			fclose(rf);
+            return false;
 		}
+
+		char chunk[8];
+        char tiled = 0x0;
+
+		//general info
+        if (readChunk(rf, chunk, VMAP_MAGIC, 8))
+        {
+            if (fread(&tiled, sizeof(uint8_t), 1, rf) == 1)
+            {
+                if (readChunk(rf, chunk, "NODE", 4))
+                {
+                    if (iTree.readFromFile(rf))
+                    {
+                        iNTreeValues = iTree.primCount();
+                        iTreeValues = new ModelInstance[iNTreeValues];
+                        success = readChunk(rf, chunk, "GOBJ", 4);
+                    }
+                }
+            }
+        }
+
+		iIsTiled = tiled != 0x0;
+
+		// global model spawns
+		// only non-tiled maps have them, and if so exactly one (so far at least...)
+		ModelSpawn spawn;
+#ifdef VMAP_DEBUG
+		DEBUG_LOG("Map isTiled: %u", static_cast<G3D::uint32>(iIsTiled));
+#endif
+		if(!iIsTiled && ModelSpawn::readFromFile(rf, spawn))
+		{
+            printf("StaticMapTree::InitMap(): loading %s", spawn.name.c_str());
+
+			WorldModel* model = vm->acquireModelInstance(iBasePath, spawn.name);
+			if(model)
+			{
+				// assume that global model always is the first and only tree value (could be improved...)
+				iTreeValues[0] = ModelInstance(spawn, model);
+				iLoadedSpawns[0] = 1;
+			}
+			else
+			{
+				success = false;
+				printf("StaticMapTree::InitMap() could not acquire WorldModel pointer for '%s'!", spawn.name.c_str());
+			}
+		}
+
+		fclose(rf);
 		return success;
 	}
 

@@ -96,16 +96,16 @@ namespace MMAP
                                   MeshData& meshData,
                                   float bmin[3],
                                   float bmax[3],
-                                  dtNavMesh* navMesh);
+                                  dtNavMesh* navMesh) const;
 
-            void getTileBounds(uint32 tileX, uint32 tileY,
+        static void getTileBounds(uint32 tileX, uint32 tileY,
                                float* verts, int vertCount,
                                float* bmin, float* bmax);
-            void getGridBounds(uint32 mapID, uint32& minX, uint32& minY, uint32& maxX, uint32& maxY);
+            void getGridBounds(uint32 mapID, uint32& minX, uint32& minY, uint32& maxX, uint32& maxY) const;
 
             bool shouldSkipMap(uint32 mapID);
             bool isTransportMap(uint32 mapID);
-            bool shouldSkipTile(uint32 mapID, uint32 tileX, uint32 tileY);
+        static bool shouldSkipTile(uint32 mapID, uint32 tileX, uint32 tileY);
 
             TerrainBuilder* m_terrainBuilder;
             TileList m_tiles;

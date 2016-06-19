@@ -28,10 +28,10 @@
 
 struct MmapTileHeader
 {
-    uint32 mmapMagic;
-    uint32 dtVersion;
-    uint32 mmapVersion;
-    uint32 size;
+    uint32_t mmapMagic;
+    uint32_t dtVersion;
+    uint32_t mmapVersion;
+    uint32_t size;
     bool usesLiquids : 1;
 
     MmapTileHeader() : mmapMagic(MMAP_MAGIC), dtVersion(DT_NAVMESH_VERSION),

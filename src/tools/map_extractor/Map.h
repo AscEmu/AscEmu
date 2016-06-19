@@ -20,23 +20,26 @@
 #ifndef _MAP_H
 #define _MAP_H
 #include "loadlib.h"
+#include <cstdint>
+#include <cmath>
+
 ///- Some parts of System.cpp moved to header.
 namespace ASCEMU
 {
     ///\todo Check structure naming for mmap & map actual: mmaps != map
     struct GridMapFileHeader
     {
-        uint32 mapMagic;
-        uint32 versionMagic;
-        uint32 buildMagic;
-        uint32 areaMapOffset;
-        uint32 areaMapSize;
-        uint32 heightMapOffset;
-        uint32 heightMapSize;
-        uint32 liquidMapOffset;
-        uint32 liquidMapSize;
-        uint32 holesOffset;
-        uint32 holesSize;
+        uint32_t mapMagic;
+        uint32_t versionMagic;
+        uint32_t buildMagic;
+        uint32_t areaMapOffset;
+        uint32_t areaMapSize;
+        uint32_t heightMapOffset;
+        uint32_t heightMapSize;
+        uint32_t liquidMapOffset;
+        uint32_t liquidMapSize;
+        uint32_t holesOffset;
+        uint32_t holesSize;
     };
 
 #define MAP_HEIGHT_NO_HEIGHT  0x0001
@@ -45,8 +48,8 @@ namespace ASCEMU
 
     struct GridMapHeightHeader
     {
-        uint32 fourcc;
-        uint32 flags;
+        uint32_t fourcc;
+        uint32_t flags;
         float gridHeight;
         float gridMaxHeight;
     };
@@ -66,13 +69,13 @@ namespace ASCEMU
 
     struct GridMapLiquidHeader
     {
-        uint32 fourcc;
-        uint16 flags;
-        uint16 liquidType;
-        uint8 offsetX;
-        uint8 offsetY;
-        uint8 width;
-        uint8 height;
+        uint32_t fourcc;
+        uint16_t flags;
+        uint16_t liquidType;
+        uint8_t offsetX;
+        uint8_t offsetY;
+        uint8_t width;
+        uint8_t height;
         float liquidLevel;
     };
 

@@ -192,7 +192,17 @@ namespace VMAP
 		return true;
 	}
 
-	G3D::uint32 WmoLiquid::GetFileSize()
+    float_t* WmoLiquid::GetHeightStorage() const
+	{
+	    return iHeight;
+	}
+
+    G3D::uint8* WmoLiquid::GetFlagsStorage() const
+	{
+	    return iFlags;
+	}
+
+    G3D::uint32 WmoLiquid::GetFileSize()
 	{
 		return 2 * sizeof(G3D::uint32) +
 		       sizeof(G3D::Vector3) +

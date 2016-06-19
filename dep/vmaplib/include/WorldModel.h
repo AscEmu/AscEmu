@@ -51,9 +51,11 @@ namespace VMAP
 			WmoLiquid & operator=(const WmoLiquid & other);
 			bool GetLiquidHeight(const G3D::Vector3 & pos, float & liqHeight) const;
 			G3D::uint32 GetType() const { return iType; }
-			float* GetHeightStorage() { return iHeight; }
-			G3D::uint8* GetFlagsStorage() { return iFlags; }
-			G3D::uint32 GetFileSize();
+
+	    float_t* GetHeightStorage() const;
+	    G3D::uint8* GetFlagsStorage() const;
+
+	    G3D::uint32 GetFileSize();
 			bool writeToFile(FILE* wf);
 			static bool readFromFile(FILE* rf, WmoLiquid *&liquid);
 		private:
@@ -99,7 +101,7 @@ namespace VMAP
 			BIH meshTree;
 			WmoLiquid* iLiquid;
 		public:
-			void getMeshData(std::vector<G3D::Vector3> &vertices, std::vector<MeshTriangle> &triangles, WmoLiquid* &liquid);
+			void getMeshData(std::vector<G3D::Vector3> &vertices, std::vector<MeshTriangle> &triangles, WmoLiquid* &liquid) const;
 	};
 	/*! Holds a model (converted M2 or WMO) in its original coordinate space */
 	class WorldModel

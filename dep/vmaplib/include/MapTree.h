@@ -60,9 +60,10 @@ namespace VMAP
 			//bool containsLoadedMapTile(unsigned int pTileIdent) const { return(iLoadedMapTiles.containsKey(pTileIdent)); }
 		public:
 			static std::string getTileFileName(G3D::uint32 mapID, G3D::uint32 tileX, G3D::uint32 tileY);
-			static G3D::uint32 packTileID(G3D::uint32 tileX, G3D::uint32 tileY) { return tileX << 16 | tileY; }
-			static void unpackTileID(G3D::uint32 ID, G3D::uint32 & tileX, G3D::uint32 & tileY) { tileX = ID >> 16; tileY = ID & 0xFF; }
-			static bool CanLoadMap(const std::string & basePath, G3D::uint32 mapID, G3D::uint32 tileX, G3D::uint32 tileY);
+	    static G3D::uint32 packTileID(G3D::uint32 tileX, G3D::uint32 tileY);
+
+	    static void unpackTileID(G3D::uint32 ID, G3D::uint32& tileX, G3D::uint32& tileY);
+	    static bool CanLoadMap(const std::string & basePath, G3D::uint32 mapID, G3D::uint32 tileX, G3D::uint32 tileY);
 
 			StaticMapTree(G3D::uint32 mapID, const std::string & basePath);
 			~StaticMapTree();

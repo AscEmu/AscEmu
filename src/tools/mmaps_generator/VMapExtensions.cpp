@@ -49,7 +49,7 @@ namespace VMAP
     }
 
     // declared in src/shared/vmap/WorldModel.h
-    void GroupModel::getMeshData(std::vector<G3D::Vector3>& vertices, std::vector<MeshTriangle>& triangles, WmoLiquid*& liquid)
+    void GroupModel::getMeshData(std::vector<G3D::Vector3>& vertices, std::vector<MeshTriangle>& triangles, WmoLiquid*& liquid) const
     {
         vertices = this->vertices;
         triangles = this->triangles;
