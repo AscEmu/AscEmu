@@ -111,10 +111,10 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #endif
 
 //VMAP
-#include "ModelInstance.h"
-#include "WorldModel.h"
-#include "MapTree.h"
-#include "BIH.h"
+#include "Models/ModelInstance.h"
+#include "Models/WorldModel.h"
+#include "Maps/MapTree.h"
+#include "BoundingIntervalHierarchy.h"
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"

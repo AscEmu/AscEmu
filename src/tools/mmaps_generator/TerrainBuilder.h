@@ -24,7 +24,7 @@
 #include "../map_extractor/Map.h"
 #include "MoveMapSharedDefines.h"
 
-#include "WorldModel.h"
+#include "Models/WorldModel.h"
 
 #include "G3D/Array.h"
 #include "G3D/Vector3.h"

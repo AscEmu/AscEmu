@@ -1,5 +1,5 @@
 #define _CRT_SECURE_NO_DEPRECATE
-//#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 
 #ifndef MPQ_H
 #define MPQ_H

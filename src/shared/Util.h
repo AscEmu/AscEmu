@@ -81,30 +81,6 @@ namespace Arcemu
 }
 
 
-/////////////////////////////////////////////////////////
-//uint32 getMSTime()
-//  Returns the time elapsed in milliseconds
-//
-//Parameter(s)
-//  None
-//
-//Return Value
-//  Returns the time elapsed in milliseconds
-//
-//
-/////////////////////////////////////////////////////////
-inline uint32 getMSTime()
-{
-    uint32 MSTime = 0;
-#ifdef WIN32
-    MSTime = GetTickCount();
-#else
-    timeval tv;
-    gettimeofday(&tv, NULL);
-    MSTime = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-#endif
-    return MSTime;
-}
 #ifndef _FLAG96
 #define _FLAG96
 

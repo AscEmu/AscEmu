@@ -396,6 +396,7 @@ bool BasicTaskExecutor::run()
 }
 
 void ApplyNormalFixes();
+extern void LoadGameObjectModelList();
 
 bool World::SetInitialWorldSettings()
 {
@@ -432,6 +433,8 @@ bool World::SetInitialWorldSettings()
 
     ApplyNormalFixes();
 
+    Log.Success("GameObjectModel", "Loading GameObject models...");
+    LoadGameObjectModelList();
 
     new SpellFactoryMgr;
 

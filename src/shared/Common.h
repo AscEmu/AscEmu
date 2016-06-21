@@ -302,6 +302,7 @@ inline uint32 now()
 #endif
 
 #include "Util.h"
+#include "Timer.h"
 
 struct spawn_timed_emotes
 {

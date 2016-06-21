@@ -6,6 +6,7 @@ project(vmap4_extractor CXX)
 set(sources
    adtfile.cpp
    dbcfile.cpp
+   gameobject_extract.cpp
    model.cpp
    vmapexport.cpp
    wdtfile.cpp

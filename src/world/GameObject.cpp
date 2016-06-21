@@ -49,6 +49,8 @@ GameObject::GameObject(uint64 guid)
     m_respawnCell = NULL;
     m_rotation = 0;
     m_overrides = 0;
+
+    m_model = NULL;
 }
 
 GameObject::~GameObject()

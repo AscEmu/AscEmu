@@ -51,6 +51,7 @@ enum GameObject_Flags
 class Player;
 class GameObjectAIScript;
 class GameObjectTemplate;
+class GameObjectModel;
 
 enum GameObjectOverrides
 {
@@ -496,6 +497,8 @@ class SERVER_DECL GameObject : public Object
             else
                 return false;
         }
+
+        GameObjectModel* m_model;
 
     protected:
 

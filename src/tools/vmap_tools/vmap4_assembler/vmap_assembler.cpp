@@ -19,7 +19,7 @@
 #include <string>
 #include <iostream>
 
-#include "TileAssembler.h"
+#include "Maps/TileAssembler.h"
 
 //=======================================================
 int main(int argc, char* argv[])

@@ -21,6 +21,7 @@
 
 #include "MersenneTwister.h"
 #include "Util.h"
+#include "Timer.h"
 #include <stdexcept>
 
 #define NUMBER_OF_GENERATORS 5

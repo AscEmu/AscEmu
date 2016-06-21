@@ -34,6 +34,7 @@ namespace DBC
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
             char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const faction_template_format[] = "niiiiiiiiiiiii";
+            char const game_object_display_info_format[] = "nsxxxxxxxxxxffffffx";
             char const gem_properties_format[] = "nixxi";
             char const glyph_properties_format[] = "niii";
             char const glyph_slot_format[] = "nii";
@@ -336,6 +337,20 @@ namespace DBC
             uint32 HostileMask;             // 5
             uint32 EnemyFactions[4];        // 6-9
             uint32 FriendlyFactions[4];     // 10-13
+        };
+
+        struct GameObjectDisplayInfoEntry
+        {
+            uint32 Displayid;               // 0
+            char* filename;                 // 1
+            //uint32  unk1[10];             // 2-11
+            float minX;                     // 12
+            float minY;                     // 13
+            float minZ;                     // 14
+            float maxX;                     // 15
+            float maxY;                     // 16
+            float maxZ;                     // 17
+            //uint32 transport;             // 18
         };
 
         struct GemPropertiesEntry

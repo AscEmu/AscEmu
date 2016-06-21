@@ -1,5 +1,5 @@
 @echo off
 mkdir vmaps
-vmap_extractor.exe
-vmap_assembler Buildings vmaps
+vmap4_extractor.exe
+vmap4_assembler Buildings vmaps
 pause

@@ -19,10 +19,10 @@
 
 #include <vector>
 
-#include "MapTree.h"
+#include "Maps/MapTree.h"
 #include "VMapManager2.h"
-#include "WorldModel.h"
-#include "ModelInstance.h"
+#include "Models/WorldModel.h"
+#include "Models/ModelInstance.h"
 
 namespace VMAP
 {

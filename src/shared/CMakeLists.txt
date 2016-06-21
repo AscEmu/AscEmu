@@ -77,6 +77,7 @@ set(headers
 	StackTrace.h
 	StackWalker.h
 	TextFile.h
+	Timer.h
 	TLSObject.h
 	Tokenizer.h
 	Util.h
