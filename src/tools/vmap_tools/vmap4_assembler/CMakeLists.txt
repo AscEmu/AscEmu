@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up project name
-project(vmap_assembler CXX)
+project(vmap4_assembler CXX)
 
 set(sources
    vmap_assembler.cpp

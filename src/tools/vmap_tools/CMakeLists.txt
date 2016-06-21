@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-add_subdirectory(vmap_extractor)
-add_subdirectory(vmap_assembler)
+add_subdirectory(vmap4_extractor)
+add_subdirectory(vmap4_assembler)
 
 if(WIN32)
 	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/vmaps.bat DESTINATION ${ASCEMU_TOOLS_PATH})

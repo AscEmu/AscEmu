@@ -250,7 +250,7 @@ namespace VMAP
 			if(instanceTree->second->GetLocationInfo(pos, info))
 			{
 				floor = info.ground_Z;
-				type = info.hitModel->GetLiquidType();
+				type = info.hitModel->GetLiquidType();  // entry from LiquidType.dbc
 				if(ReqLiquidType && !(type & ReqLiquidType))
 					return false;
 				if(info.hitInstance->GetLiquidLevel(pos, info, level))

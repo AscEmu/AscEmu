@@ -1,7 +1,7 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
 # set up project name
-project(vmap_extractor CXX)
+project(vmap4_extractor CXX)
 
 set(sources
    adtfile.cpp
