@@ -20,26 +20,19 @@
 #ifndef _MAP_BUILDER_H
 #define _MAP_BUILDER_H
 
-#include <vector>
-#include <set>
-#include <map>
-#include <list>
-#include <atomic>
-#include <thread>
-
 #include "TerrainBuilder.h"
-#include "IntermediateValues.h"
 
 #include "Recast.h"
 #include "DetourNavMesh.h"
 
-#ifndef _PCQ_H
-#define _PCQ_H
-
+#include <vector>
+#include <set>
+#include <list>
+#include <atomic>
+#include <thread>
 #include <condition_variable>
 #include <mutex>
 #include <queue>
-#include <atomic>
 #include <type_traits>
 
 template <typename T>
@@ -127,7 +120,6 @@ private:
     typename std::enable_if<!std::is_pointer<E>::value>::type DeleteQueuedObject(E const& /*packet*/) { }
 };
 
-#endif
 
 using namespace VMAP;
 
@@ -216,7 +208,7 @@ namespace MMAP
             void getTileBounds(uint32 tileX, uint32 tileY,
                 float* verts, int vertCount,
                 float* bmin, float* bmax);
-            void getGridBounds(uint32 mapID, uint32 &minX, uint32 &minY, uint32 &maxX, uint32 &maxY);
+            void getGridBounds(uint32 mapID, uint32 &minX, uint32 &minY, uint32 &maxX, uint32 &maxY) const;
 
             bool shouldSkipMap(uint32 mapID);
             bool isTransportMap(uint32 mapID);

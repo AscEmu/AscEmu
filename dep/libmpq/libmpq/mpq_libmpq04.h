@@ -23,12 +23,9 @@
 #include "loadlib.h"
 #include "mpq.h"
 #include <string.h>
-#include <ctype.h>
+#include <string>
 #include <vector>
-#include <iostream>
 #include <deque>
-
-using namespace std;
 
 class MPQArchive
 {
@@ -39,7 +36,7 @@ public:
     MPQArchive(const char* filename);
     ~MPQArchive() { close(); }
 
-    void GetFileListTo(vector<string>& filelist) {
+    void GetFileListTo(std::vector<std::string>& filelist) {
         uint32_t filenum;
         if(libmpq__file_number(mpq_a, "(listfile)", &filenum)) return;
         libmpq__off_t size, transferred;
@@ -58,7 +55,7 @@ public:
         while ((token != NULL) && (counter < size)) {
             //cout << token << endl;
             token[strlen(token) - 1] = 0;
-            string s = token;
+            std::string s = token;
             filelist.push_back(s);
             counter += strlen(token) + 2;
             token = strtok(NULL, seps);
@@ -79,8 +76,8 @@ class MPQFile
     libmpq__off_t pointer,size;
 
     // disable copying
-    MPQFile(const MPQFile& /*f*/) {}
-    void operator=(const MPQFile& /*f*/) {}
+    MPQFile(const MPQFile& /*f*/) = delete;
+    void operator=(const MPQFile& /*f*/) = delete;
 
 public:
     MPQFile(const char* filename);    // filenames are not case sensitive

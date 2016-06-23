@@ -82,6 +82,8 @@ namespace MMAP
             TerrainBuilder(bool skipLiquid);
             ~TerrainBuilder();
 
+            TerrainBuilder(const TerrainBuilder &tb) = delete;
+
             void loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData);
             bool loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData);
             void loadOffMeshConnections(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData, const char* offMeshFilePath);
@@ -105,9 +107,6 @@ namespace MMAP
             /// Controls whether liquids are loaded
             bool m_skipLiquid;
 
-            /// Load the map terrain from file
-            bool loadHeightMap(uint32 mapID, uint32 tileX, uint32 tileY, G3D::Array<float> &vertices, G3D::Array<int> &triangles, Spot portion);
-
             /// Get the vector coordinate for a specific position
             void getHeightCoord(int index, Grid grid, float xOffset, float yOffset, float* coord, float* v);
 
@@ -122,10 +121,6 @@ namespace MMAP
 
             /// Get the liquid type for a specific position
             uint8 getLiquidType(int square, const uint8 liquid_type[16][16]);
-
-            // hide parameterless and copy constructor
-            TerrainBuilder();
-            TerrainBuilder(const TerrainBuilder &tb);
     };
 }
 
