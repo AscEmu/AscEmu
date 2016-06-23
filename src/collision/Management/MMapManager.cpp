@@ -20,6 +20,7 @@
 #include "MMapManager.h"
 #include "MapDefines.h"
 #include "StdAfx.h"
+#include "Errors.h"
 
 namespace MMAP
 {
@@ -66,7 +67,10 @@ namespace MMAP
             if (thread_safe_environment)
                 itr = loadedMMaps.insert(MMapDataSet::value_type(mapId, nullptr)).first;
             else
-                ASSERT(false, "Invalid mapId %u passed to MMapManager after startup in thread unsafe environment", mapId);
+            {
+                Log.Error("MMapManager", "Invalid mapId %u passed to MMapManager after startup in thread unsafe environment", mapId);
+                ASSERT(false);
+            }
         }
 
         // load and init dtNavMesh - read parameters from file
